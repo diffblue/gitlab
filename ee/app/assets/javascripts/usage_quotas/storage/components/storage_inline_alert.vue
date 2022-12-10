@@ -1,24 +1,22 @@
 <script>
 import { GlAlert } from '@gitlab/ui';
 import { n__, s__, sprintf } from '~/locale';
-import { ALERT_THRESHOLD, ERROR_THRESHOLD, WARNING_THRESHOLD } from '../constants';
+import { ALERT_THRESHOLD, ERROR_THRESHOLD } from '../constants';
 import { formatUsageSize, usageRatioToThresholdLevel } from '../utils';
 
 export default {
   i18n: {
-    lockedWithNoPurchasedStorageTitle: s__('UsageQuota|This namespace contains locked projects'),
     lockedWithNoPurchasedStorageText: s__(
-      'UsageQuota|You have reached the free storage limit of %{actualRepositorySizeLimit} on %{projectsLockedText}. To unlock them, purchase additional storage.',
+      'UsageQuota|You have reached the free storage limit on %{projectsLockedText}. To unlock them, purchase additional storage.',
     ),
-    storageUsageText: s__('UsageQuota|%{percentageLeft} of purchased storage is available'),
     lockedWithPurchaseText: s__(
-      'UsageQuota|You have consumed all of your additional storage. Purchase more to unlock your projects over the free %{actualRepositorySizeLimit} limit.',
+      'UsageQuota|You have consumed all of your additional storage. Purchase more to unlock projects over the limit.',
     ),
     warningWithPurchaseText: s__(
       'UsageQuota|Your purchased storage is running low. To avoid locked projects, purchase more storage.',
     ),
     infoWithPurchaseText: s__(
-      'UsageQuota|When you purchase additional storage, we automatically unlock projects that were locked when you reached the %{actualRepositorySizeLimit} limit.',
+      'UsageQuota|When you purchase additional storage, we automatically unlock projects that were locked if the storage limit was reached.',
     ),
   },
   components: {
@@ -59,14 +57,6 @@ export default {
         ? this.hasPurchasedStorageText()
         : this.hasNotPurchasedStorageText();
     },
-    alertTitle() {
-      if (!this.hasPurchasedStorage() && this.containsLockedProjects) {
-        return this.$options.i18n.lockedWithNoPurchasedStorageTitle;
-      }
-      return sprintf(this.$options.i18n.storageUsageText, {
-        percentageLeft: `${this.excessStoragePercentageLeft}%`,
-      });
-    },
     excessStorageRatio() {
       return this.totalRepositorySizeExcess / this.additionalPurchasedStorageSize;
     },
@@ -82,8 +72,6 @@ export default {
     thresholdLevelToAlertVariant() {
       if (this.thresholdLevel === ERROR_THRESHOLD || this.thresholdLevel === ALERT_THRESHOLD) {
         return 'danger';
-      } else if (this.thresholdLevel === WARNING_THRESHOLD) {
-        return 'warning';
       }
       return 'info';
     },
@@ -107,23 +95,15 @@ export default {
     },
     hasPurchasedStorageText() {
       if (this.thresholdLevel === ERROR_THRESHOLD) {
-        return sprintf(this.$options.i18n.lockedWithPurchaseText, {
-          actualRepositorySizeLimit: this.formatSize(this.actualRepositorySizeLimit),
-        });
-      } else if (
-        this.thresholdLevel === WARNING_THRESHOLD ||
-        this.thresholdLevel === ALERT_THRESHOLD
-      ) {
+        return this.$options.i18n.lockedWithPurchaseText;
+      } else if (this.thresholdLevel === ALERT_THRESHOLD) {
         return this.$options.i18n.warningWithPurchaseText;
       }
-      return sprintf(this.$options.i18n.infoWithPurchaseText, {
-        actualRepositorySizeLimit: this.formatSize(this.actualRepositorySizeLimit),
-      });
+      return this.$options.i18n.infoWithPurchaseText;
     },
     hasNotPurchasedStorageText() {
       if (this.thresholdLevel === ERROR_THRESHOLD) {
         return sprintf(this.$options.i18n.lockedWithNoPurchasedStorageText, {
-          actualRepositorySizeLimit: this.formatSize(this.actualRepositorySizeLimit),
           projectsLockedText: this.projectsLockedText,
         });
       }
@@ -138,7 +118,6 @@ export default {
     class="gl-mt-5"
     :variant="thresholdLevelToAlertVariant"
     :dismissible="false"
-    :title="alertTitle"
   >
     {{ alertText }}
   </gl-alert>
