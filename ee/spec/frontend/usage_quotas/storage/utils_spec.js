@@ -90,7 +90,7 @@ describe('UsageThreshold', () => {
     ${0}       | ${'none'}
     ${0.4}     | ${'none'}
     ${0.5}     | ${'info'}
-    ${0.9}     | ${'warning'}
+    ${0.9}     | ${'info'}
     ${0.99}    | ${'alert'}
     ${1}       | ${'error'}
     ${1.5}     | ${'error'}

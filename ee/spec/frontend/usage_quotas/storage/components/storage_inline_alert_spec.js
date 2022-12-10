@@ -52,7 +52,7 @@ describe('StorageInlineAlert', () => {
       const alert = findAlert();
       expect(alert.props('variant')).toBe('danger');
       expect(alert.text()).toBe(
-        'You have reached the free storage limit of 10.0GiB on 1 project. To unlock them, purchase additional storage.',
+        'You have reached the free storage limit on 1 project. To unlock them, purchase additional storage.',
       );
     });
   });
@@ -73,7 +73,7 @@ describe('StorageInlineAlert', () => {
       const alert = findAlert();
       expect(alert.props('variant')).toBe('info');
       expect(alert.text()).toBe(
-        'When you purchase additional storage, we automatically unlock projects that were locked when you reached the 10.0GiB limit.',
+        'When you purchase additional storage, we automatically unlock projects that were locked if the storage limit was reached.',
       );
     });
   });
@@ -94,28 +94,7 @@ describe('StorageInlineAlert', () => {
       const alert = findAlert();
       expect(alert.props('variant')).toBe('danger');
       expect(alert.text()).toBe(
-        'You have consumed all of your additional storage. Purchase more to unlock your projects over the free 10.0GiB limit.',
-      );
-    });
-  });
-
-  describe('excess storage below purchase limit in warning threshold', () => {
-    beforeEach(() => {
-      mountComponent({
-        containsLockedProjects: false,
-        repositorySizeExcessProjectCount: 0,
-        totalRepositorySizeExcess: TEN_GB_IN_BYTES,
-        totalRepositorySize: THIRTEEN_GB_IN_BYTES,
-        additionalPurchasedStorageSize: THIRTEEN_GB_IN_BYTES,
-        actualRepositorySizeLimit: TEN_GB_IN_BYTES,
-      });
-    });
-
-    it('renders warning alert with correct message', () => {
-      const alert = findAlert();
-      expect(alert.props('variant')).toBe('warning');
-      expect(alert.text()).toBe(
-        'Your purchased storage is running low. To avoid locked projects, purchase more storage.',
+        'You have consumed all of your additional storage. Purchase more to unlock projects over the limit.',
       );
     });
   });
