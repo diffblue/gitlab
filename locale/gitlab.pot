@@ -40256,6 +40256,9 @@ msgstr ""
 msgid "SuperSonics|You can start a free trial of GitLab Ultimate without any obligation or payment details."
 msgstr ""
 
+msgid "SuperSonics|You can sync your subscription data to ensure your details are up to date."
+msgstr ""
+
 msgid "SuperSonics|You do not have an active subscription"
 msgstr ""
 

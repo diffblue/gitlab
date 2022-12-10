@@ -2,6 +2,7 @@ import { GlSkeletonLoader, GlBadge } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import Vuex from 'vuex';
 import SubscriptionDetailsTable from 'ee/admin/subscriptions/show/components/subscription_details_table.vue';
+import SubscriptionSyncButton from 'ee/admin/subscriptions/show/components/subscription_sync_button.vue';
 import { detailsLabels } from 'ee/admin/subscriptions/show/constants';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
@@ -32,6 +33,8 @@ describe('Subscription Details Table', () => {
   const findLastSyncRow = () => wrapper.findByTestId('row-lastsync');
   const findClipboardButton = () => wrapper.findComponent(ClipboardButton);
   const findTypeBadge = () => wrapper.findComponent(GlBadge);
+  const findSyncButton = () => wrapper.findComponent(SubscriptionSyncButton);
+
   const hasClass = (className) => (w) => w.classes(className);
   const isNotLastSyncRow = (w) => w.attributes('data-testid') !== 'row-lastsync';
 
@@ -49,6 +52,7 @@ describe('Subscription Details Table', () => {
       mount(SubscriptionDetailsTable, {
         store,
         propsData: { details: licenseDetails, ...props },
+        provide: { subscriptionSyncPath: '' },
       }),
     );
   };
@@ -137,6 +141,25 @@ describe('Subscription Details Table', () => {
 
     it('passes the text to the clipboard', () => {
       expect(findClipboardButton().props('text')).toBe('13');
+    });
+  });
+
+  describe('with lastSync detail', () => {
+    beforeEach(() => {
+      createComponent({
+        props: {
+          details: [
+            {
+              detail: 'lastSync',
+              value: 'A date',
+            },
+          ],
+        },
+      });
+    });
+
+    it('shows the subscription sync button', () => {
+      expect(findSyncButton().exists()).toBe(true);
     });
   });
 

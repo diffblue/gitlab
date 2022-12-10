@@ -1,0 +1,107 @@
+import { GlButton, GlPopover } from '@gitlab/ui';
+import { shallowMount } from '@vue/test-utils';
+import Vuex from 'vuex';
+import SubscriptionSyncButton from 'ee/admin/subscriptions/show/components/subscription_sync_button.vue';
+import * as initialStore from 'ee/admin/subscriptions/show/store/';
+import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { syncButtonTexts, SYNC_BUTTON_ID } from 'ee/admin/subscriptions/show/constants';
+
+describe('Subscription Sync Button', () => {
+  const createStore = ({ syncMock = jest.fn() } = {}) => {
+    return new Vuex.Store({
+      licenseRemovalPath: '',
+      subscriptionSyncPath: '',
+      ...initialStore,
+      actions: {
+        syncSubscription: syncMock,
+      },
+    });
+  };
+
+  const createComponent = ({ store = createStore() } = {}) => {
+    return extendedWrapper(
+      shallowMount(SubscriptionSyncButton, {
+        store,
+      }),
+    );
+  };
+
+  const findButton = (wrapper) => wrapper.findComponent(GlButton);
+  const findPopover = (wrapper) => wrapper.findComponent(GlPopover);
+
+  describe('button', () => {
+    let wrapper;
+    let syncButton;
+
+    beforeEach(() => {
+      wrapper = createComponent();
+      syncButton = findButton(wrapper);
+    });
+
+    it('displays with default variant', () => {
+      expect(syncButton.props('variant')).toBe('default');
+    });
+
+    it('displays with tertiary category', () => {
+      expect(syncButton.props('category')).toBe('tertiary');
+    });
+
+    it('displays with small size', () => {
+      expect(syncButton.props('size')).toBe('small');
+    });
+
+    it('displays correct icon', () => {
+      expect(syncButton.props('icon')).toBe('retry');
+    });
+
+    it('contains an aria-label', () => {
+      expect(syncButton.attributes('aria-label')).toBe(syncButtonTexts.syncSubscriptionButtonText);
+    });
+
+    it('has a popover', () => {
+      expect(findPopover(wrapper).exists()).toBe(true);
+    });
+
+    it('does not display any text', () => {
+      expect(syncButton.text()).toBe('');
+    });
+  });
+
+  describe('popover', () => {
+    let wrapper;
+    let popover;
+
+    beforeEach(() => {
+      wrapper = createComponent();
+      popover = findPopover(wrapper);
+    });
+
+    it('displays to the right', () => {
+      expect(popover.props('placement')).toBe('right');
+    });
+
+    it('displays correct text', () => {
+      expect(popover.attributes('content')).toContain(syncButtonTexts.syncSubscriptionTooltipText);
+    });
+
+    it('targets the button', () => {
+      expect(popover.props('target')).toBe(SYNC_BUTTON_ID);
+    });
+  });
+
+  describe('on click', () => {
+    const syncSpy = jest.fn();
+    let wrapper;
+
+    beforeEach(() => {
+      const store = createStore({ syncMock: syncSpy });
+      wrapper = createComponent({ store });
+    });
+
+    it('triggers syncSubscription action', () => {
+      findButton(wrapper).vm.$emit('click');
+
+      expect(syncSpy).toHaveBeenCalled();
+    });
+  });
+});
