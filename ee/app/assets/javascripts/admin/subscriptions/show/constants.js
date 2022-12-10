@@ -33,7 +33,6 @@ export const noActiveSubscription = s__(`SuperSonics|You do not have an active s
 export const subscriptionDetailsHeaderText = s__('SuperSonics|Subscription details');
 export const licensedToHeaderText = s__('SuperSonics|Licensed to');
 export const manageSubscriptionButtonText = s__('SuperSonics|Manage');
-export const syncSubscriptionButtonText = s__('SuperSonics|Sync subscription details');
 export const copySubscriptionIdButtonText = __('Copy');
 export const licenseFileText = __('Legacy license');
 export const onlineCloudLicenseText = s__('SuperSonics|Online license');
@@ -128,3 +127,12 @@ export const instanceHasFutureLicenseBanner = {
     'SuperSonics|You have added a license that activates on %{date}. Please see the subscription history table below for more details.',
   ),
 };
+
+// Subscription Sync Button
+export const SYNC_BUTTON_ID = 'syncButton';
+export const syncButtonTexts = Object.freeze({
+  syncSubscriptionButtonText: s__('SuperSonics|Sync subscription details'),
+  syncSubscriptionTooltipText: s__(
+    'SuperSonics|You can sync your subscription data to ensure your details are up to date.',
+  ),
+});

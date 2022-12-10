@@ -55,7 +55,6 @@ describe('Subscription Breakdown', () => {
   const findActivateSubscriptionAction = () =>
     wrapper.findByTestId('subscription-activate-subscription-action');
   const findSubscriptionMangeAction = () => wrapper.findByTestId('subscription-manage-action');
-  const findSubscriptionSyncAction = () => wrapper.findByTestId('subscription-sync-action');
   const findSubscriptionActivationBanner = () =>
     wrapper.findComponent(SubscriptionActivationBanner);
   const findSubscriptionActivationModal = () => wrapper.findComponent(SubscriptionActivationModal);
@@ -196,34 +195,6 @@ describe('Subscription Breakdown', () => {
     });
 
     describe('footer buttons', () => {
-      it.each`
-        url                     | type                                | shouldShow
-        ${subscriptionSyncPath} | ${subscriptionTypes.ONLINE_CLOUD}   | ${true}
-        ${subscriptionSyncPath} | ${subscriptionTypes.OFFLINE_CLOUD}  | ${false}
-        ${subscriptionSyncPath} | ${subscriptionTypes.LEGACY_LICENSE} | ${false}
-        ${''}                   | ${subscriptionTypes.ONLINE_CLOUD}   | ${false}
-        ${''}                   | ${subscriptionTypes.OFFLINE_CLOUD}  | ${false}
-        ${''}                   | ${subscriptionTypes.LEGACY_LICENSE} | ${false}
-        ${undefined}            | ${subscriptionTypes.ONLINE_CLOUD}   | ${false}
-        ${undefined}            | ${subscriptionTypes.OFFLINE_CLOUD}  | ${false}
-        ${undefined}            | ${subscriptionTypes.LEGACY_LICENSE} | ${false}
-      `(
-        'with url is $url and type is $type the sync button is shown: $shouldShow',
-        ({ url, type, shouldShow }) => {
-          const provide = {
-            connectivityHelpURL: '',
-            customersPortalUrl: '',
-            licenseRemovePath: '',
-            subscriptionSyncPath: url,
-          };
-          const props = { subscription: { ...license.ULTIMATE, type } };
-          const stubs = { GlCard, SubscriptionDetailsCard };
-          createComponent({ props, provide, stubs });
-
-          expect(findSubscriptionSyncAction().exists()).toBe(shouldShow);
-        },
-      );
-
       it('does not show upload legacy license button', () => {
         createComponent();
 
@@ -304,10 +275,6 @@ describe('Subscription Breakdown', () => {
         });
       });
 
-      it('does not show a button to sync the subscription', () => {
-        expect(findSubscriptionSyncAction().exists()).toBe(false);
-      });
-
       it('shows the subscription details footer', () => {
         expect(findDetailsCardFooter().exists()).toBe(true);
       });
@@ -356,23 +323,6 @@ describe('Subscription Breakdown', () => {
 
           expect(findSubscriptionActivationBanner().exists()).toBe(false);
         });
-      });
-    });
-
-    describe('sync a subscription triggers action', () => {
-      let syncSubscriptionSpy;
-
-      beforeEach(() => {
-        syncSubscriptionSpy = jest.fn();
-        const store = createStore({ syncSubscriptionMock: syncSubscriptionSpy });
-
-        createComponent({ stubs: { GlCard, SubscriptionDetailsCard }, store });
-
-        findSubscriptionSyncAction().vm.$emit('click');
-      });
-
-      it('calls syncSubscription action', () => {
-        expect(syncSubscriptionSpy).toHaveBeenCalled();
       });
     });
 

@@ -3,6 +3,7 @@ import { GlSkeletonLoader, GlTableLite, GlBadge } from '@gitlab/ui';
 import { mapGetters } from 'vuex';
 import { slugifyWithUnderscore } from '~/lib/utils/text_utility';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
+import SubscriptionSyncButton from 'jh_else_ee/admin/subscriptions/show/components/subscription_sync_button.vue';
 import { copySubscriptionIdButtonText, detailsLabels } from '../constants';
 
 const placeholderHeightFactor = 32;
@@ -33,6 +34,7 @@ export default {
     GlSkeletonLoader,
     GlTableLite,
     GlBadge,
+    SubscriptionSyncButton,
   },
   props: {
     details: {
@@ -110,10 +112,12 @@ export default {
           v-if="item.detail === 'id'"
           :text="value"
           :title="$options.i18n.copySubscriptionIdButtonText"
+          :aria-label="$options.i18n.copySubscriptionIdButtonText"
           category="tertiary"
           class="gl-absolute gl-mt-n2 gl-ml-2"
           size="small"
         />
+        <subscription-sync-button v-if="item.detail === 'lastSync'" />
       </p>
     </template>
   </gl-table-lite>

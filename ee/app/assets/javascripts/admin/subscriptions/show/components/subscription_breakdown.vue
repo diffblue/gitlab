@@ -13,7 +13,6 @@ import {
   manageSubscriptionButtonText,
   subscriptionDetailsHeaderText,
   subscriptionTypes,
-  syncSubscriptionButtonText,
 } from '../constants';
 import SubscriptionActivationBanner from './subscription_activation_banner.vue';
 import SubscriptionActivationModal from './subscription_activation_modal.vue';
@@ -35,7 +34,6 @@ export const i18n = Object.freeze({
   licensedToHeaderText,
   manageSubscriptionButtonText,
   subscriptionDetailsHeaderText,
-  syncSubscriptionButtonText,
   removeLicense: __('Remove license'),
   removeLicenseConfirmSaaS: sprintf(
     __(
@@ -66,12 +64,7 @@ export default {
     SubscriptionSyncNotifications: () => import('./subscription_sync_notifications.vue'),
     UserCalloutDismisser,
   },
-  inject: [
-    'customersPortalUrl',
-    'licenseRemovePath',
-    'subscriptionSyncPath',
-    'subscriptionActivationBannerCalloutName',
-  ],
+  inject: ['customersPortalUrl', 'licenseRemovePath', 'subscriptionActivationBannerCalloutName'],
   props: {
     subscription: {
       type: Object,
@@ -103,9 +96,6 @@ export default {
     canManageSubscription() {
       return this.customersPortalUrl && this.hasSubscription;
     },
-    canSyncSubscription() {
-      return this.subscriptionSyncPath && this.isOnlineCloudType;
-    },
     canRemoveLicense() {
       return this.licenseRemovePath;
     },
@@ -115,19 +105,11 @@ export default {
     hasSubscriptionHistory() {
       return Boolean(this.subscriptionList.length);
     },
-    isOnlineCloudType() {
-      return this.subscription.type === subscriptionTypes.ONLINE_CLOUD;
-    },
     isLicenseFileType() {
       return this.subscription.type === subscriptionTypes.LEGACY_LICENSE;
     },
     shouldShowFooter() {
-      return (
-        this.canActivateSubscription ||
-        this.canRemoveLicense ||
-        this.canManageSubscription ||
-        this.canSyncSubscription
-      );
+      return this.canActivateSubscription || this.canRemoveLicense || this.canManageSubscription;
     },
     shouldShowNotifications() {
       return this.breakdown.shouldShowNotifications;
@@ -146,7 +128,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['syncSubscription', 'removeLicense']),
+    ...mapActions(['removeLicense']),
     showActivationModal() {
       this.activationModalVisible = true;
     },
@@ -207,17 +189,6 @@ export default {
         >
           <template v-if="shouldShowFooter" #footer>
             <div class="gl-display-flex gl-flex-wrap gl-align-items-flex-start">
-              <gl-button
-                v-if="canSyncSubscription"
-                category="primary"
-                :loading="hasAsyncActivity"
-                variant="confirm"
-                data-testid="subscription-sync-action"
-                class="gl-mr-3 gl-mb-3 gl-lg-mb-0"
-                @click="syncSubscription"
-              >
-                {{ $options.i18n.syncSubscriptionButtonText }}
-              </gl-button>
               <gl-button
                 v-if="canActivateSubscription"
                 v-gl-modal-directive="$options.activateSubscriptionModal.id"
