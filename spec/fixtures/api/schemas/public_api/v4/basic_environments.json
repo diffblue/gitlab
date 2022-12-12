@@ -1,6 +1,6 @@
 {
   "type": "array",
   "items": {
-    "$ref": "./environment.json"
+    "$ref": "./basic_environment.json"
   }
 }
