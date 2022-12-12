@@ -33,7 +33,6 @@ module EE
       deployment
       commit_status
       container_image
-      pages
       cluster
       release
       approvers
