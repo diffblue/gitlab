@@ -288,6 +288,7 @@ module ApplicationSettingsHelper
       :max_import_size,
       :max_pages_size,
       :max_pages_custom_domains_per_project,
+      :max_terraform_state_size_bytes,
       :max_yaml_size_bytes,
       :max_yaml_depth,
       :metrics_method_call_threshold,
