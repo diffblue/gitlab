@@ -16,22 +16,25 @@ module API
       desc 'Get Member Roles for a group' do
         success EE::API::Entities::MemberRole
       end
+
       get ":id/member_roles" do
         group = find_group(params[:id])
-
         member_roles = group.member_roles
-
         present member_roles, with: EE::API::Entities::MemberRole
       end
 
       desc 'Create Member Role for a group' do
         success EE::API::Entities::MemberRole
       end
+
       params do
-        requires 'base_access_level', type: Integer, values: Gitlab::Access.all_values,
-                                      desc: 'Base Access Level for the configured role '
-        optional 'download_code', type: Boolean,
-                                  desc: 'Permission to download code'
+        requires(
+          'base_access_level',
+          type: Integer,
+          values: Gitlab::Access.all_values,
+          desc: 'Base Access Level for the configured role'
+        )
+        optional 'read_code', type: Boolean, desc: 'Permission to read code'
       end
 
       post ":id/member_roles" do
@@ -49,9 +52,13 @@ module API
       desc 'Delete Member Role for a group' do
         success EE::API::Entities::MemberRole
       end
+
       params do
-        requires 'member_role_id', type: Integer,
-                                   desc: 'The ID of the Member Role to be deleted'
+        requires(
+          'member_role_id',
+          type: Integer,
+          desc: 'The ID of the Member Role to be deleted'
+        )
       end
 
       delete ":id/member_roles/:member_role_id" do

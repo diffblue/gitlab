@@ -465,9 +465,9 @@ module EE
       namespace_bans.find_by!(namespace: namespace)
     end
 
-    def download_code_for?(project)
+    def read_code_for?(project)
       roles = preloaded_member_roles_for_projects([project])[project.id]
-      roles&.include?(:download_code)
+      roles&.include?(:read_code)
     end
 
     override :preloaded_member_roles_for_projects

@@ -17360,7 +17360,8 @@ CREATE TABLE member_roles (
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     base_access_level integer NOT NULL,
-    download_code boolean DEFAULT false
+    download_code boolean DEFAULT false,
+    read_code boolean DEFAULT false
 );
 
 CREATE SEQUENCE member_roles_id_seq
