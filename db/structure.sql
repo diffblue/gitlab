@@ -29599,7 +29599,7 @@ CREATE INDEX index_issuable_slas_on_due_at_id_label_applied_issuable_closed ON i
 
 CREATE UNIQUE INDEX index_issuable_slas_on_issue_id ON issuable_slas USING btree (issue_id);
 
-CREATE INDEX index_issue_assignees_on_user_id ON issue_assignees USING btree (user_id);
+CREATE INDEX index_issue_assignees_on_user_id_and_issue_id ON issue_assignees USING btree (user_id, issue_id);
 
 CREATE UNIQUE INDEX index_issue_crm_contacts_on_issue_id_and_contact_id ON issue_customer_relations_contacts USING btree (issue_id, contact_id);
 
