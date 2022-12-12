@@ -2,14 +2,14 @@ import {
   getUsageDataByYear,
   formatYearMonthData,
   getSortedYears,
-} from 'ee/ci/ci_minutes_usage/utils';
-import { ciMinutesUsageMockData, pageInfo } from './mock_data';
+} from 'ee/ci/usage_quotas/pipelines/utils';
+import { mockGetCiMinutesUsageNamespace, pageInfo } from './mock_data';
 
 const {
   data: {
     ciMinutesUsage: { nodes },
   },
-} = ciMinutesUsageMockData;
+} = mockGetCiMinutesUsageNamespace;
 
 describe('CI Minutes Usage Utils', () => {
   it('getUsageDataByYear normalizes data by year', () => {
@@ -55,7 +55,7 @@ describe('CI Minutes Usage Utils', () => {
       2022: [
         {
           day: '01',
-          minutes: 0,
+          minutes: 5,
           month: '08',
           monthIso8601: '2022-08-01',
           projects: {
@@ -74,7 +74,7 @@ describe('CI Minutes Usage Utils', () => {
             ],
             pageInfo,
           },
-          sharedRunnersDuration: 0,
+          sharedRunnersDuration: 80,
           year: '2022',
         },
       ],
@@ -123,7 +123,7 @@ describe('CI Minutes Usage Utils', () => {
       },
       {
         day: '01',
-        minutes: 0,
+        minutes: 5,
         month: '08',
         monthIso8601: '2022-08-01',
         projects: {
@@ -142,7 +142,7 @@ describe('CI Minutes Usage Utils', () => {
           ],
           pageInfo,
         },
-        sharedRunnersDuration: 0,
+        sharedRunnersDuration: 80,
         year: '2022',
       },
     ];
@@ -192,7 +192,7 @@ describe('CI Minutes Usage Utils', () => {
       },
       {
         day: '01',
-        minutes: 0,
+        minutes: 5,
         month: '08',
         monthIso8601: '2022-08-01',
         monthName: 'August',
@@ -212,7 +212,7 @@ describe('CI Minutes Usage Utils', () => {
           ],
           pageInfo,
         },
-        sharedRunnersDuration: 0,
+        sharedRunnersDuration: 80,
         year: '2022',
       },
     ];

@@ -1,12 +1,12 @@
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import SharedRunnerUsageMonthChart from 'ee/ci/ci_minutes_usage/components/shared_runner_usage_month_chart.vue';
-import { ciMinutesUsageMockData } from '../mock_data';
+import SharedRunnerUsageMonthChart from 'ee/ci/usage_quotas/pipelines/components/shared_runner_usage_month_chart.vue';
+import { mockGetCiMinutesUsageNamespace } from '../mock_data';
 
 const {
   data: { ciMinutesUsage },
-} = ciMinutesUsageMockData;
+} = mockGetCiMinutesUsageNamespace;
 
 describe('Shared runner usage month chart component', () => {
   let wrapper;

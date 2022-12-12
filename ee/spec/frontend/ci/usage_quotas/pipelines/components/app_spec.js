@@ -211,7 +211,7 @@ describe('PipelineUsageApp', () => {
   describe('with apollo fetching successful', () => {
     const mockApollo = createMockApolloProvider();
 
-    useFakeDate(2022, 0, 14);
+    useFakeDate(2022, 7, 14);
 
     it('passes the correct props to ProjectList', async () => {
       createComponent({ mockApollo });
@@ -250,7 +250,7 @@ describe('PipelineUsageApp', () => {
   describe('with a namespace without projects', () => {
     beforeEach(() => {
       const mockCiMinutesUsageQuery = { ...mockGetCiMinutesUsageNamespace };
-      mockGetCiMinutesUsageNamespace.data.ciMinutesUsage.nodes[0].projects.nodes = [];
+      mockGetCiMinutesUsageNamespace.data.ciMinutesUsage.nodes[2].projects.nodes = [];
 
       const mockApollo = createMockApolloProvider({
         mockCiMinutesUsageQuery,
