@@ -380,7 +380,7 @@ module Vulnerabilities
     end
 
     def false_positive?
-      vulnerability_flags.false_positive.any?
+      vulnerability_flags.any?(&:false_positive?)
     end
 
     def first_finding_pipeline

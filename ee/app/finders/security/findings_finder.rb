@@ -19,7 +19,8 @@ module Security
     include ::VulnerabilityFindingHelpers
 
     ResultSet = Struct.new(:relation, :findings) do
-      delegate :current_page, :limit_value, :total_pages, :total_count, :next_page, :prev_page, to: :relation
+      delegate :current_page, :limit_value, :total_pages, :total_count,
+               :next_page, :prev_page, :page, :empty?, to: :relation
     end
 
     DEFAULT_PAGE = 1
@@ -31,7 +32,7 @@ module Security
     end
 
     def execute
-      return unless has_security_findings?
+      return ResultSet.new(Security::Finding.none.page(DEFAULT_PAGE), []) unless has_security_findings?
 
       ResultSet.new(security_findings, findings)
     end

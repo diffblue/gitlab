@@ -10,9 +10,12 @@
 module Security
   class Finding < ApplicationRecord
     include EachBatch
+    include Presentable
     include PartitionedTable
 
     MAX_PARTITION_SIZE = 10.gigabyte
+    ATTRIBUTES_DELEGATED_TO_FINDING_DATA = %i[name description solution location identifiers links false_positive?
+                                              assets evidence details remediation_byte_offsets].freeze
 
     self.table_name = 'security_findings'
     self.primary_key = :id # As ActiveRecord does not support compound PKs
@@ -26,8 +29,15 @@ module Security
 
     belongs_to :scan, inverse_of: :findings, optional: false
     belongs_to :scanner, class_name: 'Vulnerabilities::Scanner', inverse_of: :security_findings, optional: false
+    belongs_to :vulnerability_read,
+               class_name: 'Vulnerabilities::Read',
+               primary_key: :uuid,
+               foreign_key: :uuid,
+               inverse_of: :security_findings
 
     has_one :build, through: :scan, disable_joins: true
+    has_one :vulnerability, through: :vulnerability_read
+
     has_many :feedbacks,
              class_name: 'Vulnerabilities::Feedback',
              inverse_of: :security_finding,
@@ -62,15 +72,17 @@ module Security
                 .where('vulnerability_feedback.finding_uuid = security_findings.uuid'))
     end
     scope :latest, -> { joins(:scan).merge(Security::Scan.latest_successful) }
-    scope :ordered, -> { order(severity: :desc, confidence: :desc, id: :asc) }
+    scope :ordered, -> { order(severity: :desc, id: :asc) }
     scope :with_pipeline_entities, -> { preload(build: [:job_artifacts, :pipeline]) }
-    scope :with_scan, -> { includes(:scan) }
+    scope :with_scan, -> { preload(:scan) }
     scope :with_scanner, -> { includes(:scanner) }
+    scope :with_feedbacks, -> { includes(:feedbacks) }
+    scope :with_vulnerability, -> { includes(:vulnerability) }
     scope :deduplicated, -> { where(deduplicated: true) }
     scope :grouped_by_scan_type, -> { joins(:scan).group('security_scans.scan_type') }
 
-    delegate :scan_type, :pipeline, to: :scan, allow_nil: true
-    delegate :project, to: :pipeline
+    delegate :scan_type, :pipeline, :remediations_proxy, to: :scan, allow_nil: true
+    delegate :project, :sha, to: :pipeline
 
     class << self
       def count_by_scan_type
@@ -102,6 +114,57 @@ module Security
       def last_finding_in_partition(partition_number)
         where(partition_number: partition_number).last
       end
+    end
+
+    # Following alias attributes as used by `Vulnerabilities::FindingEntity`
+    alias_attribute :raw_metadata, :finding_data
+    alias_attribute :report_type, :scan_type
+
+    def dismissal_feedback
+      feedbacks.find(&:for_dismissal?)
+    end
+
+    def issue_feedback
+      feedbacks.find(&:for_issue?)
+    end
+
+    def merge_request_feedback
+      feedbacks.find(&:for_merge_request?)
+    end
+
+    def state
+      return vulnerability.state if vulnerability
+
+      dismissal_feedback ? 'dismissed' : 'detected'
+    end
+
+    # Symbolizing the hash keys is important as Grape entity
+    # works with symbolized keys only.
+    # See https://github.com/ruby-grape/grape-entity/issues/223
+    def symbolized_finding_data
+      @symbolized_finding_data ||= finding_data.deep_symbolize_keys
+    end
+
+    def finding_data=(value)
+      super
+    ensure
+      @symbolized_finding_data = nil
+    end
+
+    # Defines methods for the keys exist in `finding_data` to support the same
+    # interface with `Vulnerabilities::Finding` model as these methods are used
+    # by `Vulnerabilities::FindingEntity`.
+    ATTRIBUTES_DELEGATED_TO_FINDING_DATA.each do |delegated_attribute|
+      define_method(delegated_attribute) do
+        symbolized_finding_data.fetch(delegated_attribute)
+      end
+    end
+
+    def remediations
+      return [] unless symbolized_finding_data[:remediation_byte_offsets]
+
+      symbolized_finding_data[:remediation_byte_offsets].map { |offset| offset.values_at(:start_byte, :end_byte) }
+                                                        .then { remediations_proxy.by_byte_offsets(_1) }
     end
   end
 end

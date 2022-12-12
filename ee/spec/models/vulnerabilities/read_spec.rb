@@ -2,13 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::Read, type: :model do
+RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerability_management do
   let_it_be(:project) { create(:project) }
 
   describe 'associations' do
     it { is_expected.to belong_to(:vulnerability) }
     it { is_expected.to belong_to(:project) }
     it { is_expected.to belong_to(:scanner).class_name('Vulnerabilities::Scanner') }
+    it { is_expected.to have_many(:security_findings).class_name('Security::Finding') }
   end
 
   describe 'validations' do
