@@ -928,7 +928,7 @@ describe('dismiss multiple vulnerabilities', () => {
       mock.restore();
     });
 
-    it('should fire the dismissSelected mutations when all is well', () => {
+    it('should fire the dismissSelected mutations and refetch vulnerabilities when all is well', () => {
       mock
         .onPost(state.vulnerabilities[0].create_vulnerability_feedback_dismissal_path)
         .replyOnce(200)

@@ -14,6 +14,7 @@ import {
   FEEDBACK_TYPE_ISSUE,
   FEEDBACK_TYPE_MERGE_REQUEST,
 } from '~/vue_shared/security_reports/constants';
+import { DISMISSAL_STATES } from 'ee/security_dashboard/store/modules/filters/constants';
 import * as types from './mutation_types';
 
 let vulnerabilitiesSource;
@@ -157,8 +158,14 @@ export const deselectVulnerability = ({ commit }, { id }) => {
   commit(types.DESELECT_VULNERABILITY, id);
 };
 
-export const dismissSelectedVulnerabilities = ({ dispatch, state }, { comment } = {}) => {
+export const dismissSelectedVulnerabilities = (
+  { dispatch, state, rootState },
+  { comment } = {},
+) => {
   const { vulnerabilities, selectedVulnerabilities } = state;
+  const { filters } = rootState.filters;
+  const page = state.pageInfo?.page || 1;
+
   const dismissableVulnerabilties = vulnerabilities.filter(({ id }) => selectedVulnerabilities[id]);
 
   dispatch('requestDismissSelectedVulnerabilities');
@@ -178,9 +185,17 @@ export const dismissSelectedVulnerabilities = ({ dispatch, state }, { comment } 
     }),
   );
 
-  Promise.all(promises)
+  return Promise.all(promises)
     .then(() => {
       dispatch('receiveDismissSelectedVulnerabilitiesSuccess');
+      if (filters.scope === DISMISSAL_STATES.DISMISSED) {
+        dispatch('fetchVulnerabilities', {
+          ...filters,
+          // If we just dismissed the last vulnerability on the active page,
+          // we load the previous page if any
+          page: state.vulnerabilities.length === 1 && page > 1 ? page - 1 : page,
+        });
+      }
     })
     .catch(() => {
       dispatch('receiveDismissSelectedVulnerabilitiesError', { flashError: true });
