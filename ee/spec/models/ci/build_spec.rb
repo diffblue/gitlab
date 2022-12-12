@@ -582,7 +582,7 @@ RSpec.describe Ci::Build, :saas do
 
     context 'when there is a requirements report' do
       before do
-        create(:ee_ci_job_artifact, :all_passing_requirements, job: job, project: job.project)
+        create(:ee_ci_job_artifact, :all_passing_requirements_v2, job: job, project: job.project)
       end
 
       context 'when requirements are available' do
@@ -592,6 +592,7 @@ RSpec.describe Ci::Build, :saas do
 
         it 'parses blobs and adds the results to the report' do
           expect { subject }.to change { requirements_report.requirements.count }.from(0).to(1)
+          expect(requirements_report.requirements).to eq({ "*" => "passed" })
         end
       end
 
@@ -604,6 +605,38 @@ RSpec.describe Ci::Build, :saas do
           subject
 
           expect(requirements_report.requirements.count).to eq(0)
+        end
+      end
+    end
+
+    context 'when using legacy format' do
+      subject { job.collect_requirements_reports!(requirements_report, legacy: true) }
+
+      context 'when there is a requirements report' do
+        before do
+          create(:ee_ci_job_artifact, :all_passing_requirements, job: job, project: job.project)
+        end
+
+        context 'when requirements are available' do
+          before do
+            stub_licensed_features(requirements: true)
+          end
+
+          it 'parses blobs and adds the results to the report' do
+            expect { subject }.to change { requirements_report.requirements.count }.from(0).to(1)
+          end
+        end
+
+        context 'when requirements are not available' do
+          before do
+            stub_licensed_features(requirements: false)
+          end
+
+          it 'does not parse requirements report' do
+            subject
+
+            expect(requirements_report.requirements.count).to eq(0)
+          end
         end
       end
     end
