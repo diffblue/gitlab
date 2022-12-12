@@ -1946,7 +1946,7 @@ RSpec.describe User do
     end
   end
 
-  describe '#download_code_for?', :request_store do
+  describe '#read_code_for?', :request_store do
     let_it_be(:project) { create(:project, :in_group) }
     let_it_be(:user) { create(:user) }
 
@@ -1955,29 +1955,29 @@ RSpec.describe User do
       create(
         :member_role,
         :guest,
-        download_code: true,
+        read_code: true,
         members: [project_member],
         namespace: project.group
       )
     end
 
-    context 'when download_code present in preloaded custom roles' do
+    context 'when read_code present in preloaded custom roles' do
       before do
-        user.download_code_for?(project)
+        user.read_code_for?(project)
       end
 
       it 'returns true' do
-        expect(user.download_code_for?(project)).to be true
+        expect(user.read_code_for?(project)).to be true
       end
 
       it 'does not perform extra queries when asked for projects have already been preloaded' do
-        expect { user.download_code_for?(project) }.not_to exceed_query_limit(0)
+        expect { user.read_code_for?(project) }.not_to exceed_query_limit(0)
       end
     end
 
     context 'when project not present in preloaded custom roles' do
       it 'loads the custom role' do
-        expect(user.download_code_for?(project)).to be true
+        expect(user.read_code_for?(project)).to be true
       end
     end
   end
@@ -1986,21 +1986,21 @@ RSpec.describe User do
     let_it_be(:project) { create(:project, :private, :in_group) }
     let_it_be(:user) { create(:user) }
     let_it_be(:project_member) { create(:project_member, :guest, user: user, source: project) }
-    let_it_be(:member_role) { create(:member_role, :guest, download_code: true, members: [project_member], namespace: project.group) }
+    let_it_be(:member_role) { create(:member_role, :guest, read_code: true, members: [project_member], namespace: project.group) }
 
     context 'when custom roles are present' do
-      context 'when custom role enables download code' do
-        it 'returns hash with project ids as keys and download_code in value' do
+      context 'when custom role enables read code' do
+        it 'returns hash with project ids as keys and read_code in value' do
           preloaded = user.preloaded_member_roles_for_projects([project])
 
-          expect(preloaded).to eq({ project.id => [:download_code] })
+          expect(preloaded).to eq({ project.id => [:read_code] })
         end
       end
 
-      context 'when custom role does not enable download code' do
+      context 'when custom role does not enable read code' do
         let(:user) { create(:user) }
         let(:project_member) { create(:project_member, :guest, user: user, source: project) }
-        let(:member_role) { create(:member_role, :guest, download_code: false, members: [project_member], namespace: project.group) }
+        let(:member_role) { create(:member_role, :guest, read_code: false, members: [project_member], namespace: project.group) }
 
         it 'returns hash with project ids as keys and empty array as value' do
           preloaded = user.preloaded_member_roles_for_projects([project])
@@ -2024,7 +2024,7 @@ RSpec.describe User do
       it 'does not perform extra queries when asked for projects have already been preloaded' do
         user.preloaded_member_roles_for_projects([project])
 
-        expect { user.download_code_for?(project) }.not_to exceed_query_limit(0)
+        expect { user.read_code_for?(project) }.not_to exceed_query_limit(0)
       end
     end
   end

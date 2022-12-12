@@ -2492,21 +2492,21 @@ RSpec.describe ProjectPolicy do
       )
     end
 
-    let_it_be(:member_role_download_code_true) do
+    let_it_be(:member_role_read_code_true) do
       create(
         :member_role,
         :guest,
         namespace: project.group,
-        download_code: true
+        read_code: true
       )
     end
 
-    let_it_be(:member_role_download_code_false) do
+    let_it_be(:member_role_read_code_false) do
       create(
         :member_role,
         :guest,
         namespace: project.group,
-        download_code: false
+        read_code: false
       )
     end
 
@@ -2516,59 +2516,59 @@ RSpec.describe ProjectPolicy do
       end
 
       context 'custom role for parent group' do
-        context 'custom role allows download code' do
+        context 'custom role allows read code' do
           before do
-            member_role_download_code_true.members << group_member
+            member_role_read_code_true.members << group_member
           end
 
-          it { is_expected.to be_allowed(:download_code) }
+          it { is_expected.to be_allowed(:read_code) }
         end
 
-        context 'custom role disallows download code' do
+        context 'custom role disallows read code' do
           before do
-            member_role_download_code_false.members << group_member
+            member_role_read_code_false.members << group_member
           end
 
-          it { is_expected.to be_disallowed(:download_code) }
+          it { is_expected.to be_disallowed(:read_code) }
         end
       end
 
       context 'custom role on project membership' do
-        context 'custom role allows download code' do
+        context 'custom role allows read code' do
           before do
-            member_role_download_code_true.members << project_member
+            member_role_read_code_true.members << project_member
           end
 
-          it { is_expected.to be_allowed(:download_code) }
+          it { is_expected.to be_allowed(:read_code) }
         end
 
-        context 'custom role disallows download code' do
+        context 'custom role disallows read code' do
           before do
-            member_role_download_code_false.members << project_member
+            member_role_read_code_false.members << project_member
           end
 
-          it { is_expected.to be_disallowed(:download_code) }
+          it { is_expected.to be_disallowed(:read_code) }
         end
       end
 
-      context 'multiple custom roles in hierarchy with different download_code values' do
+      context 'multiple custom roles in hierarchy with different read_code values' do
         before do
-          member_role_download_code_true.members << project_member
-          member_role_download_code_false.members << group_member
+          member_role_read_code_true.members << project_member
+          member_role_read_code_false.members << group_member
         end
 
-        # allows download code if any of the custom roles allow it
-        it { is_expected.to be_allowed(:download_code) }
+        # allows read code if any of the custom roles allow it
+        it { is_expected.to be_allowed(:read_code) }
       end
     end
 
     context 'without customizable_roles feature enabled' do
       before do
         stub_feature_flags(customizable_roles: false)
-        member_role_download_code_true.members << project_member
+        member_role_read_code_true.members << project_member
       end
 
-      it { is_expected.to be_disallowed(:download_code) }
+      it { is_expected.to be_disallowed(:read_code) }
     end
   end
 end

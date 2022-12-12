@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe API::MemberRoles, api: true do
+RSpec.describe API::MemberRoles, api: true, feature_category: :authentication_and_authorization do
   include ApiHelpers
 
   let_it_be(:owner) { create(:user) }
@@ -18,15 +18,21 @@ RSpec.describe API::MemberRoles, api: true do
   let_it_be(:child_group) { create :group, parent: group_with_member_roles }
 
   let_it_be(:member_role_1) do
-    create(:member_role, namespace: group_with_member_roles,
-                         base_access_level: ::Gitlab::Access::REPORTER,
-                         download_code: 0)
+    create(
+      :member_role,
+      namespace: group_with_member_roles,
+      base_access_level: ::Gitlab::Access::REPORTER,
+      read_code: false
+    )
   end
 
   let_it_be(:member_role_2) do
-    create(:member_role, namespace: group_with_member_roles,
-                         base_access_level: ::Gitlab::Access::REPORTER,
-                         download_code: 1)
+    create(
+      :member_role,
+      namespace: group_with_member_roles,
+      base_access_level: ::Gitlab::Access::REPORTER,
+      read_code: true
+    )
   end
 
   let_it_be(:group_id) { group_with_member_roles.id }
@@ -60,20 +66,22 @@ RSpec.describe API::MemberRoles, api: true do
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response).to(
-          match([
-                  {
-                    "id" => member_role_1.id,
-                    "base_access_level" => ::Gitlab::Access::REPORTER,
-                    "download_code" => false,
-                    "group_id" => group_id
-                  },
-                  {
-                    "id" => member_role_2.id,
-                    "base_access_level" => ::Gitlab::Access::REPORTER,
-                    "download_code" => true,
-                    "group_id" => group_id
-                  }
-                ])
+          match_array(
+            [
+              {
+                "id" => member_role_1.id,
+                "base_access_level" => ::Gitlab::Access::REPORTER,
+                "read_code" => false,
+                "group_id" => group_id
+              },
+              {
+                "id" => member_role_2.id,
+                "base_access_level" => ::Gitlab::Access::REPORTER,
+                "read_code" => true,
+                "group_id" => group_id
+              }
+            ]
+          )
         )
       end
 
@@ -98,7 +106,9 @@ RSpec.describe API::MemberRoles, api: true do
   end
 
   describe "POST /groups/:id/member_roles" do
-    let_it_be(:params) { { base_access_level: 40, download_code: 1 } }
+    let_it_be(:params) do
+      { base_access_level: ::Gitlab::Access::MAINTAINER, read_code: true }
+    end
 
     subject { post api("/groups/#{group_id}/member_roles", current_user), params: params }
 
@@ -138,12 +148,12 @@ RSpec.describe API::MemberRoles, api: true do
           aggregate_failures "testing response" do
             expect(response).to have_gitlab_http_status(:created)
             expect(json_response['base_access_level']).to eq(::Gitlab::Access::MAINTAINER)
-            expect(json_response['download_code']).to eq(true)
+            expect(json_response['read_code']).to eq(true)
           end
         end
 
         context "when params are missing" do
-          let(:params) { { download_code: 0 } }
+          let(:params) { { read_code: false } }
 
           it "returns a 400 error when params are missing" do
             subject
@@ -154,7 +164,7 @@ RSpec.describe API::MemberRoles, api: true do
         end
 
         context "when params are invalid" do
-          let(:params) { { base_access_level: 1, download_code: 1 } }
+          let(:params) { { base_access_level: 1 } }
 
           it "returns a 400 error when params are invalid" do
             subject

@@ -179,11 +179,11 @@ module EE
         ::Feature.enabled?(:customizable_roles, @subject.root_ancestor)
       end
 
-      desc "Custom role on project that enables download code"
-      condition(:role_enables_download_code) do
+      desc "Custom role on project that enables read code"
+      condition(:role_enables_read_code) do
         next unless @user.is_a?(User)
 
-        @user.download_code_for?(project)
+        @user.read_code_for?(project)
       end
 
       condition(:okrs_enabled, scope: :subject) { project&.okrs_mvc_feature_flag_enabled? }
@@ -532,7 +532,7 @@ module EE
         enable :admin_merge_request_approval_settings
       end
 
-      rule { custom_roles_allowed & role_enables_download_code }.enable :download_code
+      rule { custom_roles_allowed & role_enables_read_code }.enable :read_code
 
       rule { can?(:create_issue) & okrs_enabled }.enable :create_objective
     end

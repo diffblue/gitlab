@@ -7,7 +7,7 @@ module EE
         expose :id
         expose :namespace_id, as: :group_id
         expose :base_access_level
-        expose :download_code
+        expose :read_code
       end
     end
   end
