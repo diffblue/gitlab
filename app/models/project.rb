@@ -230,6 +230,17 @@ class Project < ApplicationRecord
   has_one :fork_network_member
   has_one :fork_network, through: :fork_network_member
   has_one :forked_from_project, through: :fork_network_member
+
+  # Projects with a very large number of notes may time out destroying them
+  # through the foreign key. Additionally, the deprecated attachment uploader
+  # for notes requires us to use dependent: :destroy to avoid orphaning uploaded
+  # files.
+  #
+  # https://gitlab.com/gitlab-org/gitlab/-/issues/207222
+  # Order of this association is important for project deletion.
+  # has_many :notes` should be the first association among all `has_many` associations.
+  has_many :notes, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
+
   has_many :forked_to_members, class_name: 'ForkNetworkMember', foreign_key: 'forked_from_project_id'
   has_many :forks, through: :forked_to_members, source: :project, inverse_of: :forked_from_project
   has_many :fork_network_projects, through: :fork_network, source: :projects
@@ -282,15 +293,6 @@ class Project < ApplicationRecord
   has_many :push_hooks_integrations, -> { push_hooks }, class_name: 'Integration'
   has_many :tag_push_hooks_integrations, -> { tag_push_hooks }, class_name: 'Integration'
   has_many :wiki_page_hooks_integrations, -> { wiki_page_hooks }, class_name: 'Integration'
-
-  # Projects with a very large number of notes may time out destroying them
-  # through the foreign key. Additionally, the deprecated attachment uploader
-  # for notes requires us to use dependent: :destroy to avoid orphaning uploaded
-  # files.
-  #
-  # https://gitlab.com/gitlab-org/gitlab/-/issues/207222
-  has_many :notes, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
-
   has_many :snippets, class_name: 'ProjectSnippet'
   has_many :hooks, class_name: 'ProjectHook'
   has_many :protected_branches
