@@ -48,7 +48,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
     end
 
     shared_examples "shows an overage modal when adding one user with a given role" do |role|
-      it "shows a modal and invites them to a group if confirmed", quarantine: "https://gitlab.com/gitlab-org/gitlab/-/issues/382373" do
+      it "shows a modal and invites them to a group if confirmed" do
         group.add_owner(user1)
         add_user_by_name(user2.name, role)
 
@@ -61,6 +61,8 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
 
         click_button _('Continue')
 
+        wait_for_requests
+
         page.refresh
 
         page.within find_member_row(user2) do
@@ -70,7 +72,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
     end
 
     shared_examples "adding user by email with a given role" do |role|
-      it "shows a modal and invites them to a group if confirmed", quarantine: "https://gitlab.com/gitlab-org/gitlab/-/issues/384518" do
+      it "shows a modal and invites them to a group if confirmed" do
         group.add_owner(user1)
         add_user_by_email(role)
 
@@ -82,6 +84,8 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
         expect(page).to have_content(info)
 
         click_button _('Continue')
+
+        wait_for_requests
 
         page.refresh
 
