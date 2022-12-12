@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Boards::Epics::PositionCreateService do
+RSpec.describe Boards::Epics::PositionCreateService, feature_category: :portfolio_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:board) { create(:epic_board, group: group) }
@@ -37,6 +37,10 @@ RSpec.describe Boards::Epics::PositionCreateService do
     context 'with correct params' do
       subject { described_class.new(group, user, params).execute }
 
+      let(:ordered_by_relative_position) { Boards::EpicBoardPosition.order(:relative_position) }
+
+      let_it_be(:ideal_distance) { Boards::EpicBoardPosition::IDEAL_DISTANCE }
+
       context 'without additional params' do
         context 'when there are no positions' do
           it 'creates the positions for all epics in the list' do
@@ -46,8 +50,9 @@ RSpec.describe Boards::Epics::PositionCreateService do
           it 'sets the relative_position based on id' do
             subject
 
-            expect(Boards::EpicBoardPosition.order(:relative_position).map(&:epic_id))
-              .to eq([epic4.id, epic3.id, epic2.id, epic1.id])
+            expect(ordered_by_relative_position.map(&:epic_id)).to eq([epic4.id, epic3.id, epic2.id, epic1.id])
+            expect(ordered_by_relative_position.map(&:relative_position))
+              .to eq([ideal_distance * 2, ideal_distance * 3, ideal_distance * 4, ideal_distance * 5])
           end
         end
 
@@ -63,15 +68,10 @@ RSpec.describe Boards::Epics::PositionCreateService do
             it 'sets the relative_position based on id after the last existing position' do
               subject
 
-              expect(Boards::EpicBoardPosition.order(:relative_position).map(&:epic_id))
-                .to eq([epic3.id, epic1.id, epic4.id, epic2.id])
-            end
+              expect(ordered_by_relative_position.map(&:epic_id)).to eq([epic3.id, epic1.id, epic4.id, epic2.id])
 
-            it 'does not update the existing epic positions' do
-              subject
-
-              expect(epic_position1.reload.relative_position).to eq(1000)
-              expect(epic_position3.reload.relative_position).to eq(10)
+              expect(ordered_by_relative_position.map(&:relative_position))
+                .to eq([10, 1000, 1000 + ideal_distance * 2, 1000 + ideal_distance * 3])
             end
           end
 
@@ -107,8 +107,9 @@ RSpec.describe Boards::Epics::PositionCreateService do
           it 'sets the relative_position based on id' do
             subject
 
-            expect(Boards::EpicBoardPosition.order(:relative_position).map(&:epic_id))
-              .to eq([epic4.id, epic3.id, epic2.id])
+            expect(ordered_by_relative_position.map(&:epic_id)).to eq([epic4.id, epic3.id, epic2.id])
+            expect(ordered_by_relative_position.map(&:relative_position))
+              .to eq([ideal_distance * 2, ideal_distance * 3, ideal_distance * 4])
           end
         end
 
@@ -131,8 +132,8 @@ RSpec.describe Boards::Epics::PositionCreateService do
           it 'sets the relative_position based on id only for the epis with list label' do
             subject
 
-            expect(Boards::EpicBoardPosition.order(:relative_position).map(&:epic_id))
-              .to eq([epic4.id, epic2.id])
+            expect(ordered_by_relative_position.map(&:epic_id)).to eq([epic4.id, epic2.id])
+            expect(ordered_by_relative_position.map(&:relative_position)).to eq([ideal_distance * 2, ideal_distance * 3])
           end
         end
       end
