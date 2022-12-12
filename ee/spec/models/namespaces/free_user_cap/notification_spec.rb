@@ -27,6 +27,14 @@ RSpec.describe Namespaces::FreeUserCap::Notification, :saas do
     context 'when :preview_free_user_cap is enabled' do
       it { is_expected.to be true }
 
+      context 'when feature flag :notification_free_user_cap_show_over_limit is disabled' do
+        before do
+          stub_feature_flags(notification_free_user_cap_show_over_limit: false)
+        end
+
+        it { is_expected.to be false }
+      end
+
       context 'with updating dashboard_notification_at field', :use_clean_rails_redis_caching do
         context 'when cache has expired or does not exist' do
           context 'when under the limit' do
@@ -69,6 +77,22 @@ RSpec.describe Namespaces::FreeUserCap::Notification, :saas do
                 expect do
                   expect(over_limit?).to be(true)
                 end.to change { namespace.namespace_details.dashboard_notification_at }.from(nil).to(Time.current)
+              end
+            end
+
+            context 'when feature flag :notification_free_user_cap_show_over_limit is disabled' do
+              before do
+                stub_feature_flags(notification_free_user_cap_show_over_limit: false)
+              end
+
+              it 'does not update the database for notification' do
+                namespace.namespace_details.update!(dashboard_notification_at: nil)
+
+                freeze_time do
+                  expect do
+                    expect(over_limit?).to be(false)
+                  end.not_to change { namespace.namespace_details.dashboard_notification_at }
+                end
               end
             end
 
