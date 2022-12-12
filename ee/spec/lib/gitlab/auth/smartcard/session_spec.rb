@@ -30,7 +30,7 @@ RSpec.describe Gitlab::Auth::Smartcard::Session do
   end
 
   describe '#update_active' do
-    let(:now) { Time.now }
+    let(:now) { Time.current }
 
     around do |example|
       Gitlab::Session.with_session({}) do
