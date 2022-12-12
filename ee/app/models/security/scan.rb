@@ -107,6 +107,10 @@ module Security
       @report_primary_identifiers ||= security_report&.primary_identifiers
     end
 
+    def remediations_proxy
+      @remediations_proxy ||= RemediationsProxy.new(job_artifact.file)
+    end
+
     private
 
     def security_report

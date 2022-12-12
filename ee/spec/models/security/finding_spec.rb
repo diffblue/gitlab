@@ -2,16 +2,18 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Finding do
+RSpec.describe Security::Finding, feature_category: :vulnerability_management do
   let_it_be(:scan_1) { create(:security_scan, :latest_successful, scan_type: :sast) }
   let_it_be(:scan_2) { create(:security_scan, :latest_successful, scan_type: :dast) }
-  let_it_be(:finding_1) { create(:security_finding, scan: scan_1) }
-  let_it_be(:finding_2) { create(:security_finding, scan: scan_2) }
+  let_it_be(:finding_1, refind: true) { create(:security_finding, scan: scan_1) }
+  let_it_be(:finding_2, refind: true) { create(:security_finding, scan: scan_2) }
 
   describe 'associations' do
     it { is_expected.to belong_to(:scan).required }
     it { is_expected.to belong_to(:scanner).required }
+    it { is_expected.to belong_to(:vulnerability_read).class_name('Vulnerabilities::Read') }
     it { is_expected.to have_one(:build).through(:scan) }
+    it { is_expected.to have_one(:vulnerability).through(:vulnerability_read) }
 
     it {
       is_expected.to have_many(:feedbacks)
@@ -148,16 +150,16 @@ RSpec.describe Security::Finding do
   end
 
   describe '.ordered' do
-    let_it_be(:finding_3) { create(:security_finding, severity: :critical, confidence: :confirmed) }
-    let_it_be(:finding_4) { create(:security_finding, severity: :critical, confidence: :high) }
+    let_it_be(:finding_3) { create(:security_finding, severity: :critical) }
+    let_it_be(:finding_4) { create(:security_finding, severity: :critical) }
 
     let(:expected_findings) { [finding_3, finding_4, finding_1, finding_2] }
 
     subject { described_class.ordered }
 
     before do
-      finding_1.update!(severity: :high, confidence: :unknown)
-      finding_2.update!(severity: :low, confidence: :confirmed)
+      finding_1.update!(severity: :high)
+      finding_2.update!(severity: :low)
     end
 
     it { is_expected.to eq(expected_findings) }
@@ -285,6 +287,128 @@ RSpec.describe Security::Finding do
       end
 
       it { is_expected.to match(1) }
+    end
+  end
+
+  describe '#state' do
+    subject { finding_1.state }
+
+    context 'when there is no associated vulnerability' do
+      context 'when there is no associated dismissal feedback' do
+        it { is_expected.to eq('detected') }
+      end
+
+      context 'when there is an associated dismissal feedback' do
+        before do
+          create(:vulnerability_feedback, :dismissal, finding_uuid: finding_1.uuid)
+        end
+
+        it { is_expected.to eq('dismissed') }
+      end
+    end
+
+    context 'when there is an associated vulnerability' do
+      where(:state) { %i[detected confirmed dismissed resolved] }
+
+      before do
+        create(:vulnerabilities_finding, state, uuid: finding_1.uuid)
+      end
+
+      with_them do
+        it { is_expected.to eq(state.to_s) }
+      end
+    end
+  end
+
+  describe 'feedback accessors' do
+    shared_examples_for 'has feedback method for' do |type|
+      context 'when there is no associated dismissal feedback' do
+        it { is_expected.to be_nil }
+      end
+
+      context 'when there is an associated dismissal feedback' do
+        let!(:feedback) { create(:vulnerability_feedback, type, finding_uuid: finding_1.uuid) }
+
+        it { is_expected.to eq(feedback) }
+      end
+    end
+
+    describe '#dismissal_feedback' do
+      it_behaves_like 'has feedback method for', :dismissal do
+        subject { finding_1.dismissal_feedback }
+      end
+    end
+
+    describe '#issue_feedback' do
+      it_behaves_like 'has feedback method for', :issue do
+        subject { finding_1.issue_feedback }
+      end
+    end
+
+    describe '#merge_request_feedback' do
+      it_behaves_like 'has feedback method for', :merge_request do
+        subject { finding_1.merge_request_feedback }
+      end
+    end
+  end
+
+  describe 'attributes delegated to `finding_data`' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:attribute, :expected_value) do
+      :name                     | 'Test finding'
+      :description              | 'Test description'
+      :solution                 | 'Test solution'
+      :location                 | 'Test location'
+      :identifiers              | ['Test identifier']
+      :links                    | ['Test link']
+      :false_positive?          | false
+      :assets                   | ['Test asset']
+      :evidence                 | {}
+      :details                  | []
+      :remediation_byte_offsets | { start_byte: 0, end_byte: 1 }
+    end
+
+    with_them do
+      let(:finding) { build(:security_finding) }
+
+      subject { finding.send(attribute) }
+
+      before do
+        finding.finding_data[attribute] = expected_value
+      end
+
+      it { is_expected.to eq(expected_value) }
+    end
+  end
+
+  describe '#remediations', :aggregate_failures do
+    let(:finding) { create(:security_finding, finding_data: finding_data) }
+    let(:mock_remediations) { [Object.new] }
+    let(:mock_proxy) { instance_double(Security::RemediationsProxy, by_byte_offsets: mock_remediations) }
+
+    subject(:remediations) { finding.remediations }
+
+    before do
+      allow(finding.scan).to receive(:remediations_proxy).and_return(mock_proxy)
+    end
+
+    context 'when the remediation byte offsets do not exist' do
+      let(:finding_data) { {} }
+
+      it 'does not call the proxy and returns an empty array' do
+        expect(remediations).to be_empty
+        expect(mock_proxy).not_to have_received(:by_byte_offsets)
+      end
+    end
+
+    context 'when the remediation byte offsets exist' do
+      let(:finding_data) { { remediation_byte_offsets: [{ start_byte: 0, end_byte: 10 }] } }
+
+      it 'delegates the call to the proxy' do
+        expect(remediations).to eq(mock_remediations)
+        expect(mock_proxy).to have_received(:by_byte_offsets)
+      end
     end
   end
 end
