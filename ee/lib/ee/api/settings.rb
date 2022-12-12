@@ -70,6 +70,10 @@ module EE
               attrs = attrs.except(*EE::ApplicationSettingsHelper.git_abuse_rate_limit_attributes)
             end
 
+            unless License.feature_available?(:disable_personal_access_tokens)
+              attrs = attrs.except(:disable_personal_access_tokens)
+            end
+
             attrs
           end
           # rubocop:enable Metrics/CyclomaticComplexity

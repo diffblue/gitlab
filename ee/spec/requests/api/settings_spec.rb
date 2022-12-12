@@ -318,4 +318,11 @@ RSpec.describe API::Settings, 'EE Settings' do
 
     it_behaves_like 'settings for licensed features'
   end
+
+  context 'disable personal access tokens setting' do
+    let(:settings) { { disable_personal_access_tokens: false } }
+    let(:feature) { :disable_personal_access_tokens }
+
+    it_behaves_like 'settings for licensed features'
+  end
 end

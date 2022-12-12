@@ -117,9 +117,10 @@ RSpec.describe Gitlab::Auth::AuthFinders do
         expect(find_user_from_bearer_token).to eq user
       end
 
-      context 'when FIPS mode is enabled', :fips_mode do
+      context 'when personal access tokens are disabled' do
         before do
-          stub_licensed_features(fips_disable_personal_access_tokens: true)
+          stub_licensed_features(disable_personal_access_tokens: true)
+          stub_application_setting(disable_personal_access_tokens: true)
         end
 
         it 'raises unauthorized error' do
@@ -139,9 +140,10 @@ RSpec.describe Gitlab::Auth::AuthFinders do
         expect(find_user_from_access_token).to eq user
       end
 
-      context 'when FIPS mode is enabled', :fips_mode do
+      context 'when personal access tokens are disabled' do
         before do
-          stub_licensed_features(fips_disable_personal_access_tokens: true)
+          stub_licensed_features(disable_personal_access_tokens: true)
+          stub_application_setting(disable_personal_access_tokens: true)
         end
 
         it 'raised unauthorized error' do
@@ -164,14 +166,18 @@ RSpec.describe Gitlab::Auth::AuthFinders do
             request.update_param(:feed_token, user.feed_token)
           end
 
-          context 'when FIPS mode is enabled', :fips_mode do
+          context 'when personal access tokens are disabled' do
+            before do
+              stub_application_setting(disable_personal_access_tokens: true)
+            end
+
             it 'returns user' do
               expect(find_user_from_feed_token(:rss)).to eq user
             end
 
-            context 'when fips_disable_personal_access_tokens feature is licensed' do
+            context 'when disable_personal_access_tokens feature is licensed' do
               before do
-                stub_licensed_features(fips_disable_personal_access_tokens: true)
+                stub_licensed_features(disable_personal_access_tokens: true)
               end
 
               it 'returns nil' do
