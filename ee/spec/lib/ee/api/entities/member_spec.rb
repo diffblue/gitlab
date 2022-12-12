@@ -85,7 +85,6 @@ RSpec.describe API::Entities::Member do
 
       expect(entity_representation[:member_role][:id]).to eq member_role.id
       expect(entity_representation[:member_role][:base_access_level]).to eq member_role.base_access_level
-      expect(entity_representation[:member_role][:download_code]).to eq member_role.download_code
       expect(entity_representation[:member_role][:group_id]).to eq(member_role.namespace.id)
     end
   end

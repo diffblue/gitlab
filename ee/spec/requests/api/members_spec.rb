@@ -49,8 +49,7 @@ RSpec.describe API::Members do
         create(
           :member_role,
           namespace: group_with_member_roles,
-          base_access_level: ::Gitlab::Access::GUEST,
-          download_code: false
+          base_access_level: ::Gitlab::Access::GUEST
         )
       end
 
