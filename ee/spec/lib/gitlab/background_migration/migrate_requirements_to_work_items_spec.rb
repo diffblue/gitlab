@@ -4,8 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::BackgroundMigration::MigrateRequirementsToWorkItems,
   :migration, schema: 20220505174658, feature_category: :team_planning do
-  let_it_be(:issue_base_type_enum) { 0 }
-  let_it_be(:issue_type_id) { table(:work_item_types).find_by(base_type: issue_base_type_enum).id }
+  let!(:issue_base_type_enum) { 0 }
+  let!(:issue_type_id) { table(:work_item_types).find_by(base_type: issue_base_type_enum).id }
 
   let(:issues) { table(:issues) }
   let(:requirements) { table(:requirements) }
