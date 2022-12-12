@@ -3,17 +3,19 @@
 module Gitlab
   module Metrics
     module GlobalSearchIndexingSlis
-      class << self
-        # The following targets are the 99.95th percentile of indexing
-        # gathered on 20-10-2022
-        # Code/Wikis
-        # from https://log.gprd.gitlab.net/goto/8cbc1920-3432-11ed-8656-f5f2137823ba (internal only)
-        #
-        # Other
-        # (TODO) https://log.gprd.gitlab.net/goto/a6f274b0-3432-11ed-8656-f5f2137823ba (internal only)
-        CODE_INDEXING_TARGET_S    = 120.0
-        CONTENT_INDEXING_TARGET_S = 4.878
+      CODE_DOCUMENT_TYPES       = %w[Code Wiki].freeze
 
+      # The following targets are the 99.95th percentile of indexing
+      # gathered on 20-10-2022
+      # Code/Wikis
+      # from https://log.gprd.gitlab.net/goto/8cbc1920-3432-11ed-8656-f5f2137823ba (internal only)
+      #
+      # Other
+      # (TODO) https://log.gprd.gitlab.net/goto/a6f274b0-3432-11ed-8656-f5f2137823ba (internal only)
+      CONTENT_INDEXING_TARGET_S = 4.878
+      CODE_INDEXING_TARGET_S    = 120.0
+
+      class << self
         def initialize_slis!
           Gitlab::Metrics::Sli::Apdex.initialize_sli(:global_search_indexing, possible_labels)
         end
@@ -28,11 +30,11 @@ module Gitlab
         private
 
         def duration_target(indexing_type)
-          indexing_type == 'Code' ? CODE_INDEXING_TARGET_S : CONTENT_INDEXING_TARGET_S
+          CODE_DOCUMENT_TYPES.include?(indexing_type) ? CODE_INDEXING_TARGET_S : CONTENT_INDEXING_TARGET_S
         end
 
         def document_types
-          indexable_models + %w[Code Wiki]
+          indexable_models + CODE_DOCUMENT_TYPES
         end
 
         def indexable_models
