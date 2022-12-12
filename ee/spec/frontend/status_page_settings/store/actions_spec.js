@@ -2,7 +2,7 @@ import MockAdapter from 'axios-mock-adapter';
 import * as actions from 'ee/status_page_settings/store/actions';
 import * as types from 'ee/status_page_settings/store/mutation_types';
 import testAction from 'helpers/vuex_action_helper';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { refreshCurrentPage } from '~/lib/utils/url_utility';
 
@@ -18,7 +18,6 @@ describe('Status Page actions', () => {
 
   afterEach(() => {
     mock.restore();
-    createFlash.mockClear();
   });
 
   const state = {
@@ -108,10 +107,10 @@ describe('Status Page actions', () => {
   describe('receiveStatusPageSettingsUpdateError', () => {
     const error = { response: { data: { message: 'Update error' } } };
     it('should handle error update', async () => {
-      await testAction(actions.receiveStatusPageSettingsUpdateError, error, null, [], [], () => {
-        expect(createFlash).toHaveBeenCalledWith({
-          message: `There was an error saving your changes. ${error.response.data.message}`,
-        });
+      await testAction(actions.receiveStatusPageSettingsUpdateError, error, null, [], []);
+
+      expect(createAlert).toHaveBeenCalledWith({
+        message: `There was an error saving your changes. ${error.response.data.message}`,
       });
     });
   });
