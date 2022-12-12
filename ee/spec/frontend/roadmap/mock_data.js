@@ -19,7 +19,7 @@ import {
   TOKEN_TYPE_MY_REACTION,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 
-import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
+import UserToken from '~/vue_shared/components/filtered_search_bar/tokens/user_token.vue';
 import EmojiToken from '~/vue_shared/components/filtered_search_bar/tokens/emoji_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
@@ -841,12 +841,12 @@ export const mockAuthorTokenConfig = {
   title: TOKEN_TITLE_AUTHOR,
   unique: true,
   symbol: '@',
-  token: AuthorToken,
+  token: UserToken,
   operators: OPERATORS_IS_NOT,
   recentSuggestionsStorageKey: 'gitlab-org-epics-recent-tokens-author_username',
-  fetchAuthors: expect.any(Function),
-  preloadedAuthors: [],
-  defaultAuthors: [],
+  fetchUsers: expect.any(Function),
+  preloadedUsers: [],
+  defaultUsers: [],
 };
 
 export const mockLabelTokenConfig = {

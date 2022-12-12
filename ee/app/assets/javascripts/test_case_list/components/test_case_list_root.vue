@@ -16,7 +16,7 @@ import {
   TOKEN_TYPE_AUTHOR,
   TOKEN_TYPE_LABEL,
 } from '~/vue_shared/components/filtered_search_bar/constants';
-import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
+import UserToken from '~/vue_shared/components/filtered_search_bar/tokens/user_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 
 import { TestCaseTabs, AvailableSortOptions, DEFAULT_PAGE_SIZE } from '../constants';
@@ -204,10 +204,10 @@ export default {
           title: TOKEN_TITLE_AUTHOR,
           unique: true,
           symbol: '@',
-          token: AuthorToken,
+          token: UserToken,
           operators: OPERATORS_IS,
           fetchPath: this.projectFullPath,
-          fetchAuthors: Api.projectUsers.bind(Api),
+          fetchUsers: Api.projectUsers.bind(Api),
         },
         {
           type: TOKEN_TYPE_LABEL,

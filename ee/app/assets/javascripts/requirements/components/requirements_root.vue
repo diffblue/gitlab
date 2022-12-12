@@ -17,7 +17,7 @@ import {
   TOKEN_TYPE_STATUS,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
-import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
+import UserToken from '~/vue_shared/components/filtered_search_bar/tokens/user_token.vue';
 
 import {
   FilterState,
@@ -292,10 +292,10 @@ export default {
           title: TOKEN_TITLE_AUTHOR,
           unique: false,
           symbol: '@',
-          token: AuthorToken,
+          token: UserToken,
           operators: OPERATORS_IS,
           fetchPath: this.projectPath,
-          fetchAuthors: Api.projectUsers.bind(Api),
+          fetchUsers: Api.projectUsers.bind(Api),
         },
         {
           type: TOKEN_TYPE_STATUS,

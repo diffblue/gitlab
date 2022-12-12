@@ -9,12 +9,12 @@ import {
   TOKEN_TYPE_AUTHOR,
   TOKEN_TYPE_LABEL,
 } from '~/vue_shared/components/filtered_search_bar/constants';
-import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
+import UserToken from '~/vue_shared/components/filtered_search_bar/tokens/user_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 
 describe('EpicFilteredSearch', () => {
   let wrapper;
-  const { fetchAuthors, fetchLabels } = issueBoardFilters({}, '', 'group');
+  const { fetchUsers, fetchLabels } = issueBoardFilters({}, '', 'group');
 
   const createComponent = ({ initialFilterParams = {} } = {}) => {
     wrapper = shallowMount(EpicFilteredSearch, {
@@ -66,10 +66,10 @@ describe('EpicFilteredSearch', () => {
             { value: '!=', description: 'is not' },
           ],
           symbol: '@',
-          token: AuthorToken,
+          token: UserToken,
           unique: true,
-          fetchAuthors,
-          preloadedAuthors: [
+          fetchUsers,
+          preloadedUsers: [
             { id: 'gid://gitlab/User/4', name: 'Admin', username: 'root', avatarUrl: 'url' },
           ],
         },

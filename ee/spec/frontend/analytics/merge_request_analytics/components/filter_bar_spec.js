@@ -200,13 +200,13 @@ describe('Filter bar', () => {
     });
 
     it('provides the initial author token', () => {
-      const { initialAuthors } = getSearchToken(authorTokenType);
+      const { initialUsers } = getSearchToken(authorTokenType);
 
-      expect(initialAuthors).toHaveLength(filterUsers.length);
+      expect(initialUsers).toHaveLength(filterUsers.length);
     });
 
     it('provides the initial assignee token', () => {
-      const { initialAuthors: initialAssignees } = getSearchToken(assigneeTokenType);
+      const { initialUsers: initialAssignees } = getSearchToken(assigneeTokenType);
 
       expect(initialAssignees).toHaveLength(filterUsers.length);
     });
