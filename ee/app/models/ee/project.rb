@@ -389,7 +389,11 @@ module EE
     end
 
     def latest_default_branch_pipeline_with_reports(reports)
-      all_pipelines.success.newest_first(ref: default_branch).with_reports(reports).take
+      latest_pipeline_with_reports_for_ref(default_branch, reports)
+    end
+
+    def latest_pipeline_with_reports_for_ref(ref, reports)
+      all_pipelines.success.newest_first(ref: ref).with_reports(reports).take
     end
 
     def security_reports_up_to_date_for_ref?(ref)
