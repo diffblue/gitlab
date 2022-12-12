@@ -63,12 +63,12 @@ describe('getMonthsForDates', () => {
 
 describe('getTimeframeForRangeType', () => {
   beforeEach(() => {
-    jest.useFakeTimers('modern');
+    jest.useFakeTimers({ legacyFakeTimers: false });
     jest.setSystemTime(new Date('2021-01-01'));
   });
 
   afterEach(() => {
-    jest.useFakeTimers('legacy');
+    jest.useFakeTimers({ legacyFakeTimers: true });
     jest.runOnlyPendingTimers();
   });
 
