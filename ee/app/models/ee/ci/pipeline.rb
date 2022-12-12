@@ -49,6 +49,7 @@ module EE
           license_scanning: %i[license_scanning],
           metrics: %i[metrics_reports],
           requirements: %i[requirements],
+          requirements_v2: %i[requirements],
           coverage_fuzzing: %i[coverage_fuzzing],
           api_fuzzing: %i[api_fuzzing]
         }.freeze

@@ -19511,7 +19511,8 @@ CREATE TABLE plan_limits (
     project_ci_variables integer DEFAULT 200 NOT NULL,
     group_ci_variables integer DEFAULT 200 NOT NULL,
     ci_max_artifact_size_cyclonedx integer DEFAULT 1 NOT NULL,
-    rpm_max_file_size bigint DEFAULT '5368709120'::bigint NOT NULL
+    rpm_max_file_size bigint DEFAULT '5368709120'::bigint NOT NULL,
+    ci_max_artifact_size_requirements_v2 integer DEFAULT 0 NOT NULL
 );
 
 CREATE SEQUENCE plan_limits_id_seq

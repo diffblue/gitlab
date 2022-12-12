@@ -30,6 +30,7 @@ module EE
         cluster_image_scanning: %w[cluster_image_scanning].freeze,
         dast: %w[dast].freeze,
         requirements: %w[requirements].freeze,
+        requirements_v2: %w[requirements_v2].freeze,
         coverage_fuzzing: %w[coverage_fuzzing].freeze,
         api_fuzzing: %w[api_fuzzing].freeze,
         browser_performance: %w[browser_performance performance].freeze,
