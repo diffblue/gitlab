@@ -25,8 +25,8 @@ RSpec.describe Ci::JobToken::Scope, feature_category: :continuous_integration do
     end
   end
 
-  describe '#includes?' do
-    subject { scope.includes?(includes_project) }
+  describe '#allows?' do
+    subject { scope.allows?(includes_project) }
 
     context 'without scoped projects' do
       context 'when self referential' do

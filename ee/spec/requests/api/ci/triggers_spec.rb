@@ -19,7 +19,7 @@ RSpec.describe API::Ci::Triggers do
       end
 
       before do
-        allow_next(Ci::JobToken::Scope).to receive(:includes?).with(project).and_return(true)
+        allow_next(Ci::JobToken::Scope).to receive(:allows?).with(project).and_return(true)
       end
 
       context 'without user' do
@@ -80,7 +80,7 @@ RSpec.describe API::Ci::Triggers do
           context 'when project is not in the job token scope' do
             before do
               allow_next(Ci::JobToken::Scope)
-                .to receive(:includes?)
+                .to receive(:allows?)
                 .with(project)
                 .and_return(false)
             end

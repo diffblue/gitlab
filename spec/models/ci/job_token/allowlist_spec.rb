@@ -11,14 +11,14 @@ RSpec.describe Ci::JobToken::Allowlist, feature_category: :continuous_integratio
   let(:direction) { :outbound }
 
   describe '#projects' do
-    subject(:all_projects) { allowlist.all_projects }
+    subject(:projects) { allowlist.projects }
 
     context 'when no projects are added to the scope' do
       [:inbound, :outbound].each do |d|
         let(:direction) { d }
 
         it 'returns the project defining the scope' do
-          expect(all_projects).to contain_exactly(source_project)
+          expect(projects).to contain_exactly(source_project)
         end
       end
     end
@@ -33,7 +33,7 @@ RSpec.describe Ci::JobToken::Allowlist, feature_category: :continuous_integratio
 
       with_them do
         it 'returns all projects that can be accessed from a given scope' do
-          expect(all_projects).to contain_exactly(source_project, additional_project)
+          expect(projects).to contain_exactly(source_project, additional_project)
         end
       end
     end
@@ -45,17 +45,15 @@ RSpec.describe Ci::JobToken::Allowlist, feature_category: :continuous_integratio
     context 'without scoped projects' do
       let(:unscoped_project) { build(:project) }
 
-      context 'when project is self referential' do
-        where(:includes_project, :direction, :result) do
-          ref(:source_project)   | :outbound | true
-          ref(:source_project)   | :inbound  | true
-          ref(:unscoped_project) | :outbound | false
-          ref(:unscoped_project) | :inbound  | false
-        end
+      where(:includes_project, :direction, :result) do
+        ref(:source_project)   | :outbound | false
+        ref(:source_project)   | :inbound  | false
+        ref(:unscoped_project) | :outbound | false
+        ref(:unscoped_project) | :inbound  | false
+      end
 
-        with_them do
-          it { is_expected.to be result }
-        end
+      with_them do
+        it { is_expected.to be result }
       end
     end
 
@@ -63,8 +61,8 @@ RSpec.describe Ci::JobToken::Allowlist, feature_category: :continuous_integratio
       include_context 'with scoped projects'
 
       where(:includes_project, :direction, :result) do
-        ref(:source_project)          | :outbound | true
-        ref(:source_project)          | :inbound  | true
+        ref(:source_project)          | :outbound | false
+        ref(:source_project)          | :inbound  | false
         ref(:inbound_scoped_project)  | :outbound | false
         ref(:inbound_scoped_project)  | :inbound  | true
         ref(:outbound_scoped_project) | :outbound | true
