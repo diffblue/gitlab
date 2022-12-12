@@ -13,7 +13,7 @@ module Security
     include Presentable
     include PartitionedTable
 
-    MAX_PARTITION_SIZE = 10.gigabyte
+    MAX_PARTITION_SIZE = 100.gigabyte
     ATTRIBUTES_DELEGATED_TO_FINDING_DATA = %i[name description solution location identifiers links false_positive?
                                               assets evidence details remediation_byte_offsets].freeze
 
