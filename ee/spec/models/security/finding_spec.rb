@@ -216,9 +216,9 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
     using RSpec::Parameterized::TableSyntax
 
     where(:partition_size, :considered_full?) do
-      11.gigabytes     | true
-      10.gigabytes     | true
-      10.gigabytes - 1 | false
+      101.gigabytes     | true
+      100.gigabytes     | true
+      100.gigabytes - 1 | false
     end
 
     with_them do
