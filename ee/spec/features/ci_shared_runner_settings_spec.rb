@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'CI shared runner settings', feature_category: :runner do
+RSpec.describe 'CI shared runner settings', feature_category: :runner_fleet do
   include StubENV
 
   let(:admin) { create(:admin) }
