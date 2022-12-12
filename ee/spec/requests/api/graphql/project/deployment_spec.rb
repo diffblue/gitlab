@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Project Deployment query' do
+RSpec.describe 'Project Deployment query', feature_category: :continuous_delivery do
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }
@@ -182,6 +182,30 @@ RSpec.describe 'Project Deployment query' do
 
         expect(summary_data['totalPendingApprovalCount']).to eq(2)
         expect(summary_data['status']).to eq('REJECTED')
+      end
+    end
+
+    context 'when requesting user permissions' do
+      let(:query) do
+        %(
+          query {
+            project(fullPath: "#{project.full_path}") {
+              deployment(iid: #{deployment.iid}) {
+                userPermissions {
+                  approveDeployment
+                }
+              }
+            }
+          }
+        )
+      end
+
+      it 'returns user permissions of the deployments', :aggregate_failures do
+        subject
+
+        permissions = graphql_data_at(:project, :deployment, :userPermissions)
+
+        expect(permissions['approveDeployment']).to eq(Ability.allowed?(user, :approve_deployment, deployment))
       end
     end
 
