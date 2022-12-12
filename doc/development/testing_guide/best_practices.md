@@ -926,7 +926,7 @@ them unspecified, and look up the value after the row is created.
 
 ##### TestProf in migration specs
 
-Because of the what is described above, migration specs can't be run inside
+Because of what is described above, migration specs can't be run inside
 a database transaction. Our test suite uses
 [TestProf](https://github.com/test-prof/test-prof) to improve the runtime of the
 test suite, but `TestProf` uses database transactions to perform these optimizations.
