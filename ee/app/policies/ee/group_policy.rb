@@ -484,12 +484,8 @@ module EE
       rule { maintainer & eligible_for_trial }.enable :start_trial
 
       rule { read_only }.policy do
-        prevent :create_projects
         prevent :create_epic
         prevent :update_epic
-        prevent :admin_milestone
-        prevent :upload_file
-        prevent :admin_label
         prevent :admin_pipeline
         prevent :admin_group_runners
         prevent :register_group_runners

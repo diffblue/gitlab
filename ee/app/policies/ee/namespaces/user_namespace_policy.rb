@@ -13,10 +13,6 @@ module EE
 
         rule { admin & is_gitlab_com }.enable :update_subscription_limit
 
-        rule { read_only }.policy do
-          prevent :create_projects
-        end
-
         rule { owner | admin }.policy do
           enable :read_billable_member
         end
