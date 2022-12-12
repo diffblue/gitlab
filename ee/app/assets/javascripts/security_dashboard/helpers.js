@@ -10,7 +10,6 @@ import convertReportType from 'ee/vue_shared/security_reports/store/utils/conver
 import { VULNERABILITY_STATES } from 'ee/vulnerabilities/constants';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import { s__, __ } from '~/locale';
-import { SCANNER_NAMES_MAP } from '~/security_configuration/components/constants';
 import { DEFAULT_SCANNER } from './constants';
 
 const parseOptions = (obj) =>
@@ -177,26 +176,8 @@ export const preparePageInfo = (pageInfo) => {
 };
 
 /**
- * Provided a groupBy vulnerability scanners, this returns an array that is
- * sorted alphabetically with the "GENERIC" custom scanner name as the last item
- *
- * @param {Object} groupedByReportType
- * @returns {Array} sorted groupedByReportType
- */
-const sortGroupedReportType = (groupedByReportType) => {
-  const manuallyAddedScannerId = 'GENERIC';
-
-  return Object.entries(groupedByReportType).sort(([a], [b]) => {
-    if (a === manuallyAddedScannerId) return 1;
-    if (b === manuallyAddedScannerId) return -1;
-
-    return a.localeCompare(b);
-  });
-};
-
-/**
- * Provided a vulnerability scanners from the GraphQL API, this returns an array that is
- * formatted so it can be displayed in the dropdown UI.
+ * Provided vulnerability scanners from the GraphQL API, this returns an array that is formatted
+ * so it can be displayed in the dropdown UI.
  * The final formatted scanners will include all possible scanners, including the available ones
  * from the GraphQL API and the unavailable ones.
  *
@@ -204,27 +185,16 @@ const sortGroupedReportType = (groupedByReportType) => {
  * @returns {Array} formatted vulnerabilityScanners
  */
 export const getFormattedScanners = (vulnerabilityScanners) => {
-  const allPossibleReportTypes = Object.keys(REPORT_TYPES_WITH_MANUALLY_ADDED).reduce(
-    (a, v) => ({ ...a, [v.toUpperCase()]: null }),
-    {},
-  );
-  const availableReportTypes = groupBy(vulnerabilityScanners, 'reportType');
+  const groupedByReportType = groupBy(vulnerabilityScanners, 'reportType');
 
-  const combinedDeduplicatedReportTypes = {
-    ...allPossibleReportTypes,
-    ...availableReportTypes,
-  };
+  return Object.entries(REPORT_TYPES_WITH_MANUALLY_ADDED).map(([type, name]) => {
+    const reportType = type.toUpperCase();
 
-  const sortedAllReportTypes = sortGroupedReportType(combinedDeduplicatedReportTypes);
-
-  return sortedAllReportTypes.map(([reportType, scanners]) => {
-    const scannersArr = scanners || [];
     return {
       id: reportType,
       reportType,
-      name: SCANNER_NAMES_MAP[reportType] || SCANNER_NAMES_MAP.GENERIC,
-      scannerIds: scannersArr.map(({ id }) => id),
-      disabled: scannersArr.length === 0,
+      name,
+      disabled: (groupedByReportType[reportType] || []).length <= 0,
     };
   });
 };
