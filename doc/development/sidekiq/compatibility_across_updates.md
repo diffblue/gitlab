@@ -131,12 +131,12 @@ To remove a worker class, follow these steps over two minor releases:
 
 1. Remove any code that enqueues the jobs.
 
-    For example, if there is a UI component or an API endpoint that a user can interact with that results in the worker instance getting enqueued, make sure those surface areas are either removed or updated in a way that the worker instance is no longer enqueued. 
+    For example, if there is a UI component or an API endpoint that a user can interact with that results in the worker instance getting enqueued, make sure those surface areas are either removed or updated in a way that the worker instance is no longer enqueued.
 
     This ensures that instances related to the worker class are no longer being enqueued.
 
 1. Ensure both the frontend and backend code no longer relies on any of the work that used to be done by the worker.
-1. In the relevant worker classes, replace the contents of the `perform` method with a no-op, while keeping any arguments in tact. 
+1. In the relevant worker classes, replace the contents of the `perform` method with a no-op, while keeping any arguments in tact.
 
     For example, if you're working with the following `ExampleWorker`:
 
@@ -147,7 +147,7 @@ To remove a worker class, follow these steps over two minor releases:
           end
         end
       ```
-    
+
     Implementing the no-op might look like this:
 
       ```ruby
@@ -158,7 +158,10 @@ To remove a worker class, follow these steps over two minor releases:
 
     By implementing this no-op, you can avoid unnecessary cycles once any deprecated jobs that are still enqueued eventually get processed.
 
-1. In a separate merge request, because it's a migration, consider using the `sidekiq_remove_jobs` helper migration method in a **post-deployment migration**:
+### In a subsequent, separate minor release
+
+1. Delete the worker class file and follow the guidance in our [Sidekiq queues documentation](../sidekiq/index.md#sidekiq-queues) around running Rake tasks to regenerate/update related files.
+1. Add a migration (not a post-deployment migration) that uses `sidekiq_remove_jobs`:
 
     ```ruby
     class RemoveMyDeprecatedWorkersJobInstances < Gitlab::Database::Migration[2.0]
@@ -176,10 +179,6 @@ To remove a worker class, follow these steps over two minor releases:
       end
     end
     ```
-
-#### In a subsequent, separate minor release
-
-1. Delete the worker class file and follow the guidance in our [Sidekiq queues documentation](../sidekiq/index.md#sidekiq-queues) around running Rake tasks to regenerate/update related files.
 
 ## Renaming queues
 
