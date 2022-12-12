@@ -23423,6 +23423,9 @@ msgstr ""
 msgid "JiraService|Change GitLab version"
 msgstr ""
 
+msgid "JiraService|Continue setup in GitLab"
+msgstr ""
+
 msgid "JiraService|Define the type of Jira issue to create from a vulnerability."
 msgstr ""
 
@@ -23469,6 +23472,9 @@ msgid "JiraService|IDs must be a list of numbers that can be split with , or ;"
 msgstr ""
 
 msgid "JiraService|If different from Web URL."
+msgstr ""
+
+msgid "JiraService|In order to complete the set up, you’ll need to complete a few steps in GitLab."
 msgstr ""
 
 msgid "JiraService|Issues created from vulnerabilities in this project will be Jira issues, even if GitLab issues are enabled."
