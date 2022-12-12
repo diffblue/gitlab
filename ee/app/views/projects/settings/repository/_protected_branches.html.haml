@@ -1,7 +1,7 @@
 - if @project.feature_available?(:protected_refs_for_users, current_user)
   .js-protected-refs-for-users
-    = render "projects/protected_branches/ee/index"
+    = render "protected_branches/ee/index"
     = render "projects/protected_tags/ee/index"
 - else
-  = render "projects/protected_branches/index"
+  = render "protected_branches/index"
   = render "projects/protected_tags/index"

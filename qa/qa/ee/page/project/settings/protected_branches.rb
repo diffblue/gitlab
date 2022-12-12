@@ -12,11 +12,11 @@ module QA
               super
 
               base.class_eval do
-                view 'ee/app/views/projects/protected_branches/ee/_code_owner_approval_table.html.haml' do
+                view 'ee/app/views/protected_branches/ee/_code_owner_approval_table.html.haml' do
                   element :code_owner_toggle_button
                 end
 
-                view 'ee/app/views/projects/protected_branches/ee/_create_protected_branch.html.haml' do
+                view 'ee/app/views/protected_branches/ee/_create_protected_branch.html.haml' do
                   element :allowed_to_push_dropdown
                   element :allowed_to_push_dropdown_content
                   element :allowed_to_merge_dropdown
