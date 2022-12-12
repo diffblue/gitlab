@@ -71,13 +71,23 @@ module Projects
         params[:previous_default_branch] = previous_default_branch
 
         if !project.root_ref?(new_default_branch) && has_custom_head_branch?
-          raise ValidationError, s_("UpdateProject|Could not set the default branch. Do you have branch `head` in your repository?")
+          raise ValidationError,
+            format(
+              s_("UpdateProject|Could not set the default branch. Do you have a branch named 'HEAD' in your repository? (%{linkStart}How do I fix this?%{linkEnd})"),
+              linkStart: ambiguous_head_documentation_link, linkEnd: '</a>'
+            ).html_safe
         end
 
         after_default_branch_change(previous_default_branch)
       else
         raise ValidationError, s_("UpdateProject|Could not set the default branch")
       end
+    end
+
+    def ambiguous_head_documentation_link
+      url = Rails.application.routes.url_helpers.help_page_path('user/project/repository/branches/index.md', anchor: 'error-ambiguous-head-branch-exists')
+
+      format('<a href="%{url}" target="_blank" rel="noopener noreferrer">', url: url)
     end
 
     # See issue: https://gitlab.com/gitlab-org/gitlab/-/issues/381731
