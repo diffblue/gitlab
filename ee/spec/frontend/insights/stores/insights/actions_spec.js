@@ -5,7 +5,7 @@ import * as actions from 'ee/insights/stores/modules/insights/actions';
 import { TEST_HOST } from 'helpers/test_constants';
 import testAction from 'helpers/vuex_action_helper';
 
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 
 const ERROR_MESSAGE = 'TEST_ERROR_MESSAGE';
@@ -54,34 +54,32 @@ describe('Insights store actions', () => {
   });
 
   describe('receiveConfigError', () => {
-    it('commits RECEIVE_CONFIG_ERROR and shows flash message', () => {
-      return testAction(
+    it('commits RECEIVE_CONFIG_ERROR and shows alert message', async () => {
+      await testAction(
         actions.receiveConfigError,
         ERROR_MESSAGE,
         null,
         [{ type: 'RECEIVE_CONFIG_ERROR' }],
         [],
-        () => {
-          expect(createFlash).toHaveBeenCalledWith({
-            message: `There was an error fetching configuration for charts: ${ERROR_MESSAGE}`,
-          });
-        },
       );
+
+      expect(createAlert).toHaveBeenCalledWith({
+        message: `There was an error fetching configuration for charts: ${ERROR_MESSAGE}`,
+      });
     });
 
-    it('flashes Unknown Error when error message is falsey', () => {
-      return testAction(
+    it('shows `Unknown Error` alert when error message is falsy', async () => {
+      await testAction(
         actions.receiveConfigError,
         null,
         null,
         expect.any(Array),
         expect.any(Array),
-        () => {
-          expect(createFlash).toHaveBeenCalledWith({
-            message: `There was an error fetching configuration for charts: Unknown Error`,
-          });
-        },
       );
+
+      expect(createAlert).toHaveBeenCalledWith({
+        message: `There was an error fetching configuration for charts: Unknown Error`,
+      });
     });
   });
 
