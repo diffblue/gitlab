@@ -764,7 +764,7 @@ kbd {
   font-size: 0.75rem;
   line-height: 10px;
   color: var(--gray-700, #535158);
-  vertical-align: middle;
+  vertical-align: unset;
   background-color: var(--gray-10, #fbfafd);
   border-width: 1px;
   border-style: solid;
