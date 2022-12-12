@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.runner(id)' do
+RSpec.describe 'Query.runner(id)', feature_category: :runner_fleet do
   include GraphqlHelpers
   include RunnerReleasesHelper
 
