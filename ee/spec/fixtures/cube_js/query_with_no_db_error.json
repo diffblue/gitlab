@@ -1,0 +1,3 @@
+{
+  "error": "Error: Code: 81. DB::Exception: Database gitlab_project_12 doesn't exist. (UNKNOWN_DATABASE) (version 22.10.2.11 (official build))\n"
+}

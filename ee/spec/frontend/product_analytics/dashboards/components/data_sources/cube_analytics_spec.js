@@ -1,6 +1,10 @@
 import { CubejsApi, HttpTransport } from '@cubejs-client/core';
-import { fetch } from 'ee/product_analytics/dashboards/data_sources/cube_analytics';
-import { mockResultSet } from '../mock_data';
+import {
+  fetch,
+  hasAnalyticsData,
+  NO_DATABASE_ERROR_MESSAGE,
+} from 'ee/product_analytics/dashboards/data_sources/cube_analytics';
+import { mockCountResultSet, mockResultSet } from '../mock_data';
 
 const mockLoad = jest.fn().mockImplementation(() => mockResultSet);
 
@@ -16,6 +20,23 @@ jest.mock('~/lib/utils/csrf', () => ({
   token: 'mock-csrf-token',
 }));
 
+const itSetsUpCube = () => {
+  it('creates a new CubejsApi connection', () => {
+    expect(CubejsApi).toHaveBeenCalledWith('1', { transport: {} });
+  });
+
+  it('creates a new HttpTransport with the proxy URL and csrf headers', () => {
+    expect(HttpTransport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        apiUrl: '/api/v4/projects/TEST_ID/product_analytics/request',
+        headers: expect.objectContaining({
+          'mock-csrf-header': 'mock-csrf-token',
+        }),
+      }),
+    );
+  });
+};
+
 describe('Cube Analytics Data Source', () => {
   const projectId = 'TEST_ID';
   const visualizationType = 'LineChart';
@@ -27,20 +48,7 @@ describe('Cube Analytics Data Source', () => {
       return fetch({ projectId, visualizationType, query, queryOverrides });
     });
 
-    it('creates a new CubejsApi connection', () => {
-      expect(CubejsApi).toHaveBeenCalledWith('1', { transport: {} });
-    });
-
-    it('creates a new HttpTransport with the proxy URL and csrf headers', () => {
-      expect(HttpTransport).toHaveBeenCalledWith(
-        expect.objectContaining({
-          apiUrl: '/api/v4/projects/TEST_ID/product_analytics/request',
-          headers: expect.objectContaining({
-            'mock-csrf-header': 'mock-csrf-token',
-          }),
-        }),
-      );
-    });
+    itSetsUpCube();
 
     it('loads the query with the query override', () => {
       expect(mockLoad).toHaveBeenCalledWith({ alpha: 'two' });
@@ -73,6 +81,56 @@ describe('Cube Analytics Data Source', () => {
         const result = await fetch({ projectId, visualizationType: 'SingleStat', query });
 
         expect(result).toBe('36');
+      });
+    });
+  });
+
+  describe('hasAnalyticsData', () => {
+    let result;
+
+    afterEach(() => {
+      result = null;
+    });
+
+    describe.each`
+      countText           | mockedApiResponse          | expectedResult
+      ${'greater than 0'} | ${mockCountResultSet(335)} | ${true}
+      ${'equal to 0'}     | ${mockCountResultSet(0)}   | ${false}
+    `('when the amount of data is $countText', ({ mockedApiResponse, expectedResult }) => {
+      beforeEach(async () => {
+        mockLoad.mockImplementation(() => mockedApiResponse);
+
+        result = await hasAnalyticsData('TEST_ID');
+      });
+
+      itSetsUpCube();
+
+      it(`should return ${expectedResult}`, () => {
+        expect(result).toBe(expectedResult);
+      });
+    });
+
+    describe(`when the API returns ${NO_DATABASE_ERROR_MESSAGE}`, () => {
+      beforeEach(async () => {
+        mockLoad.mockRejectedValue({ response: { message: NO_DATABASE_ERROR_MESSAGE } });
+
+        result = await hasAnalyticsData('TEST_ID');
+      });
+
+      itSetsUpCube();
+
+      it('should return false', async () => {
+        expect(result).toBe(false);
+      });
+    });
+
+    describe(`when the API returns an unexpected error`, () => {
+      const error = new Error('unexpected error');
+
+      it('should throw the error', async () => {
+        mockLoad.mockRejectedValue(error);
+
+        await expect(hasAnalyticsData('TEST_ID')).rejects.toThrow(error);
       });
     });
   });
