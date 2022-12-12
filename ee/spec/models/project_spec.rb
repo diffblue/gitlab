@@ -2001,7 +2001,7 @@ RSpec.describe Project do
     subject { project.latest_default_branch_pipeline_with_reports(reports) }
 
     context 'when reports are found' do
-      let_it_be(:reports) { ::Ci::JobArtifact.of_report_type(:sast) }
+      let(:reports) { ::Ci::JobArtifact.of_report_type(:sast) }
 
       it "returns the latest pipeline with reports of right type" do
         is_expected.to eq(pipeline_2)
@@ -2015,12 +2015,42 @@ RSpec.describe Project do
         end
       end
     end
+  end
 
-    context 'when reports are not found' do
-      let(:reports) { ::Ci::JobArtifact.of_report_type(:metrics) }
+  describe "#latest_pipeline_with_reports_for_ref" do
+    let_it_be(:project) { create(:project) }
 
-      it 'returns nothing' do
-        is_expected.to be_nil
+    context "when pipeline ref is non-default branch" do
+      let_it_be(:merge_request) { create(:merge_request, source_project: project) }
+      let_it_be(:pipeline_1) { create(:ee_ci_pipeline, :with_sast_report, project: project, ref: merge_request.target_branch) }
+      let_it_be(:pipeline_2) { create(:ee_ci_pipeline, :with_sast_report, project: project, ref: merge_request.target_branch) }
+      let_it_be(:pipeline_3) { create(:ee_ci_pipeline, :with_dependency_scanning_report, project: project, ref: merge_request.target_branch) }
+      let_it_be(:pipeline_4) { create(:ee_ci_pipeline, :with_sast_report, project: project) }
+
+      subject { project.latest_pipeline_with_reports_for_ref(merge_request.target_branch, reports) }
+
+      context 'when reports are found' do
+        let(:reports) { ::Ci::JobArtifact.of_report_type(:sast) }
+
+        it "returns the latest pipeline with reports of right type" do
+          is_expected.to eq(pipeline_2)
+        end
+
+        context 'and one of the pipelines has not yet completed' do
+          let_it_be(:pipeline_5) { create(:ee_ci_pipeline, :with_sast_report, project: project, ref: merge_request.target_branch, status: :running) }
+
+          it 'returns the latest successful pipeline with reports' do
+            is_expected.to eq(pipeline_2)
+          end
+        end
+      end
+
+      context 'when reports are not found' do
+        let(:reports) { ::Ci::JobArtifact.of_report_type(:metrics) }
+
+        it 'returns nothing' do
+          is_expected.to be_nil
+        end
       end
     end
   end
