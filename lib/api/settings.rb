@@ -187,6 +187,7 @@ module API
       optional :pipeline_limit_per_project_user_sha, type: Integer, desc: "Maximum number of pipeline creation requests allowed per minute per user and commit. Set to 0 for unlimited requests per minute."
       optional :jira_connect_application_key, type: String, desc: "Application ID of the OAuth application that should be used to authenticate with the GitLab.com for Jira Cloud app"
       optional :jira_connect_proxy_url, type: String, desc: "URL of the GitLab instance that should be used as a proxy for the GitLab.com for Jira Cloud app"
+      optional :bulk_import_enabled, type: Boolean, desc: 'Enable migrating GitLab groups and projects by direct transfer'
 
       Gitlab::SSHPublicKey.supported_types.each do |type|
         optional :"#{type}_key_restriction",

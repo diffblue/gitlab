@@ -165,7 +165,8 @@ RSpec.describe API::Settings, 'Settings', :do_not_mock_admin_mode_setting, featu
             inactive_projects_send_warning_email_after_months: 12,
             can_create_group: false,
             jira_connect_application_key: '123',
-            jira_connect_proxy_url: 'http://example.com'
+            jira_connect_proxy_url: 'http://example.com',
+            bulk_import_enabled: false
           }
 
         expect(response).to have_gitlab_http_status(:ok)
@@ -230,6 +231,7 @@ RSpec.describe API::Settings, 'Settings', :do_not_mock_admin_mode_setting, featu
         expect(json_response['can_create_group']).to eq(false)
         expect(json_response['jira_connect_application_key']).to eq('123')
         expect(json_response['jira_connect_proxy_url']).to eq('http://example.com')
+        expect(json_response['bulk_import_enabled']).to be(false)
       end
     end
 
