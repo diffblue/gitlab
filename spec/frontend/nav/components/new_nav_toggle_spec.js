@@ -45,7 +45,7 @@ describe('NewNavToggle', () => {
     });
 
     it('renders the toggle as enabled', () => {
-      expect(findToggle().vm.isChecked).toBe('true');
+      expect(findToggle().props('value')).toBe(true);
     });
   });
 
@@ -55,7 +55,7 @@ describe('NewNavToggle', () => {
     });
 
     it('renders the toggle as disabled', () => {
-      expect(wrapper.findComponent(GlToggle).vm.isChecked).toBe('false');
+      expect(findToggle().props('value')).toBe(false);
     });
   });
 
