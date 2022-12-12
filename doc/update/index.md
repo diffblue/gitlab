@@ -515,6 +515,20 @@ and [Helm Chart deployments](https://docs.gitlab.com/charts/). They come with ap
 
 - You should use one of the [officially supported PostgreSQL versions](../administration/package_information/postgresql_versions.md). Some database migrations can cause stability and performance issues with older PostgreSQL versions.
 - Git 2.37.0 and later is required by Gitaly. For installations from source, we recommend you use the [Git version provided by Gitaly](../install/installation.md#git).
+- A database change to modify the behavior of four indexes fails on instances
+  where these indexes do not exist:
+
+  ```plaintext
+  Caused by:
+  PG::UndefinedTable: ERROR:  relation "index_issues_on_title_trigram" does not exist
+  ```
+
+  The other three indexes are: `index_merge_requests_on_title_trigram`, `index_merge_requests_on_description_trigram`,
+  and `index_issues_on_description_trigram`.
+
+  This issue was [fixed in GitLab 15.7](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/105375) and backported
+  to GitLab 15.6.2. The issue can also be worked around:
+  [read about how to create these indexes](https://gitlab.com/gitlab-org/gitlab/-/issues/378343#note_1199863087).
 
 ### 15.5.0
 
