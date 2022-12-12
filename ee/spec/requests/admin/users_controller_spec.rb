@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::UsersController, :enable_admin_mode do
+RSpec.describe Admin::UsersController, :enable_admin_mode, feature_category: :user_management do
   include AdminModeHelper
 
   let_it_be(:admin) { create(:admin) }

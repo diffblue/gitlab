@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Git LFS API and storage' do
+RSpec.describe 'Git LFS API and storage', feature_category: :source_code_management do
   include LfsHttpHelpers
   include WorkhorseHelpers
   include WorkhorseLfsHelpers

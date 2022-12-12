@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe RegistrationsController, type: :request do
+RSpec.describe RegistrationsController, type: :request, feature_category: :authentication_and_authorization do
   describe 'POST #create' do
     let_it_be(:user_attrs) { build(:user).slice(:first_name, :last_name, :username, :email, :password) }
 

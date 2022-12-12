@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'callout alerts' do
+RSpec.describe 'callout alerts', feature_category: :navigation do
   include Capybara::RSpecMatchers
 
   describe 'new_user_signups_cap_reached' do

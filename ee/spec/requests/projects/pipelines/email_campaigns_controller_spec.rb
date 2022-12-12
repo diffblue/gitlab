@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::Pipelines::EmailCampaignsController do
+RSpec.describe Projects::Pipelines::EmailCampaignsController, feature_category: :navigation do
   let_it_be(:user) { create(:user) }
 
   let(:com) { true }

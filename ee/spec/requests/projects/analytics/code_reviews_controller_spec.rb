@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::Analytics::CodeReviewsController, type: :request do
+RSpec.describe Projects::Analytics::CodeReviewsController, type: :request, feature_category: :value_stream_management do
   let(:user) { create :user }
   let(:project) { create(:project) }
 

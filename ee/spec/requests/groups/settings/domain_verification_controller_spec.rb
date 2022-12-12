@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Settings::DomainVerificationController, type: :request do
+RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
+                                                               feature_category: :authentication_and_authorization do
   shared_examples 'renders 404' do
     it 'renders 404' do
       expect(response).to have_gitlab_http_status(:not_found)

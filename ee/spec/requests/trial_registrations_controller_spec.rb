@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe TrialRegistrationsController do
+RSpec.describe TrialRegistrationsController, feature_category: :purchase do
   let(:com) { true }
 
   before do

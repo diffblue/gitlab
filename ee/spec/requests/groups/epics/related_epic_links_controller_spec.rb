@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Epics::RelatedEpicLinksController do
+RSpec.describe Groups::Epics::RelatedEpicLinksController, feature_category: :portfolio_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:epic) { create(:epic) }
   let_it_be(:epic2) { create(:epic, group: epic.group) }

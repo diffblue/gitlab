@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::SubscriptionsController, :cloud_licenses do
+RSpec.describe Admin::SubscriptionsController, :cloud_licenses, feature_category: :purchase do
   include AdminModeHelper
 
   describe 'GET /subscriptions' do

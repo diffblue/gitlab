@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'learn about features' do
+RSpec.describe 'learn about features', feature_category: :experimentation_conversion do
   describe 'GET /groups/:group_id/-/discover_premium_and_ultimate' do
     using RSpec::Parameterized::TableSyntax
 

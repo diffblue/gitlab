@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::RequirementsManagement::RequirementsController do
+RSpec.describe Projects::RequirementsManagement::RequirementsController, feature_category: :requirements_management do
   include WorkhorseHelpers
 
   include_context 'workhorse headers'

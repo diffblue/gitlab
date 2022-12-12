@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Groups::ProtectedEnvironmentsController do
+RSpec.describe Groups::ProtectedEnvironmentsController, feature_category: :continuous_delivery do
   let_it_be(:group) { create(:group) }
   let_it_be(:subgroup_1) { create(:group, parent: group) }
   let_it_be(:subgroup_2) { create(:group, parent: group) }

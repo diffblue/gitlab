@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Settings::ReportingController, type: :request do
+RSpec.describe Groups::Settings::ReportingController, type: :request, feature_category: :insider_threat do
   let_it_be(:user) { create(:user) }
 
   let(:group) { create(:group) }

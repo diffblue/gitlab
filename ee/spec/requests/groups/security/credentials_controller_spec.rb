@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Security::CredentialsController do
+RSpec.describe Groups::Security::CredentialsController, feature_category: :compliance_management do
   let_it_be(:group_with_managed_accounts) { create(:group_with_managed_accounts, :private) }
   let_it_be(:managed_users) { create_list(:user, 2, :group_managed, managing_group: group_with_managed_accounts) }
   let_it_be(:owner) { managed_users.first }

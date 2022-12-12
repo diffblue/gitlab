@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GroupsController, type: :request do
+RSpec.describe GroupsController, type: :request, feature_category: :subgroups do
   let(:user) { create(:user) }
   let(:group) { create(:group) }
 
