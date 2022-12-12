@@ -102,7 +102,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
         it 'returns prepared CI configuration for SAST' do
           expected_configuration = {
             inherit: { variables: false },
-            tags: ['runner-tag'],
             variables: { 'SAST_EXCLUDED_ANALYZERS' => 'semgrep' },
             trigger: { include: [{ template: 'Security/SAST.gitlab-ci.yml' }] }
           }
@@ -116,7 +115,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
           it 'returns prepared CI configuration for SAST' do
             expected_configuration = {
               inherit: { variables: false },
-              tags: ['runner-tag'],
               trigger: { include: [{ template: 'Security/SAST.gitlab-ci.yml' }] }
             }
 
@@ -134,7 +132,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
         it 'returns prepared CI configuration for Dependency Scanning' do
           expected_configuration = {
             inherit: { variables: false },
-            tags: ['runner-tag'],
             variables: { 'DS_EXCLUDED_ANALYZERS' => 'gemnasium-python' },
             trigger: { include: [{ template: 'Jobs/Dependency-Scanning.gitlab-ci.yml' }] }
           }
@@ -148,7 +145,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
           it 'returns prepared CI configuration for Dependency Scanning' do
             expected_configuration = {
               inherit: { variables: false },
-              tags: ['runner-tag'],
               trigger: { include: [{ template: 'Jobs/Dependency-Scanning.gitlab-ci.yml' }] }
             }
 

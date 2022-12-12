@@ -55,9 +55,7 @@ module Security
 
       def child_pipeline_configuration(action, ci_variables)
         template = action[:scan]
-        tags = action[:tags]
         {
-          tags: tags,
           variables: ci_variables.compact.presence,
           inherit: {
             variables: false
