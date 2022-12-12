@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['DeploymentDetails'] do
+RSpec.describe GitlabSchema.types['Deployment'], feature_category: :continuous_delivery do
   it 'includes the expected fields' do
     expected_fields = %w[approvalSummary]
 
