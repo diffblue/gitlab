@@ -52,9 +52,9 @@ RSpec.describe Users::AuthorizedBuildService do
         end
       end
 
-      context 'when user confirmation is enabled' do
+      context 'when email confirmation setting is set to `hard`' do
         before do
-          stub_application_setting(send_user_confirmation_email: true)
+          stub_application_setting_enum('email_confirmation_setting', 'hard')
         end
 
         it_behaves_like 'unsuccessful user domain matching'

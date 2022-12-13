@@ -104,23 +104,23 @@ RSpec.describe Users::EmailVerification::SendCustomConfirmationInstructionsServi
 
   describe '#enabled?' do
     where(:identity_verification, :soft_email_confirmation,
-      :require_admin_approval_after_user_signup, :send_user_confirmation_email, :enabled?) do
-      true  | true  | true  | true  | false
-      true  | true  | true  | false | false
-      true  | true  | false | true  | false
-      true  | true  | false | false | false
-      true  | false | true  | true  | false
-      true  | false | true  | false | false
-      true  | false | false | true  | true
-      true  | false | false | false | false
-      false | true  | true  | true  | false
-      false | true  | true  | false | false
-      false | true  | false | true  | false
-      false | true  | false | false | false
-      false | false | true  | true  | false
-      false | false | true  | false | false
-      false | false | false | true  | false
-      false | false | false | false | false
+      :require_admin_approval_after_user_signup, :email_confirmation_setting, :enabled?) do
+      true  | true  | true  | 'hard' | false
+      true  | true  | true  | 'off'  | false
+      true  | true  | false | 'hard' | false
+      true  | true  | false | 'off'  | false
+      true  | false | true  | 'hard' | false
+      true  | false | true  | 'off'  | false
+      true  | false | false | 'hard' | true
+      true  | false | false | 'off'  | false
+      false | true  | true  | 'hard' | false
+      false | true  | true  | 'off'  | false
+      false | true  | false | 'hard' | false
+      false | true  | false | 'off'  | false
+      false | false | true  | 'hard' | false
+      false | false | true  | 'off'  | false
+      false | false | false | 'hard' | false
+      false | false | false | 'off'  | false
     end
 
     with_them do
@@ -128,7 +128,7 @@ RSpec.describe Users::EmailVerification::SendCustomConfirmationInstructionsServi
         stub_feature_flags(identity_verification: identity_verification)
         stub_feature_flags(soft_email_confirmation: soft_email_confirmation)
         stub_application_setting(require_admin_approval_after_user_signup: require_admin_approval_after_user_signup)
-        stub_application_setting(send_user_confirmation_email: send_user_confirmation_email)
+        stub_application_setting_enum('email_confirmation_setting', email_confirmation_setting)
       end
 
       it 'returns the expected result' do

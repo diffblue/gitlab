@@ -12,8 +12,8 @@ feature_category: :authentication_and_authorization do
     let(:user) { User.find_by_username(new_user.username) }
 
     before do
+      stub_application_setting_enum('email_confirmation_setting', 'hard')
       stub_application_setting(require_admin_approval_after_user_signup: false)
-      stub_application_setting(send_user_confirmation_email: true)
       stub_feature_flags(identity_verification_credit_card: false)
       stub_feature_flags(soft_email_confirmation: false)
       stub_feature_flags(arkose_labs_signup_challenge: false)

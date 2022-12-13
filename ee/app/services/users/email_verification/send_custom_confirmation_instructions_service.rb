@@ -48,7 +48,7 @@ module Users
       def self.enabled?(email)
         return false if ::Feature.enabled?(:soft_email_confirmation)
         return false if ::Gitlab::CurrentSettings.require_admin_approval_after_user_signup
-        return false unless ::Gitlab::CurrentSettings.send_user_confirmation_email
+        return false if ::Gitlab::CurrentSettings.email_confirmation_setting_off?
 
         # Since we might not have a persisted user yet, we cannot scope the feature flag on the user,
         # but since we do have an email, use this wrapper that implements `flipper_id` for email addresses.

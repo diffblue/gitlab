@@ -14,7 +14,7 @@ RSpec.describe 'Email Confirmation', feature_category: :onboarding do
   where(identity_verification: [true, false],
         soft_email_confirmation: [true, false],
         require_admin_approval_after_user_signup: [true, false],
-        send_user_confirmation_email: [true, false])
+        email_confirmation_setting: %w[off soft hard])
 
   with_them do
     before do
@@ -24,7 +24,7 @@ RSpec.describe 'Email Confirmation', feature_category: :onboarding do
       stub_feature_flags(identity_verification: identity_verification)
       stub_feature_flags(soft_email_confirmation: soft_email_confirmation)
       stub_application_setting(require_admin_approval_after_user_signup: require_admin_approval_after_user_signup)
-      stub_application_setting(send_user_confirmation_email: send_user_confirmation_email)
+      stub_application_setting_enum('email_confirmation_setting', email_confirmation_setting)
 
       sign_up
     end
@@ -32,7 +32,7 @@ RSpec.describe 'Email Confirmation', feature_category: :onboarding do
     it 'confirms identity and signs in successfully', :aggregate_failures, :js, :enable_admin_mode do
       expect_required_approval_and_sign_in if require_admin_approval_after_user_signup
 
-      if send_user_confirmation_email
+      unless Gitlab::CurrentSettings.email_confirmation_setting_off?
         if soft_email_confirmation
           expect_successful_sign_in_and_confirmation_banner
           expect_successful_resend_instructions(from_banner: true)
@@ -124,7 +124,11 @@ RSpec.describe 'Email Confirmation', feature_category: :onboarding do
 
     perform_enqueued_jobs { Users::ApproveService.new(admin).execute(user) }
 
-    should_email(user, times: send_user_confirmation_email ? 2 : 1) # welcome email and optional confirmation email
+    # This is temporary as `soft_email_confirmation` is being removed and conflicts with the new
+    # `email_confirmation_setting` enum which will encompass `soft_email_confirmation`
+    number_of_emails = email_confirmation_setting == 'off' ? 1 : 2
+
+    should_email(user, times: number_of_emails) # welcome email and optional confirmation email
 
     sign_in
   end
