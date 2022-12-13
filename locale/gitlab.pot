@@ -17652,6 +17652,9 @@ msgstr ""
 msgid "ForksDivergence|%{messages} upstream repository"
 msgstr ""
 
+msgid "ForksDivergence|Fork has diverged from upstream repository"
+msgstr ""
+
 msgid "ForksDivergence|Up to date with upstream repository"
 msgstr ""
 
