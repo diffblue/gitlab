@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Mutations::Analytics::DevopsAdoption::EnabledNamespaces::Enable do
+RSpec.describe Mutations::Analytics::DevopsAdoption::EnabledNamespaces::Enable, feature_category: :incident_management do
   include GraphqlHelpers
 
   let_it_be(:display_group) { create(:group, name: 'aaaa') }

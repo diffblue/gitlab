@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Creating an External Issue Link' do
+RSpec.describe 'Creating an External Issue Link', feature_category: :vulnerability_management do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }

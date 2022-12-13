@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Updating an epic tree' do
+RSpec.describe 'Updating an epic tree', feature_category: :portfolio_management do
   include GraphqlHelpers
 
   let(:current_user) { create(:user) }

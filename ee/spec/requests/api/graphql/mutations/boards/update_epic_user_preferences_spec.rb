@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Update board epic user preferences' do
+RSpec.describe 'Update board epic user preferences', feature_category: :portfolio_management do
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group, :private) }

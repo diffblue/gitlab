@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Creating a Requirement' do
+RSpec.describe 'Creating a Requirement', feature_category: :requirements_management do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }

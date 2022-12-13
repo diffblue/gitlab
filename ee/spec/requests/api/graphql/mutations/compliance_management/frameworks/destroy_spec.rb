@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Delete a compliance framework' do
+RSpec.describe 'Delete a compliance framework', feature_category: :compliance_management do
   include GraphqlHelpers
 
   let_it_be(:namespace) { create(:group) }

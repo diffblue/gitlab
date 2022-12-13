@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Activate a subscription' do
+RSpec.describe 'Activate a subscription', feature_category: :purchase do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:admin) }

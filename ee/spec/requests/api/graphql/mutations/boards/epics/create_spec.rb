@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Mutations::Boards::Epics::Create do
+RSpec.describe Mutations::Boards::Epics::Create, feature_category: :portfolio_management do
   include GraphqlHelpers
 
   let_it_be(:current_user, reload: true) { create(:user) }

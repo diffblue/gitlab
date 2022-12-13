@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe 'Creating an Issue from a Security::Finding' do
+RSpec.describe 'Creating an Issue from a Security::Finding', feature_category: :vulnerability_management do
   include GraphqlHelpers
 
   before do

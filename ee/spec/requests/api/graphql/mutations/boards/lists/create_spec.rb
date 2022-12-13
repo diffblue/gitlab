@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Create a milestone or assignee board list' do
+RSpec.describe 'Create a milestone or assignee board list', feature_category: :team_planning do
   include GraphqlHelpers
 
   let_it_be(:group)     { create(:group, :private) }

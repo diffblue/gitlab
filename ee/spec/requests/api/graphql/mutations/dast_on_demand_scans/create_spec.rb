@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Running a DAST Scan' do
+RSpec.describe 'Running a DAST Scan', feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project, :repository) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Delete a DAST Scanner Profile' do
+RSpec.describe 'Delete a DAST Scanner Profile', feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project) }
