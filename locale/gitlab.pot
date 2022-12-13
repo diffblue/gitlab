@@ -43561,22 +43561,10 @@ msgstr ""
 msgid "Trials|Day %{daysUsed}/%{duration}"
 msgstr ""
 
-msgid "Trials|Go back to GitLab"
-msgstr ""
-
-msgid "Trials|Skip Trial"
-msgstr ""
-
 msgid "Trials|Upgrade %{groupName} to %{planName}"
 msgstr ""
 
-msgid "Trials|You can always resume this process by selecting your avatar and choosing 'Start an Ultimate trial'"
-msgstr ""
-
 msgid "Trials|You can apply your trial to a new group or an existing group."
-msgstr ""
-
-msgid "Trials|You won't get a free trial right now but you can always resume this process by selecting your avatar and choosing 'Start an Ultimate trial'"
 msgstr ""
 
 msgid "Trials|You've got %{daysRemaining} day remaining on GitLab %{planName}!"

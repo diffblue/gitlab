@@ -1,9 +1,0 @@
-.gl-mt-4
-  - if params[:glm_source] == glm_source
-    = link_to s_('Trials|Go back to GitLab'), skip_trials_path, class: 'block py-2 js-skip-trial'
-    .gl-font-sm.gl-text-gray-700
-      = s_("Trials|You can always resume this process by selecting your avatar and choosing 'Start an Ultimate trial'")
-  - else
-    = link_to s_('Trials|Skip Trial'), skip_trials_path, class: 'block py-2 js-skip-trial'
-    .gl-font-sm.gl-text-gray-700
-      = s_("Trials|You won't get a free trial right now but you can always resume this process by selecting your avatar and choosing 'Start an Ultimate trial'")
