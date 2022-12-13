@@ -322,27 +322,39 @@ RSpec.describe MergeRequests::UpdateService, :mailer do
       end
     end
 
-    describe 'capture suggested_reviewer_ids' do
-      context 'when suggested_reviewer_ids is present' do
-        let(:opts) { { reviewer_ids: [user.id, user2.id], suggested_reviewer_ids: [user.id] } }
+    describe 'capture suggested_reviewer_ids', feature_category: :workflow_automation do
+      shared_examples 'not capturing suggested_reviewer_ids' do
+        it 'does not capture the suggested_reviewer_ids and raise update error', :aggregate_failures do
+          expect(MergeRequests::CaptureSuggestedReviewersAcceptedWorker).not_to receive(:perform_async)
 
-        it 'captures the suggested_reviewer_ids' do
-          expect(MergeRequests::CaptureSuggestedReviewersAcceptedWorker)
-            .to receive(:perform_async)
-            .with(merge_request.id, [user.id])
-
-          update_merge_request(opts)
+          expect { update_merge_request(opts) }.not_to raise_error
         end
       end
 
-      context 'when suggested_reviewer_ids is blank' do
-        let(:opts) { { reviewer_ids: [user.id, user2.id] } }
+      context 'when reviewer_ids is present' do
+        context 'when suggested_reviewer_ids is present' do
+          let(:opts) { { reviewer_ids: [user.id, user2.id], suggested_reviewer_ids: [user.id] } }
 
-        it 'does not capture the suggested_reviewer_ids' do
-          expect(MergeRequests::CaptureSuggestedReviewersAcceptedWorker).not_to receive(:perform_async)
+          it 'captures the suggested_reviewer_ids and does not raise update error', :aggregate_failures do
+            expect(MergeRequests::CaptureSuggestedReviewersAcceptedWorker)
+              .to receive(:perform_async)
+              .with(merge_request.id, [user.id])
 
-          update_merge_request(opts)
+            expect { update_merge_request(opts) }.not_to raise_error
+          end
         end
+
+        context 'when suggested_reviewer_ids is blank' do
+          let(:opts) { { reviewer_ids: [user.id, user2.id] } }
+
+          it_behaves_like 'not capturing suggested_reviewer_ids'
+        end
+      end
+
+      context 'when reviewer_ids is blank' do
+        let(:opts) { { reviewer_ids: [], suggested_reviewer_ids: [user.id] } }
+
+        it_behaves_like 'not capturing suggested_reviewer_ids'
       end
     end
   end
