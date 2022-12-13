@@ -7,12 +7,9 @@ module EE
     READONLY_ABILITIES = %i[
       admin_tag
       push_to_delete_protected_branch
-      request_access
-      upload_file
       resolve_note
       create_merge_request_from
       create_merge_request_in
-      award_emoji
       admin_software_license_policy
       modify_auto_fix_setting
       create_test_case
@@ -21,8 +18,6 @@ module EE
 
     READONLY_FEATURES = %i[
       merge_request
-      label
-      milestone
       snippet
       wiki
       pipeline

@@ -1654,8 +1654,7 @@ RSpec.describe GroupPolicy do
   context 'when group is read only' do
     let(:current_user) { owner }
     let(:policies) do
-      %i[create_projects create_epic update_epic admin_milestone upload_file admin_label
-         admin_pipeline admin_group_runners register_group_runners add_cluster
+      %i[create_epic update_epic admin_pipeline admin_group_runners register_group_runners add_cluster
          create_cluster update_cluster admin_cluster create_deploy_token create_subgroup create_package]
     end
 

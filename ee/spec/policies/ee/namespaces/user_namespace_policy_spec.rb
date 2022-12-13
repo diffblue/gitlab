@@ -36,26 +36,6 @@ RSpec.describe Namespaces::UserNamespacePolicy do
     end
   end
 
-  context ':read_only' do
-    let(:current_user) { owner }
-
-    before do
-      allow(namespace).to receive(:read_only?).and_return(read_only)
-    end
-
-    context 'when the namespace is read only' do
-      let(:read_only) { true }
-
-      it { is_expected.to(be_disallowed(:create_projects)) }
-    end
-
-    context 'when the namespace is not read only' do
-      let(:read_only) { false }
-
-      it { is_expected.to(be_allowed(:create_projects)) }
-    end
-  end
-
   context ':admin_compliance_framework' do
     shared_examples 'permitted' do
       it { is_expected.to(be_allowed(:admin_compliance_framework)) }
