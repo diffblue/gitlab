@@ -1,4 +1,10 @@
 - page_title _('Dashboards')
 
-#js-analytics-dashboard{ data: { jitsu_key: @project.project_setting.jitsu_key, project_id: @project.id } }
+#js-analytics-dashboard{
+  data: {
+    chart_empty_state_illustration_path: image_path('illustrations/chart-empty-state.svg'),
+    jitsu_key: @project.project_setting.jitsu_key,
+    project_id: @project.id
+  }
+}
   = gl_loading_icon(size: 'lg', css_class: 'gl-my-7')

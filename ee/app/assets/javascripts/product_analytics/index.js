@@ -9,12 +9,13 @@ export default () => {
     return false;
   }
 
-  const { jitsuKey, projectId } = el.dataset;
+  const { chartEmptyStateIllustrationPath, jitsuKey, projectId } = el.dataset;
 
   return new Vue({
     el,
     router: createRouter(),
     provide: {
+      chartEmptyStateIllustrationPath,
       jitsuKey,
       projectId,
     },
