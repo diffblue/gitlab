@@ -20,20 +20,16 @@ Default.args = {
       component: 'CubeLineChart',
       title: s__('ProductAnalytics|Audience'),
       gridAttributes: {
-        size: {
-          width: 3,
-          height: 3,
-        },
+        width: 3,
+        height: 3,
       },
     },
     {
       component: 'CubeLineChart',
       title: s__('ProductAnalytics|Audience'),
       gridAttributes: {
-        size: {
-          width: 3,
-          height: 3,
-        },
+        width: 3,
+        height: 3,
       },
     },
   ],

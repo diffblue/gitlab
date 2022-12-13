@@ -68,17 +68,9 @@ export default {
       }
     },
     getGridAttribute(widget, attribute) {
-      const { gridAttributes: { position = {}, size = {} } = {} } = widget;
+      const { gridAttributes = {} } = widget;
 
-      if (position[attribute] !== undefined) {
-        return position[attribute];
-      }
-
-      if (size[attribute] !== undefined) {
-        return size[attribute];
-      }
-
-      return undefined;
+      return gridAttributes[attribute];
     },
     handleWidgetError(widgetTitle, error) {
       createAlert({

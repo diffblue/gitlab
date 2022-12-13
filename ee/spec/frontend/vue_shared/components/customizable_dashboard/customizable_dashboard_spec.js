@@ -93,8 +93,8 @@ describe('CustomizableDashboard', () => {
 
         expect(findGridStackWidgets().at(index).attributes()).toMatchObject({
           'gs-id': `${index}`,
-          'gs-h': `${gridAttributes.size.height}`,
-          'gs-w': `${gridAttributes.size.width}`,
+          'gs-h': `${gridAttributes.height}`,
+          'gs-w': `${gridAttributes.width}`,
         });
       },
     );
