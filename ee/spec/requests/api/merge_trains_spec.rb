@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe API::MergeTrains do
+RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:developer) { create(:user) }
   let_it_be(:guest) { create(:user) }

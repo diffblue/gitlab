@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Ci::Runner do
+RSpec.describe API::Ci::Runner, feature_category: :runner do
   let_it_be_with_reload(:project) { create(:project, :repository) }
 
   let_it_be(:user) { create(:user) }

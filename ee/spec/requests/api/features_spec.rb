@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Features, stub_feature_flags: false do
+RSpec.describe API::Features, stub_feature_flags: false, feature_category: :feature_flags do
   include EE::GeoHelpers
 
   let_it_be(:admin) { create(:admin) }

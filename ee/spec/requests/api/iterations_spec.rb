@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Iterations do
+RSpec.describe API::Iterations, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
   let_it_be(:parent_group) { create(:group, :private) }
   let_it_be(:group) { create(:group, :private, parent: parent_group) }

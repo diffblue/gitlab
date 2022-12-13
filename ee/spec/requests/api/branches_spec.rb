@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Branches do
+RSpec.describe API::Branches, feature_category: :source_code_management do
   describe 'PUT /projects/:id/repository/branches/:branch/protect' do
     context 'when authenticated', 'as a maintainer' do
       let(:user) { create(:user) }

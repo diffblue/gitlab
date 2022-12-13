@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Ci::Jobs do
+RSpec.describe API::Ci::Jobs, feature_category: :continuous_integration do
   let_it_be(:project) do
     create(:project, :repository, public_builds: false)
   end

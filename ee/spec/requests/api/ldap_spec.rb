@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Ldap do
+RSpec.describe API::Ldap, feature_category: :authentication_and_authorization do
   include ApiHelpers
   include LdapHelpers
 

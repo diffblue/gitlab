@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::EpicLinks do
+RSpec.describe API::EpicLinks, feature_category: :portfolio_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:other_group) { create(:group) }
   let_it_be(:ancestor) { create(:group) }

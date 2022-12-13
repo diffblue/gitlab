@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::CaptchaCheck do
+RSpec.describe API::CaptchaCheck, feature_category: :authentication_and_authorization do
   let_it_be(:username) { 'TestCaptcha' }
   let_it_be(:email) { 'test_email@email.com' }
   let_it_be_with_reload(:user) { create(:user, username: username, email: email) }

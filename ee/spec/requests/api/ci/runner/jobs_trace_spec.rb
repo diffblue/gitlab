@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Ci::Runner, :clean_gitlab_redis_shared_state do
+RSpec.describe API::Ci::Runner, :clean_gitlab_redis_shared_state, feature_category: :runner do
   let_it_be(:minutes_used) { 95 + Ci::Minutes::TrackLiveConsumptionService::CONSUMPTION_THRESHOLD.abs }
   let_it_be(:group) { create(:group, :with_ci_minutes, ci_minutes_limit: 100, ci_minutes_used: minutes_used) }
   let_it_be(:project) { create(:project, :private, namespace: group, shared_runners_enabled: true) }

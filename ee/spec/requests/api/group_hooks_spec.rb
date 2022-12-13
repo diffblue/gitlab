@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::GroupHooks, :aggregate_failures do
+RSpec.describe API::GroupHooks, :aggregate_failures, feature_category: :integrations do
   let_it_be(:group_admin) { create(:user) }
   let_it_be(:non_admin_user) { create(:user) }
   let_it_be(:group) { create(:group) }

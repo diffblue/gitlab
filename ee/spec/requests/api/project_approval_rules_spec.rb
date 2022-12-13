@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::ProjectApprovalRules do
+RSpec.describe API::ProjectApprovalRules, feature_category: :source_code_management do
   let_it_be(:group) { create(:group_with_members) }
   let_it_be(:user) { create(:user) }
   let_it_be(:user2) { create(:user) }

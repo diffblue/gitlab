@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe API::SamlGroupLinks, api: true do
+RSpec.describe API::SamlGroupLinks, api: true, feature_category: :authentication_and_authorization do
   include ApiHelpers
 
   let_it_be(:owner) { create(:user) }

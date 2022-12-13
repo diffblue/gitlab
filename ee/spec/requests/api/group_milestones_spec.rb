@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::GroupMilestones do
+RSpec.describe API::GroupMilestones, feature_category: :team_planning do
   let(:user) { create(:user) }
   let(:group) { create(:group, :private) }
   let(:project) { create(:project, namespace: group) }

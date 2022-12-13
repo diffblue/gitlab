@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::ResourceLabelEvents do
+RSpec.describe API::ResourceLabelEvents, feature_category: :portfolio_management do
   let_it_be(:user) { create(:user) }
 
   before do

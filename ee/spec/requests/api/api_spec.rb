@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::API do
+RSpec.describe API::API, feature_category: :authentication_and_authorization do
   describe 'logging', :aggregate_failures do
     let_it_be(:project) { create(:project, :public) }
     let_it_be(:user) { project.first_owner }

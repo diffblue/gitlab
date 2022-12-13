@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Projects do
+RSpec.describe API::Projects, feature_category: :projects do
   include ExternalAuthorizationServiceHelpers
   include StubRequests
 

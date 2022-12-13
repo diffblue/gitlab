@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::ProtectedTags do
+RSpec.describe API::ProtectedTags, feature_category: :source_code_management do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:user) { create(:user, maintainer_projects: [project]) }
 

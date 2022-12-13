@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::MergeRequestApprovalSettings do
+RSpec.describe API::MergeRequestApprovalSettings, feature_category: :source_code_management do
   let_it_be_with_reload(:group) { create(:group) }
   let_it_be(:user) { create(:user) }
   let_it_be_with_reload(:project) { create(:project, group: group) }

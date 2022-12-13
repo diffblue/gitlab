@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Analytics::ProjectDeploymentFrequency do
+RSpec.describe API::Analytics::ProjectDeploymentFrequency, feature_category: :value_stream_management do
   let_it_be(:group) { create(:group, :private) }
   let_it_be(:project) { create(:project, :repository, namespace: group) }
   let_it_be(:prod) { create(:environment, project: project, name: "prod") }

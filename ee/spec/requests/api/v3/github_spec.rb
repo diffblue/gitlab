@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::V3::Github do
+RSpec.describe API::V3::Github, feature_category: :integrations do
   describe 'GET /repos/:namespace/:project/pulls' do
     let_it_be(:private_group) { create(:group, :private) }
     let_it_be(:ip_restriction) { create(:ip_restriction, group: private_group) }

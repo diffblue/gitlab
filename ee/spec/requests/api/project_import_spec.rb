@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::ProjectImport do
+RSpec.describe API::ProjectImport, feature_category: :importers do
   include ExternalAuthorizationServiceHelpers
   include WorkhorseHelpers
 

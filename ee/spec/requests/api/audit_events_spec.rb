@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::AuditEvents do
+RSpec.describe API::AuditEvents, feature_category: :audit_events do
   describe 'Unique usage tracking', :clean_gitlab_redis_shared_state do
     let_it_be(:current_user) { create(:admin) }
     let_it_be(:group) { create(:group, owner_id: current_user) }
