@@ -14,6 +14,11 @@ module Types
 
       field :iid, GraphQL::Types::ID, null: false, description: 'Internal ID of the requirement.'
 
+      field :work_item_iid, GraphQL::Types::ID, null: false,
+                                                method: :work_item_iid,
+                                                description: 'Work item IID of the requirement, '\
+                                                             'will replace current IID as identifier soon.'
+
       field :title, GraphQL::Types::String, null: true, description: 'Title of the requirement.'
 
       field :title_html, GraphQL::Types::String,
@@ -82,6 +87,10 @@ module Types
 
       def author
         Gitlab::Graphql::Loaders::BatchModelLoader.new(User, object.author_id).find
+      end
+
+      def work_item_iid
+        object.requirement_issue.iid
       end
     end
   end

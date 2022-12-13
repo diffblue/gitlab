@@ -76,6 +76,7 @@ RSpec.describe 'getting a requirement list for a project' do
             descriptionHtml
             createdAt
             updatedAt
+            workItemIid
             author {
               name
             }
