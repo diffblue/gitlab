@@ -5,10 +5,6 @@ class Groups::Security::DashboardController < Groups::ApplicationController
   feature_category :vulnerability_management
   urgency :low
 
-  before_action do
-    push_frontend_feature_flag(:vulnerability_management_survey, type: :ops)
-  end
-
   def show
     render :unavailable unless dashboard_available?
   end

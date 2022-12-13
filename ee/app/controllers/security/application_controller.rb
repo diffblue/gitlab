@@ -4,10 +4,6 @@ module Security
   class ApplicationController < ::ApplicationController
     include SecurityDashboardsPermissions
 
-    before_action do
-      push_frontend_feature_flag(:vulnerability_management_survey, type: :ops)
-    end
-
     feature_category :vulnerability_management
     urgency :low
 

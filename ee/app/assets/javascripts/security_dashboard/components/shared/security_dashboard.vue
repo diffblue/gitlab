@@ -1,11 +1,10 @@
 <script>
 import { s__ } from '~/locale';
-import SurveyRequestBanner from './survey_request_banner.vue';
 import VulnerabilitiesOverTimeChart from './vulnerabilities_over_time_chart.vue';
 import VulnerabilitySeverities from './project_security_status_chart.vue';
 
 export default {
-  components: { SurveyRequestBanner, VulnerabilitiesOverTimeChart, VulnerabilitySeverities },
+  components: { VulnerabilitiesOverTimeChart, VulnerabilitySeverities },
   props: {
     historyQuery: {
       type: Object,
@@ -24,7 +23,6 @@ export default {
 
 <template>
   <div>
-    <survey-request-banner class="gl-mt-5" />
     <h2 class="gl-mb-6">{{ $options.i18n.title }}</h2>
 
     <div class="security-charts gl-display-grid">

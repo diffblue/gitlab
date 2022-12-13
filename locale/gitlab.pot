@@ -37337,9 +37337,6 @@ msgstr ""
 msgid "SecurityReports|Although it's rare to have no vulnerabilities, it can happen. Check your settings to make sure you've set up your dashboard correctly."
 msgstr ""
 
-msgid "SecurityReports|At GitLab, we're all about iteration and feedback. That's why we are reaching out to customers like you to help guide what we work on this year for Vulnerability Management. We have a lot of exciting ideas and ask that you assist us by taking a short survey %{boldStart}no longer than 10 minutes%{boldEnd} to evaluate a few of our potential features."
-msgstr ""
-
 msgid "SecurityReports|Change status"
 msgstr ""
 
@@ -37559,9 +37556,6 @@ msgstr ""
 msgid "SecurityReports|Submit vulnerability"
 msgstr ""
 
-msgid "SecurityReports|Take survey"
-msgstr ""
-
 msgid "SecurityReports|The Vulnerability Report shows results of successful scans on your project's default branch, manually added vulnerability records, and vulnerabilities found from scanning operational environments. %{linkStart}Learn more.%{linkEnd}"
 msgstr ""
 
@@ -37619,9 +37613,6 @@ msgstr ""
 msgid "SecurityReports|Upgrade to manage vulnerabilities"
 msgstr ""
 
-msgid "SecurityReports|Vulnerability Management feature survey"
-msgstr ""
-
 msgid "SecurityReports|Vulnerability Report"
 msgstr ""
 
@@ -37638,9 +37629,6 @@ msgid "SecurityReports|You do not have sufficient permissions to access this rep
 msgstr ""
 
 msgid "SecurityReports|You must sign in as an authorized user to see this report"
-msgstr ""
-
-msgid "SecurityReports|Your feedback is important to us! We will ask again in a week."
 msgstr ""
 
 msgid "SecurityReports|scanned resources"
