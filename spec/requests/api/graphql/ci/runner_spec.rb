@@ -484,6 +484,9 @@ RSpec.describe 'Query.runner(id)', feature_category: :runner_fleet do
           groups {
             nodes {
               id
+              path
+              fullPath
+              webUrl
             }
           }
           projects {
