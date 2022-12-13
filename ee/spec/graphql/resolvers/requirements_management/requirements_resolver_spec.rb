@@ -34,12 +34,36 @@ RSpec.describe Resolvers::RequirementsManagement::RequirementsResolver do
         expect(resolve_requirements(state: 'archived')).to contain_exactly(requirement2, requirement3)
       end
 
-      it 'filters by iid' do
-        expect(resolve_requirements(iid: requirement1.iid)).to contain_exactly(requirement1)
-      end
+      describe 'filtering by requirement (legacy) iid or work_item_iid' do
+        it 'filters by requirement iid' do
+          expect(resolve_requirements(iid: requirement1.iid)).to contain_exactly(requirement1)
+        end
 
-      it 'filters by iids' do
-        expect(resolve_requirements(iids: [requirement1.iid, requirement3.iid])).to contain_exactly(requirement1, requirement3)
+        it 'filters by requirement iids' do
+          expect(resolve_requirements(iids: [requirement1.iid, requirement3.iid])).to contain_exactly(requirement1, requirement3)
+        end
+
+        it 'filters by work_item_iid' do
+          expect(resolve_requirements(work_item_iid: requirement1.requirement_issue.iid)).to contain_exactly(requirement1)
+        end
+
+        it 'filters by work_item_iids' do
+          expect(resolve_requirements(work_item_iids: [requirement1.requirement_issue.iid, requirement3.requirement_issue.iid])).to contain_exactly(requirement1, requirement3)
+        end
+
+        describe 'iid filter combinations' do
+          it 'returns an empty set for an impossible query' do
+            expect(resolve_requirements(work_item_iids: [requirement1.requirement_issue.iid], iid: requirement3.iid)).to be_empty
+          end
+
+          it 'returns the intersection set of given iids' do
+            expect(resolve_requirements(work_item_iids: [requirement1.requirement_issue.iid], iids: [requirement1.iid, requirement3.iid])).to contain_exactly(requirement1)
+          end
+
+          it 'treats empty query values as "any"' do
+            expect(resolve_requirements(work_item_iids: [requirement1.requirement_issue.iid], iids: [])).to contain_exactly(requirement1)
+          end
+        end
       end
 
       it 'preloads correct latest test report' do
