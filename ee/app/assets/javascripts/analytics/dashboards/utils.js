@@ -1,4 +1,5 @@
 import { isNumeric } from '~/lib/utils/number_utils';
+import { formatDate } from '~/lib/utils/datetime_utility';
 import { fetchMetricsData } from '~/analytics/shared/utils';
 import { METRICS_REQUESTS } from '~/analytics/cycle_analytics/constants';
 import { DORA_METRICS } from './constants';
@@ -77,7 +78,7 @@ export const hasDoraMetricValues = (timePeriods) =>
 export const generateDoraTimePeriodComparisonTable = (timePeriods) => {
   const doraMetrics = Object.entries(DORA_METRICS);
   return doraMetrics.map(([identifier, { label, formatValue, invertTrendColor }]) => {
-    const data = { metric: { value: label } };
+    const data = { metric: { identifier, value: label } };
     timePeriods.forEach((timePeriod, index) => {
       // The last timePeriod is not rendered, we just use it
       // to determine the % change for the 2nd last timePeriod
@@ -100,3 +101,39 @@ export const generateDoraTimePeriodComparisonTable = (timePeriods) => {
     return data;
   });
 };
+
+/**
+ * Takes N time periods of DORA metrics and sorts the data into an
+ * object of timeseries arrays, per metric.
+ *
+ * @param {Array} timePeriods - Array of the DORA metrics for different time periods
+ * @returns {Object} object containing a timeseries of values for each metric
+ */
+export const generateSparklineCharts = (timePeriods) =>
+  Object.entries(DORA_METRICS).reduce(
+    (acc, [identifier, { chartUnits }]) =>
+      Object.assign(acc, {
+        [identifier]: {
+          tooltipLabel: chartUnits,
+          data: timePeriods.map((timePeriod) => [
+            `${formatDate(timePeriod.start, 'mmm d')} - ${formatDate(timePeriod.end, 'mmm d')}`,
+            timePeriod[identifier].value,
+          ]),
+        },
+      }),
+    {},
+  );
+
+/**
+ * Merges the results of `generateDoraTimePeriodComparisonTable` and `generateSparklineCharts`
+ * into a new array for the comparison table.
+ *
+ * @param {Array} tableData - Table rows created by `generateDoraTimePeriodComparisonTable`
+ * @param {Object} chartData - Charts object created by `generateSparklineCharts`
+ * @returns {Array} A copy of tableData with `chart` added in each row
+ */
+export const mergeSparklineCharts = (tableData, chartData) =>
+  tableData.map((row) => {
+    const chart = chartData[row.metric.identifier];
+    return chart ? { ...row, chart } : row;
+  });

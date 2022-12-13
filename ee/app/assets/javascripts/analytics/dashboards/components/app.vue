@@ -8,11 +8,15 @@ import {
   DASHBOARD_LOADING_FAILURE,
   DASHBOARD_NO_DATA,
   DASHBOARD_TIME_PERIODS,
+  CHART_TIME_PERIODS,
+  CHART_LOADING_FAILURE,
 } from '../constants';
 import {
   fetchDoraMetrics,
   hasDoraMetricValues,
   generateDoraTimePeriodComparisonTable,
+  generateSparklineCharts,
+  mergeSparklineCharts,
 } from '../utils';
 import DoraComparisonTable from './dora_comparison_table.vue';
 
@@ -35,40 +39,67 @@ export default {
   },
   data() {
     return {
-      data: [],
-      loading: false,
+      tableData: [],
+      chartData: {},
+      loadingTable: false,
     };
   },
   computed: {
     hasData() {
-      return Boolean(this.data.length);
+      return Boolean(this.allData.length);
+    },
+    hasChartData() {
+      return Boolean(Object.keys(this.chartData).length);
+    },
+    allData() {
+      return this.hasChartData
+        ? mergeSparklineCharts(this.tableData, this.chartData)
+        : this.tableData;
     },
     description() {
       const { groupName } = this;
       return sprintf(this.$options.i18n.description, { groupName });
     },
+    requestPath() {
+      return `groups/${this.groupFullPath}`;
+    },
   },
   mounted() {
-    this.fetchData();
+    this.fetchTableData();
   },
   methods: {
-    fetchData() {
-      this.loading = true;
+    fetchTableData() {
+      this.loadingTable = true;
 
       fetchDoraMetrics({
         timePeriods: DASHBOARD_TIME_PERIODS,
-        requestPath: `groups/${this.groupFullPath}`,
+        requestPath: this.requestPath,
       })
         .then((response) => {
-          this.data = hasDoraMetricValues(response)
-            ? generateDoraTimePeriodComparisonTable(response)
-            : [];
+          if (hasDoraMetricValues(response)) {
+            this.tableData = generateDoraTimePeriodComparisonTable(response);
+            this.fetchChartData();
+          }
         })
         .catch(() => {
           createAlert({ message: DASHBOARD_LOADING_FAILURE });
         })
         .finally(() => {
-          this.loading = false;
+          this.loadingTable = false;
+        });
+    },
+    fetchChartData() {
+      fetchDoraMetrics({
+        timePeriods: CHART_TIME_PERIODS,
+        requestPath: this.requestPath,
+      })
+        .then((response) => {
+          if (hasDoraMetricValues(response)) {
+            this.chartData = generateSparklineCharts(response);
+          }
+        })
+        .catch(() => {
+          createAlert({ message: CHART_LOADING_FAILURE });
         });
     },
   },
@@ -83,8 +114,8 @@ export default {
   <div>
     <h1 class="page-title">{{ $options.i18n.title }}</h1>
     <h4>{{ description }}</h4>
-    <gl-skeleton-loader v-if="loading" />
-    <dora-comparison-table v-else-if="hasData" :data="data" />
+    <gl-skeleton-loader v-if="loadingTable" />
+    <dora-comparison-table v-else-if="hasData" :table-data="allData" />
     <gl-alert v-else variant="info" :dismissible="false">{{ $options.i18n.noData }}</gl-alert>
   </div>
 </template>

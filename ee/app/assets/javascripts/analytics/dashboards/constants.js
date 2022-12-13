@@ -1,5 +1,6 @@
 import { s__, __ } from '~/locale';
 import { days, percentHundred } from '~/lib/utils/unit_format';
+import { thWidthPercent } from '~/lib/utils/table_utility';
 import {
   getStartOfDay,
   dateAtFirstDayOfMonth,
@@ -20,35 +21,50 @@ import {
   DEPLOYS_METRIC_TYPE,
 } from '~/api/analytics_api';
 
+const UNITS = {
+  PER_DAY: {
+    chartUnits: __('/day'),
+    formatValue: (value) => days(value, 1, { unitSeparator: '/' }),
+  },
+  DAYS: {
+    chartUnits: __('days'),
+    formatValue: (value) => days(value, 1, { unitSeparator: ' ' }),
+  },
+  PERCENT: {
+    chartUnits: '%',
+    formatValue: (value) => percentHundred(value, 2),
+  },
+};
+
 export const DORA_METRICS = {
   [DEPLOYMENT_FREQUENCY_METRIC_TYPE]: {
     label: s__('DORA4Metrics|Deployment Frequency'),
-    formatValue: (value) => days(value, 1, { unitSeparator: '/' }),
+    ...UNITS.PER_DAY,
   },
   [LEAD_TIME_FOR_CHANGES]: {
     label: s__('DORA4Metrics|Lead Time for Changes'),
     invertTrendColor: true,
-    formatValue: (value) => days(value, 1, { unitSeparator: ' ' }),
+    ...UNITS.DAYS,
   },
   [TIME_TO_RESTORE_SERVICE]: {
     label: s__('DORA4Metrics|Time to Restore Service'),
     invertTrendColor: true,
-    formatValue: (value) => days(value, 1, { unitSeparator: ' ' }),
+    ...UNITS.DAYS,
   },
   [CHANGE_FAILURE_RATE]: {
     label: s__('DORA4Metrics|Change Failure Rate'),
     invertTrendColor: true,
-    formatValue: (value) => percentHundred(value, 2),
+    ...UNITS.PERCENT,
   },
   [LEAD_TIME_METRIC_TYPE]: {
     label: s__('DORA4Metrics|Lead time'),
     invertTrendColor: true,
-    formatValue: (value) => days(value, 1, { unitSeparator: ' ' }),
+    ...UNITS.DAYS,
   },
   [CYCLE_TIME_METRIC_TYPE]: {
     label: s__('DORA4Metrics|Cycle time'),
     invertTrendColor: true,
-    formatValue: (value) => days(value, 1, { unitSeparator: ' ' }),
+    ...UNITS.DAYS,
   },
   [ISSUES_METRIC_TYPE]: {
     label: s__('DORA4Metrics|New issues'),
@@ -64,6 +80,7 @@ export const DASHBOARD_TITLE = __('DevOps metrics comparison (Alpha)');
 export const DASHBOARD_DESCRIPTION = s__('DORA4Metrics|DORA metrics for %{groupName} group');
 export const DASHBOARD_NO_DATA = __('No data available');
 export const DASHBOARD_LOADING_FAILURE = __('Failed to load');
+export const CHART_LOADING_FAILURE = s__('DORA4Metrics|Failed to load charts');
 
 const NOW = new Date();
 const CURRENT_MONTH_START = getStartOfDay(dateAtFirstDayOfMonth(NOW));
@@ -75,6 +92,7 @@ export const THIS_MONTH = {
   label: s__('DORA4Metrics|Month to date'),
   start: CURRENT_MONTH_START,
   end: NOW,
+  thClass: thWidthPercent(20),
 };
 
 export const LAST_MONTH = {
@@ -82,6 +100,7 @@ export const LAST_MONTH = {
   label: monthInWords(nMonthsBefore(NOW, 1)),
   start: PREVIOUS_MONTH_START,
   end: PREVIOUS_MONTH_END,
+  thClass: thWidthPercent(20),
 };
 
 export const TWO_MONTHS_AGO = {
@@ -89,6 +108,7 @@ export const TWO_MONTHS_AGO = {
   label: monthInWords(nMonthsBefore(NOW, 2)),
   start: nMonthsBefore(PREVIOUS_MONTH_START, 1),
   end: nSecondsBefore(PREVIOUS_MONTH_START, 1),
+  thClass: thWidthPercent(20),
 };
 
 export const THREE_MONTHS_AGO = {
@@ -99,7 +119,26 @@ export const THREE_MONTHS_AGO = {
 };
 
 export const DASHBOARD_TIME_PERIODS = [THIS_MONTH, LAST_MONTH, TWO_MONTHS_AGO, THREE_MONTHS_AGO];
+
+// Generate the chart time periods, starting with the oldest first:
+// 5 months ago -> 4 months ago -> etc.
+export const CHART_TIME_PERIODS = [5, 4, 3, 2, 1, 0].map((monthsAgo) => ({
+  end: monthsAgo === 0 ? NOW : nMonthsBefore(NOW, monthsAgo),
+  start: nMonthsBefore(NOW, monthsAgo + 1),
+}));
+
 export const DASHBOARD_TABLE_FIELDS = [
-  { key: 'metric', label: __('Metric') },
+  {
+    key: 'metric',
+    label: __('Metric'),
+    thClass: thWidthPercent(25),
+  },
   ...DASHBOARD_TIME_PERIODS.slice(0, -1),
+  {
+    key: 'chart',
+    label: s__('DORA4Metrics|Past 6 Months'),
+    start: nMonthsBefore(NOW, 6),
+    end: NOW,
+    thClass: thWidthPercent(15),
+  },
 ];
