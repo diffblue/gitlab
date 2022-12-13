@@ -1,5 +1,5 @@
 minio 2022-07-15T03-44-22Z
-nodejs 16.15.0
+nodejs 18.16.0
 postgres 13.9 12.13
 redis 6.2.7
 ruby 3.0.5
