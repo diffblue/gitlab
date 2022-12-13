@@ -41,11 +41,10 @@ class GeoNode < ApplicationRecord
   validate :require_current_node_to_be_primary, if: :secondary?
   validate :require_hashed_storage, on: :create
 
-  after_save :expire_cache!
-  after_destroy :expire_cache!
-
   before_validation :update_dependents_attributes
   before_validation :ensure_access_keys!
+  after_destroy :expire_cache!
+  after_save :expire_cache!
 
   alias_method :repair, :save # the `update_dependents_attributes` hook will take care of it
 

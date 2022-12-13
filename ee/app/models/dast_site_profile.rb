@@ -28,6 +28,7 @@ class DastSiteProfile < ApplicationRecord
   scope :with_project_id, -> (project_id) { where(project_id: project_id) }
   scope :with_project, -> { includes(:project) }
 
+  before_save :ensure_scan_file_path
   after_destroy :cleanup_dast_site
 
   enum target_type: { website: 0, api: 1 }
@@ -42,8 +43,6 @@ class DastSiteProfile < ApplicationRecord
                                graphql: 'DAST_API_GRAPHQL' }.with_indifferent_access.freeze
 
   sanitizes! :name, :scan_file_path
-
-  before_save :ensure_scan_file_path
 
   def self.names(site_profile_ids)
     find(*site_profile_ids).pluck(:name)
