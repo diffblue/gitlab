@@ -97,7 +97,8 @@ export default {
     },
     mappedCoverages() {
       return this.dailyCoverageData?.map((item, index) => ({
-        // Convert index to string to get normal items instead of group headers
+        // A numerical index makes an item into a group header, so
+        // convert these to strings to get non-header GlListbox items
         value: index.toString(),
         text: item.group_name,
       }));
