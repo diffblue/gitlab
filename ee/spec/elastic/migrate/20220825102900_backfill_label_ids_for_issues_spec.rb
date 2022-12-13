@@ -4,7 +4,7 @@ require 'spec_helper'
 require_relative 'migration_shared_examples'
 require File.expand_path('ee/elastic/migrate/20220825102900_backfill_label_ids_for_issues.rb')
 
-RSpec.describe BackfillLabelIdsForIssues, :elastic, :sidekiq_inline do
+RSpec.describe BackfillLabelIdsForIssues, :elastic_clean, :sidekiq_inline, feature_category: :global_search do
   let(:version) { 20220825102900 }
 
   include_examples 'migration backfills fields' do
