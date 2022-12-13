@@ -3474,6 +3474,27 @@ Input type: `IssueSetWeightInput`
 | <a id="mutationissuesetweighterrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationissuesetweightissue"></a>`issue` | [`Issue`](#issue) | Issue after mutation. |
 
+### `Mutation.issueUnlinkAlert`
+
+Input type: `IssueUnlinkAlertInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationissueunlinkalertalertid"></a>`alertId` | [`AlertManagementAlertID!`](#alertmanagementalertid) | Global ID of the alert to unlink from the incident. |
+| <a id="mutationissueunlinkalertclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationissueunlinkalertiid"></a>`iid` | [`String!`](#string) | IID of the issue to mutate. |
+| <a id="mutationissueunlinkalertprojectpath"></a>`projectPath` | [`ID!`](#id) | Project the issue to mutate is in. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationissueunlinkalertclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationissueunlinkalerterrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationissueunlinkalertissue"></a>`issue` | [`Issue`](#issue) | Issue after mutation. |
+
 ### `Mutation.iterationCadenceCreate`
 
 Input type: `IterationCadenceCreateInput`
@@ -23108,6 +23129,12 @@ This schema includes custom scalar types for identifiers, with a specific type f
 each kind of object.
 
 For more information, read about [Scalar Types](https://graphql.org/learn/schema/#scalar-types) on `graphql.org`.
+
+### `AlertManagementAlertID`
+
+A `AlertManagementAlertID` is a global ID. It is encoded as a string.
+
+An example `AlertManagementAlertID` is: `"gid://gitlab/AlertManagement::Alert/1"`.
 
 ### `AlertManagementHttpIntegrationID`
 
