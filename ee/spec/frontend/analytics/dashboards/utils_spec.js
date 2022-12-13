@@ -3,6 +3,8 @@ import {
   extractDoraMetrics,
   hasDoraMetricValues,
   generateDoraTimePeriodComparisonTable,
+  generateSparklineCharts,
+  mergeSparklineCharts,
 } from 'ee/analytics/dashboards/utils';
 import {
   DEPLOYMENT_FREQUENCY_METRIC_TYPE,
@@ -24,6 +26,8 @@ import {
   mockThreeMonthsAgoTimePeriod,
   mockComparativeTableData,
   mockMonthToDateApiResponse,
+  mockChartsTimePeriods,
+  mockChartData,
 } from './mock_data';
 
 describe('Analytics Dashboards utils', () => {
@@ -59,6 +63,31 @@ describe('Analytics Dashboards utils', () => {
 
     it('calculates the changes between the 2 time periods', () => {
       expect(res).toEqual(mockComparativeTableData);
+    });
+  });
+
+  describe('generateSparklineCharts', () => {
+    let res = {};
+
+    beforeEach(() => {
+      res = generateSparklineCharts(mockChartsTimePeriods);
+    });
+
+    it('returns the chart data for each metric', () => {
+      expect(res).toEqual(mockChartData);
+    });
+  });
+
+  describe('mergeSparklineCharts', () => {
+    it('returns the table data with the additive chart data', () => {
+      const chart = { data: [1, 2, 3] };
+      const rowNoChart = { metric: { identifier: 'noChart' } };
+      const rowWithChart = { metric: { identifier: 'withChart' } };
+
+      expect(mergeSparklineCharts([rowNoChart, rowWithChart], { withChart: chart })).toEqual([
+        rowNoChart,
+        { ...rowWithChart, chart },
+      ]);
     });
   });
 
