@@ -6,7 +6,7 @@ module QA
       module Project
         module Secure
           class LicenseCompliance < QA::Page::Base
-            include QA::Page::Component::Select2
+            include ::QA::Page::Component::Dropdown
 
             view 'ee/app/assets/javascripts/license_compliance/components/app.vue' do
               element :license_compliance_empty_state_description_content
@@ -31,10 +31,20 @@ module QA
               end
             end
 
-            def approve_license(license)
+            def add_and_enter_license(license)
               click_element(:license_add_button)
-              expand_select_list
-              search_and_select_exact(license)
+
+              if use_select2?
+                expand_select_list
+                search_and_select_exact(license)
+              else
+                # The digit after token-input- can vary, find by prefix
+                find_input_by_prefix_and_set('token-input-', license)
+              end
+            end
+
+            def approve_license(license)
+              add_and_enter_license(license)
               choose_element(:allowed_license_radio, true)
               click_element(:add_license_submit_button)
 
@@ -49,9 +59,7 @@ module QA
             end
 
             def deny_license(license)
-              click_element(:license_add_button)
-              expand_select_list
-              search_and_select_exact(license)
+              add_and_enter_license(license)
               choose_element(:denied_license_radio, true)
               click_element(:add_license_submit_button)
 

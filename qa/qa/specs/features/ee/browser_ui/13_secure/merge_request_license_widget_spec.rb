@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Secure', :runner, product_group: :composition_analysis, quarantine: {
-    issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/385137',
-    type: :investigating
-  } do
+  RSpec.describe 'Secure', :runner, product_group: :composition_analysis do
     describe 'License merge request widget' do
       let(:approved_license_name) { "MIT License" }
       let(:denied_license_name) { "zlib License" }
@@ -37,7 +34,7 @@ module QA
         end
 
         @project.visit!
-        Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
+        Flow::Pipeline.wait_for_latest_pipeline(status: 'passed', wait: 180)
 
         @merge_request = Resource::MergeRequest.fabricate_via_api! do |mr|
           mr.project = @project
@@ -95,7 +92,7 @@ module QA
         end
 
         @project.visit!
-        Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
+        Flow::Pipeline.wait_for_latest_pipeline(status: 'passed', wait: 180)
       end
 
       it 'manage licenses from the merge request',
