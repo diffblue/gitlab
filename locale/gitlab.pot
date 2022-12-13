@@ -26930,6 +26930,9 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
+msgid "Name can contain only letters, digits, emojis, '_', '.', '+', dashes, or spaces"
+msgstr ""
+
 msgid "Name can't be blank"
 msgstr ""
 
@@ -26937,6 +26940,9 @@ msgid "Name has already been taken"
 msgstr ""
 
 msgid "Name is already taken."
+msgstr ""
+
+msgid "Name must start with a letter, digit, emoji, or '_'"
 msgstr ""
 
 msgid "Name new label"
