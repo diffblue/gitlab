@@ -15,7 +15,7 @@ module Gitlab
         max_docs_shard_count: 5,
         ignore_patterns: [/migrations/],
         include_patterns: [],
-        index_pattern: 'gitlab*'
+        index_pattern: "gitlab-#{Rails.env}*"
       }.freeze
 
       attr_reader :settings
