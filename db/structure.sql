@@ -17172,21 +17172,6 @@ CREATE SEQUENCE keys_id_seq
 
 ALTER SEQUENCE keys_id_seq OWNED BY keys.id;
 
-CREATE TABLE known_slack_api_scopes (
-    id bigint NOT NULL,
-    name text NOT NULL,
-    CONSTRAINT check_041c51715f CHECK ((char_length(name) <= 100))
-);
-
-CREATE SEQUENCE known_slack_api_scopes_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE known_slack_api_scopes_id_seq OWNED BY known_slack_api_scopes.id;
-
 CREATE TABLE label_links (
     id integer NOT NULL,
     label_id integer,
@@ -21673,6 +21658,21 @@ CREATE SEQUENCE shards_id_seq
 
 ALTER SEQUENCE shards_id_seq OWNED BY shards.id;
 
+CREATE TABLE slack_api_scopes (
+    id bigint NOT NULL,
+    name text NOT NULL,
+    CONSTRAINT check_738678187a CHECK ((char_length(name) <= 100))
+);
+
+CREATE SEQUENCE slack_api_scopes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE slack_api_scopes_id_seq OWNED BY slack_api_scopes.id;
+
 CREATE TABLE slack_integrations (
     id integer NOT NULL,
     team_id character varying NOT NULL,
@@ -21689,21 +21689,6 @@ CREATE TABLE slack_integrations (
     CONSTRAINT check_c9ca9ae80d CHECK ((integration_id IS NOT NULL))
 );
 
-CREATE TABLE slack_integrations_authorized_scopes (
-    id bigint NOT NULL,
-    known_slack_api_scope_id bigint NOT NULL,
-    slack_integration_id bigint NOT NULL
-);
-
-CREATE SEQUENCE slack_integrations_authorized_scopes_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE slack_integrations_authorized_scopes_id_seq OWNED BY slack_integrations_authorized_scopes.id;
-
 CREATE SEQUENCE slack_integrations_id_seq
     START WITH 1
     INCREMENT BY 1
@@ -21712,6 +21697,21 @@ CREATE SEQUENCE slack_integrations_id_seq
     CACHE 1;
 
 ALTER SEQUENCE slack_integrations_id_seq OWNED BY slack_integrations.id;
+
+CREATE TABLE slack_integrations_scopes (
+    id bigint NOT NULL,
+    slack_api_scope_id bigint NOT NULL,
+    slack_integration_id bigint NOT NULL
+);
+
+CREATE SEQUENCE slack_integrations_scopes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE slack_integrations_scopes_id_seq OWNED BY slack_integrations_scopes.id;
 
 CREATE TABLE smartcard_identities (
     id bigint NOT NULL,
@@ -24193,8 +24193,6 @@ ALTER TABLE ONLY jira_tracker_data ALTER COLUMN id SET DEFAULT nextval('jira_tra
 
 ALTER TABLE ONLY keys ALTER COLUMN id SET DEFAULT nextval('keys_id_seq'::regclass);
 
-ALTER TABLE ONLY known_slack_api_scopes ALTER COLUMN id SET DEFAULT nextval('known_slack_api_scopes_id_seq'::regclass);
-
 ALTER TABLE ONLY label_links ALTER COLUMN id SET DEFAULT nextval('label_links_id_seq'::regclass);
 
 ALTER TABLE ONLY label_priorities ALTER COLUMN id SET DEFAULT nextval('label_priorities_id_seq'::regclass);
@@ -24551,9 +24549,11 @@ ALTER TABLE ONLY sentry_issues ALTER COLUMN id SET DEFAULT nextval('sentry_issue
 
 ALTER TABLE ONLY shards ALTER COLUMN id SET DEFAULT nextval('shards_id_seq'::regclass);
 
+ALTER TABLE ONLY slack_api_scopes ALTER COLUMN id SET DEFAULT nextval('slack_api_scopes_id_seq'::regclass);
+
 ALTER TABLE ONLY slack_integrations ALTER COLUMN id SET DEFAULT nextval('slack_integrations_id_seq'::regclass);
 
-ALTER TABLE ONLY slack_integrations_authorized_scopes ALTER COLUMN id SET DEFAULT nextval('slack_integrations_authorized_scopes_id_seq'::regclass);
+ALTER TABLE ONLY slack_integrations_scopes ALTER COLUMN id SET DEFAULT nextval('slack_integrations_scopes_id_seq'::regclass);
 
 ALTER TABLE ONLY smartcard_identities ALTER COLUMN id SET DEFAULT nextval('smartcard_identities_id_seq'::regclass);
 
@@ -26228,9 +26228,6 @@ ALTER TABLE ONLY jira_tracker_data
 ALTER TABLE ONLY keys
     ADD CONSTRAINT keys_pkey PRIMARY KEY (id);
 
-ALTER TABLE ONLY known_slack_api_scopes
-    ADD CONSTRAINT known_slack_api_scopes_pkey PRIMARY KEY (id);
-
 ALTER TABLE ONLY label_links
     ADD CONSTRAINT label_links_pkey PRIMARY KEY (id);
 
@@ -26873,11 +26870,14 @@ ALTER TABLE ONLY service_desk_settings
 ALTER TABLE ONLY shards
     ADD CONSTRAINT shards_pkey PRIMARY KEY (id);
 
-ALTER TABLE ONLY slack_integrations_authorized_scopes
-    ADD CONSTRAINT slack_integrations_authorized_scopes_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY slack_api_scopes
+    ADD CONSTRAINT slack_api_scopes_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY slack_integrations
     ADD CONSTRAINT slack_integrations_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY slack_integrations_scopes
+    ADD CONSTRAINT slack_integrations_scopes_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY smartcard_identities
     ADD CONSTRAINT smartcard_identities_pkey PRIMARY KEY (id);
@@ -28483,9 +28483,7 @@ CREATE INDEX index_authentication_events_on_provider ON authentication_events US
 
 CREATE INDEX index_authentication_events_on_user_and_ip_address_and_result ON authentication_events USING btree (user_id, ip_address, result);
 
-CREATE INDEX index_authorized_scopes_on_integration ON slack_integrations_authorized_scopes USING btree (slack_integration_id);
-
-CREATE INDEX index_authorized_scopes_on_scope ON slack_integrations_authorized_scopes USING btree (known_slack_api_scope_id);
+CREATE INDEX index_authorized_scopes_on_integration ON slack_integrations_scopes USING btree (slack_integration_id);
 
 CREATE INDEX index_award_emoji_on_awardable_type_and_awardable_id ON award_emoji USING btree (awardable_type, awardable_id);
 
@@ -29785,10 +29783,6 @@ CREATE INDEX index_keys_on_last_used_at ON keys USING btree (last_used_at DESC N
 
 CREATE INDEX index_keys_on_user_id ON keys USING btree (user_id);
 
-CREATE UNIQUE INDEX index_known_slack_api_scopes ON known_slack_api_scopes USING btree (name);
-
-CREATE UNIQUE INDEX index_known_slack_api_scopes_on_name_and_integration ON slack_integrations_authorized_scopes USING btree (known_slack_api_scope_id, slack_integration_id);
-
 CREATE UNIQUE INDEX index_kubernetes_namespaces_on_cluster_project_environment_id ON clusters_kubernetes_namespaces USING btree (cluster_id, project_id, environment_id);
 
 CREATE INDEX index_label_links_on_label_id_and_target_type ON label_links USING btree (label_id, target_type);
@@ -30952,6 +30946,10 @@ CREATE INDEX index_service_desk_settings_on_file_template_project_id ON service_
 CREATE UNIQUE INDEX index_shards_on_name ON shards USING btree (name);
 
 CREATE UNIQUE INDEX index_site_profile_secret_variables_on_site_profile_id_and_key ON dast_site_profile_secret_variables USING btree (dast_site_profile_id, key);
+
+CREATE UNIQUE INDEX index_slack_api_scopes_on_name ON slack_api_scopes USING btree (name);
+
+CREATE UNIQUE INDEX index_slack_api_scopes_on_name_and_integration ON slack_integrations_scopes USING btree (slack_api_scope_id, slack_integration_id);
 
 CREATE INDEX index_slack_integrations_on_integration_id ON slack_integrations USING btree (integration_id);
 
@@ -34997,9 +34995,6 @@ ALTER TABLE ONLY vulnerability_exports
 ALTER TABLE ONLY users_ops_dashboard_projects
     ADD CONSTRAINT fk_rails_9b4ebf005b FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY slack_integrations_authorized_scopes
-    ADD CONSTRAINT fk_rails_9b4f31f84e FOREIGN KEY (known_slack_api_scope_id) REFERENCES known_slack_api_scopes(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY project_incident_management_settings
     ADD CONSTRAINT fk_rails_9c2ea1b7dd FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
@@ -35239,6 +35234,9 @@ ALTER TABLE ONLY atlassian_identities
 
 ALTER TABLE ONLY serverless_domain_cluster
     ADD CONSTRAINT fk_rails_c09009dee1 FOREIGN KEY (pages_domain_id) REFERENCES pages_domains(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY slack_integrations_scopes
+    ADD CONSTRAINT fk_rails_c0e018a6fe FOREIGN KEY (slack_api_scope_id) REFERENCES slack_api_scopes(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY packages_npm_metadata
     ADD CONSTRAINT fk_rails_c0e5fce6f3 FOREIGN KEY (package_id) REFERENCES packages_packages(id) ON DELETE CASCADE;
@@ -35510,6 +35508,9 @@ ALTER TABLE ONLY alert_management_alert_user_mentions
 ALTER TABLE ONLY snippet_statistics
     ADD CONSTRAINT fk_rails_ebc283ccf1 FOREIGN KEY (snippet_id) REFERENCES snippets(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY slack_integrations_scopes
+    ADD CONSTRAINT fk_rails_ece1eb6772 FOREIGN KEY (slack_integration_id) REFERENCES slack_integrations(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY iterations_cadences
     ADD CONSTRAINT fk_rails_ece400c55a FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
@@ -35629,9 +35630,6 @@ ALTER TABLE ONLY external_approval_rules
 
 ALTER TABLE ONLY cluster_groups
     ADD CONSTRAINT fk_rails_fdb8648a96 FOREIGN KEY (cluster_id) REFERENCES clusters(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY slack_integrations_authorized_scopes
-    ADD CONSTRAINT fk_rails_fdc97d6acb FOREIGN KEY (slack_integration_id) REFERENCES slack_integrations(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY resource_label_events
     ADD CONSTRAINT fk_rails_fe91ece594 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;

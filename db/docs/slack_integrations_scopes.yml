@@ -1,5 +1,5 @@
 ---
-table_name: slack_integrations_authorized_scopes
+table_name: slack_integrations_scopes
 classes:
 - Integrations::SlackIntegrationsKnownApiScope
 feature_categories:
