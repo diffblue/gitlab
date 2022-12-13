@@ -89,7 +89,7 @@ RSpec.describe TrialRegistrationsController, feature_category: :authentication_a
     end
 
     before do
-      stub_application_setting(send_user_confirmation_email: true)
+      stub_application_setting_enum('email_confirmation_setting', 'hard')
     end
 
     subject(:post_create) { post :create, params: { user: user_params } }
