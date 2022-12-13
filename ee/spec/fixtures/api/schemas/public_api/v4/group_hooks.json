@@ -1,9 +1,6 @@
 {
   "type": "array",
   "items": {
-    "type": "object",
-    "properties" : {
-      "$ref": "./group_hook.json"
-    }
+    "$ref": "./group_hook.json"
   }
 }

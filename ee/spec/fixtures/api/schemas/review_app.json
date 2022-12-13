@@ -1,10 +1,18 @@
 {
   "type": "object",
-  "required": ["can_setup_review_app"],
+  "required": [
+    "can_setup_review_app"
+  ],
   "properties": {
-    "can_setup_review_app": { "type": "boolean" },
-    "all_clusters_empty": { "type": "boolean" },
-    "review_snippet": { "type": "string "}
+    "can_setup_review_app": {
+      "type": "boolean"
+    },
+    "all_clusters_empty": {
+      "type": "boolean"
+    },
+    "review_snippet": {
+      "type": "string"
+    }
   },
   "additionalProperties": false
 }
