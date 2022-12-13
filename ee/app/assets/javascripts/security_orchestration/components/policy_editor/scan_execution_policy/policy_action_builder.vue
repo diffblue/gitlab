@@ -3,10 +3,12 @@ import {
   GlButton,
   GlDropdown,
   GlDropdownItem,
+  GlForm,
   GlFormGroup,
   GlFormInput,
+  GlIcon,
   GlSprintf,
-  GlForm,
+  GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -31,7 +33,11 @@ export default {
     GlForm,
     GlFormGroup,
     GlFormInput,
+    GlIcon,
     GlSprintf,
+  },
+  directives: {
+    GlTooltip,
   },
   mixins: [glFeatureFlagsMixin()],
   props: {
@@ -115,7 +121,10 @@ export default {
   i18n: {
     selectedScannerProfilePlaceholder: s__('ScanExecutionPolicy|Select scanner profile'),
     selectedSiteProfilePlaceholder: s__('ScanExecutionPolicy|Select site profile'),
-    selectedTagsPlaceholder: s__('ScanExecutionPolicy|Select tags (if any)'),
+    selectedTagsPlaceholder: s__('ScanExecutionPolicy|Ex, tag-name-1, tag-name-2'),
+    selectedTagsInformation: s__(
+      'ScanExecutionPolicy|If the field is empty, the runner will be automatically selected',
+    ),
   },
 };
 </script>
@@ -184,6 +193,12 @@ export default {
               data-testid="policy-tags-input"
             />
           </gl-form-group>
+          <gl-icon
+            v-gl-tooltip
+            name="question-o"
+            :title="$options.i18n.selectedTagsInformation"
+            class="gl-text-blue-600"
+          />
         </template>
       </gl-sprintf>
     </gl-form>
