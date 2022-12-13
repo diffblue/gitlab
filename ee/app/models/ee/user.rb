@@ -466,6 +466,8 @@ module EE
     end
 
     def read_code_for?(project)
+      return unless ::Feature.enabled?(:customizable_roles_per_user, self)
+
       roles = preloaded_member_roles_for_projects([project])[project.id]
       roles&.include?(:read_code)
     end

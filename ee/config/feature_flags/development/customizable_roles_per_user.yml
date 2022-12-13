@@ -1,0 +1,8 @@
+---
+name: customizable_roles_per_user
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/106824
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/372548
+milestone: '15.7'
+type: development
+group: group::authentication and authorization
+default_enabled: false

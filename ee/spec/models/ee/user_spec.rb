@@ -1980,6 +1980,16 @@ RSpec.describe User do
         expect(user.read_code_for?(project)).to be true
       end
     end
+
+    context 'when user based feature flag is disabled' do
+      before do
+        stub_feature_flags(customizable_roles_per_user: false)
+      end
+
+      it 'does not return anything' do
+        expect(user.read_code_for?(project)).to be_nil
+      end
+    end
   end
 
   describe '#preloaded_member_roles_for_projects' do
