@@ -188,7 +188,7 @@ module EE
 
     def gitlab_com_snippet_db_search?
       @current_user &&
-        @show_snippets &&
+        search_service.show_snippets? &&
         ::Gitlab.com? &&
         ::Gitlab::CurrentSettings.search_using_elasticsearch?(scope: nil)
     end

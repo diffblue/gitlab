@@ -2,14 +2,19 @@
 
 require 'spec_helper'
 
-RSpec.describe 'search/_category' do
+RSpec.describe 'search/_category', feature_category: :global_search do
   let_it_be(:group) { create(:group) }
 
   context 'feature flags' do
     using RSpec::Parameterized::TableSyntax
 
+    let(:search_service) do
+      instance_double(SearchService, show_snippets?: false, show_elasticsearch_tabs?: true, show_epics?: false)
+    end
+
     before do
       stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+      assign(:search_service, search_service)
     end
 
     where(:feature_flag, :tab_name) do
@@ -18,6 +23,7 @@ RSpec.describe 'search/_category' do
       :global_search_merge_requests_tab | 'Merge requests'
       :global_search_wiki_tab           | 'Wiki'
       :global_search_commits_tab        | 'Commits'
+      :global_search_users_tab          | 'Users'
     end
 
     with_them do
