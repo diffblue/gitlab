@@ -3,7 +3,7 @@
 require 'spec_helper'
 require_migration!
 
-RSpec.describe UpdateGitlabSubscriptionsStartAtPostEoa do
+RSpec.describe UpdateGitlabSubscriptionsStartAtPostEoa, feature_category: :purchase do
   let(:migration) { described_class.new }
   let(:eoa_rollout_date) { described_class::GitlabSubscription::EOA_ROLLOUT_DATE.to_date }
 

@@ -3,7 +3,8 @@
 require 'spec_helper'
 require_migration!
 
-RSpec.describe RemoveScheduleAndStatusNullConstraintsFromPendingEscalationsAlert, :migration, schema: 20210721174441 do
+RSpec.describe RemoveScheduleAndStatusNullConstraintsFromPendingEscalationsAlert, :migration, schema: 20210721174441,
+                                                                                              feature_category: :incident_management do
   let(:namespaces) { table(:namespaces) }
   let(:projects) { table(:projects) }
   let(:schedules) { table(:incident_management_oncall_schedules) }

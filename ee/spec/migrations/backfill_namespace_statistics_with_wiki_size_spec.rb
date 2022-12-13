@@ -3,7 +3,7 @@
 require 'spec_helper'
 require_migration!
 
-RSpec.describe BackfillNamespaceStatisticsWithWikiSize do
+RSpec.describe BackfillNamespaceStatisticsWithWikiSize, feature_category: :wiki do
   let!(:shards) { table(:shards) }
   let!(:shard) { shards.create!(id: 1, name: 'default') }
   let!(:groups) { table(:namespaces) }

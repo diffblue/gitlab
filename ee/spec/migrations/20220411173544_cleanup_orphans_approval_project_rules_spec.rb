@@ -3,7 +3,7 @@ require 'spec_helper'
 
 require_migration!
 
-RSpec.describe CleanupOrphansApprovalProjectRules do
+RSpec.describe CleanupOrphansApprovalProjectRules, feature_category: :source_code_management do
   let(:approval_project_rules) { table(:approval_project_rules) }
   let(:namespace) { table(:namespaces).create!(name: 'name', path: 'path') }
   let(:projects) { table(:projects) }

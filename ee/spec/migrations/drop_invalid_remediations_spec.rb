@@ -3,7 +3,7 @@
 require 'spec_helper'
 require_migration!
 
-RSpec.describe DropInvalidRemediations, :migration do
+RSpec.describe DropInvalidRemediations, :migration, feature_category: :vulnerability_management do
   let(:migration_name) { 'DropInvalidRemediations' }
 
   let(:remediations) { table(:vulnerability_findings_remediations) }

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 require_migration!
 
-RSpec.describe FixStateColumnInFileRegistry, :geo do
+RSpec.describe FixStateColumnInFileRegistry, :geo, feature_category: :geo_replication do
   let(:registry) { table(:file_registry) }
 
   it 'correctly sets registry state value' do
