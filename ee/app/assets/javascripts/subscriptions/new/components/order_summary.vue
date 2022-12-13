@@ -5,9 +5,11 @@ import { sprintf, s__ } from '~/locale';
 import { trackCheckout } from '~/google_tag_manager';
 import SummaryDetails from 'jh_else_ee/subscriptions/new/components/order_summary/summary_details.vue';
 import formattingMixins from '../formatting_mixins';
+import PromoCodeInput from './promo_code_input.vue';
 
 export default {
   components: {
+    PromoCodeInput,
     SummaryDetails,
     GlCard,
     GlIcon,
@@ -31,6 +33,7 @@ export default {
       'usersPresent',
       'isGroupSelected',
       'isSelectedGroupPresent',
+      'isEligibleToUsePromoCode',
     ]),
     titleWithName() {
       return sprintf(this.$options.i18n.title, { name: this.name });
@@ -67,7 +70,11 @@ export default {
     </div>
     <div class="gl-display-none gl-lg-display-block" data-qa-selector="order_summary">
       <h4 class="gl-my-0 gl-font-lg" data-qa-selector="title">{{ titleWithName }}</h4>
-      <summary-details class="gl-mt-6" />
+      <summary-details class="gl-mt-6">
+        <template v-if="isEligibleToUsePromoCode" #promo-code>
+          <promo-code-input />
+        </template>
+      </summary-details>
     </div>
   </gl-card>
 </template>

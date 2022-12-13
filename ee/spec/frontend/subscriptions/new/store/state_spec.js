@@ -5,8 +5,27 @@ constants.TAX_RATE = 0;
 
 describe('projectsSelector default state', () => {
   const availablePlans = [
-    { id: 'firstPlanId', code: 'bronze', price_per_year: 48, name: 'Bronze Plan' },
-    { id: 'secondPlanId', code: 'premium', price_per_year: 228, name: 'Premium Plan' },
+    {
+      id: 'firstPlanId',
+      code: 'bronze',
+      price_per_year: 48,
+      name: 'Bronze Plan',
+      eligible_to_use_promo_code: false,
+    },
+    {
+      id: 'secondPlanId',
+      code: 'premium',
+      price_per_year: 228,
+      name: 'Premium Plan',
+      eligible_to_use_promo_code: true,
+    },
+    {
+      id: 'thirdPlanId',
+      code: 'ultimate',
+      price_per_year: 350,
+      name: 'Ultimate Plan',
+      eligible_to_use_promo_code: false,
+    },
   ];
 
   const groupData = [
@@ -36,8 +55,27 @@ describe('projectsSelector default state', () => {
   describe('availablePlans', () => {
     it('sets the availablePlans to the provided parsed availablePlans', () => {
       expect(state.availablePlans).toEqual([
-        { value: 'firstPlanId', text: 'Bronze Plan', pricePerUserPerYear: 48, code: 'bronze' },
-        { value: 'secondPlanId', text: 'Premium Plan', pricePerUserPerYear: 228, code: 'premium' },
+        {
+          value: 'firstPlanId',
+          text: 'Bronze Plan',
+          pricePerUserPerYear: 48,
+          code: 'bronze',
+          isEligibleToUsePromoCode: false,
+        },
+        {
+          value: 'secondPlanId',
+          text: 'Premium Plan',
+          pricePerUserPerYear: 228,
+          code: 'premium',
+          isEligibleToUsePromoCode: true,
+        },
+        {
+          value: 'thirdPlanId',
+          text: 'Ultimate Plan',
+          pricePerUserPerYear: 350,
+          code: 'ultimate',
+          isEligibleToUsePromoCode: false,
+        },
       ]);
     });
 

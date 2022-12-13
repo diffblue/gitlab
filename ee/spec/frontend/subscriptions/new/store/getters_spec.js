@@ -240,4 +240,22 @@ describe('Subscriptions Getters', () => {
       });
     });
   });
+
+  describe('isEligibleToUsePromoCode', () => {
+    it('returns true if plan is eligible to use promo code', () => {
+      expect(
+        getters.isEligibleToUsePromoCode(state, {
+          selectedPlanDetails: { isEligibleToUsePromoCode: true },
+        }),
+      ).toBe(true);
+    });
+
+    it('returns false if plan is eligible to use promo code', () => {
+      expect(
+        getters.isEligibleToUsePromoCode(state, {
+          selectedPlanDetails: { isEligibleToUsePromoCode: false },
+        }),
+      ).toBe(false);
+    });
+  });
 });

@@ -62,6 +62,9 @@ export const isGroupSelected = (state) =>
 
 export const isSelectedGroupPresent = (state, getters) => Boolean(getters.selectedGroupData);
 
+export const isEligibleToUsePromoCode = (_, getters) =>
+  getters.selectedPlanDetails?.isEligibleToUsePromoCode;
+
 export const selectedGroupData = (state, getters) => {
   if (!getters.isGroupSelected) {
     return null;
