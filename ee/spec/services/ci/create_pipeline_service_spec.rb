@@ -155,6 +155,7 @@ RSpec.describe Ci::CreatePipelineService, '#execute', :saas do
           secrets:
             DATABASE_PASSWORD:
               vault: production/db/password
+              token: $ID_TOKEN
       YAML
     end
 
@@ -172,7 +173,8 @@ RSpec.describe Ci::CreatePipelineService, '#execute', :saas do
             'engine' => { 'name' => 'kv-v2', 'path' => 'kv-v2' },
             'path' => 'production/db',
             'field' => 'password'
-          }
+          },
+          'token' => '$ID_TOKEN'
         }
       })
     end

@@ -40,9 +40,7 @@ module EE
       def id_token_var(secret)
         return unless id_tokens?
 
-        token = secret['token'] || id_tokens.each_key.first
-
-        "${#{token}}"
+        secret['token'] || "$#{id_tokens.each_key.first}"
       end
     end
   end

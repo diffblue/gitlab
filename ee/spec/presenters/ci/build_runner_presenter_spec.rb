@@ -127,7 +127,7 @@ RSpec.describe Ci::BuildRunnerPresenter do
           it 'adds the first ID token to the Vault server payload' do
             jwt = presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'vault', 'server', 'auth', 'data', 'jwt')
 
-            expect(jwt).to eq('${VAULT_ID_TOKEN_1}')
+            expect(jwt).to eq('$VAULT_ID_TOKEN_1')
           end
 
           context 'when the token variable is specified for the vault secret' do
@@ -135,7 +135,7 @@ RSpec.describe Ci::BuildRunnerPresenter do
               {
                 DATABASE_PASSWORD: {
                   file: true,
-                  token: 'VAULT_ID_TOKEN_2',
+                  token: '$VAULT_ID_TOKEN_2',
                   vault: {
                     engine: { name: 'kv-v2', path: 'kv-v2' },
                     path: 'production/db',
@@ -148,7 +148,7 @@ RSpec.describe Ci::BuildRunnerPresenter do
             it 'uses the specified token variable' do
               jwt = presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'vault', 'server', 'auth', 'data', 'jwt')
 
-              expect(jwt).to eq('${VAULT_ID_TOKEN_2}')
+              expect(jwt).to eq('$VAULT_ID_TOKEN_2')
             end
           end
         end
