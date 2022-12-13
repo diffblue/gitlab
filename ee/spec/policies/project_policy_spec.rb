@@ -2425,7 +2425,7 @@ RSpec.describe ProjectPolicy do
   describe 'create_objective' do
     using RSpec::Parameterized::TableSyntax
 
-    let(:policy) { :create_objective }
+    let(:okr_policies) { [:create_objective, :create_key_result] }
 
     where(:role, :allowed) do
       :guest      | true
@@ -2442,10 +2442,11 @@ RSpec.describe ProjectPolicy do
 
       before do
         enable_admin_mode!(current_user) if role == :admin
+        stub_licensed_features(okrs: true)
       end
 
       context 'when okrs_mvc feature flag is enabled' do
-        it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
+        it { is_expected.to(allowed ? be_allowed(*okr_policies) : be_disallowed(*okr_policies)) }
       end
 
       context 'when okrs_mvc feature flag is disabled' do
@@ -2453,7 +2454,15 @@ RSpec.describe ProjectPolicy do
           stub_feature_flags(okrs_mvc: false)
         end
 
-        it { is_expected.to(be_disallowed(policy)) }
+        it { is_expected.to be_disallowed(*okr_policies) }
+      end
+
+      context 'when okrs license feature is not available' do
+        before do
+          stub_licensed_features(okrs: false)
+        end
+
+        it { is_expected.to be_disallowed(*okr_policies) }
       end
     end
   end

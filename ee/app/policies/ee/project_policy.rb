@@ -162,6 +162,11 @@ module EE
         @subject.group && (@subject.group.membership_lock? || ::Gitlab::CurrentSettings.lock_memberships_to_ldap?)
       end
 
+      with_scope :subject
+      condition(:okrs_enabled) do
+        @subject.okrs_mvc_feature_flag_enabled? && @subject.feature_available?(:okrs)
+      end
+
       rule { membership_locked_via_parent_group }.policy do
         prevent :import_project_members_from_another_project
       end
@@ -185,8 +190,6 @@ module EE
 
         @user.read_code_for?(project)
       end
-
-      condition(:okrs_enabled, scope: :subject) { project&.okrs_mvc_feature_flag_enabled? }
 
       # Owners can be banned from their own project except for top-level group
       # owners. This exception is made at the service layer
@@ -534,7 +537,10 @@ module EE
 
       rule { custom_roles_allowed & role_enables_read_code }.enable :read_code
 
-      rule { can?(:create_issue) & okrs_enabled }.enable :create_objective
+      rule { can?(:create_issue) & okrs_enabled }.policy do
+        enable :create_objective
+        enable :create_key_result
+      end
     end
 
     override :lookup_access_level!
