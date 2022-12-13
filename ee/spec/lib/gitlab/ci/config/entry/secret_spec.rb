@@ -53,6 +53,40 @@ RSpec.describe Gitlab::Ci::Config::Entry::Secret do
 
         it_behaves_like 'configures secrets'
       end
+
+      context 'when `token` is defined' do
+        let(:config) do
+          {
+            vault: {
+              engine: { name: 'kv-v2', path: 'kv-v2' },
+              path: 'production/db',
+              field: 'password'
+            },
+            token: '$TEST_ID_TOKEN'
+          }
+        end
+
+        describe '#value' do
+          it 'returns secret configuration' do
+            expect(entry.value).to eq(
+              {
+                vault: {
+                  engine: { name: 'kv-v2', path: 'kv-v2' },
+                  path: 'production/db',
+                  field: 'password'
+                },
+                token: '$TEST_ID_TOKEN'
+              }
+            )
+          end
+        end
+
+        describe '#valid?' do
+          it 'is valid' do
+            expect(entry).to be_valid
+          end
+        end
+      end
     end
   end
 
