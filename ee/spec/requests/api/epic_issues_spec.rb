@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::EpicIssues do
+RSpec.describe API::EpicIssues, feature_category: :portfolio_management do
   let(:user) { create(:user) }
   let(:group) { create(:group) }
   let(:project) { create(:project, :public, group: group) }

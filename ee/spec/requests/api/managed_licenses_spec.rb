@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::ManagedLicenses do
+RSpec.describe API::ManagedLicenses, feature_category: :security_policy_management do
   let_it_be(:project) { create(:project, :public) }
   let_it_be(:maintainer_user) { create(:user) }
   let_it_be(:dev_user) { create(:user) }

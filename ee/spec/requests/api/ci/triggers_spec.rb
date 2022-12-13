@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Ci::Triggers do
+RSpec.describe API::Ci::Triggers, feature_category: :continuous_integration do
   include AfterNextHelpers
 
   let_it_be(:user) { create(:user) }

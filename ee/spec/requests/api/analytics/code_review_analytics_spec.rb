@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Analytics::CodeReviewAnalytics do
+RSpec.describe API::Analytics::CodeReviewAnalytics, feature_category: :value_stream_management do
   let_it_be(:group) { create(:group, :private) }
   let_it_be(:project) { create(:project, namespace: group) }
   let(:current_user) { reporter }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Users do
+RSpec.describe API::Users, feature_category: :users do
   let(:user)  { create(:user) }
   let(:admin) { create(:admin) }
 

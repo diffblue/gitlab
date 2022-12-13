@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Epics do
+RSpec.describe API::Epics, feature_category: :portfolio_management do
   let_it_be(:user) { create(:user) }
 
   let(:group) { create(:group) }

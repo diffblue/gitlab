@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Analytics::GroupActivityAnalytics do
+RSpec.describe API::Analytics::GroupActivityAnalytics, feature_category: :value_stream_management do
   let_it_be(:group) { create(:group, :private) }
 
   let_it_be(:reporter) do

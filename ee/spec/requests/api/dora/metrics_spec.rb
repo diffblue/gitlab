@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Dora::Metrics do
+RSpec.describe API::Dora::Metrics, feature_category: :dora_metrics do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:production) { create(:environment, :production, project: project) }

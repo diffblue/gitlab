@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::ProtectedEnvironments do
+RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_delivery do
   include AccessMatchersForRequest
 
   let_it_be(:group) { create(:group) }

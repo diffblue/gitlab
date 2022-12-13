@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::ProjectMilestones do
+RSpec.describe API::ProjectMilestones, feature_category: :team_planning do
   let(:user) { create(:user) }
   let!(:project) { create(:project, namespace: user.namespace ) }
   let!(:milestone) { create(:milestone, project: project, title: 'version2', description: 'open milestone', start_date: Date.today, due_date: Date.today + 3.days) }

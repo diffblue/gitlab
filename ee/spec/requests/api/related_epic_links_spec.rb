@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::RelatedEpicLinks do
+RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
   include ExternalAuthorizationServiceHelpers
 
   let_it_be(:user) { create(:user) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::VisualReviewDiscussions do
+RSpec.describe API::VisualReviewDiscussions, feature_category: :review_apps do
   shared_examples_for 'accepting request without authentication' do
     let(:request) do
       post api("/projects/#{project_id}/merge_requests/#{merge_request.iid}/visual_review_discussions"), params: note_params

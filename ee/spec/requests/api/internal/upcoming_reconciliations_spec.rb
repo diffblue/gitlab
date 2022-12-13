@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Internal::UpcomingReconciliations, :api do
+RSpec.describe API::Internal::UpcomingReconciliations, :api, feature_category: :purchase do
   describe 'PUT /internal/upcoming_reconciliations' do
     before do
       stub_application_setting(check_namespace_plan: true)

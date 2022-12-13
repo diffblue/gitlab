@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Internal::AppSec::Dast::SiteValidations do
+RSpec.describe API::Internal::AppSec::Dast::SiteValidations, feature_category: :dynamic_application_security_testing do
   include AfterNextHelpers
 
   let_it_be(:project) { create(:project) }

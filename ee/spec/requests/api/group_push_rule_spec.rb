@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::GroupPushRule, 'GroupPushRule', api: true do
+RSpec.describe API::GroupPushRule, 'GroupPushRule', api: true, feature_category: :source_code_management do
   include ApiHelpers
   include AccessMatchersForRequest
 

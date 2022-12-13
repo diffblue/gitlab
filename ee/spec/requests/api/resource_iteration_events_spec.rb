@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::ResourceIterationEvents do
+RSpec.describe API::ResourceIterationEvents, feature_category: :team_planning do
   let!(:user) { create(:user) }
   let!(:group) { create(:group) }
   let!(:project) { create(:project, :public, namespace: group) }

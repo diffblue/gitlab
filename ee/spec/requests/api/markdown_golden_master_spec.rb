@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 # See spec/fixtures/markdown/markdown_golden_master_examples.yml for documentation on how this spec works.
-RSpec.describe API::Markdown, 'EE Golden Master' do
+RSpec.describe API::Markdown, 'EE Golden Master', feature_category: :team_planning do
   include WikiHelpers
 
   let_it_be(:user) { create(:user, username: 'gfm_ee_user') }

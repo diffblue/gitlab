@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Members do
+RSpec.describe API::Members, feature_category: :subgroups do
   include EE::API::Helpers::MembersHelpers
 
   context 'group members endpoints for group with minimal access feature' do

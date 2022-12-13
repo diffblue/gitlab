@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe API::ProviderIdentity, api: true do
+RSpec.describe API::ProviderIdentity, api: true, feature_category: :authentication_and_authorization do
   include ApiHelpers
 
   let_it_be(:owner) { create(:user) }

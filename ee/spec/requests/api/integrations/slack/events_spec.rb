@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Integrations::Slack::Events do
+RSpec.describe API::Integrations::Slack::Events, feature_category: :integrations do
   describe 'POST /integrations/slack/events' do
     let_it_be(:slack_installation) { create(:slack_integration) }
 

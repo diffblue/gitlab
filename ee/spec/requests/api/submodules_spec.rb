@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Submodules do
+RSpec.describe API::Submodules, feature_category: :source_code_management do
   include NamespaceStorageHelpers
 
   let(:user) { create(:user) }

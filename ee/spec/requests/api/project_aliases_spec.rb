@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::ProjectAliases, api: true do
+RSpec.describe API::ProjectAliases, api: true, feature_category: :source_code_management do
   let(:user)  { create(:user) }
   let(:admin) { create(:admin) }
 
