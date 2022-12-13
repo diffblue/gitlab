@@ -20,6 +20,13 @@ module Namespaces
         users_count >= limit
       end
 
+      def at_limit?
+        return false unless enforce_cap?
+        return false unless new_namespace_enforcement?
+
+        users_count == limit
+      end
+
       def seat_available?(user)
         return true unless enforce_cap?
         return true if member_with_user_already_exists?(user)
