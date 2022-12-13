@@ -128,12 +128,12 @@ module Ci
     def security_reports_for_sha(sha)
       return [] if sha.blank?
 
-      Ci::Pipeline.for_sha(sha).flat_map(&:security_reports)
+      pipeline.project.ci_pipelines.for_sha(sha).flat_map(&:security_reports)
     end
 
     def pipelines_for_source_branch_sha
       if multi_pipeline_scan_result_policies?
-        Ci::Pipeline.for_sha(pipeline.sha)
+        pipeline.project.ci_pipelines.for_sha(pipeline.sha)
       else
         [pipeline]
       end
