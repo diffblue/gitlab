@@ -17,18 +17,11 @@ module QA
         Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1)
       end
 
-      let(:non_member_user_token) do
-        Resource::PersonalAccessTokenCache.set_token_for_username(
-          non_member_user.username,
-          ENV['GITLAB_QA_USERNAME_1_ACCESS_TOKEN']
-        )
-      end
-
       let(:api_client) { Runtime::API::Client.new(:gitlab) }
       let(:non_member_api_client) do
         Runtime::API::Client.new(
           user: non_member_user,
-          personal_access_token: non_member_user_token
+          personal_access_token: Runtime::Env.gitlab_qa_access_token_1
         )
       end
 
