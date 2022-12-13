@@ -32743,10 +32743,10 @@ msgstr ""
 msgid "ProjectSettings|Users can copy the repository to a new project."
 msgstr ""
 
-msgid "ProjectSettings|Users can only push commits to this repository if the committer email is one of their own verified emails."
+msgid "ProjectSettings|Users can only push commits to this repository if the commit author name is consistent with their GitLab account name."
 msgstr ""
 
-msgid "ProjectSettings|Users can only push commits to this repository if the committer name is consistent with their git config username."
+msgid "ProjectSettings|Users can only push commits to this repository if the committer email is one of their own verified emails."
 msgstr ""
 
 msgid "ProjectSettings|Users can request access"

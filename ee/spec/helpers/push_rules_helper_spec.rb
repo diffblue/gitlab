@@ -74,7 +74,7 @@ RSpec.describe PushRulesHelper do
       expect(
         helper.commit_committer_name_check_description(push_rule)
       ).to eq(s_("ProjectSettings|Users can only push commits to this repository "\
-        "if the committer name is consistent with their git config username."))
+        "if the commit author name is consistent with their GitLab account name."))
     end
   end
 end
