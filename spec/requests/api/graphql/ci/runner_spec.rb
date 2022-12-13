@@ -499,6 +499,9 @@ RSpec.describe 'Query.runner(id)', feature_category: :runner_fleet do
           }
           ownerProject {
             id
+            path
+            fullPath
+            webUrl
           }
         }
       SINGLE
