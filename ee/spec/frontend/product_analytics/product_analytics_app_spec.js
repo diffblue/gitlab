@@ -6,6 +6,7 @@ import DashboardsView from 'ee/product_analytics/dashboards/dashboards_view.vue'
 import createRouter from 'ee/product_analytics/router';
 import waitForPromises from 'helpers/wait_for_promises';
 import cubeAnalytics from 'ee/product_analytics/dashboards/data_sources/cube_analytics';
+import { TEST_HOST } from 'helpers/test_constants';
 import { createAlert } from '~/flash';
 import { s__ } from '~/locale';
 
@@ -27,6 +28,7 @@ describe('ProductAnalyticsApp', () => {
       provide: {
         jitsuKey: '123',
         projectId: '1',
+        chartEmptyStateIllustrationPath: TEST_HOST,
         ...provided,
       },
     });

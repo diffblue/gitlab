@@ -36,7 +36,7 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
     end
 
     it do
-      expect(page).to have_content(s_('Product Analytics|Onboarding view'))
+      expect(page).to have_content(s_('Product Analytics|Analyze your product with Product Analytics'))
     end
   end
 

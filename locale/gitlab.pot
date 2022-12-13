@@ -31441,7 +31441,13 @@ msgstr ""
 msgid "Proceed"
 msgstr ""
 
-msgid "Product Analytics|Onboarding view"
+msgid "Product Analytics|Analyze your product with Product Analytics"
+msgstr ""
+
+msgid "Product Analytics|Set up Product Analytics to track how your product is performing. Combine it with your GitLab data to better understand where you can improve your product and development processes."
+msgstr ""
+
+msgid "Product Analytics|Set up product analytics..."
 msgstr ""
 
 msgid "Product analytics"

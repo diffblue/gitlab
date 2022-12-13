@@ -1,12 +1,19 @@
-import { shallowMount } from '@vue/test-utils';
+import { GlEmptyState } from '@gitlab/ui';
 import ProductAnalyticsOnboardingView from 'ee/product_analytics/onboarding/onboarding_view.vue';
-import { s__ } from '~/locale';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { TEST_HOST } from 'spec/test_constants';
 
 describe('ProductAnalyticsOnboardingView', () => {
   let wrapper;
 
+  const findEmptyState = () => wrapper.findComponent(GlEmptyState);
+
   const createWrapper = () => {
-    wrapper = shallowMount(ProductAnalyticsOnboardingView);
+    wrapper = shallowMountExtended(ProductAnalyticsOnboardingView, {
+      provide: {
+        chartEmptyStateIllustrationPath: TEST_HOST,
+      },
+    });
   };
 
   describe('when mounted', () => {
@@ -14,8 +21,18 @@ describe('ProductAnalyticsOnboardingView', () => {
       createWrapper();
     });
 
-    it('should render', () => {
-      expect(wrapper.text()).toBe(s__('Product Analytics|Onboarding view'));
+    it('should render the empty state with expected props', () => {
+      const emptyState = findEmptyState();
+
+      expect(emptyState.props()).toMatchObject({
+        title: ProductAnalyticsOnboardingView.i18n.title,
+        svgPath: TEST_HOST,
+        primaryButtonText: ProductAnalyticsOnboardingView.i18n.setUpBtnText,
+        primaryButtonLink: '#',
+        secondaryButtonText: ProductAnalyticsOnboardingView.i18n.learnMoreBtnText,
+        secondaryButtonLink: ProductAnalyticsOnboardingView.docsPath,
+      });
+      expect(emptyState.text()).toContain(ProductAnalyticsOnboardingView.i18n.description);
     });
   });
 });
