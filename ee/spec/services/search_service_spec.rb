@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SearchService do
+RSpec.describe SearchService, feature_category: :global_search do
   describe '#search_objects' do
     let(:scope) { nil }
     let(:page) { 1 }

@@ -1,3 +1,3 @@
-- if search_service.use_elasticsearch?
+- if @search_service.advanced_search_enabled?
   .form-text.text-muted{ **local_assigns.fetch(:attrs, {}) }
     = advanced_search_status_marker(@project)

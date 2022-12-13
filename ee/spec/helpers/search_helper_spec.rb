@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SearchHelper do
+RSpec.describe SearchHelper, feature_category: :global_search do
   describe '#search_filter_input_options' do
     let(:options) { helper.search_filter_input_options(:issues) }
 
@@ -183,9 +183,10 @@ RSpec.describe SearchHelper do
     subject { search_entries_info_template(collection) }
 
     before do
-      @show_snippets = show_snippets
       @current_user = user
 
+      allow(self).to receive(:current_user).and_return(user)
+      allow(search_service).to receive(:show_snippets?).and_return(show_snippets)
       allow(Gitlab).to receive(:com?).and_return(com_value)
       stub_ee_application_setting(search_using_elasticsearch: elasticsearch_enabled)
     end
@@ -361,10 +362,10 @@ RSpec.describe SearchHelper do
       allow(self).to receive(:can?).and_return(true)
       allow(self).to receive(:project_search_tabs?).and_return(true)
       allow(self).to receive(:feature_flag_tab_enabled?).and_return(true)
-      allow(search_service).to receive(:show_elasticsearch_tabs?).and_return(true)
       allow(self).to receive(:feature_flag_tab_enabled?).and_return(true)
+      allow(search_service).to receive(:show_elasticsearch_tabs?).and_return(true)
       allow(search_service).to receive(:show_epics?).and_return(true)
-      @show_snippets = true
+      allow(search_service).to receive(:show_snippets?).and_return(true)
       @project = nil
     end
 
