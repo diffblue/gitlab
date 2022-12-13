@@ -30,7 +30,7 @@ module QA
           def filter_report_type(report)
             click_element(:filter_tool_dropdown)
 
-            click_element "filter_#{report.downcase.tr(" ", "_")}_dropdown"
+            click_element "filter_#{report.downcase.tr(" ", "_")}_dropdown_item"
 
             # Click the dropdown to close the modal and ensure it isn't open if this function is called again
             click_element(:filter_tool_dropdown)
@@ -43,11 +43,11 @@ module QA
 
             retry_until(sleep_interval: 2, message: "Retrying status click until current url matches state") do
               click_element(:filter_status_dropdown)
-              click_element("filter_all_statuses_dropdown")
+              click_element("filter_all_statuses_dropdown_item")
               statuses.each do |status|
                 # The data-qa-selector for this element is dynamically computed in qaSelector method in
                 # ee/app/assets/javascripts/security_dashboard/components/shared/filters/filter_body.vue
-                click_element("filter_#{status.downcase.tr(" ", "_")}_dropdown")
+                click_element("filter_#{status.downcase.tr(" ", "_")}_dropdown_item")
                 # To account for 'All statuses' dropdown item
               end
               click_element(:filter_status_dropdown)
