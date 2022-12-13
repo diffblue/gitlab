@@ -36274,6 +36274,12 @@ msgstr ""
 msgid "ScanExecutionPolicy|A pipeline is run"
 msgstr ""
 
+msgid "ScanExecutionPolicy|Ex, tag-name-1, tag-name-2"
+msgstr ""
+
+msgid "ScanExecutionPolicy|If the field is empty, the runner will be automatically selected"
+msgstr ""
+
 msgid "ScanExecutionPolicy|Scanner profile"
 msgstr ""
 
@@ -36296,9 +36302,6 @@ msgid "ScanExecutionPolicy|Select scanner profile"
 msgstr ""
 
 msgid "ScanExecutionPolicy|Select site profile"
-msgstr ""
-
-msgid "ScanExecutionPolicy|Select tags (if any)"
 msgstr ""
 
 msgid "ScanExecutionPolicy|Site profile"
