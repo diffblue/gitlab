@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Querying an Iteration' do
+RSpec.describe 'Querying an Iteration', feature_category: :team_planning do
   include GraphqlHelpers
 
   let_it_be(:group_member) { create(:user) }

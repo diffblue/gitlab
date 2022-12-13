@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'parse alert payload fields' do
+RSpec.describe 'parse alert payload fields', feature_category: :incident_management do
   include GraphqlHelpers
 
   let_it_be_with_refind(:project) { create(:project) }

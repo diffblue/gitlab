@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'devopsAdoptionEnabledNamespaces' do
+RSpec.describe 'devopsAdoptionEnabledNamespaces', feature_category: :value_stream_management do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user, :admin) }

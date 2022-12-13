@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'get list of epic boards' do
+RSpec.describe 'get list of epic boards', feature_category: :portfolio_management do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }

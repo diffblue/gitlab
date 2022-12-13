@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'getting a list of compliance frameworks for a root namespace' do
+RSpec.describe 'getting a list of compliance frameworks for a root namespace', feature_category: :compliance_management do
   include GraphqlHelpers
 
   let_it_be(:namespace) { create(:group) }

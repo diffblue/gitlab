@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'getting Alert Management HTTP Integrations' do
+RSpec.describe 'getting Alert Management HTTP Integrations', feature_category: :incident_management do
   include ::Gitlab::Routing.url_helpers
   include GraphqlHelpers
 

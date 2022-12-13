@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.vulnerabilities.externalIssueLinks' do
+RSpec.describe 'Query.vulnerabilities.externalIssueLinks', feature_category: :vulnerability_management do
   include GraphqlHelpers
   include ReactiveCachingHelpers
 

@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.project(fullPath).pipeline(iid).dastProfile' do
+RSpec.describe 'Query.project(fullPath).pipeline(iid).dastProfile',
+feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project, :repository) }

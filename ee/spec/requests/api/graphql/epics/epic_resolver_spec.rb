@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'getting epics information' do
+RSpec.describe 'getting epics information', feature_category: :portfolio_management do
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }

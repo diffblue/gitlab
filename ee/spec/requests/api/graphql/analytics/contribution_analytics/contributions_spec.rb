@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group.contributions' do
+RSpec.describe 'Group.contributions', feature_category: :value_stream_management do
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }

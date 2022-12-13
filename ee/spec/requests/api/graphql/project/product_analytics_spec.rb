@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.project(fullPath).jitsuKey' do
+RSpec.describe 'Query.project(fullPath).jitsuKey', feature_category: :product_analytics do
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user) }
 

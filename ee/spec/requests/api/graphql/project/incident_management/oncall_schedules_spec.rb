@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'getting Incident Management on-call schedules' do
+RSpec.describe 'getting Incident Management on-call schedules', feature_category: :incident_management do
   include GraphqlHelpers
 
   let_it_be_with_refind(:project) { create(:project) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.ciMinutesUsage' do
+RSpec.describe 'Query.ciMinutesUsage', feature_category: :purchase do
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }

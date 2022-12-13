@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.project(fullPath).apiFuzzingCiConfiguration' do
+RSpec.describe 'Query.project(fullPath).apiFuzzingCiConfiguration', feature_category: :fuzz_testing do
   include GraphqlHelpers
   include StubRequests
 

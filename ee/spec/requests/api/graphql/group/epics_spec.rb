@@ -4,7 +4,7 @@ require 'spec_helper'
 
 # Based on ee/spec/requests/api/epics_spec.rb
 # Should follow closely in order to ensure all situations are covered
-RSpec.describe 'Epics through GroupQuery' do
+RSpec.describe 'Epics through GroupQuery', feature_category: :portfolio_management do
   include GraphqlHelpers
 
   let(:epics_data) { graphql_data['group']['epics']['edges'] }

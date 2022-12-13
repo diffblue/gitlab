@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'getting the compliance violations for a group' do
+RSpec.describe 'getting the compliance violations for a group', feature_category: :code_review do
   using RSpec::Parameterized::TableSyntax
 
   include GraphqlHelpers

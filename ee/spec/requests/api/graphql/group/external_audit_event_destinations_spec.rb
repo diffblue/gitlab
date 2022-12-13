@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'getting a list of external audit event destinations for a group' do
+RSpec.describe 'getting a list of external audit event destinations for a group', feature_category: :audit_events do
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }

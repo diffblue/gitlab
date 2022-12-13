@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.vulnerabilities.issueLinks' do
+RSpec.describe 'Query.vulnerabilities.issueLinks', feature_category: :vulnerability_management do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.group(fullPath).projects.dastProfiles.dastProfileSchedule' do
+RSpec.describe 'Query.group(fullPath).projects.dastProfiles.dastProfileSchedule', feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }

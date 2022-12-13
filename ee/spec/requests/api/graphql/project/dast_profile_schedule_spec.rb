@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.project(fullPath).dastProfiles.dastProfileSchedule' do
+RSpec.describe 'Query.project(fullPath).dastProfiles.dastProfileSchedule',
+feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
   let_it_be(:plan_limits) { create(:plan_limits, :default_plan) }
   let_it_be(:project) { create(:project, :repository) }

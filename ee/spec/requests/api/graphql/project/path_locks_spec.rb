@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.project(fullPath).pathLocks' do
+RSpec.describe 'Query.project(fullPath).pathLocks', feature_category: :source_code_management do
   using RSpec::Parameterized::TableSyntax
   include GraphqlHelpers
 

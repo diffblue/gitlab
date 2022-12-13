@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'getting iterations' do
+RSpec.describe 'getting iterations', feature_category: :team_planning do
   include GraphqlHelpers
 
   let_it_be(:now) { Time.now }
