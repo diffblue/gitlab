@@ -21380,7 +21380,8 @@ CREATE TABLE sbom_occurrences (
     pipeline_id bigint,
     source_id bigint,
     commit_sha bytea NOT NULL,
-    component_id bigint NOT NULL
+    component_id bigint NOT NULL,
+    uuid uuid NOT NULL
 );
 
 CREATE SEQUENCE sbom_occurrences_id_seq
@@ -30944,13 +30945,13 @@ CREATE INDEX index_sbom_occurrences_on_component_id ON sbom_occurrences USING bt
 
 CREATE INDEX index_sbom_occurrences_on_component_version_id ON sbom_occurrences USING btree (component_version_id);
 
-CREATE UNIQUE INDEX index_sbom_occurrences_on_ingestion_attributes ON sbom_occurrences USING btree (project_id, component_id, component_version_id, source_id, commit_sha);
-
 CREATE INDEX index_sbom_occurrences_on_pipeline_id ON sbom_occurrences USING btree (pipeline_id);
 
 CREATE INDEX index_sbom_occurrences_on_project_id ON sbom_occurrences USING btree (project_id);
 
 CREATE INDEX index_sbom_occurrences_on_source_id ON sbom_occurrences USING btree (source_id);
+
+CREATE UNIQUE INDEX index_sbom_occurrences_on_uuid ON sbom_occurrences USING btree (uuid);
 
 CREATE UNIQUE INDEX index_sbom_sources_on_source_type_and_source ON sbom_sources USING btree (source_type, source);
 

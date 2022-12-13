@@ -23,6 +23,8 @@ module Sbom
         ApplicationRecord.transaction do
           TASKS.each { |task| task.execute(pipeline, occurrence_maps) }
         end
+
+        occurrence_maps.map(&:occurrence_id)
       end
 
       private

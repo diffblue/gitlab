@@ -4,7 +4,7 @@ module Sbom
   module Ingestion
     class OccurrenceMap
       attr_reader :report_component, :report_source
-      attr_accessor :component_id, :component_version_id, :source_id
+      attr_accessor :component_id, :component_version_id, :source_id, :occurrence_id
 
       def initialize(report_component, report_source)
         @report_component = report_component

@@ -30,6 +30,7 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
 
       it 'does not create a new record for the existing version' do
         expect { ingest_occurrences }.to change(Sbom::Occurrence, :count).by(3)
+        expect(occurrence_maps).to all(have_attributes(occurrence_id: Integer))
       end
     end
 
@@ -38,6 +39,25 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
 
       it 'inserts records without the version' do
         expect { ingest_occurrences }.to change(Sbom::Occurrence, :count).by(4)
+        expect(occurrence_maps).to all(have_attributes(occurrence_id: Integer))
+      end
+    end
+
+    context 'when there are two duplicate occurrences' do
+      let(:occurrence_maps) do
+        map1 = create(:sbom_occurrence_map, :for_occurrence_ingestion)
+        map2 = create(:sbom_occurrence_map)
+        map2.component_id = map1.component_id
+        map2.component_version_id = map1.component_version_id
+        map2.source_id = map1.source_id
+
+        [map1, map2]
+      end
+
+      it 'discards duplicates' do
+        expect { ingest_occurrences }.to change { ::Sbom::Occurrence.count }.by(1)
+        expect(occurrence_maps.size).to eq(1)
+        expect(occurrence_maps).to all(have_attributes(occurrence_id: Integer))
       end
     end
   end
