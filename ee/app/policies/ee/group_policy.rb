@@ -497,7 +497,6 @@ module EE
         prevent :create_cluster
         prevent :update_cluster
         prevent :admin_cluster
-        prevent :admin_group_member
         prevent :create_deploy_token
         prevent :create_subgroup
         prevent :create_package

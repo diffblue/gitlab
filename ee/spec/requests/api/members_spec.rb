@@ -179,11 +179,7 @@ RSpec.describe API::Members, feature_category: :subgroups do
           stub_ee_application_setting(dashboard_limit_enabled: true)
         end
 
-        context 'when there are at the size limit' do
-          before do
-            stub_ee_application_setting(dashboard_enforcement_limit: 1)
-          end
-
+        shared_examples 'does not add members' do
           it 'does not add the member' do
             expect do
               post_members
@@ -196,14 +192,16 @@ RSpec.describe API::Members, feature_category: :subgroups do
           end
         end
 
-        context 'when there are over the limit' do
-          it 'is forbidden to add the member due to read only state of namespace' do
-            expect do
-              post_members
-            end.not_to change { group.members.count }
-
-            expect(response).to have_gitlab_http_status(:forbidden)
+        context 'when there are at the size limit' do
+          before do
+            stub_ee_application_setting(dashboard_enforcement_limit: 1)
           end
+
+          it_behaves_like 'does not add members'
+        end
+
+        context 'when there are over the limit' do
+          it_behaves_like 'does not add members'
         end
 
         context 'when there is a seat left' do
