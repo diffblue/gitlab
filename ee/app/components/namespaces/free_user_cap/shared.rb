@@ -33,6 +33,10 @@ module Namespaces
         }
       end
 
+      def self.enforcement_at_limit?(namespace)
+        ::Namespaces::FreeUserCap::Enforcement.new(namespace).at_limit?
+      end
+
       def self.enforcement_over_limit?(namespace)
         ::Namespaces::FreeUserCap::Enforcement.new(namespace).over_limit?
       end
