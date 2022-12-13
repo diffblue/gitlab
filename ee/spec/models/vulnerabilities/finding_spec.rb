@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::Finding do
+RSpec.describe Vulnerabilities::Finding, feature_category: :vulnerability_management do
   it { is_expected.to define_enum_for(:confidence) }
   it { is_expected.to define_enum_for(:report_type) }
   it { is_expected.to define_enum_for(:severity) }

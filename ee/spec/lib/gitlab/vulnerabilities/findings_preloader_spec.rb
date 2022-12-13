@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Vulnerabilities::FindingsPreloader do
+RSpec.describe Gitlab::Vulnerabilities::FindingsPreloader, feature_category: :vulnerability_management do
   describe '.preload!' do
     def preloaded_findings
       Gitlab::Vulnerabilities::FindingsPreloader.preload!(Vulnerabilities::Finding.all)

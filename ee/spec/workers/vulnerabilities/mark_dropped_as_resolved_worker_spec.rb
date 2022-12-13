@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::MarkDroppedAsResolvedWorker do
+RSpec.describe Vulnerabilities::MarkDroppedAsResolvedWorker, feature_category: :vulnerability_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:pipeline) { create(:ci_pipeline, user: user) }
   let_it_be(:dropped_identifier) do

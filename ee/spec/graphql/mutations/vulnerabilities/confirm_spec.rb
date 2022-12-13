@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Mutations::Vulnerabilities::Confirm do
+RSpec.describe Mutations::Vulnerabilities::Confirm, feature_category: :vulnerability_management do
   let(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
 
   describe '#resolve' do

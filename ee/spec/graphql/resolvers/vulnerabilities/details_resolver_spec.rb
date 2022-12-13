@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Resolvers::Vulnerabilities::DetailsResolver do
+RSpec.describe Resolvers::Vulnerabilities::DetailsResolver, feature_category: :vulnerability_management do
   include GraphqlHelpers
 
   describe '.with_field_name' do

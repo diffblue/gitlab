@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::DestroyDismissalFeedbackService do
+RSpec.describe Vulnerabilities::DestroyDismissalFeedbackService, feature_category: :vulnerability_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be(:vulnerability) { create(:vulnerability, project: project) }

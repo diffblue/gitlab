@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Resolvers::Vulnerabilities::ContainerImagesResolver do
+RSpec.describe Resolvers::Vulnerabilities::ContainerImagesResolver, feature_category: :vulnerability_management do
   include GraphqlHelpers
 
   describe '#resolve' do

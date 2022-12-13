@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::ExternalIssueLinkPolicy do
+RSpec.describe Vulnerabilities::ExternalIssueLinkPolicy, feature_category: :vulnerability_management do
   let!(:user) { create(:user) }
   let!(:project) { create(:project) }
   let!(:vulnerability) { create(:vulnerability, project: project) }

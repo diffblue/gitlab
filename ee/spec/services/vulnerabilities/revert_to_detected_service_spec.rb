@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::RevertToDetectedService do
+RSpec.describe Vulnerabilities::RevertToDetectedService, feature_category: :vulnerability_management do
   include AccessMatchersGeneric
 
   before do

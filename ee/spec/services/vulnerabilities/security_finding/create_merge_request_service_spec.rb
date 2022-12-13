@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::SecurityFinding::CreateMergeRequestService, '#execute' do
+RSpec.describe Vulnerabilities::SecurityFinding::CreateMergeRequestService, '#execute',
+feature_category: :vulnerability_management do
   let_it_be(:remediations_folder) { Rails.root.join('ee/spec/fixtures/security_reports/remediations') }
   let(:security_finding) { security_findings.first }
   let(:security_finding_uuid) { security_finding.uuid }

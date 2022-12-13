@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Vulnerabilities::Parser do
+RSpec.describe Gitlab::Vulnerabilities::Parser, feature_category: :vulnerability_management do
   describe '.fabricate' do
     let(:params) do
       {

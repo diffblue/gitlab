@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::Statistics::AdjustmentWorker do
+RSpec.describe Vulnerabilities::Statistics::AdjustmentWorker, feature_category: :vulnerability_management do
   let(:worker) { described_class.new }
 
   describe "#perform" do

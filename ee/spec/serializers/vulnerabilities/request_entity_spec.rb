@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::RequestEntity do
+RSpec.describe Vulnerabilities::RequestEntity, feature_category: :vulnerability_management do
   let(:request) { create(:vulnerabilities_finding).evidence[:request] }
 
   let(:entity) do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['VulnerabilityContainerImage'] do
+RSpec.describe GitlabSchema.types['VulnerabilityContainerImage'], feature_category: :vulnerability_management do
   let(:expected_fields) { %i[name] }
 
   subject { described_class }

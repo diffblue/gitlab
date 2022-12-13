@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::ProjectsGrade do
+RSpec.describe Vulnerabilities::ProjectsGrade, feature_category: :vulnerability_management do
   let_it_be(:group) { create(:group) }
   let_it_be(:subgroup) { create(:group, parent: group) }
   let_it_be(:project_1) { create(:project, group: group) }

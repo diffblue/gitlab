@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::FindingLink do
+RSpec.describe Vulnerabilities::FindingLink, feature_category: :vulnerability_management do
   describe 'associations' do
     it { is_expected.to belong_to(:finding).class_name('Vulnerabilities::Finding').inverse_of(:finding_links) }
   end

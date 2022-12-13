@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::ExportPolicy do
+RSpec.describe Vulnerabilities::ExportPolicy, feature_category: :vulnerability_management do
   let!(:user) { create(:user) }
   let!(:project) { create(:project) }
 

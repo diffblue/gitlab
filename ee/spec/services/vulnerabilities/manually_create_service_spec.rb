@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::ManuallyCreateService do
+RSpec.describe Vulnerabilities::ManuallyCreateService, feature_category: :vulnerability_management do
   before do
     stub_licensed_features(security_dashboard: true)
   end

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['VulnerabilityLink'] do
+RSpec.describe GitlabSchema.types['VulnerabilityLink'], feature_category: :vulnerability_management do
   let(:expected_fields) { %i[name url] }
 
   subject { described_class }

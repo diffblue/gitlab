@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::FindingSignature do
+RSpec.describe Vulnerabilities::FindingSignature, feature_category: :vulnerability_management do
   let_it_be(:signature) { create(:vulnerabilities_finding_signature) }
 
   describe 'associations' do
