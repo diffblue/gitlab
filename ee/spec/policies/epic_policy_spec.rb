@@ -213,8 +213,8 @@ RSpec.describe EpicPolicy do
     end
 
     context 'when epic is confidential' do
-      let_it_be(:group) { create(:group) }
-      let_it_be(:epic) { create(:epic, group: group, confidential: true) }
+      let_it_be_with_refind(:group) { create(:group) }
+      let_it_be_with_refind(:epic) { create(:epic, group: group, confidential: true) }
 
       context 'when user is not reporter' do
         before do
@@ -254,6 +254,36 @@ RSpec.describe EpicPolicy do
         end
 
         it_behaves_like 'all reporter epic permissions enabled'
+      end
+
+      context 'user is support bot' do
+        let_it_be(:user) { User.support_bot }
+
+        before do
+          allow(Gitlab::ServiceDesk).to receive(:supported?).and_return(true)
+        end
+
+        context 'when group has at least one project with service desk enabled' do
+          let_it_be(:project_with_service_desk) do
+            create(:project, group: group, service_desk_enabled: true)
+          end
+
+          it 'matches expected permissions' do
+            is_expected.to be_allowed(:read_epic, :read_epic_iid)
+            is_expected.to be_disallowed(:update_epic, :destroy_epic, :admin_epic,
+                                         :create_epic, :admin_related_epic_link,
+                                         :set_epic_metadata, :set_confidentiality,
+                                         :mark_note_as_confidential, :read_internal_note)
+          end
+        end
+
+        context 'when group does not have projects with service desk enabled' do
+          let_it_be(:project_without_service_desk) do
+            create(:project, group: group, service_desk_enabled: false)
+          end
+
+          it_behaves_like 'all epic permissions disabled'
+        end
       end
     end
 

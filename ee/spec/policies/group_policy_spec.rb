@@ -84,6 +84,31 @@ RSpec.describe GroupPolicy do
       it { is_expected.to be_disallowed(*(epic_rules - [:read_epic, :read_epic_board, :read_epic_board_list])) }
     end
 
+    context 'when user is support bot' do
+      let_it_be(:current_user) { User.support_bot }
+
+      before do
+        allow(Gitlab::ServiceDesk).to receive(:supported?).and_return(true)
+      end
+
+      context 'when group has at least one project with service desk enabled' do
+        let_it_be(:project_with_service_desk) do
+          create(:project, group: group, service_desk_enabled: true)
+        end
+
+        it { is_expected.to be_allowed(:read_epic, :read_epic_iid) }
+        it { is_expected.to be_disallowed(*(epic_rules - [:read_epic, :read_epic_iid])) }
+      end
+
+      context 'when group does not have projects with service desk enabled' do
+        let_it_be(:project_without_service_desk) do
+          create(:project, group: group, service_desk_enabled: false)
+        end
+
+        it { is_expected.to be_disallowed(*epic_rules) }
+      end
+    end
+
     context 'when user is not member' do
       let(:current_user) { create(:user) }
 
