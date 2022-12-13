@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Sbom::Ingestion::Tasks::IngestComponents do
+RSpec.describe Sbom::Ingestion::Tasks::IngestComponents, feature_category: :dependency_management do
   describe '#execute' do
     let_it_be(:pipeline) { create(:ci_pipeline) }
 

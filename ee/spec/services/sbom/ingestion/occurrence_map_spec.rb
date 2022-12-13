@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Sbom::Ingestion::OccurrenceMap do
+RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_management do
   let_it_be(:report_component) { create(:ci_reports_sbom_component) }
   let_it_be(:report_source) { create(:ci_reports_sbom_source) }
 

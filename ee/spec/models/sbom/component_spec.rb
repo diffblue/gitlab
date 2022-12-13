@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Sbom::Component, type: :model do
+RSpec.describe Sbom::Component, type: :model, feature_category: :dependency_management do
   let(:component_types) { { library: 0 } }
 
   let(:purl_types) do

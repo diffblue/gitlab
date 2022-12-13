@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Sbom::ComponentVersion, type: :model do
+RSpec.describe Sbom::ComponentVersion, type: :model, feature_category: :dependency_management do
   describe 'associations' do
     it { is_expected.to belong_to(:component).required }
   end

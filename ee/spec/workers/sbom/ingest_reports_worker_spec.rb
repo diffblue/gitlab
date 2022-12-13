@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Sbom::IngestReportsWorker do
+RSpec.describe Sbom::IngestReportsWorker, feature_category: :dependency_management do
   let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report) }
 
   describe '#perform' do
