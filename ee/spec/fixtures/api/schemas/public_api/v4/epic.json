@@ -1,23 +1,65 @@
 {
   "type": "object",
   "properties": {
-    "id": { "type": "integer" },
-    "iid": { "type": "integer" },
-    "group_id": { "type": "integer" },
-    "parent_id": { "type": ["integer", "null"] },
-    "parent_iid": { "type": ["integer", "null"] },
-    "title": { "type": "string" },
-    "description": { "type": ["string", "null"] },
-    "confidential": { "type": "boolean" },
+    "id": {
+      "type": "integer"
+    },
+    "iid": {
+      "type": "integer"
+    },
+    "group_id": {
+      "type": "integer"
+    },
+    "parent_id": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "parent_iid": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "confidential": {
+      "type": "boolean"
+    },
     "author": {
-      "type": ["object", "null"],
+      "type": [
+        "object",
+        "null"
+      ],
       "properties": {
-        "name": { "type": "string" },
-        "username": { "type": "string" },
-        "id": { "type": "integer" },
-        "state": { "type": "string" },
-        "avatar_url": { "type": "uri" },
-        "web_url": { "type": "uri" }
+        "name": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "state": {
+          "type": "string"
+        },
+        "avatar_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "web_url": {
+          "type": "string",
+          "format": "uri"
+        }
       },
       "additionalProperties": false
     },
@@ -27,47 +69,167 @@
         "type": "string"
       }
     },
-    "upvotes": { "type":  "integer" },
-    "downvotes": { "type":  "integer" },
-    "start_date": { "type": ["string", "null"], "format": "date" },
-    "start_date_fixed": { "type": ["string", "null"], "format": "date" },
-    "start_date_from_milestones": { "type": ["string", "null"], "format": "date-time" },
-    "start_date_from_inherited_source": { "type": ["string", "null"], "format": "date-time" },
-    "start_date_is_fixed": { "type": "boolean" },
-    "end_date": { "type": ["string", "null"], "format": "date" },
-    "due_date": { "type": ["string", "null"], "format": "date" },
-    "due_date_fixed": { "type": ["string", "null"], "format": "date" },
-    "due_date_from_milestones": { "type": ["string", "null"], "format": "date-time" },
-    "due_date_from_inherited_source": { "type": ["string", "null"], "format": "date-time" },
-    "due_date_is_fixed": { "type": "boolean" },
-    "state": { "type": "string" },
-    "created_at": { "type": ["string", "null"] },
-    "updated_at": { "type": ["string", "null"] },
-    "closed_at": { "type": ["string", "null"] },
-    "web_edit_url": { "type":  "string" },
-    "web_url": { "type":  "string" },
-    "reference": { "type":  "string" },
-    "references": {
-      "short": {"type": "string"},
-      "relative": {"type": "string"},
-      "full": {"type": "string"}
+    "upvotes": {
+      "type": "integer"
     },
-    "subscribed": { "type": ["boolean", "null"] },
+    "downvotes": {
+      "type": "integer"
+    },
+    "start_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "start_date_fixed": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "start_date_from_milestones": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "start_date_from_inherited_source": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "start_date_is_fixed": {
+      "type": "boolean"
+    },
+    "end_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "due_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "due_date_fixed": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "due_date_from_milestones": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "due_date_from_inherited_source": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "due_date_is_fixed": {
+      "type": "boolean"
+    },
+    "state": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "updated_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "closed_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "web_edit_url": {
+      "type": "string"
+    },
+    "web_url": {
+      "type": "string"
+    },
+    "reference": {
+      "type": "string"
+    },
+    "references": {
+      "short": {
+        "type": "string"
+      },
+      "relative": {
+        "type": "string"
+      },
+      "full": {
+        "type": "string"
+      }
+    },
+    "subscribed": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
     "_links": {
       "type": "object",
       "properties": {
-        "self": { "type": "uri" },
-        "epic_issues": { "type": "uri" },
-        "group": { "type": "uri" },
-        "parent": { "type": "uri" },
+        "self": {
+          "type": "string",
+          "format": "uri"
+        },
+        "epic_issues": {
+          "type": "string",
+          "format": "uri"
+        },
+        "group": {
+          "type": "string",
+          "format": "uri"
+        },
+        "parent": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
         "additionalProperties": false
       }
     },
-    "color": { "type": "string" },
-    "text_color": { "type": "string" }
+    "color": {
+      "type": "string"
+    },
+    "text_color": {
+      "type": "string"
+    }
   },
   "required": [
-    "id", "iid", "group_id", "title", "confidential", "_links"
+    "id",
+    "iid",
+    "group_id",
+    "title",
+    "confidential",
+    "_links"
   ],
   "additionalProperties": true
 }

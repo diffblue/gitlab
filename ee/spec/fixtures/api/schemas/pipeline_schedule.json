@@ -1,21 +1,44 @@
 {
   "type": "object",
   "allOf": [
-    { "$ref": "../../../../../spec/fixtures/api/schemas/pipeline_schedule.json" },
+    {
+      "$ref": "../../../../../spec/fixtures/api/schemas/pipeline_schedule.json"
+    },
     {
       "properties": {
         "owner": {
           "properties": {
-            "name": { "type": "string" },
-            "username": { "type": "string" },
-            "id": { "type": "integer" },
-            "state": { "type": "string" },
-            "avatar_url": { "type": "uri" },
-            "web_url": { "type": "uri" },
-            "is_gitlab_employee": { "type": "boolean" }
+            "name": {
+              "type": "string"
+            },
+            "username": {
+              "type": "string"
+            },
+            "id": {
+              "type": "integer"
+            },
+            "state": {
+              "type": "string"
+            },
+            "avatar_url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "web_url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "is_gitlab_employee": {
+              "type": "boolean"
+            }
           },
-          "required" : [
-            "id", "name", "username", "state", "avatar_url", "web_url"
+          "required": [
+            "id",
+            "name",
+            "username",
+            "state",
+            "avatar_url",
+            "web_url"
           ],
           "additionalProperties": false
         }

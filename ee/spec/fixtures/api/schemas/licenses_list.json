@@ -19,19 +19,31 @@
         ],
         "properties": {
           "id": {
-            "type": "integer, null"
+            "type": [
+              "integer",
+              "null"
+            ]
           },
           "name": {
             "type": "string"
           },
           "url": {
-            "type": "string, null"
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "spdx_identifier": {
-            "type": "string, null"
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "classification": {
-            "type": "string"
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "components": {
             "type": "array",
