@@ -110,7 +110,8 @@ module Elastic
         indexes :project_id, type: :integer
         indexes :author_id, type: :integer
         # For using prefix queries for an efficient search on items
-        indexes :namespace_ancestry_ids, type: :keyword
+        indexes :namespace_ancestry_ids, type: :keyword # deprecated
+        indexes :traversal_ids, type: :keyword
 
         ## Projects and Snippets
         indexes :visibility_level, type: :integer
