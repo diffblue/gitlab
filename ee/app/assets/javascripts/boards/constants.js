@@ -43,6 +43,11 @@ export const IterationFilterType = {
   current: 'Current',
 };
 
+export const HealthStatusFilterType = {
+  any: 'Any',
+  none: 'None',
+};
+
 export const IterationIDs = {
   NONE: 'gid://gitlab/Iteration/0',
   ANY: 'gid://gitlab/Iteration/-1',

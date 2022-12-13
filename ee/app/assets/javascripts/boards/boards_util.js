@@ -16,6 +16,7 @@ import {
   EPIC_LANE_BASE_HEIGHT,
   IterationFilterType,
   IterationIDs,
+  HealthStatusFilterType,
   MilestoneFilterType,
   MilestoneIDs,
   WeightFilterType,
@@ -263,9 +264,17 @@ export const FiltersInfo = {
   weight: {
     negatedSupport: true,
   },
+  // healthStatus is deprecated in favour of healthStatusFilter
   healthStatus: {
-    negatedSupport: false,
+    negatedSupport: true,
     remap: () => 'healthStatusFilter',
+    transform: (v) =>
+      v === HealthStatusFilterType.any || v === HealthStatusFilterType.none ? v.toUpperCase() : v,
+  },
+  healthStatusFilter: {
+    negatedSupport: true,
+    transform: (v) =>
+      v === HealthStatusFilterType.any || v === HealthStatusFilterType.none ? v.toUpperCase() : v,
   },
 };
 
