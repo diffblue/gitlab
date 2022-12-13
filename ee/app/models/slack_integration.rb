@@ -13,10 +13,10 @@ class SlackIntegration < ApplicationRecord
     encode_iv: false
 
   has_many :slack_integrations_scopes,
-    class_name: '::Integrations::SlackIntegrationsKnownApiScope'
+    class_name: '::Integrations::SlackWorkspace::IntegrationApiScope'
 
   has_many :slack_api_scopes,
-    class_name: '::Integrations::KnownSlackApiScope',
+    class_name: '::Integrations::SlackWorkspace::ApiScope',
     through: :slack_integrations_scopes
 
   scope :with_bot, -> { where.not(bot_user_id: nil) }
@@ -49,7 +49,7 @@ class SlackIntegration < ApplicationRecord
   end
 
   def authorized_scope_names=(names)
-    scopes = ::Integrations::KnownSlackApiScope.find_or_initialize_by_names(names)
+    scopes = ::Integrations::SlackWorkspace::ApiScope.find_or_initialize_by_names(names)
     self.slack_api_scopes = scopes
   end
 
