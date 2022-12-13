@@ -94,6 +94,22 @@ RSpec.describe SubscriptionsHelper do
       it { is_expected.to include(available_plans: '[{"id":"bronze_id","code":"bronze","price_per_year":48.0,"deprecated":true,"name":"Bronze Plan"}]') }
     end
 
+    context 'when a plan is eligible to use a promo code' do
+      let(:bronze_plan) do
+        {
+          "id" => "bronze_id",
+          "name" => "Bronze Plan",
+          "deprecated" => true,
+          "free" => false,
+          "code" => "bronze",
+          "price_per_year" => 48.0,
+          "eligible_to_use_promo_code": true
+        }
+      end
+
+      it { is_expected.to include(available_plans: '[{"id":"bronze_id","code":"bronze","price_per_year":48.0,"eligible_to_use_promo_code":true,"deprecated":true,"name":"Bronze Plan"}]') }
+    end
+
     context 'when bronze_plan has hide_card attribute set to true' do
       let(:bronze_plan) do
         {

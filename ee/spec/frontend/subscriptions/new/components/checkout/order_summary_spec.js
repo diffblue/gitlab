@@ -5,6 +5,7 @@ import Component from 'ee/subscriptions/new/components/order_summary.vue';
 import createStore from 'ee/subscriptions/new/store';
 import * as types from 'ee/subscriptions/new/store/mutation_types';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import PromoCodeInput from 'ee/subscriptions/new/components/promo_code_input.vue';
 
 describe('Order Summary', () => {
   Vue.use(Vuex);
@@ -14,8 +15,20 @@ describe('Order Summary', () => {
 
   const availablePlans = [
     { id: 'firstPlanId', code: 'bronze', price_per_year: 48, name: 'bronze plan' },
-    { id: 'secondPlanId', code: 'silver', price_per_year: 228, name: 'silver plan' },
-    { id: 'thirdPlanId', code: 'gold', price_per_year: 1188, name: 'gold plan' },
+    {
+      id: 'secondPlanId',
+      code: 'silver',
+      price_per_year: 228,
+      name: 'silver plan',
+      eligible_to_use_promo_code: true,
+    },
+    {
+      id: 'thirdPlanId',
+      code: 'gold',
+      price_per_year: 1188,
+      name: 'gold plan',
+      eligible_to_use_promo_code: false,
+    },
   ];
 
   const initialData = {
@@ -27,6 +40,7 @@ describe('Order Summary', () => {
 
   const findTaxInfoLine = () => wrapper.findByTestId('tax-info-line');
   const findTaxHelpLink = () => wrapper.findByTestId('tax-help-link');
+  const findPromoCodeInput = () => wrapper.findComponent(PromoCodeInput);
 
   const store = createStore(initialData);
   const createComponent = (opts = {}) => {
@@ -254,6 +268,24 @@ describe('Order Summary', () => {
           );
         });
       });
+    });
+  });
+
+  describe('promo code', () => {
+    it('shows promo code input if eligible', async () => {
+      await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
+
+      expect(findPromoCodeInput().exists()).toBe(true);
+    });
+
+    it('doesnt show promo code input if not eligible', async () => {
+      await store.commit(types.UPDATE_SELECTED_PLAN, 'firstPlanId');
+
+      expect(findPromoCodeInput().exists()).toBe(false);
+
+      await store.commit(types.UPDATE_SELECTED_PLAN, 'thirdPlanId');
+
+      expect(findPromoCodeInput().exists()).toBe(false);
     });
   });
 });

@@ -69,6 +69,7 @@ export default {
         })
       }}
     </div>
+    <slot name="promo-code"></slot>
     <div>
       <div class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-my-5"></div>
       <div class="gl-display-flex gl-justify-content-space-between gl-text-gray-500 gl-mb-2">

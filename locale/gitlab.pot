@@ -8220,6 +8220,9 @@ msgstr ""
 msgid "Checkout|Country"
 msgstr ""
 
+msgid "Checkout|Coupon code (optional)"
+msgstr ""
+
 msgid "Checkout|Create a new group"
 msgstr ""
 

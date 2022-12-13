@@ -49,7 +49,17 @@ module SubscriptionsHelper
     GitlabSubscriptions::FetchSubscriptionPlansService.new(plan: :free).execute
       .map(&:symbolize_keys)
       .reject { |plan_data| plan_data[:free] }
-      .map { |plan_data| plan_data.slice(:id, :code, :price_per_year, :deprecated, :name, :hide_card) }
+      .map do |plan_data|
+        plan_data.slice(
+          :id,
+          :code,
+          :price_per_year,
+          :eligible_to_use_promo_code,
+          :deprecated,
+          :name,
+          :hide_card
+        )
+      end
   end
 
   def subscription_available_plans
