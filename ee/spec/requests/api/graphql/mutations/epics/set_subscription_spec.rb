@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Set an Epic Subscription' do
+RSpec.describe 'Set an Epic Subscription', feature_category: :portfolio_management do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }

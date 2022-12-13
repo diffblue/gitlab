@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Setting the epic of an issue' do
+RSpec.describe 'Setting the epic of an issue', feature_category: :team_planning do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }

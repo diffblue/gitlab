@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'CreateApiFuzzingCiConfiguration' do
+RSpec.describe 'CreateApiFuzzingCiConfiguration', feature_category: :fuzz_testing do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project) }

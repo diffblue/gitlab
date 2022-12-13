@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Update a compliance framework' do
+RSpec.describe 'Update a compliance framework', feature_category: :compliance_management do
   include GraphqlHelpers
 
   let_it_be(:namespace) { create(:group) }

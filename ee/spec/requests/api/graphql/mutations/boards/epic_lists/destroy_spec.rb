@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Destroy an epic board list' do
+RSpec.describe 'Destroy an epic board list', feature_category: :portfolio_management do
   include GraphqlHelpers
 
   let_it_be(:current_user, refind: true) { create(:user) }

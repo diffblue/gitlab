@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Create test case' do
+RSpec.describe 'Create test case', feature_category: :quality_management do
   include GraphqlHelpers
 
   let_it_be_with_refind(:project) { create(:project, :private) }

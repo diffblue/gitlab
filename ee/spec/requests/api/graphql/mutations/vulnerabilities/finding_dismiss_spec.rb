@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-RSpec.describe 'Dismissing a Vulnerabilities::Finding object' do
+RSpec.describe 'Dismissing a Vulnerabilities::Finding object', feature_category: :vulnerability_management do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }

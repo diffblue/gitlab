@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'getting Incident Management on-call shifts' do
+RSpec.describe 'getting Incident Management on-call shifts', feature_category: :incident_management do
   include GraphqlHelpers
 
   let_it_be(:participant) { create(:incident_management_oncall_participant, :with_developer_access) }

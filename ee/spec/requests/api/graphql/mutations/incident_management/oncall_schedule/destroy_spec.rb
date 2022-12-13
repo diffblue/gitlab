@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Removing an on-call schedule' do
+RSpec.describe 'Removing an on-call schedule', feature_category: :incident_management do
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }

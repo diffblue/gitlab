@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Unassigns scan execution policy project from a project/namespace' do
+RSpec.describe 'Unassigns scan execution policy project from a project/namespace', feature_category: :security_policy_management do
   include GraphqlHelpers
 
   let_it_be_with_refind(:owner) { create(:user) }

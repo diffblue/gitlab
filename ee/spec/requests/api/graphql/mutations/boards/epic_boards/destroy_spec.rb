@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Mutations::Boards::EpicBoards::Destroy do
+RSpec.describe Mutations::Boards::EpicBoards::Destroy, feature_category: :portfolio_management do
   include GraphqlHelpers
 
   let_it_be_with_reload(:current_user) { create(:user) }

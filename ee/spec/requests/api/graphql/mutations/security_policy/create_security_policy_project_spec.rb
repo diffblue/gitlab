@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Creates and assigns scan execution policy project to a project/namespace' do
+RSpec.describe 'Creates and assigns scan execution policy project to a project/namespace', feature_category: :security_policy_management do
   include GraphqlHelpers
 
   let_it_be_with_refind(:owner) { create(:user) }

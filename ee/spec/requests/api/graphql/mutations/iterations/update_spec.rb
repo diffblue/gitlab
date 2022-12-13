@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Updating an Iteration' do
+RSpec.describe 'Updating an Iteration', feature_category: :team_planning do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }

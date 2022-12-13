@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Mutations::Analytics::DevopsAdoption::EnabledNamespaces::BulkEnable do
+RSpec.describe Mutations::Analytics::DevopsAdoption::EnabledNamespaces::BulkEnable, feature_category: :devops_reports do
   include GraphqlHelpers
 
   let_it_be(:display_group) { create(:group, name: 'dddd') }

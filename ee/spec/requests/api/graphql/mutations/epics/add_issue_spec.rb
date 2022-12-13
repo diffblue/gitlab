@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Add an issue to an Epic' do
+RSpec.describe 'Add an issue to an Epic', feature_category: :portfolio_management do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
