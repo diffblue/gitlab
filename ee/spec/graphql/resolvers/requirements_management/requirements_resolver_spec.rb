@@ -15,9 +15,9 @@ RSpec.describe Resolvers::RequirementsManagement::RequirementsResolver do
   end
 
   context 'with a project' do
-    let_it_be(:requirement1) { create(:work_item, :requirement, project: project, state: :opened, created_at: 5.hours.ago, title: 'it needs to do the thing', author: current_user).requirement }
-    let_it_be(:requirement2) { create(:work_item, :requirement, project: project, state: :closed, created_at: 3.hours.ago, title: 'it needs to not break', author: other_user).requirement }
-    let_it_be(:requirement3) { create(:work_item, :requirement, project: project, state: :closed, created_at: 4.hours.ago, title: 'do the kubernetes!', author: third_user).requirement }
+    let_it_be(:requirement1) { create(:work_item, :requirement, project: project, iid: 2033, state: :opened, created_at: 5.hours.ago, title: 'it needs to do the thing', author: current_user).requirement }
+    let_it_be(:requirement2) { create(:work_item, :requirement, project: project, iid: 121, state: :closed, created_at: 3.hours.ago, title: 'it needs to not break', author: other_user).requirement }
+    let_it_be(:requirement3) { create(:work_item, :requirement, project: project, iid: 232, state: :closed, created_at: 4.hours.ago, title: 'do the kubernetes!', author: third_user).requirement }
 
     before do
       project.add_developer(current_user)

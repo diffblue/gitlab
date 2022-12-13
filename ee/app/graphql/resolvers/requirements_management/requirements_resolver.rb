@@ -27,14 +27,32 @@ module Resolvers
         project = object.respond_to?(:sync) ? object.sync : object
         return ::RequirementsManagement::Requirement.none if project.nil?
 
-        args[:project_id] = project.id
-        args[:iids] ||= [args[:iid]].compact
+        args = sanitize_arguments(args, project)
+
         requirements = apply_lookahead(find_requirements(args))
 
         offset_pagination(requirements)
       end
 
       private
+
+      def sanitize_arguments(args, project)
+        args.tap do |values|
+          values[:project_id] = project.id
+          values[:issue_types] = [:requirement]
+          values[:iids] ||= [args[:iid]].compact
+
+          # The'archived' state does not exist for work items
+          # we need to translate it to 'closed' here to proper filter items
+          values[:state] = 'closed' if values[:state].to_s == 'archived'
+
+          # Last test report state is a widget on work items
+          # We need to parse the parameter here to filter work items correctly
+          if values[:last_test_report_state].present?
+            values[:status_widget] = { status: args.delete(:last_test_report_state) }
+          end
+        end
+      end
 
       def preloads
         {
@@ -52,9 +70,23 @@ module Resolvers
         }
       end
 
+      # rubocop: disable CodeReuse/ActiveRecord
       def find_requirements(args)
-        ::RequirementsManagement::RequirementsFinder.new(context[:current_user], args).execute
+        legacy_iids = args.delete(:iids)
+
+        work_items_ids = ::WorkItems::WorkItemsFinder.new(current_user, args).execute.select(:id)
+
+        requirements =
+          ::RequirementsManagement::Requirement.where(issue_id: work_items_ids.reorder(nil))
+
+        # keeps old requirement iids filter backwards compatible
+        requirements = requirements.where(iid: legacy_iids) if legacy_iids.present?
+
+        # Preserve the same ordering from the ids returned from WorkItemsFinder
+        # Prevents joining issues table again to have the correct sort
+        requirements.order(Arel.sql("array_position(ARRAY(#{work_items_ids.to_sql})::bigint[], requirements.issue_id)"))
       end
+      # rubocop: enable CodeReuse/ActiveRecord
     end
   end
 end
