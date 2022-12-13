@@ -7224,7 +7224,91 @@ msgstr ""
 msgid "Broadcast Messages"
 msgstr ""
 
+msgid "BroadcastMessages|Add broadcast message"
+msgstr ""
+
+msgid "BroadcastMessages|Allow users to dismiss the broadcast message"
+msgstr ""
+
+msgid "BroadcastMessages|Banner"
+msgstr ""
+
+msgid "BroadcastMessages|Blue"
+msgstr ""
+
+msgid "BroadcastMessages|Dark"
+msgstr ""
+
+msgid "BroadcastMessages|Dismissable"
+msgstr ""
+
+msgid "BroadcastMessages|Ends at"
+msgstr ""
+
+msgid "BroadcastMessages|Green"
+msgstr ""
+
+msgid "BroadcastMessages|Indigo"
+msgstr ""
+
+msgid "BroadcastMessages|Light"
+msgstr ""
+
+msgid "BroadcastMessages|Light Blue"
+msgstr ""
+
+msgid "BroadcastMessages|Light Green"
+msgstr ""
+
+msgid "BroadcastMessages|Light Indigo"
+msgstr ""
+
+msgid "BroadcastMessages|Light Red"
+msgstr ""
+
+msgid "BroadcastMessages|Message"
+msgstr ""
+
+msgid "BroadcastMessages|Notification"
+msgstr ""
+
+msgid "BroadcastMessages|Paths can contain wildcards, like */welcome"
+msgstr ""
+
+msgid "BroadcastMessages|Red"
+msgstr ""
+
+msgid "BroadcastMessages|Starts at"
+msgstr ""
+
+msgid "BroadcastMessages|Target Path"
+msgstr ""
+
+msgid "BroadcastMessages|Target roles"
+msgstr ""
+
+msgid "BroadcastMessages|The broadcast message displays only to users in projects and groups who have these roles."
+msgstr ""
+
+msgid "BroadcastMessages|Theme"
+msgstr ""
+
+msgid "BroadcastMessages|There was an error adding broadcast message."
+msgstr ""
+
+msgid "BroadcastMessages|There was an error updating broadcast message."
+msgstr ""
+
 msgid "BroadcastMessages|There was an issue deleting this message, please try again later."
+msgstr ""
+
+msgid "BroadcastMessages|Type"
+msgstr ""
+
+msgid "BroadcastMessages|Update broadcast message"
+msgstr ""
+
+msgid "BroadcastMessages|Your message here"
 msgstr ""
 
 msgid "Browse Directory"
