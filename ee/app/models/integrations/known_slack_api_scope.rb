@@ -4,7 +4,7 @@ module Integrations
   class KnownSlackApiScope < ApplicationRecord
     self.table_name = 'known_slack_api_scopes'
 
-    def self.find_or_initialize_by_name(names)
+    def self.find_or_initialize_by_names(names)
       found = where(name: names).to_a
       missing_names = names - found.pluck(:name)
 
