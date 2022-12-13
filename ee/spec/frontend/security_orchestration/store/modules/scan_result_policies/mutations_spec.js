@@ -16,10 +16,10 @@ describe('ScanResultPolicies mutations', () => {
     });
   });
 
-  describe(types.INVALID_BRANCHES, () => {
+  describe(types.INVALID_PROTECTED_BRANCHES, () => {
     it('appends new branches into invalidBranches', () => {
       const branchName = 'main';
-      mutations[types.INVALID_BRANCHES](state, branchName);
+      mutations[types.INVALID_PROTECTED_BRANCHES](state, branchName);
       expect(state.invalidBranches).toEqual([branchName]);
     });
   });

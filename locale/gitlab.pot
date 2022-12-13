@@ -37196,7 +37196,7 @@ msgstr ""
 msgid "SecurityOrchestration|Summary"
 msgstr ""
 
-msgid "SecurityOrchestration|The following branches do not exist on this development project: %{branches}. Please review all branches to ensure the values are accurate before updating this policy."
+msgid "SecurityOrchestration|The following branches do not exist on this development project: %{branches}. Please review all protected branches to ensure the values are accurate before updating this policy."
 msgstr ""
 
 msgid "SecurityOrchestration|There was a problem creating the new security policy"
@@ -37259,10 +37259,10 @@ msgstr ""
 msgid "SecurityOrchestration|a"
 msgstr ""
 
-msgid "SecurityOrchestration|all branches"
+msgid "SecurityOrchestration|all namespaces"
 msgstr ""
 
-msgid "SecurityOrchestration|all namespaces"
+msgid "SecurityOrchestration|all protected branches"
 msgstr ""
 
 msgid "SecurityOrchestration|an"

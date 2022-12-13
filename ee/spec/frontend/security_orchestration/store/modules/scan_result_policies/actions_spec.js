@@ -72,7 +72,7 @@ describe('ScanResultPolicies actions', () => {
     it.each`
       status                  | mutations
       ${httpStatus.OK}        | ${[]}
-      ${httpStatus.NOT_FOUND} | ${[{ type: types.INVALID_BRANCHES, payload: branchName }]}
+      ${httpStatus.NOT_FOUND} | ${[{ type: types.INVALID_PROTECTED_BRANCHES, payload: branchName }]}
     `('triggers $mutations.length mutation when status is $status', ({ status, mutations }) => {
       mock.onGet(apiEndpoint).replyOnce(status);
       testAction(actions.fetchBranch, { branch: branchName, projectId }, state, mutations, []);

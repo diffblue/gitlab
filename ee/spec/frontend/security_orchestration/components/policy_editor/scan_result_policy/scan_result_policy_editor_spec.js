@@ -391,7 +391,7 @@ describe('ScanResultPolicyEditor', () => {
   it.each`
     status                  | errorMessage
     ${httpStatus.OK}        | ${''}
-    ${httpStatus.NOT_FOUND} | ${'The following branches do not exist on this development project: main. Please review all branches to ensure the values are accurate before updating this policy.'}
+    ${httpStatus.NOT_FOUND} | ${'The following branches do not exist on this development project: main. Please review all protected branches to ensure the values are accurate before updating this policy.'}
   `(
     'triggers error event with content: "$errorMessage" when http status is $status',
     async ({ status, errorMessage }) => {

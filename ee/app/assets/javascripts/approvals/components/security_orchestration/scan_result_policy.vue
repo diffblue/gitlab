@@ -5,7 +5,7 @@ import { __ } from '~/locale';
 export default {
   i18n: {
     details: __('View details'),
-    allBranches: __('All branches'),
+    allProtectedBranches: __('All protected branches'),
   },
   components: {
     GlButton,
@@ -23,7 +23,7 @@ export default {
     },
     branches() {
       const branches = this.policy.rules.flatMap((rule) => rule.branches);
-      return branches.length > 0 ? branches.join(', ') : this.$options.i18n.allBranches;
+      return branches.length > 0 ? branches.join(', ') : this.$options.i18n.allProtectedBranches;
     },
     approvalsRequired() {
       return this.policyAction.approvals_required;

@@ -1,5 +1,5 @@
 import { sprintf, s__ } from '~/locale';
-import { NO_RULE_MESSAGE, INVALID_BRANCHES } from '../../constants';
+import { NO_RULE_MESSAGE, INVALID_PROTECTED_BRANCHES } from '../../constants';
 import { convertScannersToTitleCase } from '../../utils';
 
 /**
@@ -72,7 +72,7 @@ const humanizeBranches = (branches) => {
   const hasNoBranch = branches.length === 0;
 
   if (hasNoBranch) {
-    return s__('SecurityOrchestration|all branches');
+    return s__('SecurityOrchestration|all protected branches');
   }
 
   return sprintf(s__('SecurityOrchestration|the %{branches}'), {
@@ -148,5 +148,5 @@ export const humanizeInvalidBranchesError = (branches) => {
   } else {
     sentence.push(branches.join());
   }
-  return sprintf(INVALID_BRANCHES, { branches: sentence.join('') });
+  return sprintf(INVALID_PROTECTED_BRANCHES, { branches: sentence.join('') });
 };

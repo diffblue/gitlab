@@ -67,9 +67,9 @@ describe('humanizeRules', () => {
     expect(humanizeRules(mockRules)).toStrictEqual(mockRulesHumanized);
   });
 
-  it('returns a single rule as a human-readable string for all branches', () => {
+  it('returns a single rule as a human-readable string for all protected branches', () => {
     expect(humanizeRules([mockRulesEmptyBranch])).toStrictEqual([
-      'Sast scanner finds a critical vulnerability in an open merge request targeting all branches.',
+      'Sast scanner finds a critical vulnerability in an open merge request targeting all protected branches.',
     ]);
   });
 
@@ -83,19 +83,19 @@ describe('humanizeRules', () => {
 describe('humanizeInvalidBranchesError', () => {
   it('returns message without any branch name for an empty array', () => {
     expect(humanizeInvalidBranchesError([])).toEqual(
-      'The following branches do not exist on this development project: . Please review all branches to ensure the values are accurate before updating this policy.',
+      'The following branches do not exist on this development project: . Please review all protected branches to ensure the values are accurate before updating this policy.',
     );
   });
 
   it('returns message with a single branch name for an array with single element', () => {
     expect(humanizeInvalidBranchesError(['main'])).toEqual(
-      'The following branches do not exist on this development project: main. Please review all branches to ensure the values are accurate before updating this policy.',
+      'The following branches do not exist on this development project: main. Please review all protected branches to ensure the values are accurate before updating this policy.',
     );
   });
 
   it('returns message with multiple branch names for array with multiple elements', () => {
     expect(humanizeInvalidBranchesError(['main', 'protected', 'master'])).toEqual(
-      'The following branches do not exist on this development project: main, protected and master. Please review all branches to ensure the values are accurate before updating this policy.',
+      'The following branches do not exist on this development project: main, protected and master. Please review all protected branches to ensure the values are accurate before updating this policy.',
     );
   });
 });

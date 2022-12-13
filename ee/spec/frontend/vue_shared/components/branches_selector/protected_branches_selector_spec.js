@@ -6,6 +6,7 @@ import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selecto
 import {
   ALL_BRANCHES,
   ALL_PROTECTED_BRANCHES,
+  PLACEHOLDER,
 } from 'ee/vue_shared/components/branches_selector/constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import { TEST_BRANCHES_SELECTIONS, TEST_PROJECT_ID, TEST_PROTECTED_BRANCHES } from './mock_data';
@@ -58,28 +59,40 @@ describe('Protected Branches Selector', () => {
     });
 
     it.each`
-      selectedBranches             | selectedBranchesNames | branchName
-      ${[ALL_BRANCHES]}            | ${[]}                 | ${ALL_BRANCHES.name}
-      ${[ALL_PROTECTED_BRANCHES]}  | ${[]}                 | ${ALL_BRANCHES.name}
-      ${[]}                        | ${['development']}    | ${'development'}
-      ${[{ id: 1, name: 'main' }]} | ${[]}                 | ${'main'}
-      ${[{ id: 1, name: 'main' }]} | ${['development']}    | ${'main'}
+      allowAllBranchesOption | allowAllProtectedBranchesOption | selectedBranches                          | selectedBranchesNames | branchName
+      ${true}                | ${false}                        | ${[ALL_BRANCHES]}                         | ${[]}                 | ${ALL_BRANCHES.name}
+      ${true}                | ${false}                        | ${[ALL_PROTECTED_BRANCHES]}               | ${[]}                 | ${ALL_BRANCHES.name}
+      ${true}                | ${false}                        | ${[]}                                     | ${['development']}    | ${'development'}
+      ${true}                | ${false}                        | ${[{ id: 1, name: 'main' }]}              | ${[]}                 | ${'main'}
+      ${true}                | ${false}                        | ${[{ id: 1, name: 'main' }]}              | ${['development']}    | ${'main'}
+      ${true}                | ${true}                         | ${[ALL_BRANCHES, ALL_PROTECTED_BRANCHES]} | ${[]}                 | ${ALL_BRANCHES.name}
+      ${false}               | ${true}                         | ${[ALL_PROTECTED_BRANCHES]}               | ${[]}                 | ${ALL_PROTECTED_BRANCHES.name}
+      ${false}               | ${false}                        | ${[]}                                     | ${[]}                 | ${PLACEHOLDER.name}
     `(
-      'with selectedBranches and selectedBranchesNames set to $selectedBranches and $selectedBranchesNames the item checked is: $branchName',
-      async ({ selectedBranches, selectedBranchesNames, branchName }) => {
+      'with allowAllBranchesOption set to $allowAllBranchesOption and allowAllProtectedBranchesOption set to $allowAllProtectedBranchesOption and selectedBranches set to $selectedBranches and selectedBranchesNames set to $selectedBranchesNames the item checked is: $branchName',
+      async ({
+        allowAllBranchesOption,
+        allowAllProtectedBranchesOption,
+        selectedBranches,
+        selectedBranchesNames,
+        branchName,
+      }) => {
         createComponent({
           selectedBranches,
           selectedBranchesNames,
+          allowAllBranchesOption,
+          allowAllProtectedBranchesOption,
         });
         await waitForPromises();
 
         expect(findDropdown().props('text')).toBe(branchName);
-        expect(
-          findDropdownItems()
-            .filter((item) => item.text() === branchName)
-            .at(0)
-            .props('isChecked'),
-        ).toBe(true);
+        if (selectedBranches.length > 0 || selectedBranchesNames.length > 0)
+          expect(
+            findDropdownItems()
+              .filter((item) => item.text() === branchName)
+              .at(0)
+              .props('isChecked'),
+          ).toBe(true);
       },
     );
 
@@ -93,6 +106,30 @@ describe('Protected Branches Selector', () => {
       expect(wrapper.emitted('apiError')).toStrictEqual([[{ hasErrored: false }]]);
       expect(findSelectableBranches()).toStrictEqual(branchNames());
       expect(findDropdown().props('loading')).toBe(false);
+    });
+
+    describe('with allow all branches option', () => {
+      it('set to true', async () => {
+        createComponent({
+          allowAllBranchesOption: true,
+        });
+        await waitForPromises();
+
+        expect(findDropdownItems().filter((item) => item.text() === ALL_BRANCHES.name).length).toBe(
+          1,
+        );
+      });
+
+      it('set to false', async () => {
+        createComponent({
+          allowAllBranchesOption: false,
+        });
+        await waitForPromises();
+
+        expect(findDropdownItems().filter((item) => item.text() === ALL_BRANCHES.name).length).toBe(
+          0,
+        );
+      });
     });
 
     describe('with allow all protected branches option', () => {

@@ -45,8 +45,8 @@ export const GRAPHQL_ERROR_MESSAGE = s__(
 
 export const NO_RULE_MESSAGE = s__('SecurityOrchestration|No rules defined - policy will not run.');
 
-export const INVALID_BRANCHES = s__(
-  'SecurityOrchestration|The following branches do not exist on this development project: %{branches}. Please review all branches to ensure the values are accurate before updating this policy.',
+export const INVALID_PROTECTED_BRANCHES = s__(
+  'SecurityOrchestration|The following branches do not exist on this development project: %{branches}. Please review all protected branches to ensure the values are accurate before updating this policy.',
 );
 
 export const ADD_RULE_LABEL = s__('SecurityOrchestration|Add rule');

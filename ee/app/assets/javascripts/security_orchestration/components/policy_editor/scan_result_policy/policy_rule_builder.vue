@@ -6,7 +6,7 @@ import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/sto
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import { ALL_BRANCHES } from 'ee/vue_shared/components/branches_selector/constants';
+import { ALL_PROTECTED_BRANCHES } from 'ee/vue_shared/components/branches_selector/constants';
 import { APPROVAL_VULNERABILITY_STATES } from './lib';
 
 export default {
@@ -56,7 +56,7 @@ export default {
         return this.initRule.branches;
       },
       set(value) {
-        const branches = value.id === ALL_BRANCHES.id ? [] : [value.name];
+        const branches = value.id === ALL_PROTECTED_BRANCHES.id ? [] : [value.name];
         this.triggerChanged({ branches });
       },
     },
@@ -140,6 +140,8 @@ export default {
             <protected-branches-selector
               v-if="displayBranchSelector"
               v-model="branchesToAdd"
+              :allow-all-branches-option="false"
+              :allow-all-protected-branches-option="true"
               :project-id="namespaceId"
               :selected-branches-names="branchesToAdd"
             />
