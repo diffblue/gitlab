@@ -1260,6 +1260,19 @@ RSpec.describe TodoService do
   end
 
   describe '#create_member_access_request' do
+    context 'snowplow event tracking' do
+      it 'does not track snowplow event when todos are for access request for project', :snowplow do
+        user = create(:user)
+        project = create(:project)
+        requester = create(:project_member, project: project, user: assignee)
+        project.add_owner(user)
+
+        expect_no_snowplow_event
+
+        service.create_member_access_request(requester)
+      end
+    end
+
     context 'when the group has more than 10 owners' do
       it 'creates todos for 10 recently active group owners' do
         group = create(:group, :public)
