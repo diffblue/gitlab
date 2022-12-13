@@ -126,7 +126,8 @@ RSpec.describe Projects::SlackApplicationInstallService do
             'user_id' => user_id,
             'bot_user_id' => bot_user_id,
             'bot_access_token' => bot_access_token,
-            'updated_at' => Time.current
+            'updated_at' => Time.current,
+            'authorized_scope_names' => %w[chat:a chat:b chat:c]
           }
 
           service.execute

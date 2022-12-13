@@ -71,7 +71,10 @@ module Projects
       )
 
       SlackIntegration.legacy_by_team(installation.team_id).each_batch do |batch|
+        batch_ids = batch.pluck(:id) # rubocop: disable CodeReuse/ActiveRecord
         batch.update_all(updatable_attributes)
+
+        ::Integrations::SlackWorkspace::IntegrationApiScope.update_scopes(batch_ids, installation.slack_api_scopes)
       end
     end
   end
