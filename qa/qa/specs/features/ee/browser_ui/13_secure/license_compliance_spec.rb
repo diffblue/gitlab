@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Secure', :runner, product_group: :composition_analysis, quarantine: {
-    issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/385135',
-    type: :investigating
-  } do
+  RSpec.describe 'Secure', :runner, product_group: :composition_analysis do
     describe 'License Compliance' do
       before(:all) do
         @project = Resource::Project.fabricate_via_api! do |project|
