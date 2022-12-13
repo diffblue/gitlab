@@ -27,7 +27,7 @@ export default {
   },
   computed: {
     qaSelector() {
-      return `filter_${this.text.toLowerCase().replace(' ', '_')}_dropdown`;
+      return `filter_${this.text.toLowerCase().replaceAll(' ', '_')}_dropdown_item`;
     },
   },
   methods: {

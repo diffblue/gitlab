@@ -48,8 +48,8 @@ describe('Filter Item component', () => {
       createWrapper({ disabled: true, tooltip });
     });
 
-    it('renders the disabled dropdown item correctly', () => {
-      expect(wrapper.element).toMatchSnapshot();
+    it('disables the dropdown item', () => {
+      expect(dropdownItem().attributes('disabled')).toBe('true');
     });
 
     it('displays tooltip', () => {

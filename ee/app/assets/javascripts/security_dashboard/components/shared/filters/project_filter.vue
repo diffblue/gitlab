@@ -280,6 +280,7 @@ export default {
           v-for="{ id, name } in selectableProjects"
           :key="id"
           :is-checked="selected.includes(id)"
+          :text="name"
           :data-testid="id"
           @click="toggleSelected(id)"
         >
