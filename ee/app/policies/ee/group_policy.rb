@@ -512,6 +512,13 @@ module EE
       rule { security_orchestration_policies_enabled & can?(:owner_access) }.policy do
         enable :update_security_orchestration_policy_project
       end
+
+      # Special case to allow support bot assigning service desk
+      # issues to epics in private groups using quick actions
+      rule { support_bot & has_project_with_service_desk_enabled }.policy do
+        enable :read_epic
+        enable :read_epic_iid
+      end
     end
 
     override :lookup_access_level!

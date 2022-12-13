@@ -5,6 +5,10 @@ class EpicPolicy < BasePolicy
 
   delegate { @subject.group }
 
+  condition(:service_desk_enabled) do
+    @subject.group.has_project_with_service_desk_enabled?
+  end
+
   desc 'Epic is confidential'
   condition(:confidential, scope: :subject) do
     @subject.confidential?
@@ -30,11 +34,21 @@ class EpicPolicy < BasePolicy
 
   desc 'User cannot read confidential epics'
   rule { confidential & ~can?(:reporter_access) }.policy do
-    prevent(*create_read_update_admin_destroy(:epic))
-    prevent :read_epic_iid
+    prevent :create_epic
+    prevent :update_epic
+    prevent :admin_epic
+    prevent :destroy_epic
     prevent :create_note
     prevent :award_emoji
     prevent :read_note
+  end
+
+  # Special case to not prevent support bot
+  # assiging issues to confidential epics using quick actions
+  # when group has projects with service desk enabled.
+  rule { confidential & ~can?(:reporter_access) & ~(support_bot & service_desk_enabled) }.policy do
+    prevent :read_epic
+    prevent :read_epic_iid
   end
 
   rule { ~anonymous & can?(:read_epic) }.policy do
