@@ -56,7 +56,7 @@ RSpec.describe 'getting a work item list for a project', feature_category: :team
       end
 
       before do
-        stub_licensed_features(requirements: true)
+        stub_licensed_features(requirements: true, okrs: true)
       end
 
       it 'returns work items including status', :aggregate_failures do

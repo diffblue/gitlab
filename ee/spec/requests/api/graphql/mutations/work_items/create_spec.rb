@@ -11,12 +11,12 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
 
   let(:mutation) { graphql_mutation(:workItemCreate, input.merge('projectPath' => project.full_path)) }
   let(:mutation_response) { graphql_mutation_response(:work_item_create) }
+  let(:widgets_response) { mutation_response['workItem']['widgets'] }
 
   context 'when user has permissions to create a work item' do
     let(:current_user) { developer }
 
     context 'with iteration widget input' do
-      let(:widgets_response) { mutation_response['workItem']['widgets'] }
       let(:fields) do
         <<~FIELDS
         workItem {
@@ -82,6 +82,77 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
 
             expect(mutation_response).to be_nil
           end
+        end
+      end
+    end
+
+    context 'when creating a key result' do
+      let_it_be(:parent) { create(:work_item, :objective, project: project) }
+
+      let(:fields) do
+        <<~FIELDS
+        workItem {
+          id
+          workItemType {
+            id
+          }
+          widgets {
+            type
+            ... on WorkItemWidgetHierarchy {
+              parent {
+                id
+              }
+            }
+          }
+        }
+        errors
+        FIELDS
+      end
+
+      let(:input) do
+        {
+          title: 'key result',
+          workItemTypeId: WorkItems::Type.default_by_type(:key_result).to_global_id.to_s,
+          hierarchyWidget: { 'parentId' => parent.to_global_id.to_s }
+        }
+      end
+
+      let(:mutation) { graphql_mutation(:workItemCreate, input.merge('projectPath' => project.full_path), fields) }
+      let(:widgets_response) { mutation_response['workItem']['widgets'] }
+
+      context 'when okrs are available' do
+        before do
+          stub_licensed_features(okrs: true)
+        end
+
+        it 'creates the work item' do
+          expect do
+            post_graphql_mutation(mutation, current_user: current_user)
+          end.to change { WorkItem.count }.by(1)
+
+          expect(response).to have_gitlab_http_status(:success)
+          expect(widgets_response).to include(
+            {
+              'parent' => { 'id' => parent.to_global_id.to_s },
+              'type' => 'HIERARCHY'
+            }
+          )
+        end
+      end
+
+      context 'when okrs are not available' do
+        before do
+          stub_licensed_features(okrs: false)
+        end
+
+        it 'returns error' do
+          expect do
+            post_graphql_mutation(mutation, current_user: current_user)
+          end.to not_change(WorkItem, :count)
+
+          expect(mutation_response['errors'])
+            .to contain_exactly(/cannot be added: is not allowed to add this type of parent/)
+          expect(mutation_response['workItem']).to be_nil
         end
       end
     end
