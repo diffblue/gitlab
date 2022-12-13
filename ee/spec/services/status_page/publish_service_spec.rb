@@ -38,6 +38,14 @@ RSpec.describe StatusPage::PublishService do
         it_behaves_like 'an incident management tracked event', :incident_management_incident_published do
           let(:current_user) { user }
         end
+
+        it_behaves_like 'Snowplow event tracking with RedisHLL context' do
+          let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+          let(:namespace) { project.namespace }
+          let(:category) { described_class.to_s }
+          let(:action) { 'incident_management_incident_published' }
+          let(:label) { 'redis_hll_counters.incident_management.incident_management_total_unique_counts_monthly' }
+        end
       end
 
       context 'when upload fails' do

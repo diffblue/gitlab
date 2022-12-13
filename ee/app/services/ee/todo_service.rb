@@ -54,7 +54,8 @@ module EE
     end
 
     def create_approval_required_todos(merge_request, approvers, author)
-      attributes = attributes_for_todo(merge_request.project, merge_request, author, ::Todo::APPROVAL_REQUIRED)
+      project = merge_request.project
+      attributes = attributes_for_todo(project, merge_request, author, ::Todo::APPROVAL_REQUIRED)
 
       # Preload project_authorizations to prevent n+1 queries
       merge_request.project.team.max_member_access_for_user_ids(approvers.map(&:id))
@@ -63,12 +64,13 @@ module EE
         approver.can?(:approve_merge_request, merge_request)
       end
 
-      create_todos(approvers, attributes)
+      create_todos(approvers, attributes, project.namespace, project)
     end
 
     def create_merge_train_removed_todo(merge_request, user)
-      attributes = attributes_for_todo(merge_request.project, merge_request, user, ::Todo::MERGE_TRAIN_REMOVED)
-      create_todos(user, attributes)
+      project = merge_request.project
+      attributes = attributes_for_todo(project, merge_request, user, ::Todo::MERGE_TRAIN_REMOVED)
+      create_todos(user, attributes, project.namespace, project)
     end
   end
 end

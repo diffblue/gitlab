@@ -97,7 +97,23 @@ module StatusPage
     end
 
     def track_event
-      track_usage_event(:incident_management_incident_published, user.id) unless should_unpublish?
+      return if should_unpublish?
+
+      namespace = project.namespace
+      event = 'incident_management_incident_published'
+      track_usage_event(event, user.id)
+
+      return unless Feature.enabled?(:route_hll_to_snowplow_phase2, namespace)
+
+      Gitlab::Tracking.event(
+        self.class.to_s,
+        event,
+        project: project,
+        namespace: namespace,
+        user: user,
+        label: 'redis_hll_counters.incident_management.incident_management_total_unique_counts_monthly',
+        context: [Gitlab::Tracking::ServicePingContext.new(data_source: :redis_hll, event: event).to_context]
+      )
     end
   end
 end
