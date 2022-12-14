@@ -35,20 +35,20 @@ RSpec.describe 'admin/dashboard/index.html.haml' do
     it 'includes license overview' do
       render
 
-      expect(rendered).to have_content "License overview"
-      expect(rendered).to have_content "Plan:"
-      expect(rendered).to have_content "Expires:"
-      expect(rendered).to have_content "Licensed to:"
-      expect(rendered).to have_link 'View details', href: admin_subscription_path
+      expect(rendered).to have_content _('License overview')
+      expect(rendered).to have_content _('Plan:')
+      expect(rendered).to have_content s_('Subscriptions|End date:')
+      expect(rendered).to have_content _('Licensed to:')
+      expect(rendered).to have_link _('View details'), href: admin_subscription_path
     end
 
     it 'includes license breakdown' do
       render
 
-      expect(rendered).to have_content "Users in License"
-      expect(rendered).to have_content "Billable Users"
-      expect(rendered).to have_content "Maximum Users"
-      expect(rendered).to have_content "Users over License"
+      expect(rendered).to have_content _('Users in License')
+      expect(rendered).to have_content _('Billable Users')
+      expect(rendered).to have_content _('Maximum Users')
+      expect(rendered).to have_content _('Users over License')
     end
   end
 
@@ -83,7 +83,7 @@ RSpec.describe 'admin/dashboard/index.html.haml' do
                         start_date: today - 30.days,
                         expire_date: today + 30.days,
                         is_trial: false,
-                        message: "Expires: #{(today + 30.days).strftime('%b %-d, %Y')}"
+                        message: "#{s_('Subscriptions|End date:')} #{(today + 30.days).strftime('%b %-d, %Y')}"
       end
 
       context 'when is expired' do
@@ -92,7 +92,7 @@ RSpec.describe 'admin/dashboard/index.html.haml' do
                         start_date: today - 60.days,
                         expire_date: today - 30.days,
                         is_trial: false,
-                        message: "Expired: #{(today - 30.days).strftime('%b %-d, %Y')}"
+                        message: "#{_('Expired:')} #{(today - 30.days).strftime('%b %-d, %Y')}"
       end
 
       context 'when never expires' do
@@ -101,7 +101,7 @@ RSpec.describe 'admin/dashboard/index.html.haml' do
                         start_date: today - 30.days,
                         expire_date: nil,
                         is_trial: false,
-                        message: "Expires: Never"
+                        message: "#{s_('Subscriptions|End date:')} #{s_('Subscriptions|None')}"
       end
     end
 
@@ -113,7 +113,7 @@ RSpec.describe 'admin/dashboard/index.html.haml' do
                         start_date: today - 30.days,
                         expire_date: today + days_left.days,
                         is_trial: true,
-                        message: "Expires: Free trial will expire in #{days_left} days"
+                        message: "#{s_('Subscriptions|End date:')} Free trial will expire in #{days_left} days"
       end
 
       context 'when is expired' do
@@ -122,7 +122,7 @@ RSpec.describe 'admin/dashboard/index.html.haml' do
                         start_date: today - 60.days,
                         expire_date: today - 30.days,
                         is_trial: true,
-                        message: "Expired: #{(today - 30.days).strftime('%b %-d, %Y')}"
+                        message: "#{_('Expired:')} #{(today - 30.days).strftime('%b %-d, %Y')}"
       end
 
       context 'when never expires' do
@@ -131,7 +131,7 @@ RSpec.describe 'admin/dashboard/index.html.haml' do
                         start_date: today - 30.days,
                         expire_date: nil,
                         is_trial: true,
-                        message: "Expires: Never"
+                        message: "#{s_('Subscriptions|End date:')} #{s_('Subscriptions|None')}"
       end
     end
   end
