@@ -50,7 +50,7 @@ export default {
     },
   },
   i18n: {
-    purchasedUsageHelpLink: projectHelpPaths.usageQuotas,
+    purchasedUsageHelpLink: projectHelpPaths.usageQuotasNamespaceStorageLimit,
     purchasedUsageHelpText: STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE,
     usedUsageHelpLink: projectHelpPaths.usageQuotas,
     usedUsageHelpText: STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE,
@@ -137,7 +137,7 @@ export default {
       <template #description>
         {{ purchasedUsageDescription }}
         <gl-link
-          :href="$options.purchasedUsageHelpLink"
+          :href="$options.i18n.purchasedUsageHelpLink"
           target="_blank"
           class="gl-ml-2"
           :aria-label="$options.i18n.purchasedUsageHelpText"

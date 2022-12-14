@@ -96,6 +96,9 @@ export const projectHelpPaths = {
     'user/packages/container_registry/reduce_container_registry_storage',
   ),
   usageQuotas: helpPagePath('user/usage_quotas'),
+  usageQuotasNamespaceStorageLimit: helpPagePath('user/usage_quotas', {
+    anchor: 'namespace-storage-limit',
+  }),
   buildArtifacts: helpPagePath('ci/pipelines/job_artifacts', {
     anchor: 'when-job-artifacts-are-deleted',
   }),
