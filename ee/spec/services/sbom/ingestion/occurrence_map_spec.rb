@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_management do
-  let_it_be(:report_component) { create(:ci_reports_sbom_component) }
-  let_it_be(:report_source) { create(:ci_reports_sbom_source) }
+  let_it_be(:report_component) { build_stubbed(:ci_reports_sbom_component) }
+  let_it_be(:report_source) { build_stubbed(:ci_reports_sbom_source) }
 
   let(:base_data) do
     {
@@ -68,7 +68,7 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
     end
 
     context 'when component has no purl' do
-      let_it_be(:report_component) { create(:ci_reports_sbom_component, purl: nil) }
+      let_it_be(:report_component) { build_stubbed(:ci_reports_sbom_component, purl: nil) }
 
       it 'returns a hash with a nil purl_type' do
         expect(occurrence_map.to_h).to eq(
@@ -90,7 +90,7 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
     describe 'normalization' do
       using RSpec::Parameterized::TableSyntax
 
-      let(:report_component) { create(:ci_reports_sbom_component, purl_type: purl_type, name: name) }
+      let(:report_component) { build_stubbed(:ci_reports_sbom_component, purl_type: purl_type, name: name) }
 
       where(:purl_type, :name, :expected) do
         :npm  | 'Cookie_Parser'            | 'Cookie_Parser'
@@ -105,7 +105,7 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
 
       context 'when purl is absent' do
         let(:name) { 'EnterpriseLibrary_Common' }
-        let(:report_component) { create(:ci_reports_sbom_component, purl: nil, name: name) }
+        let(:report_component) { build_stubbed(:ci_reports_sbom_component, purl: nil, name: name) }
 
         it 'does not perform normalization' do
           expect(occurrence_map.to_h[:name]).to eq(name)
@@ -120,13 +120,13 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
     end
 
     context 'when version is empty' do
-      let_it_be(:report_component) { create(:ci_reports_sbom_component, version: '') }
+      let_it_be(:report_component) { build_stubbed(:ci_reports_sbom_component, version: '') }
 
       specify { expect(occurrence_map.version_present?).to be(false) }
     end
 
     context 'when version is absent' do
-      let_it_be(:report_component) { create(:ci_reports_sbom_component, version: nil) }
+      let_it_be(:report_component) { build_stubbed(:ci_reports_sbom_component, version: nil) }
 
       it { expect(occurrence_map.version_present?).to be(false) }
     end
