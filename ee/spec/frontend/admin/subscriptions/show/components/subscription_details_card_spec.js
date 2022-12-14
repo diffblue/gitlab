@@ -68,16 +68,16 @@ describe('Subscription Details Card', () => {
           value: 'Online license',
         },
         {
+          detail: 'startsAt',
+          value: '2021-03-11',
+        },
+        {
           detail: 'expiresAt',
-          value: 'in 1 year',
+          value: '2022-03-16',
         },
         {
           detail: 'lastSync',
           value: 'just now',
-        },
-        {
-          detail: 'startsAt',
-          value: '2021-03-11',
         },
       ]);
     });

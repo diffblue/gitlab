@@ -2128,9 +2128,6 @@ msgstr ""
 msgid "Activate Service Desk"
 msgstr ""
 
-msgid "Activated on"
-msgstr ""
-
 msgid "Active"
 msgstr ""
 
@@ -16560,9 +16557,6 @@ msgstr ""
 msgid "Expires %{preposition} %{expires_at}"
 msgstr ""
 
-msgid "Expires on"
-msgstr ""
-
 msgid "Expires:"
 msgstr ""
 
@@ -24208,9 +24202,6 @@ msgid "Last Pipeline"
 msgstr ""
 
 msgid "Last Seen"
-msgstr ""
-
-msgid "Last Sync"
 msgstr ""
 
 msgid "Last Used"
@@ -34649,9 +34640,6 @@ msgstr ""
 msgid "Renew subscription"
 msgstr ""
 
-msgid "Renews"
-msgstr ""
-
 msgid "Reopen"
 msgstr ""
 
@@ -40044,16 +40032,34 @@ msgstr ""
 msgid "Subscriptions"
 msgstr ""
 
+msgid "Subscriptions|Activation date"
+msgstr ""
+
 msgid "Subscriptions|Chat with sales"
 msgstr ""
 
 msgid "Subscriptions|Close"
 msgstr ""
 
+msgid "Subscriptions|End date"
+msgstr ""
+
+msgid "Subscriptions|End date:"
+msgstr ""
+
+msgid "Subscriptions|Last sync"
+msgstr ""
+
+msgid "Subscriptions|None"
+msgstr ""
+
 msgid "Subscriptions|Not ready to buy yet?"
 msgstr ""
 
 msgid "Subscriptions|Start a free trial"
+msgstr ""
+
+msgid "Subscriptions|Start date"
 msgstr ""
 
 msgid "Subscriptions|We understand. Maybe you have some questions for our sales team, or maybe you'd like to try some of the paid features first. What would you like to do?"
@@ -45237,9 +45243,6 @@ msgid "Using the %{codeStart}needs%{codeEnd} keyword makes jobs run before their
 msgstr ""
 
 msgid "VS Code in your browser. View code and make changes from the same UI as in your local IDE."
-msgstr ""
-
-msgid "Valid From"
 msgstr ""
 
 msgid "Validate"

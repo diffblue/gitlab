@@ -12,7 +12,6 @@ const formatTime = (time) => timeagoFormatter(time, timeagoLanguageCode);
 
 const subscriptionDetailsFormatRules = {
   id: getIdFromGraphQLId,
-  expiresAt: formatTime,
   lastSync: formatTime,
   type: getLicenseTypeLabel,
   plan: capitalizeFirstCharacter,

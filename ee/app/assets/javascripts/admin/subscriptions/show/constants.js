@@ -42,19 +42,19 @@ export const detailsLabels = {
   company: __('Company'),
   email: __('Email'),
   id: __('ID'),
-  lastSync: __('Last Sync'),
+  lastSync: s__('Subscriptions|Last sync'),
   name: licensedToHeaderText,
   plan: __('Plan'),
   type: __('Type'),
-  expiresAt: __('Renews'),
-  startsAt: __('Started'),
+  expiresAt: s__('Subscriptions|End date'),
+  startsAt: s__('Subscriptions|Start date'),
 };
 
 export const subscriptionTable = {
-  activatedAt: __('Activated on'),
-  expiresOn: __('Expires on'),
+  activatedAt: s__('Subscriptions|Activation date'),
+  expiresOn: s__('Subscriptions|End date'),
   seats: __('Seats'),
-  startsAt: __('Valid From'),
+  startsAt: s__('Subscriptions|Start date'),
   title: __('Subscription History'),
   type: __('Type'),
 };

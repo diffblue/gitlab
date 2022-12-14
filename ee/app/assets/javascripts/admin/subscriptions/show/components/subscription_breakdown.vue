@@ -23,9 +23,9 @@ export const subscriptionDetailsFields = [
   'id',
   'plan',
   'type',
+  'startsAt',
   'expiresAt',
   'lastSync',
-  'startsAt',
 ];
 export const licensedToFields = ['name', 'email', 'company'];
 
