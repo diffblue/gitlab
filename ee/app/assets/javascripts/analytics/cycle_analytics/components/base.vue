@@ -184,18 +184,10 @@ export default {
         <h3>{{ __('Value Stream Analytics') }}</h3>
       </div>
       <div
-        class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-justify-content-space-between gl-mb-6"
+        class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-sm-align-items-center gl-justify-content-space-between gl-mb-6 gl-gap-3"
       >
-        <div class="gl-display-flex gl-align-items-center gl-xs-mb-3">
-          <label class="gl-m-0 gl-mr-2">{{ s__('ValueStreamAnalytics|Value stream') }}</label>
-          <value-stream-select v-if="shouldDisplayCreateMultipleValueStreams" />
-        </div>
-        <div class="gl-display-flex gl-align-items-center">
-          <value-stream-aggregation-status
-            v-if="isAggregationStatusAvailable"
-            :data="aggregation"
-          />
-        </div>
+        <value-stream-select v-if="shouldDisplayCreateMultipleValueStreams" />
+        <value-stream-aggregation-status v-if="isAggregationStatusAvailable" :data="aggregation" />
       </div>
       <value-stream-filters
         v-if="!shouldRenderAggregationWarning"
