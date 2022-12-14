@@ -4,6 +4,45 @@ import { NO_RULE_MESSAGE } from '../../constants';
 import { convertScannersToTitleCase } from '../../utils';
 
 /**
+ * Create a human-readable list of runner tags, adding the necessary punctuation and conjunctions
+ * @param {Array} originalNamespaces strings representing runner tags
+ * @returns {String}
+ */
+const humanizeRunnerTags = (scanner, originalTags) => {
+  const tags = originalTags ? [...originalTags] : [];
+
+  if (tags.length === 0) {
+    return sprintf(s__('SecurityOrchestration|%{scannerStart}%{scanner}%{scannerEnd}'), {
+      scanner,
+    });
+  }
+
+  if (tags.length === 1) {
+    return sprintf(
+      s__(
+        'SecurityOrchestration|%{scannerStart}%{scanner}%{scannerEnd} on runners with the %{tags} tag',
+      ),
+      {
+        scanner,
+        tags,
+      },
+    );
+  }
+
+  const lastTag = tags.pop();
+  return sprintf(
+    s__(
+      'SecurityOrchestration|%{scannerStart}%{scanner}%{scannerEnd} on runners with the %{tags} and %{lastTag} tags',
+    ),
+    {
+      scanner,
+      tags: tags.join(', '),
+      lastTag,
+    },
+  );
+};
+
+/**
  * Create a human-readable list of strings, adding the necessary punctuation and conjunctions
  * @param {Array} originalNamespaces strings representing namespaces
  * @returns {String}
@@ -104,8 +143,27 @@ const HUMANIZE_RULES_METHODS = {
  * @returns {Array}
  */
 export const humanizeActions = (actions) => {
-  const scanners = actions.map((a) => a.scan);
-  return [...new Set(convertScannersToTitleCase(scanners))];
+  // de-duplicate scanners and merge tags (if any)
+  const scanners = actions.reduce((acc, action) => {
+    if (action.tags) {
+      if (acc[action.scan]) {
+        acc[action.scan] = [...acc[action.scan], ...action.tags];
+      } else {
+        acc[action.scan] = action.tags;
+      }
+    } else if (!acc[action.scan]) {
+      acc[action.scan] = [];
+    }
+
+    return acc;
+  }, {});
+
+  const humanizedActions = Object.entries(scanners).map(([scanner, tags]) => {
+    const humanizedScanner = convertScannersToTitleCase([scanner])[0];
+    return humanizeRunnerTags(humanizedScanner, tags);
+  });
+
+  return humanizedActions;
 };
 
 /**

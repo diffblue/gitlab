@@ -75,15 +75,27 @@ export default {
           <template v-if="!humanizedActions.length">{{ $options.i18n.noActionMessage }}</template>
           <gl-sprintf v-else-if="hasOnlyOneAction" :message="$options.i18n.singleActionMessage">
             <template #action>
-              <strong>{{ firstAction }}</strong>
+              <gl-sprintf :message="firstAction">
+                <template #scanner="{ content }">
+                  <strong>{{ content }}</strong>
+                </template>
+              </gl-sprintf>
             </template>
           </gl-sprintf>
           <gl-sprintf v-else :message="$options.i18n.multipleActionMessage">
             <template #actions>
-              <strong>{{ allButLastActions }}</strong>
+              <gl-sprintf :message="allButLastActions">
+                <template #scanner="{ content }">
+                  <strong>{{ content }}</strong>
+                </template>
+              </gl-sprintf>
             </template>
             <template #lastAction>
-              <strong>{{ lastAction }}</strong>
+              <gl-sprintf :message="lastAction">
+                <template #scanner="{ content }">
+                  <strong>{{ content }}</strong>
+                </template>
+              </gl-sprintf>
             </template>
           </gl-sprintf>
         </p>

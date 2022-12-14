@@ -17,7 +17,7 @@ const mockActions = [
   { scan: 'dast', scanner_profile: 'Scanner Profile', site_profile: 'Site Profile' },
   { scan: 'dast', scanner_profile: 'Scanner Profile 01', site_profile: 'Site Profile 01' },
   { scan: 'secret_detection' },
-  { scan: 'container_image_scanning' },
+  { scan: 'container_scanning' },
 ];
 
 const mockRules = [
@@ -64,15 +64,32 @@ describe('humanizeActions', () => {
   });
 
   it('returns a single action as human-readable string', () => {
-    expect(humanizeActions([mockActions[1]])).toStrictEqual(['Dast']);
+    expect(humanizeActions([mockActions[0]])).toStrictEqual(['%{scannerStart}Dast%{scannerEnd}']);
   });
 
   it('returns multiple actions as human-readable strings', () => {
     expect(humanizeActions(mockActions)).toStrictEqual([
-      'Dast',
-      'Secret Detection',
-      'Container Image Scanning',
+      '%{scannerStart}Dast%{scannerEnd}',
+      '%{scannerStart}Secret Detection%{scannerEnd}',
+      '%{scannerStart}Container Scanning%{scannerEnd}',
     ]);
+  });
+
+  describe('with tags', () => {
+    const mockActionsWithTags = [
+      { scan: 'sast', tags: ['one-tag'] },
+      { scan: 'secret_detection', tags: ['two-tag', 'three-tag'] },
+      { scan: 'container_scanning', tags: ['four-tag', 'five-tag', 'six-tag'] },
+    ];
+
+    it.each`
+      title                   | input                       | output
+      ${'one tag'}            | ${[mockActionsWithTags[0]]} | ${['%{scannerStart}Sast%{scannerEnd} on runners with the one-tag tag']}
+      ${'two tags'}           | ${[mockActionsWithTags[1]]} | ${['%{scannerStart}Secret Detection%{scannerEnd} on runners with the two-tag and three-tag tags']}
+      ${'more than two tags'} | ${[mockActionsWithTags[2]]} | ${['%{scannerStart}Container Scanning%{scannerEnd} on runners with the four-tag, five-tag and six-tag tags']}
+    `('$title', ({ input, output }) => {
+      expect(humanizeActions(input)).toStrictEqual(output);
+    });
   });
 });
 
