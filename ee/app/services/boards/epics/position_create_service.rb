@@ -15,7 +15,7 @@ module Boards
           Boards::EpicBoardPosition.new(
             epic_id: list_epic.id,
             epic_board_id: board_id,
-            relative_position: start_position * index,
+            relative_position: start_position + Boards::EpicBoardPosition::IDEAL_DISTANCE * index,
             created_at: time,
             updated_at: time
           )
