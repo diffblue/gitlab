@@ -3,7 +3,7 @@
 require 'spec_helper'
 require_migration!
 
-RSpec.describe SetResyncFlagForRetriedProjects, :geo do
+RSpec.describe SetResyncFlagForRetriedProjects, :geo, feature_category: :geo_replication do
   let(:registry) { table(:project_registry) }
 
   before do

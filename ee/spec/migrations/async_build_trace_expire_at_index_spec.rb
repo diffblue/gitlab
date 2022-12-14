@@ -3,7 +3,7 @@
 require 'spec_helper'
 require_migration!
 
-RSpec.describe AsyncBuildTraceExpireAtIndex do
+RSpec.describe AsyncBuildTraceExpireAtIndex, feature_category: :continuous_integration do
   describe '#up' do
     it 'sets up a delayed concurrent index creation' do
       expect_next_instance_of(described_class) do |instance|

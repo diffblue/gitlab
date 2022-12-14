@@ -3,7 +3,7 @@
 require 'spec_helper'
 require_migration!
 
-RSpec.describe MigrateCiJobArtifactsToSeparateRegistry, :geo do
+RSpec.describe MigrateCiJobArtifactsToSeparateRegistry, :geo, feature_category: :geo_replication do
   let(:file_registry) { table(:file_registry) }
   let(:job_artifact_registry) { table(:job_artifact_registry) }
 

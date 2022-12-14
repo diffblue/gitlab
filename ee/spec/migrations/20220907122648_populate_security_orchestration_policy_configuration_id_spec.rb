@@ -3,7 +3,7 @@
 require 'spec_helper'
 require_migration!
 
-RSpec.describe PopulateSecurityOrchestrationPolicyConfigurationId do
+RSpec.describe PopulateSecurityOrchestrationPolicyConfigurationId, feature_category: :source_code_management do
   describe '#up' do
     it 'schedules background migration for both levels of approval rules' do
       migrate!

@@ -3,7 +3,7 @@
 require 'spec_helper'
 require_migration!
 
-RSpec.describe ScheduleRequirementsMigration do
+RSpec.describe ScheduleRequirementsMigration, feature_category: :requirements_management do
   let(:issues) { table(:issues) }
   let(:requirements) { table(:requirements) }
   let(:namespaces) { table(:namespaces) }

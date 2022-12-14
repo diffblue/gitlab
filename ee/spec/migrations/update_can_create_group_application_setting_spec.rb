@@ -3,7 +3,7 @@
 require 'spec_helper'
 require_migration!
 
-RSpec.describe UpdateCanCreateGroupApplicationSetting, :migration do
+RSpec.describe UpdateCanCreateGroupApplicationSetting, :migration, feature_category: :subgroups do
   let(:application_setting) do
     Class.new(ActiveRecord::Base) do
       self.table_name = 'application_settings'

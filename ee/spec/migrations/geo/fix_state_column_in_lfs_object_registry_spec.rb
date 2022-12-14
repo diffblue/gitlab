@@ -4,7 +4,7 @@ require 'spec_helper'
 
 require_migration!
 
-RSpec.describe FixStateColumnInLfsObjectRegistry, :geo do
+RSpec.describe FixStateColumnInLfsObjectRegistry, :geo, feature_category: :geo_replication do
   let(:registry) { table(:lfs_object_registry) }
 
   before do

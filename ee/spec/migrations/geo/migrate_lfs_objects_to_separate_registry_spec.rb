@@ -3,7 +3,7 @@
 require 'spec_helper'
 require_migration!
 
-RSpec.describe MigrateLfsObjectsToSeparateRegistry, :geo do
+RSpec.describe MigrateLfsObjectsToSeparateRegistry, :geo, feature_category: :geo_replication do
   let(:file_registry) { table(:file_registry) }
   let(:lfs_object_registry) { table(:lfs_object_registry) }
 
