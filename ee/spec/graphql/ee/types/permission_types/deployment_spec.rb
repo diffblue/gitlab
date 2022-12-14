@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Types::PermissionTypes::Deployment, feature_category: :continuous_delivery do
   it do
-    expected_permissions = %i[update_deployment destroy_deployment]
+    expected_permissions = %i[approve_deployment]
 
     expect(described_class).to include_graphql_fields(*expected_permissions)
   end

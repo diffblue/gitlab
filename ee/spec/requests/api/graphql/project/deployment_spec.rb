@@ -185,6 +185,30 @@ RSpec.describe 'Project Deployment query', feature_category: :continuous_deliver
       end
     end
 
+    context 'when requesting user permissions' do
+      let(:query) do
+        %(
+          query {
+            project(fullPath: "#{project.full_path}") {
+              deployment(iid: #{deployment.iid}) {
+                userPermissions {
+                  approveDeployment
+                }
+              }
+            }
+          }
+        )
+      end
+
+      it 'returns user permissions of the deployments', :aggregate_failures do
+        subject
+
+        permissions = graphql_data_at(:project, :deployment, :userPermissions)
+
+        expect(permissions['approveDeployment']).to eq(Ability.allowed?(user, :approve_deployment, deployment))
+      end
+    end
+
     context 'when guest user executes the GraphQL query' do
       let(:user) { guest }
 
