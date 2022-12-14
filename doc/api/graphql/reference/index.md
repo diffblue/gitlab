@@ -10923,6 +10923,7 @@ Represents a deployment freeze window of a project.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="cifreezeperiodcrontimezone"></a>`cronTimezone` | [`String`](#string) | Time zone for the cron fields, defaults to UTC if not provided. |
 | <a id="cifreezeperiodendcron"></a>`endCron` | [`String!`](#string) | End of the freeze period in cron format. |
 | <a id="cifreezeperiodendtime"></a>`endTime` | [`Time`](#time) | Timestamp (UTC) of when the current/next active period ends. |
 | <a id="cifreezeperiodstartcron"></a>`startCron` | [`String!`](#string) | Start of the freeze period in cron format. |
