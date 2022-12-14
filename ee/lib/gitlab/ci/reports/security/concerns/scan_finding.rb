@@ -10,9 +10,7 @@ module Gitlab
 
             def violates_default_policy_against?(
               target_reports, vulnerabilities_allowed, severity_levels, vulnerability_states, report_types = [])
-              if Feature.enabled?(:require_approval_on_scan_removal, pipeline.project) && scan_removed?(target_reports)
-                return true
-              end
+              return true if scan_removed?(target_reports)
 
               count = unsafe_findings_count(target_reports, severity_levels, vulnerability_states, report_types)
               return true if count > vulnerabilities_allowed
