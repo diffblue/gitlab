@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, feature_category: :subscription_usage_reports do
+RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category: :subscription_usage_reports do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:sub_group) { create(:group, parent: group) }
@@ -13,7 +13,6 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, feature_category: :subs
 
   before do
     stub_feature_flags(usage_quotas_for_all_editions: false)
-    allow(Gitlab).to receive(:com?).and_return(true)
     stub_application_setting(check_namespace_plan: true)
 
     group.add_owner(user)
@@ -25,19 +24,21 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, feature_category: :subs
     create(:group_group_link, { shared_with_group: shared_group, shared_group: group })
 
     sign_in(user)
-
-    visit group_seat_usage_path(group)
-    wait_for_requests
   end
 
-  context 'in seat usage table' do
+  context 'with seat usage table' do
+    before do
+      visit group_seat_usage_path(group)
+      wait_for_requests
+    end
+
     it 'displays correct number of users' do
-      within '[data-testid="table"]' do
+      within member_table_selector do
         expect(all('tbody tr').count).to eq(4)
       end
     end
 
-    context 'in seat usage details table' do
+    context 'with seat usage details table' do
       it 'expands the details on click' do
         first('[data-testid="toggle-seat-usage-details"]').click
 
@@ -61,10 +62,9 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, feature_category: :subs
   end
 
   context 'when removing user' do
-    let(:user_to_remove_row) do
-      within '[data-testid="table"]' do
-        find('tr', text: maintainer.name)
-      end
+    before do
+      visit group_seat_usage_path(group)
+      wait_for_requests
     end
 
     context 'with a modal to confirm removal' do
@@ -75,13 +75,13 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, feature_category: :subs
       end
 
       it 'has disabled the remove button' do
-        within '[data-testid="remove-billable-member-modal"]' do
+        within billable_member_modal_selector do
           expect(page).to have_button('Remove user', disabled: true)
         end
       end
 
       it 'enables the remove button when user enters valid username' do
-        within '[data-testid="remove-billable-member-modal"]' do
+        within billable_member_modal_selector do
           find('input').fill_in(with: maintainer.username)
           find('input').send_keys(:tab)
 
@@ -90,7 +90,7 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, feature_category: :subs
       end
 
       it 'does not enable button when user enters invalid username' do
-        within '[data-testid="remove-billable-member-modal"]' do
+        within billable_member_modal_selector do
           find('input').fill_in(with: 'invalid username')
           find('input').send_keys(:tab)
 
@@ -111,7 +111,7 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, feature_category: :subs
       end
 
       it 'shows a flash message' do
-        within '[data-testid="remove-billable-member-modal"]' do
+        within billable_member_modal_selector do
           find('input').fill_in(with: maintainer.username)
           find('input').send_keys(:tab)
 
@@ -120,7 +120,7 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, feature_category: :subs
 
         wait_for_all_requests
 
-        within '[data-testid="table"]' do
+        within member_table_selector do
           expect(all('tbody tr').count).to eq(3)
         end
 
@@ -129,7 +129,7 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, feature_category: :subs
 
       context 'when removing a user from a sub-group' do
         it 'updates the seat table of the parent group' do
-          within '[data-testid="table"]' do
+          within member_table_selector do
             expect(all('tbody tr').count).to eq(4)
           end
 
@@ -147,7 +147,7 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, feature_category: :subs
 
           wait_for_all_requests
 
-          within '[data-testid="table"]' do
+          within member_table_selector do
             expect(all('tbody tr').count).to eq(3)
           end
         end
@@ -156,7 +156,7 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, feature_category: :subs
 
     context 'when cannot remove the user' do
       let(:shared_user_row) do
-        within '[data-testid="table"]' do
+        within member_table_selector do
           find('tr', text: shared_group_developer.name)
         end
       end
@@ -168,6 +168,64 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, feature_category: :subs
 
         expect(page).to have_content('Cannot remove user')
       end
+    end
+  end
+
+  context 'when removing a user when the namespace is in read_only state' do
+    let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
+
+    before do
+      stub_ee_application_setting(dashboard_limit_enabled: true)
+      stub_feature_flags(free_user_cap: true)
+
+      # group_seat_usage_path does some admin_group_member check then
+      # redirects to the below path where we only check read.
+      # This is strangely more restrictive then going to the
+      # usage_quotas controller directly with an anchor...so we'll
+      # just do that since admin_group_member is prevented in
+      # read_only mode.
+      visit group_usage_quotas_path(group, anchor: 'seats-quota-tab')
+
+      wait_for_requests
+    end
+
+    it 'shows a flash message' do
+      within member_table_selector do
+        expect(all('tbody tr').count).to eq(3)
+      end
+
+      within user_to_remove_row do
+        click_button 'Remove user'
+      end
+
+      within billable_member_modal_selector do
+        find('input').fill_in(with: maintainer.username)
+        find('input').send_keys(:tab)
+
+        click_button('Remove user')
+      end
+
+      wait_for_all_requests
+
+      within member_table_selector do
+        expect(all('tbody tr').count).to eq(2)
+      end
+
+      expect(page.find('.flash-container')).to have_content('User was successfully removed')
+    end
+  end
+
+  def billable_member_modal_selector
+    '[data-testid="remove-billable-member-modal"]'
+  end
+
+  def member_table_selector
+    '[data-testid="table"]'
+  end
+
+  def user_to_remove_row
+    within member_table_selector do
+      find('tr', text: maintainer.name)
     end
   end
 end
