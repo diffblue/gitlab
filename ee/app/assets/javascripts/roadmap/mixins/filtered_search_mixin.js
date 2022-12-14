@@ -23,7 +23,7 @@ import {
   TOKEN_TYPE_MY_REACTION,
   TOKEN_TYPE_SEARCH_WITHIN,
 } from '~/vue_shared/components/filtered_search_bar/constants';
-import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
+import UserToken from '~/vue_shared/components/filtered_search_bar/tokens/user_token.vue';
 import EmojiToken from '~/vue_shared/components/filtered_search_bar/tokens/emoji_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
@@ -76,10 +76,10 @@ export default {
   },
   methods: {
     getFilteredSearchTokens({ supportsEpic = true } = {}) {
-      let preloadedAuthors = [];
+      let preloadedUsers = [];
 
       if (gon.current_user_id) {
-        preloadedAuthors = [
+        preloadedUsers = [
           {
             id: gon.current_user_id,
             name: gon.current_user_fullname,
@@ -96,12 +96,12 @@ export default {
           title: TOKEN_TITLE_AUTHOR,
           unique: true,
           symbol: '@',
-          token: AuthorToken,
+          token: UserToken,
           operators: OPERATORS_IS_NOT,
           recentSuggestionsStorageKey: `${this.groupFullPath}-epics-recent-tokens-author_username`,
-          fetchAuthors: Api.users.bind(Api),
-          defaultAuthors: [],
-          preloadedAuthors,
+          fetchUsers: Api.users.bind(Api),
+          defaultUsers: [],
+          preloadedUsers,
         },
         {
           type: TOKEN_TYPE_LABEL,

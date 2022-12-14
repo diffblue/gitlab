@@ -23,7 +23,7 @@ import {
   TOKEN_TYPE_TYPE,
   TOKEN_TYPE_WEIGHT,
 } from '~/vue_shared/components/filtered_search_bar/constants';
-import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
+import UserToken from '~/vue_shared/components/filtered_search_bar/tokens/user_token.vue';
 import EmojiToken from '~/vue_shared/components/filtered_search_bar/tokens/emoji_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
@@ -492,7 +492,7 @@ export const mockSubGroups = [mockGroup0, mockGroup1, mockGroup2];
 
 export const mockTokens = (
   fetchLabels,
-  fetchAuthors,
+  fetchUsers,
   fetchMilestones,
   fetchIterations,
   fetchIterationCadences,
@@ -502,10 +502,10 @@ export const mockTokens = (
     title: TOKEN_TITLE_ASSIGNEE,
     type: TOKEN_TYPE_ASSIGNEE,
     operators: OPERATORS_IS_NOT,
-    token: AuthorToken,
+    token: UserToken,
     unique: true,
-    fetchAuthors,
-    preloadedAuthors: [],
+    fetchUsers,
+    preloadedUsers: [],
   },
   {
     icon: 'pencil',
@@ -513,10 +513,10 @@ export const mockTokens = (
     type: TOKEN_TYPE_AUTHOR,
     operators: OPERATORS_IS_NOT,
     symbol: '@',
-    token: AuthorToken,
+    token: UserToken,
     unique: true,
-    fetchAuthors,
-    preloadedAuthors: [],
+    fetchUsers,
+    preloadedUsers: [],
   },
   {
     icon: 'labels',

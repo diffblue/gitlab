@@ -278,7 +278,7 @@ describe('RoadmapFilters', () => {
           expect(filteredSearchBar.props('tokens')).toEqual([
             {
               ...mockAuthorTokenConfig,
-              preloadedAuthors: [
+              preloadedUsers: [
                 {
                   id: 1,
                   name: 'Administrator',

@@ -12,7 +12,7 @@ import {
   TOKEN_TYPE_AUTHOR,
   TOKEN_TYPE_LABEL,
 } from '~/vue_shared/components/filtered_search_bar/constants';
-import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
+import UserToken from '~/vue_shared/components/filtered_search_bar/tokens/user_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 
 export default {
@@ -20,7 +20,7 @@ export default {
   inject: ['fullPath', 'boardType'],
   computed: {
     tokens() {
-      const { fetchLabels, fetchAuthors } = issueBoardFilter(
+      const { fetchLabels, fetchUsers } = issueBoardFilter(
         this.$apollo,
         this.fullPath,
         this.boardType,
@@ -44,10 +44,10 @@ export default {
           type: TOKEN_TYPE_AUTHOR,
           operators: OPERATORS_IS_NOT,
           symbol: '@',
-          token: AuthorToken,
+          token: UserToken,
           unique: true,
-          fetchAuthors,
-          preloadedAuthors: this.preloadedAuthors(),
+          fetchUsers,
+          preloadedUsers: this.preloadedUsers(),
         },
       ];
 
@@ -55,7 +55,7 @@ export default {
     },
   },
   methods: {
-    preloadedAuthors() {
+    preloadedUsers() {
       return gon?.current_user_id
         ? [
             {

@@ -7,7 +7,7 @@ import {
   TOKEN_TYPE_AUTHOR,
   TOKEN_TYPE_STATUS,
 } from '~/vue_shared/components/filtered_search_bar/constants';
-import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
+import UserToken from '~/vue_shared/components/filtered_search_bar/tokens/user_token.vue';
 
 export const mockUserPermissions = {
   updateRequirement: true,
@@ -173,10 +173,10 @@ export const mockAuthorToken = {
   title: TOKEN_TITLE_AUTHOR,
   unique: false,
   symbol: '@',
-  token: AuthorToken,
+  token: UserToken,
   operators: OPERATORS_IS,
   fetchPath: 'gitlab-org/gitlab-shell',
-  fetchAuthors: expect.any(Function),
+  fetchUsers: expect.any(Function),
 };
 
 export const mockStatusToken = {

@@ -24,14 +24,14 @@ describe('IssueBoardFilter', () => {
     });
   };
 
-  let fetchAuthorsSpy;
+  let fetchUsersSpy;
   let fetchLabelsSpy;
   beforeEach(() => {
-    fetchAuthorsSpy = jest.fn();
+    fetchUsersSpy = jest.fn();
     fetchLabelsSpy = jest.fn();
 
     issueBoardFilters.mockReturnValue({
-      fetchAuthors: fetchAuthorsSpy,
+      fetchUsers: fetchUsersSpy,
       fetchLabels: fetchLabelsSpy,
     });
   });
@@ -52,7 +52,7 @@ describe('IssueBoardFilter', () => {
     it('passes the correct tokens to BoardFilteredSearch including epics', () => {
       const tokens = mockTokens(
         fetchLabelsSpy,
-        fetchAuthorsSpy,
+        fetchUsersSpy,
         wrapper.vm.fetchMilestones,
         wrapper.vm.fetchIterations,
         wrapper.vm.fetchIterationCadences,

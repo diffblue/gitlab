@@ -252,13 +252,13 @@ describe('EE IssuesListApp component', () => {
       });
 
       it('renders all tokens alphabetically', () => {
-        const preloadedAuthors = [
+        const preloadedUsers = [
           { ...mockCurrentUser, id: convertToGraphQLId('User', mockCurrentUser.id) },
         ];
 
         expect(findIssuableList().props('searchTokens')).toMatchObject([
-          { type: TOKEN_TYPE_ASSIGNEE, preloadedAuthors },
-          { type: TOKEN_TYPE_AUTHOR, preloadedAuthors },
+          { type: TOKEN_TYPE_ASSIGNEE, preloadedUsers },
+          { type: TOKEN_TYPE_AUTHOR, preloadedUsers },
           { type: TOKEN_TYPE_CONFIDENTIAL },
           { type: TOKEN_TYPE_CONTACT },
           { type: TOKEN_TYPE_EPIC },
