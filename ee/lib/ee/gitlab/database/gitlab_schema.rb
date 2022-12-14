@@ -20,6 +20,16 @@ module EE
           def view_path_globs
             super + [Rails.root.join(EE_DICTIONARY_PATH, 'views', '*.yml')]
           end
+
+          override :deleted_tables_path_globs
+          def deleted_tables_path_globs
+            super + [Rails.root.join(EE_DICTIONARY_PATH, 'deleted_tables', '*.yml')]
+          end
+
+          override :deleted_views_path_globs
+          def deleted_views_path_globs
+            super + [Rails.root.join(EE_DICTIONARY_PATH, 'deleted_views', '*.yml')]
+          end
         end
       end
     end
