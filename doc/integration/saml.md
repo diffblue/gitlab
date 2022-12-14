@@ -381,16 +381,19 @@ to add a `groups_attribute:` element to your SAML settings.
 
 ### Required groups
 
-Your IdP passes Group information to the SP (GitLab) in the SAML Response.
-To use this response, configure GitLab to identify:
+Your IdP passes group information to GitLab in the SAML response. To use this
+response, configure GitLab to identify:
 
-- Where to look for the groups in the SAML response via the `groups_attribute` setting
-- Which group membership is requisite to sign in via the `required_groups` setting
+- Where to look for the groups in the SAML response, using the `groups_attribute` setting.
+- Information about a group or user, using a group setting.
 
-When `required_groups` is empty or not set, anyone with proper authentication
-is able to use the service.
+Use the `required_groups` setting to configure GitLab to identify which group
+membership is required to sign in.
 
-Example:
+If you do not set `required_groups` or leave the setting empty, anyone with proper
+authentication can use the service.
+
+Example configuration:
 
 ```yaml
 { name: 'saml',
