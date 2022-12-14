@@ -19,8 +19,10 @@ module Integrations
         end
 
         # We don't know which ones to preserve - so just delete them all in a single query
-        where(slack_integration_id: integration_ids).delete_all
-        insert_all(attrs) unless attrs.empty?
+        transaction do
+          where(slack_integration_id: integration_ids).delete_all
+          insert_all(attrs) unless attrs.empty?
+        end
       end
     end
   end
