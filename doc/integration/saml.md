@@ -428,11 +428,16 @@ membership in the SAML identity provider.
 
 ### Administrator groups
 
-The requirements are the same as the previous settings:
+Your IdP passes group information to GitLab in the SAML response. To use this
+response, configure GitLab to identify:
 
-- The IdP must pass Group information to GitLab.
-- GitLab must know where to look for the groups in the SAML response, as well as
-  which groups grant the user administrator access.
+- Where to look for the groups in the SAML response, using the `groups_attribute` setting.
+- Information about a group or user, using a group setting.
+
+Use the `admin_groups` setting to configure GitLab to identify which groups grant
+the user administrator access.
+
+Example configuration:
 
 ```yaml
 { name: 'saml',
