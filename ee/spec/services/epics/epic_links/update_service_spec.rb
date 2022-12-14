@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Epics::EpicLinks::UpdateService do
+RSpec.describe Epics::EpicLinks::UpdateService, feature_category: :portfolio_management do
   let(:user) { create(:user) }
   let(:group) { create(:group) }
   let(:parent_epic) { create(:epic, group: group) }
@@ -25,7 +25,7 @@ RSpec.describe Epics::EpicLinks::UpdateService do
 
   describe '#execute' do
     before do
-      group.add_developer(user)
+      group.add_guest(user)
     end
 
     shared_examples 'updating timestamps' do
@@ -55,6 +55,16 @@ RSpec.describe Epics::EpicLinks::UpdateService do
     context 'when subepics feature is available' do
       before do
         stub_licensed_features(epics: true, subepics: true)
+      end
+
+      context 'when user has insufficient permissions' do
+        before do
+          user.group_members.delete_all
+        end
+
+        it 'returns an error' do
+          expect(subject).to eq(message: 'Epic not found for given params', status: :error, http_status: 404)
+        end
       end
 
       context 'when params are nil' do

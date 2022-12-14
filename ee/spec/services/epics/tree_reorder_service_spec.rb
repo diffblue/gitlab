@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Epics::TreeReorderService do
+RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_management do
   describe '#execute' do
     let_it_be(:user) { create(:user) }
     let_it_be(:ancestor) { create(:group) }
@@ -71,15 +71,15 @@ RSpec.describe Epics::TreeReorderService do
           group.add_reporter(user)
         end
 
-        context 'when relative_position is not valid' do
-          let(:relative_position) { 'whatever' }
-
-          it_behaves_like 'error for the tree update', 'Relative position is not valid.'
-        end
-
         context 'when moving EpicIssue' do
           let!(:tree_object_1) { epic_issue1 }
           let!(:tree_object_2) { epic_issue2 }
+
+          context 'when relative_position is not valid' do
+            let(:relative_position) { 'whatever' }
+
+            it_behaves_like 'error for the tree update', 'Relative position is not valid.'
+          end
 
           context 'when object being moved is not the same type as the switched object' do
             let!(:tree_object_3) { epic1 }
@@ -237,6 +237,12 @@ RSpec.describe Epics::TreeReorderService do
               stub_licensed_features(epics: true, subepics: true)
             end
 
+            context 'when relative_position is not valid' do
+              let(:relative_position) { 'whatever' }
+
+              it_behaves_like 'error for the tree update', 'Relative position is not valid.'
+            end
+
             context 'when user does not have permissions to admin the previous parent' do
               let(:other_epic) { create(:epic, group: ancestor) }
               let(:new_parent_id) { GitlabSchema.id_from_object(epic) }
@@ -252,7 +258,7 @@ RSpec.describe Epics::TreeReorderService do
               let(:new_parent_id) { GitlabSchema.id_from_object(epic) }
 
               before do
-                group.add_guest(user)
+                user.group_members.delete_all
               end
 
               it_behaves_like 'error for the tree update', 'You don\'t have permissions to move the objects.'

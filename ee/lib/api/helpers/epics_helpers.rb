@@ -7,10 +7,6 @@ module API
         forbidden! unless user_group.licensed_feature_available?(:epics)
       end
 
-      def authorize_subepics_feature!
-        forbidden! unless user_group.licensed_feature_available?(:subepics)
-      end
-
       def authorize_related_epics_feature!
         forbidden! unless user_group.licensed_feature_available?(:related_epics)
       end
@@ -19,16 +15,12 @@ module API
         authorize!(:read_epic, epic)
       end
 
+      def authorize_admin_epic_tree_relation!
+        authorize!(:admin_epic_tree_relation, epic)
+      end
+
       def authorize_can_admin_epic!
         authorize!(:admin_epic, epic)
-      end
-
-      def authorize_can_admin_epic_link!
-        authorize!(:admin_epic_link, epic)
-      end
-
-      def authorize_can_destroy_epic_link!
-        authorize!(:destroy_epic_link, epic)
       end
 
       def authorize_can_create!

@@ -18,6 +18,10 @@ class EpicPolicy < BasePolicy
     @subject.group.licensed_feature_available?(:related_epics)
   end
 
+  condition(:subepics_available, scope: :subject) do
+    @subject.group.licensed_feature_available?(:subepics)
+  end
+
   rule { can?(:read_epic) }.policy do
     enable :read_epic_iid
     enable :read_note
@@ -41,6 +45,25 @@ class EpicPolicy < BasePolicy
     prevent :create_note
     prevent :award_emoji
     prevent :read_note
+  end
+
+  # Checking for guest access is important as in public groups non-members can read epics,
+  # but should not be able to alter epic tree or related epics relationship. User has to
+  # have at least a Guest role for that.
+  rule { can?(:guest_access) & can?(:read_epic) }.policy do
+    # This generic permission means that a user is able to create, read, destroy an epic
+    # relationship, but it needs some extra checks depending on the feature:
+    # 1. To add an issue to the epic tree this permission is enough
+    # 2. To add a sub-epic or link a parent epic we also need to check that sub-epics feature
+    # feature is available, i.e. `subepics_available`
+    # 3. To add a related epic we also need to check that related epics feature is available,
+    # i.e. `related_epics_available`
+    enable :admin_epic_relation
+  end
+
+  # This needs to be checked on both epics involved in the epic tree relationship.
+  rule { can?(:admin_epic_relation) & subepics_available }.policy do
+    enable :admin_epic_tree_relation
   end
 
   # Special case to not prevent support bot

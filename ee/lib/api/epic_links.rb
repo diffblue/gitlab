@@ -89,8 +89,7 @@ module API
         use :child_epic_id
       end
       post ':id/(-/)epics/:epic_iid/epics/:child_epic_id' do
-        authorize_subepics_feature!
-        authorize_can_admin_epic_link!
+        authorize_admin_epic_tree_relation!
 
         target_child_epic = Epic.find_by_id(declared_params[:child_epic_id])
 
@@ -122,8 +121,7 @@ module API
           documentation: { example: true }
       end
       post ':id/(-/)epics/:epic_iid/epics' do
-        authorize_subepics_feature!
-        authorize_can_admin_epic_link!
+        authorize_admin_epic_tree_relation!
 
         confidential = params[:confidential].nil? ? epic.confidential : params[:confidential]
         create_params = { parent_id: epic.id, title: params[:title], confidential: confidential }
@@ -148,7 +146,7 @@ module API
         use :child_epic_id
       end
       delete ':id/(-/)epics/:epic_iid/epics/:child_epic_id' do
-        authorize_can_destroy_epic_link!
+        authorize!(:admin_epic_relation, epic)
 
         result = ::Epics::EpicLinks::DestroyService.new(child_epic, current_user).execute
 
@@ -178,8 +176,7 @@ module API
           documentation: { example: 1 }
       end
       put ':id/(-/)epics/:epic_iid/epics/:child_epic_id' do
-        authorize_subepics_feature!
-        authorize_can_admin_epic_link!
+        authorize_admin_epic_tree_relation!
 
         update_params = params.slice(:move_before_id, :move_after_id)
 

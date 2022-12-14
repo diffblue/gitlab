@@ -109,30 +109,38 @@ module Epics
     end
 
     def authorized?
-      return false unless can?(current_user, :admin_epic, base_epic.group)
+      return false unless can_admin?(base_epic)
 
       if adjacent_reference
-        return false unless can?(current_user, :admin_epic, adjacent_reference_group)
+        return false unless can_admin?(adjacent_reference_epic)
       end
 
       if new_parent
-        return false unless can?(current_user, :admin_epic, new_parent.group)
-        return false unless moving_object.parent && can?(current_user, :admin_epic, moving_object.parent.group)
-
-        if moving_object.is_a?(Epic)
-          return false unless can?(current_user, :admin_epic_link, moving_object.parent.group)
-        end
+        return false unless can_admin?(new_parent) && can_admin?(moving_object.parent)
       end
 
       true
     end
 
-    def adjacent_reference_group
+    def can_admin?(epic)
+      return false unless epic
+
+      ability, subject =
+        if moving_object.is_a?(Epic)
+          [:admin_epic_tree_relation, epic]
+        else
+          [:admin_epic, epic.group]
+        end
+
+      can?(current_user, ability, subject)
+    end
+
+    def adjacent_reference_epic
       case adjacent_reference
       when EpicIssue
-        adjacent_reference&.epic&.group
+        adjacent_reference&.epic
       when Epic
-        adjacent_reference&.group
+        adjacent_reference
       else
         nil
       end
