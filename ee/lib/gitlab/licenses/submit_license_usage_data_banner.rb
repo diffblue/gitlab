@@ -54,7 +54,6 @@ module Gitlab
 
       def has_non_trial_offline_cloud_license?
         return false if Gitlab::CurrentSettings.should_check_namespace_plan?
-        return false unless Feature.enabled?(:automated_email_provision)
         return false unless ::License.current&.offline_cloud_license?
         return false if ::License.current.trial?
 

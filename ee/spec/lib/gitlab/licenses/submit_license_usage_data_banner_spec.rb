@@ -63,14 +63,6 @@ RSpec.describe Gitlab::Licenses::SubmitLicenseUsageDataBanner do
       include_examples 'skips resetting the submit license usage data'
     end
 
-    context 'when feature flag :automated_email_provision is disabled' do
-      before do
-        stub_feature_flags(automated_email_provision: false)
-      end
-
-      include_examples 'skips resetting the submit license usage data'
-    end
-
     context 'when there is only a future dated license' do
       let(:starts_at) { Date.tomorrow }
 
@@ -181,14 +173,6 @@ RSpec.describe Gitlab::Licenses::SubmitLicenseUsageDataBanner do
 
     context 'when check namespace plan setting is enabled' do
       let(:check_namespace_plan) { true }
-
-      it { is_expected.to eq(false) }
-    end
-
-    context 'when feature flag :automated_email_provision is disabled' do
-      before do
-        stub_feature_flags(automated_email_provision: false)
-      end
 
       it { is_expected.to eq(false) }
     end
