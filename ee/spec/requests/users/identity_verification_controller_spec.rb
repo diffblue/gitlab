@@ -93,7 +93,7 @@ feature_category: :authentication_and_authorization do
       it 'logs and tracks the successful attempt' do
         expect(Gitlab::AppLogger).to receive(:info).with(
           hash_including(
-            message: 'Identity Verification',
+            message: 'IdentityVerification::Email',
             event: 'Success',
             username: unconfirmed_user.username
           )
@@ -126,7 +126,7 @@ feature_category: :authentication_and_authorization do
       it 'logs and tracks the failed attempt' do
         expect(Gitlab::AppLogger).to receive(:info).with(
           hash_including(
-            message: 'Identity Verification',
+            message: 'IdentityVerification::Email',
             event: 'Failed Attempt',
             username: unconfirmed_user.username,
             reason: service_response[:reason]
@@ -207,7 +207,7 @@ feature_category: :authentication_and_authorization do
       it 'logs and tracks resending the instructions' do
         expect(Gitlab::AppLogger).to receive(:info).with(
           hash_including(
-            message: 'Identity Verification',
+            message: 'IdentityVerification::Email',
             event: 'Sent Instructions',
             username: unconfirmed_user.username
           )
@@ -253,22 +253,48 @@ feature_category: :authentication_and_authorization do
 
         expect(response.body).to eq({ status: :success }.to_json)
       end
+
+      it 'logs and tracks the success attempt' do
+        expect(Gitlab::AppLogger).to receive(:info).with(
+          hash_including(
+            message: 'IdentityVerification::Phone',
+            event: 'Sent Phone Verification Code',
+            username: unconfirmed_user.username
+          )
+        )
+
+        do_request
+
+        expect_snowplow_event(
+          category: 'IdentityVerification::Phone',
+          action: 'sent_phone_verification_code',
+          property: '',
+          user: unconfirmed_user
+        )
+      end
     end
 
     context 'when sending the code is unsuccessful' do
       let_it_be(:service_response) { ServiceResponse.error(message: 'message', reason: 'reason') }
 
-      it 'logs the failed attempt' do
+      it 'logs and tracks the failed attempt' do
         expect(Gitlab::AppLogger).to receive(:info).with(
           hash_including(
-            message: 'Identity Verification',
-            event: 'Failed Phone Verification Attempt',
+            message: 'IdentityVerification::Phone',
+            event: 'Failed Attempt',
             username: unconfirmed_user.username,
             reason: service_response.reason
           )
         )
 
         do_request
+
+        expect_snowplow_event(
+          category: 'IdentityVerification::Phone',
+          action: 'failed_attempt',
+          property: service_response[:reason],
+          user: unconfirmed_user
+        )
       end
 
       it 'responds with error message' do
@@ -302,22 +328,48 @@ feature_category: :authentication_and_authorization do
 
         expect(response.body).to eq({ status: :success }.to_json)
       end
+
+      it 'logs and tracks the success attempt' do
+        expect(Gitlab::AppLogger).to receive(:info).with(
+          hash_including(
+            message: 'IdentityVerification::Phone',
+            event: 'Success',
+            username: unconfirmed_user.username
+          )
+        )
+
+        do_request
+
+        expect_snowplow_event(
+          category: 'IdentityVerification::Phone',
+          action: 'success',
+          property: '',
+          user: unconfirmed_user
+        )
+      end
     end
 
     context 'when sending the code is unsuccessful' do
       let_it_be(:service_response) { ServiceResponse.error(message: 'message', reason: 'reason') }
 
-      it 'logs the failed attempt' do
+      it 'logs and tracks the failed attempt' do
         expect(Gitlab::AppLogger).to receive(:info).with(
           hash_including(
-            message: 'Identity Verification',
-            event: 'Failed Phone Verification Attempt',
+            message: 'IdentityVerification::Phone',
+            event: 'Failed Attempt',
             username: unconfirmed_user.username,
             reason: service_response.reason
           )
         )
 
         do_request
+
+        expect_snowplow_event(
+          category: 'IdentityVerification::Phone',
+          action: 'failed_attempt',
+          property: service_response[:reason],
+          user: unconfirmed_user
+        )
       end
 
       it 'responds with error message' do

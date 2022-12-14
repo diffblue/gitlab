@@ -27,7 +27,7 @@ module Users
           redirect_url: users_successful_verification_path
         }
       else
-        log_identity_verification(:failed_attempt, result[:reason])
+        log_identity_verification('Email', :failed_attempt, result[:reason])
 
         render json: result
       end
@@ -47,10 +47,11 @@ module Users
       result = ::PhoneVerification::Users::SendVerificationCodeService.new(@user, phone_verification_params).execute
 
       unless result.success?
-        log_identity_verification(:failed_phone_verification_attempt, result.reason)
+        log_identity_verification('Phone', :failed_attempt, result.reason)
         return render status: :bad_request, json: { message: result.message }
       end
 
+      log_identity_verification('Phone', :sent_phone_verification_code)
       render json: { status: :success }
     end
 
@@ -58,10 +59,11 @@ module Users
       result = ::PhoneVerification::Users::VerifyCodeService.new(@user, verify_phone_verification_code_params).execute
 
       unless result.success?
-        log_identity_verification(:failed_phone_verification_attempt, result.reason)
+        log_identity_verification('Phone', :failed_attempt, result.reason)
         return render status: :bad_request, json: { message: result.message }
       end
 
+      log_identity_verification('Phone', :success)
       render json: { status: :success }
     end
 
@@ -72,15 +74,19 @@ module Users
       access_denied! if !@user || @user.identity_verified?
     end
 
-    def log_identity_verification(event, reason = nil)
+    def log_identity_verification(method, event, reason = nil)
+      return unless %w[Email Phone].include?(method)
+
+      category = "IdentityVerification::#{method}"
+
       Gitlab::AppLogger.info(
-        message: 'Identity Verification',
+        message: category,
         event: event.to_s.titlecase,
         username: @user.username,
         ip: request.ip,
         reason: reason.to_s
       )
-      ::Gitlab::Tracking.event('IdentityVerification::Email', event.to_s, property: reason.to_s, user: @user)
+      ::Gitlab::Tracking.event(category, event.to_s, property: reason.to_s, user: @user)
     end
 
     def verify_token
@@ -95,14 +101,14 @@ module Users
       @user.confirm
       accept_pending_invitations(user: @user)
       sign_in(@user)
-      log_identity_verification(:success)
+      log_identity_verification('Email', :success)
     end
 
     def reset_confirmation_token
       token, encrypted_token = ::Users::EmailVerification::GenerateTokenService.new(attr: :confirmation_token).execute
       @user.update!(confirmation_token: encrypted_token, confirmation_sent_at: Time.current)
       Notify.confirmation_instructions_email(@user.email, token: token).deliver_later
-      log_identity_verification(:sent_instructions)
+      log_identity_verification('Email', :sent_instructions)
     end
 
     def send_rate_limited?
