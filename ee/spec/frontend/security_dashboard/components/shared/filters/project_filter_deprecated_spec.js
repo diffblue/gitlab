@@ -7,11 +7,14 @@ import ProjectFilterDeprecated from 'ee/security_dashboard/components/shared/fil
 import groupProjectsQuery from 'ee/security_dashboard/graphql/queries/group_projects.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
-import { projectFilter } from 'ee/security_dashboard/helpers';
+import { projectFilter, PROJECT_LOADING_ERROR_MESSAGE } from 'ee/security_dashboard/helpers';
 import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { createAlert } from '~/flash';
 
 Vue.use(VueApollo);
+
+jest.mock('~/flash');
 
 const projects = [
   { id: 1, name: 'Project 1' },
@@ -125,6 +128,15 @@ describe('Project Filter Deprecated component', () => {
       await waitForPromises();
 
       expect(findLoadingIcon().exists()).toBe(false);
+    });
+
+    it('shows an error', async () => {
+      await createWrapperAndWaitForQuery({
+        projectsRequestHandler: jest.fn().mockRejectedValue(new Error()),
+      });
+
+      expect(createAlert).toHaveBeenCalledTimes(1);
+      expect(createAlert).toHaveBeenCalledWith({ message: PROJECT_LOADING_ERROR_MESSAGE });
     });
   });
 

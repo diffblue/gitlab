@@ -8,7 +8,7 @@ import {
 import { escapeRegExp, has, xorBy } from 'lodash';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { convertToGraphQLIds, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __, s__ } from '~/locale';
 import groupProjectsQuery from '../../../graphql/queries/group_projects.query.graphql';
@@ -121,7 +121,7 @@ export default {
         this.selectedOptions = this.querystringOptions;
       },
       error() {
-        createFlash({ message: PROJECT_LOADING_ERROR_MESSAGE });
+        createAlert({ message: PROJECT_LOADING_ERROR_MESSAGE });
       },
       skip() {
         // Skip if we've already cached all the projects for every querystring ID.
@@ -148,7 +148,7 @@ export default {
         this.saveProjectsToCache(this.projects);
       },
       error() {
-        createFlash({ message: PROJECT_LOADING_ERROR_MESSAGE });
+        createAlert({ message: PROJECT_LOADING_ERROR_MESSAGE });
       },
       skip() {
         return !this.hasDropdownBeenOpened || this.isSearchTooShort || this.isMaxProjectsSelected;
