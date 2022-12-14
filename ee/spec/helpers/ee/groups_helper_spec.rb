@@ -262,7 +262,6 @@ RSpec.describe GroupsHelper do
         buy_addon_target_attr: nil,
         default_per_page: 20,
         is_free_namespace: "true",
-        is_temporary_storage_increase_visible: "false",
         purchase_storage_url: nil,
         storage_limit_enforced: "false"
       })

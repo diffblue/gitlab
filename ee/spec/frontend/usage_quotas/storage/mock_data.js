@@ -113,7 +113,6 @@ export const defaultNamespaceProvideValues = {
   defaultPerPage: 20,
   purchaseStorageUrl: '',
   buyAddonTargetAttr: '_blank',
-  isTemporaryStorageIncreaseVisible: false,
   helpLinks: projectHelpLinks,
 };
 

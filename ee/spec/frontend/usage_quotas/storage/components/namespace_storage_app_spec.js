@@ -6,7 +6,6 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { captureException } from '~/ci/runner/sentry_utils';
 import NamespaceStorageApp from 'ee/usage_quotas/storage/components/namespace_storage_app.vue';
 import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
-import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import getNamespaceStorageQuery from 'ee/usage_quotas/storage/queries/namespace_storage.query.graphql';
 import getDependencyProxyTotalSizeQuery from 'ee/usage_quotas/storage/queries/dependency_proxy_usage.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -19,7 +18,6 @@ import StorageUsageStatistics from 'ee/usage_quotas/storage/components/storage_u
 import StorageInlineAlert from 'ee/usage_quotas/storage/components/storage_inline_alert.vue';
 import DependencyProxyUsage from 'ee/usage_quotas/storage/components/dependency_proxy_usage.vue';
 import ContainerRegistryUsage from 'ee/usage_quotas/storage/components/container_registry_usage.vue';
-import TemporaryStorageIncreaseModal from 'ee/usage_quotas/storage/components/temporary_storage_increase_modal.vue';
 import {
   defaultNamespaceProvideValues,
   mockedNamespaceStorageResponse,
@@ -73,8 +71,6 @@ describe('NamespaceStorageApp', () => {
   const findPurchaseStorageLink = () => wrapper.find("[data-testid='purchase-storage-link']");
   const findDependencyProxy = () => wrapper.findComponent(DependencyProxyUsage);
   const findStorageUsageStatistics = () => wrapper.findComponent(StorageUsageStatistics);
-  const findTemporaryStorageIncreaseButton = () =>
-    wrapper.find("[data-testid='temporary-storage-increase-button']");
   const findSearchAndSortBar = () => wrapper.findComponent(SearchAndSortBar);
   const findPrevButton = () => wrapper.find('[data-testid="prevButton"]');
   const findNextButton = () => wrapper.find('[data-testid="nextButton"]');
@@ -92,9 +88,6 @@ describe('NamespaceStorageApp', () => {
   } = {}) => {
     wrapper = mountExtended(NamespaceStorageApp, {
       apolloProvider: mockApollo,
-      directives: {
-        GlModalDirective: createMockDirective(),
-      },
       provide: {
         ...defaultNamespaceProvideValues,
         ...provide,
@@ -215,56 +208,6 @@ describe('NamespaceStorageApp', () => {
       expect(findContainerRegistry().props()).toEqual({
         containerRegistrySize:
           mockedNamespaceStorageResponse.data.namespace.rootStorageStatistics.containerRegistrySize,
-      });
-    });
-  });
-
-  describe('temporary storage increase', () => {
-    const namespaceWithLimit = { ...mockedNamespaceStorageResponse };
-    namespaceWithLimit.data.namespace.storageSizeLimit = TEST_LIMIT;
-    mockApollo = createMockApolloProvider(namespaceWithLimit);
-
-    describe.each`
-      provide                                           | isVisible
-      ${{}}                                             | ${false}
-      ${{ isTemporaryStorageIncreaseVisible: 'false' }} | ${false}
-      ${{ isTemporaryStorageIncreaseVisible: 'true' }}  | ${true}
-    `('with $provide', ({ provide, isVisible }) => {
-      beforeEach(() => {
-        createComponent({ mockApollo, provide });
-      });
-
-      it(`renders button = ${isVisible}`, () => {
-        expect(findTemporaryStorageIncreaseButton().exists()).toBe(isVisible);
-      });
-    });
-
-    describe('when temporary storage increase is visible', () => {
-      beforeEach(async () => {
-        namespaceWithLimit.data.namespace.storageSizeLimit = TEST_LIMIT;
-        mockApollo = createMockApolloProvider(namespaceWithLimit);
-        createComponent({
-          mockApollo,
-          provide: { isTemporaryStorageIncreaseVisible: 'true' },
-        });
-        await waitForPromises();
-      });
-
-      it('binds button to modal', () => {
-        const { value } = getBinding(
-          findTemporaryStorageIncreaseButton().element,
-          'gl-modal-directive',
-        );
-
-        expect(value).toBe('temporary-increase-storage-modal');
-        expect(value).toEqual(NamespaceStorageApp.modalId);
-      });
-
-      it('renders modal', () => {
-        expect(wrapper.findComponent(TemporaryStorageIncreaseModal).props()).toEqual({
-          limit: formatUsageSize(TEST_LIMIT),
-          modalId: NamespaceStorageApp.modalId,
-        });
       });
     });
   });
