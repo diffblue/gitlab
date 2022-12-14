@@ -683,7 +683,7 @@ module EE
 
       members = members.non_guests if exclude_guests
 
-      users_without_project_bots(members)
+      users_without_bots(members)
     end
 
     # Members belonging directly to Projects within Group or Projects within subgroups
@@ -696,7 +696,7 @@ module EE
         source_id: ::Project.joins(:group).where(namespace: self_and_descendants)
       )
 
-      users_without_project_bots(members).with_state(:active)
+      users_without_bots(members).with_state(:active)
     end
 
     # Members belonging to Groups invited to collaborate with Groups and Subgroups
@@ -705,7 +705,7 @@ module EE
       members = invited_or_shared_group_members(groups)
       members = members.non_guests if exclude_guests
 
-      users_without_project_bots(members)
+      users_without_bots(members)
     end
 
     # Members belonging to Groups invited to collaborate with Projects
@@ -714,7 +714,7 @@ module EE
       members = invited_or_shared_group_members(groups)
       members = members.non_guests if exclude_guests
 
-      users_without_project_bots(members)
+      users_without_bots(members)
     end
 
     def parent_epic_ids_in_ancestor_groups
@@ -806,8 +806,8 @@ module EE
       ::GroupMember.active_without_invites_and_requests.where(source_id: groups.self_and_ancestors)
     end
 
-    def users_without_project_bots(members)
-      ::User.where(id: members.distinct.select(:user_id)).without_project_bot
+    def users_without_bots(members)
+      ::User.where(id: members.distinct.select(:user_id)).without_bots
     end
 
     def projects_for_group_and_its_subgroups_without_deleted
