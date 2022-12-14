@@ -8,7 +8,7 @@ RSpec.describe Ci::Pipeline do
   let(:user) { create(:user) }
   let_it_be(:project) { create(:project, :repository) }
 
-  let(:pipeline) do
+  let_it_be(:pipeline, refind: true) do
     create(:ci_empty_pipeline, status: :created, project: project)
   end
 
@@ -331,7 +331,7 @@ RSpec.describe Ci::Pipeline do
     end
   end
 
-  describe '#dependency_list_reports' do
+  describe '#dependency_list_reports', feature_category: :dependency_management do
     subject { pipeline.dependency_list_report }
 
     before do
@@ -339,9 +339,9 @@ RSpec.describe Ci::Pipeline do
     end
 
     context 'when pipeline has a build with dependency list reports' do
-      let!(:build) { create(:ee_ci_build, :success, :dependency_list, pipeline: pipeline, project: project) }
-      let!(:build1) { create(:ee_ci_build, :success, :dependency_scanning, pipeline: pipeline, project: project) }
-      let!(:build2) { create(:ee_ci_build, :success, :license_scanning, pipeline: pipeline, project: project) }
+      let_it_be(:build) { create(:ee_ci_build, :success, :dependency_list, pipeline: pipeline, project: project) }
+      let_it_be(:build1) { create(:ee_ci_build, :success, :dependency_scanning, pipeline: pipeline, project: project) }
+      let_it_be(:build2) { create(:ee_ci_build, :success, :license_scanning, pipeline: pipeline, project: project) }
 
       it 'returns a dependency list report with collected data' do
         mini_portile2 = subject.dependencies.find { |x| x[:name] == 'mini_portile2' }
@@ -688,8 +688,10 @@ RSpec.describe Ci::Pipeline do
     end
   end
 
-  describe '#can_store_security_reports?' do
+  describe '#can_store_security_reports?', feature_category: :vulnerability_management do
     subject { pipeline.can_store_security_reports? }
+
+    let(:pipeline) { create(:ci_empty_pipeline, status: :created, project: project) }
 
     before do
       pipeline.succeed!
