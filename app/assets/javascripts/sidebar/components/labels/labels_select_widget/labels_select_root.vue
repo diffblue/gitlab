@@ -435,9 +435,7 @@ export default {
         :labels-filter-base-path="labelsFilterBasePath"
         :labels-filter-param="labelsFilterParam"
         @onLabelRemove="handleLabelRemove"
-      >
-        <slot></slot>
-      </embedded-labels-list>
+      />
     </template>
   </div>
 </template>

@@ -53,7 +53,7 @@ export default {
 </script>
 
 <template>
-  <div :class="{ 'gl-mt-4': selectedLabels.length }" data-testid="embedded-labels-list">
+  <div>
     <gl-label
       v-for="label in sortedSelectedLabels"
       :key="label.id"

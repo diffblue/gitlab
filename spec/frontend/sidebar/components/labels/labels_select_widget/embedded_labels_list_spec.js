@@ -13,7 +13,6 @@ describe('EmbeddedLabelsList', () => {
       .at(0);
   const findRegularLabel = () => findLabelByTitle(mockRegularLabel.title);
   const findScopedLabel = () => findLabelByTitle(mockScopedLabel.title);
-  const findWrapper = () => wrapper.findByTestId('embedded-labels-list');
 
   const createComponent = (props = {}, slots = {}) => {
     wrapper = shallowMountExtended(EmbeddedLabelsList, {
@@ -42,10 +41,6 @@ describe('EmbeddedLabelsList', () => {
       });
     });
 
-    it('does not apply `gl-mt-4` class to the wrapping container', () => {
-      expect(findWrapper().classes()).not.toContain('gl-mt-4');
-    });
-
     it('does not render any labels', () => {
       expect(findAllLabels()).toHaveLength(0);
     });
@@ -54,10 +49,6 @@ describe('EmbeddedLabelsList', () => {
   describe('when there are labels', () => {
     beforeEach(() => {
       createComponent();
-    });
-
-    it('applies `gl-mt-4` class to the wrapping container', () => {
-      expect(findWrapper().classes()).toContain('gl-mt-4');
     });
 
     it('renders a list of two labels', () => {
