@@ -107,7 +107,8 @@ export default {
 };
 </script>
 <template>
-  <div>
+  <div class="gl-display-flex gl-align-items-center gl-gap-3">
+    <label class="gl-m-0">{{ s__('ValueStreamAnalytics|Value stream') }}</label>
     <gl-dropdown
       v-if="hasValueStreams"
       data-testid="dropdown-value-streams"
