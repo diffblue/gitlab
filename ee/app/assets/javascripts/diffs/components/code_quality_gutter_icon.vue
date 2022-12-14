@@ -43,6 +43,9 @@ export default {
     tooltipTextCollapsed() {
       return n__('1 Code quality finding', '%d Code quality findings', this.codequality.length);
     },
+    showMoreCount() {
+      return this.moreCount && this.isHoveringFirstIcon;
+    },
     line() {
       return this.codequality[0].line;
     },
@@ -68,7 +71,7 @@ export default {
       return this.codequality[0];
     },
     codeQualitySubItems() {
-      return this.codequality.slice(1, 3);
+      return this.codequality.slice(1, codequalityCountThreshold);
     },
   },
 };
@@ -97,26 +100,33 @@ export default {
           @mouseleave="isHoveringFirstIcon = false"
         />
       </span>
-      <gl-icon
-        v-for="item in codeQualitySubItems"
-        :key="item.description"
-        :size="16"
-        :name="severity[item.severity].name"
-        :class="[isHoveringFirstIcon ? 'first-icon-hovered' : '', severity[item.severity].class]"
-        class="gl-hover-cursor-pointer gl-relative gl-top-1 codequality-severity-icon gl-absolute gl-left-0 gl-opacity-0"
-      />
-      <div
-        v-if="moreCount"
-        :class="[
-          isHoveringFirstIcon ? 'first-icon-hovered' : '',
-          'more-count gl-px-2 gl-w-auto gl-absolute gl-left-0 gl-opacity-0 gl-relative gl-top-1',
-        ]"
-        data-testid="codeQualityMoreCount"
-      >
-        <p class="gl-mb-0 gl-display-block gl-w-3 more-count-copy">
-          {{ moreCount }}
-        </p>
-      </div>
+      <span class="code-quality-transition-container gl-display-inline-flex">
+        <transition-group name="icons">
+          <!--
+            The TransitionGroup Component will only apply its classes when first-level children are added/removed to the DOM.
+            So to make TransitionGroup work there is no other way to use v-if-with-v-for in this case.
+          -->
+          <!-- eslint-disable vue/no-use-v-if-with-v-for -->
+          <gl-icon
+            v-for="item in codeQualitySubItems"
+            v-if="isHoveringFirstIcon"
+            :key="item.description"
+            :name="severity[item.severity].name"
+            :class="severity[item.severity].class"
+            class="gl-hover-cursor-pointer gl-relative gl-top-1 codequality-severity-icon gl-absolute gl-left-0"
+          />
+          <!-- eslint-enable -->
+        </transition-group>
+        <transition name="more-count">
+          <div
+            v-if="showMoreCount"
+            class="more-count gl-px-2 gl-w-auto gl-absolute gl-left-0 gl-relative gl-top-1"
+            data-testid="codeQualityMoreCount"
+          >
+            <p class="gl-mb-0 gl-display-block gl-w-3 more-count-copy">{{ moreCount }}</p>
+          </div>
+        </transition>
+      </span>
     </div>
     <button v-else class="diff-codequality-collapse gl-mx-n2">
       <gl-icon :size="12" name="collapse" />

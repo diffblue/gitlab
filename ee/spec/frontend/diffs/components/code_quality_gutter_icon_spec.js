@@ -131,7 +131,15 @@ describe('EE CodeQualityGutterIcon with flag on', () => {
         expect(wrapper.emitted('showCodeQualityFindings')).toHaveLength(1);
       });
 
-      it('displays correct amount of icons with correct severity', () => {
+      it('displays first icon with correct severity', () => {
+        const icons = findIcons();
+        expect(icons).toHaveLength(1);
+        expect(icons.at(0).props().name).toBe('severity-low');
+      });
+
+      it('displays correct amount of icons with correct severity on hover', async () => {
+        findFirstIcon().vm.$emit('mouseenter');
+        await nextTick();
         const icons = findIcons();
         expect(icons).toHaveLength(3);
         expect(icons.at(0).props().name).toBe('severity-low');
@@ -142,15 +150,6 @@ describe('EE CodeQualityGutterIcon with flag on', () => {
       it('does not display more count', () => {
         expect(wrapper.findByTestId('codeQualityMoreCount').exists()).toBe(false);
       });
-
-      it('triggers "first-icon-hovered" class on 2 icons when first icon is hovered and removes it when not', async () => {
-        findFirstIcon().vm.$emit('mouseenter');
-        await nextTick();
-        expect(wrapper.findAll('.first-icon-hovered')).toHaveLength(2);
-        findFirstIcon().vm.$emit('mouseleave');
-        await nextTick();
-        expect(wrapper.findAll('.first-icon-hovered')).toHaveLength(0);
-      });
     });
 
     describe('with more than 3 findings', () => {
@@ -158,22 +157,21 @@ describe('EE CodeQualityGutterIcon with flag on', () => {
         createComponent(fiveFindings, true);
       });
 
-      it('displays correct amount of icons with correct severity + more count', () => {
+      it('displays first icon with correct severity', () => {
+        const icons = findIcons();
+        expect(icons).toHaveLength(1);
+        expect(icons.at(0).props().name).toBe('severity-low');
+      });
+
+      it('displays correct amount of icons with correct severity + more count on hover', async () => {
+        findFirstIcon().vm.$emit('mouseenter');
+        await nextTick();
         const icons = findIcons();
         expect(icons).toHaveLength(3);
         expect(icons.at(0).props().name).toBe('severity-low');
         expect(icons.at(1).props().name).toBe('severity-medium');
         expect(icons.at(2).props().name).toBe('severity-info');
         expect(wrapper.findByTestId('codeQualityMoreCount').exists()).toBe(true);
-      });
-
-      it('triggers "first-icon-hovered" class on 2 icons and more count when first icon is hovered and removes it when not', async () => {
-        findFirstIcon().vm.$emit('mouseenter');
-        await nextTick();
-        expect(wrapper.findAll('.first-icon-hovered')).toHaveLength(3);
-        findFirstIcon().vm.$emit('mouseleave');
-        await nextTick();
-        expect(wrapper.findAll('.first-icon-hovered')).toHaveLength(0);
       });
     });
 
