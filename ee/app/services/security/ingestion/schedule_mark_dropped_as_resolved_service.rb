@@ -40,7 +40,7 @@ module Security
 
       # Returns a list of identifiers no longer present in latest scan
       def dropped_identifiers
-        return [] unless primary_identifiers
+        return [] unless primary_identifiers&.any?
 
         dropped_identifiers = []
 

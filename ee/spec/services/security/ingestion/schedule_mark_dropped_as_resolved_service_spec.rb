@@ -73,6 +73,14 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService do
         ::Vulnerabilities::MarkDroppedAsResolvedWorker.jobs.last['args']
       ).to eq([pipeline.project_id, [dropped_identifier.id]])
     end
+
+    context 'when primary_identifiers is empty' do
+      subject(:service) { described_class.new(pipeline.project_id, []).execute }
+
+      it 'wont schedule MarkDroppedAsResolvedWorker' do
+        expect { service }.to change { ::Vulnerabilities::MarkDroppedAsResolvedWorker.jobs.count }.by(0)
+      end
+    end
   end
 
   context 'when flag is disabled' do

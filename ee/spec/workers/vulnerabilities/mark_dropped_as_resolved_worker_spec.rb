@@ -44,5 +44,15 @@ RSpec.describe Vulnerabilities::MarkDroppedAsResolvedWorker do
       expect(transition.author_id).to eq(User.security_bot.id)
       expect(transition.comment).to match(/automatically resolved/)
     end
+
+    context 'when flag is disabled' do
+      before do
+        stub_feature_flags(sec_mark_dropped_findings_as_resolved: false)
+      end
+
+      it 'wont change state of Vulnerabilities to resolved' do
+        expect { subject }.not_to change { dismissable_vulnerability.reload.state }
+      end
+    end
   end
 end
