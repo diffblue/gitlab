@@ -636,11 +636,65 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
       end
     end
 
-    it_behaves_like 'sync retries use the snapshot RPC' do
+    context 'with snapshotting enabled' do
+      before do
+        allow(replicator).to receive(:snapshot_enabled?).and_return(true)
+        allow(replicator).to receive(:snapshot_url).and_return("#{primary.url}api/v4/projects/#{project.id}/snapshot")
+      end
+
+      it_behaves_like 'sync retries use the snapshot RPC' do
+        let(:retry_count) { described_class::RETRIES_BEFORE_REDOWNLOAD }
+
+        def registry_with_retry_count(retries)
+          replicator.registry.update!(retry_count: retries)
+        end
+      end
+    end
+
+    context 'with snapshotting disabled' do
+      before do
+        allow(replicator).to receive(:snapshot_enabled?).and_return(false)
+      end
+
+      let(:temp_repo) { subject.send(:temp_repo) }
       let(:retry_count) { described_class::RETRIES_BEFORE_REDOWNLOAD }
 
       def registry_with_retry_count(retries)
         replicator.registry.update!(retry_count: retries)
+      end
+
+      def receive_create_from_snapshot
+        receive(:create_from_snapshot).with(primary.snapshot_url(temp_repo), match(/^GL-Geo/)) { Gitaly::CreateRepositoryFromSnapshotResponse.new }
+      end
+
+      it 'does not attempt to snapshot for initial sync' do
+        allow(repository).to receive(:exists?) { false }
+
+        expect(repository).not_to receive_create_from_snapshot
+        expect(temp_repo).not_to receive_create_from_snapshot
+        expect(subject).to receive(:clone_geo_mirror)
+
+        subject.execute
+      end
+
+      it 'does not attempt to snapshot for ordinary retries' do
+        registry_with_retry_count(retry_count - 1)
+
+        expect(repository).not_to receive_create_from_snapshot
+        expect(temp_repo).not_to receive_create_from_snapshot
+        expect(subject).to receive(:fetch_geo_mirror)
+
+        subject.execute
+      end
+
+      it 'does not attempt to snapshot when registry is ready to be redownloaded' do
+        registry_with_retry_count(retry_count + 1)
+
+        expect(repository).not_to receive_create_from_snapshot
+        expect(temp_repo).not_to receive_create_from_snapshot
+        expect(subject).to receive(:clone_geo_mirror)
+
+        subject.execute
       end
     end
   end

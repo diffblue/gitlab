@@ -147,14 +147,12 @@ module Geo
     # will be enqueued by the log cursor, which should resolve any problems
     # it is possible to fix.
     def fetch_snapshot_into_temp_repo
-      # Snapshots will miss the data that are shared in object pools, and snapshotting should
-      # be avoided to guard against data loss.
-      return if replicator.model_record.pool_repository
+      return unless replicator.snapshot_enabled?
 
       log_info("Attempting to fetch repository via snapshot")
 
       temp_repo.create_from_snapshot(
-        ::Gitlab::Geo.primary_node.snapshot_url(temp_repo),
+        replicator.snapshot_url(temp_repo),
         ::Gitlab::Geo::RepoSyncRequest.new(scope: ::Gitlab::Geo::API_SCOPE).authorization
       )
     rescue StandardError => err

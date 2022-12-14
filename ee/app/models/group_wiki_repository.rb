@@ -37,10 +37,6 @@ class GroupWikiRepository < ApplicationRecord
     self.for_repository_storage(::Gitlab::Geo.current_node.selective_sync_shards)
   end
 
-  def pool_repository
-    nil
-  end
-
   def repository
     group.wiki.repository
   end
