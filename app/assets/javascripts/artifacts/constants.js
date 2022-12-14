@@ -43,10 +43,12 @@ export const I18N_MODAL_BODY = s__(
 export const I18N_MODAL_PRIMARY = s__('Artifacts|Delete artifact');
 export const I18N_MODAL_CANCEL = __('Cancel');
 
-export const I18N_FEEDBACK_BANNER_TITLE = s__('Artifacts|Feedback banner title');
-export const I18N_FEEDBACK_BANNER_BODY = s__('Artifacts|Feedback banner body');
-export const I18N_FEEDBACK_BANNER_BUTTON = s__('Artifacts|Feedback banner button');
-export const FEEDBACK_URL = '#';
+export const I18N_FEEDBACK_BANNER_TITLE = s__('Artifacts|Help us improve this page');
+export const I18N_FEEDBACK_BANNER_BODY = s__(
+  'Artifacts|We want to hear from you about how this page could help you manage artifacts! Let us know how we can improve your experience by taking a quick survey.',
+);
+export const I18N_FEEDBACK_BANNER_BUTTON = s__('Artifacts|Provide feedback');
+export const FEEDBACK_URL = 'https://gitlab.fra1.qualtrics.com/jfe/form/SV_cI9rAUI20Vo2St8';
 
 export const INITIAL_CURRENT_PAGE = 1;
 export const INITIAL_PREVIOUS_PAGE_CURSOR = '';

@@ -30,7 +30,7 @@ export default {
     <template #default="{ dismiss, shouldShowCallout }">
       <gl-banner
         v-if="shouldShowCallout"
-        class="gl-mt-6"
+        class="gl-mb-6"
         :title="$options.i18n.title"
         :button-text="$options.i18n.button"
         :button-link="$options.FEEDBACK_URL"
