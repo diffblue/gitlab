@@ -42688,7 +42688,7 @@ msgstr ""
 msgid "This variable can not be masked."
 msgstr ""
 
-msgid "This vulnerability type has been deprecated from GitLab's default ruleset and automatically resolved."
+msgid "This vulnerability was automatically resolved because its vulnerability type was disabled in this project or removed from GitLab's default ruleset."
 msgstr ""
 
 msgid "This will invalidate your registered applications and U2F / WebAuthn devices."

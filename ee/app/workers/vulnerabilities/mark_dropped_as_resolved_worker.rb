@@ -72,7 +72,8 @@ module Vulnerabilities
     end
 
     def resolution_comment
-      _("This vulnerability type has been deprecated from GitLab's default ruleset and automatically resolved.")
+      _("This vulnerability was automatically resolved because its vulnerability type was disabled in this project " \
+        "or removed from GitLab's default ruleset.")
     end
   end
   # rubocop:enable Scalability/IdempotentWorker
