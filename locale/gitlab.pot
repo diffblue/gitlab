@@ -23996,6 +23996,9 @@ msgstr ""
 msgid "Key (PEM)"
 msgstr ""
 
+msgid "Key result"
+msgstr ""
+
 msgid "Key:"
 msgstr ""
 

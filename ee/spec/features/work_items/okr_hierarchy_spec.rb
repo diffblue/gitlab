@@ -60,18 +60,15 @@ RSpec.describe 'OKR hierarchy', :js, feature_category: :product_planning do
 
         expect(find('[data-testid="add-tree-form"]')).to have_button('Add objective', disabled: true)
 
-        # TODO: Uncomment once following two issues addressed
-        # https://gitlab.com/gitlab-org/gitlab/-/issues/381833
-        # https://gitlab.com/gitlab-org/gitlab/-/issues/385084
-        # click_button 'Add'
-        # click_button 'New key result'
+        click_button 'Add'
+        click_button 'New key result'
 
-        # expect(find('[data-testid="add-tree-form"]')).to have_button('Create key result', disabled: true)
+        expect(find('[data-testid="add-tree-form"]')).to have_button('Create key result', disabled: true)
 
-        # click_button 'Add'
-        # click_button 'Existing key result'
+        click_button 'Add'
+        click_button 'Existing key result'
 
-        # expect(find('[data-testid="add-tree-form"]')).to have_button('Add key result', disabled: true)
+        expect(find('[data-testid="add-tree-form"]')).to have_button('Add key result', disabled: true)
 
         click_button 'Cancel'
 
