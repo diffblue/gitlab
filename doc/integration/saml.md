@@ -334,12 +334,12 @@ connect to the Google Workspace SAML app.
 | First Name      | `first_name`, `firstname`, `firstName` |
 | Last Name       | `last_name`, `lastname`, `lastName`    |
 
-See [`attribute_statements`](#map-saml-response-attribute-names) for examples on how custom
-assertions are configured. This section also describes how to configure custom
-username attributes.
+See [`attribute_statements`](#map-saml-response-attribute-names) for:
 
-Please refer to [the OmniAuth SAML gem](https://github.com/omniauth/omniauth-saml/blob/master/lib/omniauth/strategies/saml.rb)
-for a full list of supported assertions.
+- Custom assertion configuration examples.
+- How to configure custom username attributes.
+
+For a full list of supported assertions, see the [OmniAuth SAML gem](https://github.com/omniauth/omniauth-saml/blob/master/lib/omniauth/strategies/saml.rb)
 
 ## Configure users based on SAML group membership
 
