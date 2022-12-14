@@ -17673,12 +17673,6 @@ msgstr ""
 msgid "Format: %{dateFormat}"
 msgstr ""
 
-msgid "Found errors in your %{gitlab_ci_yml}:"
-msgstr ""
-
-msgid "Found errors in your .gitlab-ci.yml:"
-msgstr ""
-
 msgid "Framework successfully deleted"
 msgstr ""
 
@@ -43929,6 +43923,9 @@ msgstr ""
 msgid "Unable to create link to vulnerability"
 msgstr ""
 
+msgid "Unable to create pipeline"
+msgstr ""
+
 msgid "Unable to fetch branch list for this project."
 msgstr ""
 
@@ -47302,9 +47299,6 @@ msgstr ""
 msgid "You can also star a label to make it a priority label."
 msgstr ""
 
-msgid "You can also test your %{gitlab_ci_yml} in %{lint_link_start}CI Lint%{lint_link_end}"
-msgstr ""
-
 msgid "You can also upload existing files from your computer using the instructions below."
 msgstr ""
 
@@ -47432,9 +47426,6 @@ msgid "You can set up jobs to only use runners with specific tags. Separate tags
 msgstr ""
 
 msgid "You can specify notification level per group or per project."
-msgstr ""
-
-msgid "You can test your .gitlab-ci.yml in %{linkStart}CI Lint%{linkEnd}."
 msgstr ""
 
 msgid "You can view the source or %{linkStart}%{cloneIcon} clone the repository%{linkEnd}"
