@@ -211,6 +211,31 @@ feature_category: :authentication_and_authorization do
           expect { service.execute }.not_to change { GroupMember.count }
         end
 
+        context 'when invalid identity' do
+          let_it_be(:service_params) do
+            {
+              email: 'work@example.com',
+              name: 'Test Name',
+              extern_uid: '',
+              username: 'username'
+            }
+          end
+
+          let(:provision_response) do
+            ::EE::Gitlab::Scim::ProvisioningResponse.new(identity: nil,
+                                                         status: :error,
+                                                         message: "Extern uid can't be blank")
+          end
+
+          it 'does not return nil result' do
+            expect(service.execute).not_to be_nil
+          end
+
+          it 'returns error response' do
+            expect(service.execute.to_json).to eq(provision_response.to_json)
+          end
+        end
+
         context 'when error in create identity' do
           let(:error_response) { described_class.new(service_params, group).send(:error_response) }
           let(:provision_response) do
