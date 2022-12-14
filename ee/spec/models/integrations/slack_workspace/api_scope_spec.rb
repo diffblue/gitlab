@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Integrations::SlackWorkspace::ApiScope do
+RSpec.describe Integrations::SlackWorkspace::ApiScope, feature_category: :integrations do
   describe '.find_or_initialize_by_names' do
     it 'acts as insert into a global set of scope names' do
       expect { described_class.find_or_initialize_by_names(%w[foo bar baz]) }
