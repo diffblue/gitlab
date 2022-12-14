@@ -191,7 +191,7 @@ and will be moved to the JiHu GitLab codebase.
 
 ### `POST ci/lint` API endpoint deprecated
 
-Planned removal: GitLab <span class="removal-milestone">16.0</span> (2021-03-22)
+Planned removal: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)
 
 WARNING:
 This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
