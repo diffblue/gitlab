@@ -7,7 +7,7 @@
       - else
         = s_('Promotions|Keep track of events in your project')
     %p
-      = s_('Automatic event tracking provides a traceable history for audits.')
+      = _('Automatic event tracking provides a traceable history for audits.')
       = link_to _('Learn more.'), help_page_path('administration/audit_events.md', anchor: 'project-events'), target: '_blank', rel: 'noopener noreferrer'
 
     = render 'shared/promotions/promotion_link_project', location: :audit_events

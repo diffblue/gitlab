@@ -2,6 +2,6 @@
   .form-group
     = check_box_tag :terms_opt_in, '1', false, required: true
     = label_tag :terms_opt_in do
-      - terms_link = link_to s_("Terms of Service and Privacy Policy"), terms_path, target: "_blank"
+      - terms_link = link_to _("Terms of Service and Privacy Policy"), terms_path, target: "_blank"
       - accept_terms_label = _("I accept the %{terms_link}") % { terms_link: terms_link }
       = accept_terms_label.html_safe
