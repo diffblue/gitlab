@@ -9,4 +9,4 @@ feature_categories:
 classes:
 - Geo::TrackingBase::SchemaMigration
 - ActiveRecord::SchemaMigration
-gitlab_schema: gitlab_geo
+gitlab_schema: gitlab_internal
