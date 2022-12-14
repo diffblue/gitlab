@@ -7,7 +7,6 @@ module EE
     READONLY_ABILITIES = %i[
       admin_tag
       push_to_delete_protected_branch
-      resolve_note
       create_merge_request_from
       create_merge_request_in
       admin_software_license_policy

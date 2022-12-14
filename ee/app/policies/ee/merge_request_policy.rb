@@ -3,6 +3,7 @@
 module EE
   module MergeRequestPolicy
     extend ActiveSupport::Concern
+    extend ::Gitlab::Utils::Override
 
     prepended do
       with_scope :subject
@@ -15,7 +16,7 @@ module EE
           can?(:developer_access, @subject.target_project)
       end
 
-      condition(:read_only, scope: :subject) { @subject.target_project&.namespace&.read_only? }
+      condition(:read_only, scope: :subject) { read_only? }
 
       condition(:merge_request_group_approver, score: 140) do
         project = @subject.target_project
@@ -29,6 +30,10 @@ module EE
       condition(:approval_rules_licence_enabled, scope: :subject) do
         @subject.target_project.licensed_feature_available?(:coverage_check_approval_rule) ||
         @subject.target_project.licensed_feature_available?(:report_approver_rules)
+      end
+
+      def read_only?
+        @subject.target_project&.namespace&.read_only?
       end
 
       def group_access?(protected_branch)
@@ -47,14 +52,19 @@ module EE
       rule { external_status_checks_enabled }.enable :provide_status_check_response
 
       rule { read_only }.policy do
-        prevent :approve_merge_request
         prevent :update_merge_request
-        prevent :reopen_merge_request
-        prevent :create_note
-        prevent :resolve_note
       end
 
       rule { approval_rules_licence_enabled }.enable :create_merge_request_approval_rules
+    end
+
+    private
+
+    override :can_approve?
+    def can_approve?
+      return can?(:developer_access) if read_only?
+
+      super
     end
   end
 end

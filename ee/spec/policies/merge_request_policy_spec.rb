@@ -233,12 +233,12 @@ RSpec.describe MergeRequestPolicy do
         allow(merge_request.target_project.namespace).to receive(:read_only?).and_return(true)
       end
 
-      it 'does not allow few policies for all users including maintainer' do
-        expect(policy_for(maintainer)).to be_disallowed(:approve_merge_request,
-                                                        :update_merge_request,
-                                                        :reopen_merge_request,
-                                                        :create_note,
-                                                        :resolve_note)
+      it 'does not allow update_merge_request for all users including maintainer' do
+        expect(policy_for(maintainer)).to be_disallowed(:update_merge_request)
+      end
+
+      it 'does allow approval of the merge request' do
+        expect(policy_for(developer)).to be_allowed(:approve_merge_request)
       end
     end
 
