@@ -24,26 +24,25 @@ RSpec.describe "Admin Runners", feature_category: :runner_fleet do
       end
 
       shared_examples 'upgrade is recommended' do
-        it 'shows upgrade recommended badge' do
+        it 'shows an orange upgrade recommended icon' do
           within_runner_row(runner.id) do
-            expect(page).to have_selector '.badge', text: s_('Runners|Upgrade recommended')
+            expect(page).to have_selector '.gl-text-orange-500[data-testid="upgrade-icon"]'
           end
         end
       end
 
       shared_examples 'upgrade is available' do
-        it 'shows upgrade available badge' do
+        it 'shows a blue upgrade available icon' do
           within_runner_row(runner.id) do
-            expect(page).to have_selector '.badge', text: s_('Runners|Upgrade available')
+            expect(page).to have_selector '.gl-text-blue-500[data-testid="upgrade-icon"]'
           end
         end
       end
 
       shared_examples 'no upgrade shown' do
-        it 'shows no upgrade badge' do
+        it 'shows no upgrade icon' do
           within_runner_row(runner.id) do
-            expect(page).not_to have_selector '.badge', text: s_('Runners|Upgrade recommended')
-            expect(page).not_to have_selector '.badge', text: s_('Runners|Upgrade available')
+            expect(page).not_to have_selector '[data-testid="upgrade-icon"]'
           end
         end
       end
