@@ -27633,9 +27633,6 @@ msgstr ""
 msgid "No labels with such name or description"
 msgstr ""
 
-msgid "No license. All rights reserved"
-msgstr ""
-
 msgid "No matches found"
 msgstr ""
 
