@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SystemCheck::Geo::GeoDatabaseConfiguredCheck, :silence_stdout do
+RSpec.describe SystemCheck::Geo::GeoDatabaseConfiguredCheck, :silence_stdout, feature_category: :geo_replication do
   subject { described_class.new }
 
   describe '#multi_check', :reestablished_active_record_base do

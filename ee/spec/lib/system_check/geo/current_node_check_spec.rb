@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SystemCheck::Geo::CurrentNodeCheck, :geo, :silence_stdout do
+RSpec.describe SystemCheck::Geo::CurrentNodeCheck, :geo, :silence_stdout, feature_category: :geo_replication do
   describe '#check?' do
     context 'when the current machine has a matching GeoNode' do
       it 'returns true' do
