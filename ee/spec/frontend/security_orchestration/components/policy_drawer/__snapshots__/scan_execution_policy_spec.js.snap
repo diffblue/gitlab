@@ -57,7 +57,11 @@ exports[`ScanExecutionPolicy component multiple action policy renders the correc
       <p>
         Runs 
         <strong>
-          Container Scanning, Secret Detection
+          Container Scanning
+        </strong>
+        , 
+        <strong>
+          Secret Detection
         </strong>
          and 
         <strong>
