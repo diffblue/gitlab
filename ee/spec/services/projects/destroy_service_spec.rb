@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Projects::DestroyService do
   include EE::GeoHelpers
+  include BatchDestroyDependentAssociationsHelper
 
   let!(:user) { create(:user) }
   let!(:project) { create(:project, :repository, namespace: user.namespace) }
@@ -154,6 +155,29 @@ RSpec.describe Projects::DestroyService do
       end.once
 
       subject.execute
+    end
+  end
+
+  context 'associations destoyed in batches' do
+    let!(:vulnerability) { create(:vulnerability, :with_findings, project: project) }
+    let!(:finding) do
+      create(:vulnerabilities_finding, vulnerability: vulnerability, project: project)
+    end
+
+    it 'destroys the associations marked as `dependent: :destroy`, in batches' do
+      query_recorder = ActiveRecord::QueryRecorder.new do
+        subject.execute
+      end
+
+      expect(project.vulnerabilities).to be_empty
+      expect(project.vulnerability_findings).to be_empty
+
+      expected_queries = [
+        delete_in_batches_regexps(:vulnerabilities, :project_id, project, [vulnerability]),
+        delete_in_batches_regexps(:vulnerability_occurrences, :project_id, project, [finding])
+      ].flatten
+
+      expect(query_recorder.log).to include(*expected_queries)
     end
   end
 end
