@@ -7,4 +7,4 @@ milestone: TODO
 feature_categories:
 - geo_replication
 classes: []
-gitlab_schema: gitlab_geo
+gitlab_schema: gitlab_internal

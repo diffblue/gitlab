@@ -6,18 +6,19 @@ module EE
       module GitlabSchema
         extend ActiveSupport::Concern
 
-        EE_GITLAB_SCHEMAS_FILE = 'ee/lib/ee/gitlab/database/gitlab_schemas.yml'
+        EE_DICTIONARY_PATH = 'ee/db/docs'
 
         class_methods do
           extend ::Gitlab::Utils::Override
 
-          override :tables_to_schema
-          def tables_to_schema
-            @tables_to_schema ||= super.merge(ee_tables_to_schema)
+          override :dictionary_path_globs
+          def dictionary_path_globs
+            super + [Rails.root.join(EE_DICTIONARY_PATH, '*.yml')]
           end
 
-          def ee_tables_to_schema
-            @ee_tables_to_schema ||= YAML.load_file(Rails.root.join(EE_GITLAB_SCHEMAS_FILE))
+          override :view_path_globs
+          def view_path_globs
+            super + [Rails.root.join(EE_DICTIONARY_PATH, 'views', '*.yml')]
           end
         end
       end
