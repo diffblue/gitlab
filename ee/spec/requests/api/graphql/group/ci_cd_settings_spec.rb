@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Ci/Cd settings through GroupQuery' do
+RSpec.describe 'Ci/Cd settings through GroupQuery', feature_category: :continuous_integration do
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }

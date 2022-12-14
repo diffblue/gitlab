@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.project(fullPath).pushRules' do
+RSpec.describe 'Query.project(fullPath).pushRules', feature_category: :source_code_management do
   using RSpec::Parameterized::TableSyntax
   include GraphqlHelpers
 

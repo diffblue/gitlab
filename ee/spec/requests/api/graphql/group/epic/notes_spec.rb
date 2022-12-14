@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'getting notes for an epic' do
+RSpec.describe 'getting notes for an epic', feature_category: :portfolio_management do
   let(:noteable) { create(:epic) }
 
   before do

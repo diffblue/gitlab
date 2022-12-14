@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'getting a requirement list for a project' do
+RSpec.describe 'getting a requirement list for a project', feature_category: :requirements_management do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project) }

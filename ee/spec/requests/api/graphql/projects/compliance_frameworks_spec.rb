@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'getting compliance frameworks for a collection of projects' do
+RSpec.describe 'getting compliance frameworks for a collection of projects', feature_category: :compliance_management do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Getting the current Geo node' do
+RSpec.describe 'Getting the current Geo node', feature_category: :geo_replication do
   include GraphqlHelpers
   include EE::GeoHelpers
 

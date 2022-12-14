@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.project(fullPath).scanResultPolicies' do
+RSpec.describe 'Query.project(fullPath).scanResultPolicies', feature_category: :security_policy_management do
   let_it_be(:project) { create(:project) }
   let_it_be(:policy_management_project) { create(:project, :repository) }
   let_it_be(:user) { policy_management_project.first_owner }

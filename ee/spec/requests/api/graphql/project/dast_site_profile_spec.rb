@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.project(fullPath).dastSiteProfile' do
+RSpec.describe 'Query.project(fullPath).dastSiteProfile', feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
 
   let_it_be(:dast_site_profile) { create(:dast_site_profile, :with_dast_site_validation) }

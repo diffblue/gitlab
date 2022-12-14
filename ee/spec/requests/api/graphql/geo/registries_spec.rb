@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Gets registries' do
+RSpec.describe 'Gets registries', feature_category: :geo_replication do
   it_behaves_like 'gets registries for', {
     field_name: 'mergeRequestDiffRegistries',
     registry_class_name: 'MergeRequestDiffRegistry',

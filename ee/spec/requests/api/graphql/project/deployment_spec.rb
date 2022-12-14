@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Project Deployment query' do
+RSpec.describe 'Project Deployment query', feature_category: :continuous_delivery do
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }
