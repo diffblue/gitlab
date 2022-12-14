@@ -226,7 +226,7 @@ From GitLab 13.6, users can [specify any runner configuration in the GitLab Runn
 ### GitLab Runner registration token in Runner Operator
 
 End of Support: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)<br />
-Planned removal: GitLab <span class="removal-milestone">17.0</span> (2024-04-22)
+Planned removal: GitLab <span class="removal-milestone">17.0</span> (2024-05-22)
 
 WARNING:
 This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
@@ -241,7 +241,7 @@ The [`runner-registration-token`](https://docs.gitlab.com/runner/install/operato
 ### Registration tokens and server-side runner arguments in `POST /api/v4/runners` endpoint
 
 End of Support: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)<br />
-Planned removal: GitLab <span class="removal-milestone">17.0</span> (2024-04-22)
+Planned removal: GitLab <span class="removal-milestone">17.0</span> (2024-05-22)
 
 WARNING:
 This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
@@ -265,7 +265,7 @@ From GitLab 17.0 and later, the runner registration methods implemented by the n
 ### Registration tokens and server-side runner arguments in `gitlab-runner register` command
 
 End of Support: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)<br />
-Planned removal: GitLab <span class="removal-milestone">17.0</span> (2024-04-22)
+Planned removal: GitLab <span class="removal-milestone">17.0</span> (2024-05-22)
 
 WARNING:
 This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
@@ -286,7 +286,7 @@ to the `gitlab-runner register` command.
 ### `runnerRegistrationToken` parameter for GitLab Runner Helm Chart
 
 End of Support: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)<br />
-Planned removal: GitLab <span class="removal-milestone">17.0</span> (2024-04-22)
+Planned removal: GitLab <span class="removal-milestone">17.0</span> (2024-05-22)
 
 WARNING:
 This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
