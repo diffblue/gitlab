@@ -19880,7 +19880,13 @@ msgstr ""
 msgid "GroupsEmptyState|If you organize your projects under a group, it works like a folder."
 msgstr ""
 
+msgid "GroupsEmptyState|No archived projects."
+msgstr ""
+
 msgid "GroupsEmptyState|No groups found"
+msgstr ""
+
+msgid "GroupsEmptyState|No shared projects."
 msgstr ""
 
 msgid "GroupsEmptyState|No subgroups or projects."
