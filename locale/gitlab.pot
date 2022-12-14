@@ -4414,15 +4414,6 @@ msgstr ""
 msgid "An error occurred while loading projects."
 msgstr ""
 
-msgid "An error occurred while loading the Jobs tab."
-msgstr ""
-
-msgid "An error occurred while loading the Needs tab."
-msgstr ""
-
-msgid "An error occurred while loading the Test Reports tab."
-msgstr ""
-
 msgid "An error occurred while loading the blob controls."
 msgstr ""
 
@@ -4454,9 +4445,6 @@ msgid "An error occurred while loading the merge request."
 msgstr ""
 
 msgid "An error occurred while loading the notification settings. Please try again."
-msgstr ""
-
-msgid "An error occurred while loading the pipeline."
 msgstr ""
 
 msgid "An error occurred while loading the pipelines jobs."
@@ -23732,9 +23720,6 @@ msgstr ""
 msgid "Jobs|All"
 msgstr ""
 
-msgid "Jobs|An error occurred while loading the Failed Jobs tab."
-msgstr ""
-
 msgid "Jobs|Are you sure you want to proceed?"
 msgstr ""
 
@@ -41123,9 +41108,6 @@ msgid "TestReports|No test cases were found in the test report."
 msgstr ""
 
 msgid "TestReports|Test reports require job artifacts but all artifacts are expired. %{linkStart}Learn more%{linkEnd}"
-msgstr ""
-
-msgid "TestReports|Tests"
 msgstr ""
 
 msgid "TestReports|There are no test cases to display."
