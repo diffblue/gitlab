@@ -15,7 +15,18 @@ module Gitlab
               end
 
               count = unsafe_findings_count(target_reports, severity_levels, vulnerability_states, report_types)
-              count > vulnerabilities_allowed
+              return true if count > vulnerabilities_allowed
+
+              return false if ::Feature.disabled?(
+                :enforce_scan_result_policies_for_preexisting_vulnerabilities, pipeline.project
+              )
+
+              return false if vulnerability_states.include?(ApprovalProjectRule::NEWLY_DETECTED)
+
+              preexisting_count = preexisting_findings_count(
+                target_reports, severity_levels, vulnerability_states, report_types
+              )
+              preexisting_count > vulnerabilities_allowed
             end
 
             def unsafe_findings_uuids(severity_levels, report_types)
@@ -33,6 +44,11 @@ module Gitlab
               pipeline_count += new_uuids.count if vulnerability_states.include?(ApprovalProjectRule::NEWLY_DETECTED)
 
               pipeline_count
+            end
+
+            def preexisting_findings_count(target_reports, severity_levels, vulnerability_states, report_types)
+              pipeline_uuids = target_reports&.unsafe_findings_uuids(severity_levels, report_types).to_a
+              count_by_uuid(pipeline_uuids, vulnerability_states)
             end
 
             def count_by_uuid(uuids, states)
