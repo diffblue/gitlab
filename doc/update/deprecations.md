@@ -1159,7 +1159,7 @@ status value can be used in place of `active` since GitLab 14.8.
 
 ### GraphQL ID and GlobalID compatibility
 
-Planned removal: GitLab <span class="removal-milestone">15.0</span> (2022-04-22)
+Planned removal: GitLab <span class="removal-milestone">15.0</span> (2022-05-22)
 
 WARNING:
 This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
