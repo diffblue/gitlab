@@ -47,7 +47,7 @@ describe('EmbeddedLabelsList', () => {
     });
 
     it('does not render any labels', () => {
-      expect(findAllLabels().length).toBe(0);
+      expect(findAllLabels()).toHaveLength(0);
     });
   });
 
@@ -61,7 +61,7 @@ describe('EmbeddedLabelsList', () => {
     });
 
     it('renders a list of two labels', () => {
-      expect(findAllLabels().length).toBe(2);
+      expect(findAllLabels()).toHaveLength(2);
     });
 
     it('passes correct props to the regular label', () => {
