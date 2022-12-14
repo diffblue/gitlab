@@ -37,6 +37,11 @@ export default {
       required: false,
       default: false,
     },
+    cancelable: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     optionalStages: {
       type: Array,
       required: false,
@@ -197,6 +202,7 @@ export default {
               :repo="repo"
               :user-namespace="defaultTargetNamespace"
               :optional-stages="optionalStagesSelection"
+              :cancelable="cancelable"
             />
           </template>
         </tbody>

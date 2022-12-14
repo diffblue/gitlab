@@ -122,6 +122,11 @@ export default {
     });
   },
 
+  [types.CANCEL_IMPORT_SUCCESS](state, { repoId }) {
+    const existingRepo = state.repositories.find((r) => r.importSource.id === repoId);
+    existingRepo.importedProject.importStatus = STATUSES.CANCELED;
+  },
+
   [types.SET_IMPORT_TARGET](state, { repoId, importTarget }) {
     const existingRepo = state.repositories.find((r) => r.importSource.id === repoId);
 
