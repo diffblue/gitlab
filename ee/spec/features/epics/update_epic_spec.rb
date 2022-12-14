@@ -105,7 +105,7 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
         end
         expect(page).to have_selector('.todos-list .todo', count: 1)
         within first('.todo') do
-          expect(page).to have_content "#{epic.group.name} #{epic.to_reference} · #{epic.title}"
+          expect(page).to have_content "#{epic.title} · #{epic.group.name} #{epic.to_reference}"
         end
       end
 
