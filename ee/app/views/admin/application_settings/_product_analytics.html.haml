@@ -1,4 +1,4 @@
-- return unless License.feature_available?(:product_analytics) && Feature.enabled?(:cube_api_proxy)
+- return unless License.feature_available?(:product_analytics) && Feature.enabled?(:product_analytics_admin_settings)
 - expanded = integration_expanded?('product_analytics_')
 
 %section.settings.as-product-analytics.no-animate#js-product-analytics-settings{ class: ('expanded' if expanded) }

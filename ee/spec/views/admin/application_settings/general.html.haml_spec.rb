@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'admin/application_settings/general.html.haml' do
+  using RSpec::Parameterized::TableSyntax
+
   let_it_be(:user) { create(:admin) }
   let_it_be(:app_settings) { build(:application_setting) }
 
@@ -96,18 +98,16 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
   end
 
   describe 'product analytics settings' do
-    it 'does not render settings' do
-      render
+    shared_examples 'renders nothing' do
+      it do
+        render
 
-      expect(rendered).not_to have_css '#js-product-analytics-settings'
+        expect(rendered).not_to have_css '#js-product-analytics-settings'
+      end
     end
 
-    context 'when license is available' do
-      before do
-        stub_licensed_features(product_analytics: true)
-      end
-
-      it 'renders settings' do
+    shared_examples 'renders the settings' do
+      it do
         render
 
         expect(rendered).to have_css '#js-product-analytics-settings'
@@ -127,6 +127,22 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
 
         expect(rendered).to have_field s_('AdminSettings|Jitsu administrator password'), with: ApplicationSetting::MASK_PASSWORD
       end
+    end
+
+    where(:licensed, :flag_enabled, :examples_to_run) do
+      true    | true  | 'renders the settings'
+      false   | true  | 'renders nothing'
+      true    | false | 'renders nothing'
+      false   | false | 'renders nothing'
+    end
+
+    with_them do
+      before do
+        stub_licensed_features(product_analytics: licensed)
+        stub_feature_flags(product_analytics_admin_settings: flag_enabled)
+      end
+
+      it_behaves_like params[:examples_to_run]
     end
   end
 end
