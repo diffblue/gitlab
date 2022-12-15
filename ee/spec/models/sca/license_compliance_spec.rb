@@ -200,8 +200,8 @@ RSpec.describe SCA::LicenseCompliance do
     let!(:other_license_policy) { create(:software_license_policy, :allowed, software_license: other_license, project: project) }
 
     def assert_matches(item, expected = {})
-      actual = expected.keys.each_with_object({}) do |attribute, memo|
-        memo[attribute] = item.public_send(attribute)
+      actual = expected.keys.index_with do |attribute|
+        item.public_send(attribute)
       end
       expect(actual).to eql(expected)
     end

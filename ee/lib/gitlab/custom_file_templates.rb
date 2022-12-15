@@ -92,7 +92,7 @@ module Gitlab
           .ancestors_upto(nil)
           .with_custom_file_templates
           .select { |namespace| namespace.checked_file_template_project }
-          .to_h { |namespace| [namespace, namespace.checked_file_template_project] }
+          .index_with { |namespace| namespace.checked_file_template_project }
       end
     end
 
