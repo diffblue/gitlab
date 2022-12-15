@@ -77,4 +77,60 @@ RSpec.describe Ci::PipelineArtifact do
       end
     end
   end
+
+  describe '.search' do
+    let_it_be(:project1) do
+      create(:project, name: 'project_1_name', path: 'project_1_path', description: 'project_desc_1')
+    end
+
+    let_it_be(:project2) do
+      create(:project, name: 'project_2_name', path: 'project_2_path', description: 'project_desc_2')
+    end
+
+    let_it_be(:pipeline1) { create(:ci_pipeline, project: project1) }
+    let_it_be(:pipeline2) { create(:ci_pipeline, project: project2) }
+
+    let_it_be(:pipeline_artifact1) { create(:ci_pipeline_artifact, pipeline: pipeline1) }
+    let_it_be(:pipeline_artifact2) { create(:ci_pipeline_artifact, pipeline: pipeline2) }
+
+    context 'when search query is empty' do
+      it 'returns all records' do
+        result = described_class.search('')
+
+        expect(result).to contain_exactly(pipeline_artifact1, pipeline_artifact2)
+      end
+    end
+
+    context 'when search query is not empty' do
+      context 'without matches' do
+        it 'filters all job artifacts' do
+          result = described_class.search('something_that_does_not_exist')
+
+          expect(result).to be_empty
+        end
+      end
+
+      context 'with matches' do
+        context 'with project association' do
+          it 'filters by project path' do
+            result = described_class.search('project_1_PATH')
+
+            expect(result).to contain_exactly(pipeline_artifact1)
+          end
+
+          it 'filters by project name' do
+            result = described_class.search('Project_2_NAME')
+
+            expect(result).to contain_exactly(pipeline_artifact2)
+          end
+
+          it 'filters project description' do
+            result = described_class.search('Project_desc')
+
+            expect(result).to contain_exactly(pipeline_artifact1, pipeline_artifact2)
+          end
+        end
+      end
+    end
+  end
 end
