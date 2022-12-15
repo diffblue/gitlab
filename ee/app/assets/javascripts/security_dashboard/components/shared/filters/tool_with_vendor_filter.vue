@@ -34,8 +34,8 @@ export default {
     // Lookup object for vendors and report types. For more info see this comment:
     // https://gitlab.com/gitlab-org/gitlab/-/merge_requests/105823#note_1195179834
     vendors() {
-      // First, group by the vendor.
-      const vendors = groupBy(this.scanners, 'vendor');
+      // First, group by the vendor. If there is no vendor, assume GitLab.
+      const vendors = groupBy(this.scanners, ({ vendor }) => vendor.trim() || VENDOR_GITLAB);
       const lookup = mapValues(vendors, (vendor) => {
         // Then group each vendor's value by the report type.
         const reports = groupBy(vendor, 'report_type');

@@ -30,6 +30,11 @@ const CUSTOM_SCANNERS = [
   { id: 11, vendor: 'Custom', report_type: 'DAST' },
 ];
 
+const EMPTY_VENDOR_SCANNERS = [
+  { id: 12, vendor: '', report_type: 'SAST' },
+  { id: 13, vendor: '   ', report_type: 'SAST' },
+];
+
 describe('Tool With Vendor Filter component', () => {
   let wrapper;
 
@@ -163,6 +168,15 @@ describe('Tool With Vendor Filter component', () => {
 
       ids.forEach((id) => {
         expect(findDropdownItem(vendor, id).exists()).toBe(true);
+      });
+    });
+
+    it('does not show header for empty vendors', () => {
+      createWrapper({ scanners: EMPTY_VENDOR_SCANNERS });
+
+      EMPTY_VENDOR_SCANNERS.forEach(({ vendor }) => {
+        expect(findDropdownHeader(vendor).exists()).toBe(false);
+        expect(findDropdownDivider(vendor).exists()).toBe(false);
       });
     });
 
