@@ -3715,6 +3715,32 @@ RSpec.describe Project do
     end
   end
 
+  describe '#custom_roles_enabled?' do
+    context 'project belongs to group' do
+      let_it_be(:project) { create(:project, :in_group) }
+
+      context 'root ancestor has custom roles enabled' do
+        it 'returns true' do
+          allow(project.root_ancestor).to receive(:custom_roles_enabled?).and_return(true)
+
+          expect(project.custom_roles_enabled?).to be true
+        end
+      end
+
+      context 'root ancestor does not have custom roles enabled' do
+        it 'returns false' do
+          expect(project.custom_roles_enabled?).to be false
+        end
+      end
+    end
+
+    context 'project belongs to user' do
+      it 'returns false' do
+        expect(project.custom_roles_enabled?).to be false
+      end
+    end
+  end
+
   describe '#mirror_branches_setting' do
     it 'mirror all branches' do
       project = build(:project, only_mirror_protected_branches: false, mirror_branch_regex: nil)

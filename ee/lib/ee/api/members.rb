@@ -146,7 +146,7 @@ module EE
           end
 
           patch ":id/members/:user_id/member_role", feature_category: :authentication_and_authorization do
-            not_found! unless ::Feature.enabled?(:customizable_roles, user_group)
+            not_found! unless user_group.custom_roles_enabled?
             authorize_admin_group
             not_found!('Group') unless user_group
             member_role = user_group.member_roles.find_by_id(params[:member_role_id])

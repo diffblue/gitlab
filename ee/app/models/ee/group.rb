@@ -189,6 +189,12 @@ module EE
           ::Feature.enabled?(:limit_unique_project_downloads_per_namespace_user, self) &&
           licensed_feature_available?(:unique_project_download_limit)
       end
+
+      def custom_roles_enabled?
+        root? &&
+          ::Feature.enabled?(:customizable_roles, self) &&
+          licensed_feature_available?(:custom_roles)
+      end
     end
 
     class_methods do

@@ -1950,6 +1950,10 @@ RSpec.describe User do
     let_it_be(:project) { create(:project, :in_group) }
     let_it_be(:user) { create(:user) }
 
+    before do
+      stub_licensed_features(custom_roles: true)
+    end
+
     before_all do
       project_member = create(:project_member, :guest, user: user, source: project)
       create(
@@ -1998,6 +2002,10 @@ RSpec.describe User do
     let_it_be(:project_member) { create(:project_member, :guest, user: user, source: project) }
     let_it_be(:member_role) { create(:member_role, :guest, read_code: true, members: [project_member], namespace: project.group) }
 
+    before do
+      stub_licensed_features(custom_roles: true)
+    end
+
     context 'when custom roles are present' do
       context 'when custom role enables read code' do
         it 'returns hash with project ids as keys and read_code in value' do
@@ -2022,7 +2030,7 @@ RSpec.describe User do
 
     context 'when custom roles are not present' do
       it 'returns hash with project ids as keys and empty array as value' do
-        project_without_custom_role = create(:project)
+        project_without_custom_role = create(:project, :in_group)
 
         preloaded = user.preloaded_member_roles_for_projects([project_without_custom_role])
 

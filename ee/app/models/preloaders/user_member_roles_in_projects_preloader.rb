@@ -16,7 +16,7 @@ module Preloaders
 
     def execute
       sql_values_array = projects.each_with_object([]) do |project, array|
-        next unless ::Feature.enabled?(:customizable_roles, project.root_ancestor)
+        next unless project.custom_roles_enabled?
 
         array << [project.id, Arel.sql("ARRAY[#{project.namespace.traversal_ids.join(',')}]::integer[]")]
       end

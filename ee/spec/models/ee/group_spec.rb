@@ -2757,6 +2757,42 @@ RSpec.describe Group do
     end
   end
 
+  describe '#custom_roles_enabled?', feature_category: :authentication_and_authorization do
+    let_it_be(:group) { create(:group) }
+
+    let(:feature_flag_enabled) { true }
+    let(:licensed_feature_available) { true }
+
+    before do
+      stub_feature_flags(customizable_roles: feature_flag_enabled)
+      stub_licensed_features(custom_roles: licensed_feature_available)
+    end
+
+    subject { group.custom_roles_enabled? }
+
+    it { is_expected.to eq true }
+
+    context 'when feature flag is disabled' do
+      let(:feature_flag_enabled) { false }
+
+      it { is_expected.to eq false }
+    end
+
+    context 'when licensed feature is not available' do
+      let(:licensed_feature_available) { false }
+
+      it { is_expected.to eq false }
+    end
+
+    context 'when sub-group' do
+      let(:subgroup) { create(:group, parent: group) }
+
+      subject { subgroup.custom_roles_enabled? }
+
+      it { is_expected.to eq false }
+    end
+  end
+
   describe '#parent_epic_ids_in_ancestor_groups' do
     let_it_be(:root_group) { create(:group) }
     let_it_be(:group) { create(:group, parent: root_group) }
