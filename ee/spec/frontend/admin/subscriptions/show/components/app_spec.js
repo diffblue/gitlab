@@ -1,4 +1,4 @@
-import { GlButton, GlSprintf } from '@gitlab/ui';
+import { GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
@@ -62,7 +62,8 @@ describe('SubscriptionManagementApp', () => {
     wrapper.findByTestId('subscription-activation-success-alert');
   const findSubscriptionFetchErrorAlert = () =>
     wrapper.findByTestId('subscription-fetch-error-alert');
-  const findExportLicenseUsageFileLink = () => wrapper.findComponent(GlButton);
+  const findExportLicenseUsageFileLink = () => wrapper.findByTestId('export-license-usage-btn');
+  const findCustomersPortalBtn = () => wrapper.findByTestId('customers-portal-btn');
 
   let currentSubscriptionResolver;
   let pastSubscriptionsResolver;
@@ -80,6 +81,9 @@ describe('SubscriptionManagementApp', () => {
     wrapper = extendedWrapper(
       shallowMount(SubscriptionManagementApp, {
         apolloProvider: createMockApolloProvider(resolverMock),
+        provide: {
+          customersPortalUrl: 'url.com',
+        },
         propsData: {
           licenseUsageFilePath: 'about:blank',
           ...props,
@@ -93,6 +97,27 @@ describe('SubscriptionManagementApp', () => {
 
   afterEach(() => {
     wrapper.destroy();
+  });
+
+  describe('when subscription fetch is successful', () => {
+    beforeEach(() => {
+      currentSubscriptionResolver = jest.fn().mockResolvedValue(currentResponseWithData);
+      pastSubscriptionsResolver = jest.fn().mockResolvedValue(pastResponseWithData);
+      futureSubscriptionsResolver = jest.fn().mockResolvedValue(futureResponseEmpty);
+      createComponent({}, [
+        currentSubscriptionResolver,
+        pastSubscriptionsResolver,
+        futureSubscriptionsResolver,
+      ]);
+    });
+
+    it('shows the main title', () => {
+      expect(findSubscriptionMainTitle().text()).toBe(subscriptionMainTitle);
+    });
+
+    it('shows the customers portal button', () => {
+      expect(findCustomersPortalBtn().exists()).toBe(true);
+    });
   });
 
   describe('when failing to fetch subscriptions', () => {

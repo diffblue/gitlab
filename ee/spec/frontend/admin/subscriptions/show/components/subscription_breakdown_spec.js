@@ -41,7 +41,6 @@ describe('Subscription Breakdown', () => {
   const [, licenseFile] = subscriptionPastHistory;
   const congratulationSvgPath = '/path/to/svg';
   const connectivityHelpURL = 'connectivity/help/url';
-  const customersPortalUrl = 'customers.dot';
   const licenseRemovePath = '/license/remove/';
   const subscriptionActivationBannerCalloutName = 'banner_callout_name';
   const subscriptionSyncPath = '/sync/path/';
@@ -54,7 +53,6 @@ describe('Subscription Breakdown', () => {
   const findLicenseRemoveAction = () => wrapper.findByTestId('license-remove-action');
   const findActivateSubscriptionAction = () =>
     wrapper.findByTestId('subscription-activate-subscription-action');
-  const findSubscriptionMangeAction = () => wrapper.findByTestId('subscription-manage-action');
   const findSubscriptionActivationBanner = () =>
     wrapper.findComponent(SubscriptionActivationBanner);
   const findSubscriptionActivationModal = () => wrapper.findComponent(SubscriptionActivationModal);
@@ -105,7 +103,6 @@ describe('Subscription Breakdown', () => {
         provide: {
           congratulationSvgPath,
           connectivityHelpURL,
-          customersPortalUrl,
           licenseRemovePath,
           subscriptionActivationBannerCalloutName,
           subscriptionSyncPath,
@@ -202,24 +199,6 @@ describe('Subscription Breakdown', () => {
       });
 
       it.each`
-        url                   | shouldShow
-        ${customersPortalUrl} | ${true}
-        ${''}                 | ${false}
-        ${undefined}          | ${false}
-      `('with url is $url the manage button is shown: $shouldShow', ({ url, shouldShow }) => {
-        const provide = {
-          connectivityHelpURL: '',
-          licenseRemovePath: '',
-          subscriptionSyncPath: '',
-          customersPortalUrl: url,
-        };
-        const stubs = { GlCard, SubscriptionDetailsCard };
-        createComponent({ provide, stubs });
-
-        expect(findSubscriptionMangeAction().exists()).toBe(shouldShow);
-      });
-
-      it.each`
         url                  | type                                | shouldShow
         ${licenseRemovePath} | ${subscriptionTypes.LEGACY_LICENSE} | ${true}
         ${licenseRemovePath} | ${subscriptionTypes.ONLINE_CLOUD}   | ${true}
@@ -235,7 +214,6 @@ describe('Subscription Breakdown', () => {
         ({ url, type, shouldShow }) => {
           const provide = {
             connectivityHelpURL: '',
-            customersPortalUrl: '',
             subscriptionSyncPath: '',
             licenseRemovePath: url,
           };
