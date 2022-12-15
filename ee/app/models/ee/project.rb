@@ -306,6 +306,12 @@ module EE
       def member_usernames_among(users)
         members_among(users).pluck(:username)
       end
+
+      def custom_roles_enabled?
+        return false unless group
+
+        root_ancestor.custom_roles_enabled?
+      end
     end
 
     def mirror_last_update_succeeded?

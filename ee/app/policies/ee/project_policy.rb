@@ -181,7 +181,7 @@ module EE
       end
 
       condition(:custom_roles_allowed) do
-        ::Feature.enabled?(:customizable_roles, @subject.root_ancestor)
+        @subject.custom_roles_enabled?
       end
 
       desc "Custom role on project that enables read code"

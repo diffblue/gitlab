@@ -62,7 +62,11 @@ RSpec.describe API::Members, feature_category: :subgroups do
           params: params
       end
 
-      context "when customizable_roles feature flag is enabled" do
+      context "when customizable_roles feature flag and custom roles license are enabled" do
+        before do
+          stub_licensed_features(custom_roles: true)
+        end
+
         context "when current user not present" do
           let(:current_user) { nil }
 
@@ -148,11 +152,27 @@ RSpec.describe API::Members, feature_category: :subgroups do
         end
       end
 
-      context "when feature flag is disabled" do
+      context "when customizable_roles feature flag is disabled" do
         let(:current_user) { owner }
 
         before do
+          stub_licensed_features(custom_roles: true)
           stub_feature_flags(customizable_roles: false)
+        end
+
+        it "returns not found error" do
+          patch_member_role
+
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
+      end
+
+      context "when custom roles license is disabled" do
+        let(:current_user) { owner }
+
+        before do
+          stub_feature_flags(customizable_roles: true)
+          stub_licensed_features(custom_roles: false)
         end
 
         it "returns not found error" do

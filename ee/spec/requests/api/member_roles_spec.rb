@@ -37,68 +37,107 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :authentication_an
 
   let_it_be(:group_id) { group_with_member_roles.id }
 
+  shared_examples 'customizable_roles feature flag required' do
+    context 'without feature flag' do
+      let(:current_user) { owner }
+
+      it "returns not found error" do
+        stub_feature_flags(customizable_roles: false)
+        stub_licensed_features(custom_roles: true)
+
+        subject
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+  end
+
+  shared_examples 'custom_roles license required' do
+    context 'without a valid license' do
+      let(:current_user) { owner }
+
+      it "returns not found error" do
+        stub_licensed_features(custom_roles: false)
+        stub_feature_flags(customizable_roles: true)
+
+        subject
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+  end
+
   describe "GET /groups/:id/member_roles" do
     subject { get api("/groups/#{group_id}/member_roles", current_user) }
 
-    context "when unauthorized" do
-      it "returns forbidden error" do
-        subject
+    it_behaves_like "custom_roles license required"
+    it_behaves_like "customizable_roles feature flag required"
 
-        expect(response).to have_gitlab_http_status(:unauthorized)
-      end
-    end
-
-    context "when a less privileged user" do
-      let(:current_user) { user }
-
-      it "returns forbidden error" do
-        subject
-
-        expect(response).to have_gitlab_http_status(:forbidden)
-      end
-    end
-
-    context "when owner of the group" do
-      let(:current_user) { owner }
-
-      it "returns associated member roles" do
-        subject
-
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response).to(
-          match_array(
-            [
-              {
-                "id" => member_role_1.id,
-                "base_access_level" => ::Gitlab::Access::REPORTER,
-                "read_code" => false,
-                "group_id" => group_id
-              },
-              {
-                "id" => member_role_2.id,
-                "base_access_level" => ::Gitlab::Access::REPORTER,
-                "read_code" => true,
-                "group_id" => group_id
-              }
-            ]
-          )
-        )
+    context "when custom_roles license is enabled" do
+      before do
+        stub_licensed_features(custom_roles: true)
       end
 
-      context "when group does not have any associated member_roles" do
-        let_it_be(:group_with_no_member_roles) { create(:group) }
-        let_it_be(:group_id) { group_with_no_member_roles.id }
-
-        before do
-          group_with_no_member_roles.add_owner owner
-        end
-
-        it "returns empty array as response" do
+      context "when unauthorized" do
+        it "returns forbidden error" do
           subject
 
-          aggregate_failures "testing response" do
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(json_response).to(match([]))
+          expect(response).to have_gitlab_http_status(:unauthorized)
+        end
+      end
+
+      context "when a less privileged user" do
+        let(:current_user) { user }
+
+        it "returns forbidden error" do
+          subject
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
+
+      context "when owner of the group" do
+        let(:current_user) { owner }
+
+        it "returns associated member roles" do
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response).to(
+            match_array(
+              [
+                {
+                  "id" => member_role_1.id,
+                  "base_access_level" => ::Gitlab::Access::REPORTER,
+                  "read_code" => false,
+                  "group_id" => group_id
+                },
+                {
+                  "id" => member_role_2.id,
+                  "base_access_level" => ::Gitlab::Access::REPORTER,
+                  "read_code" => true,
+                  "group_id" => group_id
+                }
+              ]
+            )
+          )
+        end
+
+        context "when group does not have any associated member_roles" do
+          let_it_be(:group_with_no_member_roles) { create(:group) }
+          let_it_be(:group_id) { group_with_no_member_roles.id }
+
+          before do
+            group_with_no_member_roles.add_owner owner
+          end
+
+          it "returns empty array as response" do
+            subject
+
+            aggregate_failures "testing response" do
+              expect(response).to have_gitlab_http_status(:ok)
+              expect(json_response).to(match([]))
+            end
           end
         end
       end
@@ -112,9 +151,12 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :authentication_an
 
     subject { post api("/groups/#{group_id}/member_roles", current_user), params: params }
 
-    context "when feature flag is enabled" do
+    it_behaves_like "custom_roles license required"
+    it_behaves_like "customizable_roles feature flag required"
+
+    context "when custom_roles license is enabled" do
       before do
-        stub_feature_flags(customizable_roles: [group_with_member_roles])
+        stub_licensed_features(custom_roles: true)
       end
 
       context "when unauthorized" do
@@ -192,20 +234,6 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :authentication_an
         end
       end
     end
-
-    context "when feature flag is disabled" do
-      before do
-        stub_feature_flags(customizable_roles: false)
-      end
-
-      let(:current_user) { owner }
-
-      it "returns unauthorized error" do
-        subject
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
   end
 
   describe "DELETE /groups/:id/member_roles/:member_role_id" do
@@ -213,9 +241,12 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :authentication_an
 
     subject { delete api("/groups/#{group_id}/member_roles/#{member_role_id}", current_user) }
 
-    context "when feature flag is enabled" do
+    it_behaves_like "custom_roles license required"
+    it_behaves_like "customizable_roles feature flag required"
+
+    context "when custom_roles license is enabled" do
       before do
-        stub_feature_flags(customizable_roles: [group_with_member_roles])
+        stub_licensed_features(custom_roles: true)
       end
 
       context "when unauthorized" do

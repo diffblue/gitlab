@@ -173,6 +173,7 @@ module GitlabSubscriptions
       container_scanning
       coverage_fuzzing
       credentials_inventory
+      custom_roles
       dast
       dependency_scanning
       devops_adoption
