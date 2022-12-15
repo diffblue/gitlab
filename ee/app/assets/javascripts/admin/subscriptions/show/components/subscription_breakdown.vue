@@ -10,7 +10,6 @@ import SubscriptionDetailsHistory from 'jh_else_ee/admin/subscriptions/show/comp
 import {
   activateCloudLicense,
   licensedToHeaderText,
-  manageSubscriptionButtonText,
   subscriptionDetailsHeaderText,
   subscriptionTypes,
 } from '../constants';
@@ -32,7 +31,6 @@ export const licensedToFields = ['name', 'email', 'company'];
 export const i18n = Object.freeze({
   activateCloudLicense,
   licensedToHeaderText,
-  manageSubscriptionButtonText,
   subscriptionDetailsHeaderText,
   removeLicense: __('Remove license'),
   removeLicenseConfirmSaaS: sprintf(
@@ -64,7 +62,7 @@ export default {
     SubscriptionSyncNotifications: () => import('./subscription_sync_notifications.vue'),
     UserCalloutDismisser,
   },
-  inject: ['customersPortalUrl', 'licenseRemovePath', 'subscriptionActivationBannerCalloutName'],
+  inject: ['licenseRemovePath', 'subscriptionActivationBannerCalloutName'],
   props: {
     subscription: {
       type: Object,
@@ -93,9 +91,6 @@ export default {
     canActivateSubscription() {
       return this.isLicenseFileType;
     },
-    canManageSubscription() {
-      return this.customersPortalUrl && this.hasSubscription;
-    },
     canRemoveLicense() {
       return this.licenseRemovePath;
     },
@@ -109,7 +104,7 @@ export default {
       return this.subscription.type === subscriptionTypes.LEGACY_LICENSE;
     },
     shouldShowFooter() {
-      return this.canActivateSubscription || this.canRemoveLicense || this.canManageSubscription;
+      return this.canActivateSubscription || this.canRemoveLicense;
     },
     shouldShowNotifications() {
       return this.breakdown.shouldShowNotifications;
@@ -198,17 +193,6 @@ export default {
                 data-testid="subscription-activate-subscription-action"
               >
                 {{ $options.i18n.activateCloudLicense }}
-              </gl-button>
-              <gl-button
-                v-if="canManageSubscription"
-                :href="customersPortalUrl"
-                target="_blank"
-                category="secondary"
-                variant="confirm"
-                class="gl-mr-3 gl-mb-3 gl-lg-mb-0"
-                data-testid="subscription-manage-action"
-              >
-                {{ $options.i18n.manageSubscriptionButtonText }}
               </gl-button>
               <div v-if="canRemoveLicense">
                 <gl-button

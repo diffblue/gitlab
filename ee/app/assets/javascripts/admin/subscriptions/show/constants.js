@@ -32,7 +32,6 @@ export const activateCloudLicense = s__('SuperSonics|Enter activation code');
 export const noActiveSubscription = s__(`SuperSonics|You do not have an active subscription`);
 export const subscriptionDetailsHeaderText = s__('SuperSonics|Subscription details');
 export const licensedToHeaderText = s__('SuperSonics|Licensed to');
-export const manageSubscriptionButtonText = s__('SuperSonics|Manage');
 export const copySubscriptionIdButtonText = __('Copy');
 export const licenseFileText = __('Legacy license');
 export const onlineCloudLicenseText = s__('SuperSonics|Online license');
@@ -120,6 +119,7 @@ export const subscriptionBannerText = s__(
 export const subscriptionBannerBlogPostUrl =
   'https://about.gitlab.com/blog/2021/07/20/improved-billing-and-subscription-management/';
 export const exportLicenseUsageBtnText = s__('SuperSonics|Export license usage file');
+export const customersPortalBtnText = s__('SuperSonics|Customers Portal');
 
 export const instanceHasFutureLicenseBanner = {
   title: s__('SuperSonics|You have a future dated license'),
