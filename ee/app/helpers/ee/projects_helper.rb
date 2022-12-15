@@ -187,7 +187,7 @@ module EE
           has_jira_vulnerabilities_integration_enabled: project.configured_to_create_issues_from_vulnerabilities?.to_s,
           project: { id: project.id, name: project.name },
           project_full_path: project.full_path,
-          vulnerabilities_export_endpoint: api_v4_security_projects_vulnerability_exports_path(id: project.id),
+          vulnerabilities_export_endpoint: expose_path(api_v4_security_projects_vulnerability_exports_path(id: project.id)),
           empty_state_svg_path: image_path('illustrations/security-dashboard-empty-state.svg'),
           security_dashboard_empty_svg_path: image_path('illustrations/security-dashboard_empty.svg'),
           no_vulnerabilities_svg_path: image_path('illustrations/issues.svg'),

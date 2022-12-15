@@ -212,6 +212,17 @@ RSpec.describe ProjectsHelper do
         create(:vulnerabilities_finding, project: project, scanner: scanner)
       end
 
+      context 'with related_url_root set' do
+        let(:relative_url) { '/gitlab' }
+        let(:expected_path) { "#{relative_url}/api/v4/security/projects/#{project.id}/vulnerability_exports" }
+
+        before do
+          stub_config_setting(relative_url_root: relative_url)
+        end
+
+        it { is_expected.to match(base_values.merge(vulnerabilities_export_endpoint: expected_path)) }
+      end
+
       context 'without pipeline' do
         before do
           allow(project).to receive(:latest_ingested_security_pipeline).and_return(nil)
