@@ -408,9 +408,17 @@ Example:
 
 ### External groups
 
-SAML login supports the automatic identification of a user as an
-[external user](../user/admin_area/external_users.md). This is based on the user's group
-membership in the SAML identity provider.
+Your IdP passes group information to GitLab in the SAML response. To use this
+response, configure GitLab to identify:
+
+- Where to look for the groups in the SAML response, using the `groups_attribute` setting.
+- Information about a group or user, using a group setting.
+
+SAML can automatically identify a user as an
+[external user](../user/admin_area/external_users.md), based on the `external_groups`
+setting.
+
+Example configuration:
 
 ```yaml
 { name: 'saml',
