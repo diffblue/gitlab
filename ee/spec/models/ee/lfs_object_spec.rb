@@ -21,6 +21,46 @@ RSpec.describe ::LfsObject do
     end
   end
 
+  describe '.search' do
+    let_it_be(:lfs_object1) { create(:lfs_object) }
+    let_it_be(:lfs_object2) { create(:lfs_object) }
+    let_it_be(:lfs_object3) { create(:lfs_object) }
+
+    context 'when search query is empty' do
+      it 'returns all records' do
+        result = described_class.search('')
+
+        expect(result).to contain_exactly(lfs_object1, lfs_object2, lfs_object3)
+      end
+    end
+
+    context 'when search query is not empty' do
+      context 'without matches' do
+        it 'filters all lfs objects' do
+          result = described_class.search('something_that_does_not_exist')
+
+          expect(result).to be_empty
+        end
+      end
+
+      context 'with matches by attributes' do
+        context 'for file attribute' do
+          before do
+            lfs_object1.update_column(:file, 'a1e7550e9b718dafc9b525a04879a766de62e4fbdfc46593d47f7ab74636')
+            lfs_object2.update_column(:file, '4c6fe7a2979eefb9ec74a5dfc6888fb25543cf99b77586b79afea1da6f97')
+            lfs_object3.update_column(:file, '8de917525f83104736f6c64d32f0e2a02f5bf2ee57843a54f222cba8c813')
+          end
+
+          it do
+            result = described_class.search('8de917525f83104736f6c64d32f0e2a02f5bf2ee57843a54f222cba8c813')
+
+            expect(result).to contain_exactly(lfs_object3)
+          end
+        end
+      end
+    end
+  end
+
   describe '.with_files_stored_locally' do
     let_it_be(:lfs_object) { create(:lfs_object, :with_file) }
 

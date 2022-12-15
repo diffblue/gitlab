@@ -38,6 +38,17 @@ module EE
     class_methods do
       extend ::Gitlab::Utils::Override
 
+      # Search for a list of lfs_objects based on the query given in `query`.
+      #
+      # @param [String] query term that will search over lfs_object :file attribute
+      #
+      # @return [ActiveRecord::Relation<LfsObject>] a collection of LFS objects
+      def search(query)
+        return all if query.empty?
+
+        where(sanitize_sql_for_conditions({ file: query })).limit(1000)
+      end
+
       # @param primary_key_in [Range, LfsObject] arg to pass to primary_key_in scope
       # @return [ActiveRecord::Relation<LfsObject>] everything that should be synced to this node, restricted by primary key
       def replicables_for_current_secondary(primary_key_in)
