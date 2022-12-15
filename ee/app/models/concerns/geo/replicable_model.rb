@@ -59,6 +59,15 @@ module Geo
       # :nocov:
     end
 
+    class_methods do
+      # When searching replicable models, most of the time we want to search
+      # by their project association using a search term (query).
+      # This method makes that query reusable across replicable models.
+      def search_project_ids(query)
+        ::Project.search(query).limit(1000).pluck_primary_key
+      end
+    end
+
     def in_replicables_for_current_secondary?
       self.class.replicables_for_current_secondary(self).exists?
     end

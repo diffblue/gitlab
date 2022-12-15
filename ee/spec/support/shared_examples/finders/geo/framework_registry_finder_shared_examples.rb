@@ -4,6 +4,7 @@ RSpec.shared_examples 'a framework registry finder' do |registry_factory|
   include ::EE::GeoHelpers
 
   let(:replicator_class) { Gitlab::Geo::Replicator.for_class_name(described_class.name) }
+  let(:model_class) { replicator_class.model }
   let(:factory_traits) { replicator_class.verification_enabled? ? [:synced, :verification_succeeded] : [:synced] }
 
   # rubocop:disable Rails/SaveBang
@@ -108,6 +109,49 @@ RSpec.shared_examples 'a framework registry finder' do |registry_factory|
 
               expect { registries }.to raise_error(ArgumentError, message)
             end
+          end
+        end
+
+        context 'when search method is not implemented in the registry model' do
+          let(:params) { { keyword: 'any_keyword' } }
+
+          before do
+            skip "Skipping because search method is implemented for #{model_class}" if model_class.respond_to?(:search)
+          end
+
+          it 'raises ArgumentError' do
+            message = "Filtering by keyword is not supported " \
+              "because search method is not implemented for #{replicator_class.model}"
+
+            expect { registries }.to raise_error(ArgumentError, message)
+          end
+        end
+
+        context 'when search method is implemented in the registry model' do
+          let(:registry5) { create(registry_factory) } # rubocop:disable Rails/SaveBang
+          let(:replicable_record) { registry5.replicator.model_record }
+          let(:params) { { keyword: 'any_keyword' } }
+
+          def searchable_attributes
+            if model_class.const_defined?(:EE_SEARCHABLE_ATTRIBUTES)
+              model_class::EE_SEARCHABLE_ATTRIBUTES
+            else
+              []
+            end
+          end
+
+          before do
+            if !model_class.respond_to?(:search) || searchable_attributes.empty?
+              skip "Skipping because search method is not implemented
+                      for #{model_class} or searchable attributes are not defined."
+            end
+
+            # Use update_column to bypass attribute validations like regex formatting, checksum, etc.
+            replicable_record.update_column(searchable_attributes[0], 'any_keyword')
+          end
+
+          it 'returns a registry filtered by keyword' do
+            expect(registries.to_a).to contain_exactly(registry5)
           end
         end
 

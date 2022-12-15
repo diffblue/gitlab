@@ -57,6 +57,23 @@ module EE
     class_methods do
       extend ::Gitlab::Utils::Override
 
+      # Search for a list of projects associated, based on the query given in `query`.
+      #
+      # @param [String] query term that will search over projects :path, :name and :description
+      #
+      # @return [ActiveRecord::Relation<Ci::JobArtifact>] a collection of job artifacts
+      def search(query)
+        return all if query.empty?
+
+        search_by_project(query)
+      end
+
+      def search_by_project(query)
+        return all if query.empty?
+
+        for_project(search_project_ids(query))
+      end
+
       override :associated_file_types_for
       def associated_file_types_for(file_type)
         return file_types_for_report(:license_scanning) if file_types_for_report(:license_scanning).include?(file_type)

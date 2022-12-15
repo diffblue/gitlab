@@ -27,6 +27,10 @@ module Resolvers
                  required: false,
                  description: 'Filters registries by their verification state.'
 
+        argument :keyword, GraphQL::Types::String,
+                 required: false,
+                 description: 'Filters registries by their attributes using a keyword.'
+
         def resolve(**args)
           return registry_class.none unless geo_node_is_current?
 
@@ -42,7 +46,8 @@ module Resolvers
           {
             ids: registry_ids(args[:ids]),
             replication_state: args[:replication_state],
-            verification_state: args[:verification_state]
+            verification_state: args[:verification_state],
+            keyword: args[:keyword]
           }.compact
         end
 

@@ -406,4 +406,14 @@ RSpec.describe Ci::JobArtifact do
       expect(::Gitlab::Ci::Reports::Security::Report).to have_received(:new).twice
     end
   end
+
+  it_behaves_like 'a model that implements the search method' do
+    let(:with_project_association) { true }
+
+    let_it_be(:ci_build1) { create(:ci_build, project: project1) }
+    let_it_be(:ci_build2) { create(:ci_build, project: project2) }
+
+    let_it_be(:record1) { create(:ci_job_artifact, job: ci_build1) }
+    let_it_be(:record2) { create(:ci_job_artifact, job: ci_build2) }
+  end
 end
