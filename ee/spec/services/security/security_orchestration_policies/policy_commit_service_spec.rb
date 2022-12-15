@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService do
+RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService, feature_category: :source_code_management do
   include RepoHelpers
 
   describe '#execute' do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Cleanup::OrphanJobArtifactFilesBatch do
+RSpec.describe Gitlab::Cleanup::OrphanJobArtifactFilesBatch, feature_category: :build_artifacts do
   include ::EE::GeoHelpers
 
   let(:batch_size) { 10 }

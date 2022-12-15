@@ -3,7 +3,7 @@
 require 'spec_helper'
 require File.expand_path('ee/elastic/migrate/20221018125700_create_user_index.rb')
 
-RSpec.describe CreateUserIndex, :elastic, :sidekiq_inline do
+RSpec.describe CreateUserIndex, :elastic, :sidekiq_inline, feature_category: :global_search do
   let(:version) { 20221018125700 }
   let(:helper) { Gitlab::Elastic::Helper.new }
   let(:index_name) { User.__elasticsearch__.index_name }
