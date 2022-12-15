@@ -86,6 +86,8 @@ RSpec.describe 'SAST.gitlab-ci.yml' do
             'Python'               | { 'app.py' => '' }                              | {}                                         | %w(semgrep-sast)
             'Ruby'                 | { 'config/routes.rb' => '' }                    | {}                                         | %w(brakeman-sast)
             'Scala'                | { 'app.scala' => '' }                           | {}                                         | %w(spotbugs-sast)
+            'Scala'                | { 'app.scala' => '' }                           | {}                                         | %w(semgrep-sast)
+            'Scala'                | { 'app.sc' => '' }                              | {}                                         | %w(semgrep-sast)
             'Typescript'           | { 'app.ts' => '' }                              | {}                                         | %w(semgrep-sast)
             'Typescript JSX'       | { 'app.tsx' => '' }                             | {}                                         | %w(semgrep-sast)
             'Visual Basic'         | { 'app.vbproj' => '' }                          | {}                                         | %w(security-code-scan-sast)
