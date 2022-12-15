@@ -19,14 +19,14 @@ RSpec.describe Slack::BlockKit::IncidentManagement::IncidentModalOpened do
     it 'sets projects in the project selection' do
       project_list = payload[:blocks][1][:elements][0][:options]
 
-      expect(project_list.first[:value]).to eq(project1.full_path)
-      expect(project_list.last[:value]).to eq(project2.full_path)
+      expect(project_list.first[:value]).to eq(project1.id.to_s)
+      expect(project_list.last[:value]).to eq(project2.id.to_s)
     end
 
     it 'sets initial project option as the first project path' do
       initial_project = payload[:blocks][1][:elements][0][:initial_option]
 
-      expect(initial_project[:value]).to eq(project1.full_path)
+      expect(initial_project[:value]).to eq(project1.id.to_s)
     end
   end
 end

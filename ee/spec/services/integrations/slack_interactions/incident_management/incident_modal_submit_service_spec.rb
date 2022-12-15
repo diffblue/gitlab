@@ -60,7 +60,7 @@ RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModa
               project_and_severity_selector: {
                 project: {
                   selected_option: {
-                    value: project.full_path
+                    value: project.id.to_s
                   }
                 },
                 severity: severity

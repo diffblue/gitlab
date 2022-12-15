@@ -88,9 +88,9 @@ module Integrations
         end
 
         def project
-          full_path = values.dig(:project_and_severity_selector, :project, :selected_option, :value)
+          project_id = values.dig(:project_and_severity_selector, :project, :selected_option, :value)
 
-          Project.find_by_full_path(full_path)
+          Project.find(project_id)
         end
 
         def find_user
