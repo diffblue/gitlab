@@ -49,7 +49,10 @@ module EE
         enable :approve_merge_request
       end
 
-      rule { external_status_checks_enabled }.enable :provide_status_check_response
+      rule { external_status_checks_enabled }.policy do
+        enable :provide_status_check_response
+        enable :retry_failed_status_checks
+      end
 
       rule { read_only }.policy do
         prevent :update_merge_request

@@ -15,7 +15,7 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
 
   let(:single_object_url) { "/projects/#{project.id}/external_status_checks/#{rule.id}" }
   let(:collection_url) { "/projects/#{project.id}/external_status_checks" }
-  let(:sha) { merge_request.source_branch_sha }
+  let(:sha) { merge_request.diff_head_sha }
   let(:status) { '' }
 
   subject { get api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/status_checks", user), params: { external_status_check_id: rule.id, sha: sha } }
@@ -277,6 +277,107 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
           get api(collection_url, (project_owner ? project.first_owner : build(:user)))
 
           expect(response).to have_gitlab_http_status(status)
+        end
+      end
+    end
+  end
+
+  describe 'POST :id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id' do
+    subject(:retry_failed_status_check) do
+      post api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/status_checks/#{rule.id}/retry", user)
+    end
+
+    context 'when unlicensed' do
+      before do
+        stub_licensed_features(external_status_checks: false)
+        project.add_member(user, :maintainer)
+      end
+
+      it 'returns unauthorized status' do
+        retry_failed_status_check
+
+        expect(response).to have_gitlab_http_status(:unauthorized)
+      end
+    end
+
+    context 'when licensed' do
+      using RSpec::Parameterized::TableSyntax
+
+      before do
+        stub_licensed_features(external_status_checks: true)
+      end
+
+      context 'permissions' do
+        where(:user_permissions, :applies_to_target_project, :expected_status) do
+          :maintainer | true  | :accepted
+          :maintainer | false | :not_found
+          :developer  | true  | :accepted
+          :developer  | false | :not_found
+          :guest      | true  | :forbidden
+          :guest      | false | :not_found
+        end
+
+        with_them do
+          before do
+            if applies_to_target_project
+              project.add_member(user, user_permissions)
+            else
+              another_project.add_member(user, user_permissions)
+            end
+
+            create(:status_check_response, merge_request: merge_request,
+                                           external_status_check: rule, sha: merge_request.diff_head_sha, status: 'failed')
+          end
+
+          it 'returns the correct status' do
+            retry_failed_status_check
+
+            expect(response).to have_gitlab_http_status(expected_status)
+          end
+        end
+      end
+
+      context 'when current_user has access' do
+        before do
+          stub_licensed_features(external_status_checks: true)
+          project.add_member(user, :maintainer)
+        end
+
+        context 'when status check is failed' do
+          let_it_be(:data) { merge_request.to_hook_data(user) }
+
+          before do
+            create(:status_check_response, merge_request: merge_request,
+                                           external_status_check: rule, sha: merge_request.diff_head_sha, status: 'failed')
+          end
+
+          it 'calls async execute with correct data' do
+            expect_next_found_instance_of(::MergeRequests::ExternalStatusCheck) do |instance|
+              instance.to receive(:async_execute).with(data)
+            end
+
+            retry_failed_status_check
+          end
+
+          it 'returns accepted response' do
+            retry_failed_status_check
+
+            expect(response).to have_gitlab_http_status(:accepted)
+          end
+        end
+
+        context 'when status check is passed' do
+          before do
+            create(:status_check_response, merge_request: merge_request,
+                                           external_status_check: rule, sha: merge_request.diff_head_sha, status: 'passed')
+          end
+
+          it 'returns unprocessable_entity response', :aggregate_failures do
+            retry_failed_status_check
+
+            expect(response).to have_gitlab_http_status(:unprocessable_entity)
+            expect(response.body).to eq('{"message":"External status check must be failed"}')
+          end
         end
       end
     end

@@ -34,8 +34,8 @@ module MergeRequests
       merge_request.status_check_responses.where(external_status_check: self, sha: sha).last&.status || 'pending'
     end
 
-    def approved?(merge_request, sha)
-      merge_request.status_check_responses.where(external_status_check: self, sha: sha).exists?
+    def failed?(merge_request)
+      merge_request.status_check_responses.where(external_status_check: self, sha: merge_request.diff_head_sha).last&.status == 'failed'
     end
 
     def to_h
