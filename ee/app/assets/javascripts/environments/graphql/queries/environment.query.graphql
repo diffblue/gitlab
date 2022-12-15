@@ -3,8 +3,8 @@ query environment($fullPath: ID!, $environmentName: String) {
     id
     environment(name: $environmentName) {
       id
-      # eslint-disable-next-line @graphql-eslint/require-id-when-available
       latestOpenedMostSevereAlert {
+        id
         title
         severity
         detailsUrl
