@@ -4,7 +4,7 @@ class ElasticIndexInitialBulkCronWorker # rubocop:disable Scalability/Idempotent
   include Elastic::BulkCronWorker
 
   feature_category :global_search
-  urgency :throttled
+  urgency :low
   # Even though this worker is idempotent, until https://gitlab.com/gitlab-org/gitlab/-/issues/325291 is done
   # we can't use it with read-only database replicas
   data_consistency :sticky

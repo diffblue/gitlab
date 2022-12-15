@@ -124,7 +124,7 @@
   :worker_name: ElasticIndexBulkCronWorker
   :feature_category: :global_search
   :has_external_dependencies: false
-  :urgency: :throttled
+  :urgency: :low
   :resource_boundary: :cpu
   :weight: 1
   :idempotent: false
@@ -133,7 +133,7 @@
   :worker_name: ElasticIndexInitialBulkCronWorker
   :feature_category: :global_search
   :has_external_dependencies: false
-  :urgency: :throttled
+  :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: false
