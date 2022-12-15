@@ -149,14 +149,43 @@ module API
           present(approval, with: Entities::MergeRequests::StatusCheckResponse)
         end
 
-        desc 'List status checks for a merge request' do
-          success Entities::MergeRequests::StatusCheck
-          is_array true
-        end
-        get 'status_checks' do
-          merge_request = find_merge_request_with_access(params[:merge_request_iid], :approve_merge_request)
+        segment 'status_checks' do
+          desc 'List status checks for a merge request' do
+            success Entities::MergeRequests::StatusCheck
+            is_array true
+          end
+          get do
+            merge_request = find_merge_request_with_access(params[:merge_request_iid], :approve_merge_request)
 
-          present(paginate(user_project.external_status_checks.applicable_to_branch(merge_request.target_branch)), with: Entities::MergeRequests::StatusCheck, merge_request: merge_request, sha: merge_request.source_branch_sha)
+            present(paginate(user_project.external_status_checks.applicable_to_branch(merge_request.target_branch)), with: Entities::MergeRequests::StatusCheck, merge_request: merge_request, sha: merge_request.diff_head_sha)
+          end
+
+          desc 'Retry failed external status check' do
+            success code: 202
+          end
+          params do
+            requires :id, type: String, desc: 'ID of a project', documentation: { example: '1' }
+            requires :merge_request_iid,
+                     type: Integer,
+                     desc: 'IID of a merge request',
+                     documentation: { example: 1 }
+            requires :external_status_check_id, type: Integer, desc: 'ID of a failed external status check'
+          end
+          post ':external_status_check_id/retry' do
+            merge_request = find_merge_request_with_access(params[:merge_request_iid], :approve_merge_request)
+
+            not_found! unless current_user.can?(:retry_failed_status_checks, merge_request)
+
+            status_check = merge_request.project.external_status_checks.find(params[:external_status_check_id])
+
+            if status_check.failed?(merge_request)
+              data = merge_request.to_hook_data(current_user)
+              status_check.async_execute(data)
+              accepted!
+            else
+              unprocessable_entity!("External status check must be failed")
+            end
+          end
         end
       end
     end

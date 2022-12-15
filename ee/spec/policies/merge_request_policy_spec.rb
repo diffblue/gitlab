@@ -257,10 +257,8 @@ RSpec.describe MergeRequestPolicy do
     end
   end
 
-  describe 'provide_status_check_response' do
+  shared_examples 'external_status_check_access' do
     using RSpec::Parameterized::TableSyntax
-
-    let(:policy) { :provide_status_check_response }
 
     subject { policy_for(current_user) }
 
@@ -289,6 +287,18 @@ RSpec.describe MergeRequestPolicy do
 
       it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
     end
+  end
+
+  describe 'retry_failed_status_checks' do
+    let(:policy) { :retry_failed_status_checks }
+
+    it_behaves_like 'external_status_check_access'
+  end
+
+  describe 'provide_status_check_response' do
+    let(:policy) { :provide_status_check_response }
+
+    it_behaves_like 'external_status_check_access'
   end
 
   describe 'create_merge_request_approval_rules' do

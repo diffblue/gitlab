@@ -87,104 +87,71 @@ RSpec.describe MergeRequests::ExternalStatusCheck, type: :model do
     end
   end
 
-  describe 'approved?' do
+  describe 'failed?' do
     let_it_be(:rule) { create(:external_status_check) }
     let_it_be(:merge_request) { create(:merge_request) }
 
     let(:project) { merge_request.source_project }
 
-    subject { rule.approved?(merge_request, merge_request.source_branch_sha) }
+    subject { rule.failed?(merge_request) }
 
-    context 'when a rule has a positive status check response' do
-      let_it_be(:status_check_response) { create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: merge_request.source_branch_sha) }
+    context 'when last status check response is failed' do
+      before do
+        create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: merge_request.diff_head_sha, status: 'passed')
+        create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: merge_request.diff_head_sha, status: 'failed')
+      end
 
       it { is_expected.to be true }
+    end
+
+    context 'when last status check response is passed' do
+      before do
+        create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: merge_request.diff_head_sha, status: 'failed')
+        create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: merge_request.diff_head_sha, status: 'passed')
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context 'when there are no status check responses' do
+      before do
+        merge_request.status_check_responses.delete_all
+      end
+
+      it { is_expected.to be false }
+    end
+  end
+
+  describe 'status' do
+    let_it_be(:rule) { create(:external_status_check) }
+    let_it_be(:merge_request) { create(:merge_request) }
+
+    let(:project) { merge_request.source_project }
+
+    subject { rule.status(merge_request, merge_request.source_branch_sha) }
+
+    context 'when a rule has a positive status check response' do
+      let_it_be(:status_check_response) { create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: merge_request.source_branch_sha, status: 'passed') }
+
+      it { is_expected.to eq('passed') }
 
       context 'when a rule also has a positive check response from an old sha' do
         before do
-          create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: 'abc1234')
+          create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: 'abc1234', status: 'passed')
         end
-
-        it { is_expected.to be true }
-      end
-    end
-
-    context 'when a rule has no positive status check response' do
-      it { is_expected.to be false }
-    end
-
-    context 'when a rule has a positive status check response from an old sha' do
-      before do
-        create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: 'abc123')
-      end
-
-      it { is_expected.to be false }
-    end
-
-    describe 'status' do
-      let_it_be(:rule) { create(:external_status_check) }
-      let_it_be(:merge_request) { create(:merge_request) }
-
-      let(:project) { merge_request.source_project }
-
-      subject { rule.status(merge_request, merge_request.source_branch_sha) }
-
-      context 'when a rule has a positive status check response' do
-        let_it_be(:status_check_response) { create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: merge_request.source_branch_sha, status: 'passed') }
 
         it { is_expected.to eq('passed') }
-
-        context 'when a rule also has a positive check response from an old sha' do
-          before do
-            create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: 'abc1234', status: 'passed')
-          end
-
-          it { is_expected.to eq('passed') }
-        end
-      end
-
-      context 'when a rule has a negative status check response' do
-        let_it_be(:status_check_response) { create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: merge_request.source_branch_sha, status: 'failed') }
-
-        it { is_expected.to eq('failed') }
-      end
-
-      context 'when a rule has no status check response' do
-        it { is_expected.to eq('pending') }
       end
     end
 
-    describe 'status' do
-      let_it_be(:rule) { create(:external_status_check) }
-      let_it_be(:merge_request) { create(:merge_request) }
+    context 'when a rule has a negative status check response' do
+      let_it_be(:status_check_response) { create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: merge_request.source_branch_sha, status: 'failed') }
 
-      let(:project) { merge_request.source_project }
+      it { is_expected.to eq('failed') }
+    end
 
-      subject { rule.status(merge_request, merge_request.source_branch_sha) }
-
-      context 'when a rule has a positive status check response' do
-        let_it_be(:status_check_response) { create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: merge_request.source_branch_sha, status: 'passed') }
-
-        it { is_expected.to eq('passed') }
-
-        context 'when a rule also has a positive check response from an old sha' do
-          before do
-            create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: 'abc1234', status: 'passed')
-          end
-
-          it { is_expected.to eq('passed') }
-        end
-      end
-
-      context 'when a rule has a negative status check response' do
-        let_it_be(:status_check_response) { create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: merge_request.source_branch_sha, status: 'failed') }
-
-        it { is_expected.to eq('failed') }
-      end
-
-      context 'when a rule has no status check response' do
-        it { is_expected.to eq('pending') }
-      end
+    context 'when a rule has no status check response' do
+      it { is_expected.to eq('pending') }
     end
   end
 
