@@ -163,7 +163,7 @@ export const cancelImportFactory = (cancelImportPath) => ({ state, commit }, { r
   const existingRepo = state.repositories.find((r) => r.importSource.id === repoId);
 
   if (!existingRepo?.importedProject) {
-    return Promise.resolve();
+    throw new Error(`Attempting to cancel project which is not started: ${repoId}`);
   }
 
   const { id } = existingRepo.importedProject;
