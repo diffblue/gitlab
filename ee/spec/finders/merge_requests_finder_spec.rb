@@ -94,22 +94,5 @@ RSpec.describe MergeRequestsFinder do
         expect(merge_requests).to contain_exactly(scoped_labeled_merge_request_1, scoped_labeled_merge_request_2)
       end
     end
-
-    context 'when the author of a merge request is banned' do
-      let_it_be(:banned_user) { create(:user, :banned) }
-      let_it_be(:banned_merge_request) do
-        create(:merge_request, :simple, author: banned_user, source_project: project1)
-      end
-
-      subject(:merge_requests) { described_class.new(user).execute }
-
-      it { is_expected.not_to include(banned_merge_request) }
-
-      context 'when the user is an auditor' do
-        let_it_be(:user) { create(:user, :auditor) }
-
-        it { is_expected.to include(banned_merge_request) }
-      end
-    end
   end
 end
