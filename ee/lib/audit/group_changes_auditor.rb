@@ -2,20 +2,28 @@
 
 module Audit
   class GroupChangesAuditor < BaseChangesAuditor
-    COLUMNS = %i[name path repository_size_limit visibility_level
-                 request_access_enabled membership_lock lfs_enabled
-                 shared_runners_minutes_limit
-                 require_two_factor_authentication
-                 two_factor_grace_period
-                 project_creation_level].freeze
-
     COLUMN_HUMAN_NAME = {
       visibility_level: 'visibility'
     }.freeze
 
+    EVENT_NAME_PER_COLUMN = {
+      name: 'group_name_updated',
+      path: 'group_path_updated',
+      repository_size_limit: 'group_repository_size_limit_updated',
+      visibility_level: 'group_visibility_level_updated',
+      request_access_enabled: 'group_request_access_enabled_updated',
+      membership_lock: 'group_membership_lock_updated',
+      lfs_enabled: 'group_lfs_enabled_updated',
+      shared_runners_minutes_limit: 'group_shared_runners_minutes_limit_updated',
+      require_two_factor_authentication: 'group_require_two_factor_authentication_updated',
+      two_factor_grace_period: 'group_two_factor_grace_period_updated',
+      project_creation_level: 'group_project_creation_level_updated'
+    }.freeze
+
     def execute
-      COLUMNS.each do |column|
-        audit_changes(column, as: column_human_name(column), model: model)
+      EVENT_NAME_PER_COLUMN.each do |column, event_name|
+        audit_changes(column, as: column_human_name(column), model: model,
+                              event_type: event_name)
       end
     end
 

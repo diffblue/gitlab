@@ -9,7 +9,8 @@ RSpec.describe Audit::GroupChangesAuditor do
     let(:foo_instance) { described_class.new(user, group) }
 
     before do
-      stub_licensed_features(extended_audit_events: true)
+      stub_licensed_features(extended_audit_events: true, external_audit_events: true)
+      group.external_audit_event_destinations.create!(destination_url: 'http://example.com')
     end
 
     describe 'non audit changes' do
@@ -41,7 +42,8 @@ RSpec.describe Audit::GroupChangesAuditor do
 
       it 'creates an event when attributes change' do
         # Exclude special cases covered from above
-        columns = described_class::COLUMNS - described_class::COLUMN_HUMAN_NAME.keys - [:project_creation_level]
+        columns = described_class::EVENT_NAME_PER_COLUMN.keys -
+          described_class::COLUMN_HUMAN_NAME.keys - [:project_creation_level]
 
         columns.each do |column|
           data = group.attributes[column.to_s]
@@ -56,7 +58,11 @@ RSpec.describe Audit::GroupChangesAuditor do
               "#{data}-next"
             end
 
+          event_name = Audit::GroupChangesAuditor::EVENT_NAME_PER_COLUMN[column]
           group.update_attribute(column, value)
+
+          expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async)
+            .with(event_name, anything, anything)
 
           expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
 
