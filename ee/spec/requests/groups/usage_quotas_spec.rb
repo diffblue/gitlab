@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'view usage quotas', feature_category: :subscription_usage_reports do
+RSpec.describe 'view usage quotas', feature_category: :subscription_cost_management do
   describe 'GET /groups/:group/-/usage_quotas' do
     let_it_be(:group) { create(:group) }
     let_it_be(:user) { create(:user) }

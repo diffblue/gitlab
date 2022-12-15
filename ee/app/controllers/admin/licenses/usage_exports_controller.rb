@@ -7,7 +7,7 @@ module Admin
 
       before_action :require_license, only: :show
 
-      feature_category :subscription_usage_reports
+      feature_category :subscription_cost_management
       urgency :low
 
       after_action :set_license_usage_data_exported, only: :show
