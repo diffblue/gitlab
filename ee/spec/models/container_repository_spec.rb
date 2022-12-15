@@ -84,4 +84,47 @@ RSpec.describe ContainerRepository, :saas do
       gitlab_container_repository.push_blob('a123cd', ['body'], 32456)
     end
   end
+
+  describe '.search' do
+    let_it_be(:container_repository1) { create(:container_repository) }
+    let_it_be(:container_repository2) { create(:container_repository) }
+    let_it_be(:container_repository3) { create(:container_repository) }
+
+    context 'when search query is empty' do
+      it 'returns all records' do
+        result = described_class.search('')
+
+        expect(result).to contain_exactly(container_repository1, container_repository2, container_repository3)
+      end
+    end
+
+    context 'when search query is not empty' do
+      context 'without matches' do
+        it 'filters all container repositories' do
+          result = described_class.search('something_that_does_not_exist')
+
+          expect(result).to be_empty
+        end
+      end
+
+      context 'with matches' do
+        context 'with matches by attributes' do
+          where(:searchable_attributes) { described_class::EE_SEARCHABLE_ATTRIBUTES }
+
+          before do
+            # Use update_column to bypass attribute validations like regex formatting, checksum, etc.
+            container_repository1.update_column(searchable_attributes, 'any_keyword')
+          end
+
+          with_them do
+            it do
+              result = described_class.search('any_keyword')
+
+              expect(result).to contain_exactly(container_repository1)
+            end
+          end
+        end
+      end
+    end
+  end
 end

@@ -5,6 +5,7 @@ module EE
     extend ActiveSupport::Concern
 
     GITLAB_ORG_NAMESPACE = 'gitlab-org'
+    EE_SEARCHABLE_ATTRIBUTES = %i[name].freeze
 
     prepended do
       include ::Geo::ReplicableModel
@@ -16,6 +17,17 @@ module EE
 
     class_methods do
       extend ::Gitlab::Utils::Override
+
+      # Search for a list of container_repositories based on the query given in `query`.
+      #
+      # @param [String] query term that will search over container_repository :name attribute
+      #
+      # @return [ActiveRecord::Relation<ContainerRepository>] a collection of container repositories
+      def search(query)
+        return all if query.empty?
+
+        fuzzy_search(query, EE_SEARCHABLE_ATTRIBUTES)
+      end
 
       # @param primary_key_in [Range, ContainerRepository] arg to pass to primary_key_in scope
       # @return [ActiveRecord::Relation<ContainerRepository>] everything that should be synced to this node, restricted by primary key
