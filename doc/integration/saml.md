@@ -460,11 +460,16 @@ Example configuration:
 
 > Introduced in GitLab 11.4.
 
-The requirements are the same as the previous settings:
+Your IdP passes group information to GitLab in the SAML response. To use this
+response, configure GitLab to identify:
 
-- The IdP must pass Group information to GitLab.
-- GitLab should know where to look for the groups in the SAML response, as well as which
-  groups include users with the [Auditor access level](../administration/auditor_users.md).
+- Where to look for the groups in the SAML response, using the `groups_attribute` setting.
+- Information about a group or user, using a group setting.
+
+Use the `auditor_groups` setting to configure GitLab to identify which groups include
+users with [auditor access](../administration/auditor_users.md).
+
+Example configuration:
 
 ```yaml
 { name: 'saml',
