@@ -9,9 +9,10 @@ module Namespaces
 
         result = users_count > limit
 
+        log_user_counts
+
         return false unless Feature.enabled?(:notification_free_user_cap_show_over_limit, root_namespace)
 
-        log_user_counts
         update_database_fields(result)
 
         result
