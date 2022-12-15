@@ -10,11 +10,19 @@ module Resolvers
 
       argument :iid, GraphQL::Types::ID,
                required: false,
-               description: 'IID of the requirement, e.g., "1".'
+               description: 'IID of the requirement, for example, "1".'
 
       argument :iids, [GraphQL::Types::ID],
                required: false,
-               description: 'List of IIDs of requirements, e.g., `[1, 2]`.'
+               description: 'List of IIDs of requirements, for example, `[1, 2]`.'
+
+      argument :work_item_iid, GraphQL::Types::ID, # rubocop:disable Graphql/IDType
+               required: false,
+               description: 'IID of the requirement work item, for example, "1".'
+
+      argument :work_item_iids, [GraphQL::Types::ID],
+               required: false,
+               description: 'List of IIDs of requirement work items, for example, `[1, 2]`.'
 
       argument :last_test_report_state, ::Types::RequirementsManagement::RequirementStatusFilterEnum,
                required: false,
@@ -41,6 +49,7 @@ module Resolvers
           values[:project_id] = project.id
           values[:issue_types] = [:requirement]
           values[:iids] ||= [args[:iid]].compact
+          values[:work_item_iids] ||= [args[:work_item_iid]].compact
 
           # The'archived' state does not exist for work items
           # we need to translate it to 'closed' here to proper filter items
@@ -74,7 +83,9 @@ module Resolvers
       def find_requirements(args)
         legacy_iids = args.delete(:iids)
 
-        work_items_ids = ::WorkItems::WorkItemsFinder.new(current_user, args).execute.select(:id)
+        work_items_ids = ::WorkItems::WorkItemsFinder
+                           .new(current_user, args.merge(iids: args[:work_item_iids]))
+                           .execute.select(:id)
 
         requirements =
           ::RequirementsManagement::Requirement.where(issue_id: work_items_ids.reorder(nil))
