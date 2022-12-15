@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService do
+RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService, feature_category: :security_policy_management do
   include AfterNextHelpers
 
   describe '#execute' do
@@ -340,13 +340,34 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService do
         end
 
         context "when action contains variables" do
-          it 'parses variables from the action and applies them in configuration service' do
-            expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
-              expect(ci_configuration_service).to receive(:execute).once
-                                                    .with(actions.first, { 'SAST_DISABLED' => nil, 'SAST_EXCLUDED_ANALYZERS' => 'semgrep' }).and_call_original
+          context 'when scan_execution_policies_run_sast_and_ds_in_single_pipeline is enabled' do
+            before do
+              stub_feature_flags(scan_execution_policies_run_sast_and_ds_in_single_pipeline: true)
             end
 
-            subject
+            it 'parses variables from the action and applies them in configuration service' do
+              expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
+                expect(ci_configuration_service).to receive(:execute).once
+                                                      .with(actions.first, { 'SAST_DISABLED' => nil, 'SAST_EXCLUDED_ANALYZERS' => 'semgrep' }, 0).and_call_original
+              end
+
+              subject
+            end
+          end
+
+          context 'when scan_execution_policies_run_sast_and_ds_in_single_pipeline is disabled' do
+            before do
+              stub_feature_flags(scan_execution_policies_run_sast_and_ds_in_single_pipeline: false)
+            end
+
+            it 'parses variables from the action and applies them in configuration service' do
+              expect_next_instance_of(::Security::SecurityOrchestrationPolicies::LegacyCiConfigurationService) do |ci_configuration_service|
+                expect(ci_configuration_service).to receive(:execute).once
+                                                      .with(actions.first, { 'SAST_DISABLED' => nil, 'SAST_EXCLUDED_ANALYZERS' => 'semgrep' }).and_call_original
+              end
+
+              subject
+            end
           end
         end
       end

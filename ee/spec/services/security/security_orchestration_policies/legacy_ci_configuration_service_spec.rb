@@ -2,15 +2,15 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
-  feature_category: :security_policy_management do
+RSpec.describe Security::SecurityOrchestrationPolicies::LegacyCiConfigurationService,
+feature_category: :security_policy_management do
   describe '#execute' do
     let_it_be(:service) { described_class.new }
     let_it_be(:ci_variables) do
       { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false', 'SECRET_DETECTION_DISABLED' => nil }
     end
 
-    subject { service.execute(action, ci_variables, 0) }
+    subject { service.execute(action, ci_variables) }
 
     shared_examples 'with template name for scan type' do
       it 'fetches template content using ::TemplateFinder' do
@@ -51,7 +51,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
             }
           }
 
-          expect(subject.deep_symbolize_keys).to eq('secret-detection-0': expected_configuration)
+          expect(subject.deep_symbolize_keys).to eq(expected_configuration)
         end
       end
 
@@ -92,75 +92,65 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
             ]
           }
 
-          expect(subject.deep_symbolize_keys).to eq('container-scanning-0': expected_configuration)
+          expect(subject.deep_symbolize_keys).to eq(expected_configuration)
         end
       end
 
-      context 'when scan type is sast', :aggregate_failures do
+      context 'when scan type is sast' do
         let_it_be(:action) { { scan: 'sast', tags: ['runner-tag'] } }
         let_it_be(:ci_variables) { { 'SAST_EXCLUDED_ANALYZERS' => 'semgrep', 'SAST_DISABLED' => nil } }
 
         it 'returns prepared CI configuration for SAST' do
-          expected_jobs = [
-            :"sast-0",
-            :"bandit-sast-0",
-            :"brakeman-sast-0",
-            :"eslint-sast-0",
-            :"flawfinder-sast-0",
-            :"kubesec-sast-0",
-            :"gosec-sast-0",
-            :"mobsf-android-sast-0",
-            :"mobsf-ios-sast-0",
-            :"nodejs-scan-sast-0",
-            :"phpcs-security-audit-sast-0",
-            :"pmd-apex-sast-0",
-            :"security-code-scan-sast-0",
-            :"semgrep-sast-0",
-            :"sobelow-sast-0",
-            :"spotbugs-sast-0"
-          ]
-
-          expected_variables = {
-            'SEARCH_MAX_DEPTH' => 4,
-            'SECURE_ANALYZERS_PREFIX' => '$CI_TEMPLATE_REGISTRY_HOST/security-products',
-            'SAST_IMAGE_SUFFIX' => '',
-            'SAST_EXCLUDED_ANALYZERS' => 'semgrep',
-            'SAST_EXCLUDED_PATHS' => 'spec, test, tests, tmp',
-            'SCAN_KUBERNETES_MANIFESTS' => 'false'
+          expected_configuration = {
+            inherit: { variables: false },
+            variables: { 'SAST_EXCLUDED_ANALYZERS' => 'semgrep' },
+            trigger: { include: [{ template: 'Security/SAST.gitlab-ci.yml' }] }
           }
 
-          expect(subject[:variables]).to be_nil
-          expect(subject[:'sast-0'][:variables].stringify_keys).to include(expected_variables)
-          expect(subject.keys).to match_array(expected_jobs)
+          expect(subject).to eq(expected_configuration)
+        end
+
+        context 'when variables are empty' do
+          let_it_be(:ci_variables) { {} }
+
+          it 'returns prepared CI configuration for SAST' do
+            expected_configuration = {
+              inherit: { variables: false },
+              trigger: { include: [{ template: 'Security/SAST.gitlab-ci.yml' }] }
+            }
+
+            expect(subject).to eq(expected_configuration)
+          end
         end
       end
 
-      context 'when scan type is dependency_scanning', :aggregate_failures do
+      context 'when scan type is dependency_scanning' do
         let_it_be(:action) { { scan: 'dependency_scanning', tags: ['runner-tag'] } }
         let_it_be(:ci_variables) do
           { 'DS_EXCLUDED_ANALYZERS' => 'gemnasium-python', 'DEPENDENCY_SCANNING_DISABLED' => nil }
         end
 
         it 'returns prepared CI configuration for Dependency Scanning' do
-          expected_jobs = [
-            :"dependency-scanning-0",
-            :"gemnasium-dependency-scanning-0",
-            :"gemnasium-maven-dependency-scanning-0",
-            :"gemnasium-python-dependency-scanning-0",
-            :"bundler-audit-dependency-scanning-0",
-            :"retire-js-dependency-scanning-0"
-          ]
-
-          expected_variables = {
-            SECURE_ANALYZERS_PREFIX: "$CI_TEMPLATE_REGISTRY_HOST/security-products",
-            DS_EXCLUDED_PATHS: "spec, test, tests, tmp",
-            DS_MAJOR_VERSION: 3,
-            DS_EXCLUDED_ANALYZERS: ""
+          expected_configuration = {
+            inherit: { variables: false },
+            variables: { 'DS_EXCLUDED_ANALYZERS' => 'gemnasium-python' },
+            trigger: { include: [{ template: 'Jobs/Dependency-Scanning.gitlab-ci.yml' }] }
           }
 
-          expect(subject[:variables]).to be_nil
-          expect(subject[:'dependency-scanning-0'][:variables]).to include(expected_variables)
-          expect(subject.keys).to match_array(expected_jobs)
+          expect(subject).to eq(expected_configuration)
+        end
+
+        context 'when variables are empty' do
+          let_it_be(:ci_variables) { {} }
+
+          it 'returns prepared CI configuration for Dependency Scanning' do
+            expected_configuration = {
+              inherit: { variables: false },
+              trigger: { include: [{ template: 'Jobs/Dependency-Scanning.gitlab-ci.yml' }] }
+            }
+
+            expect(subject).to eq(expected_configuration)
+          end
         end
       end
     end
@@ -174,7 +164,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
           'script' => "echo \"Error during Scan execution: Invalid Scan type\" && false"
         }
 
-        expect(subject).to eq('invalid-type-0': expected_configuration)
+        expect(subject).to eq(expected_configuration)
       end
     end
   end
