@@ -5,10 +5,13 @@ module EE
     module PackageFile
       extend ActiveSupport::Concern
 
+      EE_SEARCHABLE_ATTRIBUTES = %i[file_name].freeze
+
       prepended do
         include ::Geo::ReplicableModel
         include ::Geo::VerifiableModel
         include ::Geo::VerificationStateDefinition
+        include ::Gitlab::SQL::Pattern
 
         with_replicator ::Geo::PackageFileReplicator
       end
@@ -20,6 +23,17 @@ module EE
           primary_key_in(primary_key_in)
             .merge(selective_sync_scope)
             .merge(object_storage_scope)
+        end
+
+        # Search for a list of package_files based on the query given in `query`.
+        #
+        # @param [String] query term that will search over package_file :file_name
+        #
+        # @return [ActiveRecord::Relation<Packages::PackageFile>] a collection of package files
+        def search(query)
+          return all if query.empty?
+
+          fuzzy_search(query, EE_SEARCHABLE_ATTRIBUTES).limit(500)
         end
 
         private
