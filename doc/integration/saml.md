@@ -486,11 +486,11 @@ For information on automatically managing GitLab group membership, see [SAML Gro
 
 ## Bypass two-factor authentication
 
-If you want some SAML authentication methods to count as 2FA on a per session
-basis, you can register them in the `upstream_two_factor_authn_contexts` list.
+To configure a SAML authentication method to count as two-factor authentication
+(2FA) on a per session basis, register that method in the `upstream_two_factor_authn_contexts`
+list.
 
-In addition to the changes in GitLab, make sure that your IdP is returning the
-`AuthnContext`. For example:
+1. Make sure that your IdP is returning the `AuthnContext`. For example:
 
 ```xml
 <saml:AuthnStatement>
@@ -500,7 +500,11 @@ In addition to the changes in GitLab, make sure that your IdP is returning the
 </saml:AuthnStatement>
 ```
 
-**For Omnibus installations:**
+1. Edit your installation configuration to register the SAML authentication method
+   in the `upstream_two_factor_authn_contexts` list. How you edit your configuration
+   will differ depending on your installation type.
+
+### Omnibus GitLab installations
 
 1. Edit `/etc/gitlab/gitlab.rb`:
 
@@ -526,11 +530,10 @@ In addition to the changes in GitLab, make sure that your IdP is returning the
    ]
    ```
 
-1. Save the file and [reconfigure](../administration/restart_gitlab.md#omnibus-gitlab-reconfigure) GitLab for the changes to take effect.
+1. Save the file and [reconfigure](../administration/restart_gitlab.md#omnibus-gitlab-reconfigure)
+   GitLab for the changes to take effect.
 
----
-
-**For installations from source:**
+### Installations from source
 
 1. Edit `config/gitlab.yml`:
 
@@ -556,7 +559,8 @@ In addition to the changes in GitLab, make sure that your IdP is returning the
        }
    ```
 
-1. Save the file and [restart GitLab](../administration/restart_gitlab.md#installations-from-source) for the changes to take effect
+1. Save the file and [restart GitLab](../administration/restart_gitlab.md#installations-from-source)
+   for the changes to take effect.
 
 ## Validate response signatures
 
