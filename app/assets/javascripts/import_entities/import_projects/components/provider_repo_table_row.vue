@@ -81,6 +81,10 @@ export default {
       return isImporting(this.repo);
     },
 
+    isCancelable() {
+      return this.cancelable && this.isImporting && this.importStatus !== STATUSES.SCHEDULING;
+    },
+
     stats() {
       return this.repo.importedProject?.stats;
     },
@@ -186,7 +190,7 @@ export default {
         </div>
       </gl-tooltip>
       <gl-button
-        v-show="cancelable && isImporting"
+        v-show="isCancelable"
         ref="cancelButton"
         variant="danger"
         category="secondary"

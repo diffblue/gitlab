@@ -51,7 +51,9 @@ export default {
       // https://gitlab.com/gitlab-org/gitlab/-/issues/27370#note_379034091
 
       const newImportedProjects = processLegacyEntries({
-        newRepositories: repositories.importedProjects,
+        newRepositories: repositories.importedProjects.filter(
+          (p) => p.importStatus !== STATUSES.CANCELED,
+        ),
         existingRepositories: state.repositories,
         factory: makeNewImportedProject,
       });

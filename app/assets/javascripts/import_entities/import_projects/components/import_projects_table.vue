@@ -102,7 +102,6 @@ export default {
   },
 
   mounted() {
-    this.fetchNamespaces();
     this.fetchJobs();
 
     if (!this.paginatable) {
@@ -119,7 +118,6 @@ export default {
     ...mapActions([
       'fetchRepos',
       'fetchJobs',
-      'fetchNamespaces',
       'stopJobsPolling',
       'clearJobsEtagPoll',
       'setFilter',
