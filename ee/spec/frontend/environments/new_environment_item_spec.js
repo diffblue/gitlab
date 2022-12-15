@@ -27,6 +27,7 @@ describe('~/environments/components/new_environment_item.vue', () => {
               environment: {
                 id: '2',
                 latestOpenedMostSevereAlert: {
+                  id: '4',
                   severity: 'CRITICAL',
                   title: 'alert title',
                   prometheusAlert: { id: '3', humanizedText: '>0.1% jest' },
