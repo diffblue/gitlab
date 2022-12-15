@@ -2128,6 +2128,9 @@ msgstr ""
 msgid "Activate Service Desk"
 msgstr ""
 
+msgid "Activated"
+msgstr ""
+
 msgid "Active"
 msgstr ""
 
@@ -30274,6 +30277,9 @@ msgstr ""
 msgid "PipelineSchedules|Are you sure you want to delete this pipeline schedule?"
 msgstr ""
 
+msgid "PipelineSchedules|Cron timezone"
+msgstr ""
+
 msgid "PipelineSchedules|Delete pipeline schedule"
 msgstr ""
 
@@ -30284,6 +30290,9 @@ msgid "PipelineSchedules|Edit pipeline schedule"
 msgstr ""
 
 msgid "PipelineSchedules|Inactive"
+msgstr ""
+
+msgid "PipelineSchedules|Interval Pattern"
 msgstr ""
 
 msgid "PipelineSchedules|Last Pipeline"
@@ -30311,6 +30320,9 @@ msgid "PipelineSchedules|Provide a short description for this pipeline"
 msgstr ""
 
 msgid "PipelineSchedules|Run pipeline schedule"
+msgstr ""
+
+msgid "PipelineSchedules|Save pipeline schedule"
 msgstr ""
 
 msgid "PipelineSchedules|Successfully taken ownership from %{owner}."
