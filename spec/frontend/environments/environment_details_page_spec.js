@@ -1,12 +1,12 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlLoadingIcon, GlTableLite } from '@gitlab/ui';
+import resolvedEnvironmentDetails from 'test_fixtures/graphql/environments/graphql/queries/environment_details.query.graphql.json';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from '../__helpers__/mock_apollo_helper';
 import waitForPromises from '../__helpers__/wait_for_promises';
 import EnvironmentsDetailPage from '../../../app/assets/javascripts/environments/environment_details/index.vue';
 import getEnvironmentDetails from '../../../app/assets/javascripts/environments/graphql/queries/environment_details.query.graphql';
-import { resolvedEnvironmentDetails } from './graphql/mock_data';
 
 describe('~/environments/environment_details/page.vue', () => {
   Vue.use(VueApollo);
@@ -21,8 +21,8 @@ describe('~/environments/environment_details/page.vue', () => {
     return mountExtended(EnvironmentsDetailPage, {
       apolloProvider: mockApollo,
       propsData: {
-        projectFullPath: 'gitlab-group/test-project',
-        environmentName: 'test-environment-name',
+        projectFullPath: resolvedEnvironmentDetails.data.project.fullPath,
+        environmentName: resolvedEnvironmentDetails.data.project.environment.name,
       },
     });
   };

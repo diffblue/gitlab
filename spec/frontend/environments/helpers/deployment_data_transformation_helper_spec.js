@@ -59,6 +59,12 @@ describe('deployment_data_transformation_helper', () => {
     finishedAt: '2022-10-17T07:44:43Z',
   };
 
+  const deploymentNodeWithNoJob = {
+    ...deploymentNode,
+    job: null,
+    finishedAt: null,
+  };
+
   describe('getAuthorFromCommit', () => {
     it.each([commitWithAuthor, commitWithourAuthor])('should be properly converted', (commit) => {
       expect(getAuthorFromCommit(commit)).toMatchSnapshot();
@@ -80,7 +86,7 @@ describe('deployment_data_transformation_helper', () => {
   describe('convertToDeploymentTableRow', () => {
     const deploymentNodeWithEmptyJob = { ...deploymentNode, job: undefined };
 
-    it.each([deploymentNode, deploymentNodeWithEmptyJob])(
+    it.each([deploymentNode, deploymentNodeWithEmptyJob, deploymentNodeWithNoJob])(
       'should be converted to proper table row data',
       (node) => {
         expect(convertToDeploymentTableRow(node)).toMatchSnapshot();

@@ -65,10 +65,7 @@ export default {
   },
   computed: {
     deployments() {
-      return (
-        this.project.environments?.nodes[0]?.deployments.nodes.map(convertToDeploymentTableRow) ||
-        []
-      );
+      return this.project.environment?.deployments.nodes.map(convertToDeploymentTableRow) || [];
     },
     isLoading() {
       return this.$apollo.queries.project.loading;

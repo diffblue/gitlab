@@ -56,7 +56,7 @@ export const convertToDeploymentTableRow = (deploymentNode) => {
       webPath: deploymentNode.job.webPath,
       label: `${deploymentNode.job.name} (#${getIdFromGraphQLId(deploymentNode.job.id)})`,
     },
-    created: deploymentNode.createdAt,
-    deployed: deploymentNode.finishedAt,
+    created: deploymentNode.createdAt || '',
+    deployed: deploymentNode.finishedAt || '',
   };
 };
