@@ -28483,8 +28483,6 @@ CREATE INDEX index_authentication_events_on_provider ON authentication_events US
 
 CREATE INDEX index_authentication_events_on_user_and_ip_address_and_result ON authentication_events USING btree (user_id, ip_address, result);
 
-CREATE INDEX index_authorized_scopes_on_integration ON slack_integrations_scopes USING btree (slack_integration_id);
-
 CREATE INDEX index_award_emoji_on_awardable_type_and_awardable_id ON award_emoji USING btree (awardable_type, awardable_id);
 
 CREATE UNIQUE INDEX index_aws_roles_on_role_external_id ON aws_roles USING btree (role_external_id);
@@ -30949,7 +30947,7 @@ CREATE UNIQUE INDEX index_site_profile_secret_variables_on_site_profile_id_and_k
 
 CREATE UNIQUE INDEX index_slack_api_scopes_on_name ON slack_api_scopes USING btree (name);
 
-CREATE UNIQUE INDEX index_slack_api_scopes_on_name_and_integration ON slack_integrations_scopes USING btree (slack_api_scope_id, slack_integration_id);
+CREATE UNIQUE INDEX index_slack_api_scopes_on_name_and_integration ON slack_integrations_scopes USING btree (slack_integration_id, slack_api_scope_id);
 
 CREATE INDEX index_slack_integrations_on_integration_id ON slack_integrations USING btree (integration_id);
 

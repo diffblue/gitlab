@@ -19,13 +19,13 @@ class AddAuthorizedScopesToSlackIntegration < Gitlab::Database::Migration[2.1]
 
       references :slack_integration,
         null: false,
-        index: { name: 'index_authorized_scopes_on_integration' },
+        index: false, # see composite index
         foreign_key: {
           to_table: :slack_integrations,
           on_delete: :cascade
         }
 
-      t.index [:slack_api_scope_id, :slack_integration_id],
+      t.index [:slack_integration_id, :slack_api_scope_id],
         unique: true,
         name: 'index_slack_api_scopes_on_name_and_integration'
     end
