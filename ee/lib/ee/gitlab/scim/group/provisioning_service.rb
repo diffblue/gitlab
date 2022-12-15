@@ -25,6 +25,8 @@ module EE
 
           def create_identity
             return success_response if identity.save
+
+            error_response(objects: [identity])
           end
 
           def identity
