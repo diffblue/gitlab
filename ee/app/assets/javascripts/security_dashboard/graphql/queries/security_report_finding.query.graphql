@@ -1,0 +1,62 @@
+query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findingUuid: String!) {
+  project(fullPath: $projectFullPath) {
+    id
+    pipeline(iid: $pipelineIid) {
+      id
+      securityReportFinding(uuid: $findingUuid) {
+        uuid
+        title
+        description
+        state
+        severity
+        solution
+        reportType
+        scanner {
+          id
+          name
+        }
+        assets {
+          name
+          url
+        }
+        project {
+          id
+          name
+          webUrl
+        }
+        location {
+          ... on VulnerabilityLocationSast {
+            startLine
+            endLine
+            file
+            blobPath
+          }
+          ... on VulnerabilityLocationDependencyScanning {
+            blobPath
+            file
+          }
+          ... on VulnerabilityLocationSecretDetection {
+            startLine
+            endLine
+            file
+            blobPath
+          }
+          ... on VulnerabilityLocationCoverageFuzzing {
+            startLine
+            endLine
+            file
+            blobPath
+          }
+        }
+        links {
+          name
+          url
+        }
+        identifiers {
+          name
+          url
+        }
+      }
+    }
+  }
+}

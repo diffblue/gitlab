@@ -353,3 +353,81 @@ export const pipelineSecurityReportSummaryEmpty = merge({}, pipelineSecurityRepo
     },
   },
 });
+
+export const pipelineSecurityReportFinding = {
+  uuid: '1',
+  title: 'Vulnerability title',
+  state: 'CONFIRMED',
+  description: 'description',
+  severity: 'HIGH',
+  solution: 'Some solution',
+  reportType: 'reportType',
+  project: {
+    id: '1',
+    name: 'project name',
+    webUrl: 'project fullName',
+  },
+  scanner: {
+    id: '1',
+    name: 'scanner name',
+    url: 'http://example.com/scannerUrl',
+    version: '1.0',
+  },
+  location: {
+    class: 'location class',
+    method: 'location method',
+    crashAddress: 'location crashAddress',
+    crashState: 'location crashState',
+    crashType: 'location crashType',
+    stackTraceSnippet: 'location stackTraceSnippet',
+    file: 'location file',
+    image: 'location image',
+    operatingSystem: 'location operatingSystem',
+  },
+  request: {
+    url: 'http://example.com/requestUrl',
+    body: 'request body',
+    method: 'request method',
+    headers: [
+      { name: 'headers name - 1', value: 'headers value - 1' },
+      { name: 'headers name - 2', value: 'headers value - 2' },
+    ],
+  },
+  response: {
+    body: 'response body',
+    statusCode: '200',
+    reasonPhrase: 'response reasonPhrase',
+    headers: [
+      { name: 'response headers name - 1', value: 'response headers value - 1' },
+      { name: 'response headers name - 2', value: 'response headers value - 2' },
+    ],
+  },
+  evidence: 'evidence',
+  links: [
+    { url: 'http://example.com/link-1', name: null },
+    { url: 'http://example.com/link-2', name: 'links name - 1' },
+  ],
+  identifiers: [
+    { url: 'http://example.com/identifier-1', name: 'identifiers name - 1' },
+    { url: 'http://example.com/identifier-2', name: 'Identifiers name - 2' },
+  ],
+  evidenceSource: {
+    name: 'evidenceSource name',
+  },
+  assets: [
+    { url: 'http://example.com/asset-1', name: 'assets name - 1' },
+    { url: 'http://example.com/asset-2', name: 'assets name - 2' },
+  ],
+};
+
+export const getPipelineSecurityReportFindingResponse = (withoutFindingData = false) => ({
+  data: {
+    project: {
+      id: '1',
+      pipeline: {
+        id: '1',
+        securityReportFinding: withoutFindingData ? null : pipelineSecurityReportFinding,
+      },
+    },
+  },
+});
