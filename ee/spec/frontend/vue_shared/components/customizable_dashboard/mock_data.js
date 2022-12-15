@@ -27,13 +27,13 @@ export const dashboard = {
   widgets: [
     {
       title: __('Test A'),
-      gridAttributes: { size: { width: 3, height: 3 } },
+      gridAttributes: { width: 3, height: 3 },
       visualization: cubeLineChart,
       queryOverrides: {},
     },
     {
       title: __('Test B'),
-      gridAttributes: { size: { width: 2, height: 4 } },
+      gridAttributes: { width: 2, height: 4 },
       visualization: cubeLineChart,
       queryOverrides: {},
     },

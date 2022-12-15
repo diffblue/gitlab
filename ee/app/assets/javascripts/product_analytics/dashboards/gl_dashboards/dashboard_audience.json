@@ -5,10 +5,8 @@
       "visualization": "cube_analytics_line_chart",
       "title": "Audience",
       "gridAttributes": {
-        "size": {
-          "width": 3,
-          "height": 3
-        }
+        "width": 3,
+        "height": 3
       }
     }
   ]
