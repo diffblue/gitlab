@@ -1,10 +1,12 @@
 <script>
 import { GlBadge, GlButton } from '@gitlab/ui';
-import axios from '~/lib/utils/axios_utils';
 import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import MrWidget from '~/vue_merge_request_widget/components/widget/widget.vue';
 import MrWidgetRow from '~/vue_merge_request_widget/components/widget/widget_content_row.vue';
 import { BV_SHOW_MODAL } from '~/lib/utils/constants';
+import axios from '~/lib/utils/axios_utils';
+import { visitUrl } from '~/lib/utils/url_utility';
+import { s__ } from '~/locale';
 import FindingModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
@@ -38,6 +40,7 @@ export default {
   data() {
     return {
       isLoading: false,
+      isCreatingIssue: false,
       modalData: null,
       vulnerabilities: {
         collapsed: null,
@@ -147,6 +150,13 @@ export default {
 
       return 'success';
     },
+
+    canCreateIssue() {
+      return Boolean(
+        this.mr.createVulnerabilityFeedbackIssuePath ||
+          this.modalData?.vulnerability?.create_jira_issue_url,
+      );
+    },
   },
   methods: {
     handleIsLoading(value) {
@@ -225,8 +235,40 @@ export default {
     },
 
     setModalData(finding) {
-      this.modalData = { vulnerability: finding, title: finding.name };
+      this.modalData = {
+        vulnerability: finding,
+        title: finding.name,
+      };
       this.$root.$emit(BV_SHOW_MODAL, VULNERABILITY_MODAL_ID);
+    },
+
+    createNewIssue() {
+      this.isCreatingIssue = true;
+      const finding = this.modalData?.vulnerability;
+
+      axios
+        .post(this.mr.createVulnerabilityFeedbackIssuePath, {
+          vulnerability_feedback: {
+            feedback_type: 'issue',
+            pipeline_id: this.mr.pipelineId,
+            project_fingerprint: finding.project_fingerprint,
+            finding_uuid: finding.uuid,
+            category: finding.report_type,
+            vulnerability_data: { ...finding, category: finding.report_type },
+          },
+        })
+        .then((response) => {
+          visitUrl(response.data.issue_url); // redirect the user to the created issue
+        })
+        .catch(() => {
+          this.modalData = {
+            ...this.modalData,
+            error: s__('ciReport|There was an error creating the issue. Please try again.'),
+          };
+        })
+        .finally(() => {
+          this.isCreatingIssue = false;
+        });
     },
   },
   SEVERITY_LEVELS,
@@ -268,7 +310,9 @@ export default {
         :modal="modalData"
         :is-dismissing-vulnerability="false"
         :is-creating-merge-request="false"
-        :is-creating-issue="false"
+        :is-creating-issue="isCreatingIssue"
+        :can-create-issue="canCreateIssue"
+        @createNewIssue="createNewIssue"
       />
       <security-training-promo-widget
         :security-configuration-path="mr.securityConfigurationPath"
