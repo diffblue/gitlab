@@ -21,8 +21,8 @@ module IdentityVerifiable
     # Return only the state of required verification methods instead of all
     # methods. This will save us from doing unnecessary queries. E.g. when risk
     # band is 'Low' we only need to call `confirmed?`
-    required_identity_verification_methods.each_with_object({}) do |method, state|
-      state[method] = verification_state[method].call
+    required_identity_verification_methods.index_with do |method|
+      verification_state[method].call
     end
   end
   strong_memoize_attr :identity_verification_state

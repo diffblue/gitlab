@@ -30,8 +30,8 @@ module Vulnerabilities
       relation.group(:letter_grade)
               .select(:letter_grade, 'array_agg(project_id) project_ids')
               .then do |statistics|
-                vulnerables.each_with_object({}) do |vulnerable, hash|
-                  hash[vulnerable] = statistics.map { |statistic| new(vulnerable, statistic.letter_grade, statistic.project_ids, include_subgroups: include_subgroups) }
+                vulnerables.index_with do |vulnerable|
+                  statistics.map { |statistic| new(vulnerable, statistic.letter_grade, statistic.project_ids, include_subgroups: include_subgroups) }
                 end
               end
     end

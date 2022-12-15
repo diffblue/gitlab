@@ -42,8 +42,8 @@ module Gitlab
         end
 
         def initial_labels_count_hash
-          (labels + [Gitlab::Insights::UNCATEGORIZED]).each_with_object({}) do |label, hash|
-            hash[label] = 0
+          (labels + [Gitlab::Insights::UNCATEGORIZED]).index_with do |label|
+            0
           end
         end
       end

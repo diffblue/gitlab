@@ -286,7 +286,7 @@ module EE
                       #   }
                       # ]
                       geo_node_usage: GeoNodeStatus.for_active_secondaries.map do |node|
-                        GeoNodeStatus::RESOURCE_STATUS_FIELDS.to_h { |field| [field, node[field]] }
+                        GeoNodeStatus::RESOURCE_STATUS_FIELDS.index_with { |field| node[field] }
                       end
                     # rubocop: enable UsageData/LargeTable
                   })

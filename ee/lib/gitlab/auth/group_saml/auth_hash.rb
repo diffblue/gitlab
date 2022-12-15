@@ -17,8 +17,8 @@ module Gitlab
         # auth_hash.user_attributes['can_create_group']
         def user_attributes
           strong_memoize(:user_attributes) do
-            ALLOWED_USER_ATTRIBUTES.to_h do |attr|
-              [attr, Array(get_raw(attr)).first]
+            ALLOWED_USER_ATTRIBUTES.index_with do |attr|
+              Array(get_raw(attr)).first
             end
           end
         end
