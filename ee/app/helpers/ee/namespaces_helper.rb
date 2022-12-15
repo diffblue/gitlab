@@ -32,13 +32,6 @@ module EE
       end
     end
 
-    def temporary_storage_increase_visible?(namespace)
-      return false unless ::Gitlab::CurrentSettings.enforce_namespace_storage_limit?
-      return false unless ::Feature.enabled?(:temporary_storage_increase, namespace)
-
-      current_user.can?(:admin_namespace, namespace.root_ancestor)
-    end
-
     def buy_additional_minutes_path(namespace)
       return EE::SUBSCRIPTIONS_MORE_MINUTES_URL if use_customers_dot_for_addon_path?(namespace)
 
@@ -91,7 +84,6 @@ module EE
         namespace_path: namespace.full_path,
         purchase_storage_url: nil,
         buy_addon_target_attr: nil,
-        is_temporary_storage_increase_visible: temporary_storage_increase_visible?(namespace).to_s,
         default_per_page: page_size,
         additional_repo_storage_by_namespace: current_user.namespace.additional_repo_storage_by_namespace_enabled?.to_s,
         is_free_namespace: (!current_user.namespace.paid?).to_s,

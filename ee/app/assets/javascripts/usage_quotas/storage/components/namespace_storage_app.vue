@@ -1,17 +1,8 @@
 <script>
-import {
-  GlAlert,
-  GlLink,
-  GlSprintf,
-  GlModalDirective,
-  GlButton,
-  GlIcon,
-  GlKeysetPagination,
-} from '@gitlab/ui';
+import { GlAlert, GlLink, GlSprintf, GlButton, GlIcon, GlKeysetPagination } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { s__ } from '~/locale';
 import { captureException } from '~/ci/runner/sentry_utils';
-import { parseBoolean } from '~/lib/utils/common_utils';
 import { namespaceContainerRegistryPopoverContent } from '../constants';
 import query from '../queries/namespace_storage.query.graphql';
 import GetDependencyProxyTotalSizeQuery from '../queries/dependency_proxy_usage.query.graphql';
@@ -19,7 +10,6 @@ import { formatUsageSize, parseGetStorageResults } from '../utils';
 import SearchAndSortBar from '../../components/search_and_sort_bar/search_and_sort_bar.vue';
 import ProjectList from './project_list.vue';
 import StorageInlineAlert from './storage_inline_alert.vue';
-import TemporaryStorageIncreaseModal from './temporary_storage_increase_modal.vue';
 import UsageGraph from './usage_graph.vue';
 import UsageStatistics from './usage_statistics.vue';
 import DependencyProxyUsage from './dependency_proxy_usage.vue';
@@ -40,22 +30,11 @@ export default {
     StorageUsageStatistics,
     StorageInlineAlert,
     GlKeysetPagination,
-    TemporaryStorageIncreaseModal,
     DependencyProxyUsage,
     ContainerRegistryUsage,
     SearchAndSortBar,
   },
-  directives: {
-    GlModalDirective,
-  },
-  inject: [
-    'namespaceId',
-    'namespacePath',
-    'purchaseStorageUrl',
-    'isTemporaryStorageIncreaseVisible',
-    'helpLinks',
-    'defaultPerPage',
-  ],
+  inject: ['namespaceId', 'namespacePath', 'purchaseStorageUrl', 'helpLinks', 'defaultPerPage'],
   provide: {
     containerRegistryPopoverContent: namespaceContainerRegistryPopoverContent,
   },
@@ -131,9 +110,6 @@ export default {
   computed: {
     namespaceProjects() {
       return this.namespace?.projects?.data ?? [];
-    },
-    isStorageIncreaseModalVisible() {
-      return parseBoolean(this.isTemporaryStorageIncreaseVisible);
     },
     shouldUseNewStorageDesign() {
       return this.isFreeNamespace;
@@ -218,7 +194,6 @@ export default {
       }
     },
   },
-  modalId: 'temporary-increase-storage-modal',
 };
 </script>
 <template>
@@ -277,14 +252,6 @@ export default {
         </div>
         <div class="gl-w-half gl-text-right">
           <gl-button
-            v-if="isStorageIncreaseModalVisible"
-            v-gl-modal-directive="$options.modalId"
-            category="secondary"
-            variant="confirm"
-            data-testid="temporary-storage-increase-button"
-            >{{ s__('UsageQuota|Increase storage temporarily') }}</gl-button
-          >
-          <gl-button
             v-if="purchaseStorageUrl"
             :href="purchaseStorageUrl"
             class="gl-ml-2"
@@ -339,11 +306,5 @@ export default {
         />
       </div>
     </section>
-
-    <temporary-storage-increase-modal
-      v-if="isStorageIncreaseModalVisible"
-      :limit="formattedNamespaceLimit"
-      :modal-id="$options.modalId"
-    />
   </div>
 </template>
