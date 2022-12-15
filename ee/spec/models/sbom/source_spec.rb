@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Sbom::Source, type: :model do
+RSpec.describe Sbom::Source, type: :model, feature_category: :dependency_management do
   let(:source_types) { { dependency_scanning: 0, container_scanning: 1 } }
 
   describe 'enums' do

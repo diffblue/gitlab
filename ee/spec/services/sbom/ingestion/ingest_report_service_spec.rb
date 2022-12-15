@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Sbom::Ingestion::IngestReportService do
+RSpec.describe Sbom::Ingestion::IngestReportService, feature_category: :dependency_management do
   let_it_be(:num_components) { 283 }
   let_it_be(:pipeline) { create(:ci_pipeline) }
   let_it_be(:sbom_report) { create(:ci_reports_sbom_report, num_components: num_components) }
