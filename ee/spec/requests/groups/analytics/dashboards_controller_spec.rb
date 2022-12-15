@@ -90,6 +90,10 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :subgr
         end
 
         context 'when the feature is enabled' do
+          let_it_be(:subgroup) { create(:group, parent: group) }
+          let_it_be(:projects) { create_list(:project, 4, :public, group: group) }
+          let_it_be(:subgroup_projects) { create_list(:project, 2, :public, group: subgroup) }
+
           before do
             stub_feature_flags(group_analytics_dashboards_page: group)
           end
@@ -100,10 +104,58 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :subgr
             expect(response).to be_successful
           end
 
+          it 'can accept a `query` params' do
+            project = projects.first
+
+            get build_dashboard_path(group_analytics_dashboards_path(group), [another_group, subgroup, project])
+
+            expect(response).to be_successful
+
+            expect(response.body.include?("data-namespaces")).to be_truthy
+            expect(response.body).not_to include(parsed_response(another_group, false))
+            expect(response.body).to include(parsed_response(subgroup, false))
+            expect(response.body).to include(parsed_response(project))
+          end
+
+          it 'will only return the first 4 namespaces' do
+            get build_dashboard_path(group_analytics_dashboards_path(group), [].concat(projects, [subgroup]))
+
+            expect(response).to be_successful
+            expect(response.body).not_to include(parsed_response(subgroup, false))
+
+            projects.each do |project|
+              expect(response.body).to include(parsed_response(project))
+            end
+          end
+
+          it 'will return projects in a subgroup' do
+            first_parent_project = projects.first
+            params = [].concat(subgroup_projects, [subgroup], [first_parent_project])
+
+            get build_dashboard_path(group_analytics_dashboards_path(group), params)
+
+            expect(response).to be_successful
+            expect(response.body).to include(parsed_response(subgroup, false))
+            expect(response.body).to include(parsed_response(first_parent_project))
+
+            subgroup_projects.each do |project|
+              expect(response.body).to include(parsed_response(project))
+            end
+          end
+
           context 'when the feature is not enabled for that group' do
             let(:request) { get(group_analytics_dashboards_path(another_group)) }
 
             it_behaves_like 'forbidden response'
+          end
+
+          def parsed_response(namespace, is_project = true)
+            json = { name: namespace.name, full_path: namespace.full_path, is_project: is_project }.to_json
+            HTMLEntities.new.encode(json)
+          end
+
+          def build_dashboard_path(path, namespaces)
+            "#{path}?query=#{namespaces.map(&:full_path).join(',')}"
           end
         end
       end

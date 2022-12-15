@@ -7,7 +7,31 @@ module Groups
 
       layout 'group'
 
-      def index; end
+      MAX_ALLOWED_PATHS = 4
+
+      def index
+        @namespaces =
+          if params[:query].present?
+            paths_array = params[:query].split(",").first(MAX_ALLOWED_PATHS)
+            sources = Route.inside_path(@group.full_path).where(path: paths_array).map(&:source) # rubocop:disable CodeReuse/ActiveRecord
+
+            sources.map do |source|
+              {
+                name: source.name,
+                full_path: source.full_path,
+                is_project: project?(source)
+              }
+            end
+          else
+            []
+          end
+      end
+
+      private
+
+      def project?(source)
+        source.model_name.param_key == "project"
+      end
     end
   end
 end
