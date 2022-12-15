@@ -6,11 +6,15 @@ class Groups::AuditEventsController < Groups::ApplicationController
   include AuditEvents::AuditEventsParams
   include AuditEvents::Sortable
   include AuditEvents::DateRange
-  include RedisTracking
+  include ProductAnalyticsTracking
 
   before_action :check_audit_events_available!
 
-  track_redis_hll_event :index, name: 'g_compliance_audit_events'
+  track_custom_event :index,
+    name: 'g_compliance_audit_events',
+    action: 'visit_group_compliance_audit_events',
+    label: 'redis_hll_counters.compliance.compliance_total_unique_counts_monthly',
+    destinations: [:redis_hll, :snowplow]
 
   feature_category :audit_events
 
@@ -45,5 +49,13 @@ class Groups::AuditEventsController < Groups::ApplicationController
 
   def can_view_events_from_all_members?(user)
     can?(user, :admin_group, group) || user.auditor?
+  end
+
+  def tracking_namespace_source
+    group
+  end
+
+  def tracking_project_source
+    nil
   end
 end

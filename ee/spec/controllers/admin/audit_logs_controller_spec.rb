@@ -45,6 +45,27 @@ RSpec.describe Admin::AuditLogsController, feature_category: :audit_events do
         )
       end
 
+      it_behaves_like 'Snowplow event tracking with RedisHLL context' do
+        subject(:index_request) { get :index }
+
+        let(:category) { 'Admin::AuditLogsController' }
+        let(:action) { 'visit_instance_compliance_audit_events' }
+        let(:label) { 'redis_hll_counters.compliance.compliance_total_unique_counts_monthly' }
+        let(:property) { 'i_compliance_audit_events' }
+        let(:user) { admin }
+        let(:project) { nil }
+        let(:namespace) { nil }
+        let(:context) do
+          [
+            ::Gitlab::Tracking::ServicePingContext
+              .new(data_source: :redis_hll, event: 'i_compliance_audit_events')
+              .to_context
+          ]
+        end
+
+        let(:feature_flag_name) { :route_hll_to_snowplow_phase4 }
+      end
+
       context 'when invalid date' do
         where(:created_before, :created_after) do
           'invalid-date' | nil

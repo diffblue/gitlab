@@ -35,7 +35,7 @@ RSpec.describe Groups::Security::ComplianceDashboardsController, feature_categor
           let(:category) { described_class.to_s }
           let(:action) { 'show_compliance_dashboard' }
           let(:namespace) { group }
-          let(:label) { 'redis_hll_counters.compliance.g_compliance_dashboard_monthly' }
+          let(:label) { 'redis_hll_counters.compliance.compliance_total_unique_counts_monthly' }
           let(:property) { 'g_compliance_dashboard' }
         end
       end

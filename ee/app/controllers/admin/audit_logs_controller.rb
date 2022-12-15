@@ -7,11 +7,15 @@ class Admin::AuditLogsController < Admin::ApplicationController
   include AuditEvents::Sortable
   include AuditEvents::DateRange
   include Gitlab::Tracking
-  include RedisTracking
+  include ProductAnalyticsTracking
 
   before_action :check_license_admin_audit_event_available!
 
-  track_redis_hll_event :index, name: 'i_compliance_audit_events'
+  track_custom_event :index,
+    name: 'i_compliance_audit_events',
+    action: 'visit_instance_compliance_audit_events',
+    label: 'redis_hll_counters.compliance.compliance_total_unique_counts_monthly',
+    destinations: [:redis_hll, :snowplow]
 
   feature_category :audit_events
 
@@ -36,6 +40,14 @@ class Admin::AuditLogsController < Admin::ApplicationController
   end
 
   private
+
+  def tracking_namespace_source
+    nil
+  end
+
+  def tracking_project_source
+    nil
+  end
 
   def events
     strong_memoize(:events) do
