@@ -162,11 +162,14 @@ export const dismissSelectedVulnerabilities = (
   { dispatch, state, rootState },
   { comment } = {},
 ) => {
-  const { vulnerabilities, selectedVulnerabilities } = state;
   const { filters } = rootState.filters;
-  const page = state.pageInfo?.page || 1;
-
+  const { vulnerabilities, selectedVulnerabilities, pageInfo } = state;
   const dismissableVulnerabilties = vulnerabilities.filter(({ id }) => selectedVulnerabilities[id]);
+
+  const currentPage = pageInfo?.page || 1;
+  const vulnerabilitiesOnPage = vulnerabilities.length - dismissableVulnerabilties.length;
+  const hideDismissed = filters?.scope === DISMISSAL_STATES.DISMISSED;
+  const shouldLoadPreviousPage = hideDismissed && vulnerabilitiesOnPage < 1;
 
   dispatch('requestDismissSelectedVulnerabilities');
 
@@ -188,14 +191,10 @@ export const dismissSelectedVulnerabilities = (
   return Promise.all(promises)
     .then(() => {
       dispatch('receiveDismissSelectedVulnerabilitiesSuccess');
-      if (filters.scope === DISMISSAL_STATES.DISMISSED) {
-        dispatch('fetchVulnerabilities', {
-          ...filters,
-          // If we just dismissed the last vulnerability on the active page,
-          // we load the previous page if any
-          page: state.vulnerabilities.length === 1 && page > 1 ? page - 1 : page,
-        });
-      }
+      dispatch('fetchVulnerabilities', {
+        ...filters,
+        page: shouldLoadPreviousPage ? currentPage - 1 : currentPage,
+      });
     })
     .catch(() => {
       dispatch('receiveDismissSelectedVulnerabilitiesError', { flashError: true });
