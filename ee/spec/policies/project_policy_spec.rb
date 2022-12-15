@@ -539,9 +539,10 @@ RSpec.describe ProjectPolicy do
       end
     end
 
-    context 'with transparent SSO' do
+    context 'with transparent SSO', feature_category: :authentication_and_authorization do
       before do
         stub_licensed_features(group_saml: true)
+        stub_feature_flags(transparent_sso_enforcement_override: false)
       end
 
       around do |example|

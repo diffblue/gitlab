@@ -1,0 +1,8 @@
+---
+name: transparent_sso_enforcement_override
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/107028
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/375788
+milestone: '15.7'
+type: development
+group: group::authentication and authorization
+default_enabled: false

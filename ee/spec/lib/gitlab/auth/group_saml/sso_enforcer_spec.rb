@@ -162,6 +162,10 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :authenti
       let(:root_group) { create(:group, saml_provider: create(:saml_provider, enabled: true, enforced_sso: false)) }
       let(:user) { create(:user) }
 
+      before do
+        stub_feature_flags(transparent_sso_enforcement_override: false)
+      end
+
       shared_examples 'restricted access for all groups in the hierarchy' do
         it 'restricts access for a group' do
           expect(described_class).to be_group_access_restricted(root_group, user: user)
@@ -180,6 +184,18 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :authenti
         end
       end
 
+      shared_examples 'unrestricted access for all groups in the hierarchy' do
+        it 'access is not restricted for a group' do
+          expect(described_class).not_to be_group_access_restricted(root_group, user: user)
+        end
+
+        it 'access is not restricted for a subgroup' do
+          sub_group = create(:group, parent: root_group)
+
+          expect(described_class).not_to be_group_access_restricted(sub_group, user: user)
+        end
+      end
+
       context 'when the user has a SAML identity' do
         before do
           create(:group_saml_identity, user: user, saml_provider: root_group.saml_provider)
@@ -192,9 +208,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :authenti
             root_group.saml_provider.update!(enabled: false)
           end
 
-          it 'does not restrict access for the group' do
-            expect(described_class).not_to be_group_access_restricted(root_group, user: user)
-          end
+          it_behaves_like 'unrestricted access for all groups in the hierarchy'
         end
 
         context 'when Group SAML is not licensed' do
@@ -202,9 +216,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :authenti
             stub_licensed_features(group_saml: false)
           end
 
-          it 'does not restrict access for the group' do
-            expect(described_class).not_to be_group_access_restricted(root_group, user: user)
-          end
+          it_behaves_like 'unrestricted access for all groups in the hierarchy'
         end
 
         context 'when the transparent_sso_enforcement feature flag is disabled globally' do
@@ -212,15 +224,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :authenti
             stub_feature_flags(transparent_sso_enforcement: false)
           end
 
-          it 'access is not restricted for a group' do
-            expect(described_class).not_to be_group_access_restricted(root_group, user: user)
-          end
-
-          it 'access is not restricted for a subgroup' do
-            sub_group = create(:group, parent: root_group)
-
-            expect(described_class).not_to be_group_access_restricted(sub_group, user: user)
-          end
+          it_behaves_like 'unrestricted access for all groups in the hierarchy'
 
           context 'when the transparent_sso_enforcement feature flag is enabled for a top-level group' do
             before do
@@ -228,6 +232,14 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :authenti
             end
 
             it_behaves_like 'restricted access for all groups in the hierarchy'
+
+            context 'when the transparent_sso_enforcement_override feature flag is enabled for the same group' do
+              before do
+                stub_feature_flags(transparent_sso_enforcement_override: root_group)
+              end
+
+              it_behaves_like 'unrestricted access for all groups in the hierarchy'
+            end
           end
         end
       end

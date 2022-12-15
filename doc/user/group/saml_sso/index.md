@@ -123,7 +123,7 @@ It can also help to compare the XML response from your provider with our [exampl
 > - [Improved](https://gitlab.com/gitlab-org/gitlab/-/issues/215155) in GitLab 15.5 [with a flag](../../../administration/feature_flags.md) named `transparent_sso_enforcement` to include transparent enforcement even when SSO enforcement is not enabled. Disabled on GitLab.com.
 
 FLAG:
-On self-managed GitLab, transparent SSO enforcement is unavailable. On GitLab.com, transparent SSO enforcement is unavailable and can be configured by GitLab.com administrators only.
+On self-managed GitLab, transparent SSO enforcement is unavailable. On GitLab.com, see the [Transparent SSO rollout](https://gitlab.com/gitlab-org/gitlab/-/issues/375788) issue for the current status.
 
 SSO is enforced when users access groups and projects in the organization's group hierarchy. Users can view other groups and projects without SSO sign in.
 
@@ -176,6 +176,17 @@ When SSO is enforced, users are not immediately revoked. If the user:
 - Is signed out, they cannot access the group after being removed from the identity provider.
 - Has an active session, they can continue accessing the group for up to 24 hours until the identity
   provider session times out.
+
+### Selectively enable and disable transparent SSO enforcement
+
+There are two feature flags associated with this feature to allow precise control. If a customer has a problem with transparent SSO on GitLab.com, GitLab can help troubleshoot and override the feature flag as necessary.
+
+**`transparent_sso_enforcement`:** This feature flag should only be enabled or disabled by the Authentication and Authorization group
+or in the case of a serious and widespread issue affecting many groups or users. See [issue 375788](https://gitlab.com/gitlab-org/gitlab/-/issues/375788) for the current GitLab.com rollout status.
+
+**`transparent_sso_enforcement_override`:** When the `transparent_sso_enforcement` feature flag is enabled, support or production teams can
+turn off transparent SSO by enabling this feature flag for a specific customer group. **Enabling** this feature flag
+disables transparent SSO enforcement.
 
 ## Providers
 

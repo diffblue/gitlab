@@ -46,7 +46,7 @@ module Gitlab
         def saml_enforced?
           return true if saml_provider&.enforced_sso?
           return false unless user && group
-          return false unless Feature.enabled?(:transparent_sso_enforcement, group)
+          return false unless transparent_sso_enabled?
           return false unless saml_provider&.enabled? && group.licensed_feature_available?(:group_saml)
 
           user.group_sso?(group)
@@ -60,6 +60,13 @@ module Gitlab
           return false if for_project
 
           !group.has_parent? && group.owned_by?(user)
+        end
+
+        # Override feature flag allows selective disabling by actor
+        # See https://docs.gitlab.com/ee/development/feature_flags/controls.html#selectively-disable-by-actor
+        def transparent_sso_enabled?
+          Feature.enabled?(:transparent_sso_enforcement, group) &&
+            Feature.disabled?(:transparent_sso_enforcement_override, group)
         end
       end
     end
