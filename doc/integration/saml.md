@@ -253,77 +253,85 @@ omniauth:
 
 ## Set up identity providers
 
-GitLab support of SAML means that you can sign in to GitLab with a wide range of identity providers.
-Your identity provider may have additional documentation. Some identity providers include
-documentation on how to use SAML to sign in to GitLab.
+GitLab support of SAML means you can sign in to GitLab through a wide range
+of IdPs.
 
-Examples:
-
-- [ADFS (Active Directory Federation Services)](https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/operations/create-a-relying-party-trust)
-- [Auth0](https://auth0.com/docs/authenticate/protocols/saml/saml-sso-integrations/configure-auth0-saml-identity-provider)
-
-GitLab provides the following setup notes for guidance only.
-If you have any questions on configuring the SAML app, please contact your provider's support.
+GitLab provides the following content on setting up the Okta and Google Workspace
+IdPs for guidance only. If you have any questions on configuring either of these
+IdPs, contact your provider's support.
 
 ### Set up Okta
 
 1. In the Okta administrator section choose **Applications**.
-1. When the app screen comes up you see another button to **Create App Integration** and
-   choose SAML 2.0 on the next screen.
-1. Optionally, you can add a logo
-   (you can choose it from <https://about.gitlab.com/press/>). You must
-   crop and resize it.
-1. Next, fill in the SAML general configuration with
-   the assertion consumer service URL as "Single sign-on URL" and
-   the issuer as "Audience URI" along with the [NameID](../user/group/saml_sso/index.md#nameid)
-   and [assertions](#configure-assertions).
-1. The last part of the configuration is the feedback section where you can
-   just say you're a customer and creating an app for internal use.
-1. When you have your app you can see a few tabs on the top of the app's
-   profile. Select the SAML 2.0 configuration instructions button.
-1. On the screen that comes up take note of the
-   **Identity Provider Single Sign-On URL** which you can use for the
+1. On the app screen, select **Create App Integration** and then select
+   **SAML 2.0** on the next screen.
+1. Optional. Choose and add a logo from [GitLab Press](https://about.gitlab.com/press/).
+   You must crop and resize the logo.
+1. Complete the SAML general configuration. Enter:
+   - `"Single sign-on URL"`: Use the assertion consumer service URL.
+   - `"Audience URI"`: Use the issuer.
+   - [`NameID`](../user/group/saml_sso/index.md#nameid).
+   - [Assertions](#configure-assertions).
+1. In the feedback section, enter that you're a customer and creating an
+   app for internal use.
+1. At the top of your new app's profile, select **SAML 2.0 configuration instructions**.
+1. Note the **Identity Provider Single Sign-On URL**. Use this URL for the
    `idp_sso_target_url` on your GitLab configuration file.
-1. **Before you leave Okta, make sure you add your user and groups if any.**
+1. Before you sign out of Okta, make sure you add your user and groups if any.
 
 ### Set up Google Workspace
 
-The following guidance is based on this Google Workspace article, on how to [Set up your own custom SAML application](https://support.google.com/a/answer/6087519?hl=en):
+Prerequisites:
 
-Make sure you have access to a Google Workspace [Super Admin](https://support.google.com/a/answer/2405986#super_admin) account.
-   Use the information below and follow the instructions in the linked Google Workspace article.
+- Make sure you have access to a
+[Google Workspace Super Admin account](https://support.google.com/a/answer/2405986#super_admin).
 
-|                  | Typical value                                    | Description                                              |
-|------------------|--------------------------------------------------|----------------------------------------------------------|
-| Name of SAML App | GitLab                                           | Other names OK.                                          |
-| ACS URL          | `https://<GITLAB_DOMAIN>/users/auth/saml/callback` | ACS is short for Assertion Consumer Service.             |
-| GITLAB_DOMAIN    | `gitlab.example.com`                             | Set to the domain of your GitLab instance.               |
-| Entity ID        | `https://gitlab.example.com`                     | A value unique to your SAML app, set it to the `issuer` in your GitLab configuration.                         |
-| Name ID format   | EMAIL                                            | Required value. Also known as `name_identifier_format`                    |
-| Name ID          | Primary email address                            | Make sure someone receives content sent to that address                |
-| First name       | `first_name`                                     | Required value to communicate with GitLab.               |
-| Last name        | `last_name`                                      | Required value to communicate with GitLab.               |
+1. Use the following information, and follow the instructions in
+[Set up your own custom SAML application in Google Workspace](https://support.google.com/a/answer/6087519?hl=en).
 
-You also must setup the following SAML attribute mappings:
+   |                  | Typical value                                    | Description                                              |
+   |------------------|--------------------------------------------------|----------------------------------------------------------|
+   | Name of SAML App | GitLab                                           | Other names OK.                                          |
+   | ACS URL          | `https://<GITLAB_DOMAIN>/users/auth/saml/callback` | Assertion Consumer Service URL.             |
+   | GITLAB_DOMAIN    | `gitlab.example.com`                             | Your GitLab instance domain.               |
+   | Entity ID        | `https://gitlab.example.com`                     | A value unique to your SAML application. Set it to the `issuer` in your GitLab configuration.                         |
+   | Name ID format   | EMAIL                                            | Required value. Also known as `name_identifier_format`.                    |
+   | Name ID          | Primary email address                            | Your email address. Make sure someone receives content sent to that address.                |
+   | First name       | `first_name`                                     | First name. Required value to communicate with GitLab.               |
+   | Last name        | `last_name`                                      | Last name. Required value to communicate with GitLab.               |
 
-| Google Directory attributes       | App attributes |
-|-----------------------------------|----------------|
-| Basic information > Email         | `email`        |
-| Basic Information > First name    | `first_name`   |
-| Basic Information > Last name     | `last_name`    |
+1. Set up the following SAML attribute mappings:
 
-You may also use some of this information when you [configure GitLab](#configure-saml-support-in-gitlab).
+   | Google Directory attributes       | App attributes |
+   |-----------------------------------|----------------|
+   | Basic information > Email         | `email`        |
+   | Basic Information > First name    | `first_name`   |
+   | Basic Information > Last name     | `last_name`    |
 
-When configuring the Google Workspace SAML app, be sure to record the following information:
+   You might use some of this information when you
+   [configure SAML support in GitLab](#configure-saml-support-in-gitlab).
+
+When configuring the Google Workspace SAML application, record the following information:
 
 |             | Value        | Description                                                                       |
 |-------------|--------------|-----------------------------------------------------------------------------------|
 | SSO URL     | Depends      | Google Identity Provider details. Set to the GitLab `idp_sso_target_url` setting. |
 | Certificate | Downloadable | Run `openssl x509 -in <your_certificate.crt> -noout -fingerprint` to generate the SHA1 fingerprint that can be used in the `idp_cert_fingerprint` setting.                         |
 
-While the Google Workspace Administrator provides IdP metadata, Entity ID, and SHA-256
-fingerprint, they are not required. GitLab does not need that information to
-connect to the Google Workspace SAML app.
+Google Workspace Administrator also provides the IdP metadata, Entity ID, and SHA-256
+fingerprint. However, GitLab does not need this information to connect to the
+Google Workspace SAML application.
+
+### Set up other IdPs
+
+Some IdPs have documentation on how to use them as the IdP in SAML configurations.
+For example:
+
+- [Active Directory Federation Services (ADFS)](https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/operations/create-a-relying-party-trust)
+- [Auth0](https://auth0.com/docs/authenticate/protocols/saml/saml-sso-integrations/configure-auth0-saml-identity-provider)
+
+If you have any questions on configuring your IdP in a SAML configuration, contact
+your provider's support.
 
 ### Configure assertions
 
