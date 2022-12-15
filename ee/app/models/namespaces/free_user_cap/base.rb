@@ -17,18 +17,19 @@ module Namespaces
       end
       strong_memoize_attr :enforce_cap?, :enforce_cap
 
-      def users_count
-        full_user_counts[:user_ids]
+      def users_count(cache: true)
+        full_user_counts(cache: cache)[:user_ids]
       end
 
       private
 
       attr_reader :root_namespace
 
-      def full_user_counts
+      def full_user_counts(cache: true)
+        return preloaded_users_count[root_namespace.id] if cache
+
         ::Namespaces::FreeUserCap::UsersFinder.count(root_namespace, database_limit)
       end
-      strong_memoize_attr :full_user_counts
 
       def database_limit
         limit + 1
@@ -42,7 +43,19 @@ module Namespaces
         root_namespace.has_free_or_no_subscription?
       end
 
+      def preloaded_users_count
+        resource_key = 'free_user_cap_full_user_counts'
+
+        ::Gitlab::SafeRequestLoader.execute(resource_key: resource_key, resource_ids: [root_namespace.id]) do
+          { root_namespace.id => full_user_counts(cache: false) }
+        end
+      end
+
       def feature_enabled?
+        raise NotImplementedError
+      end
+
+      def limit
         raise NotImplementedError
       end
     end

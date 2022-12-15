@@ -639,6 +639,17 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas do
         let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit - 1 }
 
         it { is_expected.to be true }
+
+        context 'when invoked with request cache', :request_store do
+          it 'responds correctly between calls when no seats are exhausted' do
+            expect(described_class.new(namespace).seat_available?(user)).to be(true)
+
+            allow(::Namespaces::FreeUserCap::UsersFinder)
+              .to receive(:count).and_return({ user_ids: Namespaces::FreeUserCap.dashboard_limit })
+
+            expect(described_class.new(namespace).seat_available?(user)).to be(false)
+          end
+        end
       end
 
       context 'when at the same number as the free users limit' do
@@ -741,22 +752,6 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas do
           it { is_expected.to be false }
         end
       end
-    end
-  end
-
-  describe '#users_count' do
-    subject { described_class.new(namespace).users_count }
-
-    it { is_expected.to eq(0) }
-
-    it 'caches the result for the same instance' do
-      instance = described_class.new(namespace)
-
-      expect(instance.users_count).to eq(0)
-
-      allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return({ user_ids: 1 })
-
-      expect(instance.users_count).to eq(0)
     end
   end
 

@@ -31,7 +31,7 @@ module Namespaces
         return true unless enforce_cap?
         return true if member_with_user_already_exists?(user)
 
-        !reached_limit?
+        users_count(cache: false) < limit
       end
 
       def close_to_dashboard_limit?
