@@ -44,6 +44,14 @@ module QA
           "#{api_get_path}/iterations"
         end
 
+        def api_delete_path
+          if marked_for_deletion?
+            "#{super}?permanently_remove=true&full_path=#{CGI.escape(full_path)}"
+          else
+            super
+          end
+        end
+
         # Check if the group has already been scheduled to be deleted
         #
         # @return [Boolean]
@@ -52,14 +60,22 @@ module QA
         end
 
         # Remove the group unless it's already scheduled for deletion.
-        def remove_via_api!
-          if marked_for_deletion?
+        def remove_via_api!(force: false)
+          if marked_for_deletion? && !force
             QA::Runtime::Logger.debug("#{self.class.name} #{identifier} is already scheduled to be removed.")
 
             return
           end
 
-          super
+          super()
+        end
+
+        # Immediately removes a sandboxed group if it is scheduled for deletion.
+        def immediate_remove_via_api!
+          raise 'Cannot immediately delete top level groups' unless respond_to?(:sandbox)
+
+          remove_via_api!
+          remove_via_api!(force: true)
         end
       end
     end
