@@ -40,7 +40,8 @@ RSpec.describe Namespaces::FreeUserCap::Notification, :saas do
     context 'when :preview_free_user_cap is enabled' do
       it { is_expected.to be true }
 
-      it 'logs a message' do
+      it 'logs a message even when notification_free_user_cap_show_over_limit is not enabled' do
+        stub_feature_flags(notification_free_user_cap_show_over_limit: false)
         allow(Gitlab::AppLogger).to receive(:info) # needed when using 2 in same code path to enable focus on one
 
         expect(Gitlab::AppLogger)
