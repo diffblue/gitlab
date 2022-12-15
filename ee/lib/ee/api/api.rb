@@ -60,6 +60,7 @@ module EE
         mount ::API::Integrations::Slack::Events
         mount ::API::Integrations::Slack::Interactions
         mount ::API::Ml::AiAssist
+        mount ::API::DependencyListExports
 
         mount ::API::Internal::AppSec::Dast::SiteValidations
         mount ::API::Internal::UpcomingReconciliations
