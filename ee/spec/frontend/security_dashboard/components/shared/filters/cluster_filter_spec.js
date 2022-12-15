@@ -87,10 +87,11 @@ describe('ClusterFilter component', () => {
         );
       });
 
-      it('shows the DropdownButtonText component with the correct items', () => {
-        expect(wrapper.findComponent(DropdownButtonText).props('items')).toEqual([
-          ClusterFilter.i18n.allItemsText,
-        ]);
+      it('shows the DropdownButtonText component with the correct props', () => {
+        expect(wrapper.findComponent(DropdownButtonText).props()).toMatchObject({
+          items: [ClusterFilter.i18n.allItemsText],
+          name: ClusterFilter.i18n.label,
+        });
       });
     });
 

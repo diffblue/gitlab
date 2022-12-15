@@ -180,10 +180,11 @@ describe('Project Filter component', () => {
         );
       });
 
-      it('shows the DropdownButtonText component with the correct items', () => {
-        expect(wrapper.findComponent(DropdownButtonText).props('items')).toEqual([
-          ProjectFilter.i18n.allItemsText,
-        ]);
+      it('shows the DropdownButtonText component with the correct props', () => {
+        expect(wrapper.findComponent(DropdownButtonText).props()).toEqual({
+          items: [ProjectFilter.i18n.allItemsText],
+          name: ProjectFilter.i18n.label,
+        });
       });
     });
 

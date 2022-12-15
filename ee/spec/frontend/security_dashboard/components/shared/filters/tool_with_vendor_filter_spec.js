@@ -120,10 +120,11 @@ describe('Tool With Vendor Filter component', () => {
         );
       });
 
-      it('shows the DropdownButtonText component with the correct default item', () => {
-        expect(wrapper.findComponent(DropdownButtonText).props('items')).toEqual([
-          ToolWithVendorFilter.i18n.allItemsText,
-        ]);
+      it('shows the DropdownButtonText component with the correct props', () => {
+        expect(wrapper.findComponent(DropdownButtonText).props()).toMatchObject({
+          items: [ToolWithVendorFilter.i18n.allItemsText],
+          name: ToolWithVendorFilter.i18n.label,
+        });
       });
     });
   });

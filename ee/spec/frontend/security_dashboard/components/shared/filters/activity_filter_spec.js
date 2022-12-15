@@ -4,8 +4,9 @@ import ActivityFilter, {
   ITEMS,
   GROUPS,
 } from 'ee/security_dashboard/components/shared/filters/activity_filter.vue';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
+import DropdownButtonText from 'ee/security_dashboard/components/shared/filters/dropdown_button_text.vue';
 import { ALL_ID } from 'ee/security_dashboard/components/shared/filters/constants';
 
 describe('Activity Filter component', () => {
@@ -25,7 +26,9 @@ describe('Activity Filter component', () => {
   };
 
   const createWrapper = () => {
-    wrapper = shallowMountExtended(ActivityFilter);
+    wrapper = mountExtended(ActivityFilter, {
+      stubs: { QuerystringSync: true, GlBadge: true },
+    });
   };
 
   beforeEach(() => {
@@ -34,6 +37,13 @@ describe('Activity Filter component', () => {
 
   afterEach(() => {
     wrapper.destroy();
+  });
+
+  it('renders the dropdown text', () => {
+    expect(wrapper.findComponent(DropdownButtonText).props()).toMatchObject({
+      items: wrapper.vm.selectedItemNames,
+      name: ActivityFilter.i18n.label,
+    });
   });
 
   it('renders the header text for each group', () => {

@@ -75,10 +75,11 @@ describe('Tool Filter component (deprecated)', () => {
       );
     });
 
-    it('shows the DropdownButtonText component with the correct items', () => {
-      expect(wrapper.findComponent(DropdownButtonText).props('items')).toEqual([
-        ToolFilterDeprecated.i18n.allItemsText,
-      ]);
+    it('shows the DropdownButtonText component with the correct props', () => {
+      expect(wrapper.findComponent(DropdownButtonText).props()).toMatchObject({
+        items: [ToolFilterDeprecated.i18n.allItemsText],
+        name: ToolFilterDeprecated.i18n.label,
+      });
     });
   });
 
