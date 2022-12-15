@@ -4,5 +4,5 @@ introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/359958
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/97666
 feature_category: "runner"
 milestone: "15.4"
-saved_to_database: false
+saved_to_database: true
 streamed: true
