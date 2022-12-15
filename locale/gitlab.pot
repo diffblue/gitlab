@@ -48639,10 +48639,13 @@ msgstr ""
 msgid "ciReport|Code Quality"
 msgstr ""
 
-msgid "ciReport|Code Quality failed loading results"
+msgid "ciReport|Code Quality failed to load results"
 msgstr ""
 
-msgid "ciReport|Code Quality test metrics results are being parsed"
+msgid "ciReport|Code Quality hasn't changed."
+msgstr ""
+
+msgid "ciReport|Code Quality is loading"
 msgstr ""
 
 msgid "ciReport|Code quality degraded due to 1 new issue"
@@ -48793,9 +48796,6 @@ msgid "ciReport|New"
 msgstr ""
 
 msgid "ciReport|New vulnerabilities are vulnerabilities that the security scan detects in the merge request that are different to existing vulnerabilities in the default branch."
-msgstr ""
-
-msgid "ciReport|No changes to Code Quality."
 msgstr ""
 
 msgid "ciReport|No changes to code quality"
