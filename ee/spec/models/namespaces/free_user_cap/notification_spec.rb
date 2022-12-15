@@ -9,12 +9,25 @@ RSpec.describe Namespaces::FreeUserCap::Notification, :saas do
 
   before do
     stub_ee_application_setting(dashboard_limit_enabled: true)
-    allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return(free_user_count)
+    allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return({ user_ids: free_user_count })
     stub_ee_application_setting(dashboard_enforcement_limit: enforcement_limit)
   end
 
   describe '#over_limit?' do
     subject(:over_limit?) { described_class.new(namespace).over_limit? }
+
+    it 'logs a message' do
+      allow(Gitlab::AppLogger).to receive(:info) # needed when using 2 in same code path to enable focus on one
+
+      expect(Gitlab::AppLogger)
+        .to receive(:info)
+              .with(a_hash_including(message: 'Namespace qualifies for notification',
+                                     class: described_class.name,
+                                     namespace_id: namespace.id))
+              .and_call_original
+
+      over_limit?
+    end
 
     context 'when :preview_free_user_cap is disabled' do
       before do
@@ -26,6 +39,20 @@ RSpec.describe Namespaces::FreeUserCap::Notification, :saas do
 
     context 'when :preview_free_user_cap is enabled' do
       it { is_expected.to be true }
+
+      it 'logs a message' do
+        allow(Gitlab::AppLogger).to receive(:info) # needed when using 2 in same code path to enable focus on one
+
+        expect(Gitlab::AppLogger)
+          .to receive(:info)
+                .with(a_hash_including(message: 'Namespace qualifies for counting users',
+                                       class: described_class.name,
+                                       namespace_id: namespace.id,
+                                       user_ids: free_user_count))
+                .and_call_original
+
+        over_limit?
+      end
 
       context 'when feature flag :notification_free_user_cap_show_over_limit is disabled' do
         before do
