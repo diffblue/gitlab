@@ -251,17 +251,23 @@ RSpec.describe Ci::JobArtifact do
       create(:project, name: 'project_2_name', path: 'project_2_path', description: 'project_desc_2')
     end
 
+    let_it_be(:project3) do
+      create(:project, name: 'another_name', path: 'another_path', description: 'another_description')
+    end
+
     let_it_be(:ci_build1) { create(:ci_build, project: project1) }
     let_it_be(:ci_build2) { create(:ci_build, project: project2) }
+    let_it_be(:ci_build3) { create(:ci_build, project: project3) }
 
     let_it_be(:job_artifact1) { create(:ci_job_artifact, job: ci_build1) }
     let_it_be(:job_artifact2) { create(:ci_job_artifact, job: ci_build2) }
+    let_it_be(:job_artifact3) { create(:ci_job_artifact, job: ci_build3) }
 
     context 'when search query is empty' do
       it 'returns all records' do
         result = described_class.search('')
 
-        expect(result).to contain_exactly(job_artifact1, job_artifact2)
+        expect(result).to contain_exactly(job_artifact1, job_artifact2, job_artifact3)
       end
     end
 

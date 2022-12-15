@@ -48,4 +48,44 @@ RSpec.describe Terraform::StateVersion do
       end
     end
   end
+
+  describe '.search' do
+    let_it_be(:state_version1) { create(:terraform_state_version) }
+    let_it_be(:state_version2) { create(:terraform_state_version) }
+    let_it_be(:state_version3) { create(:terraform_state_version) }
+
+    context 'when search query is empty' do
+      it 'returns all records' do
+        result = described_class.search('')
+
+        expect(result).to contain_exactly(state_version1, state_version2, state_version3)
+      end
+    end
+
+    context 'when search query is not empty' do
+      context 'without matches' do
+        it 'filters all terraform state versions' do
+          result = described_class.search('something_that_does_not_exist')
+
+          expect(result).to be_empty
+        end
+      end
+
+      context 'with matches by attributes' do
+        context 'for file attribute' do
+          before do
+            state_version1.update_column(:file, '1.tfstate')
+            state_version2.update_column(:file, '2.tfstate')
+            state_version3.update_column(:file, '3.tfstate')
+          end
+
+          it do
+            result = described_class.search('3')
+
+            expect(result).to contain_exactly(state_version3)
+          end
+        end
+      end
+    end
+  end
 end
