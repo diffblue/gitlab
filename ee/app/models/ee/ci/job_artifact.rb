@@ -65,6 +65,7 @@ module EE
       def search(query)
         return all if query.empty?
 
+        # This is divided into two separate queries, one for the CI and one for the main database
         for_project(::Project.search(query).limit(1000).pluck_primary_key)
       end
 

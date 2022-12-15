@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Geo::CiSecureFileRegistry, :geo, type: :model do
-  let_it_be(:registry) { create(:geo_ci_secure_file_registry) }
+  let(:registry) { create(:geo_ci_secure_file_registry) }
 
   specify 'factory is valid' do
     expect(registry).to be_valid
@@ -11,4 +11,5 @@ RSpec.describe Geo::CiSecureFileRegistry, :geo, type: :model do
 
   include_examples 'a Geo framework registry'
   include_examples 'a Geo verifiable registry'
+  include_examples 'a Geo searchable registry'
 end
