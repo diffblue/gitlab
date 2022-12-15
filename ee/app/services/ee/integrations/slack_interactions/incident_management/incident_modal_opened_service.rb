@@ -6,6 +6,7 @@ module EE
       module IncidentManagement
         class IncidentModalOpenedService
           MAX_PROJECTS = 100
+          CACHE_EXPIRES_IN = 5.minutes
 
           def initialize(slack_installation, current_user, params)
             @slack_installation = slack_installation
@@ -46,7 +47,15 @@ module EE
                 )
             end
 
-            return ServiceResponse.success(message: _('Please complete the incident creation form.')) if response['ok']
+            if response['ok']
+              Rails.cache.write(
+                cache_key(response),
+                project_id(response),
+                expires_in: CACHE_EXPIRES_IN
+              )
+
+              return ServiceResponse.success(message: _('Please complete the incident creation form.'))
+            end
 
             ServiceResponse.error(
               message: _('Something went wrong while opening the incident form.'),
@@ -70,6 +79,20 @@ module EE
               user_projects,
               response_url
             ).build
+          end
+
+          def project_id(response)
+            response.dig(
+              'view', 'state', 'values',
+              'project_and_severity_selector',
+              'project', 'selected_option',
+              'value')
+          end
+
+          def cache_key(response)
+            view_id = response.dig('view', 'id')
+
+            ['slack:incident_modal_opened', view_id].join(':')
           end
         end
       end

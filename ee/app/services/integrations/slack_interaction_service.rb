@@ -19,9 +19,9 @@ module Integrations
         unless interaction?(interaction_type)
 
       service_class = INTERACTIONS[interaction_type]
-      response = service_class.new(params).execute
+      service_class.new(params).execute
 
-      ServiceResponse.success(payload: response)
+      ServiceResponse.success
     end
 
     private

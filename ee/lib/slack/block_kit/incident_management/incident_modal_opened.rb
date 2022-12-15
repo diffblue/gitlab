@@ -260,7 +260,7 @@ module Slack
               "type": "plain_text",
               "text": project.full_path
             },
-            "value": project.full_path
+            "value": project.id.to_s
           }
         end
       end

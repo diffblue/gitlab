@@ -22,10 +22,24 @@ RSpec.describe EE::Integrations::SlackInteractions::IncidentManagement::Incident
     end
 
     before do
+      response = {
+        id: '123',
+        state: {
+          values: {
+            project_and_severity_selector: {
+              project: {
+                selected_option: {
+                  value: project.id.to_s
+                }
+              }
+            }
+          }
+        }
+      }
       stub_request(:post, api_url)
         .to_return(
           status: 200,
-          body: Gitlab::Json.dump({ ok: true }),
+          body: Gitlab::Json.dump({ ok: true, view: response }),
           headers: { 'Content-Type' => 'application/json' }
         )
     end
@@ -38,6 +52,9 @@ RSpec.describe EE::Integrations::SlackInteractions::IncidentManagement::Incident
           expect(ui).to receive(:build).and_return(mock_modal)
         end
 
+        expect(Rails.cache).to receive(:write).with(
+          'slack:incident_modal_opened:123', project.id.to_s, { expires_in: 5.minutes })
+
         response = subject.execute
 
         expect(WebMock).to have_requested(:post, api_url).with(
@@ -49,6 +66,7 @@ RSpec.describe EE::Integrations::SlackInteractions::IncidentManagement::Incident
             'Authorization' => "Bearer #{slack_installation.bot_access_token}",
             'Content-Type' => 'application/json; charset=utf-8'
           })
+
         expect(response.message).to eq('Please complete the incident creation form.')
       end
     end
@@ -67,6 +85,7 @@ RSpec.describe EE::Integrations::SlackInteractions::IncidentManagement::Incident
       it 'does not open the modal' do
         response = subject.execute
 
+        expect(Rails.cache).not_to receive(:write)
         expect(response.message).to be('You do not have access to any projects for creating incidents.')
       end
     end
@@ -85,6 +104,7 @@ RSpec.describe EE::Integrations::SlackInteractions::IncidentManagement::Incident
             }
           )
 
+        expect(Rails.cache).not_to receive(:write)
         expect(subject.execute).to be_error
       end
     end
@@ -109,6 +129,8 @@ RSpec.describe EE::Integrations::SlackInteractions::IncidentManagement::Incident
               slack_user_id: slack_installation.user_id
             }
           )
+
+        expect(Rails.cache).not_to receive(:write)
         response = subject.execute
 
         expect(response.message).to eq('Something went wrong while opening the incident form.')
