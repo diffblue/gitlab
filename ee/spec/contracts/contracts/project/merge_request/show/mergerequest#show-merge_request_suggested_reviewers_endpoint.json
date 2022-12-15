@@ -1,0 +1,77 @@
+{
+  "consumer": {
+    "name": "MergeRequest#show"
+  },
+  "provider": {
+    "name": "Merge Request Suggested Reviewers Endpoint"
+  },
+  "interactions": [
+    {
+      "description": "a request for suggested reviewers",
+      "providerState": "a merge request exists with suggested reviewers available for selection",
+      "request": {
+        "method": "GET",
+        "path": "/-/autocomplete/users.json",
+        "query": "active=true&project_id=12345&merge_request_iid=54321&current_user=true",
+        "headers": {
+          "Accept": "*/*"
+        },
+        "matchingRules": {
+          "$.query.project_id[0]": {
+            "match": "type"
+          },
+          "$.query.merge_request_iid[0]": {
+            "match": "type"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "body": [
+          {
+            "id": 6954442,
+            "username": "user1",
+            "name": "A User"
+          },
+          {
+            "id": 6954441,
+            "username": "gitlab-qa",
+            "name": "Contract Test User",
+            "suggested": true
+          }
+        ],
+        "matchingRules": {
+          "$.body[0].id": {
+            "match": "type"
+          },
+          "$.body[0].username": {
+            "match": "type"
+          },
+          "$.body[0].name": {
+            "match": "type"
+          },
+          "$.body[1].id": {
+            "match": "type"
+          },
+          "$.body[1].username": {
+            "match": "type"
+          },
+          "$.body[1].name": {
+            "match": "type"
+          },
+          "$.body[1].suggested": {
+            "match": "type"
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "2.0.0"
+    }
+  }
+}
