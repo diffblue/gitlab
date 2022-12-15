@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Elastic::Helper, :request_store do
+RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :global_search do
   subject(:helper) { described_class.default }
 
   shared_context 'with a legacy index' do
@@ -647,6 +647,41 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
     it 'delegates to Gitlab::CurrentSettings.elasticsearch_pause_indexing?' do
       allow(::Gitlab::CurrentSettings).to receive(:elasticsearch_pause_indexing?).and_return(:stubbed_value)
       expect(helper.indexing_paused?).to eq(::Gitlab::CurrentSettings.elasticsearch_pause_indexing?)
+    end
+  end
+
+  describe '#refresh_index', :elastic do
+    subject(:refresh_index) { helper.refresh_index(index_name: index_name) }
+
+    context 'when index_name is not provided' do
+      let(:index_name) { nil }
+
+      it 'refreshes all indexes' do
+        expected_count = helper.standalone_indices_proxies.count + 1 # add the main index
+        expect(helper.client.indices).to receive(:refresh).exactly(expected_count).times
+
+        refresh_index
+      end
+    end
+
+    context 'when index_name is provided' do
+      let(:index_name) { 'gitlab-test-issues' }
+
+      it 'refreshes a single index' do
+        expect(helper.client.indices).to receive(:refresh).with(index: index_name)
+
+        refresh_index
+      end
+    end
+
+    context 'when an index does not exist' do
+      let(:index_name) { 'non-existing-index' }
+
+      it 'does not refresh the index' do
+        expect(helper.client.indices).not_to receive(:refresh)
+
+        refresh_index
+      end
     end
   end
 end

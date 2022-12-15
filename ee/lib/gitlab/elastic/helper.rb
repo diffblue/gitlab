@@ -237,6 +237,9 @@ module Gitlab
                   end
 
         indices.each do |index|
+          # ignore indexes which may not be created yet (for example: pending migrations)
+          next unless index_exists?(index_name: index)
+
           client.indices.refresh(index: index)
         end
       end
