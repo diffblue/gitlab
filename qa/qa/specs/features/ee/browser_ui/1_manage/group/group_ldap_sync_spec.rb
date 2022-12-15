@@ -18,10 +18,42 @@ module QA
         end
       end
 
+      let(:project) do
+        Resource::Project.fabricate_via_api! do |project|
+          project.group = group
+          project.name = "project-to-test-PrAT-#{SecureRandom.hex(8)}"
+        end
+      end
+
       after do |example|
         # If a test fails leave the groups so we can investigate them
         unless example.exception
           root_group.remove_via_api!
+        end
+      end
+
+      shared_examples 'Group sync' do |testcases|
+        it 'has LDAP users synced', testcase: testcases[0] do
+          verify_users_synced(sync_users)
+        end
+
+        it 'can create group access tokens', testcase: testcases[1] do
+          expect do
+            QA::Resource::GroupAccessToken.fabricate_via_api! do |resource|
+              resource.group = group
+              resource.api_client = Runtime::API::Client.as_admin
+            end
+          end.not_to raise_error
+        end
+
+        it 'can create project access tokens', testcase: testcases[2] do
+          project
+
+          expect do
+            QA::Resource::ProjectAccessToken.fabricate_via_api! do |pat|
+              pat.project = project
+            end
+          end.not_to raise_error
         end
       end
 
@@ -73,13 +105,11 @@ module QA
             settings.set_group_cn('Engineering')
             settings.click_add_sync_button
           end
-
-          Page::Group::Menu.perform(&:click_subgroup_members_item)
         end
 
-        it 'has LDAP users synced', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347894' do
-          verify_users_synced(sync_users)
-        end
+        it_behaves_like 'Group sync', %w[https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347894
+                                         https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/385267
+                                         https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/385266]
       end
 
       context 'user filter method' do
@@ -133,9 +163,9 @@ module QA
           Page::Group::Menu.perform(&:click_subgroup_members_item)
         end
 
-        it 'has LDAP users synced', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347893' do
-          verify_users_synced(sync_users)
-        end
+        it_behaves_like 'Group sync', %w[https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347893
+                                         https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/385269
+                                         https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/385270]
       end
 
       def create_users_via_api(users)
@@ -176,6 +206,8 @@ module QA
       end
 
       def verify_users_synced(expected_users)
+        Page::Group::Menu.perform(&:click_subgroup_members_item)
+
         EE::Page::Group::Members.perform do |members|
           members.click_sync_now_if_needed
 
