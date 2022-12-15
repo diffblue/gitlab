@@ -1,0 +1,21 @@
+---
+key_path: usage_activity_by_stage_monthly.govern.merged_merge_requests_using_approval_rules_distinct
+description: "Count of distinct merge requests merged using approval rules"
+product_section: sec
+product_stage: govern
+product_group: compliance
+product_category: compliance_management
+value_type: number
+status: active
+milestone: "15.7"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/106642
+time_frame: 28d
+data_source: database
+data_category: optional
+instrumentation_class: CountDistinctMergedMergeRequestsUsingApprovalRulesMetric
+performance_indicator_type: []
+distribution:
+  - ee
+tier:
+  - premium
+  - ultimate
