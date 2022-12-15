@@ -4,7 +4,6 @@ class ElasticDeleteProjectWorker
   include ApplicationWorker
 
   data_consistency :always
-  include Elasticsearch::Model::Client::ClassMethods
   prepend Elastic::IndexingControl
 
   sidekiq_options retry: 2
@@ -22,14 +21,17 @@ class ElasticDeleteProjectWorker
   def indices
     helper = Gitlab::Elastic::Helper.default
 
-    target_classes = Gitlab::Elastic::Helper::ES_SEPARATE_CLASSES.dup
-    target_classes.delete(User) unless ::Elastic::DataMigrationService.migration_has_finished?(:create_user_index)
+    # some standalone indices may not be created yet if pending advanced search migrations exist
+    standalone_indices = helper.standalone_indices_proxies.select do |klass|
+      alias_name = helper.klass_to_alias_name(klass: klass)
+      helper.index_exists?(index_name: alias_name)
+    end
 
-    [helper.target_name] + helper.standalone_indices_proxies(target_classes: target_classes).map(&:index_name)
+    [helper.target_name] + standalone_indices.map(&:index_name)
   end
 
   def remove_project_and_children_documents(project_id, es_id)
-    client.delete_by_query({
+    Gitlab::Elastic::Helper.default.client.delete_by_query({
       index: indices,
       routing: es_id,
       body: {
