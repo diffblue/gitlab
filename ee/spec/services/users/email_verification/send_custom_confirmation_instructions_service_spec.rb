@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::EmailVerification::SendCustomConfirmationInstructionsService do
+RSpec.describe Users::EmailVerification::SendCustomConfirmationInstructionsService,
+feature_category: :authentication_and_authorization do
   using RSpec::Parameterized::TableSyntax
 
   let(:service) { described_class.new(user) }
