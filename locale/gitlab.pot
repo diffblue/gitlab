@@ -1541,7 +1541,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "1 user"
-msgid_plural "%{num} users"
+msgid_plural "%d users"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -47886,8 +47886,10 @@ msgstr ""
 msgid "You've rejected %{user}"
 msgstr ""
 
-msgid "You've successfully purchased the %{plan} plan subscription for %{seats} and you'll receive a receipt by email. Your purchase may take a minute to sync, refresh the page if your subscription details haven't displayed yet."
-msgstr ""
+msgid "You've successfully purchased the %{plan} plan subscription for 1 user and you'll receive a receipt by email. Your purchase may take a minute to sync, refresh the page if your subscription details haven't displayed yet."
+msgid_plural "You've successfully purchased the %{plan} plan subscription for %{quantity} users and you'll receive a receipt by email. Your purchase may take a minute to sync, refresh the page if your subscription details haven't displayed yet."
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "YouTube"
 msgstr ""
