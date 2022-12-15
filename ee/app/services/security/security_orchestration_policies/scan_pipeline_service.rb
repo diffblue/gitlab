@@ -67,21 +67,30 @@ module Security
       end
 
       def prepare_policy_configuration(action, index)
-        {
-          "#{action[:scan].dasherize}-#{index}" => scan_configuration(action)
-        }.deep_symbolize_keys
-      end
+        if Feature.enabled?(:scan_execution_policies_run_sast_and_ds_in_single_pipeline, project)
+          action_variables = action[:variables].to_h.stringify_keys
 
-      def scan_configuration(action)
-        action_variables = action[:variables].to_h.stringify_keys
-
-        ::Security::SecurityOrchestrationPolicies::CiConfigurationService
-          .new
-          .execute(action, action_variables.merge(scan_variables(action)))
+          ::Security::SecurityOrchestrationPolicies::CiConfigurationService
+            .new
+            .execute(action, action_variables.merge(scan_variables(action)), index)
+            .deep_symbolize_keys
+        else
+          {
+            "#{action[:scan].dasherize}-#{index}" => legacy_scan_configuration(action)
+          }.deep_symbolize_keys
+        end
       end
 
       def scan_variables(action)
         SCAN_VARIABLES[action[:scan].to_sym].to_h
+      end
+
+      def legacy_scan_configuration(action)
+        action_variables = action[:variables].to_h.stringify_keys
+
+        ::Security::SecurityOrchestrationPolicies::LegacyCiConfigurationService
+          .new
+          .execute(action, action_variables.merge(scan_variables(action)))
       end
     end
   end

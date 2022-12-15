@@ -6,22 +6,16 @@ module Security
       SCAN_TEMPLATES = {
         'secret_detection' => 'Jobs/Secret-Detection',
         'container_scanning' => 'Jobs/Container-Scanning',
-        'sast' => 'Security/SAST',
+        'sast' => 'Jobs/SAST',
         'dependency_scanning' => 'Jobs/Dependency-Scanning'
       }.freeze
 
-      def execute(action, ci_variables)
+      def execute(action, ci_variables, index = 0)
         case action[:scan]
-        when 'secret_detection'
-          secret_detection_configuration(action, ci_variables)
-        when 'container_scanning'
-          scan_configuration(action, ci_variables)
-        when 'sast'
-          child_pipeline_configuration(action, ci_variables)
-        when 'dependency_scanning'
-          child_pipeline_configuration(action, ci_variables)
+        when *SCAN_TEMPLATES.keys
+          pipeline_configuration(action, ci_variables, index)
         else
-          error_script('Invalid Scan type')
+          error_script('Invalid Scan type', action, index)
         end
       end
 
@@ -29,48 +23,55 @@ module Security
 
       def scan_template(scan_type)
         template = ::TemplateFinder.build(:gitlab_ci_ymls, nil, name: SCAN_TEMPLATES[scan_type]).execute
-        Gitlab::Config::Loader::Yaml.new(template.content).load!
+        Gitlab::Ci::Config.new(template.content).to_hash
       end
 
-      def secret_detection_configuration(action, ci_variables)
-        tags = action[:tags]
-        ci_configuration = scan_template('secret_detection')
+      def pipeline_configuration(action, ci_variables, index)
+        scan_type = action[:scan]
+        ci_configuration = scan_template(scan_type)
+        variables = ci_configuration.delete(:variables).deep_merge(ci_variables).compact
 
-        ci_configuration[:secret_detection]
-          .merge(tags ? { tags: tags } : {})
-          .merge(ci_configuration[:'.secret-analyzer'])
-          .deep_merge(variables: ci_configuration[:variables].deep_merge(ci_variables).compact)
-          .except(:extends)
+        ci_configuration.reject! { |job_name, _| hidden_job?(job_name) }
+        ci_configuration.transform_keys! { |job_name| generate_job_name_with_index(job_name, index) }
+
+        ci_configuration.each do |_, job_configuration|
+          apply_variables!(job_configuration, variables)
+          apply_tags!(job_configuration, action[:tags])
+          remove_extends!(job_configuration)
+        end
+
+        ci_configuration
       end
 
-      def scan_configuration(action, ci_variables)
-        template = action[:scan]
-        tags = action[:tags]
-        ci_configuration = scan_template(template)
-
-        ci_configuration[template.to_sym]
-          .merge(tags ? { tags: tags } : {})
-          .deep_merge(variables: ci_configuration[:variables].deep_merge(ci_variables).compact)
-      end
-
-      def child_pipeline_configuration(action, ci_variables)
-        template = action[:scan]
+      def error_script(error_message, action, index)
         {
-          variables: ci_variables.compact.presence,
-          inherit: {
-            variables: false
-          },
-          trigger: {
-            include: [{ template: "#{SCAN_TEMPLATES[template.to_s]}.gitlab-ci.yml" }]
+          generate_job_name_with_index(action[:scan], index) => {
+            'script' => "echo \"Error during Scan execution: #{error_message}\" && false",
+            'allow_failure' => true
           }
-        }.compact
+        }
       end
 
-      def error_script(error_message)
-        {
-          'script' => "echo \"Error during Scan execution: #{error_message}\" && false",
-          'allow_failure' => true
-        }
+      def hidden_job?(job_name)
+        job_name.start_with?('.')
+      end
+
+      def generate_job_name_with_index(job_name, index)
+        "#{job_name.to_s.dasherize}-#{index}".to_sym
+      end
+
+      def apply_variables!(job_configuration, variables)
+        job_configuration[:variables] = job_configuration[:variables].to_h.deep_merge(variables).compact
+      end
+
+      def apply_tags!(job_configuration, tags)
+        return if tags.blank?
+
+        job_configuration[:tags] = tags
+      end
+
+      def remove_extends!(job_configuration)
+        job_configuration.delete(:extends)
       end
     end
   end
