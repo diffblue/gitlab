@@ -7,6 +7,74 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project) }
 
+  describe '#show' do
+    subject(:get_show) { get :show }
+
+    before do
+      sign_in(user)
+    end
+
+    it 'tracks render event' do
+      get_show
+
+      expect_snowplow_event(
+        category: described_class.name,
+        action: 'render',
+        user: user,
+        label: 'free_registration'
+      )
+    end
+
+    context 'when in invitation flow' do
+      before do
+        allow(controller.helpers).to receive(:user_has_memberships?).and_return(true)
+      end
+
+      it 'tracks render event' do
+        get_show
+
+        expect_snowplow_event(
+          category: described_class.name,
+          action: 'render',
+          user: user,
+          label: 'invite_registration'
+        )
+      end
+    end
+
+    context 'when in trial flow' do
+      before do
+        allow(controller.helpers).to receive(:in_trial_flow?).and_return(true)
+      end
+
+      it 'tracks render event' do
+        get_show
+
+        expect_snowplow_event(
+          category: described_class.name,
+          action: 'render',
+          user: user,
+          label: 'trial_registration'
+        )
+      end
+    end
+
+    context 'when completed welcome step' do
+      let_it_be(:user) { create(:user, setup_for_company: true) }
+
+      it 'does not track render event' do
+        get_show
+
+        expect_no_snowplow_event(
+          category: described_class.name,
+          action: 'render',
+          user: user,
+          label: 'free_registration'
+        )
+      end
+    end
+  end
+
   describe '#continuous_onboarding_getting_started' do
     let_it_be(:project) { create(:project, group: group) }
 
@@ -150,10 +218,6 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
 
       context 'email updates' do
         context 'when not on gitlab.com' do
-          before do
-            allow(::Gitlab).to receive(:com?).and_return(false)
-          end
-
           context 'when the user opted in' do
             let(:email_opted_in) { '1' }
 
@@ -173,11 +237,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
           end
         end
 
-        context 'when on gitlab.com' do
-          before do
-            allow(::Gitlab).to receive(:com?).and_return(true)
-          end
-
+        context 'when on gitlab.com', :saas do
           context 'when registration_objective field is provided' do
             it 'sets the registration_objective' do
               subject
@@ -242,6 +302,17 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
           end
 
           it { is_expected.to redirect_to dashboard_projects_path }
+
+          it 'tracks successful submission event' do
+            patch_update
+
+            expect_snowplow_event(
+              category: described_class.name,
+              action: 'successfully_submitted_form',
+              user: user,
+              label: 'free_registration'
+            )
+          end
         end
 
         context 'when signup_onboarding is enabled' do
@@ -333,6 +404,17 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
             end
 
             it { is_expected.not_to redirect_to new_users_sign_up_groups_project_path }
+
+            it 'tracks successful submission event' do
+              patch_update
+
+              expect_snowplow_event(
+                category: described_class.name,
+                action: 'successfully_submitted_form',
+                user: user,
+                label: 'invite_registration'
+              )
+            end
           end
 
           context 'when in trial flow' do
@@ -341,6 +423,17 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
             end
 
             it { is_expected.not_to redirect_to new_users_sign_up_groups_project_path }
+
+            it 'tracks successful submission event' do
+              patch_update
+
+              expect_snowplow_event(
+                category: described_class.name,
+                action: 'successfully_submitted_form',
+                user: user,
+                label: 'trial_registration'
+              )
+            end
 
             context 'when stored company path' do
               let(:stored_path) { new_users_sign_up_company_path }
@@ -368,6 +461,27 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
                 expect(response).to redirect_to path
               end
             end
+          end
+        end
+
+        context 'when failed request' do
+          subject(:patch_update) { patch :update, params: { user: { role: 'software_developer' } } }
+
+          before do
+            allow_next_instance_of(::Users::SignupService) do |service|
+              allow(service).to receive(:execute).and_return({})
+            end
+          end
+
+          it 'does not track submission event' do
+            patch_update
+
+            expect_no_snowplow_event(
+              category: described_class.name,
+              action: 'successfully_submitted_form',
+              user: user,
+              label: 'free_registration'
+            )
           end
         end
       end

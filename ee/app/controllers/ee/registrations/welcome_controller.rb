@@ -121,6 +121,18 @@ module EE
         save_onboarding_step_url(redirect_uri)
         redirect_uri
       end
+
+      override :track_event
+      def track_event(category)
+        ::Gitlab::Tracking.event(self.class.name, category, user: current_user, label: tracking_label)
+      end
+
+      def tracking_label
+        return 'trial_registration' if helpers.in_trial_flow?
+        return 'invite_registration' if helpers.user_has_memberships?
+
+        'free_registration'
+      end
     end
   end
 end
