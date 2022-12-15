@@ -15,7 +15,7 @@ RSpec.describe GroupsController, feature_category: :subgroups do
   describe 'GET #show' do
     let(:namespace) { group }
 
-    subject { get :show, params: { id: group.to_param } }
+    subject(:get_show) { get :show, params: { id: group.to_param } }
 
     before do
       namespace.add_owner(user)
@@ -26,6 +26,29 @@ RSpec.describe GroupsController, feature_category: :subgroups do
     it_behaves_like 'namespace storage limit alert'
 
     it_behaves_like 'seat count alert'
+
+    context 'with free user cap performance concerns', :saas do
+      render_views
+
+      let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
+
+      before do
+        stub_ee_application_setting(dashboard_limit_enabled: true)
+        stub_ee_application_setting(dashboard_enforcement_limit: 5)
+      end
+
+      it 'avoids extra user count queries', :request_store do
+        recorder = ActiveRecord::QueryRecorder.new { get_show }
+
+        # we expect 4 invocations since there are 4 queries, so if over 4, this below
+        # will be non-empty. Count was 20 with strong_memoize prior to adding safe request
+        # store caching on the `users_count` method.
+        expected_count = ::Namespaces::BilledUsersFinder::METHOD_KEY_MAP.keys.size
+        method_invocations = recorder.find_query(/.*:calculate_user_ids.*/, expected_count, first_only: true)
+
+        expect(method_invocations).to be_empty
+      end
+    end
   end
 
   describe 'GET #activity' do

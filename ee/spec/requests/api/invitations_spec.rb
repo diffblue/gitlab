@@ -138,6 +138,26 @@ RSpec.describe API::Invitations, 'EE Invitations', feature_category: :users do
           expect(json_response['status']).to eq('success')
         end
       end
+
+      context 'when there are seats left and we add enough to exhaust all seats' do
+        before do
+          stub_ee_application_setting(dashboard_enforcement_limit: 1)
+        end
+
+        it 'creates one member and errors on the other member', :aggregate_failures do
+          expect do
+            stranger = create(:user)
+            stranger2 = create(:user)
+            user_id_list = "#{stranger.id},#{stranger2.id}"
+
+            post api(url, admin), params: { user_id: user_id_list, access_level: Member::DEVELOPER }
+
+            expect(response).to have_gitlab_http_status(:created)
+            expect(json_response['status']).to eq('error')
+            expect(json_response['message'][stranger2.username]).to match(/cannot be added since you've reached your/)
+          end.to change { group.members.count }.by(1)
+        end
+      end
     end
   end
 
