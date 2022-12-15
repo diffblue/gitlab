@@ -3,6 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import WorkItemWeight from 'ee/work_items/components/work_item_weight.vue';
+import WorkItemProgress from 'ee/work_items/components/work_item_progress.vue';
 import WorkItemIteration from 'ee/work_items/components/work_item_iteration.vue';
 import workItemWeightSubscription from 'ee/work_items/graphql/work_item_weight.subscription.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -47,6 +48,7 @@ describe('WorkItemDetail component', () => {
 
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findWorkItemWeight = () => wrapper.findComponent(WorkItemWeight);
+  const findWorkItemProgress = () => wrapper.findComponent(WorkItemProgress);
   const findWorkItemIteration = () => wrapper.findComponent(WorkItemIteration);
 
   const createComponent = ({
@@ -71,6 +73,7 @@ describe('WorkItemDetail component', () => {
         },
         hasIssueWeightsFeature: true,
         hasIterationsFeature: true,
+        hasOkrsFeature: true,
         projectNamespace: 'namespace',
         fullPath: 'group/project',
       },
@@ -136,6 +139,36 @@ describe('WorkItemDetail component', () => {
       const updateError = 'Failed to update';
 
       findWorkItemWeight().vm.$emit('error', updateError);
+      await waitForPromises();
+
+      expect(findAlert().text()).toBe(updateError);
+    });
+  });
+
+  describe('progress widget', () => {
+    describe.each`
+      description                               | progressWidgetPresent | exists
+      ${'when widget is returned from API'}     | ${true}               | ${true}
+      ${'when widget is not returned from API'} | ${false}              | ${false}
+    `('$description', ({ progressWidgetPresent, exists }) => {
+      it(`${
+        progressWidgetPresent ? 'renders' : 'does not render'
+      } progress component`, async () => {
+        const response = workItemResponseFactory({ progressWidgetPresent });
+        const handler = jest.fn().mockResolvedValue(response);
+        createComponent({ handler });
+        await waitForPromises();
+
+        expect(findWorkItemProgress().exists()).toBe(exists);
+      });
+    });
+
+    it('shows an error message when it emits an `error` event', async () => {
+      createComponent();
+      await waitForPromises();
+      const updateError = 'Failed to update';
+
+      findWorkItemProgress().vm.$emit('error', updateError);
       await waitForPromises();
 
       expect(findAlert().text()).toBe(updateError);
