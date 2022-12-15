@@ -77,7 +77,8 @@ export const DORA_METRICS = {
 };
 
 export const DASHBOARD_TITLE = __('DevOps metrics comparison (Alpha)');
-export const DASHBOARD_DESCRIPTION = s__('DORA4Metrics|DORA metrics for %{groupName} group');
+export const DASHBOARD_DESCRIPTION_GROUP = s__('DORA4Metrics|DORA metrics for %{name} group');
+export const DASHBOARD_DESCRIPTION_PROJECT = s__('DORA4Metrics|DORA metrics for %{name} project');
 export const DASHBOARD_NO_DATA = __('No data available');
 export const DASHBOARD_LOADING_FAILURE = __('Failed to load');
 export const CHART_LOADING_FAILURE = s__('DORA4Metrics|Failed to load charts');

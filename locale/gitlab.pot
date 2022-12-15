@@ -12269,7 +12269,10 @@ msgstr ""
 msgid "DORA4Metrics|Cycle time"
 msgstr ""
 
-msgid "DORA4Metrics|DORA metrics for %{groupName} group"
+msgid "DORA4Metrics|DORA metrics for %{name} group"
+msgstr ""
+
+msgid "DORA4Metrics|DORA metrics for %{name} project"
 msgstr ""
 
 msgid "DORA4Metrics|Date"

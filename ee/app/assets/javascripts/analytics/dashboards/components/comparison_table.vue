@@ -6,7 +6,7 @@ import { DASHBOARD_TABLE_FIELDS } from '../constants';
 import TrendIndicator from './trend_indicator.vue';
 
 export default {
-  name: 'DoraComparisonTable',
+  name: 'ComparisonTable',
   components: {
     GlTableLite,
     GlSparklineChart,
