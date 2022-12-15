@@ -46875,6 +46875,9 @@ msgstr ""
 msgid "WorkItem|%{workItemType} deleted"
 msgstr ""
 
+msgid "WorkItem|Activity"
+msgstr ""
+
 msgid "WorkItem|Add"
 msgstr ""
 
