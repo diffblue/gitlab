@@ -9,6 +9,7 @@ import SummaryHighlights from 'ee/vue_merge_request_widget/extensions/security_r
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import Widget from '~/vue_merge_request_widget/components/widget/widget.vue';
 import MrWidgetRow from '~/vue_merge_request_widget/components/widget/widget_content_row.vue';
+import * as urlUtils from '~/lib/utils/url_utility';
 import axios from '~/lib/utils/axios_utils';
 
 jest.mock('~/vue_shared/components/user_callout_dismisser.vue', () => ({ render: () => {} }));
@@ -27,6 +28,7 @@ describe('MR Widget Security Reports', () => {
   const apiFuzzingHelp = '/help/user/application_security/api-fuzzing/index';
   const dependencyScanningHelp = '/help/user/application_security/api-fuzzing/index';
   const containerScanningHelp = '/help/user/application_security/container-scanning/index';
+  const createVulnerabilityFeedbackIssuePath = '/create/vulnerability/feedback/issue/path';
 
   const reportEndpoints = {
     sastComparisonPath: '/my/sast/endpoint',
@@ -337,10 +339,10 @@ describe('MR Widget Security Reports', () => {
   });
 
   describe('modal', () => {
-    const mockWithData = () => {
+    const mockWithData = (props) => {
       Object.keys(reportEndpoints).forEach((key, i) => {
         mockAxios.onGet(reportEndpoints[key]).replyOnce(200, {
-          added: [{ id: i, severity: 'critical', name: 'Password leak' }],
+          added: [{ id: i, severity: 'critical', name: 'Password leak', ...props }],
         });
       });
     };
@@ -378,6 +380,8 @@ describe('MR Widget Security Reports', () => {
       wrapper.findAllByText('Password leak').at(0).trigger('click');
       await nextTick();
 
+      expect(findModal().props('canCreateIssue')).toBe(false);
+
       expect(findModal().props('modal')).toEqual({
         title: 'Password leak',
         vulnerability: {
@@ -385,6 +389,123 @@ describe('MR Widget Security Reports', () => {
           severity: 'critical',
           name: 'Password leak',
         },
+      });
+    });
+
+    describe('issue creation', () => {
+      it('can create issue when createVulnerabilityFeedbackIssuePath is provided', async () => {
+        mockWithData();
+
+        createComponent({
+          mountFn: mountExtended,
+          propsData: {
+            mr: {
+              createVulnerabilityFeedbackIssuePath,
+            },
+          },
+        });
+
+        await waitForPromises();
+
+        // Click on the toggle button to expand data
+        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+        await nextTick();
+
+        // Click on the vulnerability name
+        wrapper.findAllByText('Password leak').at(0).trigger('click');
+        await nextTick();
+
+        expect(findModal().props('canCreateIssue')).toBe(true);
+      });
+
+      it('can create issue when user can create a jira issue', async () => {
+        mockWithData({
+          create_jira_issue_url: 'create/jira/issue/url',
+        });
+
+        createComponent({
+          mountFn: mountExtended,
+        });
+
+        await waitForPromises();
+
+        // Click on the toggle button to expand data
+        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+        await nextTick();
+
+        // Click on the vulnerability name
+        wrapper.findAllByText('Password leak').at(0).trigger('click');
+        await nextTick();
+
+        expect(findModal().props('canCreateIssue')).toBe(true);
+      });
+
+      it('handles issue creation - success', async () => {
+        mockWithData();
+
+        const spy = jest.spyOn(urlUtils, 'visitUrl');
+
+        mockAxios.onPost(createVulnerabilityFeedbackIssuePath).replyOnce(200, {
+          issue_url: '/my/issue/url',
+        });
+
+        createComponent({
+          mountFn: mountExtended,
+          propsData: {
+            mr: {
+              createVulnerabilityFeedbackIssuePath,
+            },
+          },
+        });
+
+        await waitForPromises();
+
+        // Click on the toggle button to expand data
+        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+        await nextTick();
+
+        // Click on the vulnerability name
+        wrapper.findAllByText('Password leak').at(0).trigger('click');
+        await nextTick();
+
+        findModal().vm.$emit('createNewIssue');
+
+        await waitForPromises();
+
+        expect(spy).toHaveBeenCalledWith('/my/issue/url');
+      });
+
+      it('handles issue creation - error', async () => {
+        mockWithData();
+
+        mockAxios.onPost(createVulnerabilityFeedbackIssuePath).replyOnce(400);
+
+        createComponent({
+          mountFn: mountExtended,
+          propsData: {
+            mr: {
+              createVulnerabilityFeedbackIssuePath,
+            },
+          },
+        });
+
+        await waitForPromises();
+
+        // Click on the toggle button to expand data
+        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+        await nextTick();
+
+        // Click on the vulnerability name
+        wrapper.findAllByText('Password leak').at(0).trigger('click');
+        await nextTick();
+
+        findModal().vm.$emit('createNewIssue');
+
+        await waitForPromises();
+
+        expect(findModal().props('modal').error).toBe(
+          'There was an error creating the issue. Please try again.',
+        );
       });
     });
   });
