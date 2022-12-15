@@ -33,7 +33,8 @@ module Projects
         team_id: slack_data.dig('team', 'id'),
         team_name: slack_data.dig('team', 'name'),
         alias: project.full_path,
-        user_id: slack_data.dig('authed_user', 'id')
+        user_id: slack_data.dig('authed_user', 'id'),
+        authorized_scope_names: slack_data['scope']
       )
 
       update_legacy_installations!(installation)
@@ -70,7 +71,10 @@ module Projects
       )
 
       SlackIntegration.legacy_by_team(installation.team_id).each_batch do |batch|
+        batch_ids = batch.pluck(:id) # rubocop: disable CodeReuse/ActiveRecord
         batch.update_all(updatable_attributes)
+
+        ::Integrations::SlackWorkspace::IntegrationApiScope.update_scopes(batch_ids, installation.slack_api_scopes)
       end
     end
   end
