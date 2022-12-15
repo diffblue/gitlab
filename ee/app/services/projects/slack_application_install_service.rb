@@ -34,7 +34,7 @@ module Projects
         team_name: slack_data.dig('team', 'name'),
         alias: project.full_path,
         user_id: slack_data.dig('authed_user', 'id'),
-        authorized_scope_names: Array.wrap(slack_data['scope']&.split(','))
+        authorized_scope_names: slack_data['scope']
       )
 
       update_legacy_installations!(installation)

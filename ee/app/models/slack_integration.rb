@@ -49,6 +49,8 @@ class SlackIntegration < ApplicationRecord
   end
 
   def authorized_scope_names=(names)
+    names = Array.wrap(names).flat_map { _1.split(',') }.map(&:strip)
+
     scopes = ::Integrations::SlackWorkspace::ApiScope.find_or_initialize_by_names(names)
     self.slack_api_scopes = scopes
   end

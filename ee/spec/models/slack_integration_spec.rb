@@ -7,6 +7,40 @@ RSpec.describe SlackIntegration do
     it { is_expected.to belong_to(:integration) }
   end
 
+  describe 'authorized_scope_names' do
+    subject(:slack_integration) { create(:slack_integration) }
+
+    it 'accepts assignment to nil' do
+      slack_integration.update!(authorized_scope_names: nil)
+
+      expect(slack_integration.authorized_scope_names).to be_empty
+    end
+
+    it 'accepts assignment to a string' do
+      slack_integration.update!(authorized_scope_names: 'foo')
+
+      expect(slack_integration.authorized_scope_names).to contain_exactly('foo')
+    end
+
+    it 'accepts assignment to an array of strings' do
+      slack_integration.update!(authorized_scope_names: %w[foo bar])
+
+      expect(slack_integration.authorized_scope_names).to contain_exactly('foo', 'bar')
+    end
+
+    it 'accepts assignment to a comma-separated string' do
+      slack_integration.update!(authorized_scope_names: 'foo,bar')
+
+      expect(slack_integration.authorized_scope_names).to contain_exactly('foo', 'bar')
+    end
+
+    it 'strips white-space' do
+      slack_integration.update!(authorized_scope_names: 'foo , bar,baz')
+
+      expect(slack_integration.authorized_scope_names).to contain_exactly('foo', 'bar', 'baz')
+    end
+  end
+
   describe 'feature_available?' do
     subject(:slack_integration) { create(:slack_integration) }
 
