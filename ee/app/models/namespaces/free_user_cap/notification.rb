@@ -11,12 +11,23 @@ module Namespaces
 
         return false unless Feature.enabled?(:notification_free_user_cap_show_over_limit, root_namespace)
 
+        log_user_counts
         update_database_fields(result)
 
         result
       end
 
       private
+
+      def log_user_counts
+        data = {
+          message: 'Namespace qualifies for counting users',
+          class: self.class.name,
+          namespace_id: root_namespace.id
+        }.merge(full_user_counts)
+
+        Gitlab::AppLogger.info(data)
+      end
 
       def update_database_fields(result)
         Rails.cache.fetch([self.class.name, root_namespace.id], expires_in: 1.day) do
@@ -35,11 +46,23 @@ module Namespaces
       end
 
       def feature_enabled?
+        log_qualifies
+
         return false unless ::Feature.enabled?(:preview_free_user_cap, root_namespace)
 
         # before Enforcement does.  So this will cover the ones that are over the number
         # for Enforcement as they will always get a notification before being enforced with Enforcement.
         !Enforcement.new(root_namespace).over_limit?(update_database: false)
+      end
+
+      def log_qualifies
+        data = {
+          message: 'Namespace qualifies for notification',
+          class: self.class.name,
+          namespace_id: root_namespace.id
+        }
+
+        Gitlab::AppLogger.info(data)
       end
     end
   end

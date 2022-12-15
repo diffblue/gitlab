@@ -18,13 +18,21 @@ module Namespaces
       strong_memoize_attr :enforce_cap?, :enforce_cap
 
       def users_count
-        ::Namespaces::FreeUserCap::UsersFinder.count(root_namespace)
+        full_user_counts[:user_ids]
       end
-      strong_memoize_attr :users_count
 
       private
 
       attr_reader :root_namespace
+
+      def full_user_counts
+        ::Namespaces::FreeUserCap::UsersFinder.count(root_namespace, database_limit)
+      end
+      strong_memoize_attr :full_user_counts
+
+      def database_limit
+        limit + 1
+      end
 
       def enforceable_subscription?
         return false unless ::Gitlab::CurrentSettings.dashboard_limit_enabled?

@@ -584,9 +584,9 @@ module EE
 
     def releases_percentage
       calculate_sql = <<~SQL
-      (
-        COUNT(*) FILTER (WHERE EXISTS (SELECT 1 FROM releases WHERE releases.project_id = projects.id)) * 100.0 / GREATEST(COUNT(*), 1)
-      )::integer AS releases_percentage
+        (
+          COUNT(*) FILTER (WHERE EXISTS (SELECT 1 FROM releases WHERE releases.project_id = projects.id)) * 100.0 / GREATEST(COUNT(*), 1)
+        )::integer AS releases_percentage
       SQL
 
       self.class.count_by_sql(
@@ -799,7 +799,7 @@ module EE
 
     def invited_group_in_groups
       ::Group.joins(:shared_group_links)
-        .where(group_group_links: { shared_group_id: self.self_and_descendants })
+             .where(group_group_links: { shared_group_id: self.self_and_descendants })
     end
 
     def invited_or_shared_group_members(groups)
@@ -807,7 +807,7 @@ module EE
     end
 
     def users_without_bots(members)
-      ::User.where(id: members.distinct.select(:user_id)).without_bots
+      ::User.where(id: members.select(:user_id)).without_bots
     end
 
     def projects_for_group_and_its_subgroups_without_deleted
