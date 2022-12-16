@@ -3,7 +3,6 @@
 FactoryBot.define do
   factory :geo_upload_registry, class: 'Geo::UploadRegistry' do
     association(:upload, :with_file)
-    sequence(:file_id)
     state { Geo::UploadRegistry.state_value(:pending) }
 
     trait :synced do

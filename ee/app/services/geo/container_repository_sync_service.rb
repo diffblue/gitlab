@@ -40,7 +40,7 @@ module Geo
     private
 
     def mark_sync_as_successful
-      persisted = registry.finish_sync!
+      persisted = registry.synced!
 
       reschedule_sync unless persisted
     end

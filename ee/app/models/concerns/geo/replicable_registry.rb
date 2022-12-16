@@ -44,6 +44,12 @@ module Geo::ReplicableRegistry
     end
   end
 
+  def before_synced
+    self.retry_count = 0
+    self.last_sync_failure = nil
+    self.retry_at = nil
+  end
+
   # Overridden by Geo::VerifiableRegistry
   def after_synced
     # No-op
@@ -88,9 +94,7 @@ module Geo::ReplicableRegistry
       end
 
       before_transition any => :synced do |registry, _|
-        registry.retry_count = 0
-        registry.last_sync_failure = nil
-        registry.retry_at = nil
+        registry.before_synced
       end
 
       after_transition any => :synced do |registry, _|
@@ -103,10 +107,6 @@ module Geo::ReplicableRegistry
 
       event :start do
         transition [:pending, :synced, :failed] => :started
-      end
-
-      event :synced do
-        transition [:started] => :synced
       end
 
       event :failed do
@@ -131,6 +131,36 @@ module Geo::ReplicableRegistry
       self.custom_max_retry_wait_time = missing_on_primary ? 4.hours : nil
 
       super()
+    end
+
+    # Override state machine synced! event method to indicate that the sync
+    # succeeded (but separately mark as synced atomically).
+    #
+    # @return [Boolean] whether the update was successful
+    def synced!
+      before_synced
+      save!
+
+      return false unless mark_synced_atomically
+
+      after_synced
+
+      true
+    end
+
+    # Mark the resource as synced using atomic conditions
+    #
+    # @return [Boolean] whether the update was successful
+    def mark_synced_atomically
+      # We can only update registry if state is started.
+      # If state is set to pending that means that pending! was called
+      # during the sync so we need to reschedule new sync
+      num_rows = self.class
+                     .where(self.class::MODEL_FOREIGN_KEY => model_record_id)
+                     .with_state(:started)
+                     .update_all(state: Geo::ReplicableRegistry::STATE_VALUES[:synced])
+
+      num_rows > 0
     end
 
     def replicator

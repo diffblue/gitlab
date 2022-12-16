@@ -147,4 +147,45 @@ RSpec.shared_examples 'a Geo framework registry' do
       end
     end
   end
+
+  describe '#synced!' do
+    let(:registry) { create(registry_class_factory, :started) }
+
+    it 'mark as synced', :aggregate_failures do
+      registry.synced!
+
+      expect(registry.reload).to have_attributes(
+        retry_count: 0,
+        retry_at: nil,
+        last_sync_failure: nil
+      )
+
+      expect(registry.synced?).to be_truthy
+    end
+
+    context 'when a sync was scheduled after the last sync finishes' do
+      before do
+        registry.update!(
+          state: 'pending',
+          retry_count: 2,
+          retry_at: 1.hour.ago,
+          last_sync_failure: 'Something went wrong'
+        )
+
+        registry.synced!
+      end
+
+      it 'does not reset state' do
+        expect(registry.reload.pending?).to be_truthy
+      end
+
+      it 'resets the other sync state fields' do
+        expect(registry.reload).to have_attributes(
+          retry_count: 0,
+          retry_at: nil,
+          last_sync_failure: nil
+        )
+      end
+    end
+  end
 end
