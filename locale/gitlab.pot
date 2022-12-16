@@ -32548,9 +32548,6 @@ msgstr ""
 msgid "ProjectSettings|Configure your infrastructure."
 msgstr ""
 
-msgid "ProjectSettings|Configure your project resources and monitor their health."
-msgstr ""
-
 msgid "ProjectSettings|Contact an admin to change this setting."
 msgstr ""
 
@@ -32720,9 +32717,6 @@ msgid "ProjectSettings|Only commits that include a %{code_block_start}Signed-off
 msgstr ""
 
 msgid "ProjectSettings|Only signed commits can be pushed to this repository."
-msgstr ""
-
-msgid "ProjectSettings|Operations"
 msgstr ""
 
 msgid "ProjectSettings|Override user notification preferences for all project members."

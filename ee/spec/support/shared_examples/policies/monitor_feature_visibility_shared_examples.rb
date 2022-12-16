@@ -38,21 +38,10 @@ RSpec.shared_examples 'monitor feature visibility' do |allow_lowest_role:|
   with_them do
     let(:project) { public_send("#{project_visibility}_project") }
 
-    context 'with monitor feature' do
-      before do
-        project.project_feature.update!(monitor_access_level: access_level)
-      end
-
-      it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
+    before do
+      project.project_feature.update!(monitor_access_level: access_level)
     end
 
-    context 'with operation feature' do
-      before do
-        stub_feature_flags(split_operations_visibility_permissions: false)
-        project.project_feature.update!(operations_access_level: access_level)
-      end
-
-      it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
-    end
+    it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
   end
 end

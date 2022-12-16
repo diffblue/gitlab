@@ -144,16 +144,6 @@ RSpec.describe ProjectPolicy do
           merge_requests_access_level: [:read_merge_request],
           monitor_access_level: [:read_alert_management_alert]
         }
-
-        context 'with disabled feature flag split_operations_visibility_permissions' do
-          before do
-            stub_feature_flags(split_operations_visibility_permissions: false)
-          end
-
-          include_examples 'project feature visibility', {
-            operations_access_level: [:read_alert_management_alert]
-          }
-        end
       end
     end
   end
