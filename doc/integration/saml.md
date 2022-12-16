@@ -343,13 +343,19 @@ For a full list of supported assertions, see the [OmniAuth SAML gem](https://git
 
 ## Configure users based on SAML group membership
 
-You can require users to be members of a certain group, or assign users [external](../user/admin_area/external_users.md), administrator or [auditor](../administration/auditor_users.md) access levels based on group membership.
-These groups are checked on each SAML login and user attributes updated as necessary.
-This feature **does not** allow you to
-automatically add users to GitLab [Groups](../user/group/index.md).
+You can:
 
-Support for these groups depends on your [subscription](https://about.gitlab.com/pricing/)
-and whether you've installed [GitLab Enterprise Edition (EE)](https://about.gitlab.com/install/).
+- Require users to be members of a certain group.
+- Assign users [external](../user/admin_area/external_users.md), administrator or [auditor](../administration/auditor_users.md) roles based on group membership.
+
+GitLab checks these groups on each SAML sign in and updates user attributes as necessary.
+This feature **does not** allow you to automatically add users to GitLab
+[Groups](../user/group/index.md).
+
+Support for these groups depends on:
+
+- Your [subscription](https://about.gitlab.com/pricing/).
+- Whether you've installed [GitLab Enterprise Edition (EE)](https://about.gitlab.com/install/).
 
 | Group                        | Tier               | GitLab Enterprise Edition (EE) Only? |
 |------------------------------|--------------------|--------------------------------------|
@@ -360,9 +366,9 @@ and whether you've installed [GitLab Enterprise Edition (EE)](https://about.gitl
 
 ### Prerequisites
 
-First tell GitLab where to look for group information. For this, you
-must make sure that your IdP server sends a specific `AttributeStatement` along
-with the regular SAML response. Here is an example:
+You must tell GitLab where to look for group information. To do this, make sure
+that your IdP server sends a specific `AttributeStatement` along with the regular
+SAML response. For example:
 
 ```xml
 <saml:AttributeStatement>
@@ -375,9 +381,9 @@ with the regular SAML response. Here is an example:
 </saml:AttributeStatement>
 ```
 
-The name of the attribute can be anything you like, but it must contain the groups
-to which a user belongs. To tell GitLab where to find these groups, you need
-to add a `groups_attribute:` element to your SAML settings.
+The name of the attribute must contain the groups that a user belongs to.
+To tell GitLab where to find these groups, add a `groups_attribute:`
+element to your SAML settings.
 
 ### Required groups
 
