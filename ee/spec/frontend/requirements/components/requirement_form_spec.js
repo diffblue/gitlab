@@ -13,8 +13,11 @@ import IssuableBody from '~/vue_shared/issuable/show/components/issuable_body.vu
 import IssuableEditForm from '~/vue_shared/issuable/show/components/issuable_edit_form.vue';
 import MarkdownField from '~/vue_shared/components/markdown/field.vue';
 import ZenMode from '~/zen_mode';
+import { renderGFM } from '~/behaviors/markdown/render_gfm';
 
 import { mockRequirementsOpen, mockTestReport } from '../mock_data';
+
+jest.mock('~/behaviors/markdown/render_gfm');
 
 const createComponent = ({
   drawerOpen = true,
@@ -40,13 +43,11 @@ const createComponent = ({
   });
 
 describe('RequirementForm', () => {
-  let renderGFMSpy;
   let documentEventSpyOn;
   let wrapper;
   let wrapperWithRequirement;
 
   beforeEach(() => {
-    renderGFMSpy = jest.spyOn($.fn, 'renderGFM');
     documentEventSpyOn = jest.spyOn($.prototype, 'on');
     wrapper = createComponent();
     wrapperWithRequirement = createComponent({
@@ -192,7 +193,7 @@ describe('RequirementForm', () => {
     });
 
     it('calls `renderGFM` on `$refs.gfmContainer`', () => {
-      expect(renderGFMSpy).toHaveBeenCalled();
+      expect(renderGFM).toHaveBeenCalled();
     });
 
     it('binds events `zen_mode:enter` & `zen_mode:leave` events on document', () => {
