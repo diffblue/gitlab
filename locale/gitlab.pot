@@ -19963,6 +19963,9 @@ msgstr ""
 msgid "GroupsNew|Import groups from another instance of GitLab"
 msgstr ""
 
+msgid "GroupsNew|Importing groups by direct transfer is currently disabled."
+msgstr ""
+
 msgid "GroupsNew|No import options available"
 msgstr ""
 
@@ -19972,6 +19975,12 @@ msgstr ""
 msgid "GroupsNew|Personal access token"
 msgstr ""
 
+msgid "GroupsNew|Please %{admin_link_start}enable it in the Admin settings%{admin_link_end}."
+msgstr ""
+
+msgid "GroupsNew|Please ask your Administrator to enable it in the Admin settings."
+msgstr ""
+
 msgid "GroupsNew|Please fill in GitLab source URL."
 msgstr ""
 
@@ -19979,6 +19988,9 @@ msgid "GroupsNew|Please fill in your personal access token."
 msgstr ""
 
 msgid "GroupsNew|Provide credentials for another instance of GitLab to import your groups directly."
+msgstr ""
+
+msgid "GroupsNew|Remember to enable it also on the instance you are migrating from."
 msgstr ""
 
 msgid "GroupsNew|This feature is deprecated and replaced by %{docs_link_start}group migration%{docs_link_end}."
