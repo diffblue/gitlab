@@ -24,6 +24,7 @@ RSpec.describe Groups::Settings::RepositoryController, feature_category: :source
         it 'always allows access' do
           get group_settings_repository_path(group)
           expect(response).to have_gitlab_http_status(:ok)
+          expect(assigns).to include(:protected_branches)
         end
       end
 

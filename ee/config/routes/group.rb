@@ -193,6 +193,8 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
 
     resource :push_rules, only: [:update]
 
+    resources :protected_branches, only: [:create, :update, :destroy]
+
     resource :saml_providers, path: 'saml', only: [:show, :create, :update] do
       callback_methods = Rails.env.test? ? [:get, :post] : [:post]
       match :callback, to: 'omniauth_callbacks#group_saml', via: callback_methods

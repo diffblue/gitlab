@@ -9,6 +9,7 @@ module EE
 
         prepended do
           before_action :define_push_rule_variable, if: -> { can?(current_user, :change_push_rules, group) }
+          before_action :define_protected_branches, only: [:show]
         end
 
         private
@@ -23,6 +24,14 @@ module EE
             group.push_rule || group.build_push_rule
           end
         end
+
+        # rubocop:disable Gitlab/ModuleWithInstanceVariables
+        # rubocop:disable CodeReuse/ActiveRecord
+        def define_protected_branches
+          @protected_branches = group.protected_branches.order(:name).page(params[:page])
+        end
+        # rubocop:enable Gitlab/ModuleWithInstanceVariables
+        # rubocop:enable CodeReuse/ActiveRecord
       end
     end
   end
