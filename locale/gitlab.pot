@@ -26122,6 +26122,9 @@ msgstr ""
 msgid "MergeRequest|Error loading full diff. Please try again."
 msgstr ""
 
+msgid "MergeRequest|Failed to load the page"
+msgstr ""
+
 msgid "MergeRequest|No files found"
 msgstr ""
 
