@@ -120,12 +120,25 @@ module Types
           null: true,
           description: 'Vulnerability related to the security report finding.'
 
+    field :issue_links,
+          type: ::Types::Vulnerability::IssueLinkType.connection_type,
+          null: true,
+          description: "List of issue links related to the vulnerability."
+
     markdown_field :description_html, null: true
 
     def vulnerability
       BatchLoader::GraphQL.for(object.uuid).batch do |uuids, loader|
         ::Vulnerability.with_findings_by_uuid(uuids).each do |vulnerability|
           loader.call(vulnerability.finding.uuid, vulnerability)
+        end
+      end
+    end
+
+    def issue_links
+      BatchLoader::GraphQL.for(object.uuid).batch do |uuids, loader|
+        ::Vulnerability.with_findings_by_uuid(uuids).each do |vulnerability|
+          loader.call(vulnerability.finding.uuid, vulnerability.issue_links)
         end
       end
     end
