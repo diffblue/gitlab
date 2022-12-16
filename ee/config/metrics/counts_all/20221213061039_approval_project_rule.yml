@@ -1,0 +1,22 @@
+---
+key_path: usage_activity_by_stage.govern.approval_project_rule
+description: "Count of approval project rules"
+product_section: sec
+product_stage: govern
+product_group: compliance
+product_category: compliance_management
+value_type: number
+status: active
+milestone: "15.7"
+introduced_by_url:
+time_frame: all
+data_source: database
+data_category: optional
+instrumentation_class: CountApprovalProjectRulesMetric
+performance_indicator_type: []
+distribution:
+  - ee
+tier:
+  - premium
+  - ultimate
+
