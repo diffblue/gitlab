@@ -669,22 +669,20 @@ You may also bypass the auto sign-in feature by browsing to
 
 ### Map SAML response attribute names **(FREE SELF)**
 
-NOTE:
-This setting should be used only to map attributes that are part of the OmniAuth
-`info` hash schema.
-
-`attribute_statements` is used to map Attribute Names in a `SAMLResponse` to entries
+You can use `attribute_statements` to map attribute names in a SAML response to entries
 in the OmniAuth [`info` hash](https://github.com/omniauth/omniauth/wiki/Auth-Hash-Schema#schema-10-and-later).
+
+NOTE:
+Only use this setting to map attributes that are part of the OmniAuth `info` hash schema.
 
 For example, if your `SAMLResponse` contains an Attribute called `EmailAddress`,
 specify `{ email: ['EmailAddress'] }` to map the Attribute to the
 corresponding key in the `info` hash. URI-named Attributes are also supported, for example,
 `{ email: ['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] }`.
 
-This setting allows you tell GitLab where to look for certain attributes required
-to create an account. Like mentioned above, if your IdP sends the user's email
-address as `EmailAddress` instead of `email`, let GitLab know by setting it on
-your configuration:
+Use this setting to tell GitLab where to look for certain attributes required
+to create an account. If your IdP sends the user's email address as `EmailAddress`
+instead of `email`, let GitLab know by setting it on your configuration:
 
 ```yaml
 args: {
