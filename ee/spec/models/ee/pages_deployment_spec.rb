@@ -58,4 +58,44 @@ RSpec.describe PagesDeployment do
       end
     end
   end
+
+  describe '.search' do
+    let_it_be(:pages_deployment1) { create(:pages_deployment) }
+    let_it_be(:pages_deployment2) { create(:pages_deployment) }
+
+    context 'when search query is empty' do
+      it 'returns all records' do
+        result = described_class.search('')
+
+        expect(result).to contain_exactly(pages_deployment1, pages_deployment2)
+      end
+    end
+
+    context 'when search query is not empty' do
+      context 'without matches' do
+        it 'filters all records' do
+          result = described_class.search('something_that_does_not_exist')
+
+          expect(result).to be_empty
+        end
+      end
+
+      context 'with matches by attributes' do
+        where(:searchable_attribute) { described_class::EE_SEARCHABLE_ATTRIBUTES }
+
+        before do
+          # Use update_column to bypass attribute validations like regex formatting, checksum, etc.
+          pages_deployment1.update_column(searchable_attribute, 'any_keyword')
+        end
+
+        with_them do
+          it do
+            result = described_class.search('any_keyword')
+
+            expect(result).to contain_exactly(pages_deployment1)
+          end
+        end
+      end
+    end
+  end
 end

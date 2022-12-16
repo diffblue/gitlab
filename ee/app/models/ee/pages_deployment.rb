@@ -2,11 +2,14 @@
 
 module EE
   module PagesDeployment
+    EE_SEARCHABLE_ATTRIBUTES = %i[file].freeze
+
     extend ActiveSupport::Concern
 
     prepended do
       include ::Geo::ReplicableModel
       include ::Geo::VerifiableModel
+      include ::Gitlab::SQL::Pattern
 
       delegate(*::Geo::VerificationState::VERIFICATION_METHODS, to: :pages_deployment_state)
 
@@ -29,6 +32,17 @@ module EE
 
     class_methods do
       extend ::Gitlab::Utils::Override
+
+      # Search for a list of pages_deployments based on the query given in `query`.
+      #
+      # @param [String] query term that will search over :file attribute
+      #
+      # @return [ActiveRecord::Relation<PagesDeployment>] a collection of pages deployments
+      def search(query)
+        return all if query.empty?
+
+        fuzzy_search(query, EE_SEARCHABLE_ATTRIBUTES)
+      end
 
       def replicables_for_current_secondary(primary_key_in)
         node = ::Gitlab::Geo.current_node
