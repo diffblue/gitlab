@@ -1,6 +1,6 @@
 import axios from '~/lib/utils/axios_utils';
 import download from '~/lib/utils/downloader';
-import httpStatusCodes from '~/lib/utils/http_status';
+import { HTTP_STATUS_UNPROCESSABLE_ENTITY } from '~/lib/utils/http_status';
 import pollUntilComplete from '~/lib/utils/poll_until_complete';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { s__, sprintf } from '~/locale';
@@ -218,8 +218,7 @@ export const dismissVulnerability = ({ state, dispatch }, comment) => {
       toast(toastMsg);
     })
     .catch((error) => {
-      const pipelineNoLongerExists =
-        error.response?.status === httpStatusCodes.UNPROCESSABLE_ENTITY;
+      const pipelineNoLongerExists = error.response?.status === HTTP_STATUS_UNPROCESSABLE_ENTITY;
       const errorMessage = pipelineNoLongerExists
         ? s__(
             'ciReport|Could not dismiss vulnerability because the associated pipeline no longer exists. Refresh the page and try again.',

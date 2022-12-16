@@ -1,7 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
 import * as Utils from 'ee/groups/settings/compliance_frameworks/utils';
 import axios from '~/lib/utils/axios_utils';
-import httpStatus from '~/lib/utils/http_status';
+import httpStatus, { HTTP_STATUS_NO_CONTENT } from '~/lib/utils/http_status';
 
 const GET_RAW_FILE_ENDPOINT = /\/api\/(.*)\/projects\/bar%2Fbaz\/repository\/files\/foo\.ya?ml\/raw/;
 
@@ -122,10 +122,10 @@ describe('Utils', () => {
     });
 
     it.each`
-      response                 | returns
-      ${httpStatus.OK}         | ${true}
-      ${httpStatus.NO_CONTENT} | ${false}
-      ${httpStatus.NOT_FOUND}  | ${false}
+      response                  | returns
+      ${httpStatus.OK}          | ${true}
+      ${HTTP_STATUS_NO_CONTENT} | ${false}
+      ${httpStatus.NOT_FOUND}   | ${false}
     `('should return $returns when the response is $response', async ({ response, returns }) => {
       mock.onGet(GET_RAW_FILE_ENDPOINT).reply(response, {});
 

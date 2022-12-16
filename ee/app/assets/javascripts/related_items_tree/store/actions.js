@@ -2,7 +2,7 @@ import Api from 'ee/api';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
-import httpStatusCodes from '~/lib/utils/http_status';
+import httpStatusCodes, { HTTP_STATUS_CONFLICT } from '~/lib/utils/http_status';
 import { s__, __ } from '~/locale';
 import Tracking from '~/tracking';
 import {
@@ -365,7 +365,7 @@ export const addItem = ({ state, dispatch, getters }) => {
       // Ignore 409 conflict when the issue or epic is already attached to epic
       /* eslint-disable @gitlab/require-i18n-strings */
       else if (
-        response.status === httpStatusCodes.CONFLICT &&
+        response.status === HTTP_STATUS_CONFLICT &&
         response.data.message === 'Epic hierarchy level too deep'
       ) {
         dispatch('receiveAddItemFailure', {

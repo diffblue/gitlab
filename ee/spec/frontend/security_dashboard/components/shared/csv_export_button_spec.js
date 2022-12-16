@@ -8,7 +8,7 @@ import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import downloader from '~/lib/utils/downloader';
-import statusCodes from '~/lib/utils/http_status';
+import statusCodes, { HTTP_STATUS_ACCEPTED } from '~/lib/utils/http_status';
 
 jest.mock('~/flash');
 jest.mock('~/lib/utils/downloader');
@@ -33,7 +33,7 @@ describe('Csv Button Export', () => {
   const mockCsvExportRequest = (download, status = 'finished') => {
     mock
       .onPost(vulnerabilitiesExportEndpoint)
-      .reply(statusCodes.ACCEPTED, { _links: { self: 'status/url' } });
+      .reply(HTTP_STATUS_ACCEPTED, { _links: { self: 'status/url' } });
 
     mock.onGet('status/url').reply(statusCodes.OK, { _links: { download }, status });
   };
