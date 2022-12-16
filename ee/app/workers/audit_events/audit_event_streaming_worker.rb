@@ -24,12 +24,8 @@ module AuditEvents
       return if group.nil? # Do nothing if the event can't be resolved to a single group.
       return unless group.licensed_feature_available?(:external_audit_events)
 
-      filter_audit_event_enabled = Feature.enabled?('allow_audit_event_type_filtering', group)
-
       group.external_audit_event_destinations.each do |destination|
-        if filter_audit_event_enabled && !allowed_to_stream?(destination, audit_operation)
-          next
-        end
+        next unless allowed_to_stream?(destination, audit_operation)
 
         headers = destination.headers_hash
         headers[EVENT_TYPE_HEADER_KEY] = audit_operation if audit_operation.present?

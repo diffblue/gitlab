@@ -46,42 +46,26 @@ RSpec.describe Mutations::AuditEvents::Streaming::EventTypeFilters::Destroy do
           group.add_owner(current_user)
         end
 
-        context 'when feature is enabled' do
-          before do
-            stub_feature_flags(allow_audit_event_type_filtering: true)
+        context 'when event type filter is present' do
+          it 'deletes the event type filter', :aggregate_failures do
+            expect { subject }.to change { destination.event_type_filters.count }.by(-1)
+            expect(subject).to eq({ errors: [] })
+          end
+        end
+
+        context 'when event type filter is not already present' do
+          let(:params) do
+            {
+              destination_id: destination.to_gid,
+              event_type_filters: %w[filter_2]
+            }
           end
 
-          context 'when event type filter is present' do
-            it 'deletes the event type filter', :aggregate_failures do
-              expect { subject }.to change { destination.event_type_filters.count }.by(-1)
-              expect(subject).to eq({ errors: [] })
-            end
-          end
-
-          context 'when event type filter is not already present' do
-            let(:params) do
-              {
-                destination_id: destination.to_gid,
-                event_type_filters: %w[filter_2]
-              }
-            end
-
-            it 'does not delete event type filter', :aggregate_failures do
-              expect { subject }.not_to change { destination.event_type_filters.count }
-              expect(subject).to eq({
-                                      errors: ["Couldn't find event type filters where audit event type(s): filter_2"]
-                                    })
-            end
-          end
-
-          context 'when feature is disabled' do
-            before do
-              stub_feature_flags(allow_audit_event_type_filtering: false)
-            end
-
-            it 'is not authorized' do
-              expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-            end
+          it 'does not delete event type filter', :aggregate_failures do
+            expect { subject }.not_to change { destination.event_type_filters.count }
+            expect(subject).to eq({
+                                    errors: ["Couldn't find event type filters where audit event type(s): filter_2"]
+                                  })
           end
         end
       end

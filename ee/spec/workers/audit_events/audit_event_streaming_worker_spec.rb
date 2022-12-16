@@ -152,48 +152,42 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
         end
       end
 
-      context "when feature flag 'allow_audit_event_type_filtering' is enabled" do
+      context 'when no event type filter is present' do
+        it 'makes one HTTP call' do
+          expect(Gitlab::HTTP).to receive(:post).once
+
+          subject
+        end
+      end
+
+      context 'when audit_operation streaming event type filter is not present' do
         before do
-          stub_feature_flags(allow_audit_event_type_filtering: true)
+          create(:audit_events_streaming_event_type_filter,
+                 external_audit_event_destination: group.external_audit_event_destinations.last,
+                 audit_event_type: 'some_audit_operation')
         end
 
-        context 'when no event type filter is present' do
-          it 'makes one HTTP call' do
-            expect(Gitlab::HTTP).to receive(:post).once
+        it 'does not make HTTP call' do
+          expect(Gitlab::HTTP).not_to receive(:post)
 
-            subject
-          end
+          subject
+        end
+      end
+
+      context 'when audit_operation streaming event type filter is present' do
+        before do
+          create(:audit_events_streaming_event_type_filter,
+                 external_audit_event_destination: group.external_audit_event_destinations.last,
+                 audit_event_type: 'audit_operation')
+          create(:audit_events_streaming_event_type_filter,
+                 external_audit_event_destination: group.external_audit_event_destinations.last,
+                 audit_event_type: 'some_audit_operation')
         end
 
-        context 'when audit_operation streaming event type filter is not present' do
-          before do
-            create(:audit_events_streaming_event_type_filter,
-                   external_audit_event_destination: group.external_audit_event_destinations.last,
-                   audit_event_type: 'some_audit_operation')
-          end
+        it 'makes one HTTP call' do
+          expect(Gitlab::HTTP).to receive(:post).once
 
-          it 'does not make HTTP call' do
-            expect(Gitlab::HTTP).not_to receive(:post)
-
-            subject
-          end
-        end
-
-        context 'when audit_operation streaming event type filter is present' do
-          before do
-            create(:audit_events_streaming_event_type_filter,
-                   external_audit_event_destination: group.external_audit_event_destinations.last,
-                   audit_event_type: 'audit_operation')
-            create(:audit_events_streaming_event_type_filter,
-                   external_audit_event_destination: group.external_audit_event_destinations.last,
-                   audit_event_type: 'some_audit_operation')
-          end
-
-          it 'makes one HTTP call' do
-            expect(Gitlab::HTTP).to receive(:post).once
-
-            subject
-          end
+          subject
         end
       end
     end

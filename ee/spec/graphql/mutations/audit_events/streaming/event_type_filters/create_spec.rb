@@ -44,50 +44,33 @@ RSpec.describe Mutations::AuditEvents::Streaming::EventTypeFilters::Create do
           group.add_owner(current_user)
         end
 
-        context "when 'allow_audit_event_type_filtering' feature flag is disabled" do
-          before do
-            stub_feature_flags(allow_audit_event_type_filtering: false)
-          end
+        context 'and calls create service' do
+          context 'when response is success' do
+            let(:response) { ServiceResponse.success }
 
-          it 'returns correct error message' do
-            expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable,
-                                              'allow_audit_event_type_filtering feature disabled')
-          end
-        end
-
-        context "when 'allow_audit_event_type_filtering' feature flag is enabled" do
-          before do
-            stub_feature_flags(allow_audit_event_type_filtering: true)
-          end
-
-          context 'and calls create service' do
-            context 'when response is success' do
-              let(:response) { ServiceResponse.success }
-
-              before do
-                allow_next_instance_of(::AuditEvents::Streaming::EventTypeFilters::CreateService) do |instance|
-                  allow(instance).to receive(:execute).and_return(response)
-                end
-              end
-
-              it 'returns event type filters' do
-                expect(subject).to eq({ event_type_filters: destination.event_type_filters, errors: [] })
+            before do
+              allow_next_instance_of(::AuditEvents::Streaming::EventTypeFilters::CreateService) do |instance|
+                allow(instance).to receive(:execute).and_return(response)
               end
             end
 
-            context 'when response is error' do
-              let(:response) { ServiceResponse.error(message: 'Something went wrong') }
+            it 'returns event type filters' do
+              expect(subject).to eq({ event_type_filters: destination.event_type_filters, errors: [] })
+            end
+          end
 
-              before do
-                allow_next_instance_of(::AuditEvents::Streaming::EventTypeFilters::CreateService) do |instance|
-                  allow(instance).to receive(:execute).and_return(response)
-                end
-              end
+          context 'when response is error' do
+            let(:response) { ServiceResponse.error(message: 'Something went wrong') }
 
-              it 'returns error message' do
-                expect(subject).to eq({ event_type_filters: destination.event_type_filters,
-                                        errors: ['Something went wrong'] })
+            before do
+              allow_next_instance_of(::AuditEvents::Streaming::EventTypeFilters::CreateService) do |instance|
+                allow(instance).to receive(:execute).and_return(response)
               end
+            end
+
+            it 'returns error message' do
+              expect(subject).to eq({ event_type_filters: destination.event_type_filters,
+                                      errors: ['Something went wrong'] })
             end
           end
         end
