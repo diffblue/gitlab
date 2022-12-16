@@ -215,7 +215,7 @@ export default {
   <div>
     <gl-alert
       v-if="alertMessage"
-      class="gl-mt-5"
+      class="gl-mt-5 gl-mb-5"
       :variant="alertVariant"
       :dismissible="alertDismissible"
       @dismiss="dismissAlertMessage"
