@@ -157,9 +157,20 @@ class DastSiteProfile < ApplicationRecord
   end
 
   def scan_file_path_contains_valid_url
-    return if scan_file_path.blank? || Gitlab::UrlSanitizer.valid?(scan_file_path)
+    return if scan_file_path.blank? || scan_method_graphql? || Gitlab::UrlSanitizer.valid?(scan_file_path)
 
-    errors.add(:scan_file_path, _('is not a valid URL.'))
+    errors.add(:base, _('%{key} is not a valid URL.') % { key: scan_file_path_error_message })
+  end
+
+  def scan_file_path_error_message
+    case scan_method
+    when 'openapi'
+      _('OpenAPI Specification file URL')
+    when 'har'
+      _('HAR file URL')
+    when 'postman'
+      _('Postman collection file URL')
+    end
   end
 
   def dast_api_config(url)
@@ -169,6 +180,7 @@ class DastSiteProfile < ApplicationRecord
       dast_api_config.append(key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls.join(',')) unless excluded_urls.empty?
 
       dast_api_config.append(key: SCAN_METHOD_VARIABLE_MAP[scan_method], value: api_specification)
+      dast_api_config.append(key: 'DAST_API_TARGET_URL', value: url) if scan_method_graphql?
     end
   end
 
