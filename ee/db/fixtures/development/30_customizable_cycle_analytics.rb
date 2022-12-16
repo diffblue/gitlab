@@ -116,7 +116,7 @@ class Gitlab::Seeder::CustomizableCycleAnalytics
       issue.update!(created_at: Time.now)
 
       travel_to(random_duration_in_hours.hours.from_now)
-      issue.metrics.update!(first_mentioned_in_commit_at: Time.now)
+      issue.metrics&.update!(first_mentioned_in_commit_at: Time.now)
     end
   end
 
@@ -154,7 +154,7 @@ class Gitlab::Seeder::CustomizableCycleAnalytics
       mr.update!(created_at: Time.now)
 
       travel_to(random_duration_in_hours.hours.from_now)
-      mr.metrics.update!(merged_at: Time.now)
+      mr.metrics&.update!(merged_at: Time.now)
     end
   end
 

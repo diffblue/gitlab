@@ -9,32 +9,26 @@ class Gitlab::Seeder::ProductivityAnalytics
   def initialize(project)
     @project = project
     @user = User.admins.first
-    @issue_count = 100
+    @issue_count = 3
   end
 
   def seed!
     Sidekiq::Worker.skipping_transaction_check do
       Sidekiq::Testing.inline! do
-        travel_to(90.days.ago)
         issues = create_issues
         print '.'
 
-        travel_to(10.days.from_now)
         add_milestones_and_list_labels(issues)
         print '.'
 
-        travel_to(10.days.from_now)
         branches = mention_in_commits(issues)
         print '.'
 
-        travel_to(10.days.from_now)
         merge_requests = create_merge_requests_closing_issues(issues, branches)
         print '.'
 
-        travel_to(10.days.from_now)
         create_notes(merge_requests)
 
-        travel_to(10.days.from_now)
         merge_merge_requests(merge_requests)
         print '.'
       end
@@ -54,7 +48,7 @@ class Gitlab::Seeder::ProductivityAnalytics
         assignees: [@project.team.users.sample]
       }
 
-      travel_to(rand(10).days.from_now) do
+      travel_to(rand(90..100).days.ago) do
         Issues::CreateService.new(project: @project, current_user: @project.team.users.sample, params: issue_params, spam_params: nil).execute[:issue]
       end
     end
@@ -62,7 +56,7 @@ class Gitlab::Seeder::ProductivityAnalytics
 
   def add_milestones_and_list_labels(issues)
     issues.shuffle.map.with_index do |issue, index|
-      travel_to(12.hours.from_now) do
+      travel_to(80.days.ago) do
         if index.even?
           issue.update(milestone: @project.milestones.sample)
         else
@@ -81,7 +75,7 @@ class Gitlab::Seeder::ProductivityAnalytics
     issues.map do |issue|
       branch_name = filename = "#{FFaker::Product.brand}-#{FFaker::Product.brand}-#{rand(1000)}"
 
-      travel_to(12.hours.from_now) do
+      travel_to(70.days.ago) do
         issue.project.repository.add_branch(@user, branch_name, 'master')
 
         commit_sha = issue.project.repository.create_file(@user, filename, "content", message: "Commit for #{issue.to_reference}", branch_name: branch_name)
@@ -131,7 +125,7 @@ class Gitlab::Seeder::ProductivityAnalytics
 
   def merge_merge_requests(merge_requests)
     merge_requests.each do |merge_request|
-      travel_to(rand(15).days.from_now) do
+      travel_to(rand(30..45).days.ago) do
         MergeRequests::MergeService.new(project: merge_request.project, current_user: @user).execute(merge_request)
       end
     end
