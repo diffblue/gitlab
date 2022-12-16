@@ -55,11 +55,11 @@ RSpec.describe RequirementsManagement::TestReport do
 
   describe '.persist_requirement_reports' do
     let_it_be(:project) { create(:project) }
-    let_it_be(:build) { create(:ee_ci_build, :requirements_report, project: project) }
 
     subject { described_class.persist_requirement_reports(build, ci_report) }
 
     context 'if the CI report contains no entries' do
+      let_it_be(:build) { create(:ee_ci_build, :requirements_v2_report, project: project) }
       let(:ci_report) { Gitlab::Ci::Reports::RequirementsManagement::Report.new }
 
       it 'does not create any test reports' do
@@ -69,34 +69,75 @@ RSpec.describe RequirementsManagement::TestReport do
 
     context 'if the CI report contains some entries' do
       context 'and the entries are valid' do
-        let(:ci_report) do
-          Gitlab::Ci::Reports::RequirementsManagement::Report.new.tap do |report|
-            report.add_requirement('1', 'passed')
-            report.add_requirement('2', 'failed')
-            report.add_requirement('3', 'passed')
+        context 'and legacy is false' do
+          let(:ci_report) do
+            Gitlab::Ci::Reports::RequirementsManagement::Report.new.tap do |report|
+              # Keep iids not sequential here to make sure it is properly tested
+              report.add_requirement('11', 'passed')
+              report.add_requirement('13', 'failed')
+              report.add_requirement('16', 'passed')
+            end
+          end
+
+          let_it_be(:build) { create(:ee_ci_build, :requirements_v2_report, project: project) }
+
+          it 'creates test report with expected status for each open requirement' do
+            requirement1 = create(:work_item, :requirement, iid: 11, state: :opened, project: project)
+            requirement2 = create(:work_item, :requirement, iid: 13, state: :opened, project: project)
+            create(:work_item, :requirement, iid: 11, state: :opened) # different project
+            create(:work_item, :requirement, iid: 16, state: :closed, project: project) # archived
+
+            expect { subject }.to change { RequirementsManagement::TestReport.count }.by(2)
+
+            reports = RequirementsManagement::TestReport.where(build: build)
+
+            requirement_type_id = WorkItems::Type.requirement.first.id
+            expect(reports).to match_array(
+              [
+                have_attributes(requirement_issue: have_attributes(id: requirement1.id, work_item_type_id: requirement_type_id),
+                                author: build.user,
+                                state: 'passed'),
+                have_attributes(requirement_issue: have_attributes(id: requirement2.id, work_item_type_id: requirement_type_id),
+                                author: build.user,
+                                state: 'failed')
+              ])
           end
         end
 
-        it 'creates test report with expected status for each open requirement' do
-          requirement1 = create(:work_item, :requirement, state: :opened, project: project)
-          requirement2 = create(:work_item, :requirement, state: :opened, project: project)
-          create(:work_item, :requirement, state: :opened) # different project
-          create(:work_item, :requirement, state: :closed, project: project) # archived
+        context 'when legacy is true' do
+          let(:ci_report) do
+            Gitlab::Ci::Reports::RequirementsManagement::Report.new.tap do |report|
+              report.add_requirement('1', 'passed')
+              report.add_requirement('2', 'failed')
+              report.add_requirement('3', 'passed')
+            end
+          end
 
-          expect { subject }.to change { RequirementsManagement::TestReport.count }.by(2)
+          let_it_be(:build) { create(:ee_ci_build, :requirements_report, project: project) }
 
-          reports = RequirementsManagement::TestReport.where(build: build)
+          subject { described_class.persist_requirement_reports(build, ci_report, legacy: true) }
 
-          requirement_type_id = WorkItems::Type.requirement.first.id
-          expect(reports).to match_array(
-            [
-              have_attributes(requirement_issue: have_attributes(id: requirement1.id, work_item_type_id: requirement_type_id),
-                              author: build.user,
-                              state: 'passed'),
-              have_attributes(requirement_issue: have_attributes(id: requirement2.id, work_item_type_id: requirement_type_id),
-                              author: build.user,
-                              state: 'failed')
-            ])
+          it 'creates test report with expected status for each open requirement' do
+            requirement1 = create(:work_item, :requirement, state: :opened, project: project)
+            requirement2 = create(:work_item, :requirement, state: :opened, project: project)
+            create(:work_item, :requirement, state: :opened) # different project
+            create(:work_item, :requirement, state: :closed, project: project) # archived
+
+            expect { subject }.to change { RequirementsManagement::TestReport.count }.by(2)
+
+            reports = RequirementsManagement::TestReport.where(build: build)
+
+            requirement_type_id = WorkItems::Type.requirement.first.id
+            expect(reports).to match_array(
+              [
+                have_attributes(requirement_issue: have_attributes(id: requirement1.id, work_item_type_id: requirement_type_id),
+                                author: build.user,
+                                state: 'passed'),
+                have_attributes(requirement_issue: have_attributes(id: requirement2.id, work_item_type_id: requirement_type_id),
+                                author: build.user,
+                                state: 'failed')
+              ])
+          end
         end
       end
 
@@ -108,6 +149,8 @@ RSpec.describe RequirementsManagement::TestReport do
             report.add_requirement('2', nil)
           end
         end
+
+        let_it_be(:build) { create(:ee_ci_build, :requirements_v2_report, project: project) }
 
         it 'creates test report with expected status for each open requirement' do
           # ignore requirement IIDs that appear in the test but are missing

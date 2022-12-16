@@ -162,10 +162,12 @@ module EE
         metrics_report
       end
 
-      def collect_requirements_reports!(requirements_report)
+      def collect_requirements_reports!(requirements_report, legacy: false)
         return requirements_report unless project.feature_available?(:requirements)
 
-        each_report(::Ci::JobArtifact.file_types_for_report(:requirements)) do |file_type, blob, report_artifact|
+        artifact_file = legacy ? :requirements : :requirements_v2
+
+        each_report(::Ci::JobArtifact.file_types_for_report(artifact_file)) do |file_type, blob, report_artifact|
           ::Gitlab::Ci::Parsers.fabricate!(file_type).parse!(blob, requirements_report)
         end
 

@@ -23,13 +23,20 @@ module RequirementsManagement
     delegate :requirement, to: :requirement_issue, allow_nil: true
 
     class << self
-      def persist_requirement_reports(build, ci_report)
+      # Until old requirement iids are deprecated in favor of work items
+      # we keep parsing two kinds of reports to toggle requirements status:
+      #
+      # 1. When 'legacy' parameter is true we search for requirements using iids
+      # 2. When 'legacy' parameter is false we search for requirements using work-items iids
+      #
+      # The first option will be deprecated soon, more information at https://gitlab.com/groups/gitlab-org/-/epics/9203
+      def persist_requirement_reports(build, ci_report, legacy: false)
         timestamp = Time.current
 
         reports = if ci_report.all_passed?
                     passed_reports_for_all_requirements(build, timestamp)
                   else
-                    individual_reports(build, ci_report, timestamp)
+                    individual_reports(build, ci_report, timestamp, legacy)
                   end
 
         bulk_insert!(reports)
@@ -55,14 +62,20 @@ module RequirementsManagement
         end
       end
 
-      def individual_reports(build, ci_report, timestamp)
+      def individual_reports(build, ci_report, timestamp, legacy)
         [].tap do |reports|
           iids = ci_report.requirements.keys
           break [] if iids.empty?
 
-          find_requirement_issues_by(iids, build).each do |requirement_issue|
+          find_requirement_issues_by(iids, build, legacy).each do |requirement_issue|
             # ignore anything with any unexpected state
-            new_state = ci_report.requirements[requirement_issue.requirement_iid.to_s]
+            new_state =
+              if legacy
+                ci_report.requirements[requirement_issue.requirement_iid.to_s]
+              else
+                ci_report.requirements[requirement_issue.work_item_iid.to_s]
+              end
+
             next unless states.key?(new_state)
 
             reports << build_report(state: new_state, requirement_issue: requirement_issue, build: build, timestamp: timestamp)
@@ -70,13 +83,17 @@ module RequirementsManagement
         end
       end
 
-      def find_requirement_issues_by(iids, build)
+      def find_requirement_issues_by(iids, build, legacy)
         # Requirement objects are used as proxy to use same iids from before.
         # It makes API endpoints and pipelines references still compatible with old and new requirements iids.
         # For more information check: https://gitlab.com/gitlab-org/gitlab/-/issues/345842#note_810067092
-        requirement_issues = build.project.issues.opened.for_requirement_iids(iids)
-
-        requirement_issues.select('issues.id, requirement.iid as requirement_iid')
+        if legacy
+          build.project.issues.opened.for_requirement_iids(iids)
+            .select('issues.id, requirement.iid as requirement_iid')
+        else
+          build.project.issues.opened.requirement.where(iid: iids)
+            .select('issues.id, issues.iid as work_item_iid')
+        end
       end
     end
 

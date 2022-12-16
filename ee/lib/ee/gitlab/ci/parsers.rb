@@ -17,7 +17,9 @@ module EE
                 api_fuzzing: ::Gitlab::Ci::Parsers::Security::Dast,
                 coverage_fuzzing: ::Gitlab::Ci::Parsers::Security::CoverageFuzzing,
                 metrics: ::Gitlab::Ci::Parsers::Metrics::Generic,
-                requirements: ::Gitlab::Ci::Parsers::RequirementsManagement::Requirement
+                # 'requirements' artifact will be deprecated soon with https://gitlab.com/groups/gitlab-org/-/epics/9203
+                requirements: ::Gitlab::Ci::Parsers::RequirementsManagement::Requirement,
+                requirements_v2: ::Gitlab::Ci::Parsers::RequirementsManagement::Requirement
             })
           end
         end

@@ -162,6 +162,12 @@ FactoryBot.define do
       end
     end
 
+    trait :requirements_v2_report do
+      after(:build) do |build|
+        build.job_artifacts << build(:ee_ci_job_artifact, :all_passing_requirements_v2, job: build)
+      end
+    end
+
     trait :coverage_fuzzing_report do
       after(:build) do |build|
         build.job_artifacts << build(:ee_ci_job_artifact, :coverage_fuzzing, job: build)
