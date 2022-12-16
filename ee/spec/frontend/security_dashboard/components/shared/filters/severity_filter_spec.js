@@ -78,8 +78,11 @@ describe('Severity Filter component', () => {
       expect(wrapper.findComponent(GlDropdown).props('headerText')).toBe(SeverityFilter.i18n.label);
     });
 
-    it('shows the DropdownButtonText component with the correct default item', () => {
-      expect(wrapper.findComponent(DropdownButtonText).props('items')).toEqual(['All severities']);
+    it('shows the DropdownButtonText component with the correct props', () => {
+      expect(wrapper.findComponent(DropdownButtonText).props()).toMatchObject({
+        items: [SeverityFilter.i18n.allItemsText],
+        name: SeverityFilter.i18n.label,
+      });
     });
   });
 

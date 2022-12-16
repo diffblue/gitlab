@@ -114,10 +114,11 @@ describe('ImageFilter component', () => {
         expect(wrapper.findComponent(GlDropdown).props('headerText')).toBe(ImageFilter.i18n.label);
       });
 
-      it('shows the DropdownButtonText component with the correct items', () => {
-        expect(wrapper.findComponent(DropdownButtonText).props('items')).toEqual([
-          ImageFilter.i18n.allItemsText,
-        ]);
+      it('shows the DropdownButtonText component with the correct props', () => {
+        expect(wrapper.findComponent(DropdownButtonText).props()).toMatchObject({
+          items: [ImageFilter.i18n.allItemsText],
+          name: ImageFilter.i18n.label,
+        });
       });
     });
 

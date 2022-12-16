@@ -80,11 +80,11 @@ describe('Status Filter component', () => {
       expect(wrapper.findComponent(GlDropdown).props('headerText')).toBe(StatusFilter.i18n.label);
     });
 
-    it('shows the DropdownButtonText component with the correct items', () => {
-      expect(wrapper.findComponent(DropdownButtonText).props('items')).toEqual([
-        'Needs triage',
-        'Confirmed',
-      ]);
+    it('shows the DropdownButtonText component with the correct props', () => {
+      expect(wrapper.findComponent(DropdownButtonText).props()).toMatchObject({
+        items: ['Needs triage', 'Confirmed'],
+        name: StatusFilter.i18n.label,
+      });
     });
   });
 

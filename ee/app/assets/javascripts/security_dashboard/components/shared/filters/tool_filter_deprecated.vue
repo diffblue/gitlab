@@ -63,7 +63,7 @@ export default {
       menu-class="dropdown-extended-height"
     >
       <template #button-text>
-        <dropdown-button-text :items="selectedItemTexts" />
+        <dropdown-button-text :items="selectedItemTexts" :name="$options.i18n.label" />
       </template>
       <filter-item
         :is-checked="!selected.length"

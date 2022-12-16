@@ -229,10 +229,7 @@ export default {
       @show="setDropdownOpened"
     >
       <template #button-text>
-        <dropdown-button-text
-          :items="selectedProjectNames"
-          data-qa-selector="filter_project_dropdown"
-        />
+        <dropdown-button-text :items="selectedProjectNames" :name="$options.i18n.label" />
       </template>
 
       <template #header>
