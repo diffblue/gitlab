@@ -1,8 +1,0 @@
----
-  name: multi_pipeline_scan_result_policies
-  introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/103283
-  rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/382990
-  milestone: '15.7'
-  type: development
-  group: group::security policies
-  default_enabled: false

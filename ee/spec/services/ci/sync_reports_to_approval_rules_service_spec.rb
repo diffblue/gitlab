@@ -7,9 +7,7 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute', feature_catego
 
   let(:merge_request) { create(:merge_request, source_project: project) }
   let(:pipeline) { create(:ee_ci_pipeline, :success, project: project, merge_requests_as_head_pipeline: [merge_request]) }
-  let(:detached_pipeline) { create(:ee_ci_pipeline, :success, :detached_merge_request_pipeline, ref: merge_request.source_branch, merge_request: merge_request, sha: pipeline.sha) }
   let(:base_pipeline) { create(:ee_ci_pipeline, :success, project: project, ref: merge_request.target_branch, sha: merge_request.diff_base_sha) }
-  let(:detached_base_pipeline) { create(:ee_ci_pipeline, :success, :detached_merge_request_pipeline, merge_request: merge_request, ref: merge_request.target_branch, sha: base_pipeline.sha) }
   let(:scanners) { %w[dependency_scanning] }
   let(:vulnerabilities_allowed) { 0 }
   let(:severity_levels) { %w[high unknown] }
@@ -20,7 +18,7 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute', feature_catego
   before do
     allow(Ci::Pipeline).to receive(:find).with(pipeline.id) { pipeline }
 
-    stub_licensed_features(container_scanning: true, dependency_scanning: true, dast: true, license_scanning: true)
+    stub_licensed_features(dependency_scanning: true, dast: true, license_scanning: true)
   end
 
   shared_examples 'a successful execution' do
@@ -422,54 +420,6 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute', feature_catego
       end
     end
 
-    context 'when multi_pipeline_scan_result_policies feature is enabled' do
-      before do
-        stub_feature_flags(multi_pipeline_scan_result_policies: true)
-      end
-
-      include_context 'security reports with vulnerabilities'
-
-      context 'when there are security reports' do
-        context 'when pipeline passes' do
-          before do
-            create(:ee_ci_build, :success, :dependency_scanning_feature_branch, :coverage, name: 'sd_job', pipeline: pipeline, project: project)
-          end
-
-          context 'without any scanners related to the security reports in head pipeline' do
-            let(:scanners) { %w[container_scanning] }
-
-            context 'with scanners related to the security reports in detached pipeline' do
-              before do
-                create(:ee_ci_build, :success, :container_scanning_feature_branch, :coverage, name: 'cs_job', pipeline: detached_pipeline, project: project)
-              end
-
-              it "won't lower approvals_required count" do
-                expect { sync_rules }
-                  .not_to change { report_approver_rule.reload.approvals_required }
-              end
-
-              context 'when same vulnerabilities are already present in target branch detached pipeline' do
-                before do
-                  create(:ee_ci_build, :success, :container_scanning_feature_branch, :coverage, name: 'cs_job', pipeline: detached_base_pipeline, project: project)
-                end
-
-                it 'lowers approvals_required count to zero' do
-                  expect { subject }
-                    .to change { report_approver_rule.reload.approvals_required }.from(2).to(0)
-                end
-              end
-            end
-          end
-        end
-      end
-    end
-
-    context 'when multi_pipeline_scan_result_policies feature is disabled' do
-      before do
-        stub_feature_flags(multi_pipeline_scan_result_policies: false)
-      end
-
-      include_context 'security reports with vulnerabilities'
-    end
+    include_context 'security reports with vulnerabilities'
   end
 end

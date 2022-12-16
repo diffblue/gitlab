@@ -115,6 +115,35 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
 
         it { is_expected.to be(true) }
       end
+
+      context 'when existing vulnerabilities violate rule' do
+        let_it_be(:target_reports) { described_class.new(pipeline) }
+        let_it_be(:vulnerability_states) { %w[detected] }
+        let_it_be(:sast_finding) { build(:ci_reports_security_finding, severity: 'high', report_type: :sast) }
+
+        before(:all) do
+          create(:vulnerabilities_finding, :detected, report_type: :sast, project: pipeline.project,
+                                                      uuid: sast_finding.uuid)
+
+          target_reports.get_report('sast', artifact).add_finding(sast_finding)
+        end
+
+        context "with feature disabled" do
+          before do
+            stub_feature_flags(enforce_scan_result_policies_for_preexisting_vulnerabilities: false)
+          end
+
+          it { is_expected.to be(false) }
+        end
+
+        context "with feature enabled" do
+          before do
+            stub_feature_flags(enforce_scan_result_policies_for_preexisting_vulnerabilities: pipeline.project)
+          end
+
+          it { is_expected.to be(true) }
+        end
+      end
     end
   end
 end
