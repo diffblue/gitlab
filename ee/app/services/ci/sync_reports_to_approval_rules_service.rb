@@ -57,14 +57,14 @@ module Ci
     end
 
     def sync_scan_finding
-      return if pipelines_for_source_branch_sha.any?(&:incomplete?) && policy_rule_reports.empty?
+      return if policy_rule_reports.empty? && !pipeline.complete?
 
       remove_required_approvals_for_scan_finding(pipeline.merge_requests_as_head_pipeline.opened)
     end
 
     def policy_rule_reports
       strong_memoize(:policy_rule_reports) do
-        security_reports(pipeline)
+        pipeline.security_reports
       end
     end
 
@@ -93,7 +93,7 @@ module Ci
 
     def remove_required_approvals_for_scan_finding(merge_requests)
       merge_requests.each do |merge_request|
-        base_reports = security_reports(merge_request.latest_pipeline_for_target_branch)
+        base_reports = merge_request.latest_pipeline_for_target_branch&.security_reports
         scan_finding_rules = merge_request.approval_rules.scan_finding
         selected_rules = scan_finding_rules.reject do |rule|
           violates_default_policy?(rule, base_reports)
@@ -111,36 +111,6 @@ module Ci
     def violates_default_policy?(rule, base_reports)
       rule = rule.source_rule if rule.source_rule # to be removed whenever merge request and project levels approval rules are aligned
       policy_rule_reports.violates_default_policy_against?(base_reports, rule.vulnerabilities_allowed, rule.severity_levels, rule.vulnerability_states_for_branch, rule.scanners)
-    end
-
-    def security_reports(pipeline)
-      if multi_pipeline_scan_result_policies?
-        merged_reports_for_sha(pipeline&.sha)
-      else
-        pipeline&.security_reports
-      end
-    end
-
-    def merged_reports_for_sha(sha)
-      Gitlab::Ci::Reports::Security::MergedReports.new(pipeline, security_reports_for_sha(sha))
-    end
-
-    def security_reports_for_sha(sha)
-      return [] if sha.blank?
-
-      pipeline.project.ci_pipelines.for_sha(sha).flat_map(&:security_reports)
-    end
-
-    def pipelines_for_source_branch_sha
-      if multi_pipeline_scan_result_policies?
-        pipeline.project.ci_pipelines.for_sha(pipeline.sha)
-      else
-        [pipeline]
-      end
-    end
-
-    def multi_pipeline_scan_result_policies?
-      Feature.enabled?(:multi_pipeline_scan_result_policies, pipeline.project)
     end
   end
 end
