@@ -8655,6 +8655,9 @@ msgstr ""
 msgid "CiVariables|This %{entity} has %{currentVariableCount} defined CI/CD variables. The maximum number of variables per %{entity} is %{maxVariableLimit}. To add new variables, you must reduce the number of defined variables."
 msgstr ""
 
+msgid "CiVariables|Trigger this manual action"
+msgstr ""
+
 msgid "CiVariables|Type"
 msgstr ""
 
