@@ -26,8 +26,8 @@ RSpec.describe Gitlab::Counters::BufferedCounter, :clean_gitlab_redis_shared_sta
   end
 
   describe '#increment' do
-    let(:increment) { Gitlab::Counters::Increment.new(amount: 123) }
-    let(:other_increment) { Gitlab::Counters::Increment.new(amount: 100) }
+    let(:increment) { Gitlab::Counters::Increment.new(amount: 123, ref: 1) }
+    let(:other_increment) { Gitlab::Counters::Increment.new(amount: 100, ref: 2) }
 
     context 'when the counter is not undergoing refresh' do
       it 'sets a new key by the given value' do

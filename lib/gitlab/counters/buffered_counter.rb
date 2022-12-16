@@ -33,7 +33,7 @@ module Gitlab
 
       LUA_INCREMENT_WITH_DEDUPLICATION_SCRIPT = <<~LUA
         local counter_key, refresh_key, refresh_indicator_key = KEYS[1], KEYS[2], KEYS[3]
-        local amount, ref = KEYS[4], KEYS[5]
+        local amount, ref = KEYS[4], tonumber(KEYS[5])
         local tracking_key, opposing_tracking_key = KEYS[6], KEYS[7]
 
         -- increment to the counter key when not refreshing
@@ -42,14 +42,14 @@ module Gitlab
         end
 
         -- deduplicate and increment to the refresh counter key while refreshing
-        local found_duplicate = redis.call("sismember", tracking_key, ref)
+        local found_duplicate = redis.call("getbit", tracking_key, ref)
         if found_duplicate == 1 then
           return redis.call("get", refresh_key)
         end
 
-        redis.call("sadd", tracking_key, ref)
+        redis.call("setbit", tracking_key, ref, 1)
 
-        local found_opposing_increment = redis.call("sismember", opposing_tracking_key, ref)
+        local found_opposing_increment = redis.call("getbit", opposing_tracking_key, ref)
         local increment_without_previous_decrement = tonumber(amount) > 0 and found_opposing_increment == 0
         local decrement_with_previous_increment = tonumber(amount) < 0 and found_opposing_increment == 1
         local net_change = 0
@@ -181,7 +181,7 @@ module Gitlab
           refresh_key,
           refresh_indicator_key,
           increment.amount,
-          increment.ref,
+          increment.ref.to_i,
           tracking_key(increment),
           opposing_tracking_key(increment)
         ]
