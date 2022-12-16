@@ -82,8 +82,8 @@ For more information on:
 
 1. Configure the following attributes so your SAML users cannot change them:
 
-   - [`NameID`](../user/group/saml_sso/index.md#nameid)
-   - `Email` when used with `omniauth_auto_link_saml_user`
+   - [`NameID`](../user/group/saml_sso/index.md#nameid).
+   - `Email` when used with `omniauth_auto_link_saml_user`.
 
    If users can change these attributes, they can sign in as other authorized users.
    See your SAML IdP documentation for information on how to make these attributes
@@ -738,7 +738,9 @@ args: {
 
 ### Designate a unique attribute for the `uid`
 
-By default, the `uid` is set as the `name_id` in the SAML response. If you'd like to designate a unique attribute for the `uid`, you can set the `uid_attribute`. In the example below, the value of `uid` attribute in the SAML response is set as the `uid_attribute`.
+By default, the `uid` is set as the `name_id` in the SAML response. To designate
+a unique attribute for the `uid`, you can set the `uid_attribute`. In the following
+example, the value of `uid` attribute in the SAML response is set as the `uid_attribute`.
 
 ```yaml
 args: {
@@ -751,9 +753,15 @@ args: {
 }
 ```
 
-Ensure that attributes define the SAML user, such as
-[`NameID`](../user/group/saml_sso/index.md#nameid) and email address, are fixed
-for each user before changing this value.
+Before setting the `uid` to a unique attribute, make sure that you have configured
+the following attributes so your SAML users cannot change them:
+
+- [`NameID`](../user/group/saml_sso/index.md#nameid).
+- `Email` when used with `omniauth_auto_link_saml_user`.
+
+If users can change these attributes, they can sign in as other authorized users.
+See your SAML IdP documentation for information on how to make these attributes
+unchangeable.
 
 ## Assertion encryption (optional)
 
