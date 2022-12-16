@@ -199,10 +199,16 @@ You can configure GitLab to use multiple SAML 2.0 identity providers if:
 
 Example multiple providers configuration for Omnibus GitLab:
 
+To allow your users to use SAML to sign up without having to manually create an account from either of the providers, add the following values to your configuration.
+
+```ruby
+gitlab_rails['omniauth_allow_single_sign_on'] = ['saml', 'saml1']
+```
+
 ```ruby
 gitlab_rails['omniauth_providers'] = [
   {
-    name: 'saml',
+    name: 'saml', # This must match the following name configuration parameter
     args: {
             name: 'saml', # This is mandatory and must match the provider name
             strategy_class: 'OmniAuth::Strategies::SAML',
@@ -212,7 +218,7 @@ gitlab_rails['omniauth_providers'] = [
     label: 'Provider 1' # Differentiate the two buttons and providers in the UI
   },
   {
-    name: 'saml1',
+    name: 'saml1', # This must match the following name configuration parameter
     args: {
             name: 'saml1', # This is mandatory and must match the provider name
             strategy_class: 'OmniAuth::Strategies::SAML',
