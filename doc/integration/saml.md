@@ -653,11 +653,11 @@ For more information on solving these errors, see the [troubleshooting SAML guid
 
 ### Redirect users to SAML server for authentication
 
-You can add this setting to your GitLab configuration to automatically redirect you
-to your SAML server for authentication. This removes the requirement to select a button
-before actually signing in.
+You can add the `auto_sign_in_with_provider` setting to your GitLab configuration
+to automatically redirect you to your SAML server for authentication. This removes
+the requirement to select an element before actually signing in.
 
-For Omnibus package:
+For Omnibus GitLab installations:
 
 ```ruby
 gitlab_rails['omniauth_auto_sign_in_with_provider'] = 'saml'
@@ -670,11 +670,10 @@ omniauth:
   auto_sign_in_with_provider: saml
 ```
 
-Keep in mind that every sign in attempt redirects to the SAML server;
-you cannot sign in using local credentials. Ensure at least one of the
-SAML users has administrator access.
+Every sign in attempt redirects to the SAML server, so you cannot sign in using
+local credentials. Make sure at least one of the SAML users has administrator access.
 
-You may also bypass the auto sign-in feature by browsing to
+You can also bypass the auto sign-in feature by
 `https://gitlab.example.com/users/sign_in?auto_sign_in=false`.
 
 ### Map SAML response attribute names **(FREE SELF)**
