@@ -12,12 +12,13 @@ module Security
       BATCH_SIZE = 1000
       DELAY_INTERVAL = 1.minute.to_i
 
-      def self.execute(project_id, primary_identifiers)
-        new(project_id, primary_identifiers).execute
+      def self.execute(project_id, scan_type, primary_identifiers)
+        new(project_id, scan_type, primary_identifiers).execute
       end
 
-      def initialize(project_id, primary_identifiers)
+      def initialize(project_id, scan_type, primary_identifiers)
         @project_id = project_id
+        @scan_type = scan_type
         @primary_identifiers = primary_identifiers
       end
 
@@ -36,7 +37,7 @@ module Security
 
       private
 
-      attr_reader :project_id, :primary_identifiers
+      attr_reader :project_id, :scan_type, :primary_identifiers
 
       # Returns a list of identifiers no longer present in latest scan
       def dropped_identifiers
@@ -81,6 +82,7 @@ module Security
 
       def vulnerabilities_resolved_on_default_branch
         ::Vulnerabilities::Read
+          .with_report_types(scan_type)
           .with_states(:detected)
           .resolved_on_default_branch
           .for_projects(project_id)

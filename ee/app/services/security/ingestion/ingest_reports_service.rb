@@ -53,8 +53,8 @@ module Security
       end
 
       def schedule_mark_dropped_vulnerabilities
-        primary_identifiers_by_scan_type.each_value do |identifiers|
-          ScheduleMarkDroppedAsResolvedService.execute(pipeline.project_id, identifiers)
+        primary_identifiers_by_scan_type.each do |scan_type, identifiers|
+          ScheduleMarkDroppedAsResolvedService.execute(pipeline.project_id, scan_type, identifiers)
         end
       end
 
