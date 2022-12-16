@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::ProcessBookkeepingService, :clean_gitlab_redis_shared_state, :elastic do
+RSpec.describe Elastic::ProcessBookkeepingService, :clean_gitlab_redis_shared_state, :elastic,
+feature_category: :global_search do
   let(:ref_class) { ::Gitlab::Elastic::DocumentReference }
 
   let(:fake_refs) { Array.new(10) { |i| ref_class.new(Issue, i, "issue_#{i}", 'project_1') } }
@@ -278,10 +279,9 @@ RSpec.describe Elastic::ProcessBookkeepingService, :clean_gitlab_redis_shared_st
         described_class.track!(*fake_refs)
         expect_processing(*fake_refs)
 
-        expect(Gitlab::Metrics::GlobalSearchIndexingSlis).to receive(:record_apdex).with(
-          elapsed: a_kind_of(Numeric),
-          document_type: 'Issue'
-        ).exactly(fake_refs.size).times
+        expect(Gitlab::Metrics::GlobalSearchIndexingSlis).to receive(:record_bytes_per_second_apdex).with(
+          throughput: a_kind_of(Numeric)
+        ).once
 
         described_class.new.execute
       end
@@ -292,10 +292,9 @@ RSpec.describe Elastic::ProcessBookkeepingService, :clean_gitlab_redis_shared_st
         failed = fake_refs[0]
         expect_processing(*fake_refs, failures: [failed])
 
-        expect(Gitlab::Metrics::GlobalSearchIndexingSlis).to receive(:record_apdex).with(
-          elapsed: a_kind_of(Numeric),
-          document_type: 'Issue'
-        ).exactly(fake_refs.size - 1).times
+        expect(Gitlab::Metrics::GlobalSearchIndexingSlis).to receive(:record_bytes_per_second_apdex).with(
+          throughput: a_kind_of(Numeric)
+        ).once
 
         described_class.new.execute
       end
