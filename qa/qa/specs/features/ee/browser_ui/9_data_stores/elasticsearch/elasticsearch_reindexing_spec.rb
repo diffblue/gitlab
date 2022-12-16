@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Data Stores', product_group: :global_search do
+  RSpec.describe 'Data Stores', product_group: :global_search, quarantine: {
+    issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/385927',
+    type: :stale
+  } do
     describe(
       'Search using Elasticsearch',
       :orchestrated,
