@@ -136,47 +136,71 @@ RSpec.describe Namespace do
   end
 
   describe '#actual_plan_name' do
-    let(:namespace) { create(:namespace) }
+    let_it_be(:namespace, refind: true) { create(:namespace) }
 
-    before do
-      allow(Gitlab).to receive(:com?).and_return(true)
-    end
+    subject(:actual_plan_name) { namespace.actual_plan_name }
 
-    subject { namespace.actual_plan_name }
-
-    context 'when DB is read-only' do
-      before do
-        expect(Gitlab::Database).to receive(:read_only?) { true }
-      end
-
-      it 'returns free plan' do
-        is_expected.to eq('free')
-      end
-
-      it 'does not create a gitlab_subscription' do
-        expect { subject }.not_to change(GitlabSubscription, :count)
+    context 'when namespace does not have a subscription associated' do
+      it 'returns default plan' do
+        expect(actual_plan_name).to eq('default')
       end
     end
 
-    context 'when namespace is not persisted' do
-      let(:namespace) { build(:namespace) }
+    context 'when running on Gitlab.com', :saas do
+      context 'when namespace has a subscription associated' do
+        before do
+          create(:gitlab_subscription, namespace: namespace, hosted_plan: ultimate_plan)
+        end
 
-      it 'returns free plan' do
-        is_expected.to eq('free')
+        it 'returns the associated plan name' do
+          expect(actual_plan_name).to eq 'ultimate'
+        end
       end
 
-      it 'does not create a gitlab_subscription' do
-        expect { subject }.not_to change(GitlabSubscription, :count)
-      end
-    end
-
-    context 'when DB is not read-only' do
-      it 'returns free plan' do
-        is_expected.to eq('free')
+      context 'when namespace does not have subscription associated' do
+        it 'returns a free plan name' do
+          expect(actual_plan_name).to eq 'free'
+        end
       end
 
-      it 'creates a gitlab_subscription' do
-        expect { subject }.to change(GitlabSubscription, :count).by(1)
+      context 'when the database is read-only' do
+        before do
+          allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+        end
+
+        it 'returns free plan' do
+          expect(Gitlab::Database).to receive(:read_only?)
+
+          expect(actual_plan_name).to eq('free')
+        end
+
+        it 'does not create a gitlab_subscription' do
+          expect(Gitlab::Database).to receive(:read_only?)
+
+          expect { actual_plan_name }.not_to change { GitlabSubscription.count }
+        end
+      end
+
+      context 'when namespace is not persisted' do
+        let(:namespace) { build(:namespace) }
+
+        it 'returns free plan' do
+          expect(actual_plan_name).to eq('free')
+        end
+
+        it 'does not create a gitlab_subscription' do
+          expect { actual_plan_name }.not_to change { GitlabSubscription.count }
+        end
+      end
+
+      context 'when the database is not read-only' do
+        it 'returns free plan' do
+          expect(actual_plan_name).to eq('free')
+        end
+
+        it 'creates a gitlab_subscription' do
+          expect { actual_plan_name }.to change { GitlabSubscription.count }.by(1)
+        end
       end
     end
   end
@@ -897,61 +921,6 @@ RSpec.describe Namespace do
             it 'returns the plan from the subscription' do
               expect(subgroup.actual_plan).to eq(ultimate_plan)
               expect(subgroup.gitlab_subscription).not_to be_present
-            end
-          end
-        end
-      end
-    end
-  end
-
-  describe '#actual_plan_name' do
-    context 'when namespace does not have a subscription associated' do
-      it 'returns default plan' do
-        expect(namespace.actual_plan_name).to eq('default')
-      end
-    end
-
-    context 'when running on Gitlab.com' do
-      before do
-        allow(Gitlab).to receive(:com?).and_return(true)
-      end
-
-      context 'for personal namespaces' do
-        context 'when namespace has a subscription associated' do
-          before do
-            create(:gitlab_subscription, namespace: namespace, hosted_plan: ultimate_plan)
-          end
-
-          it 'returns an associated plan name' do
-            expect(namespace.actual_plan_name).to eq 'ultimate'
-          end
-        end
-
-        context 'when namespace does not have subscription associated' do
-          it 'returns a free plan name' do
-            expect(namespace.actual_plan_name).to eq 'free'
-          end
-        end
-      end
-
-      context 'for groups' do
-        context 'when the group is a subgroup with a parent' do
-          let(:parent) { create(:group) }
-          let(:subgroup) { create(:group, parent: parent) }
-
-          context 'when parent group has a subscription associated' do
-            before do
-              create(:gitlab_subscription, namespace: parent, hosted_plan: ultimate_plan)
-            end
-
-            it 'returns an associated plan name' do
-              expect(subgroup.actual_plan_name).to eq 'ultimate'
-            end
-          end
-
-          context 'when parent group does not have subscription associated' do
-            it 'returns a free plan name' do
-              expect(subgroup.actual_plan_name).to eq 'free'
             end
           end
         end

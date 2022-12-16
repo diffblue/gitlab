@@ -885,7 +885,7 @@ RSpec.describe Group do
         end
 
         it 'returns true for groups in proper plan' do
-          create(:gitlab_subscription, namespace: group, hosted_plan: create(:ultimate_plan))
+          create(:gitlab_subscription, :ultimate, namespace: group)
 
           is_expected.to be true
         end
@@ -997,507 +997,79 @@ RSpec.describe Group do
     end
   end
 
-  shared_context 'bot user for project' do
-    let(:project_bot) { create(:user, :project_bot) }
+  shared_context 'for billable users setup' do
+    let_it_be(:group, refind: true) { create(:group_with_plan, plan: :free_plan) }
+    let_it_be(:project) { create(:project, namespace: group) }
+    let_it_be(:group_developer) { group.add_developer(create(:user)).user }
+    let_it_be(:project_developer) { project.add_developer(create(:user)).user }
+    let_it_be(:group_guest) { group.add_guest(create(:user)).user }
+    let_it_be(:project_guest) { project.add_guest(create(:user)).user }
+    let_it_be(:invited_group) { create(:group) }
+    let_it_be(:invited_developer) { invited_group.add_developer(create(:user)).user }
 
-    before do
-      project.add_maintainer(project_bot)
-    end
-  end
-
-  shared_context 'bot user for group' do
-    let(:group_bot) { create(:user, :project_bot) }
-
-    before do
-      group.add_maintainer(group_bot)
+    before_all do
+      group.add_maintainer(create(:user, :project_bot))
+      project.add_maintainer(create(:user, :project_bot))
+      create(:group_group_link, { shared_with_group: invited_group, shared_group: group })
+      create(:project_group_link, project: project, group: invited_group)
     end
   end
 
   describe '#billed_user_ids', :saas do
-    let_it_be(:bronze_plan) { create(:bronze_plan) }
-    let_it_be(:premium_plan) { create(:premium_plan) }
-    let_it_be(:group, refind: true) { create(:group) }
-    let_it_be(:developer) { create(:user) }
-    let_it_be(:guest) { create(:user) }
-
-    before_all do
-      group.add_developer(developer)
-      group.add_developer(create(:user, :blocked))
-      group.add_guest(guest)
-      create(:group_member, :awaiting, :developer, source: group)
-    end
+    include_context 'for billable users setup'
 
     subject(:billed_user_ids) { group.billed_user_ids }
 
-    shared_context 'bot user for shared_group' do
-      let(:group_bot_in_shared_group) { create(:user, :project_bot) }
+    context 'with guests' do
+      it 'includes distinct active users' do
+        expect(billed_user_ids[:user_ids]).to match_array([
+                                                            group_guest.id,
+                                                            project_guest.id,
+                                                            group_developer.id,
+                                                            project_developer.id,
+                                                            invited_developer.id
+                                                          ])
+        expect(billed_user_ids[:group_member_user_ids]).to match_array([group_guest.id, group_developer.id])
+        expect(billed_user_ids[:project_member_user_ids]).to match_array([project_guest.id, project_developer.id])
+        expect(billed_user_ids[:shared_group_user_ids]).to match_array([invited_developer.id])
+        expect(billed_user_ids[:shared_project_user_ids]).to match_array([invited_developer.id])
+      end
+    end
 
+    context 'without guests' do
       before do
-        add_bot_to_group.add_maintainer(group_bot_in_shared_group)
-      end
-    end
-
-    shared_context 'bot user for invited_group' do
-      let(:group_bot_in_invited_group) { create(:user, :project_bot) }
-
-      before do
-        invited_group.add_maintainer(group_bot_in_invited_group)
-      end
-    end
-
-    it 'returns a breakdown of billable user ids' do
-      expect(billed_user_ids.keys).to eq([
-                                           :user_ids,
-                                           :group_member_user_ids,
-                                           :project_member_user_ids,
-                                           :shared_group_user_ids,
-                                           :shared_project_user_ids
-                                         ])
-    end
-
-    shared_examples 'ultimate plan' do
-      it 'does not include guest users and only active users' do
-        expect(billed_user_ids[:user_ids]).to match_array([developer.id])
+        group.gitlab_subscription.update!(hosted_plan: create(:ultimate_plan))
       end
 
-      context 'when group has a project and users are invited to it' do
-        let_it_be(:project) { create(:project, namespace: group) }
-        let_it_be(:project_developer) { create(:user) }
-
-        before_all do
-          project.add_developer(project_developer)
-          project.add_guest(create(:user))
-          project.add_developer(developer)
-          project.add_developer(create(:user, :blocked))
-          create(:project_member, :awaiting, :developer, source: project)
-        end
-
-        it 'includes invited active users except guests to the group', :aggregate_failures do
-          expect(billed_user_ids[:user_ids]).to match_array([project_developer.id, developer.id])
-          expect(billed_user_ids[:project_member_user_ids]).to match_array([project_developer.id, developer.id])
-          expect(billed_user_ids[:group_member_user_ids]).to match_array([developer.id])
-          expect(billed_user_ids[:shared_group_user_ids]).to match_array([])
-          expect(billed_user_ids[:shared_project_user_ids]).to match_array([])
-        end
-
-        context 'with bot users for project' do
-          include_context 'bot user for project'
-
-          it { expect(billed_user_ids[:user_ids]).not_to include(project_bot.id) }
-          it { expect(billed_user_ids[:project_member_user_ids]).not_to include(project_bot.id) }
-        end
-
-        context 'with bot users for group' do
-          include_context 'bot user for group'
-
-          it { expect(billed_user_ids[:user_ids]).not_to include(group_bot.id) }
-          it { expect(billed_user_ids[:group_member_user_ids]).not_to include(group_bot.id) }
-        end
-
-        context 'when group is invited to the project' do
-          let_it_be(:invited_group) { create(:group) }
-          let_it_be(:invited_group_developer) { create(:user) }
-
-          before_all do
-            invited_group.add_developer(invited_group_developer)
-            invited_group.add_guest(create(:user))
-            invited_group.add_developer(create(:user, :blocked))
-            invited_group.add_developer(developer)
-            create(:group_member, :awaiting, :developer, source: invited_group)
-          end
-
-          context 'when group is invited as non guest' do
-            before_all do
-              create(:project_group_link, project: project, group: invited_group)
-            end
-
-            it 'includes only active users except guests of the invited groups', :aggregate_failures do
-              expect(billed_user_ids[:user_ids]).to match_array([invited_group_developer.id, project_developer.id, developer.id])
-              expect(billed_user_ids[:shared_group_user_ids]).to match_array([])
-              expect(billed_user_ids[:shared_project_user_ids]).to match_array([invited_group_developer.id, developer.id])
-              expect(billed_user_ids[:group_member_user_ids]).to match_array([developer.id])
-              expect(billed_user_ids[:project_member_user_ids]).to match_array([developer.id, project_developer.id])
-            end
-
-            context 'the invited group contains bot users' do
-              include_context 'bot user for invited_group'
-
-              it { expect(billed_user_ids[:user_ids]).not_to include(group_bot_in_invited_group.id) }
-              it { expect(billed_user_ids[:shared_project_user_ids]).not_to include(group_bot_in_invited_group.id) }
-            end
-          end
-
-          context 'when group is invited as a guest to the project' do
-            before do
-              create(:project_group_link, :guest, project: project, group: invited_group)
-            end
-
-            it 'does not include any members from the invited group', :aggregate_failures do
-              expect(billed_user_ids[:user_ids]).to match_array([project_developer.id, developer.id])
-              expect(billed_user_ids[:shared_project_user_ids]).to be_empty
-            end
-          end
-        end
-      end
-
-      context 'when group has been shared with another group' do
-        let_it_be(:shared_group) { create(:group) }
-        let_it_be(:shared_group_developer) { create(:user) }
-
-        before_all do
-          shared_group.add_developer(shared_group_developer)
-          shared_group.add_guest(create(:user))
-          shared_group.add_developer(create(:user, :blocked))
-          create(:group_member, :awaiting, :developer, source: shared_group)
-          create(:group_group_link, { shared_with_group: shared_group, shared_group: group })
-        end
-
-        it 'includes active users from the shared group to the billed members', :aggregate_failures do
-          expect(billed_user_ids[:user_ids]).to match_array([shared_group_developer.id, developer.id])
-          expect(billed_user_ids[:shared_group_user_ids]).to match_array([shared_group_developer.id])
-          expect(shared_group.billed_user_ids[:user_ids]).not_to include([developer.id])
-        end
-
-        context 'the shared group contains bot users' do
-          include_context 'bot user for shared_group' do
-            let(:add_bot_to_group) { shared_group }
-          end
-
-          it { expect(billed_user_ids[:user_ids]).not_to include(group_bot_in_shared_group.id) }
-          it { expect(billed_user_ids[:shared_group_user_ids]).not_to include(group_bot_in_shared_group.id) }
-        end
-
-        context 'when subgroup invited another group to collaborate' do
-          let_it_be(:another_shared_group) { create(:group) }
-          let_it_be(:another_shared_group_developer) { create(:user) }
-
-          before_all do
-            another_shared_group.add_developer(another_shared_group_developer)
-            another_shared_group.add_guest(create(:user))
-            another_shared_group.add_developer(create(:user, :blocked))
-            create(:group_member, :awaiting, :developer, source: another_shared_group)
-          end
-
-          context 'when subgroup invites another group as non guest' do
-            before_all do
-              subgroup = create(:group, parent: group)
-              create(:group_group_link, { shared_with_group: another_shared_group, shared_group: subgroup })
-            end
-
-            it 'includes all the active and non guest users from the shared group', :aggregate_failures do
-              expect(billed_user_ids[:user_ids]).to match_array([shared_group_developer.id, developer.id, another_shared_group_developer.id])
-              expect(billed_user_ids[:shared_group_user_ids]).to match_array([shared_group_developer.id, another_shared_group_developer.id])
-              expect(shared_group.billed_user_ids[:user_ids]).not_to include([developer.id])
-              expect(another_shared_group.billed_user_ids[:user_ids]).not_to include([developer.id, shared_group_developer.id])
-            end
-
-            context 'the shared group contains bot users' do
-              include_context 'bot user for shared_group' do
-                let(:add_bot_to_group) { another_shared_group }
-              end
-
-              it { expect(billed_user_ids[:user_ids]).not_to include(group_bot_in_shared_group.id) }
-              it { expect(billed_user_ids[:shared_group_user_ids]).not_to include(group_bot_in_shared_group.id) }
-            end
-          end
-
-          context 'when subgroup invites another group as guest' do
-            before do
-              subgroup = create(:group, parent: group)
-              create(:group_group_link, :guest, { shared_with_group: another_shared_group, shared_group: subgroup })
-            end
-
-            it 'does not include any user from the shared group from the subgroup', :aggregate_failures do
-              expect(billed_user_ids[:user_ids]).to match_array([shared_group_developer.id, developer.id])
-              expect(billed_user_ids[:shared_group_user_ids]).to match_array([shared_group_developer.id])
-            end
-          end
-        end
-      end
-    end
-
-    context 'with a ultimate plan' do
-      before_all do
-        create(:gitlab_subscription, :ultimate, namespace: group)
-      end
-
-      it_behaves_like 'ultimate plan'
-    end
-
-    context 'with an ultimate trial plan' do
-      before_all do
-        create(:gitlab_subscription, :ultimate_trial, namespace: group)
-      end
-
-      it_behaves_like 'ultimate plan'
-    end
-
-    context 'with other plans' do
-      %i[bronze_plan premium_plan].each do |plan|
-        subject(:billed_user_ids) { group.billed_user_ids }
-
-        it 'includes active guest users', :aggregate_failures do
-          create(:gitlab_subscription, namespace: group, hosted_plan: send(plan))
-          expect(billed_user_ids[:user_ids]).to match_array([guest.id, developer.id])
-          expect(billed_user_ids[:group_member_user_ids]).to match_array([guest.id, developer.id])
-        end
-
-        context 'when group has a project and users invited to it' do
-          let_it_be(:project) { create(:project, namespace: group) }
-          let_it_be(:project_developer) { create(:user) }
-          let_it_be(:project_guest) { create(:user) }
-
-          before_all do
-            create(:gitlab_subscription, namespace: group, hosted_plan: send(plan))
-            project.add_developer(project_developer)
-            project.add_guest(project_guest)
-            project.add_developer(create(:user, :blocked))
-            project.add_developer(developer)
-            create(:project_member, :awaiting, :developer, source: project)
-          end
-
-          it 'includes invited active users to the group', :aggregate_failures do
-            expect(billed_user_ids[:user_ids]).to match_array([guest.id, developer.id, project_guest.id, project_developer.id])
-            expect(billed_user_ids[:project_member_user_ids]).to match_array([developer.id, project_guest.id, project_developer.id])
-          end
-
-          context 'with bot users for project' do
-            include_context 'bot user for project'
-
-            it { expect(billed_user_ids[:user_ids]).not_to include(project_bot.id) }
-            it { expect(billed_user_ids[:project_member_user_ids]).not_to include(project_bot.id) }
-          end
-
-          context 'with bot users for group' do
-            include_context 'bot user for group'
-
-            it { expect(billed_user_ids[:user_ids]).not_to include(group_bot.id) }
-            it { expect(billed_user_ids[:group_member_user_ids]).not_to include(group_bot.id) }
-          end
-
-          context 'when group is invited to the project' do
-            let_it_be(:invited_group) { create(:group) }
-            let_it_be(:invited_group_developer) { create(:user) }
-            let_it_be(:invited_group_guest) { create(:user) }
-
-            before_all do
-              invited_group.add_developer(invited_group_developer)
-              invited_group.add_developer(developer)
-              invited_group.add_guest(invited_group_guest)
-              invited_group.add_developer(create(:user, :blocked))
-              create(:group_member, :awaiting, :developer, source: invited_group)
-              create(:project_group_link, project: project, group: invited_group)
-            end
-
-            it 'includes the unique active users and guests of the invited groups', :aggregate_failures do
-              expect(billed_user_ids[:user_ids]).to match_array([
-                                                                  guest.id,
-                                                                  developer.id,
-                                                                  project_guest.id,
-                                                                  project_developer.id,
-                                                                  invited_group_developer.id,
-                                                                  invited_group_guest.id
-                                                                ])
-
-              expect(billed_user_ids[:shared_project_user_ids]).to match_array([
-                                                                                 developer.id,
-                                                                                 invited_group_developer.id,
-                                                                                 invited_group_guest.id
-                                                                               ])
-            end
-
-            context 'the invited group contains bot users' do
-              include_context 'bot user for invited_group'
-
-              it { expect(billed_user_ids[:user_ids]).not_to include(group_bot_in_invited_group.id) }
-              it { expect(billed_user_ids[:shared_project_user_ids]).not_to include(group_bot_in_invited_group.id) }
-            end
-          end
-        end
-
-        context 'when group has been shared with another group' do
-          let_it_be(:shared_group, refind: true) { create(:group) }
-          let_it_be(:shared_group_developer) { create(:user) }
-          let_it_be(:shared_group_guest) { create(:user) }
-
-          before_all do
-            create(:gitlab_subscription, namespace: group, hosted_plan: send(plan))
-            shared_group.add_developer(shared_group_developer)
-            shared_group.add_guest(shared_group_guest)
-            shared_group.add_developer(create(:user, :blocked))
-            create(:group_member, :awaiting, :developer, source: shared_group)
-
-            create(:group_group_link, { shared_with_group: shared_group,
-                                        shared_group: group })
-          end
-
-          it 'includes active users from the shared group including guests', :aggregate_failures do
-            expect(billed_user_ids[:user_ids]).to match_array([developer.id, guest.id, shared_group_developer.id, shared_group_guest.id])
-            expect(billed_user_ids[:shared_group_user_ids]).to match_array([shared_group_developer.id, shared_group_guest.id])
-            expect(shared_group.billed_user_ids[:user_ids]).to match_array([shared_group_developer.id, shared_group_guest.id])
-          end
-
-          context 'the shared group contains bot users' do
-            include_context 'bot user for shared_group' do
-              let(:add_bot_to_group) { shared_group }
-            end
-
-            it { expect(billed_user_ids[:user_ids]).not_to include(group_bot_in_shared_group.id) }
-            it { expect(billed_user_ids[:shared_group_user_ids]).not_to include(group_bot_in_shared_group.id) }
-          end
-        end
+      it 'includes distinct active users' do
+        expect(billed_user_ids[:user_ids])
+          .to match_array([group_developer.id, project_developer.id, invited_developer.id])
+        expect(billed_user_ids[:group_member_user_ids]).to match_array([group_developer.id])
+        expect(billed_user_ids[:project_member_user_ids]).to match_array([project_developer.id])
+        expect(billed_user_ids[:shared_group_user_ids]).to match_array([invited_developer.id])
+        expect(billed_user_ids[:shared_project_user_ids]).to match_array([invited_developer.id])
       end
     end
   end
 
   describe '#billable_members_count', :saas do
-    let_it_be(:bronze_plan) { create(:bronze_plan) }
-    let_it_be(:premium_plan) { create(:premium_plan) }
-    let_it_be(:ultimate_plan) { create(:ultimate_plan) }
-    let_it_be(:group, refind: true) { create(:group) }
-    let_it_be(:developer) { create(:user) }
+    include_context 'for billable users setup'
 
-    before_all do
-      group.add_developer(developer)
-      group.add_developer(create(:user, :blocked))
-      group.add_guest(create(:user))
-      create(:group_member, :awaiting, :developer, source: group)
-    end
+    subject(:billable_members_count) { group.billable_members_count }
 
-    context 'with an ultimate plan' do
-      before_all do
-        create(:gitlab_subscription, namespace: group, hosted_plan: ultimate_plan)
-      end
-
-      it 'counts only active users with an active membership with an access level higher than guest' do
-        expect(group.billable_members_count).to eq(1)
-      end
-
-      context 'when group has a project with invited users' do
-        let_it_be(:project) { create(:project, namespace: group) }
-
-        before_all do
-          project.add_developer(create(:user))
-          project.add_guest(create(:user))
-          project.add_developer(developer)
-          project.add_developer(create(:user, :blocked))
-          create(:project_member, :awaiting, :developer, source: project)
-        end
-
-        it 'includes invited active users except guests and awaiting members' do
-          expect(group.billable_members_count).to eq(2)
-        end
-
-        context 'with bot users for project and group' do
-          include_context 'bot user for project'
-          include_context 'bot user for group'
-
-          it 'does not include bot users in the count' do
-            expect(group.billable_members_count).to eq(2)
-          end
-        end
-
-        context 'when another group is invited to the project' do
-          let(:invited_group) { create(:group) }
-
-          before do
-            invited_group.add_developer(create(:user))
-            invited_group.add_guest(create(:user))
-            invited_group.add_developer(create(:user, :blocked))
-            invited_group.add_developer(developer)
-            create(:group_member, :awaiting, :developer, source: invited_group)
-            create(:project_group_link, project: project, group: invited_group)
-          end
-
-          it 'includes active users in the invited group with an access level higher than guest' do
-            expect(group.billable_members_count).to eq(3)
-          end
-        end
-      end
-
-      context 'when group has been shared with another group' do
-        let(:other_group) { create(:group) }
-
-        before do
-          other_group.add_developer(create(:user))
-          other_group.add_guest(create(:user))
-          other_group.add_developer(create(:user, :blocked))
-          create(:group_member, :awaiting, :developer, source: other_group)
-          create(:group_group_link, { shared_with_group: other_group, shared_group: group })
-        end
-
-        it 'includes active users from the other group in the billed members count' do
-          expect(group.billable_members_count).to eq(2)
-        end
+    context 'with guests' do
+      it 'provides count of users' do
+        expect(billable_members_count).to eq(5)
       end
     end
 
-    context 'with other plans' do
-      %i[bronze_plan premium_plan].each do |plan|
-        it 'counts active guest users' do
-          create(:gitlab_subscription, namespace: group, hosted_plan: send(plan))
-          expect(group.billable_members_count).to eq(2)
-        end
+    context 'without guests' do
+      before do
+        group.gitlab_subscription.update!(hosted_plan: create(:ultimate_plan))
+      end
 
-        context 'when group has a project and users invited to it' do
-          let_it_be(:project) { create(:project, namespace: group) }
-
-          before_all do
-            create(:gitlab_subscription, namespace: group, hosted_plan: send(plan))
-            project.add_developer(create(:user))
-            project.add_guest(create(:user))
-            project.add_developer(create(:user, :blocked))
-            project.add_developer(developer)
-            create(:project_member, :awaiting, :developer, source: project)
-          end
-
-          it 'includes invited active users to the group' do
-            expect(group.billable_members_count).to eq(4)
-          end
-
-          context 'with bot users for project and group' do
-            include_context 'bot user for project'
-            include_context 'bot user for group'
-
-            it 'does not include bot users in the count' do
-              expect(group.billable_members_count).to eq(4)
-            end
-          end
-
-          context 'when another group is invited to the project' do
-            let(:invited_group) { create(:group) }
-
-            before do
-              invited_group.add_developer(create(:user))
-              invited_group.add_developer(developer)
-              invited_group.add_guest(create(:user))
-              invited_group.add_developer(create(:user, :blocked))
-              create(:group_member, :awaiting, :developer, source: invited_group)
-              create(:project_group_link, project: project, group: invited_group)
-            end
-
-            it 'counts the unique active users including guests of the invited groups' do
-              expect(group.billable_members_count).to eq(6)
-            end
-          end
-        end
-
-        context 'when group has been shared with another group' do
-          let(:other_group) { create(:group) }
-
-          before do
-            create(:gitlab_subscription, namespace: group, hosted_plan: send(plan))
-            other_group.add_developer(create(:user))
-            other_group.add_guest(create(:user))
-            other_group.add_developer(create(:user, :blocked))
-            create(:group_member, :awaiting, :developer, source: other_group)
-            create(:group_group_link, { shared_with_group: other_group, shared_group: group })
-          end
-
-          it 'includes active users from the other group including guests in the billed members count' do
-            expect(group.billable_members_count).to eq(4)
-          end
-        end
+      it 'provides count of users' do
+        expect(billable_members_count).to eq(3)
       end
     end
   end
@@ -1828,6 +1400,29 @@ RSpec.describe Group do
 
       it 'returns the expected result' do
         expect(group.exclude_guests?(requested_plan_name)).to eq(result)
+      end
+    end
+  end
+
+  describe '#actual_plan_name', :saas do
+    let_it_be(:parent) { create(:group) }
+    let_it_be(:subgroup, refind: true) { create(:group, parent: parent) }
+
+    subject(:actual_plan_name) { subgroup.actual_plan_name }
+
+    context 'when parent group has a subscription associated' do
+      before do
+        create(:gitlab_subscription, :ultimate, namespace: parent)
+      end
+
+      it 'returns an associated plan name' do
+        expect(actual_plan_name).to eq 'ultimate'
+      end
+    end
+
+    context 'when parent group does not have subscription associated' do
+      it 'returns a free plan name' do
+        expect(actual_plan_name).to eq 'free'
       end
     end
   end
