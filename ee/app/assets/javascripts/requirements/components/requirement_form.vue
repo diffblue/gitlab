@@ -1,5 +1,4 @@
 <script>
-import '~/behaviors/markdown/render_gfm';
 import { GlDrawer, GlButton, GlFormCheckbox, GlTooltipDirective } from '@gitlab/ui';
 import $ from 'jquery';
 import { isEmpty } from 'lodash';
@@ -8,6 +7,7 @@ import { TAB_KEY_CODE } from '~/lib/utils/keycodes';
 import { __, sprintf } from '~/locale';
 import ZenMode from '~/zen_mode';
 
+import { renderGFM } from '~/behaviors/markdown/render_gfm';
 import { MAX_TITLE_LENGTH, TestReportStatus } from '../constants';
 import RequirementMeta from '../mixins/requirement_meta';
 import RequirementStatusBadge from './requirement_status_badge.vue';
@@ -109,7 +109,7 @@ export default {
   mounted() {
     this.handleDocumentKeydown = this.handleDrawerKeydown.bind(this);
     this.zenMode = new ZenMode();
-    $(this.$refs.gfmContainer).renderGFM();
+    renderGFM(this.$refs.gfmContainer);
     $(document).on('zen_mode:enter', () => {
       this.zenModeEnabled = true;
     });
