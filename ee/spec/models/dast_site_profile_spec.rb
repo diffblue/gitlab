@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe DastSiteProfile, type: :model do
+RSpec.describe DastSiteProfile, :dynamic_analysis,
+                                feature_category: :dynamic_application_security_testing,
+                                type: :model do
   let_it_be(:project) { create(:project) }
 
   subject { create(:dast_site_profile, :with_dast_site_validation, project: project) }
@@ -129,18 +131,55 @@ RSpec.describe DastSiteProfile, type: :model do
         subject do
           build(:dast_site_profile, dast_site: dast_site, project: project,
                                     target_type: target_type,
+                                    scan_method: scan_method,
                                     scan_file_path: scan_file_path)
         end
 
         context 'when the target_type is api' do
           let_it_be(:target_type) { 'api' }
 
-          context 'when scan_file_path is not a valid url' do
+          shared_examples 'invalid url' do
             let_it_be(:scan_file_path) { 'invalid_url' }
 
             it 'is not valid', :aggregate_failures do
               expect(subject).not_to be_valid
-              expect(subject.errors.full_messages).to include("Scan file path is not a valid URL.")
+              expect(subject.errors.full_messages).to include(error_message)
+            end
+          end
+
+          context 'when the scan_method is openapi' do
+            let_it_be(:scan_method) { 'openapi' }
+
+            let_it_be(:error_message) { 'OpenAPI Specification file URL is not a valid URL.' }
+
+            it_behaves_like 'invalid url'
+          end
+
+          context 'when the scan_method is har' do
+            let_it_be(:scan_method) { 'har' }
+
+            let_it_be(:error_message) { 'HAR file URL is not a valid URL.' }
+
+            it_behaves_like 'invalid url'
+          end
+
+          context 'when the scan_method is postman' do
+            let_it_be(:scan_method) { 'postman' }
+
+            let_it_be(:error_message) { 'Postman collection file URL is not a valid URL.' }
+
+            it_behaves_like 'invalid url'
+          end
+
+          context 'when the scan_method is graphql' do
+            let_it_be(:scan_method) { 'graphql' }
+
+            context 'when the scan_file_path is an file_path' do
+              let_it_be(:scan_file_path) { '/graphql' }
+
+              it 'is valid' do
+                expect(subject).to be_valid
+              end
             end
           end
         end
@@ -351,7 +390,7 @@ RSpec.describe DastSiteProfile, type: :model do
           let(:scan_file_path) { "http://test-deployment/#{targeting_api}" }
           let(:scan_method) { :openapi }
 
-          let(:excluded) { %w[DAST_WEBSITE DAST_EXCLUDE_URLS DAST_API_HAR DAST_API_POSTMAN_COLLECTION DAST_API_GRAPHQL] }
+          let(:excluded) { %w[DAST_WEBSITE DAST_EXCLUDE_URLS DAST_API_HAR DAST_API_POSTMAN_COLLECTION DAST_API_GRAPHQL DAST_API_TARGET_URL] }
 
           let(:included) do
             [
@@ -381,7 +420,7 @@ RSpec.describe DastSiteProfile, type: :model do
           let(:scan_file_path) { "http://test-deployment/#{targeting_api}" }
           let(:scan_method) { :har }
 
-          let(:excluded) { %w[DAST_WEBSITE DAST_EXCLUDE_URLS DAST_API_OPENAPI DAST_API_POSTMAN_COLLECTION DAST_API_GRAPHQL] }
+          let(:excluded) { %w[DAST_WEBSITE DAST_EXCLUDE_URLS DAST_API_OPENAPI DAST_API_POSTMAN_COLLECTION DAST_API_GRAPHQL DAST_API_TARGET_URL] }
 
           let(:included) do
             [
@@ -411,7 +450,7 @@ RSpec.describe DastSiteProfile, type: :model do
           let(:scan_file_path) { "http://test-deployment/#{targeting_api}" }
           let(:scan_method) { :postman }
 
-          let(:excluded) { %w[DAST_WEBSITE DAST_EXCLUDE_URLS DAST_API_OPENAPI DAST_API_HAR DAST_API_GRAPHQL] }
+          let(:excluded) { %w[DAST_WEBSITE DAST_EXCLUDE_URLS DAST_API_OPENAPI DAST_API_HAR DAST_API_GRAPHQL DAST_API_TARGET_URL] }
 
           let(:included) do
             [
@@ -437,8 +476,7 @@ RSpec.describe DastSiteProfile, type: :model do
         end
 
         context 'when scan_method is graphql' do
-          let(:targeting_api) { 'graphql' }
-          let(:scan_file_path) { "http://test-deployment/#{targeting_api}" }
+          let(:scan_file_path) { '/graphql' }
           let(:scan_method) { :graphql }
 
           let(:excluded) { %w[DAST_WEBSITE DAST_EXCLUDE_URLS DAST_API_OPENAPI DAST_API_HAR DAST_API_POSTMAN_COLLECTION] }
@@ -446,6 +484,7 @@ RSpec.describe DastSiteProfile, type: :model do
           let(:included) do
             [
               { key: 'DAST_API_GRAPHQL', value: scan_file_path, public: true },
+              { key: 'DAST_API_TARGET_URL', value: subject.dast_site.url, public: true },
               { key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true }
             ]
           end
@@ -458,6 +497,7 @@ RSpec.describe DastSiteProfile, type: :model do
             let(:included) do
               [
                 { key: 'DAST_API_GRAPHQL', value: subject.dast_site.url, public: true },
+                { key: 'DAST_API_TARGET_URL', value: subject.dast_site.url, public: true },
                 { key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true }
               ]
             end
