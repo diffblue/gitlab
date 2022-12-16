@@ -31,7 +31,7 @@ describe('Executive dashboard app', () => {
     });
 
     it('renders the page title', () => {
-      expect(wrapper.text()).toContain('DevOps metrics comparison (Alpha)');
+      expect(wrapper.text()).toContain('DevOps metrics comparison (Beta)');
     });
 
     it('renders a chart component for each config', () => {

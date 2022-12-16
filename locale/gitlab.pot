@@ -14155,7 +14155,7 @@ msgstr ""
 msgid "DevOps adoption"
 msgstr ""
 
-msgid "DevOps metrics comparison (Alpha)"
+msgid "DevOps metrics comparison (Beta)"
 msgstr ""
 
 msgid "Developer"
