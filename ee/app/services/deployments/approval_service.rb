@@ -52,25 +52,27 @@ module Deployments
       end
     end
 
+    # rubocop:disable Style/GuardClause
     def validate(deployment, status)
       return _('Unrecognized approval status.') unless Deployments::Approval.statuses.include?(status)
-
+      return _('This deployment is not waiting for approvals.') unless deployment.blocked?
+      return _('You cannot approve your own deployment.') if deployment.user == current_user && status == 'approved'
       return _('This environment is not protected.') unless deployment.environment.protected?
 
-      if environment.has_approval_rules?
-        unless current_user&.can?(:read_deployment, deployment) && approval_rule
-          return _("You don't have permission to review this deployment. Contact the project or group owner for help.")
-        end
-      else
-        unless current_user&.can?(:update_deployment, deployment)
-          return _("You don't have permission to review this deployment. Contact the project or group owner for help.")
-        end
+      unless deployment.environment.needs_approval?
+        return _('Deployment approvals is not configured for this environment.')
       end
 
-      return _('This deployment is not waiting for approvals.') unless deployment.blocked?
+      unless current_user&.can?(:approve_deployment, deployment)
+        return _("You don't have permission to approve this deployment. Contact the project or group owner for help.")
+      end
 
-      _('You cannot approve your own deployment.') if deployment.user == current_user && status == 'approved'
+      if environment.has_approval_rules? && params[:represented_as].present? && approval_rule.nil?
+        _("There are no approval rules for the given `represent_as` parameter. " \
+          "Use a valid User/Group/Role name instead.")
+      end
     end
+    # rubocop:enable Style/GuardClause
 
     def approval_rule
       strong_memoize(:approval_rule) do

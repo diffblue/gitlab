@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Deployments do
+RSpec.describe API::Deployments, feature_category: :continuous_delivery do
   let_it_be_with_refind(:organization) { create(:group) }
   let_it_be_with_refind(:project) { create(:project, :repository, group: organization) }
 
@@ -414,13 +414,12 @@ RSpec.describe API::Deployments do
               .not_to change { Deployments::Approval.count }
 
             expect(response).to have_gitlab_http_status(:bad_request)
-            expect(response.body).to include("You don't have permission to review this deployment. " \
-                                             "Contact the project or group owner for help.")
+            expect(response.body).to include("There are no approval rules for the given `represent_as` parameter. Use a valid User/Group/Role name instead.")
           end
         end
 
         context 'and user is not authorized to update deployment' do
-          include_examples 'not created', response_status: :bad_request, message: "You don't have permission to review this deployment. Contact the project or group owner for help."
+          include_examples 'not created', response_status: :bad_request, message: "You don't have permission to approve this deployment. Contact the project or group owner for help."
         end
 
         context 'with an invalid status' do
@@ -450,6 +449,14 @@ RSpec.describe API::Deployments do
 
         include_examples 'not created', response_status: :bad_request, message: 'This environment is not protected'
       end
+    end
+
+    context 'when user is Guest' do
+      before do
+        project.add_guest(user)
+      end
+
+      include_examples 'not created', response_status: :forbidden, message: '403 Forbidden'
     end
 
     context 'when user is not authorized to read project' do
