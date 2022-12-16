@@ -23,10 +23,6 @@ module Mutations
           def resolve(destination_id:, event_type_filters:)
             destination = authorized_find!(destination_id)
 
-            unless Feature.enabled?(:allow_audit_event_type_filtering, destination.group)
-              raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'allow_audit_event_type_filtering feature disabled'
-            end
-
             response = ::AuditEvents::Streaming::EventTypeFilters::CreateService.new(
               destination: destination,
               event_type_filters: event_type_filters
