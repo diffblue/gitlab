@@ -89,7 +89,7 @@ export default {
   <mounting-portal mount-to="#js-right-sidebar-portal" name="epic-board-sidebar" append>
     <gl-drawer
       v-bind="$attrs"
-      class="boards-sidebar gl-absolute"
+      class="boards-sidebar"
       :open="showSidebar"
       variant="sidebar"
       @close="handleClose"
