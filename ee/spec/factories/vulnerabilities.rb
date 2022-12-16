@@ -178,5 +178,12 @@ FactoryBot.define do
         end
       end
     end
+
+    trait :with_merge_request_links do
+      after(:create) do |vulnerability|
+        merge_request = create(:merge_request, source_project: vulnerability.project)
+        create(:vulnerabilities_merge_request_link, vulnerability: vulnerability, merge_request: merge_request)
+      end
+    end
   end
 end
