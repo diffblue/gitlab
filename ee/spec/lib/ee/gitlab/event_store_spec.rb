@@ -10,7 +10,6 @@ RSpec.describe Gitlab::EventStore do
       expect(instance.subscriptions.keys).to include(
         ::Ci::JobArtifactsDeletedEvent,
         ::Ci::PipelineCreatedEvent,
-        ::Members::MembersAddedEvent,
         ::Repositories::KeepAroundRefsCreatedEvent,
         ::MergeRequests::ApprovedEvent
       )
