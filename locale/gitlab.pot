@@ -27291,9 +27291,6 @@ msgstr ""
 msgid "New directory"
 msgstr ""
 
-msgid "New discussion"
-msgstr ""
-
 msgid "New email address added"
 msgstr ""
 
@@ -39525,13 +39522,13 @@ msgstr ""
 msgid "Start a Free Ultimate Trial"
 msgstr ""
 
-msgid "Start a new discussion…"
-msgstr ""
-
 msgid "Start a new merge request with these changes"
 msgstr ""
 
 msgid "Start a review"
+msgstr ""
+
+msgid "Start another thread"
 msgstr ""
 
 msgid "Start by choosing a group to start exploring the merge requests in that group. You can then proceed to filter by projects, labels, milestones and authors."
