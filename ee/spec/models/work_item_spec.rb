@@ -135,7 +135,7 @@ RSpec.describe WorkItem do
         end
 
         context 'when work item supports health_status' do
-          where(:work_item_type) { [:task, :issue, :objective, :key_result] }
+          where(:work_item_type) { [:issue, :objective, :key_result] }
 
           with_them do
             it 'returns an instance of the health status widget' do
