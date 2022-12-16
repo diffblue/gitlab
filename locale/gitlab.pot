@@ -48485,6 +48485,9 @@ msgstr ""
 msgid "can not be changed for existing notes"
 msgstr ""
 
+msgid "can not be changed to %{new_type}"
+msgstr ""
+
 msgid "can not be set for this resource"
 msgstr ""
 
