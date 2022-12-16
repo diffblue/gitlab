@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Deployments::ApprovalService do
+RSpec.describe Deployments::ApprovalService, feature_category: :continuous_delivery do
   let_it_be(:project) { create(:project, :repository) }
 
   let(:service) { described_class.new(project, user, params) }
@@ -231,7 +231,7 @@ RSpec.describe Deployments::ApprovalService do
       end
 
       context 'when environment is not protected' do
-        let(:deployment) { create(:deployment, project: project, deployable: ci_build) }
+        let(:deployment) { create(:deployment, :blocked, project: project, deployable: ci_build) }
 
         include_examples 'error', message: 'This environment is not protected.'
       end
@@ -244,12 +244,20 @@ RSpec.describe Deployments::ApprovalService do
         include_examples 'error', message: 'This environment is not protected.'
       end
 
+      context 'when deployment approval is not configured' do
+        before do
+          protected_environment.update_column(:required_approval_count, 0)
+        end
+
+        include_examples 'error', message: 'Deployment approvals is not configured for this environment.'
+      end
+
       context 'when the user does not have permission to update deployment' do
         before do
           project.add_developer(user)
         end
 
-        include_examples 'error', message: "You don't have permission to review this deployment. Contact the project or group owner for help."
+        include_examples 'error', message: "You don't have permission to approve this deployment. Contact the project or group owner for help."
       end
 
       context 'with approval rule' do
@@ -260,7 +268,7 @@ RSpec.describe Deployments::ApprovalService do
             project.add_guest(user)
           end
 
-          include_examples 'error', message: "You don't have permission to review this deployment. Contact the project or group owner for help."
+          include_examples 'error', message: "You don't have permission to approve this deployment. Contact the project or group owner for help."
         end
 
         context 'when there are no rules for the user' do
@@ -268,14 +276,30 @@ RSpec.describe Deployments::ApprovalService do
             project.add_developer(user)
           end
 
-          include_examples 'error', message: "You don't have permission to review this deployment. Contact the project or group owner for help."
+          include_examples 'error', message: "You don't have permission to approve this deployment. Contact the project or group owner for help."
+        end
+
+        context 'when there are no approval rules that match represented_as' do
+          let!(:group) { create(:group, name: 'QA group') }
+
+          let!(:approval_rule) do
+            create(:protected_environment_approval_rule, group: group, protected_environment: protected_environment)
+          end
+
+          let(:params) { { represented_as: 'Developer group' } }
+
+          before do
+            group.add_maintainer(user)
+          end
+
+          include_examples 'error', message: "There are no approval rules for the given `represent_as` parameter. Use a valid User/Group/Role name instead."
         end
       end
 
       context 'when user is nil' do
         let(:user) { nil }
 
-        include_examples 'error', message: "You don't have permission to review this deployment. Contact the project or group owner for help."
+        include_examples 'error', message: "You don't have permission to approve this deployment. Contact the project or group owner for help."
       end
 
       context 'when deployment is not blocked' do

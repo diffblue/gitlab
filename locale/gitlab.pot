@@ -13767,6 +13767,9 @@ msgstr ""
 msgid "Deployment Target|Select the deployment target"
 msgstr ""
 
+msgid "Deployment approvals is not configured for this environment."
+msgstr ""
+
 msgid "Deployment frequency"
 msgstr ""
 
@@ -41796,6 +41799,9 @@ msgstr ""
 msgid "There are no abuse reports!"
 msgstr ""
 
+msgid "There are no approval rules for the given `represent_as` parameter. Use a valid User/Group/Role name instead."
+msgstr ""
+
 msgid "There are no archived requirements"
 msgstr ""
 
@@ -47637,7 +47643,7 @@ msgstr ""
 msgid "You don't have any recent searches"
 msgstr ""
 
-msgid "You don't have permission to review this deployment. Contact the project or group owner for help."
+msgid "You don't have permission to approve this deployment. Contact the project or group owner for help."
 msgstr ""
 
 msgid "You don't have permission to view this epic"

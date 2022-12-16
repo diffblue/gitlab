@@ -22,6 +22,8 @@ module EE
             optional :represented_as, type: String, desc: 'The name of the User/Group/Role to use for the approval, when the user belongs to multiple approval rules'
           end
           post ':id/deployments/:deployment_id/approval' do
+            authorize! :read_deployment, user_project
+
             deployment = user_project.deployments.find(params[:deployment_id])
 
             result = ::Deployments::ApprovalService.new(user_project, current_user, declared_params(include_missing: false))

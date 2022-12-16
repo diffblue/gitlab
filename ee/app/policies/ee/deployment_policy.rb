@@ -21,10 +21,6 @@ module EE
         @subject.environment.find_approval_rule_for(user).present?
       end
 
-      condition(:deployment_triggerer) do
-        @subject.triggered_by?(user)
-      end
-
       rule { protected_environment }.policy do
         prevent :destroy_deployment
       end
@@ -36,8 +32,6 @@ module EE
       rule { needs_approval & has_approval_rules & can?(:read_deployment) & approval_rule_for_user }.policy do
         enable :approve_deployment
       end
-
-      rule { deployment_triggerer }.prevent :approve_deployment
     end
   end
 end

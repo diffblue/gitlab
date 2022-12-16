@@ -55,12 +55,6 @@ RSpec.describe DeploymentPolicy, feature_category: :continuous_delivery do
 
       it { expect_disallowed(:approve_deployment) }
     end
-
-    context 'when user is deployment triggerer' do
-      let(:deployment) { create(:deployment, environment: environment, project: project, user: user) }
-
-      it { expect_disallowed(:approve_deployment) }
-    end
   end
 
   context 'when specific group is allowed to approve' do
@@ -78,12 +72,6 @@ RSpec.describe DeploymentPolicy, feature_category: :continuous_delivery do
 
     context 'when user is developer' do
       let(:user) { developer }
-
-      it { expect_disallowed(:approve_deployment) }
-    end
-
-    context 'when user is deployment triggerer' do
-      let(:deployment) { create(:deployment, environment: environment, project: project, user: user) }
 
       it { expect_disallowed(:approve_deployment) }
     end
