@@ -15,8 +15,11 @@ import {
   TOKEN_TITLE_HEALTH,
   TOKEN_TYPE_HEALTH,
 } from 'ee/vue_shared/components/filtered_search_bar/constants';
-import { TYPE_TOKEN_OBJECTIVE_OPTION } from '~/issues/list/constants';
-import { WORK_ITEM_TYPE_ENUM_OBJECTIVE } from '~/work_items/constants';
+import { TYPE_TOKEN_OBJECTIVE_OPTION, TYPE_TOKEN_KEY_RESULT_OPTION } from '~/issues/list/constants';
+import {
+  WORK_ITEM_TYPE_ENUM_OBJECTIVE,
+  WORK_ITEM_TYPE_ENUM_KEY_RESULT,
+} from '~/work_items/constants';
 import CreateWorkItemObjective from 'ee/work_items/components/create_work_item_objective.vue';
 import searchIterationsQuery from '../queries/search_iterations.query.graphql';
 
@@ -60,14 +63,14 @@ export default {
     workItemTypes() {
       const types = [];
       if (this.isOkrsEnabled) {
-        types.push(WORK_ITEM_TYPE_ENUM_OBJECTIVE);
+        types.push(WORK_ITEM_TYPE_ENUM_OBJECTIVE, WORK_ITEM_TYPE_ENUM_KEY_RESULT);
       }
       return types;
     },
     typeTokenOptions() {
       const typeTokens = [];
       if (this.isOkrsEnabled) {
-        typeTokens.push(TYPE_TOKEN_OBJECTIVE_OPTION);
+        typeTokens.push(TYPE_TOKEN_OBJECTIVE_OPTION, TYPE_TOKEN_KEY_RESULT_OPTION);
       }
       return typeTokens;
     },
