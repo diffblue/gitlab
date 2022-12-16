@@ -12,7 +12,6 @@ module Gitlab
 
     def display?
       return false if Gitlab::CurrentSettings.should_check_namespace_plan?
-      return false unless Feature.enabled?(:automated_email_provision)
       return false unless ::License.current&.offline_cloud_license?
 
       require_notification?
