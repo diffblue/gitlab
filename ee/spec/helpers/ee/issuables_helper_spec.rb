@@ -2,27 +2,28 @@
 
 require 'spec_helper'
 
-RSpec.describe IssuablesHelper do
+RSpec.describe IssuablesHelper, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
 
   describe '#issuable_initial_data' do
+    let(:permission) { true }
+
     before do
       allow(helper).to receive(:current_user).and_return(user)
-      allow(helper).to receive(:can?).and_return(true)
+      allow(helper).to receive(:can?).and_return(permission)
       stub_commonmark_sourcepos_disabled
     end
 
     context 'for an epic' do
       let_it_be(:epic) { create(:epic, author: user, description: 'epic text', confidential: true) }
 
-      it 'returns the correct data' do
-        @group = epic.group
-
-        expected_data = {
-          canAdmin: true,
-          canDestroy: true,
-          canUpdate: true,
-          canUpdateTimelineEvent: true,
+      let(:expected_data) do
+        {
+          canAdmin: permission,
+          canAdminRelation: permission,
+          canDestroy: permission,
+          canUpdate: permission,
+          canUpdateTimelineEvent: permission,
           confidential: epic.confidential,
           endpoint: "/groups/#{@group.full_path}/-/epics/#{epic.iid}",
           epicLinksEndpoint: "/groups/#{@group.full_path}/-/epics/#{epic.iid}/links",
@@ -46,7 +47,22 @@ RSpec.describe IssuablesHelper do
           projectsEndpoint: "/api/v4/groups/#{@group.id}/projects",
           updateEndpoint: "/groups/#{@group.full_path}/-/epics/#{epic.iid}.json"
         }
+      end
+
+      before do
+        @group = epic.group
+      end
+
+      it 'returns the correct data when permissions allowed' do
         expect(helper.issuable_initial_data(epic)).to eq(expected_data)
+      end
+
+      context 'when permissions denied' do
+        let(:permission) { false }
+
+        it 'returns the correct data' do
+          expect(helper.issuable_initial_data(epic)).to eq(expected_data)
+        end
       end
     end
 
