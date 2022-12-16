@@ -104,6 +104,7 @@ or the app.
 **Description:** The DOM selector used in the test is unreliable.
 
 **Difficulty to reproduce:** Moderate to difficult. Depending on whether the DOM selector is duplicated, or appears after a delay etc.
+Adding a delay in API or controller could help reproducing the issue.
 
 **Resolution:** It really depends on the problem here. It could be to wait for requests to finish, to scroll down the page etc.
 
