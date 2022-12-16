@@ -5,4 +5,4 @@
   milestone: '15.7'
   type: development
   group: group::security policies
-  default_enabled: false
+  default_enabled: true
