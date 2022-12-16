@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe ::EE::Gitlab::Scim::Group::ProvisioningService, :saas,
-feature_category: :authentication_and_authorization do
+               feature_category: :authentication_and_authorization do
   describe '#execute' do
     let(:group) { create(:group) }
     let_it_be(:service_params) do

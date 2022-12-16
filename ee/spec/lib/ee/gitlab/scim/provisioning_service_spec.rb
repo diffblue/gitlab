@@ -2,8 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::EE::Gitlab::Scim::ProvisioningService,
-feature_category: :authentication_and_authorization do
+RSpec.describe ::EE::Gitlab::Scim::ProvisioningService, feature_category: :authentication_and_authorization do
   include LoginHelpers
 
   describe '#execute' do

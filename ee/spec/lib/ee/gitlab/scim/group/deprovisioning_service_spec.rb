@@ -2,8 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::EE::Gitlab::Scim::Group::DeprovisioningService,
-feature_category: :authentication_and_authorization do
+RSpec.describe ::EE::Gitlab::Scim::Group::DeprovisioningService, feature_category: :authentication_and_authorization do
   describe '#execute' do
     let(:identity) { create(:scim_identity, active: true) }
     let(:group) { identity.group }
