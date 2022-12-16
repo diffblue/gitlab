@@ -5,7 +5,7 @@ module Gitlab
     class File
       include ::Gitlab::Utils::StrongMemoize
 
-      SECTION_HEADER_REGEX = /(\^)?\[(.*?)\]/.freeze
+      SECTION_HEADER_REGEX = /^(\^)?\[(.*?)\]/.freeze
 
       def initialize(blob)
         @blob = blob
