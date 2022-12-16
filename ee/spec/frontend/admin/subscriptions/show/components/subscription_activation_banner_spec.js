@@ -5,7 +5,7 @@ import SubscriptionActivationBanner, {
   CLOSE_ACTIVATE_SUBSCRIPTION_BANNER_EVENT,
 } from 'ee/admin/subscriptions/show/components/subscription_activation_banner.vue';
 import {
-  activateCloudLicense,
+  addActivationCode,
   subscriptionBannerBlogPostUrl,
   subscriptionBannerText,
   subscriptionBannerTitle,
@@ -41,7 +41,7 @@ describe('SubscriptionActivationBanner', () => {
 
   it('provides the correct props to the banner', () => {
     expect(findBanner().props()).toMatchObject({
-      buttonText: activateCloudLicense,
+      buttonText: addActivationCode,
       title: subscriptionBannerTitle,
       svgPath: congratulationSvgPath,
     });

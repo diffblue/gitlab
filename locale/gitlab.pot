@@ -40284,6 +40284,9 @@ msgstr ""
 msgid "SuperSonics|Activation not possible due to true-up value mismatch"
 msgstr ""
 
+msgid "SuperSonics|Add activation code"
+msgstr ""
+
 msgid "SuperSonics|An error occurred while adding your subscription"
 msgstr ""
 
@@ -40303,9 +40306,6 @@ msgid "SuperSonics|Cloud licensing is now available. It's an easier way to activ
 msgstr ""
 
 msgid "SuperSonics|Customers Portal"
-msgstr ""
-
-msgid "SuperSonics|Enter activation code"
 msgstr ""
 
 msgid "SuperSonics|Export license usage file"

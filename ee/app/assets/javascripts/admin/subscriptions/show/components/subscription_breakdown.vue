@@ -8,10 +8,9 @@ import { __, sprintf } from '~/locale';
 import UserCalloutDismisser from '~/vue_shared/components/user_callout_dismisser.vue';
 import SubscriptionDetailsHistory from 'jh_else_ee/admin/subscriptions/show/components/subscription_details_history.vue';
 import {
-  activateCloudLicense,
+  addActivationCode,
   licensedToHeaderText,
   subscriptionDetailsHeaderText,
-  subscriptionTypes,
 } from '../constants';
 import SubscriptionActivationBanner from './subscription_activation_banner.vue';
 import SubscriptionActivationModal from './subscription_activation_modal.vue';
@@ -29,7 +28,7 @@ export const subscriptionDetailsFields = [
 export const licensedToFields = ['name', 'email', 'company'];
 
 export const i18n = Object.freeze({
-  activateCloudLicense,
+  addActivationCode,
   licensedToHeaderText,
   subscriptionDetailsHeaderText,
   removeLicense: __('Remove license'),
@@ -88,9 +87,6 @@ export default {
     hasAsyncActivity() {
       return this.breakdown.hasAsyncActivity;
     },
-    canActivateSubscription() {
-      return this.isLicenseFileType;
-    },
     canRemoveLicense() {
       return this.licenseRemovePath;
     },
@@ -100,11 +96,8 @@ export default {
     hasSubscriptionHistory() {
       return Boolean(this.subscriptionList.length);
     },
-    isLicenseFileType() {
-      return this.subscription.type === subscriptionTypes.LEGACY_LICENSE;
-    },
     shouldShowFooter() {
-      return this.canActivateSubscription || this.canRemoveLicense;
+      return this.canRemoveLicense;
     },
     shouldShowNotifications() {
       return this.breakdown.shouldShowNotifications;
@@ -158,10 +151,7 @@ export default {
       :modal-id="$options.activateSubscriptionModal.id"
       v-on="$listeners"
     />
-    <user-callout-dismisser
-      v-if="canActivateSubscription"
-      :feature-name="subscriptionActivationBannerCalloutName"
-    >
+    <user-callout-dismisser :feature-name="subscriptionActivationBannerCalloutName">
       <template #default="{ dismiss, shouldShowCallout }">
         <subscription-activation-banner
           v-if="shouldShowCallout"
@@ -184,16 +174,6 @@ export default {
         >
           <template v-if="shouldShowFooter" #footer>
             <div class="gl-display-flex gl-flex-wrap gl-align-items-flex-start">
-              <gl-button
-                v-if="canActivateSubscription"
-                v-gl-modal-directive="$options.activateSubscriptionModal.id"
-                category="primary"
-                variant="confirm"
-                class="gl-mr-3 gl-mb-3 gl-lg-mb-0"
-                data-testid="subscription-activate-subscription-action"
-              >
-                {{ $options.i18n.activateCloudLicense }}
-              </gl-button>
               <div v-if="canRemoveLicense">
                 <gl-button
                   v-gl-modal-directive="$options.removeLicenseModal.id"
@@ -221,6 +201,15 @@ export default {
                   <div>{{ $options.i18n.removeLicenseConfirm }}</div>
                 </gl-modal>
               </div>
+              <gl-button
+                v-gl-modal-directive="$options.activateSubscriptionModal.id"
+                category="secondary"
+                variant="confirm"
+                class="gl-mr-3 gl-mb-3 gl-lg-mb-0"
+                data-testid="subscription-activate-subscription-action"
+              >
+                {{ $options.i18n.addActivationCode }}
+              </gl-button>
             </div>
           </template>
         </subscription-details-card>
