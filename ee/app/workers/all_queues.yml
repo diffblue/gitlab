@@ -300,6 +300,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: cronjob:gitlab_subscriptions_notify_seats_exceeded_batch
+  :worker_name: GitlabSubscriptions::NotifySeatsExceededBatchWorker
+  :feature_category: :purchase
+  :has_external_dependencies: true
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: false
+  :tags: []
 - :name: cronjob:historical_data
   :worker_name: HistoricalDataWorker
   :feature_category: :subscription_usage_reports
