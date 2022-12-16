@@ -180,6 +180,7 @@ module Elastic
         search_flushing_duration_s: flushing_duration_s,
         search_indexed_bytes_per_second: indexed_bytes_per_second
       )
+      Gitlab::Metrics::GlobalSearchIndexingSlis.record_bytes_per_second_apdex(throughput: indexed_bytes_per_second)
 
       # Re-enqueue any failures so they are retried
       self.class.track!(*@failures) if @failures.present?
@@ -215,8 +216,6 @@ module Elastic
           search_indexing_duration_s: indexing_durations[index],
           search_indexing_flushing_duration_s: flushing_duration_s
         )
-
-        Gitlab::Metrics::GlobalSearchIndexingSlis.record_apdex(elapsed: flushing_duration_s, document_type: klass)
       end
 
       specs_buffer.count

@@ -3,7 +3,12 @@
 module Gitlab
   module Metrics
     module GlobalSearchIndexingSlis
-      CODE_DOCUMENT_TYPES       = %w[Code Wiki].freeze
+      CODE_DOCUMENT_TYPES = %w[Code Wiki].freeze
+
+      # The following target was gathered on 2022-12-10
+      # from https://log.gprd.gitlab.net/app/lens#/edit/d7f1fae0-69cf-11ed-85ed-e7557b0a598c (internal only)
+      # Non-Code indexing bytes/second should be above this value
+      INDEXED_BYTES_PER_SECOND_TARGET = 100_000
 
       # The following targets are the 99.95th percentile of indexing
       # gathered on 20-10-2022
@@ -27,10 +32,17 @@ module Gitlab
           )
         end
 
+        def record_bytes_per_second_apdex(throughput:)
+          Gitlab::Metrics::Sli::Apdex[:global_search_indexing].increment(
+            labels: labels(document_type: 'Database'),
+            success: throughput >= INDEXED_BYTES_PER_SECOND_TARGET
+          )
+        end
+
         private
 
-        def duration_target(indexing_type)
-          CODE_DOCUMENT_TYPES.include?(indexing_type) ? CODE_INDEXING_TARGET_S : CONTENT_INDEXING_TARGET_S
+        def duration_target(document_type)
+          CODE_DOCUMENT_TYPES.include?(document_type) ? CODE_INDEXING_TARGET_S : CONTENT_INDEXING_TARGET_S
         end
 
         def document_types
@@ -48,15 +60,21 @@ module Gitlab
         def possible_labels
           document_types.map do |document_type|
             {
-              document_type: document_type
+              document_type: document_type,
+              indexed_by: indexed_by(document_type)
             }
           end
         end
 
         def labels(document_type:)
           {
-            document_type: document_type
+            document_type: document_type,
+            indexed_by: indexed_by(document_type)
           }
+        end
+
+        def indexed_by(document_type)
+          CODE_DOCUMENT_TYPES.include?(document_type) ? 'indexer' : 'rails'
         end
       end
     end

@@ -19,7 +19,8 @@ RSpec.describe Gitlab::Metrics::GlobalSearchIndexingSlis, feature_category: :glo
       it 'increments the global_search_indexing SLI as a success' do
         expect(Gitlab::Metrics::Sli::Apdex[:global_search_indexing]).to receive(:increment).with(
           labels: {
-            document_type: 'Code'
+            document_type: 'Code',
+            indexed_by: 'indexer'
           },
           success: true
         )
@@ -36,7 +37,8 @@ RSpec.describe Gitlab::Metrics::GlobalSearchIndexingSlis, feature_category: :glo
       it 'increments the global_search_indexing SLI as a failure' do
         expect(Gitlab::Metrics::Sli::Apdex[:global_search_indexing]).to receive(:increment).with(
           labels: {
-            document_type: 'Code'
+            document_type: 'Code',
+            indexed_by: 'indexer'
           },
           success: false
         )
@@ -53,25 +55,53 @@ RSpec.describe Gitlab::Metrics::GlobalSearchIndexingSlis, feature_category: :glo
         stub_const("#{described_class.name}::CONTENT_INDEXING_TARGET_S", 1.0)
       end
 
-      where(:document_type, :elapsed, :expected_result) do
-        'Code'          | 5 | true
-        'Wiki'          | 5 | true
-        'MergeRequest'  | 5 | false
-        'User'          | 5 | false
-        'Issue'         | 5 | false
+      where(:document_type, :indexed_by, :elapsed, :expected_result) do
+        'Code'          | 'indexer' | 5 | true
+        'Wiki'          | 'indexer' | 5 | true
+        'MergeRequest'  | 'rails'   | 5 | false
+        'User'          | 'rails'   | 5 | false
+        'Issue'         | 'rails'   | 5 | false
       end
 
       with_them do
         it 'uses the correct target' do
           expect(Gitlab::Metrics::Sli::Apdex[:global_search_indexing]).to receive(:increment).with(
             labels: {
-              document_type: document_type
+              document_type: document_type,
+              indexed_by: indexed_by
             },
             success: expected_result
           )
 
           described_class.record_apdex(elapsed: elapsed, document_type: document_type)
         end
+      end
+    end
+  end
+
+  describe '#record_bytes_per_second_apdex' do
+    using RSpec::Parameterized::TableSyntax
+
+    before do
+      stub_const("#{described_class.name}::INDEXED_BYTES_PER_SECOND_TARGET", 200.0)
+    end
+
+    where(:throughput, :expected_success) do
+      20.0  | false
+      300.0 | true
+    end
+
+    with_them do
+      it 'increments the global_search_indexing SLI with the correct success field' do
+        expect(Gitlab::Metrics::Sli::Apdex[:global_search_indexing]).to receive(:increment).with(
+          labels: {
+            document_type: 'Database',
+            indexed_by: 'rails'
+          },
+          success: expected_success
+        )
+
+        described_class.record_bytes_per_second_apdex(throughput: throughput)
       end
     end
   end
