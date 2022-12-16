@@ -46911,6 +46911,9 @@ msgstr ""
 msgid "Work in progress Limit"
 msgstr ""
 
+msgid "WorkItem|%{count} more assignees"
+msgstr ""
+
 msgid "WorkItem|%{workItemType} deleted"
 msgstr ""
 
