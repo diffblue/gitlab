@@ -35,6 +35,17 @@ module EE
     class_methods do
       extend ::Gitlab::Utils::Override
 
+      # Search for a list of merge_request_diffs based on the query given in `query`.
+      #
+      # @param [String] query term that will search over external_diff attribute
+      #
+      # @return [ActiveRecord::Relation<MergeRequestDiff>] a collection of merge request diffs
+      def search(query)
+        return all if query.empty?
+
+        where(sanitize_sql_for_conditions({ external_diff: query })).limit(1000)
+      end
+
       # @param primary_key_in [Range, MergeRequestDiff] arg to pass to primary_key_in scope
       # @return [ActiveRecord::Relation<MergeRequestDiff>] everything that should be synced to this node, restricted by primary key
       def replicables_for_current_secondary(primary_key_in)
