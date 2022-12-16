@@ -16,7 +16,7 @@ module QA
       end
 
       after do
-        if QA::Support::FIPS.enabled?
+        if Runtime::Env.personal_access_tokens_disabled?
           project.visit!
           project.remove_via_browser_ui!
         else
