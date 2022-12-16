@@ -54,9 +54,6 @@ export default {
       default: '',
     },
   },
-  data: () => ({
-    loading: false,
-  }),
   computed: {
     ...mapState(['query']),
     search: {
@@ -101,7 +98,7 @@ export default {
           class="gl-sm-display-flex gl-flex-direction-row gl-justify-content-space-between gl-mb-4 gl-md-mb-0"
         >
           <label>{{ $options.i18n.searchLabel }}</label>
-          <div v-if="showSyntaxOptions" class="gl-lg-display-flex gl-flex-direction-row">
+          <template v-if="showSyntaxOptions">
             <gl-button
               category="tertiary"
               variant="link"
@@ -114,7 +111,7 @@ export default {
               ref="markdownDrawer"
               :document-path="$options.SYNTAX_OPTIONS_DOCUMENT"
             />
-          </div>
+          </template>
         </div>
         <gl-search-box-by-click
           id="dashboard_search"
