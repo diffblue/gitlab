@@ -597,17 +597,13 @@ list.
 
 ## Validate response signatures
 
-We require Identity Providers to sign SAML responses to ensure that the assertions are
-not tampered with.
+IdPs must sign SAML responses to ensure that the assertions are not tampered with.
 
-This prevents user impersonation and prevents privilege escalation when specific group
-membership is required. Typically this:
+This prevents user impersonation and privilege escalation when specific group
+membership is required.
 
-- Is configured using `idp_cert_fingerprint`.
-- Includes the full certificate in the response, although if your Identity Provider
-  doesn't support this, you can directly configure GitLab using the `idp_cert` option.
-
-Example configuration with `idp_cert_fingerprint`:
+You configure the response signature validation using `idp_cert_fingerprint`.
+An example configuration:
 
 ```yaml
 args: {
@@ -619,7 +615,8 @@ args: {
 }
 ```
 
-Example configuration with `idp_cert`:
+If your IdP does not support configuring this using `idp_cert_fingerprint`, you
+can instead configure GitLab directly using `idp_cert`. An example configuration:
 
 ```yaml
 args: {
@@ -633,15 +630,14 @@ args: {
 }
 ```
 
-If the response signature validation is configured incorrectly, you can see error messages
-such as:
+If you have configured the response signature validation incorrectly, you might see
+error messages such as:
 
 - A key validation error.
 - Digest mismatch.
 - Fingerprint mismatch.
 
-Refer to the [troubleshooting section](#troubleshooting) for more information on
-solving these errors.
+For more information on solving these errors, see the [troubleshooting SAML guide](../user/group/saml_sso/troubleshooting.md).
 
 ## Customize SAML settings
 
