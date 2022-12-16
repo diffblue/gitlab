@@ -8780,6 +8780,9 @@ msgstr ""
 msgid "Click the link below to confirm your email address."
 msgstr ""
 
+msgid "Click to expand"
+msgstr ""
+
 msgid "Click to expand it."
 msgstr ""
 
