@@ -56,6 +56,7 @@ the problem.
 - [Example 1](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/10148/diffs): Without
   specifying `ORDER BY`, database will not give deterministic ordering, or data race happening
   in the tests.
+- [Example 2](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/106936/diffs).
 
 ### Dataset-specific
 
