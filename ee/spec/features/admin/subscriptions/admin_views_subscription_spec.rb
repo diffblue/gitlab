@@ -29,7 +29,7 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
 
         click_button('Remove license')
 
-        within_modal do |modal|
+        within_modal do
           expect(page).not_to have_content('This change will remove ALL Premium and Ultimate features for ALL SaaS customers and make tests start failing.')
           click_button('Remove license')
         end
@@ -50,7 +50,7 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
 
         click_button 'Remove license'
 
-        within_modal do |modal|
+        within_modal do
           expect(page).to have_content('This change will remove ALL Premium and Ultimate features for ALL SaaS customers and make tests start failing.')
         end
       end
@@ -117,7 +117,7 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
     context 'when activating another subscription' do
       before do
         page.within(find('[data-testid="subscription-details"]', match: :first)) do
-          click_button('Enter activation code')
+          click_button('Add activation code')
         end
       end
 

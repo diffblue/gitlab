@@ -187,8 +187,8 @@ describe('Subscription Breakdown', () => {
       expect(findSubscriptionActivationModal().props('visible')).toBe(true);
     });
 
-    it('does not present a subscription activation banner', () => {
-      expect(findSubscriptionActivationBanner().exists()).toBe(false);
+    it('presents a subscription activation banner', () => {
+      expect(findSubscriptionActivationBanner().exists()).toBe(true);
     });
 
     describe('footer buttons', () => {
@@ -225,21 +225,12 @@ describe('Subscription Breakdown', () => {
         },
       );
 
-      it.each`
-        type                                | shouldShow
-        ${subscriptionTypes.LEGACY_LICENSE} | ${true}
-        ${subscriptionTypes.ONLINE_CLOUD}   | ${false}
-        ${subscriptionTypes.OFFLINE_CLOUD}  | ${false}
-      `(
-        'with url is $url and type is $type the activate cloud license button is shown: $shouldShow',
-        ({ type, shouldShow }) => {
-          const props = { subscription: { ...license.ULTIMATE, type } };
-          const stubs = { GlCard, SubscriptionDetailsCard };
-          createComponent({ props, stubs });
+      it('shows the activate cloud license button', () => {
+        const stubs = { GlCard, SubscriptionDetailsCard };
+        createComponent({ stubs });
 
-          expect(findActivateSubscriptionAction().exists()).toBe(shouldShow);
-        },
-      );
+        expect(findActivateSubscriptionAction().exists()).toBe(true);
+      });
     });
 
     describe('with a license file', () => {
@@ -266,41 +257,41 @@ describe('Subscription Breakdown', () => {
 
         expect(findSubscriptionActivationModal().isVisible()).toBe(true);
       });
+    });
 
-      describe('subscription activation banner', () => {
-        beforeEach(() => {
-          createComponent({
-            props: { subscription: licenseFile },
-          });
+    describe('subscription activation banner', () => {
+      beforeEach(() => {
+        createComponent({
+          props: { subscription: licenseFile },
+        });
+      });
+
+      it('presents a subscription activation banner', () => {
+        expect(findSubscriptionActivationBanner().exists()).toBe(true);
+      });
+
+      it('calls the dismiss callback when closing the banner', () => {
+        findSubscriptionActivationBanner().vm.$emit('close');
+
+        expect(userCalloutDismissSpy).toHaveBeenCalledTimes(1);
+      });
+
+      it('shows a modal', async () => {
+        expect(findSubscriptionActivationModal().props('visible')).toBe(false);
+
+        await findSubscriptionActivationBanner().vm.$emit(ACTIVATE_SUBSCRIPTION_EVENT);
+
+        expect(findSubscriptionActivationModal().props('visible')).toBe(true);
+      });
+
+      it('hides the banner when the proper condition applies', () => {
+        createComponent({
+          mountMethod: mount,
+          props: { subscription: licenseFile },
+          shouldShowCallout: false,
         });
 
-        it('presents a subscription activation banner', () => {
-          expect(findSubscriptionActivationBanner().exists()).toBe(true);
-        });
-
-        it('calls the dismiss callback when closing the banner', () => {
-          findSubscriptionActivationBanner().vm.$emit('close');
-
-          expect(userCalloutDismissSpy).toHaveBeenCalledTimes(1);
-        });
-
-        it('shows a modal', async () => {
-          expect(findSubscriptionActivationModal().props('visible')).toBe(false);
-
-          await findSubscriptionActivationBanner().vm.$emit(ACTIVATE_SUBSCRIPTION_EVENT);
-
-          expect(findSubscriptionActivationModal().props('visible')).toBe(true);
-        });
-
-        it('hides the banner when the proper condition applies', () => {
-          createComponent({
-            mountMethod: mount,
-            props: { subscription: licenseFile },
-            shouldShowCallout: false,
-          });
-
-          expect(findSubscriptionActivationBanner().exists()).toBe(false);
-        });
+        expect(findSubscriptionActivationBanner().exists()).toBe(false);
       });
     });
 

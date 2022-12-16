@@ -1,7 +1,7 @@
 <script>
 import { GlBanner, GlLink, GlSprintf } from '@gitlab/ui';
 import {
-  activateCloudLicense,
+  addActivationCode,
   subscriptionBannerBlogPostUrl,
   subscriptionBannerText,
   subscriptionBannerTitle,
@@ -15,7 +15,7 @@ export default {
   subscriptionBannerBlogPostUrl,
   i18n: {
     bannerText: subscriptionBannerText,
-    buttonText: activateCloudLicense,
+    buttonText: addActivationCode,
     title: subscriptionBannerTitle,
   },
   components: {
