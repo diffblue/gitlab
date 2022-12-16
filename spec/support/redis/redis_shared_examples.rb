@@ -20,6 +20,7 @@ RSpec.shared_examples "redis_shared_examples" do
 
   before do
     allow(described_class).to receive(:config_file_name).and_return(Rails.root.join(config_file_name).to_s)
+    allow(described_class).to receive(:redis_yml_path).and_return('/dev/null')
     redis_clear_raw_config!(described_class)
   end
 
@@ -224,26 +225,6 @@ RSpec.shared_examples "redis_shared_examples" do
     end
   end
 
-  describe '._raw_config' do
-    subject { described_class._raw_config }
-
-    let(:config_file_name) { '/var/empty/doesnotexist' }
-
-    it 'is frozen' do
-      expect(subject).to be_frozen
-    end
-
-    it 'returns false when the file does not exist' do
-      expect(subject).to eq(false)
-    end
-
-    it "returns false when the filename can't be determined" do
-      expect(described_class).to receive(:config_file_name).and_return(nil)
-
-      expect(subject).to eq(false)
-    end
-  end
-
   describe '.with' do
     let(:config_file_name) { config_old_format_socket }
 
@@ -381,21 +362,44 @@ RSpec.shared_examples "redis_shared_examples" do
 
   describe '#fetch_config' do
     it 'returns false when no config file is present' do
-      allow(described_class).to receive(:_raw_config) { false }
+      allow(described_class).to receive(:config_file_name) { nil }
 
-      expect(subject.send(:fetch_config)).to eq false
+      expect(subject.send(:fetch_config)).to eq(nil)
     end
 
     it 'returns false when config file is present but has invalid YAML' do
-      allow(described_class).to receive(:_raw_config) { "# development: true" }
+      allow(described_class).to receive(:config_file_name) { '/dev/null' }
 
-      expect(subject.send(:fetch_config)).to eq false
+      expect(subject.send(:fetch_config)).to eq(nil)
     end
 
     it 'has a value for the legacy default URL' do
-      allow(subject).to receive(:fetch_config) { false }
+      allow(subject).to receive(:fetch_config) { nil }
 
       expect(subject.send(:raw_config_hash)).to include(url: a_string_matching(%r{\Aredis://localhost:638[012]\Z}))
+    end
+
+    context 'when redis.yml exists' do
+      subject { described_class.new('test').send(:fetch_config) }
+
+      before do
+        allow(described_class).to receive(:config_file_name).and_call_original
+        allow(described_class).to receive(:redis_yml_path).and_call_original
+        allow(described_class).to receive(:rails_root).and_return(rails_root)
+        FileUtils.mkdir_p(File.join(rails_root, 'config'))
+      end
+
+      after do
+        FileUtils.rm_rf(rails_root)
+      end
+
+      it 'uses config/redis.yml' do
+        File.write(File.join(rails_root, 'config/redis.yml'), {
+          'test' => { described_class.store_name.underscore => { 'foobar' => 123 } }
+        }.to_json)
+
+        expect(subject).to eq({ 'foobar' => 123 })
+      end
     end
   end
 
