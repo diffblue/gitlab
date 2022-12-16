@@ -45,7 +45,7 @@ export default {
   computed: {
     ...mapState(['parentItem']),
     showEpicSection() {
-      return this.allowSubEpics && this.parentItem.userPermissions.canAdmin;
+      return this.allowSubEpics && this.parentItem.userPermissions.canAdminRelation;
     },
   },
   methods: {

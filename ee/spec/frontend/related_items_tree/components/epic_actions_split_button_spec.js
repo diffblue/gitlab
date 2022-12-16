@@ -14,7 +14,7 @@ Vue.use(Vuex);
 const createComponent = ({ slots, state = {} } = {}) => {
   const store = createDefaultStore();
   store.dispatch('setInitialParentItem', mockParentItem);
-  store.state.parentItem.userPermissions.canAdmin = state.canAdmin;
+  store.state.parentItem.userPermissions.canAdminRelation = state.canAdminRelation;
 
   return extendedWrapper(
     mount(EpicActionsSplitButton, {
@@ -39,13 +39,13 @@ describe('RelatedItemsTree', () => {
       });
 
       it.each`
-        canAdmin | visible  | headerLength | atIndex | headerText
-        ${false} | ${false} | ${1}         | ${0}    | ${'Issue'}
-        ${true}  | ${true}  | ${2}         | ${1}    | ${'Epic'}
+        canAdminRelation | visible  | headerLength | atIndex | headerText
+        ${false}         | ${false} | ${1}         | ${0}    | ${'Issue'}
+        ${true}          | ${true}  | ${2}         | ${1}    | ${'Epic'}
       `(
-        'epic section is visible=$visible when canAdmin=$canAdmin',
-        async ({ canAdmin, headerLength, atIndex, headerText }) => {
-          wrapper = createComponent({ state: { canAdmin } });
+        'epic section is visible=$visible when canAdminRelation=$canAdminRelation',
+        async ({ canAdminRelation, headerLength, atIndex, headerText }) => {
+          wrapper = createComponent({ state: { canAdminRelation } });
 
           await nextTick();
 
