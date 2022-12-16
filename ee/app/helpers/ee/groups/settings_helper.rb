@@ -14,7 +14,7 @@ module EE
       def keep_deleted_option_label
         number = ::Gitlab::CurrentSettings.deletion_adjourned_period
 
-        n_(s_("DeletionSettings|Keep deleted projects for 1 day"), s_("DeletionSettings|Keep deleted projects for %{number} days"), number) % { number: number }
+        ns_("DeletionSettings|Keep deleted projects for %{number} day", "DeletionSettings|Keep deleted projects for %{number} days", number) % { number: number }
       end
 
       def saas_user_caps_help_text(group)

@@ -13318,11 +13318,10 @@ msgstr ""
 msgid "DeletionSettings|Keep deleted"
 msgstr ""
 
-msgid "DeletionSettings|Keep deleted projects for %{number} days"
-msgstr ""
-
-msgid "DeletionSettings|Keep deleted projects for 1 day"
-msgstr ""
+msgid "DeletionSettings|Keep deleted projects for %{number} day"
+msgid_plural "DeletionSettings|Keep deleted projects for %{number} days"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "DeletionSettings|None, delete immediately"
 msgstr ""
