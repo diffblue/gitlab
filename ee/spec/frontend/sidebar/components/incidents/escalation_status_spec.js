@@ -53,7 +53,7 @@ describe('EscalationStatus', () => {
     it('shows the Learn More link', () => {
       expect(findLearnMoreLink().text()).toBe('Learn More.');
       expect(findLearnMoreLink().attributes('href')).toContain(
-        'incidents.html#change-incident-status',
+        'manage_incidents.html#change-status',
       );
     });
 

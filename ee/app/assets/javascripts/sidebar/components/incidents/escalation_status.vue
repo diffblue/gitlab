@@ -7,8 +7,8 @@ import { i18nStatusText } from '../../constants';
 
 export default {
   i18n: i18nStatusText,
-  docsPath: helpPagePath('operations/incident_management/incidents.html', {
-    anchor: 'change-incident-status',
+  docsPath: helpPagePath('operations/incident_management/manage_incidents.html', {
+    anchor: 'change-status',
   }),
   components: {
     EscalationStatus,
