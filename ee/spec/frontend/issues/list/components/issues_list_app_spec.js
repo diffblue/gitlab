@@ -9,9 +9,16 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { getIssuesCountsQueryResponse, getIssuesQueryResponse } from 'jest/issues/list/mock_data';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
-import { CREATED_DESC, TYPE_TOKEN_OBJECTIVE_OPTION } from '~/issues/list/constants';
+import {
+  CREATED_DESC,
+  TYPE_TOKEN_OBJECTIVE_OPTION,
+  TYPE_TOKEN_KEY_RESULT_OPTION,
+} from '~/issues/list/constants';
 import CEIssuesListApp from '~/issues/list/components/issues_list_app.vue';
-import { WORK_ITEM_TYPE_ENUM_OBJECTIVE } from '~/work_items/constants';
+import {
+  WORK_ITEM_TYPE_ENUM_OBJECTIVE,
+  WORK_ITEM_TYPE_ENUM_KEY_RESULT,
+} from '~/work_items/constants';
 import {
   TOKEN_TYPE_ASSIGNEE,
   TOKEN_TYPE_AUTHOR,
@@ -125,10 +132,10 @@ describe('EE IssuesListApp component', () => {
 
   describe('workItemTypes', () => {
     describe.each`
-      hasOkrsFeature | okrsMvc  | eeWorkItemTypes                    | message
-      ${false}       | ${true}  | ${[]}                              | ${'NOT include'}
-      ${true}        | ${false} | ${[]}                              | ${'NOT include'}
-      ${true}        | ${true}  | ${[WORK_ITEM_TYPE_ENUM_OBJECTIVE]} | ${'include'}
+      hasOkrsFeature | okrsMvc  | eeWorkItemTypes                                                    | message
+      ${false}       | ${true}  | ${[]}                                                              | ${'NOT include'}
+      ${true}        | ${false} | ${[]}                                                              | ${'NOT include'}
+      ${true}        | ${true}  | ${[WORK_ITEM_TYPE_ENUM_OBJECTIVE, WORK_ITEM_TYPE_ENUM_KEY_RESULT]} | ${'include'}
     `(
       'when hasOkrsFeature is "$hasOkrsFeature" and okrsMvc is "$okrsMvc"',
       ({ hasOkrsFeature, okrsMvc, eeWorkItemTypes, message }) => {
@@ -141,7 +148,7 @@ describe('EE IssuesListApp component', () => {
           });
         });
 
-        it(`should ${message} objective in work item types`, () => {
+        it(`should ${message} objective and key result in work item types`, () => {
           expect(findIssueListApp().props('eeWorkItemTypes')).toMatchObject(eeWorkItemTypes);
         });
       },
@@ -150,10 +157,10 @@ describe('EE IssuesListApp component', () => {
 
   describe('typeTokenOptions', () => {
     describe.each`
-      hasOkrsFeature | okrsMvc  | eeWorkItemTypeTokens             | message
-      ${false}       | ${true}  | ${[]}                            | ${'NOT include'}
-      ${true}        | ${false} | ${[]}                            | ${'NOT include'}
-      ${true}        | ${true}  | ${[TYPE_TOKEN_OBJECTIVE_OPTION]} | ${'include'}
+      hasOkrsFeature | okrsMvc  | eeWorkItemTypeTokens                                           | message
+      ${false}       | ${true}  | ${[]}                                                          | ${'NOT include'}
+      ${true}        | ${false} | ${[]}                                                          | ${'NOT include'}
+      ${true}        | ${true}  | ${[TYPE_TOKEN_OBJECTIVE_OPTION, TYPE_TOKEN_KEY_RESULT_OPTION]} | ${'include'}
     `(
       'when hasOkrsFeature is "$hasOkrsFeature" and okrsMvc is "$okrsMvc"',
       ({ hasOkrsFeature, okrsMvc, eeWorkItemTypeTokens, message }) => {
@@ -166,7 +173,7 @@ describe('EE IssuesListApp component', () => {
           });
         });
 
-        it(`should ${message} objective in type tokens`, () => {
+        it(`should ${message} objective and key result in type tokens`, () => {
           expect(findIssueListApp().props('eeTypeTokenOptions')).toMatchObject(
             eeWorkItemTypeTokens,
           );
