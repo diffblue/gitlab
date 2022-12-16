@@ -8,6 +8,9 @@ module Gitlab
       WORKER_DELAY = 10.minutes
       WORKER_LOCK_TTL = 10.minutes
 
+      # Limit size of bitmap key to 2^26-1 (~8MB)
+      MAX_BITMAP_OFFSET = 67108863
+
       LUA_FLUSH_INCREMENT_SCRIPT = <<~LUA
         local increment_key, flushed_key = KEYS[1], KEYS[2]
         local increment_value = redis.call("get", increment_key) or 0
@@ -34,7 +37,7 @@ module Gitlab
       LUA_INCREMENT_WITH_DEDUPLICATION_SCRIPT = <<~LUA
         local counter_key, refresh_key, refresh_indicator_key = KEYS[1], KEYS[2], KEYS[3]
         local amount, ref = KEYS[4], tonumber(KEYS[5])
-        local tracking_key, opposing_tracking_key = KEYS[6], KEYS[7]
+        local tracking_shard_key, opposing_tracking_shard_key, shards_key = KEYS[6], KEYS[7], KEYS[8]
 
         -- increment to the counter key when not refreshing
         if redis.call("exists", refresh_indicator_key) == 0 then
@@ -42,14 +45,15 @@ module Gitlab
         end
 
         -- deduplicate and increment to the refresh counter key while refreshing
-        local found_duplicate = redis.call("getbit", tracking_key, ref)
+        local found_duplicate = redis.call("getbit", tracking_shard_key, ref)
         if found_duplicate == 1 then
           return redis.call("get", refresh_key)
         end
 
-        redis.call("setbit", tracking_key, ref, 1)
+        redis.call("setbit", tracking_shard_key, ref, 1)
+        redis.call("sadd", shards_key, tracking_shard_key)
 
-        local found_opposing_increment = redis.call("getbit", opposing_tracking_key, ref)
+        local found_opposing_increment = redis.call("getbit", opposing_tracking_shard_key, ref)
         local increment_without_previous_decrement = tonumber(amount) > 0 and found_opposing_increment == 0
         local decrement_with_previous_increment = tonumber(amount) < 0 and found_opposing_increment == 1
         local net_change = 0
@@ -100,17 +104,25 @@ module Gitlab
       end
 
       LUA_FINALIZE_REFRESH_SCRIPT = <<~LUA
-        local counter_key, refresh_key, refresh_indicator_key = KEYS[1], KEYS[2], KEYS[3]
-        local increment_tracking_key, decrement_tracking_key = KEYS[4], KEYS[5]
+        local counter_key, refresh_key, refresh_indicator_key, shards_key = KEYS[1], KEYS[2], KEYS[3], KEYS[4]
         local refresh_amount = redis.call("get", refresh_key) or 0
 
+        if redis.call("exists", shards_key) == 1 then
+          local shards = redis.call("smembers", shards_key)
+          redis.call("del", unpack(shards))
+        end
         redis.call("incrby", counter_key, refresh_amount)
-        redis.call("del", refresh_indicator_key, increment_tracking_key, decrement_tracking_key, refresh_key)
+        redis.call("del", refresh_indicator_key, refresh_key, shards_key)
       LUA
 
       def finalize_refresh
         redis_state do |redis|
-          keys = [key, refresh_key, refresh_indicator_key, increment_tracking_key, decrement_tracking_key]
+          keys = [
+            key,
+            refresh_key,
+            refresh_indicator_key,
+            shards_key
+          ]
           redis.eval(LUA_FINALIZE_REFRESH_SCRIPT, keys: keys)
         end
 
@@ -163,14 +175,6 @@ module Gitlab
         "#{key}:refresh"
       end
 
-      def increment_tracking_key
-        "#{refresh_key}:+"
-      end
-
-      def decrement_tracking_key
-        "#{refresh_key}:-"
-      end
-
       private
 
       attr_reader :counter_record, :attribute
@@ -181,18 +185,39 @@ module Gitlab
           refresh_key,
           refresh_indicator_key,
           increment.amount,
-          increment.ref.to_i,
-          tracking_key(increment),
-          opposing_tracking_key(increment)
+          tracking_offset(increment),
+          tracking_shard_key(increment),
+          opposing_tracking_shard_key(increment),
+          shards_key
         ]
       end
 
-      def tracking_key(increment)
-        positive?(increment) ? increment_tracking_key : decrement_tracking_key
+      def tracking_shard_key(increment)
+        positive?(increment) ? positive_shard_key(increment.ref.to_i) : negative_shard_key(increment.ref.to_i)
       end
 
-      def opposing_tracking_key(increment)
-        positive?(increment) ? decrement_tracking_key : increment_tracking_key
+      def opposing_tracking_shard_key(increment)
+        positive?(increment) ? negative_shard_key(increment.ref.to_i) : positive_shard_key(increment.ref.to_i)
+      end
+
+      def shards_key
+        "#{refresh_key}:shards"
+      end
+
+      def positive_shard_key(ref)
+        "#{refresh_key}:+:#{shard_number(ref)}"
+      end
+
+      def negative_shard_key(ref)
+        "#{refresh_key}:-:#{shard_number(ref)}"
+      end
+
+      def shard_number(ref)
+        ref / MAX_BITMAP_OFFSET
+      end
+
+      def tracking_offset(increment)
+        increment.ref.to_i % MAX_BITMAP_OFFSET
       end
 
       def positive?(increment)

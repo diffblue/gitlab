@@ -226,6 +226,23 @@ RSpec.describe Gitlab::Counters::BufferedCounter, :clean_gitlab_redis_shared_sta
           it_behaves_like 'not changing the counter refresh key'
         end
       end
+
+      context 'when the ref is greater than 67108863 (8MB)' do
+        let(:increment) { Gitlab::Counters::Increment.new(amount: 123, ref: 67108864) }
+
+        let(:increment_2) { Gitlab::Counters::Increment.new(amount: 123, ref: 267108863) }
+        let(:decrement_2) { Gitlab::Counters::Increment.new(amount: -increment_2.amount, ref: increment_2.ref) }
+
+        let(:expected_counter_value) { increment.amount }
+
+        it 'deduplicates increments correctly' do
+          counter.increment(decrement_2)
+          counter.increment(increment)
+          counter.increment(increment_2)
+
+          expect(redis_get_key(counter.refresh_key).to_i).to eq(increment.amount)
+        end
+      end
     end
   end
 
@@ -421,16 +438,13 @@ RSpec.describe Gitlab::Counters::BufferedCounter, :clean_gitlab_redis_shared_sta
           .to change { counter.get }.by(increment.amount)
       end
 
-      it 'removes the refresh counter key and the refresh indicator key' do
-        expect { counter.finalize_refresh }
-          .to change { redis_exists_key(counter.refresh_indicator_key) }.from(true).to(false)
-          .and change { redis_exists_key(counter.refresh_key) }.from(true).to(false)
-      end
+      it 'removes the all refresh related keys' do
+        counter.finalize_refresh
 
-      it 'removes the tracking keys' do
-        expect { counter.finalize_refresh }
-          .to change { redis_exists_key(counter.increment_tracking_key) }.from(true).to(false)
-          .and change { redis_exists_key(counter.decrement_tracking_key) }.from(true).to(false)
+        Gitlab::Redis::SharedState.with do |redis|
+          remaining = redis.scan_each(match: "#{counter.refresh_key}*").to_a
+          expect(remaining.count).to eq(0)
+        end
       end
 
       it 'schedules a worker to commit the counter key into database' do
@@ -456,6 +470,30 @@ RSpec.describe Gitlab::Counters::BufferedCounter, :clean_gitlab_redis_shared_sta
           .with(described_class::WORKER_DELAY, counter_record.class.to_s, counter_record.id, attribute)
 
         counter.finalize_refresh
+      end
+    end
+
+    context 'with ref greater than 67108863 (8MB)' do
+      let(:increment) { Gitlab::Counters::Increment.new(amount: 123, ref: 67108864) }
+
+      let(:increment_2) { Gitlab::Counters::Increment.new(amount: 123, ref: 267108864) }
+      let(:decrement_2) { Gitlab::Counters::Increment.new(amount: -increment_2.amount, ref: increment_2.ref) }
+
+      let(:expected_counter_value) { increment.amount }
+
+      before do
+        counter.increment(decrement_2)
+        counter.increment(increment)
+        counter.increment(increment_2)
+      end
+
+      it 'removes all tracking key shards' do
+        counter.finalize_refresh
+
+        Gitlab::Redis::SharedState.with do |redis|
+          remaining = redis.scan_each(match: "#{counter.refresh_key}*").to_a
+          expect(remaining.count).to eq(0)
+        end
       end
     end
   end
