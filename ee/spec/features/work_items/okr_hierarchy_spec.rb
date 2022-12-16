@@ -19,7 +19,6 @@ RSpec.describe 'OKR hierarchy', :js, feature_category: :product_planning do
 
       stub_feature_flags(work_items: true)
       stub_feature_flags(okrs_mvc: true)
-      stub_feature_flags(hierarchy_db_restrictions: true)
 
       visit project_work_items_path(project, work_items_path: objective.id)
     end

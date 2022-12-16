@@ -49968,12 +49968,6 @@ msgstr ""
 msgid "nounSeries|%{item}, and %{lastItem}"
 msgstr ""
 
-msgid "only %{parent_types} can be parent of Task."
-msgstr ""
-
-msgid "only Task can be assigned as a child in hierarchy."
-msgstr ""
-
 msgid "only available on top-level groups."
 msgstr ""
 
