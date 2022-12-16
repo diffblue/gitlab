@@ -3,6 +3,10 @@
 #import "~/work_items/graphql/milestone.fragment.graphql"
 
 fragment WorkItemMetadataWidgets on WorkItemWidget {
+  ... on WorkItemWidgetProgress {
+    type
+    progress
+  }
   ... on WorkItemWidgetMilestone {
     type
     milestone {
@@ -19,6 +23,7 @@ fragment WorkItemMetadataWidgets on WorkItemWidget {
   }
   ... on WorkItemWidgetLabels {
     type
+    allowsScopedLabels
     labels {
       nodes {
         ...Label
