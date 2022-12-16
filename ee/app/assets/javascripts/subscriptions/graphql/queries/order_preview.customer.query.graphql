@@ -7,7 +7,5 @@ query orderPreview($namespaceId: ID!, $newProductId: String!, $newProductQuantit
     targetDate
     amount
     amountWithoutTax
-    prorationCredit
-    priceBeforeProration
   }
 }

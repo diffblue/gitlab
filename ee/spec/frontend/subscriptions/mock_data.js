@@ -55,8 +55,6 @@ export const mockOrderPreview = {
   targetDate: '2022-12-15',
   amount: 59.67,
   amountWithoutTax: 60.0,
-  prorationCredit: 0.33,
-  priceBeforeProration: 60.0,
   __typename: ORDER_PREVIEW_TYPE,
 };
 
