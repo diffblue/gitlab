@@ -10,6 +10,7 @@ RSpec.describe EE::Gitlab::Checks::PushRules::BranchCheck do
     let(:ref) { 'refs/heads/a-branch-that-is-not-allowed' }
 
     it_behaves_like 'check ignored when push rule unlicensed'
+    it_behaves_like 'use predefined push rules'
 
     it 'rejects the branch that is not allowed' do
       expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "Branch name 'a-branch-that-is-not-allowed' does not follow the pattern '^(w*)$'")

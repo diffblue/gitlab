@@ -12,6 +12,7 @@ RSpec.describe EE::Gitlab::Checks::PushRules::TagCheck do
     let(:ref) { 'refs/tags/v1.0.0' }
 
     it_behaves_like 'check ignored when push rule unlicensed'
+    it_behaves_like 'use predefined push rules'
 
     it 'returns an error if the rule denies tag deletion' do
       expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, 'You cannot delete a tag')

@@ -10,6 +10,7 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck do
       let!(:push_rule) { create(:push_rule, :commit_message) }
 
       it_behaves_like 'check ignored when push rule unlicensed'
+      it_behaves_like 'use predefined push rules'
 
       it 'returns an error if the rule fails due to missing required characters' do
         expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "Commit message does not follow the pattern '#{push_rule.commit_message_regex}'")

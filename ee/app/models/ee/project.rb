@@ -1002,6 +1002,18 @@ module EE
       only_mirror_protected_branches
     end
 
+    def predefined_push_rule
+      return push_rule if ::Feature.disabled?(:inherited_push_rule_for_project, self)
+      return unless feature_available?(:push_rules)
+      return push_rule if push_rule
+
+      if group
+        group.predefined_push_rule
+      else
+        PushRule.global
+      end
+    end
+
     private
 
     def update_legacy_open_source_license_available

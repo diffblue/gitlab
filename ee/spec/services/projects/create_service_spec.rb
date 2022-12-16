@@ -199,7 +199,11 @@ RSpec.describe Projects::CreateService, '#execute' do
     end
   end
 
-  context 'push rules' do
+  context 'when inherited_push_rule_for_project is disabled' do
+    before do
+      stub_feature_flags(inherited_push_rule_for_project: false)
+    end
+
     context 'with sample' do
       let!(:sample) { create(:push_rule_sample) }
 
@@ -247,6 +251,7 @@ RSpec.describe Projects::CreateService, '#execute' do
   context 'group push rules' do
     before do
       stub_licensed_features(push_rules: true)
+      stub_feature_flags(inherited_push_rule_for_project: false)
     end
 
     context 'project created within a group' do

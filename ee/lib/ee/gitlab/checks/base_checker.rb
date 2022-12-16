@@ -11,7 +11,7 @@ module EE
 
         def push_rule
           strong_memoize(:push_rule) do
-            project.push_rule
+            project.predefined_push_rule
           end
         end
       end

@@ -799,6 +799,58 @@ RSpec.describe Project do
     end
   end
 
+  describe '#predefined_push_rule' do
+    subject(:predefined_push_rule) { project.predefined_push_rule }
+
+    context 'when inherited_push_rule_for_project is disabled' do
+      before do
+        stub_feature_flags(inherited_push_rule_for_project: false)
+      end
+
+      it 'return push rule' do
+        expect(project).to receive(:push_rule)
+
+        subject
+      end
+    end
+
+    context 'push rules unlicensed' do
+      before do
+        stub_licensed_features(push_rules: false)
+      end
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'push rules licensed' do
+      context 'when has push rule' do
+        let(:push_rule) { build(:push_rule) }
+
+        before do
+          project.push_rule = push_rule
+        end
+
+        it { is_expected.to eq(push_rule) }
+      end
+
+      context 'when has group push rule' do
+        let!(:group) { build(:group, push_rule: build(:push_rule)) }
+
+        before do
+          project.group = group
+        end
+
+        it { is_expected.to eq(group.push_rule) }
+      end
+
+      context 'when has global push rule' do
+        let!(:push_rule_sample) { create(:push_rule_sample) }
+
+        it { is_expected.to eq(push_rule_sample) }
+      end
+    end
+  end
+
   context 'merge requests related settings' do
     shared_examples 'setting modified by application setting' do
       where(:feature_enabled, :app_setting, :project_setting, :final_setting) do

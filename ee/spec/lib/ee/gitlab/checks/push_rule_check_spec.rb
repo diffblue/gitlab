@@ -24,6 +24,8 @@ RSpec.describe EE::Gitlab::Checks::PushRuleCheck do
         .to receive(:validate!).and_return(nil)
     end
 
+    it_behaves_like 'use predefined push rules'
+
     it "returns nil on success" do
       expect(subject.validate!).to be_nil
     end
