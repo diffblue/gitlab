@@ -1,12 +1,19 @@
 # frozen_string_literal: true
 
 module Geo
-  class ProjectSyncWorker # rubocop:disable Scalability/IdempotentWorker
+  class ProjectSyncWorker
     include ApplicationWorker
-
-    data_consistency :always
     include GeoQueue
     include Gitlab::Geo::LogHelpers
+
+    # Do not enqueue another instance of this Worker with the same args
+    # if one is currently enqueued or executing. If deduplication occurs,
+    # then reschedule the job once after the first job finishes, to
+    # ensure all changes get replicated.
+    deduplicate :until_executed, if_deduplicated: :reschedule_once
+    idempotent!
+
+    data_consistency :always
 
     sidekiq_options retry: 1, dead: false
 
