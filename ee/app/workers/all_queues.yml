@@ -658,7 +658,7 @@
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent: false
+  :idempotent: true
   :tags: []
 - :name: geo:geo_rename_repository
   :worker_name: Geo::RenameRepositoryWorker

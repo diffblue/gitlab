@@ -2,25 +2,24 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::ProjectSyncWorker do
+RSpec.describe Geo::ProjectSyncWorker, feature_category: :geo_replication do
+  let_it_be(:project) { create(:project) }
+
+  before do
+    allow(Gitlab::ShardHealthCache).to receive(:healthy_shard?)
+      .with(project.repository_storage).and_return(true)
+  end
+
   describe '#perform' do
-    let(:project) { create(:project) }
-    let(:project_with_broken_storage) { create(:project, :broken_storage) }
-    let(:repository_sync_service) { spy }
     let(:wiki_sync_service) { spy }
+    let(:repository_sync_service) { spy }
 
     before do
-      allow(Gitlab::ShardHealthCache).to receive(:healthy_shard?)
-        .with(project.repository_storage).once.and_return(true)
-
-      allow(Gitlab::ShardHealthCache).to receive(:healthy_shard?)
-        .with(project_with_broken_storage.repository_storage).once.and_return(false)
-
-      allow(Geo::RepositorySyncService).to receive(:new)
-        .with(instance_of(Project)).once.and_return(repository_sync_service)
-
       allow(Geo::WikiSyncService).to receive(:new)
         .with(instance_of(Project)).once.and_return(wiki_sync_service)
+
+      allow(Geo::RepositorySyncService).to receive(:new)
+        .with(instance_of(Project)).and_return(repository_sync_service)
     end
 
     context 'when project could not be found' do
@@ -32,7 +31,12 @@ RSpec.describe Geo::ProjectSyncWorker do
     end
 
     context 'when the shard associated to the project is unhealthy' do
+      let_it_be(:project_with_broken_storage) { create(:project, :broken_storage) }
+
       it 'logs an error and returns' do
+        allow(Gitlab::ShardHealthCache).to receive(:healthy_shard?)
+          .with(project_with_broken_storage.repository_storage).once.and_return(false)
+
         expect(subject).to receive(:log_error).with("Project shard '#{project_with_broken_storage.repository_storage}' is unhealthy, skipping syncing", project_id: project_with_broken_storage.id)
         expect(repository_sync_service).not_to receive(:execute)
         expect(wiki_sync_service).not_to receive(:execute)
@@ -86,6 +90,32 @@ RSpec.describe Geo::ProjectSyncWorker do
         subject.perform(project.id, sync_wiki: true)
 
         expect(wiki_sync_service).to have_received(:execute).once
+      end
+    end
+  end
+
+  describe 'idempotence' do
+    include_examples 'an idempotent worker' do
+      let(:job_args) { [project.id, { sync_repository: true }] }
+
+      before do
+        allow_next_instance_of(Geo::RepositorySyncService) do |service|
+          allow(service).to receive(:fetch_repository)
+        end
+      end
+
+      context 'when the project registry row does not exist' do
+        it 'creates exactly 1 project registry row' do
+          expect { subject }.to change { Geo::ProjectRegistry.count }.by(1)
+        end
+      end
+
+      context 'when the project registry row already exists' do
+        it 'does not create a project registry row' do
+          create(:geo_project_registry, :synced, project: project)
+
+          expect { subject }.not_to change { Geo::ProjectRegistry.count }
+        end
       end
     end
   end
