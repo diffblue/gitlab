@@ -122,11 +122,12 @@ RSpec.describe(
 
         it "logs an error" do
           expect_next_instance_of(::Gitlab::BackgroundMigration::Logger) do |logger|
-            expect(logger).to receive(:error).once.with(
+            params = {
               class: "MigrateVulnerabilitiesFeedbackToVulnerabilitiesStateTransition",
               errors: "Title can't be blank",
               message: "Failed to create Vulnerability"
-            )
+            }
+            expect(logger).to receive(:error).once.with(params)
           end
 
           subject
@@ -196,11 +197,12 @@ RSpec.describe(
 
         it "logs an error" do
           expect_next_instance_of(::Gitlab::BackgroundMigration::Logger) do |logger|
-            expect(logger).to receive(:error).once.with(
+            params = {
               message: "Failed to create Vulnerability from Security::Finding",
               class: "MigrateVulnerabilitiesFeedbackToVulnerabilitiesStateTransition",
               error: "an error"
-            )
+            }
+            expect(logger).to receive(:error).once.with(params)
           end
 
           subject
@@ -259,13 +261,14 @@ RSpec.describe(
 
         it "logs an error" do
           expect_next_instance_of(::Gitlab::BackgroundMigration::Logger) do |logger|
-            expect(logger).to receive(:error).once.with(
+            params = {
               class: "MigrateVulnerabilitiesFeedbackToVulnerabilitiesStateTransition",
               errors: "An error",
               message: "Failed to create a StateTransition",
               vulnerability_id: kind_of(Integer),
               feedback_id: kind_of(Integer)
-            )
+            }
+            expect(logger).to receive(:error).once.with(params)
           end
 
           subject
