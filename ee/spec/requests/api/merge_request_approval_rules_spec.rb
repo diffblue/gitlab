@@ -188,12 +188,14 @@ RSpec.describe API::MergeRequestApprovalRules, feature_category: :source_code_ma
     let(:approver_params) do
       {
         user_ids: user_ids,
+        usernames: usernames,
         group_ids: group_ids
       }
     end
 
     let(:user_ids) { [] }
     let(:group_ids) { [] }
+    let(:usernames) { [] }
 
     let(:params) do
       {
@@ -253,6 +255,29 @@ RSpec.describe API::MergeRequestApprovalRules, feature_category: :source_code_ma
 
           expect(rule['eligible_approvers'].map { |approver| approver['id'] }).to contain_exactly(approver.id, other_approver.id)
           expect(rule['groups'].map { |group| group['id'] }).to contain_exactly(group.id, other_group.id)
+        end
+      end
+
+      context 'usernames are passed' do
+        let(:usernames) { "#{approver.username}, #{other_approver.username}" }
+
+        it 'includes users' do
+          rule = json_response
+
+          expect(rule['eligible_approvers'].map { |approver| approver['id'] }).to contain_exactly(approver.id, other_approver.id)
+          expect(rule['users'].map { |user| user['id'] }).to contain_exactly(approver.id, other_approver.id)
+        end
+      end
+
+      context 'usernames and user_ids are passed' do
+        let(:user_ids) { approver.id }
+        let(:usernames) { other_approver.username }
+
+        it 'includes users' do
+          rule = json_response
+
+          expect(rule['eligible_approvers'].map { |approver| approver['id'] }).to contain_exactly(approver.id, other_approver.id)
+          expect(rule['users'].map { |user| user['id'] }).to contain_exactly(approver.id, other_approver.id)
         end
       end
 
@@ -320,6 +345,7 @@ RSpec.describe API::MergeRequestApprovalRules, feature_category: :source_code_ma
     let(:new_group) { create(:group) }
     let(:user_ids) { [] }
     let(:group_ids) { [] }
+    let(:usernames) { [] }
     let(:remove_hidden_groups) { nil }
     let(:other_approver) { create(:user) }
     let(:other_group) { create(:group) }
@@ -330,6 +356,7 @@ RSpec.describe API::MergeRequestApprovalRules, feature_category: :source_code_ma
         approvals_required: 1,
         user_ids: user_ids,
         group_ids: group_ids,
+        usernames: usernames,
         remove_hidden_groups: remove_hidden_groups
       }
     end
@@ -408,6 +435,17 @@ RSpec.describe API::MergeRequestApprovalRules, feature_category: :source_code_ma
           it 'does not remove the existing private group' do
             expect(approval_rule.reload.groups).to include(existing_group)
           end
+        end
+      end
+
+      context 'usernames are passed' do
+        let(:usernames) { "#{new_approver.username},#{existing_approver.username}" }
+
+        it 'includes users' do
+          rule = json_response
+
+          expect(rule['eligible_approvers'].map { |approver| approver['id'] }).to contain_exactly(new_approver.id, existing_approver.id)
+          expect(rule['users'].map { |user| user['id'] }).to contain_exactly(new_approver.id, existing_approver.id)
         end
       end
     end

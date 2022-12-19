@@ -43,6 +43,7 @@ module API
           optional :approval_project_rule_id, type: Integer, desc: 'The ID of a project-level approval rule'
           optional :user_ids, type: Array[Integer], coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce, desc: 'The user ids for this rule'
           optional :group_ids, type: Array[Integer], coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce, desc: 'The group ids for this rule'
+          optional :usernames, type: Array[String], coerce_with: ::API::Validations::Types::CommaSeparatedToArray.coerce, desc: 'The usernames for this rule'
         end
         post do
           merge_request = find_merge_request_with_access(params[:merge_request_iid], :update_approvers)
@@ -80,6 +81,7 @@ module API
             optional :approvals_required, type: Integer, desc: 'The number of required approvals for this rule'
             optional :user_ids, type: Array[Integer], coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce, desc: 'The user ids for this rule'
             optional :group_ids, type: Array[Integer], coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce, desc: 'The group ids for this rule'
+            optional :usernames, type: Array[String], coerce_with: ::API::Validations::Types::CommaSeparatedToArray.coerce, desc: 'The group ids for this rule'
             optional :remove_hidden_groups, type: Boolean, desc: 'Whether hidden groups should be removed'
           end
           put do
