@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AbuseReport, feature_category: :users do
+RSpec.describe AbuseReport, feature_category: :insider_threat do
   let_it_be(:report, reload: true) { create(:abuse_report) }
   let_it_be(:user, reload: true) { create(:admin) }
 

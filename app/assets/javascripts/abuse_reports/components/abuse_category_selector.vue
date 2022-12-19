@@ -76,6 +76,7 @@ export default {
             v-model="selected"
             :options="$options.categoryOptions"
             name="abuse_report[category]"
+            required
           />
         </gl-form-group>
 

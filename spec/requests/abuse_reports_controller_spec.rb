@@ -68,7 +68,7 @@ RSpec.describe AbuseReportsController, feature_category: :users do
       end
     end
 
-    context 'when abuse category is missing in params' do
+    context 'when abuse_report is missing in params' do
       let(:request_params) { { user_id: user.id } }
 
       it 'raises an error' do
@@ -76,7 +76,7 @@ RSpec.describe AbuseReportsController, feature_category: :users do
       end
     end
 
-    context 'when user id is missing in params' do
+    context 'when user_id is missing in params' do
       let(:request_params) { { abuse_report: { category: abuse_category } } }
 
       it 'redirects the reporter to root_path' do

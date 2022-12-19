@@ -98,6 +98,7 @@ describe('AbuseCategorySelector', () => {
       expect(findRadioGroup().exists()).toBe(true);
       expect(findRadioGroup().props('options')).toEqual(wrapper.vm.$options.categoryOptions);
       expect(findRadioGroup().attributes('name')).toBe('abuse_report[category]');
+      expect(findRadioGroup().attributes('required')).not.toBeUndefined();
     });
 
     it('renders userId as a hidden fields', () => {
