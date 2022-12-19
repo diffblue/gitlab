@@ -12,7 +12,7 @@ module Resolvers
                description: 'UUID of the security report finding.'
 
       def resolve(**args)
-        Security::FindingsFinder.new(pipeline, params: { uuid: args[:uuid] }).execute&.findings&.first
+        Security::FindingsFinder.new(pipeline, params: { uuid: args[:uuid], scope: 'all' }).execute&.findings&.first
       end
     end
   end
