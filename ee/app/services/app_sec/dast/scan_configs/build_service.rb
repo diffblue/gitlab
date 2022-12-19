@@ -42,13 +42,19 @@ module AppSec
         end
 
         def ci_configuration
-          {
+          ci_config = {
             'stages' => [STAGE_NAME],
             'include' => [{ 'template' => dast_template }],
             'dast' => {
               'dast_configuration' => { 'site_profile' => dast_site_profile.name, 'scanner_profile' => dast_scanner_profile&.name }.compact
             }
-          }.to_yaml
+          }
+
+          if Feature.enabled?(:on_demand_scans_runner_tags, container) && dast_scanner_profile&.tags.present?
+            ci_config['tags'] = dast_scanner_profile.tags.map(&:name)
+          end
+
+          ci_config.to_yaml
         end
 
         def dast_template

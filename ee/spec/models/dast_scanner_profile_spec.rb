@@ -2,13 +2,15 @@
 
 require 'spec_helper'
 
-RSpec.describe DastScannerProfile, type: :model do
+RSpec.describe DastScannerProfile, :dynamic_analysis, feature_category: :dynamic_application_security_testing, type: :model do
   subject { create(:dast_scanner_profile) }
 
   it_behaves_like 'sanitizable', :dast_scanner_profile, %i[name]
 
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
+    it { is_expected.to have_many(:scanner_profile_runner_tags) }
+    it { is_expected.to have_many(:tags) }
   end
 
   describe 'validations' do
