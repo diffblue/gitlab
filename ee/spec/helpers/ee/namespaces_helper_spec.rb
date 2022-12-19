@@ -317,7 +317,6 @@ RSpec.describe EE::NamespacesHelper do
           default_per_page: 20,
           namespace_id: namespace.id,
           namespace_path: namespace.full_path,
-          is_free_namespace: "true",
           is_personal_namespace: true
         })
       end
@@ -336,7 +335,6 @@ RSpec.describe EE::NamespacesHelper do
           default_per_page: 20,
           namespace_id: namespace.id,
           namespace_path: namespace.full_path,
-          is_free_namespace: "true",
           is_personal_namespace: true
         })
       end

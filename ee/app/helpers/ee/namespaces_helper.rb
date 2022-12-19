@@ -86,7 +86,6 @@ module EE
         buy_addon_target_attr: nil,
         default_per_page: page_size,
         additional_repo_storage_by_namespace: current_user.namespace.additional_repo_storage_by_namespace_enabled?.to_s,
-        is_free_namespace: (!current_user.namespace.paid?).to_s,
         is_personal_namespace: true
       }
 

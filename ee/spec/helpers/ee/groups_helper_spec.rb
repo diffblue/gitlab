@@ -261,7 +261,6 @@ RSpec.describe GroupsHelper do
         additional_repo_storage_by_namespace: "false",
         buy_addon_target_attr: nil,
         default_per_page: 20,
-        is_free_namespace: "true",
         purchase_storage_url: nil,
         storage_limit_enforced: "false",
         can_show_inline_alert: "false"
