@@ -42,6 +42,7 @@ module EE
               :name,
               { user_ids: [] },
               { group_ids: [] },
+              { usernames: [] },
               :approvals_required,
               :approval_project_rule_id,
               :remove_hidden_groups,

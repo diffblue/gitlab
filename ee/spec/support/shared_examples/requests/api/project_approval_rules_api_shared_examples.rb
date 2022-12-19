@@ -191,6 +191,21 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
         expect(project.approval_rules.first.severity_levels).to eql(severity_levels)
       end
     end
+
+    context 'with username' do
+      let(:approvals_usernames) { [user2.username] }
+
+      before do
+        project.add_developer(user2)
+      end
+
+      it 'returns 201 status' do
+        post api(url, current_user), params: params.merge!({ usernames: approvals_usernames })
+
+        expect(response).to have_gitlab_http_status(:created)
+        expect(project.approval_rules.first.users).to contain_exactly(user2)
+      end
+    end
   end
 
   context 'with vulnerabilities_allowed' do

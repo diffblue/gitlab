@@ -34,9 +34,11 @@ module ApprovalRules
     end
 
     def filter_eligible_users!
-      return unless params.key?(:user_ids)
+      return unless params.key?(:user_ids) || params.key?(:usernames)
 
-      params[:users] = project.members_among(User.id_in(params.delete(:user_ids)))
+      users = User.by_ids_or_usernames(params.delete(:user_ids), params.delete(:usernames))
+
+      params[:users] = project.members_among(users)
     end
 
     def filter_eligible_groups!
