@@ -3,6 +3,7 @@ import { GlSprintf, GlForm, GlButton, GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { getDefaultRule, SCAN_FINDING, LICENSE_FINDING } from './lib';
 import SecurityScanRuleBuilder from './security_scan_rule_builder.vue';
+import LicenseScanRuleBuilder from './license_scan_rule_builder.vue';
 
 export default {
   scanResultRuleCopy: s__('ScanResultPolicy|%{ifLabelStart}if%{ifLabelEnd} %{selector}'),
@@ -12,6 +13,7 @@ export default {
     GlButton,
     GlCollapsibleListbox,
     SecurityScanRuleBuilder,
+    LicenseScanRuleBuilder,
   },
   props: {
     initRule: {
@@ -22,6 +24,9 @@ export default {
   computed: {
     isSecurityRule() {
       return this.initRule.type === SCAN_FINDING;
+    },
+    isLicenseRule() {
+      return this.initRule.type === LICENSE_FINDING;
     },
     scanRuleTypeToggleText() {
       return this.scanType ? '' : this.$options.i18n.scanRuleTypeToggleText;
@@ -87,11 +92,16 @@ export default {
       <security-scan-rule-builder
         v-if="isSecurityRule"
         :init-rule="initRule"
-        @changed="updateRule($event)"
-        @remove="removeRule()"
+        @changed="updateRule"
+        @remove="removeRule"
       />
 
-      <!-- TODO: Implement License Scan Rule Builder -->
+      <license-scan-rule-builder
+        v-else-if="isLicenseRule"
+        :init-rule="initRule"
+        @changed="updateRule"
+        @remove="removeRule"
+      />
     </gl-form>
     <gl-button
       icon="remove"

@@ -25,6 +25,7 @@ export default (el, namespaceType) => {
     policyType,
     scanPolicyDocumentationPath,
     scanResultApprovers,
+    softwareLicenses,
   } = el.dataset;
 
   const policyProject = JSON.parse(assignedPolicyProject);
@@ -46,6 +47,7 @@ export default (el, namespaceType) => {
       policiesPath,
       scanPolicyDocumentationPath,
       scanResultPolicyApprovers,
+      softwareLicenses,
       existingPolicy: policy ? { type: policyType, ...JSON.parse(policy) } : undefined,
       assignedPolicyProject: policyProject
         ? convertObjectPropsToCamelCase(policyProject)
