@@ -101,14 +101,8 @@ module QA
         end
       end
 
-      # TODO: Waiting on https://gitlab.com/gitlab-org/gitlab/-/merge_requests/107155 as there was a missing QA selector
       it 'displays security reports in the group security dashboard',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348038',
-         quarantine: {
-           issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/385800',
-           type: :waiting_on,
-           only: { pipeline: %i[production canary] }
-         } do
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348038' do
         push_security_reports
         Page::Main::Menu.perform(&:go_to_groups)
         Page::Dashboard::Groups.perform do |groups|
