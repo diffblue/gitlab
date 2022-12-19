@@ -10,6 +10,9 @@ module EE
         prepended do
           before_action :assign_variables_to_gon, only: [:show]
           before_action :define_protected_env_variables, only: [:show]
+          before_action only: [:show] do
+            push_frontend_feature_flag(:multiple_environment_approval_rules_fe, project)
+          end
         end
 
         # rubocop:disable Gitlab/ModuleWithInstanceVariables

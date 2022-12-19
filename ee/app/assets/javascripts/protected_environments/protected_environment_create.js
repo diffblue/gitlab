@@ -8,9 +8,11 @@ export const initProtectedEnvironmentCreate = () => {
   }
 
   const { projectId } = el.dataset;
-
   return new Vue({
     el,
+    provide: {
+      accessLevelsData: gon?.deploy_access_levels?.roles ?? [],
+    },
     render(h) {
       return h(CreateProtectedEnvironment, {
         props: {
