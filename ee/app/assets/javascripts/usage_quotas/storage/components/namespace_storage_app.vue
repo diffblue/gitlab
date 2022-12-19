@@ -1,5 +1,5 @@
 <script>
-import { GlAlert, GlLink, GlSprintf, GlButton, GlIcon, GlKeysetPagination } from '@gitlab/ui';
+import { GlAlert, GlKeysetPagination } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { s__ } from '~/locale';
 import { captureException } from '~/ci/runner/sentry_utils';
@@ -10,8 +10,6 @@ import { formatUsageSize, parseGetStorageResults } from '../utils';
 import SearchAndSortBar from '../../components/search_and_sort_bar/search_and_sort_bar.vue';
 import ProjectList from './project_list.vue';
 import StorageInlineAlert from './storage_inline_alert.vue';
-import UsageGraph from './usage_graph.vue';
-import UsageStatistics from './usage_statistics.vue';
 import DependencyProxyUsage from './dependency_proxy_usage.vue';
 import StorageUsageStatistics from './storage_usage_statistics.vue';
 import ContainerRegistryUsage from './container_registry_usage.vue';
@@ -20,13 +18,7 @@ export default {
   name: 'NamespaceStorageApp',
   components: {
     GlAlert,
-    GlLink,
-    GlIcon,
-    GlButton,
-    GlSprintf,
-    UsageGraph,
     ProjectList,
-    UsageStatistics,
     StorageUsageStatistics,
     StorageInlineAlert,
     GlKeysetPagination,
@@ -34,7 +26,7 @@ export default {
     ContainerRegistryUsage,
     SearchAndSortBar,
   },
-  inject: ['namespaceId', 'namespacePath', 'purchaseStorageUrl', 'helpLinks', 'defaultPerPage'],
+  inject: ['namespaceId', 'namespacePath', 'helpLinks', 'defaultPerPage'],
   provide: {
     containerRegistryPopoverContent: namespaceContainerRegistryPopoverContent,
   },
@@ -89,11 +81,6 @@ export default {
       required: false,
       default: false,
     },
-    isFreeNamespace: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
     isPersonalNamespace: {
       type: Boolean,
       required: false,
@@ -115,9 +102,6 @@ export default {
   computed: {
     namespaceProjects() {
       return this.namespace?.projects?.data ?? [];
-    },
-    shouldUseNewStorageDesign() {
-      return this.isFreeNamespace;
     },
     formattedNamespaceLimit() {
       return formatUsageSize(this.namespace.limit);
@@ -216,9 +200,8 @@ export default {
       :additional-purchased-storage-size="namespace.additionalPurchasedStorageSize"
       :actual-repository-size-limit="namespace.actualRepositorySizeLimit"
     />
-    <div v-if="isAdditionalStorageFlagEnabled && storageStatistics">
+    <div v-if="storageStatistics">
       <storage-usage-statistics
-        v-if="shouldUseNewStorageDesign"
         :storage-limit-enforced="storageLimitEnforced"
         :additional-purchased-storage-size="storageStatistics.additionalPurchasedStorageSize"
         :actual-repository-size-limit="storageStatistics.actualRepositorySizeLimit"
@@ -226,54 +209,6 @@ export default {
         :total-repository-size-excess="storageStatistics.totalRepositorySizeExcess"
         :loading="isStorageUsageStatisticsLoading"
       />
-      <usage-statistics v-else :root-storage-statistics="storageStatistics" />
-    </div>
-    <div v-else class="gl-py-4 gl-px-2 gl-m-0">
-      <div class="gl-display-flex gl-align-items-center">
-        <div class="gl-w-half" data-qa-selector="used_storage_message">
-          <gl-sprintf :message="s__('UsageQuota|You used: %{usage} %{limit}')">
-            <template #usage>
-              <span class="gl-font-weight-bold" data-testid="total-usage">
-                {{ namespace.totalUsage }}
-              </span>
-            </template>
-            <template #limit>
-              <gl-sprintf
-                v-if="namespace.limit"
-                :message="s__('UsageQuota|out of %{formattedLimit} of your namespace storage')"
-              >
-                <template #formattedLimit>
-                  <span class="gl-font-weight-bold">{{ formattedNamespaceLimit }}</span>
-                </template>
-              </gl-sprintf>
-            </template>
-          </gl-sprintf>
-          <gl-link
-            :href="helpLinks.usageQuotas"
-            target="_blank"
-            :aria-label="s__('UsageQuota|Usage quotas help link')"
-          >
-            <gl-icon name="question" :size="12" />
-          </gl-link>
-        </div>
-        <div class="gl-w-half gl-text-right">
-          <gl-button
-            v-if="purchaseStorageUrl"
-            :href="purchaseStorageUrl"
-            class="gl-ml-2"
-            target="_blank"
-            variant="confirm"
-            data-testid="purchase-storage-link"
-            >{{ s__('UsageQuota|Purchase more storage') }}</gl-button
-          >
-        </div>
-      </div>
-      <div v-if="namespace.rootStorageStatistics" class="gl-w-full">
-        <usage-graph
-          :root-storage-statistics="namespace.rootStorageStatistics"
-          :limit="namespace.limit"
-        />
-      </div>
     </div>
 
     <dependency-proxy-usage
