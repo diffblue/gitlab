@@ -164,16 +164,18 @@ export const dismissSelectedVulnerabilities = (
 ) => {
   const { filters } = rootState.filters;
   const { vulnerabilities, selectedVulnerabilities, pageInfo } = state;
-  const dismissableVulnerabilties = vulnerabilities.filter(({ id }) => selectedVulnerabilities[id]);
+  const dismissibleVulnerabilities = vulnerabilities.filter(
+    ({ id }) => selectedVulnerabilities[id],
+  );
 
   const currentPage = pageInfo?.page || 1;
-  const vulnerabilitiesOnPage = vulnerabilities.length - dismissableVulnerabilties.length;
+  const vulnerabilitiesOnPage = vulnerabilities.length - dismissibleVulnerabilities.length;
   const hideDismissed = filters?.scope === DISMISSAL_STATES.DISMISSED;
   const shouldLoadPreviousPage = hideDismissed && vulnerabilitiesOnPage < 1;
 
   dispatch('requestDismissSelectedVulnerabilities');
 
-  const promises = dismissableVulnerabilties.map((vulnerability) =>
+  const promises = dismissibleVulnerabilities.map((vulnerability) =>
     axios.post(vulnerability.create_vulnerability_feedback_dismissal_path, {
       vulnerability_feedback: {
         category: vulnerability.report_type,
