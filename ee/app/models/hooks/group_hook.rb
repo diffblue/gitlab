@@ -31,6 +31,11 @@ class GroupHook < WebHook
 
   validates :url, presence: true, addressable_url: true
 
+  override :executable?
+  def executable?
+    true
+  end
+
   def pluralized_name
     _('Group Hooks')
   end
