@@ -318,7 +318,7 @@ var y = 10;
     expect(
       serialize(
         codeBlock(
-          { language: 'json' },
+          { language: 'json', langParams: '' },
           'this is not really json but just trying out whether this case works or not',
         ),
       ),
@@ -326,6 +326,23 @@ var y = 10;
       `
 \`\`\`json
 this is not really json but just trying out whether this case works or not
+\`\`\`
+      `.trim(),
+    );
+  });
+
+  it('correctly serializes a code block with language parameters', () => {
+    expect(
+      serialize(
+        codeBlock(
+          { language: 'json', langParams: 'table' },
+          'this is not really json:table but just trying out whether this case works or not',
+        ),
+      ),
+    ).toBe(
+      `
+\`\`\`json:table
+this is not really json:table but just trying out whether this case works or not
 \`\`\`
       `.trim(),
     );
