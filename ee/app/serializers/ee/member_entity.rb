@@ -23,6 +23,10 @@ module EE
 
       expose :can_unban?, as: :can_unban
 
+      expose :can_get_two_factor_disabled do |member|
+        member.user&.two_factor_enabled? & member.user&.can_get_two_factor_disabled?(group, current_user)
+      end
+
       expose :banned do |member|
         member.user.present? && member.user.banned_from_namespace?(group)
       end

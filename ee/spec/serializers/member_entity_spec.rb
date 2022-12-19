@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MemberEntity do
+RSpec.describe MemberEntity, feature_category: :authentication_and_authorization do
   let_it_be(:current_user) { create(:user) }
 
   let(:entity) { described_class.new(member, { current_user: current_user, group: group }) }
@@ -54,6 +54,20 @@ RSpec.describe MemberEntity do
       allow(member).to receive(:can_unban?).and_return(true)
 
       expect(entity_hash[:can_unban]).to be(true)
+    end
+
+    it 'correctly exposes `can_get_two_factor_disabled`' do
+      allow(member.user).to receive(:can_get_two_factor_disabled?).with(group, current_user).and_return(true)
+      allow(member.user).to receive(:two_factor_enabled?).and_return(true)
+
+      expect(entity_hash[:can_get_two_factor_disabled]).to be(true)
+    end
+
+    it 'always returns boolean value for `can_get_two_factor_disabled`' do
+      allow(member.user).to receive(:can_get_two_factor_disabled?).with(group, current_user).and_return(nil)
+      allow(member.user).to receive(:two_factor_enabled?).and_return(true)
+
+      expect(entity_hash[:can_get_two_factor_disabled]).to be(false)
     end
   end
 

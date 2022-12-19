@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe TwoFactor::DestroyService do
+RSpec.describe TwoFactor::DestroyService, feature_category: :authentication_and_authorization do
   let_it_be(:current_user) { create(:user, :two_factor) }
   let_it_be(:group) { create(:group) }
   let_it_be(:user) { create(:user, :two_factor, provisioned_by_group_id: group.id) }
