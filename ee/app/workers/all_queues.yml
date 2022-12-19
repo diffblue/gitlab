@@ -192,6 +192,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: cronjob:geo_repository_registry_sync
+  :worker_name: Geo::RepositoryRegistrySyncWorker
+  :feature_category: :geo_replication
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:geo_repository_sync
   :worker_name: Geo::RepositorySyncWorker
   :feature_category: :geo_replication
