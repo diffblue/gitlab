@@ -1,6 +1,5 @@
 import { GlButton, GlCard, GlIcon, GlCollapse } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
-
 import VueApollo from 'vue-apollo';
 import mockTimezones from 'test_fixtures/timezones/full.json';
 import OnCallSchedule, { i18n } from 'ee/oncall_schedules/components/oncall_schedule.vue';
@@ -9,7 +8,6 @@ import ScheduleTimelineSection from 'ee/oncall_schedules/components/schedule/com
 import * as utils from 'ee/oncall_schedules/components/schedule/utils';
 import { PRESET_TYPES } from 'ee/oncall_schedules/constants';
 import getShiftsForRotationsQuery from 'ee/oncall_schedules/graphql/queries/get_oncall_schedules_with_rotations_shifts.query.graphql';
-import * as commonUtils from 'ee/oncall_schedules/utils/common_utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -39,7 +37,6 @@ describe('On-call schedule', () => {
     new Date('7 Jan 2021'),
     new Date('14 Jan 2021'),
   ];
-  const formattedTimezone = '(UTC-09:00) AKST Alaska';
 
   const createComponent = ({
     schedule = mockSchedule,
@@ -81,7 +78,6 @@ describe('On-call schedule', () => {
 
   beforeEach(() => {
     jest.spyOn(utils, 'getTimeframeForWeeksView').mockReturnValue(mockWeeksTimeFrame);
-    jest.spyOn(commonUtils, 'getFormattedTimezone').mockReturnValue(formattedTimezone);
     createComponent();
   });
 

@@ -1,6 +1,4 @@
-import mockTimezones from 'test_fixtures/timezones/full.json';
 import {
-  getFormattedTimezone,
   getParticipantsForSave,
   parseHour,
   parseRotationDate,
@@ -11,14 +9,6 @@ import {
 import { ASSIGNEE_COLORS_COMBO } from 'ee/oncall_schedules/constants';
 import * as ColorUtils from '~/lib/utils/color_utils';
 import { mockParticipants } from './mock_data';
-
-describe('getFormattedTimezone', () => {
-  it('formats the timezone', () => {
-    const tz = mockTimezones[0];
-    const expectedValue = `(UTC ${tz.formatted_offset}) ${tz.abbr} ${tz.name}`;
-    expect(getFormattedTimezone(tz)).toBe(expectedValue);
-  });
-});
 
 describe('getParticipantsForSave', () => {
   /**

@@ -1,22 +1,13 @@
 <script>
-import {
-  GlIcon,
-  GlForm,
-  GlFormGroup,
-  GlFormInput,
-  GlDropdown,
-  GlDropdownItem,
-  GlSearchBoxByType,
-} from '@gitlab/ui';
+import { GlForm, GlFormGroup, GlFormInput } from '@gitlab/ui';
 import { isEqual, isEmpty } from 'lodash';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { s__, __ } from '~/locale';
-import { getFormattedTimezone } from '../utils/common_utils';
+import TimezoneDropdown from '~/vue_shared/components/timezone_dropdown/timezone_dropdown.vue';
 
 export const i18n = {
   selectTimezone: s__('OnCallSchedules|Select timezone'),
   search: __('Search'),
-  noResults: __('No matching results'),
   fields: {
     name: {
       title: __('Name'),
@@ -41,13 +32,10 @@ export const i18n = {
 export default {
   i18n,
   components: {
-    GlIcon,
     GlForm,
     GlFormGroup,
     GlFormInput,
-    GlDropdown,
-    GlDropdownItem,
-    GlSearchBoxByType,
+    TimezoneDropdown,
   },
   directives: {
     SafeHtml,
@@ -70,30 +58,17 @@ export default {
     };
   },
   computed: {
-    filteredTimezones() {
-      const lowerCaseTzSearchTerm = this.tzSearchTerm.toLowerCase();
-      return this.timezones.filter((tz) =>
-        this.getFormattedTimezone(tz).toLowerCase().includes(lowerCaseTzSearchTerm),
-      );
-    },
-    noResults() {
-      return !this.filteredTimezones.length;
-    },
     selectedTimezone() {
-      return isEmpty(this.form.timezone)
-        ? i18n.selectTimezone
-        : this.getFormattedTimezone(this.form.timezone);
+      return isEmpty(this.form.timezone) ? i18n.selectTimezone : this.form.timezone.identifier;
     },
   },
   methods: {
-    getFormattedTimezone(tz) {
-      return getFormattedTimezone(tz);
-    },
     isTimezoneSelected(tz) {
       return isEqual(tz, this.form.timezone);
     },
-    setTimezone(timezone) {
-      this.selectedDropdownTimezone = timezone;
+    setTimezone(selectedTz) {
+      this.$emit('update-schedule-form', { type: 'timezone', value: selectedTz });
+      this.selectedDropdownTimezone = selectedTz;
     },
   },
 };
@@ -137,31 +112,14 @@ export default {
       :invalid-feedback="$options.i18n.fields.timezone.validation.empty"
       required
     >
-      <gl-dropdown
+      <timezone-dropdown
         id="schedule-timezone"
-        class="timezone-dropdown gl-w-full"
-        :header-text="$options.i18n.selectTimezone"
-        :class="{ 'invalid-dropdown': !validationState.timezone }"
-        @hide="$emit('update-schedule-form', { type: 'timezone', value: selectedDropdownTimezone })"
-      >
-        <template #button-content>
-          <span v-safe-html="selectedTimezone" class="gl-dropdown-button-text"></span>
-          <gl-icon class="dropdown-chevron" name="chevron-down" />
-        </template>
-        <gl-search-box-by-type v-model.trim="tzSearchTerm" />
-        <gl-dropdown-item
-          v-for="tz in filteredTimezones"
-          :key="getFormattedTimezone(tz)"
-          :is-checked="isTimezoneSelected(tz)"
-          is-check-item
-          @click="setTimezone(tz)"
-        >
-          <span v-safe-html="getFormattedTimezone(tz)" class="gl-white-space-nowrap"> </span>
-        </gl-dropdown-item>
-        <gl-dropdown-item v-if="noResults">
-          {{ $options.i18n.noResults }}
-        </gl-dropdown-item>
-      </gl-dropdown>
+        :value="selectedTimezone"
+        :timezone-data="timezones"
+        :additional-class="[{ 'invalid-dropdown': !validationState.timezone }, 'timezone-dropdown']"
+        name="schedule-timezone"
+        @input="setTimezone"
+      />
     </gl-form-group>
   </gl-form>
 </template>
