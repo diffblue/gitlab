@@ -1,7 +1,7 @@
 import Visibility from 'visibilityjs';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-import httpStatusCodes from '~/lib/utils/http_status';
+import httpStatusCodes, { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
 import Poll from '~/lib/utils/poll';
 import { __ } from '~/locale';
 import { MAX_RETRIES, RETRY_DELAY } from './constants';
@@ -46,7 +46,7 @@ export const fetchCodequality = ({ commit, state, dispatch }) => {
       }
     },
     errorCallback: ({ response }) => {
-      if (response.status === httpStatusCodes.BAD_REQUEST) {
+      if (response.status === HTTP_STATUS_BAD_REQUEST) {
         // we could get a 400 status response temporarily during report processing
         // so we retry up to MAX_RETRIES times in case the reports are on their way
         // and stop polling if we get 400s consistently

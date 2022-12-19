@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import httpStatus from '~/lib/utils/http_status';
+import { HTTP_STATUS_FORBIDDEN } from '~/lib/utils/http_status';
 import { s__ } from '~/locale';
 import {
   chartKeys,
@@ -115,7 +115,7 @@ export const scatterplotYaxisLabel = (_state, getters, rootState) => {
 };
 
 export const hasNoAccessError = (state) =>
-  state.charts[chartKeys.main].errorCode === httpStatus.FORBIDDEN;
+  state.charts[chartKeys.main].errorCode === HTTP_STATUS_FORBIDDEN;
 
 export const isChartEnabled = (state) => (chartKey) => state.charts[chartKey].enabled;
 

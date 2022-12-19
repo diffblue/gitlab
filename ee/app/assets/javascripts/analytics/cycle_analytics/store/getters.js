@@ -7,11 +7,11 @@ import {
 import { filterStagesByHiddenStatus } from '~/analytics/cycle_analytics/utils';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import dateFormat from '~/lib/dateformat';
-import httpStatus from '~/lib/utils/http_status';
+import { HTTP_STATUS_FORBIDDEN } from '~/lib/utils/http_status';
 import { filterToQueryObject } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
 import { DEFAULT_VALUE_STREAM_ID, OVERVIEW_STAGE_CONFIG } from '../constants';
 
-export const hasNoAccessError = (state) => state.errorCode === httpStatus.FORBIDDEN;
+export const hasNoAccessError = (state) => state.errorCode === HTTP_STATUS_FORBIDDEN;
 
 export const hasValueStreams = ({ valueStreams }) => Boolean(valueStreams?.length);
 

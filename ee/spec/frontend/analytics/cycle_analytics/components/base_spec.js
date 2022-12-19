@@ -33,7 +33,7 @@ import {
 import { createAlert } from '~/flash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import * as commonUtils from '~/lib/utils/common_utils';
-import httpStatusCodes from '~/lib/utils/http_status';
+import httpStatusCodes, { HTTP_STATUS_FORBIDDEN } from '~/lib/utils/http_status';
 import * as urlUtils from '~/lib/utils/url_utility';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import {
@@ -246,7 +246,7 @@ describe('EE Value Stream Analytics component', () => {
       wrapper = await createComponent();
 
       await store.dispatch('receiveCycleAnalyticsDataError', {
-        response: { status: httpStatusCodes.FORBIDDEN },
+        response: { status: HTTP_STATUS_FORBIDDEN },
       });
     });
 

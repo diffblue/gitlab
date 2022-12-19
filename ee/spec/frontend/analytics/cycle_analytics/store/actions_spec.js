@@ -14,7 +14,7 @@ import {
   I18N_VSA_ERROR_STAGE_MEDIAN,
 } from '~/analytics/cycle_analytics/constants';
 import { createAlert } from '~/flash';
-import httpStatusCodes from '~/lib/utils/http_status';
+import httpStatusCodes, { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
 import { allowedStages as stages, valueStreams, endpoints, groupLabels } from '../mock_data';
 
 const group = { fullPath: 'fake_group_full_path' };
@@ -379,7 +379,7 @@ describe('Value Stream Analytics actions', () => {
 
     describe('with a failed request', () => {
       beforeEach(() => {
-        mock.onGet(endpoints.groupLabels).reply(httpStatusCodes.BAD_REQUEST);
+        mock.onGet(endpoints.groupLabels).reply(HTTP_STATUS_BAD_REQUEST);
       });
 
       it(`will commit the "RECEIVE_GROUP_LABELS_ERROR" mutation`, () => {

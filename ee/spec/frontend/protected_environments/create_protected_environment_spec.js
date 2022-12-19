@@ -10,7 +10,7 @@ import axios from '~/lib/utils/axios_utils';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
 import { ACCESS_LEVELS } from 'ee/protected_environments/constants';
 import CreateProtectedEnvironment from 'ee/protected_environments/create_protected_environment.vue';
-import httpStatusCodes from '~/lib/utils/http_status';
+import httpStatusCodes, { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
 import { __, s__ } from '~/locale';
 
 const SEARCH_URL = '/search';
@@ -161,7 +161,7 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
 
     describe('on failed protected environment', () => {
       it('should show an error message', async () => {
-        mockAxios.onPost().replyOnce(httpStatusCodes.BAD_REQUEST, {});
+        mockAxios.onPost().replyOnce(HTTP_STATUS_BAD_REQUEST, {});
         createComponent();
         await submitForm();
         await waitForPromises();
@@ -262,7 +262,7 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
 
     describe('on failed protected environment', () => {
       it('should show an error message', async () => {
-        mockAxios.onPost().replyOnce(httpStatusCodes.BAD_REQUEST, {});
+        mockAxios.onPost().replyOnce(HTTP_STATUS_BAD_REQUEST, {});
         createComponent();
         await submitForm();
         await waitForPromises();
