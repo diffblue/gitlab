@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::GeoNodeStatusCheck do
+RSpec.describe Gitlab::Geo::GeoNodeStatusCheck, :geo, feature_category: :geo_replication do
+  include ::EE::GeoHelpers
+
   let_it_be(:current_node) { create(:geo_node) }
 
   let(:geo_node_status) do
@@ -13,6 +15,9 @@ RSpec.describe Gitlab::Geo::GeoNodeStatusCheck do
 
   describe '#replication_verification_complete?' do
     before do
+      # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+      # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+      stub_batch_counter_transaction_open_check
       allow(Gitlab.config.geo.registry_replication).to receive(:enabled).and_return(true)
     end
 

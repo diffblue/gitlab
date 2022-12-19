@@ -2,11 +2,14 @@
 
 require 'rake_helper'
 
-RSpec.describe 'gitlab:geo rake tasks', :geo, :silence_stdout do
+RSpec.describe 'gitlab:geo rake tasks', :geo, :silence_stdout, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   before do
     Rake.application.rake_require 'tasks/gitlab/geo'
+    # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+    # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+    stub_batch_counter_transaction_open_check
     stub_licensed_features(geo: true)
   end
 

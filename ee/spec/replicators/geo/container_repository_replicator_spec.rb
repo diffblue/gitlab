@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::ContainerRepositoryReplicator do
+RSpec.describe Geo::ContainerRepositoryReplicator, :geo, feature_category: :geo_replication do
   let(:model_record) { create(:container_repository) }
 
   subject(:replicator) { model_record.replicator }

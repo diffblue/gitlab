@@ -141,24 +141,34 @@ module Gitlab
         Feature.enabled?(:geo_batch_count)
       end
 
+      def self.batch_count(relation, column, &block)
+        return yield unless batch_count_enabled?
+
+        ::Gitlab::Database::BatchCount.batch_count(relation, column)
+      end
+
       def self.primary_total_count
-        if batch_count_enabled?
-          ::Gitlab::Database::BatchCount.batch_count(model.available_replicables, model.primary_key)
-        else
+        batch_count(model.available_replicables, model.primary_key) do
           model.available_replicables.count
         end
       end
 
       def self.registry_count
-        registry_class.count
+        batch_count(registry_class.all, registry_class.primary_key) do
+          registry_class.count
+        end
       end
 
       def self.synced_count
-        registry_class.synced.count
+        batch_count(registry_class.synced, registry_class.primary_key) do
+          registry_class.synced.count
+        end
       end
 
       def self.failed_count
-        registry_class.failed.count
+        batch_count(registry_class.failed, registry_class.primary_key) do
+          registry_class.failed.count
+        end
       end
 
       def self.enabled?
