@@ -148,7 +148,7 @@ describe('WorkItemProgress component', () => {
           canUpdate: true,
         });
 
-        findInput().vm.$emit('blur', { target: { value: 1 } });
+        findInput().vm.$emit('blur', { target: { value: '1', valueAsNumber: 1 } });
 
         expect(mutationSpy).toHaveBeenCalledWith({
           input: {
@@ -161,6 +161,20 @@ describe('WorkItemProgress component', () => {
       });
 
       it('does not call a mutation to update the progress when the input value is the same', () => {
+        const mutationSpy = jest.fn().mockResolvedValue(updateWorkItemMutationResponse);
+        createComponent({
+          isEditing: true,
+          progress: 1,
+          mutationHandler: mutationSpy,
+          canUpdate: true,
+        });
+
+        findInput().vm.$emit('blur', { target: { value: '1', valueAsNumber: 1 } });
+
+        expect(mutationSpy).not.toHaveBeenCalledWith();
+      });
+
+      it('does not call a mutation to update the progress when the input is empty', () => {
         const mutationSpy = jest.fn().mockResolvedValue(updateWorkItemMutationResponse);
         createComponent({ isEditing: true, mutationHandler: mutationSpy, canUpdate: true });
 
@@ -184,7 +198,7 @@ describe('WorkItemProgress component', () => {
           canUpdate: true,
         });
 
-        findInput().trigger('blur');
+        findInput().vm.$emit('blur', { target: { value: '1', valueAsNumber: 1 } });
         await waitForPromises();
 
         expect(wrapper.emitted('error')).toEqual([
@@ -199,7 +213,7 @@ describe('WorkItemProgress component', () => {
           canUpdate: true,
         });
 
-        findInput().trigger('blur');
+        findInput().vm.$emit('blur', { target: { value: '1', valueAsNumber: 1 } });
         await waitForPromises();
 
         expect(wrapper.emitted('error')).toEqual([
@@ -211,7 +225,7 @@ describe('WorkItemProgress component', () => {
         const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
         createComponent({ canUpdate: true });
 
-        findInput().trigger('blur');
+        findInput().vm.$emit('blur', { target: { value: '1', valueAsNumber: 1 } });
 
         expect(trackingSpy).toHaveBeenCalledWith(TRACKING_CATEGORY_SHOW, 'updated_progress', {
           category: TRACKING_CATEGORY_SHOW,
