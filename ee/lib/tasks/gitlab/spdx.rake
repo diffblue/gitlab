@@ -15,7 +15,7 @@ namespace :gitlab do
       data = ::Gitlab::Json.parse(resp.body)
 
       path = ::Gitlab::SPDX::CatalogueGateway::OFFLINE_CATALOGUE
-      IO.write(path, data.to_json, mode: 'w')
+      File.write(path, data.to_json, mode: 'w')
 
       puts "Local copy of SPDX catalogue is saved to #{path}"
     rescue StandardError => e
