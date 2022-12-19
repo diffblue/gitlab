@@ -14577,6 +14577,8 @@
               "title": "*",
               "uploading": false,
               "canonicalSrc": "foo",
+              "width": null,
+              "height": null,
               "isReference": false
             }
           }
@@ -15723,6 +15725,8 @@
               "title": null,
               "uploading": false,
               "canonicalSrc": "moon.jpg",
+              "width": null,
+              "height": null,
               "isReference": false
             },
             "marks": [
@@ -15851,6 +15855,8 @@
               "title": null,
               "uploading": false,
               "canonicalSrc": "uri3",
+              "width": null,
+              "height": null,
               "isReference": false
             }
           }
@@ -16265,6 +16271,8 @@
               "title": null,
               "uploading": false,
               "canonicalSrc": "moon.jpg",
+              "width": null,
+              "height": null,
               "isReference": false
             },
             "marks": [
@@ -18112,6 +18120,8 @@
               "title": "title",
               "uploading": false,
               "canonicalSrc": "/url",
+              "width": null,
+              "height": null,
               "isReference": false
             }
           }
@@ -18134,6 +18144,8 @@
               "title": "train & tracks",
               "uploading": false,
               "canonicalSrc": "foo *bar*",
+              "width": null,
+              "height": null,
               "isReference": true
             }
           }
@@ -18170,6 +18182,8 @@
               "title": null,
               "uploading": false,
               "canonicalSrc": "/url2",
+              "width": null,
+              "height": null,
               "isReference": false
             }
           }
@@ -18192,6 +18206,8 @@
               "title": null,
               "uploading": false,
               "canonicalSrc": "/url2",
+              "width": null,
+              "height": null,
               "isReference": false
             }
           }
@@ -18214,6 +18230,8 @@
               "title": "train & tracks",
               "uploading": false,
               "canonicalSrc": "foo *bar*",
+              "width": null,
+              "height": null,
               "isReference": true
             }
           }
@@ -18250,6 +18268,8 @@
               "title": "train & tracks",
               "uploading": false,
               "canonicalSrc": "foobar",
+              "width": null,
+              "height": null,
               "isReference": true
             }
           }
@@ -18286,6 +18306,8 @@
               "title": null,
               "uploading": false,
               "canonicalSrc": "train.jpg",
+              "width": null,
+              "height": null,
               "isReference": false
             }
           }
@@ -18312,6 +18334,8 @@
               "title": "title",
               "uploading": false,
               "canonicalSrc": "/path/to/train.jpg",
+              "width": null,
+              "height": null,
               "isReference": false
             }
           }
@@ -18334,6 +18358,8 @@
               "title": null,
               "uploading": false,
               "canonicalSrc": "url",
+              "width": null,
+              "height": null,
               "isReference": false
             }
           }
@@ -18356,6 +18382,8 @@
               "title": null,
               "uploading": false,
               "canonicalSrc": "/url",
+              "width": null,
+              "height": null,
               "isReference": false
             }
           }
@@ -18378,6 +18406,8 @@
               "title": null,
               "uploading": false,
               "canonicalSrc": "bar",
+              "width": null,
+              "height": null,
               "isReference": true
             }
           }
@@ -18414,6 +18444,8 @@
               "title": null,
               "uploading": false,
               "canonicalSrc": "bar",
+              "width": null,
+              "height": null,
               "isReference": true
             }
           }
@@ -18450,6 +18482,8 @@
               "title": "title",
               "uploading": false,
               "canonicalSrc": "foo",
+              "width": null,
+              "height": null,
               "isReference": true
             }
           }
@@ -18486,6 +18520,8 @@
               "title": "title",
               "uploading": false,
               "canonicalSrc": "*foo* bar",
+              "width": null,
+              "height": null,
               "isReference": true
             }
           }
@@ -18522,6 +18558,8 @@
               "title": "title",
               "uploading": false,
               "canonicalSrc": "foo",
+              "width": null,
+              "height": null,
               "isReference": true
             }
           }
@@ -18558,6 +18596,8 @@
               "title": "title",
               "uploading": false,
               "canonicalSrc": "foo",
+              "width": null,
+              "height": null,
               "isReference": true
             }
           },
@@ -18598,6 +18638,8 @@
               "title": "title",
               "uploading": false,
               "canonicalSrc": "foo",
+              "width": null,
+              "height": null,
               "isReference": true
             }
           }
@@ -18634,6 +18676,8 @@
               "title": "title",
               "uploading": false,
               "canonicalSrc": "*foo* bar",
+              "width": null,
+              "height": null,
               "isReference": true
             }
           }
@@ -18694,6 +18738,8 @@
               "title": "title",
               "uploading": false,
               "canonicalSrc": "foo",
+              "width": null,
+              "height": null,
               "isReference": true
             }
           }
@@ -21025,6 +21071,8 @@
               "title": null,
               "uploading": false,
               "canonicalSrc": "/uploads/aa45a38ec2cfe97433281b10bbff042c/test-file.png",
+              "width": null,
+              "height": null,
               "isReference": false
             }
           }
@@ -21047,6 +21095,8 @@
               "title": null,
               "uploading": false,
               "canonicalSrc": "/uploads/aa45a38ec2cfe97433281b10bbff042c/test-file.png",
+              "width": null,
+              "height": null,
               "isReference": false
             }
           }
@@ -21069,6 +21119,8 @@
               "title": null,
               "uploading": false,
               "canonicalSrc": "test-file.png",
+              "width": null,
+              "height": null,
               "isReference": false
             }
           }
@@ -22751,6 +22803,8 @@
               "title": null,
               "uploading": false,
               "canonicalSrc": "https://gitlab.com/logo.png",
+              "width": null,
+              "height": null,
               "isReference": false
             }
           }

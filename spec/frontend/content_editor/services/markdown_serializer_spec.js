@@ -380,6 +380,26 @@ this is not really json but just trying out whether this case works or not
     );
   });
 
+  it.each`
+    width        | height       | outputAttributes
+    ${300}       | ${undefined} | ${'width=300'}
+    ${undefined} | ${300}       | ${'height=300'}
+    ${300}       | ${300}       | ${'width=300 height=300'}
+    ${'300%'}    | ${'300px'}   | ${'width="300%" height="300px"'}
+  `(
+    'correctly serializes an image with width and height attributes',
+    ({ width, height, outputAttributes }) => {
+      const imageAttrs = { src: 'img.jpg', alt: 'foo bar' };
+
+      if (width) imageAttrs.width = width;
+      if (height) imageAttrs.height = height;
+
+      expect(serialize(paragraph(image(imageAttrs)))).toBe(
+        `![foo bar](img.jpg){${outputAttributes}}`,
+      );
+    },
+  );
+
   it('does not serialize an image when src and canonicalSrc are empty', () => {
     expect(serialize(paragraph(image({})))).toBe('');
   });
