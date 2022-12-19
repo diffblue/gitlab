@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AppSec::Dast::ScanConfigs::BuildService do
+RSpec.describe AppSec::Dast::ScanConfigs::BuildService, :dynamic_analysis, feature_category: :dynamic_application_security_testing do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be_with_reload(:dast_site_profile) { create(:dast_site_profile, :with_dast_submit_field, project: project, target_type: 'website') }
   let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project, spider_timeout: 5, target_timeout: 20) }
@@ -84,6 +84,44 @@ RSpec.describe AppSec::Dast::ScanConfigs::BuildService do
               expect(subject).not_to be_success
               expect(subject.message).to eq('Cannot run active scan against unvalidated target')
             end
+          end
+
+          context 'when the dast_scanner_profile has tag_list' do
+            context 'when feature flag on_demand_scans_runner_tags is disabled' do
+              before do
+                stub_feature_flags(on_demand_scans_runner_tags: false)
+              end
+
+              it_behaves_like 'a payload without a dast_profile'
+            end
+
+            context 'when feature flag on_demand_scans_runner_tags is enabled' do
+              let_it_be(:tags) { [ActsAsTaggableOn::Tag.create!(name: 'ruby'), ActsAsTaggableOn::Tag.create!(name: 'postgres')] }
+              let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project, tags: tags) }
+
+              let(:expected_yaml_configuration) do
+                <<~YAML
+                  ---
+                  stages:
+                  - dast
+                  include:
+                  - template: #{template}
+                  dast:
+                    dast_configuration:
+                      site_profile: #{dast_site_profile.name}
+                      scanner_profile: #{dast_scanner_profile.name}
+                  tags:
+                  - ruby
+                  - postgres
+                YAML
+              end
+
+              it_behaves_like 'a payload without a dast_profile'
+            end
+          end
+
+          context 'when the scanner profile has no runner tags' do
+            it_behaves_like 'a payload without a dast_profile'
           end
         end
 
