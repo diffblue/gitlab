@@ -332,7 +332,11 @@ export function renderComment(state, node) {
 }
 
 export function renderCodeBlock(state, node) {
-  state.write(`\`\`\`${node.attrs.language || ''}\n`);
+  state.write(
+    `\`\`\`${
+      (node.attrs.language || '') + (node.attrs.langParams ? `:${node.attrs.langParams}` : '')
+    }\n`,
+  );
   state.text(node.textContent, false);
   state.ensureNewLine();
   state.write('```');
