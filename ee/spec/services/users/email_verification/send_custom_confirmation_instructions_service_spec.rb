@@ -77,13 +77,10 @@ feature_category: :authentication_and_authorization do
 
     with_them do
       before do
+        user.restore_confirmation_token!
         allow(service).to receive(:enabled?).and_return(enabled?)
         allow(service).to receive(:token).and_return('xxx') if token_present?
         user.confirmation_token = 'yyy' unless token_saved?
-      end
-
-      after do
-        user.restore_confirmation_token!
       end
 
       it 'sends the instructions when expected' do
@@ -104,6 +101,26 @@ feature_category: :authentication_and_authorization do
   end
 
   describe '#enabled?' do
+    where(:confirmed?, :identity_verification_enabled?, :result) do
+      true  | true  | false
+      true  | false | false
+      false | true  | true
+      false | false | false
+    end
+
+    with_them do
+      before do
+        allow(user).to receive(:confirmed?).and_return(confirmed?)
+        allow(service.class).to receive(:identity_verification_enabled?).and_return(identity_verification_enabled?)
+      end
+
+      it 'returns the expected result' do
+        expect(service.enabled?).to eq(result)
+      end
+    end
+  end
+
+  describe '.identity_verification_enabled?' do
     where(:identity_verification, :soft_email_confirmation,
       :require_admin_approval_after_user_signup, :email_confirmation_setting, :enabled?) do
       true  | true  | true  | 'hard' | false
@@ -133,7 +150,7 @@ feature_category: :authentication_and_authorization do
       end
 
       it 'returns the expected result' do
-        expect(!!service.enabled?).to eq(enabled?)
+        expect(!!service.class.identity_verification_enabled?(user.email)).to eq(enabled?)
       end
     end
   end

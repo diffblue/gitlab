@@ -13,7 +13,7 @@ RSpec.describe SessionsController, feature_category: :authentication_and_authori
     context 'when identity verification is turned off' do
       before do
         allow(::Users::EmailVerification::SendCustomConfirmationInstructionsService)
-          .to receive(:enabled?).with(user.email).and_return(false)
+          .to receive(:identity_verification_enabled?).with(user.email).and_return(false)
       end
 
       it { is_expected.to redirect_to(root_path) }
@@ -28,7 +28,7 @@ RSpec.describe SessionsController, feature_category: :authentication_and_authori
     context 'when identity verification is turned on' do
       before do
         allow(::Users::EmailVerification::SendCustomConfirmationInstructionsService)
-          .to receive(:enabled?).with(user.email).and_return(true)
+          .to receive(:identity_verification_enabled?).with(user.email).and_return(true)
       end
 
       it { is_expected.to redirect_to(identity_verification_path) }
