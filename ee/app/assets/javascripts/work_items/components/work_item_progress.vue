@@ -101,8 +101,9 @@ export default {
       if (!this.canUpdate) return;
       this.isEditing = false;
 
-      const progress = Number(event.target.value);
-      if (this.progress === progress) {
+      const { value, valueAsNumber } = event.target;
+
+      if (!this.canUpdate || value === '' || valueAsNumber === this.progress) {
         return;
       }
 
@@ -114,7 +115,7 @@ export default {
             input: {
               id: this.workItemId,
               progressWidget: {
-                progress: event.target.value === '' ? null : progress,
+                progress: valueAsNumber,
               },
             },
           },
