@@ -3,17 +3,15 @@ import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { s__ } from '~/locale';
 
 import { createLocalState } from '~/ci/runner/graphql/list/local_state';
 import AdminRunnersApp from '~/ci/runner/admin_runners/admin_runners_app.vue';
 import RunnerList from '~/ci/runner/components/runner_list.vue';
 
-import RunnerUpgradeStatusBadge from 'ee_component/ci/runner/components/runner_upgrade_status_badge.vue';
+import RunnerUpgradeStatusIcon from 'ee_component/ci/runner/components/runner_upgrade_status_icon.vue';
 
 import allRunnersQuery from 'ee_else_ce/ci/runner/graphql/list/all_runners.query.graphql';
 import allRunnersCountQuery from '~/ci/runner/graphql/list/all_runners_count.query.graphql';
-
 import {
   runnersCountData,
   onlineContactTimeoutSecs,
@@ -76,9 +74,7 @@ describe('AdminRunnersApp', () => {
     wrapper.destroy();
   });
 
-  describe('upgrade badges', () => {
-    let rows = null;
-
+  describe('upgrade icons', () => {
     beforeEach(async () => {
       await createComponent({
         provide: { glFeatures: { runnerUpgradeManagement: true } },
@@ -86,15 +82,21 @@ describe('AdminRunnersApp', () => {
     });
 
     it.each`
-      version     | description                                 | upgradeText                           | index
-      ${'15.1.1'} | ${'displays no upgrade badge (up to date)'} | ${''}                                 | ${1}
-      ${'15.1.0'} | ${'displays upgrade recommended'}           | ${s__('Runners|Upgrade recommended')} | ${2}
-      ${'15.0.0'} | ${'displays upgrade available'}             | ${s__('Runners|Upgrade available')}   | ${3}
-    `('with $version $description', ({ version, index, upgradeText }) => {
-      rows = findRunnerRows().wrappers.map(extendedWrapper);
+      version     | description                                | colorClass              | index
+      ${'15.1.1'} | ${'displays no upgrade icon (up to date)'} | ${null}                 | ${1}
+      ${'15.1.0'} | ${'displays upgrade recommended'}          | ${'gl-text-orange-500'} | ${2}
+      ${'15.0.0'} | ${'displays upgrade available'}            | ${'gl-text-blue-500'}   | ${3}
+    `('with $version $description', ({ version, index, colorClass }) => {
+      const row = findRunnerRows().wrappers.map(extendedWrapper)[index];
+      const upgradeIcon = row.findComponent(RunnerUpgradeStatusIcon);
 
-      expect(rows[index].text()).toContain(version);
-      expect(rows[index].findComponent(RunnerUpgradeStatusBadge).text()).toBe(upgradeText);
+      if (colorClass) {
+        expect(upgradeIcon.classes()).toContain(colorClass);
+      } else {
+        expect(upgradeIcon.html()).toBe('');
+      }
+
+      expect(row.text()).toContain(version);
     });
   });
 });
