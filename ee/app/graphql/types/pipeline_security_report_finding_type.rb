@@ -32,7 +32,7 @@ module Types
     field :solution,
           type: GraphQL::Types::String,
           null: true,
-          description: "URL to the vulnerability's details page."
+          description: "Solution for resolving the security report finding."
 
     field :state,
           type: VulnerabilityStateEnum,
@@ -115,7 +115,20 @@ module Types
           description: 'UUIDv5 digest based on the vulnerability\'s report type, primary identifier, location, ' \
             'fingerprint, project identifier.'
 
+    field :vulnerability,
+          type: VulnerabilityType,
+          null: true,
+          description: 'Vulnerability related to the security report finding.'
+
     markdown_field :description_html, null: true
+
+    def vulnerability
+      BatchLoader::GraphQL.for(object.uuid).batch do |uuids, loader|
+        ::Vulnerability.with_findings_by_uuid(uuids).each do |vulnerability|
+          loader.call(vulnerability.finding.uuid, vulnerability)
+        end
+      end
+    end
 
     def location
       object.location&.merge(report_type: object.report_type)
