@@ -347,9 +347,7 @@ RSpec.shared_examples "redis_shared_examples" do
     context 'when sentinels are not defined' do
       let(:config_file_name) { config_old_format_host }
 
-      it 'returns false' do
-        is_expected.to be_falsey
-      end
+      it { expect(subject).to eq(nil) }
     end
   end
 
@@ -361,16 +359,14 @@ RSpec.shared_examples "redis_shared_examples" do
   end
 
   describe '#fetch_config' do
-    it 'returns false when no config file is present' do
-      allow(described_class).to receive(:config_file_name) { nil }
+    it 'raises an exception when the config file contains invalid yaml' do
+      Tempfile.open('bad.yml') do |file|
+        file.write('{"not":"yaml"')
+        file.flush
+        allow(described_class).to receive(:config_file_name) { file.path }
 
-      expect(subject.send(:fetch_config)).to eq(nil)
-    end
-
-    it 'returns false when config file is present but has invalid YAML' do
-      allow(described_class).to receive(:config_file_name) { '/dev/null' }
-
-      expect(subject.send(:fetch_config)).to eq(nil)
+        expect { subject.send(:fetch_config) }.to raise_error(Psych::SyntaxError)
+      end
     end
 
     it 'has a value for the legacy default URL' do
