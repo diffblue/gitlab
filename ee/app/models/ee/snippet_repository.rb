@@ -45,11 +45,5 @@ module EE
         self.for_repository_storage(::Gitlab::Geo.current_node.selective_sync_shards)
       end
     end
-
-    # Geo checks this method in FrameworkRepositorySyncService to avoid
-    # snapshotting repositories using object pools
-    def pool_repository
-      nil
-    end
   end
 end
