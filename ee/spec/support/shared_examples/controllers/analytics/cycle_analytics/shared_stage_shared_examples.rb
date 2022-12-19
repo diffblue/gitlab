@@ -41,7 +41,7 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
     it 'succeeds for subgroups' do
       subgroup = create(:group, parent: group)
       params[:group_id] = subgroup.full_path
-      params[:value_stream_id] = create(:cycle_analytics_group_value_stream, group: subgroup).id
+      params[:value_stream_id] = create(:cycle_analytics_group_value_stream, namespace: subgroup).id
 
       subject
 
@@ -85,7 +85,7 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
   end
 
   describe 'PUT #update' do
-    let(:stage) { create(:cycle_analytics_group_stage, parent: parent, relative_position: 15) }
+    let(:stage) { create(:cycle_analytics_group_stage, namespace: namespace, relative_position: 15) }
 
     subject { put :update, params: params.merge(id: stage.id) }
 
@@ -131,7 +131,7 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
 
       context 'when positioning parameter is given' do
         before do
-          params[:move_before_id] = create(:cycle_analytics_group_stage, parent: group, relative_position: 10).id
+          params[:move_before_id] = create(:cycle_analytics_group_stage, namespace: group, relative_position: 10).id
         end
 
         it 'moves the stage before the last place' do
@@ -147,7 +147,7 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
   end
 
   describe 'DELETE #destroy' do
-    let(:stage) { create(:cycle_analytics_group_stage, parent: group) }
+    let(:stage) { create(:cycle_analytics_group_stage, namespace: group) }
 
     subject { delete :destroy, params: params }
 
@@ -185,7 +185,7 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
   end
 
   describe 'data endpoints' do
-    let(:stage) { create(:cycle_analytics_group_stage, parent: group) }
+    let(:stage) { create(:cycle_analytics_group_stage, namespace: group) }
 
     before do
       params[:id] = stage.id
@@ -230,21 +230,21 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
           travel_to DateTime.new(2019, 1, 5) do
             event_1 = create(:cycle_analytics_merge_request_stage_event,
                              stage_event_hash_id: stage.stage_event_hash_id,
-                             group_id: stage.group.id,
+                             group_id: stage.namespace.id,
                              merge_request_id: 1,
                              start_event_timestamp: Time.current,
                              end_event_timestamp: 20.days.from_now)
 
             event_2 = create(:cycle_analytics_merge_request_stage_event,
                              stage_event_hash_id: stage.stage_event_hash_id,
-                             group_id: stage.group.id,
+                             group_id: stage.namespace.id,
                              merge_request_id: 2,
                              start_event_timestamp: Time.current,
                              end_event_timestamp: 1.day.from_now)
 
             event_3 = create(:cycle_analytics_merge_request_stage_event,
                              stage_event_hash_id: stage.stage_event_hash_id,
-                             group_id: stage.group.id,
+                             group_id: stage.namespace.id,
                              merge_request_id: 3,
                              start_event_timestamp: Time.current,
                              end_event_timestamp: 3.days.from_now)

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Analytics::CycleAnalytics::Stages::UpdateService do
   let_it_be(:group, refind: true) { create(:group) }
-  let_it_be(:value_stream, refind: true) { create(:cycle_analytics_group_value_stream, group: group) }
+  let_it_be(:value_stream, refind: true) { create(:cycle_analytics_group_value_stream, namespace: group) }
   let_it_be(:user, refind: true) { create(:user) }
 
   let(:default_stages) { Gitlab::Analytics::CycleAnalytics::DefaultStages.all }
@@ -24,7 +24,7 @@ RSpec.describe Analytics::CycleAnalytics::Stages::UpdateService do
   it_behaves_like 'permission check for Value Stream Analytics Stage services', :cycle_analytics_for_groups
 
   context 'when updating a default stage' do
-    let(:stage) { Analytics::CycleAnalytics::GroupStage.new(default_stages.first.merge(group: group)) }
+    let(:stage) { Analytics::CycleAnalytics::GroupStage.new(default_stages.first.merge(namespace: group)) }
     let(:params) { { id: stage.name, hidden: true, value_stream: value_stream } }
     let(:updated_stage) { subject.payload[:stage] }
 
@@ -98,7 +98,7 @@ RSpec.describe Analytics::CycleAnalytics::Stages::UpdateService do
   end
 
   context 'when updating a custom stage' do
-    let_it_be(:stage) { create(:cycle_analytics_group_stage, group: group, value_stream: value_stream) }
+    let_it_be(:stage) { create(:cycle_analytics_group_stage, namespace: group, value_stream: value_stream) }
 
     let(:params) { { id: stage.id, name: 'my new stage name', value_stream: value_stream } }
 
@@ -118,13 +118,13 @@ RSpec.describe Analytics::CycleAnalytics::Stages::UpdateService do
   end
 
   context 'when positioning a stage' do
-    let!(:first_stage) { create(:cycle_analytics_group_stage, group: group, value_stream: value_stream, relative_position: 10) }
-    let!(:middle_stage) { create(:cycle_analytics_group_stage, group: group, value_stream: value_stream, relative_position: 11) }
-    let!(:last_stage) { create(:cycle_analytics_group_stage, group: group, value_stream: value_stream, relative_position: 12) }
+    let!(:first_stage) { create(:cycle_analytics_group_stage, namespace: group, value_stream: value_stream, relative_position: 10) }
+    let!(:middle_stage) { create(:cycle_analytics_group_stage, namespace: group, value_stream: value_stream, relative_position: 11) }
+    let!(:last_stage) { create(:cycle_analytics_group_stage, namespace: group, value_stream: value_stream, relative_position: 12) }
 
     context 'when there are stages without position' do
-      let!(:unpositioned_stage1) { create(:cycle_analytics_group_stage, group: group, value_stream: value_stream) }
-      let!(:unpositioned_stage2) { create(:cycle_analytics_group_stage, group: group, value_stream: value_stream) }
+      let!(:unpositioned_stage1) { create(:cycle_analytics_group_stage, namespace: group, value_stream: value_stream) }
+      let!(:unpositioned_stage2) { create(:cycle_analytics_group_stage, namespace: group, value_stream: value_stream) }
 
       before do
         params[:id] = first_stage.id
@@ -185,7 +185,7 @@ RSpec.describe Analytics::CycleAnalytics::Stages::UpdateService do
     context 'when `move_before_id` points to a stage within a different group' do
       before do
         params[:id] = last_stage.id
-        params[:move_before_id] = create(:cycle_analytics_group_stage, group: create(:group), value_stream: value_stream).id
+        params[:move_before_id] = create(:cycle_analytics_group_stage, namespace: create(:group), value_stream: value_stream).id
       end
 
       it { expect { subject }.to raise_error(ActiveRecord::RecordNotFound) }

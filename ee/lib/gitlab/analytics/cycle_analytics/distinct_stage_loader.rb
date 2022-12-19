@@ -52,7 +52,7 @@ module Gitlab
             name: 'lead time', # not visible to the user
             start_event_identifier: Summary::LeadTime.start_event_identifier,
             end_event_identifier: Summary::LeadTime.end_event_identifier,
-            group: group
+            namespace: group
           )
         end
 
@@ -61,7 +61,7 @@ module Gitlab
             name: 'cycle time',
             start_event_identifier: Summary::CycleTime.start_event_identifier,
             end_event_identifier: Summary::CycleTime.end_event_identifier,
-            group: group
+            namespace: group
           )
         end
 

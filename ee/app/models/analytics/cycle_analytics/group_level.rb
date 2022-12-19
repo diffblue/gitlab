@@ -19,7 +19,7 @@ module Analytics
 
       def time_summary
         @time_summary ||= begin
-          stage = ::Analytics::CycleAnalytics::GroupStage.new(group: group)
+          stage = ::Analytics::CycleAnalytics::GroupStage.new(namespace: group)
 
           Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary
             .new(stage, options: options)

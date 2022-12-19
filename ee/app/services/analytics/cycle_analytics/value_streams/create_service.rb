@@ -6,9 +6,9 @@ module Analytics
       class CreateService
         include Gitlab::Allowable
 
-        def initialize(group:, params:, current_user:, value_stream: ::Analytics::CycleAnalytics::GroupValueStream.new(group: group))
+        def initialize(namespace:, params:, current_user:, value_stream: ::Analytics::CycleAnalytics::GroupValueStream.new(namespace: namespace))
           @value_stream = value_stream
-          @group = group
+          @namespace = namespace
           @params = process_params(params.dup.to_h)
           @current_user = current_user
         end
@@ -31,7 +31,7 @@ module Analytics
 
         private
 
-        attr_reader :value_stream, :group, :params, :current_user
+        attr_reader :value_stream, :namespace, :params, :current_user
 
         def process_params(raw_params)
           raw_params[:stages_attributes] = raw_params.delete(:stages) || []
@@ -44,7 +44,7 @@ module Analytics
         end
 
         def build_stage_attributes(stage_attributes)
-          stage_attributes[:group] = group
+          stage_attributes[:namespace] = namespace
           return stage_attributes if Gitlab::Utils.to_boolean(stage_attributes[:custom])
 
           # if we're persisting a default stage, ignore the user provided attributes and use our attributes
@@ -61,7 +61,7 @@ module Analytics
         end
 
         def authorize!
-          unless can?(current_user, :read_group_cycle_analytics, group)
+          unless can?(current_user, :read_group_cycle_analytics, namespace)
             ServiceResponse.error(message: 'Forbidden', http_status: :forbidden, payload: { errors: nil })
           end
         end

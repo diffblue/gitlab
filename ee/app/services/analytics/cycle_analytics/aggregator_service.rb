@@ -42,7 +42,7 @@ module Analytics
 
       def run_aggregation(model)
         response = Analytics::CycleAnalytics::DataLoaderService.new(
-          group: aggregation.group,
+          group: aggregation.namespace,
           model: model,
           context: Analytics::CycleAnalytics::AggregationContext.new(cursor: aggregation.cursor_for(mode, model))
         ).execute

@@ -27,7 +27,7 @@ module Analytics
           break if batch.empty?
 
           batch.each do |aggregation|
-            response = run_consistency_check_services(aggregation.group, runtime_limiter, cursor_data(aggregation))
+            response = run_consistency_check_services(aggregation.namespace, runtime_limiter, cursor_data(aggregation))
             save_cursor_attrs!(aggregation, response, current_time)
 
             if limit_reached?(response) || runtime_limiter.over_time?

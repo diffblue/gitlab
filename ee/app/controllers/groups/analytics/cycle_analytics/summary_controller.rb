@@ -46,7 +46,7 @@ module Groups
         end
 
         def data_collector_for(summary_class)
-          group_stage = ::Analytics::CycleAnalytics::GroupStage.new(group: @group)
+          group_stage = ::Analytics::CycleAnalytics::GroupStage.new(namespace: @group)
           all_params = request_params.to_data_collector_params
           group_stage_with_metadata = summary_class.new(stage: group_stage, current_user: current_user, options: all_params).stage
 

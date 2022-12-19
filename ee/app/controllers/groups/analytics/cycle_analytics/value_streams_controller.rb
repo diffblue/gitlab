@@ -29,7 +29,7 @@ class Groups::Analytics::CycleAnalytics::ValueStreamsController < Groups::Analyt
   end
 
   def create
-    result = Analytics::CycleAnalytics::ValueStreams::CreateService.new(group: @group, params: create_params, current_user: current_user).execute
+    result = Analytics::CycleAnalytics::ValueStreams::CreateService.new(namespace: @group, params: create_params, current_user: current_user).execute
 
     if result.success?
       render json: serialize_value_stream(result), status: result.http_status
@@ -39,7 +39,7 @@ class Groups::Analytics::CycleAnalytics::ValueStreamsController < Groups::Analyt
   end
 
   def update
-    result = Analytics::CycleAnalytics::ValueStreams::UpdateService.new(group: @group, params: update_params, current_user: current_user, value_stream: @value_stream).execute
+    result = Analytics::CycleAnalytics::ValueStreams::UpdateService.new(namespace: @group, params: update_params, current_user: current_user, value_stream: @value_stream).execute
 
     if result.success?
       render json: serialize_value_stream(result), status: result.http_status

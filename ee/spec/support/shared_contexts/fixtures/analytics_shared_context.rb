@@ -3,13 +3,13 @@
 RSpec.shared_context '[EE] Analytics fixtures shared context' do
   include_context 'Analytics fixtures shared context'
 
-  let_it_be(:value_stream) { create(:cycle_analytics_group_value_stream, group: group) }
+  let_it_be(:value_stream) { create(:cycle_analytics_group_value_stream, namespace: group) }
 
   let(:label) { create(:group_label, name: 'in-code-review', group: group) }
   let(:label_based_stage) do
     create(:cycle_analytics_group_stage, {
       name: 'label-based-stage',
-      parent: group,
+      namespace: group,
       value_stream: value_stream,
       start_event_identifier: :issue_label_added,
       start_event_label_id: label.id,
@@ -21,7 +21,7 @@ RSpec.shared_context '[EE] Analytics fixtures shared context' do
   let(:params) { { created_after: 3.months.ago, created_before: Time.now, group_id: group.full_path } }
 
   def additional_cycle_analytics_metrics
-    create(:cycle_analytics_group_stage, parent: group, value_stream: value_stream)
+    create(:cycle_analytics_group_stage, namespace: group, value_stream: value_stream)
 
     update_metrics
 

@@ -9,7 +9,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::StagesController, feature_cate
 
   let_it_be(:value_stream) do
     create(:cycle_analytics_group_value_stream,
-           group: group,
+           namespace: group,
            name: 'No stage value stream',
            stages: stages
           )
@@ -17,7 +17,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::StagesController, feature_cate
 
   context 'when params have only group_id' do
     let(:params) { { group_id: group } }
-    let(:parent) { group }
+    let(:namespace) { group }
 
     it_behaves_like 'Value Stream Analytics Stages controller'
   end
@@ -25,20 +25,20 @@ RSpec.describe Groups::Analytics::CycleAnalytics::StagesController, feature_cate
   context 'when params have group_id and value_stream_id' do
     let_it_be(:stages) do
       [
-        create(:cycle_analytics_group_stage, group: group, name: "Issue", relative_position: 1),
-        create(:cycle_analytics_group_stage, group: group, name: "Code", relative_position: 2)
+        create(:cycle_analytics_group_stage, namespace: group, name: "Issue", relative_position: 1),
+        create(:cycle_analytics_group_stage, namespace: group, name: "Code", relative_position: 2)
       ]
     end
 
     let_it_be(:value_stream) do
       create(:cycle_analytics_group_value_stream,
-             group: group,
+             namespace: group,
              name: 'First value stream',
              stages: stages)
     end
 
     let(:params) { { group_id: group, value_stream_id: value_stream.id } }
-    let(:parent) { group }
+    let(:namespace) { group }
 
     it_behaves_like 'Value Stream Analytics Stages controller'
   end

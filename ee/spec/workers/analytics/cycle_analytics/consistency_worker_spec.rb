@@ -77,7 +77,7 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyWorker do
 
       expect(Analytics::CycleAnalytics::ConsistencyCheckService).to receive(:new)
         .twice
-        .with(group: aggregation1.group, event_model: Analytics::CycleAnalytics::IssueStageEvent)
+        .with(group: aggregation1.namespace, event_model: Analytics::CycleAnalytics::IssueStageEvent)
         .and_return(issues_consistency_service)
 
       expect(issues_consistency_service).to receive(:execute).once.and_return(issues_consistency_service_response)
@@ -107,7 +107,7 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyWorker do
       merge_requests_consistency_service = instance_double(Analytics::CycleAnalytics::ConsistencyCheckService)
 
       expect(Analytics::CycleAnalytics::ConsistencyCheckService).to receive(:new)
-        .with(group: aggregation1.group, event_model: Analytics::CycleAnalytics::MergeRequestStageEvent)
+        .with(group: aggregation1.namespace, event_model: Analytics::CycleAnalytics::MergeRequestStageEvent)
         .and_return(merge_requests_consistency_service)
 
       expect(issues_consistency_service).to receive(:execute).once.and_return(ServiceResponse.success)
@@ -137,7 +137,7 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyWorker do
     stub_licensed_features(cycle_analytics_for_groups: true)
 
     group = create(:group)
-    stage = create(:cycle_analytics_group_stage, group: group)
+    stage = create(:cycle_analytics_group_stage, namespace: group)
     event1 = create(:cycle_analytics_merge_request_stage_event,
                     merge_request_id: 1,
                     stage_event_hash_id: stage.stage_event_hash_id,

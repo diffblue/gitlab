@@ -27,7 +27,7 @@ class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::Applicati
   end
 
   def use_aggregated_backend
-    aggregation = Analytics::CycleAnalytics::Aggregation.safe_create_for_group(@group)
+    aggregation = Analytics::CycleAnalytics::Aggregation.safe_create_for_namespace(@group)
     aggregation.update!(enabled: params[:enabled])
 
     render json: { enabled: aggregation.enabled }

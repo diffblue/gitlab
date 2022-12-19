@@ -48,7 +48,7 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService do
 
     let_it_be(:stage1) do
       create(:cycle_analytics_group_stage, {
-        group: sub_group,
+        namespace: sub_group,
         start_event_identifier: :merge_request_created,
         end_event_identifier: :merge_request_merged
       })
@@ -56,7 +56,7 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService do
 
     let_it_be(:stage2) do
       create(:cycle_analytics_group_stage, {
-        group: top_level_group,
+        namespace: top_level_group,
         start_event_identifier: :issue_created,
         end_event_identifier: :issue_closed
       })
@@ -64,7 +64,7 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService do
 
     let_it_be(:stage_in_other_group) do
       create(:cycle_analytics_group_stage, {
-        group: other_group,
+        namespace: other_group,
         start_event_identifier: :issue_created,
         end_event_identifier: :issue_closed
       })
