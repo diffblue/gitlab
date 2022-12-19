@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe QuickActions::InterpretService do
+RSpec.describe QuickActions::InterpretService, feature_category: :team_planning do
   let(:current_user) { create(:user) }
   let(:developer) { create(:user) }
   let(:developer2) { create(:user) }
@@ -691,7 +691,7 @@ RSpec.describe QuickActions::InterpretService do
       let(:referenced_epic) { create(:epic, group: epic.group) }
 
       before do
-        group.add_developer(current_user)
+        group.add_guest(current_user)
         stub_licensed_features(epics: true, subepics: true)
       end
 
@@ -727,8 +727,8 @@ RSpec.describe QuickActions::InterpretService do
 
         context 'when a user has permissions to add epic relations' do
           before do
-            group.add_developer(current_user)
-            another_group.add_developer(current_user)
+            group.add_guest(current_user)
+            another_group.add_guest(current_user)
           end
 
           it_behaves_like 'adds quick action parameter', :quick_action_assign_child_epic, :child_epic
@@ -952,7 +952,7 @@ RSpec.describe QuickActions::InterpretService do
       context 'when subepics are disabled' do
         before do
           stub_licensed_features(epics: true, subepics: false)
-          group.add_developer(current_user)
+          group.add_guest(current_user)
         end
 
         it_behaves_like 'epic relation is not removed' do
@@ -1481,12 +1481,14 @@ RSpec.describe QuickActions::InterpretService do
     end
 
     context 'epic commands' do
+      let(:other_group) { create(:group, :private) }
       let(:epic) { create(:epic, group: group) }
-      let(:epic2) { create(:epic, group: group) }
+      let(:epic2) { create(:epic, group: other_group) }
 
       before do
         stub_licensed_features(epics: true, subepics: true)
-        group.add_developer(current_user)
+        group.add_guest(current_user)
+        other_group.add_guest(current_user)
       end
 
       shared_examples 'target epic does not exist' do |relation|
@@ -1494,7 +1496,7 @@ RSpec.describe QuickActions::InterpretService do
           _, _, message = service.execute(content, epic)
 
           expect(message)
-            .to eq("#{relation.capitalize} epic doesn't exist.")
+            .to eq("#{relation.capitalize} epic does not exist.")
         end
       end
 
@@ -1508,6 +1510,13 @@ RSpec.describe QuickActions::InterpretService do
       end
 
       shared_examples 'without permissions for action' do
+        before do
+          allow(current_user).to receive(:can?).with(:use_quick_actions).and_return(true)
+          allow(current_user).to receive(:can?).with(:admin_all_resources).and_return(true)
+          allow(current_user).to receive(:can?).with(:admin_epic_tree_relation, epic).and_return(true)
+          allow(current_user).to receive(:can?).with(:admin_epic_tree_relation, epic2).and_return(false)
+        end
+
         it 'returns unsuccessful execution message' do
           _, _, message = service.execute(content, epic)
 
@@ -1545,14 +1554,8 @@ RSpec.describe QuickActions::InterpretService do
           it_behaves_like 'target epic does not exist', :child
         end
 
-        context 'when user has no permission to read epic' do
+        context 'when user has no permissions to relate the child epic' do
           let(:content) { "/child_epic #{epic2&.to_reference(epic)}" }
-
-          before do
-            allow(current_user).to receive(:can?).with(:use_quick_actions).and_return(true)
-            allow(current_user).to receive(:can?).with(:admin_epic, epic).and_return(true)
-            allow(current_user).to receive(:can?).with(:read_epic, epic2).and_return(false)
-          end
 
           it_behaves_like 'without permissions for action'
         end
@@ -1581,7 +1584,7 @@ RSpec.describe QuickActions::InterpretService do
         end
 
         context 'when epic reference is wrong' do
-          let(:content) { "/child_epic qwe" }
+          let(:content) { "/remove_child_epic qwe" }
 
           it 'returns empty explain message' do
             _, explanations = service.explain(content, epic)
@@ -1602,6 +1605,16 @@ RSpec.describe QuickActions::InterpretService do
             expect(message)
               .to eq("Child epic does not exist.")
           end
+        end
+
+        context 'when user has no permissions to remove child epic' do
+          let(:content) { "/remove_child_epic #{epic2&.to_reference(epic)}" }
+
+          before do
+            epic2.update!(parent: epic)
+          end
+
+          it_behaves_like 'without permissions for action'
         end
       end
 
@@ -1636,14 +1649,8 @@ RSpec.describe QuickActions::InterpretService do
           it_behaves_like 'target epic does not exist', :parent
         end
 
-        context 'when user has no permission to read epic' do
+        context 'when user has no permissions to relate the parent epic' do
           let(:content) { "/parent_epic #{epic2&.to_reference(epic)}" }
-
-          before do
-            allow(current_user).to receive(:can?).with(:use_quick_actions).and_return(true)
-            allow(current_user).to receive(:can?).with(:admin_epic, epic).and_return(true)
-            allow(current_user).to receive(:can?).with(:read_epic, epic2).and_return(false)
-          end
 
           it_behaves_like 'without permissions for action'
         end
@@ -1692,6 +1699,16 @@ RSpec.describe QuickActions::InterpretService do
             expect(message)
               .to eq("Parent epic is not present.")
           end
+        end
+
+        context 'when user has no permissions to remove parent epic' do
+          let(:content) { "/remove_parent_epic" }
+
+          before do
+            epic.parent = epic2
+          end
+
+          it_behaves_like 'without permissions for action'
         end
       end
     end
