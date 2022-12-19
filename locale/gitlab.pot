@@ -43479,7 +43479,7 @@ msgstr ""
 msgid "Todos|added a to-do item"
 msgstr ""
 
-msgid "Todos|has requested access"
+msgid "Todos|has requested access to group %{which}"
 msgstr ""
 
 msgid "Todos|mentioned %{who}"
