@@ -31,6 +31,10 @@ class EpicIssue < ApplicationRecord
     select(selection).in_epic(node.parent_ids)
   end
 
+  def exportable_record?(user)
+    Ability.allowed?(user, :read_epic, epic)
+  end
+
   private
 
   def validate_confidential_epic

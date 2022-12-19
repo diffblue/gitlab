@@ -331,12 +331,6 @@ module EE
       epic_issue.present?
     end
 
-    def exportable_association?(key, current_user: nil)
-      return false unless key == :epic_issue
-
-      epic.present? && current_user&.can?(:read_epic, epic)
-    end
-
     private
 
     def blocking_issues_ids
