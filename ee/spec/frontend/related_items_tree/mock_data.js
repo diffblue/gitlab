@@ -27,6 +27,7 @@ export const mockParentItem = {
   userPermissions: {
     canAdmin: true,
     createEpic: true,
+    canAdminRelation: true,
   },
   descendantCounts: {
     openedEpics: 1,
@@ -61,6 +62,7 @@ export const mockParentItem2 = {
   userPermissions: {
     canAdmin: true,
     createEpic: true,
+    canAdminRelation: true,
   },
   descendantCounts: {
     openedEpics: 1,

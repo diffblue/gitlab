@@ -60,6 +60,7 @@ export default () => {
         reference: `${initialData.fullPath}${initialData.issuableRef}`,
         userPermissions: {
           canAdmin: initialData.canAdmin,
+          canAdminRelation: initialData.canAdminRelation,
         },
       });
 

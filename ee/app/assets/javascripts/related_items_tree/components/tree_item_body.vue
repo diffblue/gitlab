@@ -80,6 +80,12 @@ export default {
       // we need to make both accessible.
       return this.item.path || this.item.webPath;
     },
+    canAdmin() {
+      if (this.isEpic) {
+        return this.parentItem.userPermissions.canAdminRelation;
+      }
+      return this.parentItem.userPermissions.canAdmin;
+    },
     isOpen() {
       return this.item.state === ChildState.Open;
     },
@@ -140,7 +146,7 @@ export default {
       );
     },
     showEmptySpacer() {
-      return !this.parentItem.userPermissions.canAdmin && this.userSignedIn;
+      return !this.canAdmin && this.userSignedIn;
     },
     totalEpicsCount() {
       const { descendantCounts: { openedEpics = 0, closedEpics = 0 } = {} } = this.item;
@@ -344,7 +350,7 @@ export default {
         </div>
 
         <gl-button
-          v-if="parentItem.userPermissions.canAdmin"
+          v-if="canAdmin"
           v-gl-tooltip.hover
           v-gl-modal-directive="$options.itemRemoveModalId"
           category="tertiary"
