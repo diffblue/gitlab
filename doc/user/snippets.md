@@ -270,4 +270,4 @@ creating a new snippet, use this workaround:
 
 ## Related topics
 
-- [Administration snippets](../administration/snippets/index.md)
+- [Configure snippet settings](../administration/snippets/index.md) on a self-managed GitLab instance
