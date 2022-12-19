@@ -33,7 +33,7 @@ export default function initReadMore(triggerSelector = '.js-read-more-trigger') 
       'click',
       (e) => {
         targetEl.classList.add('is-expanded');
-        e.target.remove();
+        triggerEl.remove();
       },
       { once: true },
     );
