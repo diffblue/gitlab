@@ -14,7 +14,7 @@ RSpec.describe EE::ReadonlyAbilities, feature_category: :subscription_management
   end
 
   describe '.readonly_abilities' do
-    it 'returns an array of abilites to be prevented when readonly' do
+    it 'returns an array of abilities to be prevented when readonly' do
       expect(TestClass.readonly_abilities).to include(*described_class::READONLY_ABILITIES)
     end
   end

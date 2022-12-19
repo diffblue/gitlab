@@ -14,7 +14,7 @@ RSpec.describe EE::ArchivedAbilities, feature_category: :projects do
   end
 
   describe '.archived_abilities' do
-    it 'returns an array of abilites to be prevented when archived' do
+    it 'returns an array of abilities to be prevented when archived' do
       expect(TestClass.archived_abilities).to include(*described_class::ARCHIVED_ABILITIES_EE)
     end
   end
