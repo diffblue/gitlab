@@ -4,7 +4,7 @@ import Api from 'ee/api';
 import * as analyticsMockData from 'ee_jest/analytics/cycle_analytics/mock_data';
 import axios from '~/lib/utils/axios_utils';
 import { ContentTypeMultipartFormData } from '~/lib/utils/headers';
-import httpStatus from '~/lib/utils/http_status';
+import httpStatus, { HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
 
 describe('Api', () => {
   const dummyApiVersion = 'v3000';
@@ -415,7 +415,7 @@ describe('Api', () => {
 
         jest.spyOn(Api, 'buildUrl').mockReturnValue(expectedUrl);
         jest.spyOn(axios, 'post');
-        mock.onPost(`${expectedUrl}/${mockAction}`).replyOnce(httpStatus.CREATED, apiResponse);
+        mock.onPost(`${expectedUrl}/${mockAction}`).replyOnce(HTTP_STATUS_CREATED, apiResponse);
 
         return Api.initiateAllGeoReplicableSyncs(mockReplicableType, mockAction).then(
           ({ data }) => {
@@ -438,7 +438,7 @@ describe('Api', () => {
         jest.spyOn(axios, 'put');
         mock
           .onPut(`${expectedUrl}/${mockProjectId}/${mockAction}`)
-          .replyOnce(httpStatus.CREATED, apiResponse);
+          .replyOnce(HTTP_STATUS_CREATED, apiResponse);
 
         return Api.initiateGeoReplicableSync(mockReplicableType, {
           projectId: mockProjectId,
@@ -491,7 +491,7 @@ describe('Api', () => {
 
         jest.spyOn(Api, 'buildUrl').mockReturnValue(expectedUrl);
         jest.spyOn(axios, 'post');
-        mock.onPost(expectedUrl).replyOnce(httpStatus.CREATED, mockNode);
+        mock.onPost(expectedUrl).replyOnce(HTTP_STATUS_CREATED, mockNode);
 
         return Api.createGeoNode(mockNode).then(({ data }) => {
           expect(data).toEqual(mockNode);
@@ -511,7 +511,7 @@ describe('Api', () => {
 
         jest.spyOn(Api, 'buildUrl').mockReturnValue(expectedUrl);
         jest.spyOn(axios, 'put');
-        mock.onPut(`${expectedUrl}/${mockNode.id}`).replyOnce(httpStatus.CREATED, mockNode);
+        mock.onPut(`${expectedUrl}/${mockNode.id}`).replyOnce(HTTP_STATUS_CREATED, mockNode);
 
         return Api.updateGeoNode(mockNode).then(({ data }) => {
           expect(data).toEqual(mockNode);
@@ -560,7 +560,7 @@ describe('Api', () => {
       it('updates applications settings', () => {
         jest.spyOn(Api, 'buildUrl').mockReturnValue(expectedUrl);
         jest.spyOn(axios, 'put');
-        mock.onPut(expectedUrl).replyOnce(httpStatus.CREATED, apiResponse);
+        mock.onPut(expectedUrl).replyOnce(HTTP_STATUS_CREATED, apiResponse);
 
         return Api.updateApplicationSettings(mockReq).then(({ data }) => {
           expect(data).toEqual(apiResponse);

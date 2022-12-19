@@ -11,7 +11,7 @@ import {
 import { mockDataMembers } from 'ee_jest/pending_members/mock_data';
 import testAction from 'helpers/vuex_action_helper';
 import axios from '~/lib/utils/axios_utils';
-import httpStatusCodes from '~/lib/utils/http_status';
+import httpStatusCodes, { HTTP_STATUS_NO_CONTENT } from '~/lib/utils/http_status';
 
 describe('Pending members actions', () => {
   let state;
@@ -117,7 +117,7 @@ describe('Pending members actions', () => {
       beforeEach(() => {
         mock
           .onPut(`/api/v4/groups/1/members/${memberId}/approve`)
-          .replyOnce(httpStatusCodes.NO_CONTENT);
+          .replyOnce(HTTP_STATUS_NO_CONTENT);
       });
 
       it('dispatches the request and success action', async () => {
