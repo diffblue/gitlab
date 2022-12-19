@@ -52,7 +52,7 @@ RSpec.describe Security::Ingestion::IngestReportsService do
 
       expect(
         Security::Ingestion::ScheduleMarkDroppedAsResolvedService
-      ).to have_received(:execute).with(project.id, artifact.security_report.primary_identifiers)
+      ).to have_received(:execute).with(project.id, 'sast', artifact.security_report.primary_identifiers)
     end
 
     describe 'scheduling the AutoFix background job' do
