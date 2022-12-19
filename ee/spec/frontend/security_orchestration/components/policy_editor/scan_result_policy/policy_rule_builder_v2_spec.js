@@ -2,6 +2,8 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import Api from 'ee/api';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_builder_v2.vue';
 import SecurityScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/security_scan_rule_builder.vue';
+import LicenseScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/license_scan_rule_builder.vue';
+
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
   emptyBuildRule,
@@ -22,6 +24,14 @@ describe('PolicyRuleBuilder V2', () => {
     vulnerability_states: ['newly_detected'],
   };
 
+  const LICENSE_SCANNING_RULE = {
+    type: 'license_finding',
+    branches: [PROTECTED_BRANCHES_MOCK[0].name],
+    match_on_inclusion: true,
+    license_types: [],
+    license_states: ['newly_detected', 'pre_existing'],
+  };
+
   const factory = (propsData = {}, provide = {}) => {
     wrapper = mountExtended(PolicyRuleBuilder, {
       propsData: {
@@ -31,6 +41,7 @@ describe('PolicyRuleBuilder V2', () => {
       provide: {
         namespaceId: '1',
         namespaceType: NAMESPACE_TYPES.PROJECT,
+        softwareLicenses: '[]',
         ...provide,
       },
     });
@@ -38,6 +49,7 @@ describe('PolicyRuleBuilder V2', () => {
 
   const findDeleteBtn = () => wrapper.findByTestId('remove-rule');
   const findSecurityScanRule = () => wrapper.findComponent(SecurityScanRuleBuilder);
+  const findLicenseScanRule = () => wrapper.findComponent(LicenseScanRuleBuilder);
 
   beforeEach(() => {
     jest
@@ -50,7 +62,8 @@ describe('PolicyRuleBuilder V2', () => {
       factory();
     });
 
-    it('does not render the security scan rule', () => {
+    it('does not render the license scan or security scan rule', () => {
+      expect(findLicenseScanRule().exists()).toBe(false);
       expect(findSecurityScanRule().exists()).toBe(false);
     });
 
@@ -67,12 +80,14 @@ describe('PolicyRuleBuilder V2', () => {
 
   describe('when a rule type is selected', () => {
     it.each`
-      ruleType           | rule                  | showSecurityRule
-      ${'unselected'}    | ${emptyBuildRule()}   | ${false}
-      ${'security scan'} | ${SECURITY_SCAN_RULE} | ${true}
-    `('renders the $ruleType policy', ({ rule, showSecurityRule }) => {
+      ruleType           | rule                     | showSecurityRule | showLicenseRule
+      ${'unselected'}    | ${emptyBuildRule()}      | ${false}         | ${false}
+      ${'security scan'} | ${SECURITY_SCAN_RULE}    | ${true}          | ${false}
+      ${'license scan'}  | ${LICENSE_SCANNING_RULE} | ${false}         | ${true}
+    `('renders the $ruleType policy', ({ rule, showSecurityRule, showLicenseRule }) => {
       factory({ initRule: rule });
       expect(findSecurityScanRule().exists()).toBe(showSecurityRule);
+      expect(findLicenseScanRule().exists()).toBe(showLicenseRule);
     });
   });
 });

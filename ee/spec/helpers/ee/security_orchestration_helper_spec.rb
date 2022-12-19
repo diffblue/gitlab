@@ -91,6 +91,8 @@ RSpec.describe EE::SecurityOrchestrationHelper do
       let(:owner) { project.first_owner }
       let(:policy) { nil }
       let(:policy_type) { 'scan_execution_policy' }
+      let_it_be(:mit_license) { create(:software_license, :mit) }
+      let_it_be(:apache_license) { create(:software_license, :apache_2_0) }
       let(:base_data) do
         {
           assigned_policy_project: nil.to_json,
@@ -103,7 +105,8 @@ RSpec.describe EE::SecurityOrchestrationHelper do
           policy: policy&.to_json,
           policy_type: policy_type,
           scan_policy_documentation_path: kind_of(String),
-          scan_result_approvers: approvers&.to_json
+          scan_result_approvers: approvers&.to_json,
+          software_licenses: [apache_license.name, mit_license.name]
         }
       end
 

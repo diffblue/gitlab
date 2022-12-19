@@ -39,7 +39,8 @@ module EE::SecurityOrchestrationHelper
 
     if container.is_a?(::Project)
       policy_data.merge(
-        create_agent_help_path: help_page_url('user/clusters/agent/install/index')
+        create_agent_help_path: help_page_url('user/clusters/agent/install/index'),
+        software_licenses: SoftwareLicense.unclassified_licenses_for(container).pluck_names
       )
     else
       policy_data
