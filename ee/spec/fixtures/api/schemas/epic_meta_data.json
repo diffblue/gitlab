@@ -2,12 +2,32 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "additionalProperties": false,
   "type": "object",
-  "required": ["epic_id", "created", "author", "ancestors", "todo_exists", "todo_path", "lock_version",
-    "state", "namespace", "labels_path", "toggle_subscription_path", "labels_web_url", "epics_web_url",
-    "new_epic_web_url", "scoped_labels", "start_date", "start_date_is_fixed", "start_date_fixed",
-    "start_date_from_milestones", "start_date_sourcing_milestone_title", "start_date_sourcing_milestone_dates",
-    "due_date", "due_date_is_fixed", "due_date_fixed",
-    "due_date_from_milestones", "due_date_sourcing_milestone_title", "due_date_sourcing_milestone_dates"],
+  "required": [
+    "epic_id",
+    "created",
+    "ancestors",
+    "todo_exists",
+    "todo_path",
+    "lock_version",
+    "state",
+    "namespace",
+    "labels_path",
+    "toggle_subscription_path",
+    "labels_web_url",
+    "epics_web_url",
+    "new_epic_web_url",
+    "scoped_labels",
+    "start_date",
+    "start_date_is_fixed",
+    "start_date_fixed",
+    "start_date_from_milestones",
+    "start_date_sourcing_milestone_title",
+    "due_date",
+    "due_date_is_fixed",
+    "due_date_fixed",
+    "due_date_from_milestones",
+    "due_date_sourcing_milestone_title"
+  ],
   "properties": {
     "epic_id": {
       "type": "integer"
@@ -52,9 +72,6 @@
       "items": {
         "id": {
           "type": "integer"
-        },
-        "title": {
-          "type": "string"
         },
         "url": {
           "type": "string"

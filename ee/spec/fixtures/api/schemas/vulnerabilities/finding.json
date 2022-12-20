@@ -1,6 +1,6 @@
 {
-  "type" : "object",
-  "required" : [
+  "type": "object",
+  "required": [
     "name",
     "project_fingerprint",
     "confidence",
@@ -10,88 +10,222 @@
     "scan",
     "project"
   ],
-  "properties" : {
-    "name" : { "type": "string" },
-    "project_fingerprint": { "type": "string" },
-    "uuid": { "type": ["string", "null"] },
-    "create_vulnerability_feedback_issue_path": { "type": "string" },
-    "create_vulnerability_feedback_merge_request_path": { "type": "string" },
-    "create_vulnerability_feedback_dismissal_path": { "type": "string" },
-    "confidence" : {
-      "type": "string",
-      "enum": ["ignore", "unknown", "experimental", "low", "medium", "high", "confirmed"]
+  "properties": {
+    "name": {
+      "type": "string"
     },
-    "severity" : {
+    "project_fingerprint": {
+      "type": "string"
+    },
+    "uuid": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "create_vulnerability_feedback_issue_path": {
+      "type": "string"
+    },
+    "create_vulnerability_feedback_merge_request_path": {
+      "type": "string"
+    },
+    "create_vulnerability_feedback_dismissal_path": {
+      "type": "string"
+    },
+    "confidence": {
       "type": "string",
-      "enum": ["info", "unknown", "low", "medium", "high", "critical"]
+      "enum": [
+        "ignore",
+        "unknown",
+        "experimental",
+        "low",
+        "medium",
+        "high",
+        "confirmed"
+      ]
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "info",
+        "unknown",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
     },
     "report_type": {
       "type": "string",
-      "enum": ["sast", "dependency_scanning", "container_scanning", "dast"]
+      "enum": [
+        "sast",
+        "dependency_scanning",
+        "container_scanning",
+        "dast"
+      ]
     },
-    "scanner" : {
-      "external_id" : { "type": "string" },
-      "name" : { "type": "string" }
+    "scanner": {
+      "external_id": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      }
     },
-    "scan" : {
-      "end_time": { "type": "string" },
-      "messages": { "type": "string" },
-      "start_time": { "type": "string" },
-      "status": { "type": "string" },
-      "type": { "type": "string" }
+    "scan": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "end_time": {
+          "type": "string"
+        },
+        "messages": {
+          "type": "string"
+        },
+        "start_time": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
     },
-    "project" : {
-      "required" : [
+    "project": {
+      "type": "object",
+      "required": [
         "id",
         "name",
         "full_path",
         "full_name"
       ],
-      "id" : { "type": "integer" },
-      "name" : { "type": "string" },
-      "full_path" : { "type": "string" },
-      "full_name" : { "type": "string" }
-    },
-    "issue_feedback" : { "oneOf": [
-      { "type": "null" },
-      { "$ref": "../vulnerability_feedback.json" }
-    ]},
-    "merge_request_feedback" : { "oneOf": [
-      { "type": "null" },
-      { "$ref": "../vulnerability_feedback.json" }
-    ]},
-    "dismissal_feedback" : { "oneOf": [
-      { "type": "null" },
-      { "$ref": "../vulnerability_feedback.json" }
-    ]},
-    "state" : {
-      "type": "string",
-      "enum": ["detected", "confirmed", "resolved", "dismissed"]
-    },
-    "description": { "type": ["string", "null"] },
-    "solution": { "type": ["string", "null"] },
-    "location" : {
-      "class" : { "type": "string" },
-      "method" : { "type": "string" },
-      "file" : { "type": "string" },
-      "start_line" : { "type": "integer" },
-      "end_line" : { "type": "integer" }
-    },
-    "links" : {
-      "type": "array",
-      "items": {
-        "name": { "type": ["string", "null"] },
-        "url": { "type": ["string", "null"] }
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "full_path": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        }
       }
     },
-    "identifiers" : {
+    "issue_feedback": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "../vulnerability_feedback.json"
+        }
+      ]
+    },
+    "merge_request_feedback": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "../vulnerability_feedback.json"
+        }
+      ]
+    },
+    "dismissal_feedback": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "../vulnerability_feedback.json"
+        }
+      ]
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "detected",
+        "confirmed",
+        "resolved",
+        "dismissed"
+      ]
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "solution": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "location": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "class": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string"
+        },
+        "file": {
+          "type": "string"
+        },
+        "start_line": {
+          "type": "integer"
+        },
+        "end_line": {
+          "type": "integer"
+        }
+      }
+    },
+    "links": {
       "type": "array",
       "items": {
-        "primary" : { "type": ["boolean"] },
-        "name": { "type": ["string"] },
-        "url": { "type": ["string", "null"] },
-        "external_id": { "type": ["string"] },
-        "external_type": { "type": ["string"] }
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "identifiers": {
+      "type": "array",
+      "items": {
+        "primary": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "external_type": {
+          "type": "string"
+        }
       }
     }
   }
