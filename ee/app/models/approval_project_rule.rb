@@ -16,6 +16,11 @@ class ApprovalProjectRule < ApplicationRecord
   has_many :approval_merge_request_rule_sources
   has_many :approval_merge_request_rules, through: :approval_merge_request_rule_sources
 
+  # the associations below are needed
+  # to export approval rules correctly
+  has_many :approval_project_rules_users, class_name: 'ApprovalProjectRulesUser'
+  has_many :approval_project_rules_protected_branches, class_name: 'ApprovalProjectRulesProtectedBranch'
+
   after_initialize :set_scanners_default_value
   after_create_commit :audit_creation, :track_creation_event
 

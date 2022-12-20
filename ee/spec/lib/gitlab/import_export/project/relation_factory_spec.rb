@@ -3,8 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::ImportExport::Project::RelationFactory do
-  let(:user) { create(:user) }
-  let(:project) { create(:project) }
+  let(:user) { create(:user, admin: true) }
+  let_it_be(:project) { create(:project) }
+
   let(:group) { create(:group) }
   let(:created_object) do
     described_class.create( # rubocop:disable Rails/SaveBang
@@ -62,6 +63,39 @@ RSpec.describe Gitlab::ImportExport::Project::RelationFactory do
     context 'when project has no group' do
       it 'does not create resource iteration event' do
         expect(created_object).to be_nil
+      end
+    end
+  end
+
+  context 'when parsing approval_rules_protected_branches object' do
+    let_it_be(:first_protected_branch) { create :protected_branch, project: project }
+    let_it_be(:protected_branch) { create :protected_branch, name: 'main', project: project }
+    let_it_be(:branch_name) { protected_branch.name }
+    let_it_be(:relation_sym) { :approval_project_rules_protected_branches }
+    let(:approval_rule) { create :approval_project_rule, project: project }
+    let(:relation_hash) do
+      {
+        "approval_project_rule_id" => approval_rule.id,
+        "protected_branch_id" => 888,
+        "branch_name" => branch_name
+      }
+    end
+
+    it 'belongs to the new protected branch' do
+      expect(created_object.protected_branch_id).to eq(protected_branch.id)
+    end
+
+    context 'when branch name is not found' do
+      let(:relation_hash) do
+        {
+          "approval_project_rule_id" => approval_rule.id,
+          "protected_branch_id" => 888,
+          "branch_name" => 'fake_master'
+        }
+      end
+
+      it 'protected_branch_id is nil' do
+        expect(created_object.protected_branch_id).to eq(nil)
       end
     end
   end

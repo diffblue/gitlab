@@ -12,7 +12,10 @@ module EE
             deploy_access_levels: 'ProtectedEnvironments::DeployAccessLevel',
             unprotect_access_levels: 'ProtectedBranch::UnprotectAccessLevel',
             security_setting: 'ProjectSecuritySetting',
-            iterations_cadence: 'Iterations::Cadence'
+            iterations_cadence: 'Iterations::Cadence',
+            approval_rules: 'ApprovalProjectRule',
+            approval_project_rules_users: 'ApprovalProjectRulesUser',
+            approval_project_rules_protected_branches: 'ApprovalProjectRulesProtectedBranch'
           }.freeze
 
           EE_EXISTING_OBJECT_RELATIONS = %i[

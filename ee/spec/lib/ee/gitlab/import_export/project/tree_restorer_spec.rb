@@ -135,6 +135,34 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer, feature_category: :i
     end
   end
 
+  describe 'approval_rules' do
+    let_it_be(:project) { create(:project, name: 'project', path: 'project') }
+
+    let(:user) { create(:user) }
+
+    before do
+      setup_import_export_config('complex', 'ee')
+      restored_project_json
+    end
+
+    it 'creates approval rules and its associations' do
+      project = Project.find_by_path('project')
+
+      expect(ApprovalProjectRule.count).to eq(1)
+      approval_rule = project.approval_rules.first
+      protected_branch = project.protected_branches.find_by(name: "master")
+
+      expect(approval_rule.name).to eq("MustContain")
+      expect(approval_rule.approvals_required).to eq(1)
+
+      expect(approval_rule.approval_project_rules_users.count).to eq(1)
+      expect(approval_rule.approval_project_rules_users.first).to have_attributes(approval_project_rule_id: approval_rule.id, user_id: user.id)
+
+      expect(approval_rule.approval_project_rules_protected_branches.count).to eq(1)
+      expect(approval_rule.approval_project_rules_protected_branches.first).to have_attributes(approval_project_rule_id: approval_rule.id, protected_branch_id: protected_branch.id)
+    end
+  end
+
   describe 'boards' do
     let_it_be(:project) { create(:project, :builds_enabled, :issues_disabled, name: 'project', path: 'project') }
 
