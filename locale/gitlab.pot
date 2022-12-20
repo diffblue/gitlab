@@ -12398,9 +12398,6 @@ msgstr ""
 msgid "DashboardProjects|Personal"
 msgstr ""
 
-msgid "DashboardProjects|Trending"
-msgstr ""
-
 msgid "Dashboards"
 msgstr ""
 
@@ -36615,9 +36612,6 @@ msgstr ""
 msgid "Search projects"
 msgstr ""
 
-msgid "Search projects..."
-msgstr ""
-
 msgid "Search protected branches"
 msgstr ""
 
@@ -45809,9 +45803,6 @@ msgid "Viewing projects and designs data from a primary site is not possible whe
 msgstr ""
 
 msgid "Violation"
-msgstr ""
-
-msgid "Visibility"
 msgstr ""
 
 msgid "Visibility and access controls"
