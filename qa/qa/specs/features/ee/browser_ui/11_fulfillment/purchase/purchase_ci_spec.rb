@@ -4,7 +4,7 @@ module QA
   include QA::Support::Helpers::Plan
 
   RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, product_group: :purchase do
-    context 'Purchase CI minutes' do
+    describe 'Purchase CI minutes' do
       # the quantity of products to purchase
       let(:purchase_quantity) { 5 }
       let(:hash) { SecureRandom.hex(4) }
@@ -46,14 +46,17 @@ module QA
           group.remove_via_api!
         end
 
-        it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347622' do
+        it 'adds additional minutes to group namespace',
+           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347622' do
           Flow::Purchase.purchase_ci_minutes(quantity: purchase_quantity)
 
           Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
             expected_minutes = CI_MINUTES[:ci_minutes] * purchase_quantity
 
-            expect { usage_quota.ci_purchase_successful_alert? }.to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
-            expect { usage_quota.additional_ci_minutes? }.to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
+            expect { usage_quota.ci_purchase_successful_alert? }
+              .to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
+            expect { usage_quota.additional_ci_minutes_added? }
+              .to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
             expect(usage_quota.additional_ci_limits).to eq(expected_minutes.to_s)
           end
         end
@@ -64,15 +67,18 @@ module QA
           Flow::Purchase.upgrade_subscription(plan: ULTIMATE)
         end
 
-        it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347569' do
+        it 'adds additional minutes to group namespace',
+            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347569' do
           Flow::Purchase.purchase_ci_minutes(quantity: purchase_quantity)
 
           Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
             expected_minutes = CI_MINUTES[:ci_minutes] * purchase_quantity
             plan_limits = ULTIMATE[:ci_minutes]
 
-            expect { usage_quota.ci_purchase_successful_alert? }.to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
-            expect { usage_quota.additional_ci_minutes? }.to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
+            expect { usage_quota.ci_purchase_successful_alert? }
+              .to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
+            expect { usage_quota.additional_ci_minutes_added? }
+              .to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
             aggregate_failures do
               expect(usage_quota.additional_ci_limits).to eq(expected_minutes.to_s)
               expect(usage_quota.plan_ci_limits).to eq(plan_limits.to_s)
@@ -90,15 +96,19 @@ module QA
           group.remove_via_api!
         end
 
-        it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347568' do
+        it 'adds additional minutes to group namespace',
+           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347568' do
           Flow::Purchase.purchase_ci_minutes(quantity: purchase_quantity)
 
           Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
             expected_minutes = CI_MINUTES[:ci_minutes] * purchase_quantity * 2
 
-            expect { usage_quota.ci_purchase_successful_alert? }.to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
-            expect { usage_quota.additional_ci_minutes? }.to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
-            expect { usage_quota.additional_ci_limits }.to eventually_eq(expected_minutes.to_s).within(max_duration: 120, max_attempts: 60, reload_page: page)
+            expect { usage_quota.ci_purchase_successful_alert? }
+              .to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
+            expect { usage_quota.additional_ci_minutes_added? }
+              .to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
+            expect { usage_quota.additional_ci_limits }
+              .to eventually_eq(expected_minutes.to_s).within(max_duration: 120, max_attempts: 60, reload_page: page)
           end
         end
       end
