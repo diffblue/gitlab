@@ -16,19 +16,6 @@ RSpec.describe Namespaces::FreeUserCap::Notification, :saas do
   describe '#over_limit?' do
     subject(:over_limit?) { described_class.new(namespace).over_limit? }
 
-    it 'logs a message' do
-      allow(Gitlab::AppLogger).to receive(:info) # needed when using 2 in same code path to enable focus on one
-
-      expect(Gitlab::AppLogger)
-        .to receive(:info)
-              .with(a_hash_including(message: 'Namespace qualifies for notification',
-                                     class: described_class.name,
-                                     namespace_id: namespace.id))
-              .and_call_original
-
-      over_limit?
-    end
-
     context 'when :preview_free_user_cap is disabled' do
       before do
         stub_feature_flags(preview_free_user_cap: false)
