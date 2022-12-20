@@ -174,7 +174,7 @@ export default {
         >
           <template v-if="shouldShowFooter" #footer>
             <div class="gl-display-flex gl-flex-wrap gl-align-items-flex-start">
-              <div v-if="canRemoveLicense">
+              <div>
                 <gl-button
                   v-gl-modal-directive="$options.removeLicenseModal.id"
                   category="secondary"
