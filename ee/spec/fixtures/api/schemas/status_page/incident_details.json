@@ -1,18 +1,37 @@
 {
   "type": "object",
   "allOf": [
-    { "$ref": "basic_incident.json" },
     {
-      "required": ["comments", "description"],
+      "$ref": "basic_incident.json"
+    },
+    {
+      "type": "object",
+      "required": [
+        "comments",
+        "description"
+      ],
       "properties": {
-        "type": "object",
-        "items": {
-          "required": ["note", "created_at"],
-          "properties": {
-            "note": { "type": "string" },
-            "created_at":  { "type": "string", "format": "date-time"}
-          },
-          "additionalProperties": false
+        "comments": {
+          "type": "array",
+          "items": {
+            "required": [
+              "note",
+              "created_at"
+            ],
+            "properties": {
+              "note": {
+                "type": "string"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "description": {
+          "type": "string"
         }
       }
     }

@@ -36,7 +36,7 @@ RSpec.shared_examples 'additional custom metrics query' do
 
       it 'return group data for custom metric' do
         queries_with_result = { queries: [{ query_range: 'avg(metric)', unit: 'm/s', label: 'legend', result: query_range_result }] }
-        expect(query_result).to match_schema('prometheus/additional_metrics_query_result')
+        expect(query_result.to_json).to match_schema('prometheus/additional_metrics_query_result')
 
         expect(query_result.count).to eq(1)
         expect(query_result.first[:metrics].count).to eq(1)
@@ -56,7 +56,7 @@ RSpec.shared_examples 'additional custom metrics query' do
         custom_queries_with_result = { queries: [{ query_range: 'avg(metric)', unit: 'm/s', label: 'legend', result: query_range_result }] }
         common_queries_with_result = { queries: [{ query_range: 'query_range_a', result: query_range_result }] }
 
-        expect(query_result).to match_schema('prometheus/additional_metrics_query_result')
+        expect(query_result.to_json).to match_schema('prometheus/additional_metrics_query_result')
 
         expect(query_result.count).to eq(2)
         expect(query_result).to all(satisfy { |r| r[:metrics].count == 1 })
