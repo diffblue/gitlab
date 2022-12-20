@@ -3,37 +3,106 @@
 module Audit
   class ProjectChangesAuditor < BaseChangesAuditor
     def execute
-      audit_changes(:visibility_level, as: 'visibility', model: model)
+      audit_changes(
+        :visibility_level,
+        as: 'visibility_level',
+        model: model,
+        event_type: 'project_visibility_level_updated'
+      )
       audit_changes(:path, as: 'path', model: model, event_type: 'project_path_updated')
       audit_changes(:name, as: 'name', model: model, event_type: 'project_name_updated')
-      audit_changes(:namespace_id, as: 'namespace', model: model)
-      audit_changes(:repository_size_limit, as: 'repository_size_limit', model: model)
-      audit_changes(:packages_enabled, as: 'packages_enabled', model: model)
+      audit_changes(:namespace_id, as: 'namespace', model: model, event_type: 'project_namespace_updated')
+      audit_changes(
+        :repository_size_limit,
+        as: 'repository_size_limit',
+        model: model,
+        event_type: 'project_repository_size_limit_updated'
+      )
+      audit_changes(
+        :packages_enabled,
+        as: 'packages_enabled',
+        model: model,
+        event_type: 'project_packages_enabled_updated'
+      )
 
-      audit_changes(:merge_requests_author_approval, as: 'prevent merge request approval from authors', model: model)
-      audit_changes(:merge_requests_disable_committers_approval,
-        as: 'prevent merge request approval from committers', model: model)
-      audit_changes(:reset_approvals_on_push,
-        as: 'require new approvals when new commits are added to an MR', model: model)
-      audit_changes(:disable_overriding_approvers_per_merge_request,
-        as: 'prevent users from modifying MR approval rules in merge requests', model: model)
-      audit_changes(:require_password_to_approve, as: 'require user password for approvals', model: model)
+      audit_changes(
+        :merge_requests_author_approval,
+        as: 'prevent merge request approval from authors',
+        model: model,
+        event_type: 'project_merge_requests_author_approval_updated'
+      )
+      audit_changes(
+        :merge_requests_disable_committers_approval,
+        as: 'prevent merge request approval from committers',
+        model: model,
+        event_type: 'project_merge_requests_disable_committers_approval_updated'
+      )
+      audit_changes(
+        :reset_approvals_on_push,
+        as: 'require new approvals when new commits are added to an MR',
+        model: model,
+        event_type: 'project_reset_approvals_on_push_updated'
+      )
+      audit_changes(
+        :disable_overriding_approvers_per_merge_request,
+        as: 'prevent users from modifying MR approval rules in merge requests',
+        model: model,
+        event_type: 'project_disable_overriding_approvers_per_merge_request_updated'
+      )
+      audit_changes(
+        :require_password_to_approve,
+        as: 'require user password for approvals',
+        model: model,
+        event_type: 'project_require_password_to_approve_updated'
+      )
 
       if should_audit? :merge_requests_template
-        audit_changes(:merge_requests_template, as: 'merge_requests_template', model: model)
+        audit_changes(
+          :merge_requests_template,
+          as: 'merge_requests_template',
+          model: model,
+          event_type: 'project_merge_requests_template_updated'
+        )
       end
 
-      audit_changes(:resolve_outdated_diff_discussions, as: 'resolve_outdated_diff_discussions', model: model)
-      audit_changes(:printing_merge_request_link_enabled,
-        as: 'printing_merge_request_link_enabled', model: model)
-      audit_changes(:remove_source_branch_after_merge, as: 'remove_source_branch_after_merge', model: model)
-      audit_changes(:only_allow_merge_if_pipeline_succeeds,
-        as: 'only_allow_merge_if_pipeline_succeeds', model: model)
-      audit_changes(:only_allow_merge_if_all_discussions_are_resolved,
-        as: 'only_allow_merge_if_all_discussions_are_resolved', model: model)
+      audit_changes(
+        :resolve_outdated_diff_discussions,
+        as: 'resolve_outdated_diff_discussions',
+        model: model,
+        event_type: 'project_resolve_outdated_diff_discussions_updated'
+      )
+      audit_changes(
+        :printing_merge_request_link_enabled,
+        as: 'printing_merge_request_link_enabled',
+        model: model,
+        event_type: 'project_printing_merge_request_link_enabled_updated'
+      )
+      audit_changes(
+        :remove_source_branch_after_merge,
+        as: 'remove_source_branch_after_merge',
+        model: model,
+        event_type: 'project_remove_source_branch_after_merge_updated'
+      )
+      audit_changes(
+        :only_allow_merge_if_pipeline_succeeds,
+        as: 'only_allow_merge_if_pipeline_succeeds',
+        model: model,
+        event_type: 'project_only_allow_merge_if_pipeline_succeeds_updated'
+      )
+      audit_changes(
+        :only_allow_merge_if_all_discussions_are_resolved,
+        as: 'only_allow_merge_if_all_discussions_are_resolved',
+        model: model,
+        event_type: 'project_only_allow_merge_if_all_discussions_are_resolved_updated'
+      )
 
       if should_audit?(:suggestion_commit_message)
-        audit_changes(:suggestion_commit_message, as: 'suggestion_commit_message', model: model)
+        audit_changes(
+          :suggestion_commit_message,
+          as: 'suggestion_commit_message',
+          model: model,
+          event_type: 'project_suggestion_commit_message_updated'
+        )
       end
 
       audit_merge_method

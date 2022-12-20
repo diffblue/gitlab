@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Audit::ProjectChangesAuditor do
+RSpec.describe Audit::ProjectChangesAuditor, feature_category: :audit_events do
   using RSpec::Parameterized::TableSyntax
   describe '.audit_changes' do
     let_it_be(:user) { create(:user) }
@@ -29,7 +29,54 @@ RSpec.describe Audit::ProjectChangesAuditor do
 
     before do
       project.reload
-      stub_licensed_features(extended_audit_events: true)
+      stub_licensed_features(extended_audit_events: true, external_audit_events: true)
+      group.external_audit_event_destinations.create!(destination_url: 'http://example.com')
+    end
+
+    shared_examples 'project_audit_events_from_to' do
+      it 'calls auditor' do
+        expect(Gitlab::Audit::Auditor).to receive(:audit).with(
+          {
+            name: event.to_s,
+            author: user,
+            scope: project,
+            target: project,
+            message: "Changed #{change} from #{change_from} to #{change_to}",
+            additional_details: {
+              change: change.to_s,
+              from: change_from,
+              target_details: project.full_path.to_s,
+              to: change_to
+            },
+            target_details: project.full_path.to_s
+          }
+        ).and_call_original
+
+        auditor_instance.execute
+      end
+    end
+
+    shared_examples 'project_audit_events_to' do
+      it 'calls auditor' do
+        expect(Gitlab::Audit::Auditor).to receive(:audit).with(
+          {
+            name: event.to_s,
+            author: user,
+            scope: project,
+            target: project,
+            message: "Changed #{change} to #{change_to}",
+            additional_details: {
+              change: change.to_s,
+              from: change_from,
+              target_details: project.full_path.to_s,
+              to: change_to
+            },
+            target_details: project.full_path.to_s
+          }
+        ).and_call_original
+
+        auditor_instance.execute
+      end
     end
 
     describe 'non audit changes' do
@@ -41,164 +88,158 @@ RSpec.describe Audit::ProjectChangesAuditor do
     end
 
     describe 'audit changes' do
-      it 'creates an event when the visibility change' do
-        project.update!(visibility_level: 20)
+      context 'when project visibility_level is updated' do
+        let(:change) { "visibility_level" }
+        let(:event) { "project_visibility_level_updated" }
+        let(:change_from) { "Private" }
+        let(:change_to) { "Public" }
 
-        expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
-        expect(AuditEvent.last.details[:change]).to eq 'visibility'
+        before do
+          project.update!(visibility_level: 20)
+        end
+
+        it_behaves_like 'project_audit_events_from_to'
       end
 
       context 'when project name is updated' do
-        it "logs project_name_updated event" do
-          old_project_name = project.full_name.to_s
+        let(:change) { "name" }
+        let(:event) { "project_name_updated" }
+        let(:change_from) { "group1 / interesting name" }
+        let(:change_to) { project.full_name }
 
+        before do
           project.update!(name: 'newname')
-
-          expect(Gitlab::Audit::Auditor).to receive(:audit).with(
-            {
-              name: 'project_name_updated',
-              author: user,
-              scope: project,
-              target: project,
-              message: "Changed name from #{old_project_name} to #{project.full_name}",
-              additional_details: {
-                change: "name",
-                from: old_project_name,
-                target_details: project.full_path.to_s,
-                to: project.full_name.to_s
-              },
-              target_details: project.full_path.to_s
-            }
-          ).and_call_original
-
-          auditor_instance.execute
         end
+
+        it_behaves_like 'project_audit_events_from_to'
       end
 
       context 'when project path is updated' do
-        it "logs project_path_updated event" do
+        let(:change) { "path" }
+        let(:event) { "project_path_updated" }
+        let(:change_from) { "" }
+        let(:change_to) { project.full_path }
+
+        before do
           project.update!(path: 'newpath')
-
-          expect(Gitlab::Audit::Auditor).to receive(:audit).with(
-            {
-              name: 'project_path_updated',
-              author: user,
-              scope: project,
-              target: project,
-              message: "Changed path to #{project.full_path}",
-              additional_details: {
-                change: "path",
-                from: "",
-                target_details: project.full_path.to_s,
-                to: project.full_path.to_s
-              },
-              target_details: project.full_path.to_s
-            }
-          ).and_call_original
-
-          auditor_instance.execute
         end
+
+        it_behaves_like 'project_audit_events_to'
       end
 
-      it 'creates an event when the namespace change' do
-        new_namespace = create(:namespace)
+      context 'when project namespace is updated' do
+        let(:change) { "namespace" }
+        let(:event) { "project_namespace_updated" }
+        let(:change_from) { project.old_path_with_namespace }
+        let(:change_to) { project.full_path }
 
-        project.update!(namespace: new_namespace)
+        before do
+          new_namespace = create(:namespace)
+          project.update!(namespace: new_namespace)
+        end
 
-        expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
-        expect(AuditEvent.last.details[:change]).to eq 'namespace'
+        it_behaves_like 'project_audit_events_to'
       end
 
-      it 'creates an event when the repository size limit changes' do
-        project.update!(repository_size_limit: 100)
+      context 'when project repository size limit is updated' do
+        let(:change) { "repository_size_limit" }
+        let(:event) { "project_repository_size_limit_updated" }
+        let(:change_from) { 10 }
+        let(:change_to) { 100  }
 
-        expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
-        expect(AuditEvent.last.details[:change]).to eq 'repository_size_limit'
+        before do
+          project.update!(repository_size_limit: 100)
+        end
+
+        it_behaves_like 'project_audit_events_from_to'
       end
 
-      it 'creates an event when the packages enabled setting changes' do
-        project.update!(packages_enabled: false)
+      context 'when project packages enabled setting changes is updated' do
+        it "logs project_packages_enabled_updated event" do
+          project.update!(packages_enabled: false)
 
-        expect { auditor_instance.execute }.to change(AuditEvent, :count).by(2)
-        expect(AuditEvent.last(2).map { |e| e.details[:change] })
+          expect { auditor_instance.execute }.to change(AuditEvent, :count).by(2)
+          expect(AuditEvent.last(2).map { |e| e.details[:change] })
           .to eq %w[packages_enabled package_registry_access_level]
-      end
-
-      it 'creates an event when the merge requests template changes' do
-        project.update!(merge_requests_template: 'I am a merge request template')
-
-        expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
-        expect(AuditEvent.last.details[:change]).to eq 'merge_requests_template'
-        expect(AuditEvent.last.details).to include({
-                                                     change: 'merge_requests_template',
-                                                     from: nil,
-                                                     to: 'I am a merge request template'
-                                                   })
-      end
-
-      it 'creates an event when the merge requests author approval changes' do
-        project.update!(merge_requests_author_approval: true)
-
-        aggregate_failures do
-          expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
-          expect(AuditEvent.last.details).to include(
-            change: 'prevent merge request approval from authors',
-            from: true,
-            to: false
-          )
         end
       end
 
-      it 'creates an event when the merge requests committers approval changes' do
-        project.update!(merge_requests_disable_committers_approval: false)
+      context 'when project merge_requests_template is updated' do
+        let(:change) { "merge_requests_template" }
+        let(:event) { "project_merge_requests_template_updated" }
+        let(:change_from) { nil }
+        let(:change_to) { 'I am a merge request template' }
 
-        aggregate_failures do
-          expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
-          expect(AuditEvent.last.details).to include(
-            change: 'prevent merge request approval from committers',
-            from: true,
-            to: false
-          )
+        before do
+          project.update!(merge_requests_template: 'I am a merge request template')
         end
+
+        it_behaves_like 'project_audit_events_to'
       end
 
-      it 'creates an event when the reset approvals on push changes' do
-        project.update!(reset_approvals_on_push: true)
+      context 'when project merge_requests_author_approval is updated' do
+        let(:change) { "prevent merge request approval from authors" }
+        let(:event) { "project_merge_requests_author_approval_updated" }
+        let(:change_from) { true }
+        let(:change_to) { false }
 
-        aggregate_failures do
-          expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
-          expect(AuditEvent.last.details).to include(
-            change: 'require new approvals when new commits are added to an MR',
-            from: false,
-            to: true
-          )
+        before do
+          project.update!(merge_requests_author_approval: true)
         end
+
+        it_behaves_like 'project_audit_events_from_to'
       end
 
-      it 'creates an event when the require password to approve changes' do
-        project.update!(require_password_to_approve: true)
+      context 'when project merge_requests_disable_committers_approval is updated' do
+        let(:change) { "prevent merge request approval from committers" }
+        let(:event) { "project_merge_requests_disable_committers_approval_updated" }
+        let(:change_from) { true }
+        let(:change_to) { false }
 
-        aggregate_failures do
-          expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
-          expect(AuditEvent.last.details).to include(
-            change: 'require user password for approvals',
-            from: false,
-            to: true
-          )
+        before do
+          project.update!(merge_requests_disable_committers_approval: false)
         end
+
+        it_behaves_like 'project_audit_events_from_to'
       end
 
-      it 'creates an event when the disable overriding approvers per merge request changes' do
-        project.update!(disable_overriding_approvers_per_merge_request: true)
+      context 'when project reset_approvals_on_push is updated' do
+        let(:change) { "require new approvals when new commits are added to an MR" }
+        let(:event) { "project_reset_approvals_on_push_updated" }
+        let(:change_from) { false }
+        let(:change_to) { true }
 
-        aggregate_failures do
-          expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
-          expect(AuditEvent.last.details).to include(
-            change: 'prevent users from modifying MR approval rules in merge requests',
-            from: false,
-            to: true
-          )
+        before do
+          project.update!(reset_approvals_on_push: true)
         end
+
+        it_behaves_like 'project_audit_events_from_to'
+      end
+
+      context 'when project require_password_to_approve is updated' do
+        let(:change) { "require user password for approvals" }
+        let(:event) { "project_require_password_to_approve_updated" }
+        let(:change_from) { false }
+        let(:change_to) { true }
+
+        before do
+          project.update!(require_password_to_approve: true)
+        end
+
+        it_behaves_like 'project_audit_events_from_to'
+      end
+
+      context 'when project disable_overriding_approvers_per_merge_request is updated' do
+        let(:change) { "prevent users from modifying MR approval rules in merge requests" }
+        let(:event) { "project_disable_overriding_approvers_per_merge_request_updated" }
+        let(:change_from) { false }
+        let(:change_to) { true }
+
+        before do
+          project.update!(disable_overriding_approvers_per_merge_request: true)
+        end
+
+        it_behaves_like 'project_audit_events_from_to'
       end
 
       context 'when auditable boolean column is changed' do
@@ -211,14 +252,13 @@ RSpec.describe Audit::ProjectChangesAuditor do
             false | true
           end
 
-          before do
-            project.update_attribute(column, prev_value)
-          end
-
           with_them do
-            it 'creates an audit event' do
+            before do
+              project.update_attribute(column, prev_value)
               project.update_attribute(column, new_value)
+            end
 
+            it 'creates an audit event' do
               expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
               expect(AuditEvent.last.details).to include({
                                                            change: column,
@@ -226,21 +266,28 @@ RSpec.describe Audit::ProjectChangesAuditor do
                                                            to: new_value
                                                          })
             end
+
+            it 'streams correct audit event', :aggregate_failures do
+              event_name = "project_#{column}_updated"
+              expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async)
+                .with(event_name, anything, anything)
+              subject.execute
+            end
           end
         end
       end
 
-      it 'creates an event when suggestion_commit_message change' do
-        previous_value = project.suggestion_commit_message
-        new_value = "I'm a suggested commit message"
-        project.update!(suggestion_commit_message: new_value)
+      context 'when project suggestion_commit_message is updated' do
+        let(:change) { "suggestion_commit_message" }
+        let(:event) { "project_suggestion_commit_message_updated" }
+        let(:change_from) { nil }
+        let(:change_to) { "I'm a suggested commit message" }
 
-        expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
-        expect(AuditEvent.last.details).to include({
-                                                     change: 'suggestion_commit_message',
-                                                     from: previous_value,
-                                                     to: new_value
-                                                   })
+        before do
+          project.update!(suggestion_commit_message: "I'm a suggested commit message")
+        end
+
+        it_behaves_like 'project_audit_events_to'
       end
 
       it 'does not create an event when suggestion_commit_message change from nil to empty string' do
