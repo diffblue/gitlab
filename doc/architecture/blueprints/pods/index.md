@@ -328,6 +328,7 @@ This is the list of known affected features with the proposed solutions.
 - [Pods: Global Search](pods-feature-global-search.md)
 - [Pods: CI Runners](pods-feature-ci-runners.md)
 - [Pods: Admin Area](pods-feature-admin-area.md)
+- [Pods: Secrets](pods-feature-secrets.md)
 - [Pods: Container Registry](pods-feature-container-registry.md)
 - [Pods: Contributions: Forks](pods-feature-contributions-forks.md)
 - [Pods: Personal Namespaces](pods-feature-personal-namespaces.md)
