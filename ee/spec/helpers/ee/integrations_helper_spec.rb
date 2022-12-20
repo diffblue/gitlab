@@ -97,8 +97,16 @@ RSpec.describe EE::IntegrationsHelper do
         )
       end
 
-      it 'includes the flag to upgrade Slack app' do
+      it 'includes the flag to upgrade Slack app, set to true' do
         expect(form_data[:should_upgrade_slack]).to eq 'true'
+      end
+
+      context 'when the integration includes all necessary scopes' do
+        let(:integration) { create(:gitlab_slack_application_integration, :all_features_supported, project: project) }
+
+        it 'includes the flag to upgrade Slack app, set to false' do
+          expect(form_data[:should_upgrade_slack]).to eq 'false'
+        end
       end
     end
   end

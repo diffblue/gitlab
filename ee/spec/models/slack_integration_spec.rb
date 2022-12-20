@@ -41,6 +41,31 @@ RSpec.describe SlackIntegration do
     end
   end
 
+  describe 'all_features_supported?/upgrade_needed?' do
+    subject(:slack_integration) { create(:slack_integration) }
+
+    context 'with enough scopes' do
+      before do
+        slack_integration.update!(authorized_scope_names: %w[chat:write.public chat:write commands])
+      end
+
+      it { is_expected.to be_all_features_supported }
+      it { is_expected.not_to be_upgrade_needed }
+    end
+
+    %w[chat:write.public chat:write commands].each do |scope_name|
+      context "without #{scope_name}" do
+        before do
+          scopes = %w[chat:write.public chat:write commands] - [scope_name]
+          slack_integration.update!(authorized_scope_names: scopes)
+        end
+
+        it { is_expected.not_to be_all_features_supported }
+        it { is_expected.to be_upgrade_needed }
+      end
+    end
+  end
+
   describe 'feature_available?' do
     subject(:slack_integration) { create(:slack_integration) }
 

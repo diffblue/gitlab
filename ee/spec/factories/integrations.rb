@@ -18,6 +18,10 @@ FactoryBot.define do
         integration.send("#{name}=".to_sym, "##{name}")
       end
     end
+
+    trait :all_features_supported do
+      slack_integration { association :slack_integration, :all_features_supported, integration: instance }
+    end
   end
 
   factory :github_integration, class: 'Integrations::Github' do

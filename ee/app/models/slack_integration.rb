@@ -3,6 +3,8 @@
 class SlackIntegration < ApplicationRecord
   include EachBatch
 
+  ALL_FEATURES = %i[commands notifications].freeze
+
   belongs_to :integration
 
   attr_encrypted :bot_access_token,
@@ -46,6 +48,14 @@ class SlackIntegration < ApplicationRecord
     else
       false
     end
+  end
+
+  def upgrade_needed?
+    !all_features_supported?
+  end
+
+  def all_features_supported?
+    ALL_FEATURES.all? { feature_available?(_1) } # rubocop: disable Gitlab/FeatureAvailableUsage
   end
 
   def authorized_scope_names=(names)
