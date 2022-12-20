@@ -30141,6 +30141,8 @@ CREATE UNIQUE INDEX index_namespaces_on_parent_id_and_id ON namespaces USING btr
 
 CREATE INDEX index_namespaces_on_path ON namespaces USING btree (path);
 
+CREATE INDEX index_namespaces_on_path_for_top_level_non_projects ON namespaces USING btree (lower((path)::text)) WHERE ((parent_id IS NULL) AND ((type)::text <> 'Project'::text));
+
 CREATE INDEX index_namespaces_on_path_trigram ON namespaces USING gin (path gin_trgm_ops);
 
 CREATE UNIQUE INDEX index_namespaces_on_push_rule_id ON namespaces USING btree (push_rule_id);
