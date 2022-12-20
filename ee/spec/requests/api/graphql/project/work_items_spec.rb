@@ -99,7 +99,7 @@ RSpec.describe 'getting a work item list for a project', feature_category: :team
     end
 
     describe 'fetching work item notes widget' do
-      let(:work_item) { create(:work_item, project: project) }
+      let(:work_item) { create(:work_item, :issue, project: project) }
       let(:item_filter_params) { { iid: work_item.iid.to_s } }
       let(:fields) do
         <<~GRAPHQL
@@ -125,6 +125,131 @@ RSpec.describe 'getting a work item list for a project', feature_category: :team
         post_graphql(query, current_user: current_user)
 
         expect_graphql_errors_to_be_empty
+      end
+
+      context 'when fetching description version diffs' do
+        shared_examples 'description change diff' do |description_diffs_enabled: true|
+          it 'returns previous description change diff' do
+            post_graphql(query, current_user: current_user)
+
+            # check that system note is added
+            note = find_note(work_item, 'changed the description') # system note about changed description
+            expect(work_item.reload.description).to eq('updated description')
+            expect(note.note).to eq('changed the description')
+
+            # check that diff is returned
+            all_widgets = graphql_dig_at(items_data, :node, :widgets)
+            notes_widget = all_widgets.find { |x| x["type"] == "NOTES" }
+
+            system_notes = graphql_dig_at(notes_widget["system"], :nodes)
+            description_changed_note = graphql_dig_at(system_notes.first["notes"], :nodes).first
+            description_version = graphql_dig_at(description_changed_note['systemNoteMetadata'], :descriptionVersion)
+
+            id = GitlabSchema.parse_gid(description_version['id'], expected_type: ::DescriptionVersion).model_id
+            diff = description_version['diff']
+            diff_path = description_version['diffPath']
+            delete_path = description_version['deletePath']
+            can_delete = description_version['canDelete']
+            deleted = description_version['deleted']
+
+            url_helpers = ::Gitlab::Routing.url_helpers
+            url_args = [work_item.project, work_item, id]
+
+            if description_diffs_enabled
+              expect(diff).to eq("<span class=\"idiff addition\">updated description</span>")
+              expect(diff_path).to eq(url_helpers.description_diff_project_issue_path(*url_args))
+              expect(delete_path).to eq(url_helpers.delete_description_version_project_issue_path(*url_args))
+              expect(can_delete).to be true
+            else
+              expect(diff).to be_nil
+              expect(diff_path).to be_nil
+              expect(delete_path).to be_nil
+              expect(can_delete).to be_nil
+            end
+
+            expect(deleted).to be false
+          end
+        end
+
+        let(:fields) do
+          <<~GRAPHQL
+            edges {
+              node {
+                widgets {
+                  type
+                  ... on WorkItemWidgetNotes {
+                    system: discussions(filter: ONLY_ACTIVITY, first: 10) {
+                      nodes {
+                        id
+                        notes {
+                          nodes {
+                            id
+                            system
+                            internal
+                            body
+                            systemNoteMetadata {
+                              id
+                              descriptionVersion {
+                                id
+                                diff(versionId: #{version_gid})
+                                diffPath
+                                deletePath
+                                canDelete
+                                deleted
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          GRAPHQL
+        end
+
+        let(:version_gid) { "null" }
+        let(:opts) { {} }
+        let(:spam_params) { {} }
+        let(:widget_params) { { description_widget: { description: "updated description" } } }
+
+        let(:service) do
+          WorkItems::UpdateService.new(
+            project: project,
+            current_user: current_user,
+            params: opts,
+            spam_params: spam_params,
+            widget_params: widget_params
+          )
+        end
+
+        before do
+          project.add_developer(current_user)
+          service.execute(work_item)
+        end
+
+        it_behaves_like 'description change diff'
+
+        context 'with passed description version id' do
+          let(:version_gid) { "\"#{work_item.description_versions.first.to_global_id}\"" }
+
+          it_behaves_like 'description change diff'
+        end
+
+        context 'with description_diffs disabled' do
+          before do
+            stub_licensed_features(description_diffs: false)
+          end
+
+          it_behaves_like 'description change diff', description_diffs_enabled: false
+        end
+      end
+    end
+
+    def find_note(work_item, starting_with)
+      work_item.notes.find do |note|
+        break note if note && note.note.start_with?(starting_with)
       end
     end
 
