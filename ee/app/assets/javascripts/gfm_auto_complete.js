@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import '~/lib/utils/jquery_at_who';
-import GfmAutoComplete, { showAndHideHelper } from '~/gfm_auto_complete';
+import GfmAutoComplete, { showAndHideHelper, escape } from '~/gfm_auto_complete';
 
 /**
  * This is added to keep the export parity with the CE counterpart.
@@ -9,6 +9,7 @@ import GfmAutoComplete, { showAndHideHelper } from '~/gfm_auto_complete';
  * which will be undefined if not exported from here in EE.
  */
 export {
+  escape,
   defaultAutocompleteConfig,
   membersBeforeSave,
   highlighter,
@@ -18,12 +19,23 @@ export {
 } from '~/gfm_auto_complete';
 
 const EPICS_ALIAS = 'epics';
+const ITERATIONS_ALIAS = 'iterations';
 const VULNERABILITIES_ALIAS = 'vulnerabilities';
+
+GfmAutoComplete.Iterations = {
+  templateFunction({ id, title }) {
+    return `<li><small>*iteration:${id}</small> ${escape(title)}</li>`;
+  },
+};
 
 class GfmAutoCompleteEE extends GfmAutoComplete {
   setupAtWho($input) {
     if (this.enableMap.epics) {
       this.setupAutoCompleteEpics($input, this.getDefaultCallbacks());
+    }
+
+    if (this.enableMap.iterations) {
+      this.setupAutoCompleteIterations($input, this.getDefaultCallbacks());
     }
 
     if (this.enableMap.vulnerabilities) {
@@ -67,6 +79,43 @@ class GfmAutoCompleteEE extends GfmAutoComplete {
       },
     });
     showAndHideHelper($input, EPICS_ALIAS);
+  };
+
+  // eslint-disable-next-line class-methods-use-this
+  setupAutoCompleteIterations = ($input, defaultCallbacks) => {
+    $input.atwho({
+      at: '*iteration:',
+      alias: ITERATIONS_ALIAS,
+      searchKey: 'search',
+      displayTpl(value) {
+        let tmpl = GfmAutoComplete.Loading.template;
+        if (value.id != null) {
+          tmpl = GfmAutoComplete.Iterations.templateFunction(value);
+        }
+        return tmpl;
+      },
+      data: GfmAutoComplete.defaultLoadingData,
+      // eslint-disable-next-line no-template-curly-in-string
+      insertTpl: '${atwho-at}${id}',
+      skipSpecialCharacterTest: true,
+      callbacks: {
+        ...defaultCallbacks,
+        beforeSave(merges) {
+          return $.map(merges, (m) => {
+            if (m.id == null) {
+              return m;
+            }
+
+            return {
+              id: m.id,
+              title: m.title,
+              search: `${m.id} ${m.title}`,
+            };
+          });
+        },
+      },
+    });
+    showAndHideHelper($input, ITERATIONS_ALIAS);
   };
 
   // eslint-disable-next-line class-methods-use-this
