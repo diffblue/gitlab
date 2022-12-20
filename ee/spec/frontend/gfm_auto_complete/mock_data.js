@@ -41,4 +41,11 @@ export const eventlistenersMockDefaultMap = [
   },
 ];
 
+export const iterationsMock = [
+  {
+    id: 1,
+    title: 'Foobar iteration',
+  },
+];
+
 export { crmContactsMock } from '../../../../spec/frontend/gfm_auto_complete/mock_data';
