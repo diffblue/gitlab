@@ -16,6 +16,12 @@ module EE
       end
       # rubocop: enable CodeReuse/ActiveRecord
 
+      def iterations
+        finder_params = { parent: group, include_ancestors: true, state: 'opened' }
+
+        IterationsFinder.new(current_user, finder_params).execute
+      end
+
       def vulnerabilities
         ::Autocomplete::VulnerabilitiesAutocompleteFinder
           .new(current_user, group, params)

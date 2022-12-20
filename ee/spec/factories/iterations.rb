@@ -32,6 +32,8 @@ FactoryBot.define do
 
     trait :closed do
       state_enum { Iteration::STATE_ENUM_MAP[:closed] }
+      start_date { 1.week.ago }
+      due_date   { 1.week.ago + 4.days }
     end
 
     trait(:skip_future_date_validation) do

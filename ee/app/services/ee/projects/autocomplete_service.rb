@@ -10,6 +10,12 @@ module EE
           .select(:iid, :title, :group_id)
       end
 
+      def iterations
+        finder_params = { parent: project.group, include_ancestors: true, state: 'opened' }
+
+        IterationsFinder.new(current_user, finder_params).execute
+      end
+
       def vulnerabilities
         ::Autocomplete::VulnerabilitiesAutocompleteFinder
           .new(current_user, project, params)

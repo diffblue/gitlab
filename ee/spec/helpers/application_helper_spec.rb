@@ -232,7 +232,7 @@ RSpec.describe ApplicationHelper do
     end
   end
 
-  describe '#autocomplete_data_sources' do
+  describe '#autocomplete_data_sources', feature_category: :project_management do
     def expect_autocomplete_data_sources(object, noteable_type, source_keys)
       sources = helper.autocomplete_data_sources(object, noteable_type)
       expect(sources.keys).to match_array(source_keys)
@@ -242,47 +242,59 @@ RSpec.describe ApplicationHelper do
     end
 
     context 'group' do
+      let(:autocomplete_data_sources) { [:members, :issues, :mergeRequests, :labels, :commands, :milestones, :epics] }
       let(:object) { create(:group) }
       let(:noteable_type) { Epic }
 
-      it 'returns paths for autocomplete_sources_controller', :aggregate_failures do
-        expect_autocomplete_data_sources(object, noteable_type, [:members, :issues, :mergeRequests, :labels, :epics, :commands, :milestones])
-      end
-
-      context 'when vulnerabilities are enabled' do
+      context 'when licensed features are disabled' do
         before do
-          stub_licensed_features(security_dashboard: true)
+          stub_licensed_features(security_dashboard: false, iterations: false)
         end
 
-        it 'returns paths for autocomplete_sources_controller with vulnerabilities', :aggregate_failures do
-          expect_autocomplete_data_sources(object, noteable_type, [:members, :issues, :mergeRequests, :labels, :epics, :vulnerabilities, :commands, :milestones])
+        it 'returns paths for autocomplete_sources_controller', :aggregate_failures do
+          expect_autocomplete_data_sources(object, noteable_type, autocomplete_data_sources)
+        end
+      end
+
+      context 'when licensed features are enabled' do
+        before do
+          stub_licensed_features(security_dashboard: true, iterations: true)
+        end
+
+        it 'returns paths for autocomplete_sources_controller including iterations and vulnerabilities', :aggregate_failures do
+          expect_autocomplete_data_sources(object, noteable_type, autocomplete_data_sources + [:iterations, :vulnerabilities])
         end
       end
     end
 
     context 'project' do
+      let(:autocomplete_data_sources) { [:members, :issues, :mergeRequests, :labels, :commands, :milestones, :snippets, :contacts] }
       let(:object) { create(:project) }
       let(:noteable_type) { Issue }
 
-      context 'when epics and vulnerabilities are enabled' do
+      context 'when licensed features are enabled' do
         before do
-          stub_licensed_features(epics: true, security_dashboard: true)
+          stub_licensed_features(epics: true, security_dashboard: true, iterations: true)
         end
 
         it 'returns paths for autocomplete_sources_controller for personal projects' do
-          expect_autocomplete_data_sources(object, noteable_type, [:members, :issues, :mergeRequests, :labels, :milestones, :commands, :snippets, :vulnerabilities, :contacts])
+          expect_autocomplete_data_sources(object, noteable_type, autocomplete_data_sources + [:vulnerabilities])
         end
 
-        it 'returns paths for autocomplete_sources_controller including epics and vulnerabilities for group projects' do
+        it 'returns paths for autocomplete_sources_controller including epics, iterations and vulnerabilities for group projects' do
           object.update!(group: create(:group))
 
-          expect_autocomplete_data_sources(object, noteable_type, [:members, :issues, :mergeRequests, :labels, :milestones, :commands, :snippets, :epics, :vulnerabilities, :contacts])
+          expect_autocomplete_data_sources(object, noteable_type, autocomplete_data_sources + [:epics, :iterations, :vulnerabilities])
         end
       end
 
-      context 'when epics and vulnerabilities are disabled' do
+      context 'when licensed features are disabled' do
+        before do
+          stub_licensed_features(epics: false, security_dashboard: false, iterations: false)
+        end
+
         it 'returns paths for autocomplete_sources_controller' do
-          expect_autocomplete_data_sources(object, noteable_type, [:members, :issues, :mergeRequests, :labels, :milestones, :commands, :snippets, :contacts])
+          expect_autocomplete_data_sources(object, noteable_type, autocomplete_data_sources)
         end
       end
     end

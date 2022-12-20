@@ -36,4 +36,32 @@ RSpec.describe Projects::AutocompleteService do
       expect(result).to contain_exactly(epic.slice(expected_attributes))
     end
   end
+
+  describe '#iterations', feature_category: :project_management do
+    let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+    let_it_be(:open_iteration) { create(:iteration, iterations_cadence: cadence) }
+    let_it_be(:closed_iteration) { create(:iteration, :closed, iterations_cadence: cadence) }
+    let_it_be(:other_iteration) do
+      other_group = create(:group, :private)
+      create(:iteration, iterations_cadence: create(:iterations_cadence, group: other_group))
+    end
+
+    subject { described_class.new(project, user).iterations }
+
+    context 'when the iterations feature is unavailable' do
+      before do
+        stub_licensed_features(iterations: false)
+      end
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'when the iterations feature is available' do
+      before do
+        stub_licensed_features(iterations: true)
+      end
+
+      it { is_expected.to contain_exactly(open_iteration) }
+    end
+  end
 end

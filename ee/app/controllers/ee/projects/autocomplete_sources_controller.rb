@@ -7,7 +7,8 @@ module EE
 
       prepended do
         feature_category :portfolio_management, [:epics]
-        urgency :medium, [:epics]
+        feature_category :team_planning, [:iterations]
+        urgency :medium, [:epics, :iterations]
         feature_category :vulnerability_management, [:vulnerabilities]
         urgency :low, [:vulnerabilities]
       end
@@ -21,6 +22,12 @@ module EE
         )
       end
 
+      def iterations
+        return render_404 unless project.group.licensed_feature_available?(:iterations)
+
+        render json: iteration_serializer.represent(autocomplete_service.iterations)
+      end
+
       def vulnerabilities
         return render_404 unless project.feature_available?(:security_dashboard)
 
@@ -28,6 +35,10 @@ module EE
       end
 
       private
+
+      def iteration_serializer
+        ::Autocomplete::IterationSerializer.new
+      end
 
       def issuable_serializer
         GroupIssuableAutocompleteSerializer.new
