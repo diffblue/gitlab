@@ -842,12 +842,14 @@ GitLab signs the request with the provided private key. GitLab includes the conf
 
 ## Password generation for users created through SAML
 
-The [Generated passwords for users created through integrated authentication](../security/passwords_for_integrated_authentication_methods.md) guide provides an overview of how GitLab generates and sets passwords for users created via SAML.
+GitLab [generates and sets passwords for users created through SAML](../security/passwords_for_integrated_authentication_methods.md).
 
-Users authenticated with SSO or SAML must not use a password for Git operations over HTTPS. These users can do one of the following instead:
+Users authenticated with SSO or SAML must not use a password for Git operations
+over HTTPS. These users can instead:
 
 - Set up a [personal access token](../user/profile/personal_access_tokens.md).
-- Use the [Git Credential Manager](../user/profile/account/two_factor_authentication.md#git-credential-manager) which securely authenticates using OAuth.
+- Use the [Git Credential Manager](../user/profile/account/two_factor_authentication.md#git-credential-manager)
+  which securely authenticates using OAuth.
 
 ## Link SAML identity for an existing user
 
