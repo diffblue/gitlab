@@ -60,7 +60,10 @@ export default {
 <template>
   <gl-drawer :header-height="drawerOffsetTop" :open="showDrawer" @close="closeDrawer">
     <template #title>
-      <h2 class="gl-font-size-h2 gl-line-height-24" data-testid="category-drawer-title">
+      <h2
+        class="gl-font-size-h2 gl-mt-0 gl-mb-0 gl-line-height-24"
+        data-testid="category-drawer-title"
+      >
         {{ $options.i18n.title }}
       </h2>
     </template>
