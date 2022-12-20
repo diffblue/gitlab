@@ -265,10 +265,10 @@ RSpec.describe Projects::UpdateService, '#execute' do
         let(:attributes) do
           audit_event_params.tap do |param|
             param[:details].merge!(
-              change: 'visibility',
+              change: 'visibility_level',
               from: 'Private',
               to: 'Internal',
-              custom_message: "Changed visibility from Private to Internal"
+              custom_message: "Changed visibility_level from Private to Internal"
             )
           end
         end
