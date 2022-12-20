@@ -117,6 +117,15 @@ export const ADD_STREAM_EDITOR_I18N = {
   SAVE_BUTTON_NAME: s__('AuditStreams|Save external stream destination'),
   CANCEL_BUTTON_TEXT: __('Cancel'),
   CANCEL_BUTTON_NAME: s__('AuditStreams|Cancel editing'),
+  HEADER_FILTERING: s__('AuditStreams|Event filtering (optional)'),
+  SUBHEADER_FILTERING: s__('AuditStreams|Defines which streaming events are captured'),
+  SUBHEADER_EMPTY_FILTERING: s__(
+    'AuditStreams|No filters available. %{linkStart}How do I add a filter?%{linkEnd}',
+  ),
+  SUBHEADER_EMPTY_FILTERING_LINK: helpPagePath('administration/audit_event_streaming', {
+    anchor: 'use-the-api-to-add-an-event-type-filter',
+  }),
+  HEADER_FILTERING_ITEM: __('Show filters'),
 };
 
 export const AUDIT_STREAMS_EMPTY_STATE_I18N = {
@@ -140,6 +149,11 @@ export const AUDIT_STREAMS_NETWORK_ERRORS = {
   DELETING_ERROR: s__(
     'AuditStreams|An error occurred when deleting external audit event stream destination. Please try it again.',
   ),
+};
+
+export const AUDIT_STREAMS_FILTERING = {
+  SELECT_ALL: __('Select all'),
+  UNSELECT_ALL: __('Unselect all'),
 };
 
 export const MAX_HEADERS = 20;

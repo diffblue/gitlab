@@ -1,15 +1,18 @@
 <script>
 import {
+  GlAccordion,
+  GlAccordionItem,
   GlAlert,
   GlButton,
   GlForm,
   GlFormCheckbox,
   GlFormGroup,
   GlFormInput,
+  GlLink,
   GlSprintf,
   GlTableLite,
 } from '@gitlab/ui';
-import { isEmpty } from 'lodash';
+import { isEmpty, isEqual } from 'lodash';
 import * as Sentry from '@sentry/browser';
 import { GlTooltipDirective as GlTooltip } from '@gitlab/ui/dist/directives/tooltip';
 import { thWidthPercent } from '~/lib/utils/table_utility';
@@ -17,6 +20,8 @@ import externalAuditEventDestinationCreate from '../../graphql/create_external_d
 import externalAuditEventDestinationHeaderCreate from '../../graphql/create_external_destination_header.mutation.graphql';
 import externalAuditEventDestinationHeaderUpdate from '../../graphql/update_external_destination_header.mutation.graphql';
 import externalAuditEventDestinationHeaderDelete from '../../graphql/delete_external_destination_header.mutation.graphql';
+import deleteExternalDestinationFilters from '../../graphql/delete_external_destination_filters.mutation.graphql';
+import updateExternalDestinationFilters from '../../graphql/update_external_destination_filters.mutation.graphql';
 import {
   ADD_STREAM_EDITOR_I18N,
   AUDIT_STREAMS_NETWORK_ERRORS,
@@ -24,6 +29,7 @@ import {
 } from '../../constants';
 import deleteExternalDestination from '../../graphql/delete_external_destination.mutation.graphql';
 import { mapAllMutationErrors, mapItemHeadersToFormData } from '../../utils';
+import StreamFilters from './stream_filters.vue';
 
 const { CREATING_ERROR, UPDATING_ERROR } = AUDIT_STREAMS_NETWORK_ERRORS;
 
@@ -32,14 +38,18 @@ const tdClasses = `gl-p-3!`;
 
 export default {
   components: {
+    GlAccordion,
+    GlAccordionItem,
     GlAlert,
     GlButton,
     GlForm,
     GlFormCheckbox,
     GlFormGroup,
     GlFormInput,
+    GlLink,
     GlSprintf,
     GlTableLite,
+    StreamFilters,
   },
   directives: {
     GlTooltip,
@@ -51,6 +61,11 @@ export default {
       required: false,
       default: () => ({}),
     },
+    groupEventFilters: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -58,6 +73,7 @@ export default {
       errors: [],
       loading: false,
       headers: [createBlankHeader()],
+      filters: [],
     };
   },
   computed: {
@@ -90,6 +106,9 @@ export default {
         ? ADD_STREAM_EDITOR_I18N.SAVE_BUTTON_TEXT
         : ADD_STREAM_EDITOR_I18N.ADD_BUTTON_TEXT;
     },
+    itemFilters() {
+      return this.item?.eventTypeFilters || [];
+    },
   },
   mounted() {
     const existingHeaders = mapItemHeadersToFormData(this.item);
@@ -101,6 +120,8 @@ export default {
     this.headers = existingHeaders;
 
     this.destinationUrl = this.item.destinationUrl;
+
+    this.filters = this.item.eventTypeFilters;
   },
   methods: {
     clearError(index) {
@@ -196,6 +217,30 @@ export default {
     findHeadersToAdd(existingHeaders, changedHeaders) {
       return changedHeaders.filter((header) => header.id === null && this.isHeaderFilled(header));
     },
+    async removeDestinationFilters(destinationId, filters) {
+      const { data } = await this.$apollo.mutate({
+        mutation: deleteExternalDestinationFilters,
+        variables: {
+          destinationId,
+          eventTypeFilters: filters,
+        },
+      });
+      const error = data?.deleteExternalDestinationFilters?.errors || [];
+
+      return error;
+    },
+    async addDestinationFilters(destinationId, filters) {
+      const { data } = await this.$apollo.mutate({
+        mutation: updateExternalDestinationFilters,
+        variables: {
+          destinationId,
+          eventTypeFilters: filters,
+        },
+      });
+      const error = data?.updateExternalDestinationFilters?.errors || [];
+
+      return error;
+    },
     async addDestination() {
       let destinationId = null;
 
@@ -213,6 +258,14 @@ export default {
           if (errors.length > 0) {
             await this.deleteCreatedDestination(destinationId);
           }
+        }
+
+        if (this.filters?.length > 0 && destinationId) {
+          const addDestinationFiltersErrors = await this.addDestinationFilters(
+            destinationId,
+            this.filters,
+          );
+          errors.push(...addDestinationFiltersErrors);
         }
 
         if (errors.length > 0) {
@@ -255,6 +308,25 @@ export default {
         const headersToAdd = this.findHeadersToAdd(existingHeaders, changedHeaders);
 
         errors.push(...(await this.addDestinationHeaders(this.item.id, headersToAdd)));
+
+        if (!isEqual(this.item.eventTypeFilters, this.filters)) {
+          const removeFilters = this.item.eventTypeFilters.filter((f) => !this.filters.includes(f));
+          const addFilters = this.filters.filter((f) => !this.item.eventTypeFilters.includes(f));
+          if (removeFilters?.length) {
+            const removeDestinationFiltersErrors = await this.removeDestinationFilters(
+              this.item.id,
+              removeFilters,
+            );
+            errors.push(...removeDestinationFiltersErrors);
+          }
+          if (addFilters?.length) {
+            const addDestinationFiltersErrors = await this.addDestinationFilters(
+              this.item.id,
+              addFilters,
+            );
+            errors.push(...addDestinationFiltersErrors);
+          }
+        }
 
         if (errors.length > 0) {
           this.errors.push(...errors);
@@ -313,6 +385,9 @@ export default {
       if (headersCount === 0) {
         this.addBlankHeader({ deletionDisabled: true });
       }
+    },
+    updateEventTypeFilters(newFilters) {
+      this.filters = newFilters;
     },
   },
   i18n: { ...ADD_STREAM_EDITOR_I18N, CREATING_ERROR },
@@ -466,6 +541,37 @@ export default {
         >
           {{ $options.i18n.ADD_HEADER_ROW_BUTTON_TEXT }}
         </gl-button>
+      </div>
+
+      <div class="gl-mb-5">
+        <strong class="gl-display-block gl-mb-3" data-testid="filtering-header">{{
+          $options.i18n.HEADER_FILTERING
+        }}</strong>
+
+        <gl-accordion :header-level="1">
+          <gl-accordion-item :title="$options.i18n.HEADER_FILTERING_ITEM">
+            <div v-if="groupEventFilters.length">
+              <p data-testid="filtering-subheader">{{ $options.i18n.SUBHEADER_FILTERING }}</p>
+              <stream-filters
+                :filter-options="groupEventFilters"
+                :filter-selected="itemFilters"
+                @updateFilters="updateEventTypeFilters"
+              />
+            </div>
+            <div v-else>
+              <gl-sprintf :message="$options.i18n.SUBHEADER_EMPTY_FILTERING">
+                <template #link="{ content }">
+                  <gl-link
+                    :href="$options.i18n.SUBHEADER_EMPTY_FILTERING_LINK"
+                    target="_blank"
+                    class="gl-text-blue-500!"
+                    >{{ content }}</gl-link
+                  >
+                </template>
+              </gl-sprintf>
+            </div>
+          </gl-accordion-item>
+        </gl-accordion>
       </div>
 
       <div class="gl-display-flex">

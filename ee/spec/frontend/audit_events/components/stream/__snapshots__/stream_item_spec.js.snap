@@ -38,6 +38,7 @@ exports[`StreamItem editing should render correctly 1`] = `
     class="gl-p-4"
   >
     <stream-destination-editor-stub
+      groupeventfilters="repository_download_operation,update_merge_approval_rule,create_merge_approval_rule"
       item="[object Object]"
     />
   </div>

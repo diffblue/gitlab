@@ -1,6 +1,13 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlButton, GlFormCheckbox, GlForm, GlTableLite } from '@gitlab/ui';
+import {
+  GlAccordion,
+  GlAccordionItem,
+  GlButton,
+  GlFormCheckbox,
+  GlForm,
+  GlTableLite,
+} from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { sprintf } from '~/locale';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -15,7 +22,10 @@ import externalAuditEventDestinationHeaderCreate from 'ee/audit_events/graphql/c
 import externalAuditEventDestinationHeaderUpdate from 'ee/audit_events/graphql/update_external_destination_header.mutation.graphql';
 import externalAuditEventDestinationHeaderDelete from 'ee/audit_events/graphql/delete_external_destination_header.mutation.graphql';
 import deleteExternalDestination from 'ee/audit_events/graphql/delete_external_destination.mutation.graphql';
+import deleteExternalDestinationFilters from 'ee/audit_events/graphql/delete_external_destination_filters.mutation.graphql';
+import updateExternalDestinationFilters from 'ee/audit_events/graphql/update_external_destination_filters.mutation.graphql';
 import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';
+import StreamFilters from 'ee/audit_events/components/stream/stream_filters.vue';
 import { AUDIT_STREAMS_NETWORK_ERRORS, ADD_STREAM_EDITOR_I18N } from 'ee/audit_events/constants';
 import {
   destinationCreateMutationPopulator,
@@ -26,6 +36,13 @@ import {
   groupPath,
   mockExternalDestinations,
   mockExternalDestinationHeader,
+  destinationFilterRemoveMutationPopulator,
+  destinationFilterUpdateMutationPopulator,
+  mockFiltersOptions,
+  mockRemoveFilterSelect,
+  mockRemoveFilterRemaining,
+  mockAddFilterSelect,
+  mockAddFilterRemaining,
 } from '../../mock_data';
 
 Vue.use(VueApollo);
@@ -37,7 +54,7 @@ describe('StreamDestinationEditor', () => {
 
   const createComponent = (
     mountFn = shallowMountExtended,
-    propsData = {},
+    props = {},
     apolloHandlers = [
       [
         externalAuditEventDestinationCreate,
@@ -51,7 +68,10 @@ describe('StreamDestinationEditor', () => {
         groupPath,
         maxHeaders,
       },
-      propsData,
+      propsData: {
+        groupEventFilters: mockFiltersOptions,
+        ...props,
+      },
       apolloProvider: mockApollo,
     });
   };
@@ -67,6 +87,12 @@ describe('StreamDestinationEditor', () => {
 
   const findDestinationUrlFormGroup = () => wrapper.findByTestId('destination-url-form-group');
   const findDestinationUrl = () => wrapper.findByTestId('destination-url');
+
+  const findFilteringHeader = () => wrapper.findByTestId('filtering-header');
+  const findFilteringSubheader = () => wrapper.findByTestId('filtering-subheader');
+  const findAccordion = () => wrapper.findComponent(GlAccordion);
+  const findAllAccordionItems = () => wrapper.findAllComponents(GlAccordionItem);
+  const findFilters = () => wrapper.findComponent(StreamFilters);
 
   const findHeadersRows = () => findHeadersTable().find('tbody').findAll('tr');
   const findHeadersHeaderCell = (tdIdx) =>
@@ -524,6 +550,114 @@ describe('StreamDestinationEditor', () => {
         ]);
 
         await setupUpdatedHeaders(updatedHeader, addedHeader);
+
+        expect(findAlertErrors()).toHaveLength(1);
+        expect(findAlertErrors().at(0).text()).toBe(AUDIT_STREAMS_NETWORK_ERRORS.UPDATING_ERROR);
+        expect(sentryCaptureExceptionSpy).toHaveBeenCalledWith(sentryError);
+        expect(wrapper.emitted('error')).toBeDefined();
+        expect(wrapper.emitted('updated')).toBeUndefined();
+      });
+    });
+  });
+
+  describe('destination event filters', () => {
+    describe('renders', () => {
+      beforeEach(() => {
+        createComponent(mountExtended, { item: mockExternalDestinations[1] });
+      });
+
+      it('displays the correct text', () => {
+        expect(findFilteringHeader().text()).toBe(ADD_STREAM_EDITOR_I18N.HEADER_FILTERING);
+        expect(findFilteringSubheader().text()).toBe(ADD_STREAM_EDITOR_I18N.SUBHEADER_FILTERING);
+      });
+
+      it('shows an accordion containing a list of event filters', () => {
+        expect(findAccordion().exists()).toBe(true);
+        expect(findAllAccordionItems()).toHaveLength(1);
+        expect(findFilters().props()).toStrictEqual({
+          filterOptions: mockFiltersOptions,
+          filterSelected: mockExternalDestinations[1].eventTypeFilters,
+        });
+      });
+
+      it('shows an empty state for a list of event filters when no options are available', () => {
+        createComponent(mountExtended, {
+          item: mockExternalDestinations[0],
+          groupEventFilters: [],
+        });
+
+        expect(findAccordion().text()).toContain(
+          sprintf(ADD_STREAM_EDITOR_I18N.SUBHEADER_EMPTY_FILTERING, {
+            linkStart: '',
+            linkEnd: '',
+          }),
+        );
+        expect(findFilters().exists()).toBe(false);
+      });
+    });
+
+    describe('on change filters', () => {
+      it('removes the deselected filters from a destination', async () => {
+        const filterRemoveSpy = jest
+          .fn()
+          .mockResolvedValue(destinationFilterRemoveMutationPopulator());
+
+        createComponent(mountExtended, { item: mockExternalDestinations[1] }, [
+          [deleteExternalDestinationFilters, filterRemoveSpy],
+        ]);
+
+        findFilters().vm.$emit('updateFilters', mockRemoveFilterSelect);
+
+        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+        await waitForPromises();
+
+        expect(filterRemoveSpy).toHaveBeenCalledWith({
+          destinationId: mockExternalDestinations[1].id,
+          eventTypeFilters: mockRemoveFilterRemaining,
+        });
+
+        expect(findAlertErrors()).toHaveLength(0);
+        expect(wrapper.emitted('error')).toBeUndefined();
+        expect(wrapper.emitted('updated')).toBeDefined();
+      });
+
+      it('adds the selected filters for a destination', async () => {
+        const filterAddSpy = jest
+          .fn()
+          .mockResolvedValue(destinationFilterUpdateMutationPopulator());
+
+        createComponent(mountExtended, { item: mockExternalDestinations[1] }, [
+          [updateExternalDestinationFilters, filterAddSpy],
+        ]);
+
+        findFilters().vm.$emit('updateFilters', mockAddFilterSelect);
+
+        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+        await waitForPromises();
+
+        expect(filterAddSpy).toHaveBeenCalledWith({
+          destinationId: mockExternalDestinations[1].id,
+          eventTypeFilters: mockAddFilterRemaining,
+        });
+
+        expect(findAlertErrors()).toHaveLength(0);
+        expect(wrapper.emitted('error')).toBeUndefined();
+        expect(wrapper.emitted('updated')).toBeDefined();
+      });
+
+      it('should not emit updated event and reports error when network error occurs while saving', async () => {
+        const sentryError = new Error('Network error');
+        const sentryCaptureExceptionSpy = jest.spyOn(Sentry, 'captureException');
+        const filterRemoveSpy = jest.fn().mockRejectedValue(sentryError);
+
+        createComponent(mountExtended, { item: mockExternalDestinations[1] }, [
+          [deleteExternalDestinationFilters, filterRemoveSpy],
+        ]);
+
+        findFilters().vm.$emit('updateFilters', mockRemoveFilterSelect);
+
+        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+        await waitForPromises();
 
         expect(findAlertErrors()).toHaveLength(1);
         expect(findAlertErrors().at(0).text()).toBe(AUDIT_STREAMS_NETWORK_ERRORS.UPDATING_ERROR);
