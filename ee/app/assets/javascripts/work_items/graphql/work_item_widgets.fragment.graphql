@@ -104,4 +104,8 @@ fragment WorkItemWidgets on WorkItemWidget {
   ... on WorkItemWidgetNotes {
     type
   }
+  ... on WorkItemWidgetHealthStatus {
+    type
+    healthStatus
+  }
 }
