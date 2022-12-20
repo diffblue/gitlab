@@ -222,37 +222,37 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
       stub_licensed_features(okrs: true)
     end
 
+    shared_examples 'redirects to show work item page' do
+      context 'when use_iid_in_work_items_path feature flag is disabled' do
+        before do
+          stub_feature_flags(use_iid_in_work_items_path: false)
+        end
+
+        it 'redirects to work item page' do
+          make_request
+
+          expect(response).to redirect_to(project_work_items_path(project, work_item.id, query))
+        end
+      end
+
+      it 'redirects to work item page using iid' do
+        make_request
+
+        expect(response).to redirect_to(project_work_items_path(project, work_item.iid, query.merge(iid_path: true)))
+      end
+    end
+
     context 'when issue is of type objective' do
       let(:query) { {} }
 
-      let_it_be(:objective) { create(:issue, :objective, project: project) }
-
-      shared_examples 'redirects to show work item page' do
-        context 'when use_iid_in_work_items_path feature flag is disabled' do
-          before do
-            stub_feature_flags(use_iid_in_work_items_path: false)
-          end
-
-          it 'redirects to work item page' do
-            make_request
-
-            expect(response).to redirect_to(project_work_items_path(project, objective.id, query))
-          end
-        end
-
-        it 'redirects to work item page using iid' do
-          make_request
-
-          expect(response).to redirect_to(project_work_items_path(project, objective.iid, query.merge(iid_path: true)))
-        end
-      end
+      let_it_be(:work_item) { create(:issue, :objective, project: project) }
 
       context 'show action' do
         let(:query) { { query: 'any' } }
 
         it_behaves_like 'redirects to show work item page' do
           subject(:make_request) do
-            get :show, params: { namespace_id: project.namespace, project_id: project, id: objective.iid, **query }
+            get :show, params: { namespace_id: project.namespace, project_id: project, id: work_item.iid, **query }
           end
         end
       end
@@ -262,7 +262,7 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
 
         it_behaves_like 'redirects to show work item page' do
           subject(:make_request) do
-            get :edit, params: { namespace_id: project.namespace, project_id: project, id: objective.iid, **query }
+            get :edit, params: { namespace_id: project.namespace, project_id: project, id: work_item.iid, **query }
           end
         end
       end
@@ -273,7 +273,46 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
             put :update, params: {
               namespace_id: project.namespace,
               project_id: project,
-              id: objective.iid,
+              id: work_item.iid,
+              issue: { title: 'New title' }
+            }
+          end
+        end
+      end
+    end
+
+    context 'when issue is of type key_result' do
+      let(:query) { {} }
+
+      let_it_be(:work_item) { create(:issue, :key_result, project: project) }
+
+      context 'show action' do
+        let(:query) { { query: 'any' } }
+
+        it_behaves_like 'redirects to show work item page' do
+          subject(:make_request) do
+            get :show, params: { namespace_id: project.namespace, project_id: project, id: work_item.iid, **query }
+          end
+        end
+      end
+
+      context 'edit action' do
+        let(:query) { { query: 'any' } }
+
+        it_behaves_like 'redirects to show work item page' do
+          subject(:make_request) do
+            get :edit, params: { namespace_id: project.namespace, project_id: project, id: work_item.iid, **query }
+          end
+        end
+      end
+
+      context 'update action' do
+        it_behaves_like 'redirects to show work item page' do
+          subject(:make_request) do
+            put :update, params: {
+              namespace_id: project.namespace,
+              project_id: project,
+              id: work_item.iid,
               issue: { title: 'New title' }
             }
           end

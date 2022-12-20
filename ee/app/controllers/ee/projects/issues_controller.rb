@@ -139,8 +139,8 @@ module EE
 
       override :allowed_work_item?
       def allowed_work_item?
-        if ::Feature.enabled?(:okrs_mvc, project) && project.feature_available?(:okrs)
-          return super || issue.objective?
+        if project.okrs_mvc_feature_flag_enabled? && project.feature_available?(:okrs)
+          return super || issue.objective? || issue.key_result?
         end
 
         super

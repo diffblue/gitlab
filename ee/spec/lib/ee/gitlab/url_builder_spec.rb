@@ -19,6 +19,7 @@ RSpec.describe Gitlab::UrlBuilder do
       :group_wiki            | ->(wiki)          { "/groups/#{wiki.container.full_path}/-/wikis/home" }
 
       [:issue, :objective]   | ->(issue)         { "/#{issue.project.full_path}/-/work_items/#{issue.iid}?iid_path=true" }
+      [:issue, :key_result]  | ->(issue)         { "/#{issue.project.full_path}/-/work_items/#{issue.iid}?iid_path=true" }
     end
 
     with_them do
@@ -44,6 +45,14 @@ RSpec.describe Gitlab::UrlBuilder do
           objective = create(:issue, :objective)
 
           expect(subject.build(objective, only_path: true)).to eq("/#{objective.project.full_path}/-/work_items/#{objective.id}")
+        end
+      end
+
+      context 'when a key_result issue is passed' do
+        it 'returns a path using the work item\'s ID and no query params' do
+          key_result = create(:issue, :key_result)
+
+          expect(subject.build(key_result, only_path: true)).to eq("/#{key_result.project.full_path}/-/work_items/#{key_result.id}")
         end
       end
 
