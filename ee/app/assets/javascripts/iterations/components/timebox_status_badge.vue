@@ -28,7 +28,7 @@ export default {
             variant: 'danger',
           };
         case iterationStates.expired:
-          return { text: __('Past due'), variant: 'warning' };
+          return { text: __('Expired'), variant: 'warning' };
         case iterationStates.upcoming:
           return { text: __('Upcoming'), variant: 'neutral' };
         default:
