@@ -594,7 +594,7 @@ RSpec.describe 'Pipelines', :js, feature_category: :projects do
         end
 
         it 'changes the Pipeline ID column for Pipeline IID' do
-          page.find('[data-testid="pipeline-key-dropdown"]').click
+          page.find('[data-testid="pipeline-key-collapsible-box"]').click
 
           within '.gl-dropdown-contents' do
             dropdown_options = page.find_all '.gl-dropdown-item'
