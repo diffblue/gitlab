@@ -726,9 +726,9 @@ This also sets the `username` attribute in your SAML Response to the username in
 
 ### Allow for clock drift
 
-The clock of the Identity Provider may drift slightly ahead of your system clocks.
-To allow for a small amount of clock drift, you can use `allowed_clock_drift` in
-your settings. Its value must be given in a number (and/or fraction) of seconds.
+The clock of the IdP may drift slightly ahead of your system clocks.
+To allow for a small amount of clock drift, use `allowed_clock_drift` in
+your settings. You must enter the parameter's value in a number and fraction of seconds.
 The value given is added to the current time at which the response is validated.
 
 ```yaml
