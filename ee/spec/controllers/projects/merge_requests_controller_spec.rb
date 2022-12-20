@@ -406,8 +406,10 @@ RSpec.describe Projects::MergeRequestsController do
     subject { get :dependency_scanning_reports, params: params, format: :json }
 
     before do
-      allow_any_instance_of(::MergeRequest).to receive(:compare_reports)
-        .with(::Ci::CompareSecurityReportsService, viewer, 'dependency_scanning').and_return(comparison_status)
+      allow_next_found_instance_of(::MergeRequest) do |instance|
+        allow(instance).to receive(:compare_reports)
+              .with(::Ci::CompareSecurityReportsService, viewer, 'dependency_scanning').and_return(comparison_status)
+      end
     end
 
     it_behaves_like 'pending pipeline response'
@@ -479,8 +481,10 @@ RSpec.describe Projects::MergeRequestsController do
     subject { get :container_scanning_reports, params: params, format: :json }
 
     before do
-      allow_any_instance_of(::MergeRequest).to receive(:compare_reports)
-        .with(::Ci::CompareSecurityReportsService, viewer, 'container_scanning').and_return(comparison_status)
+      allow_next_found_instance_of(::MergeRequest) do |instance|
+        allow(instance).to receive(:compare_reports)
+              .with(::Ci::CompareSecurityReportsService, viewer, 'container_scanning').and_return(comparison_status)
+      end
     end
 
     it_behaves_like 'pending pipeline response'
@@ -552,8 +556,10 @@ RSpec.describe Projects::MergeRequestsController do
     subject { get :sast_reports, params: params, format: :json }
 
     before do
-      allow_any_instance_of(::MergeRequest).to receive(:compare_reports)
-        .with(::Ci::CompareSecurityReportsService, viewer, 'sast').and_return(comparison_status)
+      allow_next_found_instance_of(::MergeRequest) do |instance|
+        allow(instance).to receive(:compare_reports)
+              .with(::Ci::CompareSecurityReportsService, viewer, 'sast').and_return(comparison_status)
+      end
     end
 
     it_behaves_like 'pending pipeline response'
@@ -625,8 +631,10 @@ RSpec.describe Projects::MergeRequestsController do
     subject { get :coverage_fuzzing_reports, params: params, format: :json }
 
     before do
-      allow_any_instance_of(::MergeRequest).to receive(:compare_reports)
-        .with(::Ci::CompareSecurityReportsService, viewer, 'coverage_fuzzing').and_return(comparison_status)
+      allow_next_found_instance_of(::MergeRequest) do |instance|
+        allow(instance).to receive(:compare_reports)
+              .with(::Ci::CompareSecurityReportsService, viewer, 'coverage_fuzzing').and_return(comparison_status)
+      end
     end
 
     it_behaves_like 'pending pipeline response'
@@ -698,8 +706,10 @@ RSpec.describe Projects::MergeRequestsController do
     subject { get :api_fuzzing_reports, params: params, format: :json }
 
     before do
-      allow_any_instance_of(::MergeRequest).to receive(:compare_reports)
-        .with(::Ci::CompareSecurityReportsService, viewer, 'api_fuzzing').and_return(comparison_status)
+      allow_next_found_instance_of(::MergeRequest) do |instance|
+        allow(instance).to receive(:compare_reports)
+              .with(::Ci::CompareSecurityReportsService, viewer, 'api_fuzzing').and_return(comparison_status)
+      end
     end
 
     it_behaves_like 'pending pipeline response'
@@ -772,8 +782,10 @@ RSpec.describe Projects::MergeRequestsController do
     subject { get :secret_detection_reports, params: params, format: :json }
 
     before do
-      allow_any_instance_of(::MergeRequest).to receive(:compare_reports)
-        .with(::Ci::CompareSecurityReportsService, viewer, 'secret_detection').and_return(comparison_status)
+      allow_next_found_instance_of(::MergeRequest) do |instance|
+        allow(instance).to receive(:compare_reports)
+              .with(::Ci::CompareSecurityReportsService, viewer, 'secret_detection').and_return(comparison_status)
+      end
     end
 
     it_behaves_like 'pending pipeline response'
@@ -845,8 +857,10 @@ RSpec.describe Projects::MergeRequestsController do
     subject { get :dast_reports, params: params, format: :json }
 
     before do
-      allow_any_instance_of(::MergeRequest).to receive(:compare_reports)
-        .with(::Ci::CompareSecurityReportsService, viewer, 'dast').and_return(comparison_status)
+      allow_next_found_instance_of(::MergeRequest) do |instance|
+        allow(instance).to receive(:compare_reports)
+              .with(::Ci::CompareSecurityReportsService, viewer, 'dast').and_return(comparison_status)
+      end
     end
 
     it_behaves_like 'pending pipeline response'
@@ -987,8 +1001,10 @@ RSpec.describe Projects::MergeRequestsController do
     subject { get :metrics_reports, params: params, format: :json }
 
     before do
-      allow_any_instance_of(::MergeRequest).to receive(:compare_reports)
-        .with(::Ci::CompareMetricsReportsService).and_return(comparison_status)
+      allow_next_found_instance_of(::MergeRequest) do |instance|
+        allow(instance).to receive(:compare_reports)
+              .with(::Ci::CompareMetricsReportsService).and_return(comparison_status)
+      end
     end
 
     context 'when comparison is being processed' do

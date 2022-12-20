@@ -22,7 +22,9 @@ RSpec.describe Oauth::GeoAuthController, :geo, feature_category: :geo_replicatio
     end
 
     it 'redirects to root_url when state is invalid' do
-      allow_any_instance_of(Gitlab::Geo::Oauth::LoginState).to receive(:valid?).and_return(false)
+      allow_next_instance_of(Gitlab::Geo::Oauth::LoginState) do |instance|
+        allow(instance).to receive(:valid?).and_return(false)
+      end
 
       get :auth, params: { state: login_state }
 
@@ -67,12 +69,16 @@ RSpec.describe Oauth::GeoAuthController, :geo, feature_category: :geo_replicatio
 
     context 'redirection' do
       before do
-        allow_any_instance_of(Gitlab::Geo::Oauth::Session).to receive(:get_token).and_return('token')
-        allow_any_instance_of(Gitlab::Geo::Oauth::Session).to receive(:authenticate).and_return(user.attributes)
+        allow_next_instance_of(Gitlab::Geo::Oauth::Session) do |instance|
+          allow(instance).to receive(:get_token).and_return('token')
+          allow(instance).to receive(:authenticate).and_return(user.attributes)
+        end
       end
 
       it 'redirects to login screen if state is invalid' do
-        allow_any_instance_of(Gitlab::Geo::Oauth::LoginState).to receive(:valid?).and_return(false)
+        allow_next_instance_of(Gitlab::Geo::Oauth::LoginState) do |instance|
+          allow(instance).to receive(:valid?).and_return(false)
+        end
 
         get :callback, params: { state: login_state }
 
@@ -121,8 +127,10 @@ RSpec.describe Oauth::GeoAuthController, :geo, feature_category: :geo_replicatio
       let(:oauth_error) { OAuth2::Error.new(OAuth2::Response.new(fake_response)) }
 
       before do
-        allow_any_instance_of(Gitlab::Geo::Oauth::Session).to receive(:get_token).and_return(access_token.token)
-        allow_any_instance_of(Gitlab::Geo::Oauth::Session).to receive(:authenticate).and_raise(oauth_error)
+        allow_next_instance_of(Gitlab::Geo::Oauth::Session) do |instance|
+          allow(instance).to receive(:get_token).and_return(access_token.token)
+          allow(instance).to receive(:authenticate).and_raise(oauth_error)
+        end
       end
 
       it 'handles invalid credentials error' do
@@ -138,8 +146,10 @@ RSpec.describe Oauth::GeoAuthController, :geo, feature_category: :geo_replicatio
       render_views
 
       before do
-        allow_any_instance_of(Gitlab::Geo::Oauth::Session).to receive(:get_token).and_return('token')
-        allow_any_instance_of(Gitlab::Geo::Oauth::Session).to receive(:authenticate).and_return(nil)
+        allow_next_instance_of(Gitlab::Geo::Oauth::Session) do |instance|
+          allow(instance).to receive(:get_token).and_return('token')
+          allow(instance).to receive(:authenticate).and_return(nil)
+        end
       end
 
       it 'handles non-existent remote user error' do
@@ -154,8 +164,10 @@ RSpec.describe Oauth::GeoAuthController, :geo, feature_category: :geo_replicatio
       render_views
 
       before do
-        allow_any_instance_of(Gitlab::Geo::Oauth::Session).to receive(:get_token).and_return('token')
-        allow_any_instance_of(Gitlab::Geo::Oauth::Session).to receive(:authenticate).and_return(id: non_existing_record_id)
+        allow_next_instance_of(Gitlab::Geo::Oauth::Session) do |instance|
+          allow(instance).to receive(:get_token).and_return('token')
+          allow(instance).to receive(:authenticate).and_return(id: non_existing_record_id)
+        end
       end
 
       it 'handles non-existent local user error' do

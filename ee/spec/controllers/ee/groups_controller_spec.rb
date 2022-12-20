@@ -415,7 +415,9 @@ RSpec.describe GroupsController, feature_category: :subgroups do
       end
 
       before do
-        allow_any_instance_of(EE::Group).to receive(:enforced_group_managed_accounts?).and_return(true)
+        allow_next_found_instance_of(Group) do |instance|
+          allow(instance).to receive(:enforced_group_managed_accounts?).and_return(true)
+        end
 
         managed_group.add_owner(user)
         sign_in(user)

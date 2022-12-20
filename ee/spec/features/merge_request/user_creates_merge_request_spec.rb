@@ -27,7 +27,9 @@ RSpec.describe "User creates a merge request", :js, feature_category: :code_revi
   end
 
   it "creates a merge request" do
-    allow_any_instance_of(Gitlab::AuthorityAnalyzer).to receive(:calculate).and_return([user2])
+    allow_next_instance_of(Gitlab::AuthorityAnalyzer) do |instance|
+      allow(instance).to receive(:calculate).and_return([user2])
+    end
 
     find(".js-source-branch").click
     click_link("fix")

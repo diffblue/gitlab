@@ -336,8 +336,12 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
 
       before do
         sign_in(user)
-        allow_any_instance_of(GitlabSubscriptions::CreateService).to receive(:execute).and_return(service_response)
-        allow_any_instance_of(EE::Groups::CreateService).to receive(:execute).and_return(group)
+        allow_next_instance_of(GitlabSubscriptions::CreateService) do |instance|
+          allow(instance).to receive(:execute).and_return(service_response)
+        end
+        allow_next_instance_of(Groups::CreateService) do |instance|
+          allow(instance).to receive(:execute).and_return(group)
+        end
       end
 
       context 'when setting up for a company' do
@@ -347,7 +351,9 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
 
         it 'creates a group based on the company' do
           expect(Namespace).to receive(:clean_name).with(params.dig(:customer, :company)).and_call_original
-          expect_any_instance_of(EE::Groups::CreateService).to receive(:execute)
+          expect_next_instance_of(Groups::CreateService) do |instance|
+            expect(instance).to receive(:execute)
+          end
 
           subject
         end
@@ -370,7 +376,9 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
 
         it 'creates a group based on the user' do
           expect(Namespace).to receive(:clean_name).with(user.name).and_call_original
-          expect_any_instance_of(EE::Groups::CreateService).to receive(:execute)
+          expect_next_instance_of(Groups::CreateService) do |instance|
+            expect(instance).to receive(:execute)
+          end
 
           subject
         end
