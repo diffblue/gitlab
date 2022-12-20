@@ -9,6 +9,8 @@ module Vulnerabilities
 
     feature_category :static_application_security_testing
 
+    loggable_arguments 1
+
     def perform(project_id, dropped_identifier_ids)
       return unless Feature.enabled?(:sec_mark_dropped_findings_as_resolved, Project.find(project_id))
 
