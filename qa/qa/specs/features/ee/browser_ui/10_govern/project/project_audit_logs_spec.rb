@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Govern', product_group: :compliance do
+  RSpec.describe(
+    'Govern',
+    product_group: :compliance,
+    quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/386403', type: :broken }
+  ) do
     shared_examples 'audit event' do |expected_events|
       it 'logs audit events for UI operations' do
         QA::Support::Retrier.retry_on_exception do
