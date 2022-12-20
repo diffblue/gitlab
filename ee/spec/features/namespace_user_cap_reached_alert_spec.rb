@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Namespace user cap reached alert', :feature, :js, :use_clean_rails_memory_store_caching,
-feature_category: :subscription_usage_reports do
+feature_category: :subscription_cost_management do
   include ReactiveCachingHelpers
 
   let_it_be(:group, refind: true) do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsStorageSizeWithoutUploadsSize, :migration, schema: 20221104115712, feature_category: :subscription_usage_reports do # rubocop:disable Layout/LineLength
+RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsStorageSizeWithoutUploadsSize, :migration, schema: 20221104115712, feature_category: :subscription_cost_management do # rubocop:disable Layout/LineLength
   let!(:namespace) { table(:namespaces) }
   let!(:project_statistics_table) { table(:project_statistics) }
   let!(:project) { table(:projects) }

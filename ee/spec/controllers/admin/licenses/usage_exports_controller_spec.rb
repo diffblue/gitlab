@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::Licenses::UsageExportsController, feature_category: :subscription_usage_reports do
+RSpec.describe Admin::Licenses::UsageExportsController, feature_category: :subscription_cost_management do
   let(:admin) { create(:admin) }
 
   before do

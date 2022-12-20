@@ -311,7 +311,7 @@
   :tags: []
 - :name: cronjob:historical_data
   :worker_name: HistoricalDataWorker
-  :feature_category: :subscription_usage_reports
+  :feature_category: :subscription_cost_management
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -473,7 +473,7 @@
   :tags: []
 - :name: cronjob:update_max_seats_used_for_gitlab_com_subscriptions
   :worker_name: UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker
-  :feature_category: :subscription_usage_reports
+  :feature_category: :subscription_cost_management
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :cpu

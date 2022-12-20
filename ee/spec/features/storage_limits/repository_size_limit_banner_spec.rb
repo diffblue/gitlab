@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe "Repository size limit banner", :js, :saas, feature_category: :subscription_usage_reports do
+RSpec.describe "Repository size limit banner", :js, :saas, feature_category: :subscription_cost_management do
   let_it_be(:owner) { create(:user) }
   let_it_be(:free_group) { create(:group) }
   let_it_be_with_refind(:free_group_project) { create(:project, :repository, group: free_group) }
