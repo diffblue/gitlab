@@ -5402,7 +5402,7 @@ msgstr ""
 msgid "Artifacts|Help us improve this page"
 msgstr ""
 
-msgid "Artifacts|Provide feedback"
+msgid "Artifacts|Take a quick survey"
 msgstr ""
 
 msgid "Artifacts|This artifact will be permanently deleted. Any reports generated from this artifact will be empty."
@@ -5411,7 +5411,7 @@ msgstr ""
 msgid "Artifacts|Total artifacts size"
 msgstr ""
 
-msgid "Artifacts|We want to hear from you about how this page could help you manage artifacts! Let us know how we can improve your experience by taking a quick survey."
+msgid "Artifacts|We want you to be able to use this page to easily manage your CI/CD job artifacts. We are working to improve this experience and would appreciate any feedback you have about the improvements we are making."
 msgstr ""
 
 msgid "As we continue to build more features for SAST, we'd love your feedback on the SAST configuration feature in %{linkStart}this issue%{linkEnd}."

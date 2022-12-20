@@ -45,9 +45,9 @@ export const I18N_MODAL_CANCEL = __('Cancel');
 
 export const I18N_FEEDBACK_BANNER_TITLE = s__('Artifacts|Help us improve this page');
 export const I18N_FEEDBACK_BANNER_BODY = s__(
-  'Artifacts|We want to hear from you about how this page could help you manage artifacts! Let us know how we can improve your experience by taking a quick survey.',
+  'Artifacts|We want you to be able to use this page to easily manage your CI/CD job artifacts. We are working to improve this experience and would appreciate any feedback you have about the improvements we are making.',
 );
-export const I18N_FEEDBACK_BANNER_BUTTON = s__('Artifacts|Provide feedback');
+export const I18N_FEEDBACK_BANNER_BUTTON = s__('Artifacts|Take a quick survey');
 export const FEEDBACK_URL = 'https://gitlab.fra1.qualtrics.com/jfe/form/SV_cI9rAUI20Vo2St8';
 
 export const INITIAL_CURRENT_PAGE = 1;
