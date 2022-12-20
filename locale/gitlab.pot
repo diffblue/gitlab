@@ -27237,6 +27237,27 @@ msgstr ""
 msgid "NavigationTheme|Red"
 msgstr ""
 
+msgid "Navigation|Context navigation"
+msgstr ""
+
+msgid "Navigation|Recent groups"
+msgstr ""
+
+msgid "Navigation|Recent projects"
+msgstr ""
+
+msgid "Navigation|Switch to..."
+msgstr ""
+
+msgid "Navigation|View all groups"
+msgstr ""
+
+msgid "Navigation|View all projects"
+msgstr ""
+
+msgid "Navigation|Your work"
+msgstr ""
+
 msgid "Nav|Help"
 msgstr ""
 
