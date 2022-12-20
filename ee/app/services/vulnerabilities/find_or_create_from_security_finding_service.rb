@@ -29,7 +29,7 @@ module Vulnerabilities
         ).execute
       else
         vulnerability = Vulnerability.find(vulnerability_finding.vulnerability_id)
-        update_state_for(vulnerability) if Vulnerability.states[vulnerability.state] != @state
+        update_state_for(vulnerability) if vulnerability.state != @state.to_s
         vulnerability
       end
     end

@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::FindOrCreateFromSecurityFindingService, '#execute' do
+RSpec.describe Vulnerabilities::FindOrCreateFromSecurityFindingService,
+  '#execute',
+  feature_category: :threat_insights do
   before do
     stub_licensed_features(security_dashboard: true)
     project.add_developer(user)
@@ -18,7 +20,7 @@ RSpec.describe Vulnerabilities::FindOrCreateFromSecurityFindingService, '#execut
   let_it_be(:report) { create(:ci_reports_security_report, pipeline: pipeline, type: :dast) }
   let_it_be(:scan) { create(:security_scan, :latest_successful, scan_type: :dast, build: artifact.job) }
   let_it_be(:security_findings) { [] }
-  let_it_be(:state) { Vulnerability.states[:dismissed] }
+  let_it_be(:state) { 'dismissed' }
   let(:params) { { security_finding_uuid: security_finding_uuid } }
   let(:service) do
     described_class.new(
@@ -95,7 +97,7 @@ RSpec.describe Vulnerabilities::FindOrCreateFromSecurityFindingService, '#execut
 
     context 'when the vulnerability state is same with the requested one' do
       before do
-        vulnerability.state = Vulnerability.states[:dismissed]
+        vulnerability.state = 'dismissed'
         vulnerability.save!
       end
 
