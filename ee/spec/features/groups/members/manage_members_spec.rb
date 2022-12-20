@@ -133,7 +133,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
           group.add_owner(user1)
           visit group_group_members_path(group)
 
-          invite_member([user2.name, user3.name], role: 'Developer', refresh: false)
+          invite_member([user2.name, user3.name], role: 'Developer')
 
           message = ns_('MembersOverage|Your subscription includes %d seat.', 'MembersOverage|Your subscription includes %d seats.', 2) % 2
           info = format(ns_('MembersOverage|If you continue, the %{groupName} group will have %{quantity} seat in use and will be billed for the overage.', 'MembersOverage|If you continue, the %{groupName} group will have %{quantity} seats in use and will be billed for the overage.', 3), groupName: group.name, quantity: 3)
@@ -205,7 +205,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
     def add_user_by_name(name, role)
       visit group_group_members_path(group)
 
-      invite_member(name, role: role, refresh: false)
+      invite_member(name, role: role)
     end
 
     def add_user_by_email(role)
@@ -307,7 +307,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
 
     context 'when close to free user limit on new namespace' do
       it 'shows the alert notification in the modal' do
-        stub_ee_application_setting(dashboard_limit: 3)
+        stub_ee_application_setting(dashboard_limit: 4)
         stub_ee_application_setting(dashboard_limit_new_namespace_creation_enforcement_date: 2.days.ago)
         group = create(:group_with_plan, :private, plan: :free_plan)
         user = create(:user)
@@ -317,10 +317,23 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
 
         visit group_group_members_path(group)
 
+        invite_member(create(:user).name)
+
         click_on _('Invite members')
 
         page.within invite_modal_selector do
-          expect(page).to have_content 'You only have space for'
+          expect(page).to have_content 'You only have space for 2'
+          expect(page).to have_content 'To get more members an owner of the group can'
+
+          click_on _('Cancel')
+        end
+
+        invite_member(create(:user).name)
+
+        click_on _('Invite members')
+
+        page.within invite_modal_selector do
+          expect(page).to have_content 'You only have space for 1'
           expect(page).to have_content 'To get more members an owner of the group can'
         end
       end
