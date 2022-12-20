@@ -12,7 +12,9 @@ RSpec.describe Projects::PathLocksController, feature_category: :source_code_man
   before do
     sign_in(user)
 
-    allow_any_instance_of(Repository).to receive(:root_ref).and_return('lfs')
+    allow_next_instance_of(Repository) do |instance|
+      allow(instance).to receive(:root_ref).and_return('lfs')
+    end
     allow_next_found_instance_of(Project) do |project|
       allow(project).to receive(:lfs_enabled?) { lfs_enabled }
     end

@@ -138,7 +138,9 @@ RSpec.describe "Admin::Users", :js, feature_category: :user_management do
       before do
         visit_edit_user(user.id)
 
-        allow_any_instance_of(AuditorUserHelper).to receive(:license_allows_auditor_user?).and_return(true)
+        allow_next_instance_of(AuditorUserHelper) do |instance|
+          allow(instance).to receive(:license_allows_auditor_user?).and_return(true)
+        end
         choose "user_access_level_auditor"
         click_button "Save changes"
       end

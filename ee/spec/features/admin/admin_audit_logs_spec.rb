@@ -144,8 +144,10 @@ RSpec.describe 'Admin::AuditLogs', :js, feature_category: :audit_events do
 
         context 'when creation fails' do
           before do
-            allow_any_instance_of(ServiceResponse).to receive(:success?).and_return(false)
-            allow_any_instance_of(ServiceResponse).to receive(:message).and_return('error')
+            allow_next_instance_of(ServiceResponse) do |instance|
+              allow(instance).to receive(:success?).and_return(false)
+              allow(instance).to receive(:message).and_return('error')
+            end
             personal_access_token
           end
 
@@ -173,8 +175,10 @@ RSpec.describe 'Admin::AuditLogs', :js, feature_category: :audit_events do
           let(:message) { "Attempted to revoke personal access token with id #{personal_access_token.id} but failed with message: error" }
 
           before do
-            allow_any_instance_of(ServiceResponse).to receive(:success?).and_return(false)
-            allow_any_instance_of(ServiceResponse).to receive(:message).and_return('error')
+            allow_next_instance_of(ServiceResponse) do |instance|
+              allow(instance).to receive(:success?).and_return(false)
+              allow(instance).to receive(:message).and_return('error')
+            end
             PersonalAccessTokens::RevokeService.new(admin, token: personal_access_token).execute
           end
 

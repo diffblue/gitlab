@@ -38,7 +38,9 @@ RSpec.describe 'Reset namespace pipeline minutes', :js, feature_category: :conti
   shared_examples 'rendering error' do
     context 'when resetting pipeline minutes fails' do
       before do
-        allow_any_instance_of(Ci::Minutes::ResetUsageService).to receive(:execute).and_return(false)
+        allow_next_instance_of(Ci::Minutes::ResetUsageService) do |instance|
+          allow(instance).to receive(:execute).and_return(false)
+        end
       end
 
       it 'renders edit page with an error' do

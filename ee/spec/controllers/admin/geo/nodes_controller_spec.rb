@@ -91,7 +91,9 @@ RSpec.describe Admin::Geo::NodesController do
       end
 
       it 'delegates the create of the Geo node to Geo::NodeCreateService' do
-        expect_any_instance_of(Geo::NodeCreateService).to receive(:execute).once.and_call_original
+        expect_next_instance_of(Geo::NodeCreateService) do |instance|
+          expect(instance).to receive(:execute).once.and_call_original
+        end
 
         go
       end
@@ -137,7 +139,9 @@ RSpec.describe Admin::Geo::NodesController do
       end
 
       it 'delegates the update of the Geo node to Geo::NodeUpdateService' do
-        expect_any_instance_of(Geo::NodeUpdateService).to receive(:execute).once
+        expect_next_instance_of(Geo::NodeUpdateService) do |instance|
+          expect(instance).to receive(:execute).once
+        end
 
         go
       end

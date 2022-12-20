@@ -21,7 +21,9 @@ RSpec.describe 'Edit group settings', feature_category: :subgroups do
   describe 'navbar' do
     context 'with LDAP enabled' do
       before do
-        allow_any_instance_of(EE::Group).to receive(:ldap_synced?).and_return(true)
+        allow_next_found_instance_of(Group) do |instance|
+          allow(instance).to receive(:ldap_synced?).and_return(true)
+        end
         allow(Gitlab::Auth::Ldap::Config).to receive(:enabled?).and_return(true)
       end
 

@@ -39,7 +39,9 @@ RSpec.describe Groups::Epics::NotesController, feature_category: :portfolio_mana
 
     context 'with cross-reference system note that is not visible to the current user', :request_store do
       it "does not return any note" do
-        expect_any_instance_of(Note).to receive(:readable_by?).and_return(false)
+        expect_next_found_instance_of(Note) do |instance|
+          expect(instance).to receive(:readable_by?).and_return(false)
+        end
 
         get :index, params: request_params
 
