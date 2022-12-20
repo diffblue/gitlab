@@ -895,23 +895,24 @@ For installations from source:
 
 ## Additional configuration for SAML apps on your IdP
 
-When configuring a SAML app on the IdP, your identity provider may require additional configuration, such as the following:
+When configuring a SAML app on the IdP, your IdP may need additional configuration,
+such as the following:
 
 | Field | Value | Notes |
 |-------|-------|-------|
-| SAML profile | Web browser SSO profile | GitLab uses SAML to sign users in through their browser. No requests are made directly to the identity provider. |
-| SAML request binding | HTTP Redirect | GitLab (the service provider) redirects users to your identity provider with a base64 encoded `SAMLRequest` HTTP parameter. |
-| SAML response binding | HTTP POST | Specifies how the SAML token is sent by your identity provider. Includes the `SAMLResponse`, which a user's browser submits back to GitLab. |
+| SAML profile | Web browser SSO profile | GitLab uses SAML to sign users in through their browser. No requests are made directly to the IdP. |
+| SAML request binding | HTTP Redirect | GitLab (the SP) redirects users to your IdP with a base64 encoded `SAMLRequest` HTTP parameter. |
+| SAML response binding | HTTP POST | Specifies how the SAML token is sent by your IdP. Includes the `SAMLResponse`, which a user's browser submits back to GitLab. |
 | Sign SAML response | Required | Prevents tampering. |
-| X.509 certificate in response | Required | Signs the response and checks against the provided fingerprint. |
-| Fingerprint algorithm | SHA-1  |  GitLab uses a SHA-1 hash of the certificate to sign the SAML Response. |
+| X.509 certificate in response | Required | Signs the response and checks the response against the provided fingerprint. |
+| Fingerprint algorithm | SHA-1 | GitLab uses a SHA-1 hash of the certificate to sign the SAML Response. |
 | Signature algorithm | SHA-1/SHA-256/SHA-384/SHA-512 | Determines how a response is signed. Also known as the digest method, this can be specified in the SAML response. |
 | Encrypt SAML assertion | Optional | Uses TLS between your identity provider, the user's browser, and GitLab. |
 | Sign SAML assertion | Optional | Validates the integrity of a SAML assertion. When active, signs the whole response. |
 | Check SAML request signature | Optional | Checks the signature on the SAML response. |
-| Default RelayState | Optional | Specifies the URL users should end up on after successfully signing in through SAML at your identity provider. |
+| Default RelayState | Optional | Specifies the URL users should end up on after successfully signing in through SAML at your IdP. |
 | NameID format | Persistent | See [NameID format details](../user/group/saml_sso/index.md#nameid-format). |
-| Additional URLs | Optional | May include the issuer (or identifier) or the assertion consumer service URL in other fields on some providers. |
+| Additional URLs | Optional | May include the issuer, identifier, or assertion consumer service URL in other fields on some providers. |
 
 For example configurations, see the [notes on specific providers](#set-up-identity-providers).
 
