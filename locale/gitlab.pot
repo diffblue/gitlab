@@ -45223,10 +45223,10 @@ msgstr ""
 msgid "UserProfile|Subscribe"
 msgstr ""
 
-msgid "UserProfile|This user doesn't have any followers."
+msgid "UserProfile|There are no projects available to be displayed here."
 msgstr ""
 
-msgid "UserProfile|This user doesn't have any personal projects"
+msgid "UserProfile|This user doesn't have any followers."
 msgstr ""
 
 msgid "UserProfile|This user has a private profile"
