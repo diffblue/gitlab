@@ -4,46 +4,21 @@ require 'spec_helper'
 
 RSpec.describe 'Standard flow for user picking just me and joining a project', :js, :saas, :saas_registration,
 feature_category: :onboarding do
-  context 'when project_list_filter_bar feature flag is enabled' do
-    it 'registers the user and sends them to a project listing page' do
-      stub_feature_flags(project_list_filter_bar: true)
+  it 'registers the user and sends them to a project listing page' do
+    user_signs_up
 
-      user_signs_up
+    expect_to_see_account_confirmation_page
 
-      expect_to_see_account_confirmation_page
+    confirm_account
 
-      confirm_account
+    user_signs_in
 
-      user_signs_in
+    expect_to_see_welcome_form
 
-      expect_to_see_welcome_form
+    fills_in_welcome_form
+    click_on 'Continue'
 
-      fills_in_welcome_form
-      click_on 'Continue'
-
-      expect_to_be_on_projects_dashboard
-    end
-  end
-
-  context 'when project_list_filter_bar feature flag is disabled' do
-    it 'registers the user and sends them to a project listing page' do
-      stub_feature_flags(project_list_filter_bar: false)
-
-      user_signs_up
-
-      expect_to_see_account_confirmation_page
-
-      confirm_account
-
-      user_signs_in
-
-      expect_to_see_welcome_form
-
-      fills_in_welcome_form
-      click_on 'Continue'
-
-      expect_to_be_on_projects_dashboard_with_zero_authorized_projects
-    end
+    expect_to_be_on_projects_dashboard_with_zero_authorized_projects
   end
 
   def user_signs_up
