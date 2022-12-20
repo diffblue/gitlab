@@ -50,6 +50,14 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
     create(:merge_request, params)
   end
 
+  def hover(path, rehover: true)
+    # Move the mouse of the way to ensure hover works reliabily
+    # Selenium v4 has `move_to_location` that we could use in the future.
+    page.driver.browser.action.move_by(-10000, -10000).perform if rehover
+
+    page.find(path).hover
+  end
+
   before do
     stub_licensed_features(cycle_analytics_for_groups: true, type_of_work_analytics: true, dora4_analytics: true)
 
@@ -246,6 +254,8 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
       context 'with created_before and created_after set' do
         before do
           visit "#{group_analytics_cycle_analytics_path(group)}?created_before=2019-12-31&created_after=2019-11-01"
+
+          wait_for_requests
         end
 
         it 'has the date range prepopulated' do
@@ -255,7 +265,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
           expect(element.find('.js-daterange-picker-from input').value).to eq '2019-11-01'
           expect(element.find('.js-daterange-picker-to input').value).to eq '2019-12-31'
 
-          page.find('[data-testid="vsa-task-by-type-description"]').hover
+          hover('[data-testid="vsa-task-by-type-description"]')
 
           expect(page.find('.tooltip')).to have_text(_("Shows issues for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019") % { group_name: group.name })
         end
