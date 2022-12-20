@@ -618,6 +618,8 @@ RSpec.describe 'Pipelines', :js, feature_category: :projects do
               user: user)
       end
 
+      let(:external_stage) { create(:ci_stage, name: 'external', pipeline: pipeline) }
+
       before do
         create_build('build', 0, 'build', :success)
         create_build('test', 1, 'rspec 0:2', :pending)
@@ -627,7 +629,7 @@ RSpec.describe 'Pipelines', :js, feature_category: :projects do
         create_build('test', 1, 'audit', :created)
         create_build('deploy', 2, 'production', :created)
 
-        create(:generic_commit_status, pipeline: pipeline, stage: 'external', name: 'jenkins', stage_idx: 3, ref: 'master')
+        create(:generic_commit_status, pipeline: pipeline, ci_stage: external_stage, name: 'jenkins', ref: 'master')
 
         visit project_pipeline_path(project, pipeline)
         wait_for_requests
