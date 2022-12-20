@@ -1,0 +1,8 @@
+---
+name: show_overage_on_role_promotion
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/105613
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/385496
+milestone: '15.7'
+type: development
+group: group::billing and subscription management
+default_enabled: false

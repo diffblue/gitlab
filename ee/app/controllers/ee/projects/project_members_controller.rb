@@ -8,6 +8,12 @@ module EE
 
       private
 
+      prepended do
+        before_action do
+          push_frontend_feature_flag(:show_overage_on_role_promotion)
+        end
+      end
+
       override :invited_members
       def invited_members
         super.or(members.awaiting.with_invited_user_state)
