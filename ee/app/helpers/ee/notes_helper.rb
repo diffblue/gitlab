@@ -21,24 +21,28 @@ module EE
     end
 
     def description_diff_path(issuable, version_id)
+      url_helper = ::Gitlab::Routing.url_helpers
+
       case issuable
       when Issue
-        description_diff_project_issue_path(issuable.project, issuable, version_id)
+        url_helper.description_diff_project_issue_path(issuable.project, issuable, version_id)
       when MergeRequest
-        description_diff_project_merge_request_path(issuable.project, issuable, version_id)
+        url_helper.description_diff_project_merge_request_path(issuable.project, issuable, version_id)
       when Epic
-        description_diff_group_epic_path(issuable.group, issuable, version_id)
+        url_helper.description_diff_group_epic_path(issuable.group, issuable, version_id)
       end
     end
 
     def delete_description_version_path(issuable, version_id)
+      url_helper = ::Gitlab::Routing.url_helpers
+
       case issuable
       when Issue
-        delete_description_version_project_issue_path(issuable.project, issuable, version_id)
+        url_helper.delete_description_version_project_issue_path(issuable.project, issuable, version_id)
       when MergeRequest
-        delete_description_version_project_merge_request_path(issuable.project, issuable, version_id)
+        url_helper.delete_description_version_project_merge_request_path(issuable.project, issuable, version_id)
       when Epic
-        delete_description_version_group_epic_path(issuable.group, issuable, version_id)
+        url_helper.delete_description_version_group_epic_path(issuable.group, issuable, version_id)
       end
     end
   end
