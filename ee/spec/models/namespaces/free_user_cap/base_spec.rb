@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Namespaces::FreeUserCap::Base, :saas do
-  let_it_be(:namespace) { create(:group_with_plan, :private, plan: :free_plan) }
+  let_it_be(:namespace, refind: true) { create(:group_with_plan, :private, plan: :free_plan) }
 
   describe '#enforce_cap?' do
     before do
@@ -12,6 +12,30 @@ RSpec.describe Namespaces::FreeUserCap::Base, :saas do
 
     it 'raises an error for feature enabled definition' do
       expect { described_class.new(namespace).enforce_cap? }.to raise_error(NotImplementedError)
+    end
+
+    context 'with storage limit considerations' do
+      subject(:test_class) do
+        Class.new(described_class) do
+          private
+
+          def feature_enabled?
+            true
+          end
+        end
+      end
+
+      it 'is enforced when below storage limit' do
+        expect(test_class.new(namespace)).to be_enforce_cap
+      end
+
+      it 'is not enforced when above storage limit' do
+        limit = 100
+        create(:plan_limits, plan: namespace.gitlab_subscription.hosted_plan, storage_size_limit: limit)
+        create(:namespace_root_storage_statistics, namespace: namespace, storage_size: (limit + 1).megabytes)
+
+        expect(test_class.new(namespace)).not_to be_enforce_cap
+      end
     end
   end
 

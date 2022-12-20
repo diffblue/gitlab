@@ -39,6 +39,7 @@ module Namespaces
         return false unless ::Gitlab::CurrentSettings.dashboard_limit_enabled?
         return false unless root_namespace.group_namespace?
         return false if root_namespace.public?
+        return false if above_size_limit?
 
         root_namespace.has_free_or_no_subscription?
       end
@@ -49,6 +50,10 @@ module Namespaces
         ::Gitlab::SafeRequestLoader.execute(resource_key: resource_key, resource_ids: [root_namespace.id]) do
           { root_namespace.id => full_user_counts(cache: false) }
         end
+      end
+
+      def above_size_limit?
+        ::Namespaces::Storage::RootSize.new(root_namespace).above_size_limit?(enforcement: false)
       end
 
       def feature_enabled?
