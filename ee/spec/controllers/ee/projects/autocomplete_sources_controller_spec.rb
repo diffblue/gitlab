@@ -47,6 +47,60 @@ RSpec.describe Projects::AutocompleteSourcesController do
     end
   end
 
+  describe '#iterations', :freeze_time, feature_category: :project_management do
+    let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+    let_it_be(:open_iteration) { create(:iteration, iterations_cadence: cadence) }
+    let_it_be(:closed_iteration) { create(:iteration, :closed, iterations_cadence: cadence) }
+    let_it_be(:other_iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group2)) }
+
+    context 'when iterations feature is disabled' do
+      before do
+        stub_licensed_features(iterations: false)
+      end
+
+      it 'returns 404 status' do
+        visit
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'when iterations feature is enabled' do
+      before do
+        stub_licensed_features(iterations: true)
+      end
+
+      describe '#iterations' do
+        it 'returns the correct response', :aggregate_failures do
+          iteration_json_response = {
+            'id' => open_iteration.id,
+            'title' => open_iteration.display_text,
+            'reference' => open_iteration.to_reference
+          }
+
+          visit
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response).to be_an(Array)
+          expect(json_response.count).to eq(1)
+          expect(json_response.first).to include(iteration_json_response)
+        end
+      end
+
+      it 'avoids N+1 queries', :use_sql_query_cache do
+        control = ActiveRecord::QueryRecorder.new(skip_cached: false) { visit }
+
+        create(:iteration, iterations_cadence: cadence)
+
+        expect { visit }.not_to exceed_all_query_limit(control)
+      end
+    end
+
+    def visit
+      get :iterations, params: { namespace_id: project.namespace, project_id: project }
+    end
+  end
+
   describe '#vulnerabilities', feature_category: :vulnerability_management do
     context 'when vulnerabilities feature is disabled' do
       it 'returns 404 status' do

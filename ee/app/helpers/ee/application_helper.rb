@@ -86,11 +86,13 @@ module EE
       if object.is_a?(Group)
         {
           epics: epics_group_autocomplete_sources_path(object),
+          iterations: object.feature_available?(:iterations) ? iterations_group_autocomplete_sources_path(object) : nil,
           vulnerabilities: enabled_for_vulnerabilities ? vulnerabilities_group_autocomplete_sources_path(object) : nil
         }.compact.merge(super)
       else
         {
           epics: object.group&.feature_available?(:epics) ? epics_project_autocomplete_sources_path(object) : nil,
+          iterations: object.group&.feature_available?(:iterations) ? iterations_project_autocomplete_sources_path(object) : nil,
           vulnerabilities: enabled_for_vulnerabilities ? vulnerabilities_project_autocomplete_sources_path(object) : nil
         }.compact.merge(super)
       end

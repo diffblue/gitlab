@@ -27,6 +27,7 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
         resources :autocomplete_sources, only: [] do
           collection do
             get 'epics'
+            get 'iterations'
             get 'vulnerabilities'
           end
         end
