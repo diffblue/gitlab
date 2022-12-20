@@ -856,44 +856,24 @@ over HTTPS. These users can instead:
 A user can manually link their SAML identity to an existing GitLab account by following the steps in
 [Enable OmniAuth for an existing user](omniauth.md#enable-omniauth-for-an-existing-user).
 
-## Group SAML on a self-managed GitLab instance **(PREMIUM SELF)**
+## Configure group SAML SSO on a self-managed instance **(PREMIUM SELF)**
 
-For information on the GitLab.com implementation, please see the [SAML SSO for GitLab.com groups page](../user/group/saml_sso).
+Use group SAML SSO if you have to allow access through multiple SAML IdPs on your
+self-managed instance.
 
-Group SAML SSO helps if you have to allow access via multiple SAML identity providers, but as a multi-tenant solution is less suited to cases where you administer your own GitLab instance.
+To configure group SAML SSO:
 
-To proceed with configuring Group SAML SSO instead, enable the `group_saml` OmniAuth provider. This can be done from:
+1. [Configure GitLab with HTTPS](../install/installation.md#using-https).
+1. Enable OmniAuth and the `group_saml` provider.
 
-- `gitlab.rb` for Omnibus GitLab installations.
-- `gitlab/config/gitlab.yml` for source installations.
-
-### Self-managed instance group SAML limitations
-
-Group SAML on a self-managed instance is limited when compared to the recommended
-[instance-wide SAML](../user/group/saml_sso/index.md). The recommended solution allows you to take advantage of:
-
-- [LDAP compatibility](../administration/auth/ldap/index.md).
-- [LDAP Group Sync](../user/group/access_and_permissions.md#manage-group-memberships-via-ldap).
-- [Required groups](#required-groups).
-- [Administrator groups](#administrator-groups).
-- [Auditor groups](#auditor-groups).
-
-For Omnibus installations:
-
-1. Make sure GitLab is
-   [configured with HTTPS](../install/installation.md#using-https).
-1. Enable OmniAuth and the `group_saml` provider in `gitlab.rb`:
+   To do this for Omnibus GitLab installations, edit `gitlab.rb`:
 
    ```ruby
    gitlab_rails['omniauth_enabled'] = true
    gitlab_rails['omniauth_providers'] = [{ name: 'group_saml' }]
    ```
 
-For installations from source:
-
-1. Make sure GitLab is
-   [configured with HTTPS](../install/installation.md#using-https).
-1. Enable OmniAuth and the `group_saml` provider in `gitlab/config/gitlab.yml`:
+   For installations from source, edit `gitlab/config/gitlab.yml`:
 
     ```yaml
     omniauth:
@@ -901,6 +881,16 @@ For installations from source:
       providers:
         - { name: 'group_saml' }
     ```
+
+As a multi-tenant solution, group SAML on a self-managed instance is limited compared
+to the recommended [instance-wide SAML](../user/group/saml_sso/index.md). Use
+instance-wide SAML to take advantage of:
+
+- [LDAP compatibility](../administration/auth/ldap/index.md).
+- [LDAP Group Sync](../user/group/access_and_permissions.md#manage-group-memberships-via-ldap).
+- [Required groups](#required-groups).
+- [Administrator groups](#administrator-groups).
+- [Auditor groups](#auditor-groups).
 
 ## Additional configuration for SAML apps on your IdP
 
