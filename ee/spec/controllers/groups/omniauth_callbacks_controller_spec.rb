@@ -314,6 +314,42 @@ RSpec.describe Groups::OmniauthCallbacksController, feature_category: :authentic
 
       it_behaves_like "and identity already linked"
     end
+
+    describe 'identity verification', feature_category: :insider_threat do
+      before do
+        allow(::Users::EmailVerification::SendCustomConfirmationInstructionsService)
+          .to receive(:identity_verification_enabled?).and_return(true)
+      end
+
+      shared_examples 'identity verification not required' do
+        it 'does not redirect to identity verification' do
+          allow_any_instance_of(::Users::EmailVerification::SendCustomConfirmationInstructionsService) do |instance|
+            expect(instance).not_to receive(:execute)
+          end
+
+          post provider, params: { group_id: group }
+
+          expect(request.session[:verification_user_id]).to be_nil
+          expect(response).not_to redirect_to(identity_verification_path)
+        end
+      end
+
+      context 'on sign up' do
+        let(:user) { build(:user) }
+
+        it_behaves_like 'identity verification not required'
+      end
+
+      context 'on sign in when identity is not yet verified' do
+        let(:user) { create_linked_user }
+
+        before do
+          user.update!(confirmed_at: nil)
+        end
+
+        it_behaves_like 'identity verification not required'
+      end
+    end
   end
 
   describe "#failure" do

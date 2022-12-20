@@ -5,6 +5,13 @@ module EE
     module Auth
       module OAuth
         module User
+          extend ::Gitlab::Utils::Override
+
+          def identity_verification_enabled?(user)
+            service_class = ::Users::EmailVerification::SendCustomConfirmationInstructionsService
+            service_class.identity_verification_enabled?(user.email)
+          end
+
           protected
 
           def activate_user_if_user_cap_not_reached
@@ -38,6 +45,16 @@ module EE
               "#{protocol}(#{auth_hash.provider}) account \"#{auth_hash.uid}\" #{message} " \
               "GitLab user \"#{user.name}\" (#{user.email})"
             )
+          end
+
+          override :build_new_user
+          def build_new_user(skip_confirmation: true)
+            super.tap do |user|
+              next unless identity_verification_enabled?(user)
+
+              user.confirmed_at = nil
+              user.skip_confirmation_notification!
+            end
           end
         end
       end
