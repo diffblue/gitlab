@@ -136,7 +136,7 @@ export default {
 </script>
 
 <template>
-  <gl-form v-if="isOkrsEnabled" @submit.prevent="blurInput">
+  <gl-form v-if="isOkrsEnabled" data-testid="work-item-progress" @submit.prevent="blurInput">
     <gl-form-group
       class="gl-align-items-center"
       :label="__('Progress')"

@@ -11,7 +11,7 @@ module EE
         requirement: [::WorkItems::Widgets::Status],
         task: [::WorkItems::Widgets::Iteration, ::WorkItems::Widgets::Weight],
         objective: [::WorkItems::Widgets::HealthStatus, ::WorkItems::Widgets::Progress],
-        key_result: [::WorkItems::Widgets::HealthStatus]
+        key_result: [::WorkItems::Widgets::HealthStatus, ::WorkItems::Widgets::Progress]
       }.freeze
 
       class_methods do
