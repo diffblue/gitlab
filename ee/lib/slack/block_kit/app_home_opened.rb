@@ -23,16 +23,12 @@ module Slack
           "blocks": [
             header,
             section_introduction,
-            section_first_step_section,
-            section_connect_gitlab_account,
-            section_second_step,
-            section_gitlab_help,
-            divider,
-            section_create_issues,
-            image_create_issues,
-            divider,
-            section_run_ci_cd,
-            image_run_ci_cd
+            section_notifications_heading,
+            section_notifications,
+            section_slash_commands_heading,
+            section_slash_commands,
+            section_slash_commands_connect,
+            section_connect_gitlab_account
           ]
         }
       end
@@ -58,56 +54,59 @@ module Slack
       def section_introduction
         section(
           format(
-            s_("Slack|View and control GitLab content while you're working in Slack. Type the command as a" \
-              " message in your chat client to activate it. %{startMarkup}Learn more%{endMarkup}."),
+            s_("Slack|GitLab for Slack now supports channel-based notifications." \
+               "Let your team know when new issues are created or new CI/CD jobs are run." \
+               "%{startMarkup}Learn more%{endMarkup}."),
               startMarkup: " <https://docs.gitlab.com/ee/integration/slash_commands.html|",
               endMarkup: ">"
           )
         )
       end
 
-      def section_first_step_section
+      def section_notifications_heading
         section(
           format(
-            s_("Slack|%{asterisk}Step 1.%{asterisk} Connect your GitLab account to get started."),
+            s_("Slack|%{asterisk}Channel notifications%{asterisk}"),
             asterisk: '*'
           )
         )
       end
 
-      def section_second_step
+      def section_notifications
         section(
           format(
-            s_("Slack|%{asterisk}Step 2.%{asterisk} Try it out!"),
+            s_("Slack|To start using notifications, " \
+              " %{startMarkup}enable the Slack integration%{endMarkup} in your project settings."),
+              startMarkup: "<https://docs.gitlab.com/ee/user/project/integrations/gitlab_slack_application.html#configuration|",
+              endMarkup: ">"
+          )
+        )
+      end
+
+      def section_slash_commands_heading
+        section(
+          format(
+            s_("Slack|%{asterisk}Slash commands%{asterisk}"),
             asterisk: '*'
           )
         )
       end
 
-      def section_gitlab_help
-        section(
-          format(s_("Slack|See a list of available commands: %{command})"), command: "`/gitlab help`")
-        )
-      end
-
-      def section_create_issues
+      def section_slash_commands
         section(
           format(
-            s_("Slack|Create new issues from Slack: %{command}"),
-            command: "`/gitlab <project alias> issue new <title> <shift+return> <description>`"
-          )
-        )
-      end
-
-      def section_run_ci_cd
-        section(
-          format(
-            s_("Slack|Streamline your GitLab deployments with ChatOps. Once you've configured your" \
-              " %{startMarkup}CI/CD pipelines%{endMarkup}, try: %{command}"),
-              startMarkup: "<https://docs.gitlab.com/ee/ci/chatops/index.html|",
+            s_("Slack|Control GitLab from Slack with" \
+              " %{startMarkup}slash commands%{endMarkup}. For a list of available commands, enter %{command}."),
+              startMarkup: "<https://docs.gitlab.com/ee/user/project/integrations/gitlab_slack_application.html#usage|",
               endMarkup: ">",
-              command: "`/gitlab <project alias> run <job name> <arguments>`"
+              command: "`/gitlab help`"
           )
+        )
+      end
+
+      def section_slash_commands_connect
+        section(
+          s_("Slack|To start using slash commands, connect your GitLab account.")
         )
       end
 
@@ -166,41 +165,6 @@ module Slack
             "type": "mrkdwn",
             "text": text
           }
-        }
-      end
-
-      def divider
-        {
-          "type": "divider"
-        }
-      end
-
-      def image_create_issues
-        image(
-          text: s_("Slack|Create a new issue"),
-          filename: "slack-issue-new.gif"
-        )
-      end
-
-      def image_run_ci_cd
-        image(
-          text: s_("Slack|Run a CI/CD job"),
-          filename: "slack-run-job.gif"
-        )
-      end
-
-      def image(text:, filename:)
-        image_url = ActionController::Base.helpers.image_url("slack/#{filename}", host: Gitlab.config.gitlab.base_url)
-
-        {
-          "type": "image",
-          "title": {
-            "type": "plain_text",
-            "text": text,
-            "emoji": true
-          },
-          "image_url": image_url,
-          "alt_text": text
         }
       end
     end
