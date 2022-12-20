@@ -167,7 +167,10 @@ RSpec.describe 'Git LFS API and storage', feature_category: :source_code_managem
                 stub_ee_application_setting(dashboard_limit_enabled: true)
                 enforce_namespace_storage_limit(namespace)
                 set_storage_size_limit(namespace, megabytes: 100)
-                set_used_storage(namespace, megabytes: 140)
+                set_used_storage(namespace, megabytes: 90)
+                allow_next_instance_of(Repositories::LfsApiController) do |instance|
+                  allow(instance).to receive(:lfs_upload_access?).and_return(false)
+                end
               end
 
               it 'responds with status 406', :aggregate_failures do
@@ -175,7 +178,7 @@ RSpec.describe 'Git LFS API and storage', feature_category: :source_code_managem
 
                 expect(response).to have_gitlab_http_status(:not_acceptable)
                 expect(json_response['documentation_url']).to include('/help', 'free_user_limit')
-                expect(json_response['message']).to match(/Your namespace is over the user and storage limits/)
+                expect(json_response['message']).to match(/Your namespace is over the user limit/)
               end
             end
           end

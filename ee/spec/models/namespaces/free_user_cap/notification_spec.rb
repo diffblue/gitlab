@@ -162,6 +162,16 @@ RSpec.describe Namespaces::FreeUserCap::Notification, :saas do
         it { is_expected.to be false }
       end
 
+      context 'when the namespace is over storage limit' do
+        before do
+          allow_next_instance_of(::Namespaces::Storage::RootSize, namespace) do |instance|
+            allow(instance).to receive(:above_size_limit?).with(enforcement: false).and_return(true)
+          end
+        end
+
+        it { is_expected.to be false }
+      end
+
       context 'with a net new namespace' do
         let(:enforcement_date) { Date.today }
         let_it_be(:namespace) do

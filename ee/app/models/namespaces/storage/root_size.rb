@@ -11,8 +11,8 @@ module Namespaces
         @root_namespace = root_namespace.root_ancestor # just in case the true root isn't passed
       end
 
-      def above_size_limit?
-        return false unless enforce_limit?
+      def above_size_limit?(enforcement: true)
+        return false if enforcement && !enforce_limit?
         return false if root_namespace.temporary_storage_increase_enabled?
 
         usage_ratio > 1
