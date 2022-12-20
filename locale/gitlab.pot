@@ -825,6 +825,9 @@ msgstr ""
 msgid "%{level_name} is not allowed since the fork source project has lower visibility."
 msgstr ""
 
+msgid "%{linkStart} Learn more%{linkEnd}."
+msgstr ""
+
 msgid "%{link_start}Remove the %{draft_snippet} prefix%{link_end} from the title to allow this merge request to be merged when it's ready."
 msgstr ""
 
@@ -10969,6 +10972,9 @@ msgid "Continue editing"
 msgstr ""
 
 msgid "Continue to the next step"
+msgstr ""
+
+msgid "Continue with overages"
 msgstr ""
 
 msgid "Continuous Integration and Deployment"
@@ -47383,6 +47389,9 @@ msgid "You are about to delete this forked project containing:"
 msgstr ""
 
 msgid "You are about to delete this project containing:"
+msgstr ""
+
+msgid "You are about to incur additional charges"
 msgstr ""
 
 msgid "You are about to transfer the control of your account to %{group_name} group. This action is NOT reversible, you won't be able to access any of your groups and projects outside of %{group_name} once this transfer is complete."
