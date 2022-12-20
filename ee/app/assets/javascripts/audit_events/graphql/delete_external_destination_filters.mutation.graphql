@@ -1,0 +1,10 @@
+mutation deleteExternalDestinationFilters(
+  $destinationId: AuditEventsExternalAuditEventDestinationID!
+  $eventTypeFilters: [String!]!
+) {
+  auditEventsStreamingDestinationEventsRemove(
+    input: { destinationId: $destinationId, eventTypeFilters: $eventTypeFilters }
+  ) {
+    errors
+  }
+}

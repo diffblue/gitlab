@@ -55,7 +55,7 @@ export const mockExternalDestinations = [
     id: 'test_id2',
     destinationUrl: 'https://apiv2.gitlab.com',
     verificationToken: 'JsSQtg86au6buRtX9j98sYa8',
-    eventTypeFilters: ['filter1', 'filter2'],
+    eventTypeFilters: ['repository_download_operation', 'update_merge_approval_rule'],
     headers: {
       nodes: [],
     },
@@ -142,3 +142,34 @@ export const destinationHeaderDeleteMutationPopulator = (errors = []) => ({
 });
 
 export const mockSvgPath = 'mock/path';
+
+export const mockFiltersOptions = [
+  'repository_download_operation',
+  'update_merge_approval_rule',
+  'create_merge_approval_rule',
+];
+export const mockRemoveFilterSelect = ['repository_download_operation'];
+export const mockRemoveFilterRemaining = ['update_merge_approval_rule'];
+export const mockAddFilterSelect = [
+  'repository_download_operation',
+  'update_merge_approval_rule',
+  'create_merge_approval_rule',
+];
+export const mockAddFilterRemaining = ['create_merge_approval_rule'];
+
+export const destinationFilterRemoveMutationPopulator = (errors = []) => ({
+  data: {
+    auditEventsStreamingDestinationEventsRemove: {
+      errors,
+    },
+  },
+});
+
+export const destinationFilterUpdateMutationPopulator = (errors = [], eventTypeFilters = []) => ({
+  data: {
+    auditEventsStreamingDestinationEventsAdd: {
+      errors,
+      eventTypeFilters,
+    },
+  },
+});

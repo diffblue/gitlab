@@ -5629,6 +5629,9 @@ msgstr ""
 msgid "AuditStreams|Custom HTTP headers (optional)"
 msgstr ""
 
+msgid "AuditStreams|Defines which streaming events are captured"
+msgstr ""
+
 msgid "AuditStreams|Delete %{link}"
 msgstr ""
 
@@ -5644,10 +5647,16 @@ msgstr ""
 msgid "AuditStreams|Edit %{link}"
 msgstr ""
 
+msgid "AuditStreams|Event filtering (optional)"
+msgstr ""
+
 msgid "AuditStreams|Header"
 msgstr ""
 
 msgid "AuditStreams|Maximum of %{number} HTTP headers has been reached."
+msgstr ""
+
+msgid "AuditStreams|No filters available. %{linkStart}How do I add a filter?%{linkEnd}"
 msgstr ""
 
 msgid "AuditStreams|Remove custom header"
@@ -38493,6 +38502,9 @@ msgstr ""
 msgid "Show file contents"
 msgstr ""
 
+msgid "Show filters"
+msgstr ""
+
 msgid "Show group milestones"
 msgstr ""
 
@@ -44262,6 +44274,9 @@ msgid "Unschedule job"
 msgstr ""
 
 msgid "Unselect \"Expand variable reference\" if you want to use the variable value as a raw string."
+msgstr ""
+
+msgid "Unselect all"
 msgstr ""
 
 msgid "Unstar"

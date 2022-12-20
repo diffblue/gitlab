@@ -30,6 +30,10 @@ export default {
       type: Object,
       required: true,
     },
+    groupEventFilters: {
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {
@@ -164,6 +168,7 @@ export default {
     <div v-if="isEditing" class="gl-p-4">
       <stream-destination-editor
         :item="item"
+        :group-event-filters="groupEventFilters"
         @updated="onUpdated"
         @error="onEditorError"
         @cancel="setEditMode(false)"

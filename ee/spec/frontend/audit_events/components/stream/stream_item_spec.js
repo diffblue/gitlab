@@ -9,7 +9,11 @@ import deleteExternalDestination from 'ee/audit_events/graphql/delete_external_d
 import { AUDIT_STREAMS_NETWORK_ERRORS, STREAM_ITEMS_I18N } from 'ee/audit_events/constants';
 import StreamItem from 'ee/audit_events/components/stream/stream_item.vue';
 import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';
-import { destinationDeleteMutationPopulator, mockExternalDestinations } from '../../mock_data';
+import {
+  destinationDeleteMutationPopulator,
+  mockExternalDestinations,
+  mockFiltersOptions,
+} from '../../mock_data';
 
 jest.mock('~/flash');
 Vue.use(VueApollo);
@@ -29,6 +33,7 @@ describe('StreamItem', () => {
       apolloProvider: mockApollo,
       propsData: {
         item: destinationWithoutFilters,
+        groupEventFilters: mockFiltersOptions,
         ...props,
       },
       stubs: {
