@@ -55,7 +55,7 @@ module EE
       def suggested_reviewers
         return unless object.project.can_suggest_reviewers?
 
-        object.predictions&.suggested_reviewers
+        object.predictions
       end
     end
   end

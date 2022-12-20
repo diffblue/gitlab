@@ -11,19 +11,24 @@ RSpec.describe 'getting merge request information nested in a project', feature_
   let(:merge_request) { create(:merge_request, source_project: project) }
   let(:merge_request_graphql_data) { graphql_data_at(:project, :merge_request) }
   let(:mr_fields) { "suggestedReviewers { #{all_graphql_fields_for('SuggestedReviewersType')} }" }
-  let(:machine_learning_result) do
+  let(:suggested_reviewers) do
     {
       'version' => '0.0.0',
       'top_n' => 1,
-      'reviewers' => ['root']
+      'reviewers' => %w[bmarley swayne]
+    }
+  end
+
+  let(:accepted_reviewers) do
+    {
+      'reviewers' => %w[bmarley]
     }
   end
 
   let(:api_result) do
     {
-      'version' => '0.0.0',
-      'topN' => 1,
-      'reviewers' => ['root']
+      'accepted' => %w[bmarley],
+      'suggested' => %w[bmarley swayne]
     }
   end
 
@@ -38,7 +43,10 @@ RSpec.describe 'getting merge request information nested in a project', feature_
   describe 'suggestedReviewers' do
     before do
       merge_request.build_predictions
-      merge_request.predictions.update!(suggested_reviewers: machine_learning_result)
+      merge_request.predictions.update!(
+        suggested_reviewers: suggested_reviewers,
+        accepted_reviewers: accepted_reviewers
+      )
       allow_any_instance_of(Project)  # rubocop:disable RSpec/AnyInstanceOf
         .to receive(:can_suggest_reviewers?).and_return(available)
     end

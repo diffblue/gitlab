@@ -19548,9 +19548,8 @@ Represents a Suggested Reviewers result set.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="suggestedreviewerstypereviewers"></a>`reviewers` | [`[String!]!`](#string) | List of reviewers. |
-| <a id="suggestedreviewerstypetopn"></a>`topN` | [`Int`](#int) | Number of reviewers returned. |
-| <a id="suggestedreviewerstypeversion"></a>`version` | [`String`](#string) | Suggested reviewer version. |
+| <a id="suggestedreviewerstypeaccepted"></a>`accepted` | [`[String!]`](#string) | List of accepted reviewer usernames. |
+| <a id="suggestedreviewerstypesuggested"></a>`suggested` | [`[String!]!`](#string) | List of suggested reviewer usernames. |
 
 ### `TaskCompletionStatus`
 
