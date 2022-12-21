@@ -58,6 +58,14 @@ RSpec.describe Gitlab::Database::GitlabSchema do
     include_examples 'validate path globs', described_class.view_path_globs
   end
 
+  describe '.deleted_tables_path_globs' do
+    include_examples 'validate path globs', described_class.deleted_tables_path_globs
+  end
+
+  describe '.deleted_views_path_globs' do
+    include_examples 'validate path globs', described_class.deleted_views_path_globs
+  end
+
   describe '.tables_to_schema' do
     let(:database_models) { Gitlab::Database.database_base_models.slice('geo') }
     let(:views) { database_models.flat_map { |_, m| m.connection.views }.sort.uniq }
