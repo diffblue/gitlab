@@ -32,6 +32,10 @@ RSpec.describe EE::ApplicationSettingsHelper do
         end
       end
     end
+
+    it 'contains telesign values' do
+      expect(visible_attributes).to include(*%i(telesign_customer_xid telesign_api_key))
+    end
   end
 
   describe '.registration_features_can_be_prompted?' do
