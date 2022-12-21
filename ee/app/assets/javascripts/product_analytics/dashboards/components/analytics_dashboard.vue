@@ -4,16 +4,27 @@ import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboa
 
 // TODO: Replace the hardcoded values with API calls in https://gitlab.com/gitlab-org/gitlab/-/issues/382551
 const VISUALIZATION_JSONS = {
-  cube_analytics_line_chart: () =>
-    import(`../gl_dashboards/visualizations/cube_analytics_line_chart.json`),
-  cube_analytics_data_table: () =>
-    import(`../gl_dashboards/visualizations/cube_analytics_data_table.json`),
-  cube_analytics_single_stat: () =>
-    import(`../gl_dashboards/visualizations/cube_analytics_single_stat.json`),
+  average_session_duration: () =>
+    import(`../gl_dashboards/visualizations/average_session_duration.json`),
+  average_sessions_per_user: () =>
+    import(`../gl_dashboards/visualizations/average_sessions_per_user.json`),
+  browsers_per_users: () => import(`../gl_dashboards/visualizations/browsers_per_users.json`),
+  daily_active_users: () => import(`../gl_dashboards/visualizations/daily_active_users.json`),
+  events_over_time: () => import(`../gl_dashboards/visualizations/events_over_time.json`),
+  page_views_over_time: () => import(`../gl_dashboards/visualizations/page_views_over_time.json`),
+  returning_users_percentage: () =>
+    import(`../gl_dashboards/visualizations/returning_users_percentage.json`),
+  sessions_over_time: () => import(`../gl_dashboards/visualizations/sessions_over_time.json`),
+  sessions_per_browser: () => import(`../gl_dashboards/visualizations/sessions_per_browser.json`),
+  top_pages: () => import(`../gl_dashboards/visualizations/top_pages.json`),
+  total_events: () => import(`../gl_dashboards/visualizations/total_events.json`),
+  total_pageviews: () => import(`../gl_dashboards/visualizations/total_pageviews.json`),
+  total_sessions: () => import(`../gl_dashboards/visualizations/total_sessions.json`),
+  total_unique_users: () => import(`../gl_dashboards/visualizations/total_unique_users.json`),
 };
 
 const DASHBOARD_JSONS = {
-  dashboard_overview: () => import(`../gl_dashboards/dashboard_overview.json`),
+  dashboard_behavior: () => import(`../gl_dashboards/dashboard_behavior.json`),
   dashboard_audience: () => import(`../gl_dashboards/dashboard_audience.json`),
 };
 

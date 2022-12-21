@@ -49,7 +49,7 @@ describe('AnalyticsDashboard', () => {
     });
 
     it('should render the loading icon while fetching data', async () => {
-      createWrapper({}, 'dashboard_overview');
+      createWrapper({}, 'dashboard_audience');
 
       expect(findLoader().exists()).toBe(true);
 
@@ -58,16 +58,16 @@ describe('AnalyticsDashboard', () => {
       expect(findLoader().exists()).toBe(false);
     });
 
-    it('should render overview dashboard by id', async () => {
-      createWrapper({}, 'dashboard_overview');
+    it('should render audience dashboard by id', async () => {
+      createWrapper({}, 'dashboard_audience');
 
       await waitForPromises();
 
       expect(findDashboard().exists()).toBe(true);
     });
 
-    it('should render audience dashboard by id', async () => {
-      createWrapper({}, 'dashboard_audience');
+    it('should render behavior dashboard by id', async () => {
+      createWrapper({}, 'dashboard_behavior');
 
       await waitForPromises();
 
