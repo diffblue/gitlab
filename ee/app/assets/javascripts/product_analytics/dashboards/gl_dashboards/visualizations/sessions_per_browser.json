@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "title": "Sessions per Browser",
+  "type": "DataTable",
+  "data": {
+    "type": "cube_analytics",
+    "query": {
+      "measures": ["Sessions.count"],
+      "dimensions": ["Jitsu.parsedUaUaFamily", "Jitsu.parsedUaUaVersion"],
+      "limit": 100,
+      "timezone": "UTC",
+      "filters": [],
+      "timeDimensions": []
+    }
+  },
+  "options": {}
+}

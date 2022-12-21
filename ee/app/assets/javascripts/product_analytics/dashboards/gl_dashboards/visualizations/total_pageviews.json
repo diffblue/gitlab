@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "title": "Total pageviews",
+  "type": "SingleStat",
+  "data": {
+    "type": "cube_analytics",
+    "query": {
+      "measures": ["Jitsu.pageViewsCount"],
+      "filters": [{ "operator": "equals", "values": ["pageview"], "member": "Jitsu.eventType" }],
+      "limit": 100,
+      "timezone": "UTC",
+      "dimensions": [],
+      "timeDimensions": []
+    }
+  },
+  "options": {}
+}

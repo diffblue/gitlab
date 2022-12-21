@@ -57,12 +57,14 @@ describe('AnalyticsDashboardList', () => {
 
     it('should render titles', () => {
       expect(findRouterLinks()).toHaveLength(NUMBER_OF_DASHBOARDS);
-      expect(findRouterLinks().at(0).element.innerText).toContain('Overview');
+      expect(findRouterLinks().at(0).element.innerText).toContain('Audience');
     });
 
     it('should render descriptions', () => {
       expect(findRouterDescriptions()).toHaveLength(NUMBER_OF_DASHBOARDS);
-      expect(findRouterDescriptions().at(0).element.innerText).toContain('All');
+      expect(findRouterDescriptions().at(0).element.innerText).toContain(
+        'Understand your audience',
+      );
     });
 
     it('should render links', () => {
@@ -81,7 +83,7 @@ describe('AnalyticsDashboardList', () => {
     it('should route to the dashboard when a list item is clicked', async () => {
       await findListItems().at(0).trigger('click');
 
-      expect($router.push).toHaveBeenCalledWith('dashboard_overview');
+      expect($router.push).toHaveBeenCalledWith('dashboard_audience');
     });
   });
 });

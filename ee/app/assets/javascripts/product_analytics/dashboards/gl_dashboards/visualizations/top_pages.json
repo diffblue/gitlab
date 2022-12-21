@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "title": "Top pages",
+  "type": "DataTable",
+  "data": {
+    "type": "cube_analytics",
+    "query": {
+      "measures": ["Jitsu.pageViewsCount"],
+      "dimensions": ["Jitsu.docPath"],
+      "limit": 100,
+      "timezone": "UTC",
+      "filters": [],
+      "timeDimensions": []
+    }
+  },
+  "options": {}
+}

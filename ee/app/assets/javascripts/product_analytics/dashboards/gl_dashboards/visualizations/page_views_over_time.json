@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "title": "Page views over time",
+  "type": "LineChart",
+  "data": {
+    "type": "cube_analytics",
+    "query": {
+      "measures": ["Jitsu.pageViewsCount"],
+      "timeDimensions": [{ "dimension": "Jitsu.utcTime", "granularity": "day" }],
+      "filters": [{ "operator": "equals", "values": ["pageview"], "member": "Jitsu.eventType" }],
+      "limit": 100,
+      "timezone": "UTC",
+      "dimensions": []
+    }
+  },
+  "options": {
+    "xAxis": { "name": "Time", "type": "time" },
+    "yAxis": { "name": "Counts", "type": "time" }
+  }
+}

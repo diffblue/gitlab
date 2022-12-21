@@ -128,7 +128,7 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
             end
 
             it 'renders the dashboards view' do
-              expect(page).to have_content('All insights in one quick glance')
+              expect(page).to have_content('Understand your audience')
             end
           end
         end

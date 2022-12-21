@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "title": "Events over time",
+  "type": "LineChart",
+  "data": {
+    "type": "cube_analytics",
+    "query": {
+      "measures": ["Jitsu.count"],
+      "timeDimensions": [{ "dimension": "Jitsu.utcTime", "granularity": "day" }],
+      "limit": 100,
+      "timezone": "UTC",
+      "filters": [],
+      "dimensions": []
+    }
+  },
+  "options": {
+    "xAxis": { "name": "Time", "type": "time" },
+    "yAxis": { "name": "Counts", "type": "time" }
+  }
+}

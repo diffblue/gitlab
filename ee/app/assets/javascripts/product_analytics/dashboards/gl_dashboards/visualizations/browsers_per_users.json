@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "title": "Browsers per Users",
+  "type": "DataTable",
+  "data": {
+    "type": "cube_analytics",
+    "query": {
+      "measures": ["Jitsu.uniqueUsersCount"],
+      "dimensions": ["Jitsu.parsedUaUaFamily", "Jitsu.parsedUaUaVersion"],
+      "limit": 100,
+      "timezone": "UTC",
+      "filters": [],
+      "timeDimensions": []
+    }
+  },
+  "options": {}
+}
