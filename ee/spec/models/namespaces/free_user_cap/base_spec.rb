@@ -37,6 +37,52 @@ RSpec.describe Namespaces::FreeUserCap::Base, :saas do
         expect(test_class.new(namespace)).not_to be_enforce_cap
       end
     end
+
+    context 'when invoked with request cache', :request_store do
+      subject(:test_class) do
+        Class.new(described_class) do
+          private
+
+          def feature_enabled?
+            true
+          end
+        end
+      end
+
+      before do
+        test_class.new(namespace).enforce_cap?
+      end
+
+      it 'enforces cap' do
+        expect(test_class.new(namespace)).to be_enforce_cap
+      end
+
+      it 'does not perform extra work when enforce_cap has been invoked before' do
+        expect(::Gitlab::CurrentSettings).not_to receive(:dashboard_limit_enabled?)
+
+        test_class.new(namespace).enforce_cap?
+      end
+
+      it 'benchmarks with and without cache' do
+        # Run with:
+        #   BENCHMARK=1 rspec ee/spec/models/namespaces/free_user_cap/base_spec.rb
+        skip('Skipped. To run set env variable BENCHMARK=1') unless ENV.key?('BENCHMARK')
+
+        require 'benchmark/ips'
+
+        puts "\n--> Benchmarking enforce cap with request caching and without\n"
+
+        Benchmark.ips do |x|
+          x.report('without cache') do
+            test_class.new(namespace).enforce_cap?(cache: false)
+          end
+          x.report('with cache') do
+            test_class.new(namespace).enforce_cap?(cache: true)
+          end
+          x.compare!
+        end
+      end
+    end
   end
 
   describe '#users_count' do

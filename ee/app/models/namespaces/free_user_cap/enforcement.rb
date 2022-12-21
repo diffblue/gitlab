@@ -3,8 +3,7 @@
 module Namespaces
   module FreeUserCap
     class Enforcement < Base
-      def over_limit?(cache: false, update_database: true)
-        return preloaded_over_limit[root_namespace.id] if cache
+      def over_limit?(update_database: true)
         return false unless enforce_cap?
 
         result = users_count > limit
@@ -61,14 +60,6 @@ module Namespaces
       private
 
       CLOSE_TO_LIMIT_COUNT_DIFFERENCE = 2
-
-      def preloaded_over_limit
-        resource_key = 'free_user_cap_for_over_limit'
-
-        ::Gitlab::SafeRequestLoader.execute(resource_key: resource_key, resource_ids: [root_namespace.id]) do
-          { root_namespace.id => over_limit? }
-        end
-      end
 
       def update_database_fields(result)
         Rails.cache.fetch([self.class.name, root_namespace.id], expires_in: 1.day) do

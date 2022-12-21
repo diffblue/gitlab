@@ -287,36 +287,22 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas do
       end
     end
 
-    context 'when invoked with request cache', :request_store do
-      before do
-        described_class.new(namespace).over_limit?(cache: true)
-      end
-
-      it 'returns true' do
-        expect(described_class.new(namespace).over_limit?(cache: true)).to be true
-      end
-
-      it 'does not perform extra queries when over limit has been invoked before' do
-        expect(::Gitlab::CurrentSettings).not_to receive(:dashboard_limit_enabled?)
-
-        expect { described_class.new(namespace).over_limit?(cache: true) }.not_to exceed_query_limit(0)
-      end
-
-      it 'benchmarks with and without cache' do
+    context 'with benchmarks' do
+      it 'shows with and without database update' do
         # Run with:
-        #   BENCHMARK=1 rspec ee/spec/models/namespaces/free_user_cap/standard_spec.rb
+        #   BENCHMARK=1 rspec ee/spec/models/namespaces/free_user_cap/enforcement_spec.rb
         skip('Skipped. To run set env variable BENCHMARK=1') unless ENV.key?('BENCHMARK')
 
         require 'benchmark/ips'
 
-        puts "\n--> Benchmarking over limit with request caching and without\n"
+        puts "\n--> Benchmarking over limit with database updating and without\n"
 
         Benchmark.ips do |x|
-          x.report('without cache') do
-            ::Namespaces::FreeUserCap::Enforcement.new(namespace).over_limit?(cache: false)
+          x.report('with database update') do
+            ::Namespaces::FreeUserCap::Enforcement.new(namespace).over_limit?
           end
-          x.report('with cache') do
-            ::Namespaces::FreeUserCap::Enforcement.new(namespace).over_limit?(cache: true)
+          x.report('without database update') do
+            ::Namespaces::FreeUserCap::Enforcement.new(namespace).over_limit?(update_database: false)
           end
           x.compare!
         end
