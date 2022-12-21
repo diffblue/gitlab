@@ -17,6 +17,7 @@ module Epics
         .with(epics_cte.to_arel)
         .from(epics_cte.table.name)
         .where('EXISTS (?)', issues_joined_with_epics)
+        .order(id: :desc)
     end
     # rubocop: enable CodeReuse/ActiveRecord
 
@@ -26,7 +27,7 @@ module Epics
 
     # rubocop: disable CodeReuse/ActiveRecord
     def epics_cte
-      @epics_cte ||= Gitlab::SQL::CTE.new(:sorted_epics, accessible_epics.order(id: :desc))
+      @epics_cte ||= Gitlab::SQL::CTE.new(:sorted_epics, accessible_epics)
     end
     # rubocop: enable CodeReuse/ActiveRecord
 
