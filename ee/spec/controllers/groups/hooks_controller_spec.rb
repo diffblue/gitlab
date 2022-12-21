@@ -185,6 +185,24 @@ RSpec.describe Groups::HooksController, feature_category: :integrations do
       let(:hook) { create(:group_hook, group: group) }
       let(:success_response) { ServiceResponse.success(payload: { http_status: 200 }) }
 
+      context 'when testing a job hook' do
+        let(:trigger) { 'job_events' }
+
+        before do
+          create(:project, :repository, group: group)
+        end
+
+        context 'where there are no jobs' do
+          it 'reports the error' do
+            post :test, params: { group_id: group.to_param, id: hook, trigger: trigger }
+
+            expect(response).to have_gitlab_http_status(:found)
+            expect(flash[:notice]).to be_nil
+            expect(flash[:alert]).to eq('Hook execution failed: Ensure the project has CI jobs.')
+          end
+        end
+      end
+
       context 'when group does not have a project' do
         it 'redirects back' do
           expect(TestHooks::ProjectService).not_to receive(:new)
@@ -197,7 +215,9 @@ RSpec.describe Groups::HooksController, feature_category: :integrations do
       end
 
       context 'when group has a project' do
-        let!(:project) { create(:project, :repository, group: group) }
+        before do
+          create(:project, :repository, group: group)
+        end
 
         context 'when "trigger" params is empty' do
           it 'defaults to "push_events"' do
