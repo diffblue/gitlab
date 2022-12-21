@@ -12,11 +12,23 @@ module Audit
       return if model.blank?
 
       if should_audit?(:merge_pipelines_enabled)
-        audit_changes(:merge_pipelines_enabled, as: 'merge_pipelines_enabled', entity: @project, model: model)
+        audit_changes(
+          :merge_pipelines_enabled,
+          as: 'merge_pipelines_enabled',
+          entity: @project,
+          model: model,
+          event_type: 'project_cicd_merge_pipelines_enabled_updated'
+        )
       end
 
       if should_audit?(:merge_trains_enabled)
-        audit_changes(:merge_trains_enabled, as: 'merge_trains_enabled', entity: @project, model: model)
+        audit_changes(
+          :merge_trains_enabled,
+          as: 'merge_trains_enabled',
+          entity: @project,
+          model: model,
+          event_type: 'project_cicd_merge_trains_enabled_updated'
+        )
       end
 
       nil
