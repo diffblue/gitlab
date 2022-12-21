@@ -25788,6 +25788,9 @@ msgstr[1] ""
 msgid "Membership"
 msgstr ""
 
+msgid "Members|%{group} by %{createdBy}"
+msgstr ""
+
 msgid "Members|%{time} by %{user}"
 msgstr ""
 
@@ -25795,6 +25798,12 @@ msgid "Members|%{userName} is currently an LDAP user. Editing their permissions 
 msgstr ""
 
 msgid "Members|2FA"
+msgstr ""
+
+msgid "Members|Access granted"
+msgstr ""
+
+msgid "Members|Activity"
 msgstr ""
 
 msgid "Members|An error occurred while trying to enable LDAP override, please try again."
@@ -25833,6 +25842,9 @@ msgstr ""
 msgid "Members|Direct"
 msgstr ""
 
+msgid "Members|Direct member by %{createdBy}"
+msgstr ""
+
 msgid "Members|Disabled"
 msgstr ""
 
@@ -25860,6 +25872,9 @@ msgstr ""
 msgid "Members|LDAP override enabled."
 msgstr ""
 
+msgid "Members|Last activity"
+msgstr ""
+
 msgid "Members|Leave \"%{source}\""
 msgstr ""
 
@@ -25885,6 +25900,9 @@ msgid "Members|Search groups"
 msgstr ""
 
 msgid "Members|Search invited"
+msgstr ""
+
+msgid "Members|User created"
 msgstr ""
 
 msgid "Member|Deny access"
