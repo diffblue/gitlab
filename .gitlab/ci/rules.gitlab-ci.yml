@@ -220,9 +220,6 @@
   - "scripts/lint-doc.sh"
   - ".gitlab/ci/docs.gitlab-ci.yml"
 
-.docs-code-quality-patterns: &docs-code-quality-patterns
-  - "doc/**/*.md"
-
 .docs-deprecations-and-removals-patterns: &docs-deprecations-and-removals-patterns
   - "doc/update/deprecations.md"
   - "doc/update/removals.md"
@@ -814,11 +811,6 @@
       changes: *docs-patterns
       when: manual
       allow_failure: true
-
-.docs:rules:docs-code-quality:
-  rules:
-    - <<: *if-merge-request
-      changes: *docs-code-quality-patterns
 
 .docs:rules:docs-lint:
   rules:
@@ -1777,6 +1769,8 @@
     - <<: *if-default-branch-refs
     - <<: *if-default-refs
       changes: *code-backstage-qa-patterns
+    - <<: *if-default-refs
+      changes: *docs-patterns
 
 .reports:rules:brakeman-sast:
   rules:
