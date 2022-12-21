@@ -26,7 +26,7 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountCiBuildsMetric do
       secure_types.each do |secure_type|
         create(:ci_build, name: secure_type, user: user, created_at: 3.days.ago)
         create(:ci_build, name: secure_type, user: user)
-        create(:ci_build, name: secure_type, user: user2, created_at: 30.days.ago)
+        create(:ci_build, name: secure_type, user: user2, created_at: 31.days.ago)
       end
     end
 
