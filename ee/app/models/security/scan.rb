@@ -54,6 +54,7 @@ module Security
     scope :with_errors, -> { where("jsonb_array_length(COALESCE(info->'errors', '[]'::jsonb)) > 0") }
 
     delegate :name, to: :build
+    alias_attribute :type, :scan_type
 
     before_save :ensure_project_id_pipeline_id
 
