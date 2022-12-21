@@ -65,6 +65,10 @@ module Namespaces
         limit != 0 && exceeded_size(change_size) > 0
       end
 
+      def enforcement_type
+        :namespace_storage_limit
+      end
+
       private
 
       attr_reader :root_namespace

@@ -91,9 +91,14 @@ module EE
         buy_addon_target_attr: buy_addon_target_attr,
         default_per_page: page_size,
         storage_limit_enforced: ::EE::Gitlab::Namespaces::Storage::Enforcement.enforce_limit?(group).to_s,
+        can_show_inline_alert: project_storage_limit_enforced?(group).to_s,
         additional_repo_storage_by_namespace: group.additional_repo_storage_by_namespace_enabled?.to_s,
         is_free_namespace: (!group.paid?).to_s
       }
+    end
+
+    def project_storage_limit_enforced?(group)
+      group.root_storage_size.enforce_limit? && group.root_storage_size.enforcement_type == :project_repository_limit
     end
 
     override :require_verification_for_namespace_creation_enabled?

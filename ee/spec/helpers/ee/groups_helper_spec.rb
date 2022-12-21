@@ -263,8 +263,43 @@ RSpec.describe GroupsHelper do
         default_per_page: 20,
         is_free_namespace: "true",
         purchase_storage_url: nil,
-        storage_limit_enforced: "false"
+        storage_limit_enforced: "false",
+        can_show_inline_alert: "false"
       })
+    end
+  end
+
+  describe '#project_storage_limit_enforced?' do
+    subject(:project_storage_limit_enforced?) { helper.project_storage_limit_enforced?(group) }
+
+    context 'when project-level storage limits are enabled' do
+      before do
+        allow(::EE::Gitlab::Namespaces::Storage::Enforcement).to receive(:enforce_limit?).with(group).and_return(false)
+      end
+
+      context 'when the project limit is enforced' do
+        before do
+          stub_ee_application_setting(automatic_purchased_storage_allocation: true)
+        end
+
+        it { is_expected.to be true }
+      end
+
+      context 'when project limit is not enforced' do
+        before do
+          stub_ee_application_setting(automatic_purchased_storage_allocation: false)
+        end
+
+        it { is_expected.to be false }
+      end
+    end
+
+    context 'when namespace-level storage limits are enabled' do
+      before do
+        allow(::EE::Gitlab::Namespaces::Storage::Enforcement).to receive(:enforce_limit?).with(group).and_return(true)
+      end
+
+      it { is_expected.to be false }
     end
   end
 

@@ -21,6 +21,7 @@ export default () => {
     buyAddonTargetAttr,
     defaultPerPage,
     storageLimitEnforced,
+    canShowInlineAlert,
     additionalRepoStorageByNamespace,
     isFreeNamespace,
     isPersonalNamespace,
@@ -46,6 +47,7 @@ export default () => {
       return createElement(NamespaceStorageApp, {
         props: {
           storageLimitEnforced: parseBoolean(storageLimitEnforced),
+          canShowInlineAlert: parseBoolean(canShowInlineAlert),
           isAdditionalStorageFlagEnabled: parseBoolean(additionalRepoStorageByNamespace),
           isFreeNamespace: parseBoolean(isFreeNamespace),
           isPersonalNamespace,

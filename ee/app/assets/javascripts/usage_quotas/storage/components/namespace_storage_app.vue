@@ -84,6 +84,11 @@ export default {
       required: false,
       default: false,
     },
+    canShowInlineAlert: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     isFreeNamespace: {
       type: Boolean,
       required: false,
@@ -143,14 +148,15 @@ export default {
         return false;
       }
 
-      if (this.firstFetch) {
-        // for initial load check if the data fetch is done (isQueryLoading)
-        return this.isAdditionalStorageFlagEnabled && !this.isQueryLoading;
+      // for initial load check if the data fetch is done (isQueryLoading)
+      if (this.firstFetch && this.isQueryLoading) {
+        return false;
       }
+
       // for all subsequent queries the storage inline alert doesn't
       // have to be re-rendered as the data from graphql will remain
       // the same.
-      return this.isAdditionalStorageFlagEnabled;
+      return this.canShowInlineAlert;
     },
     showPagination() {
       return Boolean(this.pageInfo?.hasPreviousPage || this.pageInfo?.hasNextPage);

@@ -36,6 +36,10 @@ module Namespaces
         ::Gitlab::CurrentSettings.automatic_purchased_storage_allocation?
       end
 
+      def enforcement_type
+        :project_repository_limit
+      end
+
       private
 
       attr_reader :root_namespace

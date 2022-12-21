@@ -80,6 +80,7 @@ describe('NamespaceStorageApp', () => {
   const createComponent = ({
     provide = {},
     storageLimitEnforced = false,
+    canShowInlineAlert = false,
     additionalRepoStorageByNamespace = false,
     dependencyProxyTotalSize = '',
     isFreeNamespace = false,
@@ -94,6 +95,7 @@ describe('NamespaceStorageApp', () => {
       },
       propsData: {
         storageLimitEnforced,
+        canShowInlineAlert,
         isAdditionalStorageFlagEnabled: additionalRepoStorageByNamespace,
         isFreeNamespace,
         isPersonalNamespace,
@@ -427,6 +429,7 @@ describe('NamespaceStorageApp', () => {
 
         createComponent({
           mockApollo,
+          canShowInlineAlert: true,
           additionalRepoStorageByNamespace: true,
         });
         await waitForPromises();
@@ -463,6 +466,34 @@ describe('NamespaceStorageApp', () => {
       await waitForPromises();
 
       expect(findTotalUsage().text()).toContain('Not applicable');
+    });
+  });
+
+  describe('when canShowInlineAlert is true', () => {
+    it('does render storage-inline-alert component', async () => {
+      mockApollo = createMockApolloProvider();
+
+      createComponent({
+        mockApollo,
+        canShowInlineAlert: true,
+        additionalRepoStorageByNamespace: true,
+      });
+      await waitForPromises();
+
+      expect(findStorageInlineAlert().exists()).toBe(true);
+    });
+  });
+
+  describe('when canShowInlineAlert is false', () => {
+    it('does not render storage-inline-alert component', async () => {
+      mockApollo = createMockApolloProvider();
+
+      createComponent({
+        mockApollo,
+      });
+      await waitForPromises();
+
+      expect(findStorageInlineAlert().exists()).toBe(false);
     });
   });
 });
