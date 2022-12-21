@@ -20,6 +20,10 @@ module QA
                 element :security_report_content
               end
 
+              view 'ee/app/assets/javascripts/security_dashboard/components/shared/filters/activity_filter.vue' do
+                element :filter_activity_dropdown
+              end
+
               view 'ee/app/assets/javascripts/security_dashboard/components/
                     shared/vulnerability_report/vulnerability_list.vue' do
                 element :vulnerability_status_content
@@ -51,9 +55,24 @@ module QA
                 # To account for 'All statuses' dropdown item
               end
               click_element(:filter_status_dropdown)
-              state = statuses.map { |status| status.include?("all") ? "state=all" : "state=#{status}" }.join("&")
+              state = statuses.map do |status|
+                case status
+                when /all/i
+                  'state=all'
+                when /needs triage/i
+                  'state=detected'
+                else
+                  "state=#{status}"
+                end
+              end.join("&")
               page.current_url.downcase.include?(state)
             end
+          end
+
+          def filter_by_activity(activity_name)
+            click_element(:filter_activity_dropdown, wait: 30)
+            click_element("filter_#{activity_name.downcase.tr(" ", "_")}_dropdown_item")
+            click_element(:filter_activity_dropdown)
           end
 
           def has_vulnerability?(name)

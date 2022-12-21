@@ -113,7 +113,12 @@ export default {
   <div>
     <querystring-sync v-model="selected" querystring-key="activity" />
     <label class="gl-mb-2">{{ $options.i18n.label }}</label>
-    <gl-dropdown :header-text="$options.i18n.label" block toggle-class="gl-mb-0">
+    <gl-dropdown
+      :header-text="$options.i18n.label"
+      block
+      toggle-class="gl-mb-0"
+      data-qa-selector="filter_activity_dropdown"
+    >
       <template #button-text>
         <dropdown-button-text :items="selectedItemNames" :name="$options.i18n.label" />
       </template>
