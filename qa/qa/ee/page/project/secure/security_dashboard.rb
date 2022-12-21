@@ -20,6 +20,10 @@ module QA
               element :change_status_button
             end
 
+            view 'ee/app/assets/javascripts/security_dashboard/components/shared/vulnerability_report/vulnerability_report_header.vue' do
+              element :export_vulnerabilities_button
+            end
+
             def has_vulnerability?(description:)
               has_element?(:vulnerability, vulnerability_description: description)
             end
@@ -54,6 +58,10 @@ module QA
 
             def has_issue_created_icon?(vulnerability_name)
               has_element?(:vulnerability_issue_created_badge_content, badge_description: vulnerability_name)
+            end
+
+            def export_vulnerabilities_to_csv
+              click_element(:export_vulnerabilities_button)
             end
           end
         end
