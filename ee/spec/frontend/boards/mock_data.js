@@ -609,7 +609,7 @@ export const mockTokens = (
     icon: 'status-health',
     title: TOKEN_TITLE_HEALTH,
     token: HealthToken,
-    unique: true,
-    operators: OPERATORS_IS,
+    unique: false,
+    operators: OPERATORS_IS_NOT,
   },
 ];

@@ -3,7 +3,7 @@ import { ITEM_TYPE } from '~/groups/constants';
 import IssuesListApp from '~/issues/list/components/issues_list_app.vue';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
-  OPERATORS_IS,
+  OPERATORS_IS_NOT,
   TOKEN_TYPE_EPIC,
   TOKEN_TYPE_ITERATION,
   TOKEN_TYPE_WEIGHT,
@@ -122,9 +122,9 @@ export default {
           type: TOKEN_TYPE_HEALTH,
           title: TOKEN_TITLE_HEALTH,
           icon: 'status-health',
-          operators: OPERATORS_IS,
+          operators: OPERATORS_IS_NOT,
           token: HealthToken,
-          unique: true,
+          unique: false,
         });
       }
 

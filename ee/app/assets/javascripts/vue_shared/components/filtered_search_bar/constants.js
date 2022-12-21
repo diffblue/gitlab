@@ -11,10 +11,7 @@ export const WEIGHT_TOKEN_SUGGESTIONS_SIZE = 21;
 
 export const DEFAULT_ITERATIONS = OPTIONS_NONE_ANY.concat(OPTION_CURRENT);
 export const DEFAULT_CADENCES = [OPTION_ANY, OPTION_CURRENT];
-export const DEFAULT_HEALTH_STATUSES = OPTIONS_NONE_ANY.map((opt) => ({
-  ...opt,
-  value: opt.value.toUpperCase(),
-}));
+export const DEFAULT_HEALTH_STATUSES = OPTIONS_NONE_ANY;
 
 export const HEALTH_SUGGESTIONS = [
   { title: __('On track'), value: 'onTrack' },

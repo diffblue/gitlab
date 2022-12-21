@@ -18,7 +18,7 @@ query getIssuesCountEE(
   $iterationId: [ID]
   $iterationWildcardId: IterationWildcardId
   $weight: String
-  $healthStatus: HealthStatusFilter
+  $healthStatusFilter: HealthStatusFilter
   $crmContactId: String
   $crmOrganizationId: String
   $not: NegatedIssueFilterInput
@@ -45,7 +45,7 @@ query getIssuesCountEE(
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
       weight: $weight
-      healthStatusFilter: $healthStatus
+      healthStatusFilter: $healthStatusFilter
       crmContactId: $crmContactId
       crmOrganizationId: $crmOrganizationId
       not: $not
@@ -72,7 +72,7 @@ query getIssuesCountEE(
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
       weight: $weight
-      healthStatusFilter: $healthStatus
+      healthStatusFilter: $healthStatusFilter
       crmContactId: $crmContactId
       crmOrganizationId: $crmOrganizationId
       not: $not
@@ -99,7 +99,7 @@ query getIssuesCountEE(
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
       weight: $weight
-      healthStatusFilter: $healthStatus
+      healthStatusFilter: $healthStatusFilter
       crmContactId: $crmContactId
       crmOrganizationId: $crmOrganizationId
       not: $not
@@ -130,7 +130,7 @@ query getIssuesCountEE(
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
       weight: $weight
-      healthStatusFilter: $healthStatus
+      healthStatusFilter: $healthStatusFilter
       crmContactId: $crmContactId
       crmOrganizationId: $crmOrganizationId
       not: $not
@@ -158,7 +158,7 @@ query getIssuesCountEE(
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
       weight: $weight
-      healthStatusFilter: $healthStatus
+      healthStatusFilter: $healthStatusFilter
       crmContactId: $crmContactId
       crmOrganizationId: $crmOrganizationId
       not: $not
@@ -186,7 +186,7 @@ query getIssuesCountEE(
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
       weight: $weight
-      healthStatusFilter: $healthStatus
+      healthStatusFilter: $healthStatusFilter
       crmContactId: $crmContactId
       crmOrganizationId: $crmOrganizationId
       not: $not

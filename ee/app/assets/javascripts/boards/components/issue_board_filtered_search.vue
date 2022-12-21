@@ -8,7 +8,6 @@ import IssueBoardFilteredSearchFoss from '~/boards/components/issue_board_filter
 import { BoardType } from '~/boards/constants';
 import {
   OPERATORS_IS_NOT,
-  OPERATORS_IS,
   TOKEN_TYPE_EPIC,
   TOKEN_TYPE_HEALTH,
   TOKEN_TYPE_ITERATION,
@@ -87,9 +86,9 @@ export default {
                 type: TOKEN_TYPE_HEALTH,
                 title: TOKEN_TITLE_HEALTH,
                 icon: 'status-health',
-                operators: OPERATORS_IS,
+                operators: OPERATORS_IS_NOT,
                 token: HealthToken,
-                unique: true,
+                unique: false,
               },
             ]
           : []),

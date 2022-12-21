@@ -60,17 +60,24 @@ RSpec.describe 'Filter issues health status', :js, feature_category: :team_plann
   end
 
   describe 'behavior' do
-    it 'loads all the health statuses when opened' do
-      select_tokens 'Health'
+    it 'loads all the health statuses when opened for =' do
+      select_tokens 'Health', '='
 
       # Expect Any, None, On track, Needs attention and At risk
       expect_suggestion_count 5
+    end
+
+    it 'loads all the health statuses when opened for !=' do
+      select_tokens 'Health', '!='
+
+      # Expect On track, Needs attention and At risk
+      expect_suggestion_count 3
     end
   end
 
   describe 'only health' do
     it 'filter issues by searched health status' do
-      select_tokens 'Health', 'On track', submit: true
+      select_tokens 'Health', '=', 'On track', submit: true
 
       expect_issues_list_count(1)
       expect_issues_list_to_contain([issue1])
@@ -78,7 +85,7 @@ RSpec.describe 'Filter issues health status', :js, feature_category: :team_plann
     end
 
     it 'filter issues by Any health status' do
-      select_tokens 'Health', 'Any', submit: true
+      select_tokens 'Health', '=', 'Any', submit: true
 
       expect_issues_list_count(2)
       expect_issues_list_to_contain([issue1, issue2])
@@ -86,17 +93,33 @@ RSpec.describe 'Filter issues health status', :js, feature_category: :team_plann
     end
 
     it 'filter issues by None health status' do
-      select_tokens 'Health', 'None', submit: true
+      select_tokens 'Health', '=', 'None', submit: true
 
       expect_issues_list_count(1)
       expect_issues_list_to_contain([issue3])
       expect_issues_list_to_not_contain([issue1, issue2])
     end
+
+    it 'filter issues by not on track health status' do
+      select_tokens 'Health', '!=', 'On track', submit: true
+
+      expect_issues_list_count(2)
+      expect_issues_list_to_contain([issue2, issue3])
+      expect_issues_list_to_not_contain([issue1])
+    end
+
+    it 'filter issues by any health status but not on track' do
+      select_tokens 'Health', '!=', 'On track', 'Health', '=', 'Any', submit: true
+
+      expect_issues_list_count(1)
+      expect_issues_list_to_contain([issue2])
+      expect_issues_list_to_not_contain([issue1, issue3])
+    end
   end
 
   describe 'health with other filters' do
     it 'filters issues by searched health and text' do
-      select_tokens 'Health', 'At risk'
+      select_tokens 'Health', '=', 'At risk'
       send_keys 'bug', :enter
 
       expect_issues_list_count 1
@@ -106,7 +129,7 @@ RSpec.describe 'Filter issues health status', :js, feature_category: :team_plann
     end
 
     it 'filters issues by searched health, author and text' do
-      select_tokens 'Health', 'At risk', 'Author', '=', user.username
+      select_tokens 'Health', '=', 'At risk', 'Author', '=', user.username
       send_keys 'bug', :enter
 
       expect_issues_list_count 1
@@ -116,7 +139,7 @@ RSpec.describe 'Filter issues health status', :js, feature_category: :team_plann
     end
 
     it 'filters issues by searched health, author, assignee and text' do
-      select_tokens 'Health', 'At risk', 'Author', '=', user.username, 'Assignee', '=', user.username
+      select_tokens 'Health', '=', 'At risk', 'Author', '=', user.username, 'Assignee', '=', user.username
       send_keys 'bug', :enter
 
       expect_issues_list_count 1
@@ -126,7 +149,7 @@ RSpec.describe 'Filter issues health status', :js, feature_category: :team_plann
     end
 
     it 'filters issues by searched health, author, assignee, label and text' do
-      select_tokens 'Health', 'At risk', 'Author', '=', user.username
+      select_tokens 'Health', '=', 'At risk', 'Author', '=', user.username
       select_tokens 'Assignee', '=', user.username, 'Label', '=', label.title
       send_keys 'bug', :enter
 
@@ -137,13 +160,22 @@ RSpec.describe 'Filter issues health status', :js, feature_category: :team_plann
     end
 
     it 'filters issues by searched health, milestone and text' do
-      select_tokens 'Health', 'At risk', 'Milestone', '=', milestone.title
+      select_tokens 'Health', '=', 'At risk', 'Milestone', '=', milestone.title
       send_keys 'bug', :enter
 
       expect_issues_list_count 1
       expect_issues_list_to_contain([issue2])
       expect_issues_list_to_not_contain([issue1])
       expect_search_term 'bug'
+    end
+
+    it 'filters issues by not on track, milestone and text' do
+      select_tokens 'Health', '!=', 'On track', 'Milestone', '=', milestone.title
+      send_keys 'bug', :enter
+
+      expect_issues_list_count 1
+      expect_issues_list_to_contain([issue2])
+      expect_issues_list_to_not_contain([issue1, issue3])
     end
   end
 end
