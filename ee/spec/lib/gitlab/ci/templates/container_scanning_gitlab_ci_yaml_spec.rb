@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Container-Scanning.gitlab-ci.yml' do
+RSpec.describe 'Container-Scanning.gitlab-ci.yml', feature_category: :continuous_integration do
   subject(:template) { Gitlab::Template::GitlabCiYmlTemplate.find('Container-Scanning') }
 
   describe 'the created pipeline' do
@@ -46,7 +46,8 @@ RSpec.describe 'Container-Scanning.gitlab-ci.yml' do
 
         it 'includes no jobs' do
           expect(build_names).to be_empty
-          expect(pipeline.errors.full_messages).to match_array(["No stages / jobs for this pipeline."])
+          expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
+            'The rules configuration prevented any jobs from being added to the pipeline.'])
         end
       end
     end

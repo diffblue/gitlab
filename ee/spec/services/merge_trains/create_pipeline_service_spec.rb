@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeTrains::CreatePipelineService do
+RSpec.describe MergeTrains::CreatePipelineService, feature_category: :continuous_integration do
   let_it_be(:project) { create(:project, :repository, :auto_devops, merge_pipelines_enabled: true, merge_trains_enabled: true) }
   let_it_be(:maintainer) { create(:user) }
 
@@ -149,7 +149,10 @@ RSpec.describe MergeTrains::CreatePipelineService do
 
       context 'when .gitlab-ci.yml does not have only: [merge_requests] specification' do
         it_behaves_like 'returns an error' do
-          let(:expected_reason) { 'No stages / jobs for this pipeline.' }
+          let(:expected_reason) do
+            'Pipeline will not run for the selected trigger. ' \
+            'The rules configuration prevented any jobs from being added to the pipeline.'
+          end
         end
       end
     end

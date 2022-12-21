@@ -68,7 +68,8 @@ RSpec.shared_examples 'language detection' do
 
       it 'includes no job' do
         expect(build_names).to be_empty
-        expect(pipeline.errors.full_messages).to match_array(["No stages / jobs for this pipeline."])
+        expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
+          'The rules configuration prevented any jobs from being added to the pipeline.'])
       end
     end
   end
@@ -108,7 +109,7 @@ RSpec.shared_examples 'DS_REMEDIATE default value' do |expected|
   end
 end
 
-RSpec.describe 'Dependency-Scanning.gitlab-ci.yml' do
+RSpec.describe 'Dependency-Scanning.gitlab-ci.yml', feature_category: :continuous_integration do
   subject(:template) { Gitlab::Template::GitlabCiYmlTemplate.find('Dependency-Scanning') }
 
   describe 'the created pipeline' do
@@ -131,7 +132,8 @@ RSpec.describe 'Dependency-Scanning.gitlab-ci.yml' do
     context 'when project has no license' do
       it 'includes no jobs' do
         expect(build_names).to be_empty
-        expect(pipeline.errors.full_messages).to match_array(["No stages / jobs for this pipeline."])
+        expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
+          'The rules configuration prevented any jobs from being added to the pipeline.'])
       end
     end
 
@@ -149,7 +151,8 @@ RSpec.describe 'Dependency-Scanning.gitlab-ci.yml' do
 
         it 'includes no jobs' do
           expect(build_names).to be_empty
-          expect(pipeline.errors.full_messages).to match_array(["No stages / jobs for this pipeline."])
+          expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
+            'The rules configuration prevented any jobs from being added to the pipeline.'])
         end
       end
 
@@ -186,7 +189,8 @@ RSpec.describe 'Dependency-Scanning.gitlab-ci.yml' do
 
             it 'creates a pipeline excluding jobs from specified analyzers' do
               expect(build_names).to be_empty
-              expect(pipeline.errors.full_messages).to match_array(["No stages / jobs for this pipeline."])
+              expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
+                'The rules configuration prevented any jobs from being added to the pipeline.'])
             end
           end
         end

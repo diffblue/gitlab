@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Coverage-Fuzzing.gitlab-ci.yml' do
+RSpec.describe 'Coverage-Fuzzing.gitlab-ci.yml', feature_category: :continuous_integration do
   subject(:template) do
     <<~YAML
       stages:
@@ -47,7 +47,8 @@ RSpec.describe 'Coverage-Fuzzing.gitlab-ci.yml' do
 
         it 'includes no job' do
           expect(build_names).to be_empty
-          expect(pipeline.errors.full_messages).to match_array(["No stages / jobs for this pipeline."])
+          expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
+            'The rules configuration prevented any jobs from being added to the pipeline.'])
         end
       end
 
@@ -60,7 +61,8 @@ RSpec.describe 'Coverage-Fuzzing.gitlab-ci.yml' do
 
         it 'includes no jobs' do
           expect(build_names).to be_empty
-          expect(pipeline.errors.full_messages).to match_array(["No stages / jobs for this pipeline."])
+          expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
+            'The rules configuration prevented any jobs from being added to the pipeline.'])
         end
       end
     end
