@@ -104,4 +104,10 @@ RSpec.describe Namespaces::Storage::RootExcessSize do
       expect(model.enforce_limit?).to eq(false)
     end
   end
+
+  describe '#enforcement_type' do
+    it 'returns :project_repository_limit' do
+      expect(model.enforcement_type).to eq(:project_repository_limit)
+    end
+  end
 end

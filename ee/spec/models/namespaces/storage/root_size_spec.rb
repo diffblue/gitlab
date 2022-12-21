@@ -398,4 +398,10 @@ RSpec.describe Namespaces::Storage::RootSize, :saas do
       end
     end
   end
+
+  describe '#enforcement_type' do
+    it 'returns :namespace_storage_limit' do
+      expect(model.enforcement_type).to eq(:namespace_storage_limit)
+    end
+  end
 end
