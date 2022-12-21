@@ -1,2 +1,3 @@
 - unless project.marked_for_deletion?
-  = link_to _('Delete'), project, data: { confirm: remove_project_message(project) }, method: :delete, class: "btn gl-button btn-danger"
+  = render Pajamas::ButtonComponent.new(href: project, variant: :danger, method: :delete, button_options: { data: { confirm: remove_project_message(project) } }) do
+    = _('Delete')
