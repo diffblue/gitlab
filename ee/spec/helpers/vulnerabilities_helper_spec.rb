@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe VulnerabilitiesHelper do
+RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :repository, :public) }
   let_it_be(:pipeline) { create(:ci_pipeline, :success, project: project) }
@@ -319,6 +319,39 @@ RSpec.describe VulnerabilitiesHelper do
             h3. Scanner:
 
             * Name: Find Security Bugs
+          TEXT
+        end
+
+        it 'delegates rendering URL to Integrations::Jira' do
+          expect(jira_integration).to receive(:new_issue_url_with_predefined_fields).with("Investigate vulnerability: #{vulnerability.name}", expected_jira_issue_description)
+
+          subject
+        end
+      end
+
+      context 'when the given object is a Security::Finding' do
+        let(:pipeline) { create(:ci_pipeline, project: project) }
+        let(:scan) { create(:security_scan, pipeline: pipeline) }
+        let(:vulnerability) { create(:security_finding, :with_finding_data, scan: scan) }
+        let(:expected_jira_issue_description) do
+          <<~TEXT
+            h3. Description:
+
+            The cipher does not provide data integrity update 1
+
+            * Severity: critical
+            * Confidence: high
+
+
+            h3. Links:
+
+            * [Cipher does not check for integrity first?|https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first]
+
+
+            h3. Scanner:
+
+            * Name: Find Security Bugs
+            * Type: dast
           TEXT
         end
 

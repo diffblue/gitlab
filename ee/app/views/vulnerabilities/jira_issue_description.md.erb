@@ -67,6 +67,7 @@ h3. <%= _("Scanner") %>:
 <% if scan_data.type.present? %>
 * <%= _("Type") %>: <%= scan_data.type %>
 <% end %>
+<% unless vulnerability.is_a?(Security::Finding) %>
 <% if scan_data.status.present? %>
 * <%= _("Status") %>: <%= scan_data.status %>
 <% end %>
@@ -75,6 +76,7 @@ h3. <%= _("Scanner") %>:
 <% end %>
 <% if scan_data.end_time.present? %>
 * <%= _("End Time") %>: <%= scan_data.end_time %>
+<% end %>
 <% end %>
 <% end %>
 <% end %>

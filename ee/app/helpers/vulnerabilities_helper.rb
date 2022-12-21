@@ -49,6 +49,11 @@ module VulnerabilitiesHelper
     new_project_issue_path(vulnerability.project, { vulnerability_id: vulnerability.id })
   end
 
+  # This method can be called with an instance of the following models;
+  # - Vulnerability
+  # - Vulnerabilities::Finding
+  # - Security::Finding
+  #
   def create_jira_issue_url_for(vulnerability)
     return unless vulnerability.project.configured_to_create_issues_from_vulnerabilities?
 

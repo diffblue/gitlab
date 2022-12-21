@@ -5,6 +5,35 @@
   "description": "The schema validates the content of the Security::Finding#finding_data attribute",
   "additionalProperties": false,
   "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "solution": {
+      "type": "string"
+    },
+    "location": {
+      "type": "object"
+    },
+    "identifiers": {
+      "type": "array"
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "remediation_byte_offsets": {
       "type": "array",
       "items": {
