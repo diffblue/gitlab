@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::CodeOwners::File do
+RSpec.describe Gitlab::CodeOwners::File, feature_category: :source_code_management do
   include FakeBlobHelpers
 
   # 'project' is required for the #fake_blob helper
@@ -93,6 +93,28 @@ RSpec.describe Gitlab::CodeOwners::File do
 
         expect(data.keys.length).to eq(1)
         expect(data.keys).to contain_exactly(::Gitlab::CodeOwners::Entry::DEFAULT_SECTION)
+      end
+
+      context 'when CODEOWNERS file contains sections at the middle of a line' do
+        let(:file_content) do
+          <<~CONTENT
+                 [Required]
+          *_spec.rb @gl-test
+
+          ^[Optional]
+          *_spec.rb @gl-test
+
+          Something before [Partially optional]
+          *.md @gl-docs
+
+          Additional content before ^[Another partially optional]
+          doc/* @gl-docs
+          CONTENT
+        end
+
+        it 'parses only sections that start at the beginning of a line' do
+          expect(file.parsed_data.keys).to match_array(%w[codeowners Required Optional])
+        end
       end
 
       context "when CODEOWNERS file contains multiple sections" do
