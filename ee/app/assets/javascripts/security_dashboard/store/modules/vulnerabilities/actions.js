@@ -195,6 +195,8 @@ export const dismissSelectedVulnerabilities = (
       dispatch('receiveDismissSelectedVulnerabilitiesSuccess');
       dispatch('fetchVulnerabilities', {
         ...filters,
+        // If we just dismissed the last vulnerability on the active page,
+        // we load the previous page if any
         page: shouldLoadPreviousPage ? currentPage - 1 : currentPage,
       });
     })
