@@ -15,6 +15,8 @@ import { getWorkItemQuery } from '~/work_items/utils';
 
 export default {
   inputId: 'progress-widget-input',
+  minValue: 0,
+  maxValue: 100,
   components: {
     GlForm,
     GlFormGroup,
@@ -54,6 +56,7 @@ export default {
   data() {
     return {
       isEditing: false,
+      localProgress: this.progress,
     };
   },
   apollo: {
@@ -90,7 +93,19 @@ export default {
       return this.hasOkrsFeature && this.glFeatures.okrsMvc;
     },
   },
+  watch: {
+    progress(newValue) {
+      this.localProgress = newValue;
+    },
+  },
   methods: {
+    isValidProgress(progress) {
+      return (
+        Number.isInteger(progress) &&
+        progress >= this.$options.minValue &&
+        progress <= this.$options.maxValue
+      );
+    },
     blurInput() {
       this.$refs.input.$el.blur();
     },
@@ -101,9 +116,14 @@ export default {
       if (!this.canUpdate) return;
       this.isEditing = false;
 
-      const { value, valueAsNumber } = event.target;
+      const { valueAsNumber } = event.target;
 
-      if (!this.canUpdate || value === '' || valueAsNumber === this.progress) {
+      if (
+        !this.canUpdate ||
+        valueAsNumber === this.progress ||
+        !this.isValidProgress(valueAsNumber)
+      ) {
+        this.localProgress = this.progress;
         return;
       }
 
@@ -148,15 +168,15 @@ export default {
       <gl-form-input
         id="progress-widget-input"
         ref="input"
-        min="0"
-        max="100"
+        v-model="localProgress"
+        :min="$options.minValue"
+        :max="$options.maxValue"
         class="gl-hover-border-gray-200! gl-border-solid! gl-border-white!"
         :class="{ 'hide-spinners gl-shadow-none!': !isEditing }"
         :placeholder="placeholder"
         :readonly="!canUpdate"
         size="sm"
         type="number"
-        :value="progress"
         @blur="updateProgress"
         @focus="handleFocus"
       />
