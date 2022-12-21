@@ -48,7 +48,9 @@ RSpec.describe 'CI shared runner limits', feature_category: :runner do
 
           before do
             group.update!(shared_runners_minutes_limit: minutes_limit)
-            allow_any_instance_of(::Ci::Minutes::Usage).to receive(:total_minutes_used).and_return(minutes_used)
+            allow_next_instance_of(::Ci::Minutes::Usage) do |instance|
+              allow(instance).to receive(:total_minutes_used).and_return(minutes_used)
+            end
           end
 
           it 'displays a warning message on pipelines page' do
@@ -148,7 +150,9 @@ RSpec.describe 'CI shared runner limits', feature_category: :runner do
 
           before do
             group.update!(shared_runners_minutes_limit: minutes_limit)
-            allow_any_instance_of(::Ci::Minutes::Usage).to receive(:total_minutes_used).and_return(minutes_used)
+            allow_next_instance_of(::Ci::Minutes::Usage) do |instance|
+              allow(instance).to receive(:total_minutes_used).and_return(minutes_used)
+            end
           end
 
           it 'displays a warning message on group information page' do
