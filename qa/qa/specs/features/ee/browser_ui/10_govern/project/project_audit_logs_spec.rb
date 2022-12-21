@@ -3,8 +3,7 @@
 module QA
   RSpec.describe(
     'Govern',
-    product_group: :compliance,
-    quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/386403', type: :broken }
+    product_group: :compliance
   ) do
     shared_examples 'audit event' do |expected_events|
       it 'logs audit events for UI operations' do
@@ -88,7 +87,7 @@ module QA
           end
         end
 
-        it_behaves_like 'audit event', ["Changed visibility from Public to Private"]
+        it_behaves_like 'audit event', ["Changed visibility level from Public to Private"]
       end
 
       context "for export file download", :skip_live_env,
