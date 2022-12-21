@@ -965,6 +965,114 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
       end
     end
 
+    context 'remove_parent_epic command' do
+      let_it_be_with_refind(:group) { create(:group) }
+      let_it_be_with_refind(:another_group) { create(:group) }
+      let_it_be(:project) { create(:project, group: group) }
+      let_it_be(:merge_request) { create(:merge_request, source_project: project) }
+      let_it_be_with_reload(:parent_epic) { create(:epic, group: another_group) }
+      let_it_be_with_reload(:epic) { create(:epic, group: group, parent: parent_epic) }
+
+      let(:content) { "/remove_parent_epic" }
+
+      shared_examples 'epic relation is not removed' do
+        it 'does not remove parent_epic from epic' do
+          expect(epic.parent).to eq(parent_epic)
+
+          service.execute(content, target)
+
+          expect(epic.parent).to eq(parent_epic)
+        end
+      end
+
+      shared_examples 'epic relation is removed' do
+        it 'removed parent_epic from epic' do
+          expect(epic.parent).to eq(parent_epic)
+
+          service.execute(content, epic)
+
+          expect(epic.parent).to be_nil
+        end
+      end
+
+      context 'when subepics are enabled' do
+        before do
+          stub_licensed_features(epics: true, subepics: true)
+        end
+
+        context 'when a user does not have permissions to manage child epic' do
+          before do
+            another_group.add_guest(current_user)
+          end
+
+          it_behaves_like 'epic relation is not removed' do
+            let(:target) { epic }
+          end
+
+          it_behaves_like 'quick action is unavailable', :remove_parent_epic do
+            let(:target) { epic }
+          end
+        end
+
+        context 'when a user does not have permissions to manage parent epic' do
+          before do
+            group.add_guest(current_user)
+          end
+
+          it_behaves_like 'epic relation is not removed' do
+            let(:target) { epic }
+          end
+
+          it_behaves_like 'quick action is available', :remove_parent_epic do
+            let(:target) { epic }
+          end
+        end
+
+        context 'when a user has permissions to remove epic relations' do
+          before do
+            group.add_guest(current_user)
+            another_group.add_guest(current_user)
+          end
+
+          it_behaves_like 'epic relation is removed'
+
+          it_behaves_like 'quick action is available', :remove_parent_epic do
+            let(:target) { epic }
+          end
+
+          it_behaves_like 'quick action is unavailable', :remove_parent_epic do
+            let(:target) { issue }
+          end
+
+          it_behaves_like 'quick action is unavailable', :remove_parent_epic do
+            let(:target) { merge_request }
+          end
+
+          context 'when target epic is not persisted yet' do
+            let(:target) { build(:epic, group: group) }
+
+            it_behaves_like 'quick action is unavailable', :remove_parent_epic
+          end
+        end
+      end
+
+      context 'when subepics are disabled' do
+        before do
+          stub_licensed_features(epics: true, subepics: false)
+          group.add_guest(current_user)
+          another_group.add_guest(current_user)
+        end
+
+        it_behaves_like 'epic relation is not removed' do
+          let(:target) { epic }
+        end
+
+        it_behaves_like 'quick action is unavailable', :remove_parent_epic do
+          let(:target) { epic }
+        end
+      end
+    end
+
     context 'label command for epics' do
       let(:epic) { create(:epic, group: group) }
       let(:label) { create(:group_label, title: 'bug', group: group) }
