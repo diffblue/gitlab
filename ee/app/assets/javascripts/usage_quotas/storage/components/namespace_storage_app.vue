@@ -6,7 +6,7 @@ import { captureException } from '~/ci/runner/sentry_utils';
 import { namespaceContainerRegistryPopoverContent } from '../constants';
 import query from '../queries/namespace_storage.query.graphql';
 import GetDependencyProxyTotalSizeQuery from '../queries/dependency_proxy_usage.query.graphql';
-import { formatUsageSize, parseGetStorageResults } from '../utils';
+import { parseGetStorageResults } from '../utils';
 import SearchAndSortBar from '../../components/search_and_sort_bar/search_and_sort_bar.vue';
 import ProjectList from './project_list.vue';
 import StorageInlineAlert from './storage_inline_alert.vue';
@@ -102,9 +102,6 @@ export default {
   computed: {
     namespaceProjects() {
       return this.namespace?.projects?.data ?? [];
-    },
-    formattedNamespaceLimit() {
-      return formatUsageSize(this.namespace.limit);
     },
     storageStatistics() {
       if (!this.namespace) {

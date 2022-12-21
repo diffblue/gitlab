@@ -73,7 +73,6 @@ describe('NamespaceStorageApp', () => {
     canShowInlineAlert = false,
     additionalRepoStorageByNamespace = false,
     dependencyProxyTotalSize = '',
-    isFreeNamespace = false,
     mockApollo = {},
     isPersonalNamespace = false,
   } = {}) => {
@@ -87,7 +86,6 @@ describe('NamespaceStorageApp', () => {
         storageLimitEnforced,
         canShowInlineAlert,
         isAdditionalStorageFlagEnabled: additionalRepoStorageByNamespace,
-        isFreeNamespace,
         isPersonalNamespace,
       },
       data() {
@@ -276,7 +274,6 @@ describe('NamespaceStorageApp', () => {
       createComponent({
         additionalRepoStorageByNamespace: true,
         storageLimitEnforced: true,
-        isFreeNamespace: true,
         mockApollo,
       });
       await waitForPromises();
@@ -317,7 +314,6 @@ describe('NamespaceStorageApp', () => {
           createComponent({
             additionalRepoStorageByNamespace: true,
             storageLimitEnforced: true,
-            isFreeNamespace: true,
             mockApollo,
           });
 
@@ -343,7 +339,6 @@ describe('NamespaceStorageApp', () => {
         createComponent({
           additionalRepoStorageByNamespace: true,
           storageLimitEnforced: true,
-          isFreeNamespace: true,
           mockApollo,
         });
 
