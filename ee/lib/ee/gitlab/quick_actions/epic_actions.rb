@@ -93,7 +93,7 @@ module EE
               if parent_error.present?
                 parent_error
               else
-                Epics::EpicLinks::DestroyService.new(parent_epic, current_user).execute
+                Epics::EpicLinks::DestroyService.new(quick_action_target, current_user).execute
 
                 success_remove_message(quick_action_target, parent_epic, :parent)
               end
