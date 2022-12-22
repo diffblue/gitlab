@@ -38,16 +38,15 @@ export default {
 
 <template>
   <div>
-    <gl-form-group :label="$options.i18n.groupSelectLabel">
-      <listbox-input
-        v-model="selectedGroup"
-        name="namespace_id"
-        data-qa-selector="subscription_for"
-        data-testid="namespace-selector"
-        :items="items"
-        :default-toggle-text="$options.i18n.defaultToggleText"
-      />
-    </gl-form-group>
+    <listbox-input
+      v-model="selectedGroup"
+      name="namespace_id"
+      data-qa-selector="subscription_for"
+      data-testid="namespace-selector"
+      :label="$options.i18n.groupSelectLabel"
+      :items="items"
+      :default-toggle-text="$options.i18n.defaultToggleText"
+    />
     <gl-form-group v-if="showNewGroupNameField" :label="$options.i18n.newGroupNameLabel">
       <gl-form-input
         name="new_group_name"
