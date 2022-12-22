@@ -43,7 +43,7 @@ module Users
       def enabled?
         self.class.enabled?(user.email)
       end
-      strong_memoize_attr :enabled?, :enabled
+      strong_memoize_attr :enabled?
 
       def self.enabled?(email)
         return false if ::Feature.enabled?(:soft_email_confirmation)
