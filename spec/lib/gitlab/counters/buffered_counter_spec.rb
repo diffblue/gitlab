@@ -438,18 +438,15 @@ RSpec.describe Gitlab::Counters::BufferedCounter, :clean_gitlab_redis_shared_sta
           .to change { counter.get }.by(increment.amount)
       end
 
-      it 'removes the all refresh related keys' do
-        counter.finalize_refresh
-
-        Gitlab::Redis::SharedState.with do |redis|
-          remaining = redis.scan_each(match: "#{counter.refresh_key}*").to_a
-          expect(remaining.count).to eq(0)
-        end
+      it 'removes the refresh counter key and the refresh indicator' do
+        expect { counter.finalize_refresh }
+          .to change { redis_exists_key(counter.refresh_key) }.from(true).to(false)
+          .and change { redis_exists_key(counter.refresh_indicator_key) }.from(true).to(false)
       end
 
-      it 'schedules a worker to commit the counter key into database' do
-        expect(FlushCounterIncrementsWorker).to receive(:perform_in)
-          .with(described_class::WORKER_DELAY, counter_record.class.to_s, counter_record.id, attribute)
+      it 'schedules a worker to clean up the refresh tracking keys' do
+        expect(Counters::CleanupRefreshWorker).to receive(:perform_async)
+          .with(counter_record.class.to_s, counter_record.id, attribute)
 
         counter.finalize_refresh
       end
@@ -472,28 +469,25 @@ RSpec.describe Gitlab::Counters::BufferedCounter, :clean_gitlab_redis_shared_sta
         counter.finalize_refresh
       end
     end
+  end
 
-    context 'with ref greater than 67108863 (8MB)' do
-      let(:increment) { Gitlab::Counters::Increment.new(amount: 123, ref: 67108864) }
+  describe '#cleanup_refresh' do
+    let(:increment) { Gitlab::Counters::Increment.new(amount: 123, ref: 67108864) }
+    let(:increment_2) { Gitlab::Counters::Increment.new(amount: 123, ref: 267108864) }
+    let(:decrement_2) { Gitlab::Counters::Increment.new(amount: -increment_2.amount, ref: increment_2.ref) }
 
-      let(:increment_2) { Gitlab::Counters::Increment.new(amount: 123, ref: 267108864) }
-      let(:decrement_2) { Gitlab::Counters::Increment.new(amount: -increment_2.amount, ref: increment_2.ref) }
+    before do
+      counter.initiate_refresh!
+      counter.increment(decrement_2)
+      counter.increment(increment)
+      counter.increment(increment_2)
+      counter.finalize_refresh
+    end
 
-      let(:expected_counter_value) { increment.amount }
-
-      before do
-        counter.increment(decrement_2)
-        counter.increment(increment)
-        counter.increment(increment_2)
-      end
-
-      it 'removes all tracking key shards' do
-        counter.finalize_refresh
-
-        Gitlab::Redis::SharedState.with do |redis|
-          remaining = redis.scan_each(match: "#{counter.refresh_key}*").to_a
-          expect(remaining.count).to eq(0)
-        end
+    it 'removes all tracking keys' do
+      Gitlab::Redis::SharedState.with do |redis|
+        expect { counter.cleanup_refresh }
+          .to change { redis.scan_each(match: "#{counter.refresh_key}*").to_a.count }.from(4).to(0)
       end
     end
   end

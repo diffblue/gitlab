@@ -113,6 +113,8 @@
   - 1
 - - container_repository_delete
   - 1
+- - counters_cleanup_refresh
+  - 1
 - - create_commit_signature
   - 2
 - - create_github_webhook

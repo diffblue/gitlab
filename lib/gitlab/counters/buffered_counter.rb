@@ -113,29 +113,28 @@ module Gitlab
       end
 
       LUA_FINALIZE_REFRESH_SCRIPT = <<~LUA
-        local counter_key, refresh_key, refresh_indicator_key, shards_key = KEYS[1], KEYS[2], KEYS[3], KEYS[4]
+        local counter_key, refresh_key, refresh_indicator_key = KEYS[1], KEYS[2], KEYS[3]
         local refresh_amount = redis.call("get", refresh_key) or 0
 
-        if redis.call("exists", shards_key) == 1 then
-          local shards = redis.call("smembers", shards_key)
-          redis.call("del", unpack(shards))
-        end
         redis.call("incrby", counter_key, refresh_amount)
-        redis.call("del", refresh_indicator_key, refresh_key, shards_key)
+        redis.call("del", refresh_indicator_key, refresh_key)
       LUA
 
       def finalize_refresh
         redis_state do |redis|
-          keys = [
-            key,
-            refresh_key,
-            refresh_indicator_key,
-            shards_key
-          ]
-          redis.eval(LUA_FINALIZE_REFRESH_SCRIPT, keys: keys)
+          redis.eval(LUA_FINALIZE_REFRESH_SCRIPT, keys: [key, refresh_key, refresh_indicator_key])
         end
 
         FlushCounterIncrementsWorker.perform_in(WORKER_DELAY, counter_record.class.name, counter_record.id, attribute)
+        ::Counters::CleanupRefreshWorker.perform_async(counter_record.class.name, counter_record.id, attribute)
+      end
+
+      def cleanup_refresh
+        redis_state do |redis|
+          while (shard = redis.spop(shards_key))
+            redis.del(shard)
+          end
+        end
       end
 
       def commit_increment!
