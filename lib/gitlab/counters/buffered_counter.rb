@@ -36,8 +36,9 @@ module Gitlab
 
       LUA_INCREMENT_WITH_DEDUPLICATION_SCRIPT = <<~LUA
         local counter_key, refresh_key, refresh_indicator_key = KEYS[1], KEYS[2], KEYS[3]
-        local amount, ref = KEYS[4], tonumber(KEYS[5])
-        local tracking_shard_key, opposing_tracking_shard_key, shards_key = KEYS[6], KEYS[7], KEYS[8]
+        local tracking_shard_key, opposing_tracking_shard_key, shards_key = KEYS[4], KEYS[5], KEYS[6]
+
+        local amount, tracking_offset = ARGV[1], tonumber(ARGV[2])
 
         -- increment to the counter key when not refreshing
         if redis.call("exists", refresh_indicator_key) == 0 then
@@ -45,15 +46,15 @@ module Gitlab
         end
 
         -- deduplicate and increment to the refresh counter key while refreshing
-        local found_duplicate = redis.call("getbit", tracking_shard_key, ref)
+        local found_duplicate = redis.call("getbit", tracking_shard_key, tracking_offset)
         if found_duplicate == 1 then
           return redis.call("get", refresh_key)
         end
 
-        redis.call("setbit", tracking_shard_key, ref, 1)
+        redis.call("setbit", tracking_shard_key, tracking_offset, 1)
         redis.call("sadd", shards_key, tracking_shard_key)
 
-        local found_opposing_change = redis.call("getbit", opposing_tracking_shard_key, ref)
+        local found_opposing_change = redis.call("getbit", opposing_tracking_shard_key, tracking_offset)
         local increment_without_previous_decrement = tonumber(amount) > 0 and found_opposing_change == 0
         local decrement_with_previous_increment = tonumber(amount) < 0 and found_opposing_change == 1
         local net_change = 0
@@ -67,7 +68,7 @@ module Gitlab
 
       def increment(increment)
         result = redis_state do |redis|
-          redis.eval(LUA_INCREMENT_WITH_DEDUPLICATION_SCRIPT, keys: increment_args(increment)).to_i
+          redis.eval(LUA_INCREMENT_WITH_DEDUPLICATION_SCRIPT, **increment_args(increment)).to_i
         end
 
         FlushCounterIncrementsWorker.perform_in(WORKER_DELAY, counter_record.class.name, counter_record.id, attribute)
@@ -79,7 +80,7 @@ module Gitlab
         result = redis_state do |redis|
           redis.pipelined do |pipeline|
             increments.each do |increment|
-              pipeline.eval(LUA_INCREMENT_WITH_DEDUPLICATION_SCRIPT, keys: increment_args(increment))
+              pipeline.eval(LUA_INCREMENT_WITH_DEDUPLICATION_SCRIPT, **increment_args(increment))
             end
           end
         end
@@ -180,16 +181,20 @@ module Gitlab
       attr_reader :counter_record, :attribute
 
       def increment_args(increment)
-        [
-          key,
-          refresh_key,
-          refresh_indicator_key,
-          increment.amount,
-          tracking_offset(increment),
-          tracking_shard_key(increment),
-          opposing_tracking_shard_key(increment),
-          shards_key
-        ]
+        {
+          keys: [
+            key,
+            refresh_key,
+            refresh_indicator_key,
+            tracking_shard_key(increment),
+            opposing_tracking_shard_key(increment),
+            shards_key
+          ],
+          argv: [
+            increment.amount,
+            tracking_offset(increment)
+          ]
+        }
       end
 
       def tracking_shard_key(increment)
