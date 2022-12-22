@@ -50,7 +50,7 @@ RSpec.describe 'Epic shortcuts', :js, feature_category: :portfolio_management do
   end
 
   describe 'pressing "e"' do
-    it "starts editing mode for epic" do
+    it "starts editing mode for epic", quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/299523' do
       find('body').native.send_key('e')
 
       expect(find('.detail-page-description')).to have_selector('form input#issuable-title')
