@@ -1,6 +1,6 @@
 <script>
 import { GlButton, GlPopover } from '@gitlab/ui';
-import { mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import { SYNC_BUTTON_ID, syncButtonTexts } from '../constants';
 
 export default {
@@ -8,6 +8,12 @@ export default {
   components: {
     GlButton,
     GlPopover,
+  },
+  computed: {
+    ...mapState(['breakdown']),
+    isDisabled() {
+      return this.breakdown.hasAsyncActivity;
+    },
   },
   methods: {
     ...mapActions(['syncSubscription']),
@@ -27,6 +33,7 @@ export default {
     variant="default"
     :aria-label="$options.syncButtonTexts.syncSubscriptionButtonText"
     aria-live="polite"
+    :disabled="isDisabled"
     @click="syncSubscription"
   >
     <gl-popover

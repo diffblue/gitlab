@@ -1,8 +1,8 @@
-export default ({ licenseRemovalPath, subscriptionSyncPath }) => ({
+export default ({ licenseRemovalPath, subscriptionSyncPath, hasAsyncActivity = false }) => ({
   subscriptionSyncStatus: null,
   breakdown: {
     shouldShowNotifications: false,
-    hasAsyncActivity: false,
+    hasAsyncActivity,
     licenseError: null,
   },
   paths: Object.freeze({

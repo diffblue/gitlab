@@ -3,11 +3,18 @@ import { shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
 import SubscriptionSyncButton from 'ee/admin/subscriptions/show/components/subscription_sync_button.vue';
 import * as initialStore from 'ee/admin/subscriptions/show/store/';
+import createState from 'ee/admin/subscriptions/show/store/state';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { syncButtonTexts, SYNC_BUTTON_ID } from 'ee/admin/subscriptions/show/constants';
 
+const subscriptionSyncPath = '/sync/path/';
+
 describe('Subscription Sync Button', () => {
-  const createStore = ({ syncMock = jest.fn() } = {}) => {
+  const createStore = (options = {}) => {
+    const {
+      syncMock = jest.fn(),
+      initialState = createState({ licenseRemovePath: '', subscriptionSyncPath }),
+    } = options;
     return new Vuex.Store({
       licenseRemovalPath: '',
       subscriptionSyncPath: '',
@@ -15,13 +22,19 @@ describe('Subscription Sync Button', () => {
       actions: {
         syncSubscription: syncMock,
       },
+      state: {
+        ...initialState,
+      },
     });
   };
 
-  const createComponent = ({ store = createStore() } = {}) => {
+  const createComponent = (options = {}) => {
+    const { store = createStore() } = options;
+
     return extendedWrapper(
       shallowMount(SubscriptionSyncButton, {
         store,
+        provide: { subscriptionSyncPath },
       }),
     );
   };
@@ -102,6 +115,24 @@ describe('Subscription Sync Button', () => {
       findButton(wrapper).vm.$emit('click');
 
       expect(syncSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('when has async activity', () => {
+    let wrapper;
+
+    beforeEach(() => {
+      const initialState = createState({
+        licenseRemovePath: '',
+        subscriptionSyncPath,
+        hasAsyncActivity: true,
+      });
+      const store = createStore({ initialState });
+      wrapper = createComponent({ store });
+    });
+
+    it('disables the sync button', () => {
+      expect(findButton(wrapper).props('disabled')).toBe(true);
     });
   });
 });
