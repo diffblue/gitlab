@@ -3,6 +3,7 @@ import { debounce } from 'lodash';
 import { GlAlert, GlCollapsibleListbox } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import axios from '~/lib/utils/axios_utils';
+import { normalizeHeaders, parseIntPagination } from '~/lib/utils/common_utils';
 import Api from '~/api';
 import { __ } from '~/locale';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
@@ -15,6 +16,7 @@ import {
 } from './constants';
 
 const MINIMUM_QUERY_LENGTH = 3;
+const GROUPS_PER_PAGE = 20;
 
 export default {
   components: {
@@ -55,8 +57,11 @@ export default {
     return {
       pristine: true,
       searching: false,
+      hasMoreGroups: true,
+      infiniteScrollLoading: false,
       searchString: '',
       groups: [],
+      page: 1,
       selectedValue: null,
       selectedText: null,
       errorMessage: '',
@@ -97,29 +102,46 @@ export default {
       if (this.isSearchQueryTooShort) {
         this.groups = [];
       } else {
-        this.fetchGroups(searchString);
+        this.fetchGroups();
       }
     }, DEFAULT_DEBOUNCE_AND_THROTTLE_MS),
-    async fetchGroups(searchString = '') {
-      this.searching = true;
+    async fetchGroups(page = 1) {
+      if (page === 1) {
+        this.searching = true;
+        this.groups = [];
+        this.hasMoreGroups = true;
+      } else {
+        this.infiniteScrollLoading = true;
+      }
 
       try {
-        const { data } = await axios.get(
+        const { data, headers } = await axios.get(
           Api.buildUrl(groupsPath(this.groupsFilter, this.parentGroupID)),
           {
             params: {
-              search: searchString,
+              search: this.searchString,
+              per_page: GROUPS_PER_PAGE,
+              page,
             },
           },
         );
         const groups = data.length ? data : data.results || [];
 
-        this.groups = groups.map((group) => ({
-          ...group,
-          value: String(group.id),
-        }));
+        this.groups.push(
+          ...groups.map((group) => ({
+            ...group,
+            value: String(group.id),
+          })),
+        );
 
+        const { totalPages } = parseIntPagination(normalizeHeaders(headers));
+        if (page === totalPages) {
+          this.hasMoreGroups = false;
+        }
+
+        this.page = page;
         this.searching = false;
+        this.infiniteScrollLoading = false;
       } catch (error) {
         this.handleError({ message: FETCH_GROUPS_ERROR, error });
       }
@@ -147,6 +169,9 @@ export default {
     },
     onReset() {
       this.selected = null;
+    },
+    onBottomReached() {
+      this.fetchGroups(this.page + 1);
     },
     handleError({ message, error }) {
       Sentry.captureException(error);
@@ -181,10 +206,13 @@ export default {
       :searching="searching"
       :items="groups"
       :no-results-text="noResultsText"
+      :infinite-scroll="hasMoreGroups"
+      :infinite-scroll-loading="infiniteScrollLoading"
       searchable
       @shown="onShown"
       @search="search"
       @reset="onReset"
+      @bottom-reached="onBottomReached"
     >
       <template #list-item="{ item }">
         <div class="gl-font-weight-bold">

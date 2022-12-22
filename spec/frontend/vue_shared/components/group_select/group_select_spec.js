@@ -191,7 +191,11 @@ describe('GroupSelect', () => {
       await waitForPromises();
 
       expect(mock.history.get).toHaveLength(2);
-      expect(mock.history.get[1].params).toStrictEqual({ search: searchString });
+      expect(mock.history.get[1].params).toStrictEqual({
+        page: 1,
+        per_page: 20,
+        search: searchString,
+      });
     });
 
     it('shows a notice if the search query is too short', async () => {
@@ -202,6 +206,90 @@ describe('GroupSelect', () => {
 
       expect(mock.history.get).toHaveLength(1);
       expect(findListbox().props('noResultsText')).toBe(QUERY_TOO_SHORT_MESSAGE);
+    });
+  });
+
+  describe('pagination', () => {
+    const searchString = 'searchString';
+
+    beforeEach(async () => {
+      let requestCount = 0;
+      mock.onGet('/api/undefined/groups.json').reply(({ params }) => {
+        requestCount += 1;
+        return [
+          200,
+          [
+            {
+              full_name: `Group [page: ${params.page} - search: ${params.search}]`,
+              id: requestCount,
+            },
+          ],
+          {
+            page: params.page,
+            'x-total-pages': 3,
+          },
+        ];
+      });
+      createComponent();
+      openListbox();
+      findListbox().vm.$emit('bottom-reached');
+      return waitForPromises();
+    });
+
+    it('fetches the next page when bottom is reached', async () => {
+      expect(mock.history.get).toHaveLength(2);
+      expect(mock.history.get[1].params).toStrictEqual({
+        page: 2,
+        per_page: 20,
+        search: '',
+      });
+    });
+
+    it('fetches the first page when the search query changes', async () => {
+      search(searchString);
+      await waitForPromises();
+
+      expect(mock.history.get).toHaveLength(3);
+      expect(mock.history.get[2].params).toStrictEqual({
+        page: 1,
+        per_page: 20,
+        search: searchString,
+      });
+    });
+
+    it('retains the search query when infinite scrolling', async () => {
+      search(searchString);
+      await waitForPromises();
+      findListbox().vm.$emit('bottom-reached');
+      await waitForPromises();
+
+      expect(mock.history.get).toHaveLength(4);
+      expect(mock.history.get[3].params).toStrictEqual({
+        page: 2,
+        per_page: 20,
+        search: searchString,
+      });
+    });
+
+    it('pauses infinite scroll after fetching the last page', async () => {
+      expect(findListbox().props('infiniteScroll')).toBe(true);
+
+      findListbox().vm.$emit('bottom-reached');
+      await waitForPromises();
+
+      expect(findListbox().props('infiniteScroll')).toBe(false);
+    });
+
+    it('resumes infinite scroll when search query changes', async () => {
+      findListbox().vm.$emit('bottom-reached');
+      await waitForPromises();
+
+      expect(findListbox().props('infiniteScroll')).toBe(false);
+
+      search(searchString);
+      await waitForPromises();
+
+      expect(findListbox().props('infiniteScroll')).toBe(true);
     });
   });
 });
