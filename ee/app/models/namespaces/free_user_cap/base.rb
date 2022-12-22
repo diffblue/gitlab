@@ -10,12 +10,13 @@ module Namespaces
         @root_namespace = root_namespace.root_ancestor # just in case the true root isn't passed
       end
 
-      def enforce_cap?
+      def enforce_cap?(cache: true)
+        return preloaded_enforce_cap[root_namespace.id] if cache
+
         return false unless enforceable_subscription?
 
         feature_enabled?
       end
-      strong_memoize_attr :enforce_cap?, :enforce_cap
 
       def users_count(cache: true)
         full_user_counts(cache: cache)[:user_ids]
@@ -42,6 +43,14 @@ module Namespaces
         return false if above_size_limit?
 
         root_namespace.has_free_or_no_subscription?
+      end
+
+      def preloaded_enforce_cap
+        resource_key = "free_user_cap_enforce_cap:#{self.class.name}"
+
+        ::Gitlab::SafeRequestLoader.execute(resource_key: resource_key, resource_ids: [root_namespace.id]) do
+          { root_namespace.id => enforce_cap?(cache: false) }
+        end
       end
 
       def preloaded_users_count
