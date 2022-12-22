@@ -189,7 +189,7 @@ module Geo
     def wiki_repository_registry_synced?
       type == :wiki && wiki_repository_registry.synced?
     end
-    strong_memoize_attr :wiki_repository_registry_synced?, :wiki_repository_registry_synced
+    strong_memoize_attr :wiki_repository_registry_synced?
 
     def wiki_repository_registry
       @wiki_repository_registry ||=

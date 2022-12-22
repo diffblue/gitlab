@@ -77,7 +77,7 @@ module Gitlab
         def update_extern_uid_allowed?
           current_user.verified_email?(auth_hash.email)
         end
-        strong_memoize_attr :update_extern_uid_allowed?, :update_extern_uid_allowed
+        strong_memoize_attr :update_extern_uid_allowed?
 
         def update_extern_uid_failed?
           extern_uid_update_required? && !update_extern_uid_allowed?
