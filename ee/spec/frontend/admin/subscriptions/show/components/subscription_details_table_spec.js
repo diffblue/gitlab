@@ -3,10 +3,22 @@ import { mount } from '@vue/test-utils';
 import Vuex from 'vuex';
 import SubscriptionDetailsTable from 'ee/admin/subscriptions/show/components/subscription_details_table.vue';
 import SubscriptionSyncButton from 'ee/admin/subscriptions/show/components/subscription_sync_button.vue';
-import { detailsLabels } from 'ee/admin/subscriptions/show/constants';
+import { detailsLabels, subscriptionTypes } from 'ee/admin/subscriptions/show/constants';
+import * as initialStore from 'ee/admin/subscriptions/show/store/';
+import createState from 'ee/admin/subscriptions/show/store/state';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
-import * as initialStore from 'ee/admin/subscriptions/show/store/';
+import { getLicenseTypeLabel } from 'ee/admin/subscriptions/show/utils';
+
+const syncDetails = {
+  detail: 'lastSync',
+  value: 'A date',
+};
+
+const typeDetails = {
+  detail: 'type',
+  value: getLicenseTypeLabel(subscriptionTypes.ONLINE_CLOUD),
+};
 
 const licenseDetails = [
   {
@@ -20,6 +32,7 @@ const licenseDetails = [
   {
     detail: 'email',
   },
+  typeDetails,
 ];
 
 const hasFontWeightBold = (wrapper) => wrapper.classes('gl-font-weight-bold');
@@ -38,11 +51,18 @@ describe('Subscription Details Table', () => {
   const hasClass = (className) => (w) => w.classes(className);
   const isNotLastSyncRow = (w) => w.attributes('data-testid') !== 'row-lastsync';
 
-  const createStore = ({ didSyncFail } = {}) => {
+  const createStore = (options = {}) => {
+    const {
+      didSyncFail,
+      initialState = createState({ licenseRemovePath: '', subscriptionSyncPath: '' }),
+    } = options;
     return new Vuex.Store({
       ...initialStore,
       getters: {
         didSyncFail: () => didSyncFail,
+      },
+      state: {
+        ...initialState,
       },
     });
   };
@@ -84,8 +104,12 @@ describe('Subscription Details Table', () => {
       expect(findClipboardButton().exists()).toBe(false);
     });
 
-    it('does not show a badge', () => {
-      expect(findTypeBadge().exists()).toBe(false);
+    it('shows a subscription type badge', () => {
+      expect(findTypeBadge().exists()).toBe(true);
+    });
+
+    it('displays the correct text for type badge', () => {
+      expect(findTypeBadge().text()).toBe('Online license');
     });
 
     it('shows the default row color', () => {
@@ -98,26 +122,17 @@ describe('Subscription Details Table', () => {
     });
   });
 
-  describe('with type detail', () => {
+  describe('with sync detail and no type detail', () => {
     beforeEach(() => {
       createComponent({
         props: {
-          details: [
-            {
-              detail: 'type',
-              value: 'My type',
-            },
-          ],
+          details: [syncDetails],
         },
       });
     });
 
-    it('shows a badge', () => {
-      expect(findTypeBadge().exists()).toBe(true);
-    });
-
-    it('displays the correct text', () => {
-      expect(findContentCells().at(0).text()).toBe('My type');
+    it('shows the subscription sync button', () => {
+      expect(findSyncButton().exists()).toBe(true);
     });
   });
 
@@ -145,21 +160,41 @@ describe('Subscription Details Table', () => {
   });
 
   describe('with lastSync detail', () => {
-    beforeEach(() => {
+    it('shows the subscription sync button', () => {
+      createComponent({ props: { details: [syncDetails, typeDetails] } });
+      expect(findSyncButton().exists()).toBe(true);
+    });
+
+    it('hides the subscription sync button for offline cloud license', () => {
       createComponent({
         props: {
           details: [
+            syncDetails,
             {
-              detail: 'lastSync',
-              value: 'A date',
+              detail: 'type',
+              value: getLicenseTypeLabel(subscriptionTypes.OFFLINE_CLOUD),
             },
           ],
         },
       });
+
+      expect(findSyncButton().exists()).toBe(false);
     });
 
-    it('shows the subscription sync button', () => {
-      expect(findSyncButton().exists()).toBe(true);
+    it('hides the subscription sync button for legacy license', () => {
+      createComponent({
+        props: {
+          details: [
+            syncDetails,
+            {
+              detail: 'type',
+              value: getLicenseTypeLabel(subscriptionTypes.LEGACY_LICENSE),
+            },
+          ],
+        },
+      });
+
+      expect(findSyncButton().exists()).toBe(false);
     });
   });
 
