@@ -11,6 +11,8 @@ module QA
       :requires_admin,
       :skip_live_env
     ) do
+      include_context 'advanced search active'
+
       let(:api_client) { Runtime::API::Client.as_admin }
 
       let(:user) do
@@ -21,16 +23,6 @@ module QA
           user.first_name = 'Joe'
           user.last_name = 'Bloggs'
         end
-      end
-
-      let(:elasticsearch_original_state_on?) { Runtime::Search.elasticsearch_on?(api_client) }
-
-      before do
-        QA::EE::Resource::Settings::Elasticsearch.fabricate_via_api! unless elasticsearch_original_state_on?
-      end
-
-      after do
-        Runtime::Search.disable_elasticsearch(api_client) if !elasticsearch_original_state_on? && !api_client.nil?
       end
 
       it(
