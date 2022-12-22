@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Audit::ProjectSettingChangesAuditor do
+RSpec.describe Audit::ProjectSettingChangesAuditor, feature_category: :audit_events do
   using RSpec::Parameterized::TableSyntax
   describe '#execute' do
     let_it_be(:user) { create(:user) }
@@ -107,6 +107,34 @@ RSpec.describe Audit::ProjectSettingChangesAuditor do
 
           expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(
             'squash_commit_template_updated', anything, anything)
+
+          project_setting_changes_auditor.execute
+        end
+      end
+
+      context 'when merge_commit_template is changed' do
+        before do
+          project.project_setting.update!(merge_commit_template: 'old merge commit template')
+        end
+
+        it 'creates an audit event' do
+          project.project_setting.update!(merge_commit_template: 'new merge commit template')
+
+          aggregate_failures do
+            expect { project_setting_changes_auditor.execute }.to change(AuditEvent, :count).by(1)
+            expect(AuditEvent.last.details).to include({
+                                                         change: 'merge_commit_template',
+                                                         from: 'old merge commit template',
+                                                         to: 'new merge commit template'
+                                                       })
+          end
+        end
+
+        it 'streams correct audit event stream' do
+          project.project_setting.update!(merge_commit_template: 'new merge commit template')
+
+          expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(
+            'merge_commit_template_updated', anything, anything)
 
           project_setting_changes_auditor.execute
         end

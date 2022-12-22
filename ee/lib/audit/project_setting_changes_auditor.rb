@@ -18,9 +18,20 @@ module Audit
       end
 
       audit_squash_option
-      audit_changes(:merge_commit_template, as: 'merge_commit_template', entity: @project, model: model)
-      audit_changes(:squash_commit_template, as: 'squash_commit_template', entity: @project, model: model,
-                                             event_type: 'squash_commit_template_updated')
+      audit_changes(
+        :merge_commit_template,
+        as: 'merge_commit_template',
+        entity: @project,
+        model: model,
+        event_type: 'merge_commit_template_updated'
+      )
+      audit_changes(
+        :squash_commit_template,
+        as: 'squash_commit_template',
+        entity: @project,
+        model: model,
+        event_type: 'squash_commit_template_updated'
+      )
     end
 
     def attributes_from_auditable_model(column)
