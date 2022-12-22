@@ -7,7 +7,6 @@ import {
   GlFormGroup,
   GlFormInput,
 } from '@gitlab/ui';
-import $ from 'jquery';
 import { createAlert } from '~/flash';
 import Autosave from '~/autosave';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
@@ -81,12 +80,8 @@ export default {
        * We'd need to update Autosave to work with plain HTML elements instead of
        * jQuery instance, but until then, we'd have to rely on jQuery.
        */
-      this.autosaveTitle = new Autosave($(titleInput.$el), [pathname, search, 'title']);
-      this.autosaveDescription = new Autosave($(descriptionInput), [
-        pathname,
-        search,
-        'description',
-      ]);
+      this.autosaveTitle = new Autosave(titleInput.$el, [pathname, search, 'title']);
+      this.autosaveDescription = new Autosave(descriptionInput, [pathname, search, 'description']);
     },
     resetAutosave() {
       this.autosaveTitle.reset();

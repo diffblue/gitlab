@@ -14,7 +14,7 @@ export default class IssuableFormEE extends IssuableForm {
     IssuableForm.addAutosave(
       autoSaveMap,
       'weight',
-      this.form.find('input[name*="[weight]"]'),
+      this.form.find('input[name*="[weight]"]').get(0),
       this.searchTerm,
       this.fallbackKey,
     );
