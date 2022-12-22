@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::StateTransition, type: :model do
+RSpec.describe Vulnerabilities::StateTransition, type: :model, feature_category: :vulnerability_management do
   let_it_be(:vulnerability) { create(:vulnerability) }
 
   subject { create(:vulnerability_state_transitions, vulnerability: vulnerability) }

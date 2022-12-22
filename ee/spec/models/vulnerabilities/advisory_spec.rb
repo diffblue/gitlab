@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::Advisory, type: :model do
+RSpec.describe Vulnerabilities::Advisory, type: :model, feature_category: :vulnerability_management do
   using RSpec::Parameterized::TableSyntax
 
   subject(:advisory) { build(:vulnerability_advisory) }

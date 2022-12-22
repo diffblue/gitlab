@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::Statistic do
+RSpec.describe Vulnerabilities::Statistic, feature_category: :vulnerability_management do
   describe 'associations' do
     it { is_expected.to belong_to(:project).required(true) }
     it { is_expected.to belong_to(:pipeline).required(false) }

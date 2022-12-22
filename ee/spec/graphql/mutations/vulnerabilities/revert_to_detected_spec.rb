@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Mutations::Vulnerabilities::RevertToDetected do
+RSpec.describe Mutations::Vulnerabilities::RevertToDetected, feature_category: :vulnerability_management do
   let(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
 
   specify { expect(described_class).to require_graphql_authorizations(:admin_vulnerability) }

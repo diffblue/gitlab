@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::Statistics::AdjustmentService do
+RSpec.describe Vulnerabilities::Statistics::AdjustmentService, feature_category: :vulnerability_management do
   let_it_be_with_reload(:project) { create(:project) }
 
   describe '.execute' do

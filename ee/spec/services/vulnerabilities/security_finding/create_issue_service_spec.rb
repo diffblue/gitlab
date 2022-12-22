@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::SecurityFinding::CreateIssueService, '#execute' do
+RSpec.describe Vulnerabilities::SecurityFinding::CreateIssueService, '#execute',
+feature_category: :vulnerability_management do
   before do
     stub_licensed_features(security_dashboard: true)
     project.add_developer(user)

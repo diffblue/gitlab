@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::DismissService do
+RSpec.describe Vulnerabilities::DismissService, feature_category: :vulnerability_management do
   include AccessMatchersGeneric
 
   before do

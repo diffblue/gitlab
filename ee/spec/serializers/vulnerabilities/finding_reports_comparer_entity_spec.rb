@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::FindingReportsComparerEntity do
+RSpec.describe Vulnerabilities::FindingReportsComparerEntity, feature_category: :vulnerability_management do
   describe 'container scanning report comparison' do
     let_it_be(:user) { create(:user) }
 

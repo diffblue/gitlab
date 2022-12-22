@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::HistoricalStatistics::DeletionWorker do
+RSpec.describe Vulnerabilities::HistoricalStatistics::DeletionWorker, feature_category: :vulnerability_management do
   let(:worker) { described_class.new }
 
   describe "#perform" do

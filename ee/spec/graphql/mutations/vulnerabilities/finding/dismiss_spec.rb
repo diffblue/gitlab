@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Mutations::Vulnerabilities::Finding::Dismiss do
+RSpec.describe Mutations::Vulnerabilities::Finding::Dismiss, feature_category: :vulnerability_management do
   include GraphqlHelpers
 
   let(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }

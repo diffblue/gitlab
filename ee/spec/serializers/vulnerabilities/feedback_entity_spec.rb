@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::FeedbackEntity do
+RSpec.describe Vulnerabilities::FeedbackEntity, feature_category: :vulnerability_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project) }
 

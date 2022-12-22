@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::UpdateService do
+RSpec.describe Vulnerabilities::UpdateService, feature_category: :vulnerability_management do
   before do
     stub_licensed_features(security_dashboard: true)
   end

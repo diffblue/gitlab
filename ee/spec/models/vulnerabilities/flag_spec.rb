@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::Flag do
+RSpec.describe Vulnerabilities::Flag, feature_category: :vulnerability_management do
   describe 'associations' do
     it { is_expected.to belong_to(:finding).class_name('Vulnerabilities::Finding').with_foreign_key('vulnerability_occurrence_id').required }
   end

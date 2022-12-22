@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Resolvers::Vulnerabilities::IssueLinksResolver do
+RSpec.describe Resolvers::Vulnerabilities::IssueLinksResolver, feature_category: :vulnerability_management do
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }

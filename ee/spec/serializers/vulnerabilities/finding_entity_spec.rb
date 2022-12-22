@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::FindingEntity do
+RSpec.describe Vulnerabilities::FindingEntity, feature_category: :vulnerability_management do
   let_it_be(:user) { build(:user) }
   let_it_be_with_refind(:project) { create(:project) }
 

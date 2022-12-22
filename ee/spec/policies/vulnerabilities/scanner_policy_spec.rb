@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::ScannerPolicy do
+RSpec.describe Vulnerabilities::ScannerPolicy, feature_category: :vulnerability_management do
   describe 'read_vulnerability_scanner' do
     let(:project) { create(:project) }
     let(:user) { create(:user) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::Feedback do
+RSpec.describe Vulnerabilities::Feedback, feature_category: :vulnerability_management do
   it {
     is_expected.to(
       define_enum_for(:feedback_type)

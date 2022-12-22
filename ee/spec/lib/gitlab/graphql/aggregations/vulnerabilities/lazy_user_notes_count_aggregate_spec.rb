@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Graphql::Aggregations::Vulnerabilities::LazyUserNotesCountAggregate do
+RSpec.describe Gitlab::Graphql::Aggregations::Vulnerabilities::LazyUserNotesCountAggregate, feature_category: :vulnerability_management do
   let(:query_ctx) do
     {}
   end

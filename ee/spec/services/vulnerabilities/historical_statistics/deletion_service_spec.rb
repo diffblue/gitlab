@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::HistoricalStatistics::DeletionService do
+RSpec.describe Vulnerabilities::HistoricalStatistics::DeletionService, feature_category: :vulnerability_management do
   describe '.execute' do
     let(:mock_service_object) { instance_double(described_class, execute: true) }
 

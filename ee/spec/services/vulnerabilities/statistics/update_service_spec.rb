@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::Statistics::UpdateService do
+RSpec.describe Vulnerabilities::Statistics::UpdateService, feature_category: :vulnerability_management do
   describe '.update_for' do
     let(:mock_service_object) { instance_double(described_class, execute: true) }
     let(:vulnerability) { instance_double(Vulnerability) }

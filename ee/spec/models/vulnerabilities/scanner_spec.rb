@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::Scanner do
+RSpec.describe Vulnerabilities::Scanner, feature_category: :vulnerability_management do
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
     it { is_expected.to have_many(:findings).class_name('Vulnerabilities::Finding') }

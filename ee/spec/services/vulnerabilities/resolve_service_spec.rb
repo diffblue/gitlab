@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::ResolveService do
+RSpec.describe Vulnerabilities::ResolveService, feature_category: :vulnerability_management do
   include AccessMatchersGeneric
 
   before do

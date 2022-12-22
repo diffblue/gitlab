@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::StatDiff do
+RSpec.describe Vulnerabilities::StatDiff, feature_category: :vulnerability_management do
   using RSpec::Parameterized::TableSyntax
 
   let!(:vulnerability) { create(:vulnerability, :detected, severity: :high, title: 'Title') }

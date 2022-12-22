@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::HistoricalStatistics::AdjustmentService do
+RSpec.describe Vulnerabilities::HistoricalStatistics::AdjustmentService, feature_category: :vulnerability_management do
   let_it_be(:project) { create(:project) }
 
   around do |example|

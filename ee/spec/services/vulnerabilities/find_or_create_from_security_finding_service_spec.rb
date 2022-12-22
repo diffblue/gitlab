@@ -2,9 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::FindOrCreateFromSecurityFindingService,
-  '#execute',
-  feature_category: :threat_insights do
+RSpec.describe Vulnerabilities::FindOrCreateFromSecurityFindingService, '#execute',
+feature_category: :vulnerability_management do
   before do
     stub_licensed_features(security_dashboard: true)
     project.add_developer(user)

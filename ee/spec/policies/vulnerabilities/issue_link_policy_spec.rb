@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::IssueLinkPolicy do
+RSpec.describe Vulnerabilities::IssueLinkPolicy, feature_category: :vulnerability_management do
   let(:vulnerability_issue_link) { build(:vulnerabilities_issue_link, vulnerability: vulnerability, issue: issue) }
 
   let_it_be(:user) { create(:user) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::Identifier do
+RSpec.describe Vulnerabilities::Identifier, feature_category: :vulnerability_management do
   using RSpec::Parameterized::TableSyntax
 
   describe 'associations' do

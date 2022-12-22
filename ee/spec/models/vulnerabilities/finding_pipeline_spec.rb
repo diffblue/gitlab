@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::FindingPipeline do
+RSpec.describe Vulnerabilities::FindingPipeline, feature_category: :vulnerability_management do
   describe 'associations' do
     it { is_expected.to belong_to(:pipeline).class_name('Ci::Pipeline') }
     it { is_expected.to belong_to(:finding).class_name('Vulnerabilities::Finding') }
