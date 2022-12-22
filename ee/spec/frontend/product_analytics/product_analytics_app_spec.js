@@ -2,6 +2,7 @@ import { shallowMount } from '@vue/test-utils';
 import { GlLoadingIcon } from '@gitlab/ui';
 import AnalyticsApp from 'ee/product_analytics/product_analytics_app.vue';
 import OnboardingView from 'ee/product_analytics/onboarding/onboarding_view.vue';
+import OnboardingSetup from 'ee/product_analytics/onboarding/onboarding_setup.vue';
 import DashboardsView from 'ee/product_analytics/dashboards/dashboards_view.vue';
 import createRouter from 'ee/product_analytics/router';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -20,6 +21,7 @@ describe('ProductAnalyticsApp', () => {
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findOnboardingView = () => wrapper.findComponent(OnboardingView);
+  const findOnboardingSetupView = () => wrapper.findComponent(OnboardingSetup);
   const findDashboardsView = () => wrapper.findComponent(DashboardsView);
 
   const createWrapper = (provided = {}) => {
@@ -28,6 +30,8 @@ describe('ProductAnalyticsApp', () => {
       provide: {
         jitsuKey: '123',
         projectId: '1',
+        jitsuHost: TEST_HOST,
+        jitsuProjectId: '',
         chartEmptyStateIllustrationPath: TEST_HOST,
         ...provided,
       },
@@ -77,14 +81,14 @@ describe('ProductAnalyticsApp', () => {
       expect(findDashboardsView().exists()).toBe(false);
     });
 
-    it('should show the onboarding app if there is no analytics data', async () => {
+    it('should show the onboarding setup view if there is no analytics data', async () => {
       jest.spyOn(cubeAnalytics, 'hasAnalyticsData').mockReturnValue(false);
 
       createWrapper();
 
       await waitForPromises();
 
-      expect(findOnboardingView().exists()).toBe(true);
+      expect(findOnboardingSetupView().exists()).toBe(true);
     });
 
     it('should show the dashboards app if there is analytics data', async () => {

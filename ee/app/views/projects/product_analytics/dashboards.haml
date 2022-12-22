@@ -2,9 +2,11 @@
 
 #js-analytics-dashboard{
   data: {
-    chart_empty_state_illustration_path: image_path('illustrations/chart-empty-state.svg'),
+    project_id: @project.id,
     jitsu_key: @project.project_setting.jitsu_key,
-    project_id: @project.id
+    jitsu_host: Gitlab::CurrentSettings.current_application_settings.jitsu_host,
+    jitsu_project_id: Gitlab::CurrentSettings.current_application_settings.jitsu_project_xid,
+    chart_empty_state_illustration_path: image_path('illustrations/chart-empty-state.svg'),
   }
 }
   = gl_loading_icon(size: 'lg', css_class: 'gl-my-7')
