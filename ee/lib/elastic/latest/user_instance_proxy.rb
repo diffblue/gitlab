@@ -6,6 +6,9 @@ module Elastic
       def as_indexed_json(options = {})
         # We don't use as_json(only: ...) because it calls all virtual and serialized attributtes
         # https://gitlab.com/gitlab-org/gitlab/issues/349
+
+        # NOTE: Remember to update ELASTICSEARCH_TRACKED_FIELDS in ee/app/models/ee/user.rb
+        # for fields that need to be updated in Elasticsearch.
         data = {}
 
         [

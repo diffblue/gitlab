@@ -6,6 +6,8 @@ module EE
     extend ::Gitlab::Utils::Override
 
     prepended do
+      include Elastic::ApplicationVersionedSearch
+
       state_machine :state, initial: :active do
         event :wait do
           transition active: :awaiting, unless: :last_owner?
@@ -55,6 +57,23 @@ module EE
       else
         super
       end
+    end
+
+    def maintaining_elasticsearch?
+      ::Gitlab::CurrentSettings.elasticsearch_indexing?
+    end
+
+    # override
+    def maintain_elasticsearch_create
+      ::Elastic::ProcessBookkeepingService.track!(user)
+    end
+
+    # override
+    def maintain_elasticsearch_update; end
+
+    # override
+    def maintain_elasticsearch_destroy
+      ::Elastic::ProcessBookkeepingService.track!(user)
     end
 
     def sso_enforcement

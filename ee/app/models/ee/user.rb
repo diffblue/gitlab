@@ -13,6 +13,8 @@ module EE
 
     DEFAULT_ROADMAP_LAYOUT = 'months'
     DEFAULT_GROUP_VIEW = 'details'
+    ELASTICSEARCH_TRACKED_FIELDS = %w[id username email public_email name admin state organization
+                                      timezone external otp_required_for_login].freeze
 
     prepended do
       include UsageStatistics
@@ -238,6 +240,16 @@ module EE
 
     def maintaining_elasticsearch?
       ::Gitlab::CurrentSettings.elasticsearch_indexing?
+    end
+
+    # override
+    def maintain_elasticsearch_update
+      super if update_elasticsearch?
+    end
+
+    def update_elasticsearch?
+      changed_fields = previous_changes.keys
+      changed_fields && (changed_fields & ELASTICSEARCH_TRACKED_FIELDS).any?
     end
 
     def search_membership_ancestry
