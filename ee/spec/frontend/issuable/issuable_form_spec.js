@@ -42,7 +42,11 @@ describe('IssuableForm', () => {
       createIssuable($form);
 
       expect(Autosave).toHaveBeenCalledTimes(totalAutosaveFormFields);
-      expect(Autosave).toHaveBeenLastCalledWith($weight, ['/', '', 'weight'], 'autosave///=weight');
+      expect(Autosave).toHaveBeenLastCalledWith(
+        $weight.get(0),
+        ['/', '', 'weight'],
+        'autosave///=weight',
+      );
     });
   });
 

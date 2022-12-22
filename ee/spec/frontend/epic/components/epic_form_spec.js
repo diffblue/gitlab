@@ -12,6 +12,7 @@ import ColorSelectDropdown from '~/vue_shared/components/color_select_dropdown/c
 jest.mock('~/lib/utils/url_utility', () => ({
   visitUrl: jest.fn(),
 }));
+jest.mock('~/autosave');
 
 const TEST_GROUP_PATH = 'gitlab-org';
 const TEST_NEW_EPIC = { data: { createEpic: { epic: { webUrl: TEST_HOST } } } };
@@ -72,12 +73,10 @@ describe('ee/epic/components/epic_form.vue', () => {
     });
 
     it('initializes autosave support on title and description fields', () => {
-      // We discourage testing `wrapper.vm` properties but
-      // since `autosave` library instantiates on component
-      // there's no other way to test whether instantiation
-      // happened correctly or not.
-      expect(wrapper.vm.autosaveTitle).toBeInstanceOf(Autosave);
-      expect(wrapper.vm.autosaveDescription).toBeInstanceOf(Autosave);
+      expect(Autosave.mock.calls).toEqual([
+        [expect.any(Element), ['/', '', 'title']],
+        [expect.any(Element), ['/', '', 'description']],
+      ]);
     });
 
     it('can be canceled', () => {
@@ -184,13 +183,8 @@ describe('ee/epic/components/epic_form.vue', () => {
 
     it('resets automatically saved title and description when request succeeds', async () => {
       createWrapper();
+      jest.spyOn(Autosave.prototype, 'reset');
 
-      // We discourage testing/spying on `wrapper.vm` properties but
-      // since `autosave` library instantiates on component there's no
-      // other way to test whether autosave class method was called
-      // correctly or not.
-      const autosaveTitleResetSpy = jest.spyOn(wrapper.vm.autosaveTitle, 'reset');
-      const autosaveDescriptionResetSpy = jest.spyOn(wrapper.vm.autosaveDescription, 'reset');
       findTitle().vm.$emit('input', title);
       findDescription().setValue(description);
 
@@ -198,8 +192,7 @@ describe('ee/epic/components/epic_form.vue', () => {
 
       await nextTick();
 
-      expect(autosaveTitleResetSpy).toHaveBeenCalled();
-      expect(autosaveDescriptionResetSpy).toHaveBeenCalled();
+      expect(Autosave.prototype.reset).toHaveBeenCalledTimes(2);
     });
   });
 });
