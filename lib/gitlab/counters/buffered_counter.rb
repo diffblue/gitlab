@@ -53,9 +53,9 @@ module Gitlab
         redis.call("setbit", tracking_shard_key, ref, 1)
         redis.call("sadd", shards_key, tracking_shard_key)
 
-        local found_opposing_increment = redis.call("getbit", opposing_tracking_shard_key, ref)
-        local increment_without_previous_decrement = tonumber(amount) > 0 and found_opposing_increment == 0
-        local decrement_with_previous_increment = tonumber(amount) < 0 and found_opposing_increment == 1
+        local found_opposing_change = redis.call("getbit", opposing_tracking_shard_key, ref)
+        local increment_without_previous_decrement = tonumber(amount) > 0 and found_opposing_change == 0
+        local decrement_with_previous_increment = tonumber(amount) < 0 and found_opposing_change == 1
         local net_change = 0
 
         if increment_without_previous_decrement or decrement_with_previous_increment then

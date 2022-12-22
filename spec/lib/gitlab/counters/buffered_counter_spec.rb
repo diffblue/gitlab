@@ -70,7 +70,7 @@ RSpec.describe Gitlab::Counters::BufferedCounter, :clean_gitlab_redis_shared_sta
       end
 
       it 'does not increment the counter key' do
-        expect { counter.increment(increment) }.not_to change { counter.get }
+        expect { counter.increment(increment) }.not_to change { counter.get }.from(0)
       end
 
       it 'increments the amount in the refresh key' do
