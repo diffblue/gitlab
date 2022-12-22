@@ -8,7 +8,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
 import { createAlert } from '~/flash';
-import httpStatusCodes from '~/lib/utils/http_status';
+import httpStatusCodes, { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
 
 import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.graphql';
 import countriesResolver from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
@@ -192,9 +192,7 @@ describe('International Phone input component', () => {
       const errorMessage = 'Invalid phone number';
 
       beforeEach(() => {
-        axiosMock
-          .onPost(SEND_CODE_PATH)
-          .reply(httpStatusCodes.BAD_REQUEST, { message: errorMessage });
+        axiosMock.onPost(SEND_CODE_PATH).reply(HTTP_STATUS_BAD_REQUEST, { message: errorMessage });
 
         enterPhoneNumber('555');
         submitForm();

@@ -9,7 +9,7 @@ import { createAlert } from '~/flash';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { newDate, dayAfter, secondsToDays, getDatesInRange } from '~/lib/utils/datetime_utility';
 import { isNumeric } from '~/lib/utils/number_utils';
-import httpStatus from '~/lib/utils/http_status';
+import httpStatus, { HTTP_STATUS_FORBIDDEN } from '~/lib/utils/http_status';
 
 const EVENT_TYPE_LABEL = 'label';
 
@@ -339,7 +339,7 @@ export const checkForDataError = (response) => {
 };
 
 export const throwIfUserForbidden = (error) => {
-  if (error?.response?.status === httpStatus.FORBIDDEN) {
+  if (error?.response?.status === HTTP_STATUS_FORBIDDEN) {
     throw error;
   }
 };

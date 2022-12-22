@@ -7,7 +7,7 @@ import * as types from 'ee/analytics/cycle_analytics/store/modules/duration_char
 import testAction from 'helpers/vuex_action_helper';
 import { createdAfter, createdBefore, group } from 'jest/analytics/cycle_analytics/mock_data';
 import { createAlert } from '~/flash';
-import httpStatusCodes from '~/lib/utils/http_status';
+import httpStatusCodes, { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
 import {
   allowedStages as activeStages,
   transformedDurationData,
@@ -19,7 +19,7 @@ jest.mock('~/flash');
 const selectedGroup = { fullPath: group.path };
 const hiddenStage = { ...activeStages[0], hidden: true, id: 3, slug: 3 };
 const [selectedValueStream] = valueStreams;
-const error = new Error(`Request failed with status code ${httpStatusCodes.BAD_REQUEST}`);
+const error = new Error(`Request failed with status code ${HTTP_STATUS_BAD_REQUEST}`);
 
 const rootState = {
   createdAfter,
@@ -141,7 +141,7 @@ describe('DurationChart actions', () => {
 
     describe('receiveDurationDataError', () => {
       beforeEach(() => {
-        mock.onGet(endpoints.durationData).reply(httpStatusCodes.BAD_REQUEST, error);
+        mock.onGet(endpoints.durationData).reply(HTTP_STATUS_BAD_REQUEST, error);
       });
 
       it("dispatches the 'receiveDurationDataError' action when there is an error", () => {

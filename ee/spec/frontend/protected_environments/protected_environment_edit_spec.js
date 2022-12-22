@@ -8,7 +8,7 @@ import ProtectedEnvironmentEdit, {
 } from 'ee/protected_environments/protected_environment_edit.vue';
 import { ACCESS_LEVELS, LEVEL_TYPES } from 'ee/protected_environments/constants';
 import { createAlert } from '~/flash';
-import httpStatusCodes from '~/lib/utils/http_status';
+import httpStatusCodes, { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
 
 jest.mock('~/flash');
 const $toast = {
@@ -174,7 +174,7 @@ describe('Protected Environment Edit', () => {
 
   describe('on permissions update failure', () => {
     beforeEach(() => {
-      mockAxios.onPatch().replyOnce(httpStatusCodes.BAD_REQUEST, {});
+      mockAxios.onPatch().replyOnce(HTTP_STATUS_BAD_REQUEST, {});
       createComponent();
     });
 
@@ -210,7 +210,7 @@ describe('Protected Environment Edit', () => {
 
   describe('on count update failure', () => {
     beforeEach(() => {
-      mockAxios.onPatch().replyOnce(httpStatusCodes.BAD_REQUEST, {});
+      mockAxios.onPatch().replyOnce(HTTP_STATUS_BAD_REQUEST, {});
       createComponent();
     });
 

@@ -1,4 +1,4 @@
-import httpStatusCodes from '~/lib/utils/http_status';
+import { HTTP_STATUS_FORBIDDEN, HTTP_STATUS_UNAUTHORIZED } from '~/lib/utils/http_status';
 
 export {
   CRITICAL,
@@ -11,6 +11,6 @@ export {
 } from '~/vulnerabilities/constants';
 
 export const LOADING_VULNERABILITIES_ERROR_CODES = {
-  UNAUTHORIZED: httpStatusCodes.UNAUTHORIZED,
-  FORBIDDEN: httpStatusCodes.FORBIDDEN,
+  UNAUTHORIZED: HTTP_STATUS_UNAUTHORIZED,
+  FORBIDDEN: HTTP_STATUS_FORBIDDEN,
 };
