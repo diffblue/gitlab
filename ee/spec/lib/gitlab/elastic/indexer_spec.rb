@@ -122,6 +122,44 @@ RSpec.describe Gitlab::Elastic::Indexer do
               "--project-path=#{project.full_path}",
               "--visibility-level=#{project.visibility_level}",
               "--repository-access-level=#{project.repository_access_level}",
+              "--traversal-ids=#{project.namespace_ancestry}",
+              project.id.to_s,
+              "#{project.repository.disk_path}.git"
+            ],
+            nil,
+            hash_including(
+              'GITALY_CONNECTION_INFO' => gitaly_connection_data.to_json,
+              'ELASTIC_CONNECTION_INFO' => elasticsearch_config.to_json,
+              'RAILS_ENV' => Rails.env,
+              'CORRELATION_ID' => Labkit::Correlation::CorrelationId.current_id,
+              'FROM_SHA' => expected_from_sha,
+              'TO_SHA' => to_sha
+            )
+          ).and_return(popen_success)
+
+          indexer.run
+        end
+      end
+
+      context 'when traversal_ids migration is not applied' do
+        before do
+          set_elasticsearch_migration_to(:add_traversal_ids_to_original_index_mapping, including: false)
+        end
+
+        it 'runs the indexer with the right flags without --traversal-ids flag' do
+          gitaly_connection_data = {
+            storage: project.repository_storage,
+            limit_file_size: Gitlab::CurrentSettings.elasticsearch_indexed_file_size_limit_kb.kilobytes
+          }.merge(Gitlab::GitalyClient.connection_data(project.repository_storage))
+
+          expect_popen.with(
+            [
+              TestEnv.indexer_bin_path,
+              "--timeout=#{Gitlab::Elastic::Indexer::TIMEOUT}s",
+              '--search-curation',
+              "--project-path=#{project.full_path}",
+              "--visibility-level=#{project.visibility_level}",
+              "--repository-access-level=#{project.repository_access_level}",
               project.id.to_s,
               "#{project.repository.disk_path}.git"
             ],
@@ -154,6 +192,7 @@ RSpec.describe Gitlab::Elastic::Indexer do
             "--project-path=#{project.full_path}",
             "--visibility-level=#{project.visibility_level}",
             "--repository-access-level=#{project.repository_access_level}",
+            "--traversal-ids=#{project.namespace_ancestry}",
             project.id.to_s,
             "#{project.repository.disk_path}.git"
           ],
@@ -283,6 +322,7 @@ RSpec.describe Gitlab::Elastic::Indexer do
               '--blob-type=wiki_blob',
               '--skip-commits',
               "--project-path=#{project.full_path}",
+              "--traversal-ids=#{project.namespace_ancestry}",
               project.id.to_s,
               "#{project.wiki.repository.disk_path}.git"
             ],
@@ -308,6 +348,7 @@ RSpec.describe Gitlab::Elastic::Indexer do
             '--blob-type=wiki_blob',
             '--skip-commits',
             "--project-path=#{project.full_path}",
+            "--traversal-ids=#{project.namespace_ancestry}",
             project.id.to_s,
             "#{project.wiki.repository.disk_path}.git"
           ],
