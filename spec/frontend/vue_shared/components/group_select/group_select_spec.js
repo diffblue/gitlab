@@ -3,7 +3,6 @@ import { GlCollapsibleListbox } from '@gitlab/ui';
 import MockAdapter from 'axios-mock-adapter';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import axios from '~/lib/utils/axios_utils';
-import { createAlert } from '~/flash';
 import GroupSelect from '~/vue_shared/components/group_select/group_select.vue';
 import {
   TOGGLE_TEXT,
@@ -12,8 +11,6 @@ import {
   QUERY_TOO_SHORT_MESSAGE,
 } from '~/vue_shared/components/group_select/constants';
 import waitForPromises from 'helpers/wait_for_promises';
-
-jest.mock('~/flash');
 
 describe('GroupSelect', () => {
   let wrapper;
@@ -26,6 +23,11 @@ describe('GroupSelect', () => {
   };
   const groupEndpoint = `/api/undefined/groups/${groupMock.id}`;
 
+  // Stubs
+  const GlAlert = {
+    template: '<div><slot /></div>',
+  };
+
   // Props
   const inputName = 'inputName';
   const inputId = 'inputId';
@@ -33,6 +35,7 @@ describe('GroupSelect', () => {
   // Finders
   const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findInput = () => wrapper.findByTestId('input');
+  const findAlert = () => wrapper.findComponent(GlAlert);
 
   // Helpers
   const createComponent = ({ props = {} } = {}) => {
@@ -41,6 +44,9 @@ describe('GroupSelect', () => {
         inputName,
         inputId,
         ...props,
+      },
+      stubs: {
+        GlAlert,
       },
     });
   };
@@ -94,13 +100,13 @@ describe('GroupSelect', () => {
           .reply(200, [{ full_name: 'notTheSelectedGroup', id: '2' }]);
         mock.onGet(groupEndpoint).reply(500);
         createComponent({ props: { initialSelection: groupMock.id } });
+
+        expect(findAlert().exists()).toBe(false);
+
         await waitForPromises();
 
-        expect(createAlert).toHaveBeenCalledWith({
-          message: FETCH_GROUP_ERROR,
-          error: expect.any(Error),
-          parent: wrapper.vm.$el,
-        });
+        expect(findAlert().exists()).toBe(true);
+        expect(findAlert().text()).toBe(FETCH_GROUP_ERROR);
       });
     });
   });
@@ -109,13 +115,12 @@ describe('GroupSelect', () => {
     mock.onGet('/api/undefined/groups.json').reply(500);
     createComponent();
     openListbox();
+    expect(findAlert().exists()).toBe(false);
+
     await waitForPromises();
 
-    expect(createAlert).toHaveBeenCalledWith({
-      message: FETCH_GROUPS_ERROR,
-      error: expect.any(Error),
-      parent: wrapper.vm.$el,
-    });
+    expect(findAlert().exists()).toBe(true);
+    expect(findAlert().text()).toBe(FETCH_GROUPS_ERROR);
   });
 
   describe('selection', () => {

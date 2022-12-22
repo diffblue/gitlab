@@ -1,11 +1,11 @@
 <script>
 import { debounce } from 'lodash';
-import { GlCollapsibleListbox } from '@gitlab/ui';
+import { GlAlert, GlCollapsibleListbox } from '@gitlab/ui';
+import * as Sentry from '@sentry/browser';
 import axios from '~/lib/utils/axios_utils';
 import Api from '~/api';
 import { __ } from '~/locale';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
-import { createAlert } from '~/flash';
 import { groupsPath } from './utils';
 import {
   TOGGLE_TEXT,
@@ -18,6 +18,7 @@ const MINIMUM_QUERY_LENGTH = 3;
 
 export default {
   components: {
+    GlAlert,
     GlCollapsibleListbox,
   },
   props: {
@@ -58,6 +59,7 @@ export default {
       groups: [],
       selectedValue: null,
       selectedText: null,
+      errorMessage: '',
     };
   },
   computed: {
@@ -119,11 +121,7 @@ export default {
 
         this.searching = false;
       } catch (error) {
-        createAlert({
-          message: FETCH_GROUPS_ERROR,
-          error,
-          parent: this.$el,
-        });
+        this.handleError({ message: FETCH_GROUPS_ERROR, error });
       }
     },
     async fetchInitialSelection() {
@@ -139,11 +137,7 @@ export default {
         this.pristine = false;
         this.searching = false;
       } catch (error) {
-        createAlert({
-          message: FETCH_GROUP_ERROR,
-          error,
-          parent: this.$el,
-        });
+        this.handleError({ message: FETCH_GROUP_ERROR, error });
       }
     },
     onShown() {
@@ -153,6 +147,13 @@ export default {
     },
     onReset() {
       this.selected = null;
+    },
+    handleError({ message, error }) {
+      Sentry.captureException(error);
+      this.errorMessage = message;
+    },
+    dismissError() {
+      this.errorMessage = '';
     },
   },
   i18n: {
@@ -167,6 +168,9 @@ export default {
 
 <template>
   <div>
+    <gl-alert v-if="errorMessage" class="gl-mb-3" variant="danger" @dismiss="dismissError">{{
+      errorMessage
+    }}</gl-alert>
     <gl-collapsible-listbox
       ref="listbox"
       v-model="selected"
@@ -189,7 +193,6 @@ export default {
         <div class="gl-text-gray-300">{{ item.full_path }}</div>
       </template>
     </gl-collapsible-listbox>
-    <div class="flash-container"></div>
     <input :id="inputId" data-testid="input" type="hidden" :name="inputName" :value="inputValue" />
   </div>
 </template>
