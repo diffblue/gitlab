@@ -40,6 +40,16 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
     end
   end
 
+  shared_examples 'renders the setup view' do
+    before do
+      visit_page
+    end
+
+    it do
+      expect(page).to have_content(s_('Product Analytics|Instrument your application'))
+    end
+  end
+
   context 'without the required application settings' do
     it_behaves_like 'renders product analytics 404'
   end
@@ -110,7 +120,7 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
               stub_cube_no_database_error
             end
 
-            it_behaves_like 'renders the onboarding view'
+            it_behaves_like 'renders the setup view'
           end
 
           context 'when the cube API returns zero data' do
@@ -118,7 +128,7 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
               stub_cube_proxy_zero_count
             end
 
-            it_behaves_like 'renders the onboarding view'
+            it_behaves_like 'renders the setup view'
           end
 
           context 'when the cube API returns data' do
