@@ -14,7 +14,7 @@ RSpec.describe 'search/_category', feature_category: :global_search do
 
     before do
       stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
-      assign(:search_service, search_service)
+      assign(:search_service_presenter, SearchServicePresenter.new(search_service))
     end
 
     where(:feature_flag, :tab_name) do
