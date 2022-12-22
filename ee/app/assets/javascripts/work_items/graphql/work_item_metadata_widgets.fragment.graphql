@@ -7,6 +7,10 @@ fragment WorkItemMetadataWidgets on WorkItemWidget {
     type
     progress
   }
+  ... on WorkItemWidgetHealthStatus {
+    type
+    healthStatus
+  }
   ... on WorkItemWidgetMilestone {
     type
     milestone {
