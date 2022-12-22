@@ -34,7 +34,7 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
       is_expected.to be_disallowed(:update_epic, :destroy_epic, :admin_epic,
                                    :create_epic, :admin_related_epic_link,
                                    :set_epic_metadata, :set_confidentiality,
-                                   :mark_note_as_confidential, :read_internal_note)
+                                   :mark_note_as_internal, :read_internal_note)
     end
   end
 
@@ -45,7 +45,7 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
                                 :update_epic, :admin_epic, :create_epic,
                                 :create_todo, :read_related_epic_link,
                                 :admin_related_epic_link, :set_epic_metadata,
-                                :set_confidentiality, :mark_note_as_confidential)
+                                :set_confidentiality, :mark_note_as_internal)
     end
   end
 
@@ -279,7 +279,7 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
             is_expected.to be_disallowed(:update_epic, :destroy_epic, :admin_epic,
                                          :create_epic, :admin_related_epic_link,
                                          :set_epic_metadata, :set_confidentiality,
-                                         :mark_note_as_confidential, :read_internal_note)
+                                         :mark_note_as_internal, :read_internal_note)
           end
         end
 
