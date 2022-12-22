@@ -5,6 +5,12 @@ require 'spec_helper'
 RSpec.describe 'admin/dashboard/index.html.haml' do
   include Devise::Test::ControllerHelpers
 
+  let(:reflections) do
+    Gitlab::Database.database_base_models.transform_values do |base_model|
+      ::Gitlab::Database::Reflection.new(base_model)
+    end
+  end
+
   before do
     counts = Admin::DashboardController::COUNTED_ITEMS.index_with { 100 }
 
@@ -12,6 +18,7 @@ RSpec.describe 'admin/dashboard/index.html.haml' do
     assign(:projects, create_list(:project, 1))
     assign(:users, create_list(:user, 1))
     assign(:groups, create_list(:group, 1))
+    assign(:database_reflections, reflections)
 
     allow(view).to receive(:admin?).and_return(true)
     allow(view).to receive(:current_application_settings).and_return(Gitlab::CurrentSettings.current_application_settings)
