@@ -33,7 +33,10 @@ import {
 import { createAlert } from '~/flash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import * as commonUtils from '~/lib/utils/common_utils';
-import httpStatusCodes, { HTTP_STATUS_FORBIDDEN } from '~/lib/utils/http_status';
+import httpStatusCodes, {
+  HTTP_STATUS_FORBIDDEN,
+  HTTP_STATUS_NOT_FOUND,
+} from '~/lib/utils/http_status';
 import * as urlUtils from '~/lib/utils/url_utility';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import {
@@ -384,7 +387,7 @@ describe('EE Value Stream Analytics component', () => {
 
       mock
         .onGet(endpoints.baseStagesEndpoint)
-        .reply(httpStatusCodes.NOT_FOUND, { response: { status: httpStatusCodes.NOT_FOUND } });
+        .reply(HTTP_STATUS_NOT_FOUND, { response: { status: HTTP_STATUS_NOT_FOUND } });
       wrapper = await createComponent();
 
       expect(createAlert).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_STAGES });
@@ -395,7 +398,7 @@ describe('EE Value Stream Analytics component', () => {
 
       mock
         .onGet(endpoints.stageData)
-        .reply(httpStatusCodes.NOT_FOUND, { response: { status: httpStatusCodes.NOT_FOUND } });
+        .reply(HTTP_STATUS_NOT_FOUND, { response: { status: HTTP_STATUS_NOT_FOUND } });
 
       wrapper = await createComponent({ selectedStage: issueStage });
 
@@ -407,7 +410,7 @@ describe('EE Value Stream Analytics component', () => {
 
       mock
         .onGet(endpoints.tasksByTypeTopLabelsData)
-        .reply(httpStatusCodes.NOT_FOUND, { response: { status: httpStatusCodes.NOT_FOUND } });
+        .reply(HTTP_STATUS_NOT_FOUND, { response: { status: HTTP_STATUS_NOT_FOUND } });
       wrapper = await createComponent();
       await waitForPromises();
 
@@ -421,7 +424,7 @@ describe('EE Value Stream Analytics component', () => {
 
       mock
         .onGet(endpoints.tasksByTypeData)
-        .reply(httpStatusCodes.NOT_FOUND, { response: { status: httpStatusCodes.NOT_FOUND } });
+        .reply(HTTP_STATUS_NOT_FOUND, { response: { status: HTTP_STATUS_NOT_FOUND } });
       wrapper = await createComponent();
       await waitForPromises();
 
@@ -435,7 +438,7 @@ describe('EE Value Stream Analytics component', () => {
 
       mock
         .onGet(endpoints.stageMedian)
-        .reply(httpStatusCodes.NOT_FOUND, { response: { status: httpStatusCodes.NOT_FOUND } });
+        .reply(HTTP_STATUS_NOT_FOUND, { response: { status: HTTP_STATUS_NOT_FOUND } });
       wrapper = await createComponent();
 
       expect(createAlert).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_STAGE_MEDIAN });

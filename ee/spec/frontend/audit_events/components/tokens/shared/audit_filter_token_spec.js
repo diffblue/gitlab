@@ -4,7 +4,7 @@ import { shallowMount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import AuditFilterToken from 'ee/audit_events/components/tokens/shared/audit_filter_token.vue';
 import { createAlert } from '~/flash';
-import httpStatusCodes from '~/lib/utils/http_status';
+import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 
 jest.mock('~/flash');
 
@@ -19,7 +19,7 @@ describe('AuditFilterToken', () => {
       full_name: 'Full name',
     },
   ];
-  const mockResponseFailed = { response: { status: httpStatusCodes.NOT_FOUND } };
+  const mockResponseFailed = { response: { status: HTTP_STATUS_NOT_FOUND } };
   const mockFetchLoading = () => new Promise(() => {});
 
   const findFilteredSearchSuggestions = () => wrapper.findAllByTestId('audit-filter-suggestion');

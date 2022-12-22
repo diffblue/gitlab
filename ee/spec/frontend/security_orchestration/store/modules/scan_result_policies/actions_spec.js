@@ -4,7 +4,7 @@ import getInitialState from 'ee/security_orchestration/store/modules/scan_result
 import * as actions from 'ee/security_orchestration/store/modules/scan_result_policies/actions';
 import testAction from 'helpers/vuex_action_helper';
 import axios from '~/lib/utils/axios_utils';
-import httpStatus from '~/lib/utils/http_status';
+import httpStatus, { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 
 describe('ScanResultPolicies actions', () => {
   let state;
@@ -70,9 +70,9 @@ describe('ScanResultPolicies actions', () => {
 
   describe('fetchBranch', () => {
     it.each`
-      status                  | mutations
-      ${httpStatus.OK}        | ${[]}
-      ${httpStatus.NOT_FOUND} | ${[{ type: types.INVALID_PROTECTED_BRANCHES, payload: branchName }]}
+      status                   | mutations
+      ${httpStatus.OK}         | ${[]}
+      ${HTTP_STATUS_NOT_FOUND} | ${[{ type: types.INVALID_PROTECTED_BRANCHES, payload: branchName }]}
     `('triggers $mutations.length mutation when status is $status', ({ status, mutations }) => {
       mock.onGet(apiEndpoint).replyOnce(status);
       testAction(actions.fetchBranch, { branch: branchName, projectId }, state, mutations, []);

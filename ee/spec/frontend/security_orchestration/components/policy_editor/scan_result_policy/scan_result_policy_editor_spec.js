@@ -33,7 +33,7 @@ import PolicyActionBuilder from 'ee/security_orchestration/components/policy_edi
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_builder.vue';
 import ScanResultPoliciesStore from 'ee/security_orchestration/store/modules/scan_result_policies';
 import axios from '~/lib/utils/axios_utils';
-import httpStatus from '~/lib/utils/http_status';
+import httpStatus, { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 
 jest.mock('~/lib/utils/url_utility', () => ({
   joinPaths: jest.requireActual('~/lib/utils/url_utility').joinPaths,
@@ -389,9 +389,9 @@ describe('ScanResultPolicyEditor', () => {
   });
 
   it.each`
-    status                  | errorMessage
-    ${httpStatus.OK}        | ${''}
-    ${httpStatus.NOT_FOUND} | ${'The following branches do not exist on this development project: main. Please review all protected branches to ensure the values are accurate before updating this policy.'}
+    status                   | errorMessage
+    ${httpStatus.OK}         | ${''}
+    ${HTTP_STATUS_NOT_FOUND} | ${'The following branches do not exist on this development project: main. Please review all protected branches to ensure the values are accurate before updating this policy.'}
   `(
     'triggers error event with content: "$errorMessage" when http status is $status',
     async ({ status, errorMessage }) => {

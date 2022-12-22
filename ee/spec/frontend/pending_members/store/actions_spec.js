@@ -11,7 +11,10 @@ import {
 import { mockDataMembers } from 'ee_jest/pending_members/mock_data';
 import testAction from 'helpers/vuex_action_helper';
 import axios from '~/lib/utils/axios_utils';
-import httpStatusCodes, { HTTP_STATUS_NO_CONTENT } from '~/lib/utils/http_status';
+import httpStatusCodes, {
+  HTTP_STATUS_NO_CONTENT,
+  HTTP_STATUS_NOT_FOUND,
+} from '~/lib/utils/http_status';
 
 describe('Pending members actions', () => {
   let state;
@@ -69,7 +72,7 @@ describe('Pending members actions', () => {
 
     describe('on error', () => {
       beforeEach(() => {
-        mock.onGet('/api/v4/groups/1/pending_members').replyOnce(httpStatusCodes.NOT_FOUND, {});
+        mock.onGet('/api/v4/groups/1/pending_members').replyOnce(HTTP_STATUS_NOT_FOUND, {});
       });
 
       it('dispatches the request and error action', async () => {
@@ -144,7 +147,7 @@ describe('Pending members actions', () => {
       beforeEach(() => {
         mock
           .onPut(`/api/v4/groups/1/members/${memberId}/approve`)
-          .replyOnce(httpStatusCodes.NOT_FOUND, {});
+          .replyOnce(HTTP_STATUS_NOT_FOUND, {});
       });
 
       it('dispatches the request and error action', async () => {

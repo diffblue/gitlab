@@ -11,12 +11,12 @@ import * as types from 'ee/analytics/cycle_analytics/store/modules/type_of_work/
 import testAction from 'helpers/vuex_action_helper';
 import { createdAfter, createdBefore } from 'jest/analytics/cycle_analytics/mock_data';
 import { createAlert } from '~/flash';
-import httpStatusCodes from '~/lib/utils/http_status';
+import httpStatusCodes, { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 import { groupLabels, groupLabelNames, endpoints, rawTasksByTypeData } from '../../../mock_data';
 
 jest.mock('~/flash');
 
-const error = new Error(`Request failed with status code ${httpStatusCodes.NOT_FOUND}`);
+const error = new Error(`Request failed with status code ${HTTP_STATUS_NOT_FOUND}`);
 
 describe('Type of work actions', () => {
   let mock;
@@ -123,7 +123,7 @@ describe('Type of work actions', () => {
 
     describe('with an error', () => {
       beforeEach(() => {
-        mock.onGet(endpoints.fetchTopRankedGroupLabels).replyOnce(httpStatusCodes.NOT_FOUND);
+        mock.onGet(endpoints.fetchTopRankedGroupLabels).replyOnce(HTTP_STATUS_NOT_FOUND);
       });
 
       it('dispatches receiveTopRankedGroupLabelsError if the request fails', () => {
@@ -195,7 +195,7 @@ describe('Type of work actions', () => {
 
     describe('with an error', () => {
       beforeEach(() => {
-        mock.onGet(endpoints.fetchTasksByTypeData).replyOnce(httpStatusCodes.NOT_FOUND);
+        mock.onGet(endpoints.fetchTasksByTypeData).replyOnce(HTTP_STATUS_NOT_FOUND);
       });
 
       it('dispatches receiveTasksByTypeDataError if the request fails', () => {

@@ -16,7 +16,7 @@ import {
   I18N_VSA_ERROR_SELECTED_STAGE,
 } from '~/analytics/cycle_analytics/constants';
 import { createAlert } from '~/flash';
-import httpStatusCodes from '~/lib/utils/http_status';
+import httpStatusCodes, { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 import {
   allowedStages as stages,
   customizableStagesAndEvents,
@@ -25,7 +25,7 @@ import {
 } from '../../mock_data';
 
 const stageData = { events: [] };
-const error = new Error(`Request failed with status code ${httpStatusCodes.NOT_FOUND}`);
+const error = new Error(`Request failed with status code ${HTTP_STATUS_NOT_FOUND}`);
 
 stages[0].hidden = true;
 const activeStages = stages.filter(({ hidden }) => !hidden);
@@ -163,7 +163,7 @@ describe('Value Stream Analytics actions / stages', () => {
     describe('with a failing request', () => {
       beforeEach(() => {
         mock = new MockAdapter(axios);
-        mock.onGet(endpoints.stageData).replyOnce(httpStatusCodes.NOT_FOUND, { error });
+        mock.onGet(endpoints.stageData).replyOnce(HTTP_STATUS_NOT_FOUND, { error });
       });
 
       it('dispatches receiveStageDataError on error', () => {
@@ -280,7 +280,7 @@ describe('Value Stream Analytics actions / stages', () => {
 
     describe('with a failing request', () => {
       beforeEach(() => {
-        mock.onGet(endpoints.stageMedian).reply(httpStatusCodes.NOT_FOUND, { error });
+        mock.onGet(endpoints.stageMedian).reply(HTTP_STATUS_NOT_FOUND, { error });
       });
 
       it('will dispatch receiveStageMedianValuesError', () => {
@@ -422,7 +422,7 @@ describe('Value Stream Analytics actions / stages', () => {
     describe('with a failing request', () => {
       beforeEach(() => {
         mock = new MockAdapter(axios);
-        mock.onGet(endpoints.baseStagesEndpoint).replyOnce(httpStatusCodes.NOT_FOUND, { error });
+        mock.onGet(endpoints.baseStagesEndpoint).replyOnce(HTTP_STATUS_NOT_FOUND, { error });
       });
 
       it('dispatches receiveGroupStagesError on error', () => {

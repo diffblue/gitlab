@@ -10,7 +10,7 @@ import axios from '~/lib/utils/axios_utils';
 import extensionsContainer from '~/vue_merge_request_widget/components/extensions/container';
 import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
 import statusChecksExtension from 'ee/vue_merge_request_widget/extensions/status_checks';
-import httpStatus from '~/lib/utils/http_status';
+import httpStatus, { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 import waitForPromises from 'helpers/wait_for_promises';
 
 describe('Status checks extension', () => {
@@ -60,7 +60,7 @@ describe('Status checks extension', () => {
 
     describe('when the fetching fails', () => {
       beforeEach(async () => {
-        await setupWithResponse(httpStatus.NOT_FOUND);
+        await setupWithResponse(HTTP_STATUS_NOT_FOUND);
       });
 
       it('should render the failed text', () => {
