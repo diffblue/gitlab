@@ -80,6 +80,10 @@ module QA
       end
 
       before do
+        unless Runtime::ApplicationSettings.get_application_settings[:bulk_import_enabled]
+          Runtime::ApplicationSettings.set_application_settings(bulk_import_enabled: true)
+        end
+
         sandbox.add_member(user, Resource::Members::AccessLevel::MAINTAINER)
         source_group.add_member(author, Resource::Members::AccessLevel::MAINTAINER)
         author.set_public_email
