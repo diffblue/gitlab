@@ -1,2 +1,2 @@
-- if search_service.show_elasticsearch_tabs?
+- if @search_service_presenter.show_elasticsearch_tabs?
   = search_filter_link 'blobs', _("Code"), data: { qa_selector: 'code_tab' }
