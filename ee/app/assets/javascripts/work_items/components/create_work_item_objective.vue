@@ -1,5 +1,5 @@
 <script>
-import { GlAlert, GlFormInput, GlButton } from '@gitlab/ui';
+import { GlAlert, GlForm, GlFormInput, GlFormCheckbox, GlButton } from '@gitlab/ui';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import createWorkItemMutation from '~/work_items/graphql/create_work_item.mutation.graphql';
 import projectWorkItemTypesQuery from '~/work_items/graphql/project_work_item_types.query.graphql';
@@ -12,7 +12,9 @@ import {
 export default {
   components: {
     GlAlert,
+    GlForm,
     GlFormInput,
+    GlFormCheckbox,
     GlButton,
   },
   mixins: [glFeatureFlagMixin()],
@@ -22,6 +24,7 @@ export default {
       title: '',
       error: null,
       loading: false,
+      confidential: false,
     };
   },
   apollo: {
@@ -79,6 +82,7 @@ export default {
               title: this.title,
               projectPath: this.fullPath,
               workItemTypeId: this.objectiveWorkItemType,
+              confidential: this.confidential,
             },
           },
         });
@@ -101,18 +105,27 @@ export default {
 <template>
   <div>
     <gl-alert v-if="error" variant="danger" @dismiss="error = null">{{ error }}</gl-alert>
-    <form
-      class="gl-md-display-flex gl-flex-grow-1 gl-border-t-0 row-content-block gl-bg-none"
+    <gl-form
+      class="gl-md-display-flex gl-flex-grow-1 gl-align-items-flex-start gl-border-t-0 row-content-block gl-bg-none"
       @submit.prevent="createObjective"
     >
-      <gl-form-input
-        ref="objectiveTitle"
-        v-model.trim="title"
-        type="text"
-        class="gl-flex-grow-1 gl-mr-3 gl-md-mb-0! gl-mb-5"
-        :autofocus="true"
-        :placeholder="__('Title')"
-      />
+      <div
+        class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-mr-3 gl-sm-mb-5 gl-sm-mr-0!"
+      >
+        <gl-form-input
+          ref="objectiveTitle"
+          v-model.trim="title"
+          type="text"
+          class="gl-flex-grow-1 gl-md-mb-0! gl-mb-5"
+          :autofocus="true"
+          :placeholder="__('Title')"
+        />
+        <gl-form-checkbox v-model="confidential" name="isConfidential" class="gl-md-mt-5">{{
+          s__(
+            'WorkItem|This objective is confidential and should only be visible to team members with at least Reporter access',
+          )
+        }}</gl-form-checkbox>
+      </div>
       <gl-button
         variant="confirm"
         :disabled="isButtonDisabled"
@@ -126,6 +139,6 @@ export default {
       <gl-button type="button" data-testid="cancel-button" @click="handleCancelClick">
         {{ __('Cancel') }}
       </gl-button>
-    </form>
+    </gl-form>
   </div>
 </template>
