@@ -13,7 +13,7 @@ On self-managed GitLab, by default this feature is not available. To make it ava
 
 As announced in [this blog post](https://about.gitlab.com/blog/2022/05/23/the-future-of-the-gitlab-web-ide/),
 the current implementation of the [Web IDE](../web_ide/index.md) is being replaced
-with an implementation inspired by Visual Studio Code. This effort is still under
+with an implementation powered by Visual Studio Code. This effort is still under
 development. For updates, see [this epic](https://gitlab.com/groups/gitlab-org/-/epics/7683).
 
 To connect a remote machine to the Web IDE Beta, see [Remote Development](../remote_development/index.md).
