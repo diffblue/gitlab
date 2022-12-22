@@ -23,7 +23,6 @@ export default () => {
     storageLimitEnforced,
     canShowInlineAlert,
     additionalRepoStorageByNamespace,
-    isFreeNamespace,
     isPersonalNamespace,
   } = el.dataset;
 
@@ -49,7 +48,6 @@ export default () => {
           storageLimitEnforced: parseBoolean(storageLimitEnforced),
           canShowInlineAlert: parseBoolean(canShowInlineAlert),
           isAdditionalStorageFlagEnabled: parseBoolean(additionalRepoStorageByNamespace),
-          isFreeNamespace: parseBoolean(isFreeNamespace),
           isPersonalNamespace,
         },
       });
