@@ -100,6 +100,10 @@ module Gitlab
                      ]
                    end
 
+        if Feature.enabled?(:send_traversal_ids_to_indexer) && traversal_id_migration_applied?
+          command << "--traversal-ids=#{project.namespace_ancestry}"
+        end
+
         command += [project.id.to_s, repository_path]
 
         output, status = Gitlab::Popen.popen(command, nil, vars)
@@ -121,6 +125,10 @@ module Gitlab
           logger.error(payload)
           raise Error, output
         end
+      end
+
+      def traversal_id_migration_applied?
+        ::Elastic::DataMigrationService.migration_has_finished?(:add_traversal_ids_to_original_index_mapping)
       end
 
       # Remove all indexed data for commits and blobs for a project.
