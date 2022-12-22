@@ -1,5 +1,5 @@
 - issuables = local_assigns.fetch(:issuables)
-- issuables_with_weight = issuables.select(&:weight_available?).map(&:weight).compact
+- issuables_with_weight = issuables.select(&:weight_available?).filter_map(&:weight)
 
 - return if issuables_with_weight.empty?
 
