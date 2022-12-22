@@ -23,10 +23,7 @@ export default {
 };
 </script>
 <template>
-  <user-callout-dismisser
-    ref="calloutDismisser"
-    feature-name="artifacts_management_page_feedback_banner"
-  >
+  <user-callout-dismisser feature-name="artifacts_management_page_feedback_banner">
     <template #default="{ dismiss, shouldShowCallout }">
       <gl-banner
         v-if="shouldShowCallout"

@@ -8,6 +8,8 @@ import {
   FEEDBACK_URL,
 } from '~/artifacts/constants';
 
+const mockBannerImagePath = 'banner/image/path';
+
 describe('Artifacts management feedback banner', () => {
   let wrapper;
   let userCalloutDismissSpy;
@@ -19,7 +21,7 @@ describe('Artifacts management feedback banner', () => {
 
     wrapper = shallowMount(FeedbackBanner, {
       provide: {
-        artifactsManagementFeedbackImagePath: 'banner/image/path',
+        artifactsManagementFeedbackImagePath: mockBannerImagePath,
       },
       stubs: {
         UserCalloutDismisser: makeMockUserCalloutDismisser({
@@ -41,7 +43,7 @@ describe('Artifacts management feedback banner', () => {
       title: I18N_FEEDBACK_BANNER_TITLE,
       buttonText: I18N_FEEDBACK_BANNER_BUTTON,
       buttonLink: FEEDBACK_URL,
-      svgPath: 'banner/image/path',
+      svgPath: mockBannerImagePath,
     });
   });
 
