@@ -67,9 +67,9 @@ RSpec.describe 'Admin Dashboard', feature_category: :not_owned do
       expect(page).to have_content("Users with highest role Owner 5")
       expect(page).to have_content("Bots 2")
       expect(page).to have_content("Billable users 69")
-      expect(page).to have_content("Active users 71")
+      expect(page).to have_content("Active users (total billable + total non-billable) 71")
       expect(page).to have_content("Blocked users 7")
-      expect(page).to have_content("Total users 78")
+      expect(page).to have_content("Total users (active users + blocked users) 78")
     end
   end
 

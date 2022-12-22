@@ -81,4 +81,10 @@ RSpec.describe UsersStatistics do
       expect(users_statistics.total).to eq(78)
     end
   end
+
+  describe '#non_billable' do
+    it 'sums bots and guests values' do
+      expect(users_statistics.non_billable).to eq(7)
+    end
+  end
 end
