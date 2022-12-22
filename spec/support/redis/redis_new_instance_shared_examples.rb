@@ -3,10 +3,12 @@
 require 'spec_helper'
 
 RSpec.shared_examples "redis_new_instance_shared_examples" do |name, fallback_class|
+  include TmpdirHelper
+
   let(:instance_specific_config_file) { "config/redis.#{name}.yml" }
   let(:environment_config_file_name) { "GITLAB_REDIS_#{name.upcase}_CONFIG_FILE" }
   let(:fallback_config_file) { nil }
-  let(:rails_root) { Dir.mktmpdir('redis_shared_examples') }
+  let(:rails_root) { mktmpdir }
 
   before do
     redis_clear_raw_config!(fallback_class)
@@ -23,18 +25,12 @@ RSpec.shared_examples "redis_new_instance_shared_examples" do |name, fallback_cl
   describe '.config_file_name' do
     subject { described_class.config_file_name }
 
-    let(:rails_root) { Dir.mktmpdir('redis_shared_examples') }
-
     before do
       # Undo top-level stub of config_file_name because we are testing that method now.
       allow(described_class).to receive(:config_file_name).and_call_original
 
       allow(described_class).to receive(:rails_root).and_return(rails_root)
       FileUtils.mkdir_p(File.join(rails_root, 'config'))
-    end
-
-    after do
-      FileUtils.rm_rf(rails_root)
     end
 
     context 'when there is only a resque.yml' do
@@ -69,10 +65,6 @@ RSpec.shared_examples "redis_new_instance_shared_examples" do |name, fallback_cl
         allow(described_class).to receive(:redis_yml_path).and_call_original
         allow(described_class).to receive(:rails_root).and_return(rails_root)
         FileUtils.mkdir_p(File.join(rails_root, 'config'))
-      end
-
-      after do
-        FileUtils.rm_rf(rails_root)
       end
 
       context 'when the fallback has a redis.yml entry' do

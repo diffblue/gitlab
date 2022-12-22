@@ -2,6 +2,7 @@
 
 RSpec.shared_examples "redis_shared_examples" do
   include StubENV
+  include TmpdirHelper
 
   let(:test_redis_url) { "redis://redishost:#{redis_port}" }
   let(:config_file_name) { instance_specific_config_file }
@@ -16,7 +17,7 @@ RSpec.shared_examples "redis_shared_examples" do
   let(:sentinel_port) { 26379 }
   let(:config_with_environment_variable_inside) { "spec/fixtures/config/redis_config_with_env.yml" }
   let(:config_env_variable_url) { "TEST_GITLAB_REDIS_URL" }
-  let(:rails_root) { Dir.mktmpdir('redis_shared_examples') }
+  let(:rails_root) { mktmpdir }
 
   before do
     allow(described_class).to receive(:config_file_name).and_return(Rails.root.join(config_file_name).to_s)
@@ -37,10 +38,6 @@ RSpec.shared_examples "redis_shared_examples" do
 
       allow(described_class).to receive(:rails_root).and_return(rails_root)
       FileUtils.mkdir_p(File.join(rails_root, 'config'))
-    end
-
-    after do
-      FileUtils.rm_rf(rails_root)
     end
 
     context 'when there is no config file anywhere' do
@@ -268,10 +265,6 @@ RSpec.shared_examples "redis_shared_examples" do
         allow(described_class).to receive(:rails_root).and_return(rails_root)
       end
 
-      after do
-        FileUtils.rm_rf(rails_root)
-      end
-
       it 'can run an empty block' do
         expect { described_class.with { nil } }.not_to raise_error
       end
@@ -383,10 +376,6 @@ RSpec.shared_examples "redis_shared_examples" do
         allow(described_class).to receive(:redis_yml_path).and_call_original
         allow(described_class).to receive(:rails_root).and_return(rails_root)
         FileUtils.mkdir_p(File.join(rails_root, 'config'))
-      end
-
-      after do
-        FileUtils.rm_rf(rails_root)
       end
 
       it 'uses config/redis.yml' do
