@@ -2228,6 +2228,81 @@ RSpec.describe User do
     expect(described_class).to include_module(Elastic::ApplicationVersionedSearch)
   end
 
+  describe 'Elastic::ApplicationVersionedSearch' do
+    let_it_be_with_reload(:user) { create(:user) }
+    let_it_be(:group) { create(:group) }
+
+    before do
+      allow(Gitlab::CurrentSettings).to(receive(:elasticsearch_indexing?)).and_return(true)
+    end
+
+    context 'on create' do
+      it 'always calls track' do
+        expect(Elastic::ProcessBookkeepingService).to receive(:track!).once
+
+        create(:user)
+      end
+    end
+
+    context 'on delete' do
+      it 'always calls track' do
+        user = create(:user)
+
+        expect(Elastic::ProcessBookkeepingService).to receive(:track!).once
+
+        user.destroy!
+      end
+    end
+
+    context 'on update' do
+      context 'when an elastic field is updated' do
+        it 'always calls track' do
+          expect(Elastic::ProcessBookkeepingService).to receive(:track!).once
+
+          user.update!(name: 'New Name')
+        end
+      end
+
+      context 'when a non-elastic field is updated' do
+        it 'does not call track' do
+          expect(Elastic::ProcessBookkeepingService).not_to receive(:track!)
+
+          user.update!(user_type: 'automation_bot')
+        end
+      end
+    end
+
+    context 'when a membership is created' do
+      let_it_be(:group) { create(:group) }
+
+      it 'always calls track' do
+        expect(Elastic::ProcessBookkeepingService).to receive(:track!).once
+
+        create(:group_member, :developer, source: group, user: user)
+      end
+    end
+
+    context 'when a membership is deleted' do
+      let_it_be(:membership) { create(:group_member, :developer, source: group, user: user) }
+
+      it 'always calls track' do
+        expect(Elastic::ProcessBookkeepingService).to receive(:track!).once
+
+        membership.destroy!
+      end
+    end
+
+    context 'when a membership is updated' do
+      let_it_be(:membership) { create(:group_member, :developer, source: group, user: user) }
+
+      it 'does not call track' do
+        expect(Elastic::ProcessBookkeepingService).not_to receive(:track!)
+
+        membership.update!(notification_level: 2)
+      end
+    end
+  end
+
   context 'when elasticsearch_indexing is true' do
     let_it_be(:user) { create(:user) }
 
