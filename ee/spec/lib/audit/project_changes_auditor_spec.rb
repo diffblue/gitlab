@@ -316,6 +316,14 @@ RSpec.describe Audit::ProjectChangesAuditor, feature_category: :audit_events do
                                                          custom_message: "Changed merge method to #{method}"
                                                        })
           end
+
+          it 'streams correct audit event' do
+            project.update!(merge_requests_ff_only_enabled: ff, merge_requests_rebase_enabled: rebase)
+
+            expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async)
+                .with("project_merge_method_updated", anything, anything)
+            auditor_instance.execute
+          end
         end
       end
 
@@ -338,6 +346,14 @@ RSpec.describe Audit::ProjectChangesAuditor, feature_category: :audit_events do
             expect(AuditEvent.last.details).to include({
                                                          custom_message: "Changed merge method to Merge"
                                                        })
+          end
+
+          it 'streams correct audit event' do
+            project.update!(merge_requests_ff_only_enabled: false, merge_requests_rebase_enabled: false)
+
+            expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async)
+              .with("project_merge_method_updated", anything, anything)
+            auditor_instance.execute
           end
         end
       end
