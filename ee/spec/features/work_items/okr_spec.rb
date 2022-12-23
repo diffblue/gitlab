@@ -11,17 +11,19 @@ RSpec.describe 'OKR', :js, feature_category: :product_planning do
   let_it_be(:objective) { create(:work_item, work_item_type: type_objective, project: project) }
   let_it_be(:key_result) { create(:work_item, work_item_type: type_key_result, project: project) }
 
+  before do
+    group.add_developer(user)
+
+    sign_in(user)
+
+    stub_licensed_features(okrs: true)
+
+    stub_feature_flags(work_items: true)
+    stub_feature_flags(okrs_mvc: true)
+  end
+
   context 'for objective' do
     before do
-      group.add_developer(user)
-
-      sign_in(user)
-
-      stub_licensed_features(okrs: true)
-
-      stub_feature_flags(work_items: true)
-      stub_feature_flags(okrs_mvc: true)
-
       visit project_work_items_path(project, work_items_path: objective.id)
     end
 
@@ -86,20 +88,54 @@ RSpec.describe 'OKR', :js, feature_category: :product_planning do
 
   context 'for keyresult' do
     before do
-      group.add_developer(user)
-
-      sign_in(user)
-
-      stub_licensed_features(okrs: true)
-
-      stub_feature_flags(work_items: true)
-      stub_feature_flags(okrs_mvc: true)
-
       visit project_work_items_path(project, work_items_path: key_result.id)
     end
 
     it 'has progress widget' do
       expect(page).to have_selector('[data-testid="work-item-progress"]')
+    end
+  end
+
+  context 'for progress input widget' do
+    before do
+      visit project_work_items_path(project, work_items_path: objective.id)
+    end
+
+    it 'prevents typing values outside min and max range', :aggregate_failures do
+      page_body = page.find('body')
+      page.within('[data-testid="work-item-progress"]') do
+        progress_input = find('input#progress-widget-input')
+        progress_input.native.send_keys('101')
+        page_body.click
+
+        expect(progress_input.value).to eq('')
+
+        # Clear input
+        progress_input.set('')
+        progress_input.native.send_keys('-')
+        page_body.click
+
+        expect(progress_input.value).to eq('')
+      end
+    end
+
+    it 'prevent typing special characters `+`, `-`, and `e`', :aggregate_failures do
+      page_body = page.find('body')
+      page.within('[data-testid="work-item-progress"]') do
+        progress_input = find('input#progress-widget-input')
+
+        progress_input.native.send_keys('+')
+        page_body.click
+        expect(progress_input.value).to eq('')
+
+        progress_input.native.send_keys('-')
+        page_body.click
+        expect(progress_input.value).to eq('')
+
+        progress_input.native.send_keys('e')
+        page_body.click
+        expect(progress_input.value).to eq('')
+      end
     end
   end
 end
