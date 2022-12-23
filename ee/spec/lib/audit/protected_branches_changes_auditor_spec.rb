@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Audit::ProtectedBranchesChangesAuditor, :request_store do
+RSpec.describe Audit::ProtectedBranchesChangesAuditor, :request_store, feature_category: :audit_events do
   let_it_be(:author) { create(:user, :with_sign_ins) }
   let_it_be(:user) { create(:user, :with_sign_ins) }
   let_it_be(:group) { create(:group) }
@@ -33,14 +33,14 @@ RSpec.describe Audit::ProtectedBranchesChangesAuditor, :request_store do
 
     subject(:service) { described_class.new(author, protected_branch, old_merge_access_levels, old_push_access_levels) }
 
-    shared_examples 'settings' do |setting|
+    shared_examples 'settings' do |setting, expected_event_type|
       context "when #{setting} changed" do
+        change_text = setting.to_s.humanize(capitalize: false)
         it 'creates an event' do
           protected_branch.update_attribute(setting, true)
           expect { service.execute }.to change(AuditEvent, :count).by(1)
 
           event = AuditEvent.last
-          change_text = setting.to_s.humanize(capitalize: false)
           expect(event.details).to eq({ change: change_text,
                                         author_name: author.name,
                                         author_class: author.class.name,
@@ -62,7 +62,7 @@ RSpec.describe Audit::ProtectedBranchesChangesAuditor, :request_store do
         it 'streams correct audit event stream' do
           protected_branch.update_attribute(setting, true)
 
-          expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with('protected_branch_updated',
+          expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(expected_event_type,
                                                                                          anything,
                                                                                          anything)
 
@@ -71,8 +71,8 @@ RSpec.describe Audit::ProtectedBranchesChangesAuditor, :request_store do
       end
     end
 
-    include_examples 'settings', :allow_force_push
-    include_examples 'settings', :code_owner_approval_required
+    include_examples 'settings', :allow_force_push, 'protected_branch_allow_force_push_updated'
+    include_examples 'settings', :code_owner_approval_required, 'protected_branch_code_owner_approval_required_updated'
 
     where(:type, :old_access_levels, :new_access_levels, :change_text) do
       :push  | ref(:old_push_access_levels)  | ref(:new_push_access_levels)  | 'allowed to push'

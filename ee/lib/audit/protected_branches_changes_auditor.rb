@@ -9,10 +9,18 @@ module Audit
     end
 
     def execute
-      audit_changes(:allow_force_push, as: 'allow force push', entity: model.project,
-                                       model: model, event_type: event_type)
-      audit_changes(:code_owner_approval_required, as: 'code owner approval required',
-                                                   entity: model.project, model: model, event_type: event_type)
+      audit_changes(
+        :allow_force_push,
+        as: 'allow force push',
+        entity: model.project,
+        model: model, event_type: 'protected_branch_allow_force_push_updated'
+      )
+      audit_changes(
+        :code_owner_approval_required,
+        as: 'code owner approval required',
+        entity: model.project, model: model,
+        event_type: 'protected_branch_code_owner_approval_required_updated'
+      )
       audit_access_levels
     end
 
@@ -32,7 +40,7 @@ module Audit
           scope: model.project,
           target: model,
           message: "Changed #{change} from #{from} to #{to}",
-          name: event_type,
+          name: 'protected_branch_updated',
           additional_details: {
             change: change,
             from: from,
@@ -52,12 +60,6 @@ module Audit
         from: old,
         to: new
       }
-    end
-
-    private
-
-    def event_type
-      'protected_branch_updated'
     end
   end
 end
