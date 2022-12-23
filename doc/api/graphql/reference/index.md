@@ -9784,9 +9784,11 @@ The connection type for [`Timelog`](#timelog).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="timelogconnectioncount"></a>`count` | [`Int!`](#int) | Total count of collection. |
 | <a id="timelogconnectionedges"></a>`edges` | [`[TimelogEdge]`](#timelogedge) | A list of edges. |
 | <a id="timelogconnectionnodes"></a>`nodes` | [`[Timelog]`](#timelog) | A list of nodes. |
 | <a id="timelogconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+| <a id="timelogconnectiontotalspenttime"></a>`totalSpentTime` | [`Int!`](#int) | Total time spent in seconds. |
 
 #### `TimelogEdge`
 
