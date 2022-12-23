@@ -40,22 +40,33 @@ RSpec.describe Namespaces::FreeUserCap::Base, :saas do
   end
 
   describe '#users_count' do
-    let(:test_class) do
-      Class.new(described_class) do
-        private
-
-        def limit
-          5
-        end
-      end
-    end
-
-    subject(:users_count) { test_class.new(namespace).users_count }
+    subject(:users_count) { described_class.new(namespace).users_count }
 
     it { is_expected.to eq(0) }
 
-    it 'raises an error for limit definition' do
-      expect { described_class.new(namespace).users_count }.to raise_error(NotImplementedError)
+    context 'with database limit considerations' do
+      using RSpec::Parameterized::TableSyntax
+
+      where(:dashboard_limit, :dashboard_notification_limit, :dashboard_enforcement_limit, :result) do
+        1 | 2 | 3 | 4
+        1 | 6 | 2 | 7
+        7 | 2 | 1 | 8
+        5 | 5 | 5 | 6
+      end
+
+      before do
+        stub_ee_application_setting(dashboard_limit: dashboard_limit)
+        stub_ee_application_setting(dashboard_notification_limit: dashboard_notification_limit)
+        stub_ee_application_setting(dashboard_enforcement_limit: dashboard_enforcement_limit)
+      end
+
+      with_them do
+        specify do
+          expect(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).with(namespace, result).and_call_original
+
+          users_count
+        end
+      end
     end
 
     context 'when invoked with request cache', :request_store do
@@ -68,7 +79,7 @@ RSpec.describe Namespaces::FreeUserCap::Base, :saas do
       end
 
       it 'does not cache the result for the same namespace' do
-        instance = test_class.new(namespace)
+        instance = described_class.new(namespace)
 
         expect(instance.users_count(cache: false)).to eq(0)
 
