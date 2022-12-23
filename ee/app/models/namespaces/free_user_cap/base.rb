@@ -33,7 +33,7 @@ module Namespaces
       end
 
       def database_limit
-        limit + 1
+        max_limit + 1
       end
 
       def enforceable_subscription?
@@ -65,11 +65,15 @@ module Namespaces
         ::Namespaces::Storage::RootSize.new(root_namespace).above_size_limit?(enforcement: false)
       end
 
-      def feature_enabled?
-        raise NotImplementedError
+      def max_limit
+        [
+          ::Gitlab::CurrentSettings.dashboard_limit,
+          ::Gitlab::CurrentSettings.dashboard_notification_limit,
+          ::Gitlab::CurrentSettings.dashboard_enforcement_limit
+        ].max
       end
 
-      def limit
+      def feature_enabled?
         raise NotImplementedError
       end
     end
