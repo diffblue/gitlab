@@ -66,7 +66,9 @@ module EE
         :jitsu_administrator_password,
         :clickhouse_connection_string,
         :cube_api_base_url,
-        :cube_api_key
+        :cube_api_key,
+        :telesign_customer_xid,
+        :telesign_api_key
       ].tap do |settings|
         next unless ::Gitlab.com?
 
