@@ -30,7 +30,11 @@ module QA
 
       it(
         'deploys a K8s manifest file',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347638'
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347638',
+        quarantine: {
+          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/381461',
+          type: :flaky
+        }
       ) do
         deploy_manifest(project)
 
