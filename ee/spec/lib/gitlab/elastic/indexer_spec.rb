@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Elastic::Indexer do
+RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
   include StubENV
 
   before do
@@ -118,12 +118,12 @@ RSpec.describe Gitlab::Elastic::Indexer do
           expect_popen.with(
             [
               TestEnv.indexer_bin_path,
+              "--project-id=#{project.id}",
               "--timeout=#{Gitlab::Elastic::Indexer::TIMEOUT}s",
-              "--project-path=#{project.full_path}",
+              "--full-path=#{project.full_path}",
               "--visibility-level=#{project.visibility_level}",
               "--repository-access-level=#{project.repository_access_level}",
               "--traversal-ids=#{project.namespace_ancestry}",
-              project.id.to_s,
               "#{project.repository.disk_path}.git"
             ],
             nil,
@@ -155,12 +155,12 @@ RSpec.describe Gitlab::Elastic::Indexer do
           expect_popen.with(
             [
               TestEnv.indexer_bin_path,
+              "--project-id=#{project.id}",
               "--timeout=#{Gitlab::Elastic::Indexer::TIMEOUT}s",
               '--search-curation',
-              "--project-path=#{project.full_path}",
+              "--full-path=#{project.full_path}",
               "--visibility-level=#{project.visibility_level}",
               "--repository-access-level=#{project.repository_access_level}",
-              project.id.to_s,
               "#{project.repository.disk_path}.git"
             ],
             nil,
@@ -187,13 +187,13 @@ RSpec.describe Gitlab::Elastic::Indexer do
         expect_popen.with(
           [
             TestEnv.indexer_bin_path,
+            "--project-id=#{project.id}",
             "--timeout=#{Gitlab::Elastic::Indexer::TIMEOUT}s",
             '--search-curation',
-            "--project-path=#{project.full_path}",
+            "--full-path=#{project.full_path}",
             "--visibility-level=#{project.visibility_level}",
             "--repository-access-level=#{project.repository_access_level}",
             "--traversal-ids=#{project.namespace_ancestry}",
-            project.id.to_s,
             "#{project.repository.disk_path}.git"
           ],
           nil,
@@ -280,21 +280,21 @@ RSpec.describe Gitlab::Elastic::Indexer do
         context 'when branch is reset to an earlier commit' do
           it 'reverses already indexed commits' do
             change_repository_and_index(project) do
-              project.repository.create_file(user, '12', '', message: '12', branch_name: 'master')
+              project.repository.create_file(user, '24', '', message: '24', branch_name: 'master')
             end
 
             head = project.repository.commit.sha
 
-            expect(indexed_commits_for('12')).to include(head)
-            expect(indexed_file_paths_for('12')).to include('12')
+            expect(indexed_commits_for('24')).to include(head)
+            expect(indexed_file_paths_for('24')).to include('24')
 
             # resetting the repository should purge the index of the outstanding commits
             change_repository_and_index(project) do
               project.repository.write_ref('master', initial_commit)
             end
 
-            expect(indexed_commits_for('12')).not_to include(head)
-            expect(indexed_file_paths_for('12')).not_to include('12')
+            expect(indexed_commits_for('24')).not_to include(head)
+            expect(indexed_file_paths_for('24')).not_to include('24')
           end
         end
       end
@@ -318,12 +318,12 @@ RSpec.describe Gitlab::Elastic::Indexer do
           expect_popen.with(
             [
               TestEnv.indexer_bin_path,
+              "--project-id=#{project.id}",
               "--timeout=#{Gitlab::Elastic::Indexer::TIMEOUT}s",
               '--blob-type=wiki_blob',
               '--skip-commits',
-              "--project-path=#{project.full_path}",
+              "--full-path=#{project.full_path}",
               "--traversal-ids=#{project.namespace_ancestry}",
-              project.id.to_s,
               "#{project.wiki.repository.disk_path}.git"
             ],
             nil,
@@ -343,13 +343,13 @@ RSpec.describe Gitlab::Elastic::Indexer do
         expect_popen.with(
           [
             TestEnv.indexer_bin_path,
+            "--project-id=#{project.id}",
             "--timeout=#{Gitlab::Elastic::Indexer::TIMEOUT}s",
             '--search-curation',
             '--blob-type=wiki_blob',
             '--skip-commits',
-            "--project-path=#{project.full_path}",
+            "--full-path=#{project.full_path}",
             "--traversal-ids=#{project.namespace_ancestry}",
-            project.id.to_s,
             "#{project.wiki.repository.disk_path}.git"
           ],
           nil,
