@@ -155,7 +155,7 @@ module Backup
     protected
 
     def base_models_for_backup
-      @base_models_for_backup ||= Gitlab::Database.database_base_models
+      @base_models_for_backup ||= Gitlab::Database.database_base_models_with_gitlab_shared
     end
 
     def main_database?(database_name)
@@ -244,7 +244,7 @@ module Backup
         puts_time 'Cleaning the database ... '.color(:blue)
         Rake::Task["gitlab:db:drop_tables:#{database_name}"].invoke
         puts_time 'done'.color(:green)
-      elsif !Gitlab::Database.has_config?(:ci)
+      elsif Gitlab::Database.database_base_models.one?
         # In single database, we do not have rake tasks per database
         puts_time 'Cleaning the database ... '.color(:blue)
         Rake::Task["gitlab:db:drop_tables"].invoke

@@ -5,7 +5,8 @@ require 'spec_helper'
 RSpec.describe Backup::Database, feature_category: :backup_restore do
   let(:progress) { StringIO.new }
   let(:output) { progress.string }
-  let(:single_database) { !Gitlab::Database.has_config?(:ci) }
+  let(:one_db_configured?) { Gitlab::Database.database_base_models.one? }
+  let(:database_models_for_backup) { Gitlab::Database.database_base_models_with_gitlab_shared }
 
   before(:all) do
     Rake::Task.define_task(:environment)
@@ -23,7 +24,7 @@ RSpec.describe Backup::Database, feature_category: :backup_restore do
     subject { described_class.new(progress, force: force) }
 
     before do
-      Gitlab::Database.database_base_models.each do |database_name, base_model|
+      database_models_for_backup.each do |database_name, base_model|
         base_model.connection.rollback_transaction unless base_model.connection.open_transactions.zero?
       end
     end
@@ -32,7 +33,7 @@ RSpec.describe Backup::Database, feature_category: :backup_restore do
       Dir.mktmpdir do |dir|
         subject.dump(dir, backup_id)
 
-        Gitlab::Database.database_base_models.each_key do |database_name|
+        database_models_for_backup.each_key do |database_name|
           filename = database_name == 'main' ? 'database.sql.gz' : "#{database_name}_database.sql.gz"
           expect(File.exist?(File.join(dir, filename))).to eq(true)
         end
@@ -71,7 +72,7 @@ RSpec.describe Backup::Database, feature_category: :backup_restore do
         allow(Backup::Dump::Postgres).to receive(:new).and_return(dumper)
         allow(dumper).to receive(:dump).with(any_args).and_return(true)
 
-        Gitlab::Database.database_base_models.each do |database_name, base_model|
+        database_models_for_backup.each do |database_name, base_model|
           allow(base_model.connection).to receive(:execute).with(
             "SELECT pg_export_snapshot() as snapshot_id;"
           ).and_return(['snapshot_id' => snapshot_id])
@@ -87,9 +88,9 @@ RSpec.describe Backup::Database, feature_category: :backup_restore do
       context 'when a PostgreSQL schema is used' do
         let(:schema) { 'gitlab' }
         let(:additional_args) do
-          pg_args + ['-n', schema] + Gitlab::Database::EXTRA_SCHEMAS.map do |schema|
+          pg_args + ['-n', schema] + Gitlab::Database::EXTRA_SCHEMAS.flat_map do |schema|
             ['-n', schema.to_s]
-          end.flatten
+          end
         end
 
         before do
@@ -109,16 +110,12 @@ RSpec.describe Backup::Database, feature_category: :backup_restore do
     let(:cmd) { %W[#{Gem.ruby} -e $stdout.puts(1)] }
     let(:backup_dir) { Rails.root.join("spec/fixtures/") }
     let(:force) { true }
+    let(:rake_task) { instance_double(Rake::Task, invoke: true) }
 
     subject { described_class.new(progress, force: force) }
 
     before do
-      if single_database
-        allow(Rake::Task['gitlab:db:drop_tables']).to receive(:invoke)
-      else
-        allow(Rake::Task['gitlab:db:drop_tables:main']).to receive(:invoke)
-        allow(Rake::Task['gitlab:db:drop_tables:ci']).to receive(:invoke)
-      end
+      allow(Rake::Task).to receive(:[]).with(any_args).and_return(rake_task)
 
       allow(subject).to receive(:pg_restore_cmd).and_return(cmd)
     end
@@ -129,7 +126,7 @@ RSpec.describe Backup::Database, feature_category: :backup_restore do
       it 'warns the user and waits' do
         expect(subject).to receive(:sleep)
 
-        if single_database
+        if one_db_configured?
           expect(Rake::Task['gitlab:db:drop_tables']).to receive(:invoke)
         else
           expect(Rake::Task['gitlab:db:drop_tables:main']).to receive(:invoke)
@@ -147,7 +144,7 @@ RSpec.describe Backup::Database, feature_category: :backup_restore do
 
     context 'with an empty .gz file' do
       it 'returns successfully' do
-        if single_database
+        if one_db_configured?
           expect(Rake::Task['gitlab:db:drop_tables']).to receive(:invoke)
         else
           expect(Rake::Task['gitlab:db:drop_tables:main']).to receive(:invoke)
@@ -167,7 +164,7 @@ RSpec.describe Backup::Database, feature_category: :backup_restore do
       end
 
       it 'raises a backup error' do
-        if single_database
+        if one_db_configured?
           expect(Rake::Task['gitlab:db:drop_tables']).to receive(:invoke)
         else
           expect(Rake::Task['gitlab:db:drop_tables:main']).to receive(:invoke)
@@ -183,7 +180,7 @@ RSpec.describe Backup::Database, feature_category: :backup_restore do
       let(:cmd) { %W[#{Gem.ruby} -e $stderr.write("#{noise}#{visible_error}")] }
 
       it 'filters out noise from errors and has a post restore warning' do
-        if single_database
+        if one_db_configured?
           expect(Rake::Task['gitlab:db:drop_tables']).to receive(:invoke)
         else
           expect(Rake::Task['gitlab:db:drop_tables:main']).to receive(:invoke)
@@ -210,7 +207,7 @@ RSpec.describe Backup::Database, feature_category: :backup_restore do
       end
 
       it 'overrides default config values' do
-        if single_database
+        if one_db_configured?
           expect(Rake::Task['gitlab:db:drop_tables']).to receive(:invoke)
         else
           expect(Rake::Task['gitlab:db:drop_tables:main']).to receive(:invoke)
@@ -234,7 +231,7 @@ RSpec.describe Backup::Database, feature_category: :backup_restore do
         end
 
         it 'raises an error about missing source file' do
-          if single_database
+          if one_db_configured?
             expect(Rake::Task['gitlab:db:drop_tables']).not_to receive(:invoke)
           else
             expect(Rake::Task['gitlab:db:drop_tables:main']).not_to receive(:invoke)
