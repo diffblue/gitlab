@@ -25,7 +25,10 @@ service, configure it on an alternative port.
 
 Download and install the current version of Go from [golang.org](https://golang.org/dl/).
 We follow the [Golang Release Policy](https://golang.org/doc/devel/release.html#policy)
-of supporting the current stable version and the previous two major versions.
+and support:
+
+- The current stable version.
+- The previous two major versions.
 
 ## How GitLab Shell works
 
