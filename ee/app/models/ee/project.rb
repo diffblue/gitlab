@@ -122,6 +122,8 @@ module EE
 
       has_many :vulnerability_hooks_integrations, -> { vulnerability_hooks }, class_name: 'Integration'
 
+      has_many :sbom_occurrences, inverse_of: :project, class_name: 'Sbom::Occurrence'
+
       elastic_index_dependant_association :issues, on_change: :visibility_level
       elastic_index_dependant_association :merge_requests, on_change: :visibility_level
       elastic_index_dependant_association :notes, on_change: :visibility_level

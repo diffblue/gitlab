@@ -15,7 +15,7 @@ module Sbom
       end
 
       def execute
-        occurrence_map_collection.each_slice(BATCH_SIZE) do |slice|
+        occurrence_map_collection.each_slice(BATCH_SIZE).flat_map do |slice|
           ingest_slice(slice)
         end
       end

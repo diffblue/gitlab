@@ -12,12 +12,16 @@ module Sbom
       end
 
       def execute
-        sbom_reports.each { |report| ingest_report(report) if report.valid? }
+        ingest_reports.then { |ingested_ids| delete_not_present_occurrences(ingested_ids) }
       end
 
       private
 
       attr_reader :pipeline
+
+      def ingest_reports
+        sbom_reports.select(&:valid?).flat_map { |report| ingest_report(report) }
+      end
 
       def sbom_reports
         pipeline.sbom_reports.reports
@@ -25,6 +29,10 @@ module Sbom
 
       def ingest_report(sbom_report)
         IngestReportService.execute(pipeline, sbom_report)
+      end
+
+      def delete_not_present_occurrences(ingested_occurrence_ids)
+        DeleteNotPresentOccurrencesService.execute(pipeline, ingested_occurrence_ids)
       end
     end
   end

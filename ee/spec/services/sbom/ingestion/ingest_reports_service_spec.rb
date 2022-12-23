@@ -6,6 +6,7 @@ RSpec.describe Sbom::Ingestion::IngestReportsService, feature_category: :depende
   let_it_be(:pipeline) { create(:ci_pipeline) }
   let_it_be(:reports) { create_list(:ci_reports_sbom_report, 4) }
 
+  let(:sequencer) { ::Ingestion::Sequencer.new }
   let(:wrapper) { instance_double('Gitlab::Ci::Reports::Sbom::Reports') }
 
   subject(:execute) { described_class.execute(pipeline) }
@@ -16,12 +17,23 @@ RSpec.describe Sbom::Ingestion::IngestReportsService, feature_category: :depende
   end
 
   describe '#execute' do
+    before do
+      allow(::Sbom::Ingestion::DeleteNotPresentOccurrencesService).to receive(:execute)
+      allow(::Sbom::Ingestion::IngestReportService).to receive(:execute)
+        .and_wrap_original do |_, _, report|
+          report.components.map { sequencer.next }
+        end
+    end
+
     it 'executes IngestReportService for each report' do
       reports.each do |report|
         expect(::Sbom::Ingestion::IngestReportService).to receive(:execute).with(pipeline, report)
       end
 
       execute
+
+      expect(::Sbom::Ingestion::DeleteNotPresentOccurrencesService).to have_received(:execute)
+        .with(pipeline, sequencer.range)
     end
 
     context 'when a report is invalid' do
@@ -37,6 +49,9 @@ RSpec.describe Sbom::Ingestion::IngestReportsService, feature_category: :depende
         end
 
         execute
+
+        expect(::Sbom::Ingestion::DeleteNotPresentOccurrencesService).to have_received(:execute)
+          .with(pipeline, sequencer.range)
       end
     end
   end

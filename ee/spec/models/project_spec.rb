@@ -67,6 +67,8 @@ RSpec.describe Project do
 
     it { is_expected.to have_many(:dependency_list_exports).class_name('Dependencies::DependencyListExport') }
 
+    it { is_expected.to have_many(:sbom_occurrences).class_name('Sbom::Occurrence') }
+
     include_examples 'ci_cd_settings delegation' do
       let(:attributes_with_prefix) do
         {

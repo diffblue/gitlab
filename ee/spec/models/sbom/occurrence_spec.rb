@@ -19,6 +19,10 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
   end
 
   describe 'validations' do
+    subject { build(:sbom_occurrence) }
+
     it { is_expected.to validate_presence_of(:commit_sha) }
+    it { is_expected.to validate_presence_of(:uuid) }
+    it { is_expected.to validate_uniqueness_of(:uuid).case_insensitive }
   end
 end
