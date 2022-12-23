@@ -1,13 +1,13 @@
 import path from 'path';
 import { pactWith } from 'jest-pact';
-import { suggestedReviewersFixture } from '../../../fixtures/project/merge_request/suggested_reviewers.fixture';
+import { suggestedReviewersFixture } from '../../../fixtures/project/merge_requests/suggested_reviewers.fixture';
 import { getSuggestedReviewers } from '../../../resources/api/project/autocomplete_users';
 
 const ROOT_PATH = path.resolve(__dirname, '../../..');
-const CONSUMER_NAME = 'MergeRequest#show';
+const CONSUMER_NAME = 'MergeRequests#show';
 const CONSUMER_LOG = path.join(ROOT_PATH, '../logs/consumer.log');
-const CONTRACT_DIR = path.join(ROOT_PATH, '../contracts/project/merge_request/show');
-const SUGGESTED_REVIEWERS_PROVIDER_NAME = 'Merge Request Suggested Reviewers Endpoint';
+const CONTRACT_DIR = path.join(ROOT_PATH, '../contracts/project/merge_requests/show');
+const SUGGESTED_REVIEWERS_PROVIDER_NAME = 'GET suggested reviewers';
 
 // API endpoint: /autocomplete/users.json
 pactWith(

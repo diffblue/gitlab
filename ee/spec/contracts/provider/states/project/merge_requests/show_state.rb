@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-Pact.provider_states_for "MergeRequest#show" do
+Pact.provider_states_for "MergeRequests#show" do
   provider_state "a merge request exists with suggested reviewers available for selection" do
     set_up do
       # Suggested Reviewers is a SaaS feature, but we can't use the `:saas` RSpec metadata like we do in other specs

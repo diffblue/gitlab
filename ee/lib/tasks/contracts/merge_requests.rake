@@ -4,21 +4,28 @@ return if Rails.env.production?
 
 require 'pact/tasks/verification_task'
 
-contracts = File.expand_path('../../../spec/contracts/contracts/project/merge_request', __dir__)
 provider = File.expand_path('../../../spec/contracts/provider', __dir__)
 
 namespace :contracts do
+  require_relative "../../../../spec/contracts/provider/helpers/contract_source_helper"
+
   namespace :merge_requests do
-    Pact::VerificationTask.new(:suggested_reviewers) do |pact|
+    Pact::VerificationTask.new(:get_suggested_reviewers) do |pact|
+      pact_helper_location = 'pact_helpers/project/merge_requests/show/get_suggested_reviewers_helper.rb'
+
       pact.uri(
-        "#{contracts}/show/mergerequest#show-merge_request_suggested_reviewers_endpoint.json",
-        pact_helper: "#{provider}/pact_helpers/project/merge_request/show/suggested_reviewers_helper.rb"
+        Provider::ContractSourceHelper.contract_location(
+          requester: :rake,
+          file_path: pact_helper_location,
+          edition: :ee
+        ),
+        pact_helper: "#{provider}/#{pact_helper_location}"
       )
     end
 
     desc 'Run all merge request contract tests'
     task 'test:merge_requests', :contract_merge_requests do |_t, arg|
-      errors = %w[suggested_reviewers].each_with_object([]) do |task, err|
+      errors = %w[get_suggested_reviewers].each_with_object([]) do |task, err|
         Rake::Task["contracts:merge_requests:pact:verify:#{task}"].execute
       rescue StandardError, SystemExit
         err << "contracts:merge_requests:pact:verify:#{task}"

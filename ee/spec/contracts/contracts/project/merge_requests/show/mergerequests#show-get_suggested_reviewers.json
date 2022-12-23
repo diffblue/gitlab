@@ -1,9 +1,9 @@
 {
   "consumer": {
-    "name": "MergeRequest#show"
+    "name": "MergeRequests#show"
   },
   "provider": {
-    "name": "Merge Request Suggested Reviewers Endpoint"
+    "name": "GET suggested reviewers"
   },
   "interactions": [
     {
