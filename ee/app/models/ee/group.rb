@@ -94,6 +94,22 @@ module EE
         joins(:ldap_group_links).where(ldap_group_links: { provider: provider })
       end
 
+      scope :invited_groups_in_groups_for_hierarchy, ->(group, exclude_guests = false) do
+        guests_scope = exclude_guests ? ::GroupGroupLink.non_guests : ::GroupGroupLink.all
+
+        joins(:shared_group_links)
+          .where(group_group_links: { shared_group_id: group.self_and_descendants })
+          .merge(guests_scope)
+      end
+
+      scope :invited_groups_in_projects_for_hierarchy, ->(group, exclude_guests = false) do
+        guests_scope = exclude_guests ? ::ProjectGroupLink.non_guests : ::ProjectGroupLink.all
+
+        joins(:project_group_links)
+          .where(project_group_links: { project_id: group.all_projects })
+          .merge(guests_scope)
+      end
+
       scope :with_external_audit_event_destinations, -> do
         joins(:external_audit_event_destinations)
       end
@@ -638,15 +654,15 @@ module EE
       strong_memoize(:shared_externally) do
         internal_groups = self.self_and_descendants
 
-        group_links = invited_group_in_groups
-          .where.not(group_group_links: { shared_with_group_id: internal_groups })
-          .limit(1)
+        group_links = self.class.invited_groups_in_groups_for_hierarchy(self)
+                          .where.not(group_group_links: { shared_with_group_id: internal_groups })
+                          .exists?
 
-        project_links = invited_groups_in_projects
-          .where.not(project_group_links: { group_id: internal_groups })
-          .limit(1)
+        project_links = self.class.invited_groups_in_projects_for_hierarchy(self)
+                            .where.not(project_group_links: { group_id: internal_groups })
+                            .exists?
 
-        group_links.any? || project_links.any?
+        group_links || project_links
       end
     end
 
@@ -707,18 +723,16 @@ module EE
 
     # Members belonging to Groups invited to collaborate with Groups and Subgroups
     def billed_shared_group_users(exclude_guests: false)
-      groups = (exclude_guests ? invited_non_guest_group_in_groups : invited_group_in_groups)
-      members = invited_or_shared_group_members(groups)
-      members = members.non_guests if exclude_guests
+      groups = self.class.invited_groups_in_groups_for_hierarchy(self, exclude_guests)
+      members = invited_or_shared_group_members(groups, exclude_guests: exclude_guests)
 
       users_without_bots(members)
     end
 
     # Members belonging to Groups invited to collaborate with Projects
     def billed_invited_group_to_project_users(exclude_guests: false)
-      groups = (exclude_guests ? invited_group_as_non_guests_in_projects : invited_groups_in_projects)
-      members = invited_or_shared_group_members(groups)
-      members = members.non_guests if exclude_guests
+      groups = self.class.invited_groups_in_projects_for_hierarchy(self, exclude_guests)
+      members = invited_or_shared_group_members(groups, exclude_guests: exclude_guests)
 
       users_without_bots(members)
     end
@@ -790,26 +804,12 @@ module EE
         .order(:created_at)
     end
 
-    def invited_group_as_non_guests_in_projects
-      invited_groups_in_projects.merge(::ProjectGroupLink.non_guests)
-    end
+    def invited_or_shared_group_members(groups, exclude_guests: false)
+      guests_scope = exclude_guests ? ::GroupMember.non_guests : ::GroupMember.all
 
-    def invited_groups_in_projects
-      ::Group.joins(:project_group_links)
-        .where(project_group_links: { project_id: all_projects })
-    end
-
-    def invited_non_guest_group_in_groups
-      invited_group_in_groups.merge(::GroupGroupLink.non_guests)
-    end
-
-    def invited_group_in_groups
-      ::Group.joins(:shared_group_links)
-             .where(group_group_links: { shared_group_id: self.self_and_descendants })
-    end
-
-    def invited_or_shared_group_members(groups)
-      ::GroupMember.active_without_invites_and_requests.where(source_id: groups.self_and_ancestors)
+      ::GroupMember.active_without_invites_and_requests
+                   .with_source_id(groups.self_and_ancestors)
+                   .merge(guests_scope)
     end
 
     def users_without_bots(members)
