@@ -151,6 +151,71 @@ RSpec.describe Group do
         expect(described_class.user_is_member(user)).to match_array([shared_group, direct_group])
       end
     end
+
+    describe '.invited_groups_in_groups_for_hierarchy' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:sub_group) { create(:group, parent: group) }
+      let_it_be(:ancestor_invited_group) { create(:group) }
+      let_it_be(:invited_group) { create(:group, parent: ancestor_invited_group) }
+      let_it_be(:invited_guest_group) { create(:group) }
+      let_it_be(:sub_invited_group) { create(:group) }
+      let_it_be(:internal_invited_group) { create(:group, parent: group) }
+
+      before_all do
+        create(:group_group_link)
+        create(:group_group_link, { shared_with_group: sub_invited_group, shared_group: sub_group })
+        create(:group_group_link, { shared_with_group: invited_group, shared_group: group })
+        create(:group_group_link, :guest, { shared_with_group: invited_guest_group, shared_group: group })
+        create(:group_group_link, { shared_with_group: internal_invited_group, shared_group: group })
+      end
+
+      context 'with guests' do
+        it 'includes all groups from group invites' do
+          expect(described_class.invited_groups_in_groups_for_hierarchy(group))
+            .to match_array([invited_guest_group, invited_group, sub_invited_group, internal_invited_group])
+        end
+      end
+
+      context 'without guests' do
+        it 'includes all groups from group invites' do
+          expect(described_class.invited_groups_in_groups_for_hierarchy(group, true))
+            .to match_array([invited_group, sub_invited_group, internal_invited_group])
+        end
+      end
+    end
+
+    describe '.invited_groups_in_projects_for_hierarchy' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:project) { create(:project, namespace: group) }
+      let_it_be(:sub_group_project) { create(:project, namespace: create(:group, parent: group)) }
+      let_it_be(:ancestor_invited_group) { create(:group) }
+      let_it_be(:invited_group) { create(:group, parent: ancestor_invited_group) }
+      let_it_be(:invited_guest_group) { create(:group) }
+      let_it_be(:sub_invited_group) { create(:group) }
+      let_it_be(:internal_invited_group) { create(:group, parent: group) }
+
+      before_all do
+        create(:project_group_link)
+        create(:project_group_link, project: project, group: invited_group)
+        create(:project_group_link, project: sub_group_project, group: sub_invited_group)
+        create(:project_group_link, :guest, project: project, group: invited_guest_group)
+        create(:project_group_link, project: project, group: internal_invited_group)
+      end
+
+      context 'with guests' do
+        it 'includes all groups from group invites' do
+          expect(described_class.invited_groups_in_projects_for_hierarchy(group))
+            .to match_array([invited_group, sub_invited_group, invited_guest_group, internal_invited_group])
+        end
+      end
+
+      context 'without guests' do
+        it 'includes all groups from group invites' do
+          expect(described_class.invited_groups_in_projects_for_hierarchy(group, true))
+            .to match_array([invited_group, sub_invited_group, internal_invited_group])
+        end
+      end
+    end
   end
 
   describe 'validations' do
@@ -1178,7 +1243,6 @@ RSpec.describe Group do
       create(:group_member, :awaiting, :developer, source: invited_group)
       create(:group_member, :minimal_access, source: invited_group)
       create(:group_member, :access_request, :developer, source: invited_group)
-      create(:group_group_link)
       create(:group_group_link, { shared_with_group: sub_invited_group, shared_group: sub_group })
       create(:group_group_link, { shared_with_group: invited_group, shared_group: group })
       create(:group_group_link, :guest, { shared_with_group: invited_guest_group, shared_group: group })
