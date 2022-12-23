@@ -17,7 +17,13 @@ module QA
     end
   end
 
-  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, product_group: :purchase do
+  RSpec.describe(
+    'Fulfillment',
+    :requires_admin,
+    only: { subdomain: :staging },
+    product_group: :purchase,
+    quarantine: { type: :broken, issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/386640' }
+  ) do
     let(:hash) { SecureRandom.hex(4) }
     let(:free_name_space) { true }
     let(:user) do
