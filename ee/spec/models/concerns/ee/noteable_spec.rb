@@ -15,69 +15,6 @@ RSpec.describe EE::Noteable do
     end
   end
 
-  describe '#commenters' do
-    shared_examples 'commenters' do
-      it 'does not automatically include the noteable author' do
-        expect(commenters).not_to include(noteable.author)
-      end
-
-      context 'with no user' do
-        it 'contains a distinct list of non-internal note authors' do
-          expect(commenters).to contain_exactly(commenter, another_commenter)
-        end
-      end
-
-      context 'with non project member' do
-        let(:current_user) { create(:user) }
-
-        it 'contains a distinct list of non-internal note authors' do
-          expect(commenters).to contain_exactly(commenter, another_commenter)
-        end
-
-        it 'does not include a commenter from another noteable' do
-          expect(commenters).not_to include(other_noteable_commenter)
-        end
-      end
-    end
-
-    let_it_be(:commenter) { create(:user) }
-    let_it_be(:another_commenter) { create(:user) }
-    let_it_be(:internal_commenter) { create(:user) }
-    let_it_be(:other_noteable_commenter) { create(:user) }
-
-    let(:noteable) { create(:epic) }
-    let(:current_user) {}
-    let(:commenters) { noteable.commenters(user: current_user) }
-
-    let!(:comments) { create_list(:note, 2, author: commenter, noteable: noteable, project: noteable.project) }
-    let!(:more_comments) { create_list(:note, 2, author: another_commenter, noteable: noteable, project: noteable.project) }
-    let!(:internal_comments) { create_list(:note, 2, author: internal_commenter, noteable: noteable, project: noteable.project, internal: true) }
-
-    let!(:other_noteable_comments) { create_list(:note, 2, author: other_noteable_commenter, noteable: create(:epic, group: noteable.group)) }
-
-    it_behaves_like 'commenters'
-
-    context 'with reporter' do
-      let(:current_user) { create(:user) }
-
-      before do
-        noteable.group.add_reporter(current_user)
-      end
-
-      it 'contains a distinct list of non-internal note authors' do
-        expect(commenters).to contain_exactly(commenter, another_commenter, internal_commenter)
-      end
-
-      context 'with noteable author' do
-        let(:current_user) { noteable.author }
-
-        it 'contains a distinct list of non-internal note authors' do
-          expect(commenters).to contain_exactly(commenter, another_commenter, internal_commenter)
-        end
-      end
-    end
-  end
-
   describe '#discussion_root_note_ids' do
     let_it_be(:issue) { create(:issue) }
     let_it_be(:weight_event) { create(:resource_weight_event, issue: issue) }
