@@ -4,6 +4,15 @@ require 'spec_helper'
 
 RSpec.describe MarkupHelper do
   let_it_be(:project) { create(:project, :public) }
+  let_it_be(:user) do
+    user = create(:user, username: 'gfm')
+    project.add_maintainer(user)
+    user
+  end
+
+  before do
+    allow(helper).to receive(:current_user).and_return(user)
+  end
 
   describe '#first_line_in_markdown' do
     context 'with scoped label references' do
@@ -16,7 +25,7 @@ RSpec.describe MarkupHelper do
       it 'shows proper tooltip' do
         note = build(:note, note: label.to_reference, project: project)
 
-        result = first_line_in_markdown(note, :note, 100, is_todo: true, project: project)
+        result = helper.first_line_in_markdown(note, :note, 100, is_todo: true, project: project)
         doc = Nokogiri::HTML.parse(result)
 
         expect(doc.css('.gl-label-link')[0].attr('data-html')).to eq('true')
