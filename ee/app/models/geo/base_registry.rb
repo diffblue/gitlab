@@ -81,6 +81,16 @@ class Geo::BaseRegistry < Geo::TrackingBase
     true
   end
 
+  # Search for a list of records associated with registries,
+  # based on the query given in `query`.
+  #
+  # @param [String] query term that will search over registry model attributes and associations
+  def self.with_search(query)
+    return all if query.empty?
+
+    where(self::MODEL_FOREIGN_KEY => self::MODEL_CLASS.search(query).limit(1000).pluck_primary_key)
+  end
+
   def model_record_id
     read_attribute(self.class::MODEL_FOREIGN_KEY)
   end

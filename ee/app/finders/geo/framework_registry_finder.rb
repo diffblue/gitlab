@@ -23,6 +23,7 @@ module Geo
         registry_entries = by_id(registry_entries)
         registry_entries = by_replication_state(registry_entries)
         registry_entries = by_verification_state(registry_entries)
+        registry_entries = by_keyword(registry_entries)
         registry_entries.ordered
       end
 
@@ -63,6 +64,17 @@ module Geo
         return registry_entries if params[:verification_state].blank?
 
         registry_entries.public_send("verification_#{params[:verification_state]}") # rubocop:disable GitlabSecurity/PublicSend
+      end
+
+      def by_keyword(registry_entries)
+        return registry_entries if params[:keyword].blank?
+
+        unless replicator_class.model.respond_to?(:search)
+          raise ArgumentError, "Filtering by keyword is not supported " \
+                "because search method is not implemented for #{replicator_class.model}"
+        end
+
+        registry_entries.with_search(params[:keyword])
       end
     end
   end
