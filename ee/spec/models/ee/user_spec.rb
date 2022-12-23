@@ -651,10 +651,10 @@ RSpec.describe User do
           AND
           ("users"."user_type" IS NULL OR "users"."user_type" IN (6, 4))
           AND
-          ("users"."user_type" IS NULL OR "users"."user_type" NOT IN (2, 6, 1, 3, 7, 8, 9, 11))
+          ("users"."user_type" IS NULL OR "users"."user_type" IN (4, 5))
         SQL
 
-        expect(users.to_sql.squish).to eq expected_sql.squish
+        expect(users.to_sql.squish).to eq(expected_sql.squish), "query was changed. Please ensure query is covered with an index and adjust this test case"
       end
 
       it 'returns users' do
@@ -679,7 +679,7 @@ RSpec.describe User do
           AND
           ("users"."user_type" IS NULL OR "users"."user_type" IN (6, 4))
           AND
-          ("users"."user_type" IS NULL OR "users"."user_type" NOT IN (2, 6, 1, 3, 7, 8, 9, 11))
+          ("users"."user_type" IS NULL OR "users"."user_type" IN (4, 5))
           AND
           (EXISTS (SELECT 1 FROM "members"
             WHERE "members"."user_id" = "users"."id"
@@ -687,7 +687,7 @@ RSpec.describe User do
             (members.access_level > 10)))
         SQL
 
-        expect(users.to_sql.squish).to eq expected_sql.squish
+        expect(users.to_sql.squish).to eq(expected_sql.squish), "query was changed. Please ensure query is covered with an index and adjust this test case"
       end
 
       it 'returns users' do
