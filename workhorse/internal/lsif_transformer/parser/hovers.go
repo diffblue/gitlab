@@ -13,6 +13,7 @@ type Offset struct {
 type Hovers struct {
 	File          *os.File
 	Offsets       *cache
+	ResultSetRefCache *cache
 	CurrentOffset int
 }
 
@@ -50,9 +51,15 @@ func NewHovers() (*Hovers, error) {
 		return nil, err
 	}
 
+	resultSetRefCache, err := newCache("results-set-ref", Id(0))
+	if err != nil {
+		return nil, err
+	}
+
 	return &Hovers{
 		File:          file,
 		Offsets:       offsets,
+		ResultSetRefCache: resultSetRefCache,
 		CurrentOffset: 0,
 	}, nil
 }
@@ -77,8 +84,13 @@ func (h *Hovers) Read(label string, line []byte) error {
 }
 
 func (h *Hovers) For(refId Id) json.RawMessage {
+	var resultSetId Id
+	if err := h.ResultSetRefCache.Entry(refId, &resultSetId); err != nil {
+		return nil
+	}
+
 	var offset Offset
-	if err := h.Offsets.Entry(refId, &offset); err != nil || offset.Len == 0 {
+	if err := h.Offsets.Entry(resultSetId, &offset); err != nil || offset.Len == 0 {
 		return nil
 	}
 
@@ -150,10 +162,5 @@ func (h *Hovers) addResultSetRef(line []byte) error {
 		return err
 	}
 
-	var offset Offset
-	if err := h.Offsets.Entry(ref.ResultSetId, &offset); err != nil {
-		return nil
-	}
-
-	return h.Offsets.SetEntry(ref.RefId, &offset)
+	return h.ResultSetRefCache.SetEntry(ref.RefId, ref.ResultSetId)
 }
