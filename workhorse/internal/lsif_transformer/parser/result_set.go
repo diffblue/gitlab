@@ -4,9 +4,21 @@ import (
 	"encoding/json"
 )
 
+type Property int8
+
+const (
+	DefinitionProp Property = iota
+	ReferencesProp
+)
+
 type ResultSet struct {
-	Hovers    *Hovers
-	RefsCache *cache
+	Hovers *Hovers
+	Cache  *cache
+}
+
+type ResultSetRef struct {
+	Id       Id
+	Property Property
 }
 
 type RawResultSetRef struct {
@@ -20,21 +32,25 @@ func NewResultSet() (*ResultSet, error) {
 		return nil, err
 	}
 
-	refsCache, err := newCache("results-set-refs", Id(0))
+	cache, err := newCache("results-set-refs", &ResultSetRef{})
 	if err != nil {
 		return nil, err
 	}
 
 	return &ResultSet{
-		Hovers:    hovers,
-		RefsCache: refsCache,
+		Hovers: hovers,
+		Cache:  cache,
 	}, nil
 }
 
 func (r *ResultSet) Read(label string, line []byte) error {
 	switch label {
 	case "textDocument/references":
-		if err := r.addResultSetRef(line); err != nil {
+		if err := r.addResultSetRef(line, ReferencesProp); err != nil {
+			return err
+		}
+	case "textDocument/definition":
+		if err := r.addResultSetRef(line, DefinitionProp); err != nil {
 			return err
 		}
 	default:
@@ -44,18 +60,18 @@ func (r *ResultSet) Read(label string, line []byte) error {
 	return nil
 }
 
-func (r *ResultSet) HoverFor(refId Id) json.RawMessage {
-	var resultSetId Id
-	if err := r.RefsCache.Entry(refId, &resultSetId); err != nil {
-		return nil
+func (r *ResultSet) RefById(refId Id) (*ResultSetRef, error) {
+	var ref ResultSetRef
+	if err := r.Cache.Entry(refId, &ref); err != nil {
+		return nil, err
 	}
 
-	return r.Hovers.For(resultSetId)
+	return &ref, nil
 }
 
 func (r *ResultSet) Close() error {
 	for _, err := range []error{
-		r.RefsCache.Close(),
+		r.Cache.Close(),
 		r.Hovers.Close(),
 	} {
 		if err != nil {
@@ -65,11 +81,20 @@ func (r *ResultSet) Close() error {
 	return nil
 }
 
-func (r *ResultSet) addResultSetRef(line []byte) error {
-	var ref RawResultSetRef
-	if err := json.Unmarshal(line, &ref); err != nil {
+func (r *ResultSet) addResultSetRef(line []byte, property Property) error {
+	var rawRef RawResultSetRef
+	if err := json.Unmarshal(line, &rawRef); err != nil {
 		return err
 	}
 
-	return r.RefsCache.SetEntry(ref.RefId, ref.ResultSetId)
+	ref := &ResultSetRef{
+		Id:       rawRef.ResultSetId,
+		Property: property,
+	}
+
+	return r.Cache.SetEntry(rawRef.RefId, ref)
+}
+
+func (r *ResultSetRef) IsDefinition() bool {
+	return r.Property == DefinitionProp
 }

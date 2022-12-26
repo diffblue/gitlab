@@ -7,11 +7,6 @@ import (
 	"strconv"
 )
 
-const (
-	definitions = "definitions"
-	references  = "references"
-)
-
 type Ranges struct {
 	DefRefs    map[Id]Item
 	References *References
@@ -25,9 +20,9 @@ type RawRange struct {
 }
 
 type Range struct {
-	Line      int32 `json:"line"`
-	Character int32 `json:"character"`
-	RefId     Id
+	Line        int32 `json:"line"`
+	Character   int32 `json:"character"`
+	ResultSetId Id
 }
 
 type RawItem struct {
@@ -108,9 +103,9 @@ func (r *Ranges) Serialize(f io.Writer, rangeIds []Id, docs map[Id]string) error
 		serializedRange := SerializedRange{
 			StartLine:      entry.Line,
 			StartChar:      entry.Character,
-			DefinitionPath: r.definitionPathFor(docs, entry.RefId),
-			Hover:          r.ResultSet.HoverFor(entry.RefId),
-			References:     r.References.For(docs, entry.RefId),
+			DefinitionPath: r.definitionPathFor(docs, entry.ResultSetId),
+			Hover:          r.ResultSet.Hovers.For(entry.ResultSetId),
+			References:     r.References.For(docs, entry.ResultSetId),
 		}
 		if err := encoder.Encode(serializedRange); err != nil {
 			return err
@@ -168,23 +163,23 @@ func (r *Ranges) addItem(line []byte) error {
 		return err
 	}
 
-	if rawItem.Property != definitions && rawItem.Property != references {
-		return nil
-	}
-
 	if len(rawItem.RangeIds) == 0 {
 		return errors.New("no range IDs")
 	}
 
-	var references []Item
+	resultSetRef, err := r.ResultSet.RefById(rawItem.RefId)
+	if err != nil {
+		return nil
+	}
 
+	var references []Item
 	for _, rangeId := range rawItem.RangeIds {
 		rg, err := r.getRange(rangeId)
 		if err != nil {
-			return err
+			break
 		}
 
-		rg.RefId = rawItem.RefId
+		rg.ResultSetId = resultSetRef.Id
 
 		if err := r.Cache.SetEntry(rangeId, rg); err != nil {
 			return err
@@ -195,14 +190,19 @@ func (r *Ranges) addItem(line []byte) error {
 			DocId: rawItem.DocId,
 		}
 
-		if rawItem.Property == definitions {
-			r.DefRefs[rawItem.RefId] = item
+		definitionItem := r.DefRefs[resultSetRef.Id]
+		if item == definitionItem {
+			continue
+		}
+
+		if resultSetRef.IsDefinition() {
+			r.DefRefs[resultSetRef.Id] = item
 		} else {
 			references = append(references, item)
 		}
 	}
 
-	if err := r.References.Store(rawItem.RefId, references); err != nil {
+	if err := r.References.Store(resultSetRef.Id, references); err != nil {
 		return err
 	}
 
