@@ -54,6 +54,7 @@ module Ci
 
     TAG_LIST_MAX_LENGTH = 50
 
+    has_many :runner_machines, inverse_of: :runner
     has_many :builds
     has_many :runner_projects, inverse_of: :runner, autosave: true, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
     has_many :projects, through: :runner_projects, disable_joins: true
