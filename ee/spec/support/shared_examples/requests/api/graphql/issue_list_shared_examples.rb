@@ -59,6 +59,9 @@ RSpec.shared_examples 'graphql issue list request spec EE' do
       let_it_be(:sla_issue4) { create(:issue, :incident, project: public_project) }
       let_it_be(:sla_issue5) { create(:issue, :incident, project: public_project) }
 
+      let(:sla_issues) { [sla_issue1, sla_issue2, sla_issue3, sla_issue4, sla_issue5] }
+      let(:issue_filter_params) { { iids: sla_issues.map { |issue| issue.iid.to_s } } }
+
       before_all do
         create(:issuable_sla, issue: sla_issue1, due_at: 1.month.ago)
         create(:issuable_sla, issue: sla_issue5, due_at: 2.months.ago)

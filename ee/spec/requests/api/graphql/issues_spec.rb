@@ -19,8 +19,13 @@ RSpec.describe 'getting an issue list at root level', feature_category: :team_pl
   let_it_be(:issue_d) { create(:issue, project: project_d, weight: 3) }
   let_it_be(:issue_e) { create(:issue, project: project_d, weight: 4) }
 
+  let_it_be(:issues) { [issue_a, issue_b, issue_c, issue_d, issue_e] }
+  # we need to always provide at least one filter to the query so it doesn't fail
+  let_it_be(:base_params) { { iids: issues.map { |issue| issue.iid.to_s } } }
+
   let(:issue_filter_params) { {} }
-  let(:issues) { [issue_a, issue_b, issue_c, issue_d, issue_e] }
+  let(:all_query_params) { base_params.merge(**issue_filter_params) }
+
   let(:fields) do
     <<~QUERY
       nodes { id }
@@ -39,7 +44,7 @@ RSpec.describe 'getting an issue list at root level', feature_category: :team_pl
     def pagination_query(params)
       graphql_query_for(
         :issues,
-        params,
+        base_params.merge(**issue_filter_params).merge(**params.to_h),
         "#{page_info} nodes { id }"
       )
     end
@@ -53,7 +58,7 @@ RSpec.describe 'getting an issue list at root level', feature_category: :team_pl
     post_graphql(query, current_user: request_user)
   end
 
-  def query(params = issue_filter_params)
+  def query(params = all_query_params)
     graphql_query_for(
       :issues,
       params,
