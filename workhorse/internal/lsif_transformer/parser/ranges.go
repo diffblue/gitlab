@@ -13,10 +13,11 @@ const (
 )
 
 type Ranges struct {
-	DefRefs    map[Id]Item
-	References *References
-	Hovers     *Hovers
-	Cache      *cache
+	DefRefs        map[Id]Item
+	References     *References
+	Hovers         *Hovers
+	Cache          *cache
+	ResultSetCache *cache
 }
 
 type RawRange struct {
@@ -66,11 +67,17 @@ func NewRanges() (*Ranges, error) {
 		return nil, err
 	}
 
+	resultSetCache, err := newCache("results-set", Id(0))
+	if err != nil {
+		return nil, err
+	}
+
 	return &Ranges{
-		DefRefs:    make(map[Id]Item),
-		References: references,
-		Hovers:     hovers,
-		Cache:      cache,
+		DefRefs:        make(map[Id]Item),
+		References:     references,
+		Hovers:         hovers,
+		Cache:          cache,
+		ResultSetCache: resultSetCache,
 	}, nil
 }
 
@@ -82,6 +89,10 @@ func (r *Ranges) Read(label string, line []byte) error {
 		}
 	case "item":
 		if err := r.addItem(line); err != nil {
+			return err
+		}
+	case "textDocument/references":
+		if err := r.addResultSet(line); err != nil {
 			return err
 		}
 	default:
@@ -109,7 +120,7 @@ func (r *Ranges) Serialize(f io.Writer, rangeIds []Id, docs map[Id]string) error
 			StartLine:      entry.Line,
 			StartChar:      entry.Character,
 			DefinitionPath: r.definitionPathFor(docs, entry.RefId),
-			Hover:          r.Hovers.For(entry.RefId),
+			Hover:          r.hoverFor(entry.RefId),
 			References:     r.References.For(docs, entry.RefId),
 		}
 		if err := encoder.Encode(serializedRange); err != nil {
@@ -127,6 +138,15 @@ func (r *Ranges) Serialize(f io.Writer, rangeIds []Id, docs map[Id]string) error
 	}
 
 	return nil
+}
+
+func (r *Ranges) hoverFor(refId Id) json.RawMessage {
+	var resultSetId Id
+	if err := r.ResultSetCache.Entry(refId, &resultSetId); err != nil {
+		return nil
+	}
+
+	return r.Hovers.For(resultSetId)
 }
 
 func (r *Ranges) Close() error {
@@ -207,6 +227,15 @@ func (r *Ranges) addItem(line []byte) error {
 	}
 
 	return nil
+}
+
+func (r *Ranges) addResultSet(line []byte) error {
+	var ref ResultSetRef
+	if err := json.Unmarshal(line, &ref); err != nil {
+		return err
+	}
+
+	return r.ResultSetCache.SetEntry(ref.RefId, ref.ResultSetId)
 }
 
 func (r *Ranges) getRange(rangeId Id) (*Range, error) {
