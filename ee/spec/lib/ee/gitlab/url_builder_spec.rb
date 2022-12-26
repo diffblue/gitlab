@@ -25,6 +25,9 @@ RSpec.describe Gitlab::UrlBuilder do
     with_them do
       let(:object) { build_stubbed(*Array(factory)) }
       let(:path) { path_generator.call(object) }
+      before do
+        stub_licensed_features(okrs: true)
+      end
 
       it 'returns the full URL' do
         expect(subject.build(object)).to eq("#{Settings.gitlab['url']}#{path}")
@@ -42,7 +45,7 @@ RSpec.describe Gitlab::UrlBuilder do
 
       context 'when a objective issue is passed' do
         it 'returns a path using the work item\'s ID and no query params' do
-          objective = create(:issue, :objective)
+          objective = create(:work_item, :objective)
 
           expect(subject.build(objective, only_path: true)).to eq("/#{objective.project.full_path}/-/work_items/#{objective.id}")
         end
@@ -50,7 +53,7 @@ RSpec.describe Gitlab::UrlBuilder do
 
       context 'when a key_result issue is passed' do
         it 'returns a path using the work item\'s ID and no query params' do
-          key_result = create(:issue, :key_result)
+          key_result = create(:work_item, :key_result)
 
           expect(subject.build(key_result, only_path: true)).to eq("/#{key_result.project.full_path}/-/work_items/#{key_result.id}")
         end
