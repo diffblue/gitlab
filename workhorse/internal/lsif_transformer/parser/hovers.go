@@ -30,11 +30,6 @@ type HoverRef struct {
 	HoverId     Id `json:"inV"`
 }
 
-type ResultSetRef struct {
-       ResultSetId Id `json:"outV"`
-       RefId       Id `json:"inV"`
-}
-
 func NewHovers() (*Hovers, error) {
 	file, err := os.CreateTemp("", "hovers")
 	if err != nil {

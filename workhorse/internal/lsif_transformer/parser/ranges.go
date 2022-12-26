@@ -13,11 +13,10 @@ const (
 )
 
 type Ranges struct {
-	DefRefs        map[Id]Item
-	References     *References
-	Hovers         *Hovers
-	Cache          *cache
-	ResultSetCache *cache
+	DefRefs    map[Id]Item
+	References *References
+	ResultSet  *ResultSet
+	Cache      *cache
 }
 
 type RawRange struct {
@@ -52,7 +51,7 @@ type SerializedRange struct {
 }
 
 func NewRanges() (*Ranges, error) {
-	hovers, err := NewHovers()
+	resultSet, err := NewResultSet()
 	if err != nil {
 		return nil, err
 	}
@@ -67,17 +66,11 @@ func NewRanges() (*Ranges, error) {
 		return nil, err
 	}
 
-	resultSetCache, err := newCache("results-set", Id(0))
-	if err != nil {
-		return nil, err
-	}
-
 	return &Ranges{
-		DefRefs:        make(map[Id]Item),
-		References:     references,
-		Hovers:         hovers,
-		Cache:          cache,
-		ResultSetCache: resultSetCache,
+		DefRefs:    make(map[Id]Item),
+		References: references,
+		Cache:      cache,
+		ResultSet:  resultSet,
 	}, nil
 }
 
@@ -91,12 +84,8 @@ func (r *Ranges) Read(label string, line []byte) error {
 		if err := r.addItem(line); err != nil {
 			return err
 		}
-	case "textDocument/references":
-		if err := r.addResultSet(line); err != nil {
-			return err
-		}
 	default:
-		return r.Hovers.Read(label, line)
+		return r.ResultSet.Read(label, line)
 	}
 
 	return nil
@@ -120,7 +109,7 @@ func (r *Ranges) Serialize(f io.Writer, rangeIds []Id, docs map[Id]string) error
 			StartLine:      entry.Line,
 			StartChar:      entry.Character,
 			DefinitionPath: r.definitionPathFor(docs, entry.RefId),
-			Hover:          r.hoverFor(entry.RefId),
+			Hover:          r.ResultSet.HoverFor(entry.RefId),
 			References:     r.References.For(docs, entry.RefId),
 		}
 		if err := encoder.Encode(serializedRange); err != nil {
@@ -140,20 +129,11 @@ func (r *Ranges) Serialize(f io.Writer, rangeIds []Id, docs map[Id]string) error
 	return nil
 }
 
-func (r *Ranges) hoverFor(refId Id) json.RawMessage {
-	var resultSetId Id
-	if err := r.ResultSetCache.Entry(refId, &resultSetId); err != nil {
-		return nil
-	}
-
-	return r.Hovers.For(resultSetId)
-}
-
 func (r *Ranges) Close() error {
 	for _, err := range []error{
 		r.Cache.Close(),
 		r.References.Close(),
-		r.Hovers.Close(),
+		r.ResultSet.Close(),
 	} {
 		if err != nil {
 			return err
@@ -227,15 +207,6 @@ func (r *Ranges) addItem(line []byte) error {
 	}
 
 	return nil
-}
-
-func (r *Ranges) addResultSet(line []byte) error {
-	var ref ResultSetRef
-	if err := json.Unmarshal(line, &ref); err != nil {
-		return err
-	}
-
-	return r.ResultSetCache.SetEntry(ref.RefId, ref.ResultSetId)
 }
 
 func (r *Ranges) getRange(rangeId Id) (*Range, error) {
