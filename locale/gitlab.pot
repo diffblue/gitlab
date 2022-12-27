@@ -22214,7 +22214,16 @@ msgstr ""
 msgid "IntegrationEvents|A confidential issue is created, updated, or closed"
 msgstr ""
 
+msgid "IntegrationEvents|A deployment is started or finished"
+msgstr ""
+
 msgid "IntegrationEvents|A merge request is created, updated, or merged"
+msgstr ""
+
+msgid "IntegrationEvents|A new, unique alert is recorded"
+msgstr ""
+
+msgid "IntegrationEvents|A new, unique, vulnerability is recorded. (Note: This feature requires an Ultimate plan)"
 msgstr ""
 
 msgid "IntegrationEvents|A pipeline status changes"
