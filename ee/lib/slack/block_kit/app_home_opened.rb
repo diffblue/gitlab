@@ -132,7 +132,6 @@ module Slack
 
       def actions_gitlab_account_not_connected
         account_connection_url = ChatNames::AuthorizeUserService.new(
-          slack_installation.integration,
           {
             team_id: slack_workspace_id,
             user_id: slack_user_id,
