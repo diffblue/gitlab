@@ -57,18 +57,9 @@ module QA
               within_element(:custom_project_templates_container) do
                 clear_current_selection_if_present
                 expand_select_list
-
-                unless use_select2?
-                  search_and_select(path)
-                  click_element(:save_changes_button)
-                  return # rubocop:disable Cop/AvoidReturnFromBlocks
-                end
+                search_and_select(path)
+                click_element(:save_changes_button)
               end
-
-              # TODO: Remove the following two lines and the use_select2?
-              # check above once ff vue_group_select is default.
-              search_and_select(path)
-              click_element(:save_changes_button)
             end
 
             def set_ip_address_restriction(ip_address)
