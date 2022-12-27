@@ -2582,4 +2582,57 @@ RSpec.describe ProjectPolicy do
       it { is_expected.to be_disallowed(:read_code) }
     end
   end
+
+  describe 'permissions for suggested reviewers bot', :saas do
+    using RSpec::Parameterized::TableSyntax
+
+    let(:permissions) { [:admin_project_member, :create_resource_access_tokens] }
+    let(:namespace) { build_stubbed(:namespace) }
+    let(:project) { build_stubbed(:project, namespace: namespace) }
+
+    context 'when user is suggested_reviewers_bot' do
+      let(:current_user) { User.suggested_reviewers_bot }
+
+      where(:suggested_reviewers_available, :token_creation_allowed, :allowed) do
+        false | false | false
+        false | true  | false
+        true  | false | false
+        true  | true  | true
+      end
+
+      with_them do
+        before do
+          allow(project).to receive(:can_suggest_reviewers?).and_return(suggested_reviewers_available)
+
+          allow(::Gitlab::CurrentSettings)
+            .to receive(:personal_access_tokens_disabled?)
+            .and_return(!token_creation_allowed)
+        end
+
+        it 'always allows permissions except when feature disabled' do
+          if allowed
+            expect_allowed(*permissions)
+          else
+            expect_disallowed(*permissions)
+          end
+        end
+      end
+    end
+
+    context 'when user is not suggested_reviewers_bot' do
+      let(:current_user) { developer }
+
+      before do
+        allow(project).to receive(:can_suggest_reviewers?).and_return(true)
+
+        allow(::Gitlab::CurrentSettings)
+          .to receive(:personal_access_tokens_disabled?)
+          .and_return(false)
+      end
+
+      it 'does not allow permissions' do
+        expect_disallowed(*permissions)
+      end
+    end
+  end
 end

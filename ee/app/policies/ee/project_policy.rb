@@ -191,6 +191,11 @@ module EE
         @user.read_code_for?(project)
       end
 
+      with_scope :subject
+      condition(:suggested_reviewers_available) do
+        @subject.can_suggest_reviewers?
+      end
+
       # Owners can be banned from their own project except for top-level group
       # owners. This exception is made at the service layer
       # (Users::Abuse::GitAbuse::NamespaceThrottleService) where the ban record
@@ -529,6 +534,11 @@ module EE
       rule { can?(:create_issue) & okrs_enabled }.policy do
         enable :create_objective
         enable :create_key_result
+      end
+
+      rule { suggested_reviewers_bot & suggested_reviewers_available & resource_access_token_feature_available & resource_access_token_creation_allowed }.policy do
+        enable :admin_project_member
+        enable :create_resource_access_tokens
       end
     end
 

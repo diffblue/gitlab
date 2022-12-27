@@ -139,6 +139,15 @@ module EE
         end
       end
 
+      def suggested_reviewers_bot
+        email_pattern = "suggested-reviewers-bot%s@#{Settings.gitlab.host}"
+
+        unique_internal(where(user_type: :suggested_reviewers_bot), 'suggested-reviewers-bot', email_pattern) do |u|
+          u.bio = 'The GitLab suggested reviewers bot used for suggested reviewers'
+          u.name = 'GitLab Suggested Reviewers Bot'
+        end
+      end
+
       def non_ldap
         joins('LEFT JOIN identities ON identities.user_id = users.id')
           .where('identities.provider IS NULL OR identities.provider NOT LIKE ?', 'ldap%')
