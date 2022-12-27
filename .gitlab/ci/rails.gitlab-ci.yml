@@ -305,7 +305,7 @@ db:backup_and_restore single-db:
   extends:
     - db:backup_and_restore
     - .single-db
-    - .rails:rules:single-db
+    - .rails:rules:db-backup
 
 rspec:deprecations:
   extends:

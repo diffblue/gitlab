@@ -1170,13 +1170,17 @@
     - <<: *if-merge-request-labels-run-single-db
     - <<: *if-merge-request
       changes: *db-patterns
-    - <<: *if-merge-request
-      changes: *db-backup-patterns
     - <<: *if-default-branch-schedule-nightly
 
 .rails:rules:db-backup:
   rules:
-    - changes: *db-backup-patterns
+    - <<: *if-merge-request-labels-run-all-rspec
+    - <<: *if-default-refs
+      changes: *db-backup-patterns
+    - <<: *if-merge-request-not-approved
+      when: never
+    - <<: *if-default-refs
+      changes: *db-patterns
 
 .rails:rules:praefect-with-db:
   rules:
@@ -1193,10 +1197,6 @@
     # When DB schema changes, many migrations spec may be affected. However, the test mapping from Crystalball does not map db change to a specific migration spec well.
     # See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/68840.
     - <<: *if-merge-request
-      changes: *db-patterns
-    - <<: *if-automated-merge-request
-      changes: *db-patterns
-    - <<: *if-security-merge-request
       changes: *db-patterns
     - <<: *if-merge-request-not-approved
       when: never
