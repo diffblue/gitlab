@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GroupWikis::GitGarbageCollectWorker do
+RSpec.describe GroupWikis::GitGarbageCollectWorker, feature_category: :source_code_management do
   it_behaves_like 'can collect git garbage', update_statistics: false do
     let_it_be(:resource) { create(:group_wiki) }
     let_it_be(:page) { create(:wiki_page, wiki: resource) }
