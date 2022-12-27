@@ -65,6 +65,8 @@ module EE
 
     # override
     def maintain_elasticsearch_create
+      return unless user
+
       ::Elastic::ProcessBookkeepingService.track!(user)
     end
 
@@ -73,6 +75,8 @@ module EE
 
     # override
     def maintain_elasticsearch_destroy
+      return unless user
+
       ::Elastic::ProcessBookkeepingService.track!(user)
     end
 
