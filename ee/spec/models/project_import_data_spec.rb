@@ -14,7 +14,7 @@ RSpec.describe ProjectImportData do
   subject(:import_data) { project.import_data }
 
   describe 'validations' do
-    it { is_expected.to validate_inclusion_of(:auth_method).in_array([nil, '', 'password', 'ssh_public_key']) }
+    it { is_expected.to validate_inclusion_of(:auth_method).in_array(%w[password ssh_public_key]).allow_nil.allow_blank }
   end
 
   describe '#ssh_key_auth?' do
