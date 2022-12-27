@@ -16877,6 +16877,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="pipelinejobsretried"></a>`retried` | [`Boolean`](#boolean) | Filter jobs by retry-status. |
 | <a id="pipelinejobssecurityreporttypes"></a>`securityReportTypes` | [`[SecurityReportTypeEnum!]`](#securityreporttypeenum) | Filter jobs by the type of security report they produce. |
 | <a id="pipelinejobsstatuses"></a>`statuses` | [`[CiJobStatus!]`](#cijobstatus) | Filter jobs by status. |
+| <a id="pipelinejobswhenexecuted"></a>`whenExecuted` | [`[String!]`](#string) | Filter jobs by when they are executed. |
 
 ##### `Pipeline.securityReportFinding`
 
