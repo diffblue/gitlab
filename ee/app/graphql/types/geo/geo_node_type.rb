@@ -20,8 +20,7 @@ module Types
             null: true,
             alpha: { milestone: '15.6' },
             resolver: ::Resolvers::Geo::DependencyProxyBlobRegistriesResolver,
-            description: 'Find Dependency Proxy Blob registries on this Geo node. '\
-                         'Ignored if `geo_dependency_proxy_blob_replication` feature flag is disabled.'
+            description: 'Find Dependency Proxy Blob registries on this Geo node.'
       field :dependency_proxy_manifest_registries, ::Types::Geo::DependencyProxyManifestRegistryType.connection_type,
             null: true,
             resolver: ::Resolvers::Geo::DependencyProxyManifestRegistriesResolver,

@@ -13222,7 +13222,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 ##### `GeoNode.dependencyProxyBlobRegistries`
 
-Find Dependency Proxy Blob registries on this Geo node. Ignored if `geo_dependency_proxy_blob_replication` feature flag is disabled.
+Find Dependency Proxy Blob registries on this Geo node.
 
 WARNING:
 **Introduced** in 15.6.
