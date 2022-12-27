@@ -443,6 +443,40 @@ RSpec.describe Member, type: :model do
     end
   end
 
+  shared_examples 'maintain_elasticsearch' do |parameter|
+    context 'when user exists' do
+      let_it_be(:member) { create(:group_member, :owner, group: group) }
+
+      it 'does not call track!' do
+        expect(::Elastic::ProcessBookkeepingService).to receive(:track!)
+
+        subject
+      end
+    end
+
+    context 'when user does not exist' do
+      let_it_be(:member) { create(:group_member, :invited, :active, group: group) }
+
+      it 'does not call track!' do
+        expect(::Elastic::ProcessBookkeepingService).not_to receive(:track!)
+
+        subject
+      end
+    end
+  end
+
+  describe '.maintain_elasticsearch_create', feature_category: :global_search do
+    subject { member.maintain_elasticsearch_create }
+
+    include_examples 'maintain_elasticsearch'
+  end
+
+  describe '.maintain_elasticsearch_destroy', feature_category: :global_search do
+    subject { member.maintain_elasticsearch_destroy }
+
+    include_examples 'maintain_elasticsearch'
+  end
+
   describe '.distinct_awaiting_or_invited_for_group' do
     let_it_be(:other_sub_group) { create(:group, parent: group) }
     let_it_be(:active_group_member) { create(:group_member, group: group) }
