@@ -2,7 +2,7 @@
 require 'erb'
 
 module QA
-  RSpec.describe 'Configure', :reliable, only: { subdomain: %i[staging staging-canary] }, product_group: :configure do
+  RSpec.describe 'Configure', only: { subdomain: %i[staging staging-canary] }, product_group: :configure do
     include Service::Shellout
 
     describe 'Kubernetes Agent' do
@@ -30,11 +30,7 @@ module QA
 
       it(
         'deploys a K8s manifest file',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347638',
-        quarantine: {
-          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/381461',
-          type: :flaky
-        }
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347638'
       ) do
         deploy_manifest(project)
 
