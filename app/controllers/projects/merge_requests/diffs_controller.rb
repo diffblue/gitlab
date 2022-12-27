@@ -43,8 +43,7 @@ class Projects::MergeRequests::DiffsController < Projects::MergeRequests::Applic
       commit: commit,
       diff_view: diff_view,
       merge_ref_head_diff: render_merge_ref_head_diff?,
-      pagination_data: diffs.pagination_data,
-      merge_conflicts_in_diff: display_merge_conflicts_in_diff?
+      pagination_data: diffs.pagination_data
     }
 
     # NOTE: Any variables that would affect the resulting json needs to be added to the cache_context to avoid stale cache issues.
@@ -56,8 +55,7 @@ class Projects::MergeRequests::DiffsController < Projects::MergeRequests::Applic
       params[:expanded],
       params[:page],
       params[:per_page],
-      options[:merge_ref_head_diff],
-      options[:merge_conflicts_in_diff]
+      options[:merge_ref_head_diff]
     ]
 
     return unless stale?(etag: [cache_context + diff_options_hash.fetch(:paths, []), diffs])
@@ -74,8 +72,7 @@ class Projects::MergeRequests::DiffsController < Projects::MergeRequests::Applic
 
     options = additional_attributes.merge(
       only_context_commits: show_only_context_commits?,
-      merge_ref_head_diff: render_merge_ref_head_diff?,
-      merge_conflicts_in_diff: display_merge_conflicts_in_diff?
+      merge_ref_head_diff: render_merge_ref_head_diff?
     )
 
     render json: DiffsMetadataSerializer.new(project: @merge_request.project, current_user: current_user)
@@ -103,8 +100,7 @@ class Projects::MergeRequests::DiffsController < Projects::MergeRequests::Applic
 
     options = additional_attributes.merge(
       diff_view: "inline",
-      merge_ref_head_diff: render_merge_ref_head_diff?,
-      merge_conflicts_in_diff: display_merge_conflicts_in_diff?
+      merge_ref_head_diff: render_merge_ref_head_diff?
     )
 
     options[:context_commits] = @merge_request.recent_context_commits
@@ -231,9 +227,5 @@ class Projects::MergeRequests::DiffsController < Projects::MergeRequests::Applic
 
     Gitlab::UsageDataCounters::MergeRequestActivityUniqueCounter
       .track_mr_diffs_single_file_action(merge_request: @merge_request, user: current_user)
-  end
-
-  def display_merge_conflicts_in_diff?
-    Feature.enabled?(:display_merge_conflicts_in_diff, @merge_request.project)
   end
 end
