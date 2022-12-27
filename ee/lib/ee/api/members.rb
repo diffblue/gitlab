@@ -23,7 +23,7 @@ module EE
               .new(current_user, { override: true })
               .execute(member, permission: :override)
 
-            updated_member = result[:member]
+            updated_member = result[:members].first
 
             if result[:status] == :success
               present_member(updated_member)
@@ -45,7 +45,7 @@ module EE
               .new(current_user, { override: false })
               .execute(member, permission: :override)
 
-            updated_member = result[:member]
+            updated_member = result[:members].first
 
             if result[:status] == :success
               present_member(updated_member)
