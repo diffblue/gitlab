@@ -79,7 +79,10 @@ module Registrations
     end
 
     def redirect_successful_namespace_creation(project_id)
-      redirect_path = continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: project_id)
+      redirect_path = continuous_onboarding_getting_started_users_sign_up_welcome_path(
+        project_id: project_id,
+        trial_onboarding_flow: params[:trial_onboarding_flow]
+      )
 
       experiment(:registration_verification, user: current_user) do |e|
         e.control { redirect_to redirect_path }

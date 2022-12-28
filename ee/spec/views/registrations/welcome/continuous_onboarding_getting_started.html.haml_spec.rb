@@ -10,6 +10,7 @@ RSpec.describe 'registrations/welcome/continuous_onboarding_getting_started' do
 
     before do
       allow(view).to receive(:project).and_return(project)
+      allow(view).to receive(:track_label).and_return('free_registration')
       allow(view).to receive(:learn_gitlab_onboarding_available?).and_return(project_available)
 
       render
@@ -20,6 +21,8 @@ RSpec.describe 'registrations/welcome/continuous_onboarding_getting_started' do
 
       it { is_expected.to have_content("Ok, let's go") }
       it { is_expected.not_to have_content('Creating your onboarding experience...') }
+      it { is_expected.to have_css("[data-track-label='free_registration']") }
+      it { is_expected.to have_css("[data-track-action='click_ok_lets_go']") }
 
       it 'does not have meta refresh tag' do
         expect(view.content_for(:meta_tags)).to be_nil
@@ -31,6 +34,8 @@ RSpec.describe 'registrations/welcome/continuous_onboarding_getting_started' do
 
       it { is_expected.not_to have_content("Ok, let's go") }
       it { is_expected.to have_content('Creating your onboarding experience...') }
+      it { is_expected.not_to have_css("[data-track-label='free_registration']") }
+      it { is_expected.not_to have_css("[data-track-action='click_ok_lets_go']") }
 
       it 'has meta refresh tag' do
         expect(view.content_for(:meta_tags)).to include("<meta content=\"5\" http-equiv=\"refresh\">")
