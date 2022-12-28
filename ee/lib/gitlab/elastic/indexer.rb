@@ -84,17 +84,18 @@ module Gitlab
         vars = build_envvars(base_sha, to_sha, target)
         path_to_indexer = Gitlab.config.elasticsearch.indexer_path
 
+        project_id_argument = "--project-id=#{project.id}"
         timeout_argument = "--timeout=#{TIMEOUT}s"
 
-        command = [path_to_indexer, timeout_argument]
+        command = [path_to_indexer, project_id_argument, timeout_argument]
 
         command << "--search-curation" if Feature.enabled?(:search_index_curation)
 
         command += if index_wiki?
-                     ["--blob-type=wiki_blob", "--skip-commits", "--project-path=#{project.full_path}"]
+                     ["--blob-type=wiki_blob", "--skip-commits", "--full-path=#{project.full_path}"]
                    else
                      [
-                       "--project-path=#{project.full_path}",
+                       "--full-path=#{project.full_path}",
                        "--visibility-level=#{project.visibility_level}",
                        "--repository-access-level=#{project.repository_access_level}"
                      ]
@@ -104,7 +105,7 @@ module Gitlab
           command << "--traversal-ids=#{project.namespace_ancestry}"
         end
 
-        command += [project.id.to_s, repository_path]
+        command += [repository_path]
 
         output, status = Gitlab::Popen.popen(command, nil, vars)
 
