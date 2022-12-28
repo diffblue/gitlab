@@ -18,7 +18,6 @@ module EE
               add_item(saml_sso_menu_item)
               add_item(saml_group_links_menu_item)
               add_item(domain_verification_menu_item)
-              add_item(usage_quotas_menu_item)
               add_item(billing_menu_item)
               add_item(reporting_menu_item)
             else
@@ -120,23 +119,9 @@ module EE
               context.show_promotions
           end
 
-          def usage_quotas_menu_item
-            unless usage_quotas_enabled?
-              return ::Sidebars::NilMenuItem.new(item_id: :usage_quotas)
-            end
-
-            ::Sidebars::MenuItem.new(
-              title: s_('UsageQuota|Usage Quotas'),
-              link: group_usage_quotas_path(context.group),
-              active_routes: { path: 'usage_quotas#index' },
-              item_id: :usage_quotas
-            )
-          end
-
-          def usage_quotas_enabled?
-            ::License.feature_available?(:usage_quotas) &&
-              context.group.parent.nil? &&
-              administration_nav_item_disabled?
+          override :usage_quotas_menu_enabled?
+          def usage_quotas_menu_enabled?
+            super && administration_nav_item_disabled?
           end
 
           def billing_menu_item

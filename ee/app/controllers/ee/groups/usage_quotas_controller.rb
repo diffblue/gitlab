@@ -16,12 +16,6 @@ module EE
 
       private
 
-      override :verify_usage_quotas_enabled!
-      def verify_usage_quotas_enabled!
-        render_404 unless ::License.feature_available?(:usage_quotas)
-        render_404 if group.has_parent?
-      end
-
       override :seat_count_data
       def seat_count_data
         generate_seat_count_alert_data(group)

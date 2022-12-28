@@ -49,7 +49,7 @@ module Sidebars
         end
 
         def usage_quotas_menu_item
-          unless usage_quotas_enabled?
+          unless context.group.usage_quotas_enabled?
             return ::Sidebars::NilMenuItem.new(item_id: :usage_quotas)
           end
 
@@ -59,10 +59,6 @@ module Sidebars
             active_routes: { path: 'usage_quotas#index' },
             item_id: :usage_quotas
           )
-        end
-
-        def usage_quotas_enabled?
-          ::License.feature_available?(:usage_quotas) && context.group.root?
         end
 
         def billing_menu_item
