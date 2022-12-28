@@ -8,8 +8,11 @@ module EE
 
       override :use_work_items_path?
       def use_work_items_path?(issue)
-        super || (%w[objective
-                     key_result].include?(issue.issue_type) && issue.project.okrs_mvc_feature_flag_enabled?)
+        if issue.project.okrs_mvc_feature_flag_enabled? && issue.project.licensed_feature_available?(:okrs)
+          return super || issue.objective? || issue.key_result?
+        end
+
+        super
       end
     end
   end

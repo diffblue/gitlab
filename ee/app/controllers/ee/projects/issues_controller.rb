@@ -136,15 +136,6 @@ module EE
 
         redirect_to project_quality_test_case_path(project, issue)
       end
-
-      override :allowed_work_item?
-      def allowed_work_item?
-        if project.okrs_mvc_feature_flag_enabled? && project.feature_available?(:okrs)
-          return super || issue.objective? || issue.key_result?
-        end
-
-        super
-      end
     end
   end
 end
