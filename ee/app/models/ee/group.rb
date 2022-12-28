@@ -214,6 +214,14 @@ module EE
       end
     end
 
+    override :usage_quotas_enabled?
+    def usage_quotas_enabled?
+      return false unless root?
+
+      # Details on this feature https://gitlab.com/gitlab-org/gitlab/-/issues/384893
+      ::License.feature_available?(:usage_quotas) || ::Feature.enabled?(:usage_quotas_for_all_editions, self)
+    end
+
     class_methods do
       def groups_user_can(groups, user, action, same_root: false)
         # If :use_traversal_ids is enabled we can use filter optmization

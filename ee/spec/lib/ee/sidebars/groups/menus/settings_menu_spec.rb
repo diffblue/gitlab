@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Sidebars::Groups::Menus::SettingsMenu do
+RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigation do
   let_it_be(:owner) { create(:user) }
   let_it_be(:auditor) { create(:user, :auditor) }
 
@@ -170,7 +170,10 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu do
         let(:usage_quotas_enabled) { true }
 
         before do
-          stub_feature_flags(group_administration_nav_item: group_admin_nav_enabled)
+          stub_feature_flags(
+            group_administration_nav_item: group_admin_nav_enabled,
+            usage_quotas_for_all_editions: false
+          )
           stub_licensed_features(usage_quotas: usage_quotas_enabled)
         end
 
