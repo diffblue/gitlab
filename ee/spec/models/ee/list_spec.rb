@@ -14,7 +14,7 @@ RSpec.describe List do
   describe 'validations' do
     it { is_expected.to validate_numericality_of(:max_issue_count).only_integer.is_greater_than_or_equal_to(0) }
     it { is_expected.to validate_numericality_of(:max_issue_weight).only_integer.is_greater_than_or_equal_to(0) }
-    it { is_expected.to validate_inclusion_of(:limit_metric).in_array([nil, *EE::List::LIMIT_METRIC_TYPES]) }
+    it { is_expected.to validate_inclusion_of(:limit_metric).in_array(EE::List::LIMIT_METRIC_TYPES).allow_nil }
   end
 
   context 'when it is an assignee type' do

@@ -27,7 +27,7 @@ RSpec.describe GeoNode, :request_store, :geo, type: :model do
   context 'validations' do
     subject { build(:geo_node) }
 
-    it { is_expected.to validate_inclusion_of(:selective_sync_type).in_array([nil, *GeoNode::SELECTIVE_SYNC_TYPES]) }
+    it { is_expected.to validate_inclusion_of(:selective_sync_type).in_array(GeoNode::SELECTIVE_SYNC_TYPES).allow_nil }
     it { is_expected.to validate_numericality_of(:repos_max_capacity).is_greater_than_or_equal_to(0) }
     it { is_expected.to validate_numericality_of(:files_max_capacity).is_greater_than_or_equal_to(0) }
     it { is_expected.to validate_numericality_of(:verification_max_capacity).is_greater_than_or_equal_to(0) }
