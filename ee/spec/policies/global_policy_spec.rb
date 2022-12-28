@@ -335,4 +335,32 @@ RSpec.describe GlobalPolicy, feature_category: :security_policies do
       end
     end
   end
+
+  describe 'read_jobs_statistics' do
+    context 'when feature is enabled' do
+      before do
+        stub_licensed_features(runner_jobs_statistics: true)
+      end
+
+      it { is_expected.to be_disallowed(:read_jobs_statistics) }
+
+      context 'when admin mode enabled', :enable_admin_mode do
+        it { expect(described_class.new(admin, [user])).to be_allowed(:read_jobs_statistics) }
+      end
+
+      context 'when admin mode disabled' do
+        it { expect(described_class.new(admin, [user])).to be_disallowed(:read_jobs_statistics) }
+      end
+    end
+
+    context 'when feature is disabled' do
+      before do
+        stub_licensed_features(runner_jobs_statistics: false)
+      end
+
+      context 'when admin mode enabled', :enable_admin_mode do
+        it { expect(described_class.new(admin, [user])).to be_disallowed(:read_jobs_statistics) }
+      end
+    end
+  end
 end
