@@ -41,7 +41,10 @@ module EE
 
         cookies[:confetti_post_signup] = true
 
-        render locals: { project: project }
+        label = helpers.in_trial_onboarding_flow? ? 'trial_registration' : 'free_registration'
+        track_event('render', label)
+
+        render locals: { project: project, track_label: label }
       end
 
       private
@@ -123,8 +126,13 @@ module EE
       end
 
       override :track_event
-      def track_event(category)
-        ::Gitlab::Tracking.event(self.class.name, category, user: current_user, label: tracking_label)
+      def track_event(action, label = tracking_label)
+        ::Gitlab::Tracking.event(
+          helpers.body_data_page,
+          action,
+          user: current_user,
+          label: label
+        )
       end
 
       def tracking_label

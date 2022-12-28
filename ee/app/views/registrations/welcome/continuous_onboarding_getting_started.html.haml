@@ -14,7 +14,7 @@
       %p.gl-text-center.gl-text-gray-700.gl-mb-7= _('Ready to get started with GitLab? Follow these steps to set up your workspace, plan and commit changes, and deploy your project.')
       = image_tag 'learn_gitlab/get_started.svg', width: '400', class: 'gl-max-w-full'
       - if learn_gitlab_onboarding_available?(project)
-        %div= link_to s_("LearnGitlab|Ok, let's go"), project_learn_gitlab_path(project), class: 'btn btn-confirm gl-button gl-mt-7 js-get-started-btn', data: { qa_selector: 'confirm_button'}
+        %div= link_to s_("LearnGitlab|Ok, let's go"), project_learn_gitlab_path(project), class: 'btn btn-confirm gl-button gl-mt-7 js-get-started-btn', data: { qa_selector: 'confirm_button', track_label: track_label, track_action: "click_ok_lets_go" }
       - else
         %p.gl-text-center.gl-text-gray-700.gl-mt-7= s_('LearnGitlab|Creating your onboarding experience...')
         = gl_loading_icon(size: 'md')

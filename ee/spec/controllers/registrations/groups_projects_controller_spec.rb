@@ -223,6 +223,19 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
 
         it { is_expected.to redirect_to(success_path) }
 
+        context 'when trial_onboarding_flow' do
+          let(:extra_params) { { trial_onboarding_flow: true } }
+
+          let(:success_path) do
+            continuous_onboarding_getting_started_users_sign_up_welcome_path(
+              project_id: project.id,
+              trial_onboarding_flow: true
+            )
+          end
+
+          it { is_expected.to redirect_to(success_path) }
+        end
+
         context 'when the `registration_verification` experiment is enabled' do
           before do
             stub_experiments(registration_verification: :candidate)

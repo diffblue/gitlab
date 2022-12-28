@@ -18,7 +18,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
       get_show
 
       expect_snowplow_event(
-        category: described_class.name,
+        category: 'registrations:welcome:show',
         action: 'render',
         user: user,
         label: 'free_registration'
@@ -34,7 +34,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
         get_show
 
         expect_snowplow_event(
-          category: described_class.name,
+          category: 'registrations:welcome:show',
           action: 'render',
           user: user,
           label: 'invite_registration'
@@ -51,7 +51,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
         get_show
 
         expect_snowplow_event(
-          category: described_class.name,
+          category: 'registrations:welcome:show',
           action: 'render',
           user: user,
           label: 'trial_registration'
@@ -66,7 +66,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
         get_show
 
         expect_no_snowplow_event(
-          category: described_class.name,
+          category: 'registrations:welcome:show',
           action: 'render',
           user: user,
           label: 'free_registration'
@@ -99,6 +99,35 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
 
         expect(cookies[:confetti_post_signup]).to eq('true')
       end
+
+      it 'tracks render event' do
+        continuous_onboarding_getting_started
+
+        expect_snowplow_event(
+          category: 'registrations:welcome:continuous_onboarding_getting_started',
+          action: 'render',
+          user: user,
+          label: 'free_registration'
+        )
+      end
+
+      context 'when in trial flow' do
+        before do
+          allow(controller.helpers).to receive(:in_trial_flow?).and_return(true)
+        end
+
+        it 'tracks render event' do
+          get :continuous_onboarding_getting_started,
+              params: { project_id: project.id, trial_onboarding_flow: true }
+
+          expect_snowplow_event(
+            category: 'registrations:welcome:continuous_onboarding_getting_started',
+            action: 'render',
+            user: user,
+            label: 'trial_registration'
+          )
+        end
+      end
     end
 
     context 'with a non-owner user signed in' do
@@ -108,6 +137,17 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
       end
 
       it { is_expected.to have_gitlab_http_status(:not_found) }
+
+      it 'does not track submission event' do
+        continuous_onboarding_getting_started
+
+        expect_no_snowplow_event(
+          category: 'registrations:welcome:continuous_onboarding_getting_started',
+          action: 'render',
+          user: user,
+          label: 'free_registration'
+        )
+      end
     end
   end
 
@@ -307,7 +347,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
             patch_update
 
             expect_snowplow_event(
-              category: described_class.name,
+              category: 'registrations:welcome:update',
               action: 'successfully_submitted_form',
               user: user,
               label: 'free_registration'
@@ -409,7 +449,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
               patch_update
 
               expect_snowplow_event(
-                category: described_class.name,
+                category: 'registrations:welcome:update',
                 action: 'successfully_submitted_form',
                 user: user,
                 label: 'invite_registration'
@@ -428,7 +468,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
               patch_update
 
               expect_snowplow_event(
-                category: described_class.name,
+                category: 'registrations:welcome:update',
                 action: 'successfully_submitted_form',
                 user: user,
                 label: 'trial_registration'
@@ -477,7 +517,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
             patch_update
 
             expect_no_snowplow_event(
-              category: described_class.name,
+              category: 'registrations:welcome:update',
               action: 'successfully_submitted_form',
               user: user,
               label: 'free_registration'
