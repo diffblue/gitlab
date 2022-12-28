@@ -37,7 +37,7 @@ class EpicEntity < IssuableEntity
     end
 
     expose :can_create_confidential_note do |epic|
-      can?(request.current_user, :mark_note_as_confidential, epic)
+      can?(request.current_user, :mark_note_as_internal, epic)
     end
 
     expose :can_update do |epic|
