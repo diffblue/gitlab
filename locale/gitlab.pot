@@ -42306,6 +42306,9 @@ msgstr ""
 msgid "This %{issuableDisplayName} is locked. Only project members can comment."
 msgstr ""
 
+msgid "This %{issuable} is hidden because its author has been banned"
+msgstr ""
+
 msgid "This %{issuable} is locked. Only %{strong_open}project members%{strong_close} can comment."
 msgstr ""
 
