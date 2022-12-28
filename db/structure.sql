@@ -16703,6 +16703,7 @@ CREATE TABLE integrations (
     archive_trace_events boolean DEFAULT false NOT NULL,
     encrypted_properties bytea,
     encrypted_properties_iv bytea,
+    incident_events boolean DEFAULT false NOT NULL,
     CONSTRAINT check_a948a0aa7e CHECK ((char_length(type_new) <= 255))
 );
 
