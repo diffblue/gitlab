@@ -105,9 +105,18 @@ function rspec_simple_job() {
   export NO_KNAPSACK="1"
 
   local rspec_cmd="bin/rspec $(rspec_args "${1}" "${2}")"
+  local retry_when_failing="${3:-true}"
+  local rspec_run_status=0
+  local rspec_log="${CI_PROJECT_DIR}/tmp/rspec.log"
   echoinfo "Running RSpec command: ${rspec_cmd}"
 
-  eval "${rspec_cmd}"
+  eval "${rspec_cmd}" | tee "${rspec_log}" || rspec_run_status=$?
+
+  if [[ "${retry_when_failing}" == "true" ]]; then
+    handle_retry_rspec_in_new_process $rspec_run_status $rspec_log
+  else
+    exit $rspec_run_status
+  fi
 }
 
 function rspec_db_library_code() {
@@ -131,9 +140,31 @@ function debug_rspec_variables() {
   echoinfo "FLAKY_RSPEC_REPORT_PATH: ${FLAKY_RSPEC_REPORT_PATH}"
   echoinfo "NEW_FLAKY_RSPEC_REPORT_PATH: ${NEW_FLAKY_RSPEC_REPORT_PATH}"
   echoinfo "SKIPPED_FLAKY_TESTS_REPORT_PATH: ${SKIPPED_FLAKY_TESTS_REPORT_PATH}"
-  echoinfo "RETRIED_TESTS_REPORT_PATH: ${RETRIED_TESTS_REPORT_PATH}"
 
   echoinfo "CRYSTALBALL: ${CRYSTALBALL}"
+}
+
+function handle_retry_rspec_in_new_process() {
+  local rspec_run_status="${1}"
+  local rspec_log="${2}"
+
+  # Experiment to retry failed examples in a new RSpec process: https://gitlab.com/gitlab-org/quality/team-tasks/-/issues/1148
+  if [[ $rspec_run_status -ne 0 ]]; then
+    if [[ "${RETRY_FAILED_TESTS_IN_NEW_PROCESS}" == "true" ]]; then
+      if grep -q "error occurred outside of examples" "${rspec_log}"; then
+        echoerr "Not retrying failing examples since there were errors happening outside of the RSpec examples!"
+      else
+        retry_failed_rspec_examples
+        rspec_run_status=$?
+      fi
+    else
+      echoerr "Not retrying failing examples since \$RETRY_FAILED_TESTS_IN_NEW_PROCESS != 'true'!"
+    fi
+  else
+    echosuccess "No examples to retry, congrats!"
+  fi
+
+  exit $rspec_run_status
 }
 
 function rspec_paralellized_job() {
@@ -146,6 +177,7 @@ function rspec_paralellized_job() {
   local rspec_flaky_folder_path="$(dirname "${FLAKY_RSPEC_SUITE_REPORT_PATH}")/"
   local knapsack_folder_path="$(dirname "${KNAPSACK_RSPEC_SUITE_REPORT_PATH}")/"
   local rspec_run_status=0
+  local rspec_log="${CI_PROJECT_DIR}/tmp/rspec.log"
 
   if [[ "${test_tool}" =~ "-ee" ]]; then
     spec_folder_prefixes="'ee/'"
@@ -179,7 +211,6 @@ function rspec_paralellized_job() {
   export FLAKY_RSPEC_REPORT_PATH="${rspec_flaky_folder_path}all_${report_name}_report.json"
   export NEW_FLAKY_RSPEC_REPORT_PATH="${rspec_flaky_folder_path}new_${report_name}_report.json"
   export SKIPPED_FLAKY_TESTS_REPORT_PATH="${rspec_flaky_folder_path}skipped_flaky_tests_${report_name}_report.txt"
-  export RETRIED_TESTS_REPORT_PATH="${rspec_flaky_folder_path}retried_tests_${report_name}_report.txt"
 
   if [[ -d "ee/" ]]; then
     export KNAPSACK_GENERATE_REPORT="true"
@@ -197,24 +228,14 @@ function rspec_paralellized_job() {
   debug_rspec_variables
 
   if [[ -n "${RSPEC_TESTS_MAPPING_ENABLED}" ]]; then
-    tooling/bin/parallel_rspec --rspec_args "$(rspec_args "${rspec_opts}")" --filter "${RSPEC_TESTS_FILTER_FILE}" || rspec_run_status=$?
+    tooling/bin/parallel_rspec --rspec_args "$(rspec_args "${rspec_opts}")" --filter "${RSPEC_TESTS_FILTER_FILE}" | tee "${rspec_log}" || rspec_run_status=$?
   else
-    tooling/bin/parallel_rspec --rspec_args "$(rspec_args "${rspec_opts}")" || rspec_run_status=$?
+    tooling/bin/parallel_rspec --rspec_args "$(rspec_args "${rspec_opts}")" | tee "${rspec_log}" || rspec_run_status=$?
   fi
 
   echoinfo "RSpec exited with ${rspec_run_status}."
 
-  # Experiment to retry failed examples in a new RSpec process: https://gitlab.com/gitlab-org/quality/team-tasks/-/issues/1148
-  if [[ $rspec_run_status -ne 0 ]]; then
-    if [[ "${RETRY_FAILED_TESTS_IN_NEW_PROCESS}" == "true" ]]; then
-      retry_failed_rspec_examples
-      rspec_run_status=$?
-    fi
-  else
-    echosuccess "No examples to retry, congrats!"
-  fi
-
-  exit $rspec_run_status
+  handle_retry_rspec_in_new_process $rspec_run_status $rspec_log
 }
 
 function retry_failed_rspec_examples() {
@@ -228,6 +249,12 @@ function retry_failed_rspec_examples() {
 
   # Keep track of the tests that are retried, later consolidated in a single file by the `rspec:flaky-tests-report` job
   local failed_examples=$(grep " failed" ${RSPEC_LAST_RUN_RESULTS_FILE})
+  local report_name=$(echo "${CI_JOB_NAME}" | sed -E 's|[/ ]|_|g') # e.g. 'rspec unit pg12 1/24' would become 'rspec_unit_pg12_1_24'
+  local rspec_flaky_folder_path="$(dirname "${FLAKY_RSPEC_SUITE_REPORT_PATH}")/"
+
+  export RETRIED_TESTS_REPORT_PATH="${rspec_flaky_folder_path}retried_tests_${report_name}_report.txt"
+  echoinfo "RETRIED_TESTS_REPORT_PATH: ${RETRIED_TESTS_REPORT_PATH}"
+
   echo "${CI_JOB_URL}" > "${RETRIED_TESTS_REPORT_PATH}"
   echo $failed_examples >> "${RETRIED_TESTS_REPORT_PATH}"
 
@@ -241,8 +268,11 @@ function retry_failed_rspec_examples() {
   # Disable simplecov so retried tests don't override test coverage report
   export SIMPLECOV=0
 
+  local default_knapsack_pattern="{,ee/,jh/}spec/{,**/}*_spec.rb"
+  local knapsack_test_file_pattern="${KNAPSACK_TEST_FILE_PATTERN:-$default_knapsack_pattern}"
+
   # Retry only the tests that failed on first try
-  rspec_simple_job "--only-failures --pattern \"${KNAPSACK_TEST_FILE_PATTERN}\"" "${JUNIT_RETRY_FILE}"
+  rspec_simple_job "--only-failures --pattern \"${knapsack_test_file_pattern}\"" "${JUNIT_RETRY_FILE}" "false"
   rspec_run_status=$?
 
   # Merge the JUnit report from retry into the first-try report
