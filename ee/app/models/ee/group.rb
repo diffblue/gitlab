@@ -36,6 +36,7 @@ module EE
       has_one :insight, foreign_key: :namespace_id
       accepts_nested_attributes_for :insight, allow_destroy: true
       has_one :scim_oauth_access_token
+      has_one :index_status, class_name: 'Elastic::GroupIndexStatus', foreign_key: :namespace_id
       has_many :external_audit_event_destinations, class_name: "AuditEvents::ExternalAuditEventDestination", foreign_key: 'namespace_id'
 
       has_many :ldap_group_links, foreign_key: 'group_id', dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
