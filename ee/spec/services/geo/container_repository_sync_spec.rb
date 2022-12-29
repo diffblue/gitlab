@@ -103,9 +103,9 @@ RSpec.describe Geo::ContainerRepositorySync, :geo do
         stub_missing_blobs_requests(primary_repository_url, secondary_repository_url, { 'sha256:3333' => true, 'sha256:4444' => false })
         stub_push_manifest_request(secondary_repository_url, 'tag-to-sync', manifest)
 
-        expect(container_repository).to receive(:push_blob).with('sha256:3333', anything)
-        expect(container_repository).not_to receive(:push_blob).with('sha256:4444', anything)
-        expect(container_repository).not_to receive(:push_blob).with('sha256:5555', anything)
+        expect(container_repository).to receive(:push_blob).with('sha256:3333', anything, anything)
+        expect(container_repository).not_to receive(:push_blob).with('sha256:4444', anything, anything)
+        expect(container_repository).not_to receive(:push_blob).with('sha256:5555', anything, anything)
         expect(container_repository).to receive(:delete_tag_by_digest).with('sha256:2222')
 
         subject.execute
@@ -131,7 +131,7 @@ RSpec.describe Geo::ContainerRepositorySync, :geo do
         stub_raw_manifest_request(primary_repository_url, 'sha256:6666', manifest)
         stub_missing_blobs_requests(primary_repository_url, secondary_repository_url, { 'sha256:3333' => true, 'sha256:4444' => false })
 
-        expect(container_repository).to receive(:push_blob).with('sha256:3333', anything)
+        expect(container_repository).to receive(:push_blob).with('sha256:3333', anything, anything)
         expect(container_repository).to receive(:push_manifest).with('sha256:6666', anything, anything)
         expect(container_repository).to receive(:push_manifest).with('tag-to-sync', anything, anything)
 
@@ -181,7 +181,7 @@ RSpec.describe Geo::ContainerRepositorySync, :geo do
         stub_raw_manifest_request(primary_repository_url, 'sha256:6666', oci_manifest)
         stub_missing_blobs_requests(primary_repository_url, secondary_repository_url, { 'sha256:3333' => true, 'sha256:4444' => false })
 
-        expect(container_repository).to receive(:push_blob).with('sha256:3333', anything)
+        expect(container_repository).to receive(:push_blob).with('sha256:3333', anything, anything)
         expect(container_repository).to receive(:push_manifest).with('sha256:6666', anything, anything)
         expect(container_repository).to receive(:push_manifest).with('tag-to-sync', anything, anything)
 
@@ -221,7 +221,7 @@ RSpec.describe Geo::ContainerRepositorySync, :geo do
         stub_raw_manifest_list_request(primary_repository_url, 'tag-to-sync', buildcache_manifest_list)
         stub_missing_blobs_requests(primary_repository_url, secondary_repository_url, { 'sha256:3333' => true, 'sha256:4444' => false })
 
-        expect(container_repository).to receive(:push_blob).with('sha256:3333', anything)
+        expect(container_repository).to receive(:push_blob).with('sha256:3333', anything, anything)
         expect(container_repository).to receive(:push_manifest).with('tag-to-sync', anything, anything)
 
         subject.execute
