@@ -56,7 +56,7 @@ module Audit
         event_type: 'project_require_password_to_approve_updated'
       )
 
-      if should_audit? :merge_requests_template
+      if should_audit?(:merge_requests_template)
         audit_changes(
           :merge_requests_template,
           as: 'merge_requests_template',
@@ -124,6 +124,7 @@ module Audit
         author: @current_user,
         scope: model,
         target: model,
+        name: 'project_merge_method_updated',
         message: merge_method_message
       }
       ::Gitlab::Audit::Auditor.audit(audit_context)
