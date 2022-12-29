@@ -157,11 +157,7 @@ describe('Billing Address', () => {
     });
 
     it('emits an error', () => {
-      expect(wrapper.emitted('error')).toEqual([[error]]);
-    });
-
-    it('captures the exception', () => {
-      expect(Sentry.captureException).toHaveBeenCalledWith(error);
+      expect(wrapper.emitted('error')).toEqual([[{ error }]]);
     });
   });
 });

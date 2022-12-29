@@ -1,6 +1,5 @@
 <script>
 import { GlFormGroup, GlFormInput, GlFormSelect } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
 import { isEmpty } from 'lodash';
 import { STEPS } from 'ee/subscriptions/constants';
 import updateStateMutation from 'ee/subscriptions/graphql/mutations/update_state.mutation.graphql';
@@ -138,8 +137,7 @@ export default {
           },
         })
         .catch((error) => {
-          Sentry.captureException(error);
-          this.$emit('error', error);
+          this.$emit('error', { error });
         });
     },
   },

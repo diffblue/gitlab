@@ -5,7 +5,7 @@ import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import Zuora from 'ee/vue_shared/purchase_flow/components/checkout/zuora.vue';
-import { sprintf, s__ } from '~/locale';
+import { s__, sprintf } from '~/locale';
 
 export default {
   components: {
@@ -40,6 +40,11 @@ export default {
       });
     },
   },
+  methods: {
+    handleError(payload) {
+      this.$emit('error', payload);
+    },
+  },
   i18n: {
     stepTitle: s__('Checkout|Payment method'),
     paymentMethod: s__('Checkout|%{cardType} ending in %{lastFourDigits}'),
@@ -51,7 +56,7 @@ export default {
 <template>
   <step :step-id="$options.stepId" :title="$options.i18n.stepTitle" :is-valid="isValid">
     <template #body="{ active }">
-      <zuora :active="active" :account-id="accountId" />
+      <zuora :active="active" :account-id="accountId" @error="handleError" />
     </template>
     <template #summary>
       <div data-testid="card-details">

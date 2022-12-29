@@ -38,8 +38,8 @@ export default {
       this.$emit('alertError', GENERAL_ERROR_MESSAGE);
       logError(error);
     },
-    showError(error) {
-      createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+    showError({ error, message = GENERAL_ERROR_MESSAGE }) {
+      createAlert({ message, error, captureError: true });
     },
   },
   i18n: {
@@ -52,7 +52,7 @@ export default {
     <div class="flash-container"></div>
     <slot name="purchase-details"></slot>
     <billing-address @error="showError" />
-    <payment-method />
+    <payment-method @error="showError" />
     <confirm-order @error="showError" />
   </div>
 </template>

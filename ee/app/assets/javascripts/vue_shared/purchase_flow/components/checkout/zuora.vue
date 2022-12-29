@@ -4,14 +4,12 @@ import { pick } from 'lodash';
 import Api from 'ee/api';
 import {
   ERROR_LOADING_PAYMENT_FORM,
-  ZUORA_SCRIPT_URL,
-  ZUORA_IFRAME_OVERRIDE_PARAMS,
   PAYMENT_FORM_ID,
+  ZUORA_IFRAME_OVERRIDE_PARAMS,
+  ZUORA_SCRIPT_URL,
 } from 'ee/subscriptions/constants';
 import updateStateMutation from 'ee/subscriptions/graphql/mutations/update_state.mutation.graphql';
-import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
-import { createAlert } from '~/flash';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import Tracking from '~/tracking';
 
@@ -70,7 +68,7 @@ export default {
           this.renderZuoraIframe();
         })
         .catch((error) => {
-          createAlert({ message: ERROR_LOADING_PAYMENT_FORM });
+          this.$emit('error', { error, message: ERROR_LOADING_PAYMENT_FORM });
           this.track('error', {
             label: 'payment_form_fetch_params',
             property: error?.message,
@@ -108,7 +106,7 @@ export default {
         .then(() => this.track('success'))
         .then(() => this.activateNextStep())
         .catch((error) => {
-          createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+          this.$emit('error', { error });
           this.track('error', {
             label: 'payment_form_submitted',
             property: error?.message,
@@ -128,7 +126,7 @@ export default {
           mutation: activateNextStepMutation,
         })
         .catch((error) => {
-          createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+          this.$emit('error', { error });
         });
     },
     updateState(payload) {
@@ -140,7 +138,7 @@ export default {
           },
         })
         .catch((error) => {
-          createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+          this.$emit('error', { error });
         });
     },
   },

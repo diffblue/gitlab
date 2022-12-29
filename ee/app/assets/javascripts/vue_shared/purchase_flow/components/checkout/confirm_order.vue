@@ -1,6 +1,5 @@
 <script>
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
 import Api from 'ee/api';
 import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
@@ -24,8 +23,7 @@ export default {
       query: activeStepQuery,
       update: ({ activeStep }) => activeStep?.id === STEPS[3].id,
       error: (error) => {
-        Sentry.captureException(error);
-        this.$emit('error', error);
+        this.$emit('error', { error });
       },
     },
     confirmOrderParams: {
@@ -73,8 +71,7 @@ export default {
           }
         })
         .catch((error) => {
-          Sentry.captureException(error);
-          this.$emit('error', error);
+          this.$emit('error', { error });
         })
         .finally(() => {
           this.isLoading = false;
