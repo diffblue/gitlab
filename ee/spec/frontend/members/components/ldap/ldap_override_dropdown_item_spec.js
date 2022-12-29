@@ -1,17 +1,17 @@
-import { GlButton } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
+import { GlDropdownItem } from '@gitlab/ui';
+import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import LdapOverrideButton from 'ee/members/components/ldap/ldap_override_button.vue';
-import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
+import LdapOverrideDropdownItem from 'ee/members/components/ldap/ldap_override_dropdown_item.vue';
 import { member } from 'jest/members/mock_data';
 import { MEMBER_TYPES } from '~/members/constants';
 
 Vue.use(Vuex);
 
-describe('LdapOverrideButton', () => {
+describe('LdapOverrideDropdownItem', () => {
   let wrapper;
   let actions;
+  const text = 'dummy';
 
   const createStore = () => {
     actions = {
@@ -29,7 +29,7 @@ describe('LdapOverrideButton', () => {
   };
 
   const createComponent = (propsData = {}) => {
-    wrapper = mount(LdapOverrideButton, {
+    wrapper = shallowMount(LdapOverrideDropdownItem, {
       propsData: {
         member,
         ...propsData,
@@ -38,35 +38,24 @@ describe('LdapOverrideButton', () => {
       provide: {
         namespace: MEMBER_TYPES.user,
       },
-      directives: {
-        GlTooltip: createMockDirective(),
+      slots: {
+        default: text,
       },
     });
   };
 
-  const findButton = () => wrapper.findComponent(GlButton);
+  const findDropdownItem = () => wrapper.findComponent(GlDropdownItem);
 
   beforeEach(() => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
-  it('displays a tooltip', () => {
-    const button = findButton();
-
-    expect(getBinding(button.element, 'gl-tooltip')).not.toBeUndefined();
-    expect(button.attributes('title')).toBe('Edit permissions');
-  });
-
-  it('sets `aria-label` attribute', () => {
-    expect(findButton().attributes('aria-label')).toBe('Edit permissions');
+  it('renders a slot', () => {
+    expect(findDropdownItem().html()).toContain(text);
   });
 
   it('calls Vuex action to open LDAP override confirmation modal when clicked', () => {
-    findButton().trigger('click');
+    findDropdownItem().vm.$emit('click');
 
     expect(actions.showLdapOverrideConfirmationModal).toHaveBeenCalledWith(
       expect.any(Object),

@@ -3,6 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category: :subscription_cost_management do
+  include Spec::Support::Helpers::ModalHelpers
+  include Spec::Support::Helpers::Features::MembersHelpers
+
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:sub_group) { create(:group, parent: group) }
@@ -135,10 +138,11 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
 
           visit group_group_members_path(sub_group)
 
-          click_button('Remove member')
+          show_actions_for_username(user_from_sub_group)
+          click_button _('Remove member')
 
-          within '[data-testid="remove-member-modal-content"]' do
-            click_button('Remove member')
+          within_modal do
+            click_button _('Remove member')
           end
 
           wait_for_all_requests

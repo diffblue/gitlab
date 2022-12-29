@@ -57,27 +57,27 @@ RSpec.describe 'Groups > Members > Maintainer/Owner can override LDAP access lev
     within first_row do
       expect(page).to have_content 'LDAP'
       expect(page).to have_button 'Guest', disabled: true
-      expect(page).to have_button 'Edit permissions'
-
-      click_button 'Edit permissions'
+      show_actions
+      expect(page).to have_button s_('Members|Edit permissions')
+      click_button s_('Members|Edit permissions')
     end
 
     within_modal do
       expect(page).to have_content ldap_override_message
-      click_button 'Edit permissions'
+      click_button s_('Members|Edit permissions')
     end
 
     expect(page).not_to have_content ldap_override_message
 
     within first_row do
-      expect(page).not_to have_button 'Edit permissions'
+      expect(page).not_to have_selector user_action_dropdown
       expect(page).to have_button 'Guest', disabled: false
     end
 
     refresh # controls should still be enabled after a refresh
 
     within first_row do
-      expect(page).not_to have_button 'Edit permissions'
+      expect(page).not_to have_selector user_action_dropdown
       expect(page).to have_button 'Guest', disabled: false
 
       click_button 'Guest'
@@ -86,12 +86,13 @@ RSpec.describe 'Groups > Members > Maintainer/Owner can override LDAP access lev
       wait_for_requests
 
       expect(page).to have_button 'Guest', disabled: true
-      expect(page).to have_button 'Edit permissions'
+      show_actions
+      expect(page).to have_button s_('Members|Edit permissions')
     end
 
     within second_row do
       expect(page).not_to have_content 'LDAP'
-      expect(page).not_to have_button 'Edit permissions'
+      expect(page).not_to have_selector user_action_dropdown
       expect(page).to have_button 'Guest', disabled: false
 
       click_button 'Guest'

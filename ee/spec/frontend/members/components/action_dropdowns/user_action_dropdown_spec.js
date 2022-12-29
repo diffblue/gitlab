@@ -1,15 +1,16 @@
 import { shallowMount } from '@vue/test-utils';
-import LdapOverrideButton from 'ee/members/components/ldap/ldap_override_button.vue';
+import LdapOverrideDropdownItem from 'ee/members/components/ldap/ldap_override_dropdown_item.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { member } from 'jest/members/mock_data';
-import UserActionButtons from '~/members/components/action_buttons/user_action_buttons.vue';
+import UserActionDropdown from '~/members/components/action_dropdowns/user_action_dropdown.vue';
+import { I18N } from '~/members/components/action_dropdowns/constants';
 import { MEMBER_TYPES } from '~/members/constants';
 
-describe('UserActionButtons', () => {
+describe('UserActionDropdown', () => {
   let wrapper;
 
   const createComponent = (propsData = {}) => {
-    wrapper = shallowMount(UserActionButtons, {
+    wrapper = shallowMount(UserActionDropdown, {
       provide: {
         namespace: MEMBER_TYPES.user,
       },
@@ -24,7 +25,7 @@ describe('UserActionButtons', () => {
     return waitForPromises();
   };
 
-  const findLdapOverrideButton = () => wrapper.findComponent(LdapOverrideButton);
+  const findLdapOverrideDropdownItem = () => wrapper.findComponent(LdapOverrideDropdownItem);
 
   afterEach(() => {
     wrapper.destroy();
@@ -32,7 +33,7 @@ describe('UserActionButtons', () => {
 
   describe('when member has `canOverride` permissions', () => {
     describe('when member is not overridden', () => {
-      it('renders LDAP override button', async () => {
+      it('renders LDAP override dropdown item with correct text', async () => {
         await createComponent({
           permissions: { canOverride: true },
           member: {
@@ -41,12 +42,14 @@ describe('UserActionButtons', () => {
           },
         });
 
-        expect(findLdapOverrideButton().exists()).toBe(true);
+        const ldapOverrideDropdownItem = findLdapOverrideDropdownItem();
+        expect(ldapOverrideDropdownItem.exists()).toBe(true);
+        expect(ldapOverrideDropdownItem.html()).toContain(I18N.editPermissions);
       });
     });
 
     describe('when member is overridden', () => {
-      it('does not render the LDAP override button', async () => {
+      it('does not render the LDAP override dropdown item', async () => {
         await createComponent({
           permissions: { canOverride: true },
           member: {
@@ -55,18 +58,18 @@ describe('UserActionButtons', () => {
           },
         });
 
-        expect(findLdapOverrideButton().exists()).toBe(false);
+        expect(findLdapOverrideDropdownItem().exists()).toBe(false);
       });
     });
   });
 
   describe('when member does not have `canOverride` permissions', () => {
-    it('does not render the LDAP override button', async () => {
+    it('does not render the LDAP override dropdown item', async () => {
       await createComponent({
         permissions: { canOverride: false },
       });
 
-      expect(findLdapOverrideButton().exists()).toBe(false);
+      expect(findLdapOverrideDropdownItem().exists()).toBe(false);
     });
   });
 });
