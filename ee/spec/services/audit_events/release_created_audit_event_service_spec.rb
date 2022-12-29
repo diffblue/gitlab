@@ -21,7 +21,7 @@ RSpec.describe AuditEvents::ReleaseCreatedAuditEventService do
     context "with multiple milestones" do
       include_examples 'logs the release audit event' do
         let(:release) { create(:release, :with_milestones, milestones_count: 2, project: entity) }
-        let(:custom_message) { "Created Release #{release.tag} with Milestones #{Milestone.first.title}, #{Milestone.second.title}" }
+        let(:custom_message) { "Created Release #{release.tag} with Milestones #{Milestone.order_by_dates_and_title.first.title}, #{Milestone.order_by_dates_and_title.second.title}" }
       end
     end
   end
