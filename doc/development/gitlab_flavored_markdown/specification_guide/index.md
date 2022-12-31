@@ -241,6 +241,12 @@ This means that it uses configuration files to support providing GitLab-specific
 which is required by internal extension examples, such
 as [`glfm_example_metadata.yml`](#glfm_example_metadatayml).
 
+The design of the snapshot testing helps ensure the correctness of the user-facing GLFM Markdown.
+The testing thoroughly exercises the backend and frontend [parsers and renderers](#parsers-and-renderers)
+by using a [black-box testing](https://en.wikipedia.org/wiki/Black-box_testing) approach.
+It can be considered a type of high-level testing at the ["top of the testing pyramid"](https://martinfowler.com/articles/practical-test-pyramid.html)
+because of this comprehensive style.
+
 Regarding the terminology used for Markdown snapshot testing:
 
 <!-- vale gitlab.InclusionCultural = NO -->
