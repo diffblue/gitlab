@@ -1,6 +1,6 @@
 .gl-mt-3.container-fluid{ class: content_class }
   = render Pajamas::AlertComponent.new(variant: :warning,
-    dismissible: true,
+    dismissible: dismissible?,
     alert_options: { class: 'js-storage-enforcement-banner', data: callout_data}) do |c|
     = c.body do
       %p= text_paragraph_1

@@ -23,6 +23,10 @@ module Namespaces
       delegate :storage_counter, to: :helpers
       attr_reader :context, :root_namespace, :user
 
+      def dismissible?
+        !root_namespace.over_storage_limit?
+      end
+
       def content_class
         "container-limited limit-container-width" unless user.layout == "fluid"
       end
