@@ -12,13 +12,7 @@ module EE
         return super unless group
         return false unless ::Feature.enabled?('group_owners_to_disable_two_factor', group)
 
-        group.root? &&
-          group_provisioned_user?(user) &&
-          can?(current_user, :admin_group, group)
-      end
-
-      def group_provisioned_user?(user)
-        user.provisioned_by_group_id == group.id
+        user&.can_get_two_factor_disabled?(group, current_user)
       end
 
       override :notify_on_success

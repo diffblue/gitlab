@@ -6,6 +6,7 @@ module EE::Groups::GroupMembersHelper
   override :group_members_list_data
   def group_members_list_data(group, _members, _pagination = {})
     super.merge!({
+      disable_two_factor_path: group_two_factor_auth_path(group),
       ldap_override_path: override_group_group_member_path(group, ':id')
     })
   end

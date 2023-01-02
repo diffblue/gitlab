@@ -508,6 +508,14 @@ module EE
       end
     end
 
+    def can_get_two_factor_disabled?(group, user)
+      return false unless group && user
+
+      group.root? &&
+        group_provisioned_user?(group) &&
+        group.owned_by?(user)
+    end
+
     protected
 
     override :password_required?
@@ -518,6 +526,10 @@ module EE
     end
 
     private
+
+    def group_provisioned_user?(group)
+      self.provisioned_by_group_id == group.id
+    end
 
     def block_auto_created_users?
       if ldap_user?

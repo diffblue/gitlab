@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe User do
+RSpec.describe User, feature_category: :authentication_and_authorization do
   subject(:user) { described_class.new }
 
   describe 'user creation' do
@@ -1992,6 +1992,68 @@ RSpec.describe User do
 
       it 'does not return anything' do
         expect(user.read_code_for?(project)).to be_nil
+      end
+    end
+  end
+
+  describe '#can_get_two_factor_disabled?' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:owner) { create(:user) }
+
+    context 'when current_user is a group owner' do
+      before do
+        group.add_owner(owner)
+      end
+
+      context 'when user is provisioned by group' do
+        let_it_be(:user) { create(:user, :two_factor, provisioned_by_group_id: group.id) }
+
+        context 'when group is root group' do
+          it 'returns true' do
+            expect(user.can_get_two_factor_disabled?(group, owner)).to eq true
+          end
+        end
+
+        context 'when group is not root group' do
+          let(:parent) { build(:group) }
+
+          before do
+            group.parent = parent
+            parent.add_owner(create(:user))
+          end
+
+          it 'returns false' do
+            expect(user.can_get_two_factor_disabled?(group, owner)).to eq false
+          end
+        end
+      end
+
+      context 'when user is not provisioned by group' do
+        let_it_be(:user) { create(:user) }
+
+        it 'returns false' do
+          expect(user.can_get_two_factor_disabled?(group, owner)).to eq false
+        end
+      end
+    end
+
+    context 'when current_user is not a group owner' do
+      let_it_be(:user) { create(:user, :two_factor, provisioned_by_group_id: group.id) }
+
+      before do
+        group.add_maintainer(owner)
+      end
+
+      it 'returns false' do
+        expect(user.can_get_two_factor_disabled?(group, owner)).to eq false
+      end
+    end
+
+    context 'when current_user passed is nil' do
+      let_it_be(:user) { create(:user, :two_factor, provisioned_by_group_id: group.id) }
+
+      it 'returns false' do
+        expect(user.can_get_two_factor_disabled?(group, nil)).to eq false
       end
     end
   end
