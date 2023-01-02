@@ -18,7 +18,7 @@ module QA
         end
       end
 
-      context 'for disable and Enable LFS',
+      context 'for disable and Enable LFS', :reliable,
               testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347919' do
         before do
           sign_in
@@ -34,7 +34,7 @@ module QA
                         ["Changed lfs enabled from false to true", /Changed lfs enabled( from true)? to false/]
       end
 
-      context 'for enable and disable membership lock',
+      context 'for enable and disable membership lock', :reliable,
               testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347900' do
         before do
           sign_in
@@ -50,7 +50,7 @@ module QA
                         ["Changed membership lock from true to false", "Changed membership lock from false to true"]
       end
 
-      context 'for enable and disable allow user request access',
+      context 'for enable and disable allow user request access', :reliable,
               testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347902' do
         before do
           sign_in
@@ -67,7 +67,7 @@ module QA
                          "Changed request access enabled from false to true"]
       end
 
-      context 'for enable and disable 2FA requirement', :requires_admin, :skip_live_env,
+      context 'for enable and disable 2FA requirement', :requires_admin, :reliable, :skip_live_env,
               testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347920' do
         let!(:owner_user) do
           Resource::User.fabricate_via_api!
