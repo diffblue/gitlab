@@ -1988,7 +1988,57 @@ RSpec.describe ProjectPolicy do
   end
 
   context 'project access tokens' do
-    it_behaves_like 'GitLab.com Core resource access tokens'
+    context 'GitLab.com Core resource access tokens', :saas do
+      before do
+        stub_ee_application_setting(should_check_namespace_plan: true)
+      end
+
+      context 'with admin access' do
+        let(:current_user) { owner }
+
+        before do
+          project.add_owner(owner)
+        end
+
+        context 'when project belongs to a group' do
+          let_it_be(:group) { create(:group) }
+          let_it_be(:project) { create(:project, group: group) }
+
+          it { is_expected.not_to be_allowed(:create_resource_access_tokens) }
+          it { is_expected.to be_allowed(:read_resource_access_tokens) }
+          it { is_expected.to be_allowed(:destroy_resource_access_tokens) }
+        end
+
+        context 'when project belongs to personal namespace' do
+          it { is_expected.to be_allowed(:create_resource_access_tokens) }
+          it { is_expected.to be_allowed(:read_resource_access_tokens) }
+          it { is_expected.to be_allowed(:destroy_resource_access_tokens) }
+        end
+      end
+
+      context 'with non admin access' do
+        let(:current_user) { developer }
+
+        before do
+          project.add_developer(developer)
+        end
+
+        context 'when project belongs to a group' do
+          let_it_be(:group) { create(:group) }
+          let_it_be(:project) { create(:project, group: group) }
+
+          it { is_expected.not_to be_allowed(:create_resource_access_tokens) }
+          it { is_expected.not_to be_allowed(:read_resource_access_tokens) }
+          it { is_expected.not_to be_allowed(:destroy_resource_access_tokens) }
+        end
+
+        context 'when project belongs to personal namespace' do
+          it { is_expected.not_to be_allowed(:create_resource_access_tokens) }
+          it { is_expected.not_to be_allowed(:read_resource_access_tokens) }
+          it { is_expected.not_to be_allowed(:destroy_resource_access_tokens) }
+        end
+      end
+    end
 
     context 'on GitLab.com paid', :saas do
       let_it_be(:group) { create(:group_with_plan, plan: :bronze_plan) }

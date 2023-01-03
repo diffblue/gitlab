@@ -1683,7 +1683,20 @@ RSpec.describe GroupPolicy do
   it_behaves_like 'update namespace limit policy'
 
   context 'group access tokens', :saas do
-    it_behaves_like 'GitLab.com Core resource access tokens'
+    context 'GitLab.com Core resource access tokens', :saas do
+      before do
+        stub_ee_application_setting(should_check_namespace_plan: true)
+      end
+
+      context 'with owner access' do
+        let(:current_user) { owner }
+
+        it { is_expected.not_to be_allowed(:create_resource_access_tokens) }
+        it { is_expected.not_to be_allowed(:admin_setting_to_allow_project_access_token_creation) }
+        it { is_expected.to be_allowed(:read_resource_access_tokens) }
+        it { is_expected.to be_allowed(:destroy_resource_access_tokens) }
+      end
+    end
 
     context 'on GitLab.com paid' do
       let_it_be(:group) { create(:group_with_plan, plan: :bronze_plan) }
@@ -1725,6 +1738,10 @@ RSpec.describe GroupPolicy do
 
         context 'destroy resource access tokens' do
           it { is_expected.to be_allowed(:destroy_resource_access_tokens) }
+        end
+
+        context 'admin settings allow project acess token is not allowed' do
+          it { is_expected.not_to be_allowed(:admin_setting_to_allow_project_access_token_creation) }
         end
       end
 
