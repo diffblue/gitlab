@@ -152,4 +152,93 @@ RSpec.describe 'Query.runner(id)', feature_category: :runner_fleet do
       end
     end
   end
+
+  describe 'jobsStatistics', :freeze_time do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:project_runner1) { create(:ci_runner, :project, projects: [project]) }
+    let_it_be(:project_runner2) { create(:ci_runner, :project, projects: [project]) }
+    let_it_be(:pipeline1) { create(:ci_pipeline, project: project) }
+    let_it_be(:pipeline2) { create(:ci_pipeline, project: project) }
+
+    let(:query) do
+      %(
+        query {
+          runners(type: PROJECT_TYPE) {
+            jobsStatistics { #{all_graphql_fields_for('CiJobsStatistics')} }
+          }
+        }
+      )
+    end
+
+    subject(:jobs_data) do
+      post_graphql(query, current_user: current_user)
+
+      graphql_data_at(:runners, :jobs_statistics)
+    end
+
+    context 'requested by an administrator' do
+      let(:current_user) { admin }
+
+      context 'when licensed' do
+        before do
+          stub_licensed_features(runner_jobs_statistics: true)
+        end
+
+        context 'with builds' do
+          let!(:build1) do
+            create(:ci_build, :running, runner: project_runner1, pipeline: pipeline1,
+                   queued_at: 5.minutes.ago, started_at: 1.minute.ago)
+          end
+
+          let!(:build2) do
+            create(:ci_build, :success, runner: project_runner2, pipeline: pipeline2,
+                   queued_at: 10.minutes.ago, started_at: 8.minutes.ago, finished_at: 7.minutes.ago)
+          end
+
+          it 'retrieves expected fields' do
+            expect(jobs_data).not_to be_nil
+            expect(jobs_data).to match a_hash_including(
+              'queuedDuration' => {
+                'p50' => 180.0,
+                'p75' => 210.0,
+                'p90' => 228.0,
+                'p95' => 234.0,
+                'p99' => 238.8
+              }
+            )
+          end
+        end
+
+        context 'with no builds' do
+          it 'retrieves expected fields with nil values' do
+            expect(jobs_data).not_to be_nil
+            expect(jobs_data).to match a_hash_including(
+              'queuedDuration' => {
+                'p50' => nil,
+                'p75' => nil,
+                'p90' => nil,
+                'p95' => nil,
+                'p99' => nil
+              }
+            )
+          end
+        end
+      end
+
+      context 'when unlicensed' do
+        before do
+          stub_licensed_features(runner_jobs_statistics: false)
+        end
+
+        context 'with builds' do
+          let!(:build1) do
+            create(:ci_build, :running, runner: project_runner1, pipeline: pipeline1,
+                   queued_at: 5.minutes.ago, started_at: 1.minute.ago)
+          end
+
+          specify { expect(jobs_data).to be_nil }
+        end
+      end
+    end
+  end
 end
