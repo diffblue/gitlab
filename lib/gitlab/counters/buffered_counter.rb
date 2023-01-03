@@ -44,7 +44,7 @@ module Gitlab
         local counter_key, refresh_key, refresh_indicator_key = KEYS[1], KEYS[2], KEYS[3]
         local tracking_shard_key, opposing_tracking_shard_key, shards_key = KEYS[4], KEYS[5], KEYS[6]
 
-        local amount, tracking_offset = ARGV[1], tonumber(ARGV[2])
+        local amount, tracking_offset = tonumber(ARGV[1]), tonumber(ARGV[2])
 
         -- increment to the counter key when not refreshing
         if redis.call("exists", refresh_indicator_key) == 0 then
@@ -63,8 +63,8 @@ module Gitlab
         redis.call("expire", shards_key, #{REFRESH_KEYS_TTL.seconds})
 
         local found_opposing_change = redis.call("getbit", opposing_tracking_shard_key, tracking_offset)
-        local increment_without_previous_decrement = tonumber(amount) > 0 and found_opposing_change == 0
-        local decrement_with_previous_increment = tonumber(amount) < 0 and found_opposing_change == 1
+        local increment_without_previous_decrement = amount > 0 and found_opposing_change == 0
+        local decrement_with_previous_increment = amount < 0 and found_opposing_change == 1
         local net_change = 0
 
         if increment_without_previous_decrement or decrement_with_previous_increment then
