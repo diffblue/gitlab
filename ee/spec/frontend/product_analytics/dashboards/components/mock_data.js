@@ -55,7 +55,14 @@ export const mockResultSet = {
   ],
   rawData: () => [
     {
+      'Jitsu.userLanguage': 'en-US',
       'Jitsu.count': '36',
+      'Jitsu.url': 'https://example.com/us',
+    },
+    {
+      'Jitsu.userLanguage': 'es-ES',
+      'Jitsu.count': '60',
+      'Jitsu.url': 'https://example.com/es',
     },
   ],
 };
