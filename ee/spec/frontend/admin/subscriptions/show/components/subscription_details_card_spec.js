@@ -64,8 +64,8 @@ describe('Subscription Details Card', () => {
           value: 'Ultimate',
         },
         {
-          detail: 'type',
-          value: 'Online license',
+          detail: 'lastSync',
+          value: 'just now',
         },
         {
           detail: 'startsAt',
@@ -74,10 +74,6 @@ describe('Subscription Details Card', () => {
         {
           detail: 'expiresAt',
           value: '2022-03-16',
-        },
-        {
-          detail: 'lastSync',
-          value: 'just now',
         },
       ]);
     });

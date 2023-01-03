@@ -3,7 +3,7 @@ import { GlSkeletonLoader, GlTableLite, GlBadge } from '@gitlab/ui';
 import { mapGetters } from 'vuex';
 import { slugifyWithUnderscore } from '~/lib/utils/text_utility';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
-import SubscriptionSyncButton from 'jh_else_ee/admin/subscriptions/show/components/subscription_sync_button.vue';
+import SubscriptionSyncButton from 'ee/admin/subscriptions/show/components/subscription_sync_button.vue';
 import {
   copySubscriptionIdButtonText,
   detailsLabels,

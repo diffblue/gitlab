@@ -5,7 +5,6 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { getTimeago, timeagoLanguageCode } from '~/lib/utils/datetime_utility';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import SubscriptionDetailsTable from 'jh_else_ee/admin/subscriptions/show/components/subscription_details_table.vue';
-import { getLicenseTypeLabel } from '../utils';
 
 const timeagoFormatter = getTimeago().format;
 const formatTime = (time) => timeagoFormatter(time, timeagoLanguageCode);
@@ -13,7 +12,6 @@ const formatTime = (time) => timeagoFormatter(time, timeagoLanguageCode);
 const subscriptionDetailsFormatRules = {
   id: getIdFromGraphQLId,
   lastSync: formatTime,
-  type: getLicenseTypeLabel,
   plan: capitalizeFirstCharacter,
 };
 
