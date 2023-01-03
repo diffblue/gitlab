@@ -322,6 +322,34 @@ module EE
       end
     end
 
+    def self.cascading_with_parent_namespace(attribute)
+      define_method("#{attribute}_of_parent_group") do
+        self.group&.namespace_settings&.public_send("#{attribute}?", inherit_group_setting: true)
+      end
+
+      define_method("#{attribute}?") do |inherit_group_setting: false|
+        return super() unless licensed_feature_available?(:group_level_merge_checks_setting) && ::Feature.enabled?(:support_group_level_merge_checks_setting, self)
+
+        if inherit_group_setting
+          result = self.public_send(attribute) || public_send("#{attribute}_of_parent_group") # rubocop:disable GitlabSecurity/PublicSend
+        else
+          result = self.public_send(attribute) # rubocop:disable GitlabSecurity/PublicSend
+        end
+
+        !!result
+      end
+
+      define_method("#{attribute}_locked?") do
+        return super() unless licensed_feature_available?(:group_level_merge_checks_setting) && ::Feature.enabled?(:support_group_level_merge_checks_setting, self)
+
+        public_send("#{attribute}_of_parent_group") # rubocop:disable GitlabSecurity/PublicSend
+      end
+    end
+
+    cascading_with_parent_namespace :only_allow_merge_if_pipeline_succeeds
+    cascading_with_parent_namespace :allow_merge_on_skipped_pipeline
+    cascading_with_parent_namespace :only_allow_merge_if_all_discussions_are_resolved
+
     def mirror_last_update_succeeded?
       !!import_state&.last_update_succeeded?
     end
