@@ -17,14 +17,7 @@ import SubscriptionActivationModal from './subscription_activation_modal.vue';
 import SubscriptionDetailsCard from './subscription_details_card.vue';
 import SubscriptionDetailsUserInfo from './subscription_details_user_info.vue';
 
-export const subscriptionDetailsFields = [
-  'id',
-  'plan',
-  'type',
-  'startsAt',
-  'expiresAt',
-  'lastSync',
-];
+export const subscriptionDetailsFields = ['id', 'plan', 'lastSync', 'startsAt', 'expiresAt'];
 export const licensedToFields = ['name', 'email', 'company'];
 
 export const i18n = Object.freeze({
@@ -173,7 +166,9 @@ export default {
           data-qa-selector="subscription_details"
         >
           <template v-if="shouldShowFooter" #footer>
-            <div class="gl-display-flex gl-flex-wrap gl-align-items-flex-start">
+            <div
+              class="gl-display-flex gl-flex-wrap gl-align-items-flex-start gl-justify-content-space-between"
+            >
               <div>
                 <gl-button
                   v-gl-modal-directive="$options.removeLicenseModal.id"
