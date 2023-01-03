@@ -16,10 +16,26 @@ describe('Dependencies mutations', () => {
   });
 
   describe(types.SET_DEPENDENCIES_ENDPOINT, () => {
-    it('sets the endpoint and download endpoint', () => {
+    it('sets the endpoint', () => {
       mutations[types.SET_DEPENDENCIES_ENDPOINT](state, TEST_HOST);
 
       expect(state.endpoint).toBe(TEST_HOST);
+    });
+  });
+
+  describe(types.SET_EXPORT_DEPENDENCIES_ENDPOINT, () => {
+    it('sets the export endpoint', () => {
+      mutations[types.SET_EXPORT_DEPENDENCIES_ENDPOINT](state, TEST_HOST);
+
+      expect(state.exportEndpoint).toBe(TEST_HOST);
+    });
+  });
+
+  describe(types.SET_FETCHING_IN_PROGRESS, () => {
+    it('sets if export is being fetched', () => {
+      mutations[types.SET_FETCHING_IN_PROGRESS](state, true);
+
+      expect(state.fetchingInProgress).toBe(true);
     });
   });
 

@@ -37,3 +37,7 @@ export const FILTER = {
 export const FETCH_ERROR_MESSAGE = __(
   'Error fetching the dependency list. Please check your network connection and try again.',
 );
+
+export const FETCH_EXPORT_ERROR_MESSAGE = s__(
+  'Dependencies|Error exporting the dependency list. Please reload the page.',
+);

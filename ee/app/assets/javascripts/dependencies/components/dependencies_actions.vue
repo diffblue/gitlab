@@ -1,12 +1,14 @@
 <script>
 import { GlButton, GlSorting, GlSortingItem, GlTooltipDirective } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { DEPENDENCY_LIST_TYPES } from '../store/constants';
 import { SORT_FIELDS, SORT_ASCENDING } from '../store/modules/list/constants';
 
 export default {
   i18n: {
+    exportAsJson: s__('Dependencies|Export as JSON'),
     sortDirectionLabel: __('Sort direction'),
     sortFields: SORT_FIELDS,
   },
@@ -19,6 +21,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     namespace: {
       type: String,
@@ -41,6 +44,15 @@ export default {
       downloadEndpoint(state, getters) {
         return getters[`${this.namespace}/downloadEndpoint`];
       },
+      buttonIcon() {
+        return this.fetchingInProgress ? '' : 'export';
+      },
+      fetchingInProgress(state) {
+        return state[this.namespace].fetchingInProgress;
+      },
+      dependencyListExporterEnabled() {
+        return this.glFeatures.dependencyListExporter;
+      },
     }),
     sortFieldName() {
       return this.$options.i18n.sortFields[this.sortField];
@@ -53,6 +65,9 @@ export default {
       },
       toggleSortOrder(dispatch) {
         dispatch(`${this.namespace}/toggleSortOrder`);
+      },
+      fetchExport(dispatch) {
+        dispatch(`${this.namespace}/fetchExport`);
       },
     }),
     isCurrentSortField(field) {
@@ -83,6 +98,19 @@ export default {
       </gl-sorting-item>
     </gl-sorting>
     <gl-button
+      v-if="dependencyListExporterEnabled"
+      v-gl-tooltip.hover
+      :title="$options.i18n.exportAsJson"
+      class="gl-ml-3"
+      :icon="buttonIcon"
+      data-testid="export"
+      :loading="fetchingInProgress"
+      @click="fetchExport"
+    >
+      {{ __('Export') }}
+    </gl-button>
+    <gl-button
+      v-else
       v-gl-tooltip
       :href="downloadEndpoint"
       download="dependencies.json"

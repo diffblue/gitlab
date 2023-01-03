@@ -6,16 +6,19 @@ import {
   FILTER,
   SORT_DESCENDING,
   FETCH_ERROR_MESSAGE,
+  FETCH_EXPORT_ERROR_MESSAGE,
 } from 'ee/dependencies/store/modules/list/constants';
 import * as types from 'ee/dependencies/store/modules/list/mutation_types';
 import getInitialState from 'ee/dependencies/store/modules/list/state';
 import { TEST_HOST } from 'helpers/test_constants';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
+import download from '~/lib/utils/downloader';
 
 import mockDependenciesResponse from './data/mock_dependencies.json';
 
 jest.mock('~/flash');
+jest.mock('~/lib/utils/downloader');
 
 describe('Dependencies actions', () => {
   const pageInfo = {
@@ -36,8 +39,16 @@ describe('Dependencies actions', () => {
     'X-Total-Pages': pageInfo.totalPages,
   };
 
+  const mockResponseExportEndpoint = {
+    id: 1,
+    has_finished: true,
+    self: '/dependency_list_exports/1',
+    download: '/dependency_list_exports/1/download',
+  };
+
   afterEach(() => {
     createAlert.mockClear();
+    download.mockClear();
   });
 
   describe('setDependenciesEndpoint', () => {
@@ -49,6 +60,22 @@ describe('Dependencies actions', () => {
         [
           {
             type: types.SET_DEPENDENCIES_ENDPOINT,
+            payload: TEST_HOST,
+          },
+        ],
+        [],
+      ));
+  });
+
+  describe('setExportDependenciesEndpoint', () => {
+    it('commits the SET_EXPORT_DEPENDENCIES_ENDPOINT mutation', () =>
+      testAction(
+        actions.setExportDependenciesEndpoint,
+        TEST_HOST,
+        getInitialState(),
+        [
+          {
+            type: types.SET_EXPORT_DEPENDENCIES_ENDPOINT,
             payload: TEST_HOST,
           },
         ],
@@ -253,6 +280,170 @@ describe('Dependencies actions', () => {
           expect(createAlert).toHaveBeenCalledWith({
             message: FETCH_ERROR_MESSAGE,
           });
+        }));
+    });
+  });
+
+  describe('fetchExport', () => {
+    let state;
+    let mock;
+
+    beforeEach(() => {
+      state = getInitialState();
+      state.exportEndpoint = `${TEST_HOST}/dependency_list_exports`;
+      mock = new MockAdapter(axios);
+    });
+
+    afterEach(() => {
+      mock.restore();
+    });
+
+    describe('when endpoint is empty', () => {
+      beforeEach(() => {
+        state.exportEndpoint = '';
+      });
+
+      it('does nothing', () => testAction(actions.fetchExport, undefined, state, [], []));
+    });
+
+    describe('on success', () => {
+      beforeEach(() => {
+        mock.onPost(state.exportEndpoint).replyOnce(201, mockResponseExportEndpoint);
+      });
+
+      it('sets SET_FETCHING_IN_PROGRESS and dispatches downloadExport', () =>
+        testAction(
+          actions.fetchExport,
+          undefined,
+          state,
+          [
+            {
+              type: 'SET_FETCHING_IN_PROGRESS',
+              payload: true,
+            },
+          ],
+          [
+            {
+              type: 'downloadExport',
+              payload: mockResponseExportEndpoint.self,
+            },
+          ],
+        ));
+    });
+
+    describe('on success with status other than created (201)', () => {
+      beforeEach(() => {
+        mock.onPost(state.exportEndpoint).replyOnce(200, mockResponseExportEndpoint);
+      });
+
+      it('does not dispatch downloadExport', () =>
+        testAction(
+          actions.fetchExport,
+          undefined,
+          state,
+          [
+            {
+              type: 'SET_FETCHING_IN_PROGRESS',
+              payload: true,
+            },
+            {
+              type: 'SET_FETCHING_IN_PROGRESS',
+              payload: false,
+            },
+          ],
+          [],
+        ));
+    });
+
+    describe('on failure', () => {
+      beforeEach(() => {
+        mock.onPost(state.exportEndpoint).replyOnce(404);
+      });
+
+      it('does not dispatch downloadExport', () =>
+        testAction(
+          actions.fetchExport,
+          undefined,
+          state,
+          [
+            {
+              type: 'SET_FETCHING_IN_PROGRESS',
+              payload: true,
+            },
+            {
+              type: 'SET_FETCHING_IN_PROGRESS',
+              payload: false,
+            },
+          ],
+          [],
+        ).then(() => {
+          expect(createAlert).toHaveBeenCalledTimes(1);
+          expect(createAlert).toHaveBeenCalledWith({
+            message: FETCH_EXPORT_ERROR_MESSAGE,
+          });
+        }));
+    });
+  });
+
+  describe('downloadExport', () => {
+    let mock;
+
+    beforeEach(() => {
+      mock = new MockAdapter(axios);
+    });
+
+    afterEach(() => {
+      mock.restore();
+    });
+
+    describe('on success', () => {
+      beforeEach(() => {
+        mock.onGet(mockResponseExportEndpoint.self).replyOnce(200, mockResponseExportEndpoint);
+      });
+
+      it('sets SET_FETCHING_IN_PROGRESS and calls download', () =>
+        testAction(
+          actions.downloadExport,
+          mockResponseExportEndpoint.self,
+          undefined,
+          [
+            {
+              type: 'SET_FETCHING_IN_PROGRESS',
+              payload: false,
+            },
+          ],
+          [],
+        ).then(() => {
+          expect(download).toHaveBeenCalledTimes(1);
+          expect(download).toHaveBeenCalledWith({
+            url: mockResponseExportEndpoint.download,
+          });
+        }));
+    });
+
+    describe('on failure', () => {
+      beforeEach(() => {
+        mock.onGet(mockResponseExportEndpoint.self).replyOnce(404);
+      });
+
+      it('sets SET_FETCHING_IN_PROGRESS', () =>
+        testAction(
+          actions.downloadExport,
+          mockResponseExportEndpoint.self,
+          undefined,
+          [
+            {
+              type: 'SET_FETCHING_IN_PROGRESS',
+              payload: false,
+            },
+          ],
+          [],
+        ).then(() => {
+          expect(createAlert).toHaveBeenCalledTimes(1);
+          expect(createAlert).toHaveBeenCalledWith({
+            message: FETCH_EXPORT_ERROR_MESSAGE,
+          });
+          expect(download).toHaveBeenCalledTimes(0);
         }));
     });
   });

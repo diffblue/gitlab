@@ -2,6 +2,8 @@ import { FILTER, REPORT_STATUS, SORT_ORDERS, DEFAULT_SORT_FIELD } from './consta
 
 export default () => ({
   endpoint: '',
+  exportEndpoint: '',
+  fetchingInProgress: false,
   initialized: false,
   isLoading: false,
   errorLoading: false,

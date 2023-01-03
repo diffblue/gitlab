@@ -20,6 +20,7 @@ describe('DependenciesApp component', () => {
 
   const basicAppProps = {
     endpoint: '/foo',
+    exportEndpoint: '/bar',
     emptyStateSvgPath: '/bar.svg',
     documentationPath: TEST_HOST,
     supportDocumentationPath: `${TEST_HOST}/dependency_scanning#supported-languages`,
@@ -36,12 +37,7 @@ describe('DependenciesApp component', () => {
         store,
         stubs,
         ...options,
-        provide: {
-          endpoint: '/foo',
-          emptyStateSvgPath: '/bar.svg',
-          documentationPath: TEST_HOST,
-          supportDocumentationPath: `${TEST_HOST}/dependency_scanning#supported-languages`,
-        },
+        provide: basicAppProps,
       }),
     );
   };
@@ -159,6 +155,7 @@ describe('DependenciesApp component', () => {
     it('dispatches the correct initial actions', () => {
       expect(store.dispatch.mock.calls).toEqual([
         ['setDependenciesEndpoint', basicAppProps.endpoint],
+        ['setExportDependenciesEndpoint', basicAppProps.exportEndpoint],
         ['fetchDependencies'],
       ]);
     });

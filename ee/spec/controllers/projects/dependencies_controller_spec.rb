@@ -50,12 +50,30 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
             get :index, params: params, format: :json
           end
 
+          shared_examples 'paginated list' do
+            it 'returns paginated list' do
+              expect(json_response['dependencies'].length).to eq(20)
+              expect(response).to include_pagination_headers
+            end
+          end
+
           context 'without pagination params' do
             let(:user) { developer }
 
-            it 'returns a hash with dependencies' do
-              expect(json_response).to be_a(Hash)
-              expect(json_response['dependencies'].length).to eq(21)
+            context 'with dependency_list_exporter feature flag disabled' do
+              before do
+                stub_feature_flags(dependency_list_exporter: false)
+                get :index, params: params, format: :json
+              end
+
+              it 'returns a hash with dependencies not paginated' do
+                expect(json_response).to be_a(Hash)
+                expect(json_response['dependencies'].length).to eq(21)
+              end
+            end
+
+            context 'with dependency_list_exporter feature flag enabled' do
+              include_examples 'paginated list'
             end
 
             it 'returns status ok' do
@@ -150,11 +168,19 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
 
             context 'with pagination params' do
               let(:user) { developer }
-              let(:params) { { namespace_id: project.namespace, project_id: project, page: 2 } }
+              let(:params) { { namespace_id: project.namespace, project_id: project, page: 1 } }
 
-              it 'returns paginated list' do
-                expect(json_response['dependencies'].length).to eq(1)
-                expect(response).to include_pagination_headers
+              context 'with dependency_list_exporter feature flag enabled' do
+                include_examples 'paginated list'
+              end
+
+              context 'with dependency_list_exporter feature flag disabled' do
+                before do
+                  stub_feature_flags(dependency_list_exporter: false)
+                  get :index, params: params, format: :json
+                end
+
+                include_examples 'paginated list'
               end
             end
           end
