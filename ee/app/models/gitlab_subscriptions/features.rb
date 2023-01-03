@@ -163,6 +163,7 @@ module GitlabSubscriptions
       coverage_check_approval_rule
       issuable_resource_links
       group_protected_branches
+      group_level_merge_checks_setting
     ].freeze
 
     ULTIMATE_FEATURES = %i[

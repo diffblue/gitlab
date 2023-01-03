@@ -272,4 +272,59 @@ RSpec.describe NamespaceSetting do
         ])
     end
   end
+
+  describe '.cascading_with_parent_namespace' do
+    context "when calling .cascading_with_parent_namespace" do
+      it 'create three instance methods for attribute' do
+        described_class.cascading_with_parent_namespace("any_configuration")
+        expect(described_class.instance_methods).to include(
+          :any_configuration_of_parent_group, :any_configuration_locked?, :any_configuration?)
+      end
+    end
+
+    context 'three configurations of MR checks' do
+      let_it_be_with_reload(:group) { create(:group) }
+      let_it_be_with_reload(:subgroup) { create(:group, parent: group) }
+      let_it_be_with_reload(:subsubgroup) { create(:group, parent: subgroup) }
+
+      shared_examples '[configuration](inherit_group_setting: bool) and [configuration]_locked?' do |attribute|
+        using RSpec::Parameterized::TableSyntax
+
+        where(:group_attr, :subgroup_attr, :subsubgroup_attr, :group_with_inherit_attr?, :group_without_inherit_attr?, :group_locked?, :subgroup_with_inherit_attr?, :subgroup_without_inherit_attr?, :subgroup_locked?, :subsubgroup_with_inherit_attr?, :subsubgroup_without_inherit_attr?, :subsubgroup_locked?) do
+          true  | true  | true      | true  | true  | false     | true  | true  | true      | true  | true  | true
+          true  | true  | false     | true  | true  | false     | true  | true  | true      | true  | false | true
+          true  | false | false     | true  | true  | false     | true  | false | true      | true  | false | true
+          false | true  | true      | false | false | false     | true  | true  | false     | true  | true  | true
+          false | true  | false     | false | false | false     | true  | true  | false     | true  | false | true
+          false | false | false     | false | false | false     | false | false | false     | false | false | false
+        end
+
+        with_them do
+          before do
+            group.namespace_settings.update!(attribute => group_attr)
+            subgroup.namespace_settings.update!(attribute => subgroup_attr)
+            subsubgroup.namespace_settings.update!(attribute => subsubgroup_attr)
+          end
+
+          it 'returns correct value' do
+            expect(group.namespace_settings.public_send("#{attribute}?", inherit_group_setting: true)).to eq(group_with_inherit_attr?)
+            expect(group.namespace_settings.public_send("#{attribute}?", inherit_group_setting: false)).to eq(group_without_inherit_attr?)
+            expect(group.namespace_settings.public_send("#{attribute}_locked?")).to eq(group_locked?)
+
+            expect(subgroup.namespace_settings.public_send("#{attribute}?", inherit_group_setting: true)).to eq(subgroup_with_inherit_attr?)
+            expect(subgroup.namespace_settings.public_send("#{attribute}?", inherit_group_setting: false)).to eq(subgroup_without_inherit_attr?)
+            expect(subgroup.namespace_settings.public_send("#{attribute}_locked?")).to eq(subgroup_locked?)
+
+            expect(subsubgroup.namespace_settings.public_send("#{attribute}?", inherit_group_setting: true)).to eq(subsubgroup_with_inherit_attr?)
+            expect(subsubgroup.namespace_settings.public_send("#{attribute}?", inherit_group_setting: false)).to eq(subsubgroup_without_inherit_attr?)
+            expect(subsubgroup.namespace_settings.public_send("#{attribute}_locked?")).to eq(subsubgroup_locked?)
+          end
+        end
+      end
+
+      it_behaves_like '[configuration](inherit_group_setting: bool) and [configuration]_locked?', :only_allow_merge_if_pipeline_succeeds
+      it_behaves_like '[configuration](inherit_group_setting: bool) and [configuration]_locked?', :allow_merge_on_skipped_pipeline
+      it_behaves_like '[configuration](inherit_group_setting: bool) and [configuration]_locked?', :only_allow_merge_if_all_discussions_are_resolved
+    end
+  end
 end

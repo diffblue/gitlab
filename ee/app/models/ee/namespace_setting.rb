@@ -32,6 +32,35 @@ module EE
         saml_setting || root_ancestor.namespace_settings&.prevent_forking_outside_group
       end
 
+      # Define three instance methods:
+      #
+      # - [attribute]_of_parent_group         Returns the configuration value of the parent group
+      # - [attribute]?(inherit_group_setting) Returns the final value after inheriting the parent group
+      # - [attribute]_locked?                 Returns true if the value is inherited from the parent group
+      def self.cascading_with_parent_namespace(attribute)
+        define_method("#{attribute}_of_parent_group") do
+          namespace&.parent&.namespace_settings&.public_send("#{attribute}?", inherit_group_setting: true)
+        end
+
+        define_method("#{attribute}?") do |inherit_group_setting: false|
+          if inherit_group_setting
+            result = public_send(attribute.to_s) || public_send("#{attribute}_of_parent_group") # rubocop:disable GitlabSecurity/PublicSend
+          else
+            result = public_send(attribute.to_s) # rubocop:disable GitlabSecurity/PublicSend
+          end
+
+          !!result
+        end
+
+        define_method("#{attribute}_locked?") do
+          !!public_send("#{attribute}_of_parent_group") # rubocop:disable GitlabSecurity/PublicSend
+        end
+      end
+
+      cascading_with_parent_namespace :only_allow_merge_if_pipeline_succeeds
+      cascading_with_parent_namespace :allow_merge_on_skipped_pipeline
+      cascading_with_parent_namespace :only_allow_merge_if_all_discussions_are_resolved
+
       private
 
       def enabling_user_cap?
@@ -68,6 +97,9 @@ module EE
         unique_project_download_limit_allowlist
         auto_ban_user_on_excessive_projects_download
         default_compliance_framework_id
+        only_allow_merge_if_pipeline_succeeds
+        allow_merge_on_skipped_pipeline
+        only_allow_merge_if_all_discussions_are_resolved
       ].freeze
 
       override :allowed_namespace_settings_params
