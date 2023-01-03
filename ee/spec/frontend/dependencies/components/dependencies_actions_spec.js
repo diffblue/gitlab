@@ -12,16 +12,20 @@ describe('DependenciesActions component', () => {
   let wrapper;
   const { namespace } = DEPENDENCY_LIST_TYPES.all;
 
-  const factory = ({ propsData, ...options } = {}) => {
+  const factory = ({ propsData, featureFlags = {} } = {}) => {
     store = createStore();
     jest.spyOn(store, 'dispatch').mockImplementation();
 
     wrapper = shallowMountExtended(DependenciesActions, {
-      ...options,
       store,
       propsData: { ...propsData },
       stubs: {
         GlSortingItem,
+      },
+      provide: {
+        glFeatures: {
+          ...featureFlags,
+        },
       },
     });
   };
@@ -69,5 +73,36 @@ describe('DependenciesActions component', () => {
         download: expect.any(String),
       }),
     );
+  });
+
+  describe('with dependencyListExporter feature flag enabled', () => {
+    beforeEach(() => {
+      factory({
+        propsData: { namespace },
+        featureFlags: { dependencyListExporter: true },
+      });
+    });
+
+    it('has a button to perform an async export of the dependency list', () => {
+      expect(findExportButton().attributes('icon')).toBe('export');
+
+      findExportButton().vm.$emit('click');
+
+      expect(store.dispatch).toHaveBeenCalledWith(`${namespace}/fetchExport`);
+    });
+
+    describe('with fetching in progress', () => {
+      beforeEach(async () => {
+        store.state[namespace].fetchingInProgress = true;
+        await nextTick;
+      });
+
+      it('sets the icon to match the loading icon', () => {
+        const exportButton = findExportButton();
+
+        expect(exportButton.attributes('icon')).toBe('');
+        expect(exportButton.attributes('loading')).toBe('true');
+      });
+    });
   });
 });

@@ -26,9 +26,10 @@ describe('Dependencies actions', () => {
   });
 
   describe.each`
-    actionName                   | payload
-    ${'setDependenciesEndpoint'} | ${TEST_HOST}
-    ${'fetchDependencies'}       | ${undefined}
+    actionName                         | payload
+    ${'setDependenciesEndpoint'}       | ${TEST_HOST}
+    ${'setExportDependenciesEndpoint'} | ${TEST_HOST}
+    ${'fetchDependencies'}             | ${undefined}
   `('$actionName', ({ actionName, payload }) => {
     it(`dispatches the ${actionName} action on each list module`, () => {
       const state = createState();

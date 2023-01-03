@@ -22,7 +22,13 @@ export default {
     DependencyListJobFailedAlert,
     PaginatedDependenciesTable,
   },
-  inject: ['emptyStateSvgPath', 'documentationPath', 'endpoint', 'supportDocumentationPath'],
+  inject: [
+    'emptyStateSvgPath',
+    'documentationPath',
+    'endpoint',
+    'supportDocumentationPath',
+    'exportEndpoint',
+  ],
   data() {
     return {
       isIncompleteAlertDismissed: false,
@@ -78,10 +84,16 @@ export default {
   },
   created() {
     this.setDependenciesEndpoint(this.endpoint);
+    this.setExportDependenciesEndpoint(this.exportEndpoint);
     this.fetchDependencies();
   },
   methods: {
-    ...mapActions(['setDependenciesEndpoint', 'fetchDependencies', 'setCurrentList']),
+    ...mapActions([
+      'setDependenciesEndpoint',
+      'setExportDependenciesEndpoint',
+      'fetchDependencies',
+      'setCurrentList',
+    ]),
     dismissIncompleteListAlert() {
       this.isIncompleteAlertDismissed = true;
     },

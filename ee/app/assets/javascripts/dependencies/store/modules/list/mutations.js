@@ -5,6 +5,12 @@ export default {
   [types.SET_DEPENDENCIES_ENDPOINT](state, payload) {
     state.endpoint = payload;
   },
+  [types.SET_EXPORT_DEPENDENCIES_ENDPOINT](state, exportEndpoint) {
+    state.exportEndpoint = exportEndpoint;
+  },
+  [types.SET_FETCHING_IN_PROGRESS](state, fetchingInProgress) {
+    state.fetchingInProgress = fetchingInProgress;
+  },
   [types.SET_INITIAL_STATE](state, payload) {
     Object.assign(state, payload);
   },

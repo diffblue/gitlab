@@ -9,6 +9,10 @@ module Projects
     feature_category :dependency_management
     urgency :low
 
+    before_action do
+      push_frontend_feature_flag(:dependency_list_exporter, project)
+    end
+
     def index
       respond_to do |format|
         format.html do
@@ -79,7 +83,11 @@ module Projects
 
     def serializer
       serializer = ::DependencyListSerializer.new(project: project, user: current_user)
-      serializer = serializer.with_pagination(request, response) if params[:page]
+
+      if params[:page] || Feature.enabled?(:dependency_list_exporter, project)
+        serializer = serializer.with_pagination(request, response)
+      end
+
       serializer
     end
 
