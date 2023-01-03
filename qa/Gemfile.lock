@@ -313,7 +313,7 @@ DEPENDENCIES
   fog-core (= 2.1.0)
   fog-google (~> 1.19)
   gitlab-qa (~> 8, >= 8.14.1)
-  influxdb-client (~> 2.8)
+  influxdb-client (~> 2.9)
   knapsack (~> 4.0)
   nokogiri (~> 1.13, >= 1.13.10)
   octokit (~> 6.0.1)
