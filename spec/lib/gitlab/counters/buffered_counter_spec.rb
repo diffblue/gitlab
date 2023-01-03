@@ -410,12 +410,11 @@ RSpec.describe Gitlab::Counters::BufferedCounter, :clean_gitlab_redis_shared_sta
       counter.initiate_refresh!
     end
 
-    it 'sets a refresh indicator' do
+    it 'sets a refresh indicator with a long expiry' do
       counter.initiate_refresh!
 
-      Gitlab::Redis::SharedState.with do |redis|
-        expect(redis.exists?(counter.refresh_indicator_key)).to eq(true)
-      end
+      expect(redis_exists_key(counter.refresh_indicator_key)).to eq(true)
+      expect(redis_key_ttl(counter.refresh_indicator_key)).to eq(described_class::REFRESH_KEYS_TTL)
     end
   end
 
@@ -640,6 +639,12 @@ RSpec.describe Gitlab::Counters::BufferedCounter, :clean_gitlab_redis_shared_sta
   def redis_exists_key(key)
     Gitlab::Redis::SharedState.with do |redis|
       redis.exists?(key)
+    end
+  end
+
+  def redis_key_ttl(key)
+    Gitlab::Redis::SharedState.with do |redis|
+      redis.ttl(key)
     end
   end
 end

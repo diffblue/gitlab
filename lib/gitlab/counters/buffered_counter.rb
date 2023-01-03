@@ -8,6 +8,12 @@ module Gitlab
       WORKER_DELAY = 10.minutes
       WORKER_LOCK_TTL = 10.minutes
 
+      # Refresh keys are set to expire after a very long time,
+      # so that they do not occupy Redis memory indefinitely,
+      # if for any reason they are not deleted.
+      # In practice, a refresh is not expected to take longer than this TTL.
+      REFRESH_KEYS_TTL = 14.days
+
       # Limit size of bitmap key to 2^26-1 (~8MB)
       MAX_BITMAP_OFFSET = 67108863
 
@@ -52,7 +58,9 @@ module Gitlab
         end
 
         redis.call("setbit", tracking_shard_key, tracking_offset, 1)
+        redis.call("expire", tracking_shard_key, #{REFRESH_KEYS_TTL.seconds})
         redis.call("sadd", shards_key, tracking_shard_key)
+        redis.call("expire", shards_key, #{REFRESH_KEYS_TTL.seconds})
 
         local found_opposing_change = redis.call("getbit", opposing_tracking_shard_key, tracking_offset)
         local increment_without_previous_decrement = tonumber(amount) > 0 and found_opposing_change == 0
@@ -101,7 +109,7 @@ module Gitlab
       LUA_INITIATE_REFRESH_SCRIPT = <<~LUA
         local counter_key, refresh_indicator_key = KEYS[1], KEYS[2]
         redis.call("del", counter_key)
-        redis.call("set", refresh_indicator_key, 1)
+        redis.call("set", refresh_indicator_key, 1, "ex", #{REFRESH_KEYS_TTL.seconds})
       LUA
 
       def initiate_refresh!
