@@ -13,6 +13,8 @@ module Gitlab
       # if for any reason they are not deleted.
       # In practice, a refresh is not expected to take longer than this TTL.
       REFRESH_KEYS_TTL = 14.days
+      CLEANUP_BATCH_SIZE = 50
+      CLEANUP_INTERVAL_SECONDS = 0.1
 
       # Limit size of bitmap key to 2^26-1 (~8MB)
       MAX_BITMAP_OFFSET = 67108863
@@ -139,8 +141,11 @@ module Gitlab
 
       def cleanup_refresh
         redis_state do |redis|
-          while (shard = redis.spop(shards_key))
-            redis.del(shard)
+          while (shards = redis.spop(shards_key, CLEANUP_BATCH_SIZE))
+            redis.del(*shards)
+            break if shards.size < CLEANUP_BATCH_SIZE
+
+            sleep CLEANUP_INTERVAL_SECONDS
           end
         end
       end

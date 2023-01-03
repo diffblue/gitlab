@@ -474,8 +474,12 @@ RSpec.describe Gitlab::Counters::BufferedCounter, :clean_gitlab_redis_shared_sta
     let(:increment) { Gitlab::Counters::Increment.new(amount: 123, ref: 67108864) }
     let(:increment_2) { Gitlab::Counters::Increment.new(amount: 123, ref: 267108864) }
     let(:decrement_2) { Gitlab::Counters::Increment.new(amount: -increment_2.amount, ref: increment_2.ref) }
+    let(:increment_3) { Gitlab::Counters::Increment.new(amount: 123, ref: 534217728) }
 
     before do
+      stub_const("#{described_class}::CLEANUP_BATCH_SIZE", 2)
+      stub_const("#{described_class}::CLEANUP_INTERVAL_SECONDS", 0.001)
+
       counter.initiate_refresh!
       counter.increment(decrement_2)
       counter.increment(increment)
