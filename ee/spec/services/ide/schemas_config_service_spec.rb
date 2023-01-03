@@ -38,10 +38,6 @@ RSpec.describe Ide::SchemasConfigService do
     context 'when a predefined schema exists for the given filename' do
       let(:filename) { '.gitlab-ci.yml' }
 
-      before do
-        stub_feature_flags(schema_linting: true)
-      end
-
       context 'with valid config content' do
         let(:config_content) { 'schemas: [{uri: "https://someurl.com", match: ["*.yml"]}]' }
 
