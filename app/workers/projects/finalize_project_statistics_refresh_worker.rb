@@ -18,6 +18,10 @@ module Projects
     idempotent!
 
     def perform(record_class, record_id)
+      if record_class.demodulize == 'BuildArtifactsSizeRefresh'
+        Gitlab::ApplicationContext.push(feature_category: :build_artifacts)
+      end
+
       return unless self.class.const_defined?(record_class)
 
       record = record_class.constantize.find_by_id(record_id)
