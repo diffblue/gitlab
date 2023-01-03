@@ -3,10 +3,12 @@ import { GlBadge, GlButton } from '@gitlab/ui';
 import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import MrWidget from '~/vue_merge_request_widget/components/widget/widget.vue';
 import MrWidgetRow from '~/vue_merge_request_widget/components/widget/widget_content_row.vue';
-import { BV_SHOW_MODAL } from '~/lib/utils/constants';
+import toast from '~/vue_shared/plugins/global_toast';
+import { BV_SHOW_MODAL, BV_HIDE_MODAL } from '~/lib/utils/constants';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_UNPROCESSABLE_ENTITY } from '~/lib/utils/http_status';
 import { visitUrl } from '~/lib/utils/url_utility';
-import { s__ } from '~/locale';
+import { s__, sprintf } from '~/locale';
 import FindingModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
@@ -160,6 +162,10 @@ export default {
           this.modalData?.vulnerability?.create_jira_issue_url,
       );
     },
+
+    canDismissFinding() {
+      return Boolean(this.mr.createVulnerabilityFeedbackDismissalPath);
+    },
   },
   methods: {
     handleIsLoading(value) {
@@ -273,6 +279,46 @@ export default {
           this.isCreatingIssue = false;
         });
     },
+
+    dismissFinding(comment) {
+      const finding = this.modalData?.vulnerability;
+      const toastMsg = sprintf(s__("SecurityReports|Dismissed '%{vulnerabilityName}'"), {
+        vulnerabilityName: finding.name,
+      });
+
+      return axios
+        .post(this.mr.createVulnerabilityFeedbackDismissalPath, {
+          vulnerability_feedback: {
+            category: finding.report_type,
+            comment,
+            feedback_type: 'dismissal',
+            pipeline_id: this.mr.pipelineId,
+            project_fingerprint: finding.project_fingerprint,
+            finding_uuid: finding.uuid,
+            vulnerability_data: finding,
+          },
+        })
+        .then(() => {
+          this.modalData.vulnerability.state = 'dismissed';
+          this.$root.$emit(BV_HIDE_MODAL, VULNERABILITY_MODAL_ID);
+          toast(toastMsg);
+        })
+        .catch((error) => {
+          const pipelineNoLongerExists =
+            error.response?.status === HTTP_STATUS_UNPROCESSABLE_ENTITY;
+
+          const errorMessage = pipelineNoLongerExists
+            ? s__(
+                'ciReport|Could not dismiss vulnerability because the associated pipeline no longer exists. Refresh the page and try again.',
+              )
+            : s__('ciReport|There was an error dismissing the vulnerability. Please try again.');
+
+          this.modalData = {
+            ...this.modalData,
+            error: errorMessage,
+          };
+        });
+    },
   },
   SEVERITY_LEVELS,
   widgetHelpPopover: {
@@ -315,7 +361,9 @@ export default {
         :is-creating-merge-request="false"
         :is-creating-issue="isCreatingIssue"
         :can-create-issue="canCreateIssue"
+        :can-dismiss-vulnerability="canDismissFinding"
         @createNewIssue="createNewIssue"
+        @dismissVulnerability="dismissFinding"
       />
       <security-training-promo-widget
         :security-configuration-path="mr.securityConfigurationPath"
