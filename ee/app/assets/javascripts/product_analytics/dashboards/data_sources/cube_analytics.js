@@ -5,6 +5,7 @@ import csrf from '~/lib/utils/csrf';
 // This can be any value because the cube proxy adds the real API token.
 const CUBE_API_TOKEN = '1';
 const PRODUCT_ANALYTICS_CUBE_PROXY = '/api/v4/projects/:id/product_analytics/request';
+const DEFAULT_JITSU_COUNT_KEY = 'Jitsu.count';
 
 const createCubeJsApi = (projectId) =>
   new CubejsApi(CUBE_API_TOKEN, {
@@ -44,14 +45,15 @@ const convertToTableFormat = (resultSet) => {
   });
 };
 
-const convertToSingleValue = (resultSet) => {
+const convertToSingleValue = (resultSet, query) => {
+  const [measure] = query?.measures ?? [];
   const [row] = resultSet.rawData();
 
   if (!row) {
     return null;
   }
 
-  return Object.values(row)[0];
+  return row[measure ?? DEFAULT_JITSU_COUNT_KEY] ?? Object.values(row)[0];
 };
 
 const VISUALIZATION_PARSERS = {
@@ -61,18 +63,19 @@ const VISUALIZATION_PARSERS = {
 };
 
 export const fetch = async ({ projectId, visualizationType, query, queryOverrides = {} }) => {
-  const resultSet = await createCubeJsApi(projectId).load({ ...query, ...queryOverrides });
+  const userQuery = { ...query, ...queryOverrides };
+  const resultSet = await createCubeJsApi(projectId).load(userQuery);
 
-  return VISUALIZATION_PARSERS[visualizationType](resultSet);
+  return VISUALIZATION_PARSERS[visualizationType](resultSet, userQuery);
 };
 
 export const NO_DATABASE_ERROR_MESSAGE = '404 Clickhouse Database Not Found';
 
 export const hasAnalyticsData = async (projectId) => {
   try {
-    const data = await createCubeJsApi(projectId).load({ measures: ['Jitsu.count'] });
+    const data = await createCubeJsApi(projectId).load({ measures: [DEFAULT_JITSU_COUNT_KEY] });
 
-    return data.rawData()[0]['Jitsu.count'] > 0;
+    return data.rawData()[0][DEFAULT_JITSU_COUNT_KEY] > 0;
   } catch (error) {
     const errorMessage = error?.response?.message;
 

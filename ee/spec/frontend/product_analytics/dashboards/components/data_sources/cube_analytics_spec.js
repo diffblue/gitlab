@@ -40,8 +40,8 @@ const itSetsUpCube = () => {
 describe('Cube Analytics Data Source', () => {
   const projectId = 'TEST_ID';
   const visualizationType = 'LineChart';
-  const query = { alpha: 'one' };
-  const queryOverrides = { alpha: 'two' };
+  const query = { measures: ['Jitsu.count'] };
+  const queryOverrides = { measures: ['Jitsu.userLanguage'] };
 
   describe('fetch', () => {
     beforeEach(() => {
@@ -51,7 +51,7 @@ describe('Cube Analytics Data Source', () => {
     itSetsUpCube();
 
     it('loads the query with the query override', () => {
-      expect(mockLoad).toHaveBeenCalledWith({ alpha: 'two' });
+      expect(mockLoad).toHaveBeenCalledWith(queryOverrides);
     });
 
     describe('formarts the data', () => {
@@ -81,6 +81,30 @@ describe('Cube Analytics Data Source', () => {
         const result = await fetch({ projectId, visualizationType: 'SingleStat', query });
 
         expect(result).toBe('36');
+      });
+
+      it('returns the expected data format for single stats with custom measure', async () => {
+        const override = { measures: ['Jitsu.url'] };
+        const result = await fetch({
+          projectId,
+          visualizationType: 'SingleStat',
+          query,
+          queryOverrides: override,
+        });
+
+        expect(result).toBe('https://example.com/us');
+      });
+
+      it('returns the expected data format for single stats when the measure is unknown', async () => {
+        const override = { measures: ['unknown'] };
+        const result = await fetch({
+          projectId,
+          visualizationType: 'SingleStat',
+          query,
+          queryOverrides: override,
+        });
+
+        expect(result).toBe('en-US');
       });
     });
   });
