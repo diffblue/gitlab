@@ -71,6 +71,7 @@ RSpec.describe 'SAST.gitlab-ci.yml', feature_category: :continuous_integration d
             'C#'                   | { 'app.csproj' => '' }                          | {}                                         | %w(security-code-scan-sast)
             'C#'                   | { 'app.cs' => '' }                              | {}                                         | %w(semgrep-sast)
             'Elixir'               | { 'mix.exs' => '' }                             | {}                                         | %w(sobelow-sast)
+            'Elixir, nested'       | { 'a/b/mix.exs' => '' }                         | {}                                         | %w(sobelow-sast)
             'Golang'               | { 'main.go' => '' }                             | {}                                         | %w(semgrep-sast)
             'Groovy'               | { 'app.groovy' => '' }                          | {}                                         | %w(spotbugs-sast)
             ios                    | { 'a.xcodeproj/x.pbxproj' => '' }               | sast_experimental_features                 | mobsf_ios_build
