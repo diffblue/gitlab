@@ -2,13 +2,15 @@
 
 require 'spec_helper'
 
-RSpec.describe Mutations::DastScannerProfiles::Update do
+RSpec.describe Mutations::DastScannerProfiles::Update, :dynamic_analysis,
+                                                       feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project, target_timeout: 200, spider_timeout: 5000) }
+  let_it_be(:old_tags) { [ActsAsTaggableOn::Tag.create!(name: 'ruby'), ActsAsTaggableOn::Tag.create!(name: 'postgres')] }
+  let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project, target_timeout: 200, spider_timeout: 5000, tags: old_tags) }
 
   let_it_be(:new_profile_name) { SecureRandom.hex }
   let_it_be(:new_target_timeout) { dast_scanner_profile.target_timeout + 1 }
@@ -16,6 +18,8 @@ RSpec.describe Mutations::DastScannerProfiles::Update do
   let_it_be(:new_scan_type) { (DastScannerProfile.scan_types.keys - [DastScannerProfile.last.scan_type]).first }
   let_it_be(:new_use_ajax_spider) { !dast_scanner_profile.use_ajax_spider }
   let_it_be(:new_show_debug_messages) { !dast_scanner_profile.show_debug_messages }
+  let_it_be(:new_tags) { [ActsAsTaggableOn::Tag.create!(name: 'rails'), ActsAsTaggableOn::Tag.create!(name: 'docker')] }
+  let_it_be(:new_tag_list) { new_tags.map(&:name) }
 
   subject(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
 
@@ -34,7 +38,8 @@ RSpec.describe Mutations::DastScannerProfiles::Update do
         spider_timeout: new_spider_timeout,
         scan_type: new_scan_type,
         use_ajax_spider: new_use_ajax_spider,
-        show_debug_messages: new_show_debug_messages
+        show_debug_messages: new_show_debug_messages,
+        tag_list: new_tag_list
       )
     end
 
@@ -77,11 +82,24 @@ RSpec.describe Mutations::DastScannerProfiles::Update do
             expect(dast_scanner_profile.scan_type).to eq(new_scan_type)
             expect(dast_scanner_profile.use_ajax_spider).to eq(new_use_ajax_spider)
             expect(dast_scanner_profile.show_debug_messages).to eq(new_show_debug_messages)
+            expect(dast_scanner_profile.tags).to match_array(new_tags)
           end
         end
 
         it 'returns the complete dast_scanner_profile' do
           expect(subject[:dast_scanner_profile]).to eq(dast_scanner_profile)
+        end
+
+        context 'when feature flag on_demand_scans_runner_tags is disabled' do
+          before do
+            stub_feature_flags(on_demand_scans_runner_tags: false)
+          end
+
+          it 'does not update the tag_list' do
+            dast_scanner_profile = subject[:id].find
+
+            expect(dast_scanner_profile.tags).to match_array(old_tags)
+          end
         end
 
         context 'when dast scanner profile does not exist' do

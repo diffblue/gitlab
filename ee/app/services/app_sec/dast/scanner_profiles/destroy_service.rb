@@ -3,7 +3,7 @@
 module AppSec
   module Dast
     module ScannerProfiles
-      class DestroyService < BaseService
+      class DestroyService < ::BaseService
         include Gitlab::Allowable
 
         def execute(id:)
