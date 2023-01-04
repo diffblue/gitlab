@@ -2,17 +2,17 @@
 import { isEmpty } from 'lodash';
 import { GlDrawer, GlLink } from '@gitlab/ui';
 import { s__, sprintf } from '~/locale';
-import { SIDEBAR_VIEW_MODE } from 'ee/on_demand_scans/constants';
+import { DRAWER_VIEW_MODE } from 'ee/on_demand_scans/constants';
 import DastProfilesLoader from 'ee/security_configuration/dast_profiles/components/dast_profiles_loader.vue';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 import dastProfileConfiguratorMixin from 'ee/security_configuration/dast_profiles/dast_profiles_configurator_mixin';
-import DastProfilesSidebarHeader from './dast_profiles_sidebar_header.vue';
-import DastProfilesSidebarEmptyState from './dast_profiles_sidebar_empty_state.vue';
-import DastProfilesSidebarForm from './dast_profiles_sidebar_form.vue';
-import DastProfilesSidebarList from './dast_profiles_sidebar_list.vue';
+import DastProfilesDrawerHeader from './dast_profiles_drawer_header.vue';
+import DastProfilesDrawerEmptyState from './dast_profiles_drawer_empty_state.vue';
+import DastProfilesDrawerForm from './dast_profiles_drawer_form.vue';
+import DastProfilesDrawerList from './dast_profiles_drawer_list.vue';
 
 export default {
-  SIDEBAR_VIEW_MODE,
+  DRAWER_VIEW_MODE,
   i18n: {
     footerLinkText: s__('DastProfiles|Manage %{profileType} profiles'),
   },
@@ -20,10 +20,10 @@ export default {
     GlDrawer,
     GlLink,
     DastProfilesLoader,
-    DastProfilesSidebarHeader,
-    DastProfilesSidebarEmptyState,
-    DastProfilesSidebarForm,
-    DastProfilesSidebarList,
+    DastProfilesDrawerHeader,
+    DastProfilesDrawerEmptyState,
+    DastProfilesDrawerForm,
+    DastProfilesDrawerList,
   },
   mixins: [dastProfileConfiguratorMixin()],
   props: {
@@ -87,10 +87,10 @@ export default {
       return !this.hasProfiles && !this.isEditingMode;
     },
     isReadingMode() {
-      return this.hasProfiles && this.sidebarViewMode === SIDEBAR_VIEW_MODE.READING_MODE;
+      return this.hasProfiles && this.drawerViewMode === DRAWER_VIEW_MODE.READING_MODE;
     },
     isEditingMode() {
-      return this.sidebarViewMode === SIDEBAR_VIEW_MODE.EDITING_MODE;
+      return this.drawerViewMode === DRAWER_VIEW_MODE.EDITING_MODE;
     },
     footerLinkText() {
       return sprintf(this.$options.i18n.footerLinkText, {
@@ -153,7 +153,7 @@ export default {
         await this.goFirstStep(this.cachedPayload);
       }
 
-      this.$emit(this.eventName, { profileType: this.profileType, mode: this.sidebarViewMode });
+      this.$emit(this.eventName, { profileType: this.profileType, mode: this.drawerViewMode });
       await this.setCachedPayload(undefined);
     },
     async profileCreated(profile) {
@@ -162,7 +162,7 @@ export default {
       await this.resetHistory();
       this.$emit(this.eventName, {
         profileType: this.profileType,
-        mode: SIDEBAR_VIEW_MODE.READING_MODE,
+        mode: DRAWER_VIEW_MODE.READING_MODE,
       });
 
       await this.discardChanges();
@@ -174,7 +174,7 @@ export default {
       await this.goBack();
       this.$emit(this.eventName, {
         profileType: this.profileType,
-        mode: SIDEBAR_VIEW_MODE.READING_MODE,
+        mode: DRAWER_VIEW_MODE.READING_MODE,
       });
 
       await this.discardChanges();
@@ -192,12 +192,12 @@ export default {
     @close="resetAndEmitCloseEvent"
   >
     <template #title>
-      <dast-profiles-sidebar-header
+      <dast-profiles-drawer-header
         :show-new-profile-button="isReadingMode"
         :is-editing-mode="isEditingMode"
         :profile-type="profileType"
         :profile="profileForEditing"
-        @click="enableEditingMode({ mode: $options.SIDEBAR_VIEW_MODE.EDITING_MODE })"
+        @click="enableEditingMode({ mode: $options.DRAWER_VIEW_MODE.EDITING_MODE })"
       />
     </template>
     <template #default>
@@ -206,15 +206,15 @@ export default {
       </template>
       <template v-else>
         <!-- Empty state -->
-        <dast-profiles-sidebar-empty-state
+        <dast-profiles-drawer-empty-state
           v-if="isEmptyStateMode"
           class="gl-mt-11"
           :profile-type="profileType"
-          @click="enableEditingMode({ mode: $options.SIDEBAR_VIEW_MODE.EDITING_MODE })"
+          @click="enableEditingMode({ mode: $options.DRAWER_VIEW_MODE.EDITING_MODE })"
         />
 
         <!-- Create or Edit profile - editing mode -->
-        <dast-profiles-sidebar-form
+        <dast-profiles-drawer-form
           v-if="isEditingMode"
           :profile="profileForEditing"
           :is-profile-in-use="isProfileInUse"
@@ -225,14 +225,14 @@ export default {
         />
 
         <!-- Profile list - reading mode -->
-        <dast-profiles-sidebar-list
+        <dast-profiles-drawer-list
           v-if="isReadingMode"
           :profiles="profiles"
           :profile-id-in-use="profileIdInUse"
           :selected-profile-id="selectedProfileId"
           :profile-type="profileType"
           @edit="
-            enableEditingMode({ profile: $event, mode: $options.SIDEBAR_VIEW_MODE.EDITING_MODE })
+            enableEditingMode({ profile: $event, mode: $options.DRAWER_VIEW_MODE.EDITING_MODE })
           "
           v-on="$listeners"
         />

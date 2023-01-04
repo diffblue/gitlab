@@ -1,18 +1,18 @@
 import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { SCANNER_TYPE, SITE_TYPE } from 'ee/on_demand_scans/constants';
-import DastProfilesSidebarForm from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar_form.vue';
+import DastProfilesDrawerForm from 'ee/security_configuration/dast_profiles/dast_profiles_drawer/dast_profiles_drawer_form.vue';
 import DastScannerProfileForm from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/components/dast_scanner_profile_form.vue';
 import DastSiteProfileForm from 'ee/security_configuration/dast_profiles/dast_site_profiles/components/dast_site_profile_form.vue';
 import { scannerProfiles } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
 
-describe('DastProfilesSidebarForm', () => {
+describe('DastProfilesDrawerForm', () => {
   let wrapper;
   const projectPath = 'projectPath';
   const profile = scannerProfiles[0];
 
   const createComponent = (options = {}, listeners = {}) => {
-    wrapper = mountExtended(DastProfilesSidebarForm, {
+    wrapper = mountExtended(DastProfilesDrawerForm, {
       propsData: {
         ...options,
       },

@@ -11,7 +11,7 @@ export default {
     ),
     emptyStateHeader: s__('OnDemandScans|No %{profileType} profiles found for DAST'),
   },
-  name: 'DastProfilesSidebarEmptyState',
+  name: 'DastProfilesDrawerEmptyState',
   components: {
     GlButton,
   },

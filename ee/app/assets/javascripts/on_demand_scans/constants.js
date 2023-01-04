@@ -35,7 +35,7 @@ export const SCANNER_TYPE = 'scanner';
 export const SITE_TYPE = 'site';
 
 // dast sidebar mode
-export const SIDEBAR_VIEW_MODE = {
+export const DRAWER_VIEW_MODE = {
   EDITING_MODE: 'editing_mode',
   READING_MODE: 'reading_mode',
 };

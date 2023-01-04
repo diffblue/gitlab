@@ -1,22 +1,22 @@
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { SCANNER_TYPE, SITE_TYPE } from 'ee/on_demand_scans/constants';
-import DastProfilesSidebarHeader from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar_header.vue';
+import DastProfilesDrawerHeader from 'ee/security_configuration/dast_profiles/dast_profiles_drawer/dast_profiles_drawer_header.vue';
 
 import { scannerProfiles } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
 
-describe('DastProfilesSidebarForm', () => {
+describe('DastProfilesDrawerForm', () => {
   let wrapper;
   const profile = scannerProfiles[0];
 
   const createComponent = (options = {}) => {
-    wrapper = mountExtended(DastProfilesSidebarHeader, {
+    wrapper = mountExtended(DastProfilesDrawerHeader, {
       propsData: {
         ...options,
       },
     });
   };
 
-  const findSidebarHeader = () => wrapper.findByTestId('sidebar-header');
+  const findDrawerHeader = () => wrapper.findByTestId('drawer-header');
   const findNewScanButton = () => wrapper.findByTestId('new-profile-button');
 
   describe.each`
@@ -33,7 +33,7 @@ describe('DastProfilesSidebarForm', () => {
     });
 
     it('should render correct header based on mode', () => {
-      expect(findSidebarHeader().text()).toContain(expectedResult);
+      expect(findDrawerHeader().text()).toContain(expectedResult);
     });
   });
 
