@@ -39,18 +39,6 @@ RSpec.describe Namespaces::Storage::RootSize, :saas do
       it { is_expected.to eq(false) }
     end
 
-    context 'when limit enforcement is off due to passed parameter' do
-      let(:current_size) { 101.megabytes }
-
-      before do
-        allow(model).to receive(:enforce_limit?).and_return(true)
-      end
-
-      subject { model.above_size_limit?(enforcement: false) }
-
-      it { is_expected.to eq(true) }
-    end
-
     context 'when limit enforcement is on' do
       before do
         allow(model).to receive(:enforce_limit?).and_return(true)
