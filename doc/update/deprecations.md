@@ -48,6 +48,25 @@ sole discretion of GitLab Inc.
 
 <div class="announcement-milestone">
 
+## Announced in 15.8
+
+<div class="deprecation removal-160 breaking-change">
+
+### Container Registry pull-through cache
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+The Container Registry pull-through cache is deprecated in GitLab 15.8 and will be removed in GitLab 16.0. While the Container Registry pull-through cache functionality is useful, we have not made significant changes to this feature. You can use the upstream version of the container registry to achieve the same functionality. Removing the pull-through cache allows us also to remove the upstream client code without sacrificing functionality.
+
+</div>
+</div>
+
+<div class="announcement-milestone">
+
 ## Announced in 15.7
 
 <div class="deprecation removal-160 breaking-change">
