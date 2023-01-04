@@ -118,7 +118,14 @@ export default {
   <div>
     <h4>{{ description }}</h4>
     <gl-skeleton-loader v-if="loadingTable" />
-    <comparison-table v-else-if="hasData" :table-data="allData" />
-    <gl-alert v-else variant="info" :dismissible="false">{{ $options.i18n.noData }}</gl-alert>
+    <gl-alert v-else-if="!hasData" variant="info" :dismissible="false">{{
+      $options.i18n.noData
+    }}</gl-alert>
+    <comparison-table
+      v-else
+      :table-data="allData"
+      :request-path="namespaceRequestPath"
+      :is-project="isProject"
+    />
   </div>
 </template>

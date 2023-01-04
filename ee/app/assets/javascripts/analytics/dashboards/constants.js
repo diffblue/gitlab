@@ -1,4 +1,5 @@
 import { s__, __ } from '~/locale';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import { days, percentHundred } from '~/lib/utils/unit_format';
 import { thWidthPercent } from '~/lib/utils/table_utility';
 import {
@@ -143,3 +144,68 @@ export const DASHBOARD_TABLE_FIELDS = [
     thClass: thWidthPercent(15),
   },
 ];
+
+export const METRIC_TOOLTIPS = {
+  [DEPLOYMENT_FREQUENCY_METRIC_TYPE]: {
+    description: s__(
+      'DORA4Metrics|Average number of deployments to production per day. This metric measures how often value is delivered to end users.',
+    ),
+    groupLink: '-/analytics/ci_cd?tab=deployment-frequency',
+    projectLink: '-/pipelines/charts?chart=deployment-frequency',
+    docsLink: helpPagePath('user/analytics/dora_metrics', { anchor: 'deployment-frequency' }),
+  },
+  [LEAD_TIME_FOR_CHANGES]: {
+    description: s__(
+      'DORA4Metrics|The time to successfully deliver a commit into production. This metric reflects the efficiency of CI/CD pipelines.',
+    ),
+    groupLink: '-/analytics/ci_cd?tab=lead-time',
+    projectLink: '-/pipelines/charts?chart=lead-time',
+    docsLink: helpPagePath('user/analytics/dora_metrics', { anchor: 'lead-time-for-changes' }),
+  },
+  [TIME_TO_RESTORE_SERVICE]: {
+    description: s__(
+      'DORA4Metrics|The time it takes an organization to recover from a failure in production.',
+    ),
+    groupLink: '-/analytics/ci_cd?tab=time-to-restore-service',
+    projectLink: '-/pipelines/charts?chart=time-to-restore-service',
+    docsLink: helpPagePath('user/analytics/dora_metrics', { anchor: 'time-to-restore-service' }),
+  },
+  [CHANGE_FAILURE_RATE]: {
+    description: s__(
+      'DORA4Metrics|Percentage of deployments that cause an incident in production.',
+    ),
+    groupLink: '-/analytics/ci_cd?tab=change-failure-rate',
+    projectLink: '-/pipelines/charts?chart=change-failure-rate',
+    docsLink: helpPagePath('user/analytics/dora_metrics', { anchor: 'change-failure-rate' }),
+  },
+  [LEAD_TIME_METRIC_TYPE]: {
+    description: s__('DORA4Metrics|Median time from issue created to issue closed.'),
+    groupLink: '-/analytics/value_stream_analytics',
+    projectLink: '-/value_stream_analytics',
+    docsLink: helpPagePath('user/analytics/value_stream_analytics', {
+      anchor: 'view-the-lead-time-and-cycle-time-for-issues',
+    }),
+  },
+  [CYCLE_TIME_METRIC_TYPE]: {
+    description: s__(
+      "DORA4Metrics|Median time from the earliest commit of a linked issue's merge request to when that issue is closed.",
+    ),
+    groupLink: '-/analytics/value_stream_analytics',
+    projectLink: '-/value_stream_analytics',
+    docsLink: helpPagePath('user/analytics/value_stream_analytics', {
+      anchor: 'view-the-lead-time-and-cycle-time-for-issues',
+    }),
+  },
+  [ISSUES_METRIC_TYPE]: {
+    description: s__('DORA4Metrics|Number of new issues created.'),
+    groupLink: '-/issues_analytics',
+    projectLink: '-/analytics/issues_analytics',
+    docsLink: helpPagePath('user/analytics/issue_analytics'),
+  },
+  [DEPLOYS_METRIC_TYPE]: {
+    description: s__('DORA4Metrics|Total number of deploys to production.'),
+    groupLink: '-/analytics/productivity_analytics',
+    projectLink: '-/analytics/merge_request_analytics',
+    docsLink: helpPagePath('user/analytics/merge_request_analytics'),
+  },
+};
