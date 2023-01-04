@@ -23,6 +23,20 @@ module EE
         create_note(NoteSummary.new(noteable, project, author, body, action: 'health_status'))
       end
 
+      # Called when the progress of a WorkItem is changed
+      #
+      # Example Note text:
+      #
+      #   "changed progress to 10"
+      #
+      # Returns the created Note object
+      def change_progress_note
+        progress = noteable.progress&.progress
+        body = "changed progress to **#{progress}**"
+
+        create_note(NoteSummary.new(noteable, project, author, body, action: 'progress'))
+      end
+
       # Called when the an issue is published to a project's
       # status page application
       #

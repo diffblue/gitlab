@@ -55,6 +55,21 @@ RSpec.describe ::SystemNotes::IssuablesService do
     end
   end
 
+  describe '#change_progress_note' do
+    let_it_be(:noteable) { create(:work_item, :objective, project: project) }
+    let_it_be(:progress) { create(:progress, work_item: noteable) }
+
+    subject { service.change_progress_note }
+
+    it_behaves_like 'a system note' do
+      let(:action) { 'progress' }
+    end
+
+    it 'sets the progress text' do
+      expect(subject.note).to eq "changed progress to **#{progress&.progress}**"
+    end
+  end
+
   describe '#publish_issue_to_status_page' do
     let_it_be(:noteable) { create(:issue, project: project) }
 
