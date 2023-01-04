@@ -10,7 +10,8 @@ module Gitlab
 
     def self.scanner_for_pipeline(pipeline)
       klass = scanner_class
-      klass.new(pipeline.project, pipeline)
+      project = pipeline.project unless pipeline.blank?
+      klass.new(project, pipeline)
     end
 
     # TODO: return ::Gitlab::LicenseScanning::SbomScanner

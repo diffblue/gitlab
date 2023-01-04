@@ -122,6 +122,8 @@ module EE
         batch_lookup_report_artifact_for_file_type(:license_scanning).present?
       end
 
+      # Deprecated: use Gitlab::LicenseScanning to generate a scanner and call #report instead.
+      # More info: https://gitlab.com/groups/gitlab-org/-/epics/8532
       def license_scanning_report
         ::Gitlab::Ci::Reports::LicenseScanning::Report.new.tap do |license_scanning_report|
           latest_report_builds(::Ci::JobArtifact.of_report_type(:license_scanning)).each do |build|

@@ -183,7 +183,11 @@ module EE
     def has_denied_policies?
       return false unless project.feature_available?(:license_scanning)
 
-      return false unless has_license_scanning_reports?
+      return false unless actual_head_pipeline
+
+      return false unless ::Gitlab::LicenseScanning
+        .scanner_for_pipeline(actual_head_pipeline)
+        .results_available?
 
       return false if has_approved_license_check?
 
@@ -224,10 +228,6 @@ module EE
       return missing_report_error("dependency scanning") unless has_dependency_scanning_reports?
 
       compare_reports(::Ci::CompareSecurityReportsService, current_user, 'dependency_scanning')
-    end
-
-    def has_license_scanning_reports?
-      !!actual_head_pipeline&.complete_and_has_reports?(::Ci::JobArtifact.of_report_type(:license_scanning))
     end
 
     def has_container_scanning_reports?
