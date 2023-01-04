@@ -12,6 +12,7 @@ module SCA
     def initialize(project, pipeline)
       @project = project
       @pipeline = pipeline
+      @scanner = ::Gitlab::LicenseScanning.scanner_for_pipeline(pipeline)
     end
 
     def policies
@@ -58,13 +59,13 @@ module SCA
 
     def license_scanning_report
       strong_memoize(:license_scanning_report) do
-        pipeline.blank? ? empty_report : pipeline.license_scanning_report
+        scanner.report
       end
     end
 
     private
 
-    attr_reader :project, :pipeline
+    attr_reader :project, :pipeline, :scanner
 
     def known_policies
       return {} if project.blank?
@@ -89,10 +90,6 @@ module SCA
 
         [reported_license.canonical_id, build_policy(reported_license, nil)]
       end.compact.to_h
-    end
-
-    def empty_report
-      ::Gitlab::Ci::Reports::LicenseScanning::Report.new
     end
 
     def build_policy(reported_license, software_license_policy)
