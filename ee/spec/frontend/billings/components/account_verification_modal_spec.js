@@ -1,13 +1,18 @@
 import { GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import AccountVerificationModal from 'ee/billings/components/account_verification_modal.vue';
-import Zuora from 'ee/billings/components/zuora.vue';
+import { nextTick } from 'vue';
+import AccountVerificationModal, {
+  IFRAME_MINIMUM_HEIGHT,
+} from 'ee/billings/components/account_verification_modal.vue';
+import Zuora from 'ee/billings/components/zuora_simple.vue';
 import { verificationModalDefaultGon, verificationModalDefaultProps } from '../mock_data';
 
 describe('Account verification modal', () => {
   let wrapper;
 
   const originalGon = window.gon;
+  const findModal = () => wrapper.findComponent({ ref: 'modal' });
+  const zuoraSubmitSpy = jest.fn();
 
   const createComponent = () => {
     wrapper = shallowMount(AccountVerificationModal, {
@@ -18,15 +23,12 @@ describe('Account verification modal', () => {
     });
   };
 
-  const findModal = () => wrapper.findComponent({ ref: 'modal' });
-
-  const zuoraSubmitSpy = jest.fn();
-
   beforeEach(() => {
     window.gon = {
       ...originalGon,
       ...verificationModalDefaultGon,
     };
+    createComponent();
   });
 
   afterEach(() => {
@@ -35,10 +37,6 @@ describe('Account verification modal', () => {
   });
 
   describe('on creation', () => {
-    beforeEach(() => {
-      createComponent();
-    });
-
     it('renders the title', () => {
       expect(findModal().attributes('title')).toBe('Validate user account');
     });
@@ -46,13 +44,37 @@ describe('Account verification modal', () => {
     it('renders the description', () => {
       expect(wrapper.find('p').text()).toContain('To use free CI/CD minutes');
     });
+
+    it('renders the Zuora component', () => {
+      expect(wrapper.findComponent(Zuora).props()).toEqual({
+        currentUserId: 300,
+        initialHeight: IFRAME_MINIMUM_HEIGHT,
+        paymentFormId: 'payment-validation-page-id',
+      });
+    });
+
+    it('passes the correct props to the button', () => {
+      expect(findModal().props('actionPrimary').attributes).toMatchObject({
+        disabled: false,
+        variant: 'confirm',
+      });
+    });
+  });
+
+  describe('when zuora emits load error', () => {
+    it('disables the CTA on the modal', async () => {
+      wrapper.findComponent(Zuora).vm.$emit('load-error');
+
+      await nextTick();
+
+      expect(findModal().props('actionPrimary').attributes).toMatchObject({
+        disabled: true,
+        variant: 'confirm',
+      });
+    });
   });
 
   describe('when zuora emits success', () => {
-    beforeEach(() => {
-      createComponent();
-    });
-
     it('forwards the success event up', () => {
       wrapper.findComponent(Zuora).vm.$emit('success');
 

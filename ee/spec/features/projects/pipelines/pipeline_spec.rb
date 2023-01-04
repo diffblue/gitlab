@@ -324,9 +324,19 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
       create(:gitlab_subscription, :active_trial, namespace: namespace, hosted_plan: ultimate_plan)
     end
 
-    context 'with payment validation via CustomersDot iframe' do
+    context 'with payment validation via CustomersDot api' do
       before do
-        stub_feature_flags(use_api_for_payment_validation: false)
+        stub_request(:get, "#{EE::SUBSCRIPTIONS_URL}/payment_forms/payment_method_validation")
+          .with(
+            headers: {
+              'Accept' => 'application/json',
+              'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+              'Content-Type' => 'application/json',
+              'User-Agent' => 'Ruby',
+              'X-Admin-Email' => 'gl_com_api@gitlab.com',
+              'X-Admin-Token' => 'customer_admin_token'
+            })
+          .to_return(status: 200, body: "", headers: {})
       end
 
       it 'redirects to pipeline page with account validation modal opened' do
