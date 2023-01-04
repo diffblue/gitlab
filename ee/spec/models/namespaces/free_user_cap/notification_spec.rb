@@ -151,8 +151,8 @@ RSpec.describe Namespaces::FreeUserCap::Notification, :saas do
 
       context 'when the namespace is over storage limit' do
         before do
-          allow_next_instance_of(::Namespaces::Storage::RootSize, namespace) do |instance|
-            allow(instance).to receive(:above_size_limit?).with(enforcement: false).and_return(true)
+          allow_next_instance_of(::Namespaces::FreeUserCap::RootSize, namespace) do |instance|
+            allow(instance).to receive(:above_size_limit?).and_return(true)
           end
         end
 

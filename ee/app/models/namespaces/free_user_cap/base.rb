@@ -62,7 +62,7 @@ module Namespaces
       end
 
       def above_size_limit?
-        ::Namespaces::Storage::RootSize.new(root_namespace).above_size_limit?(enforcement: false)
+        ::Namespaces::FreeUserCap::RootSize.new(root_namespace).above_size_limit?
       end
 
       def max_limit
