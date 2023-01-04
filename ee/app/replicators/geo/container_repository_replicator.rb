@@ -42,7 +42,7 @@ module Geo
       end
 
       def data_type
-        'repository'
+        'container_repository'
       end
 
       def data_type_title
