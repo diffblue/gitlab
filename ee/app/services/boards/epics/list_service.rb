@@ -16,16 +16,13 @@ module Boards
         super(items)
       end
 
-      def query_additions(items, required_fields)
-        return items unless required_fields&.include?(:total_weight)
-
-        items.left_joins(epic_issues: :issue)
-      end
-
       def metadata_fields(required_fields)
         fields = super
 
-        fields[:total_weight] = 'SUM(weight)' if required_fields&.include?(:total_weight)
+        if required_fields&.include?(:total_weight)
+          fields[:total_weight] = 'COALESCE(SUM(total_opened_issue_weight+total_closed_issue_weight), 0)'
+        end
+
         fields[:epics_count] = 'COUNT(distinct epics.id)' if required_fields&.include?(:epics_count)
         fields
       end

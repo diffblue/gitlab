@@ -67,7 +67,7 @@ RSpec.describe 'get list of epic boards', feature_category: :portfolio_managemen
       expect { post_graphql(pagination_query, current_user: current_user) }.not_to exceed_query_limit(control)
     end
 
-    describe 'field values' do
+    describe 'field values', :sidekiq_inline do
       let_it_be(:other_user) { create(:user) }
 
       it 'returns the correct values for collapsed' do
@@ -101,8 +101,8 @@ RSpec.describe 'get list of epic boards', feature_category: :portfolio_managemen
 
         expect(list_nodes).to match [
           a_hash_including('epicsCount' => 1, 'metadata' => { 'epicsCount' => 1, 'totalWeight' => 7 }),
-          a_hash_including('epicsCount' => 0, 'metadata' => { 'epicsCount' => 0, 'totalWeight' => nil }),
-          a_hash_including('epicsCount' => 0, 'metadata' => { 'epicsCount' => 0, 'totalWeight' => nil })
+          a_hash_including('epicsCount' => 0, 'metadata' => { 'epicsCount' => 0, 'totalWeight' => 0 }),
+          a_hash_including('epicsCount' => 0, 'metadata' => { 'epicsCount' => 0, 'totalWeight' => 0 })
         ]
       end
 

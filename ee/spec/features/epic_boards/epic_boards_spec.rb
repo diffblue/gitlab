@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'epic boards', :js, feature_category: :portfolio_management do
+RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio_management do
   include DragTo
   include MobileHelpers
 
@@ -20,7 +20,9 @@ RSpec.describe 'epic boards', :js, feature_category: :portfolio_management do
 
   let_it_be(:epic1) { create(:epic, group: group, labels: [label], author: user, title: 'Epic1') }
   let_it_be(:epic2) { create(:epic, group: group, title: 'Epic2') }
-  let_it_be(:epic3) { create(:epic, group: group, labels: [label2], issues: [issue_with_weight], title: 'Epic3') }
+  let_it_be(:epic3) { create(:epic, group: group, labels: [label2], title: 'Epic3') }
+
+  let!(:epic_issue) { create(:epic_issue, epic: epic3, issue: issue_with_weight) }
 
   let(:edit_board) { find('.btn', text: 'Edit board') }
   let(:view_scope) { find('.btn', text: 'View scope') }
