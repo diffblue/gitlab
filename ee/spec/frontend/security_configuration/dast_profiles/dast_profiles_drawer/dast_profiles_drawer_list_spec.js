@@ -1,7 +1,7 @@
 import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { SCANNER_TYPE, SITE_TYPE } from 'ee/on_demand_scans/constants';
-import DastProfilesSidebarList from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar_list.vue';
+import DastProfilesDrawerList from 'ee/security_configuration/dast_profiles/dast_profiles_drawer/dast_profiles_drawer_list.vue';
 import ScannerProfileSummary from 'ee/security_configuration/dast_profiles/dast_profile_selector/scanner_profile_summary.vue';
 import SiteProfileSummary from 'ee/security_configuration/dast_profiles/dast_profile_selector/site_profile_summary.vue';
 import {
@@ -9,11 +9,11 @@ import {
   siteProfiles,
 } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
 
-describe('DastProfilesSidebarList', () => {
+describe('DastProfilesDrawerList', () => {
   let wrapper;
 
   const createComponent = (options = {}) => {
-    wrapper = mountExtended(DastProfilesSidebarList, {
+    wrapper = mountExtended(DastProfilesDrawerList, {
       propsData: {
         ...options,
       },

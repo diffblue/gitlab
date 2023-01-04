@@ -5,7 +5,7 @@ import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { queryToObject } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import { TYPE_SCANNER_PROFILE, TYPE_SITE_PROFILE } from '~/graphql_shared/constants';
-import DastProfilesSidebar from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar.vue';
+import DastProfilesDrawer from 'ee/security_configuration/dast_profiles/dast_profiles_drawer/dast_profiles_drawer.vue';
 import ScannerProfileSelector from 'ee/security_configuration/dast_profiles/dast_profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from 'ee/security_configuration/dast_profiles/dast_profile_selector/site_profile_selector.vue';
 import dastProfileConfiguratorMixin from 'ee/security_configuration/dast_profiles/dast_profiles_configurator_mixin';
@@ -13,7 +13,7 @@ import {
   DAST_CONFIGURATION_HELP_PATH,
   SCANNER_TYPE,
   SITE_TYPE,
-  SIDEBAR_VIEW_MODE,
+  DRAWER_VIEW_MODE,
 } from 'ee/on_demand_scans/constants';
 import SectionLayout from '~/vue_shared/security_configuration/components/section_layout.vue';
 import {
@@ -53,7 +53,7 @@ const createProfilesApolloOptions = (name, field, savedField, { fetchQuery, fetc
 export default {
   SCANNER_TYPE,
   SITE_TYPE,
-  SIDEBAR_VIEW_MODE,
+  DRAWER_VIEW_MODE,
   dastConfigurationHelpPath: DAST_CONFIGURATION_HELP_PATH,
   name: 'DastProfilesConfigurator',
   i18n: {
@@ -65,7 +65,7 @@ export default {
   components: {
     GlLink,
     GlSprintf,
-    DastProfilesSidebar,
+    DastProfilesDrawer,
     ScannerProfileSelector,
     SiteProfileSelector,
     SectionLayout,
@@ -183,9 +183,6 @@ export default {
     libraryLink() {
       return this.isScannerProfile ? this.scannerProfilesLibraryPath : this.siteProfilesLibraryPath;
     },
-    isSidebarOpenComputed() {
-      return this.isSideDrawerOpen || this.open;
-    },
   },
   watch: {
     selectedScannerProfile: 'updateProfiles',
@@ -214,7 +211,7 @@ export default {
 
       this.$nextTick(() => {
         this.selectActiveProfile(profileType);
-        this.openProfileDrawer({ profileType, mode: SIDEBAR_VIEW_MODE.EDITING_MODE });
+        this.openProfileDrawer({ profileType, mode: DRAWER_VIEW_MODE.EDITING_MODE });
       });
     },
     reopenProfileDrawer() {
@@ -314,7 +311,7 @@ export default {
           @open-drawer="
             openProfileDrawer({
               profileType: $options.SCANNER_TYPE,
-              mode: $options.SIDEBAR_VIEW_MODE.READING_MODE,
+              mode: $options.DRAWER_VIEW_MODE.READING_MODE,
             })
           "
           @edit="
@@ -331,7 +328,7 @@ export default {
           @open-drawer="
             openProfileDrawer({
               profileType: $options.SITE_TYPE,
-              mode: $options.SIDEBAR_VIEW_MODE.READING_MODE,
+              mode: $options.DRAWER_VIEW_MODE.READING_MODE,
             })
           "
           @edit="
@@ -343,7 +340,7 @@ export default {
       </template>
     </section-layout>
 
-    <dast-profiles-sidebar
+    <dast-profiles-drawer
       :profiles="selectedProfiles"
       :profile-id-in-use="profileIdInUse"
       :active-profile="activeProfile"

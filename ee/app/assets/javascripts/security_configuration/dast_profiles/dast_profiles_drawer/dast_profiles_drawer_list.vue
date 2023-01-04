@@ -2,15 +2,15 @@
 import { SCANNER_TYPE } from 'ee/on_demand_scans/constants';
 import ScannerProfileSummary from 'ee/security_configuration/dast_profiles/dast_profile_selector/scanner_profile_summary.vue';
 import SiteProfileSummary from 'ee/security_configuration/dast_profiles/dast_profile_selector/site_profile_summary.vue';
-import dastProfilesSidebarMixin from './dast_profiles_sidebar_mixin';
+import dastProfilesDrawerMixin from './dast_profiles_drawer_mixin';
 
 export default {
-  name: 'DastProfilesSidebarList',
+  name: 'DastProfilesDrawerList',
   components: {
     ScannerProfileSummary,
     SiteProfileSummary,
   },
-  mixins: [dastProfilesSidebarMixin()],
+  mixins: [dastProfilesDrawerMixin()],
   props: {
     profiles: {
       type: Array,
@@ -45,7 +45,7 @@ export default {
 </script>
 
 <template>
-  <div data-testid="dast-profiles-sidebar list">
+  <div data-testid="dast-profiles-drawer list">
     <component
       :is="summaryComponent"
       v-for="profile in profiles"

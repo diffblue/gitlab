@@ -1,5 +1,5 @@
-import { SCANNER_TYPE, SIDEBAR_VIEW_MODE } from 'ee/on_demand_scans/constants';
-import getSharedStateQuery from 'ee/vue_shared/security_configuration/graphql/client/queries/shared_sidebar_state.query.graphql';
+import { SCANNER_TYPE, DRAWER_VIEW_MODE } from 'ee/on_demand_scans/constants';
+import getSharedStateQuery from 'ee/vue_shared/security_configuration/graphql/client/queries/shared_drawer_state.query.graphql';
 import goFirstStepMutation from 'ee/vue_shared/security_configuration/graphql/client/mutations/go_first_history_step.mutation.graphql';
 import goForwardMutation from 'ee/vue_shared/security_configuration/graphql/client/mutations/go_forward_history.mutation.graphql';
 import discardMutationsMutation from 'ee/vue_shared/security_configuration/graphql/client/mutations/discard_changes.mutation.graphql';
@@ -34,9 +34,9 @@ export default () => ({
     profileType() {
       return this.sharedData.history?.[this.lastHistoryIndex]?.profileType || SCANNER_TYPE;
     },
-    sidebarViewMode() {
+    drawerViewMode() {
       return (
-        this.sharedData.history?.[this.lastHistoryIndex]?.mode || SIDEBAR_VIEW_MODE.READING_MODE
+        this.sharedData.history?.[this.lastHistoryIndex]?.mode || DRAWER_VIEW_MODE.READING_MODE
       );
     },
     eventName() {

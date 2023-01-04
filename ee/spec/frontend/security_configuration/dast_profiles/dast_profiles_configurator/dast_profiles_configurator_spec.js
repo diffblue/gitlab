@@ -10,14 +10,15 @@ import ScannerProfileSelector from 'ee/security_configuration/dast_profiles/dast
 import SiteProfileSelector from 'ee/security_configuration/dast_profiles/dast_profile_selector/site_profile_selector.vue';
 import ScannerProfileSummary from 'ee/security_configuration/dast_profiles/dast_profile_selector/scanner_profile_summary.vue';
 import SiteProfileSummary from 'ee/security_configuration/dast_profiles/dast_profile_selector/site_profile_summary.vue';
-import DastProfilesSidebar from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar.vue';
-import DastProfilesSidebarList from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar_list.vue';
-import DastProfilesSidebarForm from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar_form.vue';
+import DastProfilesDrawer from 'ee/security_configuration/dast_profiles/dast_profiles_drawer/dast_profiles_drawer.vue';
+import DastProfilesDrawerList from 'ee/security_configuration/dast_profiles/dast_profiles_drawer/dast_profiles_drawer_list.vue';
+import DastProfilesDrawerForm from 'ee/security_configuration/dast_profiles/dast_profiles_drawer/dast_profiles_drawer_form.vue';
 import SectionLayout from '~/vue_shared/security_configuration/components/section_layout.vue';
 import SectionLoader from '~/vue_shared/security_configuration/components/section_loader.vue';
 import dastScannerProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql';
 import dastSiteProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql';
 import resolvers from 'ee/vue_shared/security_configuration/graphql/resolvers/resolvers';
+import { DRAWER_VIEW_MODE, SCANNER_TYPE, SITE_TYPE } from 'ee/on_demand_scans/constants';
 import { typePolicies } from 'ee/vue_shared/security_configuration/graphql/provider';
 import waitForPromises from 'helpers/wait_for_promises';
 import createApolloProvider from 'helpers/mock_apollo_helper';
@@ -64,9 +65,9 @@ describe('DastProfilesConfigurator', () => {
   const findSiteProfilesSelector = () => wrapper.findComponent(SiteProfileSelector);
   const findAllScannerProfileSummary = () => wrapper.findAllComponents(ScannerProfileSummary);
   const findAllSiteProfileSummary = () => wrapper.findAllComponents(SiteProfileSummary);
-  const findDastProfileSidebar = () => wrapper.findComponent(DastProfilesSidebar);
-  const findDastProfilesSidebarList = () => wrapper.findComponent(DastProfilesSidebarList);
-  const findDastProfilesSidebarForm = () => wrapper.findComponent(DastProfilesSidebarForm);
+  const findDastProfileDrawer = () => wrapper.findComponent(DastProfilesDrawer);
+  const findDastProfilesDrawerList = () => wrapper.findComponent(DastProfilesDrawerList);
+  const findDastProfilesDrawerForm = () => wrapper.findComponent(DastProfilesDrawerForm);
 
   const openDrawer = async () => {
     findOpenDrawerButton().vm.$emit('click');
@@ -154,21 +155,37 @@ describe('DastProfilesConfigurator', () => {
       await waitForPromises();
     });
 
-    it('should open drawer with scanner profiles', async () => {
-      findScannerProfilesSelector().vm.$emit('open-drawer');
-      await waitForPromises();
+    it.each`
+      findProfileSelector            | findAllProfileSummary           | expectedLength
+      ${findScannerProfilesSelector} | ${findAllScannerProfileSummary} | ${scannerProfiles.length}
+      ${findSiteProfilesSelector}    | ${findAllSiteProfileSummary}    | ${siteProfiles.length}
+    `(
+      'should open drawer with profiles',
+      async ({ findProfileSelector, findAllProfileSummary, expectedLength }) => {
+        findProfileSelector().vm.$emit('open-drawer');
+        await waitForPromises();
 
-      expect(findDastProfileSidebar().exists()).toBe(true);
-      expect(findAllScannerProfileSummary()).toHaveLength(scannerProfiles.length);
-    });
+        expect(findDastProfileDrawer().exists()).toBe(true);
+        expect(findAllProfileSummary()).toHaveLength(expectedLength);
+      },
+    );
 
-    it('should open drawer with site profiles', async () => {
-      findSiteProfilesSelector().vm.$emit('open-drawer');
-      await waitForPromises();
+    it.each`
+      findProfileSelector            | expectedPayload
+      ${findScannerProfilesSelector} | ${{ mode: DRAWER_VIEW_MODE.EDITING_MODE, profileType: SCANNER_TYPE }}
+      ${findSiteProfilesSelector}    | ${{ mode: DRAWER_VIEW_MODE.EDITING_MODE, profileType: SITE_TYPE }}
+    `(
+      'should open drawer with selected profile in edit mode',
+      async ({ findProfileSelector, expectedPayload }) => {
+        const openDrawerSpy = jest.spyOn(wrapper.vm, 'openProfileDrawer');
+        findProfileSelector().vm.$emit('edit');
+        await waitForPromises();
 
-      expect(findDastProfileSidebar().exists()).toBe(true);
-      expect(findAllSiteProfileSummary()).toHaveLength(siteProfiles.length);
-    });
+        expect(findDastProfileDrawer().exists()).toBe(true);
+        expect(findDastProfilesDrawerForm().exists()).toBe(true);
+        expect(openDrawerSpy).toHaveBeenCalledWith(expectedPayload);
+      },
+    );
   });
 
   describe('saved profiles', () => {
@@ -222,13 +239,13 @@ describe('DastProfilesConfigurator', () => {
     const expectEditingMode = async () => {
       findNewScanButton().vm.$emit('click');
       await waitForPromises();
-      expect(findDastProfilesSidebarForm().exists()).toBe(true);
+      expect(findDastProfilesDrawerForm().exists()).toBe(true);
     };
 
     it('should have reading mode by default', async () => {
       await openDrawer();
 
-      expect(findDastProfilesSidebarList().exists()).toBe(true);
+      expect(findDastProfilesDrawerList().exists()).toBe(true);
     });
 
     it('should have editing mode by default', async () => {
@@ -243,7 +260,7 @@ describe('DastProfilesConfigurator', () => {
       findCancelButton().vm.$emit('click');
       await waitForPromises();
 
-      expect(findDastProfilesSidebarList().exists()).toBe(true);
+      expect(findDastProfilesDrawerList().exists()).toBe(true);
     });
   });
 
