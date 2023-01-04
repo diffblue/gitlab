@@ -41,3 +41,5 @@ export const FETCH_ERROR_MESSAGE = __(
 export const FETCH_EXPORT_ERROR_MESSAGE = s__(
   'Dependencies|Error exporting the dependency list. Please reload the page.',
 );
+
+export const DEPENDENCIES_FILENAME = 'dependencies.json';
