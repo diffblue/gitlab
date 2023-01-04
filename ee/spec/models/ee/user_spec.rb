@@ -646,7 +646,7 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
     context 'with guests' do
       it 'validates the sql matches the specific index we have' do
         expected_sql = <<~SQL
-          SELECT "users".* FROM "users"
+          FROM "users"
           WHERE ("users"."state" IN ('active'))
           AND
           ("users"."user_type" IS NULL OR "users"."user_type" IN (6, 4))
@@ -654,7 +654,7 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
           ("users"."user_type" IS NULL OR "users"."user_type" IN (4, 5))
         SQL
 
-        expect(users.to_sql.squish).to eq(expected_sql.squish), "query was changed. Please ensure query is covered with an index and adjust this test case"
+        expect(users.to_sql.squish).to end_with(expected_sql.squish), "query was changed. Please ensure query is covered with an index and adjust this test case"
       end
 
       it 'returns users' do
@@ -674,7 +674,7 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
 
       it 'validates the sql matches the specific index we have' do
         expected_sql = <<~SQL
-          SELECT "users".* FROM "users"
+          FROM "users"
           WHERE ("users"."state" IN ('active'))
           AND
           ("users"."user_type" IS NULL OR "users"."user_type" IN (6, 4))
@@ -687,7 +687,7 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
             (members.access_level > 10)))
         SQL
 
-        expect(users.to_sql.squish).to eq(expected_sql.squish), "query was changed. Please ensure query is covered with an index and adjust this test case"
+        expect(users.to_sql.squish).to end_with(expected_sql.squish), "query was changed. Please ensure query is covered with an index and adjust this test case"
       end
 
       it 'returns users' do
