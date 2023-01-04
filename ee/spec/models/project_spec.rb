@@ -2323,25 +2323,13 @@ RSpec.describe Project do
           jira_import.start
         end
 
-        it 'schedules mirror update' do
-          expect(RepositoryUpdateMirrorWorker).to receive(:perform_in)
+        it 'triggers mirror update' do
+          expect(RepositoryUpdateMirrorWorker).to receive(:perform_async)
           expect(Gitlab::JiraImport::Stage::StartImportWorker).not_to receive(:perform_async)
           expect(project.mirror).to be true
           expect(project.jira_import?).to be true
 
           project.add_import_job
-        end
-
-        context 'with :delay_for_repository_update_mirror feature flag disabled' do
-          before do
-            stub_feature_flags(delay_for_repository_update_mirror: false)
-          end
-
-          it 'triggers job without a delay' do
-            expect(RepositoryUpdateMirrorWorker).to receive(:perform_async)
-
-            project.add_import_job
-          end
         end
       end
     end
@@ -2809,7 +2797,7 @@ RSpec.describe Project do
         it 'schedules RepositoryUpdateMirrorWorker' do
           project = create(:project, :mirror, :repository)
 
-          expect(RepositoryUpdateMirrorWorker).to receive(:perform_in).with(20.seconds, project.id).and_return(import_jid)
+          expect(RepositoryUpdateMirrorWorker).to receive(:perform_async).with(project.id).and_return(import_jid)
           expect(project.add_import_job).to eq(import_jid)
         end
       end
