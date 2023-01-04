@@ -52,4 +52,8 @@ class DastScannerProfile < ApplicationRecord
       configuration.active_policy_names_with_dast_scanner_profile(name)
     end
   end
+
+  def tag_list
+    tags.map(&:name)
+  end
 end

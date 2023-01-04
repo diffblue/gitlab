@@ -43,6 +43,8 @@ module Types
       null: true, calls_gitaly: true,
       description: 'List of security policy names that are referencing given project.'
 
+    field :tag_list, [GraphQL::Types::String], null: true, description: 'Runner tags associated with the scanner profile.'
+
     def edit_path
       Rails.application.routes.url_helpers.edit_project_security_configuration_profile_library_dast_scanner_profile_path(object.project, object)
     end

@@ -4,18 +4,12 @@ module AppSec
   module Dast
     module ScannerProfiles
       class CreateService < BaseService
-        def execute(name:, target_timeout:, spider_timeout:, scan_type:, use_ajax_spider:, show_debug_messages:)
+        def execute
           return ServiceResponse.error(message: 'Insufficient permissions') unless allowed?
 
-          dast_scanner_profile = DastScannerProfile.create(
-            project: project,
-            name: name,
-            target_timeout: target_timeout,
-            spider_timeout: spider_timeout,
-            scan_type: scan_type,
-            use_ajax_spider: use_ajax_spider,
-            show_debug_messages: show_debug_messages
-          )
+          return ServiceResponse.error(message: 'Invalid tag_list') unless valid_tags?
+
+          dast_scanner_profile = DastScannerProfile.create(create_params)
 
           if dast_scanner_profile.valid?
             create_audit_event(dast_scanner_profile)
@@ -40,6 +34,10 @@ module AppSec
             target: profile,
             message: "Added DAST scanner profile"
           )
+        end
+
+        def create_params
+          base_params.merge({ name: params[:name], project: project, tags: tags })
         end
       end
     end

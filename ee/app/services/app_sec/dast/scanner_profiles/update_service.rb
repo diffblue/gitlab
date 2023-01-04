@@ -6,25 +6,20 @@ module AppSec
       class UpdateService < BaseService
         include Gitlab::Allowable
 
-        def execute(id:, profile_name:, target_timeout:, spider_timeout:, scan_type: nil, use_ajax_spider: nil, show_debug_messages: nil)
+        def execute
           return unauthorized unless can_update_scanner_profile?
 
-          dast_scanner_profile = find_dast_scanner_profile(id)
+          dast_scanner_profile = find_dast_scanner_profile(params[:id])
           return ServiceResponse.error(message: _('Scanner profile not found for given parameters')) unless dast_scanner_profile
           return ServiceResponse.error(message: _('Cannot modify %{profile_name} referenced in security policy') % { profile_name: dast_scanner_profile.name }) if referenced_in_security_policy?(dast_scanner_profile)
 
-          old_params = dast_scanner_profile.attributes.symbolize_keys
-          params = {
-            name: profile_name,
-            target_timeout: target_timeout,
-            spider_timeout: spider_timeout,
-            scan_type: scan_type,
-            use_ajax_spider: use_ajax_spider,
-            show_debug_messages: show_debug_messages
-          }.compact
+          return ServiceResponse.error(message: 'Invalid tag_list') unless valid_tags?
 
-          if dast_scanner_profile.update(params)
-            create_audit_events(dast_scanner_profile, params, old_params)
+          old_params = dast_scanner_profile.attributes.symbolize_keys
+          update_params = update_params(params[:profile_name])
+
+          if dast_scanner_profile.update(update_params)
+            create_audit_events(dast_scanner_profile, update_params, old_params)
 
             ServiceResponse.success(payload: dast_scanner_profile)
           else
@@ -51,6 +46,8 @@ module AppSec
         end
 
         def create_audit_events(profile, params, old_params)
+          params.delete(:tags) if tag_list?
+
           params.each do |property, new_value|
             old_value = old_params[property]
 
@@ -64,6 +61,13 @@ module AppSec
               message: "Changed DAST scanner profile #{property} from #{old_value} to #{new_value}"
             )
           end
+        end
+
+        def update_params(profile_name)
+          params = base_params
+          params[:name] = profile_name
+          params[:tags] = tags if tag_list?
+          params.compact
         end
       end
     end
