@@ -1,6 +1,7 @@
 <script>
 import { GlModal, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import Zuora from 'ee/billings/components/zuora_simple.vue';
 
 export const IFRAME_MINIMUM_HEIGHT = 350;
 const i18n = Object.freeze({
@@ -14,10 +15,7 @@ export default {
   components: {
     GlModal,
     GlSprintf,
-    Zuora: () =>
-      window.gon?.features?.useApiForPaymentValidation
-        ? import('ee/billings/components/zuora_simple.vue')
-        : import('ee/billings/components/zuora.vue'),
+    Zuora,
   },
   props: {
     iframeUrl: {
