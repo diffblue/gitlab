@@ -253,7 +253,7 @@ export const receiveRemoveItemFailure = ({ commit }, { item, status }) => {
         : relatedIssuesRemoveErrorMap[issuableType],
   });
 };
-export const removeItem = ({ dispatch }, { parentItem, item }) => {
+export const removeItem = ({ state, dispatch }, { parentItem, item }) => {
   dispatch('requestRemoveItem', {
     item,
   });
@@ -266,7 +266,9 @@ export const removeItem = ({ dispatch }, { parentItem, item }) => {
         item,
       });
 
-      dispatch('updateChildrenCount', { item, isRemoved: true });
+      dispatch('fetchItems', {
+        parentItem: state.parentItem,
+      });
     })
     .catch(({ status }) => {
       dispatch('receiveRemoveItemFailure', {
@@ -323,10 +325,6 @@ export const receiveAddItemSuccess = ({ dispatch, commit, getters }, { rawItems 
     items,
   });
 
-  items.forEach((item) => {
-    dispatch('updateChildrenCount', { item });
-  });
-
   dispatch('setItemChildrenFlags', {
     children: items,
     isSubItem: false,
@@ -355,6 +353,9 @@ export const addItem = ({ state, dispatch, getters }) => {
       dispatch('receiveAddItemSuccess', {
         // Newly added item is always first in the list
         rawItems: data.issuables.slice(0, state.pendingReferences.length),
+      });
+      dispatch('fetchItems', {
+        parentItem: state.parentItem,
       });
     })
     .catch((data) => {
