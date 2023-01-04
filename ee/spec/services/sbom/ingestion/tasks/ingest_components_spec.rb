@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Sbom::Ingestion::Tasks::IngestComponents, feature_category: :dependency_management do
   describe '#execute' do
-    let_it_be(:pipeline) { create(:ci_pipeline) }
+    let_it_be(:pipeline) { build_stubbed(:ci_pipeline) }
 
     let(:occurrence_maps) { create_list(:sbom_occurrence_map, 4) }
     let!(:existing_component) { create(:sbom_component, **occurrence_maps.first.to_h.slice(:component_type, :name)) }
