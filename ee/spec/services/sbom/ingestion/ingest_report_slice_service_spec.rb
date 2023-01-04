@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Sbom::Ingestion::IngestReportSliceService, feature_category: :dependency_management do
   let_it_be(:num_occurrences) { 10 }
-  let_it_be(:pipeline) { create(:ci_pipeline) }
+  let_it_be(:pipeline) { build_stubbed(:ci_pipeline) }
   let_it_be(:occurrence_maps) { create_list(:sbom_occurrence_map, num_occurrences) }
 
   let(:sequencer) { ::Ingestion::Sequencer.new }
