@@ -717,131 +717,23 @@ RSpec.describe GitlabSubscription, :saas do
     end
   end
 
-  context 'when in a trial' do
+  describe '#trial_extended_or_reactivated?' do
     let_it_be(:gitlab_subscription, reload: true) { create(:gitlab_subscription, :active_trial) }
 
-    let(:start_trial_on) { nil }
-    let(:end_trial_on) { nil }
-    let(:trial_extension_type) { nil }
-
     before do
-      gitlab_subscription.trial_starts_on = start_trial_on if start_trial_on
-      gitlab_subscription.trial_ends_on = end_trial_on if end_trial_on
       gitlab_subscription.trial_extension_type = trial_extension_type
     end
 
-    describe '#trial_extended_or_reactivated?' do
-      subject { gitlab_subscription.trial_extended_or_reactivated? }
+    subject { gitlab_subscription.trial_extended_or_reactivated? }
 
-      where(:trial_extension_type, :extended_or_reactivated) do
-        nil | false
-        1   | true
-        2   | true
-      end
-
-      with_them do
-        it { is_expected.to be(extended_or_reactivated) }
-      end
+    where(:trial_extension_type, :extended_or_reactivated) do
+      nil | false
+      1 | true
+      2 | true
     end
 
-    describe '#trial_days_remaining' do
-      subject { gitlab_subscription.trial_days_remaining }
-
-      context 'at the beginning of a trial' do
-        let(:start_trial_on) { Date.current }
-        let(:end_trial_on) { Date.current.advance(days: 30) }
-
-        it { is_expected.to eq(30) }
-      end
-
-      context 'in the middle of a trial' do
-        it { is_expected.to eq(15) }
-      end
-
-      context 'at the end of a trial' do
-        let(:start_trial_on) { Date.current.advance(days: -30) }
-        let(:end_trial_on) { Date.current }
-
-        it { is_expected.to eq(0) }
-      end
-    end
-
-    describe '#trial_duration' do
-      subject { gitlab_subscription.trial_duration }
-
-      context 'for a default trial duration' do
-        it { is_expected.to eq(30) }
-      end
-
-      context 'for a custom trial duration' do
-        let(:start_trial_on) { Date.current.advance(days: -5) }
-        let(:end_trial_on) { Date.current.advance(days: 5) }
-
-        it { is_expected.to eq(10) }
-      end
-    end
-
-    describe '#trial_days_used' do
-      subject { gitlab_subscription.trial_days_used }
-
-      context 'for the beginning of a trial' do
-        let(:start_trial_on) { Date.current }
-        let(:end_trial_on) { Date.current.advance(days: 30) }
-
-        it { is_expected.to eq(1) }
-      end
-
-      context 'in the middle of a trial' do
-        it { is_expected.to eq(15) }
-      end
-
-      context 'for the end of a trial' do
-        let(:start_trial_on) { Date.current.advance(days: -30) }
-        let(:end_trial_on) { Date.current }
-
-        it { is_expected.to eq(30) }
-      end
-    end
-
-    describe '#trial_percentage_complete' do
-      subject { gitlab_subscription.trial_percentage_complete }
-
-      context 'for the beginning of a trial' do
-        let(:start_trial_on) { Date.current }
-        let(:end_trial_on) { Date.current.advance(days: 30) }
-
-        it { is_expected.to eq(3.33) }
-      end
-
-      context 'for the middle of a trial' do
-        it { is_expected.to eq(50.0) }
-      end
-
-      context 'for the end of a trial' do
-        let(:start_trial_on) { Date.current.advance(days: -30) }
-        let(:end_trial_on) { Date.current }
-
-        it { is_expected.to eq(100.0) }
-      end
-
-      context 'rounding' do
-        let(:start_trial_on) { Date.current.advance(days: -10) }
-        let(:end_trial_on) { Date.current.advance(days: 20) }
-
-        context 'by default' do
-          it 'rounds to 2 decimal places' do
-            is_expected.to eq(33.33)
-          end
-        end
-
-        context 'with custom rounding options' do
-          subject { gitlab_subscription.trial_percentage_complete(4) }
-
-          it 'rounds to the given number of decimal places' do
-            is_expected.to eq(33.3333)
-          end
-        end
-      end
+    with_them do
+      it { is_expected.to be(extended_or_reactivated) }
     end
   end
 
