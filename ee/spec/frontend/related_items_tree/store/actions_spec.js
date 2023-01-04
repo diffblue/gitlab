@@ -783,6 +783,7 @@ describe('RelatedItemTree', () => {
 
         beforeEach(() => {
           mock = new MockAdapter(axios);
+          state.parentItem = mockParentItem;
         });
 
         afterEach(() => {
@@ -807,8 +808,8 @@ describe('RelatedItemTree', () => {
                 payload: { parentItem: data.parentItem, item: data.item },
               },
               {
-                type: 'updateChildrenCount',
-                payload: { item: data.item, isRemoved: true },
+                type: 'fetchItems',
+                payload: { parentItem: mockParentItem },
               },
             ],
           );
@@ -952,14 +953,6 @@ describe('RelatedItemTree', () => {
             ],
             [
               {
-                type: 'updateChildrenCount',
-                payload: { item: mockEpicsWithoutPerm[0] },
-              },
-              {
-                type: 'updateChildrenCount',
-                payload: { item: mockEpicsWithoutPerm[1] },
-              },
-              {
                 type: 'setItemChildrenFlags',
                 payload: { children: mockEpicsWithoutPerm, isSubItem: false },
               },
@@ -1023,6 +1016,7 @@ describe('RelatedItemTree', () => {
 
         beforeEach(() => {
           mock = new MockAdapter(axios);
+          state.parentItem = mockParentItem;
         });
 
         afterEach(() => {
@@ -1049,6 +1043,10 @@ describe('RelatedItemTree', () => {
               {
                 type: 'receiveAddItemSuccess',
                 payload: { rawItems: [mockEpic1] },
+              },
+              {
+                type: 'fetchItems',
+                payload: { parentItem: mockParentItem },
               },
             ],
           );
