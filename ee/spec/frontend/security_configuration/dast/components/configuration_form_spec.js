@@ -223,7 +223,7 @@ describe('EE - DAST Configuration Form', () => {
     });
   });
 
-  describe('toggle sidebars', () => {
+  describe('toggle drawers', () => {
     beforeEach(() => {
       createComponent(
         {},
@@ -235,7 +235,7 @@ describe('EE - DAST Configuration Form', () => {
       );
     });
 
-    it('should close toggle sidebars when one sidebar opens', async () => {
+    it('should close toggle drawers when one drawer opens', async () => {
       findPreScanVerificationConfigurator().vm.$emit('open-drawer');
       await nextTick();
 

@@ -5,17 +5,17 @@ import { __ } from '~/locale';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import DastProfilesSidebar from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar.vue';
+import DastProfilesDrawer from 'ee/security_configuration/dast_profiles/dast_profiles_drawer/dast_profiles_drawer.vue';
 import DastProfilesLoader from 'ee/security_configuration/dast_profiles/components/dast_profiles_loader.vue';
 import {
   scannerProfiles,
   mockSharedData,
 } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
-import { SCANNER_TYPE, SIDEBAR_VIEW_MODE } from 'ee/on_demand_scans/constants';
+import { SCANNER_TYPE, DRAWER_VIEW_MODE } from 'ee/on_demand_scans/constants';
 import resolvers from 'ee/vue_shared/security_configuration/graphql/resolvers/resolvers';
 import { typePolicies } from 'ee/vue_shared/security_configuration/graphql/provider';
 
-describe('DastProfilesSidebar', () => {
+describe('DastProfilesDrawer', () => {
   let wrapper;
   let fakeApollo;
   const projectPath = 'projectPath';
@@ -26,7 +26,7 @@ describe('DastProfilesSidebar', () => {
   const createComponent = (options = {}) => {
     fakeApollo = createMockApollo([], resolvers, { typePolicies });
 
-    wrapper = mountExtended(DastProfilesSidebar, {
+    wrapper = mountExtended(DastProfilesDrawer, {
       apolloProvider: fakeApollo,
       propsData: {
         ...options,
@@ -44,7 +44,7 @@ describe('DastProfilesSidebar', () => {
   const findProfileNameInput = () => wrapper.findByTestId('profile-name-input');
   const findModal = () => wrapper.findByTestId('dast-profile-form-cancel-modal');
   const findEditButton = () => wrapper.findByTestId('profile-edit-btn');
-  const findSidebarHeader = () => wrapper.findByTestId('sidebar-header');
+  const findDrawerHeader = () => wrapper.findByTestId('drawer-header');
   const findEmptyStateHeader = () => wrapper.findByTestId('empty-state-header');
   const findNewScanButton = () => wrapper.findByTestId('new-profile-button');
   const findFooterLink = () => wrapper.findComponent(GlLink);
@@ -70,7 +70,7 @@ describe('DastProfilesSidebar', () => {
 
     expect(findEmptyStateHeader().exists()).toBe(true);
     expect(findEmptyStateHeader().text()).toContain(`No ${SCANNER_TYPE} profiles found for DAST`);
-    expect(findSidebarHeader().text()).toContain('Scanner profile library');
+    expect(findDrawerHeader().text()).toContain('Scanner profile library');
   });
 
   it('should render new scan button when profiles exists', async () => {
@@ -94,7 +94,7 @@ describe('DastProfilesSidebar', () => {
       await waitForPromises();
 
       expect(wrapper.emitted()).toEqual({
-        'reopen-drawer': [[{ mode: SIDEBAR_VIEW_MODE.EDITING_MODE, profileType: SCANNER_TYPE }]],
+        'reopen-drawer': [[{ mode: DRAWER_VIEW_MODE.EDITING_MODE, profileType: SCANNER_TYPE }]],
       });
       expect(findNewScanButton().exists()).toBe(false);
     });
@@ -130,7 +130,7 @@ describe('DastProfilesSidebar', () => {
 
       expect(findNewDastScannerProfileForm().exists()).toBe(true);
       expect(findNewScanButton().exists()).toBe(false);
-      expect(findSidebarHeader().text()).toContain('Edit scanner profile');
+      expect(findDrawerHeader().text()).toContain('Edit scanner profile');
     });
   });
 

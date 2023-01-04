@@ -1,4 +1,4 @@
-import getSharedStateQuery from '../client/queries/shared_sidebar_state.query.graphql';
+import getSharedStateQuery from '../client/queries/shared_drawer_state.query.graphql';
 
 export default {
   Mutation: {

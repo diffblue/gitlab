@@ -3,20 +3,20 @@ import { isEmpty } from 'lodash';
 import { GlButton } from '@gitlab/ui';
 import { s__, sprintf } from '~/locale';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
-import dastProfilesSidebarMixin from './dast_profiles_sidebar_mixin';
+import dastProfilesDrawerMixin from './dast_profiles_drawer_mixin';
 
 export default {
   i18n: {
-    scanSidebarHeader: s__('OnDemandScans|%{profileType} profile library'),
-    scanCreateSidebarHeader: s__('OnDemandScans|New %{profileType} profile'),
-    scanEditSidebarHeader: s__('OnDemandScans|Edit %{profileType} profile'),
-    scanSidebarHeaderButton: s__('OnDemandScans|New profile'),
+    scanDrawerHeader: s__('OnDemandScans|%{profileType} profile library'),
+    scanCreateDrawerHeader: s__('OnDemandScans|New %{profileType} profile'),
+    scanEditDrawerHeader: s__('OnDemandScans|Edit %{profileType} profile'),
+    scanDrawerHeaderButton: s__('OnDemandScans|New profile'),
   },
-  name: 'DastProfilesSidebarHeader',
+  name: 'DastProfilesDrawerHeader',
   components: {
     GlButton,
   },
-  mixins: [dastProfilesSidebarMixin()],
+  mixins: [dastProfilesDrawerMixin()],
   props: {
     isEditingMode: {
       type: Boolean,
@@ -30,15 +30,15 @@ export default {
     },
   },
   computed: {
-    sidebarHeader() {
-      return sprintf(this.$options.i18n.scanSidebarHeader, {
+    drawerHeader() {
+      return sprintf(this.$options.i18n.scanDrawerHeader, {
         profileType: capitalizeFirstCharacter(this.profileType),
       });
     },
     editingModeHeader() {
       const header = !isEmpty(this.profile)
-        ? this.$options.i18n.scanEditSidebarHeader
-        : this.$options.i18n.scanCreateSidebarHeader;
+        ? this.$options.i18n.scanEditDrawerHeader
+        : this.$options.i18n.scanCreateDrawerHeader;
 
       return sprintf(header, { profileType: this.profileType });
     },
@@ -48,9 +48,9 @@ export default {
 
 <template>
   <div class="gl-display-flex gl-w-full gl-align-items-center gl-justify-content-space-between">
-    <h4 data-testid="sidebar-header" class="sidebar-header gl-font-size-h2 gl-my-0 gl-mr-3">
+    <h4 data-testid="drawer-header" class="gl-font-size-h2 gl-my-0 gl-mr-3">
       <template v-if="!isEditingMode">
-        {{ sidebarHeader }}
+        {{ drawerHeader }}
       </template>
       <template v-else>
         {{ editingModeHeader }}
@@ -65,7 +65,7 @@ export default {
       data-testid="new-profile-button"
       @click="$emit('click')"
     >
-      {{ $options.i18n.scanSidebarHeaderButton }}
+      {{ $options.i18n.scanDrawerHeaderButton }}
     </gl-button>
   </div>
 </template>
