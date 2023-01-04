@@ -8,15 +8,25 @@ module Gitlab
       end
 
       def report
-        raise "Not implemented"
+        pipeline.blank? ? empty_report : pipeline.license_scanning_report
       end
 
       def has_data?
-        raise "Not implemented"
+        return false if pipeline.blank?
+
+        pipeline.batch_lookup_report_artifact_for_file_type(:license_scanning).present?
       end
 
       def results_available?
-        raise "Not implemented"
+        return false if pipeline.blank?
+
+        pipeline.complete_and_has_reports?(::Ci::JobArtifact.of_report_type(:license_scanning))
+      end
+
+      private
+
+      def empty_report
+        ::Gitlab::Ci::Reports::LicenseScanning::Report.new
       end
     end
   end

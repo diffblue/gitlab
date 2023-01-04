@@ -912,7 +912,8 @@ module EE
       !!merge_requests_disable_committers_approval
     end
 
-    def license_compliance(pipeline = latest_default_branch_pipeline_with_reports(::Ci::JobArtifact.of_report_type(:license_scanning)))
+    def license_compliance(pipeline = nil)
+      pipeline ||= ::Gitlab::LicenseScanning.scanner_for_project(self).pipeline
       SCA::LicenseCompliance.new(self, pipeline)
     end
 
