@@ -11,7 +11,6 @@ module EE
         before_action do
           push_frontend_feature_flag(:pipeline_security_dashboard_graphql, project, type: :development)
           push_frontend_feature_flag(:graphql_code_quality_full_report, project, type: :development)
-          push_frontend_feature_flag(:use_api_for_payment_validation, project)
         end
 
         feature_category :license_compliance, [:licenses]
