@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Member, type: :model do
-  let_it_be(:user) { build :user }
+  let_it_be(:user) { create :user }
   let_it_be(:group) { create :group }
   let_it_be(:member) { build :group_member, source: group, user: user }
   let_it_be(:sub_group) { create(:group, parent: group) }
@@ -447,7 +447,7 @@ RSpec.describe Member, type: :model do
     context 'when user exists' do
       let_it_be(:member) { create(:group_member, :owner, group: group) }
 
-      it 'does not call track!' do
+      it 'calls track!' do
         expect(::Elastic::ProcessBookkeepingService).to receive(:track!)
 
         subject

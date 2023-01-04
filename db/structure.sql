@@ -18260,6 +18260,7 @@ CREATE TABLE namespace_settings (
     only_allow_merge_if_all_discussions_are_resolved boolean DEFAULT false NOT NULL,
     default_compliance_framework_id bigint,
     runner_registration_enabled boolean DEFAULT true,
+    allow_runner_registration_token boolean DEFAULT true NOT NULL,
     CONSTRAINT check_0ba93c78c7 CHECK ((char_length(default_branch_name) <= 255)),
     CONSTRAINT namespace_settings_unique_project_download_limit_allowlist_size CHECK ((cardinality(unique_project_download_limit_allowlist) <= 100))
 );
