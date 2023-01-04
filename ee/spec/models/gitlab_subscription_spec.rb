@@ -784,18 +784,18 @@ RSpec.describe GitlabSubscription, :saas do
     describe '#trial_days_used' do
       subject { gitlab_subscription.trial_days_used }
 
-      context 'at the beginning of a trial' do
+      context 'for the beginning of a trial' do
         let(:start_trial_on) { Date.current }
         let(:end_trial_on) { Date.current.advance(days: 30) }
 
-        it { is_expected.to eq(0) }
+        it { is_expected.to eq(1) }
       end
 
       context 'in the middle of a trial' do
         it { is_expected.to eq(15) }
       end
 
-      context 'at the end of a trial' do
+      context 'for the end of a trial' do
         let(:start_trial_on) { Date.current.advance(days: -30) }
         let(:end_trial_on) { Date.current }
 
@@ -806,18 +806,18 @@ RSpec.describe GitlabSubscription, :saas do
     describe '#trial_percentage_complete' do
       subject { gitlab_subscription.trial_percentage_complete }
 
-      context 'at the beginning of a trial' do
+      context 'for the beginning of a trial' do
         let(:start_trial_on) { Date.current }
         let(:end_trial_on) { Date.current.advance(days: 30) }
 
-        it { is_expected.to eq(0.0) }
+        it { is_expected.to eq(3.33) }
       end
 
-      context 'in the middle of a trial' do
+      context 'for the middle of a trial' do
         it { is_expected.to eq(50.0) }
       end
 
-      context 'at the end of a trial' do
+      context 'for the end of a trial' do
         let(:start_trial_on) { Date.current.advance(days: -30) }
         let(:end_trial_on) { Date.current }
 

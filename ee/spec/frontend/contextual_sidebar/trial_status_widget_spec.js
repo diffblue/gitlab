@@ -10,7 +10,6 @@ describe('TrialStatusWidget component', () => {
   const { trackingEvents } = WIDGET;
   const trialDaysUsed = 10;
   const trialDuration = 30;
-  const daysRemaining = 20;
 
   const findGlLink = () => wrapper.findComponent(GlLink);
 
@@ -19,7 +18,6 @@ describe('TrialStatusWidget component', () => {
       provide: {
         trialDaysUsed,
         trialDuration,
-        daysRemaining,
         navIconImagePath: 'illustrations/golden_tanuki.svg',
         percentageComplete: 10,
         planName: 'Ultimate',
@@ -70,6 +68,18 @@ describe('TrialStatusWidget component', () => {
       wrapper = createComponent({ planName: 'Ultimate Trial' });
 
       expect(wrapper.text()).toMatchInterpolatedText('Ultimate Trial Day 10/30');
+    });
+
+    it('shows the expected day 1 text', () => {
+      wrapper = createComponent({ trialDaysUsed: 1 });
+
+      expect(wrapper.text()).toMatchInterpolatedText('Ultimate Trial Day 1/30');
+    });
+
+    it('shows the expected last day text', () => {
+      wrapper = createComponent({ trialDaysUsed: 30 });
+
+      expect(wrapper.text()).toMatchInterpolatedText('Ultimate Trial Day 30/30');
     });
   });
 

@@ -18,7 +18,6 @@ RSpec.describe TrialStatusWidgetHelper, :saas do
     let(:shared_expected_attrs) do
       {
         container_id: 'trial-status-sidebar-widget',
-        days_remaining: trial_days_remaining,
         plan_name: 'Ultimate',
         plans_href: group_billings_path(group)
       }
@@ -41,6 +40,9 @@ RSpec.describe TrialStatusWidgetHelper, :saas do
 
     describe '#trial_status_popover_data_attrs' do
       let_it_be(:user) { create(:user) }
+      let(:expected_attrs) do
+        shared_expected_attrs.merge(days_remaining: trial_days_remaining)
+      end
 
       before do
         allow(helper).to receive(:current_user).and_return(user)
@@ -50,10 +52,10 @@ RSpec.describe TrialStatusWidgetHelper, :saas do
 
       it 'returns the needed data attributes for mounting the popover Vue component' do
         expect(data_attrs).to match(
-          shared_expected_attrs.merge(
+          expected_attrs.merge(
             group_name: group.name,
             purchase_href: purchase_href(group),
-            target_id: shared_expected_attrs[:container_id],
+            target_id: expected_attrs[:container_id],
             trial_end_date: trial_end_date
           )
         )
@@ -66,7 +68,7 @@ RSpec.describe TrialStatusWidgetHelper, :saas do
 
         it 'returns the needed data attributes for mounting the popover Vue component' do
           expect(data_attrs).to match(
-            shared_expected_attrs.merge(
+            expected_attrs.merge(
               namespace_id: group.id,
               user_name: user.username,
               first_name: user.first_name,
@@ -75,7 +77,7 @@ RSpec.describe TrialStatusWidgetHelper, :saas do
               glm_content: 'trial-status-show-group',
               group_name: group.name,
               purchase_href: purchase_href(group),
-              target_id: shared_expected_attrs[:container_id],
+              target_id: expected_attrs[:container_id],
               trial_end_date: trial_end_date
             )
           )

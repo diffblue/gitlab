@@ -134,7 +134,8 @@ class GitlabSubscription < ApplicationRecord
   end
 
   def trial_days_used
-    trial_duration - trial_days_remaining
+    duration = trial_duration - trial_days_remaining
+    duration.nonzero? || 1 # prevent showing 0 on day 1 of a trial
   end
 
   def trial_percentage_complete(decimal_places = 2)
