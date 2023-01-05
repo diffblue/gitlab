@@ -32607,6 +32607,9 @@ msgstr ""
 msgid "ProjectService|Trigger event when a wiki page is created or updated."
 msgstr ""
 
+msgid "ProjectService|Trigger event when an incident is created."
+msgstr ""
+
 msgid "ProjectService|Trigger event when an issue is created, updated, or closed."
 msgstr ""
 

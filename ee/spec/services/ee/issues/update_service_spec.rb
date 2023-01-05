@@ -568,6 +568,15 @@ RSpec.describe Issues::UpdateService do
           expect(project).to receive(:execute_hooks).with(expected_full_payload, :issue_hooks)
           expect(project).to receive(:execute_integrations).with(expected_full_payload, :issue_hooks)
 
+          # For incident specific actions
+          expected_full_payload = include(
+            expected_payload.merge(
+              event_type: 'incident',
+              object_kind: 'incident'
+            )
+          )
+          expect(project).to receive(:execute_integrations).with(expected_full_payload, :incident_hooks)
+
           update_issue(opts)
         end
       end
