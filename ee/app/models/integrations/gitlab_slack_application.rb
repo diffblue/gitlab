@@ -79,6 +79,10 @@ module Integrations
       Gitlab::Chat::Responder::Slack
     end
 
+    def upgrade_needed?
+      slack_integration.present? && slack_integration.upgrade_needed?
+    end
+
     private
 
     override :should_execute?
