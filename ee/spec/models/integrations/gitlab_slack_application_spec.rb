@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Integrations::GitlabSlackApplication do
+RSpec.describe Integrations::GitlabSlackApplication, feature_category: :integrations do
   include AfterNextHelpers
 
   it_behaves_like Integrations::BaseSlackNotification, factory: :gitlab_slack_application_integration do
@@ -190,6 +190,19 @@ RSpec.describe Integrations::GitlabSlackApplication do
           expect(integration.execute(data)).to be false
         end
       end
+    end
+  end
+
+  describe '#sections' do
+    it 'includes the expected sections' do
+      section_types = subject.sections.pluck(:type)
+
+      expect(section_types).to eq(
+        [
+          described_class::SECTION_TYPE_TRIGGER,
+          described_class::SECTION_TYPE_CONFIGURATION
+        ]
+      )
     end
   end
 
