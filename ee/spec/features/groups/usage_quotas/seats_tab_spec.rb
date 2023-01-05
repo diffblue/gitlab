@@ -219,6 +219,114 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
     end
   end
 
+  context 'with free user limit' do
+    let(:preview_free_user_cap) { false }
+    let(:free_user_cap) { false }
+    let(:awaiting_user_names) { awaiting_members.map { |m| m.user.name } }
+    let(:active_user_names) { active_members.map { |m| m.user.name } }
+
+    let_it_be(:group) { create(:group, :private) }
+    let_it_be(:awaiting_members) { create_list(:group_member, 3, :awaiting, source: group) }
+    let_it_be(:active_members) { create_list(:group_member, 1, source: group) }
+
+    before do
+      stub_feature_flags(preview_free_user_cap: preview_free_user_cap, free_user_cap: free_user_cap)
+      stub_ee_application_setting(dashboard_limit_enabled: true)
+      stub_ee_application_setting(dashboard_limit: 5)
+      allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService) do |instance|
+        allow(instance).to receive(:execute).and_return([{ 'code' => 'ultimate', 'id' => 'ultimate-plan-id' }])
+      end
+
+      visit group_seat_usage_path(group)
+      wait_for_requests
+    end
+
+    context 'when no feature flag enabled' do
+      it 'shows active users' do
+        expect(page.text).not_to include(*awaiting_user_names)
+        expect(page.text).to include(*active_user_names)
+        expect(page).to have_content("You have 3 pending members")
+        expect(page).to have_content("4 / Unlimited Seats in use")
+      end
+    end
+
+    context 'when free_user_cap enabled' do
+      let(:free_user_cap) { true }
+
+      context 'when on a free plan' do
+        it 'has correct seats in use and plans link' do
+          expect(page).to have_content("4 / 5 Seats in use")
+          expect(page).to have_link("Explore paid plans")
+        end
+      end
+
+      context 'when on a paid plan' do
+        let_it_be(:gitlab_subscription) { create(:gitlab_subscription, seats_in_use: 4, seats: 10, namespace: group) }
+
+        it 'shows active users' do
+          expect(page.text).not_to include(*awaiting_user_names)
+          expect(page.text).to include(*active_user_names)
+          expect(page).to have_content("You have 3 pending members")
+          expect(page).to have_content("4 / 10 Seats in use")
+        end
+      end
+
+      context 'when on a paid expired plan and over limit that is now free' do
+        let_it_be(:gitlab_subscription) { create(:gitlab_subscription, :expired, :free, namespace: group) }
+
+        let_it_be(:active_members) do
+          create_list(:group_member, 2, source: group)
+        end
+
+        it 'shows usage quota alert' do
+          expect(page).to have_content('Your free group is now limited to')
+          expect(page).to have_link('upgrade')
+
+          page.find("[data-testid='free-group-limited-dismiss']").click
+          expect(page).not_to have_content('Your free group is now limited to')
+
+          page.refresh
+          expect(page).not_to have_content('Your free group is now limited to')
+        end
+      end
+
+      context 'when on a trial' do
+        let_it_be(:gitlab_subscription) do
+          create(:gitlab_subscription, :active_trial, seats_in_use: 4, seats: 10, namespace: group)
+        end
+
+        it 'shows active users' do
+          expect(page.text).not_to include(*awaiting_user_names)
+          expect(page.text).to include(*active_user_names)
+          expect(page).to have_content("You have 3 pending members")
+          expect(page).to have_content("4 / Unlimited Seats in use")
+        end
+      end
+    end
+  end
+
+  context 'when over storage limit' do
+    let_it_be(:group) { create(:group, :private) }
+    let_it_be(:active_members) { create_list(:group_member, 3, source: group) }
+
+    before do
+      stub_application_setting(check_namespace_plan: true)
+
+      allow_next_found_instance_of(Group) do |instance|
+        allow(instance).to receive(:over_storage_limit?).and_return true
+      end
+    end
+
+    it 'shows active users' do
+      visit group_seat_usage_path(group)
+      wait_for_requests
+
+      active_user_names =  active_members.map { |m| m.user.name }
+
+      expect(page.text).to include(*active_user_names)
+    end
+  end
+
   def billable_member_modal_selector
     '[data-testid="remove-billable-member-modal"]'
   end
