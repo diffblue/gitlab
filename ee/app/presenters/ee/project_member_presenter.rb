@@ -10,6 +10,10 @@ module EE
       false
     end
 
+    def can_ban?
+      false
+    end
+
     def can_unban?
       false
     end

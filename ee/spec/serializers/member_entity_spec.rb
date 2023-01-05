@@ -50,6 +50,12 @@ RSpec.describe MemberEntity, feature_category: :authentication_and_authorization
       expect(entity_hash[:banned]).to be(true)
     end
 
+    it 'correctly exposes `can_ban`' do
+      allow(member).to receive(:can_ban?).and_return(true)
+
+      expect(entity_hash[:can_ban]).to be(true)
+    end
+
     it 'correctly exposes `can_unban`' do
       allow(member).to receive(:can_unban?).and_return(true)
 

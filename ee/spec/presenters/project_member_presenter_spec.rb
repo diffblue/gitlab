@@ -45,6 +45,10 @@ RSpec.describe ProjectMemberPresenter do
     end
   end
 
+  describe '#can_ban?' do
+    it { expect(presenter.can_ban?).to eq(false) }
+  end
+
   describe '#can_unban?' do
     it { expect(presenter.can_unban?).to eq(false) }
   end

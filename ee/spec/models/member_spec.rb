@@ -529,8 +529,8 @@ RSpec.describe Member, type: :model do
 
   describe '.banned_from scope' do
     let!(:group) { create :group }
-    let!(:member1) { create :group_member, source: group }
-    let!(:member2) { create :group_member, source: group }
+    let!(:member1) { create :group_member, :developer, source: group }
+    let!(:member2) { create :group_member, :developer, source: group }
     let!(:ban) { create :namespace_ban, namespace: group, user: member1.user }
 
     it 'returns only banned members from the given namespace' do

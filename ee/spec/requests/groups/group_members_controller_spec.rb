@@ -15,7 +15,7 @@ RSpec.describe Groups::GroupMembersController, feature_category: :subgroups do
   end
 
   describe 'GET /groups/*group_id/-/group_members' do
-    let(:banned_member) { create(:group_member, group: group) }
+    let(:banned_member) { create(:group_member, :developer, group: group) }
     let(:licensed_feature_available) { true }
 
     before do
@@ -83,13 +83,74 @@ RSpec.describe Groups::GroupMembersController, feature_category: :subgroups do
     end
   end
 
+  describe 'PUT /groups/*group_id/-/group_members/:id/ban' do
+    subject(:request) do
+      put ban_group_group_member_path(group_id: group, id: member)
+    end
+
+    context 'when current user is an owner' do
+      let(:member) { create(:group_member, :developer, group: group) }
+
+      shared_examples 'bans the user' do
+        it 'bans the user' do
+          expected_args = { user: member.user, namespace: group }
+          expect_next_instance_of(::Users::Abuse::NamespaceBans::CreateService, expected_args) do |service|
+            expect(service).to receive(:execute).and_return({ status: :success })
+          end
+
+          request
+        end
+      end
+
+      it_behaves_like 'bans the user'
+
+      it 'redirects back to group members page' do
+        request
+
+        expect(response).to redirect_to(group_group_members_path)
+        expect(flash[:notice]).to eq "User was successfully banned."
+      end
+
+      context 'when ban fails' do
+        let(:error_message) { 'Ban failed' }
+
+        it 'redirects back to group members page with the error message as alert' do
+          expected_args = { user: member.user, namespace: group }
+          allow_next_instance_of(::Users::Abuse::NamespaceBans::CreateService, expected_args) do |service|
+            allow(service).to receive(:execute).and_return({ status: :error, message: error_message })
+          end
+
+          request
+
+          expect(response).to redirect_to(group_group_members_path(group))
+          expect(flash[:alert]).to eq error_message
+        end
+      end
+    end
+
+    context 'when user cannot admin_group_member (not an owner)' do
+      let(:another_group) { create(:group) }
+      let(:member) { create(:group_member, group: another_group) }
+
+      before do
+        another_group.add_developer(user)
+      end
+
+      it 'returns 403' do
+        put ban_group_group_member_path(group_id: another_group, id: member)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+  end
+
   describe 'PUT /groups/*group_id/-/group_members/:id/unban' do
     subject(:request) do
       put unban_group_group_member_path(group_id: group, id: banned_member)
     end
 
     context 'when current user is an owner' do
-      let(:banned_member) { create(:group_member, group: group) }
+      let(:banned_member) { create(:group_member, :developer, group: group) }
       let!(:namespace_ban) { create(:namespace_ban, namespace: group, user: banned_member.user) }
 
       shared_examples 'unbans the user' do
