@@ -6,19 +6,6 @@ import csrf from '~/lib/utils/csrf';
 const CUBE_API_TOKEN = '1';
 const PRODUCT_ANALYTICS_CUBE_PROXY = '/api/v4/projects/:id/product_analytics/request';
 
-const createCubeJsApi = (projectId) =>
-  new CubejsApi(CUBE_API_TOKEN, {
-    transport: new HttpTransport({
-      apiUrl: PRODUCT_ANALYTICS_CUBE_PROXY.replace(':id', projectId),
-      method: 'POST',
-      headers: {
-        [csrf.headerKey]: csrf.token,
-        'X-Requested-With': 'XMLHttpRequest',
-      },
-      credentials: 'same-origin',
-    }),
-  });
-
 const convertToLineChartFormat = (resultSet) => {
   const seriesNames = resultSet.seriesNames();
   const pivot = resultSet.chartPivot();
@@ -59,6 +46,19 @@ const VISUALIZATION_PARSERS = {
   DataTable: convertToTableFormat,
   SingleStat: convertToSingleValue,
 };
+
+export const createCubeJsApi = (projectId) =>
+  new CubejsApi(CUBE_API_TOKEN, {
+    transport: new HttpTransport({
+      apiUrl: PRODUCT_ANALYTICS_CUBE_PROXY.replace(':id', projectId),
+      method: 'POST',
+      headers: {
+        [csrf.headerKey]: csrf.token,
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      credentials: 'same-origin',
+    }),
+  });
 
 export const fetch = async ({ projectId, visualizationType, query, queryOverrides = {} }) => {
   const resultSet = await createCubeJsApi(projectId).load({ ...query, ...queryOverrides });
