@@ -41,6 +41,30 @@ RSpec.describe Epics::CreateService do
       expect(NewEpicWorker).to have_received(:perform_async).with(epic.id, user.id)
     end
 
+    context 'handling parent change' do
+      context 'when parent is set' do
+        it 'creates system notes' do
+          subject
+
+          epic = Epic.last
+          expect(epic.parent).to eq(parent_epic)
+          expect(epic.notes.last.note).to eq("added epic #{parent_epic.to_reference} as parent epic")
+          expect(parent_epic.notes.last.note).to eq("added epic #{epic.to_reference} as child epic")
+        end
+      end
+
+      context 'when parent is not set' do
+        it 'does not create system notes' do
+          params[:parent_id] = nil
+          subject
+
+          epic = Epic.last
+          expect(epic.parent).to be_nil
+          expect(epic.notes).to be_empty
+        end
+      end
+    end
+
     context 'handling fixed dates' do
       it 'sets the fixed date correctly' do
         date = Date.new(2019, 10, 10)

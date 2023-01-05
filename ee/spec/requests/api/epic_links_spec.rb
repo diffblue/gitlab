@@ -216,9 +216,12 @@ RSpec.describe API::EpicLinks, feature_category: :portfolio_management do
         it 'returns 201 status' do
           subject
 
+          child_epic = Epic.last
           expect(response).to have_gitlab_http_status(:created)
           expect(response).to match_response_schema('public_api/v4/linked_epic', dir: 'ee')
-          expect(epic.reload.children).to include(Epic.last)
+          expect(epic.reload.children).to include(child_epic)
+          expect(epic.notes.last&.note).to eq("added epic #{child_epic.to_reference} as child epic")
+          expect(child_epic.notes.last&.note).to eq("added epic #{epic.to_reference} as parent epic")
         end
 
         context 'when the parent epic is confidential' do
