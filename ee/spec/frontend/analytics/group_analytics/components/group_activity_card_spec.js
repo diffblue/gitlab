@@ -7,6 +7,7 @@ import GroupActivityCard from 'ee/analytics/group_analytics/components/group_act
 import Api from 'ee/api';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
+import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 const TEST_GROUP_ID = 'gitlab-org';
 const TEST_GROUP_NAME = 'Gitlab Org';
@@ -16,6 +17,8 @@ const TEST_ISSUES_COUNT = { data: { issues_count: 20 } };
 const TEST_LARGE_ISSUES_COUNT = { data: { issues_count: 999 } };
 const TEST_NEW_MEMBERS_COUNT = { data: { new_members_count: 30 } };
 const TEST_LARGE_NEW_MEMBERS_COUNT = { data: { new_members_count: 998 } };
+
+jest.mock('~/lib/utils/url_utility');
 
 const mockActivityRequests = ({ issuesCount, mergeRequestsCount, newMembersCount }) => {
   jest
@@ -32,12 +35,14 @@ describe('GroupActivity component', () => {
   let mock;
 
   const createComponent = () => {
-    wrapper = mount(GroupActivityCard, {
-      provide: {
-        groupFullPath: TEST_GROUP_ID,
-        groupName: TEST_GROUP_NAME,
-      },
-    });
+    wrapper = extendedWrapper(
+      mount(GroupActivityCard, {
+        provide: {
+          groupFullPath: TEST_GROUP_ID,
+          groupName: TEST_GROUP_NAME,
+        },
+      }),
+    );
   };
 
   beforeEach(() => {
@@ -56,6 +61,7 @@ describe('GroupActivity component', () => {
   });
 
   const findAllSkeletonLoaders = () => wrapper.findAllComponents(GlSkeletonLoader);
+  const findAllSingleStatAnchors = () => wrapper.findAllByTestId('single-stat-link');
   const findAllSingleStats = () => wrapper.findAllComponents(GlSingleStat);
 
   it('fetches the metrics and updates isLoading properly', async () => {
@@ -90,18 +96,28 @@ describe('GroupActivity component', () => {
       createComponent();
     });
 
-    it.each`
-      index | value | title
-      ${0}  | ${10} | ${'Merge requests created'}
-      ${1}  | ${20} | ${'Issues created'}
-      ${2}  | ${30} | ${'Members added'}
-    `('renders a GlSingleStat for "$title"', async ({ index, value, title }) => {
-      const singleStat = findAllSingleStats().at(index);
+    describe.each`
+      index | value | title                       | link
+      ${0}  | ${10} | ${'Merge requests created'} | ${`/groups/${TEST_GROUP_ID}/-/analytics/productivity_analytics`}
+      ${1}  | ${20} | ${'Issues created'}         | ${`/groups/${TEST_GROUP_ID}/-/issues_analytics`}
+      ${2}  | ${30} | ${'Members added'}          | ${`/groups/${TEST_GROUP_ID}/-/group_members?sort=last_joined`}
+    `('for metric $title', ({ index, value, title, link }) => {
+      let anchor;
+      let singleStat;
 
-      await nextTick();
-      await waitForPromises();
-      expect(singleStat.props('value')).toBe(`${value}`);
-      expect(singleStat.props('title')).toBe(title);
+      beforeEach(() => {
+        anchor = findAllSingleStatAnchors().at(index);
+        singleStat = findAllSingleStats().at(index);
+      });
+
+      it('renders a GlSingleStat', () => {
+        expect(singleStat.props('value')).toBe(`${value}`);
+        expect(singleStat.props('title')).toBe(title);
+      });
+
+      it('redirects to the link on click', () => {
+        expect(anchor.attributes('href')).toBe(link);
+      });
     });
   });
 
@@ -123,11 +139,9 @@ describe('GroupActivity component', () => {
       ${0}  | ${'999+'} | ${'Merge requests created'}
       ${1}  | ${999}    | ${'Issues created'}
       ${2}  | ${998}    | ${'Members added'}
-    `('renders a GlSingleStat for "$title"', async ({ index, value, title }) => {
+    `('renders a GlSingleStat for "$title"', ({ index, value, title }) => {
       const singleStat = findAllSingleStats().at(index);
 
-      await nextTick();
-      await waitForPromises();
       expect(singleStat.props('value')).toBe(`${value}`);
       expect(singleStat.props('title')).toBe(title);
     });
