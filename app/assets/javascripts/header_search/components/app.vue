@@ -69,7 +69,6 @@ export default {
     return {
       showDropdown: false,
       isFocused: false,
-      cancelBlur: false,
       currentFocusIndex: SEARCH_BOX_INDEX,
     };
   },
@@ -163,65 +162,27 @@ export default {
   methods: {
     ...mapActions(['setSearch', 'fetchAutocompleteOptions', 'clearAutocomplete']),
     openDropdown() {
+      this.isFocused = true;
       this.showDropdown = true;
+      this.$emit('expandSearchBar', true);
 
-      // check isFocused state to avoid firing duplicate events
-      if (!this.isFocused) {
-        this.isFocused = true;
-        this.$emit('expandSearchBar', true);
-
-        Tracking.event(undefined, 'focus_input', {
-          label: 'global_search',
-          property: 'navigation_top',
-        });
-      }
+      Tracking.event(undefined, 'focusin_input', {
+        label: 'global_search',
+        property: 'navigation_top',
+      });
     },
     closeDropdown() {
+      this.isFocused = false;
       this.showDropdown = false;
     },
     collapseAndCloseSearchBar() {
-      // we need set-timeout to delay
-      // the search bar component removing
-      // the clear button from the DOM
-      // so we can focus on it
-      // set-timeout also allows for cancel
-      // mechanism of the running event in
-      // case we don’t want to collapse
-      // the searchbar
-      const blurTimer = setTimeout(() => {
-        this.closeDropdown();
-        this.isFocused = false;
-        this.$emit('collapseSearchBar');
+      this.closeDropdown();
+      this.$emit('collapseSearchBar');
 
-        Tracking.event(undefined, 'blur_input', {
-          label: 'global_search',
-          property: 'navigation_top',
-        });
-      }, 200);
-
-      // wait for the next event loop to
-      // make sure we are observing a new
-      // state of cancelBlur
-      setTimeout(() => {
-        if (this.cancelBlur) {
-          clearTimeout(blurTimer);
-          this.cancelBlur = false;
-        }
-      }, 0);
-    },
-    handleClearButtonFocus() {
-      this.cancelBlur = true;
-      this.isFocused = true;
-    },
-    handleClearButtonBlur() {
-      this.isFocused = false;
-
-      setTimeout(() => {
-        if (this.isFocused) {
-          this.cancelBlur = true;
-        }
-        this.collapseAndCloseSearchBar();
-      }, 0);
+      Tracking.event(undefined, 'focusout_input', {
+        label: 'global_search',
+        property: 'navigation_top',
+      });
     },
     submitSearch() {
       if (this.search?.length <= SEARCH_SHORTCUTS_MIN_CHARACTERS && this.currentFocusIndex < 0) {
@@ -275,13 +236,9 @@ export default {
       :placeholder="$options.i18n.searchGitlab"
       :aria-activedescendant="currentFocusedId"
       :aria-describedby="$options.SEARCH_INPUT_DESCRIPTION"
-      @focus="openDropdown"
-      @click="openDropdown"
-      @blur="collapseAndCloseSearchBar"
+      @focusin="openDropdown"
+      @focusout="collapseAndCloseSearchBar"
       @input="getAutocompleteOptions"
-      @clearButtonRelease="handleClearButtonBlur"
-      @clearButtonBlur="handleClearButtonBlur"
-      @clearButtonFocus="handleClearButtonFocus"
       @keydown.enter.stop.prevent="submitSearch"
       @keydown.esc.stop.prevent="closeDropdown"
     />
@@ -335,7 +292,6 @@ export default {
           :max="searchOptions.length - 1"
           :min="$options.FIRST_DROPDOWN_INDEX"
           :default-index="defaultIndex"
-          @tab="closeDropdown"
         />
         <header-search-default-items
           v-if="showDefaultItems"
