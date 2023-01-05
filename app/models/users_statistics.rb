@@ -19,10 +19,6 @@ class UsersStatistics < ApplicationRecord
     active + blocked
   end
 
-  def non_billable
-    bots + with_highest_role_guest
-  end
-
   class << self
     def latest
       order_created_at_desc.first
