@@ -12,7 +12,8 @@ module EE
           override :checks
           def checks
             super + [
-              ::SystemCheck::App::SearchCheck
+              ::SystemCheck::App::SearchCheck,
+              ::SystemCheck::App::AdvancedSearchMigrationsCheck
             ]
           end
         end

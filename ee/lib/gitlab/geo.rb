@@ -279,11 +279,16 @@ module Gitlab
     end
 
     def self.blob_replicator_classes
-      REPLICATOR_CLASSES.select { |replicator| replicator.ancestors.include?(::Geo::BlobReplicatorStrategy) }
+      enabled_replicator_classes.select do |replicator|
+        replicator.ancestors.include?(::Geo::BlobReplicatorStrategy)
+      end
     end
 
     def self.repository_replicator_classes
-      REPLICATOR_CLASSES.select { |replicator| replicator.ancestors.include?(::Geo::RepositoryReplicatorStrategy) }
+      enabled_replicator_classes.select do |replicator|
+        replicator.ancestors.include?(::Geo::RepositoryReplicatorStrategy) ||
+          replicator == ::Geo::ContainerRepositoryReplicator
+      end
     end
 
     def self.verification_enabled_replicator_classes
