@@ -143,16 +143,6 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
     )
   end
 
-  # rubocop: disable CodeReuse/ActiveRecord
-  def root_namespaces_sql
-    Namespace
-      .where('id = projects.namespace_id')
-      .roots
-      .as_ids
-      .to_sql
-  end
-  # rubocop: enable CodeReuse/ActiveRecord
-
   def pending_project_import_scheduling?
     ::Gitlab::Mirror.current_scheduling > 0
   end
