@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::SyncService do
+RSpec.describe Groups::SyncService, feature_category: :authentication_and_authorization do
   let(:user) { create(:user) }
 
   describe '#execute' do
@@ -178,6 +178,21 @@ RSpec.describe Groups::SyncService do
           expect(group2.members.find_by(user_id: user.id).access_level)
             .to eq(::Gitlab::Access::REPORTER)
         end
+      end
+    end
+
+    context 'when the user has an access request' do
+      before do
+        create(:group_member, :access_request, group: group1, user: user)
+      end
+
+      it 'accepts the access request successfully' do
+        expect(group1.members.find_by(user_id: user.id)).to be_nil
+
+        sync
+
+        expect(group1.members.find_by(user_id: user.id).access_level)
+          .to eq(::Gitlab::Access::DEVELOPER)
       end
     end
   end
