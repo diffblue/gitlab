@@ -1,4 +1,4 @@
-import { CubejsApi, HttpTransport } from '@cubejs-client/core';
+import { CubejsApi, HttpTransport, __setMockLoad } from '@cubejs-client/core';
 import {
   fetch,
   hasAnalyticsData,
@@ -7,13 +7,6 @@ import {
 import { mockCountResultSet, mockResultSet } from '../mock_data';
 
 const mockLoad = jest.fn().mockImplementation(() => mockResultSet);
-
-jest.mock('@cubejs-client/core', () => ({
-  CubejsApi: jest.fn().mockImplementation(() => ({
-    load: mockLoad,
-  })),
-  HttpTransport: jest.fn(),
-}));
 
 jest.mock('~/lib/utils/csrf', () => ({
   headerKey: 'mock-csrf-header',
@@ -38,6 +31,9 @@ const itSetsUpCube = () => {
 };
 
 describe('Cube Analytics Data Source', () => {
+  beforeEach(() => {
+    __setMockLoad(mockLoad);
+  });
   const projectId = 'TEST_ID';
   const visualizationType = 'LineChart';
   const query = { measures: ['Jitsu.count'] };
