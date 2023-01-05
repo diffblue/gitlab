@@ -113,49 +113,4 @@ RSpec.describe Groups::Analytics::CycleAnalyticsController, feature_category: :p
       end
     end
   end
-
-  context 'GET use_aggregated_backend' do
-    context 'when the license is not available' do
-      it 'renders 403 error' do
-        put(:use_aggregated_backend, params: { group_id: group, enabled: false })
-
-        expect(response).to have_gitlab_http_status(:forbidden)
-      end
-    end
-
-    context 'when the license is available' do
-      before do
-        stub_licensed_features(cycle_analytics_for_groups: true)
-      end
-
-      context 'when non-existent group is given' do
-        it 'renders 404 error' do
-          get(:use_aggregated_backend, params: { group_id: 'unknown' })
-
-          expect(response).to have_gitlab_http_status(:not_found)
-        end
-      end
-
-      it 'succeeds' do
-        put(:use_aggregated_backend, params: { group_id: group, enabled: false })
-
-        expect(response).to be_successful
-        expect(json_response['enabled']).to eq(false)
-      end
-
-      context 'when the aggregation record is already created' do
-        before do
-          aggregation = Analytics::CycleAnalytics::Aggregation.safe_create_for_namespace(group)
-          aggregation.update!(enabled: false)
-        end
-
-        it 'succeeds' do
-          put(:use_aggregated_backend, params: { group_id: group, enabled: true })
-
-          expect(response).to be_successful
-          expect(json_response['enabled']).to eq(true)
-        end
-      end
-    end
-  end
 end

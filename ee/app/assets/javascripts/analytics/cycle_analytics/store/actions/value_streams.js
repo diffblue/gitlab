@@ -2,18 +2,6 @@ import Api from 'ee/api';
 import { FETCH_VALUE_STREAM_DATA } from '../../constants';
 import * as types from '../mutation_types';
 
-export const updateAggregation = ({ commit, getters }, status) => {
-  const { currentGroupPath } = getters;
-  commit(types.REQUEST_UPDATE_AGGREGATION);
-
-  return Api.cycleAnalyticsUpdateAggregation(currentGroupPath, { enabled: status })
-    .then(() => commit(types.RECEIVE_UPDATE_AGGREGATION_SUCCESS))
-    .catch((err) => {
-      commit(types.RECEIVE_UPDATE_AGGREGATION_ERROR);
-      throw err;
-    });
-};
-
 export const receiveCreateValueStreamSuccess = ({ commit }, valueStream = {}) => {
   commit(types.RECEIVE_CREATE_VALUE_STREAM_SUCCESS, valueStream);
   commit(types.SET_CREATING_AGGREGATION, true);

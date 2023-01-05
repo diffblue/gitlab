@@ -36,9 +36,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
       resources :coverage_reports, only: :index
       resource :merge_request_analytics, only: :show
       resource :repository_analytics, only: :show
-      resource :cycle_analytics, only: :show, path: 'value_stream_analytics' do
-        put :use_aggregated_backend, on: :collection
-      end
+      resource :cycle_analytics, only: :show, path: 'value_stream_analytics'
       scope module: :cycle_analytics, as: 'cycle_analytics', path: 'value_stream_analytics' do
         resources :stages, only: [:index, :create, :update, :destroy] do
           member do

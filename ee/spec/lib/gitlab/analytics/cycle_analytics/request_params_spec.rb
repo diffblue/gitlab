@@ -247,14 +247,5 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams do
     subject(:value) { described_class.new(params).to_data_collector_params[:use_aggregated_data_collector] }
 
     it { is_expected.to eq(true) }
-
-    context 'when the aggregation is disabled by the user' do
-      before do
-        aggregation = ::Analytics::CycleAnalytics::Aggregation.safe_create_for_namespace(root_group)
-        aggregation.update!(enabled: false)
-      end
-
-      it { is_expected.to eq(false) }
-    end
   end
 end

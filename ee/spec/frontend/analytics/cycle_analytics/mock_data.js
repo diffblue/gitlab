@@ -58,7 +58,6 @@ export const endpoints = {
   tasksByTypeData: /analytics\/type_of_work\/tasks_by_type/,
   tasksByTypeTopLabelsData: /analytics\/type_of_work\/tasks_by_type\/top_labels/,
   valueStreamData: /analytics\/value_stream_analytics\/value_streams/,
-  valueStreamAggregationData: /analytics\/value_stream_analytics\/use_aggregated_backend/,
 };
 
 export const valueStreams = [
