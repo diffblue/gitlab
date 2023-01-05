@@ -12263,6 +12263,9 @@ msgstr ""
 msgid "CycleAnalytics|project dropdown filter"
 msgstr ""
 
+msgid "CycleAnalytics|the assigned object is not supported"
+msgstr ""
+
 msgid "DAG visualization requires at least 3 dependent jobs."
 msgstr ""
 
@@ -32632,6 +32635,9 @@ msgid "ProjectService|Trigger event when a pipeline status changes."
 msgstr ""
 
 msgid "ProjectService|Trigger event when a wiki page is created or updated."
+msgstr ""
+
+msgid "ProjectService|Trigger event when an incident is created."
 msgstr ""
 
 msgid "ProjectService|Trigger event when an issue is created, updated, or closed."

@@ -8,7 +8,7 @@ RSpec.describe Analytics::CycleAnalytics::ValueStreams::CreateService do
 
   let(:params) { {} }
 
-  subject { described_class.new(group: group, params: params, current_user: user).execute }
+  subject { described_class.new(namespace: group, params: params, current_user: user).execute }
 
   it_behaves_like 'common value stream service examples'
 

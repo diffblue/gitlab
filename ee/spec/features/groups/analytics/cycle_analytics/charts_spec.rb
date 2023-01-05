@@ -15,10 +15,10 @@ RSpec.describe 'Value stream analytics charts', :js, feature_category: :value_st
   let_it_be(:custom_value_stream_name) { "New created value stream" }
 
   let_it_be(:value_stream) do
-    create(:cycle_analytics_group_value_stream, group: group, name: custom_value_stream_name, stages: [
-             create(:cycle_analytics_group_stage, group: group, name: "Issue", relative_position: 1, start_event_identifier: :issue_created, end_event_identifier: :issue_closed),
-             create(:cycle_analytics_group_stage, group: group, name: "Code", relative_position: 2, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_merged),
-             create(:cycle_analytics_group_stage, group: group, name: "Milestone Plan", relative_position: 3, start_event_identifier: :issue_first_associated_with_milestone, end_event_identifier: :issue_first_added_to_board)
+    create(:cycle_analytics_group_value_stream, namespace: group, name: custom_value_stream_name, stages: [
+             create(:cycle_analytics_group_stage, namespace: group, name: "Issue", relative_position: 1, start_event_identifier: :issue_created, end_event_identifier: :issue_closed),
+             create(:cycle_analytics_group_stage, namespace: group, name: "Code", relative_position: 2, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_merged),
+             create(:cycle_analytics_group_stage, namespace: group, name: "Milestone Plan", relative_position: 3, start_event_identifier: :issue_first_associated_with_milestone, end_event_identifier: :issue_first_added_to_board)
            ])
   end
 

@@ -109,7 +109,7 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyCheckService, :aggregate_fa
     let!(:record2) { create(:issue, :closed, project: project2, created_at: 1.month.ago) }
     let!(:record3) { create(:issue, :closed, project: project2, created_at: 1.month.ago) }
 
-    let!(:stage) { create(:cycle_analytics_group_stage, group: group, start_event_identifier: :issue_created, end_event_identifier: :issue_closed) }
+    let!(:stage) { create(:cycle_analytics_group_stage, namespace: group, start_event_identifier: :issue_created, end_event_identifier: :issue_closed) }
 
     it_behaves_like 'consistency check examples'
   end
@@ -120,7 +120,7 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyCheckService, :aggregate_fa
     let!(:record2) { create(:merge_request, :closed_last_month, project: project2, created_at: 2.months.ago) }
     let!(:record3) { create(:merge_request, :closed_last_month, project: project2, created_at: 2.months.ago) }
 
-    let!(:stage) { create(:cycle_analytics_group_stage, group: group, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_closed) }
+    let!(:stage) { create(:cycle_analytics_group_stage, namespace: group, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_closed) }
 
     it_behaves_like 'consistency check examples'
   end

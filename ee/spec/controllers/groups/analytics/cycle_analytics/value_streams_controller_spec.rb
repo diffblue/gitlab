@@ -25,7 +25,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
     end
 
     context 'when persisted value streams present' do
-      let!(:value_stream) { create(:cycle_analytics_group_value_stream, group: group) }
+      let!(:value_stream) { create(:cycle_analytics_group_value_stream, namespace: group) }
 
       it 'succeeds' do
         get :index, params: params
@@ -39,7 +39,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
   end
 
   describe 'GET #show' do
-    let!(:value_stream) { create(:cycle_analytics_group_value_stream, group: group) }
+    let!(:value_stream) { create(:cycle_analytics_group_value_stream, namespace: group) }
 
     it 'succeeds' do
       get :show, params: params.merge(id: value_stream.id)
@@ -58,7 +58,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
   end
 
   describe 'GET #edit' do
-    let!(:value_stream) { create(:cycle_analytics_group_value_stream, group: group) }
+    let!(:value_stream) { create(:cycle_analytics_group_value_stream, namespace: group) }
 
     it 'succeeds' do
       get :edit, params: params.merge(id: value_stream.id)
@@ -176,7 +176,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
 
   describe 'PUT #update' do
     context 'with valid params' do
-      let!(:value_stream) { create(:cycle_analytics_group_value_stream, group: group, name: 'value stream') }
+      let!(:value_stream) { create(:cycle_analytics_group_value_stream, namespace: group, name: 'value stream') }
 
       it 'returns a successful 200 response' do
         put :update, params: { id: value_stream.id, group_id: group, value_stream: { name: 'new name' } }
@@ -208,7 +208,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
       end
 
       context 'with stages' do
-        let!(:stage) { create(:cycle_analytics_group_stage, group: group, value_stream: value_stream, name: 'stage 1', custom: true) }
+        let!(:stage) { create(:cycle_analytics_group_stage, namespace: group, value_stream: value_stream, name: 'stage 1', custom: true) }
 
         let(:value_stream_params) do
           {
@@ -285,7 +285,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
     end
 
     context 'when it is a custom value stream' do
-      let!(:value_stream) { create(:cycle_analytics_group_value_stream, group: group, name: 'some custom value stream') }
+      let!(:value_stream) { create(:cycle_analytics_group_value_stream, namespace: group, name: 'some custom value stream') }
       let!(:stage) { create(:cycle_analytics_group_stage, value_stream: value_stream) }
 
       it 'deletes the value stream and its stages, and returns a successful 200 response' do

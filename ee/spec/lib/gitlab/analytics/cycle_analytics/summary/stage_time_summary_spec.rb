@@ -11,7 +11,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary do
   let(:from) { 1.day.ago }
   let(:to) { nil }
   let(:options) { { from: from, to: to, current_user: user } }
-  let(:stage) { Analytics::CycleAnalytics::GroupStage.new(group: group) }
+  let(:stage) { Analytics::CycleAnalytics::GroupStage.new(namespace: group) }
 
   subject { described_class.new(stage, options: options).data }
 

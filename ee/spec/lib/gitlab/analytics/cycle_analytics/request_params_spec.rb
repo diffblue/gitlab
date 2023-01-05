@@ -187,7 +187,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams do
   end
 
   describe 'issuable filter params' do
-    let_it_be(:stage) { create(:cycle_analytics_group_stage, group: root_group) }
+    let_it_be(:stage) { create(:cycle_analytics_group_stage, namespace: root_group) }
 
     before do
       params.merge!(
@@ -250,7 +250,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams do
 
     context 'when the aggregation is disabled by the user' do
       before do
-        aggregation = ::Analytics::CycleAnalytics::Aggregation.safe_create_for_group(root_group)
+        aggregation = ::Analytics::CycleAnalytics::Aggregation.safe_create_for_namespace(root_group)
         aggregation.update!(enabled: false)
       end
 
