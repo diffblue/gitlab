@@ -23,6 +23,7 @@ actions:
   - scan: dast
     site_profile: required_site_profile
     scanner_profile: required_scanner_profile
+    tags: []
 `;
 
 export const mockDastScanExecutionObject = {
@@ -36,6 +37,7 @@ export const mockDastScanExecutionObject = {
       scan: 'dast',
       site_profile: 'required_site_profile',
       scanner_profile: 'required_scanner_profile',
+      tags: [],
     },
   ],
 };
@@ -76,37 +78,6 @@ export const mockScanExecutionPoliciesResponse = [
   mockProjectScanExecutionPolicy,
   mockGroupScanExecutionPolicy,
 ];
-
-export const mockDastWithTagsScanExecutionManifest = `type: scan_execution_policy
-name: Scheduled Dast/SAST scan
-description: This policy enforces pipeline configuration to have a job with DAST scan
-enabled: false
-rules:
-  - type: pipeline
-    branches:
-      - main
-actions:
-  - scan: dast
-    site_profile: required_site_profile
-    scanner_profile: required_scanner_profile
-    tags: []
-`;
-
-export const mockDastWithTagsScanExecutionObject = {
-  type: 'scan_execution_policy',
-  name: 'Scheduled Dast/SAST scan',
-  description: 'This policy enforces pipeline configuration to have a job with DAST scan',
-  enabled: false,
-  rules: [{ type: 'pipeline', branches: ['main'] }],
-  actions: [
-    {
-      scan: 'dast',
-      site_profile: 'required_site_profile',
-      scanner_profile: 'required_scanner_profile',
-      tags: [],
-    },
-  ],
-};
 
 export const mockSecretDetectionScanExecutionManifest = `---
 name: Enforce DAST in every pipeline

@@ -11,15 +11,12 @@ import {
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { ACTION_THEN_LABEL, ACTION_AND_LABEL } from '../constants';
 import {
   DAST_HUMANIZED_TEMPLATE,
-  DAST_HUMANIZED_TEMPLATE_WITH_TAGS,
   DEFAULT_SCANNER,
   SCANNER_DAST,
   SCANNER_HUMANIZED_TEMPLATE,
-  SCANNER_HUMANIZED_TEMPLATE_WITH_TAGS,
   RULE_MODE_SCANNERS,
 } from './constants';
 import { buildScannerAction } from './lib';
@@ -39,7 +36,6 @@ export default {
   directives: {
     GlTooltip,
   },
-  mixins: [glFeatureFlagsMixin()],
   props: {
     initAction: {
       type: Object,
@@ -61,14 +57,8 @@ export default {
       return this.actionIndex === 0 ? ACTION_THEN_LABEL : ACTION_AND_LABEL;
     },
     actionMessage() {
-      if (this.selectedScanner === SCANNER_DAST) {
-        return this.glFeatures.scanExecutionTags
-          ? DAST_HUMANIZED_TEMPLATE_WITH_TAGS
-          : DAST_HUMANIZED_TEMPLATE;
-      }
-
-      return this.glFeatures.scanExecutionTags
-        ? SCANNER_HUMANIZED_TEMPLATE_WITH_TAGS
+      return this.selectedScanner === SCANNER_DAST
+        ? DAST_HUMANIZED_TEMPLATE
         : SCANNER_HUMANIZED_TEMPLATE;
     },
     siteProfile: {
@@ -113,7 +103,6 @@ export default {
           scanner,
           siteProfile,
           scannerProfile,
-          includeTags: this.glFeatures.scanExecutionTags,
         }),
       );
     },

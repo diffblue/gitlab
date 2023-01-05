@@ -2,7 +2,6 @@
 import { GlEmptyState, GlButton } from '@gitlab/ui';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   EDITOR_MODE_RULE,
   EDITOR_MODE_YAML,
@@ -55,7 +54,6 @@ export default {
     PolicyEditorLayout,
     PolicyRuleBuilder,
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: [
     'disableScanPolicyUpdate',
     'policyEditorEmptyStateSvgPath',
@@ -83,10 +81,7 @@ export default {
       ? toYaml(this.existingPolicy)
       : DEFAULT_SCAN_EXECUTION_POLICY;
 
-    const { policy, hasParsingError } = createPolicyObject(
-      yamlEditorValue,
-      this.glFeatures.scanExecutionTags,
-    );
+    const { policy, hasParsingError } = createPolicyObject(yamlEditorValue);
 
     return {
       isCreatingMR: false,
@@ -160,12 +155,7 @@ export default {
         const mergeRequest = await modifyPolicy({
           action,
           assignedPolicyProject,
-          name:
-            this.originalName ||
-            fromYaml({
-              manifest: this.yamlEditorValue,
-              includeTags: this.glFeatures.scanExecutionTags,
-            })?.name,
+          name: this.originalName || fromYaml({ manifest: this.yamlEditorValue })?.name,
           namespacePath: this.namespacePath,
           yamlEditorValue: this.yamlEditorValue,
         });
@@ -194,10 +184,7 @@ export default {
       );
     },
     updateYaml(manifest) {
-      const { policy, hasParsingError } = createPolicyObject(
-        manifest,
-        this.glFeatures.scanExecutionTags,
-      );
+      const { policy, hasParsingError } = createPolicyObject(manifest);
 
       this.yamlEditorValue = manifest;
       this.hasParsingError = hasParsingError;
