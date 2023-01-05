@@ -305,7 +305,6 @@ RSpec.describe MergeRequests::UpdateService, :mailer do
 
     context 'when called inside an ActiveRecord transaction' do
       it 'does not attempt to update code owner approval rules' do
-        allow(ActiveRecord::Base.connection).to receive(:transaction_open?).and_return(true)
         expect(::MergeRequests::SyncCodeOwnerApprovalRulesWorker).not_to receive(:perform_async)
 
         update_merge_request(title: 'Title')
