@@ -103,7 +103,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
     describe '#deprecation_warnings' do
       subject { validator.deprecation_warnings }
 
-      let(:supported_versions) { described_class::SUPPORTED_VERSIONS[report_type].join(", ") }
+      let(:current_versions) { described_class::CURRENT_VERSIONS[report_type].join(", ") }
 
       context 'when report uses a deprecated version' do
         let(:report_data) do
@@ -112,9 +112,9 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
         end
 
         let(:expected_deprecation_message) do
-          "Version 10.0.0 for report type #{report_type} has been deprecated, supported versions "\
-          "for this report type are: #{supported_versions}. GitLab will attempt to parse and ingest"\
-          " this report if valid."
+          "version 10.0.0 for report type #{report_type} is deprecated. "\
+          "However, GitLab will still attempt to parse and ingest this report. "\
+          "Upgrade the security report to one of the following versions: #{current_versions}."
         end
 
         let(:expected_deprecation_warnings) do
