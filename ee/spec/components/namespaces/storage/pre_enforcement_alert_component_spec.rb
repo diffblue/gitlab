@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 require "spec_helper"
 
-RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :component do
+RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :component,
+        feature_category: :subscription_cost_management do
   using RSpec::Parameterized::TableSyntax
 
   let(:storage_enforcement_date) { Date.today + 31 }
+  let(:over_storage_limit) { false }
 
   context 'with a free group' do
     let_it_be(:group) { create(:group_with_plan, :with_root_storage_statistics, plan: :free_plan) }
@@ -19,6 +21,9 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
         storage_size: ::EE::Gitlab::Namespaces::Storage::Enforcement::FREE_NAMESPACE_STORAGE_CAP
       )
       allow(group).to receive(:storage_enforcement_date).and_return(storage_enforcement_date)
+      allow_next_instance_of(::Namespaces::Storage::RootSize) do |group|
+        allow(group).to receive(:above_size_limit?).and_return(over_storage_limit)
+      end
     end
 
     context 'when user is allowed to see and dismiss' do
@@ -87,6 +92,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
         expect(page).to have_css("[data-feature-id='storage_enforcement_banner_first_enforcement_threshold']")
         expect(page).to have_css("[data-dismiss-endpoint='#{group_callouts_path}']")
         expect(page).to have_css("[data-group-id='#{group.root_ancestor.id}']")
+        expect(page).not_to have_css(".gl-alert-not-dismissible")
       end
 
       context 'with different callout feature ids' do
@@ -126,7 +132,23 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
       end
     end
 
-    context 'when user is not allowed to dismiss' do
+    context 'when user is allowed to see but not dismiss the alert' do
+      let(:over_storage_limit) { true }
+
+      before do
+        group.add_maintainer(user)
+      end
+
+      it 'renders the correct callout data' do
+        render_inline(component)
+
+        expect(page).to have_css(".gl-alert-not-dismissible")
+        expect(page).to have_css("[data-feature-id='storage_enforcement_banner_first_enforcement_threshold']")
+        expect(page).to have_css("[data-group-id='#{group.root_ancestor.id}']")
+      end
+    end
+
+    context 'when user is not allowed to see the alert' do
       it 'does not render' do
         render_inline(component)
 

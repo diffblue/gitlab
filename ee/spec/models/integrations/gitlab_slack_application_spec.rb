@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Integrations::GitlabSlackApplication do
+RSpec.describe Integrations::GitlabSlackApplication, feature_category: :integrations do
   include AfterNextHelpers
 
   it_behaves_like Integrations::BaseSlackNotification, factory: :gitlab_slack_application_integration do
@@ -193,6 +193,19 @@ RSpec.describe Integrations::GitlabSlackApplication do
     end
   end
 
+  describe '#sections' do
+    it 'includes the expected sections' do
+      section_types = subject.sections.pluck(:type)
+
+      expect(section_types).to eq(
+        [
+          described_class::SECTION_TYPE_TRIGGER,
+          described_class::SECTION_TYPE_CONFIGURATION
+        ]
+      )
+    end
+  end
+
   context 'when the integration is disabled' do
     before do
       subject.active = false
@@ -224,6 +237,32 @@ RSpec.describe Integrations::GitlabSlackApplication do
       stub_feature_flags(integration_slack_app_notifications: false)
 
       expect(subject.description).not_to include('notifications')
+    end
+  end
+
+  describe '#upgrade_needed?' do
+    context 'with all_features_supported' do
+      subject(:integration) { create(:gitlab_slack_application_integration, :all_features_supported) }
+
+      it 'is false' do
+        expect(integration).not_to be_upgrade_needed
+      end
+    end
+
+    context 'without all_features_supported' do
+      subject(:integration) { create(:gitlab_slack_application_integration) }
+
+      it 'is true' do
+        expect(integration).to be_upgrade_needed
+      end
+    end
+
+    context 'without slack_integration' do
+      subject(:integration) { create(:gitlab_slack_application_integration, slack_integration: nil) }
+
+      it 'is false' do
+        expect(integration).not_to be_upgrade_needed
+      end
     end
   end
 end

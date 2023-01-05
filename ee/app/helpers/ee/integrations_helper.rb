@@ -26,7 +26,7 @@ module EE
 
       if integration.is_a?(::Integrations::GitlabSlackApplication)
         form_data[:upgrade_slack_url] = add_to_slack_link(project, slack_app_id)
-        form_data[:should_upgrade_slack] = integration.slack_integration.upgrade_needed? ? 'true' : 'false'
+        form_data[:should_upgrade_slack] = integration.upgrade_needed?.to_s
       end
 
       form_data
