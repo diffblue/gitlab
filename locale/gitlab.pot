@@ -20045,6 +20045,9 @@ msgstr ""
 msgid "GroupsDropdown|This feature requires browser localStorage support"
 msgstr ""
 
+msgid "GroupsDropdown|Toggle edit mode"
+msgstr ""
+
 msgid "GroupsEmptyState|A group is a collection of several projects."
 msgstr ""
 
@@ -33635,6 +33638,9 @@ msgid "ProjectsDropdown|Sorry, no projects matched your search"
 msgstr ""
 
 msgid "ProjectsDropdown|This feature requires browser localStorage support"
+msgstr ""
+
+msgid "ProjectsDropdown|Toggle edit mode"
 msgstr ""
 
 msgid "ProjectsNew|Allows you to immediately clone this project’s repository. Skip this if you plan to push up an existing repository."
