@@ -100,11 +100,11 @@ export default {
     ref="modal"
     :action-primary="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
       text: $options.i18n.primaryText,
-      attributes: [{ variant: 'confirm' }, { id: 'copy-yaml-snippet-and-edit-button' }],
+      attributes: { variant: 'confirm', id: 'copy-yaml-snippet-and-edit-button' },
     } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
     :action-secondary="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
       text: $options.i18n.secondaryText,
-      attributes: [{ variant: 'default' }, { id: 'copy-yaml-snippet-button' }],
+      attributes: { variant: 'default', id: 'copy-yaml-snippet-button' },
     } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
     :action-cancel="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
       text: $options.i18n.cancelText,

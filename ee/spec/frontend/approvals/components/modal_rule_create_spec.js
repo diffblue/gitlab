@@ -66,7 +66,7 @@ describe('Approvals ModalRuleCreate', () => {
       expect(modal.props('modalId')).toEqual(TEST_MODAL_ID);
       expect(modal.props('actionPrimary')).toStrictEqual({
         text: 'Add approval rule',
-        attributes: [{ variant: 'confirm' }],
+        attributes: { variant: 'confirm' },
       });
       expect(modal.props('actionCancel')).toStrictEqual({ text: 'Cancel' });
       expect(modal.attributes('title')).toEqual('Add approval rule');
@@ -98,7 +98,7 @@ describe('Approvals ModalRuleCreate', () => {
       expect(modal.attributes('title')).toEqual('Update approval rule');
       expect(modal.props('actionPrimary')).toStrictEqual({
         text: 'Update approval rule',
-        attributes: [{ variant: 'confirm' }],
+        attributes: { variant: 'confirm' },
       });
       expect(modal.props('actionCancel')).toStrictEqual({ text: 'Cancel' });
     });
@@ -123,7 +123,7 @@ describe('Approvals ModalRuleCreate', () => {
       expect(modal.attributes('title')).toEqual('Add approval rule');
       expect(modal.props('actionPrimary')).toStrictEqual({
         text: 'Add approval rule',
-        attributes: [{ variant: 'confirm' }],
+        attributes: { variant: 'confirm' },
       });
       expect(modal.props('actionCancel')).toStrictEqual({ text: 'Cancel' });
     });

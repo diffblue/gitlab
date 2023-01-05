@@ -254,7 +254,7 @@ describe('AddEditsEscalationPolicyModal', () => {
         value: '',
       });
       await nextTick();
-      expect(findModal().props('actionPrimary').attributes).toContainEqual({ disabled: true });
+      expect(findModal().props('actionPrimary').attributes.disabled).toBe(true);
     });
 
     it('should enable primary button when form is valid', async () => {
@@ -275,7 +275,7 @@ describe('AddEditsEscalationPolicyModal', () => {
         ],
       });
       await nextTick();
-      expect(findModal().props('actionPrimary').attributes).toContainEqual({ disabled: false });
+      expect(findModal().props('actionPrimary').attributes.disabled).toBe(false);
     });
   });
 });

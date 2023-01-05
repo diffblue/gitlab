@@ -35,7 +35,7 @@ export default {
     primaryActionProps() {
       return {
         text: this.title,
-        attributes: [{ variant: 'confirm' }],
+        attributes: { variant: 'confirm' },
       };
     },
   },

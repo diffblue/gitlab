@@ -76,12 +76,12 @@ export default {
         title: s__('DastSiteValidation|Validate site'),
         primaryProps: {
           text: s__('DastSiteValidation|Validate'),
-          attributes: [
-            { disabled: this.hasErrors },
-            { variant: 'confirm' },
-            { category: 'primary' },
-            { 'data-testid': 'validate-dast-site-button' },
-          ],
+          attributes: {
+            disabled: this.hasErrors,
+            variant: 'confirm',
+            category: 'primary',
+            'data-testid': 'validate-dast-site-button',
+          },
         },
         cancelProps: {
           text: __('Cancel'),

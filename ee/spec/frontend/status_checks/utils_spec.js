@@ -7,7 +7,7 @@ describe('modalPrimaryActionProps', () => {
 
     expect(Utils.modalPrimaryActionProps(text, loading)).toStrictEqual({
       text,
-      attributes: [{ variant: 'confirm', loading }],
+      attributes: { variant: 'confirm', loading },
     });
   });
 });

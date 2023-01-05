@@ -48,13 +48,11 @@ export default {
     actionPrimary() {
       return {
         text: activateLabel,
-        attributes: [
-          {
-            variant: 'confirm',
-            category: 'primary',
-            loading: this.isLoading,
-          },
-        ],
+        attributes: {
+          variant: 'confirm',
+          category: 'primary',
+          loading: this.isLoading,
+        },
       };
     },
   },

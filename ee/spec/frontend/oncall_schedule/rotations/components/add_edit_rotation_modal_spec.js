@@ -257,7 +257,7 @@ describe('AddEditRotationModal', () => {
           updateRotationForm('name', 'lalal');
           await nextTick();
           expect(findModal().props('actionPrimary').attributes).toEqual(
-            expect.arrayContaining([{ disabled: true }]),
+            expect.objectContaining({ disabled: true }),
           );
         });
 
@@ -268,7 +268,7 @@ describe('AddEditRotationModal', () => {
           updateRotationForm('endsAt.date', new Date('12/10/2021'));
           await nextTick();
           expect(findModal().props('actionPrimary').attributes).toEqual(
-            expect.arrayContaining([{ disabled: false }]),
+            expect.objectContaining({ disabled: false }),
           );
         });
       });

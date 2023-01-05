@@ -17,7 +17,7 @@ export default {
     title: s__('LicenseCompliance|Remove license?'),
     actionPrimary: {
       text: s__('LicenseCompliance|Remove license'),
-      attributes: [{ variant: 'danger' }],
+      attributes: { variant: 'danger' },
     },
     actionCancel: {
       text: __('Cancel'),

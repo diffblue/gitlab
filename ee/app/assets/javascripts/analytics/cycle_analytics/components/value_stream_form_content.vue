@@ -141,13 +141,13 @@ export default {
     primaryProps() {
       return {
         text: this.isEditing ? this.$options.i18n.EDIT_FORM_ACTION : this.$options.i18n.FORM_TITLE,
-        attributes: [{ variant: 'confirm' }, { loading: this.isLoading }],
+        attributes: { variant: 'confirm', loading: this.isLoading },
       };
     },
     secondaryProps() {
       return {
         text: this.$options.i18n.BTN_ADD_ANOTHER_STAGE,
-        attributes: [{ category: 'secondary' }, { variant: 'confirm' }, { class: '' }],
+        attributes: { category: 'secondary', variant: 'confirm', class: '' },
       };
     },
     hasFormErrors() {

@@ -125,7 +125,7 @@ export default {
     actionPrimary() {
       return {
         text: this.$options.i18n.modalPrimary,
-        attributes: [{ variant: 'confirm' }, { disabled: !this.canSubmit }],
+        attributes: { variant: 'confirm', disabled: !this.canSubmit },
       };
     },
     actionCancel() {

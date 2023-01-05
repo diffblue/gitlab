@@ -72,7 +72,7 @@ describe('DeleteModal', () => {
       const actionPrimary = findModal().props('actionPrimary');
 
       expect(actionPrimary.text).toBe('Delete framework');
-      expect(actionPrimary.attributes[1].variant).toBe('danger');
+      expect(actionPrimary.attributes.variant).toBe('danger');
     });
 
     it('sets the modal cancel button attributes', () => {

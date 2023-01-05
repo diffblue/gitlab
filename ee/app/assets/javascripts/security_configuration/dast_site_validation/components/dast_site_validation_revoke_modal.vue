@@ -47,12 +47,12 @@ export default {
         title: s__('DastSiteValidation|Revoke validation'),
         primaryProps: {
           text: s__('DastSiteValidation|Revoke validation'),
-          attributes: [
-            { loading: this.isLoading },
-            { variant: 'confirm' },
-            { category: 'primary' },
-            { 'data-testid': 'revoke-validation-button' },
-          ],
+          attributes: {
+            loading: this.isLoading,
+            variant: 'confirm',
+            category: 'primary',
+            'data-testid': 'revoke-validation-button',
+          },
         },
         cancelProps: {
           text: __('Cancel'),

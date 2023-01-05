@@ -66,11 +66,11 @@ export default {
       return {
         primary: {
           text: this.primaryBtnText,
-          attributes: [
-            { variant: 'confirm' },
-            { loading: this.loading },
-            { disabled: !this.isFormValid || !this.isFormDirty },
-          ],
+          attributes: {
+            variant: 'confirm',
+            loading: this.loading,
+            disabled: !this.isFormValid || !this.isFormDirty,
+          },
         },
         cancel: {
           text: i18n.cancel,

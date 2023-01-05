@@ -38,7 +38,7 @@ export default {
     primaryActionProps() {
       return {
         text: i18n.primaryButton,
-        attributes: [{ variant: 'danger', loading: this.submitting }],
+        attributes: { variant: 'danger', loading: this.submitting },
       };
     },
   },

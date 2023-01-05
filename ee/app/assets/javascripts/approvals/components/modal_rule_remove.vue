@@ -47,7 +47,7 @@ export default {
     primaryButtonProps() {
       return {
         text: i18n.primaryButtonText,
-        attributes: [{ variant: 'danger' }],
+        attributes: { variant: 'danger' },
       };
     },
   },

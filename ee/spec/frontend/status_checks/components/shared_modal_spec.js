@@ -79,7 +79,7 @@ describe('Shared modal', () => {
 
       it('sets the modals props', () => {
         expect(findModal().props()).toMatchObject({
-          actionPrimary: { text: title, attributes: [{ variant: 'confirm', loading: false }] },
+          actionPrimary: { text: title, attributes: { variant: 'confirm', loading: false } },
           actionCancel: { text: 'Cancel' },
           modalId,
           size: 'sm',
