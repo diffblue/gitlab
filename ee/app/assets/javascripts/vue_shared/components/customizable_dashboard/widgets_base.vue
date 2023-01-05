@@ -37,33 +37,42 @@ export default {
       loading: true,
     };
   },
-  async created() {
-    const { projectId, queryOverrides } = this;
-    const { type: dataType, query } = this.visualization.data;
-    this.loading = true;
-    this.error = null;
+  watch: {
+    visualization: {
+      handler: 'fetchData',
+      immediate: true,
+    },
+    queryOverrides: 'fetchData',
+  },
+  methods: {
+    async fetchData() {
+      const { projectId, queryOverrides } = this;
+      const { type: dataType, query } = this.visualization.data;
+      this.loading = true;
+      this.error = null;
 
-    try {
-      const { fetch } = await dataSources[dataType]();
-      this.data = await fetch({
-        projectId,
-        query,
-        queryOverrides,
-        visualizationType: this.visualization.type,
-      });
-    } catch (error) {
-      this.error = error;
-      this.$emit('error', error);
-    } finally {
-      this.loading = false;
-    }
+      try {
+        const { fetch } = await dataSources[dataType]();
+        this.data = await fetch({
+          projectId,
+          query,
+          queryOverrides,
+          visualizationType: this.visualization.type,
+        });
+      } catch (error) {
+        this.error = error;
+        this.$emit('error', error);
+      } finally {
+        this.loading = false;
+      }
+    },
   },
 };
 </script>
 
 <template>
   <div
-    class="grid-stack-item-content gl-shadow gl-rounded-base gl-p-4 gl-display-flex gl-flex-direction-column"
+    class="grid-stack-item-content gl-shadow gl-rounded-base gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
   >
     <strong v-if="title" class="gl-mb-2" data-testid="widget-title">{{ title }}</strong>
     <div class="gl-overflow-y-auto gl-h-full" :class="{ 'gl--flex-center': loading }">

@@ -79,6 +79,7 @@ describe('MR Widget Security Reports', () => {
   const findSummaryHighlights = () => wrapper.findComponent(SummaryHighlights);
   const findDismissedBadge = () => wrapper.findComponent(GlBadge);
   const findModal = () => wrapper.findComponent(FindingModal);
+  const findDynamicScroller = () => wrapper.findByTestId('dynamic-content-scroller');
 
   beforeEach(() => {
     mockAxios = new MockAdapter(axios);
@@ -126,19 +127,19 @@ describe('MR Widget Security Reports', () => {
       mockAxios.onGet(reportEndpoints.sastComparisonPath).replyOnce(200, {
         added: [
           {
-            id: 1,
+            uuid: 1,
             severity: 'critical',
             name: 'Password leak',
             state: 'dismissed',
           },
-          { id: 2, severity: 'high', name: 'XSS vulnerability' },
+          { uuid: 2, severity: 'high', name: 'XSS vulnerability' },
         ],
       });
 
       mockAxios.onGet(reportEndpoints.dastComparisonPath).replyOnce(200, {
         added: [
-          { id: 5, severity: 'low', name: 'SQL Injection' },
-          { id: 3, severity: 'unknown', name: 'Weak password' },
+          { uuid: 5, severity: 'low', name: 'SQL Injection' },
+          { uuid: 3, severity: 'unknown', name: 'Weak password' },
         ],
       });
 
@@ -186,6 +187,9 @@ describe('MR Widget Security Reports', () => {
 
       // Click on the toggle button to expand data
       wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+      await nextTick();
+
+      // Second next tick is for the dynamic scroller
       await nextTick();
 
       expect(findDismissedBadge().text()).toBe('Dismissed');
@@ -249,11 +253,41 @@ describe('MR Widget Security Reports', () => {
       wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
       await nextTick();
 
+      // Second next tick is for the dynamic scroller
+      await nextTick();
+
       expect(wrapper.findByText(/Weak password/).exists()).toBe(true);
       expect(wrapper.findByText(/Password leak/).exists()).toBe(true);
       expect(wrapper.findByTestId('SAST-report-header').text()).toBe(
         'SAST detected 2 new potential vulnerabilities',
       );
+    });
+
+    it('passes correct items to the dynamic scroller', async () => {
+      mockWithData();
+
+      createComponent({
+        mountFn: mountExtended,
+      });
+
+      await waitForPromises();
+
+      // Click on the toggle button to expand data
+      wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+      await nextTick();
+
+      // Second next tick is for the dynamic scroller
+      await nextTick();
+
+      expect(findDynamicScroller().props('items')).toEqual([
+        {
+          uuid: 1,
+          severity: 'critical',
+          name: 'Password leak',
+          state: 'dismissed',
+        },
+        { uuid: 2, severity: 'high', name: 'XSS vulnerability' },
+      ]);
     });
   });
 
@@ -263,8 +297,8 @@ describe('MR Widget Security Reports', () => {
 
       mockAxios.onGet(reportEndpoints.dastComparisonPath).replyOnce(200, {
         added: [
-          { id: 5, severity: 'low', name: 'SQL Injection' },
-          { id: 3, severity: 'unknown', name: 'Weak password' },
+          { uuid: 5, severity: 'low', name: 'SQL Injection' },
+          { uuid: 3, severity: 'unknown', name: 'Weak password' },
         ],
       });
 
@@ -293,6 +327,9 @@ describe('MR Widget Security Reports', () => {
       wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
       await nextTick();
 
+      // Second next tick is for the dynamic scroller
+      await nextTick();
+
       expect(wrapper.findByText('SAST: Loading resulted in an error').exists()).toBe(true);
     });
   });
@@ -301,7 +338,7 @@ describe('MR Widget Security Reports', () => {
     const mockWithData = () => {
       Object.keys(reportEndpoints).forEach((key, i) => {
         mockAxios.onGet(reportEndpoints[key]).replyOnce(200, {
-          added: [{ id: i, severity: 'critical', name: 'Password leak' }],
+          added: [{ uuid: i, severity: 'critical', name: 'Password leak' }],
         });
       });
     };
@@ -330,6 +367,9 @@ describe('MR Widget Security Reports', () => {
         wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
         await nextTick();
 
+        // Second next tick is for the dynamic scroller
+        await nextTick();
+
         expect(findWidgetRow(reportType).props('helpPopover')).toMatchObject({
           options: { title: reportTitle },
           content: { learnMorePath: helpPath },
@@ -342,7 +382,7 @@ describe('MR Widget Security Reports', () => {
     const mockWithData = (props) => {
       Object.keys(reportEndpoints).forEach((key, i) => {
         mockAxios.onGet(reportEndpoints[key]).replyOnce(200, {
-          added: [{ id: i, severity: 'critical', name: 'Password leak', ...props }],
+          added: [{ uuid: i, severity: 'critical', name: 'Password leak', ...props }],
         });
       });
     };
@@ -358,6 +398,8 @@ describe('MR Widget Security Reports', () => {
 
       // Click on the toggle button to expand data
       wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+      await nextTick();
+      // Second next tick is for the dynamic scroller
       await nextTick();
 
       expect(findModal().exists()).toBe(false);
@@ -375,6 +417,8 @@ describe('MR Widget Security Reports', () => {
       // Click on the toggle button to expand data
       wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
       await nextTick();
+      // Second next tick is for the dynamic scroller
+      await nextTick();
 
       // Click on the vulnerability name
       wrapper.findAllByText('Password leak').at(0).trigger('click');
@@ -385,7 +429,7 @@ describe('MR Widget Security Reports', () => {
       expect(findModal().props('modal')).toEqual({
         title: 'Password leak',
         vulnerability: {
-          id: 0,
+          uuid: 0,
           severity: 'critical',
           name: 'Password leak',
         },
@@ -410,6 +454,8 @@ describe('MR Widget Security Reports', () => {
         // Click on the toggle button to expand data
         wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
         await nextTick();
+        // Second next tick is for the dynamic scroller
+        await nextTick();
 
         // Click on the vulnerability name
         wrapper.findAllByText('Password leak').at(0).trigger('click');
@@ -431,6 +477,8 @@ describe('MR Widget Security Reports', () => {
 
         // Click on the toggle button to expand data
         wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+        await nextTick();
+        // Second next tick is for the dynamic scroller
         await nextTick();
 
         // Click on the vulnerability name
@@ -464,6 +512,9 @@ describe('MR Widget Security Reports', () => {
         wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
         await nextTick();
 
+        // Second next tick is for the dynamic scroller
+        await nextTick();
+
         // Click on the vulnerability name
         wrapper.findAllByText('Password leak').at(0).trigger('click');
         await nextTick();
@@ -493,6 +544,9 @@ describe('MR Widget Security Reports', () => {
 
         // Click on the toggle button to expand data
         wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+        await nextTick();
+
+        // Second next tick is for the dynamic scroller
         await nextTick();
 
         // Click on the vulnerability name
