@@ -5,15 +5,13 @@ module Analytics
     class GroupStage < ApplicationRecord
       include Analytics::CycleAnalytics::Stage
       include DatabaseEventTracking
+      include Analytics::CycleAnalytics::Parentable
 
-      validates :group, presence: true
       validates :name, uniqueness: { scope: [:group_id, :group_value_stream_id] }
-      belongs_to :group
       belongs_to :value_stream, class_name: 'Analytics::CycleAnalytics::GroupValueStream', foreign_key: :group_value_stream_id
 
-      alias_attribute :parent, :group
+      alias_attribute :parent, :namespace
       alias_attribute :parent_id, :group_id
-
       alias_attribute :value_stream_id, :group_value_stream_id
 
       def self.relative_positioning_query_base(stage)
@@ -24,9 +22,9 @@ module Analytics
         :group_id
       end
 
-      def self.distinct_stages_within_hierarchy(group)
+      def self.distinct_stages_within_hierarchy(namespace)
         with_preloaded_labels
-          .where(group_id: group.self_and_descendants.select(:id))
+          .where(group_id: namespace.self_and_descendants.select(:id))
           .select("DISTINCT ON(stage_event_hash_id) #{quoted_table_name}.*")
       end
 

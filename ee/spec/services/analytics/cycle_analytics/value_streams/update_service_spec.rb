@@ -9,16 +9,16 @@ RSpec.describe Analytics::CycleAnalytics::ValueStreams::UpdateService do
   let(:params) { {} }
 
   let(:value_stream) do
-    create(:cycle_analytics_group_value_stream, name: 'VS 1', group: group, stages: [
-             build(:cycle_analytics_group_stage, group: group, name: 'stage 1', custom: true),
-             build(:cycle_analytics_group_stage, group: group, name: 'stage 2', custom: true)
+    create(:cycle_analytics_group_value_stream, name: 'VS 1', namespace: group, stages: [
+             build(:cycle_analytics_group_stage, namespace: group, name: 'stage 1', custom: true),
+             build(:cycle_analytics_group_stage, namespace: group, name: 'stage 2', custom: true)
            ])
   end
 
   let(:first_stage) { value_stream.stages.first }
   let(:last_stage) { value_stream.stages.last }
 
-  subject { described_class.new(value_stream: value_stream, group: group, params: params, current_user: user).execute }
+  subject { described_class.new(value_stream: value_stream, namespace: group, params: params, current_user: user).execute }
 
   it_behaves_like 'common value stream service examples'
 

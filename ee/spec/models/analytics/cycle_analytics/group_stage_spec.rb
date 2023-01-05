@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Analytics::CycleAnalytics::GroupStage do
+RSpec.describe Analytics::CycleAnalytics::GroupStage, feature_category: :value_stream_management do
   describe 'uniqueness validation on name' do
     subject { build(:cycle_analytics_group_stage) }
 
@@ -10,14 +10,18 @@ RSpec.describe Analytics::CycleAnalytics::GroupStage do
   end
 
   describe 'associations' do
-    it { is_expected.to belong_to(:group) }
+    it { is_expected.to belong_to(:namespace).required }
     it { is_expected.to belong_to(:value_stream) }
+  end
+
+  it_behaves_like 'value stream analytics namespace models' do
+    let(:factory_name) { :cycle_analytics_group_stage }
   end
 
   it_behaves_like 'value stream analytics stage' do
     let(:factory) { :cycle_analytics_group_stage }
     let(:parent) { create(:group) }
-    let(:parent_name) { :group }
+    let(:parent_name) { :namespace }
   end
 
   include_examples 'value stream analytics label based stage' do
@@ -31,7 +35,7 @@ RSpec.describe Analytics::CycleAnalytics::GroupStage do
     it_behaves_like 'a class that supports relative positioning' do
       let(:parent) { create(:group) }
       let(:factory) { :cycle_analytics_group_stage }
-      let(:default_params) { { group: parent } }
+      let(:default_params) { { parent: parent } }
     end
   end
 
@@ -41,11 +45,11 @@ RSpec.describe Analytics::CycleAnalytics::GroupStage do
 
     before do
       # event identifiers are the same
-      create(:cycle_analytics_group_stage, name: 'Stage A1', group: group, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_merged)
-      create(:cycle_analytics_group_stage, name: 'Stage A2', group: sub_group, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_merged)
-      create(:cycle_analytics_group_stage, name: 'Stage A3', group: sub_group, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_merged)
+      create(:cycle_analytics_group_stage, name: 'Stage A1', namespace: group, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_merged)
+      create(:cycle_analytics_group_stage, name: 'Stage A2', namespace: sub_group, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_merged)
+      create(:cycle_analytics_group_stage, name: 'Stage A3', namespace: sub_group, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_merged)
 
-      create(:cycle_analytics_group_stage, name: 'Stage B1', group: group, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_closed)
+      create(:cycle_analytics_group_stage, name: 'Stage B1', namespace: group, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_closed)
     end
 
     it 'returns distinct stages by the event identifiers' do
@@ -74,7 +78,7 @@ RSpec.describe Analytics::CycleAnalytics::GroupStage do
     let(:group_stage) { described_class.create!(stage_params) }
     let(:stage_params) do
       {
-        group: namespace,
+        namespace: namespace,
         name: 'st1',
         start_event_identifier: :merge_request_created,
         end_event_identifier: :merge_request_merged,

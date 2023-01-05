@@ -16,8 +16,6 @@ RSpec.describe Group do
     # the presence check works, but since this is a private method that
     # method can't be called with a public_send.
     it { is_expected.to belong_to(:file_template_project).class_name('Project').without_validating_presence }
-    it { is_expected.to have_many(:cycle_analytics_stages) }
-    it { is_expected.to have_many(:value_streams) }
     it { is_expected.to have_many(:ip_restrictions) }
     it { is_expected.to have_many(:allowed_email_domains) }
     it { is_expected.to have_many(:compliance_management_frameworks) }

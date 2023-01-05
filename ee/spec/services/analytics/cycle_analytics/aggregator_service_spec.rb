@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Analytics::CycleAnalytics::AggregatorService do
   let!(:group) { create(:group) }
-  let!(:aggregation) { create(:cycle_analytics_aggregation, :enabled, group: group) }
+  let!(:aggregation) { create(:cycle_analytics_aggregation, :enabled, namespace: group) }
   let(:mode) { :incremental }
 
   def run_service
@@ -93,13 +93,13 @@ RSpec.describe Analytics::CycleAnalytics::AggregatorService do
 
       before do
         create(:cycle_analytics_group_stage,
-               group: group,
+               namespace: group,
                start_event_identifier: :merge_request_created,
                end_event_identifier: :merge_request_merged
               )
 
         create(:cycle_analytics_group_stage,
-               group: group,
+               namespace: group,
                start_event_identifier: :issue_created,
                end_event_identifier: :issue_closed
               )
@@ -127,7 +127,7 @@ RSpec.describe Analytics::CycleAnalytics::AggregatorService do
 
       before do
         create(:cycle_analytics_group_stage,
-               group: group,
+               namespace: group,
                start_event_identifier: :merge_request_created,
                end_event_identifier: :merge_request_merged
               )

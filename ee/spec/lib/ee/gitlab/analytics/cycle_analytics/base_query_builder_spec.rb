@@ -30,7 +30,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::BaseQueryBuilder do
       stage = build(:cycle_analytics_group_stage, {
         start_event_identifier: :issue_created,
         end_event_identifier: :issue_first_mentioned_in_commit,
-        group: group
+        namespace: group
       })
 
       result = described_class.new(stage: stage, params: { current_user: user }).build
@@ -54,7 +54,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::BaseQueryBuilder do
       stage = build(:cycle_analytics_group_stage, {
         start_event_identifier: :merge_request_created,
         end_event_identifier: :merge_request_merged,
-        group: group
+        namespace: group
       })
 
       result = described_class.new(stage: stage, params: { current_user: user }).build

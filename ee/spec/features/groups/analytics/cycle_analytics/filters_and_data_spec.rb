@@ -85,17 +85,17 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
   context 'with value streams' do
     def vsa_stages(selected_group)
       [
-        create(:cycle_analytics_group_stage, group: selected_group, name: "Issue", relative_position: 1, start_event_identifier: :issue_created, end_event_identifier: :issue_closed),
-        create(:cycle_analytics_group_stage, group: selected_group, name: "Code", relative_position: 2, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_merged),
-        create(:cycle_analytics_group_stage, group: selected_group, name: "Milestone Plan", relative_position: 3, start_event_identifier: :issue_first_associated_with_milestone, end_event_identifier: :issue_first_added_to_board)
+        create(:cycle_analytics_group_stage, namespace: selected_group, name: "Issue", relative_position: 1, start_event_identifier: :issue_created, end_event_identifier: :issue_closed),
+        create(:cycle_analytics_group_stage, namespace: selected_group, name: "Code", relative_position: 2, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_merged),
+        create(:cycle_analytics_group_stage, namespace: selected_group, name: "Milestone Plan", relative_position: 3, start_event_identifier: :issue_first_associated_with_milestone, end_event_identifier: :issue_first_added_to_board)
       ]
     end
 
     let(:issue) { create(:issue, project: project) }
 
-    let_it_be(:value_stream) { create(:cycle_analytics_group_value_stream, group: group, name: custom_value_stream_name, stages: vsa_stages(group)) }
+    let_it_be(:value_stream) { create(:cycle_analytics_group_value_stream, namespace: group, name: custom_value_stream_name, stages: vsa_stages(group)) }
 
-    let_it_be(:subgroup_value_stream) { create(:cycle_analytics_group_value_stream, group: sub_group, name: 'First subgroup value stream', stages: vsa_stages(sub_group)) }
+    let_it_be(:subgroup_value_stream) { create(:cycle_analytics_group_value_stream, namespace: sub_group, name: 'First subgroup value stream', stages: vsa_stages(sub_group)) }
 
     shared_examples 'has overview metrics' do
       before do
@@ -321,7 +321,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
       deploy_master(user, project, environment: 'staging')
       deploy_master(user, project)
 
-      value_stream = create(:cycle_analytics_group_value_stream, group: group)
+      value_stream = create(:cycle_analytics_group_value_stream, namespace: group)
       Gitlab::Analytics::CycleAnalytics::DefaultStages.all.map do |params|
         group.cycle_analytics_stages.build(params.merge(value_stream: value_stream)).save!
       end
