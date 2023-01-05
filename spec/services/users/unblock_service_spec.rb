@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::BlockService do
+RSpec.describe Users::UnblockService do
   let_it_be(:current_user) { create(:admin) }
 
   subject(:service) { described_class.new(current_user) }
@@ -11,12 +11,12 @@ RSpec.describe Users::BlockService do
     subject(:operation) { service.execute(user) }
 
     context 'when successful' do
-      let(:user) { create(:user) }
+      let(:user) { create(:user, :blocked) }
 
-      it { is_expected.to eq(status: :success) }
+      it { expect(operation.success?).to eq(true) }
 
       it "change the user's state" do
-        expect { operation }.to change { user.state }.to('blocked')
+        expect { operation }.to change { user.active? }.to(true)
       end
 
       it 'saves a custom attribute', :freeze_time, feature_category: :insider_threat do
@@ -24,33 +24,23 @@ RSpec.describe Users::BlockService do
 
         custom_attribute = user.custom_attributes.last
 
-        expect(custom_attribute.key).to eq(UserCustomAttribute::BLOCKED_BY)
+        expect(custom_attribute.key).to eq(UserCustomAttribute::UNBLOCKED_BY)
         expect(custom_attribute.value).to eq("#{current_user.username}/#{current_user.id}+#{DateTime.now}")
       end
     end
 
     context 'when failed' do
-      let(:user) { create(:user, :blocked) }
+      let(:user) { create(:user) }
 
       it 'returns error result' do
         aggregate_failures 'error result' do
-          expect(operation[:status]).to eq(:error)
-          expect(operation[:message]).to match(/State cannot transition/)
+          expect(operation.error?).to eq(true)
+          expect(operation[:message]).to include(/State cannot transition/)
         end
       end
 
       it "does not change the user's state" do
         expect { operation }.not_to change { user.state }
-      end
-    end
-
-    context 'when internal user' do
-      let(:user) { create(:user, :bot) }
-
-      it 'returns error result' do
-        expect(operation[:status]).to eq(:error)
-        expect(operation[:message]).to eq('An internal user cannot be blocked')
-        expect(operation[:http_status]).to eq(403)
       end
     end
   end
