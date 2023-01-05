@@ -49,26 +49,33 @@ module Mutations
                 description: 'Indicates if debug messages should be included in DAST console output. ' \
                 'True to include the debug messages.',
                 default_value: false
+      argument :tag_list, [GraphQL::Types::String],
+               required: false,
+               description: 'Indicates the runner tags associated with the scanner profile.'
 
       authorize :create_on_demand_dast_scan
 
-      def resolve(full_path:, profile_name:, scan_type:, use_ajax_spider:, show_debug_messages:, spider_timeout: nil, target_timeout: nil)
-        project = authorized_find!(full_path)
+      def resolve(**args)
+        project = authorized_find!(args.delete(:full_path))
 
-        service = ::AppSec::Dast::ScannerProfiles::CreateService.new(project, current_user)
-        result = service.execute(
-          name: profile_name,
-          spider_timeout: spider_timeout,
-          target_timeout: target_timeout,
-          scan_type: scan_type,
-          use_ajax_spider: use_ajax_spider,
-          show_debug_messages: show_debug_messages
-        )
+        params = service_params(project, args)
+
+        service = ::AppSec::Dast::ScannerProfiles::CreateService.new(project: project, current_user: current_user, params: params)
+        result = service.execute
 
         if result.success?
           { id: result.payload.to_global_id, dast_scanner_profile: result.payload, errors: [] }
         else
           { errors: result.errors }
+        end
+      end
+
+      private
+
+      def service_params(project, args)
+        args.tap do |values|
+          values[:name] = values.delete(:profile_name)
+          values.delete(:tag_list) unless Feature.enabled?(:on_demand_scans_runner_tags, project)
         end
       end
     end

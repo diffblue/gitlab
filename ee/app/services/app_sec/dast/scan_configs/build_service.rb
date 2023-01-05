@@ -51,7 +51,7 @@ module AppSec
           }
 
           if Feature.enabled?(:on_demand_scans_runner_tags, container) && dast_scanner_profile&.tags.present?
-            ci_config['tags'] = dast_scanner_profile.tags.map(&:name)
+            ci_config['dast']['tags'] = dast_scanner_profile.tag_list
           end
 
           ci_config.to_yaml

@@ -2,9 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe AppSec::Dast::ScannerProfiles::UpdateService do
+RSpec.describe AppSec::Dast::ScannerProfiles::UpdateService, :dynamic_analysis,
+                                                             feature_category: :dynamic_application_security_testing do
   let_it_be(:user) { create(:user) }
-  let_it_be(:dast_profile, reload: true) { create(:dast_scanner_profile, target_timeout: 200, spider_timeout: 5000) }
+  let_it_be(:old_tags) { [ActsAsTaggableOn::Tag.create!(name: 'ruby'), ActsAsTaggableOn::Tag.create!(name: 'postgres')] }
+  let_it_be(:dast_profile, reload: true) { create(:dast_scanner_profile, target_timeout: 200, spider_timeout: 5000, tags: old_tags) }
   let_it_be(:dast_profile_2, reload: true) { create(:dast_scanner_profile) }
   let(:project) { dast_profile.project }
   let(:project_2) { dast_profile_2.project }
@@ -17,22 +19,28 @@ RSpec.describe AppSec::Dast::ScannerProfiles::UpdateService do
   let(:new_use_ajax_spider) { !dast_profile.use_ajax_spider }
   let(:new_show_debug_messages) { !dast_profile.show_debug_messages }
 
+  let_it_be(:new_tags) { [ActsAsTaggableOn::Tag.create!(name: 'rails'), ActsAsTaggableOn::Tag.create!(name: 'docker')] }
+  let_it_be(:new_tag_list) { new_tags.map(&:name) }
+
+  let(:params) do
+    {
+      id: dast_scanner_profile_id,
+      profile_name: new_profile_name,
+      target_timeout: new_target_timeout,
+      spider_timeout: new_spider_timeout,
+      scan_type: new_scan_type,
+      use_ajax_spider: new_use_ajax_spider,
+      show_debug_messages: new_show_debug_messages,
+      tag_list: new_tag_list
+    }
+  end
+
   before do
     stub_licensed_features(security_on_demand_scans: true)
   end
 
   describe '#execute' do
-    subject do
-      described_class.new(project, user).execute(
-        id: dast_scanner_profile_id,
-        profile_name: new_profile_name,
-        target_timeout: new_target_timeout,
-        spider_timeout: new_spider_timeout,
-        scan_type: new_scan_type,
-        use_ajax_spider: new_use_ajax_spider,
-        show_debug_messages: new_show_debug_messages
-      )
-    end
+    subject { described_class.new(project: project, current_user: user, params: params).execute }
 
     let(:dast_scanner_profile_id) { dast_profile.id }
     let(:status) { subject.status }
@@ -55,17 +63,20 @@ RSpec.describe AppSec::Dast::ScannerProfiles::UpdateService do
         project_2.add_developer(user)
       end
 
-      subject do
-        described_class.new(project_2, user).execute(
+      let(:params) do
+        {
           id: dast_profile.id,
           profile_name: new_profile_name,
           target_timeout: new_target_timeout,
           spider_timeout: new_spider_timeout,
           scan_type: new_scan_type,
           use_ajax_spider: new_use_ajax_spider,
-          show_debug_messages: new_show_debug_messages
-        )
+          show_debug_messages: new_show_debug_messages,
+          tag_list: new_tag_list
+        }
       end
+
+      subject { described_class.new(project: project_2, current_user: user, params: params).execute }
 
       it 'returns an error status' do
         expect(status).to eq(:error)
@@ -107,14 +118,16 @@ RSpec.describe AppSec::Dast::ScannerProfiles::UpdateService do
       end
 
       context 'when the user omits unrequired elements' do
-        subject do
-          described_class.new(project, user).execute(
+        let(:params) do
+          {
             id: dast_scanner_profile_id,
             profile_name: new_profile_name,
             target_timeout: new_target_timeout,
             spider_timeout: new_spider_timeout
-          )
+          }
         end
+
+        subject { described_class.new(project: project, current_user: user, params: params).execute }
 
         it 'does not update those elements' do
           updated_dast_scanner_profile = payload.reload
@@ -150,6 +163,7 @@ RSpec.describe AppSec::Dast::ScannerProfiles::UpdateService do
           expect(updated_dast_scanner_profile.scan_type).to eq(new_scan_type)
           expect(updated_dast_scanner_profile.use_ajax_spider).to eq(new_use_ajax_spider)
           expect(updated_dast_scanner_profile.show_debug_messages).to eq(new_show_debug_messages)
+          expect(updated_dast_scanner_profile.tags).to match_array(new_tags)
         end
       end
 
@@ -245,6 +259,34 @@ RSpec.describe AppSec::Dast::ScannerProfiles::UpdateService do
       end
 
       include_examples 'restricts modification if referenced by policy', :modify
+
+      context 'when there is a invalid tag' do
+        let(:new_tag_list) { %w[invalid_tag] }
+
+        it 'returns an error status' do
+          expect(status).to eq(:error)
+        end
+
+        it 'populates message' do
+          expect(message).to eq('Invalid tag_list')
+        end
+      end
+
+      context 'when feature flag on_demand_scans_runner_tags is disabled' do
+        before do
+          stub_feature_flags(on_demand_scans_runner_tags: false)
+        end
+
+        it 'returns a success status' do
+          expect(status).to eq(:success)
+        end
+
+        it 'does not update the tags' do
+          updated_dast_scanner_profile = payload.reload
+
+          expect(updated_dast_scanner_profile.tag_list).to match_array(old_tags.map(&:name))
+        end
+      end
     end
   end
 end

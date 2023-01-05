@@ -110,9 +110,9 @@ RSpec.describe AppSec::Dast::ScanConfigs::BuildService, :dynamic_analysis, featu
                     dast_configuration:
                       site_profile: #{dast_site_profile.name}
                       scanner_profile: #{dast_scanner_profile.name}
-                  tags:
-                  - ruby
-                  - postgres
+                    tags:
+                    - ruby
+                    - postgres
                 YAML
               end
 
