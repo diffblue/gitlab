@@ -61,7 +61,7 @@ module Groups
 
         override :value_stream_class
         def value_stream_class
-          ::Analytics::CycleAnalytics::GroupValueStream
+          ::Analytics::CycleAnalytics::ValueStream
         end
 
         def create_service

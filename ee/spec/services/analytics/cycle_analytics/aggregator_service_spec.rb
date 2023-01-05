@@ -92,13 +92,13 @@ RSpec.describe Analytics::CycleAnalytics::AggregatorService do
       let!(:issue2) { create(:issue, project: project, closed_at: Time.current) }
 
       before do
-        create(:cycle_analytics_group_stage,
+        create(:cycle_analytics_stage,
                namespace: group,
                start_event_identifier: :merge_request_created,
                end_event_identifier: :merge_request_merged
               )
 
-        create(:cycle_analytics_group_stage,
+        create(:cycle_analytics_stage,
                namespace: group,
                start_event_identifier: :issue_created,
                end_event_identifier: :issue_closed
@@ -126,7 +126,7 @@ RSpec.describe Analytics::CycleAnalytics::AggregatorService do
       let!(:merge_request_2) { create(:merge_request, :with_merged_metrics, :unique_branches, project: project) }
 
       before do
-        create(:cycle_analytics_group_stage,
+        create(:cycle_analytics_stage,
                namespace: group,
                start_event_identifier: :merge_request_created,
                end_event_identifier: :merge_request_merged

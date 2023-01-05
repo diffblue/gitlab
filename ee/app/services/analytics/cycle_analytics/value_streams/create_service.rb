@@ -6,7 +6,7 @@ module Analytics
       class CreateService
         include Gitlab::Allowable
 
-        def initialize(namespace:, params:, current_user:, value_stream: ::Analytics::CycleAnalytics::GroupValueStream.new(namespace: namespace))
+        def initialize(namespace:, params:, current_user:, value_stream: ::Analytics::CycleAnalytics::ValueStream.new(namespace: namespace))
           @value_stream = value_stream
           @namespace = namespace
           @params = process_params(params.dup.to_h)

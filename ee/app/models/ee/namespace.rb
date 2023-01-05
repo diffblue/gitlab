@@ -32,8 +32,8 @@ module EE
 
       has_many :ci_minutes_additional_packs, class_name: "Ci::Minutes::AdditionalPack"
 
-      has_many :cycle_analytics_stages, class_name: 'Analytics::CycleAnalytics::GroupStage', foreign_key: :group_id, inverse_of: :namespace
-      has_many :value_streams, class_name: 'Analytics::CycleAnalytics::GroupValueStream', foreign_key: :group_id, inverse_of: :namespace
+      has_many :cycle_analytics_stages, class_name: 'Analytics::CycleAnalytics::Stage', foreign_key: :group_id, inverse_of: :namespace
+      has_many :value_streams, class_name: 'Analytics::CycleAnalytics::ValueStream', foreign_key: :group_id, inverse_of: :namespace
       has_one :security_orchestration_policy_configuration,
               class_name: 'Security::OrchestrationPolicyConfiguration',
               foreign_key: :namespace_id,

@@ -137,7 +137,7 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyWorker do
     stub_licensed_features(cycle_analytics_for_groups: true)
 
     group = create(:group)
-    stage = create(:cycle_analytics_group_stage, namespace: group)
+    stage = create(:cycle_analytics_stage, namespace: group)
     event1 = create(:cycle_analytics_merge_request_stage_event,
                     merge_request_id: 1,
                     stage_event_hash_id: stage.stage_event_hash_id,

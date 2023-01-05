@@ -8,7 +8,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::StagesController, feature_cate
   let_it_be(:stages) { [] }
 
   let_it_be(:value_stream) do
-    create(:cycle_analytics_group_value_stream,
+    create(:cycle_analytics_value_stream,
            namespace: group,
            name: 'No stage value stream',
            stages: stages
@@ -25,13 +25,13 @@ RSpec.describe Groups::Analytics::CycleAnalytics::StagesController, feature_cate
   context 'when params have group_id and value_stream_id' do
     let_it_be(:stages) do
       [
-        create(:cycle_analytics_group_stage, namespace: group, name: "Issue", relative_position: 1),
-        create(:cycle_analytics_group_stage, namespace: group, name: "Code", relative_position: 2)
+        create(:cycle_analytics_stage, namespace: group, name: "Issue", relative_position: 1),
+        create(:cycle_analytics_stage, namespace: group, name: "Code", relative_position: 2)
       ]
     end
 
     let_it_be(:value_stream) do
-      create(:cycle_analytics_group_value_stream,
+      create(:cycle_analytics_value_stream,
              namespace: group,
              name: 'First value stream',
              stages: stages)

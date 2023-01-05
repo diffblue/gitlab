@@ -536,12 +536,12 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
     end
   end
 
-  context 'when `Analytics::CycleAnalytics::GroupStage` is given' do
+  context 'when `Analytics::CycleAnalytics::Stage` is given' do
     let(:aggregated_data_collector_enabled) { true }
 
     it_behaves_like 'test various start and end event combinations' do
       let_it_be(:group) { create(:group) }
-      let_it_be(:group_value_stream) { create(:cycle_analytics_group_value_stream, namespace: group) }
+      let_it_be(:group_value_stream) { create(:cycle_analytics_value_stream, namespace: group) }
       let_it_be(:project) { create(:project, :repository, group: group) }
       let_it_be(:label) { create(:group_label, group: group) }
       let_it_be(:other_label) { create(:group_label, group: group) }
@@ -550,7 +550,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
       let(:end_event_label) { nil }
 
       let!(:stage) do
-        Analytics::CycleAnalytics::GroupStage.create!(
+        Analytics::CycleAnalytics::Stage.create!(
           name: 'My Stage',
           namespace: group,
           start_event_identifier: start_event_identifier,
@@ -575,7 +575,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
       let_it_be(:project1) { create(:project, :repository, group: group) }
       let_it_be(:project2) { create(:project, :repository, group: group) }
       let_it_be(:stage) do
-        create(:cycle_analytics_group_stage,
+        create(:cycle_analytics_stage,
                name: 'My Stage',
                namespace: group,
                start_event_identifier: :merge_request_created,
@@ -736,7 +736,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
     let(:merge_request) { merge_requests.first }
 
     let(:stage) do
-      Analytics::CycleAnalytics::GroupStage.new(
+      Analytics::CycleAnalytics::Stage.new(
         name: 'My Stage',
         namespace: group,
         start_event_identifier: :merge_request_created,

@@ -41,7 +41,7 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
     it 'succeeds for subgroups' do
       subgroup = create(:group, parent: group)
       params[:group_id] = subgroup.full_path
-      params[:value_stream_id] = create(:cycle_analytics_group_value_stream, namespace: subgroup).id
+      params[:value_stream_id] = create(:cycle_analytics_value_stream, namespace: subgroup).id
 
       subject
 
@@ -85,7 +85,7 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
   end
 
   describe 'PUT #update' do
-    let(:stage) { create(:cycle_analytics_group_stage, namespace: namespace, relative_position: 15) }
+    let(:stage) { create(:cycle_analytics_stage, namespace: namespace, relative_position: 15) }
 
     subject { put :update, params: params.merge(id: stage.id) }
 
@@ -131,7 +131,7 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
 
       context 'when positioning parameter is given' do
         before do
-          params[:move_before_id] = create(:cycle_analytics_group_stage, namespace: group, relative_position: 10).id
+          params[:move_before_id] = create(:cycle_analytics_stage, namespace: group, relative_position: 10).id
         end
 
         it 'moves the stage before the last place' do
@@ -147,7 +147,7 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
   end
 
   describe 'DELETE #destroy' do
-    let(:stage) { create(:cycle_analytics_group_stage, namespace: group) }
+    let(:stage) { create(:cycle_analytics_stage, namespace: group) }
 
     subject { delete :destroy, params: params }
 
@@ -185,7 +185,7 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
   end
 
   describe 'data endpoints' do
-    let(:stage) { create(:cycle_analytics_group_stage, namespace: group) }
+    let(:stage) { create(:cycle_analytics_stage, namespace: group) }
 
     before do
       params[:id] = stage.id

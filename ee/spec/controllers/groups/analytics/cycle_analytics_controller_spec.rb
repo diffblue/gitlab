@@ -102,7 +102,7 @@ RSpec.describe Groups::Analytics::CycleAnalyticsController, feature_category: :p
     end
 
     context 'with group and value stream params' do
-      let(:value_stream) { create(:cycle_analytics_group_value_stream, namespace: group) }
+      let(:value_stream) { create(:cycle_analytics_value_stream, namespace: group) }
 
       it 'builds request params with group and value stream' do
         expect_next_instance_of(Gitlab::Analytics::CycleAnalytics::RequestParams) do |instance|

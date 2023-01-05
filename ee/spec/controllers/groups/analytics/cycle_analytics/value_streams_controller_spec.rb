@@ -25,7 +25,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
     end
 
     context 'when persisted value streams present' do
-      let!(:value_stream) { create(:cycle_analytics_group_value_stream, namespace: group) }
+      let!(:value_stream) { create(:cycle_analytics_value_stream, namespace: group) }
 
       it 'succeeds' do
         get :index, params: params
@@ -39,7 +39,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
   end
 
   describe 'GET #show' do
-    let!(:value_stream) { create(:cycle_analytics_group_value_stream, namespace: group) }
+    let!(:value_stream) { create(:cycle_analytics_value_stream, namespace: group) }
 
     it 'succeeds' do
       get :show, params: params.merge(id: value_stream.id)
@@ -58,7 +58,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
   end
 
   describe 'GET #edit' do
-    let!(:value_stream) { create(:cycle_analytics_group_value_stream, namespace: group) }
+    let!(:value_stream) { create(:cycle_analytics_value_stream, namespace: group) }
 
     it 'succeeds' do
       get :edit, params: params.merge(id: value_stream.id)
@@ -90,7 +90,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
       it 'returns a successful 200 response' do
         expect do
           post :create, params: { group_id: group, value_stream: { name: "busy value stream" } }
-        end.to change { Analytics::CycleAnalytics::GroupValueStream.count }.by(1)
+        end.to change { Analytics::CycleAnalytics::ValueStream.count }.by(1)
 
         expect(response).to have_gitlab_http_status(:created)
       end
@@ -100,7 +100,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
       it 'returns an unprocessable entity 422 response' do
         expect do
           post :create, params: { group_id: group, value_stream: { name: '' } }
-        end.not_to change { Analytics::CycleAnalytics::GroupValueStream.count }
+        end.not_to change { Analytics::CycleAnalytics::ValueStream.count }
 
         expect(response).to have_gitlab_http_status(:unprocessable_entity)
         expect(json_response["message"]).to eq('Invalid parameters')
@@ -176,7 +176,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
 
   describe 'PUT #update' do
     context 'with valid params' do
-      let!(:value_stream) { create(:cycle_analytics_group_value_stream, namespace: group, name: 'value stream') }
+      let!(:value_stream) { create(:cycle_analytics_value_stream, namespace: group, name: 'value stream') }
 
       it 'returns a successful 200 response' do
         put :update, params: { id: value_stream.id, group_id: group, value_stream: { name: 'new name' } }
@@ -208,7 +208,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
       end
 
       context 'with stages' do
-        let!(:stage) { create(:cycle_analytics_group_stage, namespace: group, value_stream: value_stream, name: 'stage 1', custom: true) }
+        let!(:stage) { create(:cycle_analytics_stage, namespace: group, value_stream: value_stream, name: 'stage 1', custom: true) }
 
         let(:value_stream_params) do
           {
@@ -285,12 +285,12 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
     end
 
     context 'when it is a custom value stream' do
-      let!(:value_stream) { create(:cycle_analytics_group_value_stream, namespace: group, name: 'some custom value stream') }
-      let!(:stage) { create(:cycle_analytics_group_stage, value_stream: value_stream) }
+      let!(:value_stream) { create(:cycle_analytics_value_stream, namespace: group, name: 'some custom value stream') }
+      let!(:stage) { create(:cycle_analytics_stage, value_stream: value_stream) }
 
       it 'deletes the value stream and its stages, and returns a successful 200 response' do
-        expect { destroy_value_stream }.to change { Analytics::CycleAnalytics::GroupValueStream.count }.by(-1)
-          .and change { Analytics::CycleAnalytics::GroupStage.where(value_stream: value_stream).count }.from(1).to(0)
+        expect { destroy_value_stream }.to change { Analytics::CycleAnalytics::ValueStream.count }.by(-1)
+          .and change { Analytics::CycleAnalytics::Stage.where(value_stream: value_stream).count }.from(1).to(0)
 
         expect(response).to have_gitlab_http_status(:ok)
       end

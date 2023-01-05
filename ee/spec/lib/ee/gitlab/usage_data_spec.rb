@@ -425,7 +425,7 @@ RSpec.describe Gitlab::UsageData do
         user = create(:user)
         create(:key, type: 'LDAPKey', user: user)
         create(:group_member, ldap: true, user: user)
-        create(:cycle_analytics_group_stage)
+        create(:cycle_analytics_stage)
         create(:compliance_framework_project_setting)
         create(:compliance_framework)
         create(:compliance_framework, :with_pipeline)

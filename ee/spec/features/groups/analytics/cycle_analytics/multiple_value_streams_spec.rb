@@ -185,8 +185,8 @@ RSpec.describe 'Multiple value streams', :js, feature_category: :value_stream_ma
 
   shared_examples 'delete a value stream' do |custom_value_stream_name|
     before do
-      value_stream = create(:cycle_analytics_group_value_stream, name: custom_value_stream_name, namespace: group)
-      create(:cycle_analytics_group_stage, value_stream: value_stream)
+      value_stream = create(:cycle_analytics_value_stream, name: custom_value_stream_name, namespace: group)
+      create(:cycle_analytics_stage, value_stream: value_stream)
 
       select_group(group)
     end
@@ -247,7 +247,7 @@ RSpec.describe 'Multiple value streams', :js, feature_category: :value_stream_ma
   context 'with a value stream' do
     context 'without an aggregation created' do
       before do
-        create(:cycle_analytics_group_value_stream, namespace: group, name: 'default')
+        create(:cycle_analytics_value_stream, namespace: group, name: 'default')
         select_group(group)
       end
 
@@ -271,8 +271,8 @@ RSpec.describe 'Multiple value streams', :js, feature_category: :value_stream_ma
         create_value_stream_group_aggregation(sub_group)
 
         # ensure we have a value stream already available
-        create(:cycle_analytics_group_value_stream, namespace: group, name: 'default')
-        create(:cycle_analytics_group_value_stream, namespace: sub_group, name: 'default')
+        create(:cycle_analytics_value_stream, namespace: group, name: 'default')
+        create(:cycle_analytics_value_stream, namespace: sub_group, name: 'default')
       end
 
       it_behaves_like 'create group value streams', true

@@ -168,7 +168,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams do
 
   describe 'optional `value_stream`' do
     context 'when `value_stream` is not empty' do
-      let(:value_stream) { instance_double('Analytics::CycleAnalytics::GroupValueStream') }
+      let(:value_stream) { instance_double('Analytics::CycleAnalytics::ValueStream') }
 
       before do
         params[:value_stream] = value_stream
@@ -187,7 +187,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams do
   end
 
   describe 'issuable filter params' do
-    let_it_be(:stage) { create(:cycle_analytics_group_stage, namespace: root_group) }
+    let_it_be(:stage) { create(:cycle_analytics_stage, namespace: root_group) }
 
     before do
       params.merge!(

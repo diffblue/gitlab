@@ -2,13 +2,16 @@
 
 module Analytics
   module CycleAnalytics
-    class GroupStage < ApplicationRecord
-      include Analytics::CycleAnalytics::Stage
+    class Stage < ApplicationRecord
+      self.table_name = :analytics_cycle_analytics_group_stages
+
       include DatabaseEventTracking
+      include Analytics::CycleAnalytics::Stageable
       include Analytics::CycleAnalytics::Parentable
 
       validates :name, uniqueness: { scope: [:group_id, :group_value_stream_id] }
-      belongs_to :value_stream, class_name: 'Analytics::CycleAnalytics::GroupValueStream', foreign_key: :group_value_stream_id
+      belongs_to :value_stream, class_name: 'Analytics::CycleAnalytics::ValueStream',
+foreign_key: :group_value_stream_id, inverse_of: :stages
 
       alias_attribute :parent, :namespace
       alias_attribute :parent_id, :group_id

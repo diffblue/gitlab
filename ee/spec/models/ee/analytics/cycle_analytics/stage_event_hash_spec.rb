@@ -18,7 +18,7 @@ RSpec.describe Analytics::CycleAnalytics::StageEventHash, type: :model do
     end
 
     it 'does not remove the record if at least 1 group stage for the given stage events hash exists' do
-      id = create(:cycle_analytics_group_stage).stage_event_hash_id
+      id = create(:cycle_analytics_stage).stage_event_hash_id
 
       described_class.cleanup_if_unused(id)
 
