@@ -13,6 +13,7 @@ import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
 import { capitalizeFirstCharacter, convertToCamelCase } from '~/lib/utils/text_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { CRITICAL, HIGH } from '~/vulnerabilities/constants';
+import { DynamicScroller, DynamicScrollerItem } from 'vendor/vue-virtual-scroller';
 import SummaryText from './summary_text.vue';
 import SummaryHighlights from './summary_highlights.vue';
 import SecurityTrainingPromoWidget from './security_training_promo_widget.vue';
@@ -29,6 +30,8 @@ export default {
     SecurityTrainingPromoWidget,
     GlBadge,
     GlButton,
+    DynamicScroller,
+    DynamicScrollerItem,
   },
   i18n,
   props: {
@@ -343,27 +346,39 @@ export default {
           </div>
         </template>
         <template #body>
-          <div v-if="report.numberOfNewFindings > 0" class="gl-mt-2">
+          <div v-if="report.numberOfNewFindings > 0" class="gl-mt-2 gl-w-full">
             <strong>{{ $options.i18n.new }}</strong>
             <div class="gl-mt-2">
-              <mr-widget-row
-                v-for="vuln in report.added"
-                :key="vuln.uuid"
-                :level="3"
-                :widget-name="$options.name"
-                :status-icon-name="statusIconNameVulnerability(vuln)"
-                class="gl-mt-2"
+              <dynamic-scroller
+                :items="report.added"
+                :min-item-size="32"
+                :style="{ maxHeight: '170px' }"
+                data-testid="dynamic-content-scroller"
+                key-field="uuid"
+                class="gl-pr-5"
               >
-                <template #body>
-                  {{ $options.SEVERITY_LEVELS[vuln.severity] }}
-                  <gl-button variant="link" class="gl-ml-2" @click="setModalData(vuln)">{{
-                    vuln.name
-                  }}</gl-button>
-                  <gl-badge v-if="isDismissed(vuln)" class="gl-ml-3">{{
-                    $options.i18n.dismissed
-                  }}</gl-badge>
+                <template #default="{ item: vuln, active }">
+                  <dynamic-scroller-item :item="vuln" :active="active">
+                    <mr-widget-row
+                      :key="vuln.uuid"
+                      :level="3"
+                      :widget-name="$options.name"
+                      :status-icon-name="statusIconNameVulnerability(vuln)"
+                      class="gl-mt-2"
+                    >
+                      <template #body>
+                        {{ $options.SEVERITY_LEVELS[vuln.severity] }}
+                        <gl-button variant="link" class="gl-ml-2" @click="setModalData(vuln)">{{
+                          vuln.name
+                        }}</gl-button>
+                        <gl-badge v-if="isDismissed(vuln)" class="gl-ml-3">{{
+                          $options.i18n.dismissed
+                        }}</gl-badge>
+                      </template>
+                    </mr-widget-row>
+                  </dynamic-scroller-item>
                 </template>
-              </mr-widget-row>
+              </dynamic-scroller>
             </div>
           </div>
         </template>
