@@ -33,7 +33,7 @@ module Security
 
         normalized_findings = normalize_report_findings(
           report.findings,
-          vulnerabilities_by_finding_fingerprint(report))
+          existing_vulnerabilities_for(report.findings))
 
         filtered_findings = filter(normalized_findings)
 
@@ -53,25 +53,18 @@ module Security
       # environment.
       # This is easier to address from within the class rather than from tests because this leads to bad class design
       # and exposing too much of its implementation details to the test suite.
-      Gitlab::Utils.stable_sort_by(findings) { |x| [-x.severity_value, -x.confidence_value] }
+      Gitlab::Utils.stable_sort_by(findings) { |x| [-x.severity_value] }
     end
 
     def requested_reports
       @requested_reports ||= pipeline&.security_reports(report_types: report_types)&.reports&.values || []
     end
 
-    def vulnerabilities_by_finding_fingerprint(report)
-      existing_findings_for(report).each_with_object({}) do |finding, memo|
-        memo[finding.project_fingerprint] = finding.vulnerability
-      end
-    end
-
-    def existing_findings_for(report)
-      Vulnerabilities::Finding.by_project_fingerprints(report.findings.map(&:project_fingerprint))
-                              .by_projects(pipeline.project)
-                              .by_report_types(report.type)
-                              .includes(:vulnerability) # rubocop:disable CodeReuse/ActiveRecord (We will remove this class)
-                              .select(:vulnerability_id, :project_fingerprint)
+    def existing_vulnerabilities_for(findings)
+      findings.map(&:uuid)
+              .each_slice(50)
+              .flat_map { |uuids| Vulnerability.with_findings_by_uuid(uuids) }
+              .index_by(&:finding_uuid)
     end
 
     # This finder is used for fetching vulnerabilities for any pipeline, if we used it to fetch
@@ -87,7 +80,7 @@ module Security
         finding = Vulnerabilities::Finding.new(finding_hash)
         # assigning Vulnerabilities to Findings to enable the computed state
         finding.location_fingerprint = report_finding.location.fingerprint
-        finding.vulnerability = vulnerabilities[finding.project_fingerprint]
+        finding.vulnerability = vulnerabilities[finding.uuid]
         finding.project = pipeline.project
         finding.sha = pipeline.sha
         finding.scanner = scanner_for_report_finding(report_finding)

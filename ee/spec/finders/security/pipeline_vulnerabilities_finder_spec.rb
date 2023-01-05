@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::PipelineVulnerabilitiesFinder do
+RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulnerability_management do
   def disable_deduplication
     allow(::Security::MergeReportsService).to receive(:new) do |*args|
       double('no_deduplication_service', execute: args.last)
@@ -536,45 +536,35 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
     end
 
     context 'when matching vulnerability records exist' do
+      let(:sast_findings) { pipeline.security_reports.reports['sast'].findings }
+      let(:confirmed_finding) { sast_findings.first }
+      let(:resolved_finding) { sast_findings.second }
+      let(:dismissed_finding) { sast_findings.third }
+
       before do
         create(:vulnerabilities_finding,
                :confirmed,
                project: project,
                report_type: 'sast',
-               project_fingerprint: confirmed_fingerprint)
+               uuid: confirmed_finding.uuid)
         create(:vulnerabilities_finding,
                :resolved,
                project: project,
                report_type: 'sast',
-               project_fingerprint: resolved_fingerprint)
+               uuid: resolved_finding.uuid)
         create(:vulnerabilities_finding,
                :dismissed,
                project: project,
                report_type: 'sast',
-               project_fingerprint: dismissed_fingerprint)
-      end
-
-      let(:confirmed_fingerprint) do
-        Digest::SHA1.hexdigest(
-          'groovy/src/main/java/com/gitlab/security_products/tests/App.groovy:29:CIPHER_INTEGRITY')
-      end
-
-      let(:resolved_fingerprint) do
-        Digest::SHA1.hexdigest(
-          'groovy/src/main/java/com/gitlab/security_products/tests/App.groovy:47:PREDICTABLE_RANDOM')
-      end
-
-      let(:dismissed_fingerprint) do
-        Digest::SHA1.hexdigest(
-          'groovy/src/main/java/com/gitlab/security_products/tests/App.groovy:41:PREDICTABLE_RANDOM')
+               uuid: dismissed_finding.uuid)
       end
 
       subject { described_class.new(pipeline: pipeline, params: { report_type: %w[sast], scope: 'all' }).execute }
 
       it 'assigns vulnerability records to findings providing them with computed state' do
-        confirmed = subject.findings.find { |f| f.project_fingerprint == confirmed_fingerprint }
-        resolved = subject.findings.find { |f| f.project_fingerprint == resolved_fingerprint }
-        dismissed = subject.findings.find { |f| f.project_fingerprint == dismissed_fingerprint }
+        confirmed = subject.findings.find { |f| f.uuid == confirmed_finding.uuid }
+        resolved = subject.findings.find { |f| f.uuid == resolved_finding.uuid }
+        dismissed = subject.findings.find { |f| f.uuid == dismissed_finding.uuid }
 
         expect(confirmed.state).to eq 'confirmed'
         expect(resolved.state).to eq 'resolved'
