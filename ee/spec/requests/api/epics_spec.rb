@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe API::Epics, feature_category: :portfolio_management do
   let_it_be(:user) { create(:user) }
 
-  let(:group) { create(:group) }
+  let_it_be(:group, reload: true) { create(:group) }
   let(:project) { create(:project, :public, group: group) }
   let(:label) { create(:group_label, group: group) }
   let(:label2) { create(:group_label, group: group, title: 'label-2') }
@@ -159,8 +159,8 @@ RSpec.describe API::Epics, feature_category: :portfolio_management do
     end
 
     context 'with a parent epic' do
-      let!(:epic) { create(:epic, group: group) }
-      let!(:epic2) { create(:epic, group: group, parent_id: epic.id) }
+      let_it_be(:epic) { create(:epic, group: group) }
+      let_it_be(:epic2) { create(:epic, group: group, parent_id: epic.id) }
 
       before do
         stub_licensed_features(epics: true)
@@ -651,7 +651,7 @@ RSpec.describe API::Epics, feature_category: :portfolio_management do
 
   describe 'POST /groups/:id/epics' do
     let(:url) { "/groups/#{group.path}/epics" }
-    let(:parent_epic) { create(:epic, group: group) }
+    let_it_be(:parent_epic) { create(:epic, group: group) }
     let(:params) do
       {
         title: 'new epic',
@@ -668,7 +668,7 @@ RSpec.describe API::Epics, feature_category: :portfolio_management do
 
     context 'when epics feature is enabled' do
       before do
-        stub_licensed_features(epics: true)
+        stub_licensed_features(epics: true, subepics: true)
         group.add_developer(user)
       end
 
@@ -699,6 +699,15 @@ RSpec.describe API::Epics, feature_category: :portfolio_management do
           expect(json_response['parent_id']).to eq(parent_epic.id)
           expect(json_response['parent_iid']).to eq(parent_epic.iid)
           expect(json_response['_links']['parent']).to end_with("/api/v4/groups/#{parent_epic.group.id}/epics/#{parent_epic.iid}")
+        end
+
+        it 'create system notes for new relation' do
+          post api(url, user), params: params
+
+          new_epic = Epic.last
+
+          expect(parent_epic.notes.last&.note).to eq("added epic #{new_epic.to_reference} as child epic")
+          expect(new_epic.notes.last&.note).to eq("added epic #{parent_epic.to_reference} as parent epic")
         end
 
         it 'creates a new epic' do
@@ -773,6 +782,25 @@ RSpec.describe API::Epics, feature_category: :portfolio_management do
 
             expect(result.start_date_fixed).to eq(start_date)
             expect(result.due_date_fixed).to eq(due_date)
+          end
+        end
+
+        context 'when parent epic is invalid' do
+          let_it_be(:confidential_parent) { create(:epic, group: group, confidential: true) }
+
+          let(:params) do
+            {
+              title: 'new epic',
+              description: 'epic description',
+              parent_id: confidential_parent.id,
+              confidential: false
+            }
+          end
+
+          it 'returns 400' do
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response['message']['confidential'])
+              .to include('A non-confidential epic cannot be assigned to a confidential parent epic')
           end
         end
       end
