@@ -104,7 +104,7 @@ RSpec.describe Audit::ProjectChangesAuditor, feature_category: :audit_events do
       context 'when project name is updated' do
         let(:change) { "name" }
         let(:event) { "project_name_updated" }
-        let(:change_from) { "group1 / interesting name" }
+        let(:change_from) { "#{group.name} / interesting name" }
         let(:change_to) { project.full_name }
 
         before do
