@@ -109,6 +109,15 @@ RSpec.describe EE::ProtectedRefAccess do
 
         expect(subject).to be_valid
       end
+
+      context 'when importing' do
+        subject { build(factory_name, importing: true) }
+
+        it { is_expected.not_to validate_absence_of(:user) }
+        it { is_expected.not_to validate_absence_of(:group) }
+        it { is_expected.not_to receive(:validate_group_membership) }
+        it { is_expected.not_to receive(:validate_user_membership) }
+      end
     end
   end
 end
