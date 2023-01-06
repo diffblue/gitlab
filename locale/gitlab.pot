@@ -5330,6 +5330,9 @@ msgstr ""
 msgid "Are you sure you want to revoke this %{accessTokenType}? This action cannot be undone."
 msgstr ""
 
+msgid "Are you sure you want to revoke this SSH key?"
+msgstr ""
+
 msgid "Are you sure you want to revoke this group access token? This action cannot be undone."
 msgstr ""
 
@@ -10079,6 +10082,15 @@ msgid "CommitBoxTitle|Commit"
 msgstr ""
 
 msgid "CommitMessage|Add %{file_name}"
+msgstr ""
+
+msgid "CommitSignature|This commit was signed with a key that was revoked."
+msgstr ""
+
+msgid "CommitSignature|Unverified"
+msgstr ""
+
+msgid "CommitSignature|Unverified signature"
 msgstr ""
 
 msgid "CommitWidget|authored"
@@ -36058,6 +36070,9 @@ msgstr ""
 msgid "Revoke"
 msgstr ""
 
+msgid "Revoke Key"
+msgstr ""
+
 msgid "Revoked"
 msgstr ""
 
@@ -42820,6 +42835,9 @@ msgid "This action can lead to data loss. To prevent accidental actions we ask y
 msgstr ""
 
 msgid "This action cannot be undone, and will permanently delete the %{key} SSH key"
+msgstr ""
+
+msgid "This action cannot be undone, and will permanently delete the %{key} SSH key. All commits signed using this SSH key will be marked as unverified."
 msgstr ""
 
 msgid "This action deletes %{codeOpen}%{project_path_with_namespace}%{codeClose} and everything this project contains. %{strongOpen}There is no going back.%{strongClose}"

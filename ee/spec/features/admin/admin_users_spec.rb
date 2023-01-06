@@ -195,13 +195,15 @@ RSpec.describe "Admin::Users", :js, feature_category: :user_management do
       # SSH key should be the first in the list
       within('ul.content-list li.key-list-item:nth-of-type(1)') do
         expect(page).to have_content(key2.title)
-        expect(page).to have_selector('[data-testid=remove-icon]')
+        expect(page).to have_content('Remove')
+        expect(page).not_to have_content('Revoke')
       end
 
       # Next, LDAP key
       within('ul.content-list li.key-list-item:nth-of-type(2)') do
         expect(page).to have_content(key1.title)
-        expect(page).not_to have_selector('[data-testid=remove-icon]')
+        expect(page).not_to have_content('Remove')
+        expect(page).not_to have_content('Revoke')
       end
     end
   end
