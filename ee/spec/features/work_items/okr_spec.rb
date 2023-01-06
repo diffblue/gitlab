@@ -31,7 +31,7 @@ RSpec.describe 'OKR', :js, feature_category: :product_planning do
       expect(page).to have_selector('[data-testid="work-item-progress"]')
     end
 
-    context 'in heirarchy' do
+    context 'in hierarchy' do
       it 'shows no children', :aggregate_failures do
         page.within('[data-testid="work-item-tree"]') do
           expect(page).to have_content('Child objectives and key results')
@@ -86,6 +86,46 @@ RSpec.describe 'OKR', :js, feature_category: :product_planning do
     end
   end
 
+  context 'with fetch by iid' do
+    before do
+      stub_feature_flags(use_iid_in_work_items_path: true)
+      visit project_work_items_path(project, objective.iid, iid_path: true)
+      wait_for_all_requests
+    end
+
+    it 'creates objective' do
+      create_okr('objective', 'Objective 2')
+
+      expect(find('[data-testid="work-item-tree"]')).to have_content('Objective 2')
+    end
+
+    it 'creates key result' do
+      create_okr('key result', 'KR 2')
+
+      expect(find('[data-testid="work-item-tree"]')).to have_content('KR 2')
+    end
+  end
+
+  context 'without fetch by iid' do
+    before do
+      stub_feature_flags(use_iid_in_work_items_path: false)
+      visit project_work_items_path(project, work_items_path: objective.id)
+      wait_for_all_requests
+    end
+
+    it 'creates objective' do
+      create_okr('objective', 'Objective 1')
+
+      expect(find('[data-testid="work-item-tree"]')).to have_content('Objective 1')
+    end
+
+    it 'creates key result' do
+      create_okr('key result', 'KR 1')
+
+      expect(find('[data-testid="work-item-tree"]')).to have_content('KR 1')
+    end
+  end
+
   context 'for keyresult' do
     before do
       visit project_work_items_path(project, work_items_path: key_result.id)
@@ -136,6 +176,20 @@ RSpec.describe 'OKR', :js, feature_category: :product_planning do
         page_body.click
         expect(progress_input.value).to eq('')
       end
+    end
+  end
+
+  def create_okr(type, title)
+    page.within('[data-testid="work-item-tree"]') do
+      click_button 'Add'
+      click_button "New #{type}"
+      wait_for_all_requests # wait for work items type to load
+
+      fill_in 'Add a title', with: title
+
+      click_button "Create #{type}"
+
+      wait_for_all_requests
     end
   end
 end
