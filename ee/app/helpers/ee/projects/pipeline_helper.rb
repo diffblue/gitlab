@@ -13,7 +13,7 @@ module EE
           codequality_report_download_path: codequality_report_download_path(project, pipeline),
           codequality_blob_path: codequality_blob_path(project, pipeline),
           codequality_project_path: codequality_project_path(project, pipeline),
-          expose_license_scanning_data: pipeline.expose_license_scanning_data?.to_json,
+          expose_license_scanning_data: expose_license_scanning_data?(pipeline).to_json,
           expose_security_dashboard: pipeline.expose_security_dashboard?.to_json,
           is_full_codequality_report_available: project.licensed_feature_available?(:full_codequality_report).to_json,
           license_management_api_url: license_management_api_url(project),
@@ -33,6 +33,10 @@ module EE
         if project.licensed_feature_available?(:license_scanning)
           licenses_project_pipeline_path(project, pipeline)
         end
+      end
+
+      def expose_license_scanning_data?(pipeline)
+        ::Gitlab::LicenseScanning.scanner_for_pipeline(pipeline).has_data?
       end
 
       def codequality_blob_path(project, pipeline)

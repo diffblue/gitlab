@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::PipelineHelper do
+RSpec.describe Projects::PipelineHelper, feature_category: :pipeline_authoring do
   include Ci::BuildsHelper
 
   let_it_be(:user) { create(:user) }
@@ -24,7 +24,7 @@ RSpec.describe Projects::PipelineHelper do
         codequality_report_download_path: helper.codequality_report_download_path(project, pipeline),
         codequality_blob_path: codequality_blob_path(project, pipeline),
         codequality_project_path: codequality_project_path(project, pipeline),
-        expose_license_scanning_data: pipeline.expose_license_scanning_data?.to_json,
+        expose_license_scanning_data: helper.expose_license_scanning_data?(pipeline).to_json,
         expose_security_dashboard: pipeline.expose_security_dashboard?.to_json,
         is_full_codequality_report_available: project.licensed_feature_available?(:full_codequality_report).to_json,
         license_management_api_url: license_management_api_url(project),
