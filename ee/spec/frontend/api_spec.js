@@ -307,22 +307,6 @@ describe('Api', () => {
         expect(url).toEqual(expectedUrl);
       });
     });
-
-    describe('cycleAnalyticsUpdateAggregation', () => {
-      it('updates the aggregation enabled status', async () => {
-        const reqdata = { enabled: true };
-        const expectedUrl = `${dummyValueStreamAnalyticsUrlRoot}/use_aggregated_backend`;
-
-        mock.onPut(expectedUrl).reply(httpStatus.OK, reqdata);
-
-        const {
-          data,
-          config: { url },
-        } = await Api.cycleAnalyticsUpdateAggregation(groupId, reqdata);
-        expect(data).toEqual(reqdata);
-        expect(url).toEqual(expectedUrl);
-      });
-    });
   });
 
   describe('GroupActivityAnalytics', () => {
