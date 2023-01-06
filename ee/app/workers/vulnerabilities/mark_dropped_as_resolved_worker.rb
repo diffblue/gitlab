@@ -40,7 +40,7 @@ module Vulnerabilities
         .with_states(:detected)
         .with_resolution(true)
         .for_projects(@project_id)
-        .by_identifier_ids(@dropped_identifier_ids)
+        .by_primary_identifier_ids(@dropped_identifier_ids)
     end
 
     def create_state_transitions(vulnerabilities)
