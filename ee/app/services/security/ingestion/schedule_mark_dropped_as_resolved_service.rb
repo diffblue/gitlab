@@ -40,6 +40,7 @@ module Security
       attr_reader :project_id, :scan_type, :primary_identifiers
 
       # Returns a list of identifiers no longer present in latest scan
+      # limited to identifier types present in the primary_identifiers
       def dropped_identifiers
         return [] unless primary_identifiers&.any?
 
@@ -57,8 +58,15 @@ module Security
       # Returns a list of identifiers not included in scan's primary_identifiers
       def identifiers_no_longer_matching(vulnerabilities)
         existing_identifiers_for(vulnerabilities).reject do |existing_identifier|
-          present_in_scan?(existing_identifier)
+          type_unresovable?(existing_identifier) ||
+            present_in_scan?(existing_identifier)
         end
+      end
+
+      # Returns true if the existing identifier's type is not returned by
+      # the scan and thus cannot be considered auto-resolvable
+      def type_unresovable?(existing_identifier)
+        primary_identifier_types.exclude?(existing_identifier.external_type)
       end
 
       def present_in_scan?(existing_identifier)
@@ -86,6 +94,11 @@ module Security
           .with_states(:detected)
           .resolved_on_default_branch
           .for_projects(project_id)
+          .order_detected_at_desc
+      end
+
+      def primary_identifier_types
+        primary_identifiers.map(&:external_type).uniq
       end
     end
   end
