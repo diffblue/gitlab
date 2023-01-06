@@ -669,6 +669,7 @@ In this example, `job1` and `job2` run in parallel:
 **Additional details**:
 
 - You can use `allow_failure` as a subkey of [`rules`](#rulesallow_failure).
+- If `allow_failure: true` is set, the job is always considered successful, and later jobs with [`when: on_failure`](#when) don't start if this job fails.
 - You can use `allow_failure: false` with a manual job to create a [blocking manual job](../jobs/job_control.md#types-of-manual-jobs).
   A blocked pipeline does not run any jobs in later stages until the manual job
   is started and completes successfully.
@@ -4427,7 +4428,7 @@ the default value is `when: on_success`.
   or have `allow_failure: true`.
 - `manual`: Run the job only when [triggered manually](../jobs/job_control.md#create-a-job-that-must-be-run-manually).
 - `always`: Run the job regardless of the status of jobs in earlier stages. Can also be used in `workflow:rules`.
-- `on_failure`: Run the job only when at least one job in an earlier stage fails.
+- `on_failure`: Run the job only when at least one job in an earlier stage fails. A job with `allow_failure: true` is always considered successful.
 - `delayed`: [Delay the execution of a job](../jobs/job_control.md#run-a-job-after-a-delay)
   for a specified duration.
 - `never`: Don't run the job. Can only be used in a [`rules`](#rules) section or `workflow: rules`.
