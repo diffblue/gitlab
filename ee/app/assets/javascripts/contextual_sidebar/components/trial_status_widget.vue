@@ -18,7 +18,6 @@ export default {
     containerId: { default: null },
     trialDaysUsed: {},
     trialDuration: {},
-    daysRemaining: {},
     navIconImagePath: {},
     percentageComplete: {},
     planName: {},
