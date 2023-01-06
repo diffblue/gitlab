@@ -6,6 +6,11 @@ import { IssuableType, WorkspaceType } from '~/issues/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import ConfidentialityBadge from '~/vue_shared/components/confidentiality_badge.vue';
 
+const NoteableTypeText = {
+  issue: __('issue'),
+  merge_request: __('merge request'),
+};
+
 export default {
   WorkspaceType,
   IssuableType,
@@ -41,7 +46,7 @@ export default {
           visible: this.hidden,
           dataTestId: 'hidden',
           tooltip: sprintf(__('This %{issuable} is hidden because its author has been banned'), {
-            issuable: this.getNoteableData.targetType.replace('_', ' '),
+            issuable: NoteableTypeText[this.getNoteableData.targetType],
           }),
         },
       ];
