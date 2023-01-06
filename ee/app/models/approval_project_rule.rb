@@ -28,6 +28,7 @@ class ApprovalProjectRule < ApplicationRecord
   attribute :severity_levels, default: DEFAULT_SEVERITIES
 
   scope :report_approver_without_scan_finding, -> { report_approver.where.not(report_type: :scan_finding) }
+  scope :for_all_branches, -> { where.missing(:protected_branches) }
 
   alias_method :code_owner, :code_owner?
 
