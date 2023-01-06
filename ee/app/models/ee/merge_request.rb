@@ -251,13 +251,17 @@ module EE
     end
 
     def compare_license_scanning_reports(current_user)
-      return missing_report_error("license scanning") unless actual_head_pipeline&.license_scan_completed?
+      unless ::Gitlab::LicenseScanning.scanner_for_pipeline(actual_head_pipeline).results_available?
+        return missing_report_error("license scanning")
+      end
 
       compare_reports(::Ci::CompareLicenseScanningReportsService, current_user)
     end
 
     def compare_license_scanning_reports_collapsed(current_user)
-      return missing_report_error("license scanning") unless actual_head_pipeline&.license_scan_completed?
+      unless ::Gitlab::LicenseScanning.scanner_for_pipeline(actual_head_pipeline).results_available?
+        return missing_report_error("license scanning")
+      end
 
       compare_reports(
         ::Ci::CompareLicenseScanningReportsCollapsedService,

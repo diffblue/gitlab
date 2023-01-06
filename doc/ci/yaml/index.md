@@ -1300,6 +1300,11 @@ Untracked files include files that are:
 - Ignored due to [`.gitignore` configuration](https://git-scm.com/docs/gitignore).
 - Created, but not added to the checkout with [`git add`](https://git-scm.com/docs/git-add).
 
+Caching untracked files can create unexpectedly large caches if the job downloads:
+
+- Dependencies, like gems or node modules, which are usually untracked.
+- [Artifacts](#artifacts) from a different job. Files extracted from the artifacts are untracked by default.
+
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
 [`default` section](#default).
 
@@ -1318,8 +1323,9 @@ rspec:
 
 **Additional details**:
 
-- You can combine `cache:untracked` with `cache:paths` to cache all untracked files
-  as well as files in the configured paths. This is useful for including files that are not tracked because of a `.gitignore` configuration. For example:
+- You can combine `cache:untracked` with `cache:paths` to cache all untracked files, as well as files in the configured paths.
+  Use `cache:paths` to cache any specific files, including tracked files, or files that are outside of the working directory,
+  and use `cache: untracked` to also cache all untracked files. For example:
 
   ```yaml
   rspec:
@@ -1329,6 +1335,9 @@ rspec:
       paths:
         - binaries/
   ```
+
+  In this example, the job caches all untracked files in the repository, as well as all the files in `binaries/`.
+  If there are untracked files in `binaries/`, they are covered by both keywords.
 
 #### `cache:unprotect`
 
