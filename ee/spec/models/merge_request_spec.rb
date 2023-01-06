@@ -836,8 +836,8 @@ RSpec.describe MergeRequest do
       before do
         merge_request.update!(head_pipeline_id: head_pipeline.id)
 
-        allow_next_found_instance_of(Ci::Pipeline) do |pipeline|
-          allow(pipeline).to receive(:license_scan_completed?).and_return(true)
+        allow_next_instance_of(::Gitlab::LicenseScanning::BaseScanner) do |scanner|
+          allow(scanner).to receive(:results_available?).and_return(true)
         end
       end
 
