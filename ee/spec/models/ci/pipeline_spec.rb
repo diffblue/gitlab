@@ -77,17 +77,6 @@ RSpec.describe Ci::Pipeline do
     end
   end
 
-  describe '#expose_license_scanning_data?' do
-    subject { pipeline.expose_license_scanning_data? }
-
-    before do
-      stub_licensed_features(license_scanning: true)
-      create(:ee_ci_build, :license_scanning, pipeline: pipeline)
-    end
-
-    it { is_expected.to be_truthy }
-  end
-
   describe '#security_reports' do
     subject { pipeline.security_reports }
 
