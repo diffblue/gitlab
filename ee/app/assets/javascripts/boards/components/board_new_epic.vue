@@ -12,6 +12,7 @@ export default {
     BoardNewItem,
     GroupSelect,
   },
+  inject: ['fullPath'],
   props: {
     list: {
       type: Object,
@@ -19,7 +20,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(['selectedGroup', 'fullPath']),
+    ...mapState(['selectedGroup']),
     ...mapGetters(['isGroupBoard']),
     formEventPrefix() {
       return toggleFormEventPrefix.epic;

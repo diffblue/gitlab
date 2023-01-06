@@ -30,11 +30,11 @@ export default {
     SidebarTodoWidget,
   },
   mixins: [glFeatureFlagMixin()],
-  inject: ['canUpdate', 'labelsFilterBasePath'],
+  inject: ['canUpdate', 'labelsFilterBasePath', 'issuableType'],
   inheritAttrs: false,
   computed: {
     ...mapGetters(['isSidebarOpen', 'activeBoardItem']),
-    ...mapState(['sidebarType', 'issuableType']),
+    ...mapState(['sidebarType']),
     isIssuableSidebar() {
       return this.sidebarType === ISSUABLE;
     },

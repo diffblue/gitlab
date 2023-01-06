@@ -43,7 +43,6 @@ describe('BoardsSelector', () => {
         isProjectBoard: () => isProjectBoard,
       },
       state: {
-        boardType: isGroupBoard ? BoardType.group : BoardType.project,
         board: mockBoard,
       },
     });
@@ -64,7 +63,7 @@ describe('BoardsSelector', () => {
     .fn()
     .mockResolvedValue(mockGroupRecentBoardsResponse);
 
-  const createComponent = ({ isEpicBoard = false }) => {
+  const createComponent = ({ isEpicBoard = false, isGroupBoard = false }) => {
     fakeApollo = createMockApollo([
       [projectBoardsQuery, projectBoardsQueryHandlerSuccess],
       [groupBoardsQuery, groupBoardsQueryHandlerSuccess],
@@ -89,6 +88,7 @@ describe('BoardsSelector', () => {
         scopedIssueBoardFeatureEnabled: true,
         weights: [],
         isEpicBoard,
+        boardType: isGroupBoard ? BoardType.group : BoardType.project,
       },
     });
   };
