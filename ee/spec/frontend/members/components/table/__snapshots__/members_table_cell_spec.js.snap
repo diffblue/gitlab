@@ -8,6 +8,7 @@ Object {
   "permissions": Object {
     "canOverride": false,
     "canRemove": false,
+    "canRemoveBlockedByLastOwner": false,
     "canResend": false,
     "canUnban": false,
     "canUpdate": false,
