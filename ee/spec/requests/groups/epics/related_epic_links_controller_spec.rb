@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Groups::Epics::RelatedEpicLinksController, feature_category: :portfolio_management do
   let_it_be(:user) { create(:user) }
-  let_it_be(:epic) { create(:epic) }
+  let_it_be(:epic, reload: true) { create(:epic) }
   let_it_be(:epic2) { create(:epic, group: epic.group) }
   let_it_be(:epic3) { create(:epic, group: epic.group) }
   let_it_be(:epic_link1) { create(:related_epic_link, source: epic, target: epic3) }
@@ -59,7 +59,7 @@ RSpec.describe Groups::Epics::RelatedEpicLinksController, feature_category: :por
 
       control = ActiveRecord::QueryRecorder.new { do_request }
 
-      create(:related_epic_link, source: epic)
+      create(:related_epic_link, source: epic, target: epic2)
 
       expect { do_request }.not_to exceed_query_limit(control)
     end
@@ -112,8 +112,8 @@ RSpec.describe Groups::Epics::RelatedEpicLinksController, feature_category: :por
     end
 
     before do
-      epic.group.add_developer(user)
-      epic2.group.add_developer(user)
+      epic.group.add_guest(user)
+      epic2.group.add_guest(user)
       login_as user
     end
 
@@ -152,6 +152,10 @@ RSpec.describe Groups::Epics::RelatedEpicLinksController, feature_category: :por
 
     context 'with failure' do
       context 'when unauthorized' do
+        before do
+          epic.update!(confidential: true)
+        end
+
         it 'returns 403' do
           epic.group.add_guest(user)
 

@@ -20,7 +20,7 @@ module Epics
       private
 
       def permission_to_remove_relation?
-        can?(current_user, :admin_related_epic_link, source) && can?(current_user, :admin_epic, target)
+        can?(current_user, :admin_epic_link_relation, source) && can?(current_user, :admin_epic_relation, target)
       end
 
       def track_event

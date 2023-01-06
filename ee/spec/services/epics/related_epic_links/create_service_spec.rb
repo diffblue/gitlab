@@ -2,13 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe Epics::RelatedEpicLinks::CreateService do
+RSpec.describe Epics::RelatedEpicLinks::CreateService, feature_category: :portfolio_management do
   describe '#execute' do
     let_it_be(:user) { create :user }
     let_it_be(:group) { create :group }
     let_it_be(:issuable) { create :epic, group: group }
     let_it_be(:issuable2) { create :epic, group: group }
-    let_it_be(:guest_issuable) { create :epic }
+    let_it_be(:restricted_issuable) { create :epic }
     let_it_be(:another_group) { create :group }
     let_it_be(:issuable3) { create :epic, group: another_group }
     let_it_be(:issuable_a) { create :epic, group: group }
@@ -22,9 +22,8 @@ RSpec.describe Epics::RelatedEpicLinks::CreateService do
 
     before do
       stub_licensed_features(epics: true, related_epics: true)
-      group.add_developer(user)
-      guest_issuable.group.add_guest(user)
-      another_group.add_developer(user)
+      group.add_guest(user)
+      another_group.add_guest(user)
     end
 
     it_behaves_like 'issuable link creation'

@@ -61,13 +61,18 @@ class EpicPolicy < BasePolicy
     enable :admin_epic_relation
   end
 
-  # This needs to be checked on both epics involved in the epic tree relationship.
+  # Used to check permissions of subepics (child-parent relation)
   rule { can?(:admin_epic_relation) & subepics_available }.policy do
     enable :admin_epic_tree_relation
   end
 
+  # Used to check permissions of related epic links (related/blocked/blocking relation)
+  rule { can?(:admin_epic_relation) & related_epics_available }.policy do
+    enable :admin_epic_link_relation
+  end
+
   # Special case to not prevent support bot
-  # assiging issues to confidential epics using quick actions
+  # assigning issues to confidential epics using quick actions
   # when group has projects with service desk enabled.
   rule { confidential & ~can?(:reporter_access) & ~(support_bot & service_desk_enabled) }.policy do
     prevent :read_epic
@@ -81,14 +86,6 @@ class EpicPolicy < BasePolicy
   rule { can?(:admin_epic) }.policy do
     enable :set_epic_metadata
     enable :set_confidentiality
-  end
-
-  rule { can?(:read_epic) & related_epics_available }.policy do
-    enable :read_related_epic_link
-  end
-
-  rule { can?(:admin_epic) & related_epics_available }.policy do
-    enable :admin_related_epic_link
   end
 
   rule { can?(:reporter_access) }.policy do

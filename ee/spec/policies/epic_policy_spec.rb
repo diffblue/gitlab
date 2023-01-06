@@ -26,14 +26,28 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
     it { is_expected.to be_disallowed(:admin_note) }
   end
 
+  shared_examples 'can admin epic relations' do
+    it do
+      is_expected.to be_allowed(:admin_epic_relation,
+                                :admin_epic_tree_relation,
+                                :admin_epic_link_relation)
+    end
+  end
+
+  shared_examples 'cannot admin epic relations' do
+    it do
+      is_expected.to be_disallowed(:admin_epic_relation,
+                                   :admin_epic_tree_relation,
+                                   :admin_epic_link_relation)
+    end
+  end
+
   shared_examples 'can only read epics' do
     it 'matches expected permissions' do
       is_expected.to be_allowed(:read_epic, :read_epic_iid, :read_note,
-                                :create_todo, :read_related_epic_link,
-                                :read_issuable_participables)
+                                :create_todo, :read_issuable_participables)
       is_expected.to be_disallowed(:update_epic, :destroy_epic, :admin_epic,
-                                   :create_epic, :admin_related_epic_link,
-                                   :set_epic_metadata, :set_confidentiality,
+                                   :create_epic, :set_epic_metadata, :set_confidentiality,
                                    :mark_note_as_internal, :read_internal_note)
     end
   end
@@ -42,10 +56,10 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
     it 'matches expected permissions' do
       is_expected.to be_allowed(:read_epic, :read_epic_iid, :read_note,
                                 :read_issuable_participables, :read_internal_note,
-                                :update_epic, :admin_epic, :create_epic,
-                                :create_todo, :read_related_epic_link,
-                                :admin_related_epic_link, :set_epic_metadata,
-                                :set_confidentiality, :mark_note_as_internal)
+                                :update_epic, :admin_epic, :create_epic, :admin_epic_relation,
+                                :create_todo, :admin_epic_link_relation, :set_epic_metadata,
+                                :set_confidentiality, :mark_note_as_internal,
+                                :admin_epic_tree_relation)
     end
   end
 
@@ -55,10 +69,9 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
                                    :destroy_epic, :admin_epic, :create_epic,
                                    :create_note, :award_emoji, :read_note,
                                    :read_issuable_participables,
-                                   :create_todo, :read_related_epic_link,
-                                   :admin_related_epic_link, :set_epic_metadata,
-                                   :set_confidentiality, :admin_epic_relation,
-                                   :admin_epic_tree_relation)
+                                   :create_todo, :admin_epic_link_relation,
+                                   :set_epic_metadata, :set_confidentiality,
+                                   :admin_epic_relation, :admin_epic_tree_relation)
     end
   end
 
@@ -68,9 +81,9 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
                                 :admin_epic, :create_epic, :create_note,
                                 :award_emoji, :read_note, :create_todo,
                                 :read_issuable_participables, :read_internal_note,
-                                :read_related_epic_link, :admin_related_epic_link,
-                                :set_epic_metadata, :set_confidentiality,
-                                :admin_epic_relation, :admin_epic_tree_relation)
+                                :admin_epic_link_relation, :set_epic_metadata,
+                                :set_confidentiality, :admin_epic_relation,
+                                :admin_epic_tree_relation)
     end
   end
 
@@ -83,6 +96,7 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
       it_behaves_like 'can only read epics'
       it_behaves_like 'can comment on epics'
       it_behaves_like 'cannot edit epic comments'
+      it_behaves_like 'can admin epic relations'
     end
 
     context 'reporter group member' do
@@ -171,6 +185,7 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
       context 'user who is not a group member' do
         it_behaves_like 'can only read epics'
         it_behaves_like 'can comment on epics'
+        it_behaves_like 'cannot admin epic relations'
       end
 
       it_behaves_like 'group member permissions'
@@ -191,11 +206,13 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
         end
 
         it_behaves_like 'cannot comment on epics'
+        it_behaves_like 'cannot admin epic relations'
       end
 
       context 'user who is not a group member' do
         it_behaves_like 'can only read epics'
         it_behaves_like 'can comment on epics'
+        it_behaves_like 'cannot admin epic relations'
       end
 
       it_behaves_like 'group member permissions'
@@ -277,9 +294,10 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
           it 'matches expected permissions' do
             is_expected.to be_allowed(:read_epic, :read_epic_iid)
             is_expected.to be_disallowed(:update_epic, :destroy_epic, :admin_epic,
-                                         :create_epic, :admin_related_epic_link,
+                                         :create_epic, :admin_epic_link_relation,
                                          :set_epic_metadata, :set_confidentiality,
-                                         :mark_note_as_internal, :read_internal_note)
+                                         :mark_note_as_internal, :read_internal_note,
+                                         :admin_epic_tree_relation)
           end
         end
 
@@ -307,8 +325,7 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
                                   :award_emoji, :read_note, :create_todo,
                                   :read_issuable_participables, :admin_epic_relation,
                                   :admin_epic_tree_relation)
-        is_expected.to be_disallowed(:read_related_epic_link,
-                                     :admin_related_epic_link)
+        is_expected.to be_disallowed(:admin_epic_link_relation)
       end
     end
 
@@ -324,7 +341,8 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
         is_expected.to be_allowed(:read_epic, :read_epic_iid, :update_epic,
                                   :admin_epic, :create_epic, :create_note,
                                   :award_emoji, :read_note, :create_todo,
-                                  :read_issuable_participables, :admin_epic_relation)
+                                  :read_issuable_participables, :admin_epic_relation,
+                                  :admin_epic_link_relation)
         is_expected.to be_disallowed(:admin_epic_tree_relation)
       end
     end

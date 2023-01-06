@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Epics::RelatedEpicLinks::DestroyService do
+RSpec.describe Epics::RelatedEpicLinks::DestroyService, feature_category: :portfolio_management do
   describe '#execute' do
     let_it_be(:user) { create(:user) }
 
@@ -14,7 +14,7 @@ RSpec.describe Epics::RelatedEpicLinks::DestroyService do
 
     subject { described_class.new(issuable_link, issuable_link.source, user).execute }
 
-    it_behaves_like 'a destroyable issuable link'
+    it_behaves_like 'a destroyable issuable link', required_role: :guest
 
     context 'event tracking' do
       subject { described_class.new(issuable_link, epic, user).execute }
@@ -22,8 +22,8 @@ RSpec.describe Epics::RelatedEpicLinks::DestroyService do
       let(:issuable_link) { create(:related_epic_link, link_type: link_type ) }
 
       before do
-        issuable_link.source.resource_parent.add_reporter(user)
-        issuable_link.target.resource_parent.add_reporter(user)
+        issuable_link.source.resource_parent.add_guest(user)
+        issuable_link.target.resource_parent.add_guest(user)
       end
 
       shared_examples 'a recorded event' do
