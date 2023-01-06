@@ -101,7 +101,7 @@ module Gitlab
                      ]
                    end
 
-        if Feature.enabled?(:send_traversal_ids_to_indexer) && traversal_id_migration_applied?
+        if traversal_id_migration_applied?
           command << "--traversal-ids=#{project.namespace_ancestry}"
         end
 
