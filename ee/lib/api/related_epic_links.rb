@@ -11,7 +11,7 @@ module API
     feature_category :portfolio_management
 
     helpers do
-      def find_permissioned_epic!(iid, group_id: nil, permission: :admin_related_epic_link)
+      def find_permissioned_epic!(iid, group_id: nil, permission: :admin_epic_link_relation)
         group = group_id ? find_group!(group_id) : user_group
         epic = group.epics.find_by_iid!(iid)
 
@@ -86,7 +86,7 @@ module API
         source_epic = find_permissioned_epic!(params[:epic_iid])
         target_epic = find_permissioned_epic!(declared_params[:target_epic_iid],
                                               group_id: declared_params[:target_group_id],
-                                              permission: :admin_epic)
+                                              permission: :admin_epic_relation)
 
         create_params = { target_issuable: target_epic, link_type: declared_params[:link_type] }
 

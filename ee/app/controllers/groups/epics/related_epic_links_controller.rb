@@ -19,7 +19,7 @@ module Groups
       private
 
       def authorized_object
-        'related_epic_link'
+        'epic_link_relation'
       end
 
       def link

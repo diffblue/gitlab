@@ -74,7 +74,7 @@
             child_epics: true }.to_json : 'null' } }
   - if related_epics_feature_available
     #js-related-epics{ data: { endpoint: group_epic_related_epic_links_path(@group, @epic),
-      can_add_related_epics: "#{can?(current_user, :admin_related_epic_link, @epic)}",
+      can_add_related_epics: "#{can?(current_user, :admin_epic_link_relation, @epic)}",
       help_path: help_page_path('user/group/epics/linked_epics'),
       show_categorized_epics: 'true' } }
 

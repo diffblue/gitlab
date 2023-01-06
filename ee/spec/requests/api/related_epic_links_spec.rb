@@ -13,7 +13,40 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
     stub_licensed_features(epics: true, related_epics: true)
   end
 
-  shared_examples 'a not available endpoint' do
+  shared_examples 'forbidden resource' do |message|
+    it 'returns 403' do
+      subject
+
+      expect(response).to have_gitlab_http_status(:forbidden)
+    end
+  end
+
+  shared_examples 'not found resource' do |message|
+    it 'returns 404' do
+      subject
+
+      expect(response).to have_gitlab_http_status(:not_found)
+      expect(json_response['message']).to eq(message)
+    end
+  end
+
+  shared_examples 'unauthenticated resource' do
+    it 'returns 401' do
+      perform_request
+
+      expect(response).to have_gitlab_http_status(:unauthorized)
+    end
+  end
+
+  shared_examples 'successful response' do |status|
+    it "returns #{status}" do
+      subject
+
+      expect_link_response(status: status)
+    end
+  end
+
+  shared_examples 'endpoint with features check' do
     context 'when epics feature is not available' do
       before do
         stub_licensed_features(epics: false, related_epics: true)
@@ -28,6 +61,30 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
       end
 
       it { is_expected.to eq(403) }
+    end
+  end
+
+  shared_examples 'insufficient permissions' do
+    context 'when user can not access source epic' do
+      before do
+        target_group.add_guest(user)
+      end
+
+      it_behaves_like 'not found resource', '404 Group Not Found'
+    end
+
+    context 'when user can only read source epic' do
+      let_it_be(:public_group) { create(:group, :public) }
+      let_it_be(:public_epic) { create(:epic, group: public_group) }
+
+      before do
+        target_group.add_guest(user)
+      end
+
+      it_behaves_like 'forbidden resource' do
+        let(:group) { public_group }
+        let(:epic) { public_epic }
+      end
     end
   end
 
@@ -55,7 +112,7 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
         group.add_guest(user)
       end
 
-      it_behaves_like 'a not available endpoint'
+      it_behaves_like 'endpoint with features check'
 
       it 'returns related epics' do
         perform_request(user)
@@ -91,51 +148,12 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
       post api("/groups/#{group.id}/epics/#{epic.iid}/related_epics", user), params: params
     end
 
-    shared_examples 'not found resource' do |message|
-      it 'returns 404' do
-        subject
+    it_behaves_like 'unauthenticated resource'
+    it_behaves_like 'insufficient permissions'
 
-        expect(response).to have_gitlab_http_status(:not_found)
-        expect(json_response['message']).to eq(message)
-      end
-    end
-
-    shared_examples 'forbidden resource' do |message|
-      it 'returns 403' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:forbidden)
-      end
-    end
-
-    context 'when unauthenticated' do
-      it 'returns 401' do
-        perform_request
-
-        expect(response).to have_gitlab_http_status(:unauthorized)
-      end
-    end
-
-    context 'when user can not access source epic' do
-      before do
-        target_group.add_reporter(user)
-      end
-
-      it_behaves_like 'not found resource', '404 Group Not Found'
-    end
-
-    context 'when user can only read source epic' do
+    context 'when user can only manage source epic' do
       before do
         group.add_guest(user)
-        target_group.add_reporter(user)
-      end
-
-      it_behaves_like 'forbidden resource'
-    end
-
-    context 'when user can manage source epic' do
-      before do
-        group.add_reporter(user)
       end
 
       it_behaves_like 'not found resource', '404 Group Not Found'
@@ -145,7 +163,7 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
           target_group.add_guest(user)
         end
 
-        it_behaves_like 'forbidden resource'
+        it_behaves_like 'successful response', :created
 
         context 'when target epic is confidential' do
           let_it_be(:confidential_target_epic) { create(:epic, :confidential, group: target_group) }
@@ -158,16 +176,12 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
 
       context 'when user can relate epics' do
         before do
-          target_group.add_reporter(user)
+          target_group.add_guest(user)
         end
 
-        it_behaves_like 'a not available endpoint'
+        it_behaves_like 'endpoint with features check'
 
-        it 'returns 201 status and contains the expected link response' do
-          subject
-
-          expect_link_response
-        end
+        it_behaves_like 'successful response', :created
 
         it 'returns 201 when sending full path of target group' do
           perform_request(user, target_group_id: target_group.full_path, target_epic_iid: target_epic.iid, link_type: 'blocks')
@@ -195,51 +209,12 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
       delete api("/groups/#{group.id}/epics/#{epic.iid}/related_epics/#{related_epic_link.id}", user)
     end
 
-    shared_examples 'not found resource' do |message|
-      it 'returns 404' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:not_found)
-        expect(json_response['message']).to eq(message)
-      end
-    end
-
-    shared_examples 'forbidden resource' do |message|
-      it 'returns 403' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:forbidden)
-      end
-    end
-
-    context 'when unauthenticated' do
-      it 'returns 401' do
-        perform_request
-
-        expect(response).to have_gitlab_http_status(:unauthorized)
-      end
-    end
-
-    context 'when user can not access source epic' do
-      before do
-        target_group.add_reporter(user)
-      end
-
-      it_behaves_like 'not found resource', '404 Group Not Found'
-    end
-
-    context 'when user can only read source epic' do
-      before do
-        group.add_guest(user)
-        target_group.add_reporter(user)
-      end
-
-      it_behaves_like 'forbidden resource'
-    end
+    it_behaves_like 'unauthenticated resource'
+    it_behaves_like 'insufficient permissions'
 
     context 'when user can manage source epic' do
       before do
-        group.add_reporter(user)
+        group.add_guest(user)
       end
 
       it_behaves_like 'not found resource', 'No Related Epic Link found'
@@ -249,7 +224,7 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
           target_group.add_guest(user)
         end
 
-        it_behaves_like 'not found resource', 'No Related Epic Link found'
+        it_behaves_like 'successful response', :ok
       end
 
       context 'when related_epic_link_id belongs to a different epic' do
@@ -259,7 +234,7 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
         subject { delete api("/groups/#{group.id}/epics/#{epic.iid}/related_epics/#{other_epic_link.id}", user) }
 
         before do
-          target_group.add_reporter(user)
+          target_group.add_guest(user)
         end
 
         it_behaves_like 'not found resource', '404 Not found'
@@ -267,16 +242,11 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
 
       context 'when user can relate epics' do
         before do
-          target_group.add_reporter(user)
+          target_group.add_guest(user)
         end
 
-        it_behaves_like 'a not available endpoint'
-
-        it 'returns 200 status and contains the expected link response' do
-          subject
-
-          expect_link_response(status: :ok)
-        end
+        it_behaves_like 'endpoint with features check'
+        it_behaves_like 'successful response', :ok
       end
     end
   end

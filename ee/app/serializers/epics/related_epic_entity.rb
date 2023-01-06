@@ -8,7 +8,7 @@ module Epics
     expose :id, :confidential, :title, :state, :created_at, :closed_at
 
     expose :relation_path do |related_epic|
-      if can_admin_related_epic_links?(related_epic)
+      if can_admin_epic_link_relation?(related_epic)
         group_epic_related_epic_link_path(issuable.group, issuable.iid, related_epic.related_epic_link_id)
       end
     end
@@ -27,10 +27,11 @@ module Epics
 
     private
 
-    def can_admin_related_epic_links?(epic)
+    def can_admin_epic_link_relation?(epic)
       user = request.current_user
 
-      Ability.allowed?(user, :admin_related_epic_link, issuable) && Ability.allowed?(user, :admin_epic, epic)
+      Ability.allowed?(user, :admin_epic_link_relation, issuable) &&
+        Ability.allowed?(user, :admin_epic_relation, epic)
     end
 
     def issuable
