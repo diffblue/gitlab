@@ -21,8 +21,6 @@ export default {
   cycleAnalyticsStagePath:
     '/groups/:id/-/analytics/value_stream_analytics/value_streams/:value_stream_id/stages/:stage_id',
   cycleAnalyticsGroupLabelsPath: '/groups/:namespace_path/-/labels.json',
-  cycleAnalyticsAggregationPath:
-    '/groups/:namespace_path/-/analytics/value_stream_analytics/use_aggregated_backend',
   codeReviewAnalyticsPath: '/api/:version/analytics/code_review',
   groupActivityIssuesPath: '/api/:version/analytics/group_activity/issues_count',
   groupActivityMergeRequestsPath: '/api/:version/analytics/group_activity/merge_requests_count',
@@ -170,14 +168,6 @@ export default {
     return axios.get(url, {
       params,
     });
-  },
-
-  cycleAnalyticsUpdateAggregation(groupId, data) {
-    const url = Api.buildUrl(this.cycleAnalyticsAggregationPath).replace(
-      ':namespace_path',
-      groupId,
-    );
-    return axios.put(url, data);
   },
 
   codeReviewAnalytics(params = {}) {

@@ -401,48 +401,4 @@ describe('Value Stream Analytics actions / value streams', () => {
       );
     });
   });
-
-  describe('updateAggregation', () => {
-    beforeEach(() => {
-      state = { currentGroup, aggregation: { enabled: false } };
-    });
-
-    describe('with no errors', () => {
-      beforeEach(() => {
-        mock
-          .onPut(endpoints.valueStreamAggregationData)
-          .replyOnce(httpStatusCodes.OK, { enabled: true });
-      });
-
-      it(`commits the ${types.REQUEST_UPDATE_AGGREGATION} and ${types.RECEIVE_UPDATE_AGGREGATION_SUCCESS} actions`, () => {
-        return testAction(actions.updateAggregation, true, state, [
-          { type: types.REQUEST_UPDATE_AGGREGATION },
-          { type: types.RECEIVE_UPDATE_AGGREGATION_SUCCESS },
-        ]);
-      });
-    });
-
-    describe('with a failing request', () => {
-      let mockCommit;
-      beforeEach(() => {
-        mockCommit = jest.fn();
-        mock.onGet(endpoints.valueStreamAggregationData).reply(httpStatusCodes.NOT_FOUND);
-      });
-
-      it(`will commit ${types.RECEIVE_VALUE_STREAMS_ERROR}`, () => {
-        return actions.updateAggregation({ state, getters, commit: mockCommit }).catch(() => {
-          expect(mockCommit.mock.calls).toEqual([
-            ['REQUEST_UPDATE_AGGREGATION'],
-            ['RECEIVE_UPDATE_AGGREGATION_ERROR'],
-          ]);
-        });
-      });
-
-      it('throws an error', () => {
-        return expect(
-          actions.updateAggregation({ state, getters, commit: mockCommit }),
-        ).rejects.toThrow('Request failed with status code 404');
-      });
-    });
-  });
 });
