@@ -8,11 +8,14 @@ import SummaryText from 'ee/vue_merge_request_widget/extensions/security_reports
 import SummaryHighlights from 'ee/vue_merge_request_widget/extensions/security_reports/summary_highlights.vue';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import Widget from '~/vue_merge_request_widget/components/widget/widget.vue';
+import toast from '~/vue_shared/plugins/global_toast';
 import MrWidgetRow from '~/vue_merge_request_widget/components/widget/widget_content_row.vue';
 import * as urlUtils from '~/lib/utils/url_utility';
+import { BV_HIDE_MODAL } from '~/lib/utils/constants';
 import axios from '~/lib/utils/axios_utils';
 
 jest.mock('~/vue_shared/components/user_callout_dismisser.vue', () => ({ render: () => {} }));
+jest.mock('~/vue_shared/plugins/global_toast');
 
 describe('MR Widget Security Reports', () => {
   let wrapper;
@@ -29,6 +32,7 @@ describe('MR Widget Security Reports', () => {
   const dependencyScanningHelp = '/help/user/application_security/api-fuzzing/index';
   const containerScanningHelp = '/help/user/application_security/container-scanning/index';
   const createVulnerabilityFeedbackIssuePath = '/create/vulnerability/feedback/issue/path';
+  const createVulnerabilityFeedbackDismissalPath = '/dismiss/finding/feedback/path';
 
   const reportEndpoints = {
     sastComparisonPath: '/my/sast/endpoint',
@@ -559,6 +563,108 @@ describe('MR Widget Security Reports', () => {
 
         expect(findModal().props('modal').error).toBe(
           'There was an error creating the issue. Please try again.',
+        );
+      });
+    });
+
+    describe('dismissing finding', () => {
+      it('can dismiss finding when createVulnerabilityFeedbackDismissalPath is provided', async () => {
+        mockWithData();
+
+        createComponent({
+          mountFn: mountExtended,
+          propsData: {
+            mr: {
+              createVulnerabilityFeedbackDismissalPath,
+            },
+          },
+        });
+
+        await waitForPromises();
+
+        // Click on the toggle button to expand data
+        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+        await nextTick();
+        // Second one is for the dynamic scroller
+        await nextTick();
+
+        // Click on the vulnerability name
+        wrapper.findAllByText('Password leak').at(0).trigger('click');
+        await nextTick();
+
+        expect(findModal().props('canDismissVulnerability')).toBe(true);
+      });
+
+      it('handles dismissing finding - success', async () => {
+        mockWithData();
+
+        mockAxios.onPost(createVulnerabilityFeedbackDismissalPath).replyOnce(200);
+
+        createComponent({
+          mountFn: mountExtended,
+          propsData: {
+            mr: {
+              createVulnerabilityFeedbackDismissalPath,
+            },
+          },
+        });
+
+        const emitSpy = jest.spyOn(wrapper.vm.$root, '$emit');
+
+        await waitForPromises();
+
+        // Click on the toggle button to expand data
+        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+        await nextTick();
+
+        // Second one is for the dynamic scroller
+        await nextTick();
+
+        // Click on the vulnerability name
+        wrapper.findAllByText('Password leak').at(0).trigger('click');
+        await nextTick();
+
+        findModal().vm.$emit('dismissVulnerability');
+
+        await waitForPromises();
+
+        expect(toast).toHaveBeenCalledWith("Dismissed 'Password leak'");
+        expect(emitSpy).toHaveBeenCalledWith(BV_HIDE_MODAL, 'modal-mrwidget-security-issue');
+      });
+
+      it('handles issue creation - error', async () => {
+        mockWithData();
+
+        mockAxios.onPost(createVulnerabilityFeedbackDismissalPath).replyOnce(400);
+
+        createComponent({
+          mountFn: mountExtended,
+          propsData: {
+            mr: {
+              createVulnerabilityFeedbackDismissalPath,
+            },
+          },
+        });
+
+        await waitForPromises();
+
+        // Click on the toggle button to expand data
+        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+        await nextTick();
+
+        // Second one is for the dynamic scroller
+        await nextTick();
+
+        // Click on the vulnerability name
+        wrapper.findAllByText('Password leak').at(0).trigger('click');
+        await nextTick();
+
+        findModal().vm.$emit('dismissVulnerability');
+
+        await waitForPromises();
+
+        expect(findModal().props('modal').error).toBe(
+          'There was an error dismissing the vulnerability. Please try again.',
         );
       });
     });
