@@ -152,7 +152,7 @@ class ApprovalMergeRequestRule < ApplicationRecord
   end
 
   def refresh_license_scanning_approvals(project_approval_rule)
-    license_report = merge_request.head_pipeline&.license_scanning_report
+    license_report = ::Gitlab::LicenseScanning.scanner_for_project(project, merge_request.source_branch).report
     return if license_report.blank?
 
     if license_report.violates?(project.software_license_policies)
