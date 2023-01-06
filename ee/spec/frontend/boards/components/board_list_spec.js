@@ -31,9 +31,6 @@ const componentConfig = {
     isGroupBoard: () => true,
     isProjectBoard: () => false,
   },
-  state: {
-    issuableType: issuableTypes.epic,
-  },
   actions,
   stubs: {
     BoardCard,
@@ -43,6 +40,7 @@ const componentConfig = {
   provide: {
     scopedLabelsAvailable: true,
     isEpicBoard: true,
+    issuableType: issuableTypes.epic,
   },
 };
 

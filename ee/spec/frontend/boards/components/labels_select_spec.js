@@ -52,13 +52,10 @@ describe('Labels select component', () => {
         isGroupBoard: () => isGroupBoard,
         isProjectBoard: () => isProjectBoard,
       },
-      state: {
-        boardType: isGroupBoard ? 'group' : 'project',
-      },
     });
   };
 
-  const createComponent = ({ props = {} } = {}) => {
+  const createComponent = ({ props = {}, isGroupBoard = false } = {}) => {
     fakeApollo = createMockApollo([
       [searchProjectLabels, projectLabelsQueryHandlerSuccess],
       [searchGroupLabels, groupLabelsQueryHandlerSuccess],
@@ -74,6 +71,7 @@ describe('Labels select component', () => {
       provide: {
         fullPath: 'gitlab-org',
         labelsManagePath: 'gitlab-org/labels',
+        boardType: isGroupBoard ? 'group' : 'project',
       },
       stubs: {
         GlDropdown,
@@ -150,6 +148,7 @@ describe('Labels select component', () => {
       createStore({ isProjectBoard: boardType === 'project', isGroupBoard: boardType === 'group' });
       createComponent({
         [queryHandler]: jest.fn().mockResolvedValue(mockedResponse),
+        isGroupBoard: boardType === 'group',
       });
       await openLabelsDropdown();
 

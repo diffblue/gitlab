@@ -25,6 +25,7 @@ const createComponent = ({ actions = mockActions, getters = { isGroupBoard: () =
     },
     provide: {
       boardId: 1,
+      fullPath: 'group/project',
     },
     stubs: {
       BoardNewItem,
@@ -79,6 +80,7 @@ describe('Epic boards new epic form', () => {
       epicInput: {
         title: 'Foo',
         labelIds: [],
+        groupPath: 'group/project',
       },
     });
   });

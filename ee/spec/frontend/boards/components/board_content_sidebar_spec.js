@@ -19,7 +19,6 @@ describe('ee/BoardContentSidebar', () => {
         sidebarType: ISSUABLE,
         issues: { [mockIssue.id]: { ...mockIssue, epic: null } },
         activeId: mockIssue.id,
-        issuableType: issuableTypes.issue,
       },
       getters: {
         activeBoardItem: () => {
@@ -56,6 +55,7 @@ describe('ee/BoardContentSidebar', () => {
         canUpdate: true,
         rootPath: '/',
         groupId: 1,
+        issuableType: issuableTypes.issue,
         epicFeatureAvailable: true,
         iterationFeatureAvailable: true,
         weightFeatureAvailable: true,
