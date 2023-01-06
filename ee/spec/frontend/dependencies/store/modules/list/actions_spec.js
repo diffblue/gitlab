@@ -7,6 +7,7 @@ import {
   SORT_DESCENDING,
   FETCH_ERROR_MESSAGE,
   FETCH_EXPORT_ERROR_MESSAGE,
+  DEPENDENCIES_FILENAME,
 } from 'ee/dependencies/store/modules/list/constants';
 import * as types from 'ee/dependencies/store/modules/list/mutation_types';
 import getInitialState from 'ee/dependencies/store/modules/list/state';
@@ -417,6 +418,7 @@ describe('Dependencies actions', () => {
           expect(download).toHaveBeenCalledTimes(1);
           expect(download).toHaveBeenCalledWith({
             url: mockResponseExportEndpoint.download,
+            fileName: DEPENDENCIES_FILENAME,
           });
         }));
     });

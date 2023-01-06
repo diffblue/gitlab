@@ -5,7 +5,11 @@ import { __ } from '~/locale';
 import pollUntilComplete from '~/lib/utils/poll_until_complete';
 import download from '~/lib/utils/downloader';
 import { HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
-import { FETCH_ERROR_MESSAGE, FETCH_EXPORT_ERROR_MESSAGE } from './constants';
+import {
+  FETCH_ERROR_MESSAGE,
+  FETCH_EXPORT_ERROR_MESSAGE,
+  DEPENDENCIES_FILENAME,
+} from './constants';
 import * as types from './mutation_types';
 import { isValidResponse } from './utils';
 
@@ -102,6 +106,7 @@ export const downloadExport = ({ commit }, dependencyListExportEndpoint) => {
       if (response.data?.has_finished) {
         download({
           url: response.data?.download,
+          fileName: DEPENDENCIES_FILENAME,
         });
       }
     })
