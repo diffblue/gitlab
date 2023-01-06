@@ -27,7 +27,7 @@ module SlashCommands
       if chat_user&.user
         Gitlab::SlashCommands::Command.new(integration.project, chat_user, params).execute
       else
-        url = ChatNames::AuthorizeUserService.new(integration, params).execute
+        url = ChatNames::AuthorizeUserService.new(params).execute
         Gitlab::SlashCommands::Presenters::Access.new(url).authorize
       end
     end
