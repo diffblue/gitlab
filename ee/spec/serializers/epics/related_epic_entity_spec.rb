@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Epics::RelatedEpicEntity do
+RSpec.describe Epics::RelatedEpicEntity, feature_category: :portfolio_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:group_2) { create(:group) }
@@ -20,9 +20,9 @@ RSpec.describe Epics::RelatedEpicEntity do
   end
 
   describe '#to_json' do
-    context 'when user can admin_epic on target epic group' do
+    context 'when user can admin_epic_relation on target epic' do
       before do
-        group_2.add_reporter(user)
+        group_2.add_guest(user)
       end
 
       it 'matches json schema' do
@@ -36,11 +36,7 @@ RSpec.describe Epics::RelatedEpicEntity do
       end
     end
 
-    context 'when user cannot admin_epic on target epic group' do
-      before do
-        group_2.add_guest(user)
-      end
-
+    context 'when user cannot admin_epic_relation on target epic' do
       it 'matches json schema' do
         expect(entity.to_json).to match_schema('entities/related_epic', dir: 'ee')
       end

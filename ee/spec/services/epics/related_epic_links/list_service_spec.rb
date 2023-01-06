@@ -2,46 +2,88 @@
 
 require 'spec_helper'
 
-RSpec.describe Epics::RelatedEpicLinks::ListService do
+RSpec.describe Epics::RelatedEpicLinks::ListService, feature_category: :portfolio_management do
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group) }
-  let_it_be(:group2) { create(:group, :public) }
-  let_it_be(:group3) { create(:group, :private) }
-  let_it_be(:source_epic) { create(:epic, group: group) }
-  let_it_be(:epic1) { create(:epic, group: group) }
-  let_it_be(:epic2) { create(:epic, group: group2) }
-  let_it_be(:epic3) { create(:epic, group: group2, confidential: true) } # not visible because user is guest
-  let_it_be(:epic4) { create(:epic, group: group3) } # user has no access to epic's group
-  let_it_be(:epic_link1) { create(:related_epic_link, source: source_epic, target: epic1) }
-  let_it_be(:epic_link2) { create(:related_epic_link, source: source_epic, target: epic2) }
-  let_it_be(:epic_link3) { create(:related_epic_link, source: source_epic, target: epic3) }
-  let_it_be(:epic_link4) { create(:related_epic_link, source: source_epic, target: epic4) }
+  let_it_be(:source_group) { create(:group, :public) }
+  let_it_be(:public_group) { create(:group, :public) }
+  let_it_be(:private_group) { create(:group, :private) }
 
-  before do
-    stub_licensed_features(epics: true, related_epics: true)
-    group2.add_guest(user)
-  end
+  let_it_be(:source_epic) { create(:epic, group: source_group) }
+  let_it_be(:public_epic) { create(:epic, group: public_group) }
+  let_it_be(:confidential_epic) { create(:epic, group: public_group, confidential: true) }
+  let_it_be(:private_epic) { create(:epic, group: private_group) }
+
+  let_it_be(:epic_link1) { create(:related_epic_link, source: source_epic, target: public_epic) }
+  let_it_be(:epic_link2) { create(:related_epic_link, source: source_epic, target: confidential_epic) }
+  let_it_be(:epic_link3) { create(:related_epic_link, source: source_epic, target: private_epic) }
+
+  let_it_be(:relation_path1) { path_for(epic_link1) }
+  let_it_be(:relation_path2) { path_for(epic_link2) }
+  let_it_be(:relation_path3) { path_for(epic_link3) }
 
   describe '#execute' do
     subject { described_class.new(source_epic, user).execute }
 
-    it 'returns JSON list of related epics visible to user' do
-      expect(subject.size).to eq(2)
+    context 'when user is only member of source group' do
+      before do
+        source_group.add_guest(user)
+        stub_licensed_features(epics: true, related_epics: true)
+      end
 
-      expect(subject).to include(include(id: epic1.id,
-                                         title: epic1.title,
-                                         state: epic1.state,
-                                         confidential: epic1.confidential,
-                                         link_type: 'relates_to',
-                                         reference: epic1.to_reference(source_epic.group),
-                                         path: "/groups/#{epic1.group.full_path}/-/epics/#{epic1.iid}"))
-      expect(subject).to include(include(id: epic2.id,
-                                         title: epic2.title,
-                                         state: epic2.state,
-                                         confidential: epic2.confidential,
-                                         link_type: 'relates_to',
-                                         reference: epic2.to_reference(source_epic.group),
-                                         path: "/groups/#{epic2.group.full_path}/-/epics/#{epic2.iid}"))
+      it 'returns JSON list of related epics visible to user excluding relation_path' do
+        expect(subject).to include(include(epic_response(public_epic)))
+      end
+
+      context 'when user is a guest in public group' do
+        before do
+          public_group.add_guest(user)
+        end
+
+        it 'returns JSON list of related epics visible to user including relation_path' do
+          expect(subject).to include(include(epic_response(public_epic, relation_path1)))
+        end
+      end
+
+      context 'when user is a reporter in public group' do
+        before do
+          public_group.add_reporter(user)
+        end
+
+        it 'returns JSON list of related epics visible to user including relation_path' do
+          expect(subject).to include(include(epic_response(public_epic, relation_path1)))
+          expect(subject).to include(include(epic_response(confidential_epic, relation_path2)))
+        end
+      end
+
+      context 'when user is a guest in private group' do
+        before do
+          public_group.add_reporter(user)
+          private_group.add_guest(user)
+        end
+
+        it 'returns JSON list of related epics visible to user including relation_path' do
+          expect(subject).to include(include(epic_response(public_epic, relation_path1)))
+          expect(subject).to include(include(epic_response(confidential_epic, relation_path2)))
+          expect(subject).to include(include(epic_response(private_epic, relation_path3)))
+        end
+      end
     end
+  end
+
+  def epic_response(epic, relation_path = nil)
+    {
+      id: epic.id,
+      title: epic.title,
+      state: epic.state,
+      confidential: epic.confidential,
+      link_type: 'relates_to',
+      relation_path: relation_path,
+      reference: epic.to_reference(source_epic.group),
+      path: "/groups/#{epic.group.full_path}/-/epics/#{epic.iid}"
+    }
+  end
+
+  def path_for(link)
+    "/groups/group1/-/epics/#{source_epic.iid}/related_epic_links/#{link.id}"
   end
 end

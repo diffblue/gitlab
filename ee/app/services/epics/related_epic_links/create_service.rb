@@ -6,7 +6,7 @@ module Epics
       include UsageDataHelper
 
       def linkable_issuables(epics)
-        @linkable_issuables ||= epics.select { |epic| can?(current_user, :admin_epic, epic) }
+        @linkable_issuables ||= epics.select { |epic| can?(current_user, :admin_epic_relation, epic) }
       end
 
       def previous_related_issuables
