@@ -20895,9 +20895,6 @@ msgstr ""
 msgid "If no options are selected, only administrators can register runners."
 msgstr ""
 
-msgid "If none of the options work, try contacting a GitLab administrator."
-msgstr ""
-
 msgid "If the number of active users exceeds the user limit, you will be charged for the number of %{users_over_license_link} at your next license reconciliation."
 msgstr ""
 
@@ -20917,6 +20914,9 @@ msgid "If using GitHub, you’ll see pipeline statuses on GitHub for your commit
 msgstr ""
 
 msgid "If you add %{codeStart}needs%{codeEnd} to jobs in your pipeline you'll be able to view the %{codeStart}needs%{codeEnd} relationships between jobs in this tab as a %{linkStart}Directed Acyclic Graph (DAG)%{linkEnd}."
+msgstr ""
+
+msgid "If you are unable to sign in or recover your password, contact a GitLab administrator."
 msgstr ""
 
 msgid "If you did not initiate these sign-in attempts, please reach out to your administrator or enable two-factor authentication (2FA) on your account."
@@ -39077,9 +39077,6 @@ msgstr ""
 msgid "Sign-in count:"
 msgstr ""
 
-msgid "Sign-in failed because %{error}."
-msgstr ""
-
 msgid "Sign-in page"
 msgstr ""
 
@@ -44232,9 +44229,6 @@ msgid "Try grouping with different labels"
 msgstr ""
 
 msgid "Try it out now"
-msgstr ""
-
-msgid "Try logging in using your username or email. If you have forgotten your password, try recovering it"
 msgstr ""
 
 msgid "Try out GitLab Pipelines"
