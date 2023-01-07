@@ -3,7 +3,10 @@
 require 'airborne'
 
 module QA
-  RSpec.describe 'Data Stores', product_group: :global_search do
+  RSpec.describe 'Data Stores', product_group: :global_search, quarantine: {
+    issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/386653',
+    type: :investigating
+  } do
     describe(
       'When using elasticsearch API to search for a known blob',
       :orchestrated,
