@@ -34,12 +34,12 @@ module Resolvers
             .join(', ')
 
         jobs_table = ::CommitStatus.arel_table
-        started_jobs_durations =
-          ::Gitlab::Pagination::Keyset::InOperatorOptimization::QueryBuilder.new(**query_builder_args(jobs_table))
-            .execute
-            .select((jobs_table[:started_at] - jobs_table[:queued_at]).as('duration'))
-            .where.not(started_at: nil) # rubocop: disable CodeReuse/ActiveRecord
-            .limit(JOBS_LIMIT)
+        args = query_builder_args(jobs_table)
+        jobs = ::Gitlab::Pagination::Keyset::InOperatorOptimization::QueryBuilder.new(**args).execute
+        started_jobs_durations = jobs.select((jobs_table[:started_at] - jobs_table[:queued_at]).as('duration'))
+                                     .where.not(started_at: nil) # rubocop: disable CodeReuse/ActiveRecord
+                                     .where.not(runner_id: nil) # rubocop: disable CodeReuse/ActiveRecord
+                                     .limit(JOBS_LIMIT)
 
         result = ::CommitStatus.connection.execute <<~SQL
           SELECT #{percentiles} FROM (#{started_jobs_durations.to_sql}) builds
@@ -49,27 +49,10 @@ module Resolvers
       end
 
       def query_builder_args(jobs_table)
-        jobs_order =
-          ::Gitlab::Pagination::Keyset::Order.build([
-            ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
-              attribute_name: 'runner_id',
-              order_expression: jobs_table[:runner_id].desc,
-              nullable: :not_nullable,
-              distinct: false
-            ),
-            ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
-              attribute_name: 'id',
-              order_expression: jobs_table[:id].desc,
-              nullable: :not_nullable,
-              distinct: true
-            )
-          ])
-
         # rubocop: disable CodeReuse/ActiveRecord
-        jobs_scope = ::CommitStatus.order(jobs_order)
+        jobs_scope = ::CommitStatus.order(id: :desc)
         array_mapping_scope = ->(id_expression) { ::CommitStatus.where(jobs_table[:runner_id].eq(id_expression)) }
-        finder_query =
-          ->(_runner_id_expression, id_expression) { ::CommitStatus.where(jobs_table[:id].eq(id_expression)) }
+        finder_query = ->(id_expression) { ::CommitStatus.where(jobs_table[:id].eq(id_expression)) }
         runners_relation = object.items.reorder(nil)
         # rubocop: enable CodeReuse/ActiveRecord
 
