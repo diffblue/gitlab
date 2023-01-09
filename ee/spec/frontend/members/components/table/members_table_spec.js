@@ -43,6 +43,7 @@ describe('MemberList', () => {
         sourceId: 1,
         currentUserId: 1,
         namespace: MEMBER_TYPES.user,
+        canManageMembers: true,
       },
       stubs: [
         'member-avatar',
