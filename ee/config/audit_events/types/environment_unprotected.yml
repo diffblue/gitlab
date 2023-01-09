@@ -1,0 +1,9 @@
+---
+name: environment_unprotected
+description: This event is triggered when an environment is unprotected.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/216164
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/108247
+feature_category: environment_management
+milestone: '15.8'
+saved_to_database: true
+streamed: false
