@@ -133,21 +133,75 @@ RSpec.describe PostReceiveService, :geo do
       end
 
       context 'when there is payload' do
-        let(:alert_level) { :info }
-        let(:storage_notification_payload) do
-          {
-            alert_level: alert_level,
-            usage_message: "Usage",
-            explanation_message: "Explanation",
-            root_namespace: project.namespace.root_ancestor
-          }
+        context 'for namespace enforcement' do
+          let(:alert_level) { :info }
+
+          let(:storage_notification_payload) do
+            {
+              enforcement_type: :namespace,
+              alert_level: alert_level,
+              usage_message: "Usage",
+              explanation_message: {
+                main: {
+                  text: "Explanation",
+                  link: {
+                    text: "Learn more.",
+                    href: "/usage_quotas"
+                  }
+                },
+                footer: {
+                  text: "Footer",
+                  link: {
+                    text: "Learn even more.",
+                    href: "/usage_quotas#more"
+                  }
+                }
+              },
+              root_namespace: project.namespace.root_ancestor
+            }
+          end
+
+          it 'adds an alert' do
+            response = subject
+
+            expect(response).to be_present
+            expect(response).to include({
+              'type' => 'alert',
+              'message' => "##### INFO #####\nUsage\nExplanation\nFooter"
+            })
+          end
         end
 
-        it 'adds an alert' do
-          response = subject
+        context 'for repository enforcement' do
+          let(:alert_level) { :error }
 
-          expect(response).to be_present
-          expect(response).to include({ 'type' => 'alert', 'message' => "##### INFO #####\nUsage\nExplanation" })
+          let(:storage_notification_payload) do
+            {
+              enforcement_type: :repository,
+              alert_level: alert_level,
+              usage_message: "Usage",
+              explanation_message: {
+                main: {
+                  text: "Explanation",
+                  link: {
+                    text: "Learn more.",
+                    href: "/usage_quotas"
+                  }
+                }
+              },
+              root_namespace: project.namespace.root_ancestor
+            }
+          end
+
+          it 'adds an alert' do
+            response = subject
+
+            expect(response).to be_present
+            expect(response).to include({
+              'type' => 'alert',
+              'message' => "##### ERROR #####\nUsage\nExplanation"
+            })
+          end
         end
       end
     end

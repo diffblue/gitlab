@@ -10,9 +10,19 @@ RSpec.shared_examples 'namespace storage limit alert' do
     allow_next_instance_of(EE::Namespace::Storage::Notification) do |notification|
       allow(notification).to receive(:payload).and_return({
         alert_level: alert_level,
+        enforcement_type: :namespace,
+        root_namespace: namespace.root_ancestor,
         usage_message: "Usage",
-        explanation_message: "Explanation",
-        root_namespace: namespace.root_ancestor
+        explanation_message: {
+          main: {
+            text: "Explanation",
+            link: { text: 'link', href: '/link' }
+          },
+          footer: {
+            text: "Footer for explanation",
+            link: { text: 'footer link', href: '/footer/link' }
+          }
+        }
       })
       allow(notification).to receive(:alert_level).and_return(:alert_level)
     end
@@ -27,6 +37,7 @@ RSpec.shared_examples 'namespace storage limit alert' do
     subject
 
     expect(response.body).to match(/Explanation/)
+    expect(response.body).to match(/Footer for explanation/)
     expect(response.body).to have_css('.js-namespace-storage-alert')
   end
 
