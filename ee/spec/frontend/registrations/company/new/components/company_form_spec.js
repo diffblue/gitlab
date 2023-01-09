@@ -2,6 +2,7 @@ import { GlButton, GlForm, GlFormText, GlToggle } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import RegistrationForm from 'ee/registrations/components/company_form.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { mockTracking } from 'helpers/tracking_helper';
 import { TRIAL_FORM_SUBMIT_TEXT } from 'ee/trials/constants';
 
 const SUBMIT_PATH = '_submit_path_';
@@ -90,6 +91,28 @@ describe('RegistrationForm', () => {
 
       it('displays form with correct action', () => {
         expect(findForm().attributes('action')).toBe(SUBMIT_PATH);
+      });
+    });
+
+    describe('with snowplow tracking', () => {
+      it('tracks trial toggle is enabled', () => {
+        const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+
+        findToggle().vm.$emit('change', true);
+
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_trial_toggle', {
+          label: 'ON',
+        });
+      });
+
+      it('tracks trial toggle is disabled', () => {
+        const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+
+        findToggle().vm.$emit('change', false);
+
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_trial_toggle', {
+          label: 'OFF',
+        });
       });
     });
   });
