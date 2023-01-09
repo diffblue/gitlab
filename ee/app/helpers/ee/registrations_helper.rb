@@ -43,6 +43,8 @@ module EE
 
     def redirect_path
       strong_memoize(:redirect_path) do
+        # we use direct session here since stored_location_for
+        # will delete the value upon fetching
         redirect_to = session['user_return_to']
         URI.parse(redirect_to).path if redirect_to
       end

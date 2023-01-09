@@ -50,7 +50,7 @@ feature_category: :onboarding do
   def expect_to_see_welcome_form
     expect(page).to have_content('Welcome to GitLab, Registering!')
 
-    page.within('[data-testid="welcome-form"]') do
+    page.within(welcome_form_selector) do
       expect(page).to have_content('Role')
       expect(page).to have_field('user_role', valid: false)
       expect(page).to have_field('user_setup_for_company_true', valid: false)

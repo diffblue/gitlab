@@ -22,11 +22,11 @@ feature_category: :onboarding do
     fills_in_welcome_form
     click_on 'Continue'
 
-    expect_to_be_see_company_form
+    expect_to_see_company_form
 
     # validate user is returned back to the specific onboarding step
     visit root_path
-    expect_to_be_see_company_form
+    expect_to_see_company_form
 
     fill_in_company_form
     click_on 'Continue'
@@ -76,7 +76,7 @@ feature_category: :onboarding do
   def expect_to_see_welcome_form
     expect(page).to have_content('Welcome to GitLab, Registering!')
 
-    page.within('[data-testid="welcome-form"]') do
+    page.within(welcome_form_selector) do
       expect(page).to have_content('Role')
       expect(page).to have_field('user_role', valid: false)
       expect(page).to have_field('user_setup_for_company_true', valid: false)
