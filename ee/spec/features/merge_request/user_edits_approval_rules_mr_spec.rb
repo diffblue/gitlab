@@ -3,7 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature_category: :code_review_workflow do
-  include Select2Helper
+  include FeatureApprovalHelper
+  include ListboxInputHelper
 
   include_context 'with project with approval rules'
 
@@ -22,19 +23,10 @@ RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature
     end
   end
 
-  let(:modal_id) { '#mr-edit-approvals-create-modal' }
-  let(:members_selector) { "#{modal_id} input[name=members]" }
-  let(:members_search_selector) { "#{modal_id} .select2-input" }
+  let(:modal_selector) { '#mr-edit-approvals-create-modal' }
 
   def page_rule_names
     page.all('.js-approval-rules table .js-name')
-  end
-
-  def add_approval_rule_member(type, name)
-    open_select2 members_selector
-    wait_for_requests
-    find(".select2-result-label .#{type}-result", text: name).click
-    close_select2 members_selector
   end
 
   before do
@@ -66,18 +58,21 @@ RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature
       fill_in with: rule_name
     end
 
-    add_approval_rule_member('user', approver.name)
+    listbox_input approver.name, from: modal_selector
 
-    find("#{modal_id} button", text: 'Add approval rule').click
+    find("#{modal_selector} button", text: 'Add approval rule').click
     wait_for_requests
 
     expect(page_rule_names.last).to have_text(rule_name)
   end
 
   context 'with public group' do
-    let(:group) { create(:group, :public) }
+    let_it_be(:group) { create(:group, :public) }
+    let_it_be(:public_group) { create(:group, :public) }
 
     before do
+      stub_feature_flags(permit_all_shared_groups_for_approval: false)
+
       group_project = create(:project, :public, :repository, namespace: group)
       group_project_merge_request = create(:merge_request, source_project: group_project)
       group.add_developer(author)
@@ -91,17 +86,20 @@ RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature
     end
 
     it "with empty search, does not show public group" do
-      open_select2 members_selector
-      wait_for_requests
+      open_approver_select
 
-      expect(page).not_to have_selector('.select2-result-label .group-result', text: group.name)
+      expect(page).not_to have_selector('.gl-listbox-item', text: public_group.name)
     end
 
     it "with non-empty search, shows public group" do
-      find(members_search_selector).set group.name
+      open_approver_select
+
+      within(modal_selector) do
+        find('[data-testid="listbox-search-input"]').fill_in(with: public_group.name)
+      end
       wait_for_requests
 
-      expect(page).to have_selector('.select2-result-label .group-result', text: group.name)
+      expect(page).to have_selector('.gl-listbox-item', text: public_group.name)
     end
   end
 
