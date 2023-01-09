@@ -430,6 +430,12 @@ export const workItemResponseFactory = ({
           },
           parent,
         },
+        notesWidgetPresent
+          ? {
+              __typename: 'WorkItemWidgetNotes',
+              type: 'NOTES',
+            }
+          : { type: 'MOCK TYPE' },
       ],
     },
   },
