@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Runners::StaleGroupRunnersPruneService do
+RSpec.describe Ci::Runners::StaleGroupRunnersPruneService, feature_category: :runner_fleet do
   let(:service) { described_class.new }
 
   subject(:execute) { service.execute(NamespaceCiCdSetting.allowing_stale_runner_pruning.select(:namespace_id)) }
@@ -61,7 +61,7 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService do
     end
   end
 
-  context 'on self-managed instance' do
+  context 'on self-managed instance', :freeze_time do
     let!(:group1) { create(:group) }
 
     before do
@@ -95,7 +95,7 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService do
     end
   end
 
-  context 'on .com', :saas do
+  context 'on .com', :saas, :freeze_time do
     let(:namespace_plan) { :ultimate_plan }
     let!(:group1) { create(:group_with_plan, plan: namespace_plan) }
 
