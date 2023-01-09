@@ -8069,13 +8069,10 @@ msgstr ""
 msgid "Change your password or recover your current one"
 msgstr ""
 
-msgid "ChangeReviewer|Reviewer changed from %{old} to %{new}"
+msgid "ChangeReviewer|%{added_reviewers_text}%{removed_reviewers_text}"
 msgstr ""
 
-msgid "ChangeReviewer|Reviewer changed to %{new}"
-msgstr ""
-
-msgid "ChangeReviewer|Unassigned"
+msgid "ChangeReviewer|All reviewers were removed."
 msgstr ""
 
 msgid "ChangeTypeAction|Cherry-pick"
