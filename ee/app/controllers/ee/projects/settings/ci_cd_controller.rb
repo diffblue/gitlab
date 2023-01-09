@@ -25,6 +25,13 @@ module EE
           super
         end
 
+        override :permitted_project_params
+        def permitted_project_params
+          super + %i[
+            allow_pipeline_trigger_approve_deployment
+          ]
+        end
+
         private
 
         def define_protected_env_variables

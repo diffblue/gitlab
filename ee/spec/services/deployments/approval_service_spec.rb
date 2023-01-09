@@ -313,7 +313,21 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
           deployment.user = user
         end
 
-        include_examples 'error', message: 'You cannot approve your own deployment.'
+        context 'when allow pipeline triggerer to approve deployment' do
+          before do
+            project.project_setting.update!(allow_pipeline_trigger_approve_deployment: true)
+          end
+
+          include_examples 'approve'
+        end
+
+        context 'when not allow pipeline triggerer to approve deployment' do
+          before do
+            project.project_setting.update!(allow_pipeline_trigger_approve_deployment: false)
+          end
+
+          include_examples 'error', message: 'You cannot approve your own deployment. This configuration can be adjusted in the protected environment settings.'
+        end
       end
 
       context 'when the creator of the deployment is rejecting' do

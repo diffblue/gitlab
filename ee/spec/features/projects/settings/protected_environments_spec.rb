@@ -41,6 +41,22 @@ RSpec.describe 'Protected Environments', feature_category: :environment_manageme
       project.add_maintainer(user)
     end
 
+    it 'allows set "Allow pipeline triggerer to approve deployment"' do
+      visit project_settings_ci_cd_path(project)
+
+      expect(page.find('#project_allow_pipeline_trigger_approve_deployment')).not_to be_checked
+      within('#js-protected-environments-settings') do
+        check('project_allow_pipeline_trigger_approve_deployment')
+        click_on('Save changes')
+      end
+
+      wait_for_requests
+
+      within('#js-protected-environments-settings') do
+        expect(page.find('#project_allow_pipeline_trigger_approve_deployment')).to be_checked
+      end
+    end
+
     context 'with unified approval rules' do
       before do
         stub_feature_flags(multiple_environment_approval_rules_fe: false)

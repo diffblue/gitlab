@@ -28,5 +28,28 @@ RSpec.describe Projects::Settings::CiCdController, feature_category: :continuous
           .to match_array([group_protected_environment, parent_group_protected_environment])
       end
     end
+
+    describe 'PATCH update' do
+      subject do
+        patch :update,
+              params: {
+                namespace_id: project.namespace.to_param,
+                project_id: project,
+                project: params
+              }
+      end
+
+      context 'when updating general settings' do
+        context 'when allow_pipeline_trigger_approve_deployment is specified' do
+          let(:params) { { allow_pipeline_trigger_approve_deployment: true } }
+
+          it 'sets allow_pipeline_trigger_approve_deployment' do
+            expect { subject }.to change {
+              project.reload.allow_pipeline_trigger_approve_deployment
+            }.from(false).to(true)
+          end
+        end
+      end
+    end
   end
 end

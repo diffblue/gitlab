@@ -56,8 +56,12 @@ module Deployments
     def validate(deployment, status)
       return _('Unrecognized approval status.') unless Deployments::Approval.statuses.include?(status)
       return _('This deployment is not waiting for approvals.') unless deployment.blocked?
-      return _('You cannot approve your own deployment.') if deployment.user == current_user && status == 'approved'
       return _('This environment is not protected.') unless deployment.environment.protected?
+
+      if deployment.user == current_user && status == 'approved' &&
+          !deployment.allow_pipeline_trigger_approve_deployment
+        return _('You cannot approve your own deployment. This configuration can be adjusted in the protected environment settings.')
+      end
 
       unless deployment.environment.needs_approval?
         return _('Deployment approvals is not configured for this environment.')
