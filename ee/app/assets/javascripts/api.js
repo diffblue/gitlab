@@ -44,6 +44,8 @@ export default {
     '/api/:version/projects/:id/issues/:issue_iid/metric_images/:image_id',
   environmentApprovalPath: '/api/:version/projects/:id/deployments/:deployment_id/approval',
   protectedEnvironmentsPath: '/api/:version/projects/:id/protected_environments/',
+  mrStatusCheckRetryPath:
+    '/api/:version/projects/:id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id/retry',
 
   userSubscription(namespaceId) {
     const url = Api.buildUrl(this.subscriptionPath).replace(':id', encodeURIComponent(namespaceId));
