@@ -4953,6 +4953,9 @@ msgstr ""
 msgid "Applying suggestions..."
 msgstr ""
 
+msgid "Approval options"
+msgstr ""
+
 msgid "Approval rules"
 msgstr ""
 
@@ -13821,6 +13824,9 @@ msgstr ""
 msgid "Deployment frequency"
 msgstr ""
 
+msgid "DeploymentApprovals|Allow pipeline triggerer to approve deployment."
+msgstr ""
+
 msgid "DeploymentApprovals|Approvals"
 msgstr ""
 
@@ -13834,6 +13840,12 @@ msgid "DeploymentApprovals|Developers + Maintainers"
 msgstr ""
 
 msgid "DeploymentApprovals|Maintainers"
+msgstr ""
+
+msgid "DeploymentApprovals|Set how approval rules are applied to deployments in protected environments."
+msgstr ""
+
+msgid "DeploymentApprovals|When a pipeline runs, deployment jobs will automatically be approved in the pipeline if the triggerer is allowed to approve."
 msgstr ""
 
 msgid "DeploymentApproval| Current approvals: %{current}"
@@ -47961,7 +47973,7 @@ msgstr ""
 msgid "You cannot add any more epics. This epic already has maximum number of child epics."
 msgstr ""
 
-msgid "You cannot approve your own deployment."
+msgid "You cannot approve your own deployment. This configuration can be adjusted in the protected environment settings."
 msgstr ""
 
 msgid "You cannot combine replace_ids with add_ids or remove_ids"

@@ -1,0 +1,12 @@
+= gitlab_ui_form_for @project, url: project_settings_ci_cd_path(@project, anchor: 'js-protected-environments-settings'), authenticity_token: true do |form|
+  .form-group
+    %b= _('Approval options')
+    %p.text-secondary
+      = s_('DeploymentApprovals|Set how approval rules are applied to deployments in protected environments.')
+      = link_to s_('Learn more.'), 'https://docs.gitlab.com/ee/ci/environments/deployment_approvals.html', target: '_blank'
+    = form.gitlab_ui_checkbox_component :allow_pipeline_trigger_approve_deployment,
+      s_('DeploymentApprovals|Allow pipeline triggerer to approve deployment.'),
+      help_text: s_("DeploymentApprovals|When a pipeline runs, deployment jobs will automatically be approved in the pipeline if the triggerer is allowed to approve.")
+
+    .gl-mt-5
+      = form.submit _('Save changes'), pajamas_button: true
