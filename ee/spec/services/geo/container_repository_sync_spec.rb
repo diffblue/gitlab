@@ -139,6 +139,32 @@ RSpec.describe Geo::ContainerRepositorySync, :geo do
       end
     end
 
+    context 'image without mediaType parameter' do
+      let(:manifest_no_media_type) do
+        %Q(
+          {
+            "schemaVersion":2,
+            "layers":[
+              {"mediaType":"application/vnd.oci.image.layer.v1.tar+gzip","size":3333,"digest":"sha256:3333"}
+            ]
+         }
+        )
+      end
+
+      it 'pushes the correct blobs and manifests without failure' do
+        stub_repository_tags_requests(primary_repository_url, { 'tag-to-sync' => 'sha256:1111' })
+        stub_repository_tags_requests(secondary_repository_url, {})
+        stub_raw_manifest_request(primary_repository_url, 'tag-to-sync', manifest_no_media_type)
+        stub_missing_blobs_requests(primary_repository_url, secondary_repository_url, { 'sha256:3333' => true })
+        stub_push_manifest_request(secondary_repository_url, 'tag-to-sync', manifest_no_media_type)
+
+        expect(container_repository).to receive(:push_blob).with('sha256:3333', anything, anything)
+        expect(container_repository).to receive(:push_manifest).with('tag-to-sync', anything, anything)
+
+        subject.execute
+      end
+    end
+
     context 'oci manifest list' do
       let(:oci_manifest) do
         %Q(
@@ -222,6 +248,68 @@ RSpec.describe Geo::ContainerRepositorySync, :geo do
         stub_missing_blobs_requests(primary_repository_url, secondary_repository_url, { 'sha256:3333' => true, 'sha256:4444' => false })
 
         expect(container_repository).to receive(:push_blob).with('sha256:3333', anything, anything)
+        expect(container_repository).to receive(:push_manifest).with('tag-to-sync', anything, anything)
+
+        subject.execute
+      end
+    end
+
+    context 'OCI image with artifact' do
+      let(:artifact_manifest) do
+        %Q(
+          {
+            "mediaType": "application/vnd.oci.artifact.manifest.v1+json",
+            "artifactType": "application/vnd.example.sbom.v1",
+            "blobs": [
+              {
+                "mediaType": "application/gzip",
+                "size": 123,
+                "digest": "sha256:8792"
+              }
+            ],
+            "subject": {
+              "mediaType": "application/vnd.oci.image.manifest.v1+json",
+              "size": 1234,
+              "digest": "sha256:cc06a2839488b8bd2a2b99dcdc03d5cfd818eed72ad08ef3cc197aac64c0d0a0"
+            },
+            "annotations": {
+              "org.opencontainers.artifact.created": "2022-01-01T14:42:55Z",
+              "org.example.sbom.format": "json"
+            }
+          }
+        )
+      end
+
+      let(:manifest_list_with_artifacts) do
+        %Q(
+          {
+            "schemaVersion":2,
+            "mediaType":"application/vnd.oci.image.index.v1+json",
+            "manifests":[
+              {
+                "mediaType": "application/vnd.oci.artifact.manifest.v1+json",
+                "size": 7682,
+                "digest": "sha256:6015",
+                "artifactType": "application/example",
+                "annotations": {
+                    "com.example.artifactKey1": "value1",
+                    "com.example.artifactKey2": "value2"
+                  }
+              }
+            ]
+          }
+        )
+      end
+
+      it 'pushes the correct blobs and manifests' do
+        stub_repository_tags_requests(primary_repository_url, { 'tag-to-sync' => 'sha256:1111' })
+        stub_repository_tags_requests(secondary_repository_url, {})
+        stub_raw_manifest_list_request(primary_repository_url, 'tag-to-sync', manifest_list_with_artifacts)
+        stub_raw_manifest_request(primary_repository_url, 'sha256:6015', artifact_manifest)
+        stub_missing_blobs_requests(primary_repository_url, secondary_repository_url, { 'sha256:8792' => true })
+
+        expect(container_repository).to receive(:push_blob).with('sha256:8792', anything, anything)
+        expect(container_repository).to receive(:push_manifest).with('sha256:6015', anything, anything)
         expect(container_repository).to receive(:push_manifest).with('tag-to-sync', anything, anything)
 
         subject.execute
