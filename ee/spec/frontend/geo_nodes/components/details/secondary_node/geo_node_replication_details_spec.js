@@ -127,7 +127,7 @@ describe('GeoNodeReplicationDetails', () => {
       component: MOCK_REPLICABLE_TYPES[0].titlePlural,
       replicationView: new URL(
         `${MOCK_SECONDARY_NODE.url}${MOCK_REPLICABLE_TYPES[0].customReplicationUrl}`,
-      ),
+      ).toString(),
       syncValues: null,
       verificationValues: null,
     };
@@ -137,7 +137,7 @@ describe('GeoNodeReplicationDetails', () => {
       component: MOCK_REPLICABLE_TYPES[0].titlePlural,
       replicationView: new URL(
         `${MOCK_SECONDARY_NODE.url}${MOCK_REPLICABLE_TYPES[0].customReplicationUrl}`,
-      ),
+      ).toString(),
       syncValues: { total: 100, success: 0 },
       verificationValues: null,
     };
@@ -147,7 +147,7 @@ describe('GeoNodeReplicationDetails', () => {
       component: MOCK_REPLICABLE_TYPES[0].titlePlural,
       replicationView: new URL(
         `${MOCK_SECONDARY_NODE.url}${MOCK_REPLICABLE_TYPES[0].customReplicationUrl}`,
-      ),
+      ).toString(),
       syncValues: null,
       verificationValues: { total: 50, success: 50 },
     };
@@ -157,7 +157,7 @@ describe('GeoNodeReplicationDetails', () => {
       component: MOCK_REPLICABLE_TYPES[0].titlePlural,
       replicationView: new URL(
         `${MOCK_SECONDARY_NODE.url}${MOCK_REPLICABLE_TYPES[0].customReplicationUrl}`,
-      ),
+      ).toString(),
       syncValues: { total: 100, success: 0 },
       verificationValues: { total: 50, success: 50 },
     };
