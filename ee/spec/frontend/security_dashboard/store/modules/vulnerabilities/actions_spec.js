@@ -2,6 +2,7 @@ import MockAdapter from 'axios-mock-adapter';
 import * as actions from 'ee/security_dashboard/store/modules/vulnerabilities/actions';
 import * as types from 'ee/security_dashboard/store/modules/vulnerabilities/mutation_types';
 import initialState from 'ee/security_dashboard/store/modules/vulnerabilities/state';
+import { DISMISSAL_STATES } from 'ee/security_dashboard/store/modules/filters/constants';
 import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
 
@@ -915,6 +916,7 @@ describe('dismiss multiple vulnerabilities', () => {
       [state.vulnerabilities[1].id]: true,
     };
     state.selectedVulnerabilities = selectedVulnerabilities;
+    state.filters = { filters: { scope: DISMISSAL_STATES.DISMISSED } };
   });
 
   describe('dismissSelectedVulnerabilities', () => {
@@ -928,31 +930,74 @@ describe('dismiss multiple vulnerabilities', () => {
       mock.restore();
     });
 
-    it('should fire the dismissSelected mutations when all is well', () => {
-      mock
-        .onPost(state.vulnerabilities[0].create_vulnerability_feedback_dismissal_path)
-        .replyOnce(200)
-        .onPost(state.vulnerabilities[1].create_vulnerability_feedback_dismissal_path)
-        .replyOnce(200);
+    describe('on success', () => {
+      beforeEach(() => {
+        mock
+          .onPost(state.vulnerabilities[0].create_vulnerability_feedback_dismissal_path)
+          .replyOnce(200)
+          .onPost(state.vulnerabilities[1].create_vulnerability_feedback_dismissal_path)
+          .replyOnce(200);
+      });
 
-      return testAction(
-        actions.dismissSelectedVulnerabilities,
-        {},
-        state,
-        [],
-        [
-          { type: 'requestDismissSelectedVulnerabilities' },
-          {
-            type: 'receiveDismissSelectedVulnerabilitiesSuccess',
+      it('should fire the dismissSelected mutations and refetch vulnerabilities when all is well', () => {
+        return testAction(
+          actions.dismissSelectedVulnerabilities,
+          {},
+          state,
+          [],
+          [
+            { type: 'requestDismissSelectedVulnerabilities' },
+            {
+              type: 'receiveDismissSelectedVulnerabilitiesSuccess',
+            },
+            { type: 'fetchVulnerabilities', payload: { page: 1, ...state.filters.filters } },
+          ],
+          () => {
+            expect(mock.history.post).toHaveLength(2);
+            expect(mock.history.post[0].url).toEqual(
+              state.vulnerabilities[0].create_vulnerability_feedback_dismissal_path,
+            );
           },
-        ],
-        () => {
-          expect(mock.history.post).toHaveLength(2);
-          expect(mock.history.post[0].url).toEqual(
-            state.vulnerabilities[0].create_vulnerability_feedback_dismissal_path,
-          );
-        },
-      );
+        );
+      });
+
+      it.each`
+        context                                    | expectation                 | hideDismissed | currentPage | expectedPage
+        ${'not showing dismissed vulnerabilities'} | ${'load the previous page'} | ${true}       | ${2}        | ${1}
+        ${'showing all vulnerabilities'}           | ${'load the current page'}  | ${false}      | ${2}        | ${2}
+      `('when $context then $expecation', ({ hideDismissed, currentPage, expectedPage }) => {
+        state.vulnerabilities = [mockDataVulnerabilities[0]];
+        state.selectedVulnerabilities = {
+          [mockDataVulnerabilities[0].id]: true,
+        };
+        state.pageInfo.page = currentPage;
+        state.filters = {
+          filters: { scope: hideDismissed ? DISMISSAL_STATES.DISMISSED : DISMISSAL_STATES.ALL },
+        };
+
+        return testAction(
+          actions.dismissSelectedVulnerabilities,
+          {},
+          state,
+          [],
+          [
+            { type: 'requestDismissSelectedVulnerabilities' },
+            {
+              type: 'receiveDismissSelectedVulnerabilitiesSuccess',
+            },
+            {
+              type: 'fetchVulnerabilities',
+              payload: { page: expectedPage, ...state.filters.filters },
+            },
+          ],
+          () => {
+            expect(mock.history.post).toHaveLength(2);
+            expect(mock.history.post[0].url).toEqual(
+              state.vulnerabilities[0].create_vulnerability_feedback_dismissal_path,
+            );
+          },
+        );
+      });
     });
 
     it('should trigger the error state when something goes wrong', () => {

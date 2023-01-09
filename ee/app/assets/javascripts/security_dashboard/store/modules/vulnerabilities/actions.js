@@ -14,6 +14,7 @@ import {
   FEEDBACK_TYPE_ISSUE,
   FEEDBACK_TYPE_MERGE_REQUEST,
 } from '~/vue_shared/security_reports/constants';
+import { DISMISSAL_STATES } from 'ee/security_dashboard/store/modules/filters/constants';
 import * as types from './mutation_types';
 
 let vulnerabilitiesSource;
@@ -157,13 +158,24 @@ export const deselectVulnerability = ({ commit }, { id }) => {
   commit(types.DESELECT_VULNERABILITY, id);
 };
 
-export const dismissSelectedVulnerabilities = ({ dispatch, state }, { comment } = {}) => {
-  const { vulnerabilities, selectedVulnerabilities } = state;
-  const dismissableVulnerabilties = vulnerabilities.filter(({ id }) => selectedVulnerabilities[id]);
+export const dismissSelectedVulnerabilities = (
+  { dispatch, state, rootState },
+  { comment } = {},
+) => {
+  const { filters } = rootState.filters;
+  const { vulnerabilities, selectedVulnerabilities, pageInfo } = state;
+  const dismissibleVulnerabilities = vulnerabilities.filter(
+    ({ id }) => selectedVulnerabilities[id],
+  );
+
+  const currentPage = pageInfo?.page || 1;
+  const vulnerabilitiesOnPage = vulnerabilities.length - dismissibleVulnerabilities.length;
+  const hideDismissed = filters?.scope === DISMISSAL_STATES.DISMISSED;
+  const shouldLoadPreviousPage = hideDismissed && vulnerabilitiesOnPage < 1;
 
   dispatch('requestDismissSelectedVulnerabilities');
 
-  const promises = dismissableVulnerabilties.map((vulnerability) =>
+  const promises = dismissibleVulnerabilities.map((vulnerability) =>
     axios.post(vulnerability.create_vulnerability_feedback_dismissal_path, {
       vulnerability_feedback: {
         category: vulnerability.report_type,
@@ -178,9 +190,15 @@ export const dismissSelectedVulnerabilities = ({ dispatch, state }, { comment } 
     }),
   );
 
-  Promise.all(promises)
+  return Promise.all(promises)
     .then(() => {
       dispatch('receiveDismissSelectedVulnerabilitiesSuccess');
+      dispatch('fetchVulnerabilities', {
+        ...filters,
+        // If we just dismissed the last vulnerability on the active page,
+        // we load the previous page if any
+        page: shouldLoadPreviousPage ? currentPage - 1 : currentPage,
+      });
     })
     .catch(() => {
       dispatch('receiveDismissSelectedVulnerabilitiesError', { flashError: true });
