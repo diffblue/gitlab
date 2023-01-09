@@ -6,7 +6,7 @@ module Resolvers
       class ContributionsResolver < BaseResolver
         type Types::Analytics::ContributionAnalytics::ContributionMetadataType, null: true
 
-        MAX_RANGE = 31.days.freeze
+        MAX_RANGE = 3.months.freeze
 
         argument :from, GraphQL::Types::ISO8601Date, required: true,
                                                      description: 'Start date of the reporting time range.'
