@@ -25298,9 +25298,6 @@ msgstr ""
 msgid "Manage %{workspace} labels"
 msgstr ""
 
-msgid "Manage Dashboards"
-msgstr ""
-
 msgid "Manage Web IDE features."
 msgstr ""
 
@@ -28579,6 +28576,18 @@ msgid "Objective"
 msgstr ""
 
 msgid "Observability"
+msgstr ""
+
+msgid "Observability|Dashboards"
+msgstr ""
+
+msgid "Observability|Data sources"
+msgstr ""
+
+msgid "Observability|Explore"
+msgstr ""
+
+msgid "Observability|Manage dashboards"
 msgstr ""
 
 msgid "Oct"
