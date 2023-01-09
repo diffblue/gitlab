@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'AccessLevel type objects contains user and group' do |access_level_kind|
-  let_it_be(:protected_branch) do
-    create(:protected_branch, default_access_level: false, project: project)
-  end
-
+  let(:protected_branch) { create(:protected_branch, default_access_level: false, project: project) }
   let(:user_access_level) { access_levels.for_user.first }
   let(:group_access_level) { access_levels.for_group.first }
   let(:user_access_level_data) { access_levels_data.find { |data| data['user'].present? } }

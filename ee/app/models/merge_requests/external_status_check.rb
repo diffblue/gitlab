@@ -14,6 +14,7 @@ module MergeRequests
         .references(:protected_branches)
         .where('protected_branches.id IS NULL OR protected_branches.name = ?', branch)
     end
+    scope :for_all_branches, -> { where.missing(:protected_branches) }
 
     belongs_to :project
     has_and_belongs_to_many :protected_branches,

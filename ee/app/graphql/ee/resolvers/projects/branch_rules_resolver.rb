@@ -6,8 +6,22 @@ module EE
       module BranchRulesResolver
         extend ActiveSupport::Concern
         extend ::Gitlab::Utils::Override
+        include ::Gitlab::Utils::StrongMemoize
+
+        override :resolve_with_lookahead
+        def resolve_with_lookahead(**args)
+          super.tap do |rules|
+            rules.unshift(all_branches_rule) if all_branches_rule.any_rules?
+          end
+        end
 
         private
+
+        # BranchRules for 'All branches' i.e. no associated ProtectedBranch
+        def all_branches_rule
+          ::Projects::AllBranchesRule.new(project)
+        end
+        strong_memoize_attr :all_branches_rule
 
         override :preloads
         def preloads
