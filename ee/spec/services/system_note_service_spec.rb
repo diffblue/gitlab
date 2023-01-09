@@ -25,6 +25,16 @@ RSpec.describe SystemNoteService do
     end
   end
 
+  describe '.change_progress_note' do
+    it 'calls IssuableService' do
+      expect_next_instance_of(::SystemNotes::IssuablesService) do |service|
+        expect(service).to receive(:change_progress_note)
+      end
+
+      described_class.change_progress_note(noteable, author)
+    end
+  end
+
   describe '.change_epic_date_note' do
     let(:date_type) { double }
     let(:date) { double }
