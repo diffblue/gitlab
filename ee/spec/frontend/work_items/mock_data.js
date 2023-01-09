@@ -31,6 +31,7 @@ export const createWorkItemMutationResponse = {
           __typename: 'Project',
           id: '1',
           fullPath: 'test-project-path',
+          archived: false,
         },
         workItemType: {
           __typename: 'WorkItemType',

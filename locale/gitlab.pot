@@ -2209,6 +2209,9 @@ msgstr ""
 msgid "Add a collapsible section"
 msgstr ""
 
+msgid "Add a comment"
+msgstr ""
+
 msgid "Add a comment to this line"
 msgstr ""
 
