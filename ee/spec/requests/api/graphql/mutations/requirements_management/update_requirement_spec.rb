@@ -8,12 +8,14 @@ RSpec.describe 'Updating a Requirement', feature_category: :requirements_managem
   let_it_be(:current_user) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be(:requirement) { create(:work_item, :requirement, project: project).requirement }
+  let_it_be(:iid) { requirement.iid.to_s }
+  let_it_be(:work_item_iid) { requirement.requirement_issue.iid.to_s }
 
+  let(:base_params) { { project_path: project.full_path, iid: iid } }
   let(:attributes) { { title: 'title', state: 'ARCHIVED' } }
+  let(:mutation_params) { base_params.merge(attributes) }
   let(:mutation) do
-    params = { project_path: project.full_path, iid: requirement.iid.to_s }.merge(attributes)
-
-    graphql_mutation(:update_requirement, params)
+    graphql_mutation(:update_requirement, mutation_params)
   end
 
   shared_examples 'requirement update fails' do
@@ -56,12 +58,26 @@ RSpec.describe 'Updating a Requirement', feature_category: :requirements_managem
         stub_licensed_features(requirements: true)
       end
 
-      it 'updates the requirement', :aggregate_failures do
-        post_graphql_mutation(mutation, current_user: current_user)
+      context 'when identifying requirement by legacy iid' do
+        it 'updates the requirement', :aggregate_failures do
+          post_graphql_mutation(mutation, current_user: current_user)
 
-        requirement_hash = mutation_response['requirement']
-        expect(requirement_hash['title']).to eq('title')
-        expect(requirement_hash['state']).to eq('ARCHIVED')
+          requirement_hash = mutation_response['requirement']
+          expect(requirement_hash['title']).to eq('title')
+          expect(requirement_hash['state']).to eq('ARCHIVED')
+        end
+      end
+
+      context 'when identifying requirement by work item iid' do
+        let(:base_params) { { project_path: project.full_path, work_item_iid: work_item_iid } }
+
+        it 'updates the requirement', :aggregate_failures do
+          post_graphql_mutation(mutation, current_user: current_user)
+
+          requirement_hash = mutation_response['requirement']
+          expect(requirement_hash['title']).to eq('title')
+          expect(requirement_hash['state']).to eq('ARCHIVED')
+        end
       end
 
       context 'when there are ActiveRecord validation errors' do
@@ -82,6 +98,30 @@ RSpec.describe 'Updating a Requirement', feature_category: :requirements_managem
 
         it_behaves_like 'a mutation that returns top-level errors',
           errors: ['At least one of title, state, last_test_report_state, description is required']
+      end
+
+      context 'when neither iid nor work_item_iid are given' do
+        let(:base_params) { { project_path: project.full_path } }
+        let(:attributes) { { title: 'new title' } }
+
+        it_behaves_like 'a mutation that returns top-level errors',
+                        errors: ['One and only one of iid or workItemIid is required']
+      end
+
+      context 'when there are no update params nor iid params' do
+        let(:base_params) { { project_path: project.full_path } }
+        let(:attributes) { {} }
+
+        it_behaves_like 'a mutation that returns top-level errors',
+          errors: /one of iid or workItemIid is required; At least one of title/
+      end
+
+      context 'when both iid and work_item_iid are given' do
+        let(:base_params) { { project_path: project.full_path, iid: iid, work_item_iid: work_item_iid } }
+        let(:attributes) { { title: 'new title' } }
+
+        it_behaves_like 'a mutation that returns top-level errors',
+                        errors: ['One and only one of iid or workItemIid is required']
       end
     end
   end

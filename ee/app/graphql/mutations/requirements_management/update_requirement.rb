@@ -12,19 +12,28 @@ module Mutations
                description: 'State of the requirement.'
 
       argument :iid, GraphQL::Types::String,
-               required: true,
+               required: false,
                description: 'IID of the requirement to update.'
+
+      argument :work_item_iid, GraphQL::Types::String,
+               required: false,
+               description: 'IID of the requirement work item to update.'
 
       argument :last_test_report_state, Types::RequirementsManagement::TestReportStateEnum,
                required: false,
                description: 'Creates a test report for the requirement with the given state.'
 
       def ready?(**args)
-        update_args = [:title, :state, :last_test_report_state, :description]
-        if args.values_at(*update_args).compact.blank?
-          raise Gitlab::Graphql::Errors::ArgumentError,
-            "At least one of #{update_args.join(', ')} is required"
+        errors = []
+        if args.slice(*mutually_exclusive_iid_args).size != 1
+          iid_args = mutually_exclusive_iid_args.map { |x| x.to_s.camelize(:lower) }.join(' or ')
+          errors << "One and only one of #{iid_args} is required"
         end
+
+        update_args = [:title, :state, :last_test_report_state, :description]
+        errors << "At least one of #{update_args.join(', ')} is required" if args.values_at(*update_args).compact.blank?
+
+        raise Gitlab::Graphql::Errors::ArgumentError, errors.join("; ") if errors.any?
 
         super
       end
@@ -32,7 +41,8 @@ module Mutations
       def resolve(args)
         project_path = args.delete(:project_path)
         requirement_iid = args.delete(:iid)
-        requirement = authorized_find!(project_path: project_path, iid: requirement_iid)
+        work_item_iid = args.delete(:work_item_iid)
+        requirement = authorized_find!(project_path: project_path, iid: requirement_iid, work_item_iid: work_item_iid)
         spam_params = ::Spam::SpamParams.new_from_request(request: context[:request])
 
         # Keeps the mutation state argument backwards compatible
@@ -54,13 +64,17 @@ module Mutations
 
       private
 
-      def find_object(project_path:, iid:)
+      def find_object(project_path:, iid:, work_item_iid:)
         project = resolve_project(full_path: project_path)
 
         resolver = Resolvers::RequirementsManagement::RequirementsResolver
           .single.new(object: project, context: context, field: nil)
 
-        resolver.resolve(iid: iid)
+        resolver.resolve(iid: iid, work_item_iid: work_item_iid)
+      end
+
+      def mutually_exclusive_iid_args
+        [:iid, :work_item_iid]
       end
     end
   end
