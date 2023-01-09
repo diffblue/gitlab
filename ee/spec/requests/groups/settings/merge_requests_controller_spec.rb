@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Settings::MergeRequestsController, feature_category: :code_review do
+RSpec.describe Groups::Settings::MergeRequestsController, feature_category: :code_review_workflow do
   let_it_be(:group) { create(:group) }
   let_it_be(:user) { create(:user) }
 

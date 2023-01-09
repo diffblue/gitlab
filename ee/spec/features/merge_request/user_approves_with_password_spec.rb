@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Merge request > User approves with password', :js, feature_category: :code_review do
+RSpec.describe 'Merge request > User approves with password', :js, feature_category: :code_review_workflow do
   let(:user) { create(:user) }
   let(:project) { create(:project, :public, :repository, approvals_before_merge: 1, require_password_to_approve: true, merge_requests_author_approval: true) }
   let(:merge_request) { create(:merge_request, source_project: project) }

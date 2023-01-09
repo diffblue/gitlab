@@ -7,7 +7,7 @@ module Groups
 
       before_action :authorize_admin_group!
 
-      feature_category :code_review
+      feature_category :code_review_workflow
 
       def update
         return render_404 unless @group.licensed_feature_available?(:group_level_merge_checks_setting)

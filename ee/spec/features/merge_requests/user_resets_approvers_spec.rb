@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Merge Requests > User resets approvers', :js, feature_category: :code_review do
+RSpec.describe 'Merge Requests > User resets approvers', :js, feature_category: :code_review_workflow do
   include FeatureApprovalHelper
 
   let(:project) { create(:project, :repository) }

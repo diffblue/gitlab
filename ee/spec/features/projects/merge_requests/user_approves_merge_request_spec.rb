@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User approves a merge request', :js, feature_category: :code_review do
+RSpec.describe 'User approves a merge request', :js, feature_category: :code_review_workflow do
   let(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
   let(:project) { create(:project, :repository, :public, approvals_before_merge: 1) }
   let(:user) { create(:user) }

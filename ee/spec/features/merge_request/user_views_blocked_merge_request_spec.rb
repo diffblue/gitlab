@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Merge Request > User views blocked MR', :js, feature_category: :code_review do
+RSpec.describe 'Merge Request > User views blocked MR', :js, feature_category: :code_review_workflow do
   let(:block) { create(:merge_request_block) }
   let(:blocking_mr) { block.blocking_merge_request }
   let(:blocked_mr) { block.blocked_merge_request }

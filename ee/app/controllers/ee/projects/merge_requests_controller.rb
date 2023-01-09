@@ -29,7 +29,7 @@ module EE
                                                      :dast_reports, :coverage_fuzzing_reports, :api_fuzzing_reports]
         feature_category :metrics, [:metrics_reports]
         feature_category :license_compliance, [:license_scanning_reports, :license_scanning_reports_collapsed]
-        feature_category :code_review, [:delete_description_version, :description_diff]
+        feature_category :code_review_workflow, [:delete_description_version, :description_diff]
 
         urgency :high, [:delete_description_version]
         urgency :low, [:container_scanning_reports,

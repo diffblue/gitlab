@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User creates a merge request with blocking MRs', :js, feature_category: :code_review do
+RSpec.describe 'User creates a merge request with blocking MRs', :js, feature_category: :code_review_workflow do
   let(:project) { create(:project, :repository) }
   let(:user) { project.first_owner }
 
