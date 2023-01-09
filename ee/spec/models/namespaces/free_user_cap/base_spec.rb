@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::FreeUserCap::Base, :saas do
+RSpec.describe Namespaces::FreeUserCap::Base, :saas, feature_category: :experimentation_conversion do
   let_it_be(:namespace, refind: true) { create(:group_with_plan, :private, plan: :free_plan) }
 
   describe '#enforce_cap?' do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas do
+RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas, feature_category: :experimentation_conversion do
   let_it_be(:namespace, reload: true) { create(:group_with_plan, :private, plan: :free_plan) }
 
   let(:dashboard_limit_enabled) { true }
