@@ -1313,6 +1313,169 @@ RSpec.describe API::Projects, feature_category: :projects do
 
         expect(response).to have_gitlab_http_status(:forbidden)
       end
+
+      context 'with mirror_branch_regex and only_mirror_protected_branches' do
+        let(:project_params) do
+          {
+            mirror: true,
+            import_url: import_url,
+            only_mirror_protected_branches: false,
+            mirror_branch_regex: 'text'
+          }
+        end
+
+        it 'fails' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+        end
+      end
+
+      context 'with only_mirror_protected_branches' do
+        context 'when enabling only_mirror_protected_branches' do
+          let(:project_params) do
+            {
+              mirror: true,
+              import_url: import_url,
+              only_mirror_protected_branches: true
+            }
+          end
+
+          before do
+            project.update!(mirror_branch_regex: 'text')
+          end
+
+          it 'removes mirror_branch_regex' do
+            expect_any_instance_of(EE::ProjectImportState).to receive(:force_import_job!).once
+
+            subject
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(project.reload).to have_attributes(
+              only_mirror_protected_branches: true,
+              mirror_branch_regex: nil
+            )
+          end
+        end
+
+        context 'when disabling only_mirror_protected_branches' do
+          let(:project_params) do
+            {
+              mirror: true,
+              import_url: import_url,
+              only_mirror_protected_branches: false
+            }
+          end
+
+          before do
+            project.update!(mirror_branch_regex: 'text')
+          end
+
+          it 'keeps mirror_branch_regex' do
+            expect_any_instance_of(EE::ProjectImportState).to receive(:force_import_job!).once
+
+            subject
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(project.reload).to have_attributes(
+              only_mirror_protected_branches: false,
+              mirror_branch_regex: 'text'
+            )
+          end
+        end
+      end
+
+      context 'when removing mirror_branch_regex' do
+        let(:project_params) do
+          { mirror: true,
+            import_url: import_url,
+            mirror_branch_regex: nil }
+        end
+
+        context 'with mirror_branch_regex present' do
+          before do
+            project.update!(mirror_branch_regex: 'text')
+          end
+
+          it 'removes mirror_branch_regex' do
+            expect_any_instance_of(EE::ProjectImportState).to receive(:force_import_job!).once
+
+            subject
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(project.reload.mirror_branch_regex).to be_nil
+          end
+        end
+
+        context 'with mirror_branch_regex nil and only_mirror_protected_branches is truthy' do
+          before do
+            project.update!(mirror_branch_regex: nil, only_mirror_protected_branches: true)
+          end
+
+          it 'does not change only_mirror_protected_branches value' do
+            expect_any_instance_of(EE::ProjectImportState).to receive(:force_import_job!).once
+
+            subject
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(project.reload.mirror_branch_regex).to be_nil
+            expect(project.reload.only_mirror_protected_branches).to be_truthy
+          end
+        end
+
+        context 'with mirror_branch_regex nil and only_mirror_protected_branches is false' do
+          before do
+            project.update!(mirror_branch_regex: nil, only_mirror_protected_branches: false)
+          end
+
+          it 'does not change only_mirror_protected_branches value' do
+            expect_any_instance_of(EE::ProjectImportState).to receive(:force_import_job!).once
+
+            subject
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(project.reload.mirror_branch_regex).to be_nil
+            expect(project.reload.only_mirror_protected_branches).to be_falsey
+          end
+        end
+      end
+
+      context 'with mirror_branch_regex' do
+        let(:project_params) do
+          { mirror: true,
+            import_url: import_url,
+            mirror_branch_regex: 'text' }
+        end
+
+        before do
+          project.update!(only_mirror_protected_branches: true)
+        end
+
+        it 'succeeds' do
+          expect_any_instance_of(EE::ProjectImportState).to receive(:force_import_job!).once
+
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(project.reload).to have_attributes(
+            only_mirror_protected_branches: false,
+            mirror_branch_regex: 'text'
+          )
+        end
+
+        it 'does nothing when feature flag is disabled' do
+          stub_feature_flags(mirror_only_branches_match_regex: false)
+          expect_any_instance_of(EE::ProjectImportState).to receive(:force_import_job!).once
+
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(project.reload).to have_attributes(
+            only_mirror_protected_branches: true,
+            mirror_branch_regex: nil
+          )
+        end
+      end
     end
 
     describe 'updating approvals_before_merge attribute' do
