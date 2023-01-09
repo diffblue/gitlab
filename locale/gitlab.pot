@@ -11194,9 +11194,6 @@ msgstr ""
 msgid "Copy token"
 msgstr ""
 
-msgid "Copy trigger token"
-msgstr ""
-
 msgid "Copy value"
 msgstr ""
 
@@ -28011,9 +28008,6 @@ msgstr ""
 msgid "No test coverage"
 msgstr ""
 
-msgid "No triggers exist yet. Use the form above to create one."
-msgstr ""
-
 msgid "No user provided"
 msgstr ""
 
@@ -44391,12 +44385,6 @@ msgid "Trigger|Description"
 msgstr ""
 
 msgid "Trigger|Trigger description"
-msgstr ""
-
-msgid "Trigger|Trigger user has insufficient permissions to project"
-msgstr ""
-
-msgid "Trigger|invalid"
 msgstr ""
 
 msgid "Trusted"
