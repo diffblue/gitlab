@@ -9,10 +9,6 @@ module EE
       def after_create(issuable)
         issuable.run_after_commit do
           ::MergeRequests::SyncCodeOwnerApprovalRulesWorker.perform_async(issuable.id)
-
-          if project.can_suggest_reviewers? && issuable.can_suggest_reviewers?
-            ::MergeRequests::FetchSuggestedReviewersWorker.perform_async(issuable.id)
-          end
         end
 
         super

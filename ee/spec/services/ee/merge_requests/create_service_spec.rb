@@ -45,62 +45,6 @@ RSpec.describe MergeRequests::CreateService do
       end
     end
 
-    describe 'suggested reviewers' do
-      context 'when suggested reviewers is available for project' do
-        before do
-          allow(project).to receive(:can_suggest_reviewers?).and_return(true)
-        end
-
-        context 'when merge request can suggest reviewers' do
-          before do
-            allow_next_instance_of(::MergeRequest) do |instance|
-              allow(instance).to receive(:can_suggest_reviewers?).and_return(true)
-            end
-          end
-
-          it 'calls fetch worker for the merge request' do
-            expect(::MergeRequests::FetchSuggestedReviewersWorker).to receive(:perform_async)
-
-            service.execute
-          end
-        end
-
-        context 'when merge request cannot suggest reviewers' do
-          before do
-            allow_next_instance_of(::MergeRequest) do |instance|
-              allow(instance).to receive(:can_suggest_reviewers?).and_return(false)
-            end
-          end
-
-          it 'does not call fetch worker for the merge request' do
-            expect(::MergeRequests::FetchSuggestedReviewersWorker).not_to receive(:perform_async)
-
-            service.execute
-          end
-        end
-      end
-
-      context 'when suggested reviewers is not available for project' do
-        before do
-          allow(project).to receive(:can_suggest_reviewers?).and_return(false)
-        end
-
-        context 'when merge request can suggest reviewers' do
-          before do
-            allow_next_instance_of(::MergeRequest) do |instance|
-              allow(instance).to receive(:can_suggest_reviewers?).and_return(true)
-            end
-          end
-
-          it 'does not call fetch worker for the merge request' do
-            expect(::MergeRequests::FetchSuggestedReviewersWorker).not_to receive(:perform_async)
-
-            service.execute
-          end
-        end
-      end
-    end
-
     it_behaves_like 'new issuable with scoped labels' do
       let(:parent) { project }
       let(:service_result) { described_class.new(**args).execute }
