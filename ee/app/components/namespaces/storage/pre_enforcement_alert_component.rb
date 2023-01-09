@@ -14,6 +14,7 @@ module Namespaces
       def render?
         return false unless user_allowed?
         return false unless ::EE::Gitlab::Namespaces::Storage::Enforcement.show_pre_enforcement_banner?(root_namespace)
+        return true if root_namespace.over_storage_limit?
 
         !dismissed?
       end
