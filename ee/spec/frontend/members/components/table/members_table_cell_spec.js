@@ -53,6 +53,7 @@ describe('MemberTableCell', () => {
         sourceId: 1,
         currentUserId: 1,
         namespace: MEMBER_TYPES.user,
+        canManageMembers: true,
         ...provide,
       },
       scopedSlots: {

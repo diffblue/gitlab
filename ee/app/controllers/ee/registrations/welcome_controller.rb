@@ -70,8 +70,8 @@ module EE
         clean_params
       end
 
-      override :show_signup_onboarding?
-      def show_signup_onboarding?
+      override :redirect_to_signup_onboarding?
+      def redirect_to_signup_onboarding?
         !helpers.in_subscription_flow? &&
           !helpers.user_has_memberships? &&
           !helpers.in_oauth_flow? &&

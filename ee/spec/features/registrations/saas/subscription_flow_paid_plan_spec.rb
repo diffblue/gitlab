@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Standard flow for user picking company and joining a project', :js, :saas, :saas_registration,
+RSpec.describe 'Subscription flow for paid plan', :js, :saas, :saas_registration,
 feature_category: :onboarding do
-  it 'registers the user and sends them to a project listing page' do
-    user_signs_up
+  it 'registers the user and sends them back to subscription checkout' do
+    registers_from_subscription
 
     expect_to_see_account_confirmation_page
 
@@ -18,13 +18,13 @@ feature_category: :onboarding do
     fills_in_welcome_form
     click_on 'Continue'
 
-    expect_to_be_on_projects_dashboard_with_zero_authorized_projects
+    expect_to_see_checkout_form
   end
 
-  def user_signs_up
+  def registers_from_subscription
     new_user = build(:user, name: 'Registering User', email: user_email)
 
-    visit new_user_registration_path
+    visit new_subscriptions_path(plan_id: 'bronze_id')
 
     fill_in 'First name', with: new_user.first_name
     fill_in 'Last name', with: new_user.last_name
@@ -38,12 +38,37 @@ feature_category: :onboarding do
   end
 
   def fills_in_welcome_form
+    plan_data = [
+      {
+        "id" => "bronze_id",
+        "name" => "Bronze Plan",
+        "free" => false,
+        "code" => "bronze",
+        "price_per_year" => 48.0
+      }
+    ]
+    allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService) do |instance|
+      allow(instance).to receive(:execute).and_return(plan_data)
+    end
+
+    stub_request(:get, "#{EE::SUBSCRIPTIONS_URL}/payment_forms/paid_signup_flow")
+      .with(
+        headers: {
+          'Accept' => 'application/json',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Type' => 'application/json',
+          'User-Agent' => 'Ruby',
+          'X-Admin-Email' => 'gl_com_api@gitlab.com',
+          'X-Admin-Token' => 'customer_admin_token'
+        })
+      .to_return(status: 200, body: "", headers: {})
+
     select 'Software Developer', from: 'user_role'
     select 'A different reason', from: 'user_registration_objective'
     fill_in 'Why are you signing up? (optional)', with: 'My reason'
 
     choose 'My company or team'
-    choose 'Join a project'
+    choose 'Create a new project' # not sure why this matters on a paid plan
   end
 
   def expect_to_see_welcome_form
@@ -54,9 +79,14 @@ feature_category: :onboarding do
       expect(page).to have_field('user_role', valid: false)
       expect(page).to have_field('user_setup_for_company_true', valid: false)
       expect(page).to have_content('I\'m signing up for GitLab because:')
-      expect(page).to have_content('Who will be using GitLab?')
+      expect(page).to have_content('Who will be using this GitLab subscription?')
       expect(page).to have_content('What would you like to do?')
       expect(page).not_to have_content('I\'d like to receive updates about GitLab via email')
     end
+  end
+
+  def expect_to_see_checkout_form
+    expect(page).to have_content('Checkout')
+    expect(page).to have_content('Subscription details')
   end
 end

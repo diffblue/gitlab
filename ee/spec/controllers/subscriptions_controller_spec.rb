@@ -5,31 +5,19 @@ require 'spec_helper'
 RSpec.describe SubscriptionsController, feature_category: :purchase do
   let_it_be(:user) { create(:user) }
 
-  shared_examples 'unauthenticated subscription request' do |redirect_from|
-    it { is_expected.to have_gitlab_http_status(:redirect) }
-    it { is_expected.to redirect_to new_user_registration_path(redirect_from: redirect_from) }
-
-    it 'stores subscription URL for later' do
-      subject
-
-      expected_subscription_path =
-        case redirect_from
-        when 'checkout'
-          new_subscriptions_path(plan_id: 'bronze_id')
-        when 'buy_minutes'
-          buy_minutes_subscriptions_path(plan_id: 'bronze_id')
-        when 'buy_storage'
-          buy_storage_subscriptions_path(plan_id: 'bronze_id')
-        end
-
-      expect(controller.stored_location_for(:user)).to eq(expected_subscription_path)
-    end
-  end
-
   describe 'GET #new' do
     subject(:get_new) { get :new, params: { plan_id: 'bronze_id' } }
 
-    it_behaves_like 'unauthenticated subscription request', 'checkout'
+    context 'for unauthenticated subscription request' do
+      it { is_expected.to have_gitlab_http_status(:redirect) }
+      it { is_expected.to redirect_to new_user_registration_path(redirect_from: 'checkout') }
+
+      it 'stores subscription URL for later' do
+        get_new
+
+        expect(controller.stored_location_for(:user)).to eq(new_subscriptions_path(plan_id: 'bronze_id'))
+      end
+    end
 
     context 'with authenticated user' do
       before do

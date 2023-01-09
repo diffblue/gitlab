@@ -70,7 +70,7 @@ module SaasRegistrationHelpers
     expect(page).to have_content('Your project will be created at:')
   end
 
-  def expect_to_be_see_company_form
+  def expect_to_see_company_form
     expect(page).to have_content 'About your company'
   end
 
@@ -90,5 +90,9 @@ module SaasRegistrationHelpers
 
     expect(page).to have_content 'Welcome to GitLab'
     expect(page).to have_content 'Faster releases. Better code. Less pain.'
+  end
+
+  def welcome_form_selector
+    '[data-testid="welcome-form"]'
   end
 end

@@ -6,6 +6,7 @@ export {
   isDirectMember,
   isCurrentUser,
   canRemove,
+  canRemoveBlockedByLastOwner,
   canResend,
   canUpdate,
 } from '~/members/utils';
