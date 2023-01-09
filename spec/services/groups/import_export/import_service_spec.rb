@@ -212,6 +212,7 @@ RSpec.describe Groups::ImportExport::ImportService do
     subject(:service) { described_class.new(group: group, user: user) }
 
     before do
+      group.add_owner(user)
       ImportExportUpload.create!(group: group, import_file: import_file)
 
       allow(Gitlab::Import::Logger).to receive(:build).and_return(import_logger)
@@ -226,6 +227,17 @@ RSpec.describe Groups::ImportExport::ImportService do
         group_name: group.name,
         message: a_string_including('Errors occurred')
       ).once
+
+      expect { service.execute }.to raise_error(Gitlab::ImportExport::Error)
+    end
+
+    it 'tracks the error' do
+      shared = Gitlab::ImportExport::Shared.new(group)
+      allow(Gitlab::ImportExport::Shared).to receive(:new).and_return(shared)
+
+      expect(shared).to receive(:error) do |param|
+        expect(param.message).to include 'The import file is incompatible'
+      end
 
       expect { service.execute }.to raise_error(Gitlab::ImportExport::Error)
     end

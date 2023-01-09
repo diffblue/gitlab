@@ -29,7 +29,7 @@ module Groups
       def execute
         Gitlab::Tracking.event(self.class.name, 'create', label: 'import_group_from_file')
 
-        if valid_user_permissions? && import_file && file_exists? && restorers.all?(&:restore)
+        if valid_user_permissions? && import_file && valid_import_file? && restorers.all?(&:restore)
           notify_success
 
           Gitlab::Tracking.event(
@@ -101,8 +101,12 @@ module Groups
         end
       end
 
-      def file_exists?
-        File.exist?(File.join(shared.export_path, 'tree/groups/_all.ndjson'))
+      def valid_import_file?
+        return true if File.exist?(File.join(shared.export_path, 'tree/groups/_all.ndjson'))
+
+        shared.error(::Gitlab::ImportExport::Error.incompatible_import_file_error)
+
+        false
       end
 
       def notify_success
