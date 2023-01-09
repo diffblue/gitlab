@@ -14,7 +14,7 @@ import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 import { removeUnnecessaryDashes } from '../../utils';
 import { POLICIES_LIST_CONTAINER_CLASS, POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
-import { getSourceUrl, isPolicyInherited } from '../utils';
+import { getPolicyListUrl, isPolicyInherited } from '../utils';
 import ScanExecutionPolicy from './scan_execution_policy.vue';
 import ScanResultPolicy from './scan_result_policy.vue';
 
@@ -70,6 +70,9 @@ export default {
     policyYaml() {
       return removeUnnecessaryDashes(this.policy.yaml);
     },
+    sourcePolicyListUrl() {
+      return getPolicyListUrl({ namespacePath: this.policy.source.namespace.fullPath });
+    },
   },
   methods: {
     getDrawerHeaderHeight() {
@@ -77,7 +80,6 @@ export default {
     },
   },
   DRAWER_Z_INDEX,
-  getSourceUrl,
   i18n: {
     editButtonTooltipMessage: s__(
       'SecurityOrchestration|This policy is inherited from the %{linkStart}namespace%{linkEnd} and must be edited there',
@@ -120,7 +122,7 @@ export default {
       >
         <gl-sprintf :message="$options.i18n.editButtonTooltipMessage">
           <template #link>
-            <gl-link :href="$options.getSourceUrl(policy.source.namespace.fullPath)">
+            <gl-link :href="sourcePolicyListUrl">
               {{ policy.source.namespace.name }}
             </gl-link>
           </template>

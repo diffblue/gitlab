@@ -2,8 +2,7 @@ import MockAdapter from 'axios-mock-adapter';
 import axios from '~/lib/utils/axios_utils';
 import httpStatus from '~/lib/utils/http_status';
 import {
-  getProjectPoliciesUrl,
-  getSourceUrl,
+  getPolicyListUrl,
   getSchemaUrl,
   isPolicyInherited,
   getSingleScanExecutionPolicySchema,
@@ -12,23 +11,15 @@ import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/compone
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { TEST_HOST } from 'helpers/test_constants';
 
-describe(getProjectPoliciesUrl, () => {
+describe(getPolicyListUrl, () => {
   it.each`
-    input     | output
-    ${''}     | ${`${TEST_HOST}/-/security/policies`}
-    ${'test'} | ${`${TEST_HOST}/test/-/security/policies`}
-  `('returns $output when passed $input', ({ input, output }) => {
-    expect(getProjectPoliciesUrl(input)).toBe(output);
-  });
-});
-
-describe(getSourceUrl, () => {
-  it.each`
-    input     | output
-    ${''}     | ${`${TEST_HOST}/groups/-/security/policies`}
-    ${'test'} | ${`${TEST_HOST}/groups/test/-/security/policies`}
+    input                                                                | output
+    ${{ namespacePath: '' }}                                             | ${`${TEST_HOST}/groups/-/security/policies`}
+    ${{ namespacePath: 'test', namespaceType: NAMESPACE_TYPES.GROUP }}   | ${`${TEST_HOST}/groups/test/-/security/policies`}
+    ${{ namespacePath: '', namespaceType: NAMESPACE_TYPES.PROJECT }}     | ${`${TEST_HOST}/-/security/policies`}
+    ${{ namespacePath: 'test', namespaceType: NAMESPACE_TYPES.PROJECT }} | ${`${TEST_HOST}/test/-/security/policies`}
   `('returns `$output` when passed `$input`', ({ input, output }) => {
-    expect(getSourceUrl(input)).toBe(output);
+    expect(getPolicyListUrl(input)).toBe(output);
   });
 });
 
