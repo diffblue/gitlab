@@ -15,7 +15,7 @@ RSpec.describe ProjectSetting do
   end
 
   describe 'validations' do
-    context 'when enable only_mirror_protected_branches and mirror_branch_regex' do
+    context 'when enabling only_mirror_protected_branches and mirror_branch_regex' do
       it 'is invalid' do
         project = build(:project, only_mirror_protected_branches: true )
         setting = build(:project_setting, project: project, mirror_branch_regex: 'text')

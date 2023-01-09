@@ -32,6 +32,8 @@ module EE
           params :optional_update_params_ee do
             optional :mirror_user_id, type: Integer, desc: 'User responsible for all the activity surrounding a pull mirror event. Can only be set by admins'
             optional :only_mirror_protected_branches, type: Grape::API::Boolean, desc: 'Only mirror protected branches'
+            optional :mirror_branch_regex, type: String, desc: 'Only mirror branches match regex'
+            mutually_exclusive :only_mirror_protected_branches, :mirror_branch_regex
             optional :mirror_overwrites_diverged_branches, type: Grape::API::Boolean, desc: 'Pull mirror overwrites diverged branches'
             optional :import_url, type: String, desc: 'URL from which the project is imported'
             optional :fallback_approvals_required, type: Integer, desc: 'Overall approvals required when no rule is present'
@@ -73,6 +75,13 @@ module EE
           unless ::License.feature_available?(:external_authorization_service_api_management)
             attrs.delete(:external_authorization_classification_label)
           end
+        end
+
+        override :filter_attributes_under_feature_flag!
+        def filter_attributes_under_feature_flag!(attrs, project)
+          super
+
+          attrs.delete(:mirror_branch_regex) unless ::Feature.enabled?(:mirror_only_branches_match_regex, project)
         end
       end
     end

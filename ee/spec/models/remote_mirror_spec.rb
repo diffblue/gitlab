@@ -6,7 +6,7 @@ RSpec.describe RemoteMirror do
   let(:project) { create(:project, :repository, :remote_mirror) }
 
   describe 'validations' do
-    context 'when enable only_protected_branches and mirror_branch_regex' do
+    context 'when enabling only_protected_branches and mirror_branch_regex' do
       it 'is invalid' do
         remote_mirror = build(:remote_mirror, only_protected_branches: true, mirror_branch_regex: 'text')
 
