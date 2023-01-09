@@ -40,7 +40,7 @@ module Gitlab
           @klass ||= Class.new(model).tap do |klass|
             remove_validations(klass)
 
-            model.const_set("BulkInsertableProxy", klass)
+            model.const_set(:BulkInsertableProxy, klass)
           end.include(BulkInsertSafe)
         end
 

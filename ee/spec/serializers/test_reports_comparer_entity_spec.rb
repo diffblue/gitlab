@@ -60,7 +60,7 @@ RSpec.describe TestReportsComparerEntity do
 
         let(:create_test_case_java_resolved) do
           create_test_case_java_failed.tap do |test_case|
-            test_case.instance_variable_set("@status", Gitlab::Ci::Reports::TestCase::STATUS_SUCCESS)
+            test_case.instance_variable_set(:@status, Gitlab::Ci::Reports::TestCase::STATUS_SUCCESS)
           end
         end
 

@@ -43,7 +43,7 @@ module QA
       alias_method :full_path, :path_with_namespace
 
       def sandbox_path
-        return '' if personal_namespace || !group.respond_to?('sandbox')
+        return '' if personal_namespace || !group.respond_to?(:sandbox)
 
         "#{group.sandbox.path}/"
       end

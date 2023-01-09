@@ -292,7 +292,7 @@ RSpec.describe Ci::Minutes::UsagePresenter do
   describe '#display_shared_runners_data?' do
     let_it_be(:project) { create(:project, namespace: namespace, shared_runners_enabled: true) }
 
-    subject { presenter.send('display_shared_runners_data?') }
+    subject { presenter.send(:display_shared_runners_data?) }
 
     context 'when the namespace is root and it has a project with shared runners enabled' do
       it { is_expected.to be_truthy }
