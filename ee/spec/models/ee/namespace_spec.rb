@@ -18,6 +18,7 @@ RSpec.describe Namespace do
   it { is_expected.to have_one(:security_orchestration_policy_configuration).class_name('Security::OrchestrationPolicyConfiguration').with_foreign_key(:namespace_id) }
   it { is_expected.to have_one :upcoming_reconciliation }
   it { is_expected.to have_many(:ci_minutes_additional_packs) }
+  it { is_expected.to have_one(:storage_limit_exclusion) }
 
   it { is_expected.to delegate_method(:trial?).to(:gitlab_subscription) }
   it { is_expected.to delegate_method(:trial_ends_on).to(:gitlab_subscription) }
