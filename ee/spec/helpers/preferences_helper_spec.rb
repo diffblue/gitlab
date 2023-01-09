@@ -16,7 +16,7 @@ RSpec.describe PreferencesHelper do
       end
 
       it 'does not contain operations dashboard' do
-        expect(helper.dashboard_choices).to include(['Operations Dashboard', 'operations'])
+        expect(helper.dashboard_choices).to include({ text: 'Operations Dashboard', value: 'operations' })
       end
     end
 
