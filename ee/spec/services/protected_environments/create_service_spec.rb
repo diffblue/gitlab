@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe ProtectedEnvironments::CreateService, '#execute' do
+RSpec.describe ProtectedEnvironments::CreateService, '#execute', feature_category: :environment_management do
   let(:project) { create(:project) }
   let(:user) { create(:user) }
   let(:maintainer_access) { Gitlab::Access::MAINTAINER }
@@ -23,6 +23,22 @@ RSpec.describe ProtectedEnvironments::CreateService, '#execute' do
     it 'creates a record on ProtectedEnvironment record' do
       expect { subject }.to change(ProtectedEnvironments::DeployAccessLevel, :count).by(1)
     end
+
+    it 'stores and logs the audit event' do
+      subject
+
+      protected_environment = project.protected_environments.last
+
+      audit_context = {
+        name: 'environment_protected',
+        author: user,
+        scope: project,
+        target: protected_environment,
+        message: "Protected an environment: #{protected_environment.name}"
+      }
+
+      allow(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
+    end
   end
 
   context 'with invalid params' do
@@ -30,6 +46,12 @@ RSpec.describe ProtectedEnvironments::CreateService, '#execute' do
 
     it 'returns a non-persisted Protected Environment record' do
       expect(subject.persisted?).to be_falsy
+    end
+
+    it 'does not store or log the audit event' do
+      expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+
+      subject
     end
 
     context 'multiple deploy access levels' do
