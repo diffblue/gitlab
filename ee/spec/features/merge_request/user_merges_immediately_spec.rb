@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Merge requests > User merges immediately', :js, feature_category: :code_review do
+RSpec.describe 'Merge requests > User merges immediately', :js, feature_category: :code_review_workflow do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:user) { create(:user) }
 

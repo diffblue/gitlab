@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe "User views merge request with blocking merge requests", :js, feature_category: :code_review do
+RSpec.describe "User views merge request with blocking merge requests", :js, feature_category: :code_review_workflow do
   let(:merge_request) { create(:merge_request) }
   let(:user) { merge_request.target_project.first_owner }
 

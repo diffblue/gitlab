@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Merge request > User edits MR with multiple assignees', feature_category: :code_review do
+RSpec.describe 'Merge request > User edits MR with multiple assignees', feature_category: :code_review_workflow do
   include_context 'merge request edit context'
 
   before do

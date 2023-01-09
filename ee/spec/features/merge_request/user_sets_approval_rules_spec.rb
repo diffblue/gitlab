@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Merge request > User sets approval rules', :js, feature_category: :code_review do
+RSpec.describe 'Merge request > User sets approval rules', :js, feature_category: :code_review_workflow do
   include ProjectForksHelper
 
   include_context 'with project with approval rules'

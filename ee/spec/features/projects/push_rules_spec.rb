@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Projects > Push Rules', :js, feature_category: :code_review do
+RSpec.describe 'Projects > Push Rules', :js, feature_category: :code_review_workflow do
   let(:user) { create(:user) }
   let(:project) { create(:project, :repository, namespace: user.namespace) }
   let(:foo) { { reject_unsigned_commits: 'Reject unsigned commits' } }

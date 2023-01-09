@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Analytics::MergeRequestMetricsCalculator, feature_category: :code_review do
+RSpec.describe Analytics::MergeRequestMetricsCalculator, feature_category: :code_review_workflow do
   subject { described_class.new(merge_request) }
 
   let_it_be(:merge_request) { create(:merge_request, :merged, created_at: 31.days.ago) }

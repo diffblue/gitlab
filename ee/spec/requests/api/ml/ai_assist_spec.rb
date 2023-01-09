@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Ml::AiAssist, :saas, feature_category: :editor_extension do
+RSpec.describe API::Ml::AiAssist, :saas, feature_category: :code_suggestions do
   let_it_be(:user) { create(:user) }
   let_it_be(:group_user) { create(:user) }
   let(:current_user) { nil }

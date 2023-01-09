@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Merge request > User sees status checks widget', :js, feature_category: :code_review do
+RSpec.describe 'Merge request > User sees status checks widget', :js, feature_category: :code_review_workflow do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:user) { create(:user) }

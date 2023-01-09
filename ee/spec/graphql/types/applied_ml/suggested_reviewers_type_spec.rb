@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['SuggestedReviewersType'], feature_category: :code_review do
+RSpec.describe GitlabSchema.types['SuggestedReviewersType'], feature_category: :code_review_workflow do
   include GraphqlHelpers
 
   let(:fields) { %i[accepted suggested] }

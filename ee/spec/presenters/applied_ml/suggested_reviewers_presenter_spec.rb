@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AppliedMl::SuggestedReviewersPresenter, feature_category: :code_review do
+RSpec.describe AppliedMl::SuggestedReviewersPresenter, feature_category: :code_review_workflow do
   let(:presenter) { described_class.new(predictions) }
 
   let(:predictions) do

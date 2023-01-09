@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature_category: :code_review do
+RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature_category: :code_review_workflow do
   include Select2Helper
 
   include_context 'with project with approval rules'
