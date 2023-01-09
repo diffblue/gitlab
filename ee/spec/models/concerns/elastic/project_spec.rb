@@ -143,7 +143,7 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state do
   end
 
   # This test is added to address the issues described in
-  context 'when projects and snippets co-exist', issue: 'https://gitlab.com/gitlab-org/gitlab/issues/36340' do
+  context 'when projects and snippets co-exist', :elastic_clean, issue: 'https://gitlab.com/gitlab-org/gitlab/issues/36340' do
     before do
       create :project
       create :snippet, :public
