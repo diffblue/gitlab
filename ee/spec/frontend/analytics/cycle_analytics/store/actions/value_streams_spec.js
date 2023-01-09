@@ -5,7 +5,7 @@ import * as getters from 'ee/analytics/cycle_analytics/store/getters';
 import * as types from 'ee/analytics/cycle_analytics/store/mutation_types';
 import testAction from 'helpers/vuex_action_helper';
 import { currentGroup } from 'jest/analytics/cycle_analytics/mock_data';
-import httpStatusCodes from '~/lib/utils/http_status';
+import httpStatusCodes, { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 import { allowedStages as stages, endpoints, valueStreams } from '../../mock_data';
 
 const mockStartEventIdentifier = 'issue_first_mentioned_in_commit';
@@ -107,7 +107,7 @@ describe('Value Stream Analytics actions / value streams', () => {
       const message = { message: 'error' };
       const resp = { message, payload: { errors } };
       beforeEach(() => {
-        mock.onPost(endpoints.valueStreamData).replyOnce(httpStatusCodes.NOT_FOUND, resp);
+        mock.onPost(endpoints.valueStreamData).replyOnce(HTTP_STATUS_NOT_FOUND, resp);
       });
 
       it(`commits the ${types.REQUEST_CREATE_VALUE_STREAM} and ${types.RECEIVE_CREATE_VALUE_STREAM_ERROR} actions `, () => {
@@ -188,7 +188,7 @@ describe('Value Stream Analytics actions / value streams', () => {
       const message = { message: 'error' };
       const resp = { message, payload: { errors } };
       beforeEach(() => {
-        mock.onPut(endpoints.valueStreamData).replyOnce(httpStatusCodes.NOT_FOUND, resp);
+        mock.onPut(endpoints.valueStreamData).replyOnce(HTTP_STATUS_NOT_FOUND, resp);
       });
 
       it(`commits the ${types.REQUEST_UPDATE_VALUE_STREAM} and ${types.RECEIVE_UPDATE_VALUE_STREAM_ERROR} actions `, () => {
@@ -237,7 +237,7 @@ describe('Value Stream Analytics actions / value streams', () => {
       const message = { message: 'failed to delete the value stream' };
       const resp = { message };
       beforeEach(() => {
-        mock.onDelete(endpoints.valueStreamData).replyOnce(httpStatusCodes.NOT_FOUND, resp);
+        mock.onDelete(endpoints.valueStreamData).replyOnce(HTTP_STATUS_NOT_FOUND, resp);
       });
 
       it(`commits the ${types.REQUEST_DELETE_VALUE_STREAM} and ${types.RECEIVE_DELETE_VALUE_STREAM_ERROR} actions `, () => {
@@ -295,14 +295,14 @@ describe('Value Stream Analytics actions / value streams', () => {
       let mockCommit;
       beforeEach(() => {
         mockCommit = jest.fn();
-        mock.onGet(endpoints.valueStreamData).reply(httpStatusCodes.NOT_FOUND);
+        mock.onGet(endpoints.valueStreamData).reply(HTTP_STATUS_NOT_FOUND);
       });
 
       it(`will commit ${types.RECEIVE_VALUE_STREAMS_ERROR}`, () => {
         return actions.fetchValueStreams({ state, getters, commit: mockCommit }).catch(() => {
           expect(mockCommit.mock.calls).toEqual([
             ['REQUEST_VALUE_STREAMS'],
-            ['RECEIVE_VALUE_STREAMS_ERROR', httpStatusCodes.NOT_FOUND],
+            ['RECEIVE_VALUE_STREAMS_ERROR', HTTP_STATUS_NOT_FOUND],
           ]);
         });
       });

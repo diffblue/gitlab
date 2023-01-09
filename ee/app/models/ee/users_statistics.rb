@@ -9,6 +9,10 @@ module EE
       (base_billable_users + guest_billable_users).sum
     end
 
+    def non_billable
+      bots + with_highest_role_guest
+    end
+
     override :active
     def active
       super + with_highest_role_minimal_access

@@ -7,7 +7,7 @@ import {
 } from '@gitlab/ui';
 import { debounce } from 'lodash';
 import { createAlert } from '~/flash';
-import httpStatusCodes from '~/lib/utils/http_status';
+import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 import { sprintf, s__, __ } from '~/locale';
 
 export default {
@@ -108,7 +108,7 @@ export default {
     onApiError({ response: { status } }) {
       const type = this.lowerCaseType;
       let message;
-      if (status === httpStatusCodes.NOT_FOUND) {
+      if (status === HTTP_STATUS_NOT_FOUND) {
         message = s__('AuditLogs|Failed to find %{type}. Please search for another %{type}.');
       } else {
         message = s__('AuditLogs|Failed to find %{type}. Please try again.');

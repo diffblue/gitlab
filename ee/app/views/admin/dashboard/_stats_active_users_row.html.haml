@@ -1,0 +1,9 @@
+%tr.bg-gray-light.gl-text-gray-900
+  %td.gl-p-5!
+    %strong
+      = s_('AdminArea|Active users')
+    %span
+      (#{s_('AdminArea|total billable + total non-billable')})
+  %td.gl-text-right{ class: 'gl-p-5!' }
+    %strong
+      = @users_statistics&.active
