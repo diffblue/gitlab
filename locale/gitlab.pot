@@ -45469,9 +45469,6 @@ msgstr ""
 msgid "UserProfile|Activity"
 msgstr ""
 
-msgid "UserProfile|Already reported for abuse"
-msgstr ""
-
 msgid "UserProfile|Blocked user"
 msgstr ""
 
@@ -48082,6 +48079,9 @@ msgid "You have %{pendingMembersCount} pending member that needs approval."
 msgid_plural "You have %{pendingMembersCount} pending members that need approval."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "You have already reported this user"
+msgstr ""
 
 msgid "You have been granted %{access_level} access to the %{source_link} %{source_type}."
 msgstr ""
