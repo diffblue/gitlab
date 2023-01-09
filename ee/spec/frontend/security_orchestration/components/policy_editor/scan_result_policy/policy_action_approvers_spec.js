@@ -1,0 +1,163 @@
+import { nextTick } from 'vue';
+import { GlForm, GlFormInput, GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import PolicyActionApprovers from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_approvers.vue';
+import GroupSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/group_select.vue';
+import UserSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/user_select.vue';
+import {
+  getDefaultHumanizedTemplate,
+  GROUP_TYPE,
+  MULTIPLE_APPROVER_TYPES_HUMANIZED_TEMPLATE,
+  USER_TYPE,
+} from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/actions';
+
+const DEFAULT_ACTION = {
+  approvals_required: 1,
+  type: 'require_approval',
+};
+
+describe('PolicyActionApprovers', () => {
+  let wrapper;
+
+  const factory = ({ propsData = {}, stubs = {} } = {}) => {
+    wrapper = shallowMountExtended(PolicyActionApprovers, {
+      propsData: {
+        approverIndex: 0,
+        approverTypes: [],
+        approvalsRequired: 1,
+        existingApprovers: [],
+        numOfApproverTypes: 1,
+        ...propsData,
+      },
+      provide: {
+        namespaceId: '1',
+        namespacePath: 'path/to/project',
+        namespaceType: 'project',
+      },
+      stubs: {
+        GlForm,
+        GlSprintf,
+        ...stubs,
+      },
+    });
+  };
+
+  const findApprovalsRequiredInput = () => wrapper.findComponent(GlFormInput);
+  const findApproverTypeDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
+  const findGroupSelect = () => wrapper.findComponent(GroupSelect);
+  const findUserSelect = () => wrapper.findComponent(UserSelect);
+  const findAddButton = () => wrapper.findByTestId('add-approver');
+  const findRemoveButton = () => wrapper.findByTestId('remove-approver');
+  const findMessage = () => wrapper.findComponent(GlSprintf);
+
+  describe('single type', () => {
+    beforeEach(factory);
+
+    it('renders the add button', () => {
+      expect(findAddButton().exists()).toBe(true);
+    });
+
+    it('triggers an update when adding a new type', async () => {
+      expect(wrapper.emitted('addApproverType')).toEqual(undefined);
+      await findAddButton().vm.$emit('click');
+      expect(wrapper.emitted('addApproverType')).toEqual([[]]);
+    });
+
+    it('does not render the remove button', () => {
+      expect(findRemoveButton().exists()).toBe(false);
+    });
+
+    it('triggers an update when changing number of approvals required', async () => {
+      const approvalRequestPlusOne = DEFAULT_ACTION.approvals_required + 1;
+      const formInput = findApprovalsRequiredInput();
+
+      await formInput.vm.$emit('update', approvalRequestPlusOne);
+
+      expect(wrapper.emitted('updateApprovalsRequired')).toEqual([[approvalRequestPlusOne]]);
+    });
+
+    it('renders the user select when the "user" type approver is selected', async () => {
+      expect(findUserSelect().exists()).toBe(false);
+      await findApproverTypeDropdown().vm.$emit('select', USER_TYPE);
+      expect(findUserSelect().exists()).toBe(true);
+    });
+
+    it('does not render the group select when the "user" type approver is selected', async () => {
+      expect(findGroupSelect().exists()).toBe(false);
+      await findApproverTypeDropdown().vm.$emit('select', USER_TYPE);
+      expect(findGroupSelect().exists()).toBe(false);
+    });
+
+    it('does not render the user select when the "group" type approver is selected', async () => {
+      expect(findUserSelect().exists()).toBe(false);
+      await findApproverTypeDropdown().vm.$emit('select', GROUP_TYPE);
+      expect(findUserSelect().exists()).toBe(false);
+    });
+
+    it('triggers an update when changing available group approvers', async () => {
+      const newGroup = { id: 1, type: GROUP_TYPE };
+
+      await findApproverTypeDropdown().vm.$emit('select', GROUP_TYPE);
+      await findGroupSelect().vm.$emit('updateSelectedApprovers', [newGroup]);
+
+      expect(wrapper.emitted()).toEqual({
+        updateApproverType: [[{ newApproverType: GROUP_TYPE, oldApproverType: '' }]],
+        updateApprovers: [[[{ id: newGroup.id, type: GROUP_TYPE }]]],
+      });
+    });
+
+    it('triggers an update when changing available user approvers', async () => {
+      const newUser = { id: 1, type: USER_TYPE };
+
+      await findApproverTypeDropdown().vm.$emit('select', USER_TYPE);
+      await findUserSelect().vm.$emit('updateSelectedApprovers', [newUser]);
+
+      expect(wrapper.emitted()).toEqual({
+        updateApproverType: [[{ newApproverType: 'user', oldApproverType: '' }]],
+        updateApprovers: [[[{ id: newUser.id, type: USER_TYPE }]]],
+      });
+    });
+  });
+
+  describe('multiple types', () => {
+    beforeEach(() => {
+      factory({
+        propsData: { approverIndex: 1, numOfApproverTypes: 2 },
+      });
+    });
+
+    it('triggers an update when removing a new type', async () => {
+      expect(wrapper.emitted('removeApproverType')).toEqual(undefined);
+      await findRemoveButton().vm.$emit('click');
+      expect(wrapper.emitted('removeApproverType')).toEqual([['']]);
+    });
+
+    it('does not render the add button for the last type', () => {
+      expect(findAddButton().exists()).toBe(false);
+    });
+
+    it('renders the remove button', () => {
+      expect(findRemoveButton().exists()).toBe(true);
+    });
+  });
+
+  describe('message', () => {
+    it('renders the correct message for the first type added', async () => {
+      factory({ stubs: { GlSprintf: true } });
+      await nextTick();
+      expect(findMessage().attributes('message')).toBe(getDefaultHumanizedTemplate(1));
+    });
+
+    it('renders the correct text for the non-first type', async () => {
+      factory({
+        propsData: { approverIndex: 1, numOfApproverTypes: 2 },
+        stubs: { GlSprintf: true },
+      });
+      await nextTick();
+      expect(findMessage().attributes('message')).toBe(MULTIPLE_APPROVER_TYPES_HUMANIZED_TEMPLATE);
+    });
+  });
+
+  // TODO add tests back for existing users/groups as part of adding this feature back in as part of https://gitlab.com/gitlab-org/gitlab/-/issues/377865
+  // TODO create test for renders the group select with only the group approvers as part of https://gitlab.com/gitlab-org/gitlab/-/issues/377865
+});
