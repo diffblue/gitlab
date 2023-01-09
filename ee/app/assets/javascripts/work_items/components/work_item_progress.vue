@@ -1,5 +1,5 @@
 <script>
-import { GlForm, GlFormGroup, GlFormInput } from '@gitlab/ui';
+import { GlForm, GlFormGroup, GlFormInput, GlTooltipDirective } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { __ } from '~/locale';
@@ -14,6 +14,9 @@ import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutati
 import { getWorkItemQuery } from '~/work_items/utils';
 
 export default {
+  directives: {
+    GlTooltip: GlTooltipDirective,
+  },
   inputId: 'progress-widget-input',
   minValue: 0,
   maxValue: 100,
@@ -151,6 +154,13 @@ export default {
           Sentry.captureException(error);
         });
     },
+    getProgressTooltip() {
+      return this.glFeatures.okrAutomaticRollups && this.workItemType === __('Objective')
+        ? __(
+            'This field is auto-calculated based on the Progress score of its direct children. You can overwrite this value but it will be replaced by the auto-calcualtion anytime the Progress score of its direct children is updated.',
+          )
+        : '';
+    },
   },
 };
 </script>
@@ -169,6 +179,8 @@ export default {
         id="progress-widget-input"
         ref="input"
         v-model="localProgress"
+        v-gl-tooltip
+        :title="getProgressTooltip"
         :min="$options.minValue"
         :max="$options.maxValue"
         class="gl-hover-border-gray-200! gl-border-solid! gl-border-white!"

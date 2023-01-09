@@ -3792,6 +3792,20 @@ RSpec.describe Project, feature_category: :projects do
     end
   end
 
+  describe '#okr_automatic_rollups_enabled?' do
+    let_it_be(:project) { create(:project) }
+
+    it 'returns true if feature_flag is enabled' do
+      stub_feature_flags(okr_automatic_rollups: true)
+      expect(project.okr_automatic_rollups_enabled?).to be_truthy
+    end
+
+    it 'returns false if feature_flag is disabled' do
+      stub_feature_flags(okr_automatic_rollups: false)
+      expect(project.okr_automatic_rollups_enabled?).to be_falsey
+    end
+  end
+
   describe '#member_usernames_among' do
     let_it_be(:users) { create_list(:user, 3) }
 

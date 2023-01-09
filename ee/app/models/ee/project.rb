@@ -431,6 +431,10 @@ module EE
       ::Feature.enabled?(:okrs_mvc, self)
     end
 
+    def okr_automatic_rollups_enabled?
+      ::Feature.enabled?(:okr_automatic_rollups, self)
+    end
+
     def latest_ingested_security_pipeline
       vulnerability_statistic&.pipeline
     end
