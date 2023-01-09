@@ -47,6 +47,32 @@ module Namespaces
         notification_data[:explanation_message]
       end
 
+      def alert_body_message
+        alert_message.dig(:main, :text)
+      end
+
+      def alert_body_cta_text
+        alert_message.dig(:main, :link, :text)
+      end
+
+      def alert_body_cta_href
+        alert_message.dig(:main, :link, :href)
+      end
+
+      def alert_footer_message
+        return unless notification_data[:enforcement_type] == :namespace
+
+        alert_message.dig(:footer, :text)
+      end
+
+      def alert_footer_cta_text
+        alert_message.dig(:footer, :link, :text)
+      end
+
+      def alert_footer_cta_href
+        alert_message.dig(:footer, :link, :href)
+      end
+
       def alert_callout_path
         root_namespace.user_namespace? ? callouts_path : group_callouts_path
       end

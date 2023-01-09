@@ -248,8 +248,11 @@ module EE
                :suggested_reviewers_enabled,
                :only_allow_merge_if_all_status_checks_passed,
                :only_allow_merge_if_all_status_checks_passed=,
+               :mirror_branch_regex,
+               :mirror_branch_regex=,
+               :allow_pipeline_trigger_approve_deployment,
+               :allow_pipeline_trigger_approve_deployment=,
                to: :project_setting
-      delegate :mirror_branch_regex, :mirror_branch_regex=, to: :project_setting
 
       validates :repository_size_limit,
         numericality: { only_integer: true, greater_than_or_equal_to: 0, allow_nil: true }

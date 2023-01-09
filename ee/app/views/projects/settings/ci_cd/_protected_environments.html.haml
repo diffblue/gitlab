@@ -22,3 +22,4 @@
     .settings-content
       = render partial: 'projects/protected_environments/environments_list', locals: { can_admin_project: can_admin_project }
       = render partial: 'projects/protected_environments/group_environments_list'
+      = render 'projects/protected_environments/deployment_approval_options', project: @project

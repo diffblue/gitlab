@@ -103,5 +103,7 @@ FactoryBot.modify do
         )
       end
     end
+
+    trait(:allow_pipeline_trigger_approve_deployment) { allow_pipeline_trigger_approve_deployment { true } }
   end
 end

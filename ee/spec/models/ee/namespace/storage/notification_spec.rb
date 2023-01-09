@@ -82,7 +82,7 @@ RSpec.describe EE::Namespace::Storage::Notification do
     shared_examples 'namespace usage_message' do
       it 'returns correct usage_message' do
         expect(subject[:usage_message])
-        .to eq "You have reached 550% of #{group.name}'s storage capacity (55 Bytes of 10 Bytes)"
+        .to eq "You have used 550% of the storage quota for #{group.name} (55 Bytes of 10 Bytes)"
       end
     end
 
@@ -101,6 +101,15 @@ RSpec.describe EE::Namespace::Storage::Notification do
         end
       end
 
+      it 'includes a usage_quotas help link' do
+        expect(subject[:explanation_message][:main][:link]).to eq(
+          {
+            text: "Learn more.",
+            href: "/help/user/usage_quotas#manage-your-storage-usage"
+          }
+        )
+      end
+
       context 'when additional_purchased_storage_size is 0' do
         it 'returns proper usage_message' do
           expect(subject[:usage_message]).to eq "You have reached the free storage limit of " \
@@ -108,7 +117,8 @@ RSpec.describe EE::Namespace::Storage::Notification do
         end
 
         it 'returns proper explanation_message' do
-          expect(subject[:explanation_message]).to include 'Please purchase additional storage to unlock your projects'
+          expect(subject[:explanation_message][:main][:text])
+            .to include 'Please purchase additional storage to unlock your projects'
         end
       end
 
@@ -128,7 +138,21 @@ RSpec.describe EE::Namespace::Storage::Notification do
         end
 
         it 'returns explanation_message when there is additional_purchased_storage_size' do
-          expect(subject[:explanation_message]).to include 'You have consumed all of your additional storage'
+          expect(subject[:explanation_message][:main][:text])
+            .to include 'You have consumed all of your additional storage'
+        end
+
+        context 'when under size limit' do
+          before do
+            allow_next_instance_of(Namespaces::Storage::RootExcessSize) do |root_storage_size|
+              allow(root_storage_size).to receive(:above_size_limit?).and_return(false)
+            end
+          end
+
+          it 'returns explanation_message with a warning' do
+            expect(subject[:explanation_message][:main][:text])
+              .to include 'If you reach 100% storage capacity, you will not be able to:'
+          end
         end
       end
 
@@ -157,7 +181,26 @@ RSpec.describe EE::Namespace::Storage::Notification do
         it_behaves_like 'namespace usage_message'
 
         it 'returns above the limit messages' do
-          expect(subject[:explanation_message]).to include "#{group.name} is now read-only."
+          expect(subject[:explanation_message]).to eq(
+            {
+              main: {
+                text: "#{group.name} is now read-only. " \
+                      "Projects under this namespace are locked and actions are restricted.",
+                link: {
+                  text: "Which actions are restricted?",
+                  href: '/help/user/read_only_namespaces'
+                }
+              },
+              footer: {
+                text: "Manage your storage usage or, " \
+                      "if you are a namespace Owner, purchase additional storage.",
+                link: {
+                  text: "Learn more.",
+                  href: '/help/user/usage_quotas#manage-your-storage-usage'
+                }
+              }
+            }
+          )
         end
       end
 
@@ -169,7 +212,26 @@ RSpec.describe EE::Namespace::Storage::Notification do
         end
 
         it 'returns below the limit messages' do
-          expect(subject[:explanation_message]).to include "you reach 100% storage capacity, you will not be able to"
+          expect(subject[:explanation_message]).to eq(
+            {
+              main: {
+                text: "If #{group.name} exceeds the storage quota, " \
+                      "all projects in the namespace will be locked and actions will be restricted.",
+                link: {
+                  text: "Which actions become restricted?",
+                  href: "/help/user/read_only_namespaces"
+                }
+              },
+              footer: {
+                text: "Manage your storage usage or, " \
+                      "if you are a namespace Owner, purchase additional storage.",
+                link: {
+                  text: "Learn more.",
+                  href: "/help/user/usage_quotas#manage-your-storage-usage"
+                }
+              }
+            }
+          )
         end
       end
     end

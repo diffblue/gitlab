@@ -9,8 +9,15 @@
                             defer_links: "true" }}) do |c|
     = c.body do
       = sprite_icon(alert_icon, css_class: "gl-icon gl-alert-icon")
-      = alert_message
-      = link_to _('Learn more.'), help_page_path('user/usage_quotas'), target: '_blank', rel: 'noopener noreferrer'
+
+      %p
+        = alert_body_message
+        = link_to alert_body_cta_text, alert_body_cta_href, target: '_blank', rel: 'noopener noreferrer'
+
+      - if alert_footer_message
+        %p
+          = alert_footer_message
+          = link_to alert_footer_cta_text, alert_footer_cta_href, target: '_blank', rel: 'noopener noreferrer'
 
     - if purchase_link || usage_quotas_link
       = c.actions do
