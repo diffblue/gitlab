@@ -20,7 +20,7 @@ RSpec.describe WorkItems::UpdateService, feature_category: :team_planning do
       )
     end
 
-    subject { service.execute(work_item) }
+    subject(:update_work_item) { service.execute(work_item) }
 
     it_behaves_like 'work item widgetable service' do
       let(:widget_params) do
@@ -42,6 +42,18 @@ RSpec.describe WorkItems::UpdateService, feature_category: :team_planning do
     end
 
     context 'when updating widgets' do
+      context 'for the progress widget' do
+        let(:widget_params) { { progress_widget: { progress: 50 } } }
+
+        before do
+          stub_licensed_features(okrs: true)
+        end
+
+        it_behaves_like 'update service that triggers GraphQL work_item_updated subscription' do
+          subject(:execute_service) { update_work_item }
+        end
+      end
+
       context 'for the weight widget' do
         let(:widget_params) { { weight_widget: { weight: new_weight } } }
 
@@ -58,6 +70,10 @@ RSpec.describe WorkItems::UpdateService, feature_category: :team_planning do
             expect(GraphqlTriggers).to receive(:issuable_weight_updated).with(work_item).and_call_original
 
             subject
+          end
+
+          it_behaves_like 'update service that triggers GraphQL work_item_updated subscription' do
+            subject(:execute_service) { update_work_item }
           end
         end
 
