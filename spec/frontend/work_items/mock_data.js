@@ -268,6 +268,7 @@ export const workItemResponseFactory = ({
   milestoneWidgetPresent = true,
   iterationWidgetPresent = true,
   healthStatusWidgetPresent = true,
+  notesWidgetPresent = true,
   confidential = false,
   canInviteMembers = false,
   allowsScopedLabels = false,
@@ -409,6 +410,12 @@ export const workItemResponseFactory = ({
           },
           parent,
         },
+        notesWidgetPresent
+          ? {
+              __typename: 'WorkItemWidgetNotes',
+              type: 'NOTES',
+            }
+          : { type: 'MOCK TYPE' },
       ],
     },
   },
