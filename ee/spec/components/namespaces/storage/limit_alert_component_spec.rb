@@ -5,17 +5,43 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:group) { create(:group) }
-  let_it_be_with_refind(:user) { create(:user) }
+
+  let(:explanation_message_main) do
+    {
+      text: "Main",
+      link: {
+        text: "Main link",
+        href: "/main/link/"
+      }
+    }
+  end
+
+  let(:explanation_message_footer) do
+    {
+      text: "Footer",
+      link: {
+        text: "Footer link",
+        href: "/footer/link/"
+      }
+    }
+  end
 
   # EE::Namespace::Storage::Notification #payload
   let(:notification_payload) do
     {
-      explanation_message: 'explanation message',
-      usage_message: 'usage message',
       alert_level: :info,
-      root_namespace: group.root_ancestor
+      root_namespace: group.root_ancestor,
+      enforcement_type: :namespace,
+      usage_message: 'usage message',
+      explanation_message:
+        {
+          main: explanation_message_main,
+          footer: explanation_message_footer
+        }
     }
   end
+
+  let_it_be_with_refind(:user) { create(:user) }
 
   subject(:component) { described_class.new(context: group, user: user, notification_data: notification_payload) }
 
@@ -31,9 +57,35 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
     expect(page).to have_content(notification_payload[:usage_message])
   end
 
-  it 'renders the alert message' do
-    render_inline(component)
-    expect(page).to have_content(notification_payload[:explanation_message])
+  context 'for namespace type enforcement' do
+    it 'renders the alert main part' do
+      render_inline(component)
+      expect(page).to have_content(notification_payload[:explanation_message][:main][:text])
+    end
+
+    it 'renders the alert footer part' do
+      render_inline(component)
+      expect(page).to have_content(notification_payload[:explanation_message][:footer][:text])
+    end
+  end
+
+  context 'for repository type enforcement' do
+    let(:notification_payload) do
+      {
+        alert_level: :info,
+        root_namespace: group.root_ancestor,
+        enforcement_type: :repository,
+        usage_message: 'usage message',
+        explanation_message: {
+          main: explanation_message_main
+        }
+      }
+    end
+
+    it 'renders the alert message' do
+      render_inline(component)
+      expect(page).to have_content(notification_payload[:explanation_message][:main][:text])
+    end
   end
 
   describe 'purchase more storage link' do
@@ -75,10 +127,14 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
     with_them do
       let(:notification_payload) do
         {
-          explanation_message: 'explanation message',
-          usage_message: 'usage message',
+          enforcement_type: :namespace,
           alert_level: alert_level,
-          root_namespace: group.root_ancestor
+          root_namespace: group.root_ancestor,
+          usage_message: 'usage message',
+          explanation_message: {
+            main: explanation_message_main,
+            footer: explanation_message_footer
+          }
         }
       end
 
@@ -109,10 +165,14 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
     with_them do
       let(:notification_payload) do
         {
-          explanation_message: 'explanation message',
-          usage_message: 'usage message',
+          enforcement_type: :namespace,
           alert_level: alert_level,
-          root_namespace: group.root_ancestor
+          root_namespace: group.root_ancestor,
+          usage_message: 'usage message',
+          explanation_message: {
+            main: explanation_message_main,
+            footer: explanation_message_footer
+          }
         }
       end
 

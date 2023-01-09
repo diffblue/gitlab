@@ -19,9 +19,9 @@ RSpec.describe 'view usage quotas', feature_category: :subscription_cost_managem
       let(:payload) do
         {
           alert_level: :info,
-          usage_message: FFaker::Lorem.sentence,
-          explanation_message: "Explanation",
-          root_namespace: group.root_ancestor
+          enforcement_type: :namespace,
+          root_namespace: group.root_ancestor,
+          usage_message: FFaker::Lorem.sentence
         }
       end
 

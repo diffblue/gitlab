@@ -63,7 +63,15 @@ module EE
 
       alert_level = "##### #{payload[:alert_level].to_s.upcase} #####"
 
-      [alert_level, payload[:usage_message], payload[:explanation_message]].join("\n")
+      output = [
+        alert_level,
+        payload[:usage_message],
+        payload[:explanation_message][:main][:text]
+      ]
+
+      output.push(payload[:explanation_message][:footer][:text]) if payload[:enforcement_type] == :namespace
+
+      output.join("\n")
     end
   end
 end
