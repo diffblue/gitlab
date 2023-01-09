@@ -1,7 +1,7 @@
 import Api from 'ee/api';
 import { removeFlash } from '~/analytics/shared/utils';
 import { createAlert } from '~/flash';
-import httpStatus, { HTTP_STATUS_FORBIDDEN } from '~/lib/utils/http_status';
+import { HTTP_STATUS_FORBIDDEN, HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import { __ } from '~/locale';
 import * as types from './mutation_types';
 
@@ -37,7 +37,7 @@ export const receiveCycleAnalyticsDataSuccess = ({ commit, dispatch }) => {
 };
 
 export const receiveCycleAnalyticsDataError = ({ commit }, { response = {} }) => {
-  const { status = httpStatus.INTERNAL_SERVER_ERROR } = response;
+  const { status = HTTP_STATUS_INTERNAL_SERVER_ERROR } = response;
 
   commit(types.RECEIVE_VALUE_STREAM_DATA_ERROR, status);
   if (status !== HTTP_STATUS_FORBIDDEN) {

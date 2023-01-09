@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import ResetButton from 'ee/pages/admin/users/pipeline_minutes/reset_button.vue';
 import axios from '~/lib/utils/axios_utils';
-import httpStatusCodes from '~/lib/utils/http_status';
+import httpStatusCodes, { HTTP_STATUS_SERVICE_UNAVAILABLE } from '~/lib/utils/http_status';
 
 const defaultProps = { resetMinutesPath: '/adming/reset_minutes' };
 const $toast = {
@@ -72,8 +72,8 @@ describe('Reset pipeline minutes button', () => {
 
   describe('when the api is not available', () => {
     beforeEach(() => {
-      mock.onPost(defaultProps.resetMinutesPath).reply(httpStatusCodes.SERVICE_UNAVAILABLE, {
-        status: httpStatusCodes.SERVICE_UNAVAILABLE,
+      mock.onPost(defaultProps.resetMinutesPath).reply(HTTP_STATUS_SERVICE_UNAVAILABLE, {
+        status: HTTP_STATUS_SERVICE_UNAVAILABLE,
       });
     });
 

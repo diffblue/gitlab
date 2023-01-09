@@ -20,7 +20,7 @@ import { chartKeys } from 'ee/analytics/productivity_analytics/constants';
 import { getStoreConfig } from 'ee/analytics/productivity_analytics/store';
 import Scatterplot from 'ee/analytics/shared/components/scatterplot.vue';
 import { TEST_HOST } from 'helpers/test_constants';
-import httpStatusCodes from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import { mockFilters } from '../mock_data';
 
 Vue.use(Vuex);
@@ -503,7 +503,7 @@ describe('ProductivityApp component', () => {
               });
               mockStore.dispatch('charts/receiveChartDataError', {
                 chartKey: chartKeys.main,
-                error: { response: { status: httpStatusCodes.INTERNAL_SERVER_ERROR } },
+                error: { response: { status: HTTP_STATUS_INTERNAL_SERVER_ERROR } },
               });
             });
 
@@ -513,7 +513,7 @@ describe('ProductivityApp component', () => {
 
             it('passes a 500 status code to the metric chart', () => {
               expect(findMainMetricChart().props('errorCode')).toBe(
-                httpStatusCodes.INTERNAL_SERVER_ERROR,
+                HTTP_STATUS_INTERNAL_SERVER_ERROR,
               );
             });
 

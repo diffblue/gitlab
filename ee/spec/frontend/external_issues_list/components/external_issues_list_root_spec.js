@@ -18,7 +18,7 @@ import {
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 import { i18n } from '~/issues/list/constants';
 import axios from '~/lib/utils/axios_utils';
-import httpStatus from '~/lib/utils/http_status';
+import httpStatus, { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 
 import {
   mockProvide,
@@ -332,7 +332,7 @@ describe('ExternalIssuesListRoot', () => {
           jest.spyOn(axios, 'get');
           mock
             .onGet(mockProvide.issuesFetchPath)
-            .replyOnce(httpStatus.INTERNAL_SERVER_ERROR, { errors: APIErrors });
+            .replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR, { errors: APIErrors });
 
           createComponent();
           await waitForPromises();

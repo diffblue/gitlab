@@ -4,7 +4,10 @@ import * as types from 'ee/vue_shared/security_reports/store/mutation_types';
 import state from 'ee/vue_shared/security_reports/store/state';
 import testAction from 'helpers/vuex_action_helper';
 import axios from '~/lib/utils/axios_utils';
-import httpStatusCodes, { HTTP_STATUS_UNPROCESSABLE_ENTITY } from '~/lib/utils/http_status';
+import {
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_UNPROCESSABLE_ENTITY,
+} from '~/lib/utils/http_status';
 import toasted from '~/vue_shared/plugins/global_toast';
 import {
   dastFeedbacks,
@@ -340,9 +343,9 @@ describe('security reports actions', () => {
     });
 
     describe.each`
-      httpStatusErrorCode                      | expectedErrorMessage
-      ${httpStatusCodes.INTERNAL_SERVER_ERROR} | ${'There was an error dismissing the vulnerability. Please try again.'}
-      ${HTTP_STATUS_UNPROCESSABLE_ENTITY}      | ${'Could not dismiss vulnerability because the associated pipeline no longer exists. Refresh the page and try again.'}
+      httpStatusErrorCode                  | expectedErrorMessage
+      ${HTTP_STATUS_INTERNAL_SERVER_ERROR} | ${'There was an error dismissing the vulnerability. Please try again.'}
+      ${HTTP_STATUS_UNPROCESSABLE_ENTITY}  | ${'Could not dismiss vulnerability because the associated pipeline no longer exists. Refresh the page and try again.'}
     `('with error "$httpStatusErrorCode"', ({ httpStatusErrorCode, expectedErrorMessage }) => {
       beforeEach(() => {
         mockedState.createVulnerabilityFeedbackDismissalPath = 'dismiss_vulnerability_path';

@@ -5,7 +5,7 @@ import axios from '~/lib/utils/axios_utils';
 import extensionsContainer from '~/vue_merge_request_widget/components/extensions/container';
 import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
 import securityReportsExtension from 'ee/vue_merge_request_widget/extensions/security_reports';
-import httpStatusCodes from '~/lib/utils/http_status';
+import httpStatusCodes, { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import { addedResponse, emptyResponse, fixedResponse } from './mock_data';
 
 describe('License Compliance extension', () => {
@@ -67,7 +67,7 @@ describe('License Compliance extension', () => {
     });
 
     it('displays failed loading text', async () => {
-      mockAllApiCalls(httpStatusCodes.INTERNAL_SERVER_ERROR, emptyResponse());
+      mockAllApiCalls(HTTP_STATUS_INTERNAL_SERVER_ERROR, emptyResponse());
       createComponent();
       await waitForPromises();
       expect(wrapper.text()).toBe('Security reports failed loading results');

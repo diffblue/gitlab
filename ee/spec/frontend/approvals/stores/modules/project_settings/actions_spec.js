@@ -5,7 +5,7 @@ import * as actions from 'ee/approvals/stores/modules/project_settings/actions';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-import httpStatus from '~/lib/utils/http_status';
+import httpStatus, { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 
 jest.mock('~/flash');
 
@@ -109,7 +109,7 @@ describe('EE approvals project settings module actions', () => {
     });
 
     it('dispatches request/receive on error', () => {
-      mock.onGet(TEST_RULES_PATH).replyOnce(httpStatus.INTERNAL_SERVER_ERROR);
+      mock.onGet(TEST_RULES_PATH).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       return testAction(
         actions.fetchRules,
@@ -224,7 +224,7 @@ describe('EE approvals project settings module actions', () => {
     it('dispatches error on error', () => {
       mock
         .onDelete(`${TEST_RULES_PATH}/${TEST_RULE_ID}`)
-        .replyOnce(httpStatus.INTERNAL_SERVER_ERROR);
+        .replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       return testAction(actions.deleteRule, TEST_RULE_ID, state, [], [{ type: 'deleteRuleError' }]);
     });

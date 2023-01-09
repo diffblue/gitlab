@@ -4,7 +4,7 @@ import { nextTick } from 'vue';
 import RelatedIssues from 'ee/vulnerabilities/components/related_issues.vue';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-import httpStatusCodes from '~/lib/utils/http_status';
+import httpStatusCodes, { HTTP_STATUS_SERVICE_UNAVAILABLE } from '~/lib/utils/http_status';
 import * as urlUtility from '~/lib/utils/url_utility';
 import RelatedIssuesBlock from '~/related_issues/components/related_issues_block.vue';
 import { issuableTypesMap, PathIdSeparator } from '~/related_issues/constants';
@@ -106,7 +106,7 @@ describe('Vulnerability related issues component', () => {
     });
 
     it('shows an error message if the fetch fails', async () => {
-      mockAxios.onGet(propsData.endpoint).replyOnce(httpStatusCodes.SERVICE_UNAVAILABLE);
+      mockAxios.onGet(propsData.endpoint).replyOnce(HTTP_STATUS_SERVICE_UNAVAILABLE);
       createWrapper();
       await axios.waitForAll();
 
@@ -153,11 +153,11 @@ describe('Vulnerability related issues component', () => {
         .onPost(propsData.endpoint)
         .replyOnce(httpStatusCodes.OK, { issue: {} })
         .onPost(propsData.endpoint)
-        .replyOnce(httpStatusCodes.SERVICE_UNAVAILABLE)
+        .replyOnce(HTTP_STATUS_SERVICE_UNAVAILABLE)
         .onPost(propsData.endpoint)
         .replyOnce(httpStatusCodes.OK, { issue: {} })
         .onPost(propsData.endpoint)
-        .replyOnce(httpStatusCodes.SERVICE_UNAVAILABLE);
+        .replyOnce(HTTP_STATUS_SERVICE_UNAVAILABLE);
       blockEmit('addIssuableFormSubmit', { pendingReferences: '#1 #2 #3 #4' });
       await axios.waitForAll();
 
@@ -254,7 +254,7 @@ describe('Vulnerability related issues component', () => {
     it('shows error message if related issue could not be removed', async () => {
       mockAxios
         .onDelete(`${propsData.endpoint}/${issue1.vulnerabilityLinkId}`)
-        .replyOnce(httpStatusCodes.SERVICE_UNAVAILABLE);
+        .replyOnce(HTTP_STATUS_SERVICE_UNAVAILABLE);
       blockEmit('relatedIssueRemoveRequest', issue1.id);
       await axios.waitForAll();
 
