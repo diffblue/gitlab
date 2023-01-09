@@ -43,7 +43,8 @@ class SubscriptionsController < ApplicationController
         sticky_to: current_user
       ).run
     else
-      redirect_unauthenticated_user
+      store_location_for(:user, request.fullpath)
+      redirect_to new_user_registration_path(redirect_from: 'checkout')
     end
   end
 
@@ -183,11 +184,6 @@ class SubscriptionsController < ApplicationController
 
   def client
     Gitlab::SubscriptionPortal::Client
-  end
-
-  def redirect_unauthenticated_user
-    store_location_for :user, request.fullpath
-    redirect_to new_user_registration_path(redirect_from: 'checkout')
   end
 
   def ci_minutes_plan_data

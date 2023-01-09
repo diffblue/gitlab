@@ -47,7 +47,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas, :saas_registratio
   def expect_to_see_welcome_form_without_join_project_question
     expect(page).to have_content('Welcome to GitLab, Registering!')
 
-    page.within('[data-testid="welcome-form"]') do
+    page.within(welcome_form_selector) do
       expect(page).not_to have_content('What would you like to do?')
     end
   end
