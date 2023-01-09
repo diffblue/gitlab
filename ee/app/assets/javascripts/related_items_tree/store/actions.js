@@ -2,7 +2,7 @@ import Api from 'ee/api';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
-import httpStatusCodes, { HTTP_STATUS_CONFLICT } from '~/lib/utils/http_status';
+import { HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 import { s__, __ } from '~/locale';
 import Tracking from '~/tracking';
 import {
@@ -248,7 +248,7 @@ export const receiveRemoveItemFailure = ({ commit }, { item, status }) => {
   const issuableType = issuableTypesMap[item.type.toUpperCase()];
   createAlert({
     message:
-      status === httpStatusCodes.NOT_FOUND
+      status === HTTP_STATUS_NOT_FOUND
         ? pathIndeterminateErrorMap[issuableType]
         : relatedIssuesRemoveErrorMap[issuableType],
   });
@@ -360,7 +360,7 @@ export const addItem = ({ state, dispatch, getters }) => {
     })
     .catch((data) => {
       const { response } = data;
-      if (response.status === httpStatusCodes.NOT_FOUND) {
+      if (response.status === HTTP_STATUS_NOT_FOUND) {
         dispatch('receiveAddItemFailure', { itemAddFailureType: itemAddFailureTypesMap.NOT_FOUND });
       }
       // Ignore 409 conflict when the issue or epic is already attached to epic

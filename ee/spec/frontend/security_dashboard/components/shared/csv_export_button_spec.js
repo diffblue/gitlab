@@ -8,7 +8,7 @@ import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import downloader from '~/lib/utils/downloader';
-import statusCodes, { HTTP_STATUS_ACCEPTED } from '~/lib/utils/http_status';
+import statusCodes, { HTTP_STATUS_ACCEPTED, HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 
 jest.mock('~/flash');
 jest.mock('~/lib/utils/downloader');
@@ -81,7 +81,7 @@ describe('Csv Button Export', () => {
     });
 
     it('shows the flash error when backend fails to generate the export', async () => {
-      mock.onPost(vulnerabilitiesExportEndpoint).reply(statusCodes.NOT_FOUND, {});
+      mock.onPost(vulnerabilitiesExportEndpoint).reply(HTTP_STATUS_NOT_FOUND, {});
 
       findCsvExportButton().vm.$emit('click');
       await axios.waitForAll();
