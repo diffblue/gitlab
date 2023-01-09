@@ -23,169 +23,80 @@ RSpec.describe 'Group-saml single-sign on registration flow', :js, :saas, featur
     with_omniauth_full_host { example.run }
   end
 
-  context 'when update_oauth_registration_flow feature-flag is enabled' do
+  shared_examples 'auto accepts terms and redirects to the group path' do
+    it 'auto accepts terms and redirects to the group path' do
+      visit sso_group_saml_providers_path(group, token: group.saml_discovery_token)
+
+      click_link 'Sign in'
+
+      expect(page).to have_current_path(group_path(group))
+      expect(page).to have_content('Signed in with SAML')
+    end
+  end
+
+  context 'when terms are enforced' do
     before do
-      stub_feature_flags(update_oauth_registration_flow: true)
+      enforce_terms
     end
 
-    context 'when terms are enforced' do
+    context 'when user does not exist in gitlab' do
+      it_behaves_like 'auto accepts terms and redirects to the group path'
+    end
+
+    context 'when user exists in gitlab with group-saml identity linked' do
+      let!(:user) { create(:omniauth_user, extern_uid: extern_uid, saml_provider: saml_provider) }
+
+      it_behaves_like 'auto accepts terms and redirects to the group path'
+    end
+
+    context 'when user exists in gitlab without group-saml identity linked' do
+      let(:user) { create(:user, email: email) }
+
       before do
-        enforce_terms
+        sign_in(user)
       end
 
-      context 'when user does not exist in gitlab' do
-        it 'auto accepts terms and redirects to the group path' do
-          visit sso_group_saml_providers_path(group, token: group.saml_discovery_token)
+      it 'auto accepts terms and redirects to the group path' do
+        visit sso_group_saml_providers_path(group, token: group.saml_discovery_token)
 
-          click_link 'Sign in'
+        expect_to_be_on_terms_page
 
-          expect(page).to have_current_path(group_path(group))
-          expect(page).to have_content('Signed in with SAML')
-        end
-      end
+        click_button 'Accept terms'
+        wait_for_requests
 
-      context 'when user exists in gitlab with group-saml identity linked' do
-        let(:user) { create(:omniauth_user, extern_uid: extern_uid, saml_provider: saml_provider) }
+        click_link 'Authorize'
 
-        it 'auto accepts terms and redirects to the group path' do
-          visit sso_group_saml_providers_path(group, token: group.saml_discovery_token)
-
-          click_link 'Sign in'
-
-          expect(page).to have_current_path(group_path(group))
-          expect(page).to have_content('Signed in with SAML')
-        end
-      end
-
-      context 'when user exists in gitlab without group-saml identity linked' do
-        let(:user) { create(:user, email: email) }
-
-        before do
-          sign_in(user)
-        end
-
-        it 'auto accepts terms and redirects to the group path' do
-          visit sso_group_saml_providers_path(group, token: group.saml_discovery_token)
-
-          expect_to_be_on_terms_page
-
-          click_button 'Accept terms'
-          wait_for_requests
-
-          click_link 'Authorize'
-
-          expect(page).to have_current_path(group_path(group))
-          expect(page).to have_content("Your organization's SSO has been connected to your GitLab account")
-        end
-      end
-    end
-
-    context 'when terms are not enforced' do
-      context 'when user does not exist in gitlab' do
-        it 'auto accepts terms and redirects to the group path' do
-          visit sso_group_saml_providers_path(group, token: group.saml_discovery_token)
-
-          click_link 'Sign in'
-
-          expect(page).to have_current_path(group_path(group))
-          expect(page).to have_content('Signed in with SAML')
-        end
-      end
-
-      context 'when user exists in gitlab with group-saml identity linked' do
-        let(:user) { create(:omniauth_user, extern_uid: extern_uid, saml_provider: saml_provider) }
-
-        it 'auto accepts terms and redirects to the group path' do
-          visit sso_group_saml_providers_path(group, token: group.saml_discovery_token)
-
-          click_link 'Sign in'
-
-          expect(page).to have_current_path(group_path(group))
-          expect(page).to have_content('Signed in with SAML')
-        end
-      end
-
-      context 'when user exists in gitlab without group-saml identity linked' do
-        let(:user) { create(:user, email: email) }
-
-        before do
-          sign_in(user)
-        end
-
-        it 'auto accepts terms and redirects to the group path' do
-          visit sso_group_saml_providers_path(group, token: group.saml_discovery_token)
-
-          click_link 'Authorize'
-
-          expect(page).to have_current_path(group_path(group))
-          expect(page).to have_content("Your organization's SSO has been connected to your GitLab account")
-        end
+        expect(page).to have_current_path(group_path(group))
+        expect(page).to have_content("Your organization's SSO has been connected to your GitLab account")
       end
     end
   end
 
-  context 'when update_oauth_registration_flow feature-flag is disabled' do
-    before do
-      stub_feature_flags(update_oauth_registration_flow: false)
+  context 'when terms are not enforced' do
+    context 'when user does not exist in gitlab' do
+      it_behaves_like 'auto accepts terms and redirects to the group path'
     end
 
-    context 'when terms are enforced' do
+    context 'when user exists in gitlab with group-saml identity linked' do
+      let!(:user) { create(:omniauth_user, extern_uid: extern_uid, saml_provider: saml_provider) }
+
+      it_behaves_like 'auto accepts terms and redirects to the group path'
+    end
+
+    context 'when user exists in gitlab without group-saml identity linked' do
+      let(:user) { create(:user, email: email) }
+
       before do
-        enforce_terms
+        sign_in(user)
       end
 
-      context 'when user does not exist in gitlab' do
-        it 'asks to accept the terms, then redirects to group path' do
-          visit sso_group_saml_providers_path(group, token: group.saml_discovery_token)
+      it 'auto accepts terms and redirects to the group path' do
+        visit sso_group_saml_providers_path(group, token: group.saml_discovery_token)
 
-          click_link 'Sign in'
+        click_link 'Authorize'
 
-          expect_to_be_on_terms_page
-
-          click_button 'Accept terms'
-          wait_for_requests
-
-          expect(page).to have_current_path(group_path(group))
-        end
-      end
-
-      context 'when user exists in gitlab with group-saml identity linked' do
-        let(:user) { create(:omniauth_user, extern_uid: extern_uid, saml_provider: saml_provider) }
-
-        it 'asks to accept the terms, then redirects to group path' do
-          visit sso_group_saml_providers_path(group, token: group.saml_discovery_token)
-
-          click_link 'Sign in'
-
-          expect_to_be_on_terms_page
-
-          click_button 'Accept terms'
-          wait_for_requests
-
-          expect(page).to have_current_path(group_path(group))
-        end
-      end
-
-      context 'when user exists in gitlab without group-saml identity linked' do
-        let(:user) { create(:user, email: email) }
-
-        before do
-          sign_in(user)
-        end
-
-        it 'asks to accept the terms, then redirects to group path' do
-          visit sso_group_saml_providers_path(group, token: group.saml_discovery_token)
-
-          expect_to_be_on_terms_page
-
-          click_button 'Accept terms'
-          wait_for_requests
-
-          click_link 'Authorize'
-
-          expect(page).to have_current_path(group_path(group))
-          expect(page).to have_content("Your organization's SSO has been connected to your GitLab account")
-        end
+        expect(page).to have_current_path(group_path(group))
+        expect(page).to have_content("Your organization's SSO has been connected to your GitLab account")
       end
     end
   end
