@@ -1,12 +1,13 @@
+import { GlCollapsibleListbox, GlListboxItem, GlAvatarLabeled } from '@gitlab/ui';
+import { nextTick } from 'vue';
+import { cloneDeep } from 'lodash';
 import { shallowMount } from '@vue/test-utils';
-import $ from 'jquery';
-import 'select2/select2';
-import Api from 'ee/api';
-import ApproversSelect from 'ee/approvals/components/approvers_select.vue';
-import { TYPE_USER, TYPE_GROUP } from 'ee/approvals/constants';
 import { TEST_HOST } from 'helpers/test_constants';
 import waitForPromises from 'helpers/wait_for_promises';
+import Api from 'ee/api';
+import ApproversSelect from 'ee/approvals/components/approvers_select.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import { TYPE_USER } from 'ee/approvals/constants';
 
 const TEST_PROJECT_ID = '17';
 const TEST_GROUP_AVATAR = `${TEST_HOST}/group-avatar.png`;
@@ -27,60 +28,29 @@ const TEST_USERS = [
 
 const TERM = 'lorem';
 
-const waitForEvent = ($input, event) =>
-  new Promise((resolve) => {
-    $input.one(event, resolve);
-  });
-const parseAvatar = (element) =>
-  element.classList.contains('identicon') ? null : element.getAttribute('src');
-const select2Container = () => document.querySelector('.select2-container');
-const select2DropdownOptions = () => document.querySelectorAll('#select2-drop .user-result');
-const select2DropdownItems = () =>
-  Array.prototype.map.call(select2DropdownOptions(), (element) => {
-    const isGroup = element.classList.contains('group-result');
-    const avatar = parseAvatar(element.querySelector('.avatar'));
-
-    return isGroup
-      ? {
-          avatar_url: avatar,
-          full_name: element.querySelector('.group-name').textContent,
-          full_path: element.querySelector('.group-path').textContent,
-        }
-      : {
-          avatar_url: avatar,
-          name: element.querySelector('.user-name').textContent,
-          username: element.querySelector('.user-username').textContent,
-        };
-  });
-
-describe('Approvals ApproversSelect', () => {
+describe('Approvers Selector', () => {
   let wrapper;
-  let $input;
 
-  const factory = async (options = {}) => {
-    const propsData = {
-      namespaceId: TEST_PROJECT_ID,
-      ...options.propsData,
-    };
+  const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
+  const findAllListboxItems = () => wrapper.findAllComponents(GlListboxItem);
+  const findAvatar = (index) => findAllListboxItems().at(index).findComponent(GlAvatarLabeled);
+  const search = (searchString) => findListbox().vm.$emit('search', searchString);
 
-    wrapper = await shallowMount(ApproversSelect, {
-      ...options,
-      propsData,
-      attachTo: document.body,
-      provide: {
-        ...options.provide,
+  const createComponent = (props = {}, permitAllSharedGroupsForApproval = false) => {
+    wrapper = shallowMount(ApproversSelect, {
+      propsData: {
+        namespaceId: TEST_PROJECT_ID,
+        ...props,
       },
+      provide: {
+        glFeatures: {
+          permitAllSharedGroupsForApproval,
+        },
+      },
+      stubs: { GlCollapsibleListbox },
     });
-
-    await waitForPromises();
-
-    $input = $(wrapper.vm.$refs.input);
   };
-
-  const search = (term = '') => {
-    $input.select2('search', term);
-    jest.runOnlyPendingTimers();
-  };
+  const openListbox = () => findListbox().vm.$emit('shown');
 
   beforeEach(() => {
     jest.spyOn(Api, 'groups').mockResolvedValue(TEST_GROUPS);
@@ -88,136 +58,202 @@ describe('Approvals ApproversSelect', () => {
     jest.spyOn(Api, 'projectUsers').mockReturnValue(Promise.resolve(TEST_USERS));
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
+  describe('Listbox', () => {
+    it('is rendered', () => {
+      createComponent();
+      expect(findListbox().props()).toMatchObject({
+        toggleText: ApproversSelect.i18n.toggleText,
+        noCaret: true,
+        searchable: true,
+        searching: false,
+        variant: 'default',
+        category: 'secondary',
+      });
+    });
 
-  it('renders select2 input', async () => {
-    expect(select2Container()).toBe(null);
+    it('variant is set to danger if is invalid', () => {
+      createComponent({ isInvalid: true });
 
-    await factory();
+      expect(findListbox().props('variant')).toBe('danger');
+    });
 
-    expect(select2Container()).not.toBe(null);
-  });
+    it.each`
+      name                        | subtitle                        | avatarUrl            | index
+      ${TEST_GROUPS[0].full_name} | ${TEST_GROUPS[0].full_path}     | ${undefined}         | ${0}
+      ${TEST_GROUPS[1].full_name} | ${TEST_GROUPS[1].full_path}     | ${TEST_GROUP_AVATAR} | ${1}
+      ${TEST_USERS[0].name}       | ${`@${TEST_USERS[0].username}`} | ${TEST_USER_AVATAR}  | ${2}
+      ${TEST_USERS[1].name}       | ${`@${TEST_USERS[1].username}`} | ${TEST_USER_AVATAR}  | ${3}
+    `(
+      'contains avatar with the correct props at index $index',
+      async ({ name, subtitle, avatarUrl, index }) => {
+        createComponent();
+        openListbox();
+        await waitForPromises();
 
-  it('queries and displays groups and users', async () => {
-    await factory();
+        expect(findAvatar(index).props()).toMatchObject({
+          label: name,
+          subLabel: subtitle,
+        });
 
-    const expected = TEST_GROUPS.concat(TEST_USERS)
-      .map(({ id, ...obj }) => obj)
-      .map(({ username, ...obj }) => (!username ? obj : { ...obj, username: `@${username}` }));
+        expect(findAvatar(index).attributes('src')).toBe(avatarUrl);
+      },
+    );
 
-    search();
+    describe('on show', () => {
+      it('queries groups and users', async () => {
+        createComponent();
+        openListbox();
+        await waitForPromises();
 
-    await waitForEvent($input, 'select2-loaded');
-    const items = select2DropdownItems();
+        expect(Api.groups).toHaveBeenCalledWith('', {
+          skip_groups: [],
+          all_available: false,
+        });
+        expect(Api.projectUsers).toHaveBeenCalledWith(TEST_PROJECT_ID, '', {
+          skip_users: [],
+        });
 
-    expect(items).toEqual(expected);
-  });
-
-  describe.each`
-    namespaceType              | api               | mockedValue             | expectedParams
-    ${NAMESPACE_TYPES.PROJECT} | ${'projectUsers'} | ${TEST_USERS}           | ${[TEST_PROJECT_ID, TERM, { skip_users: [] }]}
-    ${NAMESPACE_TYPES.GROUP}   | ${'groupMembers'} | ${{ data: TEST_USERS }} | ${[TEST_PROJECT_ID, { query: TERM, skip_users: [] }]}
-  `(
-    'with namespaceType: $namespaceType and search term',
-    ({ namespaceType, api, mockedValue, expectedParams }) => {
-      beforeEach(async () => {
-        jest.spyOn(Api, api).mockReturnValue(Promise.resolve(mockedValue));
-        await factory({ propsData: { namespaceType } });
-
-        search(TERM);
-
-        await waitForEvent($input, 'select2-loaded');
+        expect(findListbox().props('items')).toMatchObject([...TEST_GROUPS, ...TEST_USERS]);
       });
 
-      it('fetches all available groups', () => {
-        expect(Api.groups).toHaveBeenCalledWith(TERM, {
+      it("doesn't call `Api.projectGroups` when the `permitAllSharedGroupsForApproval` feature is disabled", () => {
+        createComponent();
+        openListbox();
+
+        expect(Api.projectGroups).not.toHaveBeenCalled();
+      });
+
+      it('calls `Api.projectGroups` when the `permitAllSharedGroupsForApproval` feature is enabled', () => {
+        createComponent({}, true);
+        openListbox();
+
+        expect(Api.projectGroups).toHaveBeenCalledWith(TEST_PROJECT_ID, {
           skip_groups: [],
-          all_available: true,
+          with_shared: true,
+          shared_visible_only: false,
+          shared_min_access_level: 30,
         });
       });
 
-      it('fetches users', () => {
-        expect(Api[api]).toHaveBeenCalledWith(...expectedParams);
-      });
-    },
-  );
+      it('sets `searching` to `true` when first opening the dropdown', async () => {
+        createComponent();
 
-  describe('with permitAllSharedGroupsForApproval', () => {
-    beforeEach(async () => {
-      await factory({
-        provide: {
-          glFeatures: {
-            permitAllSharedGroupsForApproval: true,
-          },
+        expect(findListbox().props('searching')).toBe(false);
+
+        openListbox();
+        await nextTick();
+
+        expect(findListbox().props('searching')).toBe(true);
+      });
+    });
+
+    describe('on search', () => {
+      it('sets `searching` to `true` while searching', async () => {
+        createComponent();
+
+        expect(findListbox().props('searching')).toBe(false);
+
+        search('foo');
+        await nextTick();
+
+        expect(findListbox().props('searching')).toBe(true);
+      });
+
+      it('fetches groups and users matching the search string', async () => {
+        const searchString = 'searchString';
+        createComponent();
+
+        search(searchString);
+        await waitForPromises();
+
+        expect(Api.groups).toHaveBeenCalledWith(searchString, {
+          skip_groups: [],
+          all_available: true,
+        });
+        expect(Api.projectUsers).toHaveBeenCalledWith(TEST_PROJECT_ID, searchString, {
+          skip_users: [],
+        });
+      });
+
+      describe.each`
+        namespaceType              | api               | mockedValue             | expectedParams
+        ${NAMESPACE_TYPES.PROJECT} | ${'projectUsers'} | ${TEST_USERS}           | ${[TEST_PROJECT_ID, TERM, { skip_users: [] }]}
+        ${NAMESPACE_TYPES.GROUP}   | ${'groupMembers'} | ${{ data: TEST_USERS }} | ${[TEST_PROJECT_ID, { query: TERM, skip_users: [] }]}
+      `(
+        'with namespaceType: $namespaceType and search term',
+        ({ namespaceType, api, mockedValue, expectedParams }) => {
+          beforeEach(async () => {
+            jest.spyOn(Api, api).mockReturnValue(Promise.resolve(mockedValue));
+
+            createComponent({ namespaceType }, false);
+            await waitForPromises();
+
+            search(TERM);
+            await waitForPromises();
+          });
+
+          it('fetches all available groups', () => {
+            expect(Api.groups).toHaveBeenCalledWith(TERM, {
+              skip_groups: [],
+              all_available: true,
+            });
+          });
+
+          it('fetches users', () => {
+            expect(Api[api]).toHaveBeenCalledWith(...expectedParams);
+          });
         },
+      );
+
+      describe('with empty search term and skips', () => {
+        const skipGroupIds = [7, 8];
+        const skipUserIds = [9, 10];
+
+        beforeEach(async () => {
+          createComponent({
+            skipGroupIds,
+            skipUserIds,
+          });
+          openListbox();
+          await waitForPromises();
+        });
+
+        it('skips groups and does not fetch all available', () => {
+          expect(Api.groups).toHaveBeenCalledWith('', {
+            skip_groups: skipGroupIds,
+            all_available: false,
+          });
+        });
+
+        it('skips users', () => {
+          expect(Api.projectUsers).toHaveBeenCalledWith(TEST_PROJECT_ID, '', {
+            skip_users: skipUserIds,
+          });
+        });
       });
     });
 
-    it('fetches all available groups including non-visible shared groups', async () => {
-      search();
+    describe('on selection', () => {
+      it('emits input when data changes', async () => {
+        const selectedUser = TEST_USERS[0];
+        const selectedUserValue = `${TYPE_USER}.${selectedUser.id}`;
 
-      await waitForEvent($input, 'select2-loaded');
+        createComponent();
+        openListbox();
+        await waitForPromises();
 
-      expect(Api.projectGroups).toHaveBeenCalledWith(TEST_PROJECT_ID, {
-        skip_groups: [],
-        with_shared: true,
-        shared_visible_only: false,
-        shared_min_access_level: 30,
+        expect(wrapper.emitted().input).toBeUndefined();
+
+        findListbox().vm.$emit('select', selectedUserValue);
+
+        const expected = {
+          ...selectedUser,
+          value: selectedUserValue,
+          subtitle: `@${selectedUser.username}`,
+        };
+
+        expect(cloneDeep(wrapper.emitted().input)).toEqual([[[expected]]]);
       });
     });
-  });
-
-  describe('with empty seach term and skips', () => {
-    const skipGroupIds = [7, 8];
-    const skipUserIds = [9, 10];
-
-    beforeEach(async () => {
-      await factory({
-        propsData: {
-          skipGroupIds,
-          skipUserIds,
-        },
-      });
-
-      search();
-
-      await waitForEvent($input, 'select2-loaded');
-      jest.runOnlyPendingTimers();
-    });
-
-    it('skips groups and does not fetch all available', () => {
-      expect(Api.groups).toHaveBeenCalledWith('', {
-        skip_groups: skipGroupIds,
-        all_available: false,
-      });
-    });
-
-    it('skips users', () => {
-      expect(Api.projectUsers).toHaveBeenCalledWith(TEST_PROJECT_ID, '', {
-        skip_users: skipUserIds,
-      });
-    });
-  });
-
-  it('emits input when data changes', async () => {
-    await factory();
-
-    const expectedFinal = [
-      { ...TEST_USERS[0], type: TYPE_USER },
-      { ...TEST_GROUPS[0], type: TYPE_GROUP },
-    ];
-    const expected = expectedFinal.map((x, idx) => [expectedFinal.slice(0, idx + 1)]);
-
-    search();
-
-    await waitForPromises();
-    const options = select2DropdownOptions();
-    $(options[TEST_GROUPS.length]).trigger('mouseup');
-    $(options[0]).trigger('mouseup');
-
-    await waitForPromises();
-    expect(wrapper.emitted().input).toEqual(expected);
   });
 });

@@ -8,8 +8,8 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
 
   let(:user) { create(:user) }
   let(:project) { create(:project, :public, :repository) }
-  let!(:config_selector) { '.js-approval-rules' }
-  let!(:modal_selector) { '#mr-edit-approvals-create-modal' }
+  let(:config_selector) { '.js-approval-rules' }
+  let(:modal_selector) { '#mr-edit-approvals-create-modal' }
 
   context 'when editing an MR with a different author' do
     let(:author) { create(:user) }
@@ -27,8 +27,8 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
       open_modal(text: 'Add approval rule')
       open_approver_select
 
-      expect(find('.select2-results')).not_to have_content(author.name)
-      expect(find('.select2-results')).to have_content(user.name)
+      expect(find('.gl-dropdown-contents')).not_to have_content(author.name)
+      expect(find('.gl-dropdown-contents')).to have_content(user.name)
     end
   end
 
@@ -49,14 +49,14 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
       open_modal(text: 'Add approval rule')
       open_approver_select
 
-      expect(find('.select2-results')).to have_content(other_user.name)
-      expect(find('.select2-results')).not_to have_content(non_member.name)
+      expect(find('.gl-dropdown-contents')).to have_content(other_user.name)
+      expect(find('.gl-dropdown-contents')).not_to have_content(non_member.name)
     end
   end
 
   context "Group approvers" do
-    let(:project) { create(:project, :public, :repository, group: group) }
-    let(:group) { create(:group) }
+    let_it_be(:project) { create(:project, :public, :repository) }
+    let_it_be(:group) { create(:group) }
 
     context 'when creating an MR' do
       let(:other_user) { create(:user) }
@@ -75,16 +75,17 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
         open_modal(text: 'Add approval rule')
         open_approver_select
 
-        expect(find('.select2-results')).not_to have_content(group.name)
+        expect(find('.gl-dropdown-contents')).not_to have_content(group.name)
 
-        close_approver_select
         group.add_developer(user) # only display groups that user has access to
+
+        visit project_new_merge_request_path(project, merge_request: { target_branch: 'master', source_branch: 'feature' })
+        open_modal(text: 'Add approval rule')
         open_approver_select
 
-        expect(find('.select2-results')).to have_content(group.name)
+        expect(find('.gl-dropdown-contents')).to have_content(group.name)
 
-        find('.select2-results .user-result', text: group.name).click
-        close_approver_select
+        find('.gl-listbox-item', text: group.name).click
 
         within('.modal-content') do
           click_button 'Add approval rule'
@@ -145,10 +146,9 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
         open_modal(text: 'Add approval rule')
         open_approver_select
 
-        expect(find('.select2-results')).to have_content(group.name)
+        expect(find('.gl-dropdown-contents')).to have_content(group.name)
 
-        find('.select2-results .user-result', text: group.name).click
-        close_approver_select
+        find('.gl-listbox-item', text: group.name).click
         within('.modal-content') do
           click_button 'Add approval rule'
         end

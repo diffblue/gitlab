@@ -66,7 +66,7 @@ RSpec.describe Boards::Epics::ListService do
     end
   end
 
-  describe '#metadata' do
+  describe '#metadata', :sidekiq_inline do
     before do
       project = create(:project, group: group)
 

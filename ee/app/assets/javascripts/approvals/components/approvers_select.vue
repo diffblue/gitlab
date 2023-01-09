@@ -1,9 +1,6 @@
 <script>
-import $ from 'jquery';
-import { escape, debounce } from 'lodash';
+import { GlCollapsibleListbox, GlAvatarLabeled } from '@gitlab/ui';
 import Api from 'ee/api';
-import { renderAvatar } from '~/helpers/avatar_helper';
-import { loadCSSFile } from '~/lib/utils/css_utils';
 import { __ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
@@ -13,50 +10,15 @@ function addType(type) {
   return (items) => items.map((obj) => Object.assign(obj, { type }));
 }
 
-function formatSelection(group) {
-  return escape(group.full_name || group.name);
-}
-
-function formatResultUser(result) {
-  const { name, username } = result;
-  const avatar = renderAvatar(result, { sizeClass: 's40' });
-
-  return `
-    <div class="user-result">
-      <div class="user-image">
-        ${avatar}
-      </div>
-      <div class="user-info">
-        <div class="user-name">${escape(name)}</div>
-        <div class="user-username">@${escape(username)}</div>
-      </div>
-    </div>
-  `;
-}
-
-function formatResultGroup(result) {
-  const { full_name: fullName, full_path: fullPath } = result;
-  const avatar = renderAvatar(result, { sizeClass: 's40' });
-
-  return `
-    <div class="user-result group-result">
-      <div class="group-image">
-        ${avatar}
-      </div>
-      <div class="group-info">
-        <div class="group-name">${escape(fullName)}</div>
-        <div class="group-path">${escape(fullPath)}</div>
-      </div>
-    </div>
-  `;
-}
-
-function formatResult(result) {
-  return result.type === TYPE_USER ? formatResultUser(result) : formatResultGroup(result);
-}
-
 export default {
+  components: {
+    GlCollapsibleListbox,
+    GlAvatarLabeled,
+  },
   mixins: [glFeatureFlagsMixin()],
+  i18n: {
+    toggleText: __('Search users or groups'),
+  },
   props: {
     value: {
       type: Array,
@@ -88,57 +50,17 @@ export default {
       default: NAMESPACE_TYPES.PROJECT,
     },
   },
+  data() {
+    return {
+      listboxItems: [],
+      isSearching: false,
+      searchString: '',
+    };
+  },
   computed: {
     isFeatureEnabled() {
       return this.glFeatures.permitAllSharedGroupsForApproval;
     },
-  },
-  watch: {
-    value(val) {
-      if (val.length > 0) {
-        this.clear();
-      }
-    },
-    isInvalid(val) {
-      const $container = $(this.$refs.input).select2('container');
-
-      if (val) {
-        $container.addClass('is-invalid');
-      } else {
-        $container.removeClass('is-invalid');
-      }
-    },
-  },
-  mounted() {
-    const query = debounce(
-      ({ term, callback }) => this.fetchGroupsAndUsers(term).then(callback),
-      500,
-    );
-
-    import(/* webpackChunkName: 'select2' */ 'select2/select2')
-      .then(() => {
-        // eslint-disable-next-line promise/no-nesting
-        loadCSSFile(gon.select2_css_path)
-          .then(() => {
-            $(this.$refs.input)
-              .select2({
-                placeholder: __('Search users or groups'),
-                minimumInputLength: 0,
-                multiple: true,
-                closeOnSelect: false,
-                formatResult,
-                formatSelection,
-                query,
-                id: ({ type, id }) => `${type}${id}`,
-              })
-              .on('change', (e) => this.onChange(e));
-          })
-          .catch(() => {});
-      })
-      .catch(() => {});
-  },
-  beforeDestroy() {
-    $(this.$refs.input).select2('destroy');
   },
   methods: {
     fetchGroupsAndUsers(term) {
@@ -162,7 +84,7 @@ export default {
           skip_groups: this.skipGroupIds,
           ...(hasTerm ? { search: term } : {}),
           with_shared: true,
-          shared_visible_only: !this.isFeatureEnabled,
+          shared_visible_only: false,
           shared_min_access_level: DEVELOPER_ACCESS_LEVEL,
         });
       }
@@ -187,19 +109,62 @@ export default {
         skip_users: this.skipUserIds,
       });
     },
-    onChange() {
-      // call data instead of val to get array of objects
-      const value = $(this.$refs.input).select2('data');
+    getItems() {
+      this.isSearching = true;
 
-      this.$emit('input', value);
+      this.fetchGroupsAndUsers(this.searchString)
+        .then(({ results }) => {
+          this.listboxItems = results.map((result) => ({
+            name: result.type === TYPE_USER ? result.name : result.full_name,
+            value: `${result.type}.${result.id}`,
+            subtitle: result.type === TYPE_USER ? `@${result.username}` : result.full_path,
+            ...result,
+          }));
+        })
+        .catch(() => {})
+        .finally(() => {
+          this.isSearching = false;
+        });
     },
-    clear() {
-      $(this.$refs.input).select2('data', []);
+    onSearch(term) {
+      this.searchString = term;
+      this.getItems();
+    },
+    onSelect(selected) {
+      const selectedItem = this.listboxItems.find((item) => {
+        return item.value === selected;
+      });
+      this.$emit('input', [selectedItem]);
+
+      this.listboxItems = this.listboxItems.filter((item) => item.value !== selected);
     },
   },
 };
 </script>
 
 <template>
-  <input ref="input" name="members" type="hidden" />
+  <gl-collapsible-listbox
+    :items="listboxItems"
+    :toggle-text="$options.i18n.toggleText"
+    :no-caret="true"
+    :searchable="true"
+    :searching="isSearching"
+    :variant="isInvalid ? 'danger' : 'default'"
+    category="secondary"
+    toggle-class="gl-flex-direction-column gl-align-items-stretch!"
+    class="approvers-select gl-w-full"
+    @shown.once="getItems"
+    @search="onSearch"
+    @select="onSelect"
+  >
+    <template #list-item="{ item }">
+      <gl-avatar-labeled
+        :label="item.name"
+        :sub-label="item.subtitle"
+        :src="item.avatar_url"
+        :entity-name="item.name"
+        :size="32"
+      />
+    </template>
+  </gl-collapsible-listbox>
 </template>

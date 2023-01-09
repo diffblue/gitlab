@@ -87,6 +87,10 @@ export default {
     userIds() {
       return this.users.map((x) => x.id);
     },
+    skipUserIds() {
+      const skipAuthorId = this.isMrEdit && this.settings.authorId ? [this.settings.authorId] : [];
+      return [...this.userIds, ...skipAuthorId];
+    },
     groupIds() {
       return this.groups.map((x) => x.id);
     },
@@ -403,7 +407,7 @@ export default {
       <approvers-select
         v-model="approversToAdd"
         :namespace-id="settings.projectId"
-        :skip-user-ids="userIds"
+        :skip-user-ids="skipUserIds"
         :skip-group-ids="groupIds"
         :is-invalid="!isValidApprovers"
       />

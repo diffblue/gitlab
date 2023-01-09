@@ -4,9 +4,11 @@
 - can_update_approvers = can?(current_user, :update_approvers, issuable)
 - approver_presenter = MergeRequestApproverPresenter.new(issuable, skip_user: current_user)
 - show_code_owner_tip = approver_presenter.show_code_owner_tips?
+- should_skip_author = !issuable.merge_requests_author_approval?
 
 - if presenter.approval_feature_available?
   #js-mr-approvals-input{ data: { 'project_id': @target_project.id,
+    'author_id': should_skip_author ? issuable.author.id : nil,
     'can_edit': can?(current_user, :update_approvers, issuable).to_s,
     'can_update_approvers': can_update_approvers.to_s,
     'show_code_owner_tip': show_code_owner_tip.to_s,
