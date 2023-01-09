@@ -62,7 +62,7 @@ RSpec.describe Projects::MergeRequestsController do
     sign_in(viewer)
   end
 
-  describe 'PUT update', feature_category: :code_review do
+  describe 'PUT update', feature_category: :code_review_workflow do
     let_it_be_with_reload(:merge_request) do
       create(:merge_request_with_diffs, source_project: project, author: author)
     end
@@ -317,7 +317,7 @@ RSpec.describe Projects::MergeRequestsController do
     end
   end
 
-  describe 'POST #rebase', feature_category: :code_review do
+  describe 'POST #rebase', feature_category: :code_review_workflow do
     def post_rebase
       post :rebase, params: { namespace_id: project.namespace, project_id: project, id: merge_request }
     end
@@ -340,7 +340,7 @@ RSpec.describe Projects::MergeRequestsController do
     end
   end
 
-  describe 'GET #edit', feature_category: :code_review do
+  describe 'GET #edit', feature_category: :code_review_workflow do
     render_views
 
     let(:params) do

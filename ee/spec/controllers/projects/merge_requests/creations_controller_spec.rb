@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::MergeRequests::CreationsController, feature_category: :code_review do
+RSpec.describe Projects::MergeRequests::CreationsController, feature_category: :code_review_workflow do
   let(:project)       { create(:project, :repository) }
   let(:merge_request) { create(:merge_request_with_diffs, target_project: project, source_project: project) }
   let(:user)          { project.first_owner }

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'EE > Projects > Settings > Merge requests > User manages approval rules',
-feature_category: :code_review do
+feature_category: :code_review_workflow do
   let(:project) { create(:project) }
   let(:user) { project.owner }
   let(:path) { edit_project_path(project) }

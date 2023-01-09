@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'user sees MR approvals promo', :js, feature_category: :code_review do
+RSpec.describe 'user sees MR approvals promo', :js, feature_category: :code_review_workflow do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :repository, group: group) }

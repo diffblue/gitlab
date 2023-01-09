@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Merge Request sidebar', feature_category: :code_review do
+RSpec.describe 'Merge Request sidebar', feature_category: :code_review_workflow do
   let(:user) { create(:user) }
   let(:group) { create(:group, :public) }
   let(:project) { create(:project, :repository, :public, group: group) }

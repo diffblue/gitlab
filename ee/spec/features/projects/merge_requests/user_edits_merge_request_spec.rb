@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Projects > Merge Requests > User edits a merge request', feature_category: :code_review do
+RSpec.describe 'Projects > Merge Requests > User edits a merge request', feature_category: :code_review_workflow do
   let(:user) { create(:user) }
 
   before do

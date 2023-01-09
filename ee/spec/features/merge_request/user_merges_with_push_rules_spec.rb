@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Merge request > User merges with Push Rules', :js, feature_category: :code_review do
+RSpec.describe 'Merge request > User merges with Push Rules', :js, feature_category: :code_review_workflow do
   let(:user) { create(:user) }
   let(:project) { create(:project, :public, :repository, push_rule: push_rule) }
   let(:merge_request) { create(:merge_request_with_diffs, source_project: project, author: user, title: 'Bug NS-04') }

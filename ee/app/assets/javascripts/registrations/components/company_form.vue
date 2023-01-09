@@ -22,6 +22,7 @@ import {
   TRIAL_PHONE_DESCRIPTION,
   TRIAL_FORM_SUBMIT_TEXT,
 } from 'ee/trials/constants';
+import Tracking from '~/tracking';
 import { trackCompanyForm } from '~/google_tag_manager';
 
 export default {
@@ -36,6 +37,7 @@ export default {
     CountryOrRegionSelector,
     GlToggle,
   },
+  mixins: [Tracking.mixin()],
   inject: ['submitPath'],
   props: {
     trial: {
@@ -76,6 +78,8 @@ export default {
       this.$emit('changed', {
         trialOnboardingFlow: this.trialOnboardingFlow,
       });
+
+      this.track('click_trial_toggle', { label: this.trialOnboardingFlow ? 'ON' : 'OFF' });
     },
     trackCompanyForm() {
       const aboutYourCompanyType = this.trialOnboardingFlow ? 'ultimate_trial' : 'free_account';

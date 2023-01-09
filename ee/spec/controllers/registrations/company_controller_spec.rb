@@ -38,7 +38,7 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
   end
 
   describe '#new' do
-    subject { get :new }
+    subject(:get_new) { get :new }
 
     it_behaves_like 'user authentication'
     it_behaves_like 'a dot-com only feature'
@@ -46,6 +46,30 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
     context 'on render' do
       it { is_expected.to render_template 'layouts/minimal' }
       it { is_expected.to render_template(:new) }
+
+      it 'tracks render event' do
+        get_new
+
+        expect_snowplow_event(
+          category: described_class.name,
+          action: 'render',
+          user: user,
+          label: 'free_registration'
+        )
+      end
+
+      context 'when in trial flow' do
+        it 'tracks render event' do
+          get :new, params: { trial: true }
+
+          expect_snowplow_event(
+            category: described_class.name,
+            action: 'render',
+            user: user,
+            label: 'trial_registration'
+          )
+        end
+      end
     end
   end
 
@@ -69,6 +93,8 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
         website_url: 'gitlab.com'
       }.merge(glm_params)
     end
+
+    subject(:post_create) { post :create, params: params }
 
     context 'on success' do
       where(:trial_onboarding_flow, :redirect_query) do
@@ -97,8 +123,6 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
 
       context 'when saving onboarding_step_url' do
         let(:path) { new_users_sign_up_groups_project_path(glm_params) }
-
-        subject(:post_create) { post :create, params: params }
 
         before do
           allow_next_instance_of(GitlabSubscriptions::CreateTrialOrLeadService) do |service|
@@ -138,22 +162,86 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
           end
         end
       end
+
+      context 'with snowplow tracking' do
+        before do
+          allow_next_instance_of(GitlabSubscriptions::CreateTrialOrLeadService) do |service|
+            allow(service).to receive(:execute).and_return(ServiceResponse.success)
+          end
+        end
+
+        it 'tracks successful submission event' do
+          post_create
+
+          expect_snowplow_event(
+            category: described_class.name,
+            action: 'successfully_submitted_form',
+            user: user,
+            label: 'free_registration'
+          )
+        end
+
+        context 'when in trial flow' do
+          let(:params) { super().merge(trial: true) }
+
+          it 'tracks successful submission event' do
+            post_create
+
+            expect_snowplow_event(
+              category: described_class.name,
+              action: 'successfully_submitted_form',
+              user: user,
+              label: 'trial_registration'
+            )
+          end
+        end
+      end
     end
 
     context 'on failure' do
+      before do
+        allow_next_instance_of(GitlabSubscriptions::CreateTrialOrLeadService) do |service|
+          allow(service).to receive(:execute).and_return(ServiceResponse.error(message: 'failed'))
+        end
+      end
+
       where(trial_onboarding_flow: %w[true false])
 
       with_them do
         it 'renders company page :new' do
-          expect_next_instance_of(GitlabSubscriptions::CreateTrialOrLeadService) do |service|
-            expect(service).to receive(:execute).and_return(ServiceResponse.error(message: 'failed'))
-          end
-
           post :create, params: params.merge(trial_onboarding_flow: trial_onboarding_flow)
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(response).to render_template(:new)
           expect(flash[:alert]).to eq('failed')
+        end
+      end
+
+      context 'with snowplow tracking' do
+        it 'does not track successful submission event' do
+          post_create
+
+          expect_no_snowplow_event(
+            category: described_class.name,
+            action: 'successfully_submitted_form',
+            user: user,
+            label: 'free_registration'
+          )
+        end
+
+        context 'when in trial flow' do
+          let(:params) { super().merge(trial: true) }
+
+          it 'tracks successful submission event' do
+            post_create
+
+            expect_no_snowplow_event(
+              category: described_class.name,
+              action: 'successfully_submitted_form',
+              user: user,
+              label: 'trial_registration'
+            )
+          end
         end
       end
     end

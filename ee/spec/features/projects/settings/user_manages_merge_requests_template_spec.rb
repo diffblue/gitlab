@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'EE > Projects > Settings > User manages merge requests template', feature_category: :code_review do
+RSpec.describe 'EE > Projects > Settings > User manages merge requests template',
+               feature_category: :code_review_workflow do
   let(:user) { create(:user) }
   let(:project) { create(:project, :public, :repository, namespace: user.namespace) }
 
