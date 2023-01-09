@@ -10,6 +10,7 @@ RSpec.describe "Admin sends notification", :js, :sidekiq_might_not_need_inline, 
 
   before do
     stub_const('NOTIFICATION_TEXT', 'Your project has been moved.')
+    stub_feature_flags(admin_emails_vue: false)
 
     group.add_developer(user)
 

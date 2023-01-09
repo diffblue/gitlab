@@ -6,6 +6,8 @@ RSpec.describe 'Admin::Emails', :clean_gitlab_redis_shared_state do
   include ExclusiveLeaseHelpers
 
   before do
+    stub_feature_flags(admin_emails_vue: false)
+
     admin = create(:admin)
     sign_in(admin)
     gitlab_enable_admin_mode_sign_in(admin)
