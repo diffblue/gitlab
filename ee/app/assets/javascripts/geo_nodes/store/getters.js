@@ -1,4 +1,3 @@
-import { isNil } from 'lodash';
 import { convertToCamelCase } from '~/lib/utils/text_utility';
 
 export const verificationInfo = (state) => (id) => {
@@ -16,6 +15,7 @@ export const verificationInfo = (state) => (id) => {
   }
 
   return state.replicableTypes
+    .filter(({ verificationEnabled }) => verificationEnabled)
     .map((replicable) => {
       const camelCaseName = convertToCamelCase(replicable.namePlural);
 
@@ -29,10 +29,7 @@ export const verificationInfo = (state) => (id) => {
           failed: node[`${camelCaseName}${variables.failed}`],
         },
       };
-    })
-    .filter((replicable) =>
-      Boolean(!isNil(replicable.values.success) || !isNil(replicable.values.failed)),
-    );
+    });
 };
 
 export const syncInfo = (state) => (id) => {
