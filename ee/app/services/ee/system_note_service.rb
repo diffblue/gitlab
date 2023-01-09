@@ -159,6 +159,10 @@ module EE
       issuables_service(noteable, noteable.project, user).blocked_by_issuable(noteable_ref)
     end
 
+    def change_progress_note(noteable, user)
+      issuables_service(noteable, noteable.project, user).change_progress_note
+    end
+
     private
 
     def issuables_service(noteable, project, author)

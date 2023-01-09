@@ -14,6 +14,13 @@ module WorkItems
           raise WidgetError, progress.errors.full_messages.join(', ') unless progress.save
 
           work_item.touch
+          create_notes
+        end
+
+        private
+
+        def create_notes
+          ::SystemNoteService.change_progress_note(work_item, current_user)
         end
       end
     end

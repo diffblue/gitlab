@@ -22,12 +22,23 @@ RSpec.describe WorkItems::Widgets::ProgressService::UpdateService, feature_categ
           .to not_change { work_item_progress }
           .and not_change { work_item.updated_at }
       end
+
+      it 'does not create notes' do
+        expect { subject }.to not_change(work_item.notes, :count)
+      end
     end
 
     shared_examples 'progress is updated' do |new_value|
       it 'updates work item progress value' do
         expect { subject }
           .to change { work_item_progress }.to(new_value)
+      end
+
+      it 'creates notes' do
+        subject
+
+        work_item_note = work_item.notes.last
+        expect(work_item_note.note).to eq("changed progress to **#{new_value}**")
       end
     end
 
