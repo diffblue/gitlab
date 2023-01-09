@@ -114,7 +114,7 @@ module QA
         end
       end
 
-      def push_new_file(branch, as_user: user)
+      def push_new_file(branch_name, as_user: user)
         Resource::Repository::Push.fabricate! do |push|
           push.repository_http_uri = project.repository_http_location.uri
           push.branch_name = branch_name
