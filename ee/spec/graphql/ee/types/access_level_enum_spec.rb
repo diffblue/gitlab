@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe GitlabSchema.types['AccessLevelEnum'] do
   specify { expect(described_class.graphql_name).to eq('AccessLevelEnum') }
 
-  it 'exposes all the existing access levels' do
-    expect(described_class.values.keys).to include(*%w[NO_ACCESS MINIMAL_ACCESS GUEST REPORTER DEVELOPER MAINTAINER OWNER])
+  it 'exposes all the existing EE access level values' do
+    expect(described_class.values.keys).to include(*%w[ADMIN])
   end
 end

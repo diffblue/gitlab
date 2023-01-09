@@ -1,10 +1,17 @@
 import { omitBy, isEmpty } from 'lodash';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { s__ } from '~/locale';
+import { n__, s__ } from '~/locale';
 import { TYPE_GROUP, TYPE_USER } from '~/graphql_shared/constants';
 
-export const USER_TYPE = 'user';
 export const GROUP_TYPE = 'group';
+export const USER_TYPE = 'user';
+
+export const APPROVER_TYPE_DICT = {
+  [GROUP_TYPE]: ['group_approvers', 'group_approvers_ids'],
+  [USER_TYPE]: ['user_approvers', 'user_approvers_ids'],
+};
+
+export const ADD_APPROVER_LABEL = s__('SecurityOrchestration|Add new approver');
 
 export const APPROVER_TYPE_LIST_ITEMS = [
   { text: s__('SecurityOrchestration|Individual users'), value: USER_TYPE },
@@ -59,22 +66,25 @@ export function groupApprovers(existingApprovers) {
  * @returns {Object} approvers separated by type
  */
 export function groupApproversV2(existingApprovers) {
-  const USER_UNIQ_KEY = 'username';
+  const USER_TYPE_UNIQ_KEY = 'username';
   // TODO remove groupUniqKeys with the removal of the `:scan_result_role_action` feature flag (https://gitlab.com/gitlab-org/gitlab/-/issues/377866)
-  const GROUP_UNIQ_KEY = 'full_name';
-  const GROUP_UNIQ_KEY_V2 = 'fullName';
+  const GROUP_TYPE_UNIQ_KEY = 'full_name';
+  const GROUP_TYPE_UNIQ_KEY_V2 = 'fullName';
 
   return existingApprovers.reduce(
     (acc, approver) => {
       const approverKeys = Object.keys(approver);
 
-      if (approverKeys.includes(GROUP_UNIQ_KEY) || approverKeys.includes(GROUP_UNIQ_KEY_V2)) {
+      if (
+        approverKeys.includes(GROUP_TYPE_UNIQ_KEY) ||
+        approverKeys.includes(GROUP_TYPE_UNIQ_KEY_V2)
+      ) {
         acc.groups.push({
           ...approver,
           type: GROUP_TYPE,
           value: convertToGraphQLId(TYPE_GROUP, approver.id),
         });
-      } else if (approverKeys.includes(USER_UNIQ_KEY)) {
+      } else if (approverKeys.includes(USER_TYPE_UNIQ_KEY)) {
         acc.users.push({
           ...approver,
           type: USER_TYPE,
@@ -146,3 +156,17 @@ export function approversOutOfSync(action, existingApprovers) {
   const approvers = groupApprovers(existingApprovers);
   return usersOutOfSync(action, approvers) || groupsOutOfSync(action, approvers);
 }
+
+export const getDefaultHumanizedTemplate = (numOfApproversRequired) => {
+  return n__(
+    '%{requireStart}Require%{requireEnd} %{approvalsRequired} %{approvalStart}approval%{approvalEnd} from: %{approverType}%{approvers}',
+    '%{requireStart}Require%{requireEnd} %{approvalsRequired} %{approvalStart}approvals%{approvalEnd} from: %{approverType}%{approvers}',
+    numOfApproversRequired,
+  );
+};
+
+export const MULTIPLE_APPROVER_TYPES_HUMANIZED_TEMPLATE = s__(
+  'SecurityOrchestration|or from: %{approverType}%{approvers}',
+);
+
+export const DEFAULT_APPROVER_DROPDOWN_TEXT = s__('SecurityOrchestration|Choose approver type');
