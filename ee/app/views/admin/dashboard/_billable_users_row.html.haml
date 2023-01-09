@@ -1,9 +1,10 @@
 - billable_users_url = help_page_path('subscriptions/self_managed/index', anchor: 'billable-users')
 - billable_users_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer nofollow">'.html_safe % { url: billable_users_url }
 
-%tr
+%tr.bg-gray-light.gl-text-gray-900
   %td.p-3
-    = s_('AdminArea|Billable users')
+    %strong
+      = s_('AdminArea|Total Billable users')
     %span.gl-outline-0.gl-ml-2{ href: "#", tabindex: "0", role: "button", data: { container: "body",
       toggle: "popover",
       placement: "top",
@@ -12,4 +13,5 @@
       content: s_("AdminArea|%{billable_users_link_start}Learn more%{billable_users_link_end} about what defines a billable user").html_safe % { billable_users_link_start: billable_users_link_start, billable_users_link_end: '</a>'.html_safe } } }
       = sprite_icon('question-o', size: 16, css_class: 'gl-text-blue-600')
   %td.p-3.text-right
-    = @users_statistics&.billable.to_i
+    %strong
+      = @users_statistics&.billable.to_i

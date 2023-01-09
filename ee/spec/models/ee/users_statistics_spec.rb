@@ -28,6 +28,12 @@ RSpec.describe UsersStatistics do
     end
   end
 
+  describe '#non_billable' do
+    it 'sums bots and guests values' do
+      expect(users_statistics.non_billable).to eq(7)
+    end
+  end
+
   describe '.create_current_stats!' do
     before do
       create(:user_highest_role, :minimal_access)
