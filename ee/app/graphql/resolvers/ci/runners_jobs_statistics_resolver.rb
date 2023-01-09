@@ -8,6 +8,7 @@ module Resolvers
         Jobs statistics for jobs executed by a collection of runners. Available only to admins.
       MD
 
+      RUNNERS_LIMIT = 5_000
       JOBS_LIMIT = 100
 
       def resolve(lookahead:)
@@ -53,7 +54,7 @@ module Resolvers
         jobs_scope = ::CommitStatus.order(id: :desc)
         array_mapping_scope = ->(id_expression) { ::CommitStatus.where(jobs_table[:runner_id].eq(id_expression)) }
         finder_query = ->(id_expression) { ::CommitStatus.where(jobs_table[:id].eq(id_expression)) }
-        runners_relation = object.items.reorder(nil)
+        runners_relation = object.items.reorder(id: :desc).limit(RUNNERS_LIMIT)
         # rubocop: enable CodeReuse/ActiveRecord
 
         {

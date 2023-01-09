@@ -13,7 +13,9 @@ module Types
             description:
               "Statistics for amount of time that jobs were waiting to be picked up. The calculation is performed " \
               "based on the most recent #{Resolvers::Ci::RunnersJobsStatisticsResolver::JOBS_LIMIT} jobs executed by " \
-              "all the runners in context.",
+              "the #{Resolvers::Ci::RunnersJobsStatisticsResolver::RUNNERS_LIMIT} most recently created runners in " \
+              "context. If no filter is applied to runners, the calculation is performed based on the most " \
+              "recent #{Resolvers::Ci::RunnersJobsStatisticsResolver::JOBS_LIMIT} jobs globally.",
             alpha: { milestone: '15.8' }
 
       def queued_duration

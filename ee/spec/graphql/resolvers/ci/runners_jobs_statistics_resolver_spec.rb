@@ -66,6 +66,8 @@ RSpec.describe Resolvers::Ci::RunnersJobsStatisticsResolver, feature_category: :
 
         context 'with builds' do
           let(:expected_job_statistics) do
+            # expected percentiles are calculated by taking the `started_at - queued_at` values for the jobs
+            # executed by all project runners and using PostgreSQL's PERCENTILE_CONT function.
             a_hash_including(
               queued_duration: {
                 p50: 1.5.seconds,
@@ -90,6 +92,26 @@ RSpec.describe Resolvers::Ci::RunnersJobsStatisticsResolver, feature_category: :
 
             it 'ignores non-started job and does not affect statistics' do
               expect(response.object).to match(expected_job_statistics)
+            end
+          end
+
+          context 'with RUNNERS_LIMIT set to one' do
+            before do
+              stub_const('Resolvers::Ci::RunnersJobsStatisticsResolver::RUNNERS_LIMIT', 1)
+            end
+
+            it 'returns statistics from latest runner' do
+              # expected percentiles are calculated by taking the `started_at - queued_at` values for the jobs
+              # executed by the first runner (`project_runner1`) and using PostgreSQL's PERCENTILE_CONT function.
+              expect(response.object).to match(a_hash_including(
+                queued_duration: {
+                  p50: 1.25.seconds,
+                  p75: 1.625.seconds,
+                  p90: 1.85.seconds,
+                  p95: 1.925.seconds,
+                  p99: 1.985.seconds
+                }
+              ))
             end
           end
         end
