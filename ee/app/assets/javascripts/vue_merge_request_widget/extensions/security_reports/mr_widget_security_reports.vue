@@ -245,9 +245,16 @@ export default {
 
     setModalData(finding) {
       this.modalData = {
-        vulnerability: finding,
+        error: null,
         title: finding.name,
+        vulnerability: finding,
       };
+
+      // We want to keep a reference to the `finding` object so that whenever
+      // that object is updated, also the `vulnerability.collapsed` state is updated.
+      this.modalData.vulnerability.isDismissed = this.isDismissed(finding);
+      this.modalData.vulnerability.isDismissingFinding = false;
+
       this.$root.$emit(BV_SHOW_MODAL, VULNERABILITY_MODAL_ID);
     },
 
@@ -270,10 +277,9 @@ export default {
           visitUrl(response.data.issue_url); // redirect the user to the created issue
         })
         .catch(() => {
-          this.modalData = {
-            ...this.modalData,
-            error: s__('ciReport|There was an error creating the issue. Please try again.'),
-          };
+          this.modalData.error = s__(
+            'ciReport|There was an error creating the issue. Please try again.',
+          );
         })
         .finally(() => {
           this.isCreatingIssue = false;
@@ -285,6 +291,8 @@ export default {
       const toastMsg = sprintf(s__("SecurityReports|Dismissed '%{vulnerabilityName}'"), {
         vulnerabilityName: finding.name,
       });
+
+      this.modalData.vulnerability.isDismissingFinding = true;
 
       return axios
         .post(this.mr.createVulnerabilityFeedbackDismissalPath, {
@@ -298,8 +306,10 @@ export default {
             vulnerability_data: finding,
           },
         })
-        .then(() => {
+        .then(({ data }) => {
           this.modalData.vulnerability.state = 'dismissed';
+          this.modalData.vulnerability.isDismissed = true;
+          this.$set(this.modalData.vulnerability, 'dismissal_feedback', data);
           this.$root.$emit(BV_HIDE_MODAL, VULNERABILITY_MODAL_ID);
           toast(toastMsg);
         })
@@ -307,16 +317,38 @@ export default {
           const pipelineNoLongerExists =
             error.response?.status === HTTP_STATUS_UNPROCESSABLE_ENTITY;
 
-          const errorMessage = pipelineNoLongerExists
+          this.modalData.error = pipelineNoLongerExists
             ? s__(
                 'ciReport|Could not dismiss vulnerability because the associated pipeline no longer exists. Refresh the page and try again.',
               )
             : s__('ciReport|There was an error dismissing the vulnerability. Please try again.');
+        })
+        .finally(() => {
+          this.modalData.vulnerability.isDismissingFinding = false;
+        });
+    },
 
-          this.modalData = {
-            ...this.modalData,
-            error: errorMessage,
-          };
+    revertDismissVulnerability() {
+      this.modalData.vulnerability.isDismissingFinding = true;
+
+      axios
+        .delete(
+          this.modalData.vulnerability.dismissal_feedback
+            .destroy_vulnerability_feedback_dismissal_path,
+        )
+        .then(() => {
+          this.modalData.vulnerability.state = 'detected';
+          this.modalData.vulnerability.isDismissed = false;
+
+          this.$root.$emit(BV_HIDE_MODAL, VULNERABILITY_MODAL_ID);
+        })
+        .catch(() => {
+          this.modalData.error = s__(
+            'ciReport|There was an error reverting the dismissal. Please try again.',
+          );
+        })
+        .finally(() => {
+          this.modalData.vulnerability.isDismissingFinding = false;
         });
     },
 
@@ -361,13 +393,14 @@ export default {
         v-if="modalData"
         :visible="true"
         :modal="modalData"
-        :is-dismissing-vulnerability="false"
+        :is-dismissing-vulnerability="modalData.vulnerability.isDismissingFinding"
         :is-creating-merge-request="false"
         :is-creating-issue="isCreatingIssue"
         :can-create-issue="canCreateIssue"
         :can-dismiss-vulnerability="canDismissFinding"
         @openDismissalCommentBox="openDismissalCommentBox"
         @editVulnerabilityDismissalComment="openDismissalCommentBox"
+        @revertDismissVulnerability="revertDismissVulnerability"
         @createNewIssue="createNewIssue"
         @dismissVulnerability="dismissFinding"
       />
