@@ -26,6 +26,8 @@ import PolicyRuleBuilderV2 from './policy_rule_builder_v2.vue';
 import {
   DEFAULT_SCAN_RESULT_POLICY,
   DEFAULT_SCAN_RESULT_POLICY_V2,
+  DEFAULT_SCAN_RESULT_POLICY_V3,
+  DEFAULT_SCAN_RESULT_POLICY_V4,
   fromYaml,
   toYaml,
   securityScanBuildRule,
@@ -90,7 +92,15 @@ export default {
   data() {
     let yamlEditorValue;
 
-    if (this.glFeatures.licenseScanningPolicies) {
+    if (this.glFeatures.scanResultRoleAction && this.glFeatures.licenseScanningPolicies) {
+      yamlEditorValue = this.existingPolicy
+        ? toYaml(this.existingPolicy)
+        : DEFAULT_SCAN_RESULT_POLICY_V4;
+    } else if (this.glFeatures.scanResultRoleAction) {
+      yamlEditorValue = this.existingPolicy
+        ? toYaml(this.existingPolicy)
+        : DEFAULT_SCAN_RESULT_POLICY_V3;
+    } else if (this.glFeatures.licenseScanningPolicies) {
       yamlEditorValue = this.existingPolicy
         ? toYaml(this.existingPolicy)
         : DEFAULT_SCAN_RESULT_POLICY_V2;
@@ -343,8 +353,8 @@ export default {
             class="gl-mb-4"
             :init-action="action"
             :existing-approvers="existingApprovers"
+            @updateApprovers="updatePolicyApprovers"
             @changed="updateAction(index, $event)"
-            @approversUpdated="updatePolicyApprovers"
           />
         </template>
         <template v-else>
