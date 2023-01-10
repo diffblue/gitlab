@@ -35,7 +35,7 @@ module Gitlab
         end
 
         override :identity_verification_enabled?
-        def identity_verification_enabled?(_)
+        def identity_verification_enabled?
           false
         end
 

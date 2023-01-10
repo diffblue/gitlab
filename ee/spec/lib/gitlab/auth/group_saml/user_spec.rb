@@ -240,8 +240,6 @@ RSpec.describe Gitlab::Auth::GroupSaml::User do
   end
 
   describe '#identity_verification_enabled?', feature_category: :insider_threat do
-    it 'is false' do
-      expect(subject.identity_verification_enabled?(nil)).to eq false
-    end
+    it { is_expected.not_to be_identity_verification_enabled }
   end
 end

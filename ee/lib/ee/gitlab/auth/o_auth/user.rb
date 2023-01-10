@@ -7,9 +7,9 @@ module EE
         module User
           extend ::Gitlab::Utils::Override
 
-          def identity_verification_enabled?(user)
+          def identity_verification_enabled?
             service_class = ::Users::EmailVerification::SendCustomConfirmationInstructionsService
-            service_class.identity_verification_enabled?(user.email)
+            service_class.identity_verification_enabled?(auth_hash.email)
           end
 
           protected
@@ -50,7 +50,7 @@ module EE
           override :build_new_user
           def build_new_user(skip_confirmation: true)
             super.tap do |user|
-              next unless identity_verification_enabled?(user)
+              next unless identity_verification_enabled?
 
               user.confirmed_at = nil
               user.skip_confirmation_notification!
