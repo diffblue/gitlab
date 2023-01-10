@@ -147,6 +147,22 @@ describe('Billing Address', () => {
       expect(isStepValid()).toBe(false);
     });
 
+    it('should be invalid when state is undefined for countries that require state', async () => {
+      store.commit(types.UPDATE_COUNTRY, 'US');
+      store.commit(types.UPDATE_COUNTRY_STATE, null);
+      await nextTick();
+
+      expect(isStepValid()).toBe(false);
+    });
+
+    it(`should be valid when state is undefined for countries that don't require state`, async () => {
+      store.commit(types.UPDATE_COUNTRY, 'NZL');
+      store.commit(types.UPDATE_COUNTRY_STATE, null);
+      await nextTick();
+
+      expect(isStepValid()).toBe(true);
+    });
+
     it('should be invalid when streetAddressLine1 is undefined', async () => {
       store.commit(types.UPDATE_STREET_ADDRESS_LINE_ONE, null);
       await nextTick();

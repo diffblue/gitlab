@@ -8,6 +8,8 @@ import { s__ } from '~/locale';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
 import Tracking from '~/tracking';
 
+const COUNTRIES_WITH_STATES_REQUIRED = ['US', 'CA'];
+
 export default {
   components: {
     Step,
@@ -78,8 +80,15 @@ export default {
         this.updateZipCode(zipCode);
       },
     },
+    isStateRequired() {
+      return COUNTRIES_WITH_STATES_REQUIRED.includes(this.country);
+    },
+    isStateValid() {
+      return this.isStateRequired ? !isEmpty(this.countryState) : true;
+    },
     isValid() {
       return (
+        this.isStateValid &&
         !isEmpty(this.country) &&
         !isEmpty(this.streetAddressLine1) &&
         !isEmpty(this.city) &&
