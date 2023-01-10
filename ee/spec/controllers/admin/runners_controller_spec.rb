@@ -12,6 +12,7 @@ RSpec.describe Admin::RunnersController, feature_category: :runner_fleet do
 
   describe '#index' do
     it 'enables runner_upgrade_management licensed feature' do
+      is_expected.to receive(:push_licensed_feature).with(:runner_performance_insights)
       is_expected.to receive(:push_licensed_feature).with(:runner_upgrade_management)
 
       get :index

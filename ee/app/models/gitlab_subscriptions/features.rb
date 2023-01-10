@@ -33,6 +33,7 @@ module GitlabSubscriptions
       repository_size_limit
       required_ci_templates
       runner_maintenance_note
+      runner_performance_insights
       runner_upgrade_management
       runner_jobs_statistics
       seat_link
@@ -212,6 +213,7 @@ module GitlabSubscriptions
       required_ci_templates
       requirements
       runner_maintenance_note
+      runner_performance_insights
       runner_upgrade_management
       runner_upgrade_management_for_namespace
       runner_jobs_statistics

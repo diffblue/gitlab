@@ -1,0 +1,9 @@
+query runnersJobsQueueDurationEE($type: CiRunnerType) {
+  runners(type: $type) {
+    jobsStatistics {
+      queuedDuration {
+        p50
+      }
+    }
+  }
+}
