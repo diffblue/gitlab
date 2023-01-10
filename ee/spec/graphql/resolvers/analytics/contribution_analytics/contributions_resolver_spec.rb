@@ -65,7 +65,7 @@ RSpec.describe Resolvers::Analytics::ContributionAnalytics::ContributionsResolve
       end
 
       context 'when the date range is too wide' do
-        let(:args) { { from: Date.parse('2021-03-01'), to: Date.parse('2022-05-10') } }
+        let(:args) { { from: Date.parse('2021-01-01'), to: Date.parse('2022-05-10') } }
 
         it 'raises error' do
           error_message = s_('ContributionAnalytics|The given date range is larger than 31 days')
