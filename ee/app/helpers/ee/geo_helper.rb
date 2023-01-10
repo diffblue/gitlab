@@ -183,7 +183,8 @@ module EE
           title_plural: _('Repositories'),
           name: 'repository',
           name_plural: 'repositories',
-          custom_replication_url: 'admin/geo/replication/projects'
+          custom_replication_url: 'admin/geo/replication/projects',
+          verification_enabled: true
         },
         {
           data_type: 'repository',
@@ -192,7 +193,8 @@ module EE
           title_plural: _('Wikis'),
           name: 'wiki',
           name_plural: 'wikis',
-          no_replication_view: true
+          no_replication_view: true,
+          verification_enabled: true
         },
         {
           data_type: 'repository',
@@ -201,7 +203,8 @@ module EE
           title_plural: _('Design repositories'),
           name: 'design_repository',
           name_plural: 'design_repositories',
-          custom_replication_url: 'admin/geo/replication/designs'
+          custom_replication_url: 'admin/geo/replication/designs',
+          verification_enabled: false
         }
       ]
 
@@ -214,7 +217,8 @@ module EE
             title: replicator_class.replicable_title,
             title_plural: replicator_class.replicable_title_plural,
             name: replicator_class.replicable_name,
-            name_plural: replicator_class.replicable_name_plural
+            name_plural: replicator_class.replicable_name_plural,
+            verification_enabled: replicator_class.verification_enabled?
           }
         )
       end

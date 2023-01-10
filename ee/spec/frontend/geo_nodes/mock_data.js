@@ -16,6 +16,7 @@ export const MOCK_REPLICABLE_TYPES = [
     name: 'repository',
     namePlural: 'repositories',
     customReplicationUrl: 'admin/geo/replication/projects',
+    verificationEnabled: true,
   },
   {
     dataType: 'repository',
