@@ -157,6 +157,10 @@ module EE
       def check_group_saml_configured
         forbidden!('Group SAML not enabled.') unless ::Gitlab::Auth::GroupSaml::Config.enabled?
       end
+
+      def check_instance_saml_configured
+        forbidden!('SAML not enabled.') unless ::Gitlab::Auth::Saml::Config.enabled?
+      end
     end
   end
 end

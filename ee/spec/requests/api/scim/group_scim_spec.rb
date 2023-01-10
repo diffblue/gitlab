@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Scim, feature_category: :authentication_and_authorization do
+RSpec.describe API::Scim::GroupScim, feature_category: :authentication_and_authorization do
   let(:user) { create(:user) }
   let(:scim_token) { create(:scim_oauth_access_token, group: group) }
   let(:group) { identity.group }
@@ -72,7 +72,7 @@ RSpec.describe API::Scim, feature_category: :authentication_and_authorization do
         expect(response).to have_gitlab_http_status(:precondition_failed)
       end
 
-      context 'existing user matches filter' do
+      context 'when existing user matches filter' do
         it 'responds with 200' do
           get scim_api("scim/v2/groups/#{group.full_path}/Users?filter=id eq \"#{identity.extern_uid}\"")
 
@@ -82,7 +82,7 @@ RSpec.describe API::Scim, feature_category: :authentication_and_authorization do
         end
 
         it 'sets default values as required by the specification' do
-          get scim_api(%{scim/v2/groups/#{group.full_path}/Users?filter=id eq "#{identity.extern_uid}"})
+          get scim_api("scim/v2/groups/#{group.full_path}/Users?filter=id eq \"#{identity.extern_uid}\"")
 
           expect(json_response['schemas']).to eq(['urn:ietf:params:scim:api:messages:2.0:ListResponse'])
           expect(json_response['itemsPerPage']).to eq(20)
@@ -90,7 +90,7 @@ RSpec.describe API::Scim, feature_category: :authentication_and_authorization do
         end
       end
 
-      context 'no user matches filter' do
+      context 'when no user matches filter' do
         it 'responds with 200' do
           get scim_api("scim/v2/groups/#{group.full_path}/Users?filter=id eq \"nonexistent\"")
 
@@ -124,7 +124,7 @@ RSpec.describe API::Scim, feature_category: :authentication_and_authorization do
         expect(response).to have_gitlab_http_status(:not_found)
       end
 
-      context 'existing user' do
+      context 'when existing user' do
         it 'responds with 200' do
           get scim_api("scim/v2/groups/#{group.full_path}/Users/#{identity.extern_uid}")
 
@@ -168,7 +168,9 @@ RSpec.describe API::Scim, feature_category: :authentication_and_authorization do
       context 'when a provisioning error occurs' do
         before do
           allow_next_instance_of(::EE::Gitlab::Scim::Group::ProvisioningService) do |instance|
-            allow(instance).to receive(:execute).and_return(::EE::Gitlab::Scim::ProvisioningResponse.new(status: :error))
+            allow(instance).to receive(:execute).and_return(
+              ::EE::Gitlab::Scim::ProvisioningResponse.new(status: :error)
+            )
           end
 
           post scim_api("scim/v2/groups/#{group.full_path}/Users?params=#{post_params}")
@@ -214,7 +216,7 @@ RSpec.describe API::Scim, feature_category: :authentication_and_authorization do
         end
       end
 
-      context 'existing user' do
+      context 'when existing user' do
         let(:old_user) { create(:user, email: 'work@example.com') }
 
         before do
@@ -358,7 +360,7 @@ RSpec.describe API::Scim, feature_category: :authentication_and_authorization do
         end
       end
 
-      context 'Reprovision user' do
+      context 'when reprovisioning user' do
         let_it_be(:params) { { Operations: [{ 'op': 'Replace', 'path': 'active', 'value': 'true' }] }.to_query }
 
         it 'activates the scim_identity' do
@@ -376,8 +378,8 @@ RSpec.describe API::Scim, feature_category: :authentication_and_authorization do
         end
       end
 
-      context 'existing user' do
-        context 'extern UID' do
+      context 'when existing user' do
+        context 'with extern UID' do
           before do
             params = { Operations: [{ 'op': 'Replace', 'path': 'id', 'value': 'new_uid' }] }.to_query
 
@@ -393,8 +395,8 @@ RSpec.describe API::Scim, feature_category: :authentication_and_authorization do
           end
         end
 
-        context 'user attributes' do
-          context 'name' do
+        context 'with user attributes' do
+          context 'with name' do
             before do
               params = { Operations: [{ 'op': 'Replace', 'path': 'name.formatted', 'value': 'new_name' }] }.to_query
 
@@ -414,9 +416,17 @@ RSpec.describe API::Scim, feature_category: :authentication_and_authorization do
             end
           end
 
-          context 'email' do
+          context 'with email' do
             before do
-              params = { Operations: [{ 'op': 'Replace', 'path': 'emails[type eq "work"].value', 'value': 'new@mail.com' }] }.to_query
+              params = {
+                Operations: [
+                  {
+                    'op': 'Replace',
+                    'path': 'emails[type eq "work"].value',
+                    'value': 'new@mail.com'
+                  }
+                ]
+              }.to_query
 
               call_patch_api(params)
             end
@@ -430,7 +440,7 @@ RSpec.describe API::Scim, feature_category: :authentication_and_authorization do
             end
           end
 
-          context 'userName' do
+          context 'with userName' do
             before do
               params = { Operations: [{ 'op': 'Replace', 'path': 'userName', 'value': 'new_username' }] }.to_query
 
@@ -454,7 +464,7 @@ RSpec.describe API::Scim, feature_category: :authentication_and_authorization do
     end
 
     describe 'DELETE /scim/v2/groups/:group/Users/:id' do
-      context 'existing user' do
+      context 'when existing user' do
         before do
           delete scim_api("scim/v2/groups/#{group.full_path}/Users/#{identity.extern_uid}")
         end
@@ -495,7 +505,9 @@ RSpec.describe API::Scim, feature_category: :authentication_and_authorization do
         end
 
         it 'returns the last group owner error' do
-          expect(response.body).to include("Could not remove #{user.name} from #{group.name}. Cannot remove last group owner.")
+          expect(response.body).to include(
+            "Could not remove #{user.name} from #{group.name}. Cannot remove last group owner."
+          )
         end
 
         it 'does not deactivate the identity' do
@@ -525,13 +537,13 @@ RSpec.describe API::Scim, feature_category: :authentication_and_authorization do
     end
   end
 
-  context 'user with an alphanumeric extern_uid' do
+  context 'when user with an alphanumeric extern_uid' do
     let(:identity) { create(:scim_identity, user: user, extern_uid: generate(:username)) }
 
     it_behaves_like 'SCIM API endpoints'
   end
 
-  context 'user with an email extern_uid' do
+  context 'when user with an email extern_uid' do
     let(:identity) { create(:scim_identity, user: user, extern_uid: user.email) }
 
     it_behaves_like 'SCIM API endpoints'
