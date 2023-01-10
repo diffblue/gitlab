@@ -41,11 +41,11 @@ module Users
       end
 
       def enabled?
-        self.class.enabled?(user.email)
+        !user.confirmed? && self.class.identity_verification_enabled?(user.email)
       end
       strong_memoize_attr :enabled?
 
-      def self.enabled?(email)
+      def self.identity_verification_enabled?(email)
         return false if ::Feature.enabled?(:soft_email_confirmation)
         return false if ::Gitlab::CurrentSettings.require_admin_approval_after_user_signup
         return false if ::Gitlab::CurrentSettings.email_confirmation_setting_off?

@@ -238,4 +238,8 @@ RSpec.describe Gitlab::Auth::GroupSaml::User do
       expect(subject.bypass_two_factor?).to eq false
     end
   end
+
+  describe '#identity_verification_enabled?', feature_category: :insider_threat do
+    it { is_expected.not_to be_identity_verification_enabled }
+  end
 end

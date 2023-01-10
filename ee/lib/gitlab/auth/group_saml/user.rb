@@ -34,6 +34,11 @@ module Gitlab
           false
         end
 
+        override :identity_verification_enabled?
+        def identity_verification_enabled?
+          false
+        end
+
         private
 
         override :gl_user

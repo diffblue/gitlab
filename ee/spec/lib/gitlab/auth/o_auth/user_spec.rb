@@ -106,4 +106,42 @@ RSpec.describe Gitlab::Auth::OAuth::User do
       end
     end
   end
+
+  describe '#build_new_user', feature_category: :insider_threat do
+    subject(:oauth_user) { described_class.new(OmniAuth::AuthHash.new(info: {})) }
+
+    context 'when identity verification is not enabled' do
+      it 'confirms the user' do
+        expect(oauth_user.gl_user).to be_confirmed
+      end
+    end
+
+    context 'when identity verification is enabled' do
+      before do
+        allow(::Users::EmailVerification::SendCustomConfirmationInstructionsService)
+          .to receive(:identity_verification_enabled?).and_return(true)
+      end
+
+      it 'does not confirm the user' do
+        expect(oauth_user.gl_user).not_to be_confirmed
+      end
+    end
+  end
+
+  describe '#identity_verification_enabled?', feature_category: :insider_threat do
+    subject(:oauth_user) { described_class.new(OmniAuth::AuthHash.new(info: {})) }
+
+    context 'when identity verification is not enabled' do
+      it { is_expected.not_to be_identity_verification_enabled }
+    end
+
+    context 'when identity verification is enabled' do
+      before do
+        allow(::Users::EmailVerification::SendCustomConfirmationInstructionsService)
+          .to receive(:identity_verification_enabled?).and_return(true)
+      end
+
+      it { is_expected.to be_identity_verification_enabled }
+    end
+  end
 end
