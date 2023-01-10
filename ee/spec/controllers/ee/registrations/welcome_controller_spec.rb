@@ -117,8 +117,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
         end
 
         it 'tracks render event' do
-          get :continuous_onboarding_getting_started,
-              params: { project_id: project.id, trial_onboarding_flow: true }
+          get :continuous_onboarding_getting_started, params: { project_id: project.id, trial_onboarding_flow: true }
 
           expect_snowplow_event(
             category: 'registrations:welcome:continuous_onboarding_getting_started',
@@ -207,7 +206,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
         project.group.add_owner(user)
       end
 
-      context 'gitlab onboarding project is not imported yet' do
+      context 'when gitlab onboarding project is not imported yet' do
         it 'redirects to the boards path' do
           subject
 
@@ -215,8 +214,10 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
         end
       end
 
-      context 'gitlab onboarding project is imported yet' do
-        let_it_be(:board) { create(:board, project: project, name: EE::Registrations::WelcomeController::TRIAL_ONBOARDING_BOARD_NAME) }
+      context 'when gitlab onboarding project is imported yet' do
+        let_it_be(:board) do
+          create(:board, project: project, name: EE::Registrations::WelcomeController::TRIAL_ONBOARDING_BOARD_NAME)
+        end
 
         it 'redirects to the board path' do
           subject
@@ -256,7 +257,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
         sign_in(user)
       end
 
-      context 'email updates' do
+      context 'with email updates' do
         context 'when not on gitlab.com' do
           context 'when the user opted in' do
             let(:email_opted_in) { '1' }
@@ -509,7 +510,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
 
           before do
             allow_next_instance_of(::Users::SignupService) do |service|
-              allow(service).to receive(:execute).and_return({})
+              allow(service).to receive(:execute).and_return(ServiceResponse.error(message: 'failed'))
             end
           end
 
