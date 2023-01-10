@@ -7105,6 +7105,9 @@ msgstr ""
 msgid "BranchRules|default"
 msgstr ""
 
+msgid "BranchRules|protected"
+msgstr ""
+
 msgid "Branches"
 msgstr ""
 
