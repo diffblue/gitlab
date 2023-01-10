@@ -6,3 +6,4 @@ milestone: '15.7'
 type: development
 group: group::authentication and authorization
 default_enabled: false
+log_state_changes: true
