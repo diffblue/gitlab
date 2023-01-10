@@ -12,13 +12,20 @@ export default () => {
     geoTroubleshootingLink,
     geoReplicableEmptySvgPath,
     graphqlFieldName,
+    verificationEnabled,
     geoCurrentNodeId,
     geoTargetNodeId,
   } = el.dataset;
 
   return new Vue({
     el,
-    store: createStore({ replicableType, graphqlFieldName, geoCurrentNodeId, geoTargetNodeId }),
+    store: createStore({
+      replicableType,
+      graphqlFieldName,
+      verificationEnabled,
+      geoCurrentNodeId,
+      geoTargetNodeId,
+    }),
     components: {
       GeoReplicableApp,
     },

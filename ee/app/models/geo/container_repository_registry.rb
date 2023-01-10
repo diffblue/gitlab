@@ -10,16 +10,6 @@ class Geo::ContainerRepositoryRegistry < Geo::BaseRegistry
 
   belongs_to :container_repository
 
-  # Remove this as part of the ContainerRepository verification implementation
-  #
-  # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/33628
-  def verified_at; end
-
-  # Remove this as part of the ContainerRepository verification implementation
-  #
-  # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/33628
-  def verification_retry_at; end
-
   ### Remove it after data migration
   # See https://gitlab.com/gitlab-org/gitlab/-/issues/371667
   # rubocop:disable Gitlab/NoCodeCoverageComment

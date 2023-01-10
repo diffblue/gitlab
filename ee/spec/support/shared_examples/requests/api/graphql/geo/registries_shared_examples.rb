@@ -7,6 +7,7 @@ RSpec.shared_examples 'gets registries for' do |args|
   let(:registry_foreign_key_field_name) { args[:registry_foreign_key_field_name] }
   let(:replicator_class) { Geo.const_get(registry_class_name, false).replicator_class }
   let(:feature_flag) { replicator_class.replication_enabled_feature_key }
+  let(:verification_enabled) { replicator_class.verification_enabled? }
   let(:registry_foreign_key) { registry_foreign_key_field_name.underscore }
   let(:field_name_sym) { field_name.underscore.to_sym }
 
@@ -18,12 +19,14 @@ RSpec.shared_examples 'gets registries for' do |args|
   let!(:registry2) { create(registry_factory) } # rubocop:disable Rails/SaveBang
 
   let(:query) do
+    excluded = verification_enabled ? [] : %w[verifiedAt verificationRetryAt]
+
     <<~QUERY
       {
         geoNode {
           #{field_name} {
             nodes {
-              #{all_graphql_fields_for(registry_class_name)}
+              #{all_graphql_fields_for(registry_class_name, excluded: excluded)}
             }
           }
         }
@@ -110,7 +113,7 @@ RSpec.shared_examples 'gets registries for' do |args|
   end
 
   def registry_to_graphql_data_hash(registry)
-    {
+    hash = {
       'id' => registry.to_global_id.to_s,
       registry_foreign_key_field_name => registry.send(registry_foreign_key).to_s,
       'state' => registry.state_name.to_s.upcase,
@@ -118,9 +121,12 @@ RSpec.shared_examples 'gets registries for' do |args|
       'lastSyncFailure' => registry.last_sync_failure,
       'retryAt' => registry.retry_at,
       'lastSyncedAt' => registry.last_synced_at,
-      'verifiedAt' => registry.verified_at,
-      'verificationRetryAt' => registry.verification_retry_at,
       'createdAt' => registry.created_at.iso8601
     }
+
+    hash['verifiedAt'] = registry.verified_at if verification_enabled
+    hash['verificationRetryAt'] = registry.verification_retry_at if verification_enabled
+
+    hash
   end
 end

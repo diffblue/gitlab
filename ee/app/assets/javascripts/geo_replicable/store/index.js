@@ -10,13 +10,20 @@ Vue.use(Vuex);
 export const getStoreConfig = ({
   replicableType,
   graphqlFieldName,
+  verificationEnabled,
   geoCurrentNodeId,
   geoTargetNodeId,
 }) => ({
   actions,
   getters,
   mutations,
-  state: createState({ replicableType, graphqlFieldName, geoCurrentNodeId, geoTargetNodeId }),
+  state: createState({
+    replicableType,
+    graphqlFieldName,
+    verificationEnabled,
+    geoCurrentNodeId,
+    geoTargetNodeId,
+  }),
 });
 
 const createStore = (config) => new Vuex.Store(getStoreConfig(config));
