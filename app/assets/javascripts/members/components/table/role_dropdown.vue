@@ -32,7 +32,7 @@ export default {
   },
   computed: {
     disabled() {
-      return this.busy || (this.permissions.canOverride && !this.member.isOverridden);
+      return this.permissions.canOverride && !this.member.isOverridden;
     },
   },
   mounted() {
@@ -105,6 +105,7 @@ export default {
     :text="member.accessLevel.stringValue"
     :header-text="__('Change role')"
     :disabled="disabled"
+    :loading="busy"
   >
     <gl-dropdown-item
       v-for="(value, name) in member.validRoles"
