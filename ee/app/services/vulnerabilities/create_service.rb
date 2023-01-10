@@ -28,7 +28,7 @@ module Vulnerabilities
 
       vulnerability = Vulnerability.new
 
-      Vulnerabilities::Finding.transaction(requires_new: true) do # rubocop:disable Performance/ActiveRecordSubtransactions
+      Vulnerabilities::Finding.transaction do
         save_vulnerability(vulnerability, finding)
       rescue ActiveRecord::RecordNotFound
         vulnerability.errors.add(:base, _('finding is not found or is already attached to a vulnerability'))
