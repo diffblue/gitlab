@@ -16,13 +16,13 @@ import {
   mockLabel1,
 } from 'jest/boards/mock_data';
 
-import defaultStore from '~/boards/stores';
 import searchGroupLabels from '~/sidebar/components/labels/labels_select_widget/graphql/group_labels.query.graphql';
 import searchProjectLabels from '~/sidebar/components/labels/labels_select_widget/graphql/project_labels.query.graphql';
 import DropdownValue from '~/sidebar/components/labels/labels_select_widget/dropdown_value.vue';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 
 Vue.use(VueApollo);
+Vue.use(Vuex);
 
 describe('Labels select component', () => {
   let wrapper;
@@ -42,20 +42,15 @@ describe('Labels select component', () => {
     await waitForPromises();
   }
 
-  const createStore = ({ isGroupBoard = false, isProjectBoard = false } = {}) => {
+  const createStore = () => {
     store = new Vuex.Store({
-      ...defaultStore,
       actions: {
         setError: jest.fn(),
-      },
-      getters: {
-        isGroupBoard: () => isGroupBoard,
-        isProjectBoard: () => isProjectBoard,
       },
     });
   };
 
-  const createComponent = ({ props = {}, isGroupBoard = false } = {}) => {
+  const createComponent = ({ props = {}, isGroupBoard = false, isProjectBoard = false } = {}) => {
     fakeApollo = createMockApollo([
       [searchProjectLabels, projectLabelsQueryHandlerSuccess],
       [searchGroupLabels, groupLabelsQueryHandlerSuccess],
@@ -72,6 +67,7 @@ describe('Labels select component', () => {
         fullPath: 'gitlab-org',
         labelsManagePath: 'gitlab-org/labels',
         boardType: isGroupBoard ? 'group' : 'project',
+        isProjectBoard,
       },
       stubs: {
         GlDropdown,
@@ -85,8 +81,8 @@ describe('Labels select component', () => {
   };
 
   beforeEach(() => {
-    createStore({ isProjectBoard: true });
-    createComponent();
+    createStore();
+    createComponent({ isProjectBoard: true });
   });
 
   afterEach(() => {
@@ -145,10 +141,11 @@ describe('Labels select component', () => {
   `(
     'fetches $boardType labels',
     async ({ boardType, mockedResponse, queryHandler, notCalledHandler }) => {
-      createStore({ isProjectBoard: boardType === 'project', isGroupBoard: boardType === 'group' });
+      createStore();
       createComponent({
         [queryHandler]: jest.fn().mockResolvedValue(mockedResponse),
         isGroupBoard: boardType === 'group',
+        isProjectBoard: boardType === 'project',
       });
       await openLabelsDropdown();
 

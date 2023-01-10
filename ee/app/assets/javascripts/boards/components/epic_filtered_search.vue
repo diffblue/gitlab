@@ -1,7 +1,7 @@
 <script>
 import { orderBy } from 'lodash';
 import BoardFilteredSearch from 'ee/boards/components/board_filtered_search.vue';
-import issueBoardFilter from '~/boards/issue_board_filters';
+import issueBoardFilters from '~/boards/issue_board_filters';
 import { TYPE_USER } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
@@ -17,13 +17,13 @@ import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label
 
 export default {
   components: { BoardFilteredSearch },
-  inject: ['fullPath', 'boardType'],
+  inject: ['fullPath', 'boardType', 'isGroupBoard'],
   computed: {
     tokens() {
-      const { fetchLabels, fetchUsers } = issueBoardFilter(
+      const { fetchLabels, fetchUsers } = issueBoardFilters(
         this.$apollo,
         this.fullPath,
-        this.boardType,
+        this.isGroupBoard,
       );
 
       const tokens = [

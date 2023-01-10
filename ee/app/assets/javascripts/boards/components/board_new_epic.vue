@@ -1,5 +1,5 @@
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import BoardNewItem from '~/boards/components/board_new_item.vue';
 import { toggleFormEventPrefix } from '~/boards/constants';
 import eventHub from '~/boards/eventhub';
@@ -21,7 +21,6 @@ export default {
   },
   computed: {
     ...mapState(['selectedGroup']),
-    ...mapGetters(['isGroupBoard']),
     formEventPrefix() {
       return toggleFormEventPrefix.epic;
     },

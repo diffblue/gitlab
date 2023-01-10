@@ -16,7 +16,7 @@ describe('IssueBoardFilter', () => {
         isSignedIn: true,
         releasesFetchPath: '/releases',
         fullPath: 'gitlab-org',
-        boardType: 'group',
+        isGroupBoard: true,
         epicFeatureAvailable: true,
         iterationFeatureAvailable: true,
         healthStatusFeatureAvailable: true,

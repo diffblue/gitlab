@@ -4,7 +4,7 @@ import VueApollo from 'vue-apollo';
 import { fullEpicBoardId } from 'ee_component/boards/boards_util';
 
 import BoardApp from '~/boards/components/board_app.vue';
-import { issuableTypes } from '~/boards/constants';
+import { BoardType, issuableTypes } from '~/boards/constants';
 import store from '~/boards/stores';
 
 import '~/boards/filters/due_date_filters';
@@ -32,6 +32,8 @@ function mountBoardApp(el) {
     ...convertObjectPropsToCamelCase(rawFilterParams),
   };
 
+  const boardType = el.dataset.parent;
+
   store.dispatch('fetchEpicBoard', {
     fullPath,
     boardId: fullEpicBoardId(boardId),
@@ -39,7 +41,7 @@ function mountBoardApp(el) {
 
   store.dispatch('setInitialBoardData', {
     allowSubEpics: parseBoolean(el.dataset.subEpicsFeatureAvailable),
-    boardType: el.dataset.parent,
+    boardType,
     disabled: parseBoolean(el.dataset.disabled) || true,
     issuableType: issuableTypes.epic,
     boardId,
@@ -63,7 +65,9 @@ function mountBoardApp(el) {
       fullPath,
       initialFilterParams,
       boardBaseUrl: el.dataset.boardBaseUrl,
-      boardType: el.dataset.parent,
+      boardType,
+      isGroupBoard: boardType === BoardType.group,
+      isProjectBoard: boardType === BoardType.project,
       currentUserId: gon.current_user_id || null,
       labelsFetchPath: el.dataset.labelsFetchPath,
       labelsManagePath: el.dataset.labelsManagePath,

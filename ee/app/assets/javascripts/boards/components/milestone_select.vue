@@ -1,7 +1,7 @@
 <script>
 import { GlButton } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 import { s__ } from '~/locale';
 
 import groupMilestonesQuery from '~/sidebar/queries/group_milestones.query.graphql';
@@ -17,7 +17,7 @@ export default {
     GlButton,
     DropdownWidget,
   },
-  inject: ['fullPath'],
+  inject: ['fullPath', 'isProjectBoard'],
   props: {
     board: {
       type: Object,
@@ -62,7 +62,6 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['isProjectBoard']),
     anyMilestone() {
       return this.selected.title === DONT_FILTER_MILESTONE.title;
     },

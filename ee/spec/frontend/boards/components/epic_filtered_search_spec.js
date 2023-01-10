@@ -14,11 +14,11 @@ import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label
 
 describe('EpicFilteredSearch', () => {
   let wrapper;
-  const { fetchUsers, fetchLabels } = issueBoardFilters({}, '', 'group');
+  const { fetchUsers, fetchLabels } = issueBoardFilters({}, '', true);
 
   const createComponent = ({ initialFilterParams = {} } = {}) => {
     wrapper = shallowMount(EpicFilteredSearch, {
-      provide: { initialFilterParams, fullPath: '', boardType: '' },
+      provide: { initialFilterParams, fullPath: '', boardType: '', isGroupBoard: true },
     });
   };
 

@@ -12,13 +12,13 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { boardObj } from 'jest/boards/mock_data';
 import { projectMembersResponse, groupMembersResponse, mockUser2 } from 'jest/sidebar/mock_data';
 
-import defaultStore from '~/boards/stores';
 import searchGroupUsersQuery from '~/graphql_shared/queries/group_users_search.query.graphql';
 import searchProjectUsersQuery from '~/graphql_shared/queries/users_search.query.graphql';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 
 Vue.use(VueApollo);
+Vue.use(Vuex);
 
 describe('Assignee select component', () => {
   let wrapper;
@@ -32,20 +32,20 @@ describe('Assignee select component', () => {
   const usersQueryHandlerSuccess = jest.fn().mockResolvedValue(projectMembersResponse);
   const groupUsersQueryHandlerSuccess = jest.fn().mockResolvedValue(groupMembersResponse);
 
-  const createStore = ({ isGroupBoard = false, isProjectBoard = false } = {}) => {
+  const createStore = () => {
     store = new Vuex.Store({
-      ...defaultStore,
       actions: {
         setError: jest.fn(),
-      },
-      getters: {
-        isGroupBoard: () => isGroupBoard,
-        isProjectBoard: () => isProjectBoard,
       },
     });
   };
 
-  const createComponent = ({ props = {}, usersQueryHandler = usersQueryHandlerSuccess } = {}) => {
+  const createComponent = ({
+    props = {},
+    usersQueryHandler = usersQueryHandlerSuccess,
+    isGroupBoard = false,
+    isProjectBoard = false,
+  } = {}) => {
     fakeApollo = createMockApollo([
       [searchProjectUsersQuery, usersQueryHandler],
       [searchGroupUsersQuery, groupUsersQueryHandlerSuccess],
@@ -60,6 +60,8 @@ describe('Assignee select component', () => {
       },
       provide: {
         fullPath: 'gitlab-org',
+        isGroupBoard,
+        isProjectBoard,
       },
     });
 
@@ -69,8 +71,8 @@ describe('Assignee select component', () => {
   };
 
   beforeEach(() => {
-    createStore({ isProjectBoard: true });
-    createComponent();
+    createStore();
+    createComponent({ isProjectBoard: true });
   });
 
   afterEach(() => {
@@ -133,9 +135,11 @@ describe('Assignee select component', () => {
   `(
     'fetches $boardType users',
     async ({ boardType, mockedResponse, queryHandler, notCalledHandler }) => {
-      createStore({ isProjectBoard: boardType === 'project', isGroupBoard: boardType === 'group' });
+      createStore();
       createComponent({
         [queryHandler]: jest.fn().mockResolvedValue(mockedResponse),
+        isProjectBoard: boardType === 'project',
+        isGroupBoard: boardType === 'group',
       });
 
       findEditButton().vm.$emit('click');
