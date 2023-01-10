@@ -2,7 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe PackageMetadata::PackageVersion do
+RSpec.describe PackageMetadata::PackageVersion, feature_category: :license_compliance do
+  describe 'enums' do
+    it { is_expected.to define_enum_for(:purl_type).with_values(Enums::Sbom::PURL_TYPES) }
+  end
+
   describe 'association' do
     it { is_expected.to belong_to(:package).required }
   end

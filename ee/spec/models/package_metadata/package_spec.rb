@@ -2,22 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe PackageMetadata::Package, type: :model do
-  let(:purl_types) do
-    {
-      composer: 1,
-      conan: 2,
-      gem: 3,
-      golang: 4,
-      maven: 5,
-      npm: 6,
-      nuget: 7,
-      pypi: 8
-    }
-  end
-
+RSpec.describe PackageMetadata::Package, type: :model, feature_category: :license_compliance do
   describe 'enums' do
-    it { is_expected.to define_enum_for(:purl_type).with_values(purl_types) }
+    it { is_expected.to define_enum_for(:purl_type).with_values(Enums::Sbom::PURL_TYPES) }
   end
 
   describe 'validations' do
