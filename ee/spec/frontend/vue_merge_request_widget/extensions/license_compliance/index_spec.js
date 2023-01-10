@@ -6,7 +6,7 @@ import extensionsContainer from '~/vue_merge_request_widget/components/extension
 import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
 import ActionButtons from '~/vue_merge_request_widget/components/action_buttons.vue';
 import licenseComplianceExtension from 'ee/vue_merge_request_widget/extensions/license_compliance';
-import httpStatusCodes from '~/lib/utils/http_status';
+import httpStatusCodes, { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import {
   licenseComplianceNewLicenses,
   licenseComplianceSuccessExpanded,
@@ -85,7 +85,7 @@ describe('License Compliance extension', () => {
     });
 
     it('displays failed loading text', async () => {
-      mockApi(licenseComparisonPathCollapsed, httpStatusCodes.INTERNAL_SERVER_ERROR);
+      mockApi(licenseComparisonPathCollapsed, HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       createComponent();
 

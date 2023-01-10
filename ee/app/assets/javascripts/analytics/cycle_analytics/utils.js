@@ -9,7 +9,10 @@ import { createAlert } from '~/flash';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { newDate, dayAfter, secondsToDays, getDatesInRange } from '~/lib/utils/datetime_utility';
 import { isNumeric } from '~/lib/utils/number_utils';
-import httpStatus, { HTTP_STATUS_FORBIDDEN } from '~/lib/utils/http_status';
+import httpStatus, {
+  HTTP_STATUS_FORBIDDEN,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+} from '~/lib/utils/http_status';
 
 const EVENT_TYPE_LABEL = 'label';
 
@@ -302,7 +305,7 @@ export const getTasksByTypeData = ({ data = [], createdAfter = null, createdBefo
   };
 };
 
-const buildDataError = ({ status = httpStatus.INTERNAL_SERVER_ERROR, error }) => {
+const buildDataError = ({ status = HTTP_STATUS_INTERNAL_SERVER_ERROR, error }) => {
   const err = new Error(error);
   err.errorCode = status;
   return err;

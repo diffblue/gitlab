@@ -1,7 +1,7 @@
 <script>
 import { GlDropdown, GlDropdownItem, GlLoadingIcon, GlAlert, GlIcon } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
-import httpStatusCodes from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import { s__ } from '~/locale';
 
 export default {
@@ -59,7 +59,7 @@ export default {
       return foundMetric ? foundMetric.label : s__('MetricChart|Please select a metric');
     },
     isServerError() {
-      return this.errorCode === httpStatusCodes.INTERNAL_SERVER_ERROR;
+      return this.errorCode === HTTP_STATUS_INTERNAL_SERVER_ERROR;
     },
     hasChartData() {
       return !isEmpty(this.chartData);

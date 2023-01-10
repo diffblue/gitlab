@@ -12,7 +12,7 @@ import IssuableDiscussion from '~/vue_shared/issuable/show/components/issuable_d
 import Note from 'ee/external_issues_show/components/note.vue';
 import IssuableSidebar from '~/vue_shared/issuable/sidebar/components/issuable_sidebar_root.vue';
 import axios from '~/lib/utils/axios_utils';
-import httpStatusCodes from '~/lib/utils/http_status';
+import httpStatusCodes, { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 
 import { mockZentaoIssue, mockZentaoIssueComment } from '../mock_data';
 
@@ -68,7 +68,7 @@ describe('ZentaoIssuesShow', () => {
 
   describe('when error occurs during fetch', () => {
     it('renders error message', async () => {
-      mockAxios.onGet(mockZentaoIssuesShowPath).replyOnce(httpStatusCodes.INTERNAL_SERVER_ERROR);
+      mockAxios.onGet(mockZentaoIssuesShowPath).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
       createComponent();
 
       await waitForPromises();

@@ -5,7 +5,7 @@ import * as types from 'ee/approvals/stores/modules/approval_settings/mutation_t
 import getInitialState from 'ee/approvals/stores/modules/approval_settings/state';
 import testAction from 'helpers/vuex_action_helper';
 import axios from '~/lib/utils/axios_utils';
-import httpStatus from '~/lib/utils/http_status';
+import httpStatus, { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 
 describe('EE approvals group settings module actions', () => {
   let state;
@@ -46,7 +46,7 @@ describe('EE approvals group settings module actions', () => {
     describe('on error', () => {
       it('dispatches the request, updates payload and sets error message', () => {
         const data = { message: 'Internal Server Error' };
-        mock.onGet(approvalSettingsPath).replyOnce(httpStatus.INTERNAL_SERVER_ERROR, data);
+        mock.onGet(approvalSettingsPath).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR, data);
 
         return testAction(
           actions.fetchSettings,
@@ -102,7 +102,7 @@ describe('EE approvals group settings module actions', () => {
     describe('on error', () => {
       it('dispatches the request, updates payload and sets error message', () => {
         const data = { message: 'Internal Server Error' };
-        mock[onMethod](approvalSettingsPath).replyOnce(httpStatus.INTERNAL_SERVER_ERROR, data);
+        mock[onMethod](approvalSettingsPath).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR, data);
 
         return testAction(
           actionsWithMethod.updateSettings,

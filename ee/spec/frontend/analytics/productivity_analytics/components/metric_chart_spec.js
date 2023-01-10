@@ -2,7 +2,7 @@ import { GlLoadingIcon, GlDropdown, GlDropdownItem, GlAlert, GlIcon } from '@git
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import MetricChart from 'ee/analytics/productivity_analytics/components/metric_chart.vue';
-import httpStatusCodes from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 
 describe('MetricChart component', () => {
   let wrapper;
@@ -109,7 +109,7 @@ describe('MetricChart component', () => {
 
         describe('and there is a 500 error', () => {
           it('shows a "too much data" info text', () => {
-            factory({ isLoading, chartData: [], errorCode: httpStatusCodes.INTERNAL_SERVER_ERROR });
+            factory({ isLoading, chartData: [], errorCode: HTTP_STATUS_INTERNAL_SERVER_ERROR });
 
             expect(findInfoMessage().text()).toBe(
               'There is too much data to calculate. Please change your selection.',
