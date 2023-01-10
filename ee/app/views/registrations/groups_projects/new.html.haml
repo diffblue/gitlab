@@ -79,7 +79,7 @@
                   .form-text.text-muted
                     = s_('ProjectsNew|Recommended if you\'re new to GitLab')
 
-              = submit_tag _('Create project'), class: 'btn gl-button btn-confirm btn-block', data: { track_label: 'blank_project', track_action: 'click_button', track_property: 'create_project', track_value: '', qa_selector: 'submit_button' }
+              = submit_tag _('Create project'), class: 'btn gl-button btn-confirm btn-block', data: { qa_selector: 'submit_button' }
 
           #import-project-pane.tab-pane.import-project-pane.js-toggle-container{ role: 'tabpanel' }
             - if import_sources_enabled?

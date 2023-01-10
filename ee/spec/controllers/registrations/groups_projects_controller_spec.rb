@@ -52,7 +52,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
   end
 
   describe 'GET #new' do
-    subject { get :new }
+    subject(:get_new) { get :new }
 
     context 'with an unauthenticated user' do
       it { is_expected.to have_gitlab_http_status(:redirect) }
@@ -69,22 +69,27 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
         it { is_expected.to render_template(:new) }
 
         it 'assigns the group variable to a new Group with the default group visibility', :aggregate_failures do
-          subject
+          get_new
 
           expect(assigns(:group)).to be_a_new(Group)
           expect(assigns(:group).visibility_level).to eq(Gitlab::CurrentSettings.default_group_visibility)
         end
 
         it 'builds a project object' do
-          subject
+          get_new
 
           expect(assigns(:project)).to be_a_new(Project)
         end
 
         it 'tracks the new group view event' do
-          subject
+          get_new
 
-          expect_snowplow_event(category: described_class.name, action: 'view_new_group_action', user: user)
+          expect_snowplow_event(
+            category: described_class.name,
+            action: 'view_new_group_action',
+            label: 'free_registration',
+            user: user
+          )
         end
 
         it 'assigns the required verification experiment to a variant' do
@@ -93,7 +98,20 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
                                                                .with_context(user: user)
                                                                .on_next_instance
 
-          subject
+          get_new
+        end
+
+        context 'when on trial' do
+          it 'tracks the new group view event' do
+            get :new, params: { trial_onboarding_flow: true }
+
+            expect_snowplow_event(
+              category: described_class.name,
+              action: 'view_new_group_action',
+              label: 'trial_registration',
+              user: user
+            )
+          end
         end
 
         context 'when user does not have the ability to create a group' do
@@ -152,6 +170,32 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
         expect { post_create }.to change { Group.count }.by(1).and change { Project.count }.by(1)
       end
 
+      it 'tracks submission event' do
+        post_create
+
+        expect_snowplow_event(
+          category: described_class.name,
+          action: 'successfully_submitted_form',
+          label: 'free_registration',
+          user: user
+        )
+      end
+
+      context 'when on trial' do
+        let(:extra_params) { { trial_onboarding_flow: true } }
+
+        it 'tracks submission event' do
+          post_create
+
+          expect_snowplow_event(
+            category: described_class.name,
+            action: 'successfully_submitted_form',
+            label: 'trial_registration',
+            user: user
+          )
+        end
+      end
+
       context 'when there is no suggested path based from the name' do
         let(:group_params) { { name: '⛄⛄⛄', path: '' } }
 
@@ -176,6 +220,17 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
 
         it { is_expected.to have_gitlab_http_status(:ok) }
         it { is_expected.to render_template(:new) }
+
+        it 'does not tracks submission event' do
+          post_create
+
+          expect_no_snowplow_event(
+            category: described_class.name,
+            action: 'successfully_submitted_form',
+            label: 'free_registration',
+            user: user
+          )
+        end
       end
 
       context 'with signup onboarding not enabled' do

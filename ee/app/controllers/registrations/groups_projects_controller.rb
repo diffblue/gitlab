@@ -29,13 +29,14 @@ module Registrations
       @group = Group.new(visibility_level: Gitlab::CurrentSettings.default_group_visibility)
       @project = Project.new(namespace: @group)
 
-      Gitlab::Tracking.event(self.class.name, 'view_new_group_action', user: current_user)
+      track_event('view_new_group_action')
     end
 
     def create
       result = Registrations::StandardNamespaceCreateService.new(current_user, params).execute
 
       if result.success?
+        track_event('successfully_submitted_form')
         finish_onboarding
         redirect_successful_namespace_creation(result.payload[:project].id)
       else
@@ -91,6 +92,16 @@ module Registrations
           redirect_to new_users_sign_up_verification_path(project_id: project_id)
         end
       end
+    end
+
+    def track_event(action)
+      ::Gitlab::Tracking.event(self.class.name, action, user: current_user, label: tracking_label)
+    end
+
+    def tracking_label
+      return 'trial_registration' if Gitlab::Utils.to_boolean(params[:trial_onboarding_flow])
+
+      'free_registration'
     end
   end
 end
