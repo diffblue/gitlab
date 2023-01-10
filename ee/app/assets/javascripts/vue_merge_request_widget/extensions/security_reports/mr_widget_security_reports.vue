@@ -319,6 +319,10 @@ export default {
           };
         });
     },
+
+    openDismissalCommentBox() {
+      this.$set(this.modalData, 'isCommentingOnDismissal', true);
+    },
   },
   SEVERITY_LEVELS,
   widgetHelpPopover: {
@@ -362,6 +366,8 @@ export default {
         :is-creating-issue="isCreatingIssue"
         :can-create-issue="canCreateIssue"
         :can-dismiss-vulnerability="canDismissFinding"
+        @openDismissalCommentBox="openDismissalCommentBox"
+        @editVulnerabilityDismissalComment="openDismissalCommentBox"
         @createNewIssue="createNewIssue"
         @dismissVulnerability="dismissFinding"
       />

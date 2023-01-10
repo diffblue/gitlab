@@ -668,5 +668,46 @@ describe('MR Widget Security Reports', () => {
         );
       });
     });
+
+    describe('dismissal comment', () => {
+      it.each(['openDismissalCommentBox', 'editVulnerabilityDismissalComment'])(
+        'handles opening dismissal comment for event %s',
+        async (eventName) => {
+          mockWithData();
+
+          mockAxios.onPost(createVulnerabilityFeedbackDismissalPath).replyOnce(200);
+
+          createComponent({
+            mountFn: mountExtended,
+            propsData: {
+              mr: {
+                createVulnerabilityFeedbackDismissalPath,
+              },
+            },
+          });
+
+          await waitForPromises();
+
+          // Click on the toggle button to expand data
+          wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+          await nextTick();
+
+          // Second one is for the dynamic scroller
+          await nextTick();
+
+          // Click on the vulnerability name
+          wrapper.findAllByText('Password leak').at(0).trigger('click');
+          await nextTick();
+
+          expect(findModal().props('modal').isCommentingOnDismissal).toBeUndefined();
+
+          findModal().vm.$emit(eventName);
+
+          await waitForPromises();
+
+          expect(findModal().props('modal').isCommentingOnDismissal).toBe(true);
+        },
+      );
+    });
   });
 });
