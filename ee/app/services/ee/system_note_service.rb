@@ -107,13 +107,8 @@ module EE
     end
 
     # Called when state is changed for 'vulnerability'
-    def change_vulnerability_state(noteable, author)
-      vulnerabilities_service(noteable, noteable.project, author).change_vulnerability_state
-    end
-
-    # Called when marking dropped vulnerabilities as resolved
-    def mark_dropped_vulnerability_as_resolved(noteable, project, author, comment)
-      vulnerabilities_service(noteable, noteable.project, author).mark_dropped_as_resolved(comment)
+    def change_vulnerability_state(noteable, author, body = nil)
+      vulnerabilities_service(noteable, noteable.project, author).change_vulnerability_state(body)
     end
 
     # Called when quick action to publish an issue to status page is called

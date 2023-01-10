@@ -40,12 +40,25 @@ RSpec.describe Security::TokenRevocationService, '#execute' do
   context 'when revoking a glpat token' do
     let_it_be(:glpat_token) { create(:personal_access_token) }
 
+    let_it_be(:vulnerability) do
+      double('Vulnerability') # rubocop:disable RSpec/VerifiedDoubles
+    end
+
     let_it_be(:revocable_keys) do
-      [{
-        'type': 'gitleaks_rule_id_gitlab_personal_access_token',
-        'token': glpat_token.token,
-        'location': 'https://example.com/some-repo/blob/abcdefghijklmnop/compromisedfile1.java'
-      }]
+      [
+        {
+          'type': 'gitleaks_rule_id_gitlab_personal_access_token',
+          'token': glpat_token.token,
+          'location': 'https://example.com/some-repo/blob/abcdefghijklmnop/compromisedfile1.java#L21',
+          'vulnerability': vulnerability
+        },
+        {
+          'type': 'gitleaks_rule_id_gitlab_personal_access_token',
+          'token': glpat_token.token,
+          'location': 'https://example.com/some-repo/blob/abcdefghijklmnop/compromisedfile1.java#L41',
+          'vulnerability': vulnerability
+        }
+      ]
     end
 
     before do
@@ -53,6 +66,26 @@ RSpec.describe Security::TokenRevocationService, '#execute' do
     end
 
     it 'returns success' do
+      expect(PersonalAccessTokens::RevokeService).to receive(:new).once.and_call_original
+
+      expect(::AuditEventService)
+        .to receive(:new)
+        .with(
+          User.security_bot,
+          glpat_token.user,
+          action: :custom,
+          custom_message: "Revoked personal access token with id #{glpat_token.id}"
+        ).and_call_original
+
+      expect(SystemNoteService)
+        .to receive(:change_vulnerability_state)
+        .with(
+          vulnerability,
+          User.security_bot,
+          s_("TokenRevocation|This Personal Access Token has been automatically revoked on detection. " \
+             "Consider investigating and rotating before marking this vulnerability as resolved.")
+        )
+
       expect(subject[:status]).to be(:success)
     end
   end
