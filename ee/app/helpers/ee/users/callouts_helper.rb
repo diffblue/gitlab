@@ -70,7 +70,7 @@ module EE
       end
 
       def show_new_user_signups_cap_reached?
-        return false unless current_user&.admin?
+        return false unless current_user&.can_admin_all_resources?
         return false if user_dismissed?(NEW_USER_SIGNUPS_CAP_REACHED)
 
         new_user_signups_cap = ::Gitlab::CurrentSettings.current_application_settings.new_user_signups_cap

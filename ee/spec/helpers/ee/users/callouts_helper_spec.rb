@@ -259,7 +259,7 @@ RSpec.describe EE::Users::CalloutsHelper do
       it { is_expected.to eq(false) }
     end
 
-    context 'when feature flag is enabled' do
+    context 'when feature flag is enabled', :do_not_mock_admin_mode_setting do
       where(:new_user_signups_cap, :active_user_count, :result) do
         nil | 10 | false
         10  | 9  | false

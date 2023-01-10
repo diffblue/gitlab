@@ -177,7 +177,7 @@ RSpec.describe EE::SubscribableBannerHelper, :saas do
           allow(License).to receive(:current).and_return(license)
           allow(helper).to receive(:current_user).and_return(user)
           allow(helper).to receive(:signed_in?).and_return(true)
-          allow(user).to receive(:admin?).and_return(false)
+          allow(user).to receive(:can_admin_all_resources?).and_return(false)
         end
 
         it 'calls Gitlab::ExpiringSubscriptionMessage to get expiring message' do

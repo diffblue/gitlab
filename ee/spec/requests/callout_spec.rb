@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'callout alerts', feature_category: :navigation do
   include Capybara::RSpecMatchers
 
-  describe 'new_user_signups_cap_reached' do
+  describe 'new_user_signups_cap_reached', :do_not_mock_admin_mode_setting do
     let_it_be(:user) { create(:admin) }
 
     let(:billable_users) { [double(:billable_user)] }
