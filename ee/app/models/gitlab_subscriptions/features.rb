@@ -22,6 +22,7 @@ module GitlabSubscriptions
       external_authorization_service_api_management
       geo
       git_abuse_rate_limit
+      instance_level_scim
       ldap_group_sync
       ldap_group_sync_filter
       multiple_ldap_servers
@@ -123,9 +124,10 @@ module GitlabSubscriptions
       group_saml
       group_scoped_ci_variables
       group_wikis
-      incident_sla
-      incident_metric_upload
       ide_schema_config
+      incident_metric_upload
+      incident_sla
+      instance_level_scim
       issues_analytics
       jira_issues_integration
       ldap_group_sync_filter

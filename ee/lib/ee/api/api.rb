@@ -34,7 +34,8 @@ module EE
         mount ::API::ProviderIdentity
         mount ::API::GroupHooks
         mount ::API::MergeRequestApprovalSettings
-        mount ::API::Scim
+        mount ::API::Scim::GroupScim
+        mount ::API::Scim::InstanceScim
         mount ::API::ManagedLicenses
         mount ::API::ProjectApprovals
         mount ::API::Vulnerabilities
