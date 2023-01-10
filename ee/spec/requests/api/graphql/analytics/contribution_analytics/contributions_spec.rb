@@ -19,6 +19,7 @@ RSpec.describe 'Group.contributions', feature_category: :value_stream_management
               id
             }
             totalEvents
+            repoPushed
           }
         }
       }
@@ -46,9 +47,10 @@ RSpec.describe 'Group.contributions', feature_category: :value_stream_management
       post_graphql(query, current_user: user, variables: { fullPath: group.full_path })
 
       expect(graphql_data_at('group', 'contributions', 'nodes')).to eq([
-                                                                         { 'user' => { 'id' => user.to_gid.to_s },
-                                                                           'totalEvents' => 1 }
-                                                                       ])
+        { 'user' => { 'id' => user.to_gid.to_s },
+          'totalEvents' => 1,
+          'repoPushed' => 1 }
+      ])
     end
 
     context 'with events from different users' do

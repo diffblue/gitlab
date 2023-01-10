@@ -21,7 +21,7 @@ module Types
         field :merge_requests_merged, GraphQL::Types::Int, null: true,
                                                            description: 'Number of merge requests merged by the user.'
         field :repo_pushed, GraphQL::Types::Int, null: true,
-                                                 method: :repo,
+                                                 method: :push,
                                                  description: 'Number of repository pushes the user made.'
         field :total_events, GraphQL::Types::Int, null: true,
                                                   description: 'Total number of events contributed by the user.'
