@@ -362,6 +362,7 @@ export const pipelineSecurityReportFinding = {
   severity: 'HIGH',
   solution: 'Some solution',
   reportType: 'reportType',
+  falsePositive: false,
   project: {
     id: '1',
     name: 'project name',
