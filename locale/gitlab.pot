@@ -19880,7 +19880,7 @@ msgstr ""
 msgid "GroupSettings|Select the project containing the %{code_start}.gitlab/insights.yml%{code_end} file"
 msgstr ""
 
-msgid "GroupSettings|Select the project containing your custom Insights file. %{help_link_start}What is Insights?%{help_link_end}"
+msgid "GroupSettings|Select the project containing your custom Insights file."
 msgstr ""
 
 msgid "GroupSettings|Set a size limit for all content in each Pages site in this group. %{link_start}Learn more.%{link_end}"
@@ -19914,6 +19914,9 @@ msgid "GroupSettings|Users can create %{link_start_project}project access tokens
 msgstr ""
 
 msgid "GroupSettings|What are badges?"
+msgstr ""
+
+msgid "GroupSettings|What is Insights?"
 msgstr ""
 
 msgid "GroupSettings|When the number of active users exceeds this number, additional users must be %{user_cap_docs_link_start}approved by an owner%{user_cap_docs_link_end}. Leave empty if you don't want to enforce approvals."

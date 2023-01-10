@@ -2,16 +2,15 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Settings > User configures Insights', :js, feature_category: :subgroups do
+RSpec.describe 'Groups > Settings > User configures Insights', :js, feature_category: :value_stream_management do
   include Select2Helper
 
-  let(:user) { create(:user) }
-  let(:group) { create(:group) }
-  let(:subgroup) { create(:group, parent: group) }
-  let(:project) { create(:project, namespace: subgroup) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:subgroup) { create(:group, parent: group) }
+  let_it_be(:project) { create(:project, namespace: subgroup) }
+  let_it_be(:user) { create(:user).tap { |u| group.add_owner(u) } }
 
   before do
-    group.add_owner(user)
     sign_in(user)
   end
 
