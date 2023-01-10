@@ -40,6 +40,8 @@ module EE
 
       if ::Gitlab::CurrentSettings.should_check_namespace_plan? && !can_start_trial?(project)
         action_urls[:trial_started][:enabled] = false
+        action_urls[:trial_started][:message] =
+          s_('LearnGitlab|Contact your administrator to start a free Ultimate trial.')
       end
 
       action_urls

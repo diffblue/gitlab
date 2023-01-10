@@ -24665,6 +24665,9 @@ msgstr ""
 msgid "LearnGitlab|- Included in trial"
 msgstr ""
 
+msgid "LearnGitlab|Contact your administrator to enable this action."
+msgstr ""
+
 msgid "LearnGitlab|Contact your administrator to start a free Ultimate trial."
 msgstr ""
 

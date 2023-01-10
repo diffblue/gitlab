@@ -8,6 +8,7 @@ RSpec.describe LearnGitlabHelper do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, name: Onboarding::LearnGitlab::PROJECT_NAME, namespace: user.namespace) }
   let_it_be(:namespace) { project.namespace }
+  let(:disabled_message) { s_('LearnGitlab|Contact your administrator to start a free Ultimate trial.') }
 
   before do
     allow_next_instance_of(Onboarding::LearnGitlab) do |learn_gitlab|
@@ -78,7 +79,8 @@ RSpec.describe LearnGitlabHelper do
               expect(onboarding_actions_data).to include(
                 trial_started: a_hash_including(
                   url: project_project_members_path(project),
-                  enabled: false
+                  enabled: false,
+                  message: disabled_message
                 ),
                 code_owners_enabled: a_hash_including(
                   url: help_page_path('user/project/code_owners', anchor: 'set-up-code-owners'),
@@ -102,7 +104,8 @@ RSpec.describe LearnGitlabHelper do
               expect(onboarding_actions_data).to include(
                 trial_started: a_hash_including(
                   url: project_project_members_path(project),
-                  enabled: false
+                  enabled: false,
+                  message: disabled_message
                 ),
                 code_owners_enabled: a_hash_including(
                   url: help_page_path('user/project/code_owners', anchor: 'set-up-code-owners'),
@@ -120,7 +123,8 @@ RSpec.describe LearnGitlabHelper do
               expect(onboarding_actions_data).to include(
                 trial_started: a_hash_including(
                   url: project_project_members_path(project),
-                  enabled: false
+                  enabled: false,
+                  message: disabled_message
                 ),
                 code_owners_enabled: a_hash_including(
                   url: help_page_path('user/project/code_owners', anchor: 'set-up-code-owners'),
