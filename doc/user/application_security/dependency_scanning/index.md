@@ -662,7 +662,7 @@ The following variables are used for configuring specific analyzers (used for a 
 The previous tables are not an exhaustive list of all variables that can be used. They contain all specific GitLab and analyzer variables we support and test. There are many variables, such as environment variables, that you can pass in and they will work. This is a large list, many of which we may be unaware of, and as such is not documented.
 
 For example, to pass the non-GitLab environment variable `HTTPS_PROXY` to all Dependency Scanning jobs,
-set it as a [custom CI/CD variable in your `.gitlab-ci.yml`](../../../ci/variables/index.md#create-a-custom-cicd-variable-in-the-gitlab-ciyml-file)
+set it as a [CI/CD variable in your `.gitlab-ci.yml`](../../../ci/variables/index.md#define-a-cicd-variable-in-the-gitlab-ciyml-file)
 file like this:
 
 ```yaml
@@ -697,7 +697,7 @@ variables:
       -----END CERTIFICATE-----
 ```
 
-The `ADDITIONAL_CA_CERT_BUNDLE` value can also be configured as a [custom variable in the UI](../../../ci/variables/index.md#custom-cicd-variables), either as a `file`, which requires the path to the certificate, or as a variable, which requires the text representation of the certificate.
+The `ADDITIONAL_CA_CERT_BUNDLE` value can also be configured as a [custom variable in the UI](../../../ci/variables/index.md#for-a-project), either as a `file`, which requires the path to the certificate, or as a variable, which requires the text representation of the certificate.
 
 ### Using private Maven repositories
 
