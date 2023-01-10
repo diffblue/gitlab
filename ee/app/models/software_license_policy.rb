@@ -33,6 +33,7 @@ class SoftwareLicensePolicy < ApplicationRecord
   scope :with_license, -> { joins(:software_license) }
   scope :including_license, -> { includes(:software_license) }
   scope :unreachable_limit, -> { limit(1_000) }
+  scope :count_for_software_license, ->(software_license_id) { where(software_license_id: software_license_id).count }
 
   scope :with_license_by_name, -> (license_name) do
     with_license.where(SoftwareLicense.arel_table[:name].lower.in(Array(license_name).map(&:downcase)))
