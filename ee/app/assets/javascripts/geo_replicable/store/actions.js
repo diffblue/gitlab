@@ -53,7 +53,7 @@ export const fetchReplicableItemsGraphQl = ({ state, dispatch }, direction) => {
 
   client
     .query({
-      query: buildReplicableTypeQuery(state.graphqlFieldName),
+      query: buildReplicableTypeQuery(state.graphqlFieldName, state.verificationEnabled),
       variables: { first, last, before, after },
     })
     .then((res) => {

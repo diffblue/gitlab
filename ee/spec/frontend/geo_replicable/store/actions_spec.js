@@ -37,6 +37,7 @@ describe('GeoReplicable Store Actions', () => {
       graphqlFieldName: null,
       geoCurrentNodeId: null,
       geoTargetNodeId: null,
+      verificationEnabled: 'true',
     });
   });
 
@@ -160,7 +161,7 @@ describe('GeoReplicable Store Actions', () => {
             ],
             () => {
               expect(mockGeoGqClient.query).toHaveBeenCalledWith({
-                query: buildReplicableTypeQuery(MOCK_GRAPHQL_REGISTRY),
+                query: buildReplicableTypeQuery(MOCK_GRAPHQL_REGISTRY, true),
                 variables: { before: '', after: '', first: DEFAULT_PAGE_SIZE, last: null },
               });
             },
@@ -196,7 +197,7 @@ describe('GeoReplicable Store Actions', () => {
               ],
               () => {
                 expect(mockGeoGqClient.query).toHaveBeenCalledWith({
-                  query: buildReplicableTypeQuery(MOCK_GRAPHQL_REGISTRY),
+                  query: buildReplicableTypeQuery(MOCK_GRAPHQL_REGISTRY, true),
                   variables: { before: '', after: '', first: DEFAULT_PAGE_SIZE, last: null },
                 });
               },
@@ -223,7 +224,7 @@ describe('GeoReplicable Store Actions', () => {
               ],
               () => {
                 expect(mockGeoGqClient.query).toHaveBeenCalledWith({
-                  query: buildReplicableTypeQuery(MOCK_GRAPHQL_REGISTRY),
+                  query: buildReplicableTypeQuery(MOCK_GRAPHQL_REGISTRY, true),
                   variables: {
                     before: '',
                     after: MOCK_GRAPHQL_PAGINATION_DATA.endCursor,
@@ -255,7 +256,7 @@ describe('GeoReplicable Store Actions', () => {
               ],
               () => {
                 expect(mockGeoGqClient.query).toHaveBeenCalledWith({
-                  query: buildReplicableTypeQuery(MOCK_GRAPHQL_REGISTRY),
+                  query: buildReplicableTypeQuery(MOCK_GRAPHQL_REGISTRY, true),
                   variables: {
                     before: MOCK_GRAPHQL_PAGINATION_DATA.startCursor,
                     after: '',

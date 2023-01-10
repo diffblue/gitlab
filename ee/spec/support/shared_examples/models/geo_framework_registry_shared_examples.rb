@@ -7,7 +7,7 @@ RSpec.shared_examples 'a Geo framework registry' do
     it 'has expected fields or methods' do
       registry = create(registry_class_factory) # rubocop:disable Rails/SaveBang
       expected_fields = %i[
-        state retry_count last_sync_failure retry_at last_synced_at verified_at verification_retry_at created_at
+        state retry_count last_sync_failure retry_at last_synced_at created_at
       ]
 
       expected_fields.each do |field|

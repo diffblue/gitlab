@@ -1,14 +1,20 @@
 <script>
 import { GlLink, GlButton } from '@gitlab/ui';
-import { mapActions } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
 import { ACTION_TYPES } from '../constants';
 import GeoReplicableStatus from './geo_replicable_status.vue';
 import GeoReplicableTimeAgo from './geo_replicable_time_ago.vue';
 
 export default {
   name: 'GeoReplicableItem',
+  i18n: {
+    unknown: __('Unknown'),
+    nA: __('Not applicable.'),
+    resync: __('Geo|Resync'),
+    lastVerified: s__('Geo|Last time verified'),
+  },
   components: {
     GlLink,
     GlButton,
@@ -41,25 +47,26 @@ export default {
       default: '',
     },
   },
-  data() {
-    return {
-      timeAgoArray: [
+  computed: {
+    ...mapState(['verificationEnabled']),
+    hasProject() {
+      return Boolean(this.projectId);
+    },
+    timeAgoArray() {
+      return [
         {
           label: capitalizeFirstCharacter(this.syncStatus),
           dateString: this.lastSynced,
-          defaultText: __('Unknown'),
+          defaultText: this.$options.i18n.unknown,
         },
         {
-          label: __('Last time verified'),
+          label: this.$options.i18n.lastVerified,
           dateString: this.lastVerified,
-          defaultText: __('Unknown'),
+          defaultText: this.verificationEnabled
+            ? this.$options.i18n.unknown
+            : this.$options.i18n.nA,
         },
-      ],
-    };
-  },
-  computed: {
-    hasProject() {
-      return Boolean(this.projectId);
+      ];
     },
   },
   methods: {
@@ -84,7 +91,7 @@ export default {
           class="gl-ml-auto"
           size="small"
           @click="initiateReplicableSync({ projectId, name, action: $options.actionTypes.RESYNC })"
-          >{{ __('Resync') }}</gl-button
+          >{{ $options.i18n.resync }}</gl-button
         >
       </template>
       <template v-else>

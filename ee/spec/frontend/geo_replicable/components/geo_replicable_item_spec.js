@@ -27,9 +27,9 @@ describe('GeoReplicableItem', () => {
     lastVerified: mockReplicable.verifiedAt,
   };
 
-  const createComponent = (props = {}) => {
+  const createComponent = (props = {}, state = {}) => {
     const store = new Vuex.Store({
-      ...getStoreConfig({ replicableType: MOCK_REPLICABLE_TYPE, graphqlFieldName: null }),
+      ...getStoreConfig({ replicableType: MOCK_REPLICABLE_TYPE, graphqlFieldName: null, ...state }),
       actions: actionSpies,
     });
 
@@ -55,6 +55,8 @@ describe('GeoReplicableItem', () => {
   const findReplicableItemTimeAgos = () => wrapper.findAllComponents(GeoReplicableTimeAgo);
   const findReplicableTimeAgosDateStrings = () =>
     findReplicableItemTimeAgos().wrappers.map((w) => w.props('dateString'));
+  const findReplicableTimeAgosDefaultTexts = () =>
+    findReplicableItemTimeAgos().wrappers.map((w) => w.props('defaultText'));
 
   describe('template', () => {
     describe('by default', () => {
@@ -64,18 +66,6 @@ describe('GeoReplicableItem', () => {
 
       it('renders GeoReplicableStatus', () => {
         expect(findReplicableItemSyncStatus().exists()).toBe(true);
-      });
-
-      it('renders GeoReplicableTimeAgo component for each element in timeAgoArray', () => {
-        expect(findReplicableItemTimeAgos().length).toBe(2);
-      });
-
-      it('passes the correct date strings to the GeoReplicableTimeAgo component', () => {
-        expect(findReplicableTimeAgosDateStrings().length).toBe(2);
-        expect(findReplicableTimeAgosDateStrings()).toStrictEqual([
-          mockReplicable.lastSyncedAt,
-          mockReplicable.verifiedAt,
-        ]);
       });
     });
 
@@ -127,6 +117,58 @@ describe('GeoReplicableItem', () => {
 
       it('ReSync Button does not render', () => {
         expect(findResyncButton().exists()).toBe(false);
+      });
+    });
+
+    describe('when verificationEnabled is true', () => {
+      beforeEach(() => {
+        createComponent(null, { verificationEnabled: 'true' });
+      });
+
+      it('renders GeoReplicableTimeAgo component for each element in timeAgoArray', () => {
+        expect(findReplicableItemTimeAgos().length).toBe(2);
+      });
+
+      it('passes the correct date strings to the GeoReplicableTimeAgo component', () => {
+        expect(findReplicableTimeAgosDateStrings().length).toBe(2);
+        expect(findReplicableTimeAgosDateStrings()).toStrictEqual([
+          mockReplicable.lastSyncedAt,
+          mockReplicable.verifiedAt,
+        ]);
+      });
+
+      it('passes the correct date defaultTexts to the GeoReplicableTimeAgo component', () => {
+        expect(findReplicableTimeAgosDefaultTexts().length).toBe(2);
+        expect(findReplicableTimeAgosDefaultTexts()).toStrictEqual([
+          GeoReplicableItem.i18n.unknown,
+          GeoReplicableItem.i18n.unknown,
+        ]);
+      });
+    });
+
+    describe('when verificationEnabled is false', () => {
+      beforeEach(() => {
+        createComponent(null, { verificationEnabled: 'false' });
+      });
+
+      it('renders GeoReplicableTimeAgo component for each element in timeAgoArray', () => {
+        expect(findReplicableItemTimeAgos().length).toBe(2);
+      });
+
+      it('passes the correct date strings to the GeoReplicableTimeAgo component', () => {
+        expect(findReplicableTimeAgosDateStrings().length).toBe(2);
+        expect(findReplicableTimeAgosDateStrings()).toStrictEqual([
+          mockReplicable.lastSyncedAt,
+          mockReplicable.verifiedAt,
+        ]);
+      });
+
+      it('passes the correct date defaultTexts to the GeoReplicableTimeAgo component', () => {
+        expect(findReplicableTimeAgosDefaultTexts().length).toBe(2);
+        expect(findReplicableTimeAgosDefaultTexts()).toStrictEqual([
+          GeoReplicableItem.i18n.unknown,
+          GeoReplicableItem.i18n.nA,
+        ]);
       });
     });
   });

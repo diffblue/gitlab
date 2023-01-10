@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client/core';
 import PageInfo from '~/graphql_shared/fragments/page_info.fragment.graphql';
 
-export default (graphQlFieldName) => {
+export default (graphQlFieldName, verificationEnabled) => {
   return gql`
     query($first: Int, $last: Int, $before: String!, $after: String!) {
       geoNode {
@@ -16,7 +16,7 @@ export default (graphQlFieldName) => {
             lastSyncFailure
             retryAt
             lastSyncedAt
-            verifiedAt
+            verifiedAt @include (if: ${verificationEnabled})
             createdAt
           }
         }

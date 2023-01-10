@@ -11,7 +11,7 @@ RSpec.describe Admin::Geo::ReplicablesController, :geo, feature_category: :geo_r
   let_it_be(:secondary_node) { create(:geo_node, :secondary) }
 
   let(:replicable_name) { 'replicable' }
-  let(:replicable_class) { class_double("Gitlab::Geo::Replicator", replicable_name_plural: 'replicables', graphql_field_name: 'graphql') }
+  let(:replicable_class) { class_double("Gitlab::Geo::Replicator", replicable_name_plural: 'replicables', graphql_field_name: 'graphql', verification_enabled?: true) }
 
   before do
     enable_admin_mode!(admin)

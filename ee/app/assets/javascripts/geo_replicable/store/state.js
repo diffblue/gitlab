@@ -1,8 +1,16 @@
+import { parseBoolean } from '~/lib/utils/common_utils';
 import { FILTER_STATES, DEFAULT_PAGE_SIZE } from '../constants';
 
-const createState = ({ replicableType, graphqlFieldName, geoCurrentNodeId, geoTargetNodeId }) => ({
+const createState = ({
   replicableType,
   graphqlFieldName,
+  verificationEnabled,
+  geoCurrentNodeId,
+  geoTargetNodeId,
+}) => ({
+  replicableType,
+  graphqlFieldName,
+  verificationEnabled: parseBoolean(verificationEnabled),
   geoCurrentNodeId,
   geoTargetNodeId,
   useGraphQl: Boolean(graphqlFieldName),
