@@ -68,6 +68,7 @@ class ApprovalMergeRequestRule < ApplicationRecord
   def self.find_or_create_code_owner_rule(merge_request, entry)
     merge_request.approval_rules.code_owner.where(name: entry.pattern).where(section: entry.section).first_or_create do |rule|
       rule.rule_type = :code_owner
+      rule.approvals_required = entry.approvals_required
     end
   rescue ActiveRecord::RecordNotUnique
     retry

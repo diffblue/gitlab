@@ -5,7 +5,7 @@ module Gitlab
     class File
       include ::Gitlab::Utils::StrongMemoize
 
-      SECTION_HEADER_REGEX = /^(\^)?\[(.*?)\]/.freeze
+      SECTION_HEADER_REGEX = /^(\^)?\[(.*?)\](?:\[(\d*?)\])?/.freeze
 
       def initialize(blob)
         @blob = blob
@@ -78,6 +78,7 @@ module Gitlab
         parsed_sectional_data = {}
         canonical_section_name = ::Gitlab::CodeOwners::Entry::DEFAULT_SECTION
         section_optional = false
+        canonical_approvals_required = 0
 
         parsed_sectional_data[canonical_section_name] = {}
 
@@ -90,17 +91,24 @@ module Gitlab
           #   set up to hold the entries it contains, and proceed to the next
           #   line in the file.
           #
-          _, optional, name = line.match(SECTION_HEADER_REGEX).to_a
+          _, optional, name, approvals_required = line.match(SECTION_HEADER_REGEX).to_a
           if name
             canonical_section_name = find_section_name(name, parsed_sectional_data)
             section_optional = optional.present?
+            canonical_approvals_required = approvals_required.to_i
 
             parsed_sectional_data[canonical_section_name] ||= {}
 
             next
           end
 
-          extract_entry_and_populate_parsed_data(line, parsed_sectional_data, canonical_section_name, section_optional)
+          extract_entry_and_populate_parsed_data(
+            line,
+            parsed_sectional_data,
+            canonical_section_name,
+            section_optional,
+            canonical_approvals_required
+          )
         end
 
         parsed_sectional_data
@@ -114,12 +122,12 @@ module Gitlab
         section_headers.find { |k| k.casecmp?(section) } || section
       end
 
-      def extract_entry_and_populate_parsed_data(line, parsed, section, optional)
+      def extract_entry_and_populate_parsed_data(line, parsed, section, optional, approvals_required)
         pattern, _separator, owners = line.partition(/(?<!\\)\s+/)
 
         normalized_pattern = normalize_pattern(pattern)
 
-        parsed[section][normalized_pattern] = Entry.new(pattern, owners, section, optional)
+        parsed[section][normalized_pattern] = Entry.new(pattern, owners, section, optional, approvals_required)
       end
 
       def skip?(line)

@@ -138,4 +138,34 @@ RSpec.describe Gitlab::CodeOwners::Entry do
       end
     end
   end
+
+  describe "approvals_required" do
+    context 'when there has approvals_required params' do
+      let(:entry) do
+        described_class.new(
+          "/**/file",
+          "@user jane@gitlab.org @group @group/nested-group",
+          "Documentation",
+          false,
+          2)
+      end
+
+      it 'returns 2' do
+        expect(entry.approvals_required).to eq(2)
+      end
+    end
+
+    context 'when there has no approvals_required params' do
+      let(:entry) do
+        described_class.new(
+          "/**/file",
+          "@user jane@gitlab.org @group @group/nested-group",
+          "Documentation")
+      end
+
+      it 'returns 0' do
+        expect(entry.approvals_required).to eq(0)
+      end
+    end
+  end
 end

@@ -8,14 +8,16 @@ RSpec.describe MergeRequests::SyncCodeOwnerApprovalRules do
   let_it_be(:doc_owners) { create_list(:user, 2) }
   let_it_be(:rb_group_owners) { create_list(:group, 2) }
   let_it_be(:doc_group_owners) { create_list(:group, 2) }
+  let_it_be(:rb_approvals_required) { 2 }
+  let_it_be(:doc_approvals_required) { 3 }
 
-  let(:rb_entry) { build_entry('*.rb', rb_owners, rb_group_owners) }
-  let(:doc_entry) { build_entry('doc/*', doc_owners, doc_group_owners) }
+  let(:rb_entry) { build_entry('*.rb', rb_owners, rb_group_owners, 'codeowners', rb_approvals_required) }
+  let(:doc_entry) { build_entry('doc/*', doc_owners, doc_group_owners, 'codeowners', doc_approvals_required) }
   let(:entries) { [rb_entry, doc_entry] }
 
-  def build_entry(pattern, users, groups, section = Gitlab::CodeOwners::Entry::DEFAULT_SECTION)
+  def build_entry(pattern, users, groups, section = Gitlab::CodeOwners::Entry::DEFAULT_SECTION, approvals_required = 0)
     text = (users + groups).map(&:to_reference).join(' ')
-    entry = Gitlab::CodeOwners::Entry.new(pattern, text, section)
+    entry = Gitlab::CodeOwners::Entry.new(pattern, text, section, false, approvals_required)
 
     entry.add_matching_users_from(users)
     entry.add_matching_groups_from(groups)
@@ -25,8 +27,8 @@ RSpec.describe MergeRequests::SyncCodeOwnerApprovalRules do
 
   def verify_correct_code_owners
     [
-      [rb_entry, rb_owners, rb_group_owners],
-      [doc_entry, doc_owners, doc_group_owners]
+      [rb_entry, rb_owners, rb_group_owners, rb_approvals_required],
+      [doc_entry, doc_owners, doc_group_owners, doc_approvals_required]
     ].each do |entry, users, groups|
       rule = merge_request.approval_rules.code_owner.find_by(name: entry.pattern, section: entry.section)
 
@@ -63,12 +65,14 @@ RSpec.describe MergeRequests::SyncCodeOwnerApprovalRules do
       other_rule = create(:code_owner_rule, merge_request: merge_request, name: '*.rb')
       other_rule.users += doc_owners
       other_rule.groups += doc_group_owners
+      other_rule.approvals_required += doc_approvals_required
       other_rule.save!
 
       service.execute
 
       expect(other_rule.reload.users).to match_array(rb_owners)
       expect(other_rule.reload.groups).to match_array(rb_group_owners)
+      expect(other_rule.reload.approvals_required).to eq(rb_approvals_required)
     end
 
     context 'when multiple rules for the same pattern with different sections are specified' do
