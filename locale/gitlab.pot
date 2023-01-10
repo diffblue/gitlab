@@ -358,11 +358,6 @@ msgid_plural "%d personal projects will be removed and cannot be restored."
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "%d point"
-msgid_plural "%d points"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "%d previously merged commit"
 msgid_plural "%d previously merged commits"
 msgstr[0] ""
@@ -1089,8 +1084,8 @@ msgid_plural "%{strong_start}%{count} members%{strong_end} must approve to merge
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "%{strong_start}%{errors}%{strong_end} point"
-msgid_plural "%{strong_start}%{errors}%{strong_end} points"
+msgid "%{strong_start}%{errors}%{strong_end} %{prefix} finding"
+msgid_plural "%{strong_start}%{errors}%{strong_end} %{prefix} findings"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -9827,6 +9822,12 @@ msgid "Code Owners"
 msgstr ""
 
 msgid "Code Quality"
+msgstr ""
+
+msgid "Code Quality scans found %{degradation} and fixed %{improvement}."
+msgstr ""
+
+msgid "Code Quality scans found %{findings}."
 msgstr ""
 
 msgid "Code Review"
