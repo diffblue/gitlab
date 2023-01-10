@@ -47,6 +47,15 @@ export default {
           @click="selectVisualizationType('DataTable')"
           >{{ s__('ProductAnalytics|Data Table') }}</gl-button
         >
+        <gl-button
+          :selected="selectedVisualizationType === 'SingleStat'"
+          class="gl-mb-2"
+          icon="table"
+          block
+          data-testid="singlestat-button"
+          @click="selectVisualizationType('SingleStat')"
+          >{{ s__('ProductAnalytics|Single Statistic') }}</gl-button
+        >
       </div>
     </div>
     <div v-else class="gl-mt-4">
@@ -69,6 +78,12 @@ export default {
           data-testid="datatable-dd-item"
           @click="selectVisualizationType('DataTable')"
           >{{ s__('ProductAnalytics|Data Table') }}</gl-dropdown-item
+        >
+        <gl-dropdown-item
+          icon-name="table"
+          data-testid="singlestat-dd-item"
+          @click="selectVisualizationType('SingleStat')"
+          >{{ s__('ProductAnalytics|Single Statistic') }}</gl-dropdown-item
         >
       </gl-dropdown>
     </div>

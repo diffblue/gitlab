@@ -13,9 +13,10 @@ describe('AnalyticsVisualizationInspector', () => {
   };
 
   it.each`
-    visualizationButton   | visualizationType
-    ${'linechart-button'} | ${'LineChart'}
-    ${'datatable-button'} | ${'DataTable'}
+    visualizationButton    | visualizationType
+    ${'linechart-button'}  | ${'LineChart'}
+    ${'datatable-button'}  | ${'DataTable'}
+    ${'singlestat-button'} | ${'SingleStat'}
   `(
     'calls from overview to select $visualizationType',
     ({ visualizationButton, visualizationType }) => {
@@ -30,9 +31,10 @@ describe('AnalyticsVisualizationInspector', () => {
   );
 
   it.each`
-    visualizationItem      | visualizationType | visualizationTypeName
-    ${'linechart-dd-item'} | ${'LineChart'}    | ${'Line Chart'}
-    ${'datatable-dd-item'} | ${'DataTable'}    | ${'Data Table'}
+    visualizationItem       | visualizationType | visualizationTypeName
+    ${'linechart-dd-item'}  | ${'LineChart'}    | ${'Line Chart'}
+    ${'datatable-dd-item'}  | ${'DataTable'}    | ${'Data Table'}
+    ${'singlestat-dd-item'} | ${'SingleStat'}   | ${'Single Statistic'}
   `(
     'calls from overview to select $visualizationType',
     ({ visualizationItem, visualizationType, visualizationTypeName }) => {
