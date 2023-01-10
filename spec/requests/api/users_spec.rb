@@ -3668,8 +3668,8 @@ RSpec.describe API::Users, feature_category: :users do
 
           custom_attribute = user.custom_attributes.last
 
-          expect(custom_attribute.key).to eq('blocked_by')
-          expect(custom_attribute.value).to eq("#{admin.username}/#{admin.id}+#{DateTime.now}")
+          expect(custom_attribute.key).to eq(UserCustomAttribute::BLOCKED_BY)
+          expect(custom_attribute.value).to eq("#{admin.username}/#{admin.id}+#{Time.current}")
         end
       end
 
@@ -3768,8 +3768,8 @@ RSpec.describe API::Users, feature_category: :users do
 
           custom_attribute = blocked_user.custom_attributes.last
 
-          expect(custom_attribute.key).to eq('unblocked_by')
-          expect(custom_attribute.value).to eq("#{admin.username}/#{admin.id}+#{DateTime.now}")
+          expect(custom_attribute.key).to eq(UserCustomAttribute::UNBLOCKED_BY)
+          expect(custom_attribute.value).to eq("#{admin.username}/#{admin.id}+#{Time.current}")
         end
       end
 

@@ -19,13 +19,13 @@ RSpec.describe Users::BlockService do
         expect { operation }.to change { user.state }.to('blocked')
       end
 
-      it 'saves a custom attribute', :freeze_time, feature_category: :insider_threat do
+      it 'saves a custom attribute', :aggregate_failures, :freeze_time, feature_category: :insider_threat do
         operation
 
         custom_attribute = user.custom_attributes.last
 
         expect(custom_attribute.key).to eq(UserCustomAttribute::BLOCKED_BY)
-        expect(custom_attribute.value).to eq("#{current_user.username}/#{current_user.id}+#{DateTime.now}")
+        expect(custom_attribute.value).to eq("#{current_user.username}/#{current_user.id}+#{Time.current}")
       end
     end
 

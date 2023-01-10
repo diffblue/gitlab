@@ -19,24 +19,22 @@ RSpec.describe Users::UnblockService do
         expect { operation }.to change { user.active? }.to(true)
       end
 
-      it 'saves a custom attribute', :freeze_time, feature_category: :insider_threat do
+      it 'saves a custom attribute', :aggregate_failures, :freeze_time, feature_category: :insider_threat do
         operation
 
         custom_attribute = user.custom_attributes.last
 
         expect(custom_attribute.key).to eq(UserCustomAttribute::UNBLOCKED_BY)
-        expect(custom_attribute.value).to eq("#{current_user.username}/#{current_user.id}+#{DateTime.now}")
+        expect(custom_attribute.value).to eq("#{current_user.username}/#{current_user.id}+#{Time.current}")
       end
     end
 
     context 'when failed' do
       let(:user) { create(:user) }
 
-      it 'returns error result' do
-        aggregate_failures 'error result' do
-          expect(operation.error?).to eq(true)
-          expect(operation[:message]).to include(/State cannot transition/)
-        end
+      it 'returns error result', :aggregate_failures do
+        expect(operation.error?).to eq(true)
+        expect(operation[:message]).to include(/State cannot transition/)
       end
 
       it "does not change the user's state" do
