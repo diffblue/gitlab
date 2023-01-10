@@ -36,6 +36,10 @@ describe('RoleDropdown', () => {
     wrapper = mount(RoleDropdown, {
       provide: {
         namespace: MEMBER_TYPES.user,
+        group: {
+          name: 'groupname',
+          path: '/grouppath/',
+        },
       },
       propsData: {
         member,

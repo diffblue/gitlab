@@ -13,6 +13,10 @@ describe('RoleDropdown', () => {
     wrapper = shallowMount(RoleDropdown, {
       provide: {
         namespace: MEMBER_TYPES.user,
+        group: {
+          name: '',
+          path: '',
+        },
       },
       propsData: {
         member,
