@@ -8,8 +8,6 @@ module EE
 
         override :savers
         def savers
-          return super unless ndjson?
-
           super << group_and_descendants_repo_saver
         end
 

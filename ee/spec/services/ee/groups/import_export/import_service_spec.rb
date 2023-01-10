@@ -43,11 +43,24 @@ RSpec.describe Groups::ImportExport::ImportService do
 
     context 'when export file not in ndjson format' do
       let(:import_file) { fixture_file_upload('spec/fixtures/legacy_group_export.tar.gz') }
+      let(:import_logger) { instance_double(Gitlab::Import::Logger) }
 
-      it 'does not export group wiki repositories' do
+      before do
+        allow(Gitlab::Import::Logger).to receive(:build).and_return(import_logger)
+        allow(import_logger).to receive(:error)
+        allow(import_logger).to receive(:warn)
+        allow(import_logger).to receive(:info)
+      end
+
+      it 'logs the error, raises an exception and does not export group wiki repositories' do
+        expect(import_logger).to receive(:error).with(
+          group_id: group.id,
+          group_name: group.name,
+          message: a_string_including('Errors occurred')
+        ).once
+
+        expect { import_service.execute }.to raise_error(Gitlab::ImportExport::Error)
         expect(::Gitlab::ImportExport::Group::GroupAndDescendantsRepoRestorer).not_to receive(:new)
-
-        import_service.execute
       end
     end
   end

@@ -46,15 +46,5 @@ RSpec.describe Groups::ImportExport::ExportService do
       expect(File.exist?(Gitlab::ImportExport.group_wiki_repo_bundle_full_path(shared, group.id))).to eq true
       expect(File.exist?(Gitlab::ImportExport.group_wiki_repo_bundle_full_path(shared, subgroup.id))).to eq true
     end
-
-    context 'when ndjson is not enabled' do
-      it 'does not export group wiki repositories' do
-        allow(export_service).to receive(:ndjson?).and_return(false)
-
-        expect(::Gitlab::ImportExport::Group::GroupAndDescendantsRepoRestorer).not_to receive(:new)
-
-        export_service.execute
-      end
-    end
   end
 end
