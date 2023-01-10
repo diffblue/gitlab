@@ -1,5 +1,7 @@
 import { sprintf } from '~/locale';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
+import createDefaultClient from '~/lib/graphql';
+import getBillableUserCountChanges from '../invite_members/billable_users_count.query.graphql';
 import {
   GUEST_OVERAGE_MODAL_FIELDS,
   MEMBER_ACCESS_LEVELS,
@@ -18,9 +20,26 @@ const shouldShowOverageModal = (currentAccessIntValue, dropdownValue) => {
   return false;
 };
 
-const getConfirmContent = ({ subscriptionSeats, totalUsers, groupName }) => {
+const getOverageData = async ({ newRoleName, groupPath, memberId, memberType }) => {
+  const defaultClient = createDefaultClient();
+  const response = await defaultClient.query({
+    query: getBillableUserCountChanges,
+    client: 'gitlabClient',
+    variables: {
+      fullPath: groupPath,
+      addGroupId: memberType === 'group' ? memberId : null,
+      addUserEmails: [],
+      addUserIds: memberType === 'user' ? [memberId] : null,
+      role: newRoleName.toUpperCase(),
+    },
+  });
+
+  return response?.data?.group?.gitlabSubscriptionsPreviewBillableUserChange;
+};
+
+const getConfirmContent = ({ subscriptionSeats, newBillableUserCount, groupName }) => {
   const infoText = overageModalInfoText(subscriptionSeats);
-  const infoWarning = overageModalInfoWarning(totalUsers, groupName);
+  const infoWarning = overageModalInfoWarning(newBillableUserCount, groupName);
   const link = sprintf(
     GUEST_OVERAGE_MODAL_FIELDS.LINK_TEXT,
     {
@@ -34,20 +53,41 @@ const getConfirmContent = ({ subscriptionSeats, totalUsers, groupName }) => {
 };
 
 export const guestOverageConfirmAction = async ({
-  currentAccessIntValue,
-  dropdownIntValue,
-  subscriptionSeats = 0,
-  totalUsers = 0,
-  groupName = '',
+  currentRoleValue,
+  newRoleValue,
+  newRoleName,
+  group,
+  memberId,
+  memberType,
 } = {}) => {
   if (
     !gon.features.showOverageOnRolePromotion ||
-    !shouldShowOverageModal(currentAccessIntValue, dropdownIntValue)
+    !shouldShowOverageModal(currentRoleValue, newRoleValue)
   ) {
     return true;
   }
 
-  const confirmContent = getConfirmContent({ subscriptionSeats, totalUsers, groupName });
+  const overageData = await getOverageData({
+    newRoleName,
+    groupPath: group.path,
+    memberId,
+    memberType,
+  });
+
+  // Allow user to proceed if BE doesn't send the expected response since we don't want this to be blocking.
+  if (
+    !overageData ||
+    overageData.seatsInSubscription === undefined ||
+    overageData.newBillableUserCount === undefined
+  ) {
+    return true;
+  }
+
+  const confirmContent = getConfirmContent({
+    subscriptionSeats: overageData.seatsInSubscription,
+    newBillableUserCount: overageData.newBillableUserCount,
+    groupName: group.name,
+  });
 
   return confirmAction('', {
     title: GUEST_OVERAGE_MODAL_FIELDS.TITLE,
