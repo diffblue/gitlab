@@ -1,6 +1,6 @@
 import { GlLink, GlProgressBar } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import UsageOverview from 'ee/ci/usage_quotas/pipelines/components/usage_overview.vue';
+import UsageOverview from 'ee/usage_quotas/pipelines/components/usage_overview.vue';
 import { defaultProvide, defaultUsageOverviewProps } from '../mock_data';
 
 describe('UsageOverview', () => {

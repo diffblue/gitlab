@@ -1,5 +1,5 @@
 import SeatUsageApp from 'ee/usage_quotas/seats';
-import initPipelineUsageApp from 'ee/ci/usage_quotas/pipelines';
+import initPipelineUsageApp from 'ee/usage_quotas/pipelines';
 import initNamespaceStorage from 'ee/usage_quotas/storage/init_namespace_storage';
 import { GlTabsBehavior, HISTORY_TYPE_HASH } from '~/tabs';
 import { trackAddToCartUsageTab } from '~/google_tag_manager';

@@ -2,7 +2,7 @@ import {
   getUsageDataByYear,
   formatYearMonthData,
   getSortedYears,
-} from 'ee/ci/usage_quotas/pipelines/utils';
+} from 'ee/usage_quotas/pipelines/utils';
 import { mockGetCiMinutesUsageNamespace, pageInfo } from './mock_data';
 
 const {
