@@ -25,13 +25,7 @@ RSpec.describe Vulnerabilities::ConfirmService, feature_category: :vulnerability
     context 'when vulnerability state is different from the requested state' do
       it_behaves_like 'calls vulnerability statistics utility services in order'
 
-      context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
-        before do
-          stub_feature_flags(deprecate_vulnerabilities_feedback: false)
-        end
-
-        it_behaves_like 'removes dismissal feedback from associated findings'
-      end
+      it_behaves_like 'removes dismissal feedback from associated findings'
 
       it 'confirms a vulnerability' do
         freeze_time do
@@ -54,12 +48,6 @@ RSpec.describe Vulnerabilities::ConfirmService, feature_category: :vulnerability
           .to(1)
         expect(::Vulnerabilities::StateTransition.last.vulnerability_id).to eq(vulnerability.id)
         expect(::Vulnerabilities::StateTransition.last.to_state).to eq('confirmed')
-      end
-
-      it 'does not remove the feedback from associated findings' do
-        expect(Vulnerabilities::DestroyDismissalFeedbackService).not_to receive(:new).with(user, vulnerability)
-
-        confirm_vulnerability
       end
 
       context 'when security dashboard feature is disabled' do
