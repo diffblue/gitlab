@@ -746,6 +746,12 @@ module EE
       ::ProductAnalytics::Dashboard.for_project(self)
     end
 
+    def product_analytics_funnels
+      return [] unless product_analytics_enabled?
+
+      ::ProductAnalytics::Funnel.for_project(self)
+    end
+
     def product_analytics_dashboard(slug)
       return [] unless product_analytics_enabled?
 

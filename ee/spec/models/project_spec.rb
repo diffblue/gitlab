@@ -179,6 +179,26 @@ RSpec.describe Project, feature_category: :projects do
       end
     end
 
+    describe '#product_analytics_funnels' do
+      subject { create(:project, :with_product_analytics_funnel).product_analytics_funnels }
+
+      context 'when the feature is not available' do
+        before do
+          stub_licensed_features(product_analytics: false)
+        end
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'when the feature is available' do
+        before do
+          stub_licensed_features(product_analytics: true)
+        end
+
+        it { is_expected.to contain_exactly(a_kind_of(::ProductAnalytics::Funnel)) }
+      end
+    end
+
     describe '#jira_issue_association_required_to_merge_enabled?' do
       before do
         stub_licensed_features(
