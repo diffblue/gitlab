@@ -23,7 +23,7 @@ module Security
       end
 
       def execute
-        return unless Feature.enabled?(:sec_mark_dropped_findings_as_resolved, Project.find(project_id))
+        return unless Feature.enabled?(:sec_mark_dropped_findings_as_resolved_scheduler, Project.find(project_id))
 
         dropped_identifiers.each_slice(BATCH_SIZE).with_index(1) do |identifiers, index|
           delay = DELAY_INTERVAL * index
