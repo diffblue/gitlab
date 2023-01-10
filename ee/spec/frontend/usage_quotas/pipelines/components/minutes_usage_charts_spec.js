@@ -1,7 +1,7 @@
 import { cloneDeep } from 'lodash';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import MinutesUsageCharts from 'ee/ci/usage_quotas/pipelines/components/minutes_usage_charts.vue';
-import NoMinutesAlert from 'ee/ci/usage_quotas/pipelines/components/no_minutes_alert.vue';
+import MinutesUsageCharts from 'ee/usage_quotas/pipelines/components/minutes_usage_charts.vue';
+import NoMinutesAlert from 'ee/usage_quotas/pipelines/components/no_minutes_alert.vue';
 import { mockGetCiMinutesUsageNamespace } from '../mock_data';
 
 describe('MinutesUsageCharts', () => {

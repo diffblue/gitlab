@@ -1,23 +1,24 @@
+import timezoneMock from 'timezone-mock';
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import SharedRunnerUsageMonthChart from 'ee/ci/usage_quotas/pipelines/components/shared_runner_usage_month_chart.vue';
+import MinutesUsageMonthChart from 'ee/usage_quotas/pipelines/components/minutes_usage_month_chart.vue';
 import { mockGetCiMinutesUsageNamespace } from '../mock_data';
 
 const {
   data: { ciMinutesUsage },
 } = mockGetCiMinutesUsageNamespace;
 
-describe('Shared runner usage month chart component', () => {
+describe('Minutes usage by month chart component', () => {
   let wrapper;
 
   const findAreaChart = () => wrapper.findComponent(GlAreaChart);
-  const findYearDropdown = () => wrapper.findByTestId('shared-runner-usage-month-dropdown');
+  const findYearDropdown = () => wrapper.findByTestId('minutes-usage-month-dropdown');
   const findAllYearDropdownItems = () =>
-    wrapper.findAllByTestId('shared-runner-usage-month-dropdown-item');
+    wrapper.findAllByTestId('minutes-usage-month-dropdown-item');
 
   const createComponent = (usageData = ciMinutesUsage.nodes) => {
-    wrapper = shallowMountExtended(SharedRunnerUsageMonthChart, {
+    wrapper = shallowMountExtended(MinutesUsageMonthChart, {
       propsData: {
         ciMinutesUsage: usageData,
       },
@@ -32,10 +33,12 @@ describe('Shared runner usage month chart component', () => {
     wrapper.destroy();
   });
 
-  it('renders a area chart component with axis legends', () => {
+  it('renders an area chart component', () => {
     expect(findAreaChart().exists()).toBe(true);
-    expect(findAreaChart().props('option').xAxis.name).toBe('Month');
-    expect(findAreaChart().props('option').yAxis.name).toBe('Duration (min)');
+  });
+
+  it('should contain a responsive attribute for the area chart', () => {
+    expect(findAreaChart().attributes('responsive')).toBeDefined();
   });
 
   it('renders year dropdown component', () => {
@@ -47,10 +50,6 @@ describe('Shared runner usage month chart component', () => {
     expect(findAllYearDropdownItems().length).toBe(2);
   });
 
-  it('should contain a responsive attribute for the column chart', () => {
-    expect(findAreaChart().attributes('responsive')).toBeDefined();
-  });
-
   it('should change the selected year in the year dropdown', async () => {
     expect(findYearDropdown().props('text')).toBe('2022');
 
@@ -59,5 +58,26 @@ describe('Shared runner usage month chart component', () => {
     await nextTick();
 
     expect(findYearDropdown().props('text')).toBe('2021');
+  });
+
+  describe.each`
+    timezone
+    ${'Europe/London'}
+    ${'US/Pacific'}
+  `('when viewing in timezone', ({ timezone }) => {
+    describe(timezone, () => {
+      beforeEach(async () => {
+        createComponent();
+        timezoneMock.register(timezone);
+      });
+
+      afterEach(() => {
+        timezoneMock.unregister();
+      });
+
+      it('has the right start month', () => {
+        expect(findAreaChart().props('data')[0].data[0][0]).toEqual('Aug 2022');
+      });
+    });
   });
 });

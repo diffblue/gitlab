@@ -5,7 +5,7 @@ import {
   MINUTES_USED,
   CI_MINUTES_HELP_LINK,
   CI_MINUTES_HELP_LINK_LABEL,
-} from 'ee/ci/usage_quotas/pipelines/constants';
+} from 'ee/usage_quotas/pipelines/constants';
 
 export const defaultProvide = {
   namespacePath: 'mygroup',
