@@ -553,12 +553,19 @@ module EE
     end
 
     # Available in Core for self-managed but only paid, non-trial for .com to prevent abuse
-    override :resource_access_token_feature_available?
-    def resource_access_token_feature_available?
-      return false if ::Gitlab::CurrentSettings.personal_access_tokens_disabled?
+    override :resource_access_token_create_feature_available?
+    def resource_access_token_create_feature_available?
+      return false unless resource_access_token_feature_available?
       return super unless ::Gitlab.com?
 
       group.feature_available_non_trial?(:resource_access_token)
+    end
+
+    override :resource_access_token_feature_available?
+    def resource_access_token_feature_available?
+      return false if ::Gitlab::CurrentSettings.personal_access_tokens_disabled?
+
+      super
     end
   end
 end
