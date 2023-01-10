@@ -53,9 +53,8 @@ module Vulnerabilities
     end
 
     def create_system_note(vulnerability)
-      SystemNoteService.mark_dropped_vulnerability_as_resolved(
+      SystemNoteService.change_vulnerability_state(
         vulnerability,
-        vulnerability.project,
         User.security_bot,
         resolution_comment
       )

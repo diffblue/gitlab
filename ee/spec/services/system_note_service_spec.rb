@@ -172,16 +172,6 @@ RSpec.describe SystemNoteService do
     end
   end
 
-  describe '.mark_dropped_vulnerability_as_resolved' do
-    it 'calls VulnerabilitiesService' do
-      expect_next_instance_of(SystemNotes::VulnerabilitiesService) do |service|
-        expect(service).to receive(:mark_dropped_as_resolved).with('My comment')
-      end
-
-      described_class.mark_dropped_vulnerability_as_resolved(noteable, project, author, 'My comment')
-    end
-  end
-
   describe '.publish_issue_to_status_page' do
     it 'calls IssuablesService' do
       expect_next_instance_of(::SystemNotes::IssuablesService) do |service|

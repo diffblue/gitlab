@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Security
+  # https://docs.gitlab.com/ee/user/application_security/secret_detection/post_processing.html#get-v1revocable_token_types
   GLPAT_KEY_TYPE = 'gitleaks_rule_id_gitlab_personal_access_token'
 
   # Service for alerting revocation service of leaked security tokens
@@ -15,7 +16,7 @@ module Security
     def execute
       glpats, @revocable_keys = @revocable_keys.partition { |key| key[:type] == GLPAT_KEY_TYPE }
 
-      glpats.each { |token| revoke_glpat(token) }
+      revoke_glpats(glpats)
 
       return success if @revocable_keys.empty? || !external_token_revocation_enabled?
       raise RevocationFailedError, 'Missing revocation token data' if missing_token_data?
@@ -33,6 +34,13 @@ module Security
 
     private
 
+    # Deduplicate pats before revocation regardless of file location
+    def revoke_glpats(tokens)
+      tokens
+        .uniq { |pat| pat[:token] }
+        .each { |token| revoke_glpat(token) }
+    end
+
     def revoke_glpat(token)
       pat = PersonalAccessToken.active.find_by_token(token[:token])
 
@@ -40,12 +48,18 @@ module Security
       return unless AccessTokenValidationService.new(pat).validate == :valid
 
       result = PersonalAccessTokens::RevokeService.new(
-        nil,
+        User.security_bot,
         token: pat,
-        source: 'secret_detection'
+        source: :secret_detection
       ).execute
 
       raise RevocationFailedError, result[:message] if result[:status] == :error
+
+      SystemNoteService.change_vulnerability_state(
+        token[:vulnerability],
+        User.security_bot,
+        revocation_comment
+      )
     end
 
     def external_token_revocation_enabled?
@@ -108,5 +122,12 @@ module Security
     def revocation_api_token
       ::Gitlab::CurrentSettings.secret_detection_token_revocation_token
     end
+
+    # rubocop:disable Layout/LineLength
+    def revocation_comment
+      s_("TokenRevocation|This Personal Access Token has been automatically revoked on detection. " \
+         "Consider investigating and rotating before marking this vulnerability as resolved.")
+    end
+    # rubocop:enable Layout/LineLength
   end
 end
