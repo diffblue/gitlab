@@ -30,6 +30,14 @@ class ProtectedEnvironment < ApplicationRecord
   end
 
   class << self
+    def names_for_projects(project_ids)
+      where(project_id: project_ids).pluck(:name)
+    end
+
+    def tiers_for_groups(group_ids)
+      where(group_id: group_ids).pluck(:name)
+    end
+
     def revoke_user(user)
       transaction do
         ProtectedEnvironments::DeployAccessLevel
