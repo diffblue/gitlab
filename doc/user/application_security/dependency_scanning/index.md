@@ -198,13 +198,15 @@ table.supported-languages ul {
     <tr>
       <td rowspan="2">Java</td>
       <td rowspan="2">
-        8,
-        11,
+        8 LTS,
+        11 LTS,
         13<sup><b><a href="#notes-regarding-supported-languages-and-package-managers-1">1</a></b></sup>,
         14<sup><b><a href="#notes-regarding-supported-languages-and-package-managers-1">1</a></b></sup>,
         15<sup><b><a href="#notes-regarding-supported-languages-and-package-managers-1">1</a></b></sup>,
         16<sup><b><a href="#notes-regarding-supported-languages-and-package-managers-1">1</a></b></sup>,
-        or 17
+        or 17 LTS<br />
+        <br />
+        Official support is limited to LTS versions only. Although it may be possible to use Dependency Scanning with other versions by building a custom dependency scanning image, this approach is not officially supported by GitLab.
       </td>
       <td><a href="https://gradle.org/">Gradle</a><sup><b><a href="#notes-regarding-supported-languages-and-package-managers-2">2</a></b></sup></td>
       <td>
@@ -295,7 +297,7 @@ table.supported-languages ul {
   <li>
     <a id="notes-regarding-supported-languages-and-package-managers-1"></a>
     <p>
-      This version of Java is not supported by the FIPS-enabled image of <code>gemnasium-maven</code>.
+      Support for this version of Java is deprecated and is planned to be removed in the GitLab 16.0 release. Additionally, this version of Java is not supported by the FIPS-enabled image of <code>gemnasium-maven</code>.
     </p>
   </li>
   <li>
@@ -360,7 +362,7 @@ The following package managers use lockfiles that GitLab analyzers are capable o
 | Conan           | 0.4                            | [1.x](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium/-/blob/master/qa/fixtures/c-conan/default/conan.lock)                                                                                                                                      |
 | Go              | Not applicable                 | [1.x](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium/-/blob/master/qa/fixtures/go-modules/default/go.sum) <sup><strong><a href="#notes-regarding-parsing-lockfiles-1">1</a></strong></sup>                                                                                                                                      |
 | NuGet           | v1                             | [4.9](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium/-/blob/master/qa/fixtures/csharp-nuget-dotnetcore/default/src/web.api/packages.lock.json#L2)                                                                                               |
-| npm             | v1, v2                         | [6.x](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium/-/blob/master/qa/fixtures/js-npm/default/package-lock.json#L4), [7.x](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium/-/blob/master/qa/fixtures/js-npm/lockfileVersion2/package-lock.json#L4)         |
+| npm             | v1, v2, v3                     | [6.x](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium/-/blob/master/qa/fixtures/js-npm/default/package-lock.json#L4), [7.x](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium/-/blob/master/qa/fixtures/js-npm/lockfileVersion2/package-lock.json#L4)         |
 | yarn            | v1                             | [1.x](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium/-/blob/master/qa/fixtures/js-yarn/default/yarn.lock#L2)                                                                                                                                       |
 | Poetry          | v1                             | [1.x](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-python/-/blob/v3/qa/fixtures/python-poetry/default/poetry.lock)                                                                                                          |
 
