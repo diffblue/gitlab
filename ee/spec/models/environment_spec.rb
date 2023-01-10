@@ -190,6 +190,26 @@ RSpec.describe Environment, :use_clean_rails_memory_store_caching do
     end
   end
 
+  describe '#without_protected' do
+    subject { described_class.without_protected(project) }
+
+    context 'when protected by project' do
+      before do
+        create(:protected_environment, name: environment.name, project: project)
+      end
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'when protected by group' do
+      before do
+        create(:protected_environment, name: environment.tier, project: nil, group: project.group)
+      end
+
+      it { is_expected.to be_empty }
+    end
+  end
+
   describe '#reactive_cache_updated' do
     let(:mock_store) { double }
 

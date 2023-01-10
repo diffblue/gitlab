@@ -32,6 +32,12 @@ module EE
       scope :preload_for_cluster_environment_entity, -> do
         preload({ project: [:route, { namespace: :route }] })
       end
+
+      scope :without_protected, -> (project) do
+        names = ProtectedEnvironment.names_for_projects(project.id)
+        tiers = ProtectedEnvironment.tiers_for_groups(project.ancestors_upto_ids)
+        without_names(names).without_tiers(tiers)
+      end
     end
 
     def reactive_cache_updated
