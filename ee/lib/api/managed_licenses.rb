@@ -146,7 +146,9 @@ module API
         authorize_can_admin!
         not_found!('SoftwareLicensePolicy') unless software_license_policy
 
-        software_license_policy.destroy!
+        SoftwareLicensePolicies::DeleteService
+          .new(user_project, current_user)
+          .execute(software_license_policy)
 
         no_content!
       end

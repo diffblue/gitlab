@@ -45,6 +45,14 @@ RSpec.describe SoftwareLicensePolicy do
     it { expect(described_class.by_spdx(SecureRandom.uuid)).to be_empty }
   end
 
+  describe '.count_for_software_license' do
+    let!(:mit) { create(:software_license, :mit) }
+    let!(:mit_policy1) { create(:software_license_policy, software_license: mit) }
+    let!(:mit_policy2) { create(:software_license_policy, software_license: mit) }
+
+    it { expect(described_class.count_for_software_license(mit.id)).to eq(2) }
+  end
+
   describe "#name" do
     specify { expect(subject.name).to eql(subject.software_license.name) }
   end

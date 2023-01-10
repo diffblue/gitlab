@@ -271,6 +271,7 @@ RSpec.describe API::ManagedLicenses, feature_category: :security_policy_manageme
 
           expect(response).to have_gitlab_http_status(:no_content)
         end.to change { project.software_license_policies.count }.by(-1)
+            .and change { SoftwareLicense.count }.by(-1)
       end
 
       it 'responds with 404 Not Found if requesting non-existing managed license' do
