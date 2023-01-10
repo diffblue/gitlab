@@ -563,7 +563,6 @@ export default {
                 <template #link="{ content }">
                   <gl-link
                     :href="$options.i18n.SUBHEADER_EMPTY_FILTERING_LINK"
-                    target="_blank"
                     class="gl-text-blue-500!"
                     >{{ content }}</gl-link
                   >
