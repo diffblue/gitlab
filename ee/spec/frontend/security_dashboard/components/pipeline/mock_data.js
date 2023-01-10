@@ -359,6 +359,7 @@ export const pipelineSecurityReportFinding = {
   title: 'Vulnerability title',
   state: 'CONFIRMED',
   description: 'description',
+  descriptionHtml: 'description <strong>html</strong>',
   severity: 'HIGH',
   solution: 'Some solution',
   reportType: 'reportType',
