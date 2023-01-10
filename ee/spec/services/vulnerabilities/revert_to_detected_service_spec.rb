@@ -55,6 +55,8 @@ RSpec.describe Vulnerabilities::RevertToDetectedService, feature_category: :vuln
 
         include_examples 'reverts vulnerability'
 
+        it_behaves_like 'removes dismissal feedback from associated findings'
+
         context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
           before do
             stub_feature_flags(deprecate_vulnerabilities_feedback: false)
@@ -69,13 +71,7 @@ RSpec.describe Vulnerabilities::RevertToDetectedService, feature_category: :vuln
 
         include_examples 'reverts vulnerability'
 
-        context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
-          before do
-            stub_feature_flags(deprecate_vulnerabilities_feedback: false)
-          end
-
-          it_behaves_like 'removes dismissal feedback from associated findings'
-        end
+        it_behaves_like 'removes dismissal feedback from associated findings'
       end
 
       context 'when vulnerability is resolved' do
@@ -83,13 +79,7 @@ RSpec.describe Vulnerabilities::RevertToDetectedService, feature_category: :vuln
 
         include_examples 'reverts vulnerability'
 
-        context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
-          before do
-            stub_feature_flags(deprecate_vulnerabilities_feedback: false)
-          end
-
-          it_behaves_like 'removes dismissal feedback from associated findings'
-        end
+        it_behaves_like 'removes dismissal feedback from associated findings'
       end
 
       context 'when security dashboard feature is disabled' do

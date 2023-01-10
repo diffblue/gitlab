@@ -15,12 +15,8 @@ module Vulnerabilities
             to_state: :resolved
           )
 
-          if Feature.enabled?(:deprecate_vulnerabilities_feedback, @vulnerability.project)
-            update_vulnerability_with(state: :resolved, resolved_by: @user, resolved_at: Time.current)
-          else
-            update_vulnerability_with(state: :resolved, resolved_by: @user, resolved_at: Time.current) do
-              DestroyDismissalFeedbackService.new(@user, @vulnerability).execute
-            end
+          update_vulnerability_with(state: :resolved, resolved_by: @user, resolved_at: Time.current) do
+            DestroyDismissalFeedbackService.new(@user, @vulnerability).execute # we can remove this as part of https://gitlab.com/gitlab-org/gitlab/-/issues/324899
           end
         end
       end

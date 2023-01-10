@@ -17,12 +17,8 @@ module Vulnerabilities
             to_state: :detected
           )
 
-          if Feature.enabled?(:deprecate_vulnerabilities_feedback, @vulnerability.project)
-            update_vulnerability_with(state: :detected, **REVERT_PARAMS)
-          else
-            update_vulnerability_with(state: :detected, **REVERT_PARAMS) do
-              DestroyDismissalFeedbackService.new(@user, @vulnerability).execute
-            end
+          update_vulnerability_with(state: :detected, **REVERT_PARAMS) do
+            DestroyDismissalFeedbackService.new(@user, @vulnerability).execute # we can remove this as part of https://gitlab.com/gitlab-org/gitlab/-/issues/324899
           end
         end
       end
