@@ -8,7 +8,7 @@ RSpec.describe 'displays new user signups cap alert', :js, feature_category: :ex
   let(:help_page_href) { help_page_path('user/admin_area/settings/sign_up_restrictions.md') }
   let(:expected_content) { 'Your instance has reached its user cap' }
 
-  context 'when reached active users cap' do
+  context 'when reached active users cap', :do_not_mock_admin_mode_setting do
     before do
       allow(User).to receive(:billable).and_return((0..9))
       allow(Gitlab::CurrentSettings.current_application_settings).to receive(:new_user_signups_cap).and_return(9)

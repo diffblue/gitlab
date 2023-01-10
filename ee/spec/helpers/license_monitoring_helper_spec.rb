@@ -83,7 +83,19 @@ RSpec.describe LicenseMonitoringHelper do
             allow(License).to receive(:current).and_return(license)
           end
 
-          it { is_expected.to be_truthy }
+          context 'when admin mode setting is disabled', :do_not_mock_admin_mode_setting do
+            it { is_expected.to be_truthy }
+          end
+
+          context 'when admin mode setting is enabled' do
+            context 'when in admin mode', :enable_admin_mode do
+              it { is_expected.to be_truthy }
+            end
+
+            context 'when not in admin mode' do
+              it { is_expected.to be_falsey }
+            end
+          end
         end
 
         it_behaves_like 'banner hidden when below the threshold'

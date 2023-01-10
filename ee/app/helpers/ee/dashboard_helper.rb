@@ -28,7 +28,7 @@ module EE
     end
 
     def has_start_trial?
-      !current_user.has_current_license? && current_user.admin?
+      !current_user.has_current_license? && current_user.can_admin_all_resources?
     end
 
     private

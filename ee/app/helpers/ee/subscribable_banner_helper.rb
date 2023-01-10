@@ -41,7 +41,7 @@ module EE
       @project&.namespace || @group
     end
 
-    def license_message(signed_in: signed_in?, is_admin: current_user&.admin?, license: License.current, force_notification: false)
+    def license_message(signed_in: signed_in?, is_admin: current_user&.can_admin_all_resources?, license: License.current, force_notification: false)
       ::Gitlab::ExpiringSubscriptionMessage.new(
         subscribable: license,
         signed_in: signed_in,

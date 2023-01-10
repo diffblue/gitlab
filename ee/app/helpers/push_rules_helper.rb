@@ -48,7 +48,9 @@ module PushRulesHelper
                       s_("ProjectSettings|This setting is applied on the server level but has been overridden for this project.")
                     end
 
-        messages << s_("ProjectSettings|Contact an admin to change this setting.") unless current_user.admin?
+        unless current_user.can_admin_all_resources?
+          messages << s_("ProjectSettings|Contact an admin to change this setting.")
+        end
       end
     end
 

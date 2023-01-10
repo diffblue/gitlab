@@ -429,7 +429,7 @@ RSpec.describe ProjectsHelper do
   describe '#project_permissions_panel_data' do
     using RSpec::Parameterized::TableSyntax
 
-    let(:user) { instance_double(User, admin?: false) }
+    let(:user) { instance_double(User, can_admin_all_resources?: false) }
     let(:expected_data) { { requirementsAvailable: false } }
 
     subject { helper.project_permissions_panel_data(project) }
@@ -458,7 +458,7 @@ RSpec.describe ProjectsHelper do
   describe '#approvals_app_data' do
     subject { helper.approvals_app_data(project) }
 
-    let(:user) { instance_double(User, admin?: false) }
+    let(:user) { instance_double(User, can_admin_all_resources?: false) }
 
     before do
       allow(helper).to receive(:current_user).and_return(user)

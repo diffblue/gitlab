@@ -9,7 +9,7 @@ module LicenseMonitoringHelper
     return if user_dismissed?(Users::CalloutsHelper::ACTIVE_USER_COUNT_THRESHOLD)
     return if license_not_available_or_trial?
 
-    current_user&.admin? && current_license.active_user_count_threshold_reached?
+    current_user&.can_admin_all_resources? && current_license.active_user_count_threshold_reached?
   end
 
   def users_over_license

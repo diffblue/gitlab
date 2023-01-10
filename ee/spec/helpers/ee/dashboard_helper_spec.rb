@@ -132,7 +132,7 @@ RSpec.describe DashboardHelper, type: :helper do
     end
   end
 
-  describe '.has_start_trial?' do
+  describe '.has_start_trial?', :do_not_mock_admin_mode_setting do
     using RSpec::Parameterized::TableSyntax
 
     where(:has_license, :current_user, :output) do
