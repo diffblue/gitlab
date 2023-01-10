@@ -1,6 +1,6 @@
 ---
 name: environment_unprotected
-description: This event is triggered when an environment is unprotected.
+description: This event is triggered when a protected environment is deleted.
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/216164
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/108247
 feature_category: environment_management
