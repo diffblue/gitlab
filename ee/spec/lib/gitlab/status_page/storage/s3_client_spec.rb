@@ -66,7 +66,7 @@ RSpec.describe Gitlab::StatusPage::Storage::S3Client, :aws_s3 do
 
   describe '#recursive_delete' do
     let(:key_prefix) { 'key_prefix/' }
-    let(:aws_client) { client.send('client') }
+    let(:aws_client) { client.send(:client) }
 
     subject(:result) { client.recursive_delete(key_prefix) }
 
