@@ -10,6 +10,6 @@ RSpec.describe Audit::BaseChangesAuditor do
   subject { described_class.new(user, project) }
 
   describe '#attributes_from_auditable_model' do
-    it { expect { subject.send('attributes_from_auditable_model', nil) }.to raise_error(NotImplementedError) }
+    it { expect { subject.send(:attributes_from_auditable_model, nil) }.to raise_error(NotImplementedError) }
   end
 end
