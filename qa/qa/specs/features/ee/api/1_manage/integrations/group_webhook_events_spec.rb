@@ -14,13 +14,13 @@ module QA
       end
 
       after(:context) do
-        Vendor::Smocker::SmockerApi.teardown!
+        Service::DockerRun::Smocker.teardown!
       end
 
       let(:session) { SecureRandom.hex(5) }
 
       it 'sends subgroup events',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/383580' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/383580' do
         setup_group_webhook(subgroup: true) do |webhook, smocker|
           group = Resource::Group.fabricate_via_api! do |group|
             group.sandbox = webhook.group
@@ -30,18 +30,18 @@ module QA
 
           expect { history(smocker).size }.to eventually_eq(2)
                                                .within(max_duration: 30, sleep_interval: 2),
-                                              -> { "Should have 2 events, got: #{event_logs(smocker)}" }
+            -> { "Should have 2 events, got: #{event_logs(smocker)}" }
 
           event_names = events(smocker).map(&:event_name)
           expect(event_names).to include(:subgroup_create, :subgroup_destroy),
-                                 -> { "Expected Create/Destroy Subgroup events, got: #{event_logs(smocker)}" }
+            -> { "Expected Create/Destroy Subgroup events, got: #{event_logs(smocker)}" }
         end
       end
 
       private
 
       def setup_group_webhook(**event_args)
-        Vendor::Smocker::SmockerApi.init(wait: 10) do |smocker|
+        Service::DockerRun::Smocker.init(wait: 10) do |smocker|
           smocker.register(session: session)
 
           webhook = EE::Resource::GroupWebHook.fabricate_via_api! do |hook|
