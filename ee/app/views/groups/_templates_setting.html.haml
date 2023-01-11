@@ -20,5 +20,4 @@
           = project_select_tag('group[file_template_project_id]', class: 'project-item-select hidden-filter-value', toggle_class: 'js-project-search js-project-filter js-filter-submit', dropdown_class: 'dropdown-menu-selectable dropdown-menu-project js-filter-submit',
             placeholder: _('Search projects'), idAttribute: 'id', data: { order_by: 'last_activity_at', idattribute: 'id', simple_filter: true, allow_clear: true }, value: @group.checked_file_template_project_id)
           = s_('Create common files more quickly, and standardize their format.')
-          = link_to s_("How do I use file templates?"), help_page_path('user/project/repository/web_editor.md', anchor: 'template-dropdowns'), target: '_blank', rel: 'noopener noreferrer'
       = f.submit _('Save changes'), pajamas_button: true, data: { qa_selector: 'save_changes_button' }
