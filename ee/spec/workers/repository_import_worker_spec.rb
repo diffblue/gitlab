@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe RepositoryImportWorker do
+RSpec.describe RepositoryImportWorker, feature_category: :importers do
   let_it_be(:project) { create(:project) }
 
   it 'updates the error on custom project template Import/Export' do
@@ -47,6 +47,16 @@ RSpec.describe RepositoryImportWorker do
 
         subject.perform(project.id)
       end
+    end
+  end
+
+  context 'when project not found (deleted)' do
+    before do
+      allow(Project).to receive(:find_by_id).with(project.id).and_return(nil)
+    end
+
+    it 'does not raise any exception' do
+      expect { subject.perform(project.id) }.not_to raise_error
     end
   end
 

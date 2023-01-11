@@ -7,6 +7,7 @@ module EE
     override :perform
     def perform(project_id)
       super
+      return if project.nil?
 
       # Explicitly enqueue mirror for update so
       # that upstream remote is created and fetched

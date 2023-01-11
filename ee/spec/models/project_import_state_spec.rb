@@ -2,38 +2,46 @@
 
 require 'spec_helper'
 
-RSpec.describe ProjectImportState, type: :model do
+RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
   include ::EE::GeoHelpers
 
-  describe 'Project import job' do
-    let(:project) { import_state.project }
-
-    before do
-      allow_any_instance_of(Gitlab::GitalyClient::RepositoryService).to receive(:import_repository)
-        .with(project.import_url).and_return(true)
-
-      # Works around https://github.com/rspec/rspec-mocks/issues/910
-      allow(Project).to receive(:find).with(project.id).and_return(project)
-      expect(project).to receive(:after_import).and_call_original
-    end
-
-    context 'with a mirrored project' do
-      let(:import_state) { create(:import_state, :mirror) }
-
-      it 'calls RepositoryImportWorker and inserts in front of the mirror scheduler queue', :sidekiq_might_not_need_inline do
-        allow_any_instance_of(EE::Project).to receive(:repository_exists?).and_return(false, true)
-
-        expect_any_instance_of(EE::ProjectImportState).to receive(:force_import_job!)
-        expect(RepositoryImportWorker).to receive(:perform_async).with(import_state.project_id).and_call_original
-
-        expect { import_state.schedule }.to change { import_state.jid }
-      end
-    end
-  end
+  let_it_be(:project) { create(:project) }
 
   describe 'transitions' do
-    let(:import_state) { create(:import_state, :started, import_type: :github) }
-    let(:project) { import_state.project }
+    let(:import_state) { create(:import_state, :started, import_type: :github, project: project) }
+
+    context 'state transition: [:none, :finished, :failed] => :scheduled' do
+      let(:import_state) { create(:import_state, :failed, import_type: :github, project: project) }
+      let(:jid) { '551d3ceac5f67a116719ce41' }
+
+      before do
+        allow(import_state.project).to receive(:add_import_job).and_return(jid)
+        allow(Gitlab::Mirror).to receive(:increment_capacity).with(import_state.project_id)
+      end
+
+      it 'calls project import job and sets last_update_scheduled_at' do
+        import_state.schedule
+
+        expect(Gitlab::Mirror).not_to have_received(:increment_capacity)
+        expect(import_state.project).to have_received(:add_import_job)
+        expect(import_state.jid).to eq jid
+        expect(import_state.last_update_scheduled_at).to be_within(1.second).of(Time.current)
+      end
+
+      context 'when project mirrored' do
+        let(:mirror_project) { create(:project) }
+        let(:import_state) { create(:import_state, :failed, :mirror, import_type: :github, project: mirror_project) }
+
+        it 'increments mirror capacity' do
+          import_state.schedule
+
+          expect(Gitlab::Mirror).to have_received(:increment_capacity)
+          expect(import_state.project).to have_received(:add_import_job)
+          expect(import_state.jid).to eq jid
+          expect(import_state.last_update_scheduled_at).to be_within(1.second).of(Time.current)
+        end
+      end
+    end
 
     context 'state transition: [:started] => [:finished]' do
       context 'Geo repository update events' do
