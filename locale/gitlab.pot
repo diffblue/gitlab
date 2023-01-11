@@ -31815,6 +31815,9 @@ msgstr ""
 msgid "ProductAnalytics|Browser Family"
 msgstr ""
 
+msgid "ProductAnalytics|Cancel Edit"
+msgstr ""
+
 msgid "ProductAnalytics|Choose a chart type on the right"
 msgstr ""
 
@@ -31851,6 +31854,9 @@ msgstr ""
 msgid "ProductAnalytics|Dimensions"
 msgstr ""
 
+msgid "ProductAnalytics|Edit"
+msgstr ""
+
 msgid "ProductAnalytics|Event Type"
 msgstr ""
 
@@ -31867,6 +31873,9 @@ msgid "ProductAnalytics|Feature Usage"
 msgstr ""
 
 msgid "ProductAnalytics|Feature usage"
+msgstr ""
+
+msgid "ProductAnalytics|Go back"
 msgstr ""
 
 msgid "ProductAnalytics|Host"
