@@ -14,11 +14,7 @@ module EE
         include GoogleAnalyticsCSP
         include Onboarding::SetRedirect
 
-        before_action :authorized_for_trial_onboarding!,
-                      only: [
-                        :trial_getting_started,
-                        :trial_onboarding_board
-                      ]
+        before_action :authorized_for_trial_onboarding!, only: [:trial_getting_started, :trial_onboarding_board]
 
         before_action only: [:trial_getting_started, :continuous_onboarding_getting_started, :show] do
           push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
@@ -84,10 +80,9 @@ module EE
       end
 
       def learn_gitlab_project
-        strong_memoize(:learn_gitlab_project) do
-          ::Project.find(params[:learn_gitlab_project_id])
-        end
+        ::Project.find(params[:learn_gitlab_project_id])
       end
+      strong_memoize_attr :learn_gitlab_project
 
       def passed_through_params
         update_params.slice(:role, :registration_objective)
@@ -95,8 +90,8 @@ module EE
                      .merge(glm_tracking_params)
       end
 
-      override :update_success_path
-      def update_success_path
+      override :signup_onboarding_path
+      def signup_onboarding_path
         if params[:joining_project] == 'true'
           finish_onboarding
           path_for_signed_in_user(current_user)
