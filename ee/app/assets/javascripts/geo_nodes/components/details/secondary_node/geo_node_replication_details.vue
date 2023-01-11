@@ -75,7 +75,7 @@ export default {
         ? `${this.node.url}${replicable.customReplicationUrl}`
         : `${this.node.url}admin/geo/sites/${this.node.id}/replication/${replicable.namePlural}`;
 
-      return new URL(path);
+      return new URL(path).toString();
     },
   },
   GEO_REPLICATION_SUPPORTED_TYPES_URL,
