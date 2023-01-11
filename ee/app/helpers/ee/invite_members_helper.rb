@@ -19,17 +19,28 @@ module EE
       dataset = super
 
       free_user_cap = ::Namespaces::FreeUserCap::Enforcement.new(source.root_ancestor)
+      notification_free_user_cap = ::Namespaces::FreeUserCap::Notification.new(source.root_ancestor)
 
-      return dataset unless free_user_cap.enforce_cap?
+      return dataset unless free_user_cap.enforce_cap? || notification_free_user_cap.enforce_cap?
+
+      alert_variant =
+        if free_user_cap.enforce_cap?
+          if free_user_cap.reached_limit?
+            ::Namespaces::FreeUserCap::REACHED_LIMIT_VARIANT
+          elsif free_user_cap.close_to_dashboard_limit?
+            ::Namespaces::FreeUserCap::CLOSE_TO_LIMIT_VARIANT
+          end
+        elsif notification_free_user_cap.over_limit?
+          ::Namespaces::FreeUserCap::NOTIFICATION_LIMIT_VARIANT
+        end
 
       dataset.merge(
         users_limit_dataset: ::Gitlab::Json.dump(
           {
+            alert_variant: alert_variant,
             new_trial_registration_path: new_trial_path,
             members_path: group_usage_quotas_path(source.root_ancestor),
             purchase_path: group_billings_path(source.root_ancestor),
-            reached_limit: free_user_cap.reached_limit?,
-            close_to_dashboard_limit: free_user_cap.close_to_dashboard_limit?,
             remaining_seats: free_user_cap.remaining_seats,
             free_users_limit: ::Namespaces::FreeUserCap.dashboard_limit
           }
