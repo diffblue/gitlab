@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ResourceWeightEvent, type: :model do
+RSpec.describe ResourceWeightEvent, feature_category: :team_planing, type: :model do
   let_it_be(:user1) { create(:user) }
   let_it_be(:user2) { create(:user) }
 
@@ -12,6 +12,7 @@ RSpec.describe ResourceWeightEvent, type: :model do
 
   it_behaves_like 'a resource event'
   it_behaves_like 'a resource event for issues'
+  it_behaves_like 'a note for work item resource event'
 
   describe 'validations' do
     it { is_expected.not_to allow_value(nil).for(:issue) }

@@ -2,10 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe ResourceIterationEvent, :snowplow, type: :model do
+RSpec.describe ResourceIterationEvent, :snowplow, feature_category: :team_planing, type: :model do
   it_behaves_like 'a resource event'
   it_behaves_like 'a resource event for issues'
   it_behaves_like 'a resource event for merge requests'
+  it_behaves_like 'a note for work item resource event'
 
   it_behaves_like 'having unique enum values'
   it_behaves_like 'timebox resource event validations'
