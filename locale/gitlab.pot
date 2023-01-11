@@ -2726,10 +2726,19 @@ msgstr ""
 msgid "AdminDashboard|Error loading the statistics. Please try again"
 msgstr ""
 
+msgid "AdminEmail|An error occurred fetching the groups and projects. Please refresh the page to try again."
+msgstr ""
+
 msgid "AdminEmail|Body"
 msgstr ""
 
 msgid "AdminEmail|Body is required."
+msgstr ""
+
+msgid "AdminEmail|Loading groups and projects."
+msgstr ""
+
+msgid "AdminEmail|No groups or projects found."
 msgstr ""
 
 msgid "AdminEmail|Recipient group or project"
