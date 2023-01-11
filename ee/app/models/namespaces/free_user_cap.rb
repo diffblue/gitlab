@@ -2,6 +2,10 @@
 
 module Namespaces
   module FreeUserCap
+    REACHED_LIMIT_VARIANT = 'reached'
+    CLOSE_TO_LIMIT_VARIANT = 'close'
+    NOTIFICATION_LIMIT_VARIANT = 'notification'
+
     def self.notification_or_enforcement_enabled?(namespace)
       # should only be needed temporarily while notification is still in codebase
       # after notification is removed, we should merely call `Enforcement` in the

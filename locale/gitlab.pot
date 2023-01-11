@@ -22869,6 +22869,9 @@ msgstr ""
 msgid "InviteMembersModal|GitLab is better with colleagues!"
 msgstr ""
 
+msgid "InviteMembersModal|GitLab will enforce this limit in the future. If you are over %{dashboardLimit} users when enforcement begins, your namespace will be placed in a %{freeUserLimitLinkStart}read-only state%{freeUserLimitLinkEnd}. To avoid being placed in a read-only state, reduce your namespace to %{dashboardLimit} users or less, or purchase a paid tier."
+msgstr ""
+
 msgid "InviteMembersModal|How about inviting a colleague or two to join you?"
 msgstr ""
 
@@ -22947,6 +22950,9 @@ msgid "InviteMembersModal|You're inviting members to the %{strongStart}%{name}%{
 msgstr ""
 
 msgid "InviteMembersModal|You've reached your %{count} %{members} limit for %{name}"
+msgstr ""
+
+msgid "InviteMembersModal|Your namespace %{namespaceName} is over the %{dashboardLimit} user limit."
 msgstr ""
 
 msgid "InviteMembers|Invite a group"
