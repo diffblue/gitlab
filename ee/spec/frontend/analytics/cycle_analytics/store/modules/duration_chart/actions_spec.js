@@ -7,7 +7,7 @@ import * as types from 'ee/analytics/cycle_analytics/store/modules/duration_char
 import testAction from 'helpers/vuex_action_helper';
 import { createdAfter, createdBefore, group } from 'jest/analytics/cycle_analytics/mock_data';
 import { createAlert } from '~/flash';
-import httpStatusCodes, { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
+import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import {
   allowedStages as activeStages,
   transformedDurationData,
@@ -108,11 +108,11 @@ describe('DurationChart actions', () => {
         });
     });
 
-    describe(`Status ${httpStatusCodes.OK} and error message in response`, () => {
+    describe(`Status ${HTTP_STATUS_OK} and error message in response`, () => {
       const dataError = 'Too much data';
 
       beforeEach(() => {
-        mock.onGet(endpoints.durationData).reply(httpStatusCodes.OK, { error: dataError });
+        mock.onGet(endpoints.durationData).reply(HTTP_STATUS_OK, { error: dataError });
       });
 
       it(`dispatches the 'receiveDurationDataError' with ${dataError}`, () => {

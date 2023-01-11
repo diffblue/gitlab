@@ -1,7 +1,7 @@
 import Visibility from 'visibilityjs';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-import httpStatusCodes, { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
+import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import Poll from '~/lib/utils/poll';
 import { __ } from '~/locale';
 import { MAX_RETRIES, RETRY_DELAY } from './constants';
@@ -39,7 +39,7 @@ export const fetchCodequality = ({ commit, state, dispatch }) => {
     method: 'getCodequalityDiffReports',
     successCallback: ({ status, data }) => {
       retryCount = 0;
-      if (status === httpStatusCodes.OK) {
+      if (status === HTTP_STATUS_OK) {
         commit(types.SET_CODEQUALITY_DATA, data);
 
         dispatch('stopCodequalityPolling');

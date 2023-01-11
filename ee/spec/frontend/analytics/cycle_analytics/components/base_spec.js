@@ -33,9 +33,10 @@ import {
 import { createAlert } from '~/flash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import * as commonUtils from '~/lib/utils/common_utils';
-import httpStatusCodes, {
+import {
   HTTP_STATUS_FORBIDDEN,
   HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_OK,
 } from '~/lib/utils/http_status';
 import * as urlUtils from '~/lib/utils/url_utility';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
@@ -90,17 +91,17 @@ const mocks = {
 };
 
 function mockRequiredRoutes(mockAdapter) {
-  mockAdapter.onGet(endpoints.stageData).reply(httpStatusCodes.OK, issueEvents);
-  mockAdapter.onGet(endpoints.tasksByTypeTopLabelsData).reply(httpStatusCodes.OK, groupLabels);
-  mockAdapter.onGet(endpoints.tasksByTypeData).reply(httpStatusCodes.OK, { ...tasksByTypeData });
+  mockAdapter.onGet(endpoints.stageData).reply(HTTP_STATUS_OK, issueEvents);
+  mockAdapter.onGet(endpoints.tasksByTypeTopLabelsData).reply(HTTP_STATUS_OK, groupLabels);
+  mockAdapter.onGet(endpoints.tasksByTypeData).reply(HTTP_STATUS_OK, { ...tasksByTypeData });
   mockAdapter
     .onGet(endpoints.baseStagesEndpoint)
-    .reply(httpStatusCodes.OK, { ...customizableStagesAndEvents });
+    .reply(HTTP_STATUS_OK, { ...customizableStagesAndEvents });
   mockAdapter
     .onGet(endpoints.durationData)
-    .reply(httpStatusCodes.OK, customizableStagesAndEvents.stages);
-  mockAdapter.onGet(endpoints.stageMedian).reply(httpStatusCodes.OK, { value: null });
-  mockAdapter.onGet(endpoints.valueStreamData).reply(httpStatusCodes.OK, valueStreams);
+    .reply(HTTP_STATUS_OK, customizableStagesAndEvents.stages);
+  mockAdapter.onGet(endpoints.stageMedian).reply(HTTP_STATUS_OK, { value: null });
+  mockAdapter.onGet(endpoints.valueStreamData).reply(HTTP_STATUS_OK, valueStreams);
 }
 
 async function shouldMergeUrlParams(wrapper, result) {
@@ -446,7 +447,7 @@ describe('EE Value Stream Analytics component', () => {
 
     it('will display an error if the fetchStageData request is successful but has an embedded error', async () => {
       const tooMuchDataError = 'There is too much data to calculate. Please change your selection.';
-      mock.onGet(endpoints.stageData).reply(httpStatusCodes.OK, { error: tooMuchDataError });
+      mock.onGet(endpoints.stageData).reply(HTTP_STATUS_OK, { error: tooMuchDataError });
 
       wrapper = await createComponent({ selectedStage: issueStage });
 

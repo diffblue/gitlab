@@ -11,7 +11,7 @@ import * as types from 'ee/analytics/cycle_analytics/store/modules/type_of_work/
 import testAction from 'helpers/vuex_action_helper';
 import { createdAfter, createdBefore } from 'jest/analytics/cycle_analytics/mock_data';
 import { createAlert } from '~/flash';
-import httpStatusCodes, { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
+import { HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { groupLabels, groupLabelNames, endpoints, rawTasksByTypeData } from '../../../mock_data';
 
 jest.mock('~/flash');
@@ -66,7 +66,7 @@ describe('Type of work actions', () => {
 
     describe('succeeds', () => {
       beforeEach(() => {
-        mock.onGet(endpoints.tasksByTypeTopLabelsData).replyOnce(httpStatusCodes.OK, groupLabels);
+        mock.onGet(endpoints.tasksByTypeTopLabelsData).replyOnce(HTTP_STATUS_OK, groupLabels);
       });
 
       it('dispatches receiveTopRankedGroupLabelsSuccess if the request succeeds', () => {
@@ -97,13 +97,11 @@ describe('Type of work actions', () => {
       });
     });
 
-    describe(`Status ${httpStatusCodes.OK} and error message in response`, () => {
+    describe(`Status ${HTTP_STATUS_OK} and error message in response`, () => {
       const dataError = 'Too much data';
 
       beforeEach(() => {
-        mock
-          .onGet(endpoints.tasksByTypeTopLabelsData)
-          .reply(httpStatusCodes.OK, { error: dataError });
+        mock.onGet(endpoints.tasksByTypeTopLabelsData).reply(HTTP_STATUS_OK, { error: dataError });
       });
 
       it(`dispatches the 'receiveTopRankedGroupLabelsError' with ${dataError}`, () => {
@@ -158,7 +156,7 @@ describe('Type of work actions', () => {
 
     describe('succeeds', () => {
       beforeEach(() => {
-        mock.onGet(endpoints.tasksByTypeData).replyOnce(httpStatusCodes.OK, rawTasksByTypeData);
+        mock.onGet(endpoints.tasksByTypeData).replyOnce(HTTP_STATUS_OK, rawTasksByTypeData);
       });
 
       it(`commits the ${types.RECEIVE_TASKS_BY_TYPE_DATA_SUCCESS} if the request succeeds`, () => {
@@ -175,11 +173,11 @@ describe('Type of work actions', () => {
       });
     });
 
-    describe(`Status ${httpStatusCodes.OK} and error message in response`, () => {
+    describe(`Status ${HTTP_STATUS_OK} and error message in response`, () => {
       const dataError = 'Too much data';
 
       beforeEach(() => {
-        mock.onGet(endpoints.tasksByTypeData).reply(httpStatusCodes.OK, { error: dataError });
+        mock.onGet(endpoints.tasksByTypeData).reply(HTTP_STATUS_OK, { error: dataError });
       });
 
       it(`dispatches the 'receiveTasksByTypeDataError' with ${dataError}`, () => {

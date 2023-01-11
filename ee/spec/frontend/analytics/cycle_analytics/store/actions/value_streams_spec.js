@@ -5,7 +5,7 @@ import * as getters from 'ee/analytics/cycle_analytics/store/getters';
 import * as types from 'ee/analytics/cycle_analytics/store/mutation_types';
 import testAction from 'helpers/vuex_action_helper';
 import { currentGroup } from 'jest/analytics/cycle_analytics/mock_data';
-import httpStatusCodes, { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
+import { HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { allowedStages as stages, endpoints, valueStreams } from '../../mock_data';
 
 const mockStartEventIdentifier = 'issue_first_mentioned_in_commit';
@@ -84,7 +84,7 @@ describe('Value Stream Analytics actions / value streams', () => {
 
     describe('with no errors', () => {
       beforeEach(() => {
-        mock.onPost(endpoints.valueStreamData).replyOnce(httpStatusCodes.OK, createResp);
+        mock.onPost(endpoints.valueStreamData).replyOnce(HTTP_STATUS_OK, createResp);
       });
 
       it(`commits the ${types.REQUEST_CREATE_VALUE_STREAM} and ${types.RECEIVE_CREATE_VALUE_STREAM_SUCCESS} actions`, () => {
@@ -166,7 +166,7 @@ describe('Value Stream Analytics actions / value streams', () => {
 
     describe('with no errors', () => {
       beforeEach(() => {
-        mock.onPut(endpoints.valueStreamData).replyOnce(httpStatusCodes.OK, updateResp);
+        mock.onPut(endpoints.valueStreamData).replyOnce(HTTP_STATUS_OK, updateResp);
       });
 
       it(`commits the ${types.REQUEST_UPDATE_VALUE_STREAM} and ${types.RECEIVE_UPDATE_VALUE_STREAM_SUCCESS} actions`, () => {
@@ -212,7 +212,7 @@ describe('Value Stream Analytics actions / value streams', () => {
 
     describe('with no errors', () => {
       beforeEach(() => {
-        mock.onDelete(endpoints.valueStreamData).replyOnce(httpStatusCodes.OK, {});
+        mock.onDelete(endpoints.valueStreamData).replyOnce(HTTP_STATUS_OK, {});
       });
 
       it(`commits the ${types.REQUEST_DELETE_VALUE_STREAM} and ${types.RECEIVE_DELETE_VALUE_STREAM_SUCCESS} actions`, () => {
@@ -270,7 +270,7 @@ describe('Value Stream Analytics actions / value streams', () => {
         ...mockGetters,
       };
       mock = new MockAdapter(axios);
-      mock.onGet(endpoints.valueStreamData).reply(httpStatusCodes.OK, { stages: [], events: [] });
+      mock.onGet(endpoints.valueStreamData).reply(HTTP_STATUS_OK, { stages: [], events: [] });
     });
 
     it(`commits ${types.REQUEST_VALUE_STREAMS} and dispatches receiveValueStreamsSuccess with received data on success`, () => {
@@ -384,7 +384,7 @@ describe('Value Stream Analytics actions / value streams', () => {
         },
       };
       mock = new MockAdapter(axios);
-      mock.onGet(endpoints.valueStreamData).reply(httpStatusCodes.OK, { stages: [], events: [] });
+      mock.onGet(endpoints.valueStreamData).reply(HTTP_STATUS_OK, { stages: [], events: [] });
     });
 
     it('dispatches fetchGroupStagesAndEvents, fetchStageMedianValues and durationChart/fetchDurationData', () => {

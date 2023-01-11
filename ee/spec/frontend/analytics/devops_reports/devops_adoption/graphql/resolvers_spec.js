@@ -4,7 +4,7 @@ import { createResolvers } from 'ee/analytics/devops_reports/devops_adoption/gra
 import getGroupsQuery from 'ee/analytics/devops_reports/devops_adoption/graphql/queries/get_groups.query.graphql';
 import Api from 'ee/api';
 import axios from '~/lib/utils/axios_utils';
-import httpStatus from '~/lib/utils/http_status';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { groupData, groupNodes } from '../mock_data';
 
 const fetchGroupsUrl = Api.buildUrl(Api.groupsPath);
@@ -29,7 +29,7 @@ describe('DevOps GraphQL resolvers', () => {
     });
 
     it('fetches all relevent groups / subgroups', async () => {
-      mockAdapter.onGet(url).reply(httpStatus.OK, groupData);
+      mockAdapter.onGet(url).reply(HTTP_STATUS_OK, groupData);
       await mockClient.query({ query: getGroupsQuery });
 
       expect(mockAdapter.history.get[0].params).not.toEqual(
@@ -38,7 +38,7 @@ describe('DevOps GraphQL resolvers', () => {
     });
 
     it('when receiving groups data', async () => {
-      mockAdapter.onGet(url).reply(httpStatus.OK, groupData);
+      mockAdapter.onGet(url).reply(HTTP_STATUS_OK, groupData);
       const result = await mockClient.query({ query: getGroupsQuery });
 
       expect(result.data).toEqual({
@@ -50,7 +50,7 @@ describe('DevOps GraphQL resolvers', () => {
     });
 
     it('when receiving empty groups data', async () => {
-      mockAdapter.onGet(url).reply(httpStatus.OK, []);
+      mockAdapter.onGet(url).reply(HTTP_STATUS_OK, []);
       const result = await mockClient.query({ query: getGroupsQuery });
 
       expect(result.data).toEqual({
