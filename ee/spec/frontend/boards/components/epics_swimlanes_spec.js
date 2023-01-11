@@ -68,13 +68,15 @@ describe('EpicsSwimlanes', () => {
     const store = createStore({ epicLanesFetchInProgress, listItemsFetchInProgress, hasMoreEpics });
     const defaultProps = {
       lists: mockLists,
-      disabled: false,
     };
 
     wrapper = extendedWrapper(
       shallowMount(EpicsSwimlanes, {
         propsData: { ...defaultProps, canAdminList },
         store,
+        provide: {
+          disabled: false,
+        },
       }),
     );
   };

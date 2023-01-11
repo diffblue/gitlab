@@ -46,7 +46,6 @@ describe('EpicLane', () => {
     const defaultProps = {
       epic: mockEpic,
       lists: mockLists,
-      disabled: false,
     };
 
     wrapper = shallowMountExtended(EpicLane, {

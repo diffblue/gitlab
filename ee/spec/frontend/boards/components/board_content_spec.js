@@ -27,11 +27,11 @@ describe('ee/BoardContent', () => {
         isIssueBoard,
         isEpicBoard,
         isGroupBoard: true,
+        disabled: false,
         isApolloBoard: false,
       },
       propsData: {
         lists: [],
-        disabled: false,
         boardId: 'gid://gitlab/Board/1',
       },
       stubs: {

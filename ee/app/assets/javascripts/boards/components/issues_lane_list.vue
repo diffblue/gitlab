@@ -18,10 +18,6 @@ export default {
       type: Object,
       required: true,
     },
-    disabled: {
-      type: Boolean,
-      required: true,
-    },
     issues: {
       type: Array,
       required: true,
@@ -192,7 +188,7 @@ export default {
           :index="index"
           :list="list"
           :item="issue"
-          :disabled="disabled || !canAdminEpic"
+          :can-admin="canAdminEpic"
         />
         <gl-loading-icon v-if="isLoading && isUnassignedIssuesLane" size="sm" class="gl-py-3" />
       </component>

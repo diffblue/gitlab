@@ -32,13 +32,10 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
+  inject: ['disabled'],
   props: {
     lists: {
       type: Array,
-      required: true,
-    },
-    disabled: {
-      type: Boolean,
       required: true,
     },
     canAdminList: {
@@ -208,7 +205,6 @@ export default {
           <board-list-header
             :can-admin-list="canAdminList"
             :list="list"
-            :disabled="disabled"
             :is-swimlanes-header="true"
           />
         </div>
@@ -268,7 +264,6 @@ export default {
               :list="list"
               :issues="unassignedIssues(list.id)"
               :is-unassigned-issues-lane="true"
-              :disabled="disabled"
               :can-admin-list="canAdminList"
             />
           </div>
