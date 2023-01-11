@@ -20635,9 +20635,6 @@ msgstr ""
 msgid "How do I use a web terminal?"
 msgstr ""
 
-msgid "How do I use file templates?"
-msgstr ""
-
 msgid "How does pull mirroring work?"
 msgstr ""
 
