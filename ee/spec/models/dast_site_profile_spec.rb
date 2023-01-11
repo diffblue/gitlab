@@ -310,14 +310,16 @@ RSpec.describe DastSiteProfile, :dynamic_analysis,
       end
 
       context 'there is security_orchestration_policy_configuration assigned to project' do
-        let(:security_orchestration_policy_configuration) { instance_double(Security::OrchestrationPolicyConfiguration, present?: true, active_policy_names_with_dast_site_profile: ['Policy Name']) }
+        let(:group_security_policy_configuration) { instance_double(Security::OrchestrationPolicyConfiguration, present?: true, active_policy_names_with_dast_site_profile: Set.new) }
+        let(:security_orchestration_policy_configuration) { instance_double(Security::OrchestrationPolicyConfiguration, present?: true, active_policy_names_with_dast_site_profile: ['Policy Name'].to_set) }
 
         before do
           allow(subject.project).to receive(:security_orchestration_policy_configuration).and_return(security_orchestration_policy_configuration)
-          allow(subject.project).to receive(:all_security_orchestration_policy_configurations).and_return([security_orchestration_policy_configuration])
+          allow(subject.project).to receive(:all_security_orchestration_policy_configurations).and_return([group_security_policy_configuration, security_orchestration_policy_configuration])
         end
 
         it 'calls security_orchestration_policy_configuration.active_policy_names_with_dast_site_profile with profile name' do
+          expect(group_security_policy_configuration).to receive(:active_policy_names_with_dast_site_profile).with(subject.name)
           expect(security_orchestration_policy_configuration).to receive(:active_policy_names_with_dast_site_profile).with(subject.name)
 
           subject.referenced_in_security_policies
