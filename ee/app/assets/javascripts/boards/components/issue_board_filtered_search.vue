@@ -5,7 +5,6 @@
 import { mapActions } from 'vuex';
 import { orderBy } from 'lodash';
 import IssueBoardFilteredSearchFoss from '~/boards/components/issue_board_filtered_search.vue';
-import { BoardType } from '~/boards/constants';
 import {
   OPERATORS_IS_NOT,
   TOKEN_TYPE_EPIC,
@@ -31,11 +30,13 @@ export default {
     ...IssueBoardFilteredSearchFoss.i18n,
   },
   mixins: [glFeatureFlagMixin()],
-  inject: ['epicFeatureAvailable', 'iterationFeatureAvailable', 'healthStatusFeatureAvailable'],
+  inject: [
+    'epicFeatureAvailable',
+    'iterationFeatureAvailable',
+    'healthStatusFeatureAvailable',
+    'isGroupBoard',
+  ],
   computed: {
-    isGroupBoard() {
-      return this.boardType === BoardType.group;
-    },
     epicsGroupPath() {
       return this.isGroupBoard
         ? this.fullPath

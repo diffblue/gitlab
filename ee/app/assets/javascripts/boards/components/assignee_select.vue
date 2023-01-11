@@ -1,7 +1,7 @@
 <script>
 import { GlButton } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 import searchGroupUsers from '~/graphql_shared/queries/group_users_search.query.graphql';
 import searchProjectUsers from '~/graphql_shared/queries/users_search.query.graphql';
 import { s__ } from '~/locale';
@@ -18,7 +18,7 @@ export default {
     DropdownWidget,
     GlButton,
   },
-  inject: ['fullPath'],
+  inject: ['fullPath', 'isProjectBoard'],
   props: {
     board: {
       type: Object,
@@ -66,7 +66,6 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['isProjectBoard']),
     anyAssignee() {
       return this.selected.name === ANY_ASSIGNEE.name;
     },

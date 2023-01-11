@@ -7,7 +7,7 @@ import {
   GlDropdownSectionHeader,
 } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 
 import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query.graphql';
 import { getIterationPeriod } from 'ee/iterations/utils';
@@ -35,7 +35,7 @@ export default {
     DropdownWidget,
     TooltipOnTruncate,
   },
-  inject: ['fullPath'],
+  inject: ['fullPath', 'isProjectBoard', 'boardType'],
   props: {
     board: {
       type: Object,
@@ -77,8 +77,7 @@ export default {
         return !this.isEditing;
       },
       update(data) {
-        const boardType = this.isProjectBoard ? 'project' : 'group';
-        return data[boardType]?.iterations?.nodes || [];
+        return data[this.boardType]?.iterations?.nodes || [];
       },
       error() {
         this.setError({ message: this.$options.i18n.errorSearchingIterations });
@@ -86,7 +85,6 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['isProjectBoard']),
     anyIteration() {
       return this.selected.id === ANY_ITERATION.id && this.selected.iterationCadenceId === null;
     },

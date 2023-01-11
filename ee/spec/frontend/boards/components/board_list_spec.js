@@ -27,10 +27,6 @@ const actions = {
 const componentConfig = {
   listIssueProps,
   componentProps,
-  getters: {
-    isGroupBoard: () => true,
-    isProjectBoard: () => false,
-  },
   actions,
   stubs: {
     BoardCard,
@@ -41,6 +37,8 @@ const componentConfig = {
     scopedLabelsAvailable: true,
     isEpicBoard: true,
     issuableType: issuableTypes.epic,
+    isGroupBoard: true,
+    isProjectBoard: false,
   },
 };
 

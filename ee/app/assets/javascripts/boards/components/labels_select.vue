@@ -1,7 +1,7 @@
 <script>
 import { GlButton } from '@gitlab/ui';
 import { debounce } from 'lodash';
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 import { __, s__, sprintf } from '~/locale';
 import LabelItem from '~/sidebar/components/labels/labels_select_widget/label_item.vue';
 import searchGroupLabels from '~/sidebar/components/labels/labels_select_widget/graphql/group_labels.query.graphql';
@@ -22,7 +22,7 @@ export default {
     DropdownHeader,
     DropdownFooter,
   },
-  inject: ['fullPath', 'boardType'],
+  inject: ['fullPath', 'boardType', 'isProjectBoard'],
   props: {
     board: {
       type: Object,
@@ -67,7 +67,6 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['isProjectBoard']),
     isLabelsEmpty() {
       return this.selected.length === 0;
     },

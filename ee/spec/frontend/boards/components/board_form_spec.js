@@ -63,8 +63,6 @@ describe('BoardForm', () => {
   const createStore = ({ getters = {} } = {}) => {
     store = new Vuex.Store({
       getters: {
-        isGroupBoard: () => true,
-        isProjectBoard: () => false,
         ...getters,
       },
       actions: {
@@ -87,6 +85,8 @@ describe('BoardForm', () => {
         glFeatures: { iterationCadences },
         isIssueBoard,
         isEpicBoard,
+        isGroupBoard: true,
+        isProjectBoard: false,
       },
       mocks: {
         $apollo: {

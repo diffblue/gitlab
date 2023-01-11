@@ -22,6 +22,7 @@ import projectMilestonesQuery from '~/sidebar/queries/project_milestones.query.g
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 
 Vue.use(VueApollo);
+Vue.use(Vuex);
 
 describe('Milestone select component', () => {
   let wrapper;
@@ -35,12 +36,10 @@ describe('Milestone select component', () => {
   const milestonesQueryHandlerSuccess = jest.fn().mockResolvedValue(mockProjectMilestonesResponse);
   const groupUsersQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupMilestonesResponse);
 
-  const createStore = ({ isGroupBoard = false, isProjectBoard = false } = {}) => {
+  const createStore = () => {
     store = new Vuex.Store({
-      ...defaultStore,
-      getters: {
-        isGroupBoard: () => isGroupBoard,
-        isProjectBoard: () => isProjectBoard,
+      actions: {
+        ...defaultStore.actions,
       },
     });
   };
@@ -48,6 +47,8 @@ describe('Milestone select component', () => {
   const createComponent = ({
     props = {},
     milestonesQueryHandler = milestonesQueryHandlerSuccess,
+    isGroupBoard = false,
+    isProjectBoard = false,
   } = {}) => {
     fakeApollo = createMockApollo([
       [projectMilestonesQuery, milestonesQueryHandler],
@@ -63,6 +64,8 @@ describe('Milestone select component', () => {
       },
       provide: {
         fullPath: 'gitlab-org',
+        isGroupBoard,
+        isProjectBoard,
       },
       stubs: {
         GlDropdown,
@@ -76,8 +79,8 @@ describe('Milestone select component', () => {
   };
 
   beforeEach(() => {
-    createStore({ isProjectBoard: true });
-    createComponent();
+    createStore();
+    createComponent({ isProjectBoard: true });
   });
 
   afterEach(() => {
@@ -138,9 +141,11 @@ describe('Milestone select component', () => {
   `(
     'fetches $boardType milestones',
     async ({ boardType, mockedResponse, queryHandler, notCalledHandler }) => {
-      createStore({ isProjectBoard: boardType === 'project', isGroupBoard: boardType === 'group' });
+      createStore();
       createComponent({
         [queryHandler]: jest.fn().mockResolvedValue(mockedResponse),
+        isProjectBoard: boardType === 'project',
+        isGroupBoard: boardType === 'group',
       });
 
       findEditButton().vm.$emit('click');

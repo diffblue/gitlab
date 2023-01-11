@@ -10,7 +10,6 @@ import groupBoardsQuery from '~/boards/graphql/group_boards.query.graphql';
 import projectBoardsQuery from '~/boards/graphql/project_boards.query.graphql';
 import groupRecentBoardsQuery from '~/boards/graphql/group_recent_boards.query.graphql';
 import projectRecentBoardsQuery from '~/boards/graphql/project_recent_boards.query.graphql';
-import defaultStore from '~/boards/stores';
 import { TEST_HOST } from 'spec/test_constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import {
@@ -25,22 +24,18 @@ import { mockEpicBoardsResponse } from '../mock_data';
 const throttleDuration = 1;
 
 Vue.use(VueApollo);
+Vue.use(Vuex);
 
 describe('BoardsSelector', () => {
   let wrapper;
   let fakeApollo;
   let store;
 
-  const createStore = ({ isGroupBoard = false, isProjectBoard = false } = {}) => {
+  const createStore = () => {
     store = new Vuex.Store({
-      ...defaultStore,
       actions: {
         setError: jest.fn(),
         setBoardConfig: jest.fn(),
-      },
-      getters: {
-        isGroupBoard: () => isGroupBoard,
-        isProjectBoard: () => isProjectBoard,
       },
       state: {
         board: mockBoard,
@@ -63,7 +58,11 @@ describe('BoardsSelector', () => {
     .fn()
     .mockResolvedValue(mockGroupRecentBoardsResponse);
 
-  const createComponent = ({ isEpicBoard = false, isGroupBoard = false }) => {
+  const createComponent = ({
+    isEpicBoard = false,
+    isGroupBoard = false,
+    isProjectBoard = false,
+  }) => {
     fakeApollo = createMockApollo([
       [projectBoardsQuery, projectBoardsQueryHandlerSuccess],
       [groupBoardsQuery, groupBoardsQueryHandlerSuccess],
@@ -89,6 +88,8 @@ describe('BoardsSelector', () => {
         weights: [],
         isEpicBoard,
         boardType: isGroupBoard ? BoardType.group : BoardType.project,
+        isGroupBoard,
+        isProjectBoard,
       },
     });
   };
@@ -108,11 +109,12 @@ describe('BoardsSelector', () => {
     `(
       'fetches $boardType boards when isEpicBoard is $isEpicBoard',
       async ({ boardType, isEpicBoard, queryHandler, notCalledHandler }) => {
-        createStore({
+        createStore();
+        createComponent({
+          isEpicBoard,
           isProjectBoard: boardType === BoardType.project,
           isGroupBoard: boardType === BoardType.group,
         });
-        createComponent({ isEpicBoard });
 
         await nextTick();
 

@@ -14,11 +14,10 @@ Vue.use(Vuex);
 const addListNewEpicSpy = jest.fn().mockResolvedValue();
 const mockActions = { addListNewEpic: addListNewEpicSpy };
 
-const createComponent = ({ actions = mockActions, getters = { isGroupBoard: () => true } } = {}) =>
+const createComponent = ({ actions = mockActions } = {}) =>
   shallowMount(BoardNewEpic, {
     store: new Vuex.Store({
       actions,
-      getters,
     }),
     propsData: {
       list: mockList,

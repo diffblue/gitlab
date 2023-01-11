@@ -11,13 +11,14 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import { boardObj } from 'jest/boards/mock_data';
 
-import defaultStore from '~/boards/stores';
 import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query.graphql';
 import { ANY_ITERATION, CURRENT_ITERATION, IterationFilterType } from 'ee/boards/constants';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
+import { BoardType } from '~/boards/constants';
 import { mockIterationsResponse, mockIterations, mockIterationCadence } from './mock_data';
 
 Vue.use(VueApollo);
+Vue.use(Vuex);
 
 describe('Iteration select component', () => {
   let wrapper;
@@ -45,11 +46,6 @@ describe('Iteration select component', () => {
 
   const createStore = () => {
     return new Vuex.Store({
-      ...defaultStore,
-      getters: {
-        isGroupBoard: () => true,
-        isProjectBoard: () => false,
-      },
       actions: {
         setError: jest.fn(),
       },
@@ -69,6 +65,9 @@ describe('Iteration select component', () => {
       },
       provide: {
         fullPath: 'gitlab-org',
+        boardType: BoardType.group,
+        isGroupBoard: true,
+        isProjectBoard: false,
       },
       stubs: {
         GlDropdown,

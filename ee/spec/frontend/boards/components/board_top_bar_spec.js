@@ -39,6 +39,7 @@ describe('BoardTopBar', () => {
         iterationFeatureAvailable: true,
         healthStatusFeatureAvailable: true,
         isIssueBoard: true,
+        isGroupBoard: true,
         ...provide,
       },
       stubs: { IssueBoardFilteredSearch, EpicBoardFilteredSearch },

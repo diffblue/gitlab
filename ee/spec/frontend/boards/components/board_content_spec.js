@@ -26,6 +26,7 @@ describe('ee/BoardContent', () => {
         issuableType,
         isIssueBoard,
         isEpicBoard,
+        isGroupBoard: true,
         isApolloBoard: false,
       },
       propsData: {
