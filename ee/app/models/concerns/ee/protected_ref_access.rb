@@ -26,10 +26,10 @@ module EE
                                                conditions: -> { where(user_id: nil, group_id: nil) } }
         validates :group, :user,
                   absence: true,
-                  unless: :protected_refs_for_users_required_and_available
+                  unless: -> { importing? || protected_refs_for_users_required_and_available }
 
-        validate :validate_group_membership, if: :protected_refs_for_users_required_and_available
-        validate :validate_user_membership, if: :protected_refs_for_users_required_and_available
+        validate :validate_group_membership, if: -> { !importing? && protected_refs_for_users_required_and_available }
+        validate :validate_user_membership, if: -> { !importing? && protected_refs_for_users_required_and_available }
       end
     end
 
