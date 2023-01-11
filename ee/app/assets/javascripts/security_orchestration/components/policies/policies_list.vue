@@ -13,7 +13,7 @@ import groupScanResultPoliciesQuery from '../../graphql/queries/group_scan_resul
 import { getPolicyType } from '../../utils';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import PolicyDrawer from '../policy_drawer/policy_drawer.vue';
-import { getSourceUrl, isPolicyInherited } from '../utils';
+import { getPolicyListUrl, isPolicyInherited } from '../utils';
 import {
   POLICY_SOURCE_OPTIONS,
   POLICY_TYPE_FILTER_OPTIONS,
@@ -233,11 +233,14 @@ export default {
     },
   },
   methods: {
+    policyListUrlArgs(source) {
+      return { namespacePath: source.namespace.fullPath };
+    },
     getTimeAgoString(updatedAt) {
       if (!updatedAt) return '';
       return getTimeago().format(updatedAt);
     },
-    getSourceUrl,
+    getPolicyListUrl,
     isPolicyInherited,
     presentPolicyDrawer(rows) {
       if (rows.length === 0) return;
@@ -321,7 +324,7 @@ export default {
       <template #cell(source)="{ value: source }">
         <gl-sprintf v-if="isPolicyInherited(source)" :message="$options.i18n.inheritedLabel">
           <template #namespace>
-            <gl-link :href="getSourceUrl(source.namespace.fullPath)" target="_blank">
+            <gl-link :href="getPolicyListUrl(policyListUrlArgs(source))" target="_blank">
               {{ source.namespace.name }}
             </gl-link>
           </template>

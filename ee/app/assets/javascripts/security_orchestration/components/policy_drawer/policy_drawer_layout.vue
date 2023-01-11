@@ -1,7 +1,7 @@
 <script>
 import { GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import { getSourceUrl, isPolicyInherited } from '../utils';
+import { getPolicyListUrl, isPolicyInherited } from '../utils';
 import {
   DEFAULT_DESCRIPTION_LABEL,
   DESCRIPTION_TITLE,
@@ -54,8 +54,8 @@ export default {
     isInherited() {
       return isPolicyInherited(this.policy.source);
     },
-    sourceUrl() {
-      return getSourceUrl(this.policy.source.namespace.fullPath);
+    sourcePolicyListUrl() {
+      return getPolicyListUrl({ namespacePath: this.policy.source.namespace.fullPath });
     },
     statusLabel() {
       return this.policy?.enabled ? ENABLED_LABEL : NOT_ENABLED_LABEL;
@@ -93,7 +93,7 @@ export default {
       <div data-testid="policy-source">
         <gl-sprintf v-if="isInherited" :message="$options.i18n.inheritedLabel">
           <template #namespace>
-            <gl-link :href="sourceUrl" target="_blank">
+            <gl-link :href="sourcePolicyListUrl" target="_blank">
               {{ policy.source.namespace.name }}
             </gl-link>
           </template>
