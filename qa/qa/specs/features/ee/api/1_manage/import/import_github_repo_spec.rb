@@ -9,10 +9,7 @@ module QA
 
       context "when imported via api" do
         it 'imports repo push rules', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/379494' do
-          imported_project.reload! # import the project
-
-          expect { imported_project.project_import_status[:import_status] }.to eventually_eq('finished')
-            .within(max_duration: 240, sleep_interval: 1)
+          expect_project_import_finished_successfully
 
           aggregate_failures do
             verify_push_rules
