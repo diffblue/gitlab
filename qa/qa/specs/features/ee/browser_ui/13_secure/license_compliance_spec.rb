@@ -32,7 +32,7 @@ module QA
         denied_license_name = 'Apache License 2.0'
 
         before(:context) do
-          @runner = Resource::Runner.fabricate_via_api! do |runner|
+          @runner = Resource::ProjectRunner.fabricate_via_api! do |runner|
             runner.project = @project
             runner.name = "runner-for-#{@project.name}"
             runner.tags = ['secure_license']

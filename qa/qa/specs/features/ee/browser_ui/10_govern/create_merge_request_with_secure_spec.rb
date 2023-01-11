@@ -26,7 +26,7 @@ module QA
           p.initialize_with_readme = true
         end
 
-        @runner = Resource::Runner.fabricate! do |runner|
+        @runner = Resource::ProjectRunner.fabricate! do |runner|
           runner.project = @project
           runner.name = @executor
           runner.tags = ['secure_report']

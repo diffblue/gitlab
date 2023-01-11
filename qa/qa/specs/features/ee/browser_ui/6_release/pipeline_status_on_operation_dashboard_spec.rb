@@ -3,15 +3,15 @@
 module QA
   RSpec.describe 'Release', product_group: :release do
     describe 'Operations Dashboard' do
-      let(:group) { Resource::Group.fabricate_via_api! }
       let!(:runner) do
-        Resource::Runner.fabricate_via_api! do |runner|
-          runner.token = group.reload!.runners_token
+        Resource::GroupRunner.fabricate_via_api! do |runner|
+          runner.group = group
           runner.name = group.name
           runner.tags = [group.name]
-          runner.project = project_with_success_run
         end
       end
+
+      let(:group) { Resource::Group.fabricate_via_api! }
 
       let(:project_with_success_run) do
         Resource::Project.fabricate_via_api! do |project|
@@ -55,7 +55,7 @@ module QA
       end
 
       it 'has many pipelines with appropriate statuses',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348072' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348072' do
         add_projects_to_board
 
         EE::Page::OperationsDashboard.perform do |operation|

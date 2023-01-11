@@ -12,7 +12,7 @@ module QA
       let!(:executor) { "qa-runner-#{Faker::Alphanumeric.alphanumeric(number: 8)}" }
 
       let!(:runner) do
-        Resource::Runner.fabricate_via_api! do |runner|
+        Resource::ProjectRunner.fabricate_via_api! do |runner|
           runner.project = project
           runner.name = executor
           runner.tags = [executor]

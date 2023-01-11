@@ -6,7 +6,7 @@ module QA
       context 'new thread discussion' do
         let(:executor) { "qa-runner-#{Faker::Alphanumeric.alphanumeric(number: 8)}" }
         let!(:runner) do
-          Resource::Runner.fabricate! do |runner|
+          Resource::ProjectRunner.fabricate! do |runner|
             runner.project = project
             runner.name = executor
             runner.tags = [executor]
