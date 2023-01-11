@@ -21238,6 +21238,9 @@ msgid_plural "Importing %d repositories"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Importing GitLab projects? Migrating GitLab projects when migrating groups by direct transfer is in Beta. %{link_start}Learn more.%{link_end}"
+msgstr ""
+
 msgid "Importing..."
 msgstr ""
 
