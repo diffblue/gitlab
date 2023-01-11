@@ -28693,7 +28693,7 @@ msgstr ""
 msgid "Observability|Data sources"
 msgstr ""
 
-msgid "Observability|Explore"
+msgid "Observability|Explore telemetry data"
 msgstr ""
 
 msgid "Observability|Manage dashboards"
