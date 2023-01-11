@@ -5,7 +5,7 @@
 
   - if group.ldap_group_links.any?
     %ul.content-list
-      = render collection: group.ldap_group_links, partial: 'ldap_group_links/ldap_group_link', locals: { group: group }
+      = render partial: 'ldap_group_links/ldap_group_link', collection: group.ldap_group_links, locals: { group: group }
   - else
     .card-body
       No LDAP synchronizations
