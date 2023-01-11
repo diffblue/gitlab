@@ -20,6 +20,12 @@ module Elastic
           data[attr.to_s] = safely_read_attribute_for_elasticsearch(attr)
         end
 
+        # We're migrating the `confidential` Note column to `internal` and therefore write to both attributes.
+        # https://gitlab.com/groups/gitlab-org/-/epics/9634
+        if ::Elastic::DataMigrationService.migration_has_finished?(:add_internal_to_notes)
+          data['internal'] = safely_read_attribute_for_elasticsearch(:internal)
+        end
+
         if noteable.is_a?(Issue)
           data['issue'] = {
             'assignee_id' => noteable.assignee_ids,
