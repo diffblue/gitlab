@@ -432,10 +432,13 @@ describe('MR Widget Security Reports', () => {
 
       expect(findModal().props('modal')).toEqual({
         title: 'Password leak',
+        error: null,
         vulnerability: {
           uuid: 0,
           severity: 'critical',
           name: 'Password leak',
+          isDismissed: false,
+          isDismissingFinding: false,
         },
       });
     });
@@ -708,6 +711,94 @@ describe('MR Widget Security Reports', () => {
           expect(findModal().props('modal').isCommentingOnDismissal).toBe(true);
         },
       );
+    });
+
+    describe('undo dismissing finding', () => {
+      const feedbackDismissalPath = '/-/vulnerability/feedback';
+
+      it('handles undoing dismissing a finding - success', async () => {
+        mockWithData({
+          state: 'dismissed',
+          dismissal_feedback: {
+            destroy_vulnerability_feedback_dismissal_path: feedbackDismissalPath,
+            author: {}, // This is required to because `modal.vue` file needs this object. Passing undefined causes the tests to fail.
+          },
+        });
+
+        mockAxios.onDelete(feedbackDismissalPath).replyOnce(200);
+
+        createComponent({
+          mountFn: mountExtended,
+          propsData: {
+            mr: {
+              createVulnerabilityFeedbackDismissalPath,
+            },
+          },
+        });
+
+        const emitSpy = jest.spyOn(wrapper.vm.$root, '$emit');
+
+        await waitForPromises();
+
+        // Click on the toggle button to expand data
+        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+        await nextTick();
+
+        // Second one is for the dynamic scroller
+        await nextTick();
+
+        // Click on the vulnerability name
+        wrapper.findAllByText('Password leak').at(0).trigger('click');
+        await nextTick();
+
+        findModal().vm.$emit('revertDismissVulnerability');
+
+        await waitForPromises();
+
+        expect(emitSpy).toHaveBeenCalledWith(BV_HIDE_MODAL, 'modal-mrwidget-security-issue');
+      });
+
+      it('handles undoing dismissing a finding - error', async () => {
+        mockWithData({
+          state: 'dismissed',
+          dismissal_feedback: {
+            destroy_vulnerability_feedback_dismissal_path: feedbackDismissalPath,
+            author: {}, // This is required to because `modal.vue` file needs this object. Passing undefined causes the tests to fail.
+          },
+        });
+
+        mockAxios.onDelete(feedbackDismissalPath).replyOnce(400);
+
+        createComponent({
+          mountFn: mountExtended,
+          propsData: {
+            mr: {
+              createVulnerabilityFeedbackDismissalPath,
+            },
+          },
+        });
+
+        await waitForPromises();
+
+        // Click on the toggle button to expand data
+        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+        await nextTick();
+
+        // Second one is for the dynamic scroller
+        await nextTick();
+
+        // Click on the vulnerability name
+        wrapper.findAllByText('Password leak').at(0).trigger('click');
+        await nextTick();
+
+        findModal().vm.$emit('revertDismissVulnerability');
+
+        await waitForPromises();
+
+        expect(findModal().props('modal').error).toBe(
+          'There was an error reverting the dismissal. Please try again.',
+        );
+      });
     });
   });
 });
