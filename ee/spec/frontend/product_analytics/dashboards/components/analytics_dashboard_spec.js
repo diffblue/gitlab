@@ -42,10 +42,7 @@ describe('AnalyticsDashboard', () => {
         dashboard,
       });
 
-      expect(findDashboard().props()).toStrictEqual({
-        widgets: dashboard.widgets,
-        editable: false,
-      });
+      expect(findDashboard().props().initialDashboard).toStrictEqual(dashboard);
     });
 
     it('should render the loading icon while fetching data', async () => {

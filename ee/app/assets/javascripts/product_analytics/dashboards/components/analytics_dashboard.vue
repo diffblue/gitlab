@@ -44,6 +44,8 @@ export default {
       const dashboard = await DASHBOARD_JSONS[this.$route.params.id]();
       this.dashboard = await this.importDashboardDependencies(dashboard);
     }
+
+    this.availableVisualizations = [];
   },
   methods: {
     // TODO: Remove in https://gitlab.com/gitlab-org/gitlab/-/issues/382551
@@ -70,15 +72,11 @@ export default {
 <template>
   <div>
     <template v-if="dashboard">
-      <section
-        class="gl-display-flex gl-align-items-center gl-py-5 gl-border-b-1 gl-border-b-solid gl-border-b-gray-100"
-      >
-        <h3 class="gl-my-0 flex-fill">{{ dashboard.title }}</h3>
-        <router-link to="/" class="gl-button btn btn-default btn-md">
-          {{ __('Go back') }}
-        </router-link>
-      </section>
-      <customizable-dashboard :widgets="dashboard.widgets" />
+      <customizable-dashboard
+        :initial-dashboard="dashboard"
+        :get-visualization="importVisualization"
+        :available-visualizations="availableVisualizations"
+      />
     </template>
     <gl-loading-icon v-else size="lg" class="gl-my-7" />
   </div>
