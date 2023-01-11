@@ -14,11 +14,6 @@ module Geo
       ContainerRegistry::Client::OCI_DISTRIBUTION_INDEX_TYPE
     ].freeze
 
-    ATOMIC_MANIFESTS = [
-      ContainerRegistry::Client::DOCKER_DISTRIBUTION_MANIFEST_V2_TYPE,
-      ContainerRegistry::Client::OCI_MANIFEST_V1_TYPE
-    ].freeze
-
     attr_reader :repository_path, :container_repository
 
     def initialize(container_repository)
@@ -39,25 +34,32 @@ module Geo
       manifest = client.repository_raw_manifest(repository_path, tag[:name])
       manifest_parsed = Gitlab::Json.parse(manifest)
 
-      case manifest_parsed['mediaType']
-      when *ATOMIC_MANIFESTS
-        sync_manifest_blobs(manifest_parsed)
-      when *LIST_MANIFESTS
+      if LIST_MANIFESTS.include? manifest_parsed['mediaType']
         if buildkit_oci_incompatible_index?(manifest_parsed['manifests'])
           sync_manifest_blobs(manifest_parsed)
         else
-          manifest_parsed['manifests'].each do |submanifest|
-            image_info_raw = client.repository_raw_manifest(repository_path, submanifest['digest'])
-            image_info = Gitlab::Json.parse(image_info_raw)
-            sync_manifest_blobs(image_info)
-            container_repository.push_manifest(submanifest['digest'], image_info_raw, image_info['mediaType'])
+          manifest_parsed['manifests'].each do |submanifest_ref|
+            submanifest_raw = client.repository_raw_manifest(repository_path, submanifest_ref['digest'])
+            submanifest_parsed = Gitlab::Json.parse(submanifest_raw)
+            sync_manifest_blobs(submanifest_parsed)
+
+            container_repository.push_manifest(
+              submanifest_ref['digest'],
+              submanifest_raw,
+              submanifest_parsed['mediaType']
+            )
           end
         end
       else
-        raise "Unexpected mediaType: #{manifest_parsed['mediaType']}"
+        sync_manifest_blobs(manifest_parsed)
       end
 
-      container_repository.push_manifest(tag[:name], manifest, manifest_parsed['mediaType'])
+      # According to OCI specification the mediaType parameter can be left empty or be set
+      # to 'application/vnd.oci.image.manifest.v1+json' value.
+      # https://github.com/opencontainers/image-spec/blob/main/manifest.md#image-manifest-property-descriptions
+      # However, Docker Registry expects the 'Content-Type' header to be always set
+      manifest_media_type = manifest_parsed['mediaType'] || ContainerRegistry::Client::OCI_MANIFEST_V1_TYPE
+      container_repository.push_manifest(tag[:name], manifest, manifest_media_type)
     end
 
     # Buildkit-cache images have special oci-spec-invalid structure where fat manifests reference
@@ -86,15 +88,16 @@ module Geo
       container_repository.delete_tag_by_digest(tag[:digest])
     end
 
-    # Normally "layers" is the only reference to blobs related to particular manifest
-    # This method is also used for build cache images where fat manifest references blobs directly
-    # in this case "manifests" attribute is a way of refering to them.
+    # Lists blobs or nested manifests
+    # manifest['manifests'] is solely used by buildcache here because
+    # normal image indexes only refer to other manifests, not blobs
+    # manifest['blobs'] references the OCI artifacts
     def list_blobs(manifest)
-      layers = (manifest['layers'] || manifest['manifests']).filter_map do |layer|
-        layer['digest'] unless foreign_layer?(layer)
+      blobs = (manifest['layers'] || manifest['manifests'] || manifest['blobs']).filter_map do |blob|
+        blob['digest'] unless foreign_layer?(blob)
       end
 
-      layers.push(manifest.dig('config', 'digest')).compact
+      blobs.push(manifest.dig('config', 'digest')).compact
     end
 
     def foreign_layer?(layer)
