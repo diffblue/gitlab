@@ -112,7 +112,7 @@ RSpec.describe EE::WelcomeHelper do
       end
 
       with_them do
-        context 'regardless of signup onboarding' do
+        context 'and regardless of signup onboarding' do
           where(signup_onboarding_enabled: [true, false])
 
           with_them do
@@ -123,7 +123,7 @@ RSpec.describe EE::WelcomeHelper do
     end
 
     context 'when not in the subscription flow' do
-      context 'but in the invitation, oauth, or trial flow' do
+      context 'and in the invitation, oauth, or trial flow' do
         where(:user_has_memberships, :in_oauth_flow, :in_trial_flow) do
           true  | false | false
           false | true  | false
@@ -131,7 +131,7 @@ RSpec.describe EE::WelcomeHelper do
         end
 
         with_them do
-          context 'regardless of signup onboarding' do
+          context 'and regardless of signup onboarding' do
             where(signup_onboarding_enabled: [true, false])
 
             with_them do
@@ -148,7 +148,7 @@ RSpec.describe EE::WelcomeHelper do
         end
 
         with_them do
-          it 'depends on whether or not signup onboarding is enabldd' do
+          it 'depends on whether or not signup onboarding is enabled' do
             is_expected.to eq(result)
           end
         end
@@ -169,7 +169,7 @@ RSpec.describe EE::WelcomeHelper do
       end
 
       with_them do
-        context 'regardless of signup onboarding' do
+        context 'and regardless of signup onboarding' do
           where(signup_onboarding_enabled: [true, false])
 
           with_them do
@@ -180,14 +180,14 @@ RSpec.describe EE::WelcomeHelper do
     end
 
     context 'when not in the subscription or trial flow' do
-      context 'but in the invitation or oauth flow' do
+      context 'and in the invitation or oauth flow' do
         where(:user_has_memberships, :in_oauth_flow) do
           true  | false
           false | true
         end
 
         with_them do
-          context 'regardless of signup onboarding' do
+          context 'and regardless of signup onboarding' do
             where(signup_onboarding_enabled: [true, false])
 
             with_them do
@@ -218,7 +218,7 @@ RSpec.describe EE::WelcomeHelper do
       allow(helper).to receive(:signup_onboarding_enabled?).and_return(options_enabled)
     end
 
-    subject { helper.tag(:div, data: helper.data_attributes_for_progress_bar_js_component) }
+    subject { helper.data_attributes_for_progress_bar_js_component }
 
     where(:options_enabled, :attr_values) do
       true  | 'true'
@@ -227,7 +227,7 @@ RSpec.describe EE::WelcomeHelper do
 
     with_them do
       it 'always includes both attributes with stringified boolean values' do
-        is_expected.to eq(%{<div data-is-in-subscription-flow="#{attr_values}" data-is-signup-onboarding-enabled="#{attr_values}" />})
+        is_expected.to eq({ is_in_subscription_flow: attr_values, is_signup_onboarding_enabled: attr_values })
       end
     end
   end
@@ -276,7 +276,7 @@ RSpec.describe EE::WelcomeHelper do
 
     with_them do
       before do
-        expect(Gitlab).to receive(:com?).and_return(is_com)
+        allow(Gitlab).to receive(:com?).and_return(is_com)
       end
 
       it { is_expected.to eq(result) }
