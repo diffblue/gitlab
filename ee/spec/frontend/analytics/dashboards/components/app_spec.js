@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { GlSprintf, GlLink, GlAlert } from '@gitlab/ui';
 import Component from 'ee/analytics/dashboards/components/app.vue';
 import ComparisonChart from 'ee/analytics/dashboards/components/comparison_chart.vue';
 import { mockChartConfig } from '../mock_data';
@@ -16,10 +17,12 @@ describe('Executive dashboard app', () => {
         ...mockProps,
         ...props,
       },
+      stubs: { GlSprintf },
     });
   }
 
   const findComparisonCharts = () => wrapper.findAllComponents(ComparisonChart);
+  const findAlert = () => wrapper.findComponent(GlAlert);
 
   afterEach(() => {
     wrapper.destroy();
@@ -50,6 +53,15 @@ describe('Executive dashboard app', () => {
           isProject: config.isProject,
         });
       });
+    });
+
+    it('renders the feedback issue link', () => {
+      expect(findAlert().text()).toContain(
+        'Beta feature: Leave your thoughts in the feedback issue',
+      );
+      expect(findAlert().findComponent(GlLink).attributes('href')).toBe(
+        'https://gitlab.com/gitlab-org/gitlab/-/issues/381787',
+      );
     });
   });
 });
