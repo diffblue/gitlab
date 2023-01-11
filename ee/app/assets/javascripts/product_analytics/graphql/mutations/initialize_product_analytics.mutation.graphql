@@ -1,0 +1,9 @@
+mutation initializeProductAnalytics($projectPath: ID!) {
+  projectInitializeProductAnalytics(input: { projectPath: $projectPath }) {
+    project {
+      id
+      fullPath
+    }
+    errors
+  }
+}

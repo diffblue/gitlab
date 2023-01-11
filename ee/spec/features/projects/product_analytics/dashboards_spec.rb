@@ -30,7 +30,7 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
     end
   end
 
-  shared_examples 'renders the onboarding view' do
+  shared_examples 'renders the onboarding empty state' do
     before do
       visit_page
     end
@@ -93,7 +93,38 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
         end
 
         context 'without the Jitsu key' do
-          it_behaves_like 'renders the onboarding view'
+          it_behaves_like 'renders the onboarding empty state'
+
+          context 'when setting up a new instance' do
+            before do
+              visit_page
+              click_button s_('Product Analytics|Set up product analytics')
+            end
+
+            it 'renders the creating instance loading screen' do
+              expect(page).to have_content(s_('Product Analytics|Creating your product analytics instance...'))
+            end
+
+            # TODO: Update to show the tracking codes view when no error in https://gitlab.com/gitlab-org/gitlab/-/issues/381320
+            it 'returns back to the onboarding empty state after creating the new instance' do
+              wait_for_requests
+
+              expect(page).to have_content(s_('Product Analytics|Analyze your product with Product Analytics'))
+            end
+
+            context 'when a new instance has already been initialized' do
+              before do
+                visit_page
+              end
+
+              it 'renders an error alert when setting up a new instance' do
+                click_button s_('Product Analytics|Set up product analytics')
+
+                expect(find('[data-testid="alert-danger"]'))
+                  .to have_text(/Product analytics initialization is already (completed|in progress)/)
+              end
+            end
+          end
         end
 
         context 'with the Jitsu key' do
