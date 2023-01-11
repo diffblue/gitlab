@@ -13,6 +13,7 @@ module Mutations
 
       argument :iid, GraphQL::Types::String,
                required: false,
+               deprecated: { reason: 'Use work_item_iid instead', milestone: '15.8' },
                description: 'IID of the requirement to update.'
 
       argument :work_item_iid, GraphQL::Types::String,

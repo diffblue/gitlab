@@ -10,10 +10,12 @@ module Resolvers
 
       argument :iid, GraphQL::Types::ID,
                required: false,
+               deprecated: { reason: 'Use work_item_iid instead', milestone: '15.8' },
                description: 'IID of the requirement, for example, "1".'
 
       argument :iids, [GraphQL::Types::ID],
                required: false,
+               deprecated: { reason: 'Use work_item_iids instead', milestone: '15.8' },
                description: 'List of IIDs of requirements, for example, `[1, 2]`.'
 
       argument :work_item_iid, GraphQL::Types::ID, # rubocop:disable Graphql/IDType
