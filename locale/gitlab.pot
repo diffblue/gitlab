@@ -18866,6 +18866,15 @@ msgstr ""
 msgid "Gitea Import"
 msgstr ""
 
+msgid "GithubImporter|Issue attachments"
+msgstr ""
+
+msgid "GithubImporter|Merge request attachments"
+msgstr ""
+
+msgid "GithubImporter|Note attachments"
+msgstr ""
+
 msgid "GithubImporter|PR mergers"
 msgstr ""
 
@@ -18873,6 +18882,9 @@ msgid "GithubImporter|PR reviews"
 msgstr ""
 
 msgid "GithubImporter|Pull requests"
+msgstr ""
+
+msgid "GithubImporter|Release attachments"
 msgstr ""
 
 msgid "GithubIntegration|Create a %{token_link_start}personal access token%{token_link_end} with %{status_html} access granted and paste it here."
