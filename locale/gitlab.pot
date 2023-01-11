@@ -18866,6 +18866,18 @@ msgstr ""
 msgid "Gitea Import"
 msgstr ""
 
+msgid "GithubImporter|Gist with id %{gist_id} failed due to error: %{error}."
+msgstr ""
+
+msgid "GithubImporter|GitHub Gists import finished with errors"
+msgstr ""
+
+msgid "GithubImporter|GitHub gists that were not imported:"
+msgstr ""
+
+msgid "GithubImporter|GitHub gists with more than 10 files must be manually migrated."
+msgstr ""
+
 msgid "GithubImporter|Issue attachments"
 msgstr ""
 
@@ -18881,10 +18893,19 @@ msgstr ""
 msgid "GithubImporter|PR reviews"
 msgstr ""
 
+msgid "GithubImporter|Please follow %{import_snippets_link_start}Import GitHub gists into GitLab snippets%{import_snippets_link_end} for more details."
+msgstr ""
+
+msgid "GithubImporter|Please follow %{import_snippets_url} for more details."
+msgstr ""
+
 msgid "GithubImporter|Pull requests"
 msgstr ""
 
 msgid "GithubImporter|Release attachments"
+msgstr ""
+
+msgid "GithubImporter|Your import of GitHub gists into GitLab snippets is complete."
 msgstr ""
 
 msgid "GithubIntegration|Create a %{token_link_start}personal access token%{token_link_end} with %{status_html} access granted and paste it here."
