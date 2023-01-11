@@ -77,9 +77,11 @@ export const DORA_METRICS = {
   },
 };
 
-export const DASHBOARD_TITLE = __('DevOps metrics comparison (Beta)');
-export const DASHBOARD_DESCRIPTION_GROUP = s__('DORA4Metrics|DORA metrics for %{name} group');
-export const DASHBOARD_DESCRIPTION_PROJECT = s__('DORA4Metrics|DORA metrics for %{name} project');
+export const DASHBOARD_TITLE = __('Value Streams Dashboard (Beta)');
+export const DASHBOARD_DESCRIPTION_GROUP = s__('DORA4Metrics|Metrics comparison for %{name} group');
+export const DASHBOARD_DESCRIPTION_PROJECT = s__(
+  'DORA4Metrics|Metrics comparison for %{name} project',
+);
 export const DASHBOARD_NO_DATA = __('No data available');
 export const DASHBOARD_LOADING_FAILURE = __('Failed to load');
 export const DASHBOARD_FEEDBACK_INFORMATION = s__(

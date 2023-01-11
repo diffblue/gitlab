@@ -145,7 +145,7 @@ describe('Comparison chart', () => {
     it('renders the group title', async () => {
       await createWrapper();
 
-      expect(wrapper.text()).toContain('DORA metrics for Exec group group');
+      expect(wrapper.text()).toContain('Metrics comparison for Exec group group');
     });
   });
 
@@ -163,7 +163,7 @@ describe('Comparison chart', () => {
     });
 
     it('renders the project title', () => {
-      expect(wrapper.text()).toContain('DORA metrics for Exec group project');
+      expect(wrapper.text()).toContain('Metrics comparison for Exec group project');
     });
 
     it('will request project endpoints for the summary and time summary metrics', () => {
