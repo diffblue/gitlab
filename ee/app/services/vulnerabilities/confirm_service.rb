@@ -12,7 +12,8 @@ module Vulnerabilities
           Vulnerabilities::StateTransition.create!(
             vulnerability: @vulnerability,
             from_state: @vulnerability.state,
-            to_state: :confirmed
+            to_state: :confirmed,
+            author: @user
           )
 
           update_vulnerability_with(state: :confirmed, confirmed_by: @user,

@@ -48,6 +48,7 @@ RSpec.describe Vulnerabilities::ConfirmService, feature_category: :vulnerability
           .to(1)
         expect(::Vulnerabilities::StateTransition.last.vulnerability_id).to eq(vulnerability.id)
         expect(::Vulnerabilities::StateTransition.last.to_state).to eq('confirmed')
+        expect(::Vulnerabilities::StateTransition.last.author).to eq(user)
       end
 
       context 'when security dashboard feature is disabled' do

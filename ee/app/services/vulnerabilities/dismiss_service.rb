@@ -23,7 +23,8 @@ module Vulnerabilities
             from_state: @vulnerability.state,
             to_state: :dismissed,
             comment: @comment,
-            dismissal_reason: @dismissal_reason
+            dismissal_reason: @dismissal_reason,
+            author: @user
           )
 
           if dismiss_findings

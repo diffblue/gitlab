@@ -87,7 +87,8 @@ module Vulnerabilities
       state_transition_params = {
         vulnerability: vulnerability,
         from_state: from_state,
-        to_state: @state
+        to_state: @state,
+        author: @author
       }
 
       state_transition_params[:comment] = @comment if @comment

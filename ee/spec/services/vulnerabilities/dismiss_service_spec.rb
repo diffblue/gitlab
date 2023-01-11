@@ -34,6 +34,7 @@ RSpec.describe Vulnerabilities::DismissService, feature_category: :vulnerability
       expect(state_transition.to_state).to eq("dismissed")
       expect(state_transition.comment).to eq(comment)
       expect(state_transition.dismissal_reason).to eq(dismissal_reason)
+      expect(state_transition.author).to eq(user)
     end
   end
 
