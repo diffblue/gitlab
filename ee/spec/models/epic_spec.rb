@@ -1316,6 +1316,12 @@ RSpec.describe Epic do
       create(:epic, parent: parent_epic, group: group)
     end
 
+    it 'skips cache update if there is no epic parent' do
+      expect(::Epics::UpdateCachedMetadataWorker).not_to receive(:perform_async)
+
+      create(:epic, group: group)
+    end
+
     context 'when adding existing subepic' do
       let_it_be_with_reload(:subepic) { create(:epic, group: group) }
 

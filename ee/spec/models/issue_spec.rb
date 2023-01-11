@@ -1307,6 +1307,14 @@ RSpec.describe Issue, feature_category: :team_planning do
 
         issue.save!
       end
+
+      it 'schedules cache update for epic if issue is destroyed' do
+        issue.reload
+
+        expect(::Epics::UpdateCachedMetadataWorker).to receive(:perform_async).with([epic.id]).once
+
+        issue.destroy!
+      end
     end
   end
 
