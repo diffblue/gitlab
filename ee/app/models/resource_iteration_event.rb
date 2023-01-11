@@ -7,4 +7,8 @@ class ResourceIterationEvent < ResourceTimeboxEvent
 
   scope :with_api_entity_associations, -> { preload(:iteration, :user) }
   scope :by_user, -> (user) { where(user_id: user) }
+
+  def synthetic_note_class
+    IterationNote
+  end
 end
