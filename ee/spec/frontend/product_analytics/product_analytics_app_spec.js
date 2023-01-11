@@ -28,11 +28,12 @@ describe('ProductAnalyticsApp', () => {
     wrapper = shallowMount(AnalyticsApp, {
       router: createRouter(),
       provide: {
+        chartEmptyStateIllustrationPath: TEST_HOST,
         jitsuKey: '123',
         projectId: '1',
         jitsuHost: TEST_HOST,
         jitsuProjectId: '',
-        chartEmptyStateIllustrationPath: TEST_HOST,
+        projectFullPath: 'group-1/project-1',
         ...provided,
       },
     });
