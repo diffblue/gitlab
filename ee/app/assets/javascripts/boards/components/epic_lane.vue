@@ -29,10 +29,6 @@ export default {
       type: Array,
       required: true,
     },
-    disabled: {
-      type: Boolean,
-      required: true,
-    },
     canAdminList: {
       type: Boolean,
       required: false,
@@ -174,7 +170,6 @@ export default {
         :key="`${list.id}-issues`"
         :list="list"
         :issues="getIssuesByEpic(list.id, epic.id)"
-        :disabled="disabled"
         :epic-id="epic.id"
         :epic-is-confidential="epic.confidential"
         :can-admin-list="canAdminList"

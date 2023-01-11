@@ -92,7 +92,6 @@ describe('Board List Header Component', () => {
       apolloProvider: fakeApollo,
       store,
       propsData: {
-        disabled: false,
         list: listMock,
         isSwimlanesHeader,
       },
@@ -103,6 +102,7 @@ describe('Board List Header Component', () => {
         canCreateEpic,
         glFeatures,
         isEpicBoard,
+        disabled: false,
       },
     });
   };

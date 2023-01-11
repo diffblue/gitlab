@@ -33,7 +33,6 @@ describe('IssuesLaneList', () => {
       propsData: {
         list: listMock,
         issues: mockIssues,
-        disabled: false,
         canAdminList: true,
         isUnassignedIssuesLane,
       },
