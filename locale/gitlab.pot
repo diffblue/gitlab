@@ -43878,6 +43878,9 @@ msgstr ""
 msgid "To-Do List"
 msgstr ""
 
+msgid "To-Do list"
+msgstr ""
+
 msgid "To-do item successfully marked as done."
 msgstr ""
 
