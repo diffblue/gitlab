@@ -82,6 +82,11 @@ export const DASHBOARD_DESCRIPTION_GROUP = s__('DORA4Metrics|DORA metrics for %{
 export const DASHBOARD_DESCRIPTION_PROJECT = s__('DORA4Metrics|DORA metrics for %{name} project');
 export const DASHBOARD_NO_DATA = __('No data available');
 export const DASHBOARD_LOADING_FAILURE = __('Failed to load');
+export const DASHBOARD_FEEDBACK_INFORMATION = s__(
+  'DevopsMetricsDashboard|%{strongStart}Beta feature:%{strongEnd} Leave your thoughts in the %{linkStart}feedback issue%{linkEnd}.',
+);
+export const DASHBOARD_FEEDBACK_LINK = 'https://gitlab.com/gitlab-org/gitlab/-/issues/381787';
+
 export const CHART_LOADING_FAILURE = s__('DORA4Metrics|Failed to load charts');
 
 const NOW = new Date();
