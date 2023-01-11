@@ -6,11 +6,10 @@ module QA
       let(:group) { Resource::Group.fabricate_via_api! }
 
       let!(:runner) do
-        Resource::Runner.fabricate_via_api! do |runner|
-          runner.token = group.reload!.runners_token
+        Resource::GroupRunner.fabricate_via_api! do |runner|
+          runner.group = group
           runner.name = group.name
           runner.tags = [group.name]
-          runner.project = project
         end
       end
 

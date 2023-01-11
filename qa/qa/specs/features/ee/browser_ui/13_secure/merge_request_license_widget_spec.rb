@@ -19,7 +19,7 @@ module QA
           project.description = 'License widget test'
         end
 
-        @runner = Resource::Runner.fabricate! do |runner|
+        @runner = Resource::ProjectRunner.fabricate! do |runner|
           runner.project = @project
           runner.name = executor
           runner.tags = ['secure_license']

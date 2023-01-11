@@ -15,7 +15,7 @@ module QA
       let(:tag_name) { "secure_report_#{project.name}" }
 
       let!(:runner) do
-        Resource::Runner.fabricate_via_api! do |runner|
+        Resource::ProjectRunner.fabricate_via_api! do |runner|
           runner.project = project
           runner.name = "runner-for-#{project.name}"
           runner.tags = [tag_name]
