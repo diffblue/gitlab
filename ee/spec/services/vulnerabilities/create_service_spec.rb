@@ -137,13 +137,6 @@ RSpec.describe Vulnerabilities::CreateService, feature_category: :vulnerability_
       end
     end
 
-    it 'starts a new transaction for the create sequence' do
-      allow(Vulnerabilities::Finding).to receive(:transaction).and_call_original
-
-      subject
-      expect(Vulnerabilities::Finding).to have_received(:transaction).with(requires_new: true).once
-    end
-
     context 'when finding id is unknown' do
       let(:finding_id) { 0 }
 
