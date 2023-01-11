@@ -12462,6 +12462,7 @@ CREATE TABLE bulk_import_entities (
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     source_xid integer,
+    migrate_projects boolean DEFAULT true NOT NULL,
     CONSTRAINT check_13f279f7da CHECK ((char_length(source_full_path) <= 255)),
     CONSTRAINT check_715d725ea2 CHECK ((char_length(destination_name) <= 255)),
     CONSTRAINT check_796a4d9cc6 CHECK ((char_length(jid) <= 255)),
