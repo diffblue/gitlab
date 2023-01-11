@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Ci::Runners::UnassignRunnerService, '#execute' do
+RSpec.describe ::Ci::Runners::UnassignRunnerService, '#execute', feature_category: :runner_fleet do
   let_it_be(:owner_project) { create(:project) }
   let_it_be(:other_project) { create(:project) }
   let_it_be(:project_runner) { create(:ci_runner, :project, projects: [owner_project, other_project]) }
