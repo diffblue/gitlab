@@ -48281,6 +48281,9 @@ msgid_plural "You have %{pendingMembersCount} pending members that need approval
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "You have already reported this user"
+msgstr ""
+
 msgid "You have been granted %{access_level} access to the %{source_link} %{source_type}."
 msgstr ""
 
@@ -49882,9 +49885,6 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "has already been linked to another vulnerability"
-msgstr ""
-
-msgid "has already been reported for abuse"
 msgstr ""
 
 msgid "has already been taken"
