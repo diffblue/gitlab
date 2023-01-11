@@ -32,6 +32,21 @@ RSpec.describe Projects::DeployKeysController, feature_category: :continuous_del
 
       expect(response).to redirect_to(project_settings_repository_path(project, anchor: 'js-deploy-keys-settings'))
     end
+
+    context 'when the account has configured ssh key expiry' do
+      before do
+        stub_licensed_features(ssh_key_expiration_policy: true)
+        stub_application_setting(max_ssh_key_lifetime: 10)
+      end
+
+      it 'shows an alert with the validation error' do
+        post :create, params: params
+
+        expect(flash[:alert]).to eq('Key has no expiration date but an expiration ' \
+                                    'date is required for SSH keys on this instance. ' \
+                                    'Contact the instance administrator.')
+      end
+    end
   end
 
   describe '/enable/:id' do
