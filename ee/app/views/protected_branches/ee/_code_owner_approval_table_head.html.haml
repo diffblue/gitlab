@@ -1,4 +1,4 @@
-- if @project.feature_available?(:code_owner_approval_required)
+- if protected_branch_entity.feature_available?(:code_owner_approval_required)
   %th
     = s_("ProtectedBranch|Code owner approval")
     %span.sr-only

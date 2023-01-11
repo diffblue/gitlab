@@ -13,7 +13,7 @@ module AuditEvents
     def execute
       audit_context = {
         author: @author,
-        scope: @protected_branch.project,
+        scope: @protected_branch.entity,
         target: @protected_branch,
         message: message,
         name: event_type,

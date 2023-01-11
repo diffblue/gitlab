@@ -12,7 +12,10 @@ module Groups
       protected_branch = ::ProtectedBranches::CreateService.new(group, current_user, protected_branch_params).execute
       flash[:alert] = protected_branch.errors.full_messages.join(', ') unless protected_branch.persisted?
 
-      redirect_to_repository_settings
+      respond_to do |format|
+        format.html { redirect_to_repository_settings }
+        format.json { head :ok }
+      end
     end
 
     def update
@@ -57,14 +60,19 @@ module Groups
     def protected_branch_params(*attrs)
       attrs = ([:name,
                 :allow_force_push,
+                :code_owner_approval_required,
                 { merge_access_levels_attributes: access_level_attributes,
                   push_access_levels_attributes: access_level_attributes }] + attrs).uniq
+
+      unless group.licensed_feature_available?(:code_owner_approval_required)
+        params[:code_owner_approval_required] = false
+      end
 
       params.require(:protected_branch).permit(attrs)
     end
 
     def access_level_attributes
-      %i[access_level id]
+      %i[access_level id _destroy]
     end
   end
 end

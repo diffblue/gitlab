@@ -1,0 +1,3 @@
+- if can_admin_group_protected_branches?(protected_branch_entity)
+  .js-protected-refs-for-users
+    = render "protected_branches/ee/index", protected_branch_entity: protected_branch_entity

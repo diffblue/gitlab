@@ -753,6 +753,10 @@ module EE
       ids.to_a
     end
 
+    def code_owner_approval_required_available?
+      feature_available?(:code_owner_approval_required)
+    end
+
     private
 
     override :post_create_hook
