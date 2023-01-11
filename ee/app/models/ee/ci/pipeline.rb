@@ -64,7 +64,6 @@ module EE
           end
 
           after_transition any => ::Ci::Pipeline.completed_statuses do |pipeline|
-            next unless ::Feature.enabled?(:cyclonedx_sbom_ingestion, pipeline.project)
             next unless pipeline.can_ingest_sbom_reports?
 
             pipeline.run_after_commit do

@@ -1,8 +1,0 @@
----
-name: cyclonedx_sbom_ingestion
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/92277
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/367711
-milestone: '15.3'
-type: development
-group: group::container security
-default_enabled: true

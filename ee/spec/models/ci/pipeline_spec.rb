@@ -202,51 +202,21 @@ RSpec.describe Ci::Pipeline do
     end
 
     shared_examples_for 'ingesting sbom reports' do
-      context 'when cyclonedx_sbom_ingestion feature flag is enabled' do
-        before do
-          stub_feature_flags(cyclonedx_sbom_ingestion: true)
-        end
+      context 'when sbom reports can be ingested for the pipeline' do
+        it 'schedules ingest sbom reports job' do
+          transition_pipeline
 
-        context 'when sbom reports can be ingested for the pipeline' do
-          it 'schedules ingest sbom reports job' do
-            transition_pipeline
-
-            expect(::Sbom::IngestReportsWorker).to have_received(:perform_async).with(pipeline.id)
-          end
-        end
-
-        context 'when sbom reports can not be ingested for the pipeline' do
-          let(:can_ingest_sbom_reports) { false }
-
-          it 'does not schedule ingest sbom reports job' do
-            transition_pipeline
-
-            expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
-          end
+          expect(::Sbom::IngestReportsWorker).to have_received(:perform_async).with(pipeline.id)
         end
       end
 
-      context 'when cyclonedx_sbom_ingestion feature flag is disabled' do
-        before do
-          stub_feature_flags(cyclonedx_sbom_ingestion: false)
-        end
+      context 'when sbom reports can not be ingested for the pipeline' do
+        let(:can_ingest_sbom_reports) { false }
 
-        context 'when the sbom reports can be ingested for the pipeline' do
-          it 'does not schedule ingest sbom reports job' do
-            transition_pipeline
+        it 'does not schedule ingest sbom reports job' do
+          transition_pipeline
 
-            expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
-          end
-        end
-
-        context 'when the sbom report can not be ingested for the pipeline' do
-          let(:can_ingest_sbom_reports) { false }
-
-          it 'does not schedule ingest sbom reports job' do
-            transition_pipeline
-
-            expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
-          end
+          expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
         end
       end
     end
@@ -269,10 +239,6 @@ RSpec.describe Ci::Pipeline do
           block
           delay
         ]
-      end
-
-      before do
-        stub_feature_flags(cyclonedx_sbom_ingestion: true)
       end
 
       with_them do
