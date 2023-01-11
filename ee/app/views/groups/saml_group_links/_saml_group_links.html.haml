@@ -6,6 +6,6 @@
   - c.body do
     - if group_links.any?
       %ul.content-list
-        = render collection: group_links, partial: 'saml_group_link', locals: { group: group }
+        = render partial: 'saml_group_link', collection: group_links, locals: { group: group }
     - else
       = s_('GroupSAML|No active SAML group links')
