@@ -355,6 +355,10 @@ export default {
     openDismissalCommentBox() {
       this.$set(this.modalData, 'isCommentingOnDismissal', true);
     },
+
+    closeDismissalCommentBox() {
+      this.$set(this.modalData, 'isCommentingOnDismissal', false);
+    },
   },
   SEVERITY_LEVELS,
   widgetHelpPopover: {
@@ -398,6 +402,7 @@ export default {
         :is-creating-issue="isCreatingIssue"
         :can-create-issue="canCreateIssue"
         :can-dismiss-vulnerability="canDismissFinding"
+        @closeDismissalCommentBox="closeDismissalCommentBox"
         @openDismissalCommentBox="openDismissalCommentBox"
         @editVulnerabilityDismissalComment="openDismissalCommentBox"
         @revertDismissVulnerability="revertDismissVulnerability"
