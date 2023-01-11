@@ -3,16 +3,20 @@ import { getBaseURL, joinPaths } from '~/lib/utils/url_utility';
 import { NAMESPACE_TYPES } from '../constants';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from './constants';
 
-export const getProjectPoliciesUrl = (fullPath) => {
-  return joinPaths(getBaseURL(), fullPath, '-', 'security', 'policies');
-};
-
-export const getSourceUrl = (fullPath, isGroup = true) => {
-  return joinPaths(getBaseURL(), isGroup ? 'groups' : '', fullPath, '-', 'security', 'policies');
+export const getPolicyListUrl = ({ namespacePath, namespaceType = NAMESPACE_TYPES.GROUP }) => {
+  const isGroup = namespaceType === NAMESPACE_TYPES.GROUP;
+  return joinPaths(
+    getBaseURL(),
+    isGroup ? 'groups' : '',
+    namespacePath,
+    '-',
+    'security',
+    'policies',
+  );
 };
 
 export const getSchemaUrl = ({ namespacePath, namespaceType }) => {
-  const policyListUrl = getSourceUrl(namespacePath, namespaceType === NAMESPACE_TYPES.GROUP);
+  const policyListUrl = getPolicyListUrl({ namespacePath, namespaceType });
   return joinPaths(policyListUrl, 'schema');
 };
 
