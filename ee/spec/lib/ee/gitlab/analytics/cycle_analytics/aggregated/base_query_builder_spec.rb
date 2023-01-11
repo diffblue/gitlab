@@ -12,7 +12,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder d
   let_it_be(:other_project) { create(:project, group: other_group) }
 
   let_it_be(:stage) do
-    create(:cycle_analytics_group_stage,
+    create(:cycle_analytics_stage,
            namespace: group,
            start_event_identifier: :issue_created,
            end_event_identifier: :issue_deployed_to_production

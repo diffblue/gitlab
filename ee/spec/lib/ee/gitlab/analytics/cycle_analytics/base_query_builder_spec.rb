@@ -27,7 +27,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::BaseQueryBuilder do
     end
 
     it 'loads Issue records within the given Group' do
-      stage = build(:cycle_analytics_group_stage, {
+      stage = build(:cycle_analytics_stage, {
         start_event_identifier: :issue_created,
         end_event_identifier: :issue_first_mentioned_in_commit,
         namespace: group
@@ -51,7 +51,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::BaseQueryBuilder do
     end
 
     it 'loads MergeRequest records within the given Group' do
-      stage = build(:cycle_analytics_group_stage, {
+      stage = build(:cycle_analytics_stage, {
         start_event_identifier: :merge_request_created,
         end_event_identifier: :merge_request_merged,
         namespace: group

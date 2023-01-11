@@ -299,7 +299,7 @@ module EE
           super.merge({
             ldap_keys: distinct_count(::LDAPKey.where(time_period), :user_id),
             ldap_users: distinct_count(::GroupMember.of_ldap_type.where(time_period), :user_id),
-            value_stream_management_customized_group_stages: count(::Analytics::CycleAnalytics::GroupStage.where(custom: true)),
+            value_stream_management_customized_group_stages: count(::Analytics::CycleAnalytics::Stage.where(custom: true)),
             projects_with_compliance_framework: count(::ComplianceManagement::ComplianceFramework::ProjectSettings),
             custom_compliance_frameworks: count(::ComplianceManagement::Framework.where(time_period)),
             compliance_frameworks_with_pipeline: count(::ComplianceManagement::Framework.where.not(pipeline_configuration_full_path: nil).where(time_period)),

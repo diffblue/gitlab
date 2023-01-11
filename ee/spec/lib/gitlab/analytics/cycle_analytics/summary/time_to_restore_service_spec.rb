@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::TimeToRestoreService do
-  let(:stage) { build(:cycle_analytics_group_stage) }
+  let(:stage) { build(:cycle_analytics_stage) }
   let(:user) { build(:user) }
 
   let(:options) do

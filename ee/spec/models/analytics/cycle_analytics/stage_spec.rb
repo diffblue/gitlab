@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Analytics::CycleAnalytics::GroupStage, feature_category: :value_stream_management do
+RSpec.describe Analytics::CycleAnalytics::Stage, feature_category: :value_stream_management do
   describe 'uniqueness validation on name' do
-    subject { build(:cycle_analytics_group_stage) }
+    subject { build(:cycle_analytics_stage) }
 
     it { is_expected.to validate_uniqueness_of(:name).scoped_to([:group_id, :group_value_stream_id]) }
   end
@@ -15,11 +15,11 @@ RSpec.describe Analytics::CycleAnalytics::GroupStage, feature_category: :value_s
   end
 
   it_behaves_like 'value stream analytics namespace models' do
-    let(:factory_name) { :cycle_analytics_group_stage }
+    let(:factory_name) { :cycle_analytics_stage }
   end
 
   it_behaves_like 'value stream analytics stage' do
-    let(:factory) { :cycle_analytics_group_stage }
+    let(:factory) { :cycle_analytics_stage }
     let(:parent) { create(:group) }
     let(:parent_name) { :namespace }
   end
@@ -31,10 +31,10 @@ RSpec.describe Analytics::CycleAnalytics::GroupStage, feature_category: :value_s
     let_it_be(:parent_outside_of_group_label_scope) { create(:group) }
   end
 
-  context 'relative positioning' do
+  describe 'relative positioning' do
     it_behaves_like 'a class that supports relative positioning' do
       let(:parent) { create(:group) }
-      let(:factory) { :cycle_analytics_group_stage }
+      let(:factory) { :cycle_analytics_stage }
       let(:default_params) { { parent: parent } }
     end
   end
@@ -45,11 +45,15 @@ RSpec.describe Analytics::CycleAnalytics::GroupStage, feature_category: :value_s
 
     before do
       # event identifiers are the same
-      create(:cycle_analytics_group_stage, name: 'Stage A1', namespace: group, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_merged)
-      create(:cycle_analytics_group_stage, name: 'Stage A2', namespace: sub_group, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_merged)
-      create(:cycle_analytics_group_stage, name: 'Stage A3', namespace: sub_group, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_merged)
+      create(:cycle_analytics_stage, name: 'Stage A1', namespace: group,
+             start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_merged)
+      create(:cycle_analytics_stage, name: 'Stage A2', namespace: sub_group,
+             start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_merged)
+      create(:cycle_analytics_stage, name: 'Stage A3', namespace: sub_group,
+             start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_merged)
 
-      create(:cycle_analytics_group_stage, name: 'Stage B1', namespace: group, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_closed)
+      create(:cycle_analytics_stage, name: 'Stage B1', namespace: group,
+             start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_closed)
     end
 
     it 'returns distinct stages by the event identifiers' do
@@ -73,9 +77,9 @@ RSpec.describe Analytics::CycleAnalytics::GroupStage, feature_category: :value_s
     let(:label) { described_class.table_name }
     let(:namespace) { create(:group) }
     let(:action) { "database_event_#{property}" }
-    let(:value_stream) { create(:cycle_analytics_group_value_stream) }
+    let(:value_stream) { create(:cycle_analytics_value_stream) }
     let(:feature_flag_name) { :product_intelligence_database_event_tracking }
-    let(:group_stage) { described_class.create!(stage_params) }
+    let(:stage) { described_class.create!(stage_params) }
     let(:stage_params) do
       {
         namespace: namespace,
@@ -88,19 +92,19 @@ RSpec.describe Analytics::CycleAnalytics::GroupStage, feature_category: :value_s
 
     let(:record_tracked_attributes) do
       {
-        "id" => group_stage.id,
-        "created_at" => group_stage.created_at,
-        "updated_at" => group_stage.updated_at,
-        "relative_position" => group_stage.relative_position,
-        "start_event_identifier" => group_stage.start_event_identifier,
-        "end_event_identifier" => group_stage.end_event_identifier,
-        "group_id" => group_stage.group_id,
-        "start_event_label_id" => group_stage.start_event_label_id,
-        "end_event_label_id" => group_stage.end_event_label_id,
-        "hidden" => group_stage.hidden,
-        "custom" => group_stage.custom,
-        "name" => group_stage.name,
-        "group_value_stream_id" => group_stage.group_value_stream_id
+        "id" => stage.id,
+        "created_at" => stage.created_at,
+        "updated_at" => stage.updated_at,
+        "relative_position" => stage.relative_position,
+        "start_event_identifier" => stage.start_event_identifier,
+        "end_event_identifier" => stage.end_event_identifier,
+        "group_id" => stage.group_id,
+        "start_event_label_id" => stage.start_event_label_id,
+        "end_event_label_id" => stage.end_event_label_id,
+        "hidden" => stage.hidden,
+        "custom" => stage.custom,
+        "name" => stage.name,
+        "group_value_stream_id" => stage.group_value_stream_id
       }
     end
 
@@ -109,13 +113,13 @@ RSpec.describe Analytics::CycleAnalytics::GroupStage, feature_category: :value_s
         let(:property) { 'create' }
         let(:extra) { record_tracked_attributes }
 
-        subject(:new_group_stage) { group_stage }
+        subject(:new_group_stage) { stage }
       end
     end
 
     describe '#update', :freeze_time do
       it_behaves_like 'Snowplow event tracking' do
-        subject(:create_group_stage) { group_stage.update!(name: 'st 2') }
+        subject(:create_group_stage) { stage.update!(name: 'st 2') }
 
         let(:extra) { record_tracked_attributes.merge('name' => 'st 2') }
         let(:property) { 'update' }
@@ -124,7 +128,7 @@ RSpec.describe Analytics::CycleAnalytics::GroupStage, feature_category: :value_s
 
     describe '#destroy' do
       it_behaves_like 'Snowplow event tracking' do
-        subject(:delete_stage_group) { group_stage.destroy! }
+        subject(:delete_stage_group) { stage.destroy! }
 
         let(:extra) { record_tracked_attributes }
         let(:property) { 'destroy' }

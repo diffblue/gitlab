@@ -40,7 +40,7 @@ module Gitlab
         attr_reader :group
 
         def group_stages
-          @group_stages ||= ::Analytics::CycleAnalytics::GroupStage.distinct_stages_within_hierarchy(group)
+          @group_stages ||= ::Analytics::CycleAnalytics::Stage.distinct_stages_within_hierarchy(group)
         end
 
         def project_stages
@@ -48,7 +48,7 @@ module Gitlab
         end
 
         def in_memory_lead_time_stage
-          ::Analytics::CycleAnalytics::GroupStage.new(
+          ::Analytics::CycleAnalytics::Stage.new(
             name: 'lead time', # not visible to the user
             start_event_identifier: Summary::LeadTime.start_event_identifier,
             end_event_identifier: Summary::LeadTime.end_event_identifier,
@@ -57,7 +57,7 @@ module Gitlab
         end
 
         def in_memory_cycle_time_stage
-          ::Analytics::CycleAnalytics::GroupStage.new(
+          ::Analytics::CycleAnalytics::Stage.new(
             name: 'cycle time',
             start_event_identifier: Summary::CycleTime.start_event_identifier,
             end_event_identifier: Summary::CycleTime.end_event_identifier,

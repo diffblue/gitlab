@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::DataForDurationChart do
-  let_it_be(:stage) { create(:cycle_analytics_group_stage, start_event_identifier: :issue_created, end_event_identifier: :issue_closed) }
+  let_it_be(:stage) { create(:cycle_analytics_stage, start_event_identifier: :issue_created, end_event_identifier: :issue_closed) }
   let_it_be(:project) { create(:project, group: stage.namespace) }
   let_it_be(:issue_1) { create(:issue, project: project) }
   let_it_be(:issue_2) { create(:issue, project: project) }

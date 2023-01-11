@@ -2,9 +2,9 @@
 
 module Analytics
   module CycleAnalytics
-    # This class serializes errors from the GroupValueStream models and also includes errors from the stages relation.
+    # This class serializes errors from the ValueStream models and also includes errors from the stages relation.
     #
-    # The GroupValueStream model uses accepts_nested_attributes_for when receiving stages (has many). The error
+    # The ValueStream model uses accepts_nested_attributes_for when receiving stages (has many). The error
     # messages will be mapped to the respective form fields on the frontend. To do so, the serializer adds the
     # index of the stage (index from the incoming stages array) object in the response.
     #

@@ -23,7 +23,7 @@ RSpec.describe Analytics::CycleAnalytics::StageFinder do
   end
 
   context 'when persisted stage exists' do
-    let(:stage) { create(:cycle_analytics_group_stage, namespace: group) }
+    let(:stage) { create(:cycle_analytics_stage, namespace: group) }
 
     before do
       stage_id[:id] = stage.id

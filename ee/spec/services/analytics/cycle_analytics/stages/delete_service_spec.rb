@@ -4,9 +4,9 @@ require 'spec_helper'
 
 RSpec.describe Analytics::CycleAnalytics::Stages::DeleteService do
   let_it_be(:group, refind: true) { create(:group) }
-  let_it_be(:value_stream, refind: true) { create(:cycle_analytics_group_value_stream, namespace: group) }
+  let_it_be(:value_stream, refind: true) { create(:cycle_analytics_value_stream, namespace: group) }
   let_it_be(:user, refind: true) { create(:user) }
-  let_it_be(:stage, refind: true) { create(:cycle_analytics_group_stage, namespace: group, value_stream: value_stream) }
+  let_it_be(:stage, refind: true) { create(:cycle_analytics_stage, namespace: group, value_stream: value_stream) }
 
   let(:params) { { id: stage.id } }
 
@@ -33,7 +33,7 @@ RSpec.describe Analytics::CycleAnalytics::Stages::DeleteService do
   end
 
   context 'disallows deletion when default stage is given' do
-    let_it_be(:stage, refind: true) { create(:cycle_analytics_group_stage, namespace: group, custom: false, value_stream: value_stream) }
+    let_it_be(:stage, refind: true) { create(:cycle_analytics_stage, namespace: group, custom: false, value_stream: value_stream) }
 
     it { expect(subject).not_to be_success }
     it { expect(subject.http_status).to eq(:forbidden) }
