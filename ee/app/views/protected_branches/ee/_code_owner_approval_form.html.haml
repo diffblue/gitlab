@@ -1,4 +1,4 @@
-- if @project.feature_available?(:code_owner_approval_required)
+- if protected_branch_entity.feature_available?(:code_owner_approval_required)
   .form-group.row
     = f.label :code_owner_approval_required, s_("ProtectedBranch|Require approval from code owners:"), class: 'col-sm-12'
     .col-sm-12

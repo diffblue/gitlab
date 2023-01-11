@@ -12,13 +12,13 @@ module Audit
       audit_changes(
         :allow_force_push,
         as: 'allow force push',
-        entity: model.project,
+        entity: model.entity,
         model: model, event_type: 'protected_branch_allow_force_push_updated'
       )
       audit_changes(
         :code_owner_approval_required,
         as: 'code owner approval required',
-        entity: model.project, model: model,
+        entity: model.entity, model: model,
         event_type: 'protected_branch_code_owner_approval_required_updated'
       )
       audit_access_levels
@@ -37,7 +37,7 @@ module Audit
         to = new_access_levels.map(&:humanize)
         audit_context = {
           author: @current_user,
-          scope: model.project,
+          scope: model.entity,
           target: model,
           message: "Changed #{change} from #{from} to #{to}",
           name: 'protected_branch_updated',

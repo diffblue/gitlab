@@ -23,7 +23,7 @@ module EE
     end
 
     def code_owner_approval_required
-      super && project.code_owner_approval_required_available?
+      super && entity.code_owner_approval_required_available?
     end
     alias_method :code_owner_approval_required?, :code_owner_approval_required
 

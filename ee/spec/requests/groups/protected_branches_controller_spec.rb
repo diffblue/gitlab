@@ -66,12 +66,26 @@ RSpec.describe Groups::ProtectedBranchesController, feature_category: :source_co
 
     let(:create_params) { { protected_branch: { name: 'protected_branch' }.merge(access_level_params) } }
 
-    it 'creates the protected branch rule' do
-      expect do
-        post collection_path, params: create_params
-      end.to change { ProtectedBranch.count }.by(1)
+    describe 'creates the protected branch rule' do
+      let(:headers) { {} }
 
-      expect(response).to have_gitlab_http_status(:found)
+      subject { post collection_path, params: create_params, headers: headers }
+
+      context 'when format :html' do
+        it 'added record and response :found' do
+          expect { subject }.to change { ProtectedBranch.count }.by(1)
+          expect(response).to have_gitlab_http_status(:found)
+        end
+      end
+
+      context 'when format :json' do
+        let(:headers) { { "ACCEPT" => "application/json" } }
+
+        it 'added record and response :ok' do
+          expect { subject }.to change { ProtectedBranch.count }.by(1)
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+      end
     end
 
     context 'when a policy restricts rule creation' do
