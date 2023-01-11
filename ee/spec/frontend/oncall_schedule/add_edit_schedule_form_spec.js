@@ -1,10 +1,8 @@
-import { GlSearchBoxByType, GlDropdown, GlDropdownItem, GlFormGroup } from '@gitlab/ui';
+import { GlFormGroup } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import { nextTick } from 'vue';
 import mockTimezones from 'test_fixtures/timezones/full.json';
-import AddEditScheduleForm, {
-  i18n,
-} from 'ee/oncall_schedules/components/add_edit_schedule_form.vue';
+import TimezoneDropdown from '~/vue_shared/components/timezone_dropdown/timezone_dropdown.vue';
+import AddEditScheduleForm from 'ee/oncall_schedules/components/add_edit_schedule_form.vue';
 import { stubComponent } from 'helpers/stub_component';
 import { getOncallSchedulesQueryResponse } from './mocks/apollo_mock';
 
@@ -46,20 +44,56 @@ describe('AddEditScheduleForm', () => {
     wrapper.destroy();
   });
 
-  const findTimezoneDropdown = () => wrapper.findComponent(GlDropdown);
-  const findDropdownOptions = () => wrapper.findAllComponents(GlDropdownItem);
-  const findTimezoneSearchBox = () => wrapper.findComponent(GlSearchBoxByType);
+  const findTimezoneDropdown = () => wrapper.findComponent(TimezoneDropdown);
   const findScheduleName = () => wrapper.findComponent(GlFormGroup);
 
   it('renders form layout', () => {
     createComponent({
       stubs: {
-        GlDropdown: stubComponent(GlDropdown, {
+        TimezoneDropdown: stubComponent(TimezoneDropdown, {
           template: `<div />`,
         }),
       },
     });
     expect(wrapper.element).toMatchSnapshot();
+  });
+
+  describe('isTimezoneSelected', () => {
+    beforeEach(() => {
+      createComponent({
+        props: {
+          form: { name: '', description: '', timezone: mockTimezones[0] },
+        },
+      });
+    });
+
+    it('returns true if a given timezone is selected within a form', () => {
+      const isTimezoneSelected = wrapper.vm.isTimezoneSelected(mockTimezones[0]);
+
+      expect(isTimezoneSelected).toEqual(true);
+    });
+
+    it('returns false if a different timezone is selected within a form', () => {
+      const isTimezoneSelected = wrapper.vm.isTimezoneSelected(mockTimezones[1]);
+
+      expect(isTimezoneSelected).toEqual(false);
+    });
+  });
+
+  describe('setTimezone', () => {
+    beforeEach(() => {
+      wrapper.vm.setTimezone(mockTimezones[0]);
+    });
+
+    it('emits custom event upon timezone selection', () => {
+      const emittedEvent = wrapper.emitted('update-schedule-form');
+      expect(emittedEvent).toHaveLength(1);
+      expect(emittedEvent[0][0]).toEqual({ type: 'timezone', value: mockTimezones[0] });
+    });
+
+    it('sets a value for selectedDropdownTimezone', () => {
+      expect(wrapper.vm.selectedDropdownTimezone).toEqual(mockTimezones[0]);
+    });
   });
 
   describe('Schedule form validation', () => {
@@ -73,55 +107,6 @@ describe('AddEditScheduleForm', () => {
     });
   });
 
-  describe('Timezone select', () => {
-    beforeEach(() => {
-      createComponent();
-    });
-
-    it('has options based on provided BE data', () => {
-      expect(findDropdownOptions()).toHaveLength(mockTimezones.length);
-    });
-
-    it('formats each option', () => {
-      findDropdownOptions().wrappers.forEach((option, index) => {
-        const tz = mockTimezones[index];
-        const expectedValue = `(UTC ${tz.formatted_offset}) ${tz.abbr} ${tz.name}`;
-        expect(option.text()).toBe(expectedValue);
-      });
-    });
-
-    describe('timezones filtering', () => {
-      beforeEach(() => {
-        createComponent();
-      });
-
-      it('should filter options based on search term', async () => {
-        const searchTerm = 'Pacific';
-        findTimezoneSearchBox().vm.$emit('input', searchTerm);
-        await nextTick();
-        const options = findDropdownOptions();
-        expect(options).toHaveLength(1);
-        expect(options.at(0).text()).toContain(searchTerm);
-      });
-
-      it('should display no results item when there are no filter matches', async () => {
-        const searchTerm = 'someUnexistentTZ';
-        findTimezoneSearchBox().vm.$emit('input', searchTerm);
-        await nextTick();
-        const options = findDropdownOptions();
-        expect(options).toHaveLength(1);
-        expect(options.at(0).text()).toContain(i18n.noResults);
-      });
-    });
-
-    it('should add a checkmark to the selected option', async () => {
-      const selectedTZOption = findDropdownOptions().at(0);
-      selectedTZOption.vm.$emit('click');
-      await nextTick();
-      expect(selectedTZOption.attributes('ischecked')).toBe('true');
-    });
-  });
-
   describe('Form validation', () => {
     describe('Timezone select', () => {
       it('has a validation red border when timezone field is invalid', () => {
@@ -132,7 +117,10 @@ describe('AddEditScheduleForm', () => {
             validationState: { timezone: false },
           },
         });
-        expect(findTimezoneDropdown().classes()).toContain('invalid-dropdown');
+        expect(findTimezoneDropdown().props('additionalClass')).toStrictEqual([
+          { 'invalid-dropdown': true },
+          'timezone-dropdown',
+        ]);
       });
 
       it('does not have a validation red border when timezone field is valid', async () => {
@@ -141,7 +129,10 @@ describe('AddEditScheduleForm', () => {
             validationState: { timezone: true },
           },
         });
-        expect(findTimezoneDropdown().classes()).not.toContain('invalid-dropdown');
+        expect(findTimezoneDropdown().props('additionalClass')).toStrictEqual([
+          { 'invalid-dropdown': false },
+          'timezone-dropdown',
+        ]);
       });
     });
   });

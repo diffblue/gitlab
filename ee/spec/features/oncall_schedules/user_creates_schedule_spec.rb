@@ -28,7 +28,7 @@ RSpec.describe 'On-call Schedules', :js, feature_category: :on_call_schedule_man
       fill_in 'schedule-description', with: 'Test schedule description'
 
       click_button 'Select timezone'
-      click_button '(UTC -12:00) -12 International Date Line West'
+      click_button '[UTC-12] International Date Line West'
       click_button 'Add schedule'
 
       wait_for_all_requests

@@ -1292,9 +1292,6 @@ msgstr ""
 msgid "(No changes)"
 msgstr ""
 
-msgid "(UTC %{offset}) %{timezone}"
-msgstr ""
-
 msgid "(Unlimited pipeline minutes)"
 msgstr ""
 

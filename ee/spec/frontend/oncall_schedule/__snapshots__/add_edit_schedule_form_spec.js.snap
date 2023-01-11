@@ -43,7 +43,6 @@ exports[`AddEditScheduleForm renders form layout 1`] = `
     state="true"
   >
     <div
-      class="timezone-dropdown gl-w-full"
       id="schedule-timezone"
     />
   </gl-form-group-stub>
