@@ -900,6 +900,9 @@ msgid_plural "%{no_of_days} days"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%{numberOfSelectedTags} tags"
+msgstr ""
+
 msgid "%{number_commits_behind} commits behind %{default_branch}, %{number_commits_ahead} commits ahead"
 msgstr ""
 
@@ -15523,6 +15526,9 @@ msgstr ""
 msgid "End Time"
 msgstr ""
 
+msgid "End time"
+msgstr ""
+
 msgid "Ends"
 msgstr ""
 
@@ -16361,6 +16367,9 @@ msgid "Estimated"
 msgstr ""
 
 msgid "Even if you reach the number of seats in your subscription, you can continue to add users, and GitLab will bill you for the overage."
+msgstr ""
+
+msgid "Event tag (optional)"
 msgstr ""
 
 msgid "EventFilterBy|Filter by all"
@@ -22103,6 +22112,9 @@ msgid "Incident|Error deleting incident timeline event: %{error}"
 msgstr ""
 
 msgid "Incident|Error updating incident timeline event: %{error}"
+msgstr ""
+
+msgid "Incident|Incident"
 msgstr ""
 
 msgid "Incident|Metrics"
@@ -38500,6 +38512,9 @@ msgstr ""
 msgid "Select subscription"
 msgstr ""
 
+msgid "Select tags"
+msgstr ""
+
 msgid "Select target branch"
 msgstr ""
 
@@ -40254,6 +40269,9 @@ msgid "Start search"
 msgstr ""
 
 msgid "Start thread"
+msgstr ""
+
+msgid "Start time"
 msgstr ""
 
 msgid "Start your Free Ultimate Trial"
