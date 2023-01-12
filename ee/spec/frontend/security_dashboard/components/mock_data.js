@@ -284,6 +284,29 @@ export const generateVulnerabilities = () => [
     userNotesCount: 5,
     __typename: 'Vulnerability',
   },
+  {
+    id: 'id_6',
+    title: 'Vulnerability 6',
+    severity: 'high',
+    state: 'DETECTED',
+    detectedAt: new Date(),
+    resolvedOnDefaultBranch: false,
+    issueLinks: [],
+    identifiers: [],
+    reportType: 'DEPENDENCY_SCANNING',
+    location: {
+      path: '/v1/trees',
+      file: 'yarn.lock',
+    },
+    project: {
+      id: 'project-6',
+      nameWithNamespace: 'Administrator / Security reports',
+    },
+    scanner: { id: 'scanner-5', vendor: 'GitLab' },
+    vulnerabilityPath: 'path',
+    userNotesCount: 5,
+    __typename: 'Vulnerability',
+  },
 ];
 
 export const vulnerabilities = generateVulnerabilities();
