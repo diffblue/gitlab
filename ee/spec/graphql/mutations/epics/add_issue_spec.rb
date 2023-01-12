@@ -40,13 +40,14 @@ RSpec.describe Mutations::Epics::AddIssue do
       it 'returns error if the issue is already assigned to the epic' do
         issue.update!(epic: epic)
 
-        expect(subject[:errors]).to eq('Issue(s) already assigned')
+        expect(subject[:errors]).to match_array(['Issue(s) already assigned'])
       end
 
       it 'returns error if issue is not found' do
         issue.update!(project: create(:project))
+        message = "No matching issue found. Make sure that you are adding a valid issue URL."
 
-        expect(subject[:errors]).to eq('No matching issue found. Make sure that you are adding a valid issue URL.')
+        expect(subject[:errors]).to match_array([message])
       end
     end
   end
