@@ -673,44 +673,46 @@ describe('MR Widget Security Reports', () => {
     });
 
     describe('dismissal comment', () => {
-      it.each(['openDismissalCommentBox', 'editVulnerabilityDismissalComment'])(
-        'handles opening dismissal comment for event %s',
-        async (eventName) => {
-          mockWithData();
+      it.each`
+        event                                  | booleanValue
+        ${'openDismissalCommentBox'}           | ${true}
+        ${'closeDismissalCommentBox'}          | ${false}
+        ${'editVulnerabilityDismissalComment'} | ${true}
+      `('handles opening dismissal comment for event $event', async ({ event, booleanValue }) => {
+        mockWithData();
 
-          mockAxios.onPost(createVulnerabilityFeedbackDismissalPath).replyOnce(200);
+        mockAxios.onPost(createVulnerabilityFeedbackDismissalPath).replyOnce(200);
 
-          createComponent({
-            mountFn: mountExtended,
-            propsData: {
-              mr: {
-                createVulnerabilityFeedbackDismissalPath,
-              },
+        createComponent({
+          mountFn: mountExtended,
+          propsData: {
+            mr: {
+              createVulnerabilityFeedbackDismissalPath,
             },
-          });
+          },
+        });
 
-          await waitForPromises();
+        await waitForPromises();
 
-          // Click on the toggle button to expand data
-          wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-          await nextTick();
+        // Click on the toggle button to expand data
+        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+        await nextTick();
 
-          // Second one is for the dynamic scroller
-          await nextTick();
+        // Second one is for the dynamic scroller
+        await nextTick();
 
-          // Click on the vulnerability name
-          wrapper.findAllByText('Password leak').at(0).trigger('click');
-          await nextTick();
+        // Click on the vulnerability name
+        wrapper.findAllByText('Password leak').at(0).trigger('click');
+        await nextTick();
 
-          expect(findModal().props('modal').isCommentingOnDismissal).toBeUndefined();
+        expect(findModal().props('modal').isCommentingOnDismissal).toBeUndefined();
 
-          findModal().vm.$emit(eventName);
+        findModal().vm.$emit(event);
 
-          await waitForPromises();
+        await waitForPromises();
 
-          expect(findModal().props('modal').isCommentingOnDismissal).toBe(true);
-        },
-      );
+        expect(findModal().props('modal').isCommentingOnDismissal).toBe(booleanValue);
+      });
     });
 
     describe('undo dismissing finding', () => {
