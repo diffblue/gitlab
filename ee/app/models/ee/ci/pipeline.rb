@@ -137,7 +137,7 @@ module EE
 
             if license_scanner.has_data?
               dependency_list_parser = ::Gitlab::Ci::Parsers::Security::DependencyList.new(project, sha, self)
-              dependency_list_parser.parse_licenses!(license_scanner.report, dependency_list_report)
+              dependency_list_parser.apply_licenses!(license_scanner.report, dependency_list_report)
             end
           end
         end

@@ -145,14 +145,14 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList, feature_category: 
     end
   end
 
-  describe '#parse_licenses!' do
+  describe '#apply_licenses!' do
     let(:dependency_info) { build(:dependency, :nokogiri, :with_vulnerabilities) }
     let(:license_report) { build(:ci_reports_license_scanning_report, :license_for_nokogiri) }
 
     before do
       report.add_dependency(dependency)
 
-      parser.parse_licenses!(license_report, report)
+      parser.apply_licenses!(license_report, report)
     end
 
     context 'with existing license' do

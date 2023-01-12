@@ -50,7 +50,7 @@ module Gitlab
             "#{CONTAINER_IMAGE_PATH_PREFIX}#{finding.image}"
           end
 
-          def parse_licenses!(license_report, report)
+          def apply_licenses!(license_report, report)
             license_report.licenses.each do |license|
               report.apply_license(license)
             end
