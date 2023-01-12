@@ -1,15 +1,21 @@
 <script>
-import { GlTableLite } from '@gitlab/ui';
+import { GlSkeletonLoader, GlTableLite } from '@gitlab/ui';
 import { GlSparklineChart } from '@gitlab/ui/dist/charts';
 import { s__, __ } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import MetricPopover from '~/analytics/shared/components/metric_popover.vue';
-import { DASHBOARD_TABLE_FIELDS, METRIC_TOOLTIPS } from '../constants';
+import {
+  DASHBOARD_TABLE_FIELDS,
+  METRIC_TOOLTIPS,
+  CHART_GRADIENT,
+  CHART_GRADIENT_INVERTED,
+} from '../constants';
 import TrendIndicator from './trend_indicator.vue';
 
 export default {
   name: 'ComparisonTable',
   components: {
+    GlSkeletonLoader,
     GlTableLite,
     GlSparklineChart,
     MetricPopover,
@@ -49,6 +55,9 @@ export default {
         ],
       };
     },
+    chartGradient(invert) {
+      return invert ? CHART_GRADIENT_INVERTED : CHART_GRADIENT;
+    },
   },
   i18n: {
     popoverDashboardLabel: __('Dashboard'),
@@ -68,7 +77,7 @@ export default {
       </template>
     </template>
 
-    <template #cell()="{ value: { value, change, invertTrendColor } }">
+    <template #cell()="{ value: { value, change }, item: { invertTrendColor } }">
       {{ value }}
       <trend-indicator v-if="change" :change="change" :invert-color="invertTrendColor" />
     </template>
@@ -82,14 +91,20 @@ export default {
       />
     </template>
 
-    <template #cell(chart)="{ value }">
+    <template #cell(chart)="{ value: { data, tooltipLabel }, item: { invertTrendColor } }">
       <gl-sparkline-chart
-        v-if="value.data"
+        v-if="data"
         :height="30"
-        :tooltip-label="value.tooltipLabel"
+        :tooltip-label="tooltipLabel"
         :show-last-y-value="false"
-        :data="value.data"
+        :data="data"
+        :smooth="0.2"
+        :gradient="chartGradient(invertTrendColor)"
+        data-testid="metric_chart"
       />
+      <div v-else class="gl-py-4" data-testid="metric_chart_skeleton">
+        <gl-skeleton-loader :lines="1" :width="100" />
+      </div>
     </template>
   </gl-table-lite>
 </template>

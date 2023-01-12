@@ -116,20 +116,18 @@ export const mockComparativeTableData = [
       value: 'Deployment Frequency',
       identifier: 'deployment_frequency',
     },
+    invertTrendColor: undefined,
     thisMonth: {
       value: '0.0/d',
       change: 0,
-      invertTrendColor: undefined,
     },
     lastMonth: {
       value: '2.0/d',
       change: -0.5,
-      invertTrendColor: undefined,
     },
     twoMonthsAgo: {
       value: '4.0/d',
       change: 1,
-      invertTrendColor: undefined,
     },
   },
   {
@@ -137,20 +135,18 @@ export const mockComparativeTableData = [
       value: 'Lead Time for Changes',
       identifier: 'lead_time_for_changes',
     },
+    invertTrendColor: true,
     thisMonth: {
       value: '5.1 d',
       change: 0.4166666666666665,
-      invertTrendColor: true,
     },
     lastMonth: {
       value: '3.6 d',
       change: -0.6086956521739131,
-      invertTrendColor: true,
     },
     twoMonthsAgo: {
       value: '9.2 d',
       change: -0.5422885572139304,
-      invertTrendColor: true,
     },
   },
   {
@@ -158,20 +154,18 @@ export const mockComparativeTableData = [
       value: 'Time to Restore Service',
       identifier: 'time_to_restore_service',
     },
+    invertTrendColor: true,
     thisMonth: {
       value: '4.0 d',
       change: -0.8,
-      invertTrendColor: true,
     },
     lastMonth: {
       value: '20.0 d',
       change: -0.375,
-      invertTrendColor: true,
     },
     twoMonthsAgo: {
       value: '32.0 d',
       change: 0,
-      invertTrendColor: true,
     },
   },
   {
@@ -179,20 +173,18 @@ export const mockComparativeTableData = [
       value: 'Change Failure Rate',
       identifier: 'change_failure_rate',
     },
+    invertTrendColor: true,
     thisMonth: {
       value: '8.00%',
       change: 1,
-      invertTrendColor: true,
     },
     lastMonth: {
       value: '4.00%',
       change: -0.5,
-      invertTrendColor: true,
     },
     twoMonthsAgo: {
       value: '8.00%',
       change: 0,
-      invertTrendColor: true,
     },
   },
   {
@@ -200,20 +192,18 @@ export const mockComparativeTableData = [
       value: 'Lead time',
       identifier: 'lead_time',
     },
+    invertTrendColor: true,
     lastMonth: {
       change: 1,
       value: '4.0 d',
-      invertTrendColor: true,
     },
     thisMonth: {
       change: -0.5,
       value: '2.0 d',
-      invertTrendColor: true,
     },
     twoMonthsAgo: {
       change: -0.5,
       value: '2.0 d',
-      invertTrendColor: true,
     },
   },
   {
@@ -221,20 +211,18 @@ export const mockComparativeTableData = [
       value: 'Cycle time',
       identifier: 'cycle_time',
     },
+    invertTrendColor: true,
     lastMonth: {
       change: 0,
       value: '-',
-      invertTrendColor: true,
     },
     thisMonth: {
       change: 0,
       value: '4.0 d',
-      invertTrendColor: true,
     },
     twoMonthsAgo: {
       change: 0,
       value: '-',
-      invertTrendColor: true,
     },
   },
   {
@@ -242,20 +230,18 @@ export const mockComparativeTableData = [
       value: 'New issues',
       identifier: 'issues',
     },
+    invertTrendColor: undefined,
     lastMonth: {
       change: 1,
       value: 12,
-      invertTrendColor: undefined,
     },
     thisMonth: {
       change: -0.5,
       value: 6,
-      invertTrendColor: undefined,
     },
     twoMonthsAgo: {
       change: -0.5,
       value: 6,
-      invertTrendColor: undefined,
     },
   },
   {
@@ -263,20 +249,18 @@ export const mockComparativeTableData = [
       value: 'Deploys',
       identifier: 'deploys',
     },
+    invertTrendColor: undefined,
     lastMonth: {
       change: 1,
       value: 16,
-      invertTrendColor: undefined,
     },
     thisMonth: {
       change: -0.5,
       value: 8,
-      invertTrendColor: undefined,
     },
     twoMonthsAgo: {
       change: -0.5,
       value: 8,
-      invertTrendColor: undefined,
     },
   },
 ];

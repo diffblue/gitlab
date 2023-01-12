@@ -78,7 +78,7 @@ export const hasDoraMetricValues = (timePeriods) =>
 export const generateDoraTimePeriodComparisonTable = (timePeriods) => {
   const doraMetrics = Object.entries(DORA_METRICS);
   return doraMetrics.map(([identifier, { label, formatValue, invertTrendColor }]) => {
-    const data = { metric: { identifier, value: label } };
+    const data = { invertTrendColor, metric: { identifier, value: label } };
     timePeriods.forEach((timePeriod, index) => {
       // The last timePeriod is not rendered, we just use it
       // to determine the % change for the 2nd last timePeriod
@@ -91,7 +91,6 @@ export const generateDoraTimePeriodComparisonTable = (timePeriods) => {
 
       data[timePeriod.key] = {
         value: hasCurrentValue ? formatValue(current.value) : '-',
-        invertTrendColor,
         change: percentChange({
           current: hasCurrentValue ? current.value : 0,
           previous: hasPreviousValue ? previous.value : 0,
