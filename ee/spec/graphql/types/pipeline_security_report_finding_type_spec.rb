@@ -36,6 +36,7 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
        details
        vulnerability
        issueLinks
+       merge_request
        description_html]
   end
 
@@ -222,6 +223,57 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
     end
   end
 
+  describe 'merge_request' do
+    let(:query_for_test) do
+      %(
+        uuid
+        mergeRequest {
+          description
+        }
+      )
+    end
+
+    it 'returns no merge requests for the security findings when no vulnerability finding exists' do
+      expect(get_findings_from_response(subject).first['mergeRequest']).to be_nil
+    end
+
+    context 'when there is a vulnerabillty with no merge request' do
+      let_it_be(:vulnerability_finding) { create(:vulnerabilities_finding, project: project, uuid: security_findings.first.uuid) }
+
+      it 'returns no merge requests' do
+        expect(get_findings_from_response(subject).first['mergeRequest']).to be_nil
+      end
+    end
+
+    context 'when the security finding has a related vulnerability finding' do
+      let_it_be(:vulnerability_finding) { create(:vulnerabilities_finding, project: project, uuid: security_findings.first.uuid) }
+      let_it_be(:mr_feedback) { create(:vulnerability_feedback, :merge_request, project: project, finding_uuid: vulnerability_finding.uuid) }
+
+      it 'returns the merge request for the security findings' do
+        response = GitlabSchema.execute(query, context: { current_user: user })
+        expect(get_findings_from_response(response).first['mergeRequest']['description']).to eq(mr_feedback.merge_request.description)
+      end
+
+      it 'avoids N+1 queries' do
+        # Warm up table schema and other data (e.g. SAML providers, license)
+        run_with_clean_state(query, context: { current_user: user })
+
+        initial_query = ActiveRecord::QueryRecorder.new { run_with_clean_state(query, context: { current_user: user }) }
+
+        expect(get_merge_requests_from_query.count).to eq(1)
+
+        merge_request = create(:merge_request, source_project: project, target_branch: 'feature2')
+        new_vulnerability_finding = create(:vulnerabilities_finding, project: project, uuid: security_findings.second.uuid)
+        create(:vulnerability_feedback, :merge_request, project: project, finding_uuid: new_vulnerability_finding.uuid, merge_request: merge_request)
+
+        expect { run_with_clean_state(query, context: { current_user: user }) }.not_to exceed_query_limit(initial_query)
+
+        # We test the data here to ensure we are pulling more data with the same number of queries
+        expect(get_merge_requests_from_query.count).to eq(2)
+      end
+    end
+  end
+
   def create_security_findings
     content = File.read(artifact.file.path)
     Gitlab::Ci::Parsers::Security::Sast.parse!(content, report)
@@ -243,4 +295,22 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
     findings.pluck('issueLinks').compact.pluck('nodes').flatten
   end
   alias_method :get_issues_from_vulnerabilities, :get_issues_from_findings
+
+  def get_vulnerabilities_issues_from_query
+    response = run_with_clean_state(query, context: { current_user: user })
+    vulnerabilities = get_findings_from_response(response).pluck('vulnerability').compact
+    vulnerabilities.pluck('issueLinks').compact.pluck('nodes').flatten
+  end
+
+  def get_findings_issues_from_query
+    response = run_with_clean_state(query, context: { current_user: user })
+    findings = get_findings_from_response(response)
+    findings.pluck('issueLinks').compact.pluck('nodes').flatten
+  end
+
+  def get_merge_requests_from_query
+    response = run_with_clean_state(query, context: { current_user: user })
+    findings = get_findings_from_response(response)
+    findings.pluck('mergeRequest').compact
+  end
 end
