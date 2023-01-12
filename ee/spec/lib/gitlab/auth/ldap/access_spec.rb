@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Auth::Ldap::Access do
+RSpec.describe Gitlab::Auth::Ldap::Access, feature_category: :authentication_and_authorization do
   include LdapHelpers
 
   let(:user) { create(:omniauth_user, :ldap) }
@@ -13,15 +13,17 @@ RSpec.describe Gitlab::Auth::Ldap::Access do
   describe '#allowed?' do
     context 'LDAP user' do
       it 'finds a user by dn first' do
-        expect(Gitlab::Auth::Ldap::Person).to receive(:find_by_dn).and_return(:ldap_user)
+        allow(Gitlab::Auth::Ldap::Person).to receive(:disabled_via_active_directory?).and_return(false)
+        expect(Gitlab::Auth::Ldap::Person).to receive(:find_by_dn).and_return(user)
         expect(Gitlab::Auth::Ldap::Person).not_to receive(:find_by_email)
 
         access.allowed?
       end
 
       it 'finds a user by email if not found by dn' do
+        allow(Gitlab::Auth::Ldap::Person).to receive(:disabled_via_active_directory?).and_return(false)
         expect(Gitlab::Auth::Ldap::Person).to receive(:find_by_dn).and_return(nil)
-        expect(Gitlab::Auth::Ldap::Person).to receive(:find_by_email)
+        expect(Gitlab::Auth::Ldap::Person).to receive(:find_by_email).and_return(user)
 
         access.allowed?
       end
