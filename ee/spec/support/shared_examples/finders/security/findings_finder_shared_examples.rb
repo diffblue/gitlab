@@ -17,6 +17,8 @@ RSpec.shared_examples 'security findings finder' do
   let(:scope) { nil }
   let(:page) { nil }
   let(:per_page) { nil }
+  let(:scanner) { nil }
+  let(:state) { nil }
   let(:service_object) { described_class.new(pipeline, params: params) }
   let(:params) do
     {
@@ -25,7 +27,9 @@ RSpec.shared_examples 'security findings finder' do
       report_type: report_types,
       scope: scope,
       page: page,
-      per_page: per_page
+      per_page: per_page,
+      scanner: scanner,
+      state: state
     }
   end
 
@@ -49,6 +53,8 @@ RSpec.shared_examples 'security findings finder' do
 
         findings = { artifact_ds => report_ds, artifact_sast => report_sast }.collect do |artifact, report|
           scan = create(:security_scan, :latest_successful, scan_type: artifact.job.name, build: artifact.job)
+          scanner_external_id = report.scanners.each_value.first.external_id
+          scanner = create(:vulnerabilities_scanner, project: pipeline.project, external_id: scanner_external_id)
 
           report.findings.collect do |finding, index|
             create(:security_finding,
@@ -56,7 +62,8 @@ RSpec.shared_examples 'security findings finder' do
                    confidence: finding.confidence,
                    uuid: finding.uuid,
                    deduplicated: true,
-                   scan: scan)
+                   scan: scan,
+                   scanner: scanner)
           end
         end.flatten
 
@@ -65,7 +72,7 @@ RSpec.shared_examples 'security findings finder' do
         create(:vulnerability_feedback,
                :dismissal,
                project: pipeline.project,
-               category: :sast,
+               category: :dependency_scanning,
                finding_uuid: findings.first.uuid)
       end
 
@@ -262,6 +269,34 @@ RSpec.shared_examples 'security findings finder' do
           let(:expected_uuids) { Security::Finding.pluck(:uuid) - [Security::Finding.second[:uuid]] }
 
           it { is_expected.to match_array(expected_uuids) }
+        end
+
+        context 'when the `scanner` is provided' do
+          let(:scanner) { report_sast.scanners.each_value.first.external_id }
+          let(:expected_uuids) { Security::Finding.by_scan(Security::Scan.find_by(scan_type: 'sast')).pluck(:uuid) }
+
+          it { is_expected.to match_array(expected_uuids) }
+        end
+
+        context 'when the `state` is provided' do
+          let(:dismissed_finding_uuid) { report_ds.findings.first.uuid }
+          let(:state) { :dismissed }
+
+          before do
+            stub_feature_flags(deprecate_vulnerabilities_feedback: deprecate_vulnerabilities_feedback?)
+          end
+
+          context 'when the `deprecate_vulnerabilities_feedback` FF is disabled' do
+            let(:deprecate_vulnerabilities_feedback?) { false }
+
+            it { is_expected.to match_array([dismissed_finding_uuid]) }
+          end
+
+          context 'when the `deprecate_vulnerabilities_feedback` FF is enabled' do
+            let(:deprecate_vulnerabilities_feedback?) { true }
+
+            it { is_expected.to be_empty }
+          end
         end
 
         context 'when there is a retried build' do

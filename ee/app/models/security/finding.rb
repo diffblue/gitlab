@@ -57,6 +57,41 @@ module Security
     scope :by_confidence_levels, -> (confidence_levels) { where(confidence: confidence_levels) }
     scope :by_report_types, -> (report_types) { joins(:scan).merge(Scan.by_scan_types(report_types)) }
     scope :by_scan, -> (scans) { where(scan: scans) }
+    scope :by_scanners, -> (scanners) { where(scanner: scanners) }
+    scope :by_state, -> (states, check_feedback: false) do
+      states = Array(states).map(&:to_s)
+
+      relation = where('EXISTS (?)',
+                       Vulnerability.select(1)
+                                    .with_states(states)
+                                    .joins(:findings)
+                                    .where('vulnerability_occurrences.uuid = security_findings.uuid::text'))
+
+      # If the given states includes `dismissed` and `check_feedback` is true,
+      # we need to check `vulnerabilities_feedback` as well.
+      relation = relation.or(dismissed_by_feedback) if check_feedback && states.include?('dismissed')
+
+      # If the given list of states includes `detected` we should return
+      # the findings which does not exist on main branch as well.
+      relation = relation.or(recently_detected) if states.include?('detected')
+
+      relation
+    end
+
+    scope :dismissed_by_feedback, -> do
+      where('EXISTS (?)',
+            Scan.select(1)
+                .has_dismissal_feedback
+                .where('security_scans.id = security_findings.scan_id')
+                .where('vulnerability_feedback.finding_uuid = security_findings.uuid'))
+    end
+
+    scope :recently_detected, -> do
+      where('NOT EXISTS (?)',
+            Vulnerabilities::Finding.select(1)
+                                    .where('vulnerability_occurrences.uuid = security_findings.uuid::text'))
+    end
+
     scope :undismissed_by_vulnerability, -> do
       where('NOT EXISTS (?)',
             Vulnerability.select(1)
@@ -64,6 +99,7 @@ module Security
                          .joins(:findings)
                          .where('vulnerability_occurrences.uuid = security_findings.uuid::text'))
     end
+
     scope :undismissed, -> do
       where('NOT EXISTS (?)',
             Scan.select(1)
@@ -71,6 +107,7 @@ module Security
                 .where('security_scans.id = security_findings.scan_id')
                 .where('vulnerability_feedback.finding_uuid = security_findings.uuid'))
     end
+
     scope :latest, -> { joins(:scan).merge(Security::Scan.latest_successful) }
     scope :ordered, -> { order(severity: :desc, id: :asc) }
     scope :with_pipeline_entities, -> { preload(build: [:job_artifacts, :pipeline]) }
