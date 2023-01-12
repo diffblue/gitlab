@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Resolvers::PipelineSecurityReportFindingsResolver do
+RSpec.describe Resolvers::PipelineSecurityReportFindingsResolver, feature_category: :vulnerability_management do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project, :repository) }
@@ -20,6 +20,68 @@ RSpec.describe Resolvers::PipelineSecurityReportFindingsResolver do
     before do
       allow_next_instance_of(Security::PipelineVulnerabilitiesFinder) do |instance|
         allow(instance).to receive_message_chain(:execute, :findings).and_return(returned_findings)
+      end
+    end
+
+    describe 'utilized finder class' do
+      let(:mock_report) { instance_double(Gitlab::Ci::Reports::Security::AggregatedReport, findings: []) }
+      let(:mock_pure_finder) { instance_double(Security::PureFindingsFinder, execute: [], available?: pure_finder_available?) }
+      let(:mock_deprecated_finder) { instance_double(Security::PipelineVulnerabilitiesFinder, execute: mock_report) }
+      let(:utilize_finding_data?) { true }
+
+      before do
+        allow(Security::PureFindingsFinder).to receive(:new).and_return(mock_pure_finder)
+        allow(Security::PipelineVulnerabilitiesFinder).to receive(:new).and_return(mock_deprecated_finder)
+
+        stub_feature_flags(utilize_finding_data: utilize_finding_data?)
+      end
+
+      context 'when the pure findings finder is available' do
+        let(:pure_finder_available?) { true }
+
+        it 'uses the pure findings finder' do
+          resolve_query
+
+          expect(mock_pure_finder).to have_received(:execute)
+          expect(mock_deprecated_finder).not_to have_received(:execute)
+        end
+      end
+
+      context 'when the pure findings finder is not available' do
+        let(:pure_finder_available?) { false }
+
+        it 'uses the deprecated findings finder' do
+          resolve_query
+
+          expect(mock_pure_finder).not_to have_received(:execute)
+          expect(mock_deprecated_finder).to have_received(:execute)
+        end
+      end
+
+      context 'when the `utilize_finding_data` FF is disabled' do
+        let(:utilize_finding_data?) { false }
+
+        context 'when the pure findings finder is available' do
+          let(:pure_finder_available?) { true }
+
+          it 'uses the deprecated findings finder' do
+            resolve_query
+
+            expect(mock_pure_finder).not_to have_received(:execute)
+            expect(mock_deprecated_finder).to have_received(:execute)
+          end
+        end
+
+        context 'when the pure findings finder is not available' do
+          let(:pure_finder_available?) { false }
+
+          it 'uses the deprecated findings finder' do
+            resolve_query
+
+            expect(mock_pure_finder).not_to have_received(:execute)
+            expect(mock_deprecated_finder).to have_received(:execute)
+          end
+        end
       end
     end
 

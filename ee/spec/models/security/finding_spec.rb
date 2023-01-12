@@ -56,11 +56,9 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
   end
 
   describe '.by_uuid' do
-    let(:expected_findings) { [finding_1] }
-
     subject { described_class.by_uuid(finding_1.uuid) }
 
-    it { is_expected.to match_array(expected_findings) }
+    it { is_expected.to match_array([finding_1]) }
   end
 
   describe '.by_build_ids' do
@@ -109,6 +107,72 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
     subject { described_class.by_project_fingerprints(finding_1.project_fingerprint) }
 
     it { is_expected.to match_array(expected_findings) }
+  end
+
+  describe '.by_scanners' do
+    subject { described_class.by_scanners(finding_1.scanner) }
+
+    it { is_expected.to match_array([finding_1]) }
+  end
+
+  describe '.by_state' do
+    context 'when the state is `detected`' do
+      subject(:findings) { described_class.by_state(:detected) }
+
+      before do
+        create(:vulnerabilities_finding, :detected, uuid: finding_2.uuid)
+      end
+
+      it 'returns findings that are associated with "detected vulnerabilities" along with the recently detected ones' do
+        expect(findings).to match_array([finding_1, finding_2])
+      end
+    end
+
+    context 'when the state is `dismissed`' do
+      subject { described_class.by_state(:dismissed, check_feedback: check_feedback?) }
+
+      before do
+        create(:vulnerability_feedback,
+           :dismissal,
+           project: scan_2.project,
+           category: scan_2.scan_type,
+           finding_uuid: finding_2.uuid)
+
+        create(:vulnerabilities_finding, :dismissed, uuid: finding_1.uuid)
+      end
+
+      context 'when the `check_feedback` argument is false' do
+        let(:check_feedback?) { false }
+
+        it { is_expected.to match_array([finding_1]) }
+      end
+
+      context 'when the `check_feedback` argument is true' do
+        let(:check_feedback?) { true }
+
+        it { is_expected.to match_array([finding_1, finding_2]) }
+      end
+    end
+
+    context 'when the state is `confirmed`' do
+      subject { described_class.by_state(:confirmed) }
+
+      before do
+        create(:vulnerabilities_finding, :confirmed, uuid: finding_1.uuid)
+      end
+
+      it { is_expected.to match_array([finding_1]) }
+    end
+
+    context 'when the state is `resolved`' do
+      subject { described_class.by_state(:resolved) }
+
+      before do
+        create(:vulnerabilities_finding, :resolved, uuid: finding_1.uuid)
+      end
+
+      it { is_expected.to match_array([finding_1]) }
+    end
   end
 
   describe '.undismissed_by_vulnerability' do
