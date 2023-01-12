@@ -125,6 +125,10 @@ module Types
           null: true,
           description: "List of issue links related to the vulnerability."
 
+    field :merge_request, ::Types::MergeRequestType,
+          null: true,
+          description: 'Merge request that fixes the vulnerability.'
+
     markdown_field :description_html, null: true
 
     def vulnerability
@@ -139,6 +143,16 @@ module Types
       BatchLoader::GraphQL.for(object.uuid).batch do |uuids, loader|
         ::Vulnerability.with_findings_by_uuid(uuids).each do |vulnerability|
           loader.call(vulnerability.finding.uuid, vulnerability.issue_links)
+        end
+      end
+    end
+
+    def merge_request
+      BatchLoader::GraphQL.for(object.uuid).batch do |uuids, loader|
+        ::Vulnerabilities::Feedback
+          .all_preloaded.by_finding_uuid(uuids)
+          .with_feedback_type('merge_request').each do |feedback|
+          loader.call(feedback.finding_uuid, feedback.merge_request)
         end
       end
     end
