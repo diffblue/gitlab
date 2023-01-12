@@ -27,10 +27,11 @@ module Mutations
         issue = resolve_issuable(type: :issue, parent_path: project_path, iid: issue_iid)
         service = create_epic_issue(epic, issue)
         epic_issue = service[:status] == :success ? find_epic_issue(epic, issue) : nil
+        error_message = service[:message]
 
         {
           epic_issue: epic_issue,
-          errors: service[:message] || []
+          errors: error_message.present? ? [error_message] : []
         }
       end
 
