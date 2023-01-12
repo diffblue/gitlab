@@ -53,20 +53,22 @@ module Elastic
 
     def resume_processing!
       with_redis do |redis|
-        loop do
-          break if Elastic::IndexingControl.non_cached_pause_indexing?
+        Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
+          loop do
+            break if Elastic::IndexingControl.non_cached_pause_indexing?
 
-          jobs_with_scores = next_batch_from_waiting_queue(redis)
-          break if jobs_with_scores.empty?
+            jobs_with_scores = next_batch_from_waiting_queue(redis)
+            break if jobs_with_scores.empty?
 
-          parsed_jobs = jobs_with_scores.map { |j, _| deserialize(j) }
+            parsed_jobs = jobs_with_scores.map { |j, _| deserialize(j) }
 
-          parsed_jobs.each { |j| send_to_processing_queue(j) }
+            parsed_jobs.each { |j| send_to_processing_queue(j) }
 
-          remove_jobs_from_waiting_queue(redis, jobs_with_scores)
+            remove_jobs_from_waiting_queue(redis, jobs_with_scores)
+          end
+
+          redis.del(redis_set_key, redis_score_key) if queue_size == 0
         end
-
-        redis.del(redis_set_key, redis_score_key) if queue_size == 0
       end
     end
 
@@ -75,9 +77,7 @@ module Elastic
     attr_reader :klass, :queue_name, :redis_set_key, :redis_score_key
 
     def with_redis(&blk)
-      Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
-        Gitlab::Redis::SharedState.with(&blk) # rubocop:disable CodeReuse/ActiveRecord
-      end
+      Gitlab::Redis::SharedState.with(&blk) # rubocop:disable CodeReuse/ActiveRecord
     end
 
     def serialize(args, context)
