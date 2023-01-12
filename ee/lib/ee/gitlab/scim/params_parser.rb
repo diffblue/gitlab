@@ -24,7 +24,7 @@ module EE
         end
 
         def update_params
-          @update_params ||= process_operations
+          @update_params ||= (process_operations || {})
         end
 
         def filter_params
@@ -42,7 +42,7 @@ module EE
         end
 
         def process_operations
-          @params[:Operations].each_with_object({}) do |operation, hash|
+          @params[:Operations]&.each_with_object({}) do |operation, hash|
             next unless OPERATIONS_OPERATORS.include?(operation[:op].downcase)
 
             hash.merge!(transformed_operation(operation))

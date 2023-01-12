@@ -12,6 +12,7 @@ class ScimIdentity < ApplicationRecord
   validates :extern_uid, presence: true,
                          uniqueness: { case_sensitive: false, scope: [:group_id] }
 
+  scope :for_instance, -> { where(group: nil) }
   scope :for_user, ->(user) { where(user: user) }
   scope :with_extern_uid, ->(extern_uid) { iwhere(extern_uid: extern_uid) }
 end

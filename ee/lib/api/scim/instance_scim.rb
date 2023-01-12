@@ -11,6 +11,7 @@ module API
       USER_ID_REQUIREMENTS = { id: /.+/ }.freeze
 
       helpers ::EE::API::Helpers::ScimPagination
+      helpers ::API::Helpers::ScimHelpers
 
       helpers do
         def check_access!
@@ -21,16 +22,36 @@ module API
           unauthorized! unless token && ScimOauthAccessToken.token_matches?(token)
         end
 
-        def render_scim_error(error_class, message)
-          error!({ with: error_class }.merge(detail: message), error_class::STATUS)
+        def find_user_identity(extern_uid)
+          ScimIdentity.for_instance.with_extern_uid(extern_uid).first
         end
 
-        def scim_not_found!(message:)
-          render_scim_error(::EE::API::Entities::Scim::NotFound, message)
+        def patch_deprovision(identity)
+          ::EE::Gitlab::Scim::DeprovisioningService.new(identity).execute
+
+          true
+        rescue StandardError => e
+          logger.error(
+            identity: identity,
+            error: e.class.name,
+            message: e.message,
+            source: "#{__FILE__}:#{__LINE__}"
+          )
+          scim_error!(message: e.message)
         end
 
-        def scim_error!(message:)
-          render_scim_error(::EE::API::Entities::Scim::Error, message)
+        def reprovision(identity)
+          ::EE::Gitlab::Scim::ReprovisioningService.new(identity).execute
+
+          true
+        rescue StandardError => e
+          logger.error(
+            identity: identity,
+            error: e.class.name,
+            message: e.message,
+            source: "#{__FILE__}:#{__LINE__}"
+          )
+          scim_error!(message: e.message)
         end
       end
 
@@ -75,6 +96,61 @@ module API
             status 200
 
             present identity, with: ::EE::API::Entities::Scim::User
+          end
+
+          desc 'Create a SCIM user' do
+            success ::EE::API::Entities::Scim::Users
+          end
+
+          post do
+            check_access!
+            parser = ::EE::Gitlab::Scim::ParamsParser.new(params)
+            result = ::EE::Gitlab::Scim::ProvisioningService.new(parser.post_params).execute
+
+            case result.status
+            when :success
+              status 201
+
+              present result.identity, with: ::EE::API::Entities::Scim::User
+            when :conflict
+              scim_conflict!(
+                message: "Error saving user with #{sanitize_request_parameters(params).inspect}: #{result.message}"
+              )
+            when :error
+              scim_error!(
+                message: [
+                  "Error saving user with #{sanitize_request_parameters(params).inspect}",
+                  result.message
+                ].compact.join(": ")
+              )
+            end
+          end
+
+          desc 'Updates a SCIM user'
+
+          patch ':id', requirements: USER_ID_REQUIREMENTS do
+            check_access!
+            identity = find_user_identity(params[:id])
+            scim_not_found!(message: "Resource #{params[:id]} not found") unless identity
+            updated = update_scim_user(identity)
+
+            if updated
+              no_content!
+            else
+              scim_error!(
+                message: "Error updating #{identity.user.name} with #{sanitize_request_parameters(params).inspect}"
+              )
+            end
+          end
+
+          desc 'Removes a SCIM user'
+
+          delete ':id', requirements: USER_ID_REQUIREMENTS do
+            check_access!
+            identity = find_user_identity(params[:id])
+            scim_not_found!(message: "Resource #{params[:id]} not found") unless identity
+            patch_deprovision(identity)
+            no_content!
           end
         end
       end
