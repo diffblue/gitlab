@@ -1,11 +1,10 @@
 <script>
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
+import * as Sentry from '@sentry/browser';
 import Api from 'ee/api';
 import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
-import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import activeStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/active_step.query.graphql';
-import { createAlert } from '~/flash';
 import { redirectTo } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 
@@ -25,7 +24,8 @@ export default {
       query: activeStepQuery,
       update: ({ activeStep }) => activeStep?.id === STEPS[3].id,
       error: (error) => {
-        createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+        Sentry.captureException(error);
+        this.$emit('error', error);
       },
     },
     confirmOrderParams: {
@@ -73,7 +73,8 @@ export default {
           }
         })
         .catch((error) => {
-          createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+          Sentry.captureException(error);
+          this.$emit('error', error);
         })
         .finally(() => {
           this.isLoading = false;

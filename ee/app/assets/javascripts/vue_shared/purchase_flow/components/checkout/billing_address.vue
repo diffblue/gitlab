@@ -1,5 +1,6 @@
 <script>
 import { GlFormGroup, GlFormInput, GlFormSelect } from '@gitlab/ui';
+import * as Sentry from '@sentry/browser';
 import { isEmpty } from 'lodash';
 import { STEPS } from 'ee/subscriptions/constants';
 import updateStateMutation from 'ee/subscriptions/graphql/mutations/update_state.mutation.graphql';
@@ -7,8 +8,6 @@ import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.gra
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import statesQuery from 'ee/subscriptions/graphql/queries/states.query.graphql';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
-import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
-import { createAlert } from '~/flash';
 import { s__ } from '~/locale';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
 
@@ -131,7 +130,7 @@ export default {
   },
   methods: {
     updateState(payload) {
-      this.$apollo
+      return this.$apollo
         .mutate({
           mutation: updateStateMutation,
           variables: {
@@ -139,7 +138,8 @@ export default {
           },
         })
         .catch((error) => {
-          createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+          Sentry.captureException(error);
+          this.$emit('error', error);
         });
     },
   },
@@ -180,6 +180,7 @@ export default {
           value-field="id"
           text-field="name"
           data-qa-selector="country"
+          data-testid="country-select"
         />
       </gl-form-group>
       <gl-form-group :label="$options.i18n.streetAddressLabel" label-size="sm" class="mb-3">

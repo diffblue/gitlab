@@ -118,7 +118,12 @@ export default {
   />
   <step-order-app v-else-if="!$apollo.loading" data-testid="buy-addons-shared">
     <template #checkout>
-      <gl-alert v-if="alertMessage" class="checkout-alert" variant="danger" :dismissible="false">
+      <gl-alert
+        v-if="alertMessage"
+        class="checkout-alert gl-mb-5"
+        variant="danger"
+        :dismissible="false"
+      >
         {{ alertMessage }}
       </gl-alert>
       <checkout :plan="plan" @alertError="alertError">
