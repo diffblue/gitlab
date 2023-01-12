@@ -1,5 +1,13 @@
 <script>
-import { GlButton, GlEmptyState, GlIcon, GlLink, GlLoadingIcon, GlTableLite } from '@gitlab/ui';
+import {
+  GlButton,
+  GlEmptyState,
+  GlIcon,
+  GlLink,
+  GlLoadingIcon,
+  GlTableLite,
+  GlTooltipDirective as GlTooltip,
+} from '@gitlab/ui';
 
 import { s__, __ } from '~/locale';
 import { createAlert } from '~/flash';
@@ -42,6 +50,10 @@ export default {
     ImportStatus,
     TimeAgo,
     LocalStorageSync,
+  },
+
+  directives: {
+    GlTooltip,
   },
 
   data() {
@@ -122,6 +134,17 @@ export default {
       const suffix = item.entity_type === 'group' ? '/' : '';
       return `${item.destination_full_path}${suffix}`;
     },
+
+    getEntityTooltip(item) {
+      switch (item.entity_type) {
+        case 'project':
+          return __('Project');
+        case 'group':
+          return __('Group');
+        default:
+          return '';
+      }
+    },
   },
 
   gitlabLogo: window.gon.gitlab_logo,
@@ -153,7 +176,13 @@ export default {
         class="gl-w-full"
       >
         <template #cell(destination_name)="{ item }">
-          <gl-icon :name="item.entity_type" class="gl-text-gray-500"/>
+          <gl-icon
+            v-gl-tooltip
+            :name="item.entity_type"
+            :title="getEntityTooltip(item)"
+            :aria-label="getEntityTooltip(item)"
+            class="gl-text-gray-500"
+          />
           <gl-link :href="getFullDestinationUrl(item)" target="_blank">
             {{ getPresentationUrl(item) }}
           </gl-link>

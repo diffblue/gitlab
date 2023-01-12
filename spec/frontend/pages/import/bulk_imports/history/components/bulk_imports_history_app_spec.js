@@ -168,12 +168,12 @@ describe('BulkImportsHistoryApp', () => {
     );
   });
 
-  it('prefixes group urls with slash', async () => {
+  it('adds slash to group urls', async () => {
     mock.onGet(API_URL).reply(200, DUMMY_RESPONSE, DEFAULT_HEADERS);
     createComponent({ shallow: false });
     await axios.waitForAll();
 
-    expect(wrapper.find('tbody tr a').text()).toBe(`/${DUMMY_RESPONSE[0].destination_full_path}`);
+    expect(wrapper.find('tbody tr a').text()).toBe(`${DUMMY_RESPONSE[0].destination_full_path}/`);
   });
 
   it('does not prefixes project urls with slash', async () => {
