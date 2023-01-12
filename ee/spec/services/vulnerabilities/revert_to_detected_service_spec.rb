@@ -39,6 +39,7 @@ RSpec.describe Vulnerabilities::RevertToDetectedService, feature_category: :vuln
         .to(1)
       expect(::Vulnerabilities::StateTransition.last.vulnerability_id).to eq(vulnerability.id)
       expect(::Vulnerabilities::StateTransition.last.to_state).to eq('detected')
+      expect(::Vulnerabilities::StateTransition.last.author).to eq(user)
     end
 
     it_behaves_like 'calls vulnerability statistics utility services in order'
