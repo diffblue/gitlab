@@ -106,6 +106,8 @@ module Security
               .then(&method(:by_confidence_levels))
               .then(&method(:by_report_types))
               .then(&method(:by_severity_levels))
+              .then(&method(:by_scanner_external_ids))
+              .then(&method(:by_state))
     end
 
     def per_page
@@ -117,7 +119,21 @@ module Security
     end
 
     def include_dismissed?
-      params[:scope] == 'all'
+      params[:scope] == 'all' || params[:state]
+    end
+
+    def by_scanner_external_ids(relation)
+      return relation unless params[:scanner].present?
+
+      relation.by_scanners(project.vulnerability_scanners.with_external_id(params[:scanner]))
+    end
+
+    def by_state(relation)
+      return relation unless params[:state].present?
+
+      check_feedback = Feature.disabled?(:deprecate_vulnerabilities_feedback, project)
+
+      relation.by_state(params[:state], check_feedback: check_feedback)
     end
 
     def by_confidence_levels(relation)

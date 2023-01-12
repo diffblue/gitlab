@@ -164,7 +164,7 @@ module Types
     def false_positive?
       return unless expose_false_positive?
 
-      object.vulnerability_flags.any?(&:false_positive?) || false
+      object.false_positive?
     end
 
     def description_html_resolver

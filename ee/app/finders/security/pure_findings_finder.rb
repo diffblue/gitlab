@@ -20,9 +20,7 @@
 module Security
   class PureFindingsFinder < FindingsFinder
     def execute
-      security_findings.tap do |findings|
-        findings.each(&:remediations) # initiates Batchloader
-      end
+      security_findings
     end
 
     def available?
