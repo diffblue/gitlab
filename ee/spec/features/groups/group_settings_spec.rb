@@ -241,13 +241,13 @@ RSpec.describe 'Edit group settings', feature_category: :subgroups do
       context 'group selection menu', :js do
         before do
           wait_for_all_requests
-          page.within('[data-test-id="custom_project_templates_selector"]') do
+          page.within('[data-testid="custom_project_templates_selector"]') do
             find('.dropdown-toggle').click
           end
         end
 
         it 'shows only the subgroups' do
-          page.within('[data-test-id="custom_project_templates_selector"] [role="listbox"]') do
+          page.within('[data-testid="custom_project_templates_selector"] [role="listbox"]') do
             results = find_all('[role="option"]')
 
             expect(results.count).to eq(1)

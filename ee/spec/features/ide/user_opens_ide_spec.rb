@@ -23,6 +23,8 @@ RSpec.describe 'EE user opens IDE', :js, feature_category: :web_ide do
     it 'does not show warning' do
       ide_visit(project)
 
+      wait_for_all_requests
+
       expect(page).not_to have_text(unsigned_commits_warning)
     end
   end
@@ -30,6 +32,8 @@ RSpec.describe 'EE user opens IDE', :js, feature_category: :web_ide do
   shared_examples 'has warning' do
     it 'shows warning' do
       ide_visit(project)
+
+      wait_for_all_requests
 
       expect(page).to have_text(unsigned_commits_warning)
     end

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe RequirementsManagement::TestReport do
+RSpec.describe RequirementsManagement::TestReport, feature_category: :requirements_management do
   describe 'associations' do
     subject { build(:test_report) }
 
@@ -96,10 +96,10 @@ RSpec.describe RequirementsManagement::TestReport do
               [
                 have_attributes(requirement_issue: have_attributes(id: requirement1.id, work_item_type_id: requirement_type_id),
                                 author: build.user,
-                                state: 'passed'),
+                                state: 'passed', uses_legacy_iid: false),
                 have_attributes(requirement_issue: have_attributes(id: requirement2.id, work_item_type_id: requirement_type_id),
                                 author: build.user,
-                                state: 'failed')
+                                state: 'failed', uses_legacy_iid: false)
               ])
           end
         end
@@ -132,10 +132,10 @@ RSpec.describe RequirementsManagement::TestReport do
               [
                 have_attributes(requirement_issue: have_attributes(id: requirement1.id, work_item_type_id: requirement_type_id),
                                 author: build.user,
-                                state: 'passed'),
+                                state: 'passed', uses_legacy_iid: true),
                 have_attributes(requirement_issue: have_attributes(id: requirement2.id, work_item_type_id: requirement_type_id),
                                 author: build.user,
-                                state: 'failed')
+                                state: 'failed', uses_legacy_iid: true)
               ])
           end
         end
@@ -152,7 +152,7 @@ RSpec.describe RequirementsManagement::TestReport do
 
         let_it_be(:build) { create(:ee_ci_build, :requirements_v2_report, project: project) }
 
-        it 'creates test report with expected status for each open requirement' do
+        it 'does not create any test reports' do
           # ignore requirement IIDs that appear in the test but are missing
           create(:work_item, :requirement, state: :opened, project: project, iid: 1)
           create(:work_item, :requirement, state: :opened, project: project, iid: 2)
@@ -171,28 +171,38 @@ RSpec.describe RequirementsManagement::TestReport do
 
     let(:now) { Time.current }
 
-    context 'when build is passed as argument' do
-      it 'builds test report with correct attributes' do
-        test_report = described_class.build_report(requirement_issue: requirement, author: user, state: 'failed', build: build, timestamp: now)
+    shared_examples 'builds the expected reports' do |expected_legacy_value|
+      context 'when build is passed as argument' do
+        it 'builds test report with correct attributes' do
+          test_report = described_class.build_report(requirement_issue: requirement, author: user, state: 'failed', build: build, timestamp: now, legacy: expected_legacy_value)
 
-        expect(test_report.author).to eq(build.author)
-        expect(test_report.build).to eq(build)
-        expect(test_report.issue_id).to eq(requirement.id)
-        expect(test_report.state).to eq('failed')
-        expect(test_report.created_at).to eq(now)
+          expect(test_report.author).to eq(build.author)
+          expect(test_report.build).to eq(build)
+          expect(test_report.issue_id).to eq(requirement.id)
+          expect(test_report.state).to eq('failed')
+          expect(test_report.created_at).to eq(now)
+          expect(test_report.uses_legacy_iid).to eq expected_legacy_value
+        end
+      end
+
+      context 'when build is not passed as argument' do
+        it 'builds test report with correct attributes' do
+          test_report = described_class.build_report(requirement_issue: requirement, author: user, state: 'passed', timestamp: now, legacy: expected_legacy_value)
+
+          expect(test_report.author).to eq(user)
+          expect(test_report.build).to eq(nil)
+          expect(test_report.issue_id).to eq(requirement.id)
+          expect(test_report.state).to eq('passed')
+          expect(test_report.created_at).to eq(now)
+          expect(test_report.uses_legacy_iid).to eq expected_legacy_value
+        end
       end
     end
 
-    context 'when build is not passed as argument' do
-      it 'builds test report with correct attributes' do
-        test_report = described_class.build_report(requirement_issue: requirement, author: user, state: 'passed', timestamp: now)
+    it_behaves_like 'builds the expected reports', false
 
-        expect(test_report.author).to eq(user)
-        expect(test_report.build).to eq(nil)
-        expect(test_report.issue_id).to eq(requirement.id)
-        expect(test_report.state).to eq('passed')
-        expect(test_report.created_at).to eq(now)
-      end
+    context 'when legacy is true' do
+      it_behaves_like 'builds the expected reports', true
     end
 
     context 'when state param is invalid' do

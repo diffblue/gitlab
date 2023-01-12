@@ -42,13 +42,14 @@ module RequirementsManagement
         bulk_insert!(reports)
       end
 
-      def build_report(state:, requirement_issue:, author: nil, build: nil, timestamp: Time.current)
+      def build_report(state:, requirement_issue:, author: nil, build: nil, timestamp: Time.current, legacy: false)
         new(
           issue_id: requirement_issue.id,
           build_id: build&.id,
           author_id: build&.user_id || author&.id,
           created_at: timestamp,
-          state: state
+          state: state,
+          uses_legacy_iid: !!legacy
         )
       end
 
@@ -78,7 +79,7 @@ module RequirementsManagement
 
             next unless states.key?(new_state)
 
-            reports << build_report(state: new_state, requirement_issue: requirement_issue, build: build, timestamp: timestamp)
+            reports << build_report(state: new_state, requirement_issue: requirement_issue, build: build, timestamp: timestamp, legacy: legacy)
           end
         end
       end

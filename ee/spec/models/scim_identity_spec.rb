@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ScimIdentity do
+RSpec.describe ScimIdentity, feature_category: :authentication_and_authorization do
   describe 'relations' do
     it { is_expected.to belong_to(:group) }
     it { is_expected.to belong_to(:user) }
@@ -64,6 +64,17 @@ RSpec.describe ScimIdentity do
       identity = user.scim_identities.create!(group: group, extern_uid: user.email)
 
       expect(group.scim_identities.with_extern_uid(user.email.upcase).first).to eq identity
+    end
+  end
+
+  describe '.for_instance' do
+    it 'finds identities not associated with a group' do
+      _group_identity = create(:scim_identity, group: create(:group))
+      instance_identity = create(:scim_identity, group: nil)
+
+      expect(described_class.for_instance).to match_array(
+        [instance_identity]
+      )
     end
   end
 end
