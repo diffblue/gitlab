@@ -5,10 +5,6 @@
   pointer-events: none;
 }
 
-.epic-discussion-separator {
-  border-color: var(--gray-100, $gray-100);
-}
-
 @include media-breakpoint-down(xs) {
   .epic-page-container {
     .detail-page-header {
