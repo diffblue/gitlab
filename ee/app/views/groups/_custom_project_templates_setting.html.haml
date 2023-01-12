@@ -15,9 +15,6 @@
       %input{ type: 'hidden', name: 'update_section', value: 'js-custom-project-templates-settings' }
       = form_errors(@group)
 
-      %fieldset
-        .form-group{ data: { test_id: 'custom_project_templates_selector' } }
-          = f.label :custom_project_templates_group_id, class: 'label-bold' do
-            = _('Select subgroup')
-          = groups_select_tag('group[custom_project_templates_group_id]', data: { groups_filter: 'subgroups', parent_id: @group.id, input_id: 'group_custom_project_templates_group_id' }, selected: @group.custom_project_templates_group_id, class: 'input-clamp allowClear', multiple: false)
+      .js-vue-group-select{ data: { label: _('Select subgroup'), input_name: 'group[custom_project_templates_group_id]', input_id: 'group_custom_project_templates_group_id', groups_filter: 'subgroups', parent_id: @group.id, selected: @group.custom_project_templates_group_id, clearable: 'true', testid: 'custom_project_templates_selector' } }
+
       = f.submit _('Save changes'), pajamas_button: true , data: { qa_selector: 'save_changes_button' }

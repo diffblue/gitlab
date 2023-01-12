@@ -13,11 +13,6 @@
       = gitlab_ui_form_for @application_setting, url: templates_admin_application_settings_path(anchor: 'js-custom-project-templates-settings') do |f|
         = form_errors(@application_setting)
 
-        %fieldset
-          .form-group
-            = f.label :file_template_project_id, class: 'label-bold' do
-              .form-text
-                = _('Select group')
-            = groups_select_tag('application_setting[custom_project_templates_group_id]', data: { input_id: 'application_setting_file_template_project_id' }, selected: @application_setting.custom_project_templates_group_id, class: 'input-clamp allowClear', multiple: false)
+        .js-vue-group-select{ data: { label: _('Select group'), input_name: 'application_setting[custom_project_templates_group_id]', input_id: 'application_setting_file_template_project_id', selected: @application_setting.custom_project_templates_group_id, clearable: 'true' } }
 
         = f.submit _('Save changes'), pajamas_button: true, data: { qa_selector: 'save_changes_button' }
