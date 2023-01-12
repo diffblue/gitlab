@@ -19,14 +19,12 @@ export default {
     },
   },
   computed: {
-    ...mapState('securityConfiguration', ['configuration']),
     ...mapState({
       rules: (state) => state.approvals.rules,
       isApprovalsLoading: (state) => state.approvals.isLoading,
-      isSecurityConfigurationLoading: (state) => state.securityConfiguration.isLoading,
     }),
     isRulesLoading() {
-      return this.isApprovalsLoading || this.isSecurityConfigurationLoading;
+      return this.isApprovalsLoading;
     },
     securityRules() {
       return [
@@ -57,11 +55,7 @@ export default {
       }, []);
     },
   },
-  created() {
-    this.fetchSecurityConfiguration();
-  },
   methods: {
-    ...mapActions('securityConfiguration', ['fetchSecurityConfiguration']),
     ...mapActions({ openCreateModal: 'createModal/open' }),
     hasApprovalRuleDefined(matchRule) {
       return this.rules.some((rule) => {
