@@ -6,6 +6,7 @@ import ConfirmOrder from 'ee/vue_shared/purchase_flow/components/checkout/confir
 import PaymentMethod from 'ee/vue_shared/purchase_flow/components/checkout/payment_method.vue';
 import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import { s__ } from '~/locale';
+import { createAlert } from '~/flash';
 
 export default {
   components: {
@@ -24,20 +25,21 @@ export default {
   },
   methods: {
     updateSelectedPlan({ id, isAddon } = {}) {
-      this.$apollo
+      return this.$apollo
         .mutate({
           mutation: updateState,
           variables: {
             input: { selectedPlan: { id, isAddon } },
           },
         })
-        .catch((error) => {
-          this.emitError(error);
-        });
+        .catch(this.emitError);
     },
     emitError(error) {
       this.$emit('alertError', GENERAL_ERROR_MESSAGE);
       logError(error);
+    },
+    showError(error) {
+      createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
     },
   },
   i18n: {
@@ -49,8 +51,8 @@ export default {
   <div>
     <div class="flash-container"></div>
     <slot name="purchase-details"></slot>
-    <billing-address />
+    <billing-address @error="showError" />
     <payment-method />
-    <confirm-order />
+    <confirm-order @error="showError" />
   </div>
 </template>

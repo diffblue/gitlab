@@ -15,6 +15,9 @@ import {
 } from 'ee_jest/subscriptions/mock_data';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { createAlert } from '~/flash';
+
+jest.mock('~/flash');
 
 Vue.use(VueApollo);
 
@@ -59,10 +62,6 @@ describe('Checkout', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when mounted', () => {
     it('invokes the mutation with the correct params', () => {
       const { id, isAddon } = plan;
@@ -90,16 +89,50 @@ describe('Checkout', () => {
   });
 
   describe('when the mutation fails', () => {
-    beforeEach(async () => {
+    const error = new Error('Yikes!');
+
+    beforeEach(() => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
-      updateState = jest.fn().mockRejectedValue(new Error('Yikes!'));
+      updateState = jest.fn().mockRejectedValue(error);
       createComponent();
 
-      await waitForPromises();
+      return waitForPromises();
     });
 
     it('should emit `alertError` event', () => {
       expect(wrapper.emitted('alertError')).toEqual([[GENERAL_ERROR_MESSAGE]]);
+    });
+  });
+
+  describe('when the children component emit error', () => {
+    const errorMessage = 'Yikes!';
+
+    beforeEach(() => {
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      updateState = jest.fn().mockResolvedValue('');
+      createComponent();
+
+      return waitForPromises();
+    });
+
+    it('emits an error message from billing address', () => {
+      findBillingAddress().vm.$emit('error', errorMessage);
+
+      expect(createAlert).toHaveBeenCalledWith({
+        message: GENERAL_ERROR_MESSAGE,
+        captureError: true,
+        error: errorMessage,
+      });
+    });
+
+    it('emits an error message from order confirmation', () => {
+      findOrderConfirmation().vm.$emit('error', errorMessage);
+
+      expect(createAlert).toHaveBeenCalledWith({
+        message: GENERAL_ERROR_MESSAGE,
+        captureError: true,
+        error: errorMessage,
+      });
     });
   });
 });

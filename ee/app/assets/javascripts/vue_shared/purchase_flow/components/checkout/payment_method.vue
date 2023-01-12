@@ -4,8 +4,8 @@ import find from 'lodash/find';
 import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
+import Zuora from 'ee/vue_shared/purchase_flow/components/checkout/zuora.vue';
 import { sprintf, s__ } from '~/locale';
-import Zuora from './zuora.vue';
 
 export default {
   components: {

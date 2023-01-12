@@ -2,11 +2,11 @@ import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import * as Sentry from '@sentry/browser';
 import Api from 'ee/api';
 import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import ConfirmOrder from 'ee/vue_shared/purchase_flow/components/checkout/confirm_order.vue';
-import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import { stateData as initialStateData, subscriptionName } from 'ee_jest/subscriptions/mock_data';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -127,16 +127,24 @@ describe('Confirm Order', () => {
         expect(UrlUtility.redirectTo).toHaveBeenCalledWith(location);
       });
 
-      it('shows an error if it fails', async () => {
+      describe('when there is a failure', () => {
         const errors = 'an error';
-        Api.confirmOrder = jest.fn().mockResolvedValueOnce({ data: { errors } });
-        findConfirmButton().vm.$emit('click');
-        await waitForPromises();
+        const expectedError = new Error(JSON.stringify(errors));
 
-        expect(createAlert.mock.calls[0][0]).toMatchObject({
-          message: GENERAL_ERROR_MESSAGE,
-          captureError: true,
-          error: new Error(JSON.stringify(errors)),
+        beforeEach(() => {
+          jest.spyOn(Sentry, 'captureException');
+          Api.confirmOrder = jest.fn().mockResolvedValueOnce({ data: { errors } });
+          findConfirmButton().vm.$emit('click');
+
+          return waitForPromises();
+        });
+
+        it('emits an error', () => {
+          expect(wrapper.emitted('error')).toEqual([[expectedError]]);
+        });
+
+        it('captures the exception', () => {
+          expect(Sentry.captureException).toHaveBeenCalledWith(expectedError);
         });
       });
     });
