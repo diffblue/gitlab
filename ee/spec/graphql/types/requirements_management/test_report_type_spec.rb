@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSchema.types['TestReport'] do
-  fields = %i[id state author created_at]
+  fields = %i[id state author created_at uses_legacy_iid]
 
   it { expect(described_class.graphql_name).to eq('TestReport') }
 
