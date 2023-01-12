@@ -3,7 +3,7 @@
 require 'spec_helper'
 require File.expand_path('ee/elastic/migrate/20220713103500_delete_commits_from_original_index.rb')
 
-RSpec.describe DeleteCommitsFromOriginalIndex do
+RSpec.describe DeleteCommitsFromOriginalIndex, :elastic_clean, feature_category: :global_search do
   let(:version) { 20220713103500 }
   let(:migration) { described_class.new(version) }
   let(:helper) { Gitlab::Elastic::Helper.new }
@@ -20,7 +20,7 @@ RSpec.describe DeleteCommitsFromOriginalIndex do
     end
   end
 
-  context 'commits are already deleted', :elastic do
+  context 'commits are already deleted' do
     it 'does not execute delete_by_query' do
       expect(migration.completed?).to be_truthy
       expect(helper.client).not_to receive(:delete_by_query)
@@ -29,7 +29,7 @@ RSpec.describe DeleteCommitsFromOriginalIndex do
     end
   end
 
-  context 'commits are still present in the index', :elastic, :sidekiq_inline do
+  context 'commits are still present in the index', :sidekiq_inline do
     let(:project) { create(:project, :repository) }
 
     before do
