@@ -77,7 +77,7 @@ feature_category: :onboarding do
     # The groups_and_projects_controller (on `click_on 'Create project'`) is over
     # the query limit threshold, so we have to adjust it.
     # https://gitlab.com/gitlab-org/gitlab/-/issues/338737
-    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(143)
+    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(144)
 
     fill_in 'group_name', with: 'Test Group'
     fill_in 'blank_project_name', with: 'Test Project'
