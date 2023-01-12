@@ -54,6 +54,40 @@ RSpec.describe Issues::UpdateService do
       end
     end
 
+    context 'update health_status' do
+      before do
+        stub_licensed_features(issuable_health_status: true)
+
+        project.add_developer(user)
+
+        issue.update!(health_status: :needs_attention)
+      end
+
+      context 'when health_status has changed' do
+        it "triggers 'issuableHealthStatusUpdated' subscription" do
+          expect(GraphqlTriggers).to receive(:issuable_health_status_updated).with(issue).and_call_original
+
+          update_issue(health_status: :on_track)
+        end
+      end
+
+      context 'when health_status remains unchanged' do
+        it "does not trigger 'issuableHealthStatusUpdated' subscription" do
+          expect(GraphqlTriggers).not_to receive(:issuable_health_status_updated)
+
+          update_issue(health_status: :needs_attention)
+        end
+      end
+
+      context 'when health_status param is not provided' do
+        it "does not trigger 'issuableHealthStatusUpdated' subscription" do
+          expect(GraphqlTriggers).not_to receive(:issuable_health_status_updated)
+
+          update_issue(title: "foobar")
+        end
+      end
+    end
+
     context 'refresh epic dates' do
       let_it_be(:cadence) { create(:iterations_cadence, group: group) }
 
