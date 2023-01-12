@@ -13,7 +13,9 @@ module QA
         QA::Support::Retrier.retry_on_exception do
           QA::Page::Main::Menu.perform(&:sign_out_if_signed_in)
 
-          EE::Resource::License.fabricate!(ENV['EE_LICENSE'])
+          EE::Resource::License.fabricate! do |resource|
+            resource.license = ENV['EE_LICENSE']
+          end
         end
       end
     end
