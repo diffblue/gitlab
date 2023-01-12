@@ -114,6 +114,9 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
 
               wait_for_requests
 
+              project.project_setting.update!(jitsu_key: '123')
+              project.reload
+
               travel_to(1.minute.from_now) do
                 expect(page).to have_content(s_('Product Analytics|Instrument your application'))
               end

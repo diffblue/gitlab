@@ -72,6 +72,11 @@ export default {
 
         return jitsuKey;
       },
+      result({ data }) {
+        if (data?.project?.jitsuKey) {
+          this.showSetupView();
+        }
+      },
       skip() {
         return !this.pollJitsuKey;
       },
@@ -112,7 +117,6 @@ export default {
           this.showError(new Error(error), false);
         } else {
           this.pollJitsuKey = true;
-          this.showSetupView();
         }
       } catch (err) {
         this.showError(err);
