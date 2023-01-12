@@ -1,7 +1,7 @@
-import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
+import * as Sentry from '@sentry/browser';
 import { gitLabResolvers } from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
 import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
@@ -10,23 +10,28 @@ import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { stateData as initialStateData } from 'ee_jest/subscriptions/mock_data';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 
 Vue.use(VueApollo);
 
 describe('Billing Address', () => {
   let wrapper;
+  let updateState = jest.fn();
 
-  const apolloResolvers = {
-    Query: {
-      countries: jest.fn().mockResolvedValue([
-        { id: 'NL', name: 'Netherlands', flag: 'NL', internationalDialCode: '31' },
-        { id: 'US', name: 'United States of America', flag: 'US', internationalDialCode: '1' },
-      ]),
-      states: jest.fn().mockResolvedValue([{ id: 'CA', name: 'California' }]),
-    },
-  };
+  const findCountrySelect = () => wrapper.findByTestId('country-select');
 
   const createComponent = (apolloLocalState = {}) => {
+    const apolloResolvers = {
+      Query: {
+        countries: jest.fn().mockResolvedValue([
+          { id: 'NL', name: 'Netherlands', flag: 'NL', internationalDialCode: '31' },
+          { id: 'US', name: 'United States of America', flag: 'US', internationalDialCode: '1' },
+        ]),
+        states: jest.fn().mockResolvedValue([{ id: 'CA', name: 'California' }]),
+      },
+      Mutation: { updateState },
+    };
+
     const apolloProvider = createMockApolloProvider(STEPS, STEPS[1], {
       ...gitLabResolvers,
       ...apolloResolvers,
@@ -36,7 +41,7 @@ describe('Billing Address', () => {
       data: merge({}, initialStateData, apolloLocalState),
     });
 
-    return mount(BillingAddress, {
+    wrapper = mountExtended(BillingAddress, {
       apolloProvider,
     });
   };
@@ -45,13 +50,9 @@ describe('Billing Address', () => {
     const countrySelect = () => wrapper.find('.js-country');
 
     beforeEach(() => {
-      wrapper = createComponent();
+      createComponent();
 
       return waitForPromises();
-    });
-
-    afterEach(() => {
-      wrapper.destroy();
     });
 
     it('displays the countries returned from the server', () => {
@@ -71,7 +72,7 @@ describe('Billing Address', () => {
     };
 
     it('is valid when country, streetAddressLine1, city and zipCode have been entered', async () => {
-      wrapper = createComponent({ customer: customerData });
+      createComponent({ customer: customerData });
 
       await waitForPromises();
 
@@ -79,7 +80,7 @@ describe('Billing Address', () => {
     });
 
     it('is invalid when country is undefined', async () => {
-      wrapper = createComponent({ customer: { country: null } });
+      createComponent({ customer: { country: null } });
 
       await waitForPromises();
 
@@ -87,7 +88,7 @@ describe('Billing Address', () => {
     });
 
     it('is invalid when streetAddressLine1 is undefined', async () => {
-      wrapper = createComponent({ customer: { address1: null } });
+      createComponent({ customer: { address1: null } });
 
       await waitForPromises();
 
@@ -95,7 +96,7 @@ describe('Billing Address', () => {
     });
 
     it('is invalid when city is undefined', async () => {
-      wrapper = createComponent({ customer: { city: null } });
+      createComponent({ customer: { city: null } });
 
       await waitForPromises();
 
@@ -103,7 +104,7 @@ describe('Billing Address', () => {
     });
 
     it('is invalid when zipCode is undefined', async () => {
-      wrapper = createComponent({ customer: { zipCode: null } });
+      createComponent({ customer: { zipCode: null } });
 
       await waitForPromises();
 
@@ -112,8 +113,8 @@ describe('Billing Address', () => {
   });
 
   describe('showing the summary', () => {
-    beforeEach(async () => {
-      wrapper = createComponent({
+    beforeEach(() => {
+      createComponent({
         customer: {
           country: 'US',
           address1: 'address line 1',
@@ -124,7 +125,7 @@ describe('Billing Address', () => {
         },
       });
 
-      await waitForPromises();
+      return waitForPromises();
     });
 
     it('should show the entered address line 1', () => {
@@ -137,6 +138,30 @@ describe('Billing Address', () => {
 
     it('should show the entered address city, state and zip code', () => {
       expect(wrapper.find('.js-summary-line-3').text()).toBe('city, US California zip');
+    });
+  });
+
+  describe('when an error occurs with the resolver', () => {
+    const error = new Error('Yikes!');
+
+    beforeEach(() => {
+      jest.spyOn(Sentry, 'captureException');
+      updateState = jest.fn().mockRejectedValue(error);
+      createComponent({
+        customer: { country: 'US' },
+      });
+
+      findCountrySelect().vm.$emit('input', 'IT');
+
+      return waitForPromises();
+    });
+
+    it('emits an error', () => {
+      expect(wrapper.emitted('error')).toEqual([[error]]);
+    });
+
+    it('captures the exception', () => {
+      expect(Sentry.captureException).toHaveBeenCalledWith(error);
     });
   });
 });
