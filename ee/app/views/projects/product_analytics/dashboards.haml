@@ -8,6 +8,7 @@
     jitsu_project_id: Gitlab::CurrentSettings.current_application_settings.jitsu_project_xid,
     chart_empty_state_illustration_path: image_path('illustrations/chart-empty-state.svg'),
     project_full_path: @project.full_path,
+    router_base: project_product_analytics_dashboards_path(@project)
   }
 }
   = gl_loading_icon(size: 'lg', css_class: 'gl-my-7')
