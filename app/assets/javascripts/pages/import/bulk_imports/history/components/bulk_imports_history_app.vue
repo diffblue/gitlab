@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlEmptyState, GlLink, GlLoadingIcon, GlTable } from '@gitlab/ui';
+import { GlButton, GlEmptyState, GlIcon, GlLink, GlLoadingIcon, GlTableLite } from '@gitlab/ui';
 
 import { s__, __ } from '~/locale';
 import { createAlert } from '~/flash';
@@ -34,9 +34,10 @@ export default {
   components: {
     GlButton,
     GlEmptyState,
+    GlIcon,
     GlLink,
     GlLoadingIcon,
-    GlTable,
+    GlTableLite,
     PaginationBar,
     ImportStatus,
     TimeAgo,
@@ -58,12 +59,12 @@ export default {
   fields: [
     tableCell({
       key: 'source_full_path',
-      label: s__('BulkImport|Source group'),
+      label: s__('BulkImport|Source'),
       thClass: `${DEFAULT_TH_CLASSES} gl-w-30p`,
     }),
     tableCell({
       key: 'destination_name',
-      label: s__('BulkImport|Destination group'),
+      label: s__('BulkImport|Destination'),
       thClass: `${DEFAULT_TH_CLASSES} gl-w-40p`,
     }),
     tableCell({
@@ -113,12 +114,13 @@ export default {
       }
     },
 
-    getDestinationUrl({ destination_name: name, destination_namespace: namespace }) {
-      return [namespace, name].filter(Boolean).join('/');
+    getFullDestinationUrl(params) {
+      return joinPaths(gon.relative_url_root || '', '/', params.destination_full_path);
     },
 
-    getFullDestinationUrl(params) {
-      return joinPaths(gon.relative_url_root || '', '/', this.getDestinationUrl(params));
+    getPresentationUrl(item) {
+      const prefix = item.entity_type === 'group' ? '/' : '';
+      return `${prefix}${item.destination_full_path}`;
     },
   },
 
@@ -134,25 +136,26 @@ export default {
     >
       <h1 class="gl-my-0 gl-py-4 gl-font-size-h1">
         <img :src="$options.gitlabLogo" class="gl-w-6 gl-h-6 gl-mb-2 gl-display-inline gl-mr-2" />
-        {{ s__('BulkImport|Group import history') }}
+        {{ s__('BulkImport|GitLab Migration history') }}
       </h1>
     </div>
     <gl-loading-icon v-if="loading" size="lg" class="gl-mt-5" />
     <gl-empty-state
       v-else-if="!hasHistoryItems"
       :title="s__('BulkImport|No history is available')"
-      :description="s__('BulkImport|Your imported groups will appear here.')"
+      :description="s__('BulkImport|Your imported groups and projects will appear here.')"
     />
     <template v-else>
-      <gl-table
+      <gl-table-lite
         :fields="$options.fields"
         :items="historyItems"
         data-qa-selector="import_history_table"
         class="gl-w-full"
       >
         <template #cell(destination_name)="{ item }">
+          <gl-icon :name="item.entity_type" />
           <gl-link :href="getFullDestinationUrl(item)" target="_blank">
-            {{ getDestinationUrl(item) }}
+            {{ getPresentationUrl(item) }}
           </gl-link>
         </template>
         <template #cell(created_at)="{ value }">
@@ -171,7 +174,7 @@ export default {
         <template #row-details="{ item }">
           <pre><code>{{ item.failures }}</code></pre>
         </template>
-      </gl-table>
+      </gl-table-lite>
       <pagination-bar
         :page-info="pageInfo"
         class="gl-m-0 gl-mt-3"
