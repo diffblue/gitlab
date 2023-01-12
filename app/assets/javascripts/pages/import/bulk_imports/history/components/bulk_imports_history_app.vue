@@ -119,8 +119,8 @@ export default {
     },
 
     getPresentationUrl(item) {
-      const prefix = item.entity_type === 'group' ? '/' : '';
-      return `${prefix}${item.destination_full_path}`;
+      const suffix = item.entity_type === 'group' ? '/' : '';
+      return `${item.destination_full_path}${suffix}`;
     },
   },
 
@@ -153,7 +153,7 @@ export default {
         class="gl-w-full"
       >
         <template #cell(destination_name)="{ item }">
-          <gl-icon :name="item.entity_type" />
+          <gl-icon :name="item.entity_type" class="gl-text-gray-500"/>
           <gl-link :href="getFullDestinationUrl(item)" target="_blank">
             {{ getPresentationUrl(item) }}
           </gl-link>
