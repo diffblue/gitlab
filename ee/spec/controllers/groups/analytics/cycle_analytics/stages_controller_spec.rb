@@ -15,13 +15,6 @@ RSpec.describe Groups::Analytics::CycleAnalytics::StagesController, feature_cate
           )
   end
 
-  context 'when params have only group_id' do
-    let(:params) { { group_id: group } }
-    let(:namespace) { group }
-
-    it_behaves_like 'Value Stream Analytics Stages controller'
-  end
-
   context 'when params have group_id and value_stream_id' do
     let_it_be(:stages) do
       [

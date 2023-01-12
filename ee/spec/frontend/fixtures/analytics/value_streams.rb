@@ -12,23 +12,5 @@ RSpec.describe 'Analytics (JavaScript fixtures)', :sidekiq_inline do
 
       expect(response).to be_successful
     end
-
-    it "analytics/value_stream_analytics/stages/label-based-stage/records.json" do
-      get(:records, params: params.merge({ id: label_based_stage.id }), format: :json)
-
-      expect(response).to be_successful
-    end
-
-    it "analytics/value_stream_analytics/stages/label-based-stage/median.json" do
-      get(:median, params: params.merge({ id: label_based_stage.id }), format: :json)
-
-      expect(response).to be_successful
-    end
-
-    it "analytics/value_stream_analytics/stages/label-based-stage/count.json" do
-      get(:count, params: params.merge({ id: label_based_stage.id }), format: :json)
-
-      expect(response).to be_successful
-    end
   end
 end

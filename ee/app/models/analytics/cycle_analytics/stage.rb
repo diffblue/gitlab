@@ -17,14 +17,6 @@ foreign_key: :group_value_stream_id, inverse_of: :stages
       alias_attribute :parent_id, :group_id
       alias_attribute :value_stream_id, :group_value_stream_id
 
-      def self.relative_positioning_query_base(stage)
-        where(group_id: stage.group_id)
-      end
-
-      def self.relative_positioning_parent_column
-        :group_id
-      end
-
       def self.distinct_stages_within_hierarchy(namespace)
         with_preloaded_labels
           .where(group_id: namespace.self_and_descendants.select(:id))
