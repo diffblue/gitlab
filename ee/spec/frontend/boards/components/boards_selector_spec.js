@@ -90,6 +90,7 @@ describe('BoardsSelector', () => {
         boardType: isGroupBoard ? BoardType.group : BoardType.project,
         isGroupBoard,
         isProjectBoard,
+        isApolloBoard: false,
       },
     });
   };

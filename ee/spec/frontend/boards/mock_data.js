@@ -47,6 +47,16 @@ export const mockEpicBoard = {
   },
 };
 
+export const mockEpicBoardResponse = {
+  data: {
+    workspace: {
+      id: 'gid://gitlab/Group/114',
+      board: mockEpicBoard,
+      __typename: 'Group',
+    },
+  },
+};
+
 export const mockEpicBoardsResponse = {
   data: {
     group: {

@@ -20,6 +20,9 @@ export default {
   },
   methods: {
     ...mapActions(['fetchEpicBoard']),
+    fullBoardId(boardId) {
+      return this.isEpicBoard ? fullEpicBoardId(boardId) : fullBoardId(boardId);
+    },
     epicBoardUpdate(data) {
       if (!data?.group) {
         return [];

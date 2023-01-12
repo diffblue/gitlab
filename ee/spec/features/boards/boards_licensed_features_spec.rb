@@ -10,6 +10,7 @@ RSpec.describe 'Boards licensed features', :js, feature_category: :team_planning
   let(:card) { find('.board:nth-child(1)').find('[data-testid="board_card"]') }
 
   before do
+    stub_feature_flags(apollo_boards: false)
     sign_in user
   end
 

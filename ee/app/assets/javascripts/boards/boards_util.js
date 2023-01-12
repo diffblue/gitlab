@@ -2,6 +2,7 @@ import {
   FiltersInfo as FiltersInfoCE,
   formatIssueInput as formatIssueInputCe,
 } from '~/boards/boards_util';
+import { boardQuery } from '~/boards/constants';
 import {
   TYPE_EPIC_BOARD,
   TYPE_ITERATION,
@@ -23,6 +24,7 @@ import {
   WeightIDs,
   EpicFilterType,
 } from './constants';
+import epicBoardQuery from './graphql/epic_board.query.graphql';
 
 export {
   formatBoardLists,
@@ -277,6 +279,13 @@ export const FiltersInfo = {
       v === HealthStatusFilterType.any || v === HealthStatusFilterType.none ? v.toUpperCase() : v,
   },
 };
+
+export function getBoardQuery(boardType, isEpicBoard) {
+  if (isEpicBoard) {
+    return epicBoardQuery;
+  }
+  return boardQuery[boardType].query;
+}
 
 export default {
   getMilestone,
