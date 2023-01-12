@@ -97,9 +97,11 @@ class DastSiteProfile < ApplicationRecord
   def referenced_in_security_policies
     return [] unless project.all_security_orchestration_policy_configurations.present?
 
-    project.all_security_orchestration_policy_configurations.flat_map do |configuration|
-      configuration.active_policy_names_with_dast_site_profile(name)
-    end
+    project
+      .all_security_orchestration_policy_configurations
+      .map { |configuration| configuration.active_policy_names_with_dast_site_profile(name) }
+      .inject(&:merge)
+      .to_a
   end
 
   def scan_file_path_or_dast_site_url
