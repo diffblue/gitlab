@@ -12,7 +12,8 @@ module Vulnerabilities
           Vulnerabilities::StateTransition.create!(
             vulnerability: @vulnerability,
             from_state: @vulnerability.state,
-            to_state: :resolved
+            to_state: :resolved,
+            author: @user
           )
 
           update_vulnerability_with(state: :resolved, resolved_by: @user, resolved_at: Time.current) do

@@ -73,6 +73,7 @@ feature_category: :vulnerability_management do
           expect(state_transition.to_state).to eq("dismissed")
           expect(state_transition.comment).to be_nil
           expect(state_transition.dismissal_reason).to be_nil
+          expect(state_transition.author).to eq(user)
         end
       end
 
