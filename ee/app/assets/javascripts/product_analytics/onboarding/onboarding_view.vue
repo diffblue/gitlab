@@ -1,18 +1,37 @@
 <script>
+import { GlLoadingIcon } from '@gitlab/ui';
 import { createAlert } from '~/flash';
+import simplePoll from '~/lib/utils/simple_poll';
 import initializeProductAnalyticsMutation from '../graphql/mutations/initialize_product_analytics.mutation.graphql';
 import getProjectJitsuKeyQuery from '../graphql/mutations/get_project_jitsu_key.query.graphql';
-import OnboardingEmptyState from './components/onboarding_empty_state.vue';
-import { JITSU_KEY_CHECK_DELAY } from './constants';
+import { hasAnalyticsData } from '../dashboards/data_sources/cube_analytics';
+import {
+  JITSU_KEY_CHECK_DELAY,
+  CUBE_DATA_CHECK_DELAY,
+  NO_INSTANCE_DATA,
+  ONBOARDING_VIEW_I18N,
+} from './constants';
 
 export default {
   name: 'ProductAnalyticsOnboardingView',
   components: {
-    OnboardingEmptyState,
+    GlLoadingIcon,
+    OnboardingEmptyState: () => import('./components/onboarding_empty_state.vue'),
+    OnboardingSetup: () => import('ee/product_analytics/onboarding/onboarding_setup.vue'),
   },
   inject: {
     projectFullPath: {
       type: String,
+    },
+    projectId: {
+      type: String,
+    },
+  },
+  props: {
+    status: {
+      type: String,
+      required: false,
+      default: '',
     },
   },
   data() {
@@ -20,7 +39,22 @@ export default {
       creatingInstance: false,
       jitsuKey: null,
       pollJitsuKey: false,
+      isLoading: false,
+      showSetup: false,
     };
+  },
+  computed: {
+    initializationIsLoading() {
+      return this.creatingInstance || this.pollJitsuKey;
+    },
+  },
+  async created() {
+    if (this.status === NO_INSTANCE_DATA) {
+      // For our first time polling, show loader
+      // Afterwards, we can assume we are just polling in the background
+      this.isLoading = true;
+      this.showSetupView();
+    }
   },
   apollo: {
     jitsuKey: {
@@ -47,18 +81,17 @@ export default {
       },
     },
   },
-  computed: {
-    loading() {
-      return this.creatingInstance || this.pollJitsuKey;
-    },
-  },
   methods: {
-    showError(error, captureError = true) {
+    showError(error, captureError = true, message = '') {
       createAlert({
-        message: error.message,
+        message: message || error.message,
         captureError,
         error,
       });
+    },
+    showSetupView() {
+      this.showSetup = true;
+      this.pollForAnalyticsData();
     },
     async initializeProductAnalytics() {
       this.creatingInstance = true;
@@ -79,18 +112,51 @@ export default {
           this.showError(new Error(error), false);
         } else {
           this.pollJitsuKey = true;
+          this.showSetupView();
         }
       } catch (err) {
-        // TODO: Update to show the tracking codes view when no error in https://gitlab.com/gitlab-org/gitlab/-/issues/381320
         this.showError(err);
       } finally {
         this.creatingInstance = false;
       }
     },
+    async fetchAnalyticsData(continuePoll, stopPoll) {
+      try {
+        const hasData = await hasAnalyticsData(this.projectId);
+
+        if (hasData) {
+          this.$emit('complete');
+          stopPoll();
+        } else {
+          continuePoll();
+        }
+      } catch (error) {
+        this.showError(error, true, this.$options.i18n.unhandledErrorMessage);
+
+        this.$emit('error');
+        stopPoll();
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    pollForAnalyticsData() {
+      simplePoll((continuePoll, stopPoll) => this.fetchAnalyticsData(continuePoll, stopPoll), {
+        interval: CUBE_DATA_CHECK_DELAY,
+      }).catch(() => {
+        this.pollForAnalyticsData();
+      });
+    },
   },
+  i18n: ONBOARDING_VIEW_I18N,
 };
 </script>
 
 <template>
-  <onboarding-empty-state :loading="loading" @initialize="initializeProductAnalytics" />
+  <gl-loading-icon v-if="isLoading" size="lg" class="gl-my-7" />
+  <onboarding-setup v-else-if="showSetup" />
+  <onboarding-empty-state
+    v-else
+    :loading="initializationIsLoading"
+    @initialize="initializeProductAnalytics"
+  />
 </template>
