@@ -17,6 +17,9 @@ module Types
       field :created_at, TimeType,
         null: false, description: 'Timestamp of when the test report was created.'
 
+      field :uses_legacy_iid, GraphQL::Types::Boolean, null: true,
+        description: 'Indicates whether the test report was generated with references to legacy requirement IIDs.'
+
       def author
         Gitlab::Graphql::Loaders::BatchModelLoader.new(User, object.author_id).find
       end
