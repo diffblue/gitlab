@@ -6,7 +6,7 @@ RSpec.describe API::Scim::InstanceScim, feature_category: :authentication_and_au
   include LoginHelpers
 
   let(:user) { create(:user) }
-  let(:scim_token) { create(:scim_oauth_access_token) }
+  let(:scim_token) { create(:scim_oauth_access_token, group: nil) }
 
   before do
     stub_licensed_features(instance_level_scim: true)

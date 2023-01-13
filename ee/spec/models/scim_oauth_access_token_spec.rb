@@ -2,28 +2,74 @@
 
 require 'spec_helper'
 
-RSpec.describe ScimOauthAccessToken do
+RSpec.describe ScimOauthAccessToken, feature_category: :authentication_and_authorization do
   describe "Associations" do
     it { is_expected.to belong_to :group }
   end
 
   describe '.token_matches_for_group?' do
-    it 'finds the token' do
-      group = create(:group)
+    context 'when token passed in found in database' do
+      context 'when token associated with group passed in' do
+        it 'returns true' do
+          group = create(:group)
+          scim_token = create(:scim_oauth_access_token, group: group)
+          token_value = scim_token.token
 
-      scim_token = create(:scim_oauth_access_token, group: group)
+          expect(
+            described_class.token_matches_for_group?(token_value, group)
+          ).to eq true
+        end
+      end
 
-      token_value = scim_token.token
+      context 'when token not associated with group passed in' do
+        it 'returns false' do
+          other_group = create(:group)
+          scim_token = create(:scim_oauth_access_token, group: create(:group))
+          token_value = scim_token.token
 
-      expect(described_class.token_matches_for_group?(token_value, group)).to be true
+          expect(
+            described_class.token_matches_for_group?(token_value, other_group)
+          ).to eq false
+        end
+      end
     end
 
-    it 'find the token even when not associated with group' do
-      scim_token = create(:scim_oauth_access_token)
+    context 'when token passed in is not found in database' do
+      it 'returns nil' do
+        group = create(:group)
 
-      token_value = scim_token.token
+        expect(
+          described_class.token_matches_for_group?('notatoken', group)
+        ).to eq nil
+      end
+    end
+  end
 
-      expect(described_class.token_matches?(token_value)).not_to be nil
+  describe '.token_matches?' do
+    context 'when token passed in found in database' do
+      context 'when token not associated with a group' do
+        it 'returns true' do
+          scim_token = create(:scim_oauth_access_token, group: nil)
+          token_value = scim_token.token
+
+          expect(described_class.token_matches?(token_value)).to eq true
+        end
+      end
+
+      context 'when token associated with a group' do
+        it 'returns false' do
+          scim_token = create(:scim_oauth_access_token, group: create(:group))
+          token_value = scim_token.token
+
+          expect(described_class.token_matches?(token_value)).to eq false
+        end
+      end
+    end
+
+    context 'when token passed in not found in database' do
+      it 'returns nil' do
+        expect(described_class.token_matches?('notatoken')).to eq nil
+      end
     end
   end
 
