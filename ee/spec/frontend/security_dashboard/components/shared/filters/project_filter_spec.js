@@ -167,6 +167,22 @@ describe('Project Filter component', () => {
 
         expectSelectedItems(expected);
       });
+
+      it.each`
+        querystringValues    | expected
+        ${['999']}           | ${[ALL_ID]}
+        ${['1', '2', '999']} | ${['1', '2']}
+        ${['1', '2']}        | ${['1', '2']}
+      `(
+        'selects dropdown options $expected when querystring values are $querystringValues',
+        async ({ querystringValues, expected }) => {
+          await createWrapperAndOpenDropdown();
+          findQuerystringSync().vm.$emit('input', querystringValues);
+          await waitForPromises();
+
+          expectSelectedItems(expected);
+        },
+      );
     });
 
     describe('default view', () => {
@@ -259,6 +275,35 @@ describe('Project Filter component', () => {
 
           expect(wrapper.emitted('filter-changed')[ids.length][0].projectId).toEqual(ids);
         }
+      });
+
+      it('emits the raw querystring IDs before the valid IDs are fetched', async () => {
+        createWrapper();
+        const querystringIds = ['1', '2', '999'];
+        findQuerystringSync().vm.$emit('input', querystringIds);
+        await nextTick();
+
+        expect(wrapper.emitted('filter-changed')[0][0].projectId).toEqual(querystringIds);
+      });
+
+      describe('after the valid IDs are fetched', () => {
+        beforeEach(createWrapper);
+
+        it('emits the raw querystring IDs if there is at least one valid ID', async () => {
+          const querystringIds = ['1', '999', '998'];
+          findQuerystringSync().vm.$emit('input', querystringIds);
+          await waitForPromises();
+
+          expect(wrapper.emitted('filter-changed')[1][0].projectId).toBe(querystringIds);
+        });
+
+        it('emits an empty array if there are no valid IDs', async () => {
+          const querystringIds = ['998', '999'];
+          findQuerystringSync().vm.$emit('input', querystringIds);
+          await waitForPromises();
+
+          expect(wrapper.emitted('filter-changed')[1][0].projectId).toEqual([]);
+        });
       });
     });
   });
