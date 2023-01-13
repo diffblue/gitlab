@@ -955,8 +955,8 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas, feature_category: :e
     end
 
     context 'when over the user limit' do
-      let(:over_user_limit_message) { /Your namespace is over the user limit/ }
-      let(:over_combined_limit_message) { /Your namespace is over the user and storage limits/ }
+      let(:over_user_limit_message) { /Your top-level group is over the user limit/ }
+      let(:over_combined_limit_message) { /Your top-level group is over the user and storage limits/ }
 
       it 'raises an error for over user limit' do
         expect { git_check_over_limit! }.to raise_error(StandardError, over_user_limit_message)

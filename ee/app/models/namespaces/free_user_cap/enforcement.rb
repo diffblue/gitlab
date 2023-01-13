@@ -104,9 +104,9 @@ module Namespaces
 
       def git_read_only_message(over_storage_limit)
         if over_storage_limit
-          _('Your namespace is over the user and storage limits and has been placed in a read-only state.')
+          _('Your top-level group is over the user and storage limits and has been placed in a read-only state.')
         else
-          _('Your namespace is over the user limit and has been placed in a read-only state.')
+          _('Your top-level group is over the user limit and has been placed in a read-only state.')
         end
       end
     end

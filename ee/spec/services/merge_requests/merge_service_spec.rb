@@ -106,7 +106,7 @@ RSpec.describe MergeRequests::MergeService do
       it 'persists the correct error message' do
         service.execute(merge_request)
 
-        expect(merge_request.merge_error).to match(/Your namespace is over the user limit/)
+        expect(merge_request.merge_error).to match(/Your top-level group is over the user limit/)
       end
     end
 

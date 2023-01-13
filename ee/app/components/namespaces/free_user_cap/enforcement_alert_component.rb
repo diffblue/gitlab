@@ -27,7 +27,7 @@ module Namespaces
         {
           title: alert_title,
           body: _("To remove the %{link_start}read-only%{link_end} state and regain write access, " \
-                  "you can reduce the number of users in your namespace to %{free_limit} users or " \
+                  "you can reduce the number of users in your top-level group to %{free_limit} users or " \
                   "less. You can also upgrade to a paid tier, which do not have user limits. If you " \
                   "need additional time, you can start a free 30-day trial which includes unlimited " \
                   "users.").html_safe % {
@@ -41,7 +41,7 @@ module Namespaces
       end
 
       def alert_title
-        _("Your namespace %{namespace_name} is over the %{free_limit} user " \
+        _("Your top-level group %{namespace_name} is over the %{free_limit} user " \
           'limit and has been placed in a read-only state.').html_safe % {
           free_limit: free_user_limit,
           namespace_name: namespace.name
