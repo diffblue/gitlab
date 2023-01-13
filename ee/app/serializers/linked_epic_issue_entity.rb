@@ -24,6 +24,7 @@ class LinkedEpicIssueEntity < LinkedIssueEntity
   private
 
   def can_admin_issue_link?(issue)
-    Ability.allowed?(current_user, :admin_epic_issue, issue) && Ability.allowed?(current_user, :admin_epic, issuable)
+    Ability.allowed?(current_user, :admin_issue_relation, issue) &&
+      Ability.allowed?(current_user, :admin_epic_relation, issuable)
   end
 end

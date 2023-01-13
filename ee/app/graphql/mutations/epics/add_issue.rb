@@ -7,7 +7,7 @@ module Mutations
 
       include Mutations::ResolvesIssuable
 
-      authorize :admin_epic
+      authorize :admin_epic_relation
 
       argument :project_path, GraphQL::Types::ID,
                required: true,

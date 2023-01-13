@@ -15,6 +15,27 @@ RSpec.describe Mutations::Epics::Update do
   describe '#resolve' do
     subject { mutation.resolve(group_path: group.full_path, iid: epic.iid, title: 'new epic title') }
 
-    it_behaves_like 'permission level for epic mutation is correctly verified'
+    context 'when the user is a group member' do
+      context 'with guest role' do
+        before do
+          group.add_guest(user)
+        end
+
+        it_behaves_like 'epic mutation for user without access'
+      end
+
+      context 'with reporter role' do
+        before do
+          group.add_reporter(user)
+          stub_licensed_features(epics: true)
+        end
+
+        it 'updates the epic' do
+          expect(subject[:epic]).to eq(epic)
+          expect(epic.reload.title).to eq('new epic title')
+          expect(subject[:errors]).to be_empty
+        end
+      end
+    end
   end
 end

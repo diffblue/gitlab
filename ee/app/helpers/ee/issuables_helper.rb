@@ -16,7 +16,8 @@ module EE
     def issuable_initial_data(issuable)
       data = super.merge(
         canAdmin: can?(current_user, :"admin_#{issuable.to_ability_name}", issuable),
-        hasIssueWeightsFeature: issuable.project&.licensed_feature_available?(:issue_weights)
+        hasIssueWeightsFeature: issuable.project&.licensed_feature_available?(:issue_weights),
+        canAdminRelation: can?(current_user, :"admin_#{issuable.to_ability_name}_relation", issuable)
       )
 
       if parent.is_a?(Group)
@@ -27,7 +28,6 @@ module EE
         data[:issueLinksEndpoint] = group_epic_issues_path(parent, issuable)
         data[:issuesWebUrl] = issues_group_path(parent)
         data[:projectsEndpoint] = expose_path(api_v4_groups_projects_path(id: parent.id))
-        data[:canAdminRelation] = can?(current_user, :admin_epic_relation, issuable)
       end
 
       data

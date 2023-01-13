@@ -55,7 +55,7 @@ module EE
 
         return unless epic
 
-        unless can?(current_user, :read_epic, epic) && can?(current_user, :admin_issue, issue)
+        unless can?(current_user, :read_epic, epic) && can?(current_user, :admin_issue_relation, issue)
           raise ::Gitlab::Access::AccessDeniedError
         end
 

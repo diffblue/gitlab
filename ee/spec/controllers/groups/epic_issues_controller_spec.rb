@@ -19,7 +19,7 @@ RSpec.describe Groups::EpicIssuesController, feature_category: :portfolio_manage
   shared_examples 'unlicensed epics action' do
     before do
       stub_licensed_features(epics: false)
-      group.add_developer(user)
+      group.add_guest(user)
 
       subject
     end
@@ -39,7 +39,7 @@ RSpec.describe Groups::EpicIssuesController, feature_category: :portfolio_manage
     context 'when epics feature is enabled' do
       context 'when user has access to epic' do
         before do
-          group.add_developer(user)
+          group.add_guest(user)
 
           subject
         end
@@ -77,7 +77,7 @@ RSpec.describe Groups::EpicIssuesController, feature_category: :portfolio_manage
     context 'when epics feature is enabled' do
       context 'when user has permissions to create requested association' do
         before do
-          group.add_developer(user)
+          group.add_guest(user)
         end
 
         it 'returns correct response for the correct issue reference' do
@@ -117,7 +117,7 @@ RSpec.describe Groups::EpicIssuesController, feature_category: :portfolio_manage
     context 'when epics feature is enabled' do
       context 'when user has permissions to delete the link' do
         before do
-          group.add_developer(user)
+          group.add_guest(user)
         end
 
         it 'returns status 200' do
@@ -151,7 +151,7 @@ RSpec.describe Groups::EpicIssuesController, feature_category: :portfolio_manage
         let(:another_epic) { create(:epic, group: group) }
 
         before do
-          group.add_developer(user)
+          group.add_guest(user)
         end
 
         it 'returns status 404' do
@@ -167,7 +167,7 @@ RSpec.describe Groups::EpicIssuesController, feature_category: :portfolio_manage
 
       context 'when the epic_issue record does not exists' do
         it 'returns status 404' do
-          group.add_developer(user)
+          group.add_guest(user)
 
           delete :destroy, params: { group_id: group, epic_id: epic.to_param, id: 0 }
 

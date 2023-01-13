@@ -66,9 +66,9 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
         it_behaves_like 'error for the tree update', 'You don\'t have permissions to move the objects.'
       end
 
-      context 'when user does have permission to admin the base epic' do
+      context 'when user does have admin_issue_relation permission for the base epic' do
         before do
-          group.add_reporter(user)
+          group.add_guest(user)
         end
 
         context 'when moving EpicIssue' do

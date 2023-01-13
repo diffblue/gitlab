@@ -24,11 +24,12 @@ RSpec.shared_examples 'issue with epic_id parameter' do
   end
 
   context 'when user can not add issues to the epic' do
-    before do
-      project.add_guest(user)
-    end
-
     let(:params) { { title: 'issue1', epic_id: epic.id } }
+
+    before do
+      allow(Ability).to receive(:allowed?).and_call_original
+      allow(Ability).to receive(:allowed?).with(user, :admin_issue_relation, anything).and_return(false)
+    end
 
     it 'raises an exception' do
       expect { execute }.to raise_error(Gitlab::Access::AccessDeniedError)

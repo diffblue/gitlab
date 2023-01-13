@@ -13,6 +13,7 @@ class EpicIssuePresenter < Gitlab::View::Presenter::Delegated
   private
 
   def can_admin_issue_link?(current_user)
-    Ability.allowed?(current_user, :admin_epic_issue, issue) && Ability.allowed?(current_user, :admin_epic, issue.epic)
+    Ability.allowed?(current_user, :admin_issue_relation, issue) &&
+      Ability.allowed?(current_user, :admin_epic_relation, issue.epic)
   end
 end

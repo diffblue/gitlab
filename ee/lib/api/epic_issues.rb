@@ -26,7 +26,7 @@ module API
       end
 
       def authorize_can_assign_to_epic!(issue)
-        forbidden! unless can?(current_user, :read_epic, epic) && can?(current_user, :admin_issue, issue)
+        forbidden! unless can?(current_user, :read_epic, epic) && can?(current_user, :admin_issue_relation, issue)
       end
     end
 
@@ -118,7 +118,7 @@ module API
       post ':id/(-/)epics/:epic_iid/issues/:issue_id' do
         authorize_can_read!
         issue = Issue.find(params[:issue_id])
-        authorize!(:admin_issue, issue)
+        authorize!(:admin_issue_relation, issue)
 
         create_params = { target_issuable: issue }
 
