@@ -372,7 +372,7 @@ RSpec.describe Gitlab::GitAccess do
     end
 
     it 'rejects the push' do
-      expect { push_changes }.to raise_error(described_class::ForbiddenError, /Your namespace is over the user limit/)
+      expect { push_changes }.to raise_error(described_class::ForbiddenError, /Your top-level group is over the user limit/)
     end
   end
 

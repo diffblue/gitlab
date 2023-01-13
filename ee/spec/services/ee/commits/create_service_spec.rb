@@ -96,7 +96,7 @@ RSpec.describe Commits::CreateService do
         result = service.execute
 
         expect(result[:status]).to be(:error)
-        expect(result[:message]).to match(/Your namespace is over the user limit/)
+        expect(result[:message]).to match(/Your top-level group is over the user limit/)
       end
     end
   end

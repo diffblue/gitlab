@@ -9,7 +9,7 @@ RSpec.describe Namespaces::FreeUserCap::NonOwnerAlertComponent, :saas, :aggregat
   let(:free_user_cap_over_limit?) { true }
 
   let(:title) do
-    "Your namespace #{namespace.name} is over the #{::Namespaces::FreeUserCap.dashboard_limit} " \
+    "Your top-level group #{namespace.name} is over the #{::Namespaces::FreeUserCap.dashboard_limit} " \
     "user limit and has been placed in a read-only state."
   end
 

@@ -9,7 +9,7 @@ RSpec.describe Namespaces::FreeUserCap::NotificationAlertComponent, :saas, :aggr
   let(:preview_free_user_cap_over?) { true }
 
   let(:title) do
-    "Your namespace #{namespace.name} is over the " \
+    "Your top-level group #{namespace.name} is over the " \
     "#{::Namespaces::FreeUserCap.dashboard_limit} user limit"
   end
 

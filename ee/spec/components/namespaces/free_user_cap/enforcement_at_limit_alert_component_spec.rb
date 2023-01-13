@@ -11,7 +11,7 @@ RSpec.describe Namespaces::FreeUserCap::EnforcementAtLimitAlertComponent,
   let(:owner_access?) { true }
 
   let_it_be(:title) do
-    "Your namespace #{namespace.name} has reached the " \
+    "Your top-level group #{namespace.name} has reached the " \
     "#{::Namespaces::FreeUserCap.dashboard_limit} user limit"
   end
 
