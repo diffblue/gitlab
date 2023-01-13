@@ -69,6 +69,10 @@
   category: compliance
   redis_slot: compliance
   aggregation: weekly
+- name: approval_project_rule_created
+  category: compliance
+  redis_slot: approval_project_rule
+  aggregation: daily
 # Incident management linked resources
 - name: incident_management_issuable_resource_link_created
   redis_slot: incident_management
