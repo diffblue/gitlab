@@ -178,7 +178,7 @@ RSpec.describe 'Git LFS API and storage', feature_category: :source_code_managem
 
                 expect(response).to have_gitlab_http_status(:not_acceptable)
                 expect(json_response['documentation_url']).to include('/help', 'free_user_limit')
-                expect(json_response['message']).to match(/Your namespace is over the user limit/)
+                expect(json_response['message']).to match(/Your top-level group is over the user limit/)
               end
             end
           end

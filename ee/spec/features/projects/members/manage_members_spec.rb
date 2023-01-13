@@ -33,7 +33,7 @@ RSpec.describe 'Projects > Members > Manage members', :js, feature_category: :su
         click_on _('Invite members')
 
         page.within invite_modal_selector do
-          expect(page).to have_content "Your namespace free-user-limit-project is over the 1 user limit."
+          expect(page).to have_content "Your top-level group free-user-limit-project is over the 1 user limit."
           expect(page).to have_content 'GitLab will enforce this limit in the future.'
         end
       end
@@ -51,12 +51,12 @@ RSpec.describe 'Projects > Members > Manage members', :js, feature_category: :su
 
         page.within invite_modal_selector do
           expect(page).to have_content "You've reached your"
-          expect(page).to have_content 'To invite new users to this namespace, you must remove existing users.'
+          expect(page).to have_content 'To invite new users to this top-level group, you must remove existing users.'
         end
       end
     end
 
-    context 'when close to free user limit on new namespace' do
+    context 'when close to free user limit on new top-level group' do
       it 'shows the alert notification in the modal' do
         stub_ee_application_setting(dashboard_limit: 4)
         stub_ee_application_setting(dashboard_limit_new_namespace_creation_enforcement_date: 2.days.ago)

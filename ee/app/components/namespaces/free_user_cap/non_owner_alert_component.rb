@@ -18,7 +18,7 @@ module Namespaces
           # https://github.com/github/view_component/issues/156#issuecomment-737469885
           body: Kernel.format(
             _("To remove the %{link_start}read-only%{link_end} state and regain write access, " \
-              "ask your namespace owner to reduce the number of users in your namespace to " \
+              "ask your top-level group owner(s) to reduce the number of users in your top-level group to " \
               "%{free_limit} users or less, or to upgrade to a paid tier which do not have " \
               "user limits."),
             link_start: free_user_limit_link_start,

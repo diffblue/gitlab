@@ -23,22 +23,22 @@ module Namespaces
       def alert_attributes
         {
           title: _(
-            'Your namespace %{namespace_name} is over the %{free_user_limit} user limit'
+            'Your top-level group %{namespace_name} is over the %{free_user_limit} user limit'
           ).html_safe % {
             namespace_name: namespace.name,
             free_user_limit: free_user_limit
           },
           body: n_(
             'GitLab will enforce this limit in the future. If you are over %{free_user_limit} ' \
-            'user when enforcement begins, your namespace will be placed in a ' \
-            '%{link_start}read-only%{link_end} state. To avoid being placed in a read-only ' \
-            'state, reduce your namespace to %{free_user_limit} user or less or purchase a ' \
-            'paid tier.',
+            'user when enforcement begins, your top-level group, including any ' \
+            'subgroups and projects, will be placed in a %{link_start}read-only%{link_end} ' \
+            'state. To avoid being placed in a read-only state, reduce your top-level group ' \
+            'to %{free_user_limit} user or less or purchase a paid tier.',
             'GitLab will enforce this limit in the future. If you are over %{free_user_limit} ' \
-            'users when enforcement begins, your namespace will be placed in a ' \
-            '%{link_start}read-only%{link_end} state. To avoid being placed in a read-only ' \
-            'state, reduce your namespace to %{free_user_limit} users or less or purchase a ' \
-            'paid tier.',
+            'users when enforcement begins, your top-level group, including any ' \
+            'subgroups and projects, will be placed in a %{link_start}read-only%{link_end} ' \
+            'state. To avoid being placed in a read-only state, reduce your top-level group ' \
+            'to %{free_user_limit} users or less or purchase a paid tier.',
             free_user_limit
           ).html_safe % {
             free_user_limit: free_user_limit,
