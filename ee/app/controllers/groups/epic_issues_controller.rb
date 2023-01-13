@@ -38,6 +38,6 @@ class Groups::EpicIssuesController < Groups::ApplicationController
   end
 
   def authorized_object
-    'epic'
+    'epic_relation'
   end
 end

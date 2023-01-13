@@ -2,11 +2,12 @@
 
 require 'spec_helper'
 
-RSpec.describe Issues::UpdateService do
+RSpec.describe Issues::UpdateService, feature_category: :team_planning do
   let_it_be(:group) { create(:group) }
   let_it_be_with_reload(:project) { create(:project, group: group) }
   let_it_be_with_reload(:issue) { create(:issue, project: project) }
   let_it_be(:epic) { create(:epic, group: group) }
+  let_it_be(:non_member) { create(:user) }
 
   let(:author) { issue.author }
   let(:user) { author }
@@ -308,9 +309,7 @@ RSpec.describe Issues::UpdateService do
       subject { update_issue(params) }
 
       context 'when a user does not have permissions to assign an epic' do
-        before do
-          project.add_guest(author)
-        end
+        let(:user) { non_member }
 
         it 'raises an exception' do
           expect { subject }.to raise_error(Gitlab::Access::AccessDeniedError)

@@ -510,9 +510,9 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures, feature_category: :tea
           stub_licensed_features(epics: true)
         end
 
-        context 'when user can admin epics' do
+        context 'when user can read epics' do
           before do
-            group.add_owner(user)
+            group.add_guest(user)
           end
 
           context 'with epic_id parameter' do
@@ -538,9 +538,21 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures, feature_category: :tea
           end
         end
 
-        context 'when user can not edit epics' do
+        context 'when user can not read the epic' do
+          let(:epic) { build(:epic, :confidential, group: group) }
+
+          it 'does not set the epic' do
+            request
+
+            expect(response).to have_gitlab_http_status(:success)
+            expect(json_response['epic_iid']).to be_nil
+          end
+        end
+
+        context 'when user can not admin_issue_relation for the issue' do
           before do
-            group.add_guest(user)
+            allow(Ability).to receive(:allowed?).and_call_original
+            allow(Ability).to receive(:allowed?).with(user, :admin_issue_relation, anything).and_return(false)
           end
 
           it 'returns an error' do

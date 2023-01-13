@@ -15,7 +15,7 @@ RSpec.describe EpicIssues::DestroyService do
 
     context 'when epics feature is disabled' do
       before do
-        project.add_reporter(user)
+        project.add_guest(user)
         group.add_guest(user)
       end
 
@@ -31,7 +31,7 @@ RSpec.describe EpicIssues::DestroyService do
 
       context 'when user has permissions to remove associations' do
         before do
-          project.add_reporter(user)
+          project.add_guest(user)
           group.add_guest(user)
         end
 
