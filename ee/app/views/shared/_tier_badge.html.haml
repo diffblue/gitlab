@@ -1,0 +1,9 @@
+- if !source.root_ancestor.paid?
+  - content = 'overview-free-tier-highlight'
+  - if source.is_a?(Group)
+    - link_upgrade_path = group_billings_path(source.root_ancestor, source: content)
+  - else
+    - link_upgrade_path = source.personal? ? profile_billings_path(source: content) : group_billings_path(source.root_ancestor, source: content)
+  - experiment(:tier_badge, actor: current_user) do |e|
+    - e.candidate do
+      .js-tier-badge-trigger{ data: { primary_cta_link: new_trial_path, secondary_cta_link: link_upgrade_path, source_type: source_type } }
