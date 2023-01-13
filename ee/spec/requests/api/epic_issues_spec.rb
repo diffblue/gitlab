@@ -3,10 +3,39 @@
 require 'spec_helper'
 
 RSpec.describe API::EpicIssues, feature_category: :portfolio_management do
-  let(:user) { create(:user) }
-  let(:group) { create(:group) }
-  let(:project) { create(:project, :public, group: group) }
-  let(:epic) { create(:epic, group: group) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:group, reload: true) { create(:group) }
+  let_it_be(:project, reload: true) { create(:project, :public, group: group) }
+  let_it_be(:epic) { create(:epic, group: group) }
+  let_it_be(:issue) { create(:issue, project: project) }
+  let_it_be(:confidential_epic) { create(:epic, :confidential, group: group) }
+  let_it_be(:confidential_issue) { create(:issue, :confidential, project: project) }
+
+  shared_examples 'user with insufficient permissions' do
+    context 'when user does not have admin_issue_relation permissions for issue' do
+      before do
+        group.add_guest(user)
+      end
+
+      it 'returns 403 forbidden error' do
+        request
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context 'without permissions to read the epic' do
+      before do
+        project.add_reporter(user)
+      end
+
+      it 'returns 403 forbidden error' do
+        request
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+  end
 
   describe 'GET /groups/:id/epics/:epic_iid/issues' do
     let(:url) { "/groups/#{group.path}/epics/#{epic.iid}/issues" }
@@ -44,9 +73,9 @@ RSpec.describe API::EpicIssues, feature_category: :portfolio_management do
       end
 
       context 'when the request is correct' do
-        let(:issues) { create_list(:issue, 2, project: project) }
-        let!(:epic_issue1) { create(:epic_issue, epic: epic, issue: issues[0]) }
-        let!(:epic_issue2) { create(:epic_issue, epic: epic, issue: issues[1]) }
+        let_it_be(:issues) { create_list(:issue, 2, project: project) }
+        let_it_be(:epic_issue1) { create(:epic_issue, epic: epic, issue: issues[0]) }
+        let_it_be(:epic_issue2) { create(:epic_issue, epic: epic, issue: issues[1]) }
 
         def perform_request(params = {})
           get api(url, user), params: params
@@ -86,7 +115,6 @@ RSpec.describe API::EpicIssues, feature_category: :portfolio_management do
   end
 
   describe 'POST /groups/:id/epics/:epic_iid/issues' do
-    let(:issue) { create(:issue, project: project) }
     let(:url) { "/groups/#{group.path}/epics/#{epic.iid}/issues/#{issue.id}" }
 
     context 'when epics feature is disabled' do
@@ -102,7 +130,6 @@ RSpec.describe API::EpicIssues, feature_category: :portfolio_management do
     context 'when epics feature is enabled' do
       before do
         stub_licensed_features(epics: true)
-        group.add_guest(user)
       end
 
       context 'when an error occurs' do
@@ -115,36 +142,14 @@ RSpec.describe API::EpicIssues, feature_category: :portfolio_management do
         it 'returns 404 not found error for a user without permissions to see the group' do
           project.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
           group.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
+          put api(url, user)
 
-          post api(url, user)
-
-          expect(response).to have_gitlab_http_status(:forbidden)
+          expect(response).to have_gitlab_http_status(:not_found)
         end
 
-        context 'without permissions to admin the issue' do
-          before do
-            project.add_guest(user)
-          end
-
-          it 'returns 403 forbidden error' do
-            post api(url, user)
-
-            expect(response).to have_gitlab_http_status(:forbidden)
-          end
-        end
-
-        context 'without permissions to read the epic' do
-          let(:epic) { create(:epic, :confidential, group: create(:group, :private)) }
-
-          before do
-            project.add_reporter(user)
-          end
-
-          it 'returns 403 forbidden error' do
-            post api(url, user)
-
-            expect(response).to have_gitlab_http_status(:forbidden)
-          end
+        it_behaves_like 'user with insufficient permissions' do
+          let(:url) { "/groups/#{group.path}/epics/#{confidential_epic.iid}/issues/#{confidential_issue.id}" }
+          let(:request) { post api(url, user) }
         end
 
         context 'when issue project is not under the epic group' do
@@ -167,8 +172,7 @@ RSpec.describe API::EpicIssues, feature_category: :portfolio_management do
 
       context 'when the request is correct' do
         before do
-          project.add_reporter(user)
-
+          group.add_guest(user)
           post api(url, user)
         end
 
@@ -191,9 +195,8 @@ RSpec.describe API::EpicIssues, feature_category: :portfolio_management do
   end
 
   describe 'DELETE /groups/:id/epics/:epic_iid/issues/:epic_issue_id"' do
-    let(:issue) { create(:issue, project: project) }
-    let!(:epic_issue) { create(:epic_issue, epic: epic, issue: issue) }
     let(:url) { "/groups/#{group.path}/epics/#{epic.iid}/issues/#{epic_issue.id}" }
+    let_it_be(:epic_issue) { create(:epic_issue, epic: epic, issue: issue) }
 
     context 'when epics feature is disabled' do
       it 'returns 403 forbidden error' do
@@ -226,29 +229,10 @@ RSpec.describe API::EpicIssues, feature_category: :portfolio_management do
           expect(response).to have_gitlab_http_status(:not_found)
         end
 
-        context 'With user without permissions to admin the issue' do
-          before do
-            project.add_guest(user)
-          end
-
-          it 'returns 403 forbidden error' do
-            delete api(url, user)
-
-            expect(response).to have_gitlab_http_status(:forbidden)
-          end
-        end
-
-        context 'without permissions to read the epic' do
-          before do
-            [issue, epic].map { |issuable| issuable.update!(confidential: true) }
-            project.add_reporter(user)
-          end
-
-          it 'returns 403 forbidden error' do
-            delete api(url, user)
-
-            expect(response).to have_gitlab_http_status(:forbidden)
-          end
+        it_behaves_like 'user with insufficient permissions' do
+          let_it_be(:epic_issue2) { create(:epic_issue, epic: confidential_epic, issue: confidential_issue) }
+          let(:url) { "/groups/#{group.path}/epics/#{confidential_epic.iid}/issues/#{epic_issue2.id}" }
+          let(:request) { delete api(url, user) }
         end
 
         context 'when epic_issue association does not include the epic in the url' do
@@ -257,8 +241,8 @@ RSpec.describe API::EpicIssues, feature_category: :portfolio_management do
             other_group_epic = create(:epic, group: other_group)
             epic_issue.update_attribute(:epic, other_group_epic)
 
-            group.add_developer(user)
-            other_group.add_developer(user)
+            group.add_guest(user)
+            other_group.add_guest(user)
           end
 
           it 'returns 404 not found error' do
@@ -271,7 +255,7 @@ RSpec.describe API::EpicIssues, feature_category: :portfolio_management do
 
       context 'when the request is correct' do
         before do
-          group.add_developer(user)
+          group.add_guest(user)
         end
 
         it 'returns 200 status' do
@@ -294,9 +278,9 @@ RSpec.describe API::EpicIssues, feature_category: :portfolio_management do
   end
 
   describe 'PUT /groups/:id/epics/:epic_iid/issues/:epic_issue_id' do
-    let(:issues) { create_list(:issue, 2, project: project) }
-    let!(:epic_issue1) { create(:epic_issue, epic: epic, issue: issues[0], relative_position: 1) }
-    let!(:epic_issue2) { create(:epic_issue, epic: epic, issue: issues[1], relative_position: 2) }
+    let_it_be(:issue2) { create(:issue, project: project) }
+    let_it_be(:epic_issue1) { create(:epic_issue, epic: epic, issue: issue, relative_position: 1) }
+    let_it_be(:epic_issue2) { create(:epic_issue, epic: epic, issue: issue2, relative_position: 2) }
 
     let(:url) { "/groups/#{group.path}/epics/#{epic.iid}/issues/#{epic_issue1.id}?move_after_id=#{epic_issue2.id}" }
 
@@ -329,14 +313,8 @@ RSpec.describe API::EpicIssues, feature_category: :portfolio_management do
           expect(response).to have_gitlab_http_status(:not_found)
         end
 
-        it 'returns 403 forbidden error for a user who can not move the issue' do
-          put api(url, user)
-
-          expect(response).to have_gitlab_http_status(:forbidden)
-        end
-
         it 'returns 404 not found error for the link of another epic' do
-          group.add_developer(user)
+          group.add_guest(user)
           another_epic = create(:epic, group: group)
           url = "/groups/#{group.path}/epics/#{another_epic.iid}/issues/#{epic_issue1.id}?move_after_id=#{epic_issue2.id}"
 
@@ -344,11 +322,27 @@ RSpec.describe API::EpicIssues, feature_category: :portfolio_management do
 
           expect(response).to have_gitlab_http_status(:not_found)
         end
+
+        context 'with insufficient permissions' do
+          let_it_be(:confidential_issue2) { create(:issue, :confidential, project: project) }
+          let_it_be(:epic_issue1) { create(:epic_issue, epic: epic, issue: confidential_issue, relative_position: 1) }
+          let_it_be(:epic_issue2) { create(:epic_issue, epic: epic, issue: confidential_issue2, relative_position: 2) }
+
+          before do
+            group.add_guest(user)
+          end
+
+          it 'returns 403 forbidden error for a user who can not move the issue' do
+            put api(url, user)
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
+        end
       end
 
       context 'when the request is correct' do
         before do
-          group.add_developer(user)
+          group.add_guest(user)
           put api(url, user)
         end
 

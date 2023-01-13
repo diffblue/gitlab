@@ -28,7 +28,7 @@ module EpicIssues
     end
 
     def permission_to_remove_relation?
-      can?(current_user, :admin_epic_issue, target) && can?(current_user, :read_epic, source)
+      can?(current_user, :admin_issue_relation, target) && can?(current_user, :read_epic, source)
     end
 
     def create_notes

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Mutations::Epics::AddIssue do
+RSpec.describe Mutations::Epics::AddIssue, feature_category: :portfolio_management do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, namespace: group) }
   let_it_be(:epic) { create(:epic, group: group) }
@@ -22,12 +22,12 @@ RSpec.describe Mutations::Epics::AddIssue do
       )
     end
 
-    it_behaves_like 'permission level for epic mutation is correctly verified'
+    it_behaves_like 'epic mutation for user without access'
 
-    context 'when the user can update the epic' do
+    context 'when the user have admin_epic_relation permissions for the epic' do
       before do
         stub_licensed_features(epics: true)
-        group.add_developer(user)
+        group.add_guest(user)
       end
 
       it 'adds the issue to the epic' do

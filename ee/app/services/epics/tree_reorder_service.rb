@@ -129,7 +129,7 @@ module Epics
         if moving_object.is_a?(Epic)
           [:admin_epic_tree_relation, epic]
         else
-          [:admin_epic, epic.group]
+          [:admin_epic_relation, epic]
         end
 
       can?(current_user, ability, subject)

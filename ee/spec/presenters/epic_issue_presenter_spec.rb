@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EpicIssuePresenter do
+RSpec.describe EpicIssuePresenter, feature_category: :portfolio_management do
   include Gitlab::Routing.url_helpers
 
   let(:user)         { create(:user) }
@@ -16,7 +16,7 @@ RSpec.describe EpicIssuePresenter do
 
   before do
     stub_licensed_features(epics: true)
-    group.add_developer(user)
+    group.add_guest(user)
   end
 
   describe '#group_epic_issue_path' do

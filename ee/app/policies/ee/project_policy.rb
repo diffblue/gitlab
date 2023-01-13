@@ -230,7 +230,6 @@ module EE
 
       rule { can?(:reporter_access) }.policy do
         enable :admin_issue_board
-        enable :admin_epic_issue
       end
 
       rule { monitor_disabled }.policy do

@@ -78,6 +78,7 @@ RSpec.describe IssuablesHelper, feature_category: :team_planning do
 
         expected_data = {
           canAdmin: true,
+          canAdminRelation: true,
           hasIssueWeightsFeature: true,
           publishedIncidentUrl: nil
         }
