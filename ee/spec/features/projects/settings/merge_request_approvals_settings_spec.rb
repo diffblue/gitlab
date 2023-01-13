@@ -29,7 +29,7 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js, feature_c
     expect(find('.gl-dropdown-contents')).to have_content(user.name)
     expect(find('.gl-dropdown-contents')).not_to have_content(non_member.name)
 
-    find('.gl-listbox-item', text: user.name).click
+    find('.gl-dropdown-item', text: user.name).click
 
     expect(find('.content-list')).to have_content(user.name)
 
@@ -53,7 +53,7 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js, feature_c
 
     expect(find('.gl-dropdown-contents')).to have_content(group.name)
 
-    find('.gl-listbox-item', text: group.name).click
+    find('.gl-dropdown-item', text: group.name).click
 
     expect(find('.content-list')).to have_content(group.name)
 

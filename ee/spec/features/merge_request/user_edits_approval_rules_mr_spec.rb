@@ -88,7 +88,7 @@ RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature
     it "with empty search, does not show public group" do
       open_approver_select
 
-      expect(page).not_to have_selector('.gl-listbox-item', text: public_group.name)
+      expect(page).not_to have_selector('.gl-dropdown-item', text: public_group.name)
     end
 
     it "with non-empty search, shows public group" do
@@ -99,7 +99,7 @@ RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature
       end
       wait_for_requests
 
-      expect(page).to have_selector('.gl-listbox-item', text: public_group.name)
+      expect(page).to have_selector('.gl-dropdown-item', text: public_group.name)
     end
   end
 

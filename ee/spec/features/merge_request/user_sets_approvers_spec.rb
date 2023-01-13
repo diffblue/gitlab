@@ -85,7 +85,7 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
 
         expect(find('.gl-dropdown-contents')).to have_content(group.name)
 
-        find('.gl-listbox-item', text: group.name).click
+        find('.gl-dropdown-item', text: group.name).click
 
         within('.modal-content') do
           click_button 'Add approval rule'
@@ -148,7 +148,7 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
 
         expect(find('.gl-dropdown-contents')).to have_content(group.name)
 
-        find('.gl-listbox-item', text: group.name).click
+        find('.gl-dropdown-item', text: group.name).click
         within('.modal-content') do
           click_button 'Add approval rule'
         end
