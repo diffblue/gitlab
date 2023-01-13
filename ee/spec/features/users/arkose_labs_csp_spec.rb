@@ -3,15 +3,15 @@
 require 'spec_helper'
 
 RSpec.describe 'ArkoseLabs content security policy', feature_category: :authentication_and_authorization do
-  shared_examples 'configures Content Security Policy headers correctly' do
-    context 'when feature flag is enabled' do
-      let(:feature_flag_state) { true }
+  include ContentSecurityPolicyHelpers
 
-      it 'adds ArkoseLabs URL to Content Security Policy headers' do
-        visit page_path
+  let(:feature_flag_state) { true }
 
-        expect(response_headers['Content-Security-Policy']).to include('https://*.arkoselabs.com')
-      end
+  shared_examples 'configures Content Security Policy headers correctly' do |controller_class|
+    it 'adds ArkoseLabs URL to Content Security Policy headers' do
+      visit page_path
+
+      expect(response_headers['Content-Security-Policy']).to include('https://*.arkoselabs.com')
     end
 
     context 'when feature flag is disabled' do
@@ -21,6 +21,19 @@ RSpec.describe 'ArkoseLabs content security policy', feature_category: :authenti
         visit page_path
 
         expect(response_headers['Content-Security-Policy']).not_to include('https://*.arkoselabs.com')
+      end
+    end
+
+    context 'when there is no global CSP config' do
+      before do
+        csp = ActionDispatch::ContentSecurityPolicy.new
+        setup_csp_for_controller(controller_class, csp, any_time: true)
+      end
+
+      it 'does not add ArkoseLabs URL to Content Security Policy headers' do
+        visit page_path
+
+        expect(response_headers['Content-Security-Policy']).to be_blank
       end
     end
   end
@@ -35,7 +48,7 @@ RSpec.describe 'ArkoseLabs content security policy', feature_category: :authenti
       )
     end
 
-    it_behaves_like 'configures Content Security Policy headers correctly'
+    it_behaves_like 'configures Content Security Policy headers correctly', SessionsController
   end
 
   context 'when in registration page' do
@@ -48,6 +61,6 @@ RSpec.describe 'ArkoseLabs content security policy', feature_category: :authenti
       )
     end
 
-    it_behaves_like 'configures Content Security Policy headers correctly'
+    it_behaves_like 'configures Content Security Policy headers correctly', RegistrationsController
   end
 end
