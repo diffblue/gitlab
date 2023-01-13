@@ -30,6 +30,12 @@ FactoryBot.define do
       end
     end
 
+    trait :license_for_nokogiri do
+      after(:build) do |report, evaluator|
+        report.add_license(id: 'MIT', name: 'MIT', url: 'https://opensource.org/licenses/mit').add_dependency(name: 'nokogiri')
+      end
+    end
+
     skip_create
   end
 end
