@@ -5,6 +5,8 @@ module ArkoseLabsCSP
 
   included do
     content_security_policy do |policy|
+      next unless policy.directives.present?
+
       allow_for_login = self == SessionsController && Feature.enabled?(:arkose_labs_login_challenge)
       allow_for_signup = self == RegistrationsController && Feature.enabled?(:arkose_labs_signup_challenge)
 
