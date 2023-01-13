@@ -18,7 +18,10 @@ class ScimOauthAccessToken < ApplicationRecord
 
   def self.token_matches?(token)
     # Necessary to call `TokenAuthenticatableStrategies::Encrypted.find_token_authenticatable`
-    find_by_token(token)
+    token = find_by_token(token)
+    # This method is for authenticating with instance-level SCIM tokens. As a
+    # result, group SCIM tokens should return falsey value
+    token && !token.group_id
   end
 
   def as_entity_json
