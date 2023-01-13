@@ -19,7 +19,7 @@ module API
             current_request,
             *Doorkeeper.configuration.access_token_methods
           )
-          unauthorized! unless token && ScimOauthAccessToken.token_matches?(token)
+          unauthorized! unless token && ScimOauthAccessToken.token_matches_for_instance?(token)
         end
 
         def find_user_identity(extern_uid)
