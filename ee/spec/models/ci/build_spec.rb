@@ -507,40 +507,6 @@ RSpec.describe Ci::Build, :saas do
     end
   end
 
-  describe '#collect_licenses_for_dependency_list!' do
-    let!(:license_scan_artifact) { create(:ee_ci_job_artifact, :license_scanning, job: job, project: job.project) }
-    let(:dependency_list_report) { Gitlab::Ci::Reports::DependencyList::Report.new }
-    let(:dependency) { build(:dependency, :nokogiri) }
-
-    subject { job.collect_licenses_for_dependency_list!(dependency_list_report) }
-
-    before do
-      dependency_list_report.add_dependency(dependency)
-    end
-
-    context 'with available licensed feature' do
-      before do
-        stub_licensed_features(dependency_scanning: true)
-      end
-
-      it 'parses blobs and add found license' do
-        subject
-        nokogiri = dependency_list_report.dependencies.first
-
-        expect(nokogiri&.dig(:licenses, 0, :name)).to eq('MIT')
-      end
-    end
-
-    context 'with unavailable licensed feature' do
-      it 'does not add licenses' do
-        subject
-        nokogiri = dependency_list_report.dependencies.first
-
-        expect(nokogiri[:licenses]).to be_empty
-      end
-    end
-  end
-
   describe '#collect_metrics_reports!' do
     subject { job.collect_metrics_reports!(metrics_report) }
 

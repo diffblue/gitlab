@@ -131,8 +131,14 @@ module EE
           latest_report_builds(::Ci::JobArtifact.of_report_type(:dependency_list)).success.each do |build|
             build.collect_dependency_list_reports!(dependency_list_report)
           end
-          latest_report_builds(::Ci::JobArtifact.of_report_type(:license_scanning)).success.each do |build|
-            build.collect_licenses_for_dependency_list!(dependency_list_report)
+
+          if project.feature_available?(:dependency_scanning) && project.feature_available?(:license_scanning)
+            license_scanner = ::Gitlab::LicenseScanning.scanner_for_pipeline(self)
+
+            if license_scanner.has_data?
+              dependency_list_parser = ::Gitlab::Ci::Parsers::Security::DependencyList.new(project, sha, self)
+              dependency_list_parser.apply_licenses!(license_scanner.report, dependency_list_report)
+            end
           end
         end
       end

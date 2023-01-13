@@ -79,12 +79,6 @@ module Gitlab
             }
           end
 
-          def self.parse_from(json)
-            new.tap do |report|
-              ::Gitlab::Ci::Parsers::LicenseCompliance::LicenseScanning.new.parse!(json, report)
-            end
-          end
-
           private
 
           attr_reader :found_licenses

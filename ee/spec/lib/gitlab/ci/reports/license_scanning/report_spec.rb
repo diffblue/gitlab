@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Reports::LicenseScanning::Report do
+RSpec.describe Gitlab::Ci::Reports::LicenseScanning::Report, feature_category: :license_scanning do
   include LicenseScanningReportHelpers
 
   describe '#by_license_name' do
@@ -275,25 +275,5 @@ RSpec.describe Gitlab::Ci::Reports::LicenseScanning::Report do
 
     it { expect(empty_report).to be_empty }
     it { expect(completed_report).not_to be_empty }
-  end
-
-  describe '.parse_from' do
-    context 'when parsing a v1 report' do
-      subject { described_class.parse_from(v1_json) }
-
-      let(:v1_json) { fixture_file('security_reports/master/gl-license-scanning-report.json', dir: 'ee') }
-
-      it { expect(subject.version).to eql('1.0') }
-      it { expect(subject.licenses.count).to eq(4) }
-    end
-
-    context 'when parsing a v2 report' do
-      subject { described_class.parse_from(v2_json) }
-
-      let(:v2_json) { fixture_file('security_reports/license_compliance/gl-license-scanning-report-v2.json', dir: 'ee') }
-
-      it { expect(subject.version).to eql('2.0') }
-      it { expect(subject.licenses.count).to eq(3) }
-    end
   end
 end
