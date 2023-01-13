@@ -11,7 +11,7 @@ module QA
             super
 
             base.class_eval do
-              prepend ::QA::Page::Component::Select2
+              include ::QA::Page::Component::Dropdown
 
               view 'ee/app/assets/javascripts/approvals/components/app.vue' do
                 element :add_approvers_button
@@ -36,10 +36,10 @@ module QA
                   fill_element :approvals_required_field, rule[:approvals_required]
 
                   rule.key?(:users) && rule[:users].each do |user|
-                    select_user_member(user.username)
+                    select_member(user.username)
                   end
                   rule.key?(:groups) && rule[:groups].each do |group|
-                    select_group_member(group.full_path)
+                    select_member(group.name)
                   end
 
                   click_approvers_modal_ok_button
@@ -54,23 +54,18 @@ module QA
                 find("#mr-edit-approvals-create-modal footer button.btn-confirm").click
               end
 
-              # Select2 is an external library, so we can't add our own selector
-              def select_user_member(name)
-                enter_member(name)
-                find('.select2-results .user-username', text: "@#{name}").click
-              end
-
-              def select_group_member(path)
-                enter_member(path)
-                find('.select2-results .group-path', text: "#{path}").click
-              end
-
               private
 
-              def enter_member(name)
+              def select_member(name)
                 retry_until do
                   within_element(:member_select_field) do
+                    find('.dropdown').click
                     search_item(name)
+
+                    # we must send an extra key to trigger the dropdown to filter
+                    # as the filtering does not work correctly with Capybara input
+                    send_keys_to_search :space
+                    select_item(name)
                   end
                 end
               end
