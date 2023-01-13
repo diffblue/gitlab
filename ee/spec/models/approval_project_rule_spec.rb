@@ -323,6 +323,19 @@ RSpec.describe ApprovalProjectRule do
 
     let_it_be(:rule, reload: true) { create(:approval_project_rule, name: 'Vulnerability', users: [user], groups: [group]) }
 
+    describe '#track_creation_event tracks count after create' do
+      let_it_be(:approval_project_rule) { build(:approval_project_rule) }
+
+      it 'calls Gitlab::UsageDataCounters::HLLRedisCounter track event' do
+        allow(Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event)
+
+        approval_project_rule.save!
+
+        expect(Gitlab::UsageDataCounters::HLLRedisCounter).to have_received(:track_event)
+                                                                .with('approval_project_rule_created', values: approval_project_rule.id)
+      end
+    end
+
     describe '#audit_add users after :add' do
       let(:action!) { rule.update!(users: [user, new_user]) }
       let(:message) { 'Added User Spiderman to approval group on Vulnerability rule' }

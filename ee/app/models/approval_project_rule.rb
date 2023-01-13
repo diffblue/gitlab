@@ -9,6 +9,7 @@ class ApprovalProjectRule < ApplicationRecord
   DEFAULT_SEVERITIES = %w[unknown high critical].freeze
   NEWLY_DETECTED_STATE = { NEWLY_DETECTED.to_sym => 0 }.freeze
   APPROVAL_VULNERABILITY_STATES = ::Enums::Vulnerability.vulnerability_states.merge(NEWLY_DETECTED_STATE).freeze
+  APPROVAL_PROJECT_RULE_CREATION_EVENT = 'approval_project_rule_created'
 
   belongs_to :project
   has_and_belongs_to_many :protected_branches
@@ -16,7 +17,7 @@ class ApprovalProjectRule < ApplicationRecord
   has_many :approval_merge_request_rules, through: :approval_merge_request_rule_sources
 
   after_initialize :set_scanners_default_value
-  after_create_commit :audit_creation
+  after_create_commit :audit_creation, :track_creation_event
 
   enum rule_type: {
     regular: 0,
@@ -152,5 +153,9 @@ class ApprovalProjectRule < ApplicationRecord
     elsif name == name_type[:name] && report_type != name_type[:type]
       errors.add(:name, _("%{name} is reserved for %{type} report type") % name_type)
     end
+  end
+
+  def track_creation_event
+    Gitlab::UsageDataCounters::HLLRedisCounter.track_event(APPROVAL_PROJECT_RULE_CREATION_EVENT, values: self.id)
   end
 end
