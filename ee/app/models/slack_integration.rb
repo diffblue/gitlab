@@ -5,6 +5,15 @@ class SlackIntegration < ApplicationRecord
 
   ALL_FEATURES = %i[commands notifications].freeze
 
+  SCOPE_COMMANDS = 'commands'
+  SCOPE_CHAT_WRITE = 'chat:write'
+  SCOPE_CHAT_WRITE_PUBLIC = 'chat:write.public'
+
+  # These scopes are requested when installing the app, additional scopes
+  # will need reauthorization.
+  # https://api.slack.com/authentication/oauth-v2#asking
+  SCOPES = [SCOPE_COMMANDS, SCOPE_CHAT_WRITE, SCOPE_CHAT_WRITE_PUBLIC].freeze
+
   belongs_to :integration
 
   attr_encrypted :bot_access_token,
@@ -42,9 +51,9 @@ class SlackIntegration < ApplicationRecord
   def feature_available?(feature_name)
     case feature_name
     when :commands
-      scoped_to?('commands')
+      scoped_to?(SCOPE_COMMANDS)
     when :notifications
-      scoped_to?('chat:write', 'chat:write.public')
+      scoped_to?(SCOPE_CHAT_WRITE, SCOPE_CHAT_WRITE_PUBLIC)
     else
       false
     end
