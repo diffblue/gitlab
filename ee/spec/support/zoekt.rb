@@ -3,7 +3,12 @@
 module Zoekt
   module TestHelpers
     def zoekt_shard
-      @zoekt_shard ||= ::Zoekt::Shard.find_or_create_by!(index_base_url: 'http://127.0.0.1:6060/', search_base_url: 'http://127.0.0.1:6070/')
+      index_base_url = ENV.fetch('ZOEKT_INDEX_BASE_URL', 'http://127.0.0.1:6060')
+      search_base_url = ENV.fetch('ZOEKT_SEARCH_BASE_URL', 'http://127.0.0.1:6070')
+      ::Zoekt::Shard.find_or_create_by!(
+        index_base_url: index_base_url,
+        search_base_url: search_base_url
+      )
     end
     module_function :zoekt_shard
 
