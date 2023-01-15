@@ -2585,20 +2585,6 @@ GET /projects/:id/push_rule
 }
 ```
 
-Users of [GitLab Premium or higher](https://about.gitlab.com/pricing/)
-can also see the `commit_committer_check` and `reject_unsigned_commits`
-parameters:
-
-```json
-{
-  "id": 1,
-  "project_id": 3,
-  "commit_committer_check": false,
-  "reject_unsigned_commits": false
-  ...
-}
-```
-
 ### Add project push rule
 
 Adds a push rule to a specified project.
