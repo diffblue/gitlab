@@ -18,6 +18,8 @@ module RuboCop
         KEYWORD_DEPRECATION_STR = 'maybe ** should be added to the call'
 
         def on_send(node)
+          return if target_ruby_version >= 3.0
+
           arg = get_last_argument(node)
           return unless arg
 
