@@ -49,12 +49,12 @@ module RuboCop
         end
 
         def known_match?(file_path, line_number, method_name)
-          file_path_from_root = file_path.sub(File.expand_path('../../..', __dir__), '')
-          file_and_line = "#{file_path_from_root}:#{line_number}"
-
           method_name = 'initialize' if method_name == 'new'
 
           return unless self.class.keyword_warnings[method_name]
+
+          file_path_from_root = file_path.sub(File.expand_path('../../..', __dir__), '')
+          file_and_line = "#{file_path_from_root}:#{line_number}"
 
           self.class.keyword_warnings[method_name].any? do |warning|
             warning.include?(file_and_line)
