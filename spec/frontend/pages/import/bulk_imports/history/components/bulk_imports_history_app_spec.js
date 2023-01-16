@@ -78,6 +78,7 @@ describe('BulkImportsHistoryApp', () => {
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
+    mock.onGet(API_URL).reply(200, DUMMY_RESPONSE, DEFAULT_HEADERS);
   });
 
   afterEach(() => {
@@ -101,7 +102,6 @@ describe('BulkImportsHistoryApp', () => {
     });
 
     it('renders table with data when history is available', async () => {
-      mock.onGet(API_URL).reply(200, DUMMY_RESPONSE, DEFAULT_HEADERS);
       createComponent();
       await axios.waitForAll();
 
@@ -114,7 +114,6 @@ describe('BulkImportsHistoryApp', () => {
     it('changes page when requested by pagination bar', async () => {
       const NEW_PAGE = 4;
 
-      mock.onGet(API_URL).reply(200, DUMMY_RESPONSE, DEFAULT_HEADERS);
       createComponent();
       await axios.waitForAll();
       mock.resetHistory();
@@ -130,7 +129,6 @@ describe('BulkImportsHistoryApp', () => {
   it('changes page size when requested by pagination bar', async () => {
     const NEW_PAGE_SIZE = 4;
 
-    mock.onGet(API_URL).reply(200, DUMMY_RESPONSE, DEFAULT_HEADERS);
     createComponent();
     await axios.waitForAll();
     mock.resetHistory();
@@ -147,7 +145,6 @@ describe('BulkImportsHistoryApp', () => {
   it('sets up the local storage sync correctly', async () => {
     const NEW_PAGE_SIZE = 4;
 
-    mock.onGet(API_URL).reply(200, DUMMY_RESPONSE, DEFAULT_HEADERS);
     createComponent();
     await axios.waitForAll();
     mock.resetHistory();
@@ -159,7 +156,6 @@ describe('BulkImportsHistoryApp', () => {
   });
 
   it('renders correct url for destination group when relative_url is empty', async () => {
-    mock.onGet(API_URL).reply(200, DUMMY_RESPONSE, DEFAULT_HEADERS);
     createComponent({ shallow: false });
     await axios.waitForAll();
 
@@ -169,7 +165,6 @@ describe('BulkImportsHistoryApp', () => {
   });
 
   it('adds slash to group urls', async () => {
-    mock.onGet(API_URL).reply(200, DUMMY_RESPONSE, DEFAULT_HEADERS);
     createComponent({ shallow: false });
     await axios.waitForAll();
 
@@ -177,7 +172,6 @@ describe('BulkImportsHistoryApp', () => {
   });
 
   it('does not prefixes project urls with slash', async () => {
-    mock.onGet(API_URL).reply(200, DUMMY_RESPONSE, DEFAULT_HEADERS);
     createComponent({ shallow: false });
     await axios.waitForAll();
 
