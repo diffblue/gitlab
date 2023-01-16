@@ -27,14 +27,20 @@ To preserve contribution history, [migrate using direct transfer](../../group/im
 
 If you migrate from GitLab.com to self-managed GitLab, an administrator can create users on the self-managed GitLab instance.
 
-## Set up project to migrate using file exports
+## Configure file exports as an import source **(FREE SELF)**
 
-Before you can import or export a project and its data, you must set it up.
+Before you can migrate projects on a self-managed GitLab instance using file exports, GitLab administrators must enable file exports as an import source for the instance. On
+GitLab.com, file exports are already enabled as an import source.
 
+To enable file exports as an import source:
+
+1. On the top bar, select **Main menu > Admin**.
 1. On the left sidebar, select **Settings > General**.
 1. Expand **Visibility and access controls**.
 1. Scroll to **Import sources**.
-1. Enable the desired **Import sources**.
+1. Select the **GitLab export** checkbox.
+1. Then scroll to **Project export**.
+1. Select the **Enable** checkbox.
 
 ## Between CE and EE
 
