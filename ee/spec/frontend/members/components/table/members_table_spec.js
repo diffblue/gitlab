@@ -95,10 +95,6 @@ describe('MemberList', () => {
         ['canUnban', memberCanUnban],
         ['canDisableTwoFactor', memberCanDisableTwoFactor],
       ])('when one of the members has `%s` permissions', (_, memberWithPermission) => {
-        beforeEach(() => {
-          gon.features = { groupOwnersToDisableTwoFactor: true };
-        });
-
         it('renders the "Actions" field', () => {
           createComponent({
             members: [memberNoPermissions, memberWithPermission],

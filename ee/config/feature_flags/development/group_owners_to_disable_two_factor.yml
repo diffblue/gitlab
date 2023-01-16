@@ -1,8 +1,0 @@
----
-name: group_owners_to_disable_two_factor
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/99129
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/378321
-milestone: '15.6'
-type: development
-group: group::authentication and authorization
-default_enabled: false

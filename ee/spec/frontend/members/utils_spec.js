@@ -36,10 +36,6 @@ describe('Members Utils', () => {
   });
 
   describe('canDisableTwoFactor', () => {
-    beforeEach(() => {
-      gon.features = { groupOwnersToDisableTwoFactor: true };
-    });
-
     it.each`
       member                                           | expected
       ${{ ...memberMock, canDisableTwoFactor: true }}  | ${true}

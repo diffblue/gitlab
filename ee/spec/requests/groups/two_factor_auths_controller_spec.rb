@@ -59,18 +59,6 @@ RSpec.describe Groups::TwoFactorAuthsController, feature_category: :system_acces
             expect(flash[:alert])
               .to eq format(_("You are not authorized to perform this action"))
           end
-
-          context 'when feature flag is not enabled' do
-            before do
-              stub_feature_flags(group_owners_to_disable_two_factor: false)
-            end
-
-            it 'responds with a 404', :aggregate_failures do
-              delete_two_factor
-
-              expect(response).to have_gitlab_http_status(:not_found)
-            end
-          end
         end
 
         context 'when user is not provisioned by current group' do

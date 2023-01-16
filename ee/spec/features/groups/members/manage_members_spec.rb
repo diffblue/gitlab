@@ -220,7 +220,6 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
   context 'with enterprise users' do
     before do
       sign_in(user1)
-      stub_feature_flags(group_owners_to_disable_two_factor: true)
     end
 
     it 'can disable two-factor authentication', :js do
