@@ -38410,9 +38410,6 @@ msgstr ""
 msgid "Select a template repository"
 msgstr ""
 
-msgid "Select a template type"
-msgstr ""
-
 msgid "Select all"
 msgstr ""
 
