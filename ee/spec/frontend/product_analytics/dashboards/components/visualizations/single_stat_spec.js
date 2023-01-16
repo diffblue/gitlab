@@ -24,6 +24,8 @@ describe('Single Stat Visualization', () => {
         value: 0,
         title: '',
         variant: 'muted',
+        shouldAnimate: true,
+        animationDecimalPlaces: 0,
       });
     });
 
@@ -36,6 +38,7 @@ describe('Single Stat Visualization', () => {
     it('should pass the visualization options to the single stat', () => {
       const options = {
         title: 'Sessions',
+        decimalPlaces: 2,
         metaText: 'meta text',
         metaIcon: 'project',
         titleIcon: 'users',
@@ -43,7 +46,14 @@ describe('Single Stat Visualization', () => {
       };
       createWrapper({ options });
 
-      expect(findSingleStat().props()).toMatchObject(options);
+      expect(findSingleStat().props()).toMatchObject({
+        title: 'Sessions',
+        metaText: 'meta text',
+        metaIcon: 'project',
+        titleIcon: 'users',
+        unit: 'days',
+        animationDecimalPlaces: 2,
+      });
     });
   });
 });
