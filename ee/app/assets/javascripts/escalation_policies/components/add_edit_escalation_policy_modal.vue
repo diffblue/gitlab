@@ -141,7 +141,7 @@ export default {
               throw error;
             }
             this.$refs.addUpdateEscalationPolicyModal.hide();
-            this.$emit('policyCreated');
+            this.$emit('policy-created');
             this.resetForm();
           },
         )

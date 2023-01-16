@@ -1,5 +1,5 @@
 <script>
-import { GlEmptyState, GlButton, GlModalDirective, GlLoadingIcon } from '@gitlab/ui';
+import { GlEmptyState, GlButton, GlModalDirective, GlLoadingIcon, GlAlert } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { s__ } from '~/locale';
 import { addEscalationPolicyModalId } from '../constants';
@@ -14,9 +14,15 @@ export const i18n = {
   emptyState: {
     title: s__('EscalationPolicies|Create an escalation policy in GitLab'),
     description: s__(
-      "EscalationPolicies|Set up escalation policies to define who is paged, and when, in the event the first users paged don't respond.",
+      "EscalationPolicies|Choose who to email if those contacted first about an alert don't respond.",
     ),
     button: s__('EscalationPolicies|Add an escalation policy'),
+  },
+  policyCreatedAlert: {
+    title: s__('EscalationPolicies|Escalation policy successfully created'),
+    message: s__(
+      'EscalationPolicies|When a new alert is received, the users specified in the policy receive an email.',
+    ),
   },
 };
 
@@ -27,6 +33,7 @@ export default {
     GlEmptyState,
     GlButton,
     GlLoadingIcon,
+    GlAlert,
     AddEscalationPolicyModal,
     EscalationPolicy,
   },
@@ -37,6 +44,7 @@ export default {
   data() {
     return {
       escalationPolicies: [],
+      isCreatedAlertShown: false,
     };
   },
   apollo: {
@@ -63,6 +71,11 @@ export default {
       return this.escalationPolicies.length;
     },
   },
+  methods: {
+    showCreatedAlert(alertShown) {
+      this.isCreatedAlertShown = alertShown;
+    },
+  },
 };
 </script>
 
@@ -74,6 +87,16 @@ export default {
       <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
         <h2>{{ $options.i18n.title }}</h2>
       </div>
+
+      <gl-alert
+        v-if="isCreatedAlertShown"
+        variant="success"
+        :title="$options.i18n.policyCreatedAlert.title"
+        @dismiss="showCreatedAlert(false)"
+      >
+        {{ $options.i18n.policyCreatedAlert.message }}
+      </gl-alert>
+
       <escalation-policy
         v-for="(policy, index) in escalationPolicies"
         :key="policy.id"
@@ -94,6 +117,9 @@ export default {
         </gl-button>
       </template>
     </gl-empty-state>
-    <add-escalation-policy-modal :modal-id="$options.addEscalationPolicyModalId" />
+    <add-escalation-policy-modal
+      :modal-id="$options.addEscalationPolicyModalId"
+      @policy-created="showCreatedAlert(true)"
+    />
   </div>
 </template>

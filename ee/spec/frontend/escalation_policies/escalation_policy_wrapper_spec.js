@@ -1,6 +1,8 @@
-import { GlEmptyState, GlLoadingIcon } from '@gitlab/ui';
+import { GlEmptyState, GlLoadingIcon, GlAlert } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import EscalationPoliciesWrapper from 'ee/escalation_policies/components/escalation_policies_wrapper.vue';
 import EscalationPolicy from 'ee/escalation_policies/components/escalation_policy.vue';
+import AddEscalationPolicyModal from 'ee/escalation_policies/components/add_edit_escalation_policy_modal.vue';
 import { parsePolicy } from 'ee/escalation_policies/utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import mockEscalationPolicies from './mocks/mockPolicies.json';
@@ -45,6 +47,8 @@ describe('Escalation Policies Wrapper', () => {
   const findLoader = () => wrapper.findComponent(GlLoadingIcon);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findEscalationPolicies = () => wrapper.findAllComponents(EscalationPolicy);
+  const findEscalationPolicyModal = () => wrapper.findComponent(AddEscalationPolicyModal);
+  const findAlert = () => wrapper.findComponent(GlAlert);
 
   describe.each`
     state             | loading  | escalationPolicies        | showsEmptyState | showsLoader
@@ -69,6 +73,24 @@ describe('Escalation Policies Wrapper', () => {
 
     it(`does ${escalationPolicies.length ? 'show' : 'not show'} escalation policies`, () => {
       expect(findEscalationPolicies()).toHaveLength(escalationPolicies.length);
+    });
+  });
+
+  describe('Escalation policy created alert', () => {
+    it('should display alert when when policy created', async () => {
+      mountComponent({
+        loading: false,
+        escalationPolicies: mockEscalationPolicies.map(parsePolicy),
+      });
+      expect(findAlert().exists()).toBe(false);
+
+      findEscalationPolicyModal().vm.$emit('policy-created');
+      await nextTick();
+      expect(findAlert().exists()).toBe(true);
+
+      findAlert().vm.$emit('dismiss');
+      await nextTick();
+      expect(findAlert().exists()).toBe(false);
     });
   });
 });
