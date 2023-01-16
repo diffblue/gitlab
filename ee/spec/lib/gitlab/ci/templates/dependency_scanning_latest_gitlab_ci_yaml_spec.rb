@@ -3,7 +3,7 @@
 
 require 'spec_helper'
 
-RSpec.shared_examples 'language detection' do
+RSpec.shared_examples 'language detection', feature_category: :dependency_scanning do
   using RSpec::Parameterized::TableSyntax
 
   where(:case_name, :files, :include_build_names) do

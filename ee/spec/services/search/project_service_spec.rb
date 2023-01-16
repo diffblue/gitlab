@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Search::ProjectService do
+RSpec.describe Search::ProjectService, feature_category: :global_search do
   include SearchResultHelpers
   include ProjectHelpers
   include UserHelpers

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Insights::Finders::IssuableFinder do
+RSpec.describe Gitlab::Insights::Finders::IssuableFinder, feature_category: :team_planning do
   using RSpec::Parameterized::TableSyntax
 
   around do |example|
