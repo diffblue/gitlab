@@ -20,6 +20,7 @@ import {
   LAST_WEEK,
   LAST_MONTH,
   LAST_90_DAYS,
+  LAST_180_DAYS,
   CHART_TITLE,
 } from './static_data/change_failure_rate';
 import {
@@ -57,6 +58,7 @@ export default {
     [LAST_WEEK]: 7,
     [LAST_MONTH]: 30,
     [LAST_90_DAYS]: 90,
+    [LAST_180_DAYS]: 180,
   },
   data() {
     return {
@@ -64,6 +66,7 @@ export default {
         [LAST_WEEK]: [],
         [LAST_MONTH]: [],
         [LAST_90_DAYS]: [],
+        [LAST_180_DAYS]: [],
       },
       tooltipTitle: null,
       tooltipValue: null,
