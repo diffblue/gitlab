@@ -145,6 +145,7 @@ module EE
         ::Dora::DailyMetrics::RefreshWorker.perform_async(related_production_env.id, issue.created_at.to_date.to_s)
       end
 
+      before_destroy :set_old_epic_id
       after_commit :update_cached_metadata
     end
 
@@ -358,11 +359,23 @@ module EE
       _('This issue cannot be assigned to a confidential epic because it is public.')
     end
 
-    def update_cached_metadata
-      return unless epic_issue
-      return unless weight_previously_changed? || state_id_previously_changed?
+    def set_old_epic_id
+      @old_epic_id = epic_issue&.epic_id # rubocop: disable Gitlab/ModuleWithInstanceVariables
+    end
 
-      ::Epics::UpdateCachedMetadataWorker.perform_async([epic_issue.epic_id])
+    def update_cached_metadata
+      epic_id = epic_id_to_refresh_cache
+      return unless epic_id
+
+      ::Epics::UpdateCachedMetadataWorker.perform_async([epic_id])
+    end
+
+    def epic_id_to_refresh_cache
+      return @old_epic_id if @old_epic_id # rubocop: disable Gitlab/ModuleWithInstanceVariables
+      return unless weight_previously_changed? || state_id_previously_changed?
+      return unless epic_issue
+
+      epic_issue.epic_id
     end
   end
 end

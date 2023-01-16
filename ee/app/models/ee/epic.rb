@@ -682,7 +682,7 @@ module EE
     end
 
     def update_cached_metadata
-      ::Epics::UpdateCachedMetadataWorker.perform_async([parent_id]) if propagate_issue_metadata_change?
+      ::Epics::UpdateCachedMetadataWorker.perform_async([parent_id]) if parent_id && propagate_issue_metadata_change?
 
       if parent_id_previously_changed? && parent_id_previously_was
         ::Epics::UpdateCachedMetadataWorker.perform_async([parent_id_previously_was])

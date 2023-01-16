@@ -20120,7 +20120,10 @@ msgstr ""
 msgid "GroupsNew|Create subgroup"
 msgstr ""
 
-msgid "GroupsNew|GitLab source URL"
+msgid "GroupsNew|Enter the URL for the source instance."
+msgstr ""
+
+msgid "GroupsNew|GitLab source instance URL"
 msgstr ""
 
 msgid "GroupsNew|Groups can also be nested by creating %{linkStart}subgroups%{linkEnd}."
@@ -20132,7 +20135,7 @@ msgstr ""
 msgid "GroupsNew|Import group"
 msgstr ""
 
-msgid "GroupsNew|Import groups from another instance of GitLab"
+msgid "GroupsNew|Import groups by direct transfer"
 msgstr ""
 
 msgid "GroupsNew|Importing groups by direct transfer is currently disabled."
@@ -20153,13 +20156,10 @@ msgstr ""
 msgid "GroupsNew|Please ask your Administrator to enable it in the Admin settings."
 msgstr ""
 
-msgid "GroupsNew|Please fill in GitLab source URL."
-msgstr ""
-
 msgid "GroupsNew|Please fill in your personal access token."
 msgstr ""
 
-msgid "GroupsNew|Provide credentials for another instance of GitLab to import your groups directly."
+msgid "GroupsNew|Provide credentials for the source instance to import from. You can provide this instance as a source to move groups in this instance."
 msgstr ""
 
 msgid "GroupsNew|Remember to enable it also on the instance you are migrating from."
@@ -22449,9 +22449,6 @@ msgstr ""
 msgid "Integrations|Add namespace"
 msgstr ""
 
-msgid "Integrations|Adding a namespace only works in browsers that allow cross-site cookies. %{linkStart}Learn more%{linkEnd}."
-msgstr ""
-
 msgid "Integrations|All details"
 msgstr ""
 
@@ -22572,9 +22569,6 @@ msgstr ""
 msgid "Integrations|Keep your PHP dependencies updated on Packagist."
 msgstr ""
 
-msgid "Integrations|Known limitations"
-msgstr ""
-
 msgid "Integrations|Link namespaces"
 msgstr ""
 
@@ -22651,9 +22645,6 @@ msgid "Integrations|Standard"
 msgstr ""
 
 msgid "Integrations|There are no projects using custom settings"
-msgstr ""
-
-msgid "Integrations|This integration only works with GitLab.com. Adding a namespace only works in browsers that allow cross-site cookies. %{linkStart}Learn more%{linkEnd}."
 msgstr ""
 
 msgid "Integrations|This integration, and inheriting projects were reset."
