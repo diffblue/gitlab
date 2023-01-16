@@ -25,6 +25,7 @@ module EE
           push_frontend_feature_flag(:overage_members_modal, @group) if ::Gitlab::CurrentSettings.should_check_namespace_plan?
           push_frontend_feature_flag(:limit_unique_project_downloads_per_namespace_user, @group)
           push_frontend_feature_flag(:show_overage_on_role_promotion)
+          push_frontend_feature_flag(:group_owners_to_disable_two_factor)
           push_licensed_feature(:unique_project_download_limit, @group)
         end
       end

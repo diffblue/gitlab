@@ -1,7 +1,7 @@
 import { GlFilteredSearchToken } from '@gitlab/ui';
 import { groupMemberRequestFormatter } from '~/groups/members/utils';
 
-import { __, n__, sprintf } from '~/locale';
+import { __, n__, s__, sprintf } from '~/locale';
 import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/constants';
 import {
   AVAILABLE_FILTERED_SEARCH_TOKENS as AVAILABLE_FILTERED_SEARCH_TOKENS_CE,
@@ -12,6 +12,12 @@ import { helpPagePath } from '~/helpers/help_page_helper';
 
 // eslint-disable-next-line import/export
 export * from '~/members/constants';
+
+export const DISABLE_TWO_FACTOR_MODAL_ID = 'disable-two-factor-modal';
+
+export const I18N_CANCEL = __('Cancel');
+export const I18N_DISABLE = __('Disable');
+export const I18N_DISABLE_TWO_FACTOR_MODAL_TITLE = s__('Members|Disable two-factor authentication');
 
 export const LDAP_OVERRIDE_CONFIRMATION_MODAL_ID = 'ldap-override-confirmation-modal';
 

@@ -1,7 +1,7 @@
 <script>
 import CEMembersTableCell from '~/members/components/table/members_table_cell.vue';
 import { MEMBER_TYPES } from 'ee_else_ce/members/constants';
-import { canOverride, canUnban } from '../../utils';
+import { canDisableTwoFactor, canOverride, canUnban } from '../../utils';
 
 export default {
   name: 'MembersTableCell',
@@ -13,6 +13,9 @@ export default {
     },
   },
   computed: {
+    canDisableTwoFactor() {
+      return canDisableTwoFactor(this.member);
+    },
     canOverride() {
       return canOverride(this.member);
     },
@@ -41,6 +44,7 @@ export default {
               ...props.permissions,
               canOverride: this.canOverride,
               canUnban: this.canUnban,
+              canDisableTwoFactor: this.canDisableTwoFactor,
             },
           });
         },
