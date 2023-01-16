@@ -19,8 +19,14 @@ export const i18n = {
       validation: {
         empty: __("Can't be empty"),
       },
+      help: s__(
+        'EscalationPolicies|Distinguishes this policy from others you may create (for example, "Critical alert escalation").',
+      ),
     },
-    description: { title: __('Description (optional)') },
+    description: {
+      title: __('Description (optional)'),
+      help: s__('EscalationPolicies|More detailed information about your policy.'),
+    },
     rules: {
       title: s__('EscalationPolicies|Escalation rules'),
     },
@@ -138,6 +144,7 @@ export default {
             $emit('update-escalation-policy-form', { field: 'name', value: $event.target.value })
           "
         />
+        <span class="form-text text-muted">{{ $options.i18n.fields.name.help }}</span>
       </gl-form-group>
 
       <gl-form-group
@@ -155,6 +162,7 @@ export default {
             })
           "
         />
+        <span class="form-text text-muted">{{ $options.i18n.fields.description.help }}</span>
       </gl-form-group>
     </div>
 
