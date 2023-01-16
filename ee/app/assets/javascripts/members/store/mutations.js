@@ -6,6 +6,14 @@ import * as types from './mutation_types';
 
 export default {
   ...CEMutations,
+  [types.SHOW_DISABLE_TWO_FACTOR_MODAL](state, modalData) {
+    state.disableTwoFactorModalData = modalData;
+    state.disableTwoFactorModalVisible = true;
+  },
+  [types.HIDE_DISABLE_TWO_FACTOR_MODAL](state) {
+    state.disableTwoFactorModalData = null;
+    state.disableTwoFactorModalVisible = false;
+  },
   [types.RECEIVE_LDAP_OVERRIDE_SUCCESS](state, { memberId, override }) {
     const member = findMember(state, memberId);
 

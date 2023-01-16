@@ -2,6 +2,8 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { noop } from 'lodash';
 import {
+  showDisableTwoFactorModal,
+  hideDisableTwoFactorModal,
   updateLdapOverride,
   showLdapOverrideConfirmationModal,
   hideLdapOverrideConfirmationModal,
@@ -20,6 +22,35 @@ describe('Vuex members actions', () => {
 
   afterEach(() => {
     mock.restore();
+  });
+
+  describe('disable two factor confirmation modal', () => {
+    const state = {
+      disableTwoFactorModalData: null,
+      disableTwoFactorModalVisible: false,
+    };
+
+    describe('showDisableTwoFactorModal', () => {
+      it(`commits ${types.SHOW_DISABLE_TWO_FACTOR_MODAL} mutation`, () => {
+        const modalData = { userID: 5, name: 'John Malone' };
+        testAction(showDisableTwoFactorModal, modalData, state, [
+          {
+            type: types.SHOW_DISABLE_TWO_FACTOR_MODAL,
+            payload: modalData,
+          },
+        ]);
+      });
+    });
+
+    describe('hideDisableTwoFactorModal', () => {
+      it(`commits ${types.HIDE_DISABLE_TWO_FACTOR_MODAL} mutation`, () => {
+        testAction(hideDisableTwoFactorModal, {}, state, [
+          {
+            type: types.HIDE_DISABLE_TWO_FACTOR_MODAL,
+          },
+        ]);
+      });
+    });
   });
 
   describe('updateLdapOverride', () => {

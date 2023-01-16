@@ -84,6 +84,28 @@ describe('MemberTableCell', () => {
   });
 
   describe('permissions', () => {
+    describe('canDisableTwoFactor', () => {
+      beforeEach(() => {
+        gon.features = { groupOwnersToDisableTwoFactor: true };
+      });
+
+      it('returns `true` when `canGetTwoFactorDisabled` is `true`', () => {
+        createComponent({
+          member: { ...directMember, canGetTwoFactorDisabled: true },
+        });
+
+        expect(findWrappedComponent().props('permissions').canDisableTwoFactor).toBe(true);
+      });
+
+      it('returns `false` when `canDisableTwoFactor` is `false`', () => {
+        createComponent({
+          member: { ...directMember, canGetTwoFactorDisabled: false },
+        });
+
+        expect(findWrappedComponent().props('permissions').canDisableTwoFactor).toBe(false);
+      });
+    });
+
     describe('canOverride', () => {
       it('returns `true` when `canOverride` is `true`', () => {
         createComponent({

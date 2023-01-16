@@ -3,6 +3,14 @@ import * as types from './mutation_types';
 
 export * from '~/members/store/actions';
 
+export const showDisableTwoFactorModal = ({ commit }, modalData) => {
+  commit(types.SHOW_DISABLE_TWO_FACTOR_MODAL, modalData);
+};
+
+export const hideDisableTwoFactorModal = ({ commit }) => {
+  commit(types.HIDE_DISABLE_TWO_FACTOR_MODAL);
+};
+
 export const updateLdapOverride = async ({ state, commit }, { memberId, override }) => {
   try {
     await axios.patch(

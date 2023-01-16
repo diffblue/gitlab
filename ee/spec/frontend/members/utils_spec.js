@@ -1,4 +1,4 @@
-import { generateBadges, canOverride, canUnban } from 'ee/members/utils';
+import { generateBadges, canDisableTwoFactor, canOverride, canUnban } from 'ee/members/utils';
 import { member as memberMock, directMember, inheritedMember } from 'jest/members/mock_data';
 
 describe('Members Utils', () => {
@@ -33,6 +33,23 @@ describe('Members Utils', () => {
         generateBadges({ member, isCurrentUser: true, canManageMembers: true }),
       ).toContainEqual(expect.objectContaining(expected));
     });
+  });
+
+  describe('canDisableTwoFactor', () => {
+    beforeEach(() => {
+      gon.features = { groupOwnersToDisableTwoFactor: true };
+    });
+
+    it.each`
+      member                                               | expected
+      ${{ ...memberMock, canGetTwoFactorDisabled: true }}  | ${true}
+      ${{ ...memberMock, canGetTwoFactorDisabled: false }} | ${false}
+    `(
+      'returns $expected for members whose two factor authentication can be disabled',
+      ({ member, expected }) => {
+        expect(canDisableTwoFactor(member)).toBe(expected);
+      },
+    );
   });
 
   describe('canOverride', () => {
