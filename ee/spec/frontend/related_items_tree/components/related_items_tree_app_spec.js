@@ -1,8 +1,8 @@
 import { GlLoadingIcon } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import AxiosMockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import mockProjects from 'test_fixtures_static/projects.json';
 import CreateIssueForm from 'ee/related_items_tree/components/create_issue_form.vue';
@@ -33,7 +33,7 @@ const createComponent = () => {
     children: [...mockEpics, ...mockIssues],
   });
 
-  return shallowMount(RelatedItemsTreeApp, {
+  return shallowMountExtended(RelatedItemsTreeApp, {
     store,
     stubs: {
       SlotSwitch,
@@ -308,5 +308,20 @@ describe('RelatedItemsTreeApp', () => {
 
       expect(wrapper.findComponent(appMapping[activeTab]).isVisible()).toBe(true);
     });
+
+    it.each([false, true])(
+      "toggle related items container when `toggleRelatedItemsView` emits '%s'",
+      async (toggled) => {
+        wrapper.vm.$store.state.itemsFetchResultEmpty = false;
+
+        await nextTick();
+
+        wrapper.findComponent(RelatedItemsTreeHeader).vm.$emit('toggleRelatedItemsView', toggled);
+
+        await nextTick();
+        expect(wrapper.vm.showRelatedItems).toBe(toggled);
+        expect(wrapper.findByTestId('related-items-container').exists()).toBe(toggled);
+      },
+    );
   });
 });

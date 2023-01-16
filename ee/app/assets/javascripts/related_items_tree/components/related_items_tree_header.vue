@@ -1,8 +1,9 @@
 <script>
-import { GlAlert, GlPopover, GlIcon } from '@gitlab/ui';
+import { GlAlert, GlPopover, GlIcon, GlButton } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
 
 import { issuableTypesMap } from '~/related_issues/constants';
+import { __ } from '~/locale';
 import { i18n, treeTitle, ParentType } from '../constants';
 import EpicHealthStatus from './epic_health_status.vue';
 import EpicActionsSplitButton from './epic_issue_actions_split_button.vue';
@@ -12,8 +13,14 @@ export default {
     GlAlert,
     GlPopover,
     GlIcon,
+    GlButton,
     EpicHealthStatus,
     EpicActionsSplitButton,
+  },
+  data() {
+    return {
+      isOpen: true,
+    };
   },
   computed: {
     ...mapState([
@@ -41,6 +48,12 @@ export default {
     },
     parentIsEpic() {
       return this.parentItem.type === ParentType.Epic;
+    },
+    toggleIcon() {
+      return this.isOpen ? 'chevron-lg-up' : 'chevron-lg-down';
+    },
+    toggleLabel() {
+      return this.isOpen ? __('Collapse') : __('Expand');
     },
   },
   methods: {
@@ -72,6 +85,10 @@ export default {
       this.toggleCreateEpicForm({
         toggleState: true,
       });
+    },
+    handleToggle() {
+      this.isOpen = !this.isOpen;
+      this.$emit('toggleRelatedItemsView', this.isOpen);
     },
   },
   i18n,
@@ -175,6 +192,16 @@ export default {
           @showCreateIssueForm="showCreateIssueForm"
           @showAddEpicForm="showAddEpicForm"
           @showCreateEpicForm="showCreateEpicForm"
+        />
+      </div>
+      <div class="gl-pl-3 gl-ml-3 gl-border-l-1 gl-border-l-solid gl-border-l-gray-100">
+        <gl-button
+          category="tertiary"
+          size="small"
+          :icon="toggleIcon"
+          :aria-label="toggleLabel"
+          data-testid="toggle-links"
+          @click="handleToggle"
         />
       </div>
     </div>

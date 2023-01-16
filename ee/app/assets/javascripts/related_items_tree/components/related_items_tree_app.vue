@@ -45,6 +45,7 @@ export default {
   data() {
     return {
       activeTab: ITEM_TABS.TREE,
+      showRelatedItems: true,
     };
   },
   computed: {
@@ -171,6 +172,9 @@ export default {
     handleTabChange(value) {
       this.activeTab = value;
     },
+    handleRelatedItemsView(value) {
+      this.showRelatedItems = value;
+    },
   },
 };
 </script>
@@ -184,7 +188,10 @@ export default {
         'overflow-auto': directChildren.length > $options.OVERFLOW_AFTER,
       }"
     >
-      <related-items-tree-header :class="{ 'border-bottom-0': itemsFetchResultEmpty }" />
+      <related-items-tree-header
+        :class="{ 'border-bottom-0': itemsFetchResultEmpty || !showRelatedItems }"
+        @toggleRelatedItemsView="handleRelatedItemsView"
+      />
       <slot-switch
         v-if="visibleForm && parentItem.confidential"
         :active-slot-names="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
@@ -253,7 +260,10 @@ export default {
       <div v-if="itemsFetchInProgress" class="gl-p-3">
         <gl-loading-icon size="lg" />
       </div>
-      <div v-else-if="!itemsFetchResultEmpty">
+      <div
+        v-else-if="!itemsFetchResultEmpty && showRelatedItems"
+        data-testid="related-items-container"
+      >
         <related-items-tree-actions :active-tab="activeTab" @tab-change="handleTabChange" />
 
         <related-items-tree-body

@@ -1,7 +1,7 @@
 import { GlPopover, GlIcon, GlAlert } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import EpicHealthStatus from 'ee/related_items_tree/components/epic_health_status.vue';
 import EpicActionsSplitButton from 'ee/related_items_tree/components/epic_issue_actions_split_button.vue';
@@ -35,7 +35,7 @@ const createComponent = ({ slots } = {}) => {
   });
   store.dispatch('setChildrenCount', mockParentItem.descendantCounts);
 
-  return shallowMount(RelatedItemsTreeHeader, {
+  return shallowMountExtended(RelatedItemsTreeHeader, {
     store,
     slots,
   });
@@ -44,6 +44,8 @@ const createComponent = ({ slots } = {}) => {
 describe('RelatedItemsTree', () => {
   describe('RelatedItemsTreeHeader', () => {
     let wrapper;
+
+    const findToggleButton = () => wrapper.findByTestId('toggle-links');
 
     const findEpicsIssuesSplitButton = () => wrapper.findComponent(EpicActionsSplitButton);
 
@@ -262,6 +264,33 @@ describe('RelatedItemsTree', () => {
         expect(weightEl.text().trim()).toContain('15');
         expect(weightIcon.isVisible()).toBe(true);
         expect(weightIcon.props('name')).toBe('weight');
+      });
+    });
+
+    describe('toggle Child issues and epics section', () => {
+      beforeEach(() => {
+        wrapper = createComponent();
+      });
+
+      it('is expanded by default', () => {
+        expect(findToggleButton().props('icon')).toBe('chevron-lg-up');
+      });
+
+      it('expands on click toggle button', async () => {
+        findToggleButton().vm.$emit('click');
+        await nextTick();
+
+        expect(findToggleButton().props('icon')).toBe('chevron-lg-down');
+        expect(wrapper.emitted('toggleRelatedItemsView')[0][0]).toBe(false);
+      });
+
+      it('Collapse on click toggle button', async () => {
+        findToggleButton().vm.$emit('click');
+        findToggleButton().vm.$emit('click');
+        await nextTick();
+
+        expect(findToggleButton().props('icon')).toBe('chevron-lg-up');
+        expect(wrapper.emitted('toggleRelatedItemsView')[1][0]).toBe(true);
       });
     });
   });
