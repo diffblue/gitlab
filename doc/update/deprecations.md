@@ -126,6 +126,22 @@ GitLab has deprecated Dependency Scanning support for Java versions 13, 14, 15, 
 
 </div>
 
+<div class="deprecation removal-160 breaking-change">
+
+### Developer role providing the ability to import projects to a group
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+The ability for users with the Developer role for a group to import projects to that group is deprecated in GitLab
+15.8 and will be removed in GitLab 16.0. From GitLab 16.0, only users with at least the Maintainer role for a group
+will be able to import projects to that group.
+
+</div>
+
 <div class="deprecation removal-160">
 
 ### GitLab.com importer
