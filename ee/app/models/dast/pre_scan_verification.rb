@@ -7,7 +7,8 @@ module Dast
     belongs_to :ci_pipeline, class_name: 'Ci::Pipeline', optional: false
     belongs_to :dast_profile, class_name: 'Dast::Profile', optional: false, inverse_of: :dast_pre_scan_verification
 
-    has_many :pre_scan_verification_steps, class_name: 'Dast::PreScanVerificationStep'
+    has_many :pre_scan_verification_steps, class_name: 'Dast::PreScanVerificationStep',
+             foreign_key: 'dast_pre_scan_verification_id', inverse_of: :dast_pre_scan_verification
 
     delegate :project, :dast_site_profile, to: :dast_profile, allow_nil: true
 
