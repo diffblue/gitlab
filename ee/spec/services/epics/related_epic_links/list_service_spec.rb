@@ -84,6 +84,6 @@ RSpec.describe Epics::RelatedEpicLinks::ListService, feature_category: :portfoli
   end
 
   def path_for(link)
-    "/groups/group1/-/epics/#{source_epic.iid}/related_epic_links/#{link.id}"
+    "/groups/#{source_group.full_path}/-/epics/#{source_epic.iid}/related_epic_links/#{link.id}"
   end
 end
