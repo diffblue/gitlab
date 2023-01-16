@@ -126,6 +126,22 @@ GitLab has deprecated Dependency Scanning support for Java versions 13, 14, 15, 
 
 </div>
 
+<div class="deprecation removal-160">
+
+### GitLab.com importer
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
+
+The [GitLab.com importer](https://docs.gitlab.com/ee/user/project/import/gitlab_com.html) is deprecated in GitLab 15.8 and will be removed in GitLab 16.0.
+
+The GitLab.com importer was introduced in 2015 for importing a project from GitLab.com to a self-managed GitLab instance through the UI.
+This feature is available on self-managed instances only. [Migrating GitLab groups and projects by direct transfer](https://docs.gitlab.com/ee/user/group/import/#migrate-groups-by-direct-transfer-recommended)
+supersedes the GitLab.com importer and provides a more cohesive importing functionality.
+
+See [migrated group items](https://docs.gitlab.com/ee/user/group/import/#migrated-group-items) and [migrated project items](https://docs.gitlab.com/ee/user/group/import/#migrated-project-items) for an overview.
+
+</div>
+
 <div class="deprecation removal-160 breaking-change">
 
 ### Limit personal access token and deploy token's access with external authorization
