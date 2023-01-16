@@ -16,6 +16,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
     resources :group_members, only: [], concerns: :access_requestable do
       patch :override, on: :member
       put :unban, on: :member
+      put :ban, on: :member
 
       collection do
         get :export_csv

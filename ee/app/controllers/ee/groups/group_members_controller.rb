@@ -64,6 +64,18 @@ module EE
         redirect_to group_group_members_path(group), notice: _('CSV is being generated and will be emailed to you upon completion.')
       end
 
+      def ban
+        member = group_members.find(params[:id])
+
+        result = ::Users::Abuse::NamespaceBans::CreateService.new(user: member.user, namespace: group).execute
+
+        if result[:status] == :success
+          redirect_to group_group_members_path, notice: _("User was successfully banned.")
+        else
+          redirect_to group_group_members_path, alert: result[:message]
+        end
+      end
+
       def unban
         member = banned_members.find(params[:id])
         ban = member.user.namespace_ban_for(group)
