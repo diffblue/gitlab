@@ -21,6 +21,10 @@ module EE
       member.source.access_level_roles
     end
 
+    def can_ban?
+      can?(current_user, :ban_group_member, member.source) && !member.owner?
+    end
+
     def can_unban?
       can?(current_user, admin_member_permission, member)
     end

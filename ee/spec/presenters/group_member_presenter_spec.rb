@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe GroupMemberPresenter do
+  using RSpec::Parameterized::TableSyntax
+
   let(:user) { double(:user) }
   let(:group) { double(:group) }
   let(:group_member) { double(:group_member, source: group, user: user) }
@@ -96,6 +98,27 @@ RSpec.describe GroupMemberPresenter do
           entity.update!(parent: group)
         end
       end
+    end
+  end
+
+  describe '#can_ban?' do
+    let(:current_user) { instance_double(User) }
+    let(:presenter) { described_class.new(group_member, current_user: current_user) }
+
+    where(:can_ban_group_member, :member_is_owner, :result) do
+      false | false | false
+      false | true  | false
+      true  | false | true
+      true  | true  | false
+    end
+
+    with_them do
+      before do
+        allow(presenter).to receive(:can?).with(current_user, :ban_group_member, group).and_return(can_ban_group_member)
+        allow(group_member).to receive(:owner?).and_return(member_is_owner)
+      end
+
+      it { expect(presenter.can_ban?).to eq(result) }
     end
   end
 

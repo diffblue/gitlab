@@ -2403,6 +2403,39 @@ RSpec.describe GroupPolicy do
     end
   end
 
+  describe 'ban_group_member' do
+    using RSpec::Parameterized::TableSyntax
+
+    let_it_be(:user) { create(:user) }
+
+    let(:group) { create(:group) }
+
+    subject(:policy) { described_class.new(user, group) }
+
+    where(:unique_project_download_limit_enabled, :is_owner, :enabled) do
+      false | false | false
+      false | true  | false
+      true  | false | false
+      true  | true  | true
+    end
+
+    with_them do
+      before do
+        allow(group).to receive(:unique_project_download_limit_enabled?)
+          .and_return(unique_project_download_limit_enabled)
+        group.add_owner(user) if is_owner
+      end
+
+      it 'has the correct value' do
+        if enabled
+          expect(policy).to be_allowed(:ban_group_member)
+        else
+          expect(policy).to be_disallowed(:ban_group_member)
+        end
+      end
+    end
+  end
+
   describe 'group cicd runners' do
     context 'auditor' do
       let(:current_user) { auditor }

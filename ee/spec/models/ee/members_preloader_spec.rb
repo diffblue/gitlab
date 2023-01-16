@@ -12,12 +12,12 @@ RSpec.describe EE::MembersPreloader do
     let_it_be(:escalation_policy) { create(:incident_management_escalation_policy, project: project, rule_count: 0) }
 
     it 'preloads associations to avoid N+1 queries' do
-      member = create(:group_member, group: group)
+      member = create(:group_member, :developer, group: group)
       create_member_associations(member)
 
       control = ActiveRecord::QueryRecorder.new { access_group_with_preload([member]) }
 
-      members = create_list(:group_member, 3, group: group)
+      members = create_list(:group_member, 3, :developer, group: group)
       create_member_associations(members.first)
       create_member_associations(members.last)
 
