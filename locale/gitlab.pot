@@ -7447,6 +7447,15 @@ msgstr ""
 msgid "BulkImport|Import selected"
 msgstr ""
 
+msgid "BulkImport|Import with projects"
+msgstr ""
+
+msgid "BulkImport|Import without projects"
+msgstr ""
+
+msgid "BulkImport|Importing projects is a %{docsLinkStart}Beta%{docsLinkEnd} feature."
+msgstr ""
+
 msgid "BulkImport|Importing the group failed."
 msgstr ""
 
@@ -21215,6 +21224,12 @@ msgstr ""
 msgid "Import timed out. Import took longer than %{import_jobs_expiration} seconds"
 msgstr ""
 
+msgid "Import with projects"
+msgstr ""
+
+msgid "Import without projects"
+msgstr ""
+
 msgid "ImportAProjectModal|Import from a project"
 msgstr ""
 
@@ -34601,6 +34616,12 @@ msgid "Re-authentication required"
 msgstr ""
 
 msgid "Re-import"
+msgstr ""
+
+msgid "Re-import with projects"
+msgstr ""
+
+msgid "Re-import without projects"
 msgstr ""
 
 msgid "Re-request review"
