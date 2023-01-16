@@ -1454,8 +1454,7 @@ has not been retried. `1` means that it's the first retry.
 
 ### Pipeline name
 
-> - `commit.name` [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/107963) in GitLab 15.8 [with a flag](../../../administration/feature_flags.md) named `pipeline_name`. Enabled by default.
-> - [Generally available](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/108774) in GitLab 15.8. Feature flag `pipeline_name` removed.
+> `commit.name` [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/107963) in GitLab 15.8.
 
 You can set custom names for pipelines with [`workflow:name`](../../../ci/yaml/index.md#workflowname).
 If the pipeline has a name, that name is the value of `commit.name`.
