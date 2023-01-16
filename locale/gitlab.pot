@@ -36368,6 +36368,9 @@ msgstr ""
 msgid "Runners|Jobs"
 msgstr ""
 
+msgid "Runners|Jobs in projects you have access to."
+msgstr ""
+
 msgid "Runners|Last contact"
 msgstr ""
 
