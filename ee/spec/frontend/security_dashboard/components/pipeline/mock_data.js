@@ -354,6 +354,12 @@ export const pipelineSecurityReportSummaryEmpty = merge({}, pipelineSecurityRepo
   },
 });
 
+export const vulnerabilityDetailUrl = {
+  type: 'VulnerabilityDetailUrl',
+  href: 'http://google.com',
+  name: 'GitLab',
+};
+
 export const pipelineSecurityReportFinding = {
   uuid: '1',
   title: 'Vulnerability title',
@@ -420,6 +426,7 @@ export const pipelineSecurityReportFinding = {
     { url: 'http://example.com/asset-1', name: 'assets name - 1' },
     { url: 'http://example.com/asset-2', name: 'assets name - 2' },
   ],
+  details: [vulnerabilityDetailUrl],
 };
 
 export const getPipelineSecurityReportFindingResponse = (withoutFindingData = false) => ({
