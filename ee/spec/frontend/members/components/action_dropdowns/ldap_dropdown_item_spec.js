@@ -2,7 +2,7 @@ import { GlDropdownItem } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import LdapDropdownItem from 'ee/members/components/ldap/ldap_dropdown_item.vue';
+import LdapDropdownItem from 'ee/members/components/action_dropdowns/ldap_dropdown_item.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { MEMBER_TYPES } from '~/members/constants';
 
