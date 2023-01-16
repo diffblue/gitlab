@@ -11,6 +11,7 @@ export const environmentTierDocumentationHref = helpPagePath('ci/environments/in
 export const LAST_WEEK = 'LAST_WEEK';
 export const LAST_MONTH = 'LAST_MONTH';
 export const LAST_90_DAYS = 'LAST_90_DAYS';
+export const LAST_180_DAYS = 'LAST_180_DAYS';
 /* eslint-enable @gitlab/require-i18n-strings */
 
 // Compute all relative dates based on the _beginning_ of today.
@@ -25,6 +26,7 @@ const startOfTomorrow = dayAfter(startOfToday, { utc: true });
 const lastWeek = nDaysBefore(startOfTomorrow, 7, { utc: true });
 const lastMonth = nMonthsBefore(startOfTomorrow, 1, { utc: true });
 const last90Days = nDaysBefore(startOfTomorrow, 90, { utc: true });
+const last180Days = nDaysBefore(startOfTomorrow, 180, { utc: true });
 const apiDateFormatString = 'isoDateTime';
 const titleDateFormatString = 'mmm d';
 const sharedRequestParams = {
@@ -42,14 +44,18 @@ export const averageSeriesOptions = {
   },
 };
 
+const formatDateRangeString = (startDate) => {
+  return sprintf(s__('DORA4Metrics|%{startDate} - %{endDate}'), {
+    startDate: dateFormat(startDate, titleDateFormatString, true),
+    endDate: dateFormat(startOfToday, titleDateFormatString, true),
+  });
+};
+
 export const allChartDefinitions = [
   {
     id: LAST_WEEK,
     title: __('Last week'),
-    range: sprintf(s__('DORA4Metrics|%{startDate} - %{endDate}'), {
-      startDate: dateFormat(lastWeek, titleDateFormatString, true),
-      endDate: dateFormat(startOfToday, titleDateFormatString, true),
-    }),
+    range: formatDateRangeString(lastWeek),
     startDate: lastWeek,
     endDate: startOfTomorrow,
     requestParams: {
@@ -60,10 +66,7 @@ export const allChartDefinitions = [
   {
     id: LAST_MONTH,
     title: __('Last month'),
-    range: sprintf(s__('DORA4Metrics|%{startDate} - %{endDate}'), {
-      startDate: dateFormat(lastMonth, titleDateFormatString, true),
-      endDate: dateFormat(startOfToday, titleDateFormatString, true),
-    }),
+    range: formatDateRangeString(lastMonth),
     startDate: lastMonth,
     endDate: startOfTomorrow,
     requestParams: {
@@ -74,15 +77,23 @@ export const allChartDefinitions = [
   {
     id: LAST_90_DAYS,
     title: __('Last 90 days'),
-    range: sprintf(s__('DORA4Metrics|%{startDate} - %{endDate}'), {
-      startDate: dateFormat(last90Days, titleDateFormatString, true),
-      endDate: dateFormat(startOfToday, titleDateFormatString, true),
-    }),
+    range: formatDateRangeString(last90Days),
     startDate: last90Days,
     endDate: startOfTomorrow,
     requestParams: {
       ...sharedRequestParams,
       start_date: dateFormat(last90Days, apiDateFormatString, true),
+    },
+  },
+  {
+    id: LAST_180_DAYS,
+    title: __('Last 180 days'),
+    range: formatDateRangeString(last180Days),
+    startDate: last180Days,
+    endDate: startOfTomorrow,
+    requestParams: {
+      ...sharedRequestParams,
+      start_date: dateFormat(last180Days, apiDateFormatString, true),
     },
   },
 ];

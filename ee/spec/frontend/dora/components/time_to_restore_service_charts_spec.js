@@ -4,6 +4,7 @@ import MockAdapter from 'axios-mock-adapter';
 import lastWeekData from 'test_fixtures/api/dora/metrics/daily_time_to_restore_service_for_last_week.json';
 import lastMonthData from 'test_fixtures/api/dora/metrics/daily_time_to_restore_service_for_last_month.json';
 import last90DaysData from 'test_fixtures/api/dora/metrics/daily_time_to_restore_service_for_last_90_days.json';
+import last180DaysData from 'test_fixtures/api/dora/metrics/daily_time_to_restore_service_for_last_180_days.json';
 import { useFixturesFakeDate } from 'helpers/fake_date';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
@@ -48,7 +49,7 @@ describe('time_to_restore_service_charts.vue', () => {
     wrapper = extendedWrapper(shallowMount(TimeToRestoreServiceCharts, mountOptions));
   };
 
-  const setUpMockDeploymentFrequencies = ({ start_date, data }) => {
+  const setUpMockTimetoRestoreService = ({ start_date, data }) => {
     mock
       .onGet(/projects\/test%2Fproject\/dora\/metrics/, {
         params: {
@@ -73,17 +74,21 @@ describe('time_to_restore_service_charts.vue', () => {
     beforeEach(async () => {
       mock = new MockAdapter(axios);
 
-      setUpMockDeploymentFrequencies({
+      setUpMockTimetoRestoreService({
         start_date: '2015-06-27T00:00:00+0000',
         data: lastWeekData,
       });
-      setUpMockDeploymentFrequencies({
+      setUpMockTimetoRestoreService({
         start_date: '2015-06-04T00:00:00+0000',
         data: lastMonthData,
       });
-      setUpMockDeploymentFrequencies({
+      setUpMockTimetoRestoreService({
         start_date: '2015-04-05T00:00:00+0000',
         data: last90DaysData,
+      });
+      setUpMockTimetoRestoreService({
+        start_date: '2015-01-05T00:00:00+0000',
+        data: last180DaysData,
       });
 
       createComponent();
@@ -91,8 +96,8 @@ describe('time_to_restore_service_charts.vue', () => {
       await axios.waitForAll();
     });
 
-    it('makes 3 GET requests - one for each chart', () => {
-      expect(mock.history.get).toHaveLength(3);
+    it('makes 4 GET requests - one for each chart', () => {
+      expect(mock.history.get).toHaveLength(4);
     });
 
     it('does not show a flash message', () => {
@@ -160,6 +165,7 @@ describe('time_to_restore_service_charts.vue', () => {
         'Error: Request failed with status code 404',
         'Error: Request failed with status code 404',
         'Error: Request failed with status code 404',
+        'Error: Request failed with status code 404',
       ].join('\n');
 
       expect(captureExceptionSpy).toHaveBeenCalledWith(new Error(expectedErrorMessage));
@@ -186,7 +192,7 @@ describe('time_to_restore_service_charts.vue', () => {
       });
 
       it('makes a call to the project API endpoint', () => {
-        expect(mock.history.get).toHaveLength(3);
+        expect(mock.history.get).toHaveLength(4);
         expect(mock.history.get[0].url).toMatch('/projects/test%2Fproject/dora/metrics');
       });
 
@@ -207,7 +213,7 @@ describe('time_to_restore_service_charts.vue', () => {
       });
 
       it('makes a call to the group API endpoint', () => {
-        expect(mock.history.get).toHaveLength(3);
+        expect(mock.history.get).toHaveLength(4);
         expect(mock.history.get[0].url).toMatch('/groups/test%2Fgroup/dora/metrics');
       });
 
