@@ -11,9 +11,10 @@ import {
 import { mockDataMembers } from 'ee_jest/pending_members/mock_data';
 import testAction from 'helpers/vuex_action_helper';
 import axios from '~/lib/utils/axios_utils';
-import httpStatusCodes, {
+import {
   HTTP_STATUS_NO_CONTENT,
   HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_OK,
 } from '~/lib/utils/http_status';
 
 describe('Pending members actions', () => {
@@ -55,7 +56,7 @@ describe('Pending members actions', () => {
       beforeEach(() => {
         mock
           .onGet('/api/v4/groups/1/pending_members')
-          .replyOnce(httpStatusCodes.OK, mockDataMembers.data, mockDataMembers.headers);
+          .replyOnce(HTTP_STATUS_OK, mockDataMembers.data, mockDataMembers.headers);
       });
 
       it('dispatches the request and success action', () => {

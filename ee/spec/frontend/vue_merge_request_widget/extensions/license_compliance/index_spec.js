@@ -6,7 +6,7 @@ import extensionsContainer from '~/vue_merge_request_widget/components/extension
 import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
 import ActionButtons from '~/vue_merge_request_widget/components/action_buttons.vue';
 import licenseComplianceExtension from 'ee/vue_merge_request_widget/extensions/license_compliance';
-import httpStatusCodes, { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import {
   licenseComplianceNewLicenses,
   licenseComplianceSuccessExpanded,
@@ -77,7 +77,7 @@ describe('License Compliance extension', () => {
 
   describe('summary', () => {
     it('displays loading text', () => {
-      mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceNewLicenses);
+      mockApi(licenseComparisonPathCollapsed, HTTP_STATUS_OK, licenseComplianceNewLicenses);
 
       createComponent();
 
@@ -108,7 +108,7 @@ describe('License Compliance extension', () => {
     `(
       'the $scenario scenario expects the message to be "$message"',
       async ({ response, message, isExpandable }) => {
-        mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, response);
+        mockApi(licenseComparisonPathCollapsed, HTTP_STATUS_OK, response);
         createComponent();
 
         await waitForPromises();
@@ -121,7 +121,7 @@ describe('License Compliance extension', () => {
 
   describe('actions buttons', () => {
     it('displays manage licenses and full report links', async () => {
-      mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceNewLicenses);
+      mockApi(licenseComparisonPathCollapsed, HTTP_STATUS_OK, licenseComplianceNewLicenses);
 
       createComponent();
 
@@ -137,7 +137,7 @@ describe('License Compliance extension', () => {
     });
 
     it('hides the manage licenses button when URL is not available', async () => {
-      mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceNewLicenses);
+      mockApi(licenseComparisonPathCollapsed, HTTP_STATUS_OK, licenseComplianceNewLicenses);
 
       createComponent({
         license_scanning: {
@@ -160,8 +160,8 @@ describe('License Compliance extension', () => {
   describe('expanded data', () => {
     describe('with new licenses', () => {
       beforeEach(async () => {
-        mockApi(licenseComparisonPathCollapsed, httpStatusCodes.OK, licenseComplianceNewLicenses);
-        mockApi(licenseComparisonPath, httpStatusCodes.OK, licenseComplianceSuccessExpanded);
+        mockApi(licenseComparisonPathCollapsed, HTTP_STATUS_OK, licenseComplianceNewLicenses);
+        mockApi(licenseComparisonPath, HTTP_STATUS_OK, licenseComplianceSuccessExpanded);
 
         createComponent();
 

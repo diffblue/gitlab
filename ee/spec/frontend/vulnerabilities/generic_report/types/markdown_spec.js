@@ -4,7 +4,7 @@ import MockAdapter from 'axios-mock-adapter';
 import Markdown from 'ee/vulnerabilities/components/generic_report/types/markdown.vue';
 import { buildApiUrl } from '~/api/api_utils';
 import axios from '~/lib/utils/axios_utils';
-import httpStatusCodes from '~/lib/utils/http_status';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 const MARKDOWN_PATH = '/api/:version/markdown';
 
@@ -39,7 +39,7 @@ describe('ee/vulnerabilities/components/generic_report/types/markdown.vue', () =
         text: MARKDOWN,
         gfm: true,
       })
-      .replyOnce(httpStatusCodes.OK, { html: RENDERED_MARKDOWN });
+      .replyOnce(HTTP_STATUS_OK, { html: RENDERED_MARKDOWN });
   };
 
   beforeEach(() => {

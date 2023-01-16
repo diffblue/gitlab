@@ -5,7 +5,7 @@ import axios from '~/lib/utils/axios_utils';
 import extensionsContainer from '~/vue_merge_request_widget/components/extensions/container';
 import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
 import securityReportsExtension from 'ee/vue_merge_request_widget/extensions/security_reports';
-import httpStatusCodes, { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { addedResponse, emptyResponse, fixedResponse } from './mock_data';
 
 describe('License Compliance extension', () => {
@@ -61,7 +61,7 @@ describe('License Compliance extension', () => {
 
   describe('summary', () => {
     it('displays loading text', () => {
-      mockAllApiCalls(httpStatusCodes.OK, emptyResponse());
+      mockAllApiCalls(HTTP_STATUS_OK, emptyResponse());
       createComponent();
       expect(wrapper.text()).toBe('Security scanning is loading');
     });
@@ -74,12 +74,12 @@ describe('License Compliance extension', () => {
     });
 
     it('displays the summary correctly', async () => {
-      mock.onGet(sastEndpoint).reply(httpStatusCodes.OK, addedResponse());
-      mock.onGet(dastEndpoint).reply(httpStatusCodes.OK, fixedResponse());
-      mock.onGet(secretDetectionEndpoint).reply(httpStatusCodes.OK, emptyResponse());
-      mock.onGet(apiFuzzingEndpoint).reply(httpStatusCodes.OK, addedResponse());
-      mock.onGet(coverageFuzzingEndpoint).reply(httpStatusCodes.OK, emptyResponse());
-      mock.onGet(dependencyScanningEndpoint).reply(httpStatusCodes.OK, emptyResponse());
+      mock.onGet(sastEndpoint).reply(HTTP_STATUS_OK, addedResponse());
+      mock.onGet(dastEndpoint).reply(HTTP_STATUS_OK, fixedResponse());
+      mock.onGet(secretDetectionEndpoint).reply(HTTP_STATUS_OK, emptyResponse());
+      mock.onGet(apiFuzzingEndpoint).reply(HTTP_STATUS_OK, addedResponse());
+      mock.onGet(coverageFuzzingEndpoint).reply(HTTP_STATUS_OK, emptyResponse());
+      mock.onGet(dependencyScanningEndpoint).reply(HTTP_STATUS_OK, emptyResponse());
       createComponent();
       await waitForPromises();
       expect(wrapper.text()).toContain(

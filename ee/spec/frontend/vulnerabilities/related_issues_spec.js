@@ -4,7 +4,7 @@ import { nextTick } from 'vue';
 import RelatedIssues from 'ee/vulnerabilities/components/related_issues.vue';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-import httpStatusCodes, { HTTP_STATUS_SERVICE_UNAVAILABLE } from '~/lib/utils/http_status';
+import { HTTP_STATUS_OK, HTTP_STATUS_SERVICE_UNAVAILABLE } from '~/lib/utils/http_status';
 import * as urlUtility from '~/lib/utils/url_utility';
 import RelatedIssuesBlock from '~/related_issues/components/related_issues_block.vue';
 import { issuableTypesMap, PathIdSeparator } from '~/related_issues/constants';
@@ -97,7 +97,7 @@ describe('Vulnerability related issues component', () => {
 
   describe('fetch related issues', () => {
     it('fetches related issues when the component is created', async () => {
-      mockAxios.onGet(propsData.endpoint).replyOnce(httpStatusCodes.OK, [issue1, issue2]);
+      mockAxios.onGet(propsData.endpoint).replyOnce(HTTP_STATUS_OK, [issue1, issue2]);
       createWrapper();
       await axios.waitForAll();
 
@@ -117,14 +117,14 @@ describe('Vulnerability related issues component', () => {
 
   describe('add related issue', () => {
     beforeEach(() => {
-      mockAxios.onGet(propsData.endpoint).replyOnce(httpStatusCodes.OK, []);
+      mockAxios.onGet(propsData.endpoint).replyOnce(HTTP_STATUS_OK, []);
       createWrapper({ data: { isFormVisible: true } });
     });
 
     it('adds related issue with vulnerabilityLinkId populated', async () => {
       mockAxios
         .onPost(propsData.endpoint)
-        .replyOnce(httpStatusCodes.OK, { issue: {}, id: issue1.vulnerabilityLinkId });
+        .replyOnce(HTTP_STATUS_OK, { issue: {}, id: issue1.vulnerabilityLinkId });
       blockEmit('addIssuableFormSubmit', { pendingReferences: '#1' });
       await axios.waitForAll();
 
@@ -138,7 +138,7 @@ describe('Vulnerability related issues component', () => {
     });
 
     it('adds multiple issues', async () => {
-      mockAxios.onPost(propsData.endpoint).reply(httpStatusCodes.OK, { issue: {} });
+      mockAxios.onPost(propsData.endpoint).reply(HTTP_STATUS_OK, { issue: {} });
       blockEmit('addIssuableFormSubmit', { pendingReferences: '#1 #2 #3' });
       await axios.waitForAll();
 
@@ -151,11 +151,11 @@ describe('Vulnerability related issues component', () => {
     it('adds only issues that returns issue', async () => {
       mockAxios
         .onPost(propsData.endpoint)
-        .replyOnce(httpStatusCodes.OK, { issue: {} })
+        .replyOnce(HTTP_STATUS_OK, { issue: {} })
         .onPost(propsData.endpoint)
         .replyOnce(HTTP_STATUS_SERVICE_UNAVAILABLE)
         .onPost(propsData.endpoint)
-        .replyOnce(httpStatusCodes.OK, { issue: {} })
+        .replyOnce(HTTP_STATUS_OK, { issue: {} })
         .onPost(propsData.endpoint)
         .replyOnce(HTTP_STATUS_SERVICE_UNAVAILABLE);
       blockEmit('addIssuableFormSubmit', { pendingReferences: '#1 #2 #3 #4' });
@@ -235,7 +235,7 @@ describe('Vulnerability related issues component', () => {
 
   describe('remove related issue', () => {
     beforeEach(async () => {
-      mockAxios.onGet(propsData.endpoint).replyOnce(httpStatusCodes.OK, [issue1, issue2]);
+      mockAxios.onGet(propsData.endpoint).replyOnce(HTTP_STATUS_OK, [issue1, issue2]);
       createWrapper();
       await axios.waitForAll();
     });
@@ -243,7 +243,7 @@ describe('Vulnerability related issues component', () => {
     it('removes related issue', async () => {
       mockAxios
         .onDelete(`${propsData.endpoint}/${issue1.vulnerabilityLinkId}`)
-        .replyOnce(httpStatusCodes.OK);
+        .replyOnce(HTTP_STATUS_OK);
       blockEmit('relatedIssueRemoveRequest', issue1.id);
       await axios.waitForAll();
 
@@ -285,7 +285,7 @@ describe('Vulnerability related issues component', () => {
 
     beforeEach(async () => {
       redirectToSpy = jest.spyOn(urlUtility, 'redirectTo').mockImplementation(() => {});
-      mockAxios.onGet(propsData.endpoint).replyOnce(httpStatusCodes.OK, [issue1, issue2]);
+      mockAxios.onGet(propsData.endpoint).replyOnce(HTTP_STATUS_OK, [issue1, issue2]);
       createWrapper({ stubs: { RelatedIssuesBlock } });
       await axios.waitForAll();
     });
