@@ -28,7 +28,7 @@ export default {
   IssuableType,
   deleteModalId: 'delete-modal-id',
   directives: {
-    GlTooltipDirective,
+    GlTooltip: GlTooltipDirective,
     GlModal: GlModalDirective,
   },
   components: {
@@ -192,11 +192,14 @@ export default {
 
       <gl-dropdown
         v-if="canCreate || canDestroy"
+        v-gl-tooltip.hover
         class="gl-display-none gl-sm-display-inline-flex! gl-ml-3"
         icon="ellipsis_v"
         category="tertiary"
         :text="$options.i18n.dropdownText"
         :text-sr-only="true"
+        :title="$options.i18n.dropdownText"
+        :aria-label="$options.i18n.dropdownText"
         no-caret
         right
         data-testid="desktop-dropdown"
