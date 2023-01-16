@@ -116,7 +116,6 @@ RSpec.describe Notes::CreateService do
       end
 
       context "with reviewers quick actions" do
-        let(:feature_flag_hash) { { limit_reviewer_and_assignee_size: false } }
         let(:update_service) { MergeRequests::UpdateService }
         let(:noteable_type) { 'MergeRequest' }
 
@@ -127,7 +126,6 @@ RSpec.describe Notes::CreateService do
             "/assign_reviewer #{user1.to_reference} #{user2.to_reference} #{user3.to_reference}"
           end
 
-          it_behaves_like 'does not exceed the issuable size limit with ff off'
           it_behaves_like 'does not exceed the issuable size limit'
         end
 
@@ -141,7 +139,6 @@ RSpec.describe Notes::CreateService do
             HEREDOC
           end
 
-          it_behaves_like 'does not exceed the issuable size limit with ff off'
           it_behaves_like 'does not exceed the issuable size limit'
         end
       end
