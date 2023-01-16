@@ -16,7 +16,7 @@ import {
   I18N_VSA_ERROR_SELECTED_STAGE,
 } from '~/analytics/cycle_analytics/constants';
 import { createAlert } from '~/flash';
-import httpStatusCodes, { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
+import { HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import {
   allowedStages as stages,
   customizableStagesAndEvents,
@@ -110,7 +110,7 @@ describe('Value Stream Analytics actions / stages', () => {
     beforeEach(() => {
       state = { ...state, currentGroup };
       mock = new MockAdapter(axios);
-      mock.onGet(endpoints.stageData).reply(httpStatusCodes.OK, stageData, headers);
+      mock.onGet(endpoints.stageData).reply(HTTP_STATUS_OK, stageData, headers);
     });
 
     it(`commits ${types.RECEIVE_STAGE_DATA_SUCCESS} with received data and headers on success`, () => {
@@ -137,7 +137,7 @@ describe('Value Stream Analytics actions / stages', () => {
         mock = new MockAdapter(axios);
         mock
           .onGet(endpoints.stageData)
-          .reply(httpStatusCodes.OK, { events: [] }, { ...headers, 'X-Next-Page': null });
+          .reply(HTTP_STATUS_OK, { events: [] }, { ...headers, 'X-Next-Page': null });
       });
 
       it('sets hasNextPage to false', () => {
@@ -226,7 +226,7 @@ describe('Value Stream Analytics actions / stages', () => {
     beforeEach(() => {
       state = { ...state, stages, currentGroup };
       mock = new MockAdapter(axios);
-      mock.onGet(endpoints.stageMedian).reply(httpStatusCodes.OK, { events: [] });
+      mock.onGet(endpoints.stageMedian).reply(HTTP_STATUS_OK, { events: [] });
       mockDispatch = jest.fn();
     });
 
@@ -259,12 +259,12 @@ describe('Value Stream Analytics actions / stages', () => {
         });
     });
 
-    describe(`Status ${httpStatusCodes.OK} and error message in response`, () => {
+    describe(`Status ${HTTP_STATUS_OK} and error message in response`, () => {
       const dataError = 'Too much data';
       const payload = activeStages.map(({ id }) => ({ value: null, id, error: dataError }));
 
       beforeEach(() => {
-        mock.onGet(endpoints.stageMedian).reply(httpStatusCodes.OK, { error: dataError });
+        mock.onGet(endpoints.stageMedian).reply(HTTP_STATUS_OK, { error: dataError });
       });
 
       it(`dispatches the 'RECEIVE_STAGE_MEDIANS_SUCCESS' with ${dataError}`, () => {
@@ -330,7 +330,7 @@ describe('Value Stream Analytics actions / stages', () => {
         featureFlags: state.featureFlags,
       };
       mock = new MockAdapter(axios);
-      mock.onGet(endpoints.stageCount).reply(httpStatusCodes.OK, { events: [] });
+      mock.onGet(endpoints.stageCount).reply(HTTP_STATUS_OK, { events: [] });
     });
 
     it('dispatches receiveStageCountValuesSuccess with received data on success', () => {
@@ -396,9 +396,7 @@ describe('Value Stream Analytics actions / stages', () => {
     beforeEach(() => {
       state = { ...state, ...mockGetters };
       mock = new MockAdapter(axios);
-      mock
-        .onGet(endpoints.baseStagesEndpoint)
-        .reply(httpStatusCodes.OK, customizableStagesAndEvents);
+      mock.onGet(endpoints.baseStagesEndpoint).reply(HTTP_STATUS_OK, customizableStagesAndEvents);
     });
 
     it(`commits ${types.RECEIVE_STAGE_DATA_SUCCESS} with received data and headers on success`, () => {
