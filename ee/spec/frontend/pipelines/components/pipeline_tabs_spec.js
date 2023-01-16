@@ -18,7 +18,7 @@ describe('The Pipeline Tabs', () => {
   const findSecurityTab = () => wrapper.findByTestId('security-tab');
   const findTestsTab = () => wrapper.findByTestId('tests-tab');
   const getLicenseCount = () => wrapper.findByTestId('license-counter').text();
-  const getCodequalityCount = () => wrapper.findByTestId('codequality-counter').text();
+  const getCodequalityCount = () => wrapper.findByTestId('codequality-counter');
   const findCodeQualityRouterView = () => wrapper.findComponent({ ref: 'router-view-codequality' });
   const findLicensesRouterView = () => wrapper.findComponent({ ref: 'router-view-licenses' });
 
@@ -156,12 +156,20 @@ describe('The Pipeline Tabs', () => {
 
     it('updates the codequality badge after a new count has been emitted', async () => {
       const newLicenseCount = 100;
-      expect(getCodequalityCount()).toBe('0');
+      expect(getCodequalityCount().exists()).toBe(false);
 
       findCodeQualityRouterView().vm.$emit('updateBadgeCount', newLicenseCount);
       await nextTick();
 
-      expect(getCodequalityCount()).toBe(`${newLicenseCount}`);
+      expect(getCodequalityCount().text()).toBe(`${newLicenseCount}`);
+    });
+
+    it('shows the correct codequality badge when the count is 0', async () => {
+      const newLicenseCount = 0;
+      findCodeQualityRouterView().vm.$emit('updateBadgeCount', newLicenseCount);
+      await nextTick();
+
+      expect(getCodequalityCount().text()).toBe(`${newLicenseCount}`);
     });
   });
 

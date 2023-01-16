@@ -38,7 +38,8 @@ export default {
   data() {
     return {
       activeTab: this.defaultTabValue,
-      codeQualityCount: 0,
+      codeQualityCount: undefined,
+      codeQualityCountFetched: false,
       licenseCount: 0,
     };
   },
@@ -69,6 +70,7 @@ export default {
       this.$router.push({ name: tabName });
     },
     updateCodeQualityCount(count) {
+      this.codeQualityCountFetched = true;
       this.codeQualityCount = count;
     },
     updateLicenseCount(count) {
@@ -128,7 +130,9 @@ export default {
     >
       <template #title>
         <span class="gl-mr-2">{{ $options.i18n.tabs.codeQualityTitle }}</span>
-        <gl-badge size="sm" data-testid="codequality-counter">{{ codeQualityCount }}</gl-badge>
+        <gl-badge v-if="codeQualityCountFetched" size="sm" data-testid="codequality-counter">{{
+          codeQualityCount
+        }}</gl-badge>
       </template>
 
       <router-view ref="router-view-codequality" @updateBadgeCount="updateCodeQualityCount" />
