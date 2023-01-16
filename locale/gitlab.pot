@@ -9863,7 +9863,7 @@ msgstr ""
 msgid "Code Quality"
 msgstr ""
 
-msgid "Code Quality scans found %{degradation} and fixed %{improvement}."
+msgid "Code Quality scans found %{degradation} and %{improvement}."
 msgstr ""
 
 msgid "Code Quality scans found %{findings}."
