@@ -12348,12 +12348,6 @@ msgstr ""
 msgid "DORA4Metrics|Cycle time"
 msgstr ""
 
-msgid "DORA4Metrics|DORA metrics for %{name} group"
-msgstr ""
-
-msgid "DORA4Metrics|DORA metrics for %{name} project"
-msgstr ""
-
 msgid "DORA4Metrics|Date"
 msgstr ""
 
@@ -12403,6 +12397,12 @@ msgid "DORA4Metrics|Median time from issue created to issue closed."
 msgstr ""
 
 msgid "DORA4Metrics|Median time from the earliest commit of a linked issue's merge request to when that issue is closed."
+msgstr ""
+
+msgid "DORA4Metrics|Metrics comparison for %{name} group"
+msgstr ""
+
+msgid "DORA4Metrics|Metrics comparison for %{name} project"
 msgstr ""
 
 msgid "DORA4Metrics|Month to date"
@@ -14241,9 +14241,6 @@ msgid "DevOps Reports"
 msgstr ""
 
 msgid "DevOps adoption"
-msgstr ""
-
-msgid "DevOps metrics comparison (Beta)"
 msgstr ""
 
 msgid "Developer"
@@ -45995,6 +45992,9 @@ msgid "Value Stream Analytics"
 msgstr ""
 
 msgid "Value Stream Analytics can help you determine your team’s velocity"
+msgstr ""
+
+msgid "Value Streams Dashboard (Beta)"
 msgstr ""
 
 msgid "Value might contain a variable reference"

@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlSprintf, GlLink, GlAlert } from '@gitlab/ui';
+import { DASHBOARD_TITLE } from 'ee/analytics/dashboards/constants';
 import Component from 'ee/analytics/dashboards/components/app.vue';
 import ComparisonChart from 'ee/analytics/dashboards/components/comparison_chart.vue';
 import { mockChartConfig } from '../mock_data';
@@ -34,7 +35,7 @@ describe('Executive dashboard app', () => {
     });
 
     it('renders the page title', () => {
-      expect(wrapper.text()).toContain('DevOps metrics comparison (Beta)');
+      expect(wrapper.text()).toContain(DASHBOARD_TITLE);
     });
 
     it('renders a chart component for each config', () => {
