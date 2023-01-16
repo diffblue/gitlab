@@ -174,6 +174,20 @@ With external authorization enabled, personal access tokens (PATs) and deploy to
 
 <div class="deprecation removal-160 breaking-change">
 
+### Null value for `private_profile` attribute in User API is deprecated
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+When creating and updating users through the API, `null` was a valid value for the `private_profile` attribute, which would internally be converted to the default value. Starting with 16.0, `null` will no longer be a valid value for this parameter, and the response will be a 400 if used. Now the only valid values are `true` and `false`.
+
+</div>
+
+<div class="deprecation removal-160 breaking-change">
+
 ### Owner permissions are required to update Package settings
 
 Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
