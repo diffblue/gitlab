@@ -1,9 +1,7 @@
 import { GlIcon } from '@gitlab/ui';
 import { stubComponent } from 'helpers/stub_component';
 import SecurityTrainingPromo from 'ee/vue_shared/security_reports/components/security_training_promo.vue';
-import SecurityTraininPromoWidget, {
-  i18n,
-} from 'ee/vue_merge_request_widget/extensions/security_reports/security_training_promo_widget.vue';
+import SecurityTraininPromoWidget from 'ee/vue_merge_request_widget/extensions/security_reports/security_training_promo_widget.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 const dismissSpy = jest.fn();
@@ -60,11 +58,17 @@ describe('Security training promo widget component', () => {
   });
 
   it('renders the title', () => {
-    expect(wrapper.findByText(i18n.title).exists()).toBe(true);
+    expect(wrapper.findByText('Resolve with security training').exists()).toBe(true);
   });
 
   it('renders the description', () => {
-    expect(wrapper.findByText(i18n.content).exists()).toBe(true);
+    expect(
+      wrapper
+        .findByText(
+          'Enable security training to learn how to fix vulnerabilities. View security training from selected educational providers relevant to the detected vulnerability.',
+        )
+        .exists(),
+    ).toBe(true);
   });
 
   it('renders the icons', () => {
@@ -107,7 +111,7 @@ describe('Security training promo widget component', () => {
     });
 
     it('renders the correct text', () => {
-      expect(findCancelButton().text()).toBe(i18n.buttonCancel);
+      expect(findCancelButton().text()).toBe("Don't show again");
     });
 
     it('should trigger the dismiss method when it is clicked', () => {
