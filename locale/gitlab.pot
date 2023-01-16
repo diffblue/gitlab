@@ -22449,9 +22449,6 @@ msgstr ""
 msgid "Integrations|Add namespace"
 msgstr ""
 
-msgid "Integrations|Adding a namespace only works in browsers that allow cross-site cookies. %{linkStart}Learn more%{linkEnd}."
-msgstr ""
-
 msgid "Integrations|All details"
 msgstr ""
 
@@ -22572,9 +22569,6 @@ msgstr ""
 msgid "Integrations|Keep your PHP dependencies updated on Packagist."
 msgstr ""
 
-msgid "Integrations|Known limitations"
-msgstr ""
-
 msgid "Integrations|Link namespaces"
 msgstr ""
 
@@ -22651,9 +22645,6 @@ msgid "Integrations|Standard"
 msgstr ""
 
 msgid "Integrations|There are no projects using custom settings"
-msgstr ""
-
-msgid "Integrations|This integration only works with GitLab.com. Adding a namespace only works in browsers that allow cross-site cookies. %{linkStart}Learn more%{linkEnd}."
 msgstr ""
 
 msgid "Integrations|This integration, and inheriting projects were reset."
