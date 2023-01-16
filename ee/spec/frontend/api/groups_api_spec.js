@@ -2,7 +2,7 @@ import MockAdapter from 'axios-mock-adapter';
 import * as GroupsApi from 'ee/api/groups_api';
 import { DEFAULT_PER_PAGE } from '~/api';
 import axios from '~/lib/utils/axios_utils';
-import httpStatus from '~/lib/utils/http_status';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 describe('GroupsApi', () => {
   const dummyApiVersion = 'v3000';
@@ -34,7 +34,7 @@ describe('GroupsApi', () => {
 
       it('GETs the right url', async () => {
         jest.spyOn(axios, 'get');
-        mock.onGet(expectedUrl).replyOnce(httpStatus.OK, []);
+        mock.onGet(expectedUrl).replyOnce(HTTP_STATUS_OK, []);
 
         const { data } = await GroupsApi.fetchBillableGroupMembersList(namespaceId);
 
@@ -50,7 +50,7 @@ describe('GroupsApi', () => {
 
       it('fetches memberships for the member', async () => {
         jest.spyOn(axios, 'get');
-        mock.onGet(expectedUrl).replyOnce(httpStatus.OK, []);
+        mock.onGet(expectedUrl).replyOnce(HTTP_STATUS_OK, []);
 
         const { data } = await GroupsApi.fetchBillableGroupMemberMemberships(namespaceId, memberId);
 
@@ -64,7 +64,7 @@ describe('GroupsApi', () => {
 
       it('removes a billable member from a group', async () => {
         jest.spyOn(axios, 'delete');
-        mock.onDelete(expectedUrl).replyOnce(httpStatus.OK, []);
+        mock.onDelete(expectedUrl).replyOnce(HTTP_STATUS_OK, []);
 
         const { data } = await GroupsApi.removeBillableMemberFromGroup(namespaceId, memberId);
 
@@ -79,7 +79,7 @@ describe('GroupsApi', () => {
 
     it('sends GET request using the right URL', async () => {
       jest.spyOn(axios, 'get');
-      mock.onGet(expectedUrl).replyOnce(httpStatus.OK, []);
+      mock.onGet(expectedUrl).replyOnce(HTTP_STATUS_OK, []);
 
       const { data } = await GroupsApi.fetchPendingGroupMembersList(namespaceId);
 
@@ -95,7 +95,7 @@ describe('GroupsApi', () => {
 
     it('approves a pending member from a group', async () => {
       jest.spyOn(axios, 'put');
-      mock.onPut(expectedUrl).replyOnce(httpStatus.OK, []);
+      mock.onPut(expectedUrl).replyOnce(HTTP_STATUS_OK, []);
 
       const { data } = await GroupsApi.approvePendingGroupMember(namespaceId, memberId);
 
@@ -109,7 +109,7 @@ describe('GroupsApi', () => {
 
     beforeEach(() => {
       jest.spyOn(axios, 'put');
-      mock.onPut(expectedUrl).replyOnce(httpStatus.OK, {});
+      mock.onPut(expectedUrl).replyOnce(HTTP_STATUS_OK, {});
     });
 
     it('sends PUT request to the correct URL with the correct payload', async () => {

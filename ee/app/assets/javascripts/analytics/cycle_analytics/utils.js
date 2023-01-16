@@ -9,9 +9,10 @@ import { createAlert } from '~/flash';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { newDate, dayAfter, secondsToDays, getDatesInRange } from '~/lib/utils/datetime_utility';
 import { isNumeric } from '~/lib/utils/number_utils';
-import httpStatus, {
+import {
   HTTP_STATUS_FORBIDDEN,
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_OK,
 } from '~/lib/utils/http_status';
 
 const EVENT_TYPE_LABEL = 'label';
@@ -318,7 +319,7 @@ const buildDataError = ({ status = HTTP_STATUS_INTERNAL_SERVER_ERROR, error }) =
  * @param {String} errorMessage - Error message to display
  */
 export const flashErrorIfStatusNotOk = ({ error, message }) => {
-  if (error?.errorCode !== httpStatus.OK) {
+  if (error?.errorCode !== HTTP_STATUS_OK) {
     createAlert({
       message,
     });

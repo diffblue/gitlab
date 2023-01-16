@@ -1,7 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
 import * as SubscriptionsApi from 'ee/api/subscriptions_api';
 import axios from '~/lib/utils/axios_utils';
-import httpStatus from '~/lib/utils/http_status';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 describe('SubscriptionsApi', () => {
   let mock;
@@ -44,7 +44,7 @@ describe('SubscriptionsApi', () => {
 
       it('sends hand raise lead parameters', async () => {
         jest.spyOn(axios, 'post');
-        mock.onPost(expectedUrl).replyOnce(httpStatus.OK, []);
+        mock.onPost(expectedUrl).replyOnce(HTTP_STATUS_OK, []);
 
         const { data } = await SubscriptionsApi.sendHandRaiseLead(params);
 

@@ -1,6 +1,6 @@
 import Visibility from 'visibilityjs';
 import axios from '~/lib/utils/axios_utils';
-import httpStatusCodes from '~/lib/utils/http_status';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import Poll from '~/lib/utils/poll';
 import * as types from './mutation_types';
 
@@ -65,7 +65,7 @@ export const fetchMetrics = ({ state, dispatch }) => {
 };
 
 export const receiveMetricsSuccess = ({ commit, dispatch }, { status, data }) => {
-  if (status === httpStatusCodes.OK) {
+  if (status === HTTP_STATUS_OK) {
     commit(types.RECEIVE_METRICS_SUCCESS, data);
     dispatch('stopPolling');
   }

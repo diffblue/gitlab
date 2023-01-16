@@ -1,7 +1,7 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import testAction from 'helpers/vuex_action_helper';
-import httpStatusCodes, { HTTP_STATUS_UNAUTHORIZED } from '~/lib/utils/http_status';
+import { HTTP_STATUS_OK, HTTP_STATUS_UNAUTHORIZED } from '~/lib/utils/http_status';
 import {
   syncSubscription,
   removeLicense,
@@ -43,7 +43,7 @@ describe('Admin Subscriptions Show Actions', () => {
       const successMutation = { type: types.RECEIVE_SYNC_SUCCESS };
 
       beforeEach(() => {
-        axiosMock.onPost().replyOnce(httpStatusCodes.OK);
+        axiosMock.onPost().replyOnce(HTTP_STATUS_OK);
       });
 
       it('triggers REQUEST_SYNC and RECEIVE_SYNC_SUCCESS', async () => {
@@ -112,7 +112,7 @@ describe('Admin Subscriptions Show Actions', () => {
 
     describe('when axios response is successful', () => {
       beforeEach(() => {
-        axiosMock.onDelete().replyOnce(httpStatusCodes.OK);
+        axiosMock.onDelete().replyOnce(HTTP_STATUS_OK);
       });
 
       it('triggers REQUEST_REMOVE_LICENSE and removeLicenseSuccess action', async () => {
