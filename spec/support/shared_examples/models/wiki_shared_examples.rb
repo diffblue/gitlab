@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples 'wiki model', feature_category: :wiki do
+RSpec.shared_examples 'wiki model' do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:user) { create(:user, :commit_email) }

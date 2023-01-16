@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples 'a Geo framework registry', feature_category: :geo_replication do
+RSpec.shared_examples 'a Geo framework registry' do
   let(:registry_class_factory) { described_class.underscore.tr('/', '_').to_sym }
 
   context 'obligatory fields check' do
