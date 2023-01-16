@@ -3,6 +3,39 @@ import mutations from 'ee/members/store/mutations';
 import { members, member } from 'jest/members/mock_data';
 
 describe('Vuex members mutations', () => {
+  describe(types.SHOW_DISABLE_TWO_FACTOR_MODAL, () => {
+    it('sets `disableTwoFactorModalData` and `disableTwoFactorModalVisible`', () => {
+      const state = {
+        disableTwoFactorModalData: {},
+        disableTwoFactorModalVisible: false,
+      };
+
+      const modalData = { userID: 5, name: 'John Malone' };
+      mutations[types.SHOW_DISABLE_TWO_FACTOR_MODAL](state, modalData);
+
+      expect(state).toEqual({
+        disableTwoFactorModalData: modalData,
+        disableTwoFactorModalVisible: true,
+      });
+    });
+  });
+
+  describe(types.HIDE_DISABLE_TWO_FACTOR_MODAL, () => {
+    it('sets `disableTwoFactorModalData` and `disableTwoFactorModalVisible`', () => {
+      const state = {
+        disableTwoFactorModalData: { userID: 5, name: 'John Malone' },
+        disableTwoFactorModalVisible: true,
+      };
+
+      mutations[types.HIDE_DISABLE_TWO_FACTOR_MODAL](state);
+
+      expect(state).toEqual({
+        disableTwoFactorModalData: null,
+        disableTwoFactorModalVisible: false,
+      });
+    });
+  });
+
   describe(types.RECEIVE_LDAP_OVERRIDE_SUCCESS, () => {
     it('updates member', () => {
       const state = {

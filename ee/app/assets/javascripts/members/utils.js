@@ -40,7 +40,15 @@ export const generateBadges = ({ member, isCurrentUser, canManageMembers }) => [
   },
 ];
 
+export const canDisableTwoFactor = (member) => {
+  if (gon.features?.groupOwnersToDisableTwoFactor) {
+    return Boolean(member.canGetTwoFactorDisabled);
+  }
+  return false;
+};
+
 export const canOverride = (member) => member.canOverride && isDirectMember(member);
+
 export const canUnban = (member) => {
   return Boolean(member.banned) && member.canUnban;
 };

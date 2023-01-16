@@ -52,9 +52,11 @@ describe('MemberList', () => {
         'created-at',
         'member-action-buttons',
         'role-dropdown',
+        'disable-two-factor-modal',
         'remove-group-link-modal',
         'remove-member-modal',
         'expiration-datepicker',
+        'ldap-override-confirmation-modal',
       ],
     });
   };
@@ -83,6 +85,11 @@ describe('MemberList', () => {
         canUnban: true,
       };
 
+      const memberCanGetTwoFactorDisabled = {
+        ...memberMock,
+        canGetTwoFactorDisabled: true,
+      };
+
       const memberNoPermissions = {
         ...memberMock,
         id: 2,
@@ -91,7 +98,12 @@ describe('MemberList', () => {
       describe.each([
         ['canOverride', memberCanOverride],
         ['canUnban', memberCanUnban],
+        ['canDisableTwoFactor', memberCanGetTwoFactorDisabled],
       ])('when one of the members has `%s` permissions', (_, memberWithPermission) => {
+        beforeEach(() => {
+          gon.features = { groupOwnersToDisableTwoFactor: true };
+        });
+
         it('renders the "Actions" field', () => {
           createComponent({
             members: [memberNoPermissions, memberWithPermission],
@@ -109,7 +121,7 @@ describe('MemberList', () => {
         });
       });
 
-      describe.each([['canOverride'], ['canUnban']])(
+      describe.each([['canOverride'], ['canUnban'], ['canDisableTwoFactor']])(
         'when none of the members has `%s` permissions',
         () => {
           it('does not render the "Actions" field', () => {

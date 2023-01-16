@@ -1,11 +1,14 @@
 import createState from '~/members/store/state';
 
 export default (initialState) => {
-  const { ldapOverridePath } = initialState;
+  const { disableTwoFactorPath, ldapOverridePath } = initialState;
 
   return {
-    ldapOverridePath,
+    disableTwoFactorPath,
+    disableTwoFactorModalData: {},
+    disableTwoFactorModalVisible: false,
     memberToOverride: null,
+    ldapOverridePath,
     ldapOverrideConfirmationModalVisible: false,
     ...createState(initialState),
   };

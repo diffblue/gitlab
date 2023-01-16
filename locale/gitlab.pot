@@ -26026,6 +26026,9 @@ msgstr ""
 msgid "Members|Are you sure you want to deny %{usersName}'s request to join \"%{source}\""
 msgstr ""
 
+msgid "Members|Are you sure you want to disable the two-factor authentication for %{userName}?"
+msgstr ""
+
 msgid "Members|Are you sure you want to leave \"%{source}\"?"
 msgstr ""
 
@@ -26051,6 +26054,9 @@ msgid "Members|Direct"
 msgstr ""
 
 msgid "Members|Direct member by %{createdBy}"
+msgstr ""
+
+msgid "Members|Disable two-factor authentication"
 msgstr ""
 
 msgid "Members|Disabled"

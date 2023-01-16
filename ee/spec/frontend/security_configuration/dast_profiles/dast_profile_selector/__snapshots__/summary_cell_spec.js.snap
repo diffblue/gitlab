@@ -5,13 +5,13 @@ exports[`DastProfileSummaryCell renders properly 1`] = `
   class="row gl-my-2"
 >
   <div
-    class="col-md-6"
+    class="col-md-5 gl-pr-0!"
   >
     Row Label:
   </div>
    
   <div
-    class="col-md-6"
+    class="col-md-7"
   >
     <strong>
       Row Value

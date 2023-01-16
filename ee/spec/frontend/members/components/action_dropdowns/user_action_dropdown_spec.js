@@ -1,7 +1,9 @@
 import { shallowMount } from '@vue/test-utils';
+import DisableTwoFactorDropdownItem from 'ee/members/components/action_dropdowns/disable_two_factor_dropdown_item.vue';
 import LdapOverrideDropdownItem from 'ee/members/components/ldap/ldap_override_dropdown_item.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { member } from 'jest/members/mock_data';
+import { sprintf } from '~/locale';
 import UserActionDropdown from '~/members/components/action_dropdowns/user_action_dropdown.vue';
 import { I18N } from '~/members/components/action_dropdowns/constants';
 import { MEMBER_TYPES } from '~/members/constants';
@@ -25,10 +27,32 @@ describe('UserActionDropdown', () => {
     return waitForPromises();
   };
 
+  const findDisableTwoFactorDropdownItem = () =>
+    wrapper.findComponent(DisableTwoFactorDropdownItem);
   const findLdapOverrideDropdownItem = () => wrapper.findComponent(LdapOverrideDropdownItem);
 
-  afterEach(() => {
-    wrapper.destroy();
+  describe('when `canDisableTwoFactor` permission', () => {
+    describe('is `true`', () => {
+      it('renders the dropdown item', async () => {
+        await createComponent({
+          permissions: { canDisableTwoFactor: true },
+        });
+
+        expect(findDisableTwoFactorDropdownItem().props('modalMessage')).toBe(
+          sprintf(I18N.confirmDisableTwoFactor, { userName: member.user.username }),
+        );
+      });
+    });
+
+    describe('is `false`', () => {
+      it('does not render the dropdown item', async () => {
+        await createComponent({
+          permissions: { canDisableTwoFactor: false },
+        });
+
+        expect(findDisableTwoFactorDropdownItem().exists()).toBe(false);
+      });
+    });
   });
 
   describe('when member has `canOverride` permissions', () => {

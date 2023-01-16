@@ -58,6 +58,13 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
           name
           url
         }
+        details {
+          ... on VulnerabilityDetailUrl {
+            type: __typename
+            name
+            href
+          }
+        }
       }
     }
   }

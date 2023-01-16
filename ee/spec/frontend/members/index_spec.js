@@ -21,6 +21,14 @@ describe('initMembersApp', () => {
     el = null;
   });
 
+  it('sets `disableTwoFactorPath` in Vuex store', () => {
+    createVm();
+
+    expect(vm.$store.state[MEMBER_TYPES.user].disableTwoFactorPath).toBe(
+      '/groups/ldap-group/-/two_factor_auth',
+    );
+  });
+
   it('sets `ldapOverridePath` in Vuex store', () => {
     createVm();
 
