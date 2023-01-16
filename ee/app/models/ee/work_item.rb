@@ -13,7 +13,7 @@ module EE
     LICENSED_WIDGETS = {
       iterations: ::WorkItems::Widgets::Iteration,
       issue_weights: ::WorkItems::Widgets::Weight,
-      requirements: ::WorkItems::Widgets::Status,
+      requirements: [::WorkItems::Widgets::Status, ::WorkItems::Widgets::RequirementLegacy],
       issuable_health_status: ::WorkItems::Widgets::HealthStatus,
       okrs: ::WorkItems::Widgets::Progress
     }.freeze
@@ -31,9 +31,10 @@ module EE
     private
 
     def unlicensed_widgets
-      LICENSED_WIDGETS.map do |licensed_feature, widget|
-        widget unless resource_parent.licensed_feature_available?(licensed_feature)
+      excluded = LICENSED_WIDGETS.map do |licensed_feature, widgets|
+        widgets unless resource_parent.licensed_feature_available?(licensed_feature)
       end
+      excluded.flatten
     end
   end
 end
