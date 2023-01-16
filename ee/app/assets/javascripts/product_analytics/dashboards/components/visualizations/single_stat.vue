@@ -22,6 +22,9 @@ export default {
     title() {
       return this.options.title ?? '';
     },
+    decimalPlaces() {
+      return parseInt(this.options.decimalPlaces, 10) || 0;
+    },
   },
 };
 </script>
@@ -36,6 +39,8 @@ export default {
       :meta-icon="options.metaIcon"
       :title-icon="options.titleIcon"
       :unit="options.unit"
+      :animation-decimal-places="decimalPlaces"
+      :should-animate="true"
       variant="muted"
     />
   </div>
