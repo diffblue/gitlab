@@ -2,13 +2,18 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['DastProfile'] do
+RSpec.describe GitlabSchema.types['DastProfile'], :dynamic_analysis,
+                                                  feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:object) { create(:dast_profile, project: project) }
+  let_it_be(:dast_pre_scan_verification) { create(:dast_pre_scan_verification, dast_profile: object) }
   let_it_be(:user) { create(:user, developer_projects: [project]) }
-  let_it_be(:fields) { %i[id name description dastSiteProfile dastScannerProfile dastProfileSchedule branch editPath] }
+  let_it_be(:fields) do
+    %i[id name description dastSiteProfile dastScannerProfile dastProfileSchedule branch editPath
+      dastPreScanVerification]
+  end
 
   specify { expect(described_class.graphql_name).to eq('DastProfile') }
   specify { expect(described_class).to require_graphql_authorizations(:read_on_demand_dast_scan) }
@@ -39,6 +44,23 @@ RSpec.describe GitlabSchema.types['DastProfile'] do
   describe 'dastProfileSchedule field' do
     it 'correctly resolves the field' do
       expect(resolve_field(:dast_profile_schedule, object, current_user: user)).to eq(object.dast_profile_schedule)
+    end
+  end
+
+  describe 'dast_pre_scan_verification field' do
+    it 'correctly resolves the field' do
+      expect(resolve_field(:dast_pre_scan_verification,
+                           object, current_user: user)).to eq(object.dast_pre_scan_verification)
+    end
+
+    context 'when the feature flag is not enabled' do
+      before do
+        stub_feature_flags(dast_pre_scan_verification: false)
+      end
+
+      it 'is nil' do
+        expect(resolve_field(:dast_pre_scan_verification, object, current_user: user)).to be_nil
+      end
     end
   end
 end

@@ -34,8 +34,20 @@ module Types
       field :edit_path, GraphQL::Types::String,
         null: true, description: 'Relative web path to the edit page of a profile.'
 
+      field :dast_pre_scan_verification,
+            ::Types::Dast::PreScanVerificationType,
+            null: true,
+            description: 'DAST Pre Scan Verification associated with the site profile. Will always return `null` ' \
+                         'if `dast_on_demand_scans_scheduler` feature flag is disabled.'
+
       def edit_path
         Gitlab::Routing.url_helpers.edit_project_on_demand_scan_path(object.project, object)
+      end
+
+      def dast_pre_scan_verification
+        return unless Feature.enabled?(:dast_pre_scan_verification, object.project)
+
+        object.dast_pre_scan_verification
       end
     end
   end
