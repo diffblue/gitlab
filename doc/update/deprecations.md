@@ -172,6 +172,32 @@ In GitLab 16.0 and later, you must have Owner permissions to use the GraphQL API
 
 </div>
 
+<div class="deprecation removal-160">
+
+### Rake task for importing bare repositories
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
+
+The [Rake task for importing bare repositories](https://docs.gitlab.com/ee/raketasks/import.html) `gitlab:import:repos` is deprecated in GitLab 15.8 and will be removed in GitLab 16.0.
+
+This Rake task imports a directory tree of repositories into a GitLab instance. These repositories must have been
+managed by GitLab previously, because the Rake task relies on the specific directory structure or a specific custom Git setting in order to work (`gitlab.fullpath`).
+
+Importing repositories using this Rake task has limitations. The Rake task:
+
+- Only knows about project and project wiki repositories and doesn't support repositories for designs, group wikis, or snippets.
+- Permits you to import non-hashed storage projects even though these aren't supported.
+- Relies on having Git config `gitlab.fullpath` set. [Epic 8953](https://gitlab.com/groups/gitlab-org/-/epics/8953) proposes removing support for this setting.
+
+Alternatives to using the `gitlab:import:repos` Rake task include:
+
+- Migrating projects using either [an export file](https://docs.gitlab.com/ee/user/project/settings/import_export.html) or
+  [direct transfer](https://docs.gitlab.com/ee/user/group/import/#migrate-groups-by-direct-transfer-recommended) migrate repositories as well.
+- Importing a [repository by URL](https://docs.gitlab.com/ee/user/project/import/repo_by_url.html).
+- Importing a [repositories from a non-GitLab source](https://docs.gitlab.com/ee/user/project/import/).
+
+</div>
+
 <div class="deprecation removal-160 breaking-change">
 
 ### Support for third party registries
