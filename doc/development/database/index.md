@@ -40,6 +40,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 - [Deleting migrations](deleting_migrations.md)
 - [SQL guidelines](../sql.md) for working with SQL queries
 - [Partitioning tables](table_partitioning.md)
+- [Adding required stops](required_stops.md)
 
 ## Debugging
 
