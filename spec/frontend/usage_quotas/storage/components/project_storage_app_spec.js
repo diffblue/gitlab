@@ -5,10 +5,10 @@ import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import ProjectStorageApp from 'ee/usage_quotas/storage/components/project_storage_app.vue';
-import UsageGraph from 'ee/usage_quotas/storage/components/usage_graph.vue';
-import { TOTAL_USAGE_DEFAULT_TEXT } from 'ee/usage_quotas/storage/constants';
-import getProjectStorageStatistics from 'ee/usage_quotas/storage/queries/project_storage.query.graphql';
+import ProjectStorageApp from '~/usage_quotas/storage/components/project_storage_app.vue';
+import UsageGraph from '~/usage_quotas/storage/components/usage_graph.vue';
+import { TOTAL_USAGE_DEFAULT_TEXT } from '~/usage_quotas/storage/constants';
+import getProjectStorageStatistics from '~/usage_quotas/storage/queries/project_storage.query.graphql';
 import {
   projectData,
   mockGetProjectStorageStatisticsGraphQLResponse,

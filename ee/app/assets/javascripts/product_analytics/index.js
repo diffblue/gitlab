@@ -18,6 +18,7 @@ export default () => {
     jitsuHost,
     jitsuProjectId,
     chartEmptyStateIllustrationPath,
+    routerBase,
   } = el.dataset;
   Vue.use(VueApollo);
 
@@ -28,7 +29,7 @@ export default () => {
   return new Vue({
     el,
     apolloProvider,
-    router: createRouter(),
+    router: createRouter(routerBase),
     provide: {
       jitsuKey,
       projectFullPath,
