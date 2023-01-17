@@ -1,7 +1,7 @@
 import { helpPagePath } from '~/helpers/help_page_helper';
 import dateFormat from '~/lib/dateformat';
 import { nDaysBefore, nMonthsBefore, getStartOfDay, dayAfter } from '~/lib/utils/datetime_utility';
-import { __, s__, sprintf } from '~/locale';
+import { __, sprintf } from '~/locale';
 
 export const environmentTierDocumentationHref = helpPagePath('ci/environments/index.html', {
   anchor: 'deployment-tier-of-environments',
@@ -45,11 +45,12 @@ export const averageSeriesOptions = {
 };
 
 const formatDateRangeString = (startDate) => {
-  return sprintf(s__('DORA4Metrics|%{startDate} - %{endDate}'), {
-    startDate: dateFormat(startDate, titleDateFormatString, true),
-    endDate: dateFormat(startOfToday, titleDateFormatString, true),
-  });
+  const start = dateFormat(startDate, titleDateFormatString, true);
+  const end = dateFormat(startOfToday, titleDateFormatString, true);
+  return `${start} - ${end}`;
 };
+
+const lastXDays = __('Last %{days} days');
 
 export const allChartDefinitions = [
   {
@@ -76,7 +77,7 @@ export const allChartDefinitions = [
   },
   {
     id: LAST_90_DAYS,
-    title: __('Last 90 days'),
+    title: sprintf(lastXDays, { days: 90 }),
     range: formatDateRangeString(last90Days),
     startDate: last90Days,
     endDate: startOfTomorrow,
@@ -87,7 +88,7 @@ export const allChartDefinitions = [
   },
   {
     id: LAST_180_DAYS,
-    title: __('Last 180 days'),
+    title: sprintf(lastXDays, { days: 180 }),
     range: formatDateRangeString(last180Days),
     startDate: last180Days,
     endDate: startOfTomorrow,

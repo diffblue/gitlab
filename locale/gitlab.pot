@@ -12324,9 +12324,6 @@ msgstr ""
 msgid "DNS"
 msgstr ""
 
-msgid "DORA4Metrics|%{startDate} - %{endDate}"
-msgstr ""
-
 msgid "DORA4Metrics|Average (last %{days}d)"
 msgstr ""
 
@@ -19556,9 +19553,6 @@ msgstr ""
 msgid "GroupActivityMetrics|Issues created"
 msgstr ""
 
-msgid "GroupActivityMetrics|Last 30 days"
-msgstr ""
-
 msgid "GroupActivityMetrics|Members added"
 msgstr ""
 
@@ -24402,19 +24396,7 @@ msgstr[1] ""
 msgid "Last %{days} days"
 msgstr ""
 
-msgid "Last 180 days"
-msgstr ""
-
 msgid "Last 2 weeks"
-msgstr ""
-
-msgid "Last 30 days"
-msgstr ""
-
-msgid "Last 60 days"
-msgstr ""
-
-msgid "Last 90 days"
 msgstr ""
 
 msgid "Last Accessed On"
@@ -35565,9 +35547,6 @@ msgid "RepositoriesAnalytics|Jobs with Coverage"
 msgstr ""
 
 msgid "RepositoriesAnalytics|Jobs with Coverage: %{coverageCount}"
-msgstr ""
-
-msgid "RepositoriesAnalytics|Last 30 days"
 msgstr ""
 
 msgid "RepositoriesAnalytics|Last Update"
