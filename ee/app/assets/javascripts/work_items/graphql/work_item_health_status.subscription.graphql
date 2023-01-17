@@ -1,0 +1,13 @@
+subscription issuableHealthStatusUpdated($issuableId: IssuableID!) {
+  issuableHealthStatusUpdated(issuableId: $issuableId) {
+    ... on WorkItem {
+      id
+      widgets {
+        ... on WorkItemWidgetHealthStatus {
+          type
+          healthStatus
+        }
+      }
+    }
+  }
+}
