@@ -210,6 +210,27 @@ settings for the group using either the GitLab UI or GraphQL API.
 
 <div class="deprecation removal-160 breaking-change">
 
+### Non-standard default Redis ports are deprecated
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+If GitLab starts without any Redis configuration file present,
+GitLab assumes it can connect to three Redis servers at `localhost:6380`,
+`localhost:6381` and `localhost:6382`. We are changing this behavior
+so GitLab assumes there is one Redis server at `localhost:6379`.
+
+Administrators who want to keep the three servers must configure
+the Redis URLs by editing the `config/redis.cache.yml`,`config/redis.queues.yml`
+and `config/redis.shared_state.yml` files.
+
+</div>
+
+<div class="deprecation removal-160 breaking-change">
+
 ### Null value for `private_profile` attribute in User API is deprecated
 
 Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
