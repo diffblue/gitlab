@@ -462,7 +462,7 @@ describe('RelatedItemsTree', () => {
         expect(assignees.isVisible()).toBe(true);
       });
 
-      it('renders item remove button when `item.userPermissions.canAdmin` is true', () => {
+      it('renders item remove button when `item.userPermissions.canAdminRelation` is true', () => {
         const removeButton = wrapper.findComponent(GlButton);
 
         expect(removeButton.isVisible()).toBe(true);
