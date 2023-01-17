@@ -22,6 +22,12 @@ export const HTML_SCRIPT_SETUP = `<script src="https://unpkg.com/@gitlab/applica
 
 export const JITSU_KEY_CHECK_DELAY = 1000;
 
+export const CUBE_DATA_CHECK_DELAY = 2500;
+
+export const NO_PROJECT_INSTANCE = 'no_project_instance';
+
+export const NO_INSTANCE_DATA = 'no_instance_data';
+
 export const EMPTY_STATE_I18N = {
   empty: {
     title: s__('Product Analytics|Analyze your product with Product Analytics'),
@@ -37,4 +43,10 @@ export const EMPTY_STATE_I18N = {
       'Product Analytics|This might take a while, feel free to navigate away from this page and come back later.',
     ),
   },
+};
+
+export const ONBOARDING_VIEW_I18N = {
+  unhandledErrorMessage: s__(
+    'ProductAnalytics|An error occurred while fetching data. Refresh the page to try again.',
+  ),
 };
