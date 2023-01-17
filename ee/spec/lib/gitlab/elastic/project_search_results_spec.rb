@@ -121,9 +121,7 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic do
     let(:results) { described_class.new(user, query, project: project) }
 
     it 'returns an empty list' do
-      create(:user, name: 'Sarah John')
-      create(:user, name: 'John Doe')
-      create(:user, name: 'john@c.o')
+      create_list(:user, 3, name: "Sarah John")
 
       ensure_elasticsearch_index!
 
@@ -134,20 +132,34 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic do
     end
 
     context 'with project members' do
-      it 'returns users who are members of the project' do
-        user_1 = create(:user, name: 'Sarah John')
-        user_2 = create(:user, name: 'John Doe') # rubocop:disable Lint/UselessAssignment
-        user_3 = create(:user, name: 'john@c.o')
+      let_it_be(:parent_group) { create(:group) }
+      let_it_be(:group) { create(:group, parent: parent_group) }
+      let_it_be(:child_group) { create(:group, parent: group) }
+      let_it_be(:child_of_parent_group) { create(:group, parent: parent_group) }
+      let_it_be(:project_in_group) { create(:project, namespace: group) }
+      let_it_be(:project_in_child_group) { create(:project, namespace: child_group) }
+      let_it_be(:project_in_parent_group) { create(:project, namespace: parent_group) }
+      let_it_be(:project_in_child_of_parent_group) { create(:project, namespace: child_of_parent_group) }
 
-        project.add_developer(user_1)
-        project.add_developer(user_3)
+      let(:results) { described_class.new(user, query, project: project_in_group) }
+
+      it 'returns matching users who have access to the project' do
+        users = create_list(:user, 8, name: "Sarah John")
+
+        project_in_group.add_developer(users[0])
+        project_in_child_group.add_developer(users[1])
+        project_in_parent_group.add_developer(users[2])
+        project_in_child_of_parent_group.add_developer(users[3])
+
+        group.add_developer(users[4])
+        parent_group.add_developer(users[5])
+        child_group.add_developer(users[6])
+        child_of_parent_group.add_developer(users[7])
 
         ensure_elasticsearch_index!
 
-        users = results.objects('users')
-
-        expect(users).to contain_exactly(user_1, user_3)
-        expect(results.users_count).to eq 2
+        expect(results.objects('users')).to contain_exactly(users[0], users[4], users[5])
+        expect(results.users_count).to eq 3
       end
     end
   end

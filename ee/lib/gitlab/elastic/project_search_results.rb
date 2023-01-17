@@ -82,7 +82,7 @@ module Gitlab
       def scope_options(scope)
         case scope
         when :users
-          super.merge(projects: [project])
+          super.merge(project_id: project.id)
         else
           super
         end

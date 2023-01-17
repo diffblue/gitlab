@@ -11,13 +11,14 @@ module Elastic
         filters = []
 
         if options[:count_only]
-          filters = fuzzy_query(filters: filters, query: query, search_fields: fuzzy_search_fields, options: options)
+          filters = fuzzy_query(clauses: filters, query: query, search_fields: fuzzy_search_fields, options: options)
+          filters = namespace_query(filters, options)
           query_hash[:size] = 0
         else
-          musts = fuzzy_query(filters: musts, query: query, search_fields: fuzzy_search_fields, options: options)
+          musts = fuzzy_query(clauses: musts, query: query, search_fields: fuzzy_search_fields, options: options)
+          musts = namespace_query(musts, options)
         end
 
-        filters = ancestry_query(filters, options)
         filters = forbidden_states_filter(filters, options)
 
         query_hash[:query] = {
@@ -32,8 +33,8 @@ module Elastic
         search(query_hash, options)
       end
 
-      def fuzzy_query(filters:, query:, search_fields:, options: {})
-        return filters unless query
+      def fuzzy_query(clauses:, query:, search_fields:, options: {})
+        return clauses unless query
 
         search_fields -= ['email'] unless is_admin?(options)
         shoulds = []
@@ -49,29 +50,12 @@ module Elastic
           }
         end
 
-        filters << context.name(:fuzzy_search) do
+        clauses << context.name(:fuzzy_search) do
           {
             bool: {
               should: shoulds
             }
           }
-        end
-      end
-
-      def ancestry_query(filters, options)
-        current_user = options[:current_user]
-        projects = options[:projects]
-        groups = options[:groups]
-
-        return filters unless current_user
-        return filters unless projects || groups
-
-        namespace_ancestry_ids = []
-        namespace_ancestry_ids << project_namespace_ids(projects) if projects
-        namespace_ancestry_ids << group_namespace_ids(groups) if groups
-
-        filters << context.name(:namespace) do
-          ancestry_filter(current_user, namespace_ancestry_ids.flatten)
         end
       end
 
@@ -85,14 +69,42 @@ module Elastic
         }
       end
 
-      private
+      def namespace_query(clauses, options)
+        return clauses unless options[:project_id].present? || options[:group_id].present?
 
-      def project_namespace_ids(projects)
-        projects.map(&:elastic_namespace_ancestry)
+        project = Project.find_by_id(options[:project_id])
+        group = Group.find_by_id(options[:group_id])
+        shoulds = []
+
+        if project
+          terms = namespace_ids(project.elastic_namespace_ancestry)
+          shoulds << { terms: { namespace_ancestry_ids: terms } }
+        elsif group
+          ids = namespace_ids(group.elastic_namespace_ancestry)
+          prefix = ids.pop
+          terms = ids
+
+          shoulds << { prefix: { namespace_ancestry_ids: { value: prefix } } }
+          shoulds << { terms: { namespace_ancestry_ids: terms } } if terms.any?
+        end
+
+        clauses << context.name(:namespace_filter) do
+          {
+            bool: {
+              should: shoulds
+            }
+          }
+        end
       end
 
-      def group_namespace_ids(groups)
-        groups.map(&:elastic_namespace_ancestry)
+      private
+
+      def namespace_ids(ids, separator = '-')
+        ids = ids.split(separator)
+
+        ids.map.with_index do |_, idx|
+          ids.slice(0..idx).join(separator) + separator
+        end
       end
 
       # rubocop:disable Naming/PredicateName
