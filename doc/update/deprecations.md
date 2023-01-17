@@ -66,6 +66,41 @@ The endpoint to get the configuration of approvals for a project returns empty a
 
 <div class="deprecation removal-160 breaking-change">
 
+### Auto DevOps no longer provisions a PostgreSQL database by default
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+Currently, Auto DevOps provisions an in-cluster PostgreSQL database by default.
+In GitLab 16.0, databases will be provisioned only for users who opt in. This
+change supports production deployments that require more robust database management.
+
+If you want Auto DevOps to provision an in-cluster database,
+set the `POSTGRES_ENABLED` CI/CD variable to `true`.
+
+</div>
+
+<div class="deprecation removal-170 breaking-change">
+
+### Auto DevOps support for Herokuish is deprecated
+
+Planned removal: GitLab <span class="removal-milestone">17.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+Auto DevOps support for Herokuish is deprecated in favor of [Cloud Native Buildpacks](https://docs.gitlab.com/ee/topics/autodevops/stages.html#auto-build-using-cloud-native-buildpacks). You should [migrate your builds from Herokuish to Cloud Native Buildpacks](https://docs.gitlab.com/ee/topics/autodevops/stages.html#moving-from-herokuish-to-cloud-native-buildpacks). From GitLab 14.0, Auto Build uses Cloud Native Buildpacks by default.
+
+Because Cloud Native Buildpacks do not support automatic testing, the Auto Test feature of Auto DevOps is also deprecated.
+
+</div>
+
+<div class="deprecation removal-160 breaking-change">
+
 ### Azure Storage Driver defaults to the correct root prefix
 
 Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
@@ -142,6 +177,27 @@ will be able to import projects to that group.
 
 </div>
 
+<div class="deprecation removal-170 breaking-change">
+
+### GitLab Helm chart values `gitlab.kas.privateApi.*` are deprecated
+
+Planned removal: GitLab <span class="removal-milestone">17.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+We introduced the `global.kas.tls.*` Helm values to facilitate TLS communication between KAS and your Helm chart components.
+The old values `gitlab.kas.privateApi.tls.enabled` and `gitlab.kas.privateApi.tls.secretName` are deprecated and scheduled for removal in GitLab 17.0.
+
+Because the new values provide a streamlined, comprehensive method to enable TLS for KAS, you should use `global.kas.tls.*` instead of `gitlab.kas.privateApi.tls.*`. The `gitlab.kas.privateApi.tls.*` For more information, see:
+
+- The [merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/2888) that introduces the `global.kas.tls.*` values.
+- The [deprecated `gitlab.kas.privateApi.tls.*` documentation](https://docs.gitlab.com/charts/charts/gitlab/kas/index.html#enable-tls-communication-through-the-gitlabkasprivateapi-attributes-deprecated).
+- The [new `global.kas.tls.*` documentation](https://docs.gitlab.com/charts/charts/globals.html#tls-settings-1).
+
+</div>
+
 <div class="deprecation removal-160">
 
 ### GitLab.com importer
@@ -205,6 +261,27 @@ the GraphQL API is deprecated in GitLab 15.8 and will be removed in GitLab 16.0.
 
 In GitLab 16.0 and later, you must have Owner role for a group to change the **Packages and registries**
 settings for the group using either the GitLab UI or GraphQL API.
+
+</div>
+
+<div class="deprecation removal-160 breaking-change">
+
+### Non-standard default Redis ports are deprecated
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+If GitLab starts without any Redis configuration file present,
+GitLab assumes it can connect to three Redis servers at `localhost:6380`,
+`localhost:6381` and `localhost:6382`. We are changing this behavior
+so GitLab assumes there is one Redis server at `localhost:6379`.
+
+Administrators who want to keep the three servers must configure
+the Redis URLs by editing the `config/redis.cache.yml`,`config/redis.queues.yml`
+and `config/redis.shared_state.yml` files.
 
 </div>
 

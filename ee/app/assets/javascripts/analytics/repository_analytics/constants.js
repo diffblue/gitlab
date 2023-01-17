@@ -1,4 +1,6 @@
-import { __, s__, n__ } from '~/locale';
+import { sprintf, __, s__, n__ } from '~/locale';
+
+export const lastXDays = __('Last %{days} days');
 
 const i18n = {
   header: {
@@ -12,7 +14,7 @@ const i18n = {
     lastUpdated: s__('RepositoriesAnalytics|Last updated %{timeAgo}'),
     emptyChart: s__('RepositoriesAnalytics|No test coverage to display'),
     graphCardHeader: s__('RepositoriesAnalytics|Average test coverage'),
-    graphCardSubheader: s__('RepositoriesAnalytics|Last 30 days'),
+    graphCardSubheader: sprintf(lastXDays, { days: 30 }),
     yAxisName: __('Coverage'),
     xAxisName: __('Date'),
     graphName: s__('RepositoriesAnalytics|Average coverage'),

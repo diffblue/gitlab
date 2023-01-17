@@ -3,7 +3,7 @@ import { GlSkeletonLoader, GlTooltipDirective } from '@gitlab/ui';
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
 import Api from 'ee/api';
 import { createAlert } from '~/flash';
-import { __, s__ } from '~/locale';
+import { sprintf, __, s__ } from '~/locale';
 import Tracking from '~/tracking';
 
 const MERGE_REQUESTS_TRACKING_LABEL = 'g_analytics_activity_widget_mr_created_clicked';
@@ -96,6 +96,7 @@ export default {
       this.track('click_button', { label: trackingLabel });
     },
   },
+  activityTimeSpan: sprintf(__('Last %{days} days'), { days: 30 }),
 };
 </script>
 
@@ -105,7 +106,7 @@ export default {
   >
     <div class="gl-display-flex gl-flex-direction-column gl-pr-9 gl-flex-shrink-0">
       <span class="gl-font-weight-bold">{{ s__('GroupActivityMetrics|Recent activity') }}</span>
-      <span>{{ s__('GroupActivityMetrics|Last 30 days') }}</span>
+      <span>{{ $options.activityTimeSpan }}</span>
     </div>
     <div
       v-for="{ key, value, label, link, trackingLabel } in metricsArray"

@@ -10,8 +10,8 @@ import {
 } from '@gitlab/ui';
 import { pikadayToString } from '~/lib/utils/datetime_utility';
 import { mergeUrlParams } from '~/lib/utils/url_utility';
-import { __ } from '~/locale';
-import { downloadi18n as i18n } from '../constants';
+import { __, sprintf } from '~/locale';
+import { downloadi18n as i18n, lastXDays } from '../constants';
 import SelectProjectsDropdown from './select_projects_dropdown.vue';
 
 export default {
@@ -114,10 +114,10 @@ export default {
   i18n,
   dateRangeOptions: [
     { value: 7, text: __('Last week') },
-    { value: 14, text: __('Last 2 weeks') },
-    { value: 30, text: __('Last 30 days') },
-    { value: 60, text: __('Last 60 days') },
-    { value: 90, text: __('Last 90 days') },
+    { value: 14, text: sprintf(__('Last 2 weeks')) },
+    { value: 30, text: sprintf(lastXDays, { days: 30 }) },
+    { value: 60, text: sprintf(lastXDays, { days: 60 }) },
+    { value: 90, text: sprintf(lastXDays, { days: 90 }) },
   ],
 };
 </script>
