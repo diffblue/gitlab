@@ -290,6 +290,7 @@ export default {
       :modal-id="$options.metadataModalId"
       title-tag="h4"
       category="primary"
+      hide-footer
     >
       <template #modal-title>
         <gl-sprintf :message="$options.i18n.metadataModalTitle">
