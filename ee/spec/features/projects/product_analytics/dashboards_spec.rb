@@ -50,6 +50,12 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
     end
   end
 
+  shared_examples 'renders the dashboards view' do
+    it do
+      expect(page).to have_content('Understand your audience')
+    end
+  end
+
   context 'without the required application settings' do
     it_behaves_like 'renders product analytics 404'
   end
@@ -97,26 +103,26 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
 
           context 'when setting up a new instance' do
             before do
+              stub_cube_proxy_zero_count
               visit_page
+            end
+
+            it 'renders the creating instance loading screen and then the setup page' do
               click_button s_('Product Analytics|Set up product analytics')
-            end
 
-            it 'renders the creating instance loading screen' do
               expect(page).to have_content(s_('Product Analytics|Creating your product analytics instance...'))
-            end
 
-            # TODO: Update to show the tracking codes view when no error in https://gitlab.com/gitlab-org/gitlab/-/issues/381320
-            it 'returns back to the onboarding empty state after creating the new instance' do
               wait_for_requests
 
-              expect(page).to have_content(s_('Product Analytics|Analyze your product with Product Analytics'))
+              project.project_setting.update!(jitsu_key: '123')
+              project.reload
+
+              travel_to(1.minute.from_now) do
+                expect(page).to have_content(s_('Product Analytics|Instrument your application'))
+              end
             end
 
             context 'when a new instance has already been initialized' do
-              before do
-                visit_page
-              end
-
               it 'renders an error alert when setting up a new instance' do
                 click_button s_('Product Analytics|Set up product analytics')
 
@@ -168,8 +174,25 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
               visit_page
             end
 
-            it 'renders the dashboards view' do
-              expect(page).to have_content('Understand your audience')
+            it_behaves_like 'renders the dashboards view'
+          end
+
+          context 'when the cube API returns data while onboarding' do
+            before do
+              stub_cube_proxy_zero_count
+              visit_page
+            end
+
+            it 'renders the dashboard view after polling' do
+              travel_to(1.minute.from_now) do
+                expect(page).to have_content(s_('Product Analytics|Instrument your application'))
+              end
+
+              stub_cube_proxy_success
+
+              travel_to(1.minute.from_now) do
+                expect(page).to have_content('Understand your audience')
+              end
             end
           end
         end
