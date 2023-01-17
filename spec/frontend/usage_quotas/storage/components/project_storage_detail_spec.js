@@ -1,13 +1,13 @@
 import { GlTableLite, GlPopover } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import ProjectStorageDetail from 'ee/usage_quotas/storage/components/project_storage_detail.vue';
+import ProjectStorageDetail from '~/usage_quotas/storage/components/project_storage_detail.vue';
 import {
   containerRegistryPopoverId,
   containerRegistryId,
   uploadsPopoverId,
   uploadsId,
-} from 'ee/usage_quotas/storage/constants';
+} from '~/usage_quotas/storage/constants';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { projectData, projectHelpLinks } from '../mock_data';
 

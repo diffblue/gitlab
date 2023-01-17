@@ -4,11 +4,10 @@ import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import StorageTypeHelpLink from 'ee/usage_quotas/storage/components/storage_type_help_link.vue';
 import StorageTypeWarning from 'ee/usage_quotas/storage/components/storage_type_warning.vue';
-import {
-  namespaceContainerRegistryPopoverContent,
-  uploadsPopoverContent,
-} from 'ee/usage_quotas/storage/constants';
-import { projectHelpLinks, projects } from '../mock_data';
+import { uploadsPopoverContent } from '~/usage_quotas/storage/constants';
+import { namespaceContainerRegistryPopoverContent } from 'ee/usage_quotas/storage/constants';
+import { projectHelpLinks } from 'jest/usage_quotas/storage/mock_data';
+import { projects } from '../mock_data';
 
 let wrapper;
 
