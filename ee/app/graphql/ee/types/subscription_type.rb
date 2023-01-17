@@ -11,6 +11,9 @@ module EE
 
         field :issuable_iteration_updated, subscription: Subscriptions::IssuableUpdated, null: true,
                                            description: 'Triggered when the iteration of an issuable is updated.'
+
+        field :issuable_health_status_updated, subscription: Subscriptions::IssuableUpdated, null: true,
+                                            description: 'Triggered when the health status of an issuable is updated.'
       end
     end
   end
