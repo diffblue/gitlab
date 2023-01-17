@@ -79,7 +79,7 @@ export default {
 </script>
 
 <template>
-  <span class="gl-line-height-42">
+  <div class="gl-display-inline! gl-line-height-42 gl-ml-3">
     <gl-sprintf :message="$options.scanResultRuleCopy">
       <template #scanners>
         <policy-rule-multi-select
@@ -112,7 +112,7 @@ export default {
       <template #severities>
         <policy-rule-multi-select
           v-model="severityLevelsToAdd"
-          class="gl-mx-3 gl-display-inline! gl-vertical-align-middle"
+          class="gl-ml-3 gl-display-inline! gl-vertical-align-middle"
           :item-type-name="$options.i18n.severityLevels"
           :items="$options.SEVERITY_LEVELS"
           data-testid="severities-select"
@@ -122,12 +122,12 @@ export default {
       <template #vulnerabilityStates>
         <policy-rule-multi-select
           v-model="vulnerabilityStates"
-          class="gl-ml-3 gl-display-inline! gl-vertical-align-middle"
+          class="gl-mx-3 gl-display-inline! gl-vertical-align-middle"
           :item-type-name="$options.i18n.vulnerabilityStates"
           :items="$options.APPROVAL_VULNERABILITY_STATES"
           data-testid="vulnerability-states-select"
         />
       </template>
     </gl-sprintf>
-  </span>
+  </div>
 </template>
