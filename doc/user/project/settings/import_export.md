@@ -138,16 +138,14 @@ WARNING:
 Only import projects from sources you trust. If you import a project from an untrusted source, it
 may be possible for an attacker to steal your sensitive data.
 
-WARNING:
-Importing projects was restricted to users with Maintainer and above role on the destination group in GitLab 15.8.
-
 Prerequisites:
 
 - You must have [exported the project and its data](#export-a-project-and-its-data).
 - Compare GitLab versions and ensure you are importing to a GitLab version that is the same or later
   than the GitLab version you exported to.
-- Review the [Version history](#version-history)
-  for compatibility issues.
+- Review the [Version history](#version-history) for compatibility issues.
+- At least the Maintainer role on the destination group to migrate to. Using the Developer role for this purpose was
+  [deprecated](https://gitlab.com/gitlab-org/gitlab/-/issues/387891) in GitLab 15.8 and will be removed in GitLab 16.0.
 
 To import a project:
 
@@ -224,7 +222,7 @@ To help avoid abuse, by default, users are rate limited to:
 
 ### 15.8+
 
-Starting with GitLab 15.8, importing groupgs from a JSON export is no longer supported. Groups need to be imported
+Starting with GitLab 15.8, importing groups from a JSON export is no longer supported. Groups must be imported
 in NDJSON format.
 
 ### 14.0+
