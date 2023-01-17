@@ -27341,6 +27341,9 @@ msgstr ""
 msgid "Namespace ID:"
 msgstr ""
 
+msgid "Namespace or group to import repository into does not exist."
+msgstr ""
+
 msgid "Namespace:"
 msgstr ""
 
