@@ -64,6 +64,22 @@ The endpoint to get the configuration of approvals for a project returns empty a
 
 </div>
 
+<div class="deprecation removal-170 breaking-change">
+
+### Auto DevOps support for Herokuish is deprecated
+
+Planned removal: GitLab <span class="removal-milestone">17.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+Auto DevOps support for Herokuish is deprecated in favor of [Cloud Native Buildpacks](https://docs.gitlab.com/ee/topics/autodevops/stages.html#auto-build-using-cloud-native-buildpacks). You should [migrate your builds from Herokuish to Cloud Native Buildpacks](https://docs.gitlab.com/ee/topics/autodevops/stages.html#moving-from-herokuish-to-cloud-native-buildpacks). From GitLab 14.0, Auto Build uses Cloud Native Buildpacks by default.
+
+Because Cloud Native Buildpacks do not support automatic testing, the Auto Test feature of Auto DevOps is also deprecated.
+
+</div>
+
 <div class="deprecation removal-160 breaking-change">
 
 ### Azure Storage Driver defaults to the correct root prefix
