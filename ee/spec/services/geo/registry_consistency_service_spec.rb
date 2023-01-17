@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::RegistryConsistencyService, :geo, :use_clean_rails_memory_store_caching do
+RSpec.describe Geo::RegistryConsistencyService, :geo, :use_clean_rails_memory_store_caching,
+feature_category: :geo_replication do
   include EE::GeoHelpers
 
   let(:secondary) { create(:geo_node) }

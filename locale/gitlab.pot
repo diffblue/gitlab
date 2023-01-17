@@ -35342,6 +35342,9 @@ msgstr ""
 msgid "Report your license usage data to GitLab"
 msgstr ""
 
+msgid "ReportAbuse|Report abuse to administrator"
+msgstr ""
+
 msgid "ReportAbuse|Something else."
 msgstr ""
 

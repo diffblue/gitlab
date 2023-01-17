@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GeoNodeStatus, :geo do
+RSpec.describe GeoNodeStatus, :geo, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   using RSpec::Parameterized::TableSyntax
