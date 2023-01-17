@@ -45,7 +45,7 @@ module EE
 
       private
 
-      def show_company_form?
+      def redirect_to_company_form?
         update_params[:setup_for_company] == 'true'
       end
 
@@ -95,7 +95,7 @@ module EE
         if params[:joining_project] == 'true'
           finish_onboarding
           path_for_signed_in_user(current_user)
-        elsif show_company_form?
+        elsif redirect_to_company_form?
           path = new_users_sign_up_company_path(passed_through_params)
           save_onboarding_step_url(path)
           path
