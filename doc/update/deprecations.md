@@ -177,6 +177,27 @@ will be able to import projects to that group.
 
 </div>
 
+<div class="deprecation removal-170 breaking-change">
+
+### GitLab Helm chart values `gitlab.kas.privateApi.*` are deprecated
+
+Planned removal: GitLab <span class="removal-milestone">17.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+We introduced the `global.kas.tls.*` Helm values to facilitate TLS communication between KAS and your Helm chart components.
+The old values `gitlab.kas.privateApi.tls.enabled` and `gitlab.kas.privateApi.tls.secretName` are deprecated and scheduled for removal in GitLab 17.0.
+
+Because the new values provide a streamlined, comprehensive method to enable TLS for KAS, you should use `global.kas.tls.*` instead of `gitlab.kas.privateApi.tls.*`. The `gitlab.kas.privateApi.tls.*` For more information, see:
+
+- The [merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/2888) that introduces the `global.kas.tls.*` values.
+- The [deprecated `gitlab.kas.privateApi.tls.*` documentation](https://docs.gitlab.com/charts/charts/gitlab/kas/index.html#enable-tls-communication-through-the-gitlabkasprivateapi-attributes-deprecated).
+- The [new `global.kas.tls.*` documentation](https://docs.gitlab.com/charts/charts/globals.html#tls-settings-1).
+
+</div>
+
 <div class="deprecation removal-160">
 
 ### GitLab.com importer
