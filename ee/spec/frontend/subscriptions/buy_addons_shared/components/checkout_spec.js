@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
-import BillingAddress from 'ee/vue_shared/purchase_flow/components/checkout/billing_address.vue';
+import BillingAddress from 'jh_else_ee/vue_shared/purchase_flow/components/checkout/billing_address.vue';
 import OrderConfirmation from 'ee/vue_shared/purchase_flow/components/checkout/confirm_order.vue';
 import PaymentMethod from 'ee/vue_shared/purchase_flow/components/checkout/payment_method.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
