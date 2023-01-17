@@ -65,6 +65,8 @@ module Integrations
 
     override :sections
     def sections
+      return [] unless editable?
+
       [
         {
           type: SECTION_TYPE_TRIGGER,
