@@ -12,9 +12,7 @@ module EE
     end
 
     def registration_verification_data
-      url = if params[:learn_gitlab_project_id].present?
-              trial_getting_started_users_sign_up_welcome_path(params.slice(:learn_gitlab_project_id).permit!)
-            elsif params[:project_id].present?
+      url = if params[:project_id].present?
               continuous_onboarding_getting_started_users_sign_up_welcome_path(params.slice(:project_id).permit!)
             else
               root_path
