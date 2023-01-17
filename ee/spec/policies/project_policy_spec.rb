@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ProjectPolicy do
+RSpec.describe ProjectPolicy, feature_category: :authentication_and_authorization do
   include ExternalAuthorizationServiceHelpers
   include AdminModeHelper
   include_context 'ProjectPolicy context'
@@ -267,6 +267,8 @@ RSpec.describe ProjectPolicy do
 
   context 'merge requests feature' do
     let(:current_user) { owner }
+    let_it_be(:group) { create(:group, :private) }
+    let_it_be(:project) { create(:project, group: group) }
 
     context 'when the feature is disabled' do
       before do
