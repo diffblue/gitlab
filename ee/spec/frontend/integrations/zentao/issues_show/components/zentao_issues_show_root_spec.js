@@ -12,7 +12,7 @@ import IssuableDiscussion from '~/vue_shared/issuable/show/components/issuable_d
 import Note from 'ee/external_issues_show/components/note.vue';
 import IssuableSidebar from '~/vue_shared/issuable/sidebar/components/issuable_sidebar_root.vue';
 import axios from '~/lib/utils/axios_utils';
-import httpStatusCodes, { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 import { mockZentaoIssue, mockZentaoIssueComment } from '../mock_data';
 
@@ -84,7 +84,7 @@ describe('ZentaoIssuesShow', () => {
   });
 
   it('renders IssuableShow', async () => {
-    mockAxios.onGet(mockZentaoIssuesShowPath).replyOnce(httpStatusCodes.OK, mockZentaoIssue);
+    mockAxios.onGet(mockZentaoIssuesShowPath).replyOnce(HTTP_STATUS_OK, mockZentaoIssue);
     createComponent();
 
     await waitForPromises();
@@ -94,7 +94,7 @@ describe('ZentaoIssuesShow', () => {
   });
 
   it('displays a tooltip', async () => {
-    mockAxios.onGet(mockZentaoIssuesShowPath).replyOnce(httpStatusCodes.OK, {
+    mockAxios.onGet(mockZentaoIssuesShowPath).replyOnce(HTTP_STATUS_OK, {
       ...mockZentaoIssue,
       comments: [mockZentaoIssueComment],
     });
@@ -115,7 +115,7 @@ describe('ZentaoIssuesShow', () => {
     beforeEach(async () => {
       mockAxios
         .onGet(mockZentaoIssuesShowPath)
-        .replyOnce(httpStatusCodes.OK, { ...mockZentaoIssue, state });
+        .replyOnce(HTTP_STATUS_OK, { ...mockZentaoIssue, state });
       createComponent();
 
       await waitForPromises();

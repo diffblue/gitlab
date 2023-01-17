@@ -4,7 +4,7 @@ import Api from 'ee/api';
 import * as analyticsMockData from 'ee_jest/analytics/cycle_analytics/mock_data';
 import axios from '~/lib/utils/axios_utils';
 import { ContentTypeMultipartFormData } from '~/lib/utils/headers';
-import httpStatus, { HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
+import { HTTP_STATUS_CREATED, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 describe('Api', () => {
   const dummyApiVersion = 'v3000';
@@ -35,7 +35,7 @@ describe('Api', () => {
       const callback = jest.fn();
       const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/ldap/${provider}/groups.json`;
 
-      mock.onGet(expectedUrl).reply(httpStatus.OK, [
+      mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, [
         {
           name: 'test',
         },
@@ -58,7 +58,7 @@ describe('Api', () => {
         parentId: 5,
       };
 
-      mock.onPost(expectedUrl).reply(httpStatus.OK, expectedRes);
+      mock.onPost(expectedUrl).reply(HTTP_STATUS_OK, expectedRes);
 
       const { data } = await Api.createChildEpic({ groupId, parentEpicId, title });
       expect(data.title).toBe(expectedRes.title);
@@ -120,7 +120,7 @@ describe('Api', () => {
           label_names: labelNames,
         };
         const expectedUrl = analyticsMockData.endpoints.tasksByTypeData;
-        mock.onGet(expectedUrl).reply(httpStatus.OK, tasksByTypeResponse);
+        mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, tasksByTypeResponse);
 
         const {
           data,
@@ -141,7 +141,7 @@ describe('Api', () => {
         };
 
         const expectedUrl = analyticsMockData.endpoints.tasksByTypeTopLabelsData;
-        mock.onGet(expectedUrl).reply(httpStatus.OK, response);
+        mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
 
         const {
           data,
@@ -157,7 +157,7 @@ describe('Api', () => {
       it('fetches custom value streams', async () => {
         const response = [{ name: 'value stream 1', id: 1 }];
         const expectedUrl = valueStreamBaseUrl({ resource: 'value_streams' });
-        mock.onGet(expectedUrl).reply(httpStatus.OK, response);
+        mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
 
         const responseObj = await Api.cycleAnalyticsValueStreams(groupId);
         expectRequestWithCorrectParameters(responseObj, {
@@ -172,7 +172,7 @@ describe('Api', () => {
         const response = {};
         const customValueStream = { name: 'cool-value-stream-stage' };
         const expectedUrl = valueStreamBaseUrl({ resource: 'value_streams' });
-        mock.onPost(expectedUrl).reply(httpStatus.OK, response);
+        mock.onPost(expectedUrl).reply(HTTP_STATUS_OK, response);
 
         const {
           data,
@@ -189,7 +189,7 @@ describe('Api', () => {
         const response = {};
         const customValueStream = { name: 'cool-value-stream-stage', stages: [] };
         const expectedUrl = valueStreamBaseUrl({ resource: `value_streams/${valueStreamId}` });
-        mock.onPut(expectedUrl).reply(httpStatus.OK, response);
+        mock.onPut(expectedUrl).reply(HTTP_STATUS_OK, response);
 
         const {
           data,
@@ -209,7 +209,7 @@ describe('Api', () => {
       it('delete the custom value stream', async () => {
         const response = {};
         const expectedUrl = valueStreamBaseUrl({ resource: `value_streams/${valueStreamId}` });
-        mock.onDelete(expectedUrl).reply(httpStatus.OK, response);
+        mock.onDelete(expectedUrl).reply(HTTP_STATUS_OK, response);
 
         const {
           data,
@@ -229,7 +229,7 @@ describe('Api', () => {
           'cycle_analytics[created_before]': createdBefore,
         };
         const expectedUrl = valueStreamBaseUrl({ id: valueStreamId, resource: 'stages' });
-        mock.onGet(expectedUrl).reply(httpStatus.OK, response);
+        mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
 
         const responseObj = await Api.cycleAnalyticsGroupStagesAndEvents({
           groupId,
@@ -252,7 +252,7 @@ describe('Api', () => {
           id: valueStreamId,
           resource: `stages/${stageId}/records`,
         });
-        mock.onGet(expectedUrl).reply(httpStatus.OK, response);
+        mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
 
         const responseObj = await Api.cycleAnalyticsStageEvents({
           groupId,
@@ -276,7 +276,7 @@ describe('Api', () => {
           id: valueStreamId,
           resource: `stages/${stageId}/average_duration_chart`,
         });
-        mock.onGet(expectedUrl).reply(httpStatus.OK, response);
+        mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
 
         const responseObj = await Api.cycleAnalyticsDurationChart({
           groupId,
@@ -297,7 +297,7 @@ describe('Api', () => {
         const response = [];
         const expectedUrl = `${dummyUrlRoot}/groups/${groupId}/-/labels.json`;
 
-        mock.onGet(expectedUrl).reply(httpStatus.OK, response);
+        mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
 
         const {
           data,
@@ -319,7 +319,7 @@ describe('Api', () => {
 
         jest.spyOn(Api, 'buildUrl').mockReturnValue(expectedUrl);
         jest.spyOn(axios, 'get');
-        mock.onGet(expectedUrl).reply(httpStatus.OK, response);
+        mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
 
         return Api.groupActivityMergeRequestsCount(groupId).then(({ data }) => {
           expect(data).toEqual(response);
@@ -335,7 +335,7 @@ describe('Api', () => {
 
         jest.spyOn(Api, 'buildUrl').mockReturnValue(expectedUrl);
         jest.spyOn(axios, 'get');
-        mock.onGet(expectedUrl).replyOnce(httpStatus.OK, response);
+        mock.onGet(expectedUrl).replyOnce(HTTP_STATUS_OK, response);
 
         const { data } = await Api.groupActivityIssuesCount(groupId);
         expect(data).toEqual(response);
@@ -350,7 +350,7 @@ describe('Api', () => {
 
         jest.spyOn(Api, 'buildUrl').mockReturnValue(expectedUrl);
         jest.spyOn(axios, 'get');
-        mock.onGet(expectedUrl).reply(httpStatus.OK, response);
+        mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
 
         return Api.groupActivityNewMembersCount(groupId).then(({ data }) => {
           expect(data).toEqual(response);
@@ -381,7 +381,7 @@ describe('Api', () => {
 
         jest.spyOn(Api, 'buildUrl').mockReturnValue(expectedUrl);
         jest.spyOn(axios, 'get');
-        mock.onGet(expectedUrl).replyOnce(httpStatus.OK, apiResponse);
+        mock.onGet(expectedUrl).replyOnce(HTTP_STATUS_OK, apiResponse);
 
         return Api.getGeoReplicableItems(mockReplicableType, mockParams).then(({ data }) => {
           expect(data).toEqual(apiResponse);
@@ -448,7 +448,7 @@ describe('Api', () => {
       const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/vulnerabilities/${id}/${action}`;
       const expectedResponse = { id, action, test: 'test' };
 
-      mock.onPost(expectedUrl).replyOnce(httpStatus.OK, expectedResponse);
+      mock.onPost(expectedUrl).replyOnce(HTTP_STATUS_OK, expectedResponse);
 
       return Api.changeVulnerabilityState(id, action).then(({ data }) => {
         expect(mock.history.post).toContainEqual(expect.objectContaining({ url: expectedUrl }));
@@ -512,7 +512,7 @@ describe('Api', () => {
 
         jest.spyOn(Api, 'buildUrl').mockReturnValue(`${expectedUrl}/${mockNode.id}`);
         jest.spyOn(axios, 'delete');
-        mock.onDelete(`${expectedUrl}/${mockNode.id}`).replyOnce(httpStatus.OK, {});
+        mock.onDelete(`${expectedUrl}/${mockNode.id}`).replyOnce(HTTP_STATUS_OK, {});
 
         return Api.removeGeoNode(mockNode.id).then(() => {
           expect(axios.delete).toHaveBeenCalledWith(`${expectedUrl}/${mockNode.id}`);
@@ -529,7 +529,7 @@ describe('Api', () => {
       it('fetches applications settings', () => {
         jest.spyOn(Api, 'buildUrl').mockReturnValue(expectedUrl);
         jest.spyOn(axios, 'get');
-        mock.onGet(expectedUrl).replyOnce(httpStatus.OK, apiResponse);
+        mock.onGet(expectedUrl).replyOnce(HTTP_STATUS_OK, apiResponse);
 
         return Api.getApplicationSettings().then(({ data }) => {
           expect(data).toEqual(apiResponse);
@@ -562,7 +562,7 @@ describe('Api', () => {
 
     describe('deploymentFrequencies', () => {
       it('GETs the right url', async () => {
-        mock.onGet(expectedUrl, { params }).replyOnce(httpStatus.OK, []);
+        mock.onGet(expectedUrl, { params }).replyOnce(HTTP_STATUS_OK, []);
 
         const { data } = await Api.deploymentFrequencies(projectPath, params);
 
@@ -579,7 +579,7 @@ describe('Api', () => {
     describe('fetchIssueMetricImages', () => {
       it('fetches a list of images', async () => {
         jest.spyOn(axios, 'get');
-        mock.onGet(expectedUrl).replyOnce(httpStatus.OK, []);
+        mock.onGet(expectedUrl).replyOnce(HTTP_STATUS_OK, []);
 
         await Api.fetchIssueMetricImages({ issueIid, id: projectId }).then(({ data }) => {
           expect(data).toEqual([]);
@@ -595,7 +595,7 @@ describe('Api', () => {
 
       it('uploads an image', async () => {
         jest.spyOn(axios, 'post');
-        mock.onPost(expectedUrl).replyOnce(httpStatus.OK, {});
+        mock.onPost(expectedUrl).replyOnce(HTTP_STATUS_OK, {});
 
         await Api.uploadIssueMetricImage({ issueIid, id: projectId, file, url, urlText }).then(
           ({ data }) => {
@@ -616,7 +616,7 @@ describe('Api', () => {
     const comment = 'comment';
 
     it('sends an approval when approve is true', async () => {
-      mock.onPost(expectedUrl, { status: 'approved', comment }).replyOnce(httpStatus.OK);
+      mock.onPost(expectedUrl, { status: 'approved', comment }).replyOnce(HTTP_STATUS_OK);
 
       await Api.deploymentApproval({ id: projectId, deploymentId, approve: true, comment });
 
@@ -625,7 +625,7 @@ describe('Api', () => {
     });
 
     it('sends a rejection when approve is false', async () => {
-      mock.onPost(expectedUrl, { status: 'rejected', comment }).replyOnce(httpStatus.OK);
+      mock.onPost(expectedUrl, { status: 'rejected', comment }).replyOnce(HTTP_STATUS_OK);
 
       await Api.deploymentApproval({ id: projectId, deploymentId, approve: false, comment });
 
@@ -638,7 +638,7 @@ describe('Api', () => {
     it('submits the custom value stream data', () => {
       const response = {};
       const expectedUrl = '/gitlab/-/subscriptions/validate_payment_method';
-      mock.onPost(expectedUrl).reply(httpStatus.OK, response);
+      mock.onPost(expectedUrl).reply(HTTP_STATUS_OK, response);
 
       return Api.validatePaymentMethod('id', 'user_id').then((res) => {
         expect(res.data).toEqual(response);

@@ -5,7 +5,7 @@ import * as actions from 'ee/approvals/stores/modules/project_settings/actions';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-import httpStatus, { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 jest.mock('~/flash');
 
@@ -91,7 +91,7 @@ describe('EE approvals project settings module actions', () => {
   describe('fetchRules', () => {
     it('dispatches request/receive', () => {
       const data = [TEST_RULE_RESPONSE];
-      mock.onGet(TEST_RULES_PATH).replyOnce(httpStatus.OK, data);
+      mock.onGet(TEST_RULES_PATH).replyOnce(HTTP_STATUS_OK, data);
 
       return testAction(
         actions.fetchRules,
@@ -135,7 +135,7 @@ describe('EE approvals project settings module actions', () => {
 
   describe('postRule', () => {
     it('dispatches success on success', () => {
-      mock.onPost(TEST_RULES_PATH).replyOnce(httpStatus.OK);
+      mock.onPost(TEST_RULES_PATH).replyOnce(HTTP_STATUS_OK);
 
       return testAction(
         actions.postRule,
@@ -157,7 +157,7 @@ describe('EE approvals project settings module actions', () => {
 
   describe('putRule', () => {
     it('dispatches success on success', () => {
-      mock.onPut(`${TEST_RULES_PATH}/${TEST_RULE_ID}`).replyOnce(httpStatus.OK);
+      mock.onPut(`${TEST_RULES_PATH}/${TEST_RULE_ID}`).replyOnce(HTTP_STATUS_OK);
 
       return testAction(
         actions.putRule,
@@ -203,7 +203,7 @@ describe('EE approvals project settings module actions', () => {
 
   describe('deleteRule', () => {
     it('dispatches success on success', () => {
-      mock.onDelete(`${TEST_RULES_PATH}/${TEST_RULE_ID}`).replyOnce(httpStatus.OK);
+      mock.onDelete(`${TEST_RULES_PATH}/${TEST_RULE_ID}`).replyOnce(HTTP_STATUS_OK);
 
       return testAction(
         actions.deleteRule,

@@ -8,7 +8,7 @@ import ProtectedEnvironmentEdit, {
 } from 'ee/protected_environments/protected_environment_edit.vue';
 import { ACCESS_LEVELS, LEVEL_TYPES } from 'ee/protected_environments/constants';
 import { createAlert } from '~/flash';
-import httpStatusCodes, { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
+import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 jest.mock('~/flash');
 const $toast = {
@@ -151,9 +151,7 @@ describe('Protected Environment Edit', () => {
         { group_id: 1, id: 2 },
         { access_level: 3, id: 3 },
       ];
-      mockAxios
-        .onPatch()
-        .replyOnce(httpStatusCodes.OK, { [ACCESS_LEVELS.DEPLOY]: updatedPermissions });
+      mockAxios.onPatch().replyOnce(HTTP_STATUS_OK, { [ACCESS_LEVELS.DEPLOY]: updatedPermissions });
       findAccessDropdown().vm.$emit('hidden', [{ user_id: 1 }]);
       await waitForPromises();
     });
@@ -194,7 +192,7 @@ describe('Protected Environment Edit', () => {
     beforeEach(async () => {
       createComponent();
       updatedCount = 5;
-      mockAxios.onPatch().replyOnce(httpStatusCodes.OK, { required_approval_count: updatedCount });
+      mockAxios.onPatch().replyOnce(HTTP_STATUS_OK, { required_approval_count: updatedCount });
       findRequiredCountSelect().setValue(updatedCount);
       await waitForPromises();
     });
