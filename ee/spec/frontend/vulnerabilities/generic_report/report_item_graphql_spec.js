@@ -1,14 +1,19 @@
 import { shallowMount } from '@vue/test-utils';
 import ReportItem from 'ee/vulnerabilities/components/generic_report/report_item_graphql.vue';
 import {
+  GRAPHQL_TYPENAME_DIFF,
   GRAPHQL_TYPENAME_URL,
   GRAPHQL_TYPENAMES,
 } from 'ee/vulnerabilities/components/generic_report/types/constants';
-import { vulnerabilityDetailUrl } from 'ee_jest/security_dashboard/components/pipeline/mock_data';
+import {
+  vulnerabilityDetailDiff,
+  vulnerabilityDetailUrl,
+} from 'ee_jest/security_dashboard/components/pipeline/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 const TEST_DATA = {
   [GRAPHQL_TYPENAME_URL]: vulnerabilityDetailUrl,
+  [GRAPHQL_TYPENAME_DIFF]: vulnerabilityDetailDiff,
 };
 
 describe('ee/vulnerabilities/components/generic_report/report_item_graphql.vue', () => {
