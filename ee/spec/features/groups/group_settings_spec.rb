@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Edit group settings', feature_category: :subgroups do
+  include ListboxHelpers
   include Select2Helper
 
   let_it_be(:user) { create(:user) }
@@ -239,20 +240,10 @@ RSpec.describe 'Edit group settings', feature_category: :subgroups do
       end
 
       context 'group selection menu', :js do
-        before do
-          wait_for_all_requests
-          page.within('[data-testid="custom_project_templates_selector"]') do
-            find('.dropdown-toggle').click
-          end
-        end
-
         it 'shows only the subgroups' do
-          page.within('[data-testid="custom_project_templates_selector"] [role="listbox"]') do
-            results = find_all('[role="option"]')
+          click_button 'Search for a group'
 
-            expect(results.count).to eq(1)
-            expect(results.last.text).to eq "#{nested_group.full_name}\n#{nested_group.full_path}"
-          end
+          expect_listbox_items(["#{nested_group.full_name}\n#{nested_group.full_path}"])
         end
       end
     end
