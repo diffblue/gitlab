@@ -24,9 +24,7 @@ module Resolvers
 
     def resolve(**args)
       pure_finder = ::Security::PureFindingsFinder.new(pipeline, params: args)
-      utilize_finding_data = Feature.enabled?(:utilize_finding_data, pipeline.project)
-
-      return pure_finder.execute if utilize_finding_data && pure_finder.available?
+      return pure_finder.execute if pure_finder.available?
 
       # This finder class has been deprecated and will be removed by
       # https://gitlab.com/gitlab-org/gitlab/-/issues/334488.
