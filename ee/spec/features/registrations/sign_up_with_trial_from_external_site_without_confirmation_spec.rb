@@ -31,6 +31,8 @@ feature_category: :onboarding do
     fill_in 'new_user_username', with: user.username
     fill_in 'new_user_email', with: user.email
     fill_in 'new_user_password', with: user.password
+    wait_for_all_requests
+
     click_button 'Register'
 
     select 'Software Developer', from: 'user_role'
