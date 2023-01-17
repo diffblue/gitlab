@@ -13,7 +13,7 @@ import axios from '~/lib/utils/axios_utils';
 import extensionsContainer from '~/vue_merge_request_widget/components/extensions/container';
 import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
 import statusChecksExtension from 'ee/vue_merge_request_widget/extensions/status_checks';
-import httpStatus, { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
+import { HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import waitForPromises from 'helpers/wait_for_promises';
 import * as StatusCheckRetryApi from 'ee/api/status_check_api';
 
@@ -56,7 +56,7 @@ describe('Status checks extension', () => {
   describe('summary', () => {
     describe('when loading', () => {
       beforeEach(async () => {
-        await setupWithResponse(httpStatus.OK, new Promise(() => {}));
+        await setupWithResponse(HTTP_STATUS_OK, new Promise(() => {}));
       });
 
       it('should render loading text', () => {
@@ -87,7 +87,7 @@ describe('Status checks extension', () => {
         ${'failed and pending'}   | ${pendingAndFailedChecks}   | ${'1 failed, 1 pending'}
       `('and the status checks are $state', ({ response, text }) => {
         beforeEach(async () => {
-          await setupWithResponse(httpStatus.OK, response);
+          await setupWithResponse(HTTP_STATUS_OK, response);
         });
 
         it(`renders '${text}' in the report section`, () => {
@@ -99,7 +99,7 @@ describe('Status checks extension', () => {
 
   describe('expanded data', () => {
     beforeEach(async () => {
-      await setupWithResponse(httpStatus.OK, [
+      await setupWithResponse(HTTP_STATUS_OK, [
         ...approvedAndPendingChecks,
         {
           id: 4,
@@ -131,7 +131,7 @@ describe('Status checks extension', () => {
       ${'pending'}  | ${pendingChecks}
     `('and the status checks are $state', ({ response }) => {
       beforeEach(async () => {
-        await setupWithResponse(httpStatus.OK, response);
+        await setupWithResponse(HTTP_STATUS_OK, response);
         wrapper
           .find('[data-testid="widget-extension"] [data-testid="toggle-button"]')
           .trigger('click');
@@ -155,7 +155,7 @@ describe('Status checks extension', () => {
       }
 
       beforeEach(async () => {
-        await setupWithResponse(httpStatus.OK, failedChecks);
+        await setupWithResponse(HTTP_STATUS_OK, failedChecks);
         wrapper
           .find('[data-testid="widget-extension"] [data-testid="toggle-button"]')
           .trigger('click');

@@ -8,7 +8,7 @@ import last180DaysData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_
 import { useFixturesFakeDate } from 'helpers/fake_date';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-import httpStatus from '~/lib/utils/http_status';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 jest.mock('~/flash');
 
@@ -50,7 +50,7 @@ describe('lead_time_charts.vue', () => {
           start_date,
         },
       })
-      .replyOnce(httpStatus.OK, data);
+      .replyOnce(HTTP_STATUS_OK, data);
   };
 
   afterEach(() => {
@@ -122,8 +122,8 @@ describe('lead_time_charts.vue', () => {
     beforeEach(() => {
       mock = new MockAdapter(axios);
 
-      mock.onGet(/projects\/test%2Fproject\/dora\/metrics/).reply(httpStatus.OK, lastWeekData);
-      mock.onGet(/groups\/test%2Fgroup\/dora\/metrics/).reply(httpStatus.OK, lastWeekData);
+      mock.onGet(/projects\/test%2Fproject\/dora\/metrics/).reply(HTTP_STATUS_OK, lastWeekData);
+      mock.onGet(/groups\/test%2Fgroup\/dora\/metrics/).reply(HTTP_STATUS_OK, lastWeekData);
     });
 
     describe('when projectPath is provided', () => {

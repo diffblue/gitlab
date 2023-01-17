@@ -1,6 +1,6 @@
 import MockAdapter from 'axios-mock-adapter';
 import axios from '~/lib/utils/axios_utils';
-import httpStatus from '~/lib/utils/http_status';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import {
   getPolicyListUrl,
   getSchemaUrl,
@@ -91,7 +91,7 @@ describe(getSingleScanExecutionPolicySchema, () => {
   });
 
   it('returns the appropriate schema on request success', async () => {
-    mock.onGet().reply(httpStatus.OK, mockSchema);
+    mock.onGet().reply(HTTP_STATUS_OK, mockSchema);
 
     await expect(
       getSingleScanExecutionPolicySchema({

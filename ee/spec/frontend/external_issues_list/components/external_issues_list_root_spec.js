@@ -18,7 +18,7 @@ import {
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 import { i18n } from '~/issues/list/constants';
 import axios from '~/lib/utils/axios_utils';
-import httpStatus, { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 import {
   mockProvide,
@@ -368,7 +368,7 @@ describe('ExternalIssuesListRoot', () => {
       'sets `showPaginationControls` prop to $shouldShowPaginationControls when request $scenario',
       async ({ issues, shouldShowPaginationControls }) => {
         jest.spyOn(axios, 'get');
-        mock.onGet(mockProvide.issuesFetchPath).replyOnce(httpStatus.OK, issues, {
+        mock.onGet(mockProvide.issuesFetchPath).replyOnce(HTTP_STATUS_OK, issues, {
           'x-page': 1,
           'x-total': issues.length,
         });

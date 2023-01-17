@@ -3,7 +3,7 @@ import * as actions from 'ee/status_checks/store/actions';
 import * as types from 'ee/status_checks/store/mutation_types';
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
-import httpStatusCodes from '~/lib/utils/http_status';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 const statusChecksPath = '/api/v4/projects/1/external_status_checks';
 const rootState = { settings: { statusChecksPath } };
@@ -34,7 +34,7 @@ describe('Status checks actions', () => {
     it(`should commit the API response`, async () => {
       const data = [{ name: 'Foo' }, { name: 'Bar' }];
 
-      mockAxios.onGet(statusChecksPath).replyOnce(httpStatusCodes.OK, data);
+      mockAxios.onGet(statusChecksPath).replyOnce(HTTP_STATUS_OK, data);
 
       await actions.fetchStatusChecks({ commit, rootState });
 
@@ -68,7 +68,7 @@ describe('Status checks actions', () => {
     `(
       'should $httpMethod to the API and then dispatch fetchStatusChecks',
       async ({ action, axiosMethod, httpMethod, statusCheck, url }) => {
-        mockAxios[axiosMethod](url).replyOnce(httpStatusCodes.OK);
+        mockAxios[axiosMethod](url).replyOnce(HTTP_STATUS_OK);
 
         await actions[action]({ dispatch, rootState }, statusCheck);
 
@@ -84,7 +84,7 @@ describe('Status checks actions', () => {
     it(`should DELETE call the API and then dispatch a new fetchStatusChecks`, async () => {
       const id = 1;
 
-      mockAxios.onPost(statusChecksPath).replyOnce(httpStatusCodes.OK);
+      mockAxios.onPost(statusChecksPath).replyOnce(HTTP_STATUS_OK);
 
       await actions.postStatusCheck({ dispatch, rootState }, id);
 

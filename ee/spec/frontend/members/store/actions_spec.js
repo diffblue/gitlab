@@ -11,7 +11,7 @@ import {
 import * as types from 'ee/members/store/mutation_types';
 import testAction from 'helpers/vuex_action_helper';
 import { members, member } from 'jest/members/mock_data';
-import httpStatusCodes from '~/lib/utils/http_status';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 describe('Vuex members actions', () => {
   let mock;
@@ -67,7 +67,7 @@ describe('Vuex members actions', () => {
 
     describe('successful request', () => {
       it(`commits ${types.RECEIVE_LDAP_OVERRIDE_SUCCESS} mutation`, async () => {
-        mock.onPatch().replyOnce(httpStatusCodes.OK);
+        mock.onPatch().replyOnce(HTTP_STATUS_OK);
 
         await testAction(updateLdapOverride, payload, state, [
           {

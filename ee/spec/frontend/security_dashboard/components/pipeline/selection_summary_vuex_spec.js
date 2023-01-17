@@ -11,7 +11,7 @@ import {
   RECEIVE_VULNERABILITIES_SUCCESS,
 } from 'ee/security_dashboard/store/modules/vulnerabilities/mutation_types';
 import waitForPromises from 'helpers/wait_for_promises';
-import httpStatus from '~/lib/utils/http_status';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import mockDataVulnerabilities from '../../store/modules/vulnerabilities/data/mock_data_vulnerabilities';
 
 Vue.use(Vuex);
@@ -101,7 +101,7 @@ describe('Selection Summary', () => {
     });
 
     it('should make an API request for each vulnerability', async () => {
-      mock.onPost().reply(httpStatus.OK);
+      mock.onPost().reply(HTTP_STATUS_OK);
 
       selectByIndex(0);
       selectByIndex(1);

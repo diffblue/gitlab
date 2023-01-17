@@ -10,7 +10,7 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-import httpStatus from '~/lib/utils/http_status';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
 
 jest.mock('~/flash');
@@ -63,7 +63,7 @@ describe('deployment_frequency_charts.vue', () => {
           start_date,
         },
       })
-      .replyOnce(httpStatus.OK, data);
+      .replyOnce(HTTP_STATUS_OK, data);
   };
 
   const findValueStreamMetrics = () => wrapper.findComponent(ValueStreamMetrics);
@@ -185,8 +185,8 @@ describe('deployment_frequency_charts.vue', () => {
     beforeEach(() => {
       mock = new MockAdapter(axios);
 
-      mock.onGet(/projects\/test%2Fproject\/dora\/metrics/).reply(httpStatus.OK, lastWeekData);
-      mock.onGet(/groups\/test%2Fgroup\/dora\/metrics/).reply(httpStatus.OK, lastWeekData);
+      mock.onGet(/projects\/test%2Fproject\/dora\/metrics/).reply(HTTP_STATUS_OK, lastWeekData);
+      mock.onGet(/groups\/test%2Fgroup\/dora\/metrics/).reply(HTTP_STATUS_OK, lastWeekData);
     });
 
     describe('when projectPath is provided', () => {

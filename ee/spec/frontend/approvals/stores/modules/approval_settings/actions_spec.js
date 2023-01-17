@@ -5,7 +5,7 @@ import * as types from 'ee/approvals/stores/modules/approval_settings/mutation_t
 import getInitialState from 'ee/approvals/stores/modules/approval_settings/state';
 import testAction from 'helpers/vuex_action_helper';
 import axios from '~/lib/utils/axios_utils';
-import httpStatus, { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 describe('EE approvals group settings module actions', () => {
   let state;
@@ -28,7 +28,7 @@ describe('EE approvals group settings module actions', () => {
     describe('on success', () => {
       it('dispatches the request and updates payload', () => {
         const data = { allow_author_approval: true };
-        mock.onGet(approvalSettingsPath).replyOnce(httpStatus.OK, data);
+        mock.onGet(approvalSettingsPath).replyOnce(HTTP_STATUS_OK, data);
 
         return testAction(
           actions.fetchSettings,
@@ -84,7 +84,7 @@ describe('EE approvals group settings module actions', () => {
           require_password_to_approve: { value: true },
           retain_approvals_on_push: { value: true },
         };
-        mock[onMethod](approvalSettingsPath).replyOnce(httpStatus.OK, data);
+        mock[onMethod](approvalSettingsPath).replyOnce(HTTP_STATUS_OK, data);
 
         return testAction(
           actionsWithMethod.updateSettings,
