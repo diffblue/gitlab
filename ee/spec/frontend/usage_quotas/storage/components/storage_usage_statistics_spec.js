@@ -1,7 +1,7 @@
 import { GlLink, GlSprintf, GlProgressBar, GlButton } from '@gitlab/ui';
 import StorageStatisticsCard from 'ee/usage_quotas/storage/components/storage_statistics_card.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { projectHelpPaths } from 'ee/usage_quotas/storage/constants';
+import { projectHelpPaths } from '~/usage_quotas/storage/constants';
 import StorageUsageStatistics from 'ee/usage_quotas/storage/components/storage_usage_statistics.vue';
 
 import { withRootStorageStatistics } from '../mock_data';
