@@ -21,6 +21,8 @@ module Registrations
 
     feature_category :onboarding
 
+    urgency :low, [:create, :import]
+
     def new
       experiment(:require_verification_for_namespace_creation, user: current_user) do |e|
         e.candidate { set_requires_verification }
