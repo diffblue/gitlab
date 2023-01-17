@@ -193,20 +193,50 @@ RSpec.describe Integrations::GitlabSlackApplication, feature_category: :integrat
     end
   end
 
-  describe '#sections' do
-    it 'includes the expected sections' do
-      section_types = subject.sections.pluck(:type)
+  context 'when the integration is active' do
+    before do
+      subject.active = true
+    end
 
-      expect(section_types).to eq(
-        [
-          described_class::SECTION_TYPE_TRIGGER,
-          described_class::SECTION_TYPE_CONFIGURATION
-        ]
-      )
+    context 'when the feature flag is disabled' do
+      before do
+        stub_feature_flags(integration_slack_app_notifications: false)
+      end
+
+      it 'is not editable, and presents no editable fields' do
+        expect(subject).not_to be_editable
+        expect(subject.fields).to be_empty
+        expect(subject.configurable_events).to be_empty
+      end
+
+      it 'does not include sections' do
+        section_types = subject.sections.pluck(:type)
+
+        expect(section_types).to be_empty
+      end
+    end
+
+    context 'when the feature flag is enabled' do
+      it 'is editable, and presents editable fields' do
+        expect(subject).to be_editable
+        expect(subject.fields).not_to be_empty
+        expect(subject.configurable_events).not_to be_empty
+      end
+
+      it 'includes the expected sections' do
+        section_types = subject.sections.pluck(:type)
+
+        expect(section_types).to eq(
+          [
+            described_class::SECTION_TYPE_TRIGGER,
+            described_class::SECTION_TYPE_CONFIGURATION
+          ]
+        )
+      end
     end
   end
 
-  context 'when the integration is disabled' do
+  context 'when the integration is not active' do
     before do
       subject.active = false
     end
@@ -216,17 +246,11 @@ RSpec.describe Integrations::GitlabSlackApplication, feature_category: :integrat
       expect(subject.fields).to be_empty
       expect(subject.configurable_events).to be_empty
     end
-  end
 
-  context 'when the feature flag is disabled' do
-    before do
-      stub_feature_flags(integration_slack_app_notifications: false)
-    end
+    it 'does not include sections' do
+      section_types = subject.sections.pluck(:type)
 
-    it 'is not editable, and presents no editable fields' do
-      expect(subject).not_to be_editable
-      expect(subject.fields).to be_empty
-      expect(subject.configurable_events).to be_empty
+      expect(section_types).to be_empty
     end
   end
 
