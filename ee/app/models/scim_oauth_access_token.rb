@@ -24,6 +24,10 @@ class ScimOauthAccessToken < ApplicationRecord
     token && !token.group_id
   end
 
+  def self.find_for_instance
+    find_by_group_id(nil)
+  end
+
   def as_entity_json
     ScimOauthAccessTokenEntity.new(self).as_json
   end
