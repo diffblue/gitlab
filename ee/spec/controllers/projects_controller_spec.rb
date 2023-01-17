@@ -554,6 +554,47 @@ RSpec.describe ProjectsController do
       end
     end
 
+    context 'analytics dashboards pointer setting' do
+      let_it_be(:project, reload: true) { create(:project, namespace: group) }
+      let_it_be(:another_project) do
+        create(:project, namespace: group).tap { |p| p.add_maintainer(user) }
+      end
+
+      let(:params) do
+        {
+          id: project,
+          namespace_id: project.namespace,
+          project: {
+            analytics_dashboards_pointer_attributes: { target_project_id: another_project.id }
+          }
+        }
+      end
+
+      context 'without correct license' do
+        before do
+          stub_licensed_features(project_level_analytics_dashboard: false)
+
+          put :update, params: params
+        end
+
+        it 'ignores input' do
+          expect(project.analytics_dashboards_configuration_project).to be_nil
+        end
+      end
+
+      context 'with correct license' do
+        before do
+          stub_licensed_features(project_level_analytics_dashboard: true)
+
+          put :update, params: params
+        end
+
+        it 'updates analytics dashboards configuration project' do
+          expect(project.analytics_dashboards_configuration_project).to eq another_project
+        end
+      end
+    end
+
     context 'compliance framework settings' do
       let(:group) { create(:group) }
       let(:project) { create(:project, group: group) }

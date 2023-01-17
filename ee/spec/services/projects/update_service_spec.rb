@@ -5,11 +5,12 @@ require 'spec_helper'
 RSpec.describe Projects::UpdateService, '#execute' do
   include EE::GeoHelpers
 
-  let(:user) { create(:user) }
-  let(:admin) { create(:user, :admin) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:admin) { create(:user, :admin) }
   let(:project) { create(:project, :repository, creator: user, namespace: user.namespace) }
 
   context 'shared runners', :saas do
+    let(:user) { create(:user) }
     let(:opts) { { shared_runners_enabled: enabled } }
     let(:enabled) { true }
 
@@ -278,7 +279,7 @@ RSpec.describe Projects::UpdateService, '#execute' do
 
   context 'triggering wiki Geo syncs', :geo do
     context 'on a Geo primary' do
-      let_it_be(:primary)   { create(:geo_node, :primary) }
+      let_it_be(:primary) { create(:geo_node, :primary) }
       let_it_be(:secondary) { create(:geo_node) }
 
       before do
@@ -564,6 +565,36 @@ RSpec.describe Projects::UpdateService, '#execute' do
 
     expect(project.import_data).to be_nil
     expect(project).not_to be_mirror
+  end
+
+  context 'updating analytics_dashboards_pointer_attributes.target_project_id param' do
+    let_it_be(:user) { create :user }
+    let_it_be(:group) { create(:group) { |g| g.add_owner(user) } }
+
+    let(:project) { create :project, namespace: group }
+    let(:sibling_project) { create :project, namespace: group }
+
+    let(:attrs) { { analytics_dashboards_pointer_attributes: { target_project_id: sibling_project.id } } }
+
+    it 'updates the Analytics Dashboards pointer project' do
+      update_project(project, user, attrs)
+
+      expect(project.analytics_dashboards_pointer.target_project).to eq(sibling_project)
+    end
+
+    context 'when pointer project is empty' do
+      let(:existing_pointer) do
+        create(:analytics_dashboards_pointer, project: project, namespace: nil, target_project: sibling_project)
+      end
+
+      let(:attrs) { { analytics_dashboards_pointer_attributes: { id: existing_pointer.id, target_project_id: '' } } }
+
+      it 'removes pointer project' do
+        update_project(project, user, attrs)
+
+        expect(project.reload.analytics_dashboards_pointer).to eq(nil)
+      end
+    end
   end
 
   def update_project(project, user, opts)

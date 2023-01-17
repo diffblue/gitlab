@@ -3,6 +3,6 @@
 FactoryBot.define do
   factory :analytics_dashboards_pointer, class: 'Analytics::DashboardsPointer' do
     namespace
-    project
+    target_project factory: :project
   end
 end

@@ -208,6 +208,7 @@ module GitlabSubscriptions
       personal_access_token_expiration_policy
       product_analytics
       project_quality_summary
+      project_level_analytics_dashboard
       prometheus_alerts
       quality_management
       related_epics

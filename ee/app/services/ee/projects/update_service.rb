@@ -36,6 +36,8 @@ module EE
           end
         end
 
+        prepare_analytics_dashboards_params!
+
         result = super do
           # Repository size limit comes as MB from the view
           project.repository_size_limit = ::Gitlab::Utils.try_megabytes_to_bytes(limit) if limit
@@ -56,6 +58,15 @@ module EE
       end
 
       private
+
+      def prepare_analytics_dashboards_params!
+        if params[:analytics_dashboards_pointer_attributes] &&
+            params[:analytics_dashboards_pointer_attributes][:target_project_id].blank?
+
+          params[:analytics_dashboards_pointer_attributes][:_destroy] = true
+          params[:analytics_dashboards_pointer_attributes].delete(:target_project_id)
+        end
+      end
 
       def trigger_project_registration
         return unless params[:project_setting_attributes].present? &&

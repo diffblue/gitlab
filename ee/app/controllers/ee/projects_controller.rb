@@ -130,6 +130,10 @@ module EE
         attrs << :auto_rollback_enabled
       end
 
+      if project&.feature_available?(:project_level_analytics_dashboard)
+        attrs << { analytics_dashboards_pointer_attributes: [:id, :target_project_id, :_destroy] }
+      end
+
       if allow_mirror_params?
         attrs + mirror_params
       else
