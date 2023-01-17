@@ -64,6 +64,25 @@ The endpoint to get the configuration of approvals for a project returns empty a
 
 </div>
 
+<div class="deprecation removal-160 breaking-change">
+
+### Auto DevOps no longer provisions a PostgreSQL database by default
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+Currently, Auto DevOps provisions an in-cluster PostgreSQL database by default.
+In GitLab 16.0, databases will be provisioned only for users who opt in. This
+change supports production deployments that require more robust database management.
+
+If you want Auto DevOps to provision an in-cluster database,
+set the `POSTGRES_ENABLED` CI/CD variable to `true`.
+
+</div>
+
 <div class="deprecation removal-170 breaking-change">
 
 ### Auto DevOps support for Herokuish is deprecated
