@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Trial Select Namespace', :js, feature_category: :purchase do
-  include ListboxInputHelper
+  include ListboxHelpers
 
   let_it_be(:group) { create(:group, path: 'group-test') }
   let_it_be(:new_group_name) { 'GitLab' }
@@ -41,7 +41,7 @@ RSpec.describe 'Trial Select Namespace', :js, feature_category: :purchase do
 
     context 'selects create a new group' do
       before do
-        listbox_input "Create group", from: '[data-testid="namespace-selector"]'
+        select_from_listbox 'Create group', from: 'Please select a group'
       end
 
       it 'shows the new group name input' do
@@ -113,7 +113,7 @@ RSpec.describe 'Trial Select Namespace', :js, feature_category: :purchase do
 
     context 'selects an existing group' do
       before do
-        listbox_input group.name, from: '[data-testid="namespace-selector"]'
+        select_from_listbox group.name, from: 'Please select a group'
       end
 
       context 'without trial plan' do
@@ -149,7 +149,7 @@ RSpec.describe 'Trial Select Namespace', :js, feature_category: :purchase do
           expect(find_field('namespace_id', type: :hidden).value).to eq(group.id.to_s)
 
           # new group name should be functional
-          listbox_input 'Create group', from: '[data-testid="namespace-selector"]'
+          select_from_listbox 'Create group', from: group.name
 
           expect(page).to have_field('new_group_name')
           expect(find('#trial_entity_individual').checked?).to be(false)

@@ -42,7 +42,6 @@ export default {
       v-model="selectedGroup"
       name="namespace_id"
       data-qa-selector="subscription_for"
-      data-testid="namespace-selector"
       :label="$options.i18n.groupSelectLabel"
       :items="items"
       :default-toggle-text="$options.i18n.defaultToggleText"

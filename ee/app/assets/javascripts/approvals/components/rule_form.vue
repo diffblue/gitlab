@@ -344,6 +344,8 @@ export default {
     },
   },
   APPROVAL_DIALOG_I18N,
+  ruleNameInput: 'rule-name-input',
+  approvalsRequiredInput: 'approvals-required-input',
 };
 </script>
 
@@ -352,12 +354,14 @@ export default {
     <gl-form-group
       v-if="showName"
       :label="$options.APPROVAL_DIALOG_I18N.form.nameLabel"
+      :label-for="$options.ruleNameInput"
       :description="$options.APPROVAL_DIALOG_I18N.form.nameDescription"
       :state="isValidName"
       :invalid-feedback="invalidName"
       data-testid="name-group"
     >
       <gl-form-input
+        :id="$options.ruleNameInput"
         v-model="name"
         :disabled="isNameDisabled"
         :state="isValidName"
@@ -383,11 +387,13 @@ export default {
     </gl-form-group>
     <gl-form-group
       :label="$options.APPROVAL_DIALOG_I18N.form.approvalsRequiredLabel"
+      :label-for="$options.approvalsRequiredInput"
       :state="isValidApprovalsRequired"
       :invalid-feedback="invalidApprovalsRequired"
       data-testid="approvals-required-group"
     >
       <gl-form-input
+        :id="$options.approvalsRequiredInput"
         v-model.number="approvalsRequired"
         :state="isValidApprovalsRequired"
         :min="minApprovalsRequired"
