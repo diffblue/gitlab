@@ -47,7 +47,7 @@ RSpec.describe WorkItems::Widgets::HealthStatusService::UpdateService, feature_c
           project.add_reporter(user)
         end
 
-        it 'sets the health_status for the work item' do
+        it 'sets the health_status for the work item and triggers subscription' do
           update_health_status
 
           expect(work_item.health_status).to eq('on_track')

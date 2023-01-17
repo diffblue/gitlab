@@ -130,6 +130,46 @@ RSpec.describe WorkItems::UpdateService do
           end
         end
       end
+
+      context 'for the health_status widget' do
+        let(:widget_params) { { health_status_widget: { health_status: new_health_status } } }
+
+        before do
+          stub_licensed_features(issuable_health_status: true)
+
+          work_item.update!(health_status: :needs_attention)
+        end
+
+        context 'when health_status is changed' do
+          let(:new_health_status) { :on_track }
+
+          it "triggers 'issuableHealthStatusUpdated' subscription" do
+            expect(GraphqlTriggers).to receive(:issuable_health_status_updated).with(work_item).and_call_original
+
+            subject
+          end
+        end
+
+        context 'when health_status remains unchanged' do
+          let(:new_health_status) { :needs_attention }
+
+          it "does not trigger 'issuableHealthStatusUpdated' subscription" do
+            expect(GraphqlTriggers).not_to receive(:issuable_health_status_updated)
+
+            subject
+          end
+        end
+
+        context 'when health_status widget param is not provided' do
+          let(:widget_params) { {} }
+
+          it "does not trigger 'issuableHealthStatusUpdated' subscription" do
+            expect(GraphqlTriggers).not_to receive(:issuable_health_status_updated)
+
+            subject
+          end
+        end
+      end
     end
   end
 end
