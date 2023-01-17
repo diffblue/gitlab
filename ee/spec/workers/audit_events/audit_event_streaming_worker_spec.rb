@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AuditEvents::AuditEventStreamingWorker do
+RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_events do
   let(:worker) { described_class.new }
 
   before do
@@ -332,6 +332,18 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
         subject { worker.perform('audit_operation', nil, event.to_json(methods: [:root_group_entity_id])) }
 
         include_context 'audit event stream'
+      end
+    end
+
+    context 'when connecting to redis fails' do
+      before do
+        allow(Gitlab::UsageDataCounters::StreamingAuditEventTypeCounter).to receive(:count).and_raise(Redis::CannotConnectError)
+      end
+
+      it_behaves_like 'a successful audit event stream' do
+        let_it_be(:group) { create(:group) }
+        let_it_be(:project) { create(:project, group: group) }
+        let_it_be(:event) { create(:audit_event, :project_event, target_project: project) }
       end
     end
   end
