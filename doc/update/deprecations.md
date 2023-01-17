@@ -266,6 +266,31 @@ Moving forward, we'll continue to invest in developing and releasing new feature
 
 </div>
 
+<div class="deprecation removal-160 breaking-change">
+
+### The API no longer returns revoked tokens for the agent for Kubernetes
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+Currently, GET requests to the [Cluster Agents API](https://docs.gitlab.com/ee/api/cluster_agents.html#list-tokens-for-an-agent)
+endpoints can return revoked tokens. In GitLab 16.0, GET requests will not return revoked tokens.
+
+You should review your calls to these endpoints and ensure you do not use revoked tokens.
+
+This change affects the following REST and GraphQL API endpoints:
+
+- REST API:
+  - [List tokens](https://docs.gitlab.com/ee/api/cluster_agents.html#list-tokens-for-an-agent)
+  - [Get a single token](https://docs.gitlab.com/ee/api/cluster_agents.html#get-a-single-agent-token)
+- GraphQL:
+  - [`ClusterAgent.tokens`](https://docs.gitlab.com/ee/api/graphql/reference/#clusteragenttokens)
+
+</div>
+
 <div class="deprecation removal-170 breaking-change">
 
 ### The Visual Reviews tool is deprecated
