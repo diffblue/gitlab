@@ -46,6 +46,7 @@ export default {
     return {
       isLoading: false,
       isCreatingIssue: false,
+      isDismissingFinding: false,
       modalData: null,
       vulnerabilities: {
         collapsed: null,
@@ -253,7 +254,7 @@ export default {
       // We want to keep a reference to the `finding` object so that whenever
       // that object is updated, also the `vulnerability.collapsed` state is updated.
       this.modalData.vulnerability.isDismissed = this.isDismissed(finding);
-      this.modalData.vulnerability.isDismissingFinding = false;
+      this.isDismissingFinding = false;
 
       this.$root.$emit(BV_SHOW_MODAL, VULNERABILITY_MODAL_ID);
     },
@@ -292,7 +293,7 @@ export default {
         vulnerabilityName: finding.name,
       });
 
-      this.modalData.vulnerability.isDismissingFinding = true;
+      this.isDismissingFinding = true;
 
       return axios
         .post(this.mr.createVulnerabilityFeedbackDismissalPath, {
@@ -310,7 +311,7 @@ export default {
           this.modalData.vulnerability.state = 'dismissed';
           this.modalData.vulnerability.isDismissed = true;
           this.$set(this.modalData.vulnerability, 'dismissal_feedback', data);
-          this.$root.$emit(BV_HIDE_MODAL, VULNERABILITY_MODAL_ID);
+          this.hideModal();
           toast(toastMsg);
         })
         .catch((error) => {
@@ -324,12 +325,12 @@ export default {
             : s__('ciReport|There was an error dismissing the vulnerability. Please try again.');
         })
         .finally(() => {
-          this.modalData.vulnerability.isDismissingFinding = false;
+          this.isDismissingFinding = false;
         });
     },
 
     revertDismissVulnerability() {
-      this.modalData.vulnerability.isDismissingFinding = true;
+      this.isDismissingFinding = true;
 
       axios
         .delete(
@@ -339,8 +340,7 @@ export default {
         .then(() => {
           this.modalData.vulnerability.state = 'detected';
           this.modalData.vulnerability.isDismissed = false;
-
-          this.$root.$emit(BV_HIDE_MODAL, VULNERABILITY_MODAL_ID);
+          this.hideModal();
         })
         .catch(() => {
           this.modalData.error = s__(
@@ -348,7 +348,7 @@ export default {
           );
         })
         .finally(() => {
-          this.modalData.vulnerability.isDismissingFinding = false;
+          this.isDismissingFinding = false;
         });
     },
 
@@ -358,6 +358,40 @@ export default {
 
     closeDismissalCommentBox() {
       this.$set(this.modalData, 'isCommentingOnDismissal', false);
+    },
+
+    editDismissalComment(comment) {
+      const { vulnerability: finding } = this.modalData;
+      const dismissalFeedback = finding.dismissal_feedback;
+      const url = `${this.mr.createVulnerabilityFeedbackDismissalPath}/${dismissalFeedback.id}`;
+      const toastMsg = sprintf(s__("SecurityReports|Comment edited on '%{vulnerabilityName}'"), {
+        vulnerabilityName: finding.name,
+      });
+
+      // This will cause the spinner to be displayed
+      this.isDismissingFinding = true;
+
+      return axios
+        .patch(url, {
+          project_id: dismissalFeedback.project_id,
+          id: dismissalFeedback.id,
+          comment,
+        })
+        .then(({ data }) => {
+          this.modalData.vulnerability.dismissal_feedback = data;
+          toast(toastMsg);
+          this.hideModal();
+        })
+        .catch(() => {
+          this.modalData.error = s__('SecurityReports|There was an error adding the comment.');
+        })
+        .finally(() => {
+          this.isDismissingFinding = false;
+        });
+    },
+
+    hideModal() {
+      this.$root.$emit(BV_HIDE_MODAL, VULNERABILITY_MODAL_ID);
     },
   },
   SEVERITY_LEVELS,
@@ -397,11 +431,12 @@ export default {
         v-if="modalData"
         :visible="true"
         :modal="modalData"
-        :is-dismissing-vulnerability="modalData.vulnerability.isDismissingFinding"
+        :is-dismissing-vulnerability="isDismissingFinding"
         :is-creating-merge-request="false"
         :is-creating-issue="isCreatingIssue"
         :can-create-issue="canCreateIssue"
         :can-dismiss-vulnerability="canDismissFinding"
+        @addDismissalComment="editDismissalComment"
         @closeDismissalCommentBox="closeDismissalCommentBox"
         @openDismissalCommentBox="openDismissalCommentBox"
         @editVulnerabilityDismissalComment="openDismissalCommentBox"
