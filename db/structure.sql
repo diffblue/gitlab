@@ -19586,7 +19586,10 @@ CREATE TABLE plan_limits (
     ci_max_artifact_size_cyclonedx integer DEFAULT 1 NOT NULL,
     rpm_max_file_size bigint DEFAULT '5368709120'::bigint NOT NULL,
     ci_max_artifact_size_requirements_v2 integer DEFAULT 0 NOT NULL,
-    pipeline_hierarchy_size integer DEFAULT 1000 NOT NULL
+    pipeline_hierarchy_size integer DEFAULT 1000 NOT NULL,
+    enforcement_limit integer DEFAULT 0 NOT NULL,
+    notification_limit integer DEFAULT 0 NOT NULL,
+    dashboard_limit_enabled_at timestamp with time zone
 );
 
 CREATE SEQUENCE plan_limits_id_seq
