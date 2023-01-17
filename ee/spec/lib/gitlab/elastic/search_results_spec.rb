@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query do
+RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature_category: :global_search do
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
   end
