@@ -116,7 +116,7 @@ describe('ScimToken', () => {
       });
     });
   };
-  const itShowsLoadingIconThenCallsCreateFlash = (expectedErrorMessage) => {
+  const itShowsLoadingIconThenCallsCreateAlert = (expectedErrorMessage) => {
     it('shows loading icon then calls `createAlert`', async () => {
       expectLoadingIconExists();
 
@@ -169,7 +169,7 @@ describe('ScimToken', () => {
           await findGenerateTokenButton().trigger('click');
         });
 
-        itShowsLoadingIconThenCallsCreateFlash(ScimToken.i18n.generateTokenErrorMessage);
+        itShowsLoadingIconThenCallsCreateAlert(ScimToken.i18n.generateTokenErrorMessage);
       });
     });
   });
@@ -240,7 +240,7 @@ describe('ScimToken', () => {
           resetAndConfirm();
         });
 
-        itShowsLoadingIconThenCallsCreateFlash(ScimToken.i18n.resetTokenErrorMessage);
+        itShowsLoadingIconThenCallsCreateAlert(ScimToken.i18n.resetTokenErrorMessage);
       });
     });
   });
