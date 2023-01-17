@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::Latest::UserClassProxy do
+RSpec.describe Elastic::Latest::UserClassProxy, feature_category: :global_search do
   subject { described_class.new(User) }
 
   let(:query) { 'bob' }
@@ -26,9 +26,9 @@ RSpec.describe Elastic::Latest::UserClassProxy do
         allow(subject).to receive(:search).and_return(response)
       end
 
-      it 'calls fuzzy_query, ancestry_query and forbidden_states_filter' do
+      it 'calls fuzzy_query, namespace_query and forbidden_states_filter' do
         expect(subject).to receive(:fuzzy_query).once
-        expect(subject).to receive(:ancestry_query).once
+        expect(subject).to receive(:namespace_query).once
         expect(subject).to receive(:forbidden_states_filter).once
 
         subject.elastic_search(query)
@@ -36,13 +36,13 @@ RSpec.describe Elastic::Latest::UserClassProxy do
 
       describe 'query' do
         let(:fuzzy_query_result) { instance_double(Array) }
-        let(:ancestry_query_result) { instance_double(Array) }
         let(:forbidden_states_query_result) { instance_double(Array) }
+        let(:namespace_query_result) { fuzzy_query_result }
 
         before do
           allow(subject).to receive(:fuzzy_query).and_return(fuzzy_query_result)
-          allow(subject).to receive(:ancestry_query).and_return(ancestry_query_result)
           allow(subject).to receive(:forbidden_states_filter).and_return(forbidden_states_query_result)
+          allow(subject).to receive(:namespace_query).and_return(namespace_query_result)
         end
 
         it 'builds a bool query with musts and filters' do
@@ -59,13 +59,31 @@ RSpec.describe Elastic::Latest::UserClassProxy do
 
           subject.elastic_search(query)
         end
+
+        context 'with count_only passed in arguments' do
+          it 'builds a bool query with filters only and size is 0' do
+            query_hash = {
+              query: {
+                bool: {
+                  must: [],
+                  filter: forbidden_states_query_result
+                }
+              },
+              size: 0
+            }
+
+            expect(subject).to receive(:search).with(query_hash, any_args).once
+
+            subject.elastic_search(query, options: { count_only: true })
+          end
+        end
       end
     end
   end
 
   describe '#fuzzy_query' do
     let(:query_hash) do
-      subject.fuzzy_query(filters: musts, query: query, search_fields: fuzzy_search_fields, options: options)
+      subject.fuzzy_query(clauses: musts, query: query, search_fields: fuzzy_search_fields, options: options)
     end
 
     let(:musts) { [] }
@@ -110,41 +128,79 @@ RSpec.describe Elastic::Latest::UserClassProxy do
     end
   end
 
-  describe '#ancestry_query' do
-    let(:query_hash) { subject.ancestry_query(filters, options) }
-    let(:filters) { [] }
+  describe '#namespace_query' do
+    let(:query_hash) { subject.namespace_query(musts, options) }
+    let(:musts) { [] }
     let(:options) { { current_user: user } }
     let_it_be(:user) { create(:user) }
 
-    it 'returns filters if no groups or projects are passed in' do
-      expect(query_hash).to eq(filters)
+    it 'returns musts if no groups or projects are passed in' do
+      expect(query_hash).to eq(musts)
     end
 
-    context 'with projects' do
+    context 'with a project' do
       let_it_be(:project) { create(:project) }
-      let(:options) { { current_user: user, projects: [project] } }
+      let(:options) { { current_user: user, project_id: project.id } }
 
-      it 'calls ApplicationClassProxy.ancestry_filter with the project namespace id' do
-        project_namespace_ancestry = project.elastic_namespace_ancestry
+      it 'has a terms query with the full ancestry and its namespace' do
+        full_ancestry = "#{project.namespace.id}-p#{project.id}-"
+        namespace = "#{project.namespace.id}-"
 
-        expect(project_namespace_ancestry).to eq("#{project.namespace.id}-p#{project.id}-")
-        expect(subject).to receive(:ancestry_filter).with(any_args, [project_namespace_ancestry]).once
+        expected_hash = { bool: { should: [{ terms: { namespace_ancestry_ids: [namespace, full_ancestry] } }] } }
+        expect(query_hash).to match_array([expected_hash])
+      end
 
-        query_hash
+      context 'when the project belongs to a group with an ancestor' do
+        let_it_be(:parent_group) { create(:group) }
+        let_it_be(:group) { create(:group, parent: parent_group) }
+
+        before do
+          project.namespace = group
+          project.save!
+        end
+
+        it 'has a terms query with the full ancestry and individual parts of the ancestry' do
+          full_ancestry = "#{parent_group.id}-#{group.id}-p#{project.id}-"
+          group_ancestry = "#{parent_group.id}-#{group.id}-"
+          parent_group_ancestry = "#{parent_group.id}-"
+
+          expected_terms = [parent_group_ancestry, group_ancestry, full_ancestry]
+          expected_hash = { bool: { should: [{ terms: { namespace_ancestry_ids: expected_terms } }] } }
+
+          expect(query_hash).to match_array([expected_hash])
+        end
       end
     end
 
-    context 'with groups' do
+    context 'with a group' do
       let_it_be(:group) { create(:group) }
-      let(:options) { { current_user: user, groups: [group] } }
+      let(:options) { { current_user: user, group_id: group.id } }
 
-      it 'calls ApplicationClassProxy.ancestry_filter with the group namespace id' do
-        group_namespace_ancestry = group.elastic_namespace_ancestry
+      it 'has a prefix query with the group ancestry' do
+        group_ancestry = "#{group.id}-"
 
-        expect(group_namespace_ancestry).to eq("#{group.id}-")
-        expect(subject).to receive(:ancestry_filter).with(any_args, [group_namespace_ancestry]).once
+        expected_hash = { bool: { should: [{ prefix: { namespace_ancestry_ids: { value: group_ancestry } } }] } }
+        expect(query_hash).to match_array([expected_hash])
+      end
 
-        query_hash
+      context 'when the group has a parent group' do
+        let_it_be(:parent_group) { create(:group) }
+
+        before do
+          group.parent = parent_group
+          group.save!
+        end
+
+        it 'has a prefix query with the group ancestry and a terms query with the parent group ancestry' do
+          full_ancestry = "#{parent_group.id}-#{group.id}-"
+          parent_group_ancestry = "#{parent_group.id}-"
+
+          expected_prefix_hash = { prefix: { namespace_ancestry_ids: { value: full_ancestry } } }
+          expected_terms_hash = { terms: { namespace_ancestry_ids: [parent_group_ancestry] } }
+
+          expected_hash = { bool: { should: [expected_prefix_hash, expected_terms_hash] } }
+          expect(query_hash).to match_array([expected_hash])
+        end
       end
     end
   end

@@ -26,7 +26,7 @@ module Gitlab
         when :issues
           super.merge(group_ids: [group.id])
         when :users
-          super.merge(groups: group.self_and_hierarchy_intersecting_with_user_groups(current_user))
+          super.merge(group_id: group.id)
         else
           super
         end
