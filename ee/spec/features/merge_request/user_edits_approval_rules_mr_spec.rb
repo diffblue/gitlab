@@ -3,8 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature_category: :code_review_workflow do
-  include FeatureApprovalHelper
-  include ListboxInputHelper
+  include ListboxHelpers
 
   include_context 'with project with approval rules'
 
@@ -22,8 +21,6 @@ RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature
       )
     end
   end
-
-  let(:modal_selector) { '#mr-edit-approvals-create-modal' }
 
   def page_rule_names
     page.all('.js-approval-rules table .js-name')
@@ -54,14 +51,11 @@ RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature
 
     click_button "Add approval rule"
 
-    within_fieldset('Rule name') do
-      fill_in with: rule_name
+    within '[role="dialog"]' do
+      fill_in 'Rule name', with: rule_name
+      select_from_listbox approver.name, from: 'Search users or groups'
+      click_button 'Add approval rule'
     end
-
-    listbox_input approver.name, from: modal_selector
-
-    find("#{modal_selector} button", text: 'Add approval rule').click
-    wait_for_requests
 
     expect(page_rule_names.last).to have_text(rule_name)
   end
@@ -86,20 +80,16 @@ RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature
     end
 
     it "with empty search, does not show public group" do
-      open_approver_select
+      click_button 'Search users or groups'
 
-      expect(page).not_to have_selector('.gl-listbox-item', text: public_group.name)
+      expect_no_listbox_item(public_group.name)
     end
 
     it "with non-empty search, shows public group" do
-      open_approver_select
+      click_button 'Search users or groups'
+      send_keys public_group.name
 
-      within(modal_selector) do
-        find('[data-testid="listbox-search-input"]').fill_in(with: public_group.name)
-      end
-      wait_for_requests
-
-      expect(page).to have_selector('.gl-listbox-item', text: public_group.name)
+      expect_listbox_item(public_group.name)
     end
   end
 

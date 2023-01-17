@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :code_review_workflow do
   include ProjectForksHelper
   include FeatureApprovalHelper
+  include ListboxHelpers
 
   let(:user) { create(:user) }
   let(:project) { create(:project, :public, :repository) }
@@ -25,7 +26,7 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
 
     it 'does not allow setting the author as an approver but allows setting the current user as an approver' do
       open_modal(text: 'Add approval rule')
-      open_approver_select
+      click_button 'Search users or groups'
 
       expect(find('.gl-dropdown-contents')).not_to have_content(author.name)
       expect(find('.gl-dropdown-contents')).to have_content(user.name)
@@ -47,7 +48,7 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
 
     it 'allows setting other users as approvers but does not allow setting the current user as an approver, and filters non members from approvers list', :sidekiq_might_not_need_inline do
       open_modal(text: 'Add approval rule')
-      open_approver_select
+      click_button 'Search users or groups'
 
       expect(find('.gl-dropdown-contents')).to have_content(other_user.name)
       expect(find('.gl-dropdown-contents')).not_to have_content(non_member.name)
@@ -73,19 +74,19 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
         visit project_new_merge_request_path(project, merge_request: { target_branch: 'master', source_branch: 'feature' })
 
         open_modal(text: 'Add approval rule')
-        open_approver_select
+        click_button 'Search users or groups'
 
-        expect(find('.gl-dropdown-contents')).not_to have_content(group.name)
+        expect_no_listbox_item(group.name)
 
         group.add_developer(user) # only display groups that user has access to
 
         visit project_new_merge_request_path(project, merge_request: { target_branch: 'master', source_branch: 'feature' })
         open_modal(text: 'Add approval rule')
-        open_approver_select
+        click_button 'Search users or groups'
 
-        expect(find('.gl-dropdown-contents')).to have_content(group.name)
+        expect_listbox_item(group.name)
 
-        find('.gl-listbox-item', text: group.name).click
+        select_listbox_item(group.name)
 
         within('.modal-content') do
           click_button 'Add approval rule'
@@ -144,11 +145,11 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
         visit edit_project_merge_request_path(group_project, group_project_merge_request)
 
         open_modal(text: 'Add approval rule')
-        open_approver_select
+        click_button 'Search users or groups'
 
-        expect(find('.gl-dropdown-contents')).to have_content(group.name)
+        expect_listbox_item(group.name)
 
-        find('.gl-listbox-item', text: group.name).click
+        select_listbox_item(group.name)
         within('.modal-content') do
           click_button 'Add approval rule'
         end
@@ -205,11 +206,9 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
         find('.detail-page-header-actions').click_on 'Edit'
         open_modal
 
-        within_fieldset('Approvals required') do
-          expect(find_field.value).to eq '2'
+        expect(page).to have_field 'Approvals required', with: '2'
 
-          fill_in with: '3'
-        end
+        fill_in 'Approvals required', with: '3'
 
         click_button 'Update approval rule'
         click_on('Save changes')
@@ -224,9 +223,7 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
 
         open_modal
 
-        within_fieldset('Approvals required') do
-          expect(find_field.value).to eq '3'
-        end
+        expect(page).to have_field 'Approvals required', with: '3'
       end
     end
   end
