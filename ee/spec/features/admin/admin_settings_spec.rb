@@ -578,6 +578,34 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
   end
 
+  describe 'SCIM token', feature_category: :authentication_and_authorization do
+    context 'when the feature is not licensed' do
+      before do
+        stub_licensed_features(instance_level_scim: false)
+        visit general_admin_application_settings_path
+      end
+
+      it 'does not display the section when not licensed' do
+        expect(page).not_to have_content(s_('SCIM|SCIM Token'))
+      end
+    end
+
+    context 'when the feature is licensed' do
+      before do
+        stub_licensed_features(instance_level_scim: true)
+        visit general_admin_application_settings_path
+      end
+
+      it 'displays the section', :js, :aggregate_failures do
+        expect(page).to have_content(s_('SCIM|SCIM Token'))
+
+        click_button s_('GroupSAML|Generate a SCIM token')
+        expect(page).to have_content s_('GroupSaml|Your SCIM token')
+        expect(page).to have_content s_('GroupSaml|SCIM API endpoint URL')
+      end
+    end
+  end
+
   def current_settings
     ApplicationSetting.current_without_cache
   end

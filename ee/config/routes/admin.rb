@@ -44,6 +44,8 @@ namespace :admin do
     get :seat_link_payload
     match :templates, :advanced_search, via: [:get, :patch]
     get :geo, to: "geo/settings#show"
+
+    resource :scim_oauth, only: [:create], controller: :scim_oauth, module: 'application_settings'
   end
 
   namespace :geo do

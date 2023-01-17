@@ -73,6 +73,14 @@ RSpec.describe ScimOauthAccessToken, feature_category: :authentication_and_autho
     end
   end
 
+  describe '.find_for_instance' do
+    let!(:scim_token) { create(:scim_oauth_access_token, group: nil) }
+
+    it 'find a token with group id nil' do
+      expect(described_class.find_for_instance).to eq(scim_token)
+    end
+  end
+
   describe '#token' do
     it 'generates a token on creation' do
       scim_token = described_class.create!(group: create(:group))
