@@ -307,6 +307,29 @@ Due to limited customer usage and capabilities, the Visual Reviews feature for R
 
 <div class="deprecation removal-160 breaking-change">
 
+### The latest Terraform templates will overwrite current stable templates
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+With every major GitLab version, we update the stable Terraform templates with the current latest templates.
+This change affects the [quickstart](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Terraform.gitlab-ci.yml)
+and the [base](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Terraform/Base.gitlab-ci.yml) templates.
+
+Because the new templates ship with default rules, the update might break your Terraform pipelines.
+For example, if your Terraform jobs are triggered as a downstream pipeline, the rules won't trigger your jobs
+in GitLab 16.0.
+
+To accommodate the changes, you might need to adjust the [`rules`](https://docs.gitlab.com/ee/ci/yaml/#rules) in your
+`.gitlab-ci.yml` file.
+
+</div>
+
+<div class="deprecation removal-160 breaking-change">
+
 ### `environment_tier` parameter for DORA API
 
 Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
