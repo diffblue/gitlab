@@ -818,6 +818,53 @@ RSpec.describe Group do
     end
   end
 
+  describe '#owner_of_email?', :saas do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:subgroup) { create(:group, parent: group) }
+    let_it_be(:project1) { create(:project, group: group) }
+    let_it_be(:project2) { create(:project, group: subgroup) }
+
+    let!(:verified_domain) { create(:pages_domain, project: project1) }
+    let!(:unverified_domain) { create(:pages_domain, :unverified, project: project2) }
+
+    let(:email_with_verified_domain) { "example@#{verified_domain.domain}" }
+    let(:email_with_unverified_domain) { "example@#{unverified_domain.domain}" }
+
+    context 'when domain_verification feature is licensed' do
+      before do
+        stub_licensed_features(domain_verification: true)
+      end
+
+      it 'returns true for email with verified domain' do
+        expect(group.owner_of_email?(email_with_verified_domain)).to eq(true)
+      end
+
+      it 'returns false for email with unverified domain' do
+        expect(group.owner_of_email?(email_with_unverified_domain)).to eq(false)
+      end
+
+      it 'ignores case sensitivity' do
+        verified_domain.update!(domain: verified_domain.domain.capitalize)
+
+        expect(group.owner_of_email?(email_with_verified_domain.upcase)).to eq(true)
+      end
+
+      it 'returns false when the receiver is subgroup' do
+        expect(subgroup.owner_of_email?(email_with_verified_domain)).to eq(false)
+      end
+    end
+
+    context 'when domain_verification feature is not licensed' do
+      before do
+        stub_licensed_features(domain_verification: false)
+      end
+
+      it 'returns false for email with verified domain' do
+        expect(group.owner_of_email?(email_with_verified_domain)).to eq(false)
+      end
+    end
+  end
+
   describe '#predefined_push_rule' do
     context 'group with no associated push_rules record' do
       let!(:sample) { create(:push_rule_sample) }

@@ -437,6 +437,15 @@ module EE
       root_ancestor.allowed_email_domains
     end
 
+    def owner_of_email?(email)
+      return false unless domain_verification_available?
+
+      verified_domains = all_projects_pages_domains(only_verified: true).map(&:domain).map(&:downcase)
+      email_domain = Mail::Address.new(email).domain.downcase
+
+      verified_domains.include?(email_domain)
+    end
+
     # Overrides a method defined in `::EE::Namespace`
     override :checked_file_template_project
     def checked_file_template_project(*args, &blk)
