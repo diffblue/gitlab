@@ -50,7 +50,9 @@ class SlackIntegration < ApplicationRecord
   def feature_available?(feature_name)
     case feature_name
     when :commands
-      scoped_to?(SCOPE_COMMANDS)
+      # The slash commands feature requires 'commands' scope.
+      # All records will support this scope, as this was the original feature.
+      true
     when :notifications
       scoped_to?(SCOPE_CHAT_WRITE, SCOPE_CHAT_WRITE_PUBLIC)
     else

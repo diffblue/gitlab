@@ -53,10 +53,10 @@ RSpec.describe SlackIntegration, feature_category: :integrations do
       it { is_expected.not_to be_upgrade_needed }
     end
 
-    %w[chat:write.public chat:write commands].each do |scope_name|
+    %w[chat:write.public chat:write].each do |scope_name|
       context "without #{scope_name}" do
         before do
-          scopes = %w[chat:write.public chat:write commands] - [scope_name]
+          scopes = %w[chat:write.public chat:write] - [scope_name]
           slack_integration.update!(authorized_scope_names: scopes)
         end
 
@@ -70,8 +70,11 @@ RSpec.describe SlackIntegration, feature_category: :integrations do
     subject(:slack_integration) { create(:slack_integration) }
 
     context 'without any scopes' do
-      it 'is always false' do
-        expect(slack_integration).not_to be_feature_available(:commands)
+      it 'is always true for :commands' do
+        expect(slack_integration).to be_feature_available(:commands)
+      end
+
+      it 'is always false for others' do
         expect(slack_integration).not_to be_feature_available(:notifications)
         expect(slack_integration).not_to be_feature_available(:foo)
       end
@@ -83,7 +86,7 @@ RSpec.describe SlackIntegration, feature_category: :integrations do
       end
 
       it 'only has the correct features' do
-        expect(slack_integration).not_to be_feature_available(:commands)
+        expect(slack_integration).to be_feature_available(:commands)
         expect(slack_integration).to be_feature_available(:notifications)
         expect(slack_integration).not_to be_feature_available(:foo)
       end
