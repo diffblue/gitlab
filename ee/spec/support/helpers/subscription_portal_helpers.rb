@@ -54,6 +54,17 @@ module SubscriptionPortalHelpers
     }.to_json, headers: { 'Content-Type' => 'application/json' })
   end
 
+  def stub_reconciliation_request(eligible)
+    stub_full_request(EE::SUBSCRIPTIONS_GRAPHQL_URL, method: :post)
+    .to_return(status: 200, body: {
+      "data": {
+        "reconciliation": {
+          "eligibleForSeatReconciliation": eligible
+        }
+      }
+    }.to_json, headers: { 'Content-Type' => 'application/json' })
+  end
+
   def stub_subscription_management_data(namespace_id, can_add_seats: true, in_renewal_period: true)
     stub_full_request(EE::SUBSCRIPTIONS_GRAPHQL_URL, method: :post)
       .with(

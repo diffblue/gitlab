@@ -14,7 +14,7 @@ import {
   overageModalInfoText,
   overageModalInfoWarning,
 } from '../constants';
-import getSubscriptionEligibility from '../subscription_eligible.customer.query.graphql';
+import getReconciliationStatus from '../subscription_eligible.customer.query.graphql';
 import getBillableUserCountChanges from '../billable_users_count.query.graphql';
 
 const OVERAGE_CONTENT_SLOT = 'overage-content';
@@ -86,7 +86,7 @@ export default {
       totalUserCount: null,
       subscriptionSeats: 0,
       namespaceId: parseInt(this.rootGroupId, 10),
-      eligibleForSeatUsageAlerts: false,
+      eligibleForSeatReconciliation: false,
       isLoading: false,
       actualFeedbackMessage: this.invalidFeedbackMessage,
       billableUsersDetails: null,
@@ -175,19 +175,19 @@ export default {
     },
     checkEligibility(args) {
       this.isLoading = true;
-      this.$apollo.addSmartQuery('eligibleForSeatUsageAlerts', {
+      this.$apollo.addSmartQuery('eligibleForSeatReconciliation', {
         client: 'customersDotClient',
-        query: getSubscriptionEligibility,
+        query: getReconciliationStatus,
         variables() {
           return {
             namespaceId: this.namespaceId,
           };
         },
         update(data) {
-          return data.subscription?.eligibleForSeatUsageAlerts;
+          return data.reconciliation?.eligibleForSeatReconciliation;
         },
         result({ data }) {
-          if (data?.subscription?.eligibleForSeatUsageAlerts) {
+          if (data?.reconciliation?.eligibleForSeatReconciliation) {
             this.checkAndSubmit(args);
             return;
           }
