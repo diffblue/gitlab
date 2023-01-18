@@ -12,4 +12,89 @@ RSpec.describe WorkItems::Progress do
                         .is_less_than_or_equal_to(100)
     end
   end
+
+  describe '#update_all_parent_objectives_progress' do
+    let_it_be(:project) { create(:project) }
+    let_it_be_with_reload(:parent_work_item) { create(:work_item, :objective, project: project) }
+    let_it_be_with_reload(:child_work_item1) { create(:work_item, :objective, project: project) }
+    let_it_be_with_reload(:child_work_item2) { create(:work_item, :objective, project: project) }
+    let_it_be_with_reload(:child1_progress) { create(:progress, work_item: child_work_item1, progress: 20) }
+    let_it_be_with_reload(:child2_progress) { create(:progress, work_item: child_work_item2, progress: 20) }
+
+    before_all do
+      create(:parent_link, work_item: child_work_item1, work_item_parent: parent_work_item)
+      create(:parent_link, work_item: child_work_item2, work_item_parent: parent_work_item)
+    end
+
+    before do
+      stub_licensed_features(okrs: true)
+    end
+
+    def parent_work_item_progress
+      parent_work_item.reload.progress&.progress
+    end
+
+    shared_examples 'parent progress is not changed' do
+      it 'doesnt update parent progress' do
+        expect { subject }.to not_change { parent_work_item_progress }
+      end
+    end
+
+    shared_examples 'parent progress is updated' do |new_value|
+      it 'updates parent progress value' do
+        expect { subject }.to change { parent_work_item_progress }.to(new_value)
+      end
+    end
+
+    context 'when okr_automatic_rollups feature flag is disabled' do
+      before do
+        stub_feature_flags(okr_automatic_rollups: false)
+      end
+
+      subject { child1_progress.update!(progress: 40) }
+
+      it_behaves_like 'parent progress is not changed'
+    end
+
+    context 'when okr_automatic_rollups feature flag is enabled' do
+      context 'when progress of child doesnt change' do
+        subject { child1_progress.save! }
+
+        it_behaves_like 'parent progress is not changed'
+      end
+
+      context 'when progress of child changes' do
+        context 'when parent progress is not created' do
+          subject { child1_progress.update!(progress: 30) }
+
+          it_behaves_like 'parent progress is updated', 25
+        end
+
+        context 'when parent progress is created' do
+          before do
+            create(:progress, work_item: parent_work_item, progress: 20)
+          end
+
+          subject { child1_progress.update!(progress: 40) }
+
+          it_behaves_like 'parent progress is updated', 30
+        end
+      end
+
+      context 'when progress of child 1+ level down changes' do
+        let_it_be_with_reload(:child_work_item3) { create(:work_item, :objective, project: project) }
+        let_it_be_with_reload(:child_work_item4) { create(:work_item, :objective, project: project) }
+        let_it_be_with_reload(:child3_progress) { create(:progress, work_item: child_work_item3, progress: 20) }
+        let_it_be_with_reload(:child4_progress) { create(:progress, work_item: child_work_item4, progress: 20) }
+
+        before_all do
+          create(:parent_link, work_item: child_work_item3, work_item_parent: child_work_item1)
+          create(:parent_link, work_item: child_work_item4, work_item_parent: child_work_item1)
+        end
+        subject { child3_progress.update!(progress: 80) }
+
+        it_behaves_like 'parent progress is updated', 35
+      end
+    end
+  end
 end
