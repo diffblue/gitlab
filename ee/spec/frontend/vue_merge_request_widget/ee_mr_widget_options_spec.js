@@ -41,6 +41,7 @@ import { securityReportMergeRequestDownloadPathsQueryResponse } from 'jest/vue_s
 
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import { SUCCESS } from '~/vue_merge_request_widget/components/deployment/constants';
 
 // Force Jest to transpile and cache
@@ -184,8 +185,8 @@ describe('ee merge request widget options', () => {
 
     describe('with failed request', () => {
       beforeEach(() => {
-        mock.onGet(SAST_DIFF_ENDPOINT).reply(500, {});
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(500, []);
+        mock.onGet(SAST_DIFF_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
         return axios.waitForAll();
@@ -297,7 +298,7 @@ describe('ee merge request widget options', () => {
 
     describe('with failed request', () => {
       beforeEach(() => {
-        mock.onAny().reply(500);
+        mock.onAny().reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
         return axios.waitForAll();
@@ -365,8 +366,8 @@ describe('ee merge request widget options', () => {
 
     describe('with failed request', () => {
       beforeEach(() => {
-        mock.onGet(CONTAINER_SCANNING_ENDPOINT).reply(500, {});
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(500, []);
+        mock.onGet(CONTAINER_SCANNING_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
         return axios.waitForAll();
@@ -432,8 +433,8 @@ describe('ee merge request widget options', () => {
 
     describe('with failed request', () => {
       beforeEach(() => {
-        mock.onGet(DAST_ENDPOINT).reply(500, {});
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(500, {});
+        mock.onGet(DAST_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
         return axios.waitForAll();
@@ -506,8 +507,8 @@ describe('ee merge request widget options', () => {
 
     describe('with failed request', () => {
       beforeEach(() => {
-        mock.onGet(COVERAGE_FUZZING_ENDPOINT).reply(500, {});
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(500, {});
+        mock.onGet(COVERAGE_FUZZING_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
         createComponentWithFeatureFlag();
         return axios.waitForAll();
       });
@@ -575,8 +576,8 @@ describe('ee merge request widget options', () => {
 
     describe('with failed request', () => {
       beforeEach(() => {
-        mock.onGet(SECRET_DETECTION_ENDPOINT).reply(500, {});
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(500, []);
+        mock.onGet(SECRET_DETECTION_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
         return axios.waitForAll();
@@ -644,8 +645,8 @@ describe('ee merge request widget options', () => {
 
     describe('with failed request', () => {
       beforeEach(() => {
-        mock.onGet(API_FUZZING_ENDPOINT).reply(500, {});
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(500, []);
+        mock.onGet(API_FUZZING_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
         return axios.waitForAll();

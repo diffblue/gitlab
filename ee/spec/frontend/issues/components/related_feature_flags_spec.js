@@ -8,6 +8,7 @@ import { mountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 
 jest.mock('~/flash');
 
@@ -78,7 +79,7 @@ describe('ee/issues/components/related_feature_flags.vue', () => {
     });
 
     it('displays nothing if the request fails', async () => {
-      mock.onGet(ENDPOINT).reply(500);
+      mock.onGet(ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
       createWrapper();
       await waitForPromises();
       await nextTick();

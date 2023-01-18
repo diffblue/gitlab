@@ -11,6 +11,7 @@ import testAction from 'helpers/vuex_action_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import Poll from '~/lib/utils/poll';
 
 jest.mock('~/flash');
@@ -108,7 +109,7 @@ describe('EE DiffsStoreActions', () => {
     });
 
     it('with unexpected error should stop polling and show a flash message', async () => {
-      mock.onGet(endpointCodequality).reply(500);
+      mock.onGet(endpointCodequality).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       await testAction(
         fetchCodequality,

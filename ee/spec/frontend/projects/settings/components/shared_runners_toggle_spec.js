@@ -6,7 +6,11 @@ import CcValidationRequiredAlert from 'ee_component/billings/components/cc_valid
 import { TEST_HOST } from 'helpers/test_constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_OK, HTTP_STATUS_UNAUTHORIZED } from '~/lib/utils/http_status';
+import {
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_OK,
+  HTTP_STATUS_UNAUTHORIZED,
+} from '~/lib/utils/http_status';
 import SharedRunnersToggleComponent from '~/projects/settings/components/shared_runners_toggle.vue';
 import { CC_VALIDATION_REQUIRED_ERROR } from '~/projects/settings/constants';
 
@@ -111,7 +115,7 @@ describe('projects/settings/components/shared_runners', () => {
 
     describe('when toggling fails for some other reason', () => {
       beforeEach(() => {
-        mockAxios.onPost(TEST_UPDATE_PATH).reply(500);
+        mockAxios.onPost(TEST_UPDATE_PATH).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
       });
 
       it('should show a generic alert instead', async () => {

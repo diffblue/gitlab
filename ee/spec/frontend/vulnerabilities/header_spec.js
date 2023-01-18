@@ -19,6 +19,7 @@ import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import download from '~/lib/utils/downloader';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import * as urlUtility from '~/lib/utils/url_utility';
 
 Vue.use(VueApollo);
@@ -276,7 +277,9 @@ describe('Vulnerability Header', () => {
       });
 
       it('shows an error message when merge request creation fails', () => {
-        mockAxios.onPost(defaultVulnerability.create_mr_url).reply(500);
+        mockAxios
+          .onPost(defaultVulnerability.create_mr_url)
+          .reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
         findGlButton().vm.$emit('click');
         return waitForPromises().then(() => {
           expect(mockAxios.history.post).toHaveLength(1);
@@ -399,7 +402,7 @@ describe('Vulnerability Header', () => {
     it('will show an error when the user cannot be loaded', () => {
       createWrapper({ vulnerability: { state: 'confirmed', confirmedById: 1 } });
 
-      mockAxios.onGet().replyOnce(500);
+      mockAxios.onGet().replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       return waitForPromises().then(() => {
         expect(createAlert).toHaveBeenCalledTimes(1);
