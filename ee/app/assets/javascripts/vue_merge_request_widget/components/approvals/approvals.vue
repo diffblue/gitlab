@@ -70,9 +70,11 @@ export default {
       if (this.isBasic) return Promise.resolve();
 
       return Promise.all([this.refreshRules(), this.refreshApprovals()]).catch(() =>
-        createAlert({
-          message: FETCH_ERROR,
-        }),
+        this.alerts.push(
+          createAlert({
+            message: FETCH_ERROR,
+          }),
+        ),
       );
     },
     refreshRules() {
