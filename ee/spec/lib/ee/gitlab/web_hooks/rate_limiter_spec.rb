@@ -4,14 +4,14 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::WebHooks::RateLimiter, :saas, :clean_gitlab_redis_rate_limiting, :freeze_time do
   before_all do
-    create(:plan_limits, :premium_plan, web_hook_calls_low: 1, web_hook_calls_mid: 2, web_hook_calls: 3)
-    create(:plan_limits, :ultimate_plan, web_hook_calls_low: 4, web_hook_calls_mid: 5, web_hook_calls: 6)
-    create(:plan_limits, :opensource_plan, web_hook_calls_low: 7, web_hook_calls_mid: 8, web_hook_calls: 9)
-    create(:plan_limits, :bronze_plan, web_hook_calls_low: 9, web_hook_calls_mid: 8, web_hook_calls: 7)
-    create(:plan_limits, :silver_plan, web_hook_calls_low: 6, web_hook_calls_mid: 5, web_hook_calls: 4)
-    create(:plan_limits, :gold_plan, web_hook_calls_low: 3, web_hook_calls_mid: 2, web_hook_calls: 1)
-    create(:plan_limits, :premium_trial_plan, web_hook_calls_low: 1, web_hook_calls_mid: 3, web_hook_calls: 2)
-    create(:plan_limits, :ultimate_trial_plan, web_hook_calls_low: 2, web_hook_calls_mid: 1, web_hook_calls: 3)
+    create(:plan_limits, :premium_plan, web_hook_calls_low: 1, web_hook_calls_mid: 2, web_hook_calls_high: 3)
+    create(:plan_limits, :ultimate_plan, web_hook_calls_low: 4, web_hook_calls_mid: 5, web_hook_calls_high: 6)
+    create(:plan_limits, :opensource_plan, web_hook_calls_low: 7, web_hook_calls_mid: 8, web_hook_calls_high: 9)
+    create(:plan_limits, :bronze_plan, web_hook_calls_low: 9, web_hook_calls_mid: 8, web_hook_calls_high: 7)
+    create(:plan_limits, :silver_plan, web_hook_calls_low: 6, web_hook_calls_mid: 5, web_hook_calls_high: 4)
+    create(:plan_limits, :gold_plan, web_hook_calls_low: 3, web_hook_calls_mid: 2, web_hook_calls_high: 1)
+    create(:plan_limits, :premium_trial_plan, web_hook_calls_low: 1, web_hook_calls_mid: 3, web_hook_calls_high: 2)
+    create(:plan_limits, :ultimate_trial_plan, web_hook_calls_low: 2, web_hook_calls_mid: 1, web_hook_calls_high: 3)
   end
 
   let_it_be(:group_premium_plan) { create(:group_with_plan, plan: :premium_plan) }
@@ -77,45 +77,45 @@ RSpec.describe Gitlab::WebHooks::RateLimiter, :saas, :clean_gitlab_redis_rate_li
       using RSpec::Parameterized::TableSyntax
 
       where(:hook, :seats, :rate_limit_name, :limit) do
-        ref(:project_hook_with_premium_plan)  | 99    | :web_hook_calls_low | 1
-        ref(:project_hook_with_premium_plan)  | 100   | :web_hook_calls_mid | 2
-        ref(:project_hook_with_premium_plan)  | 399   | :web_hook_calls_mid | 2
-        ref(:project_hook_with_premium_plan)  | 400   | :web_hook_calls     | 3
+        ref(:project_hook_with_premium_plan)  | 99    | :web_hook_calls_low  | 1
+        ref(:project_hook_with_premium_plan)  | 100   | :web_hook_calls_mid  | 2
+        ref(:project_hook_with_premium_plan)  | 399   | :web_hook_calls_mid  | 2
+        ref(:project_hook_with_premium_plan)  | 400   | :web_hook_calls_high | 3
 
-        ref(:project_hook_with_ultimate_plan) | 999   | :web_hook_calls_low | 4
-        ref(:project_hook_with_ultimate_plan) | 1_000 | :web_hook_calls_mid | 5
-        ref(:project_hook_with_ultimate_plan) | 4_999 | :web_hook_calls_mid | 5
-        ref(:project_hook_with_ultimate_plan) | 5_000 | :web_hook_calls     | 6
+        ref(:project_hook_with_ultimate_plan) | 999   | :web_hook_calls_low  | 4
+        ref(:project_hook_with_ultimate_plan) | 1_000 | :web_hook_calls_mid  | 5
+        ref(:project_hook_with_ultimate_plan) | 4_999 | :web_hook_calls_mid  | 5
+        ref(:project_hook_with_ultimate_plan) | 5_000 | :web_hook_calls_high | 6
 
-        ref(:group_hook_with_opensource_plan) | 999   | :web_hook_calls_low | 7
-        ref(:group_hook_with_opensource_plan) | 1_000 | :web_hook_calls_mid | 8
-        ref(:group_hook_with_opensource_plan) | 4_999 | :web_hook_calls_mid | 8
-        ref(:group_hook_with_opensource_plan) | 5_000 | :web_hook_calls     | 9
+        ref(:group_hook_with_opensource_plan) | 999   | :web_hook_calls_low  | 7
+        ref(:group_hook_with_opensource_plan) | 1_000 | :web_hook_calls_mid  | 8
+        ref(:group_hook_with_opensource_plan) | 4_999 | :web_hook_calls_mid  | 8
+        ref(:group_hook_with_opensource_plan) | 5_000 | :web_hook_calls_high | 9
 
-        ref(:group_hook_with_bronze_plan) | 99    | :web_hook_calls_low | 9
-        ref(:group_hook_with_bronze_plan) | 100   | :web_hook_calls_mid | 8
-        ref(:group_hook_with_bronze_plan) | 399   | :web_hook_calls_mid | 8
-        ref(:group_hook_with_bronze_plan) | 400   | :web_hook_calls     | 7
+        ref(:group_hook_with_bronze_plan) | 99    | :web_hook_calls_low  | 9
+        ref(:group_hook_with_bronze_plan) | 100   | :web_hook_calls_mid  | 8
+        ref(:group_hook_with_bronze_plan) | 399   | :web_hook_calls_mid  | 8
+        ref(:group_hook_with_bronze_plan) | 400   | :web_hook_calls_high | 7
 
-        ref(:group_hook_with_silver_plan) | 99    | :web_hook_calls_low | 6
-        ref(:group_hook_with_silver_plan) | 100   | :web_hook_calls_mid | 5
-        ref(:group_hook_with_silver_plan) | 399   | :web_hook_calls_mid | 5
-        ref(:group_hook_with_silver_plan) | 400   | :web_hook_calls     | 4
+        ref(:group_hook_with_silver_plan) | 99    | :web_hook_calls_low  | 6
+        ref(:group_hook_with_silver_plan) | 100   | :web_hook_calls_mid  | 5
+        ref(:group_hook_with_silver_plan) | 399   | :web_hook_calls_mid  | 5
+        ref(:group_hook_with_silver_plan) | 400   | :web_hook_calls_high | 4
 
-        ref(:group_hook_with_gold_plan)   | 999   | :web_hook_calls_low | 3
-        ref(:group_hook_with_gold_plan)   | 1_000 | :web_hook_calls_mid | 2
-        ref(:group_hook_with_gold_plan)   | 4_999 | :web_hook_calls_mid | 2
-        ref(:group_hook_with_gold_plan)   | 5_000 | :web_hook_calls     | 1
+        ref(:group_hook_with_gold_plan)   | 999   | :web_hook_calls_low  | 3
+        ref(:group_hook_with_gold_plan)   | 1_000 | :web_hook_calls_mid  | 2
+        ref(:group_hook_with_gold_plan)   | 4_999 | :web_hook_calls_mid  | 2
+        ref(:group_hook_with_gold_plan)   | 5_000 | :web_hook_calls_high | 1
 
-        ref(:group_hook_with_premium_trial_plan)  | 99  | :web_hook_calls_low | 1
-        ref(:group_hook_with_premium_trial_plan)  | 100 | :web_hook_calls_mid | 3
-        ref(:group_hook_with_premium_trial_plan)  | 399 | :web_hook_calls_mid | 3
-        ref(:group_hook_with_premium_trial_plan)  | 400 | :web_hook_calls     | 2
+        ref(:group_hook_with_premium_trial_plan)  | 99  | :web_hook_calls_low  | 1
+        ref(:group_hook_with_premium_trial_plan)  | 100 | :web_hook_calls_mid  | 3
+        ref(:group_hook_with_premium_trial_plan)  | 399 | :web_hook_calls_mid  | 3
+        ref(:group_hook_with_premium_trial_plan)  | 400 | :web_hook_calls_high | 2
 
-        ref(:group_hook_with_ultimate_trial_plan) | 999   | :web_hook_calls_low | 2
-        ref(:group_hook_with_ultimate_trial_plan) | 1_000 | :web_hook_calls_mid | 1
-        ref(:group_hook_with_ultimate_trial_plan) | 4_999 | :web_hook_calls_mid | 1
-        ref(:group_hook_with_ultimate_trial_plan) | 5_000 | :web_hook_calls     | 3
+        ref(:group_hook_with_ultimate_trial_plan) | 999   | :web_hook_calls_low  | 2
+        ref(:group_hook_with_ultimate_trial_plan) | 1_000 | :web_hook_calls_mid  | 1
+        ref(:group_hook_with_ultimate_trial_plan) | 4_999 | :web_hook_calls_mid  | 1
+        ref(:group_hook_with_ultimate_trial_plan) | 5_000 | :web_hook_calls_high | 3
       end
 
       with_them do
