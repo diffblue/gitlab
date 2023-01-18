@@ -11,11 +11,9 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
 
     subject { service.execute(actions) }
 
-    shared_examples 'creates scan jobs' do |pipeline_scan_jobs: [], on_demand_jobs: [], template_count: nil, legacy_ci_configuration_service: false|
+    shared_examples 'creates scan jobs' do |pipeline_scan_jobs: [], on_demand_jobs: [], template_count: nil|
       it 'returns created jobs' do
-        configuration_service_klass = legacy_ci_configuration_service ? ::Security::SecurityOrchestrationPolicies::LegacyCiConfigurationService : ::Security::SecurityOrchestrationPolicies::CiConfigurationService
-
-        expect(configuration_service_klass).to receive(:new)
+        expect(::Security::SecurityOrchestrationPolicies::CiConfigurationService).to receive(:new)
                                                                                        .exactly(template_count || pipeline_scan_jobs.count)
                                                                                        .times
                                                                                        .and_call_original
@@ -51,34 +49,13 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
     context 'when action contains variables' do
       let(:actions) { [{ scan: 'sast', variables: { SAST_EXCLUDED_ANALYZERS: 'semgrep' } }] }
 
-      context 'when scan_execution_policies_run_sast_and_ds_in_single_pipeline is enabled' do
-        before do
-          stub_feature_flags(scan_execution_policies_run_sast_and_ds_in_single_pipeline: true)
+      it 'parses variables from the action and applies them in configuration service' do
+        expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
+          expect(ci_configuration_service).to receive(:execute).once
+            .with(actions.first, { 'SAST_DISABLED' => nil, 'SAST_EXCLUDED_ANALYZERS' => 'semgrep' }, 0).and_call_original
         end
 
-        it 'parses variables from the action and applies them in configuration service' do
-          expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
-            expect(ci_configuration_service).to receive(:execute).once
-              .with(actions.first, { 'SAST_DISABLED' => nil, 'SAST_EXCLUDED_ANALYZERS' => 'semgrep' }, 0).and_call_original
-          end
-
-          subject
-        end
-      end
-
-      context 'when scan_execution_policies_run_sast_and_ds_in_single_pipeline is disabled' do
-        before do
-          stub_feature_flags(scan_execution_policies_run_sast_and_ds_in_single_pipeline: false)
-        end
-
-        it 'parses variables from the action and applies them in legacy configuration service' do
-          expect_next_instance_of(::Security::SecurityOrchestrationPolicies::LegacyCiConfigurationService) do |ci_configuration_service|
-            expect(ci_configuration_service).to receive(:execute).once
-              .with(actions.first, { 'SAST_DISABLED' => nil, 'SAST_EXCLUDED_ANALYZERS' => 'semgrep' }).and_call_original
-          end
-
-          subject
-        end
+        subject
       end
     end
 
@@ -93,31 +70,14 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
         ]
       end
 
-      context 'when scan_execution_policies_run_sast_and_ds_in_single_pipeline is enabled' do
-        before do
-          stub_feature_flags(scan_execution_policies_run_sast_and_ds_in_single_pipeline: true)
-        end
-
-        it_behaves_like 'creates scan jobs',
-                        pipeline_scan_jobs: %i[secret-detection-0 container-scanning-1
-                                               sast-2 bandit-sast-2 brakeman-sast-2 eslint-sast-2 flawfinder-sast-2
-                                               kubesec-sast-2 gosec-sast-2 mobsf-android-sast-2 mobsf-ios-sast-2
-                                               nodejs-scan-sast-2 phpcs-security-audit-sast-2 pmd-apex-sast-2
-                                               security-code-scan-sast-2 semgrep-sast-2 sobelow-sast-2 spotbugs-sast-2],
-                        on_demand_jobs: %i[dast-on-demand-0],
-                        template_count: 3
-      end
-
-      context 'when scan_execution_policies_run_sast_and_ds_in_single_pipeline is disabled' do
-        before do
-          stub_feature_flags(scan_execution_policies_run_sast_and_ds_in_single_pipeline: false)
-        end
-
-        it_behaves_like 'creates scan jobs',
-                        pipeline_scan_jobs: %i[secret-detection-0 container-scanning-1 sast-2],
-                        on_demand_jobs: %i[dast-on-demand-0],
-                        legacy_ci_configuration_service: true
-      end
+      it_behaves_like 'creates scan jobs',
+                      pipeline_scan_jobs: %i[secret-detection-0 container-scanning-1
+                                              sast-2 bandit-sast-2 brakeman-sast-2 eslint-sast-2 flawfinder-sast-2
+                                              kubesec-sast-2 gosec-sast-2 mobsf-android-sast-2 mobsf-ios-sast-2
+                                              nodejs-scan-sast-2 phpcs-security-audit-sast-2 pmd-apex-sast-2
+                                              security-code-scan-sast-2 semgrep-sast-2 sobelow-sast-2 spotbugs-sast-2],
+                      on_demand_jobs: %i[dast-on-demand-0],
+                      template_count: 3
     end
 
     context 'when there are valid and invalid actions' do
