@@ -39,7 +39,7 @@ export default {
 };
 </script>
 <template>
-  <div v-if="isActive" class="full-width gl-mb-7">
+  <div v-if="isActive" class="full-width gl-mt-5 gl-mb-7">
     <gl-button
       :disabled="isConfirmingOrder"
       variant="confirm"

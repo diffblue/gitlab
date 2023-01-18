@@ -1,12 +1,11 @@
 <script>
 import Tracking from '~/tracking';
 import BillingAddress from './checkout/billing_address.vue';
-import ConfirmOrder from './checkout/confirm_order.vue';
 import PaymentMethod from './checkout/payment_method.vue';
 import SubscriptionDetails from './checkout/subscription_details.vue';
 
 export default {
-  components: { SubscriptionDetails, BillingAddress, PaymentMethod, ConfirmOrder },
+  components: { SubscriptionDetails, BillingAddress, PaymentMethod },
   mixins: [Tracking.mixin()],
   mounted() {
     this.track('render', { label: 'saas_checkout' });
@@ -19,6 +18,5 @@ export default {
     <subscription-details />
     <billing-address />
     <payment-method />
-    <confirm-order />
   </div>
 </template>

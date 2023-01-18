@@ -1,5 +1,5 @@
 <script>
-import { GlCard, GlIcon, GlCollapse, GlCollapseToggleDirective } from '@gitlab/ui';
+import { GlCard } from '@gitlab/ui';
 import { mapGetters, mapState } from 'vuex';
 import { sprintf, s__ } from '~/locale';
 import { trackCheckout } from '~/google_tag_manager';
@@ -12,18 +12,8 @@ export default {
     PromoCodeInput,
     SummaryDetails,
     GlCard,
-    GlIcon,
-    GlCollapse,
-  },
-  directives: {
-    GlCollapseToggle: GlCollapseToggleDirective,
   },
   mixins: [formattingMixins],
-  data() {
-    return {
-      summaryDetailsAreVisible: false,
-    };
-  },
   computed: {
     ...mapState(['numberOfUsers', 'selectedPlan']),
     ...mapGetters([
@@ -54,19 +44,18 @@ export default {
   >
     <div class="gl-lg-display-none">
       <h4
-        v-gl-collapse-toggle.summary-details
         class="gl-display-flex gl-justify-content-space-between gl-align-items-center gl-font-lg gl-my-0"
       >
         <div class="gl-display-flex gl-align-items-center">
-          <gl-icon v-if="summaryDetailsAreVisible" name="chevron-down" class="gl-flex-shrink-0" />
-          <gl-icon v-else name="chevron-right" class="gl-flex-shrink-0" />
           <span class="gl-ml-2">{{ titleWithName }}</span>
         </div>
         <span class="gl-ml-3">{{ formatAmount(totalAmount, usersPresent) }}</span>
       </h4>
-      <gl-collapse id="summary-details" v-model="summaryDetailsAreVisible">
-        <summary-details class="gl-mt-6" />
-      </gl-collapse>
+      <summary-details class="gl-mt-6">
+        <template v-if="isEligibleToUsePromoCode" #promo-code>
+          <promo-code-input />
+        </template>
+      </summary-details>
     </div>
     <div class="gl-display-none gl-lg-display-block" data-qa-selector="order_summary">
       <h4 class="gl-my-0 gl-font-lg" data-qa-selector="title">{{ titleWithName }}</h4>
