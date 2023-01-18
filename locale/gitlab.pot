@@ -3605,6 +3605,9 @@ msgstr ""
 msgid "Advanced export options"
 msgstr ""
 
+msgid "AdvancedSearch|Could not fetch index entities. Please try again later."
+msgstr ""
+
 msgid "AdvancedSearch|Elasticsearch version not compatible"
 msgstr ""
 
