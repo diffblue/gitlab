@@ -101,6 +101,24 @@ RSpec.describe Gitlab::ContentSecurityPolicy::ConfigLoader do
       end
     end
 
+    describe 'Zuora directives' do
+      context 'when is Gitlab.com?' do
+        before do
+          allow(::Gitlab).to receive(:com?).and_return(true)
+        end
+
+        it 'adds Zuora host to CSP' do
+          expect(directives['frame_src']).to include('https://*.zuora.com/apps/PublicHostedPageLite.do')
+        end
+      end
+
+      context 'when is not Gitlab.com?' do
+        it 'does not add Zuora host to CSP' do
+          expect(directives['frame_src']).not_to include('https://*.zuora.com/apps/PublicHostedPageLite.do')
+        end
+      end
+    end
+
     context 'when sentry is configured' do
       let(:legacy_dsn) { 'dummy://abc@legacy-sentry.example.com/1' }
       let(:dsn) { 'dummy://def@sentry.example.com/2' }

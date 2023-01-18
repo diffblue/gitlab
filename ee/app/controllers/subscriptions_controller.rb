@@ -5,7 +5,6 @@ class SubscriptionsController < ApplicationController
   SUCCESS_ADDON = 'Success: add-on'
   include InternalRedirect
   include OneTrustCSP
-  include ZuoraCSP
   include GoogleAnalyticsCSP
 
   layout 'minimal'
