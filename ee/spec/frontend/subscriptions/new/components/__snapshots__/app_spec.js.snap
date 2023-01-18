@@ -17,7 +17,21 @@ exports[`App component cart_abandonment_modal experiment candidate matches the s
   
   </gl-modal-stub>
    
-  <step-order-app-stub />
+  <div>
+    <checkout-stub />
+     
+    <confirm-order-stub
+      class="gl-display-none gl-lg-display-block!"
+      data-testid="confirm-order-desktop"
+    />
+     
+    <order-summary-stub />
+     
+    <confirm-order-stub
+      class="gl-display-block gl-lg-display-none!"
+      data-testid="confirm-order-mobile"
+    />
+  </div>
 </div>
 `;
 
@@ -25,6 +39,20 @@ exports[`App component cart_abandonment_modal experiment control matches the sna
 <div>
   <!---->
    
-  <step-order-app-stub />
+  <div>
+    <checkout-stub />
+     
+    <confirm-order-stub
+      class="gl-display-none gl-lg-display-block!"
+      data-testid="confirm-order-desktop"
+    />
+     
+    <order-summary-stub />
+     
+    <confirm-order-stub
+      class="gl-display-block gl-lg-display-none!"
+      data-testid="confirm-order-mobile"
+    />
+  </div>
 </div>
 `;
