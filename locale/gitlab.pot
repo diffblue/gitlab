@@ -37375,13 +37375,43 @@ msgstr ""
 msgid "Secure token that identifies an external storage request."
 msgstr ""
 
+msgid "SecureFiles|%{name} Metadata"
+msgstr ""
+
+msgid "SecureFiles|App"
+msgstr ""
+
+msgid "SecureFiles|Certificates"
+msgstr ""
+
 msgid "SecureFiles|Delete %{name}?"
 msgstr ""
 
 msgid "SecureFiles|Delete secure file"
 msgstr ""
 
+msgid "SecureFiles|Expires at"
+msgstr ""
+
+msgid "SecureFiles|Issuer"
+msgstr ""
+
+msgid "SecureFiles|Name"
+msgstr ""
+
+msgid "SecureFiles|Platforms"
+msgstr ""
+
 msgid "SecureFiles|Secure File %{name} will be permanently deleted. Are you sure?"
+msgstr ""
+
+msgid "SecureFiles|Serial"
+msgstr ""
+
+msgid "SecureFiles|Team"
+msgstr ""
+
+msgid "SecureFiles|UUID"
 msgstr ""
 
 msgid "Security"
@@ -46223,6 +46253,9 @@ msgid "VersionCheck|You are currently on version %{currentVersion}. We strongly 
 msgstr ""
 
 msgid "VersionCheck|Your GitLab Version"
+msgstr ""
+
+msgid "View File Metadata"
 msgstr ""
 
 msgid "View Stage: %{title}"

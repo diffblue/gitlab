@@ -6,6 +6,7 @@ export const secureFiles = [
     checksum_algorithm: 'sha256',
     permissions: 'read_only',
     created_at: '2022-02-22T22:22:22.222Z',
+    file_extension: 'jks',
   },
   {
     id: 2,
@@ -14,5 +15,6 @@ export const secureFiles = [
     checksum_algorithm: 'sha256',
     permissions: 'execute',
     created_at: '2022-02-22T22:22:22.222Z',
+    file_extension: 'jks',
   },
 ];
