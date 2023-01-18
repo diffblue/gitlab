@@ -2,7 +2,7 @@
 
 module API
   class CaptchaCheck < ::API::Base
-    feature_category :authentication_and_authorization
+    feature_category :instance_resiliency
 
     params do
       requires :username, type: String, desc: 'The username of a user'
