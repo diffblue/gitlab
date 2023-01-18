@@ -15,7 +15,7 @@ Each [project](../index.md) contains a repository.
 
 To create a repository, you can:
 
-- [Create a project](../../../user/project/working_with_projects.md#create-a-project) or
+- [Create a project](../../../user/project/index.md#create-a-project) or
 - [Fork an existing project](forking_workflow.md).
 
 ## Add files to a repository
