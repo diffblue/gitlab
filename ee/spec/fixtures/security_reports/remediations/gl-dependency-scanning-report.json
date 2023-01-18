@@ -43,6 +43,7 @@
       ]
     },
     {
+      "id": "756a4302f62d4b44d8d64e1a925d7a076fcc80918b7319e62bb28d4d4baa2bc4",
       "category": "dependency_scanning",
       "name": "Authentication bypass via incorrect DOM traversal and canonicalization",
       "message": "Authentication bypass via incorrect DOM traversal and canonicalization in saml2-js",
@@ -94,7 +95,8 @@
     {
       "fixes": [
         {
-          "cve": "yarn.lock:saml2-js:gemnasium:9952e574-7b5b-46fa-a270-aeb694198a98"
+          "cve": "yarn.lock:saml2-js:gemnasium:9952e574-7b5b-46fa-a270-aeb694198a98",
+          "id": "756a4302f62d4b44d8d64e1a925d7a076fcc80918b7319e62bb28d4d4baa2bc4"
         }
       ],
       "summary": "Upgrade saml2-js",
