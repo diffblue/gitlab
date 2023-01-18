@@ -53,19 +53,20 @@ describe('ReadyToMerge', () => {
     mergeImmediatelyDocsPath: 'path/to/merge/immediately/docs',
     mergeTrainsCount: 0,
     userPermissions: { canMerge: true },
+    mergeable: true,
   };
 
-  const factory = (mrUpdates = {}, shallow = true) => {
-    const func = shallow ? shallowMount : mount;
-    wrapper = func(ReadyToMerge, {
+  const createComponent = (mrUpdates = {}, mountFn = shallowMount, data = {}) => {
+    wrapper = mountFn(ReadyToMerge, {
       propsData: {
-        mr: { ...mr, ...mrUpdates, transitionStateMachine() {} },
+        mr: { ...mr, ...mrUpdates },
         service,
       },
       data() {
         return {
           loading: false,
           state: { ...mr, ...mrUpdates },
+          ...data,
         };
       },
       stubs: {
@@ -81,131 +82,43 @@ describe('ReadyToMerge', () => {
   };
 
   const findMergeButton = () => wrapper.find('[data-testid="merge-button"]');
-  const findMergeButtonDropdown = () => wrapper.find('.js-merge-moment');
-  const findMergeImmediatelyButton = () => wrapper.find('.js-merge-immediately-button');
+  const findMergeImmediatelyDropdown = () =>
+    wrapper.find('[data-testid="merge-immediately-dropdown"]');
+  const findMergeImmediatelyButton = () => wrapper.find('[data-testid="merge-immediately-button"]');
   const findMergeTrainHelperIcon = () => wrapper.findComponent(MergeTrainHelperIcon);
   const findMergeTrainFailedPipelineConfirmationDialog = () =>
     wrapper.findComponent(MergeTrainFailedPipelineConfirmationDialog);
+  const findMergeImmediatelyConfirmationDialog = () =>
+    wrapper.findComponent(MergeImmediatelyConfirmationDialog);
 
-  afterEach(() => {
-    if (wrapper?.destroy) {
-      wrapper.destroy();
-      wrapper = null;
-    }
-  });
+  describe('Merge button text', () => {
+    it.each`
+      availableAutoMergeStrategies | mergeTrainsCount | expectedText
+      ${[]}                        | ${0}             | ${'Merge'}
+      ${[MWPS_MERGE_STRATEGY]}     | ${0}             | ${'Merge when pipeline succeeds'}
+      ${[MT_MERGE_STRATEGY]}       | ${0}             | ${'Start merge train'}
+      ${[MT_MERGE_STRATEGY]}       | ${1}             | ${'Add to merge train'}
+      ${[MTWPS_MERGE_STRATEGY]}    | ${0}             | ${'Start merge train when pipeline succeeds'}
+      ${[MTWPS_MERGE_STRATEGY]}    | ${1}             | ${'Add to merge train when pipeline succeeds'}
+    `(
+      'displays $expectedText with merge strategy $availableAutoMergeStrategies and merge train count $mergeTrainsCount',
+      ({ availableAutoMergeStrategies, mergeTrainsCount, expectedText }) => {
+        createComponent({ availableAutoMergeStrategies, mergeTrainsCount });
 
-  describe('computed', () => {
-    describe('mergeButtonText', () => {
-      it('should return "Merge" when no auto merge strategies are available', () => {
-        factory({ availableAutoMergeStrategies: [] });
+        expect(findMergeButton().text()).toBe(expectedText);
+      },
+    );
 
-        expect(vm.mergeButtonText).toEqual('Merge');
-      });
+    it('displays "Merge in progress"', async () => {
+      createComponent({}, shallowMount, { isMergingImmediately: true });
 
-      it('should return "Merge in progress"', () => {
-        factory();
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({ isMergingImmediately: true });
-
-        expect(vm.mergeButtonText).toEqual('Merge in progress');
-      });
-
-      it('should return "Merge when pipeline succeeds" when the MWPS auto merge strategy is available', () => {
-        factory({
-          availableAutoMergeStrategies: [MWPS_MERGE_STRATEGY],
-        });
-
-        expect(vm.mergeButtonText).toEqual('Merge when pipeline succeeds');
-      });
-
-      it('should return "Start merge train" when the merge train auto merge stategy is available and there is no existing merge train', () => {
-        factory({
-          availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
-          mergeTrainsCount: 0,
-        });
-
-        expect(vm.mergeButtonText).toEqual('Start merge train');
-      });
-
-      it('should return "Add to merge train" when the merge train auto merge stategy is available and a merge train already exists', () => {
-        factory({
-          availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
-          mergeTrainsCount: 1,
-        });
-
-        expect(vm.mergeButtonText).toEqual('Add to merge train');
-      });
-
-      it('should return "Start merge train when pipeline succeeds" when the MTWPS auto merge strategy is available and there is no existing merge train', () => {
-        factory({
-          availableAutoMergeStrategies: [MTWPS_MERGE_STRATEGY],
-          mergeTrainsCount: 0,
-        });
-
-        expect(vm.mergeButtonText).toEqual('Start merge train when pipeline succeeds');
-      });
-
-      it('should return "Add to merge train when pipeline succeeds" when the MTWPS auto merge strategy is available and a merge train already exists', () => {
-        factory({
-          availableAutoMergeStrategies: [MTWPS_MERGE_STRATEGY],
-          mergeTrainsCount: 1,
-        });
-
-        expect(vm.mergeButtonText).toEqual('Add to merge train when pipeline succeeds');
-      });
-    });
-
-    describe('autoMergeText', () => {
-      it('should return Merge when pipeline succeeds', () => {
-        factory({ availableAutoMergeStrategies: [MWPS_MERGE_STRATEGY] });
-
-        expect(vm.autoMergeText).toEqual('Merge when pipeline succeeds');
-      });
-
-      it('should return Start merge train when pipeline succeeds', () => {
-        factory({
-          availableAutoMergeStrategies: [MTWPS_MERGE_STRATEGY],
-          mergeTrainsCount: 0,
-        });
-
-        expect(vm.autoMergeText).toEqual('Start merge train when pipeline succeeds');
-      });
-
-      it('should return Add to merge train when pipeline succeeds', () => {
-        factory({
-          availableAutoMergeStrategies: [MTWPS_MERGE_STRATEGY],
-          mergeTrainsCount: 1,
-        });
-
-        expect(vm.autoMergeText).toEqual('Add to merge train when pipeline succeeds');
-      });
-    });
-
-    describe('isMergeImmediatelyDangerous', () => {
-      it('should return false if the preferred auto merge strategy is not merge train-related', () => {
-        factory({ availableAutoMergeStrategies: [MWPS_MERGE_STRATEGY] });
-
-        expect(vm.isMergeImmediatelyDangerous).toBe(false);
-      });
-
-      it('should return true if the preferred auto merge strategy is merge trains', () => {
-        factory({ availableAutoMergeStrategies: [MT_MERGE_STRATEGY] });
-
-        expect(vm.isMergeImmediatelyDangerous).toBe(true);
-      });
-
-      it('should return true if the preferred auto merge strategy is merge trains when pipeline succeeds', () => {
-        factory({ availableAutoMergeStrategies: [MTWPS_MERGE_STRATEGY] });
-
-        expect(vm.isMergeImmediatelyDangerous).toBe(true);
-      });
+      expect(findMergeButton().text()).toBe('Merge in progress');
     });
   });
 
   describe('shouldRenderMergeTrainHelperIcon', () => {
     it('should render the helper icon if MTWPS is available and the user has not yet pressed the MTWPS button', () => {
-      factory({
+      createComponent({
         onlyAllowMergeIfPipelineSucceeds: true,
         availableAutoMergeStrategies: [MTWPS_MERGE_STRATEGY],
         autoMergeEnabled: false,
@@ -217,7 +130,7 @@ describe('ReadyToMerge', () => {
 
   describe('merge train helper icon', () => {
     it('does not render the merge train helper icon if the MTWPS strategy is not available', () => {
-      factory({
+      createComponent({
         availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
         headPipeline: activePipeline,
       });
@@ -226,42 +139,42 @@ describe('ReadyToMerge', () => {
     });
   });
 
-  describe('shouldShowMergeImmediatelyDropdown', () => {
+  describe('Merge Immediately Dropdown', () => {
     it('should return false if no pipeline is active', () => {
-      factory({
+      createComponent({
         headPipeline: { id: 'gid://gitlab/Pipeline/1', path: 'path/to/pipeline', active: false },
         onlyAllowMergeIfPipelineSucceeds: false,
       });
 
-      expect(vm.shouldShowMergeImmediatelyDropdown).toBe(false);
+      expect(findMergeImmediatelyDropdown().exists()).toBe(false);
     });
 
     it('should return false if "Pipelines must succeed" is enabled for the current project', () => {
-      factory({
+      createComponent({
         headPipeline: { id: 'gid://gitlab/Pipeline/1', path: 'path/to/pipeline', active: true },
         onlyAllowMergeIfPipelineSucceeds: true,
       });
 
-      expect(vm.shouldShowMergeImmediatelyDropdown).toBe(false);
+      expect(findMergeImmediatelyDropdown().exists()).toBe(false);
     });
 
     it('should return true if the MR\'s pipeline is active and "Pipelines must succeed" is not enabled for the current project', () => {
-      factory({
+      createComponent({
         headPipeline: { id: 'gid://gitlab/Pipeline/1', path: 'path/to/pipeline', active: true },
         onlyAllowMergeIfPipelineSucceeds: false,
       });
 
-      expect(vm.shouldShowMergeImmediatelyDropdown).toBe(true);
+      expect(findMergeImmediatelyDropdown().exists()).toBe(true);
     });
 
     it('should return true when the merge train auto merge stategy is available', () => {
-      factory({
+      createComponent({
         availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
         headPipeline: { id: 'gid://gitlab/Pipeline/1', path: 'path/to/pipeline', active: false },
         onlyAllowMergeIfPipelineSucceeds: true,
       });
 
-      expect(vm.shouldShowMergeImmediatelyDropdown).toBe(true);
+      expect(findMergeImmediatelyDropdown().exists()).toBe(true);
     });
   });
 
@@ -275,7 +188,7 @@ describe('ReadyToMerge', () => {
     `(
       'with merge stragtegy $mergeStrategy and pipeline failed status of $isPipelineFailed we should show the modal: $isVisible',
       async ({ mergeStrategy, isPipelineFailed, isVisible }) => {
-        factory({
+        createComponent({
           availableAutoMergeStrategies: [mergeStrategy],
           headPipeline: {
             id: 'gid://gitlab/Pipeline/1',
@@ -299,46 +212,55 @@ describe('ReadyToMerge', () => {
   });
 
   describe('merge immediately warning dialog', () => {
-    let dialog;
-
     const clickMergeImmediately = async () => {
-      dialog = wrapper.findComponent(MergeImmediatelyConfirmationDialog);
+      expect(findMergeImmediatelyConfirmationDialog().exists()).toBe(true);
 
-      expect(dialog.exists()).toBe(true);
-      dialog.vm.show = jest.fn();
+      findMergeImmediatelyConfirmationDialog().vm.show = jest.fn();
+
       vm.handleMergeButtonClick = jest.fn();
-      findMergeButtonDropdown().trigger('click');
+
+      findMergeImmediatelyDropdown().trigger('click');
+
       await nextTick();
+
       findMergeImmediatelyButton().trigger('click');
+
       await nextTick();
     };
 
     it('should show a warning dialog asking for confirmation if the user is trying to skip the merge train', async () => {
-      factory({ availableAutoMergeStrategies: [MT_MERGE_STRATEGY] }, false);
+      createComponent({ availableAutoMergeStrategies: [MT_MERGE_STRATEGY] }, mount);
+
       await clickMergeImmediately();
-      expect(dialog.vm.show).toHaveBeenCalled();
+
+      expect(findMergeImmediatelyConfirmationDialog().vm.show).toHaveBeenCalled();
       expect(vm.handleMergeButtonClick).not.toHaveBeenCalled();
     });
 
     it('should perform the merge when the user confirms their intent to merge immediately', async () => {
-      factory({ availableAutoMergeStrategies: [MT_MERGE_STRATEGY] }, false);
+      createComponent({ availableAutoMergeStrategies: [MT_MERGE_STRATEGY] }, mount);
+
       await clickMergeImmediately();
-      dialog.vm.$emit('mergeImmediately');
+
+      findMergeImmediatelyConfirmationDialog().vm.$emit('mergeImmediately');
+
       await nextTick();
       // false (no auto merge), true (merge immediately), true (confirmation clicked)
       expect(vm.handleMergeButtonClick).toHaveBeenCalledWith(false, true, true);
     });
 
     it('should not ask for confirmation in non-merge train scenarios', async () => {
-      factory(
+      createComponent(
         {
           headPipeline: { id: 'gid://gitlab/Pipeline/1', path: 'path/to/pipeline', active: true },
           onlyAllowMergeIfPipelineSucceeds: false,
         },
-        false,
+        mount,
       );
+
       await clickMergeImmediately();
-      expect(dialog.vm.show).not.toHaveBeenCalled();
+
+      expect(findMergeImmediatelyConfirmationDialog().vm.show).not.toHaveBeenCalled();
       expect(vm.handleMergeButtonClick).toHaveBeenCalled();
     });
   });
@@ -346,7 +268,7 @@ describe('ReadyToMerge', () => {
   describe('Merge train text', () => {
     describe('pipeline failed', () => {
       beforeEach(() => {
-        factory({
+        createComponent({
           isPipelineFailed: true,
           availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
           hasCI: true,
@@ -361,7 +283,7 @@ describe('ReadyToMerge', () => {
 
     describe('pipeline passed', () => {
       beforeEach(() => {
-        factory({
+        createComponent({
           availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
           hasCI: true,
           onlyAllowMergeIfPipelineSucceeds: false,
