@@ -41,9 +41,9 @@ module QA
 
             expect(page).to have_content("Your organization's SSO has been connected to your GitLab account")
 
-            member_details = @group.list_members.find { |item| item['username'] == user.username }
+            member_details = @group.list_members.find { |item| item[:username] == user.username }
 
-            expect(member_details['access_level']).to eq(Resource::Members::AccessLevel::DEVELOPER)
+            expect(member_details[:access_level]).to eq(Resource::Members::AccessLevel::DEVELOPER)
           end
         end
       end
