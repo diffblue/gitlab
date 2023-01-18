@@ -1,8 +1,8 @@
 import Vue from 'vue';
-import FlashAlert from 'ee/trials/components/flash_alert.vue';
+import ErrorAlert from 'ee/trials/components/error_alert.vue';
 
-export const initFlashAlert = () => {
-  const el = document.querySelector('.js-flash-alert');
+export const initErrorAlert = () => {
+  const el = document.querySelector('.js-error-alert');
 
   if (!el) {
     return null;
@@ -16,9 +16,9 @@ export const initFlashAlert = () => {
 
   return new Vue({
     el,
-    name: 'FlashAlertRoot',
+    name: 'ErrorAlertRoot',
     render(createElement) {
-      return createElement(FlashAlert, {
+      return createElement(ErrorAlert, {
         props: { errors },
       });
     },

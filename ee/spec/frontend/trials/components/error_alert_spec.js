@@ -1,12 +1,12 @@
 import { GlAlert } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import FlashAlert from 'ee/trials/components/flash_alert.vue';
+import ErrorAlert from 'ee/trials/components/error_alert.vue';
 
-describe('FlashAlert', () => {
+describe('ErrorAlert', () => {
   let wrapper;
 
   const createComponent = ({ errors = null } = {}) => {
-    wrapper = shallowMount(FlashAlert, {
+    wrapper = shallowMount(ErrorAlert, {
       propsData: { errors },
     });
   };

@@ -3,7 +3,7 @@ import { GlAlert } from '@gitlab/ui';
 import { __ } from '~/locale';
 
 export default {
-  name: 'FlashAlert',
+  name: 'ErrorAlert',
   components: {
     GlAlert,
   },
