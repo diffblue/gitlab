@@ -44,7 +44,7 @@ module Security
     delegate :project, :has_security_findings?, to: :pipeline, private: true
 
     def findings
-      security_findings.map(&method(:build_vulnerability_finding))
+      security_findings.map { |finding| build_vulnerability_finding(finding) }
     end
 
     def report_finding_for(security_finding)
@@ -102,12 +102,12 @@ module Security
               .latest
               .page(page)
               .per(per_page)
-              .then(&method(:by_uuid))
-              .then(&method(:by_confidence_levels))
-              .then(&method(:by_report_types))
-              .then(&method(:by_severity_levels))
-              .then(&method(:by_scanner_external_ids))
-              .then(&method(:by_state))
+              .then { |relation| by_uuid(relation) }
+              .then { |relation| by_confidence_levels(relation) }
+              .then { |relation| by_report_types(relation) }
+              .then { |relation| by_severity_levels(relation) }
+              .then { |relation| by_scanner_external_ids(relation) }
+              .then { |relation| by_state(relation) }
     end
 
     def per_page

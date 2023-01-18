@@ -16,8 +16,8 @@ module EE
         override :build_config
         def build_config(config)
           super
-            .then(&method(:process_required_includes))
-            .then(&method(:process_security_orchestration_policy_includes))
+            .then { |config| process_required_includes(config) }
+            .then { |config| process_security_orchestration_policy_includes(config) }
         end
 
         def process_required_includes(config)

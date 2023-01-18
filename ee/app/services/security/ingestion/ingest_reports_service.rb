@@ -28,8 +28,9 @@ module Security
       delegate :project, to: :pipeline, private: true
 
       def store_reports
-        latest_security_scans.flat_map(&method(:ingest))
-                             .then(&method(:mark_resolved_vulnerabilities))
+        latest_security_scans
+          .flat_map { |scan| ingest(scan) }
+          .then { |ids| mark_resolved_vulnerabilities(ids) }
       end
 
       def latest_security_scans

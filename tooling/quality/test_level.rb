@@ -116,7 +116,7 @@ module Quality
     def prefixes_for_regex
       return '' if prefixes.empty?
 
-      regex_prefix = prefixes.map(&Regexp.method(:escape)).join('|')
+      regex_prefix = prefixes.map { |prefix| Regexp.escape(prefix) }.join('|')
 
       "(#{regex_prefix})"
     end
