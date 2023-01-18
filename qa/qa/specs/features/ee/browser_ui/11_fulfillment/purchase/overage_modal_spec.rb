@@ -46,6 +46,30 @@ module QA
         /If you continue, the #{group.path} group will have \d seats in use and will be billed for the overage/
       end
 
+      shared_examples 'overage for member invite' do |role|
+        it 'shows the modal' do
+          invite_member(user1.username, role)
+
+          check_if_overage_modal_present
+          Page::Group::Members.perform(&:send_invite)
+
+          expect(find_member_in_group(user1)).to be_truthy
+        end
+      end
+
+      shared_examples 'overage for group invite' do |role|
+        it 'shows the modal' do
+          member_group.add_member(group_owner, Resource::Members::AccessLevel::DEVELOPER)
+          member_group.add_member(user1, Resource::Members::AccessLevel::DEVELOPER)
+          invite_group(member_group.path, role)
+
+          check_if_overage_modal_present
+          Page::Group::Members.perform(&:send_invite)
+
+          expect(find_shared_group(member_group)).to be_truthy
+        end
+      end
+
       before do
         Flow::Login.sign_in(as: group_owner)
         group.visit!
@@ -65,17 +89,12 @@ module QA
           group.visit!
         end
 
-        context 'with member invite' do
-          it(
-            'shows overage modal when member with access level developer or above is added',
+        context 'for member invite' do
+          context(
+            'when access level developer or above is added',
             testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/387615'
           ) do
-            invite_member(user1.username, 'Developer')
-
-            check_if_overage_modal_present
-            Page::Group::Members.perform(&:send_invite)
-
-            expect(find_member_in_group(user1)).to be_truthy
+            it_behaves_like 'overage for member invite', 'Developer'
           end
 
           it 'does not show overage modal when inviting a member as a guest',
@@ -88,7 +107,7 @@ module QA
           end
         end
 
-        context 'with group invite' do
+        context 'for group invite' do
           it 'does not show overage modal when inviting a group which does not increase seats owed',
              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/387614' do
             member_group.add_member(group_owner, Resource::Members::AccessLevel::DEVELOPER)
@@ -98,59 +117,75 @@ module QA
             expect(find_shared_group(member_group)).to be_truthy
           end
 
-          it 'shows overage modal when inviting a group which increases seats owed',
+          context 'when inviting a group with developer role which increases seats owed',
              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/387613' do
-            member_group.add_member(group_owner, Resource::Members::AccessLevel::DEVELOPER)
-            member_group.add_member(user1, Resource::Members::AccessLevel::DEVELOPER)
-            invite_group(member_group.path, 'Developer')
+            it_behaves_like 'overage for group invite', 'Developer'
+          end
+        end
+      end
 
-            check_if_overage_modal_present
-            Page::Group::Members.perform(&:send_invite)
+      context 'with premium plan' do
+        before do
+          Flow::Purchase.upgrade_subscription(plan: PREMIUM)
+          wait_until_subscripton_upgraded?(plan: "Premium")
+          group.add_member(developer_user, Resource::Members::AccessLevel::DEVELOPER)
+          group.visit!
+        end
 
-            expect(find_shared_group(member_group)).to be_truthy
+        context 'for member invite' do
+          context 'when guest role is added',
+              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/388303' do
+            it_behaves_like 'overage for member invite', 'Guest'
           end
         end
 
-        def wait_until_subscripton_upgraded?
-          Gitlab::Page::Group::Settings::Billing.perform do |billing|
-            expect do
-              billing.billing_plan_header
-            end.to eventually_include("#{group.path} is currently using the Ultimate SaaS Plan")
-                     .within(max_duration: 120, max_attempts: 30, sleep_interval: 2, reload_page: page)
+        context 'for group invite' do
+          context 'when inviting a group with Guest role which increases seats owed',
+              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/388306' do
+            it_behaves_like 'overage for group invite', 'Guest'
           end
         end
+      end
 
-        def invite_member(user_name, access_level)
-          Page::Group::Menu.perform(&:click_group_members_item)
-          Page::Group::Members.perform do |members_page|
-            members_page.add_member(user_name, access_level, refresh_page: false)
-          end
+      def wait_until_subscripton_upgraded?(plan: "Ultimate")
+        Gitlab::Page::Group::Settings::Billing.perform do |billing|
+          expect do
+            billing.billing_plan_header
+          end.to eventually_include("#{group.path} is currently using the #{plan} SaaS Plan")
+                   .within(max_duration: 120, max_attempts: 30, sleep_interval: 2, reload_page: page)
         end
+      end
 
-        def invite_group(group_path, access_level)
-          group.visit! # Note that this is the parent group
-          Page::Group::Menu.perform(&:click_group_members_item)
-          Page::Group::Members.perform do |members_page|
-            members_page.invite_group(group_path, access_level, refresh_page: false)
-          end
+      def invite_member(user_name, access_level)
+        Page::Group::Menu.perform(&:click_group_members_item)
+        Page::Group::Members.perform do |members_page|
+          members_page.add_member(user_name, access_level, refresh_page: false)
         end
+      end
 
-        def check_if_overage_modal_present
-          expect(page).to have_content(overage_string)
-          expect(page).to have_content(overage_regex_string)
+      def invite_group(group_path, access_level)
+        group.visit! # Note that this is the parent group
+        Page::Group::Menu.perform(&:click_group_members_item)
+        Page::Group::Members.perform do |members_page|
+          members_page.invite_group(group_path, access_level, refresh_page: false)
         end
+      end
 
-        def check_if_overage_modal_absent
-          expect(page).not_to have_content(overage_string)
-        end
+      def check_if_overage_modal_present
+        expect(page).to have_content(overage_string)
+        expect(page).to have_content(overage_regex_string)
+      end
 
-        def find_member_in_group(user)
-          group.reload!.list_members.find { |usr| usr['username'] == user.username }
-        end
+      def check_if_overage_modal_absent
+        expect(page).not_to have_content(overage_string)
+      end
 
-        def find_shared_group(member_group)
-          group.reload!.shared_with_groups.find { |grp| grp[:group_name] == member_group.name }
-        end
+      def find_member_in_group(user)
+        group.reload!.list_members.find { |usr| usr['username'] == user.username }
+      end
+
+      def find_shared_group(member_group)
+        group.reload!.shared_with_groups.find { |grp| grp[:group_name] == member_group.name }
       end
     end
   end
