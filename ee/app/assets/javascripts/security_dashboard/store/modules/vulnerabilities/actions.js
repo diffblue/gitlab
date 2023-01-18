@@ -235,9 +235,9 @@ export const dismissVulnerability = (
   { vulnerability, flashError, comment },
 ) => {
   const page = state.pageInfo && state.pageInfo.page ? state.pageInfo.page : 1;
-  const dismissedVulnerabilitiesHidden = Boolean(
-    rootState.filters && rootState.filters.hideDismissed,
-  );
+  const dismissedVulnerabilitiesHidden =
+    rootState.filters?.filters?.scope === DISMISSAL_STATES.DISMISSED;
+
   dispatch('requestDismissVulnerability');
 
   const toastMsg = sprintf(

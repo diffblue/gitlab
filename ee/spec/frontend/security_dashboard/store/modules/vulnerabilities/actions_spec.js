@@ -584,7 +584,9 @@ describe('vulnerability dismissal', () => {
         state = {
           ...initialState(),
           filters: {
-            hideDismissed: true,
+            filters: {
+              scope: DISMISSAL_STATES.DISMISSED,
+            },
           },
         };
         mock
