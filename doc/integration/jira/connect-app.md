@@ -75,7 +75,7 @@ If the app requires additional permissions, [the update must first be manually a
 
 ## Connect the GitLab.com for Jira Cloud app for self-managed instances **(FREE SELF)**
 
-> Introduced in GitLab 15.7
+> Introduced in GitLab 15.7.
 
 Prerequisites:
 
@@ -85,6 +85,8 @@ Prerequisites:
 
 You can link self-managed instances after installing the GitLab.com for Jira Cloud app from the marketplace.
 Jira apps can only link to one URL per marketplace listing. The official listing links to GitLab.com.
+
+It's not possible to create branches from Jira for self-managed instances.
 
 ### Set up your instance
 
