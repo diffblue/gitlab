@@ -7075,13 +7075,13 @@ msgstr ""
 msgid "BranchRules|Keep stable branches secure and force developers to use merge requests. %{linkStart}What are protected branches?%{linkEnd}"
 msgstr ""
 
-msgid "BranchRules|Manage in Merge Request Approvals"
+msgid "BranchRules|Manage in merge request approvals"
 msgstr ""
 
-msgid "BranchRules|Manage in Protected Branches"
+msgid "BranchRules|Manage in protected branches"
 msgstr ""
 
-msgid "BranchRules|Manage in Status checks"
+msgid "BranchRules|Manage in status checks"
 msgstr ""
 
 msgid "BranchRules|No data to display"
@@ -7117,7 +7117,7 @@ msgstr ""
 msgid "BranchRules|Status checks (%{total})"
 msgstr ""
 
-msgid "BranchRules|Target Branch"
+msgid "BranchRules|Target branch"
 msgstr ""
 
 msgid "BranchRules|Users"
