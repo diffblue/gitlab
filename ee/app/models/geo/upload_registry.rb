@@ -30,12 +30,6 @@ class Geo::UploadRegistry < Geo::BaseRegistry
     [untracked, unused_tracked]
   end
 
-  def self.with_search(query)
-    return all if query.nil?
-
-    where(file_id: Upload.search(query).limit(1000).pluck_primary_key)
-  end
-
   def self.with_status(status)
     case status
     when 'synced', 'failed'

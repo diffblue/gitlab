@@ -1,12 +1,19 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'a Geo searchable registry' do
+  let(:registry_class_factory) { described_class.underscore.tr('/', '_').to_sym }
+
   describe '.with_search' do
     context 'when query is empty' do
       it 'returns all registries' do
+        # rubocop:disable Rails/SaveBang
+        registry_1 = create(registry_class_factory)
+        registry_2 = create(registry_class_factory)
+        # rubocop:enable Rails/SaveBang
+
         results = described_class.with_search('')
 
-        expect(results).to contain_exactly(registry, registry_2)
+        expect(results).to contain_exactly(registry_1, registry_2)
       end
     end
 
