@@ -26,7 +26,7 @@ module Gitlab
           'manifest_src' => "'self'",
           'media_src' => "'self' data: http: https:",
           'script_src' => ContentSecurityPolicy::Directives.script_src,
-          'style_src' => "'self' 'unsafe-inline'",
+          'style_src' => ContentSecurityPolicy::Directives.style_src,
           'worker_src' => "#{Gitlab::Utils.append_path(Gitlab.config.gitlab.url, 'assets/')} blob: data:",
           'object_src' => "'none'",
           'report_uri' => nil
