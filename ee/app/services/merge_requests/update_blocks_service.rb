@@ -33,6 +33,8 @@ module MergeRequests
       return unless update?
       return unless merge_request.target_project.feature_available?(:blocking_merge_requests)
 
+      previous_blocking_merge_requests = merge_request.blocking_merge_requests.to_a
+
       valid_references, invalid_references = extract_references
 
       delete_old_blockers!(valid_references)
@@ -47,10 +49,11 @@ module MergeRequests
         merge_request.errors.add(:dependencies, 'failed to save: ' + errors.join(', '))
       end
 
-      if invalid_references.present? || errors.present?
-        # When there are invalid references, we need to reset the associations
-        # so that the latest blocking merge requests are shown in the UI
-        merge_request.blocking_merge_requests.reset
+      # When no references are specified and old blocking merge requests are deleted,
+      # we need to reset the associations so we can get the updated state of association.
+      # This is because blocking merge requests are deleted via `delete_all`.
+      if merge_request.blocking_merge_requests.reset != previous_blocking_merge_requests
+        GraphqlTriggers.merge_request_merge_status_updated(merge_request)
       end
 
       true

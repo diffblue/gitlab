@@ -28,11 +28,11 @@ RSpec.describe MergeRequests::UpdateBlocksService do
     let(:merge_request) { create(:merge_request) }
     let(:user) { merge_request.target_project.first_owner }
 
-    let(:mr_to_ignore) { create(:merge_request) }
-    let(:mr_to_add) { create(:merge_request) }
-    let(:mr_to_keep) { create(:merge_request) }
-    let(:mr_to_del) { create(:merge_request) }
-    let(:hidden_mr) { create(:merge_request) }
+    let_it_be(:mr_to_ignore) { create(:merge_request) }
+    let_it_be(:mr_to_add) { create(:merge_request) }
+    let_it_be(:mr_to_keep) { create(:merge_request) }
+    let_it_be(:mr_to_del) { create(:merge_request) }
+    let_it_be(:hidden_mr) { create(:merge_request) }
 
     let(:refs) do
       [mr_to_ignore, mr_to_add, mr_to_keep].map { |mr| mr.to_reference(full: true) }
@@ -70,6 +70,10 @@ RSpec.describe MergeRequests::UpdateBlocksService do
         it 'does nothing' do
           expect { service.execute }.not_to change { MergeRequestBlock.count }
         end
+
+        it_behaves_like 'does not trigger GraphQL subscription mergeRequestMergeStatusUpdated' do
+          let(:action) { service.execute }
+        end
       end
 
       context 'with update: true' do
@@ -83,6 +87,10 @@ RSpec.describe MergeRequests::UpdateBlocksService do
 
             expect(merge_request.blocking_merge_requests)
               .to contain_exactly(mr_to_add, mr_to_keep, hidden_mr)
+          end
+
+          it_behaves_like 'triggers GraphQL subscription mergeRequestMergeStatusUpdated' do
+            let(:action) { service.execute }
           end
 
           context 'with a self-referential block' do
@@ -104,16 +112,61 @@ RSpec.describe MergeRequests::UpdateBlocksService do
               expect(merge_request.errors[:dependencies]).to include(/notavalid/)
             end
           end
+
+          context 'when references did not change' do
+            let(:refs) { merge_request.blocking_merge_requests.map { |mr| mr.to_reference(full: true) } }
+
+            it 'does nothing' do
+              expect { service.execute }.not_to change { MergeRequestBlock.count }
+            end
+
+            it_behaves_like 'does not trigger GraphQL subscription mergeRequestMergeStatusUpdated' do
+              let(:action) { service.execute }
+            end
+          end
+
+          context 'when no refs specified' do
+            let(:refs) { [] }
+
+            it 'deletes all visible blocking merge requests' do
+              service.execute
+
+              expect(merge_request.blocking_merge_requests)
+                .to contain_exactly(hidden_mr)
+            end
+
+            it_behaves_like 'triggers GraphQL subscription mergeRequestMergeStatusUpdated' do
+              let(:action) { service.execute }
+            end
+          end
         end
 
         context 'with remove_hidden: true' do
           let(:remove_hidden) { true }
+
+          it_behaves_like 'triggers GraphQL subscription mergeRequestMergeStatusUpdated' do
+            let(:action) { service.execute }
+          end
 
           it 'adds visible MRs and removes the hidden MR' do
             service.execute
 
             expect(merge_request.blocking_merge_requests)
               .to contain_exactly(mr_to_add, mr_to_keep)
+          end
+
+          context 'when no refs specified' do
+            let(:refs) { [] }
+
+            it 'removes all blocking merge requests' do
+              service.execute
+
+              expect(merge_request.blocking_merge_requests).to be_empty
+            end
+
+            it_behaves_like 'triggers GraphQL subscription mergeRequestMergeStatusUpdated' do
+              let(:action) { service.execute }
+            end
           end
         end
       end
@@ -129,6 +182,10 @@ RSpec.describe MergeRequests::UpdateBlocksService do
 
       it 'does nothing' do
         expect { service.execute }.not_to change { MergeRequestBlock.count }
+      end
+
+      it_behaves_like 'does not trigger GraphQL subscription mergeRequestMergeStatusUpdated' do
+        let(:action) { service.execute }
       end
     end
   end
