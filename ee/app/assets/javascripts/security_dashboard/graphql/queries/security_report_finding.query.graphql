@@ -75,6 +75,13 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
             name
             value
           }
+          ... on VulnerabilityDetailFileLocation {
+            type: __typename
+            name
+            fileName
+            lineStart
+            lineEnd
+          }
         }
       }
     }
