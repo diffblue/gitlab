@@ -1703,7 +1703,7 @@ DELETE /groups/:id/share/:group_id
 
 > Introduced in GitLab 13.4.
 
-### Get group push rules **(PREMIUM)**
+### Get group push rules
 
 Get the [push rules](../user/group/access_and_permissions.md#group-push-rules) of a group.
 
@@ -1746,7 +1746,7 @@ the `commit_committer_check` and `reject_unsigned_commits` parameters:
 }
 ```
 
-### Add group push rule **(PREMIUM)**
+### Add group push rule
 
 Adds [push rules](../user/group/access_and_permissions.md#group-push-rules) to the specified group.
 
@@ -1793,7 +1793,7 @@ Response:
 }
 ```
 
-### Edit group push rule **(PREMIUM)**
+### Edit group push rule
 
 Edit push rules for a specified group.
 
@@ -1840,7 +1840,7 @@ Response:
 }
 ```
 
-### Delete group push rule **(PREMIUM)**
+### Delete group push rule
 
 Deletes the [push rules](../user/group/access_and_permissions.md#group-push-rules) of a group.
 
