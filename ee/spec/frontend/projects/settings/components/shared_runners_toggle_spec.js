@@ -6,6 +6,7 @@ import CcValidationRequiredAlert from 'ee_component/billings/components/cc_valid
 import { TEST_HOST } from 'helpers/test_constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import SharedRunnersToggleComponent from '~/projects/settings/components/shared_runners_toggle.vue';
 import { CC_VALIDATION_REQUIRED_ERROR } from '~/projects/settings/constants';
 
@@ -36,7 +37,7 @@ describe('projects/settings/components/shared_runners', () => {
 
   beforeEach(() => {
     mockAxios = new MockAxiosAdapter(axios);
-    mockAxios.onPost(TEST_UPDATE_PATH).reply(200);
+    mockAxios.onPost(TEST_UPDATE_PATH).reply(HTTP_STATUS_OK);
   });
 
   afterEach(() => {

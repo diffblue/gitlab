@@ -1,6 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
 import * as arkoseLabsApi from 'ee/api/arkose_labs_api';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 describe('ArkoseLabs API', () => {
   let axiosMock;
@@ -17,7 +18,7 @@ describe('ArkoseLabs API', () => {
   describe('needsArkoseLabsChallenge', () => {
     beforeEach(() => {
       jest.spyOn(axios, 'post');
-      axiosMock.onPost().reply(200);
+      axiosMock.onPost().reply(HTTP_STATUS_OK);
     });
 
     it.each`
