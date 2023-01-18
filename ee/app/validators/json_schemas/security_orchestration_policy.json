@@ -72,7 +72,7 @@
                 "cadence": {
                   "description": "Specifies when this policy should schedule a new pipeline with enforced `actions`. Uses cron expression as a format (ie. `0 22 * * 1-5`). Supported only when `type` is set to `schedule`.",
                   "type": "string",
-                  "pattern": "(@(yearly|annually|monthly|weekly|daily|midnight|noon|hourly))|(?i)(((\\*|(\\-?\\d+\\,?)+)(\\/\\d+)?|last|L|(sun|mon|tue|wed|thu|fri|sat|\\-|\\,)+|(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|\\-|\\,)+)\\s?){5,6}"
+                  "pattern": "(@(yearly|annually|monthly|weekly|daily|midnight|noon|hourly))|(((\\*|(\\-?\\d+\\,?)+)(\\/\\d+)?|last|L|(sun|mon|tue|wed|thu|fri|sat|SUN|MON|TUE|WED|THU|FRI|SAT\\-|\\,)+|(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC|\\-|\\,)+)\\s?){5,6}"
                 },
                 "agents": {
                   "type": "object",
@@ -80,7 +80,7 @@
                   "minProperties": 1,
                   "maxProperties": 1,
                   "patternProperties": {
-                    "\\A[a-z0-9]([-a-z0-9]*[a-z0-9])?\\z": {
+                    "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$": {
                       "type": "object",
                       "description": "Specifies the name of the Kubernetes cluster configured for your project in GitLab.",
                       "properties": {
@@ -100,7 +100,7 @@
                   "minProperties": 1,
                   "maxProperties": 1,
                   "patternProperties": {
-                    "\\A[a-z0-9]([-a-z0-9]*[a-z0-9])?\\z": {
+                    "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$": {
                       "type": "object",
                       "properties": {
                         "namespaces": {
@@ -184,7 +184,7 @@
                   "type": "object",
                   "description": "Defines environment variables for specific security jobs. Job level property overrides global variables.",
                   "patternProperties": {
-                    "\\A[a-zA-Z_][a-zA-Z0-9_]*\\z": {
+                    "^[a-zA-Z_][a-zA-Z0-9_]*$": {
                       "type": "string"
                     }
                   }
@@ -534,15 +534,14 @@
                   "minItems": 1,
                   "additionalItems": false,
                   "items": {
-                    "type": {
-                      "enum": [
-                        "guest",
-                        "reporter",
-                        "developer",
-                        "maintainer",
-                        "owner"
-                      ]
-                    },
+                    "type": "string",
+                    "enum": [
+                      "guest",
+                      "reporter",
+                      "developer",
+                      "maintainer",
+                      "owner"
+                    ],
                     "minLength": 1
                   }
                 }
