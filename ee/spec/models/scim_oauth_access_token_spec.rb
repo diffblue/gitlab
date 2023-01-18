@@ -45,14 +45,14 @@ RSpec.describe ScimOauthAccessToken, feature_category: :authentication_and_autho
     end
   end
 
-  describe '.token_matches?' do
+  describe '.token_matches_for_instance?' do
     context 'when token passed in found in database' do
       context 'when token not associated with a group' do
         it 'returns true' do
           scim_token = create(:scim_oauth_access_token, group: nil)
           token_value = scim_token.token
 
-          expect(described_class.token_matches?(token_value)).to eq true
+          expect(described_class.token_matches_for_instance?(token_value)).to eq true
         end
       end
 
@@ -61,14 +61,14 @@ RSpec.describe ScimOauthAccessToken, feature_category: :authentication_and_autho
           scim_token = create(:scim_oauth_access_token, group: create(:group))
           token_value = scim_token.token
 
-          expect(described_class.token_matches?(token_value)).to eq false
+          expect(described_class.token_matches_for_instance?(token_value)).to eq false
         end
       end
     end
 
     context 'when token passed in not found in database' do
       it 'returns nil' do
-        expect(described_class.token_matches?('notatoken')).to eq nil
+        expect(described_class.token_matches_for_instance?('notatoken')).to eq nil
       end
     end
   end
