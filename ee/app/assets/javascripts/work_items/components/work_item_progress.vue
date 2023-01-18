@@ -180,6 +180,13 @@ export default {
         @blur="updateProgress"
         @focus="handleFocus"
       />
+      <span
+        v-if="!isEditing"
+        class="gl-mx-4 gl-my-3 gl-absolute gl-top-0 gl-bg-white gl-border gl-border-white gl-line-height-normal"
+        data-testid="progress-displayed-value"
+      >
+        {{ localProgress }}%
+      </span>
     </gl-form-group>
   </gl-form>
 </template>
