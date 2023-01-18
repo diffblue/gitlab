@@ -4,7 +4,6 @@ module Users
   class IdentityVerificationController < ApplicationController
     include AcceptsPendingInvitations
     include ActionView::Helpers::DateHelper
-    include ZuoraCSP
 
     skip_before_action :authenticate_user!
     before_action :require_unconfirmed_user!

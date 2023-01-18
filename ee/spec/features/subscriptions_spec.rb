@@ -8,7 +8,6 @@ RSpec.describe 'Subscriptions Content Security Policy', feature_category: :purch
   subject { response_headers['Content-Security-Policy'] }
 
   let_it_be(:default_csp_values) { "'self' https://some-cdn.test" }
-  let_it_be(:zuora_url) { 'https://*.zuora.com' }
   let_it_be(:onetrust_url) { 'https://*.onetrust.com' }
   let_it_be(:cookielaw_url) { 'https://cdn.cookielaw.org' }
   let_it_be(:google_tag_manager_url) { '*.googletagmanager.com' }
@@ -18,7 +17,7 @@ RSpec.describe 'Subscriptions Content Security Policy', feature_category: :purch
   before do
     stub_request(:get, /.*gitlab_plans.*/).to_return(status: 200, body: "{}")
 
-    setup_csp_for_controller(SubscriptionsController, csp, times: 4)
+    setup_csp_for_controller(SubscriptionsController, csp, times: 3)
 
     sign_in(create(:user))
 
@@ -40,9 +39,9 @@ RSpec.describe 'Subscriptions Content Security Policy', feature_category: :purch
       end
     end
 
-    it { is_expected.to include("script-src #{default_csp_values} 'unsafe-eval' #{cookielaw_url} #{onetrust_url} #{zuora_url} #{google_tag_manager_url}") }
-    it { is_expected.to include("frame-src #{default_csp_values} #{zuora_url}") }
-    it { is_expected.to include("child-src #{default_csp_values} #{zuora_url}") }
+    it { is_expected.to include("script-src #{default_csp_values} 'unsafe-eval' #{cookielaw_url} #{onetrust_url} #{google_tag_manager_url}") }
+    it { is_expected.to include("frame-src #{default_csp_values}") }
+    it { is_expected.to include("child-src #{default_csp_values}") }
     it { is_expected.to include("connect-src #{cookielaw_url} #{onetrust_url} #{google_analytics_url} #{google_analytics_google_url} #{google_tag_manager_url}") }
     it { is_expected.to include("img-src #{google_analytics_url} #{google_tag_manager_url}") }
   end
@@ -55,9 +54,7 @@ RSpec.describe 'Subscriptions Content Security Policy', feature_category: :purch
     end
 
     it { is_expected.to include("default-src #{default_csp_values}") }
-    it { is_expected.to include("script-src #{default_csp_values} 'unsafe-eval' #{cookielaw_url} #{onetrust_url} #{zuora_url} #{google_tag_manager_url}") }
-    it { is_expected.to include("frame-src #{default_csp_values} #{zuora_url}") }
-    it { is_expected.to include("child-src #{default_csp_values} #{zuora_url}") }
+    it { is_expected.to include("script-src #{default_csp_values} 'unsafe-eval' #{cookielaw_url} #{onetrust_url} #{google_tag_manager_url}") }
     it { is_expected.to include("img-src #{default_csp_values} #{google_analytics_url} #{google_tag_manager_url}") }
     it { is_expected.to include("connect-src #{default_csp_values} localhost #{cookielaw_url} #{onetrust_url} #{google_analytics_url} #{google_analytics_google_url} #{google_tag_manager_url}") }
   end
