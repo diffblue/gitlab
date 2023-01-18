@@ -10,7 +10,7 @@ import AccessRequestActionButtons from '~/members/components/action_buttons/acce
 import GroupActionButtons from '~/members/components/action_buttons/group_action_buttons.vue';
 import InviteActionButtons from '~/members/components/action_buttons/invite_action_buttons.vue';
 import UserActionDropdown from '~/members/components/action_dropdowns/user_action_dropdown.vue';
-import MemberActionButtons from '~/members/components/table/member_action_buttons.vue';
+import MemberActions from '~/members/components/table/member_actions.vue';
 import BannedActionButtons from 'ee/members/components/action_buttons/banned_action_buttons.vue';
 import { MEMBER_TYPES } from 'ee_else_ce/members/constants';
 import { stubComponent } from 'helpers/stub_component';
@@ -19,7 +19,7 @@ describe('MemberActionButtons', () => {
   let wrapper;
 
   const createComponent = (propsData = {}) => {
-    wrapper = shallowMount(MemberActionButtons, {
+    wrapper = shallowMount(MemberActions, {
       stubs: { BannedActionButtons: stubComponent(BannedActionButtons) },
       propsData: {
         isCurrentUser: false,
