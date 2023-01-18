@@ -11885,7 +11885,7 @@ CREATE TABLE atlassian_identities (
     encrypted_refresh_token bytea,
     encrypted_refresh_token_iv bytea,
     CONSTRAINT atlassian_identities_refresh_token_iv_length_constraint CHECK ((octet_length(encrypted_refresh_token_iv) <= 12)),
-    CONSTRAINT atlassian_identities_refresh_token_length_constraint CHECK ((octet_length(encrypted_refresh_token) <= 512)),
+    CONSTRAINT atlassian_identities_refresh_token_length_constraint CHECK ((octet_length(encrypted_refresh_token) <= 5000)),
     CONSTRAINT atlassian_identities_token_iv_length_constraint CHECK ((octet_length(encrypted_token_iv) <= 12)),
     CONSTRAINT atlassian_identities_token_length_constraint CHECK ((octet_length(encrypted_token) <= 2048)),
     CONSTRAINT check_32f5779763 CHECK ((char_length(extern_uid) <= 255))
@@ -19586,7 +19586,10 @@ CREATE TABLE plan_limits (
     ci_max_artifact_size_cyclonedx integer DEFAULT 1 NOT NULL,
     rpm_max_file_size bigint DEFAULT '5368709120'::bigint NOT NULL,
     ci_max_artifact_size_requirements_v2 integer DEFAULT 0 NOT NULL,
-    pipeline_hierarchy_size integer DEFAULT 1000 NOT NULL
+    pipeline_hierarchy_size integer DEFAULT 1000 NOT NULL,
+    enforcement_limit integer DEFAULT 0 NOT NULL,
+    notification_limit integer DEFAULT 0 NOT NULL,
+    dashboard_limit_enabled_at timestamp with time zone
 );
 
 CREATE SEQUENCE plan_limits_id_seq
@@ -29403,6 +29406,8 @@ CREATE INDEX index_environments_on_merge_request_id ON environments USING btree 
 
 CREATE INDEX index_environments_on_name_varchar_pattern_ops ON environments USING btree (name varchar_pattern_ops);
 
+CREATE INDEX index_environments_on_project_id_and_id ON environments USING btree (project_id, id);
+
 CREATE UNIQUE INDEX index_environments_on_project_id_and_name ON environments USING btree (project_id, name);
 
 CREATE UNIQUE INDEX index_environments_on_project_id_and_slug ON environments USING btree (project_id, slug);
@@ -29487,6 +29492,12 @@ CREATE INDEX index_et_errors_on_project_id_and_status_last_seen_at_id_desc ON er
 
 CREATE INDEX index_events_author_id_project_id_action_target_type_created_at ON events USING btree (author_id, project_id, action, target_type, created_at);
 
+CREATE INDEX index_events_for_followed_users ON events USING btree (author_id, target_type, action, id);
+
+CREATE INDEX index_events_for_group_activity ON events USING btree (group_id, target_type, action, id) WHERE (group_id IS NOT NULL);
+
+CREATE INDEX index_events_for_project_activity ON events USING btree (project_id, target_type, action, id);
+
 CREATE INDEX index_events_on_action ON events USING btree (action);
 
 CREATE INDEX index_events_on_author_id_and_created_at ON events USING btree (author_id, created_at);
@@ -29496,6 +29507,8 @@ CREATE INDEX index_events_on_author_id_and_created_at_merge_requests ON events U
 CREATE INDEX index_events_on_author_id_and_id ON events USING btree (author_id, id);
 
 CREATE INDEX index_events_on_created_at_and_id ON events USING btree (created_at, id) WHERE (created_at > '2021-08-27 00:00:00+00'::timestamp with time zone);
+
+CREATE INDEX index_events_on_group_id_and_id ON events USING btree (group_id, id) WHERE (group_id IS NOT NULL);
 
 CREATE INDEX index_events_on_group_id_partial ON events USING btree (group_id) WHERE (group_id IS NOT NULL);
 
@@ -31790,6 +31803,8 @@ CREATE UNIQUE INDEX uniq_pkgs_debian_group_distributions_group_id_and_suite ON p
 CREATE UNIQUE INDEX uniq_pkgs_debian_project_distributions_project_id_and_codename ON packages_debian_project_distributions USING btree (project_id, codename);
 
 CREATE UNIQUE INDEX uniq_pkgs_debian_project_distributions_project_id_and_suite ON packages_debian_project_distributions USING btree (project_id, suite);
+
+CREATE UNIQUE INDEX unique_ci_builds_token_encrypted_and_partition_id ON ci_builds USING btree (token_encrypted, partition_id) WHERE (token_encrypted IS NOT NULL);
 
 CREATE UNIQUE INDEX unique_merge_request_metrics_by_merge_request_id ON merge_request_metrics USING btree (merge_request_id);
 

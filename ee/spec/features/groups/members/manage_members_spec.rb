@@ -99,12 +99,12 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
       sign_in(user1)
       stub_signing_key
       stub_application_setting(check_namespace_plan: true)
-      stub_subscription_request_seat_usage(true)
+      stub_reconciliation_request(true)
     end
 
     context 'when adding a member to a free group' do
       before do
-        stub_subscription_request_seat_usage(false)
+        stub_reconciliation_request(false)
         create(:gitlab_subscription, namespace: group, hosted_plan: nil)
       end
 
@@ -198,7 +198,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
     context 'when adding to a group not eligible for reconciliation', :aggregate_failures do
       before do
         create(:gitlab_subscription, namespace: group, hosted_plan: ultimate_plan, seats: 1, seats_in_use: 1)
-        stub_subscription_request_seat_usage(false)
+        stub_reconciliation_request(false)
       end
 
       include_examples 'adding one user with a given role doesn\'t trigger an overage modal', 'Developer'

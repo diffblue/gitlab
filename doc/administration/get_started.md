@@ -36,7 +36,7 @@ Watch an overview of [groups and projects](https://www.youtube.com/watch?v=cqb2m
 
 Get started:
 
-- Create a [project](../user/project/working_with_projects.md#create-a-project).
+- Create a [project](../user/project/index.md#create-a-project).
 - Create a [group](../user/group/manage.md#create-a-group).
 - [Add members](../user/group/manage.md#add-users-to-a-group) to the group.
 - Create a [subgroup](../user/group/subgroups/index.md#create-a-subgroup).
@@ -55,7 +55,7 @@ Get started:
 
 You may need to import projects from external sources like GitHub, Bitbucket, or another instance of GitLab. Many external sources can be imported into GitLab.
 
-- Review the [GitLab projects documentation](../user/project/index.md#project-integrations).
+- Review the [GitLab projects documentation](../user/project/index.md).
 - Consider [repository mirroring](../user/project/repository/mirror/index.md)—an [alternative to project migrations](../ci/ci_cd_for_external_repos/index.md).
 - Check out our [migration index](../user/project/import/index.md) for documentation on common migration paths.
 - Schedule your project exports with our [import/export API](../api/project_import_export.md#schedule-an-export).
@@ -241,7 +241,7 @@ You can make changes to your default rate limits from the Admin Area. For more i
 - Review the [rate limit on raw endpoints](../user/admin_area/settings/rate_limits_on_raw_endpoints.md). The default setting is 300 requests per minute for raw file access.
 - Review the [import/export rate limits](../user/admin_area/settings/import_export_rate_limits.md) of the six active defaults.
 
-For more information about API and rate limits, see our [API page](../api/index.md).
+For more information about API and rate limits, see our [API page](../api/rest/index.md).
 
 ## API and rate limits for GitLab SaaS
 
@@ -255,7 +255,7 @@ Rate limits also improve the security of your application.
 You can make changes to your default rate limits from the Admin Area. For more information about configuration, see the [Admin Area page](../security/rate_limits.md#configurable-limits).
 
 - Review the rate limit page.
-- Read our [API page](../api/index.md) for more information about API and rate limiting.
+- Read our [API page](../api/rest/index.md) for more information about API and rate limiting.
 
 ### GitLab SaaS-specific block and error responses
 

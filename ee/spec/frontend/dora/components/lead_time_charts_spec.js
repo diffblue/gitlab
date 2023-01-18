@@ -4,10 +4,11 @@ import MockAdapter from 'axios-mock-adapter';
 import lastWeekData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_week.json';
 import lastMonthData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_month.json';
 import last90DaysData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_90_days.json';
+import last180DaysData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_180_days.json';
 import { useFixturesFakeDate } from 'helpers/fake_date';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-import httpStatus from '~/lib/utils/http_status';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 jest.mock('~/flash');
 
@@ -49,7 +50,7 @@ describe('lead_time_charts.vue', () => {
           start_date,
         },
       })
-      .replyOnce(httpStatus.OK, data);
+      .replyOnce(HTTP_STATUS_OK, data);
   };
 
   afterEach(() => {
@@ -73,14 +74,18 @@ describe('lead_time_charts.vue', () => {
         start_date: '2015-04-05T00:00:00+0000',
         data: last90DaysData,
       });
+      setUpMockLeadTime({
+        start_date: '2015-01-05T00:00:00+0000',
+        data: last180DaysData,
+      });
 
       createComponent();
 
       await axios.waitForAll();
     });
 
-    it('makes 3 GET requests - one for each chart', () => {
-      expect(mock.history.get).toHaveLength(3);
+    it('makes 4 GET requests - one for each chart', () => {
+      expect(mock.history.get).toHaveLength(4);
     });
 
     it('does not show a flash message', () => {
@@ -117,8 +122,8 @@ describe('lead_time_charts.vue', () => {
     beforeEach(() => {
       mock = new MockAdapter(axios);
 
-      mock.onGet(/projects\/test%2Fproject\/dora\/metrics/).reply(httpStatus.OK, lastWeekData);
-      mock.onGet(/groups\/test%2Fgroup\/dora\/metrics/).reply(httpStatus.OK, lastWeekData);
+      mock.onGet(/projects\/test%2Fproject\/dora\/metrics/).reply(HTTP_STATUS_OK, lastWeekData);
+      mock.onGet(/groups\/test%2Fgroup\/dora\/metrics/).reply(HTTP_STATUS_OK, lastWeekData);
     });
 
     describe('when projectPath is provided', () => {
@@ -135,7 +140,7 @@ describe('lead_time_charts.vue', () => {
       });
 
       it('makes a call to the project API endpoint', () => {
-        expect(mock.history.get.length).toBe(3);
+        expect(mock.history.get.length).toBe(4);
         expect(mock.history.get[0].url).toMatch('/projects/test%2Fproject/dora/metrics');
       });
 
@@ -158,7 +163,7 @@ describe('lead_time_charts.vue', () => {
       });
 
       it('makes a call to the group API endpoint', () => {
-        expect(mock.history.get.length).toBe(3);
+        expect(mock.history.get.length).toBe(4);
         expect(mock.history.get[0].url).toMatch('/groups/test%2Fgroup/dora/metrics');
       });
 

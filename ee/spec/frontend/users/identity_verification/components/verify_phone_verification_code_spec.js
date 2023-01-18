@@ -7,7 +7,7 @@ import { sprintf } from '~/locale';
 
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import httpStatusCodes, { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
+import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 import { createAlert, VARIANT_SUCCESS } from '~/flash';
 
@@ -143,7 +143,7 @@ describe('Verify phone verification code input component', () => {
   describe('Re-sending code', () => {
     describe('when request is successful', () => {
       beforeEach(() => {
-        axiosMock.onPost(SEND_CODE_PATH).reply(httpStatusCodes.OK, { success: true });
+        axiosMock.onPost(SEND_CODE_PATH).reply(HTTP_STATUS_OK, { success: true });
 
         resendCode();
         return waitForPromises();
@@ -182,7 +182,7 @@ describe('Verify phone verification code input component', () => {
   describe('Verifying code', () => {
     describe('when request is successful', () => {
       beforeEach(() => {
-        axiosMock.onPost(VERIFY_CODE_PATH).reply(httpStatusCodes.OK, { success: true });
+        axiosMock.onPost(VERIFY_CODE_PATH).reply(HTTP_STATUS_OK, { success: true });
 
         enterCode('123');
         submitForm();

@@ -19,7 +19,8 @@ RSpec.describe WorkItems::Type do
         ::WorkItems::Widgets::HealthStatus,
         ::WorkItems::Widgets::Milestone,
         ::WorkItems::Widgets::Notes,
-        ::WorkItems::Widgets::Progress
+        ::WorkItems::Widgets::Progress,
+        ::WorkItems::Widgets::RequirementLegacy
       )
     end
   end

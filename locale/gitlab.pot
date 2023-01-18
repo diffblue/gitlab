@@ -823,6 +823,12 @@ msgstr ""
 msgid "%{linkStart} Learn more%{linkEnd}."
 msgstr ""
 
+msgid "%{link_start}Remove the %{draft_snippet} prefix%{link_end} from the title to allow this merge request to be merged when it's ready."
+msgstr ""
+
+msgid "%{link_start}Start the title with %{draft_snippet}%{link_end} to prevent a merge request draft from merging before it's ready."
+msgstr ""
+
 msgid "%{listToShow}, and %{awardsListLength} more"
 msgstr ""
 
@@ -1055,7 +1061,7 @@ msgid_plural "%{strongStart}%{count}%{strongEnd} commits"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "%{strongStart}Tip:%{strongEnd} You can also check out merge requests locally. %{linkStart}Learn more.%{linkEnd}"
+msgid "%{strongStart}Tip:%{strongEnd} You can also %{linkStart}check out with merge request ID%{linkEnd}."
 msgstr ""
 
 msgid "%{strong_open}%{group_name}%{strong_close} projects:"
@@ -2270,9 +2276,6 @@ msgstr ""
 msgid "Add approvers"
 msgstr ""
 
-msgid "Add broadcast message"
-msgstr ""
-
 msgid "Add child epic to an epic"
 msgstr ""
 
@@ -2780,6 +2783,9 @@ msgstr ""
 msgid "AdminSettings|All new projects can use the instance's shared runners by default."
 msgstr ""
 
+msgid "AdminSettings|Allow migrating GitLab groups and projects by direct transfer"
+msgstr ""
+
 msgid "AdminSettings|Auto DevOps domain"
 msgstr ""
 
@@ -2853,9 +2859,6 @@ msgid "AdminSettings|Enable kuromoji custom analyzer: Indexing"
 msgstr ""
 
 msgid "AdminSettings|Enable kuromoji custom analyzer: Search"
-msgstr ""
-
-msgid "AdminSettings|Enable migrating GitLab groups and projects by direct transfer"
 msgstr ""
 
 msgid "AdminSettings|Enable pipeline suggestion banner"
@@ -3602,6 +3605,9 @@ msgstr ""
 msgid "Advanced export options"
 msgstr ""
 
+msgid "AdvancedSearch|Could not fetch index entities. Please try again later."
+msgstr ""
+
 msgid "AdvancedSearch|Elasticsearch version not compatible"
 msgstr ""
 
@@ -4130,9 +4136,6 @@ msgstr ""
 msgid "Allow use of licensed EE features"
 msgstr ""
 
-msgid "Allow users to dismiss the broadcast message"
-msgstr ""
-
 msgid "Allow users to register any application to use GitLab as an OAuth provider"
 msgstr ""
 
@@ -4506,9 +4509,6 @@ msgid "An error occurred while removing epics."
 msgstr ""
 
 msgid "An error occurred while removing issues."
-msgstr ""
-
-msgid "An error occurred while rendering preview broadcast message"
 msgstr ""
 
 msgid "An error occurred while rendering the editor"
@@ -7417,9 +7417,6 @@ msgstr ""
 msgid "BulkImport|Destination"
 msgstr ""
 
-msgid "BulkImport|Destination group"
-msgstr ""
-
 msgid "BulkImport|Existing groups"
 msgstr ""
 
@@ -7429,7 +7426,7 @@ msgstr ""
 msgid "BulkImport|Following data will not be migrated: %{bullets} Contact system administrator of %{host} to upgrade GitLab if you need this data in your migration"
 msgstr ""
 
-msgid "BulkImport|Group import history"
+msgid "BulkImport|GitLab Migration history"
 msgstr ""
 
 msgid "BulkImport|History"
@@ -7445,6 +7442,15 @@ msgid "BulkImport|Import is finished. Pick another name for re-import"
 msgstr ""
 
 msgid "BulkImport|Import selected"
+msgstr ""
+
+msgid "BulkImport|Import with projects"
+msgstr ""
+
+msgid "BulkImport|Import without projects"
+msgstr ""
+
+msgid "BulkImport|Importing projects is a %{docsLinkStart}Beta%{docsLinkEnd} feature."
 msgstr ""
 
 msgid "BulkImport|Importing the group failed."
@@ -7507,7 +7513,7 @@ msgstr ""
 msgid "BulkImport|Update of import statuses with realtime changes failed"
 msgstr ""
 
-msgid "BulkImport|Your imported groups will appear here."
+msgid "BulkImport|Your imported groups and projects will appear here."
 msgstr ""
 
 msgid "BulkImport|Your imported projects will appear here."
@@ -8238,7 +8244,7 @@ msgstr ""
 msgid "Check out branch"
 msgstr ""
 
-msgid "Check out, review, and merge locally"
+msgid "Check out, review, and resolve locally"
 msgstr ""
 
 msgid "Check the %{code_open}elasticsearch.log%{code_close} file to debug why the migration halted and make any changes before retrying the migration. When you fix the cause of the failure, select %{strong_open}Retry migration%{strong_close}, and the migration is scheduled to retry in the background."
@@ -12327,9 +12333,6 @@ msgstr ""
 msgid "DNS"
 msgstr ""
 
-msgid "DORA4Metrics|%{startDate} - %{endDate}"
-msgstr ""
-
 msgid "DORA4Metrics|Average (last %{days}d)"
 msgstr ""
 
@@ -14665,9 +14668,6 @@ msgstr ""
 msgid "Dismiss trial promotion"
 msgstr ""
 
-msgid "Dismissable"
-msgstr ""
-
 msgid "Dismissed"
 msgstr ""
 
@@ -15385,9 +15385,6 @@ msgstr ""
 msgid "Enable email notification"
 msgstr ""
 
-msgid "Enable error tracking"
-msgstr ""
-
 msgid "Enable feature to choose access level"
 msgstr ""
 
@@ -15518,9 +15515,6 @@ msgid "End time"
 msgstr ""
 
 msgid "Ends"
-msgstr ""
-
-msgid "Ends at (UTC)"
 msgstr ""
 
 msgid "Ends on"
@@ -16127,6 +16121,9 @@ msgid "Error setting up editor. Please try again."
 msgstr ""
 
 msgid "Error tracking"
+msgstr ""
+
+msgid "Error tracking is currently in"
 msgstr ""
 
 msgid "Error updating %{issuableType}"
@@ -19565,9 +19562,6 @@ msgstr ""
 msgid "GroupActivityMetrics|Issues created"
 msgstr ""
 
-msgid "GroupActivityMetrics|Last 30 days"
-msgstr ""
-
 msgid "GroupActivityMetrics|Members added"
 msgstr ""
 
@@ -20487,6 +20481,9 @@ msgstr ""
 msgid "Help translate GitLab into your language"
 msgstr ""
 
+msgid "Help translate to your language"
+msgstr ""
+
 msgid "Helps prevent bots from brute-force attacks."
 msgstr ""
 
@@ -20678,6 +20675,9 @@ msgid "How do I configure this integration?"
 msgstr ""
 
 msgid "How do I generate it?"
+msgstr ""
+
+msgid "How do I get started?"
 msgstr ""
 
 msgid "How do I mirror repositories?"
@@ -21216,6 +21216,12 @@ msgid "Import tasks from Phabricator into issues"
 msgstr ""
 
 msgid "Import timed out. Import took longer than %{import_jobs_expiration} seconds"
+msgstr ""
+
+msgid "Import with projects"
+msgstr ""
+
+msgid "Import without projects"
 msgstr ""
 
 msgid "ImportAProjectModal|Import from a project"
@@ -22404,7 +22410,7 @@ msgstr ""
 msgid "IntegrationEvents|A new, unique alert is recorded"
 msgstr ""
 
-msgid "IntegrationEvents|A new, unique, vulnerability is recorded. (Note: This feature requires an Ultimate plan)"
+msgid "IntegrationEvents|A new, unique vulnerability is recorded (available only in GitLab Ultimate)"
 msgstr ""
 
 msgid "IntegrationEvents|A pipeline status changes"
@@ -22417,6 +22423,9 @@ msgid "IntegrationEvents|A tag is pushed to the repository"
 msgstr ""
 
 msgid "IntegrationEvents|A wiki page is created or updated"
+msgstr ""
+
+msgid "IntegrationEvents|An incident is created"
 msgstr ""
 
 msgid "IntegrationEvents|An issue is created, updated, or closed"
@@ -22542,6 +22551,9 @@ msgstr ""
 msgid "Integrations|GitLab for Slack app"
 msgstr ""
 
+msgid "Integrations|GitLab for Slack app must be reinstalled to enable notifications"
+msgstr ""
+
 msgid "Integrations|Group-level integration management"
 msgstr ""
 
@@ -22648,6 +22660,9 @@ msgid "Integrations|To keep this project going, create a new issue."
 msgstr ""
 
 msgid "Integrations|Trigger"
+msgstr ""
+
+msgid "Integrations|Unable to post to %{channel_list}, please add the GitLab Slack app to any private Slack channels"
 msgstr ""
 
 msgid "Integrations|Use custom settings"
@@ -23409,6 +23424,9 @@ msgid "Issues|There was an error while moving the issues."
 msgstr ""
 
 msgid "Issue|Title"
+msgstr ""
+
+msgid "It looks like you have some draft commits in this branch."
 msgstr ""
 
 msgid "It looks like you're attempting to activate your subscription. Use %{a_start}the Subscription page%{a_end} instead."
@@ -24403,15 +24421,6 @@ msgid "Last %{days} days"
 msgstr ""
 
 msgid "Last 2 weeks"
-msgstr ""
-
-msgid "Last 30 days"
-msgstr ""
-
-msgid "Last 60 days"
-msgstr ""
-
-msgid "Last 90 days"
 msgstr ""
 
 msgid "Last Accessed On"
@@ -26176,9 +26185,6 @@ msgstr ""
 msgid "Merge in progress"
 msgstr ""
 
-msgid "Merge locally"
-msgstr ""
-
 msgid "Merge options"
 msgstr ""
 
@@ -26231,9 +26237,6 @@ msgid "Merge requests are a place to propose changes you've made to a project an
 msgstr ""
 
 msgid "Merge requests can't be merged if the status checks did not succeed or are still running."
-msgstr ""
-
-msgid "Merge the feature branch into the target branch and fix any conflicts. %{linkStart}How do I fix them?%{linkEnd}"
 msgstr ""
 
 msgid "Merge unavailable: merge requests are read-only in a secondary Geo node."
@@ -26315,12 +26318,6 @@ msgid "MergeRequests|An error occurred while saving the draft comment."
 msgstr ""
 
 msgid "MergeRequests|Create issue to resolve thread"
-msgstr ""
-
-msgid "MergeRequests|Drafts cannot be merged until marked ready."
-msgstr ""
-
-msgid "MergeRequests|Mark as draft"
 msgstr ""
 
 msgid "MergeRequests|Reference copied"
@@ -27149,7 +27146,7 @@ msgstr ""
 msgid "Monitor Settings"
 msgstr ""
 
-msgid "Monitor your errors by integrating with Sentry."
+msgid "Monitor your errors directly in GitLab."
 msgstr ""
 
 msgid "Monitoring"
@@ -27348,6 +27345,9 @@ msgid "Namespace"
 msgstr ""
 
 msgid "Namespace ID:"
+msgstr ""
+
+msgid "Namespace or group to import repository into does not exist."
 msgstr ""
 
 msgid "Namespace:"
@@ -28182,9 +28182,6 @@ msgid "Note creation requests"
 msgstr ""
 
 msgid "Note parameters are invalid: %{errors}"
-msgstr ""
-
-msgid "Note that pushing to GitLab requires write access to this repository."
 msgstr ""
 
 msgid "Note: As an administrator you may like to configure %{github_integration_link}, which will allow login via GitHub and allow connecting repositories without generating a Personal Access Token."
@@ -29237,6 +29234,9 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
+msgid "Open Beta."
+msgstr ""
+
 msgid "Open Selection"
 msgstr ""
 
@@ -30167,9 +30167,6 @@ msgid "Path"
 msgstr ""
 
 msgid "Path:"
-msgstr ""
-
-msgid "Paths can contain wildcards, like */welcome"
 msgstr ""
 
 msgid "Paths to protect with rate limiting"
@@ -34408,7 +34405,7 @@ msgstr ""
 msgid "Push project from command line"
 msgstr ""
 
-msgid "Push the target branch up to GitLab."
+msgid "Push the source branch up to GitLab."
 msgstr ""
 
 msgid "Push to create a project"
@@ -34607,6 +34604,12 @@ msgid "Re-authentication required"
 msgstr ""
 
 msgid "Re-import"
+msgstr ""
+
+msgid "Re-import with projects"
+msgstr ""
+
+msgid "Re-import without projects"
 msgstr ""
 
 msgid "Re-request review"
@@ -35342,6 +35345,9 @@ msgstr ""
 msgid "Report your license usage data to GitLab"
 msgstr ""
 
+msgid "ReportAbuse|Report abuse to administrator"
+msgstr ""
+
 msgid "ReportAbuse|Something else."
 msgstr ""
 
@@ -35559,9 +35565,6 @@ msgid "RepositoriesAnalytics|Jobs with Coverage"
 msgstr ""
 
 msgid "RepositoriesAnalytics|Jobs with Coverage: %{coverageCount}"
-msgstr ""
-
-msgid "RepositoriesAnalytics|Last 30 days"
 msgstr ""
 
 msgid "RepositoriesAnalytics|Last Update"
@@ -35850,13 +35853,19 @@ msgstr ""
 msgid "Resolve"
 msgstr ""
 
+msgid "Resolve any conflicts. %{linkStart}How do I fix them?%{linkEnd}"
+msgstr ""
+
 msgid "Resolve conflicts"
 msgstr ""
 
 msgid "Resolve conflicts on source branch"
 msgstr ""
 
-msgid "Resolve these conflicts or ask someone with write access to this repository to merge it locally."
+msgid "Resolve locally"
+msgstr ""
+
+msgid "Resolve these conflicts, or ask someone with write access to this repository to resolve them locally."
 msgstr ""
 
 msgid "Resolve thread"
@@ -36778,6 +36787,12 @@ msgid "SAML|Your organization's SSO has been connected to your GitLab account"
 msgstr ""
 
 msgid "SAST Configuration"
+msgstr ""
+
+msgid "SCIM|SCIM Token"
+msgstr ""
+
+msgid "SCIM|System for Cross-Domain Identity Management."
 msgstr ""
 
 msgid "SHA256"
@@ -38408,9 +38423,6 @@ msgid "Select a role"
 msgstr ""
 
 msgid "Select a template repository"
-msgstr ""
-
-msgid "Select a template type"
 msgstr ""
 
 msgid "Select all"
@@ -40307,9 +40319,6 @@ msgstr ""
 msgid "Starts %{startsIn}"
 msgstr ""
 
-msgid "Starts at (UTC)"
-msgstr ""
-
 msgid "Starts escalations for this incident"
 msgstr ""
 
@@ -41936,9 +41945,6 @@ msgstr ""
 msgid "The branch or tag does not exist"
 msgstr ""
 
-msgid "The broadcast message displays only to users in projects and groups who have these roles."
-msgstr ""
-
 msgid "The character highlighter helps you keep the subject line to %{titleLength} characters and wrap the body at %{bodyLength} so they are readable in git."
 msgstr ""
 
@@ -42403,9 +42409,6 @@ msgid "The vulnerability is no longer detected. Verify the vulnerability has bee
 msgstr ""
 
 msgid "The vulnerability is no longer detected. Verify the vulnerability has been remediated before changing its status."
-msgstr ""
-
-msgid "Theme"
 msgstr ""
 
 msgid "There are currently no mirrored repositories."
@@ -44985,9 +44988,6 @@ msgid "Update approval rule"
 msgstr ""
 
 msgid "Update approvers"
-msgstr ""
-
-msgid "Update broadcast message"
 msgstr ""
 
 msgid "Update failed"

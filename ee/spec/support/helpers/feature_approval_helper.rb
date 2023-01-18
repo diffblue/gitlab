@@ -13,13 +13,6 @@ module FeatureApprovalHelper
     end
   end
 
-  def open_approver_select
-    within(modal_selector) do
-      find('[data-testid="base-dropdown-toggle"]').click
-    end
-    wait_for_requests
-  end
-
   def remove_approver(name)
     el = page.find("#{modal_selector} .content-list li", text: /#{name}/i)
     el.find('button').click

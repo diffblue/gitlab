@@ -103,34 +103,6 @@ RSpec.describe Search::Elasticsearchable, feature_category: :global_search do
           expect(class_instance.advanced_user_search?).to eq(result)
         end
       end
-
-      context 'with a project or group' do
-        before do
-          stub_feature_flags(advanced_user_search: true)
-
-          allow(Elastic::DataMigrationService).to receive(:migration_has_finished?)
-          .with(:create_user_index).and_return(true)
-
-          allow(Elastic::DataMigrationService).to receive(:migration_has_finished?)
-          .with(:backfill_users).and_return(true)
-        end
-
-        where(:project_id, :group_id, :result) do
-          true | true | false
-          true | false | false
-          false | true | false
-          false | false | true
-        end
-
-        with_them do
-          it 'returns the correct result' do
-            params[:project_id] = 1 if project_id
-            params[:group_id] = 2 if group_id
-
-            expect(class_instance.advanced_user_search?).to eq(result)
-          end
-        end
-      end
     end
   end
 end

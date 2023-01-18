@@ -72,7 +72,7 @@
                 "cadence": {
                   "description": "Specifies when this policy should schedule a new pipeline with enforced `actions`. Uses cron expression as a format (ie. `0 22 * * 1-5`). Supported only when `type` is set to `schedule`.",
                   "type": "string",
-                  "pattern": "(@(yearly|annually|monthly|weekly|daily|midnight|noon|hourly))|(?i)(((\\*|(\\-?\\d+\\,?)+)(\\/\\d+)?|last|L|(sun|mon|tue|wed|thu|fri|sat|\\-|\\,)+|(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|\\-|\\,)+)\\s?){5,6}"
+                  "pattern": "(@(yearly|annually|monthly|weekly|daily|midnight|noon|hourly))|(((\\*|(\\-?\\d+\\,?)+)(\\/\\d+)?|last|L|(sun|mon|tue|wed|thu|fri|sat|SUN|MON|TUE|WED|THU|FRI|SAT\\-|\\,)+|(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC|\\-|\\,)+)\\s?){5,6}"
                 },
                 "agents": {
                   "type": "object",
@@ -80,7 +80,7 @@
                   "minProperties": 1,
                   "maxProperties": 1,
                   "patternProperties": {
-                    "\\A[a-z0-9]([-a-z0-9]*[a-z0-9])?\\z": {
+                    "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$": {
                       "type": "object",
                       "description": "Specifies the name of the Kubernetes cluster configured for your project in GitLab.",
                       "properties": {
@@ -100,7 +100,7 @@
                   "minProperties": 1,
                   "maxProperties": 1,
                   "patternProperties": {
-                    "\\A[a-z0-9]([-a-z0-9]*[a-z0-9])?\\z": {
+                    "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$": {
                       "type": "object",
                       "properties": {
                         "namespaces": {
@@ -184,7 +184,7 @@
                   "type": "object",
                   "description": "Defines environment variables for specific security jobs. Job level property overrides global variables.",
                   "patternProperties": {
-                    "\\A[a-zA-Z_][a-zA-Z0-9_]*\\z": {
+                    "^[a-zA-Z_][a-zA-Z0-9_]*$": {
                       "type": "string"
                     }
                   }
@@ -306,80 +306,131 @@
             "additionalItems": false,
             "items": {
               "type": "object",
-              "required": [
-                "branches",
-                "scanners",
-                "vulnerabilities_allowed",
-                "severity_levels",
-                "vulnerability_states"
-              ],
-              "properties": {
-                "type": {
-                  "enum": [
-                    "scan_finding"
+              "oneOf": [
+                {
+                  "type": "object",
+                  "required": [
+                    "branches",
+                    "scanners",
+                    "vulnerabilities_allowed",
+                    "severity_levels",
+                    "vulnerability_states"
                   ],
-                  "type": "string",
-                  "description": "Specified a type of the policy rule. `scan_finding` rule enforces the defined actions based on the provided information."
-                },
-                "branches": {
-                  "type": "array",
-                  "description": "Specifies a list of protected branches that should be concidered to enforce this policy.",
-                  "additionalItems": false,
-                  "items": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "scanners": {
-                  "description": "Specifies a list of scanners that should be considered to enforce this policy. Possible values: `sast`, `secret_detection`, `dependency_scanning`, `container_scanning`, `dast`, `coverage_fuzzing`, `api_fuzzing`.",
-                  "type": "array",
-                  "additionalItems": false,
-                  "items": {
-                    "minLength": 1,
-                    "type": "string"
-                  }
-                },
-                "vulnerabilities_allowed": {
-                  "description": "Specifies a number of vulnerabilities allowed before this rule is enforced.",
-                  "type": "integer"
-                },
-                "severity_levels": {
-                  "description": "Specifies a list of vulnerability security levels that should be concidered to enforce this policy. Possible values: `info`, `unknown`, `low`, `medium`, `high`, `critical`.",
-                  "type": "array",
-                  "additionalItems": false,
-                  "items": {
+                  "properties": {
                     "type": {
                       "enum": [
-                        "critical",
-                        "high",
-                        "medium",
-                        "low",
-                        "info",
-                        "unknown"
+                        "scan_finding"
                       ],
+                      "type": "string",
+                      "description": "Specified a type of the policy rule. `scan_finding` rule enforces the defined actions based on the provided information."
+                    },
+                    "branches": {
+                      "type": "array",
+                      "description": "Specifies a list of protected branches that should be concidered to enforce this policy.",
+                      "additionalItems": false,
+                      "items": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "scanners": {
+                      "description": "Specifies a list of scanners that should be considered to enforce this policy. Possible values: `sast`, `secret_detection`, `dependency_scanning`, `container_scanning`, `dast`, `coverage_fuzzing`, `api_fuzzing`.",
+                      "type": "array",
+                      "additionalItems": false,
+                      "items": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "vulnerabilities_allowed": {
+                      "description": "Specifies a number of vulnerabilities allowed before this rule is enforced.",
+                      "type": "integer"
+                    },
+                    "severity_levels": {
+                      "description": "Specifies a list of vulnerability security levels that should be concidered to enforce this policy. Possible values: `info`, `unknown`, `low`, `medium`, `high`, `critical`.",
+                      "type": "array",
+                      "additionalItems": false,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "critical",
+                          "high",
+                          "medium",
+                          "low",
+                          "info",
+                          "unknown"
+                        ]
+                      }
+                    },
+                    "vulnerability_states": {
+                      "type": "array",
+                      "description": "Specifies a list of vulnerability states that should be concidered to enforce this policy. The `newly_detected` state considers all newly detected vulnerabilities regardless of their status or dismissal. The other states consider findings that match the selected state and already exist in the default branch.",
+                      "additionalItems": false,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "newly_detected",
+                          "detected",
+                          "confirmed",
+                          "resolved",
+                          "dismissed"
+                        ]
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "branches",
+                    "match_on_inclusion",
+                    "license_types",
+                    "license_states"
+                  ],
+                  "properties": {
+                    "type": {
+                      "enum": [
+                        "license_finding"
+                      ],
+                      "type": "string",
+                      "description": "Specified a type of the policy rule. `license_finding` rule enforces the defined actions based on the provided information."
+                    }
+                  },
+                  "branches": {
+                    "type": "array",
+                    "description": "Specifies a list of protected branches that should be concidered to enforce this policy.",
+                    "additionalItems": false,
+                    "items": {
+                      "minLength": 1,
                       "type": "string"
                     }
-                  }
-                },
-                "vulnerability_states": {
-                  "type": "array",
-                  "description": "Specifies a list of vulnerability states that should be concidered to enforce this policy. The `newly_detected` state considers all newly detected vulnerabilities regardless of their status or dismissal. The other states consider findings that match the selected state and already exist in the default branch.",
-                  "additionalItems": false,
-                  "items": {
-                    "type": {
+                  },
+                  "match_on_inclusion": {
+                    "type": "boolean",
+                    "description": "Specifies whether to match licenses on inclusion or exclusion."
+                  },
+                  "license_types": {
+                    "type": "array",
+                    "description": "Specifies the licenses to match.",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "license_states": {
+                    "type": "array",
+                    "minLength": 1,
+                    "description": "States which license finding states to match on.",
+                    "items": {
+                      "type": "string",
                       "enum": [
                         "newly_detected",
-                        "detected",
-                        "confirmed",
-                        "resolved",
-                        "dismissed"
-                      ],
-                      "type": "string"
+                        "detected"
+                      ]
                     }
                   }
                 }
-              },
-              "additionalProperties": false
+              ]
             }
           },
           "actions": {
@@ -482,16 +533,15 @@
                   "description": "Specifies a list of roles required to approve affected merge request.",
                   "minItems": 1,
                   "additionalItems": false,
-                  "items":{
-                    "type": {
-                      "enum": [
-                        "guest",
-                        "reporter",
-                        "developer",
-                        "maintainer",
-                        "owner"
-                      ]
-                    },
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "guest",
+                      "reporter",
+                      "developer",
+                      "maintainer",
+                      "owner"
+                    ],
                     "minLength": 1
                   }
                 }

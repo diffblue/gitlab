@@ -19,9 +19,8 @@ RSpec.describe 'Project', :js, feature_category: :projects do
       stub_licensed_features(custom_file_templates: true)
       stub_ee_application_setting(file_template_project: template_project)
 
-      visit project_new_blob_path(project, 'master', file_name: 'LICENSE.txt')
+      visit project_new_blob_path(project, 'master', file_name: 'LICENSE')
 
-      select_template_type('LICENSE')
       select_template('license', 'custom')
 
       wait_for_requests
@@ -33,20 +32,14 @@ RSpec.describe 'Project', :js, feature_category: :projects do
       stub_licensed_features(custom_file_templates_for_namespace: true)
       group.update_columns(file_template_project_id: template_project.id)
 
-      visit project_new_blob_path(project, 'master', file_name: 'LICENSE.txt')
+      visit project_new_blob_path(project, 'master', file_name: 'LICENSE')
 
-      select_template_type('LICENSE')
       select_template('license', 'custom')
 
       wait_for_requests
 
       expect(page).to have_content(template_text)
     end
-  end
-
-  def select_template_type(template_type)
-    find('.js-template-type-selector').click
-    find('.dropdown-content li', text: template_type).click
   end
 
   def select_template(type, name)

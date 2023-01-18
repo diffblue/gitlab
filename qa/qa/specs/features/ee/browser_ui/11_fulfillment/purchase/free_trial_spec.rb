@@ -77,7 +77,7 @@ module QA
 
           it 'registers for a new trial', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/349163' do
             Gitlab::Page::Group::Settings::Billing.perform(&:start_your_free_trial)
-            register_for_trial(skip_select: true)
+            Flow::Trial.register_for_trial(skip_select: true)
 
             Page::Alert::FreeTrial.perform do |free_trial_alert|
               expect(free_trial_alert.trial_activated_message).to have_text('Congratulations, your free trial is activated')
@@ -90,39 +90,6 @@ module QA
                 billing.billing_plan_header
               end.to eventually_include("#{group_for_trial.path} is currently using the Ultimate SaaS Trial Plan").within(max_duration: 120, max_attempts: 60, reload_page: page)
             end
-          end
-        end
-      end
-
-      private
-
-      def customer_trial_info
-        {
-          company_name: 'QA Test Company',
-          number_of_employees: '500 - 1,999',
-          telephone_number: '555-555-5555',
-          country: 'United States of America',
-          state: 'CA'
-        }
-      end
-
-      def register_for_trial(skip_select: false)
-        Page::Trials::New.perform do |new|
-          # setter
-          new.company_name = customer_trial_info[:company_name]
-          new.number_of_employees = customer_trial_info[:number_of_employees]
-          new.country = customer_trial_info[:country]
-          new.telephone_number = customer_trial_info[:telephone_number]
-          new.state = customer_trial_info[:state]
-
-          new.continue
-        end
-
-        unless skip_select
-          Page::Trials::Select.perform do |select|
-            select.subscription_for = group_for_trial.path
-            select.trial_company
-            select.start_your_free_trial
           end
         end
       end

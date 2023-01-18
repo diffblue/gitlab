@@ -310,6 +310,60 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
           end
         end
       end
+
+      describe 'legacy requirement widget' do
+        let_it_be(:work_item) { create(:work_item, :requirement, project: project) }
+
+        let(:work_item_fields) do
+          <<~GRAPHQL
+            id
+            widgets {
+              type
+              ... on WorkItemWidgetRequirementLegacy {
+                type
+                legacyIid
+              }
+            }
+          GRAPHQL
+        end
+
+        context 'when requirements is licensed' do
+          before do
+            stub_licensed_features(requirements: true)
+
+            post_graphql(query, current_user: current_user)
+          end
+
+          it 'returns correct data' do
+            expect(work_item_data).to include(
+              'id' => work_item.to_gid.to_s,
+              'widgets' => include(
+                hash_including(
+                  'type' => 'REQUIREMENT_LEGACY',
+                  'legacyIid' => work_item.requirement.iid
+                )
+              )
+            )
+          end
+        end
+
+        context 'when requirements is unlicensed' do
+          before do
+            stub_licensed_features(requirements: false)
+
+            post_graphql(query, current_user: current_user)
+          end
+
+          it 'returns no legacy requirement information' do
+            expect(work_item_data['widgets']).not_to include(
+              hash_including(
+                'type' => 'REQUIREMENT_LEGACY',
+                'legacyIid' => work_item.requirement.iid
+              )
+            )
+          end
+        end
+      end
     end
   end
 end

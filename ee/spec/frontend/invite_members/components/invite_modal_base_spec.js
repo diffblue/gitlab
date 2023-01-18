@@ -13,20 +13,24 @@ import {
   OVERAGE_MODAL_BACK_BUTTON,
 } from 'ee/invite_members/constants';
 import { propsData as propsDataCE } from 'jest/invite_members/mock_data/modal_base';
-import getSubscriptionEligibility from 'ee/invite_members/subscription_eligible.customer.query.graphql';
+import getReconciliationStatus from 'ee/invite_members/subscription_eligible.customer.query.graphql';
 import getBillableUserCountChanges from 'ee/invite_members/billable_users_count.query.graphql';
 import { createMockClient } from 'helpers/mock_apollo_helper';
 
 Vue.use(VueApollo);
+
+const generateReconciliationResponse = (isEligible) => {
+  return jest
+    .fn()
+    .mockResolvedValue({ data: { reconciliation: { eligibleForSeatReconciliation: isEligible } } });
+};
 
 describe('EEInviteModalBase', () => {
   let wrapper;
   let listenerSpy;
   let mockApollo;
 
-  const defaultResolverMock = jest
-    .fn()
-    .mockResolvedValue({ data: { subscription: { eligibleForSeatUsageAlerts: true } } });
+  const defaultResolverMock = generateReconciliationResponse(true);
   const defaultBillableMock = jest.fn().mockResolvedValue({
     data: {
       group: {
@@ -45,7 +49,7 @@ describe('EEInviteModalBase', () => {
     glFeatures = {},
     queryHandler = defaultResolverMock,
   } = {}) => {
-    const mockCustomersDotClient = createMockClient([[getSubscriptionEligibility, queryHandler]]);
+    const mockCustomersDotClient = createMockClient([[getReconciliationStatus, queryHandler]]);
     const mockGitlabClient = createMockClient([[getBillableUserCountChanges, defaultBillableMock]]);
     mockApollo = new VueApollo({
       defaultClient: mockCustomersDotClient,
@@ -234,9 +238,7 @@ describe('EEInviteModalBase', () => {
       createComponent({
         props: { fullPath: 'project' },
         glFeatures: { overageMembersModal: true },
-        queryHandler: jest
-          .fn()
-          .mockResolvedValue({ data: { subscription: { eligibleForSeatUsageAlerts: false } } }),
+        queryHandler: generateReconciliationResponse(false),
       });
 
       clickInviteButton();

@@ -65,13 +65,7 @@ module EE
       def search(query)
         return all if query.empty?
 
-        search_by_project(query)
-      end
-
-      def search_by_project(query)
-        return all if query.empty?
-
-        for_project(search_project_ids(query))
+        for_project(::Project.search(query).limit(1000).pluck_primary_key)
       end
 
       override :associated_file_types_for

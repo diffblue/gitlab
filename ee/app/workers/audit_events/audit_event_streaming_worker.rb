@@ -47,6 +47,8 @@ module AuditEvents
       return unless Gitlab::UsageDataCounters::StreamingAuditEventTypeCounter::KNOWN_EVENTS.include? audit_operation
 
       Gitlab::UsageDataCounters::StreamingAuditEventTypeCounter.count(audit_operation)
+    rescue Redis::CannotConnectError => e
+      Gitlab::ErrorTracking.log_exception(e)
     end
 
     # TODO: Remove audit_operation.present? guard clause once we implement names for all the audit event types.

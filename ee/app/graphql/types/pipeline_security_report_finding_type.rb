@@ -129,6 +129,11 @@ module Types
           null: true,
           description: 'Merge request that fixes the vulnerability.'
 
+    field :remediations,
+          type: [::Types::Vulnerabilities::RemediationType],
+          null: true,
+          description: 'Remediations of the security report finding.'
+
     markdown_field :description_html, null: true
 
     def vulnerability

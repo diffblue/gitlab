@@ -59,7 +59,7 @@ module QA
               def select_member(name)
                 retry_until do
                   within_element(:member_select_field) do
-                    find('.dropdown').click
+                    click_button 'Search users or groups'
                     search_item(name)
 
                     # we must send an extra key to trigger the dropdown to filter

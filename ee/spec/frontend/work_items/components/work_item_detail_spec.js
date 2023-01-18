@@ -17,6 +17,7 @@ import {
   workItemAssigneesSubscriptionResponse,
   workItemIterationSubscriptionResponse,
   workItemMilestoneSubscriptionResponse,
+  workItemHealthStatusSubscriptionResponse,
 } from 'jest/work_items/mock_data';
 import WorkItemDetail from '~/work_items/components/work_item_detail.vue';
 import workItemQuery from '~/work_items/graphql/work_item.query.graphql';
@@ -25,6 +26,7 @@ import workItemTitleSubscription from '~/work_items/graphql/work_item_title.subs
 import workItemAssigneesSubscription from '~/work_items/graphql/work_item_assignees.subscription.graphql';
 import workItemMilestoneSubscription from '~/work_items/graphql/work_item_milestone.subscription.graphql';
 import workItemIterationSubscription from 'ee/work_items/graphql/work_item_iteration.subscription.graphql';
+import workItemHealthStatusSubscription from 'ee/work_items/graphql/work_item_health_status.subscription.graphql';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 
 describe('WorkItemDetail component', () => {
@@ -46,6 +48,9 @@ describe('WorkItemDetail component', () => {
   const iterationSubscriptionHandler = jest
     .fn()
     .mockResolvedValue(workItemIterationSubscriptionResponse);
+  const healthStatusSubscriptionHandler = jest
+    .fn()
+    .mockResolvedValue(workItemHealthStatusSubscriptionResponse);
 
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findWorkItemWeight = () => wrapper.findComponent(WorkItemWeight);
@@ -67,6 +72,7 @@ describe('WorkItemDetail component', () => {
         [workItemAssigneesSubscription, assigneesSubscriptionHandler],
         [workItemIterationSubscription, iterationSubscriptionHandler],
         [workItemMilestoneSubscription, milestoneSubscriptionHandler],
+        [workItemHealthStatusSubscription, healthStatusSubscriptionHandler],
         confidentialityMock,
       ]),
       provide: {

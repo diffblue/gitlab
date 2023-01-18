@@ -15,19 +15,7 @@ const issueActionItems = [
   },
 ];
 
-const epicActionItems = [
-  {
-    title: s__('Epics|Add a new epic'),
-    eventName: 'showCreateEpicForm',
-  },
-  {
-    title: s__('Epics|Add an existing epic'),
-    eventName: 'showAddEpicForm',
-  },
-];
-
 export default {
-  epicActionItems,
   issueActionItems,
   components: {
     GlDropdown,
@@ -44,8 +32,24 @@ export default {
   },
   computed: {
     ...mapState(['parentItem']),
-    showEpicSection() {
-      return this.allowSubEpics && this.parentItem.userPermissions.canAdminRelation;
+    canAdminRelation() {
+      return this.parentItem.userPermissions.canAdminRelation;
+    },
+    epicActionItems() {
+      const epicActionItems = [];
+
+      if (this.parentItem.userPermissions.canAdmin) {
+        epicActionItems.push({
+          title: s__('Epics|Add a new epic'),
+          eventName: 'showCreateEpicForm',
+        });
+      }
+      epicActionItems.push({
+        title: s__('Epics|Add an existing epic'),
+        eventName: 'showAddEpicForm',
+      });
+
+      return epicActionItems;
     },
   },
   methods: {
@@ -67,14 +71,10 @@ export default {
       {{ item.title }}
     </gl-dropdown-item>
 
-    <template v-if="showEpicSection">
+    <template v-if="allowSubEpics && canAdminRelation">
       <gl-dropdown-divider />
       <gl-dropdown-section-header>{{ __('Epic') }}</gl-dropdown-section-header>
-      <gl-dropdown-item
-        v-for="item in $options.epicActionItems"
-        :key="item.eventName"
-        @click="change(item)"
-      >
+      <gl-dropdown-item v-for="item in epicActionItems" :key="item.eventName" @click="change(item)">
         {{ item.title }}
       </gl-dropdown-item>
     </template>

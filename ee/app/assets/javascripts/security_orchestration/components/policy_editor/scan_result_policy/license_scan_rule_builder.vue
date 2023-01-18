@@ -117,7 +117,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-line-height-42 gl-display-inline! gl-vertical-align-middle">
+  <div class="gl-line-height-42 gl-display-inline! gl-vertical-align-middle gl-ml-3">
     <gl-sprintf :message="$options.i18n.licenseScanResultRuleCopy">
       <template #matchType>
         <gl-collapsible-listbox
@@ -143,7 +143,7 @@ export default {
       <template #licenseType>
         <gl-collapsible-listbox
           v-model="licenseTypes"
-          class="gl-vertical-align-middle gl-display-inline!"
+          class="gl-vertical-align-middle gl-display-inline! gl-mr-3"
           :items="filteredLicenses"
           :toggle-text="toggleText"
           searchable

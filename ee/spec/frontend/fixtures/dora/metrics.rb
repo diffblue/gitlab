@@ -44,6 +44,12 @@ RSpec.describe 'DORA Metrics (JavaScript fixtures)' do
   end
 
   describe API::Dora::Metrics, type: :request do
+    around do |example|
+      travel_to(Date.new(2015, 7, 3))
+      example.run
+      travel_back
+    end
+
     let(:shared_params) do
       {
         end_date: Date.tomorrow.beginning_of_day,
@@ -58,17 +64,22 @@ RSpec.describe 'DORA Metrics (JavaScript fixtures)' do
 
     shared_examples 'dora metric fixtures' do |metric_name|
       it "api/dora/metrics/daily_#{metric_name}_for_last_week.json" do
-        make_request(additional_query_params: { metric: metric_name, start_date: 1.week.ago })
+        make_request(additional_query_params: { metric: metric_name, start_date: shared_params[:end_date] - 1.week })
         expect(response).to be_successful
       end
 
       it "api/dora/metrics/daily_#{metric_name}_for_last_month.json" do
-        make_request(additional_query_params: { metric: metric_name, start_date: 1.month.ago })
+        make_request(additional_query_params: { metric: metric_name, start_date: shared_params[:end_date] - 1.month })
         expect(response).to be_successful
       end
 
       it "api/dora/metrics/daily_#{metric_name}_for_last_90_days.json" do
-        make_request(additional_query_params: { metric: metric_name, start_date: 90.days.ago })
+        make_request(additional_query_params: { metric: metric_name, start_date: shared_params[:end_date] - 90.days })
+        expect(response).to be_successful
+      end
+
+      it "api/dora/metrics/daily_#{metric_name}_for_last_180_days.json" do
+        make_request(additional_query_params: { metric: metric_name, start_date: shared_params[:end_date] - 180.days })
         expect(response).to be_successful
       end
     end

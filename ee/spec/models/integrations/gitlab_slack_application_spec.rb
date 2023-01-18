@@ -42,8 +42,8 @@ RSpec.describe Integrations::GitlabSlackApplication, feature_category: :integrat
 
   describe '#execute' do
     let_it_be(:user) { build_stubbed(:user) }
-    let_it_be(:slack_integration) { create(:slack_integration) }
 
+    let(:slack_integration) { build(:slack_integration) }
     let(:data) { Gitlab::DataBuilder::Push.build_sample(integration.project, user) }
     let(:slack_api_method_uri) { "#{::Slack::API::BASE_URL}/chat.postMessage" }
 
@@ -51,7 +51,7 @@ RSpec.describe Integrations::GitlabSlackApplication, feature_category: :integrat
       instance_double(Integrations::ChatMessage::PushMessage, attachments: ['foo'], pretext: 'bar')
     end
 
-    subject(:integration) { create(:gitlab_slack_application_integration, slack_integration: slack_integration) }
+    subject(:integration) { build(:gitlab_slack_application_integration, slack_integration: slack_integration) }
 
     before do
       allow(integration).to receive(:get_message).and_return(mock_message)
@@ -193,20 +193,137 @@ RSpec.describe Integrations::GitlabSlackApplication, feature_category: :integrat
     end
   end
 
-  describe '#sections' do
-    it 'includes the expected sections' do
-      section_types = subject.sections.pluck(:type)
+  context 'when the integration is active' do
+    before do
+      subject.active = true
+    end
 
-      expect(section_types).to eq(
-        [
-          described_class::SECTION_TYPE_TRIGGER,
-          described_class::SECTION_TYPE_CONFIGURATION
-        ]
-      )
+    context 'when the feature flag is disabled' do
+      before do
+        stub_feature_flags(integration_slack_app_notifications: false)
+      end
+
+      it 'is not editable, and presents no editable fields' do
+        expect(subject).not_to be_editable
+        expect(subject.fields).to be_empty
+        expect(subject.configurable_events).to be_empty
+      end
+
+      it 'does not include sections' do
+        section_types = subject.sections.pluck(:type)
+
+        expect(section_types).to be_empty
+      end
+    end
+
+    context 'when the feature flag is enabled' do
+      it 'is editable, and presents editable fields' do
+        expect(subject).to be_editable
+        expect(subject.fields).not_to be_empty
+        expect(subject.configurable_events).not_to be_empty
+      end
+
+      it 'includes the expected sections' do
+        section_types = subject.sections.pluck(:type)
+
+        expect(section_types).to eq(
+          [
+            described_class::SECTION_TYPE_TRIGGER,
+            described_class::SECTION_TYPE_CONFIGURATION
+          ]
+        )
+      end
     end
   end
 
-  context 'when the integration is disabled' do
+  describe '#test' do
+    let(:integration) { build(:gitlab_slack_application_integration) }
+
+    let(:slack_api_method_uri) { "#{::Slack::API::BASE_URL}/chat.postEphemeral" }
+    let(:response_failure) { { error: 'channel_not_found' } }
+    let(:response_success) { { error: 'user_not_in_channel' } }
+    let(:response_headers) { { 'Content-Type' => 'application/json; charset=utf-8' } }
+    let(:request_body) do
+      {
+        text: 'Test',
+        user: integration.bot_user_id
+      }
+    end
+
+    subject(:result) { integration.test({}) }
+
+    def stub_slack_request(channel:, success:)
+      response_body = success ? response_success : response_failure
+
+      stub_request(:post, slack_api_method_uri)
+        .with(body: request_body.merge(channel: channel))
+        .to_return(body: response_body.to_json, headers: response_headers)
+    end
+
+    context 'when all channels can be posted to' do
+      before do
+        stub_slack_request(channel: anything, success: true)
+      end
+
+      it 'is successful' do
+        is_expected.to eq({ success: true, result: nil })
+      end
+    end
+
+    context 'when the same channel is used for multiple events' do
+      let(:integration) do
+        build(:gitlab_slack_application_integration, all_channels: false, push_channel: '#foo', issue_channel: '#foo')
+      end
+
+      it 'only tests the channel once' do
+        stub_slack_request(channel: '#foo', success: true)
+
+        is_expected.to eq({ success: true, result: nil })
+        expect(WebMock).to have_requested(:post, slack_api_method_uri).once
+      end
+    end
+
+    context 'when there are channels that cannot be posted to' do
+      let(:unpostable_channels) { ['#push_channel', '#issue_channel'] }
+
+      before do
+        stub_slack_request(channel: anything, success: true)
+
+        unpostable_channels.each do |channel|
+          stub_slack_request(channel: channel, success: false)
+        end
+      end
+
+      it 'returns an error message informing which channels cannot be posted to' do
+        expected_message = "Unable to post to #{unpostable_channels.to_sentence}, " \
+                           'please add the GitLab Slack app to any private Slack channels'
+
+        is_expected.to eq({ success: false, result: expected_message })
+      end
+
+      context 'when integration is not configured for notifications' do
+        let_it_be(:integration) { build(:gitlab_slack_application_integration, all_channels: false) }
+
+        it 'is successful' do
+          is_expected.to eq({ success: true, result: nil })
+        end
+      end
+    end
+
+    context 'when integration is using legacy version of Slack app' do
+      before do
+        integration.slack_integration = build(:slack_integration, :legacy)
+      end
+
+      it 'returns an error to inform the user to update their integration' do
+        expected_message = 'GitLab for Slack app must be reinstalled to enable notifications'
+
+        is_expected.to eq({ success: false, result: expected_message })
+      end
+    end
+  end
+
+  context 'when the integration is not active' do
     before do
       subject.active = false
     end
@@ -216,17 +333,11 @@ RSpec.describe Integrations::GitlabSlackApplication, feature_category: :integrat
       expect(subject.fields).to be_empty
       expect(subject.configurable_events).to be_empty
     end
-  end
 
-  context 'when the feature flag is disabled' do
-    before do
-      stub_feature_flags(integration_slack_app_notifications: false)
-    end
+    it 'does not include sections' do
+      section_types = subject.sections.pluck(:type)
 
-    it 'is not editable, and presents no editable fields' do
-      expect(subject).not_to be_editable
-      expect(subject.fields).to be_empty
-      expect(subject.configurable_events).to be_empty
+      expect(section_types).to be_empty
     end
   end
 

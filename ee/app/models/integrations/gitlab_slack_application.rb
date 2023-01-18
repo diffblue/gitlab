@@ -18,6 +18,7 @@ module Integrations
     attribute :wiki_page_events, default: false
 
     has_one :slack_integration, foreign_key: :integration_id
+    delegate :bot_access_token, :bot_user_id, to: :slack_integration, allow_nil: true
 
     def update_active_status
       update(active: !!slack_integration)
@@ -44,9 +45,11 @@ module Integrations
       false
     end
 
-    override :testable?
-    def testable?
-      false
+    override :test
+    def test(_data)
+      failures = test_notification_channels
+
+      { success: failures.blank?, result: failures }
     end
 
     # The form fields of this integration are visible only after the Slack App installation
@@ -65,6 +68,8 @@ module Integrations
 
     override :sections
     def sections
+      return [] unless editable?
+
       [
         {
           type: SECTION_TYPE_TRIGGER,
@@ -149,6 +154,33 @@ module Integrations
 
     def api_client
       @slack_api ||= ::Slack::API.new(slack_integration)
+    end
+
+    def test_notification_channels
+      return if unique_channels.empty?
+      return s_('Integrations|GitLab for Slack app must be reinstalled to enable notifications') unless bot_access_token
+
+      test_payload = {
+        text: 'Test',
+        user: bot_user_id
+      }
+
+      not_found_channels = unique_channels.first(10).select do |channel|
+        test_payload[:channel] = channel
+
+        response = ::Slack::API.new(slack_integration).post('chat.postEphemeral', test_payload)
+        response['error'] == 'channel_not_found'
+      end
+
+      return if not_found_channels.empty?
+
+      format(
+        s_(
+          'Integrations|Unable to post to %{channel_list}, ' \
+          'please add the GitLab Slack app to any private Slack channels'
+        ),
+        channel_list: not_found_channels.to_sentence
+      )
     end
 
     override :metrics_key_prefix

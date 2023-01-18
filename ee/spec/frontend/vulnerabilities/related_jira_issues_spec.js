@@ -7,7 +7,7 @@ import createJiraIssue from 'ee/vue_shared/security_reports/components/create_ji
 import RelatedJiraIssues, { i18n } from 'ee/vulnerabilities/components/related_jira_issues.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import axios from '~/lib/utils/axios_utils';
-import httpStatusCodes from '~/lib/utils/http_status';
+import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { sprintf } from '~/locale';
 
 const mockAxios = new MockAdapter(axios);
@@ -53,7 +53,7 @@ describe('EE RelatedJiraIssues Component', () => {
 
   const withResponse = async (
     createWrapperFn,
-    { statusCode = httpStatusCodes.OK, data, waitForRequestsToFinish = true },
+    { statusCode = HTTP_STATUS_OK, data, waitForRequestsToFinish = true } = {},
   ) => {
     mockAxios.onGet(defaultProvide.relatedJiraIssuesPath).replyOnce(statusCode, data);
     const wrapperWithResponse = createWrapperFn();
@@ -89,7 +89,7 @@ describe('EE RelatedJiraIssues Component', () => {
 
     describe('with error while fetching related Jira issues', () => {
       beforeEach(async () => {
-        wrapper = await withResponse(createFullWrapper, { statusCode: httpStatusCodes });
+        wrapper = await withResponse(createFullWrapper, { statusCode: HTTP_STATUS_BAD_REQUEST });
       });
 
       it('shows when there is an error while fetching the related jira issues', () => {
@@ -150,9 +150,6 @@ describe('EE RelatedJiraIssues Component', () => {
         beforeEach(async () => {
           wrapper = await withResponse(
             createWrapper(mount, { createVulnerabilityJiraIssueViaGraphql: false }),
-            {
-              statusCode: httpStatusCodes,
-            },
           );
         });
 

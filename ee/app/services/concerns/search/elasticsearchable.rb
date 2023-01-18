@@ -18,7 +18,6 @@ module Search
 
     def advanced_user_search?
       return true unless params[:scope] == 'users'
-      return false if params[:project_id] || params[:group_id]
       return false unless ::Feature.enabled?(:advanced_user_search, current_user, type: :ops)
 
       ::Elastic::DataMigrationService.migration_has_finished?(:create_user_index) &&

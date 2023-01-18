@@ -1,0 +1,12 @@
+- return unless License.feature_available?(:instance_level_scim)
+
+%section.settings.no-animate#js-scim-token-settings{ class: ('expanded' if expanded_by_default?) }
+  .settings-header
+    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
+      = s_('SCIM|SCIM Token')
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
+      = expanded_by_default? ? _('Collapse') : _('Expand')
+    %p
+      = s_('SCIM|System for Cross-Domain Identity Management.')
+  .settings-content
+    #js-scim-token-app{ data: { endpoint_url: @scim_token_url, generate_token_path: admin_application_settings_scim_oauth_path } }

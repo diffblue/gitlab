@@ -6,7 +6,7 @@ import axios from '~/lib/utils/axios_utils';
 import extensionsContainer from '~/vue_merge_request_widget/components/extensions/container';
 import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
 import metricsExtension from 'ee/vue_merge_request_widget/extensions/metrics';
-import httpStatusCodes, { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { metricsResponse, changedMetric, unchangedMetric } from './mock_data';
 
 describe('Metrics extension', () => {
@@ -35,7 +35,7 @@ describe('Metrics extension', () => {
   };
 
   const createExpandedWidgetWithData = async (data = metricsResponse) => {
-    mockApi(httpStatusCodes.OK, data);
+    mockApi(HTTP_STATUS_OK, data);
     createComponent();
 
     await waitForPromises();
@@ -56,7 +56,7 @@ describe('Metrics extension', () => {
 
   describe('summary', () => {
     it('displays loading text', () => {
-      mockApi(httpStatusCodes.OK);
+      mockApi(HTTP_STATUS_OK);
 
       createComponent();
 
@@ -74,7 +74,7 @@ describe('Metrics extension', () => {
     });
 
     it('displays detected changes and is expandable', async () => {
-      mockApi(httpStatusCodes.OK, { existing_metrics: [changedMetric, changedMetric] });
+      mockApi(HTTP_STATUS_OK, { existing_metrics: [changedMetric, changedMetric] });
 
       createComponent();
 
@@ -85,7 +85,7 @@ describe('Metrics extension', () => {
     });
 
     it('displays no detected changes and is not expandable', async () => {
-      mockApi(httpStatusCodes.OK, { existing_metrics: [unchangedMetric] });
+      mockApi(HTTP_STATUS_OK, { existing_metrics: [unchangedMetric] });
 
       createComponent();
 

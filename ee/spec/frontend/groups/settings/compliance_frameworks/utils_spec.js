@@ -1,7 +1,11 @@
 import MockAdapter from 'axios-mock-adapter';
 import * as Utils from 'ee/groups/settings/compliance_frameworks/utils';
 import axios from '~/lib/utils/axios_utils';
-import httpStatus, { HTTP_STATUS_NO_CONTENT, HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
+import {
+  HTTP_STATUS_NO_CONTENT,
+  HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_OK,
+} from '~/lib/utils/http_status';
 
 const GET_RAW_FILE_ENDPOINT = /\/api\/(.*)\/projects\/bar%2Fbaz\/repository\/files\/foo\.ya?ml\/raw/;
 
@@ -116,14 +120,14 @@ describe('Utils', () => {
       ${'foo.yaml@bar/baz'} | ${true}
       ${'foo.yml@bar/baz'}  | ${true}
     `('should return $returns when the path is $path', async ({ path, returns }) => {
-      mock.onGet(GET_RAW_FILE_ENDPOINT).reply(returns ? httpStatus.OK : HTTP_STATUS_NOT_FOUND, {});
+      mock.onGet(GET_RAW_FILE_ENDPOINT).reply(returns ? HTTP_STATUS_OK : HTTP_STATUS_NOT_FOUND, {});
 
       expect(await Utils.fetchPipelineConfigurationFileExists(path)).toBe(returns);
     });
 
     it.each`
       response                  | returns
-      ${httpStatus.OK}          | ${true}
+      ${HTTP_STATUS_OK}         | ${true}
       ${HTTP_STATUS_NO_CONTENT} | ${false}
       ${HTTP_STATUS_NOT_FOUND}  | ${false}
     `('should return $returns when the response is $response', async ({ response, returns }) => {

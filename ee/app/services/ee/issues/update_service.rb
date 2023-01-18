@@ -37,6 +37,7 @@ module EE
 
         handle_iteration_change(issue)
         handle_weight_change(issue)
+        handle_health_status_change(issue)
       end
 
       private
@@ -52,6 +53,12 @@ module EE
         return unless issue.previous_changes.key?(:weight)
 
         ::GraphqlTriggers.issuable_weight_updated(issue)
+      end
+
+      def handle_health_status_change(issue)
+        return unless issue.previous_changes.key?(:health_status)
+
+        ::GraphqlTriggers.issuable_health_status_updated(issue)
       end
 
       def send_iteration_change_notification(issue)

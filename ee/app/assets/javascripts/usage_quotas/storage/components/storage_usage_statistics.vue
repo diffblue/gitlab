@@ -1,8 +1,8 @@
 <script>
 import { GlIcon, GlLink, GlButton } from '@gitlab/ui';
 import StorageStatisticsCard from 'ee/usage_quotas/storage/components/storage_statistics_card.vue';
+import { projectHelpPaths } from '~/usage_quotas/storage/constants';
 import {
-  projectHelpPaths,
   BUY_STORAGE,
   STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE,
   STORAGE_STATISTICS_NAMESPACE_STORAGE_USED,

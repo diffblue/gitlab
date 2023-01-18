@@ -35,7 +35,7 @@ Kubernetes platform. The largest known GitLab instance is on GitLab.com, which i
 
 A typical installation uses NGINX or Apache as a web server to proxy through
 [GitLab Workhorse](https://gitlab.com/gitlab-org/gitlab-workhorse) and into the [Puma](https://puma.io)
-application server. GitLab serves web pages and the [GitLab API](../api/index.md) using the Puma
+application server. GitLab serves web pages and the [GitLab API](../api/rest/index.md) using the Puma
 application server. It uses Sidekiq as a job queue which, in turn, uses Redis as a non-persistent
 database backend for job information, metadata, and incoming jobs.
 
@@ -543,7 +543,8 @@ GitLab CI/CD is the open-source continuous integration service included with Git
 
 #### GitLab Shell
 
-- [Project page](https://gitlab.com/gitlab-org/gitlab-shell/-/blob/main/README.md)
+- [Project page](https://gitlab.com/gitlab-org/gitlab-shell/)
+- [Documentation](gitlab_shell/index.md)
 - Configuration:
   - [Omnibus](https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/files/gitlab-config-template/gitlab.rb.template)
   - [Charts](https://docs.gitlab.com/charts/charts/gitlab/gitlab-shell/)
@@ -552,7 +553,7 @@ GitLab CI/CD is the open-source continuous integration service included with Git
 - Layer: Core Service (Processor)
 - GitLab.com: [Service Architecture](https://about.gitlab.com/handbook/engineering/infrastructure/production/architecture/#service-architecture)
 
-[GitLab Shell](https://gitlab.com/gitlab-org/gitlab-shell) is a program designed at GitLab to handle SSH-based `git` sessions, and modifies the list of authorized keys. GitLab Shell is not a Unix shell nor a replacement for Bash or Zsh.
+[GitLab Shell](gitlab_shell/index.md) is a program designed at GitLab to handle SSH-based `git` sessions, and modifies the list of authorized keys. GitLab Shell is not a Unix shell nor a replacement for Bash or Zsh.
 
 #### GitLab Workhorse
 

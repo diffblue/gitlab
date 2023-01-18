@@ -44,7 +44,7 @@ module Security
     end
 
     def sorted_artifacts
-      @sorted_artifacts ||= artifacts.each(&method(:prepare_report_for)).sort do |a, b|
+      @sorted_artifacts ||= artifacts.each { |artifact| prepare_report_for(artifact) }.sort do |a, b|
         report_a = a.security_report
         report_b = b.security_report
 

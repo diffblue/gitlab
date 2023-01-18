@@ -30,6 +30,7 @@ describe('WorkItemProgress component', () => {
 
   const findForm = () => wrapper.findComponent(GlForm);
   const findInput = () => wrapper.findComponent(GlFormInput);
+  const findDisplayedValue = () => wrapper.findByTestId('progress-displayed-value');
 
   const createComponent = ({
     canUpdate = false,
@@ -122,19 +123,26 @@ describe('WorkItemProgress component', () => {
       });
     });
 
-    describe('value attribute', () => {
+    describe('displays progress and passes as value to input field', () => {
       describe.each`
         progress
         ${1}
         ${0}
-        ${null}
-        ${undefined}
       `('when `progress` prop is "$progress"', ({ progress }) => {
         it(`value is "${progress}"`, () => {
           createComponent({ progress });
 
-          expect(wrapper.props().progress).toBe(progress);
+          expect(findInput().vm.$attrs.value).toBe(progress);
+          expect(findDisplayedValue().text()).toBe(`${progress}%`);
         });
+      });
+
+      it('does not display % when user is editing', async () => {
+        createComponent({ isEditing: true });
+
+        await nextTick();
+
+        expect(findDisplayedValue().exists()).toBe(false);
       });
     });
 

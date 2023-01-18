@@ -242,6 +242,62 @@ RSpec.describe Ci::JobArtifact do
     end
   end
 
+  describe '.search' do
+    let_it_be(:project1) do
+      create(:project, name: 'project_1_name', path: 'project_1_path', description: 'project_desc_1')
+    end
+
+    let_it_be(:project2) do
+      create(:project, name: 'project_2_name', path: 'project_2_path', description: 'project_desc_2')
+    end
+
+    let_it_be(:ci_build1) { create(:ci_build, project: project1) }
+    let_it_be(:ci_build2) { create(:ci_build, project: project2) }
+
+    let_it_be(:job_artifact1) { create(:ci_job_artifact, job: ci_build1) }
+    let_it_be(:job_artifact2) { create(:ci_job_artifact, job: ci_build2) }
+
+    context 'when search query is empty' do
+      it 'returns all records' do
+        result = described_class.search('')
+
+        expect(result).to contain_exactly(job_artifact1, job_artifact2)
+      end
+    end
+
+    context 'when search query is not empty' do
+      context 'without matches' do
+        it 'filters all job artifacts' do
+          result = described_class.search('something_that_does_not_exist')
+
+          expect(result).to be_empty
+        end
+      end
+
+      context 'with matches' do
+        context 'with project association' do
+          it 'filters by project path' do
+            result = described_class.search('project_1_PATH')
+
+            expect(result).to contain_exactly(job_artifact1)
+          end
+
+          it 'filters by project name' do
+            result = described_class.search('Project_2_NAME')
+
+            expect(result).to contain_exactly(job_artifact2)
+          end
+
+          it 'filters project description' do
+            result = described_class.search('Project_desc')
+
+            expect(result).to contain_exactly(job_artifact1, job_artifact2)
+          end
+        end
+      end
+    end
+  end
+
   describe '#replicables_for_current_secondary' do
     # Selective sync is configured relative to the job artifact's project.
     #
@@ -405,15 +461,5 @@ RSpec.describe Ci::JobArtifact do
       # because of the way MergeReportsService is implemented.
       expect(::Gitlab::Ci::Reports::Security::Report).to have_received(:new).twice
     end
-  end
-
-  it_behaves_like 'a model that implements the search method' do
-    let(:with_project_association) { true }
-
-    let_it_be(:ci_build1) { create(:ci_build, project: project1) }
-    let_it_be(:ci_build2) { create(:ci_build, project: project2) }
-
-    let_it_be(:record1) { create(:ci_job_artifact, job: ci_build1) }
-    let_it_be(:record2) { create(:ci_job_artifact, job: ci_build2) }
   end
 end

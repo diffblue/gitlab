@@ -64,7 +64,7 @@ module Dashboard
       end
 
       def add_projects(projects)
-        projects.partition(&method(:add_project))
+        projects.partition { |project| add_project(project) }
       end
 
       def add_project(project)

@@ -4,6 +4,7 @@ require 'spec_helper'
 RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js, feature_category: :code_review_workflow do
   include GitlabRoutingHelper
   include FeatureApprovalHelper
+  include ListboxHelpers
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
@@ -24,18 +25,18 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js, feature_c
     visit project_settings_merge_requests_path(project)
 
     open_modal(text: 'Add approval rule', expand: false)
-    open_approver_select
+    click_button 'Search users or groups'
 
-    expect(find('.gl-dropdown-contents')).to have_content(user.name)
-    expect(find('.gl-dropdown-contents')).not_to have_content(non_member.name)
+    expect_listbox_item(user.name)
+    expect_no_listbox_item(non_member.name)
 
-    find('.gl-dropdown-item', text: user.name).click
+    select_listbox_item(user.name)
 
     expect(find('.content-list')).to have_content(user.name)
 
-    open_approver_select
+    click_button 'Search users or groups'
 
-    expect(find('.gl-dropdown-contents')).not_to have_content(user.name)
+    expect_no_listbox_item(user.name)
 
     within('.modal-content') do
       click_button 'Add approval rule'
@@ -49,11 +50,11 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js, feature_c
     visit project_settings_merge_requests_path(project)
 
     open_modal(text: 'Add approval rule', expand: false)
-    open_approver_select
+    click_button 'Search users or groups'
 
-    expect(find('.gl-dropdown-contents')).to have_content(group.name)
+    expect_listbox_item(group.name)
 
-    find('.gl-dropdown-item', text: group.name).click
+    select_listbox_item(group.name)
 
     expect(find('.content-list')).to have_content(group.name)
 

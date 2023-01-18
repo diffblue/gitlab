@@ -3,10 +3,15 @@
 class ScimOauthAccessTokenEntity < Grape::Entity
   include ::API::Helpers::RelatedResourcesHelpers
 
-  SCIM_PATH = '/api/scim/v2/groups'
+  GROUP_SCIM_PATH = '/api/scim/v2/groups'
+  INSTANCE_SCIM_PATH = '/api/scim/v2/application'
 
   expose :scim_api_url do |scim|
-    expose_url("#{SCIM_PATH}/#{scim.group.full_path}")
+    if scim.group
+      expose_url("#{GROUP_SCIM_PATH}/#{scim.group.full_path}")
+    else
+      expose_url(INSTANCE_SCIM_PATH)
+    end
   end
 
   expose :token, as: :scim_token

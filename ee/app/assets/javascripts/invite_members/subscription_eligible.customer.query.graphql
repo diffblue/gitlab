@@ -1,5 +1,5 @@
-query getSubscriptionEligibility($namespaceId: ID!) {
-  subscription(namespaceId: $namespaceId) {
-    eligibleForSeatUsageAlerts
+query getReconciliationStatus($namespaceId: ID!) {
+  reconciliation(namespaceId: $namespaceId) {
+    eligibleForSeatReconciliation
   }
 }

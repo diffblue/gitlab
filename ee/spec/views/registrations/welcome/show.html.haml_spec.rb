@@ -2,15 +2,12 @@
 
 require 'spec_helper'
 
-RSpec.describe 'registrations/welcome/show' do
+RSpec.describe 'registrations/welcome/show', :saas do
   using RSpec::Parameterized::TableSyntax
 
-  let_it_be(:user) { create(:user) }
-
   before do
-    allow(view).to receive(:current_user).and_return(user)
+    allow(view).to receive(:current_user).and_return(build_stubbed(:user))
     allow(view).to receive(:glm_tracking_params).and_return({})
-    allow(Gitlab).to receive(:com?).and_return(true)
   end
 
   describe 'forms and progress bar', :experiments do
@@ -26,7 +23,7 @@ RSpec.describe 'registrations/welcome/show' do
 
     subject { rendered }
 
-    where(:redirect_path, :signup_onboarding_enabled, :show_progress_bar, :flow, :is_continue, :show_joining_question) do
+    where(:redirect_path, :signup_onboarding_enabled, :show_progress_bar, :flow, :continue?, :show_joining_question) do
       '/-/subscriptions/new'    | false | true  | :subscription | true  | true
       '/-/subscriptions/new'    | true  | true  | :subscription | true  | true
       '/-/trials/new'           | false | false | :trial        | true  | false
@@ -45,7 +42,7 @@ RSpec.describe 'registrations/welcome/show' do
       end
 
       it 'shows the correct text for the submit button' do
-        expected_text = is_continue ? 'Continue' : 'Get started!'
+        expected_text = continue? ? 'Continue' : 'Get started!'
 
         is_expected.to have_button(expected_text)
       end
@@ -78,7 +75,7 @@ RSpec.describe 'registrations/welcome/show' do
     end
   end
 
-  context 'rendering the hidden email opt in checkbox' do
+  context 'for rendering the hidden email opt in checkbox' do
     subject { render }
 
     it { is_expected.to have_selector('input[name="user[email_opted_in]"]') }

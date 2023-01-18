@@ -8,7 +8,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
 import { createAlert } from '~/flash';
-import httpStatusCodes, { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
+import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.graphql';
 import countriesResolver from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
@@ -169,7 +169,7 @@ describe('International Phone input component', () => {
   describe('Sending verification code', () => {
     describe('when request is successful', () => {
       beforeEach(() => {
-        axiosMock.onPost(SEND_CODE_PATH).reply(httpStatusCodes.OK, { success: true });
+        axiosMock.onPost(SEND_CODE_PATH).reply(HTTP_STATUS_OK, { success: true });
 
         enterPhoneNumber('555');
         submitForm();

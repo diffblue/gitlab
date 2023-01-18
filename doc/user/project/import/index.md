@@ -15,7 +15,11 @@ If you want to bring existing projects to GitLab or copy GitLab projects to a di
   - Between a self-managed instance and GitLab.com in both directions.
   - In the same GitLab instance.
 
-For any type of source and target, you can migrate projects:
+Prerequisite:
+
+- At least the Maintainer role on the destination group to import to. Using the Developer role for this purpose was [deprecated](https://gitlab.com/gitlab-org/gitlab/-/issues/387891) in GitLab 15.8 and will be removed in GitLab 16.0.
+
+For any type of source and target, you can migrate GitLab projects:
 
 - When [migrating groups by direct transfer](../../group/import/index.md#migrate-groups-by-direct-transfer-recommended), which allows you to migrate all
   projects in a group at once. Migrating projects by direct transfer is in [Beta](../../../policy/alpha-beta-support.md#beta-features). The feature is not ready
@@ -66,7 +70,7 @@ GitLab can not automatically migrate Subversion repositories to Git. Converting 
 
 ## Migrate using the API
 
-To migrate all data from self-managed to GitLab.com, you can leverage the [API](../../../api/index.md).
+To migrate all data from self-managed to GitLab.com, you can leverage the [API](../../../api/rest/index.md).
 Migrate the assets in this order:
 
 1. [Groups](../../../api/groups.md)
@@ -108,8 +112,8 @@ To view project import history:
 1. Select **History** in the upper right corner.
 1. If there are any errors for a particular import, you can see them by selecting **Details**.
 
-The history also includes projects created from [built-in](../working_with_projects.md#create-a-project-from-a-built-in-template)
-or [custom](../working_with_projects.md#create-a-project-from-a-built-in-template)
+The history also includes projects created from [built-in](../index.md#create-a-project-from-a-built-in-template)
+or [custom](../index.md#create-a-project-from-a-built-in-template)
 templates. GitLab uses [import repository by URL](repo_by_url.md)
 to create a new project from a template.
 

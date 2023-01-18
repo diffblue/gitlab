@@ -28,7 +28,7 @@ RSpec.describe WorkItem do
       end
     end
 
-    context 'for status widget' do
+    context 'for status widget', feature_category: :requirements_management do
       subject { build(:work_item, :requirement).widgets }
 
       context 'when requirements is licensed' do
@@ -165,9 +165,47 @@ RSpec.describe WorkItem do
         end
       end
     end
+
+    context 'for legacy requirement widget', feature_category: :requirements_management do
+      let(:work_item_type) { [:requirement] }
+
+      context 'when requirements feature is licensed' do
+        subject { build(:work_item, *work_item_type).widgets }
+
+        before do
+          stub_licensed_features(requirements: true)
+        end
+
+        context 'when work item supports legacy requirement' do
+          it 'returns an instance of the legacy requirement widget' do
+            is_expected.to include(instance_of(WorkItems::Widgets::RequirementLegacy))
+          end
+        end
+
+        context 'when work item does not support legacy requirement' do
+          where(:work_item_type) { [:test_case, :issue, :objective, :key_result] }
+
+          with_them do
+            it 'omits an instance of the legacy requirement widget' do
+              is_expected.not_to include(instance_of(WorkItems::Widgets::RequirementLegacy))
+            end
+          end
+        end
+      end
+
+      context 'when requirements feature is unlicensed' do
+        before do
+          stub_licensed_features(requirements: false)
+        end
+
+        it 'omits an instance of the legacy requirement widget' do
+          is_expected.not_to include(instance_of(WorkItems::Widgets::RequirementLegacy))
+        end
+      end
+    end
   end
 
-  it_behaves_like 'a collection filtered by test reports state' do
+  it_behaves_like 'a collection filtered by test reports state', feature_category: :requirements_management do
     let_it_be(:requirement1) { create(:work_item, :requirement) }
     let_it_be(:requirement2) { create(:work_item, :requirement) }
     let_it_be(:requirement3) { create(:work_item, :requirement) }

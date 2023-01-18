@@ -84,6 +84,17 @@ RSpec.describe 'OKR', :js, feature_category: :product_planning do
         end
       end
     end
+
+    context 'in child metadata' do
+      it 'displays progress of 0% by default' do
+        create_okr('objective', 'Objective 2')
+
+        page.within('[data-testid="work-item-tree"]') do
+          expect(page).to have_content('Objective 2')
+          expect(page).to have_content('0%')
+        end
+      end
+    end
   end
 
   context 'with fetch by iid' do
@@ -148,7 +159,7 @@ RSpec.describe 'OKR', :js, feature_category: :product_planning do
         progress_input.native.send_keys('101')
         page_body.click
 
-        expect(progress_input.value).to eq('')
+        expect(progress_input.value).to eq('0')
 
         # Clear input
         progress_input.set('')
@@ -166,15 +177,15 @@ RSpec.describe 'OKR', :js, feature_category: :product_planning do
 
         progress_input.native.send_keys('+')
         page_body.click
-        expect(progress_input.value).to eq('')
+        expect(progress_input.value).to eq('0')
 
         progress_input.native.send_keys('-')
         page_body.click
-        expect(progress_input.value).to eq('')
+        expect(progress_input.value).to eq('0')
 
         progress_input.native.send_keys('e')
         page_body.click
-        expect(progress_input.value).to eq('')
+        expect(progress_input.value).to eq('0')
       end
     end
   end

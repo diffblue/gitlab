@@ -2,7 +2,8 @@
 import { GlTable, GlLink } from '@gitlab/ui';
 import { __ } from '~/locale';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
-import { namespaceContainerRegistryPopoverContent, uploadsPopoverContent } from '../constants';
+import { uploadsPopoverContent } from '~/usage_quotas/storage/constants';
+import { namespaceContainerRegistryPopoverContent } from '../constants';
 import NumberToHumanSize from './number_to_human_size.vue';
 import StorageTypeHelpLink from './storage_type_help_link.vue';
 import StorageTypeWarning from './storage_type_warning.vue';

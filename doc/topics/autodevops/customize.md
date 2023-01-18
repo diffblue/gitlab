@@ -237,7 +237,7 @@ For a full list of options, see [the official `helm upgrade` documentation](http
 ### Limit a Helm chart to one environment
 
 To limit a custom chart to one environment, add the environment scope to your CI/CD variables.
-For more information, see [Limit the environment scope of CI/CD variables](../../ci/variables/index.md#limit-the-environment-scope-of-a-cicd-variable).
+For more information, see [Limit the environment scope of CI/CD variables](../../ci/environments/index.md#limit-the-environment-scope-of-a-cicd-variable).
 
 ## Customize `.gitlab-ci.yml`
 
@@ -306,7 +306,7 @@ However, this feature was [deprecated](https://gitlab.com/groups/gitlab-org/conf
 along with certificate-based integration.
 
 You should now use the `KUBE_NAMESPACE` environment variable and
-[limit its environment scope](../../ci/environments/index.md#scope-environments-with-specs).
+[limit its environment scope](../../ci/environments/index.md#limit-the-environment-scope-of-a-cicd-variable).
 
 ## Use images hosted in a local Docker registry
 
@@ -330,6 +330,11 @@ You can configure many Auto DevOps jobs to run in an [offline environment](../..
    ```
 
 ## PostgreSQL database support
+
+WARNING:
+Provisioning a PostgreSQL database by default was [deprecated](https://gitlab.com/gitlab-org/gitlab/-/issues/387766)
+in GitLab 15.8 and will no longer be the default from 16.0. To enable database provisioning, set
+the associated [CI/CD variable](cicd_variables.md#database-variables).
 
 To support applications that require a database,
 [PostgreSQL](https://www.postgresql.org/) is provisioned by default.
@@ -378,7 +383,7 @@ external managed provider like AWS Relational Database Service.
 To use an external managed provider:
 
 1. Disable the built-in PostgreSQL installation for the required environments with
-   environment-scoped [CI/CD variables](../../ci/environments/index.md#scope-environments-with-specs).
+   environment-scoped [CI/CD variables](../../ci/environments/index.md#limit-the-environment-scope-of-a-cicd-variable).
    Because the built-in PostgreSQL setup for Review Apps and staging is sufficient, you might only need to
    disable the installation for `production`.
 

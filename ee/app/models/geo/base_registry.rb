@@ -84,7 +84,7 @@ class Geo::BaseRegistry < Geo::TrackingBase
   # Search for a list of records associated with registries,
   # based on the query given in `query`.
   #
-  # @param [String] query term that will search over registry model attributes and associations
+  # @param [String] query term that will search over replicable registries
   def self.with_search(query)
     return all if query.empty?
 

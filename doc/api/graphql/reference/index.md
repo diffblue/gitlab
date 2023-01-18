@@ -3032,6 +3032,28 @@ Input type: `GitlabSubscriptionActivateInput`
 | <a id="mutationgitlabsubscriptionactivatefuturesubscriptions"></a>`futureSubscriptions` | [`[SubscriptionFutureEntry!]`](#subscriptionfutureentry) | Array of future subscriptions. |
 | <a id="mutationgitlabsubscriptionactivatelicense"></a>`license` | [`CurrentLicense`](#currentlicense) | Current license. |
 
+### `Mutation.groupMemberBulkUpdate`
+
+Input type: `GroupMemberBulkUpdateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationgroupmemberbulkupdateaccesslevel"></a>`accessLevel` | [`MemberAccessLevel!`](#memberaccesslevel) | Access level to update the members to. |
+| <a id="mutationgroupmemberbulkupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationgroupmemberbulkupdateexpiresat"></a>`expiresAt` | [`Time`](#time) | Date and time the membership expires. |
+| <a id="mutationgroupmemberbulkupdategroupid"></a>`groupId` | [`GroupID!`](#groupid) | Global ID of the group. |
+| <a id="mutationgroupmemberbulkupdateuserids"></a>`userIds` | [`[UserID!]!`](#userid) | Global IDs of the group members. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationgroupmemberbulkupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationgroupmemberbulkupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationgroupmemberbulkupdategroupmembers"></a>`groupMembers` | [`[GroupMember!]`](#groupmember) | Group members after mutation. |
+
 ### `Mutation.groupUpdate`
 
 Input type: `GroupUpdateInput`
@@ -7693,6 +7715,29 @@ The edge type for [`Discussion`](#discussion).
 | <a id="discussionedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="discussionedgenode"></a>`node` | [`Discussion`](#discussion) | The item at the end of the edge. |
 
+#### `EmailConnection`
+
+The connection type for [`Email`](#email).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="emailconnectionedges"></a>`edges` | [`[EmailEdge]`](#emailedge) | A list of edges. |
+| <a id="emailconnectionnodes"></a>`nodes` | [`[Email]`](#email) | A list of nodes. |
+| <a id="emailconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `EmailEdge`
+
+The edge type for [`Email`](#email).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="emailedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="emailedgenode"></a>`node` | [`Email`](#email) | The item at the end of the edge. |
+
 #### `EnvironmentConnection`
 
 The connection type for [`Environment`](#environment).
@@ -8505,6 +8550,29 @@ The edge type for [`Milestone`](#milestone).
 | ---- | ---- | ----------- |
 | <a id="milestoneedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="milestoneedgenode"></a>`node` | [`Milestone`](#milestone) | The item at the end of the edge. |
+
+#### `NamespaceCommitEmailConnection`
+
+The connection type for [`NamespaceCommitEmail`](#namespacecommitemail).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="namespacecommitemailconnectionedges"></a>`edges` | [`[NamespaceCommitEmailEdge]`](#namespacecommitemailedge) | A list of edges. |
+| <a id="namespacecommitemailconnectionnodes"></a>`nodes` | [`[NamespaceCommitEmail]`](#namespacecommitemail) | A list of nodes. |
+| <a id="namespacecommitemailconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `NamespaceCommitEmailEdge`
+
+The edge type for [`NamespaceCommitEmail`](#namespacecommitemail).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="namespacecommitemailedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="namespacecommitemailedgenode"></a>`node` | [`NamespaceCommitEmail`](#namespacecommitemail) | The item at the end of the edge. |
 
 #### `NamespaceConnection`
 
@@ -12645,6 +12713,18 @@ Returns [`[DoraMetric!]`](#dorametric).
 | <a id="dorametricdate"></a>`date` | [`String`](#string) | Date of the data point. |
 | <a id="dorametricvalue"></a>`value` | [`Float`](#float) | Value of the data point. |
 
+### `Email`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="emailconfirmedat"></a>`confirmedAt` | [`Time`](#time) | Timestamp the email was confirmed. |
+| <a id="emailcreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp the email was created. |
+| <a id="emailemail"></a>`email` | [`String!`](#string) | Email address. |
+| <a id="emailid"></a>`id` | [`ID!`](#id) | Internal ID of the email. |
+| <a id="emailupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp the email was last updated. |
+
 ### `Environment`
 
 Describes where code is deployed for a project.
@@ -15289,7 +15369,9 @@ A user assigned to a merge request.
 | <a id="mergerequestassigneeavatarurl"></a>`avatarUrl` | [`String`](#string) | URL of the user's avatar. |
 | <a id="mergerequestassigneebot"></a>`bot` | [`Boolean!`](#boolean) | Indicates if the user is a bot. |
 | <a id="mergerequestassigneecallouts"></a>`callouts` | [`UserCalloutConnection`](#usercalloutconnection) | User callouts that belong to the user. (see [Connections](#connections)) |
+| <a id="mergerequestassigneecommitemail"></a>`commitEmail` | [`String`](#string) | User's default commit email. |
 | <a id="mergerequestassigneeemail"></a>`email` **{warning-solid}** | [`String`](#string) | **Deprecated** in 13.7. This was renamed. Use: [`User.publicEmail`](#userpublicemail). |
+| <a id="mergerequestassigneeemails"></a>`emails` | [`EmailConnection`](#emailconnection) | User's email addresses. (see [Connections](#connections)) |
 | <a id="mergerequestassigneegitpodenabled"></a>`gitpodEnabled` | [`Boolean`](#boolean) | Whether Gitpod is enabled at the user level. |
 | <a id="mergerequestassigneegroupcount"></a>`groupCount` | [`Int`](#int) | Group count for the user. |
 | <a id="mergerequestassigneegroupmemberships"></a>`groupMemberships` | [`GroupMemberConnection`](#groupmemberconnection) | Group memberships of the user. (see [Connections](#connections)) |
@@ -15298,6 +15380,7 @@ A user assigned to a merge request.
 | <a id="mergerequestassigneemergerequestinteraction"></a>`mergeRequestInteraction` | [`UserMergeRequestInteraction`](#usermergerequestinteraction) | Details of this user's interactions with the merge request. |
 | <a id="mergerequestassigneename"></a>`name` | [`String!`](#string) | Human-readable name of the user. Returns `****` if the user is a project bot and the requester does not have permission to view the project. |
 | <a id="mergerequestassigneenamespace"></a>`namespace` | [`Namespace`](#namespace) | Personal namespace of the user. |
+| <a id="mergerequestassigneenamespacecommitemails"></a>`namespaceCommitEmails` | [`NamespaceCommitEmailConnection`](#namespacecommitemailconnection) | User's custom namespace commit emails. (see [Connections](#connections)) |
 | <a id="mergerequestassigneepreferencesgitpodpath"></a>`preferencesGitpodPath` | [`String`](#string) | Web path to the Gitpod section within user preferences. |
 | <a id="mergerequestassigneeprofileenablegitpodpath"></a>`profileEnableGitpodPath` | [`String`](#string) | Web path to enable Gitpod for the user. |
 | <a id="mergerequestassigneeprojectmemberships"></a>`projectMemberships` | [`ProjectMemberConnection`](#projectmemberconnection) | Project memberships of the user. (see [Connections](#connections)) |
@@ -15520,7 +15603,9 @@ The author of the merge request.
 | <a id="mergerequestauthoravatarurl"></a>`avatarUrl` | [`String`](#string) | URL of the user's avatar. |
 | <a id="mergerequestauthorbot"></a>`bot` | [`Boolean!`](#boolean) | Indicates if the user is a bot. |
 | <a id="mergerequestauthorcallouts"></a>`callouts` | [`UserCalloutConnection`](#usercalloutconnection) | User callouts that belong to the user. (see [Connections](#connections)) |
+| <a id="mergerequestauthorcommitemail"></a>`commitEmail` | [`String`](#string) | User's default commit email. |
 | <a id="mergerequestauthoremail"></a>`email` **{warning-solid}** | [`String`](#string) | **Deprecated** in 13.7. This was renamed. Use: [`User.publicEmail`](#userpublicemail). |
+| <a id="mergerequestauthoremails"></a>`emails` | [`EmailConnection`](#emailconnection) | User's email addresses. (see [Connections](#connections)) |
 | <a id="mergerequestauthorgitpodenabled"></a>`gitpodEnabled` | [`Boolean`](#boolean) | Whether Gitpod is enabled at the user level. |
 | <a id="mergerequestauthorgroupcount"></a>`groupCount` | [`Int`](#int) | Group count for the user. |
 | <a id="mergerequestauthorgroupmemberships"></a>`groupMemberships` | [`GroupMemberConnection`](#groupmemberconnection) | Group memberships of the user. (see [Connections](#connections)) |
@@ -15529,6 +15614,7 @@ The author of the merge request.
 | <a id="mergerequestauthormergerequestinteraction"></a>`mergeRequestInteraction` | [`UserMergeRequestInteraction`](#usermergerequestinteraction) | Details of this user's interactions with the merge request. |
 | <a id="mergerequestauthorname"></a>`name` | [`String!`](#string) | Human-readable name of the user. Returns `****` if the user is a project bot and the requester does not have permission to view the project. |
 | <a id="mergerequestauthornamespace"></a>`namespace` | [`Namespace`](#namespace) | Personal namespace of the user. |
+| <a id="mergerequestauthornamespacecommitemails"></a>`namespaceCommitEmails` | [`NamespaceCommitEmailConnection`](#namespacecommitemailconnection) | User's custom namespace commit emails. (see [Connections](#connections)) |
 | <a id="mergerequestauthorpreferencesgitpodpath"></a>`preferencesGitpodPath` | [`String`](#string) | Web path to the Gitpod section within user preferences. |
 | <a id="mergerequestauthorprofileenablegitpodpath"></a>`profileEnableGitpodPath` | [`String`](#string) | Web path to enable Gitpod for the user. |
 | <a id="mergerequestauthorprojectmemberships"></a>`projectMemberships` | [`ProjectMemberConnection`](#projectmemberconnection) | Project memberships of the user. (see [Connections](#connections)) |
@@ -15770,7 +15856,9 @@ A user participating in a merge request.
 | <a id="mergerequestparticipantavatarurl"></a>`avatarUrl` | [`String`](#string) | URL of the user's avatar. |
 | <a id="mergerequestparticipantbot"></a>`bot` | [`Boolean!`](#boolean) | Indicates if the user is a bot. |
 | <a id="mergerequestparticipantcallouts"></a>`callouts` | [`UserCalloutConnection`](#usercalloutconnection) | User callouts that belong to the user. (see [Connections](#connections)) |
+| <a id="mergerequestparticipantcommitemail"></a>`commitEmail` | [`String`](#string) | User's default commit email. |
 | <a id="mergerequestparticipantemail"></a>`email` **{warning-solid}** | [`String`](#string) | **Deprecated** in 13.7. This was renamed. Use: [`User.publicEmail`](#userpublicemail). |
+| <a id="mergerequestparticipantemails"></a>`emails` | [`EmailConnection`](#emailconnection) | User's email addresses. (see [Connections](#connections)) |
 | <a id="mergerequestparticipantgitpodenabled"></a>`gitpodEnabled` | [`Boolean`](#boolean) | Whether Gitpod is enabled at the user level. |
 | <a id="mergerequestparticipantgroupcount"></a>`groupCount` | [`Int`](#int) | Group count for the user. |
 | <a id="mergerequestparticipantgroupmemberships"></a>`groupMemberships` | [`GroupMemberConnection`](#groupmemberconnection) | Group memberships of the user. (see [Connections](#connections)) |
@@ -15779,6 +15867,7 @@ A user participating in a merge request.
 | <a id="mergerequestparticipantmergerequestinteraction"></a>`mergeRequestInteraction` | [`UserMergeRequestInteraction`](#usermergerequestinteraction) | Details of this user's interactions with the merge request. |
 | <a id="mergerequestparticipantname"></a>`name` | [`String!`](#string) | Human-readable name of the user. Returns `****` if the user is a project bot and the requester does not have permission to view the project. |
 | <a id="mergerequestparticipantnamespace"></a>`namespace` | [`Namespace`](#namespace) | Personal namespace of the user. |
+| <a id="mergerequestparticipantnamespacecommitemails"></a>`namespaceCommitEmails` | [`NamespaceCommitEmailConnection`](#namespacecommitemailconnection) | User's custom namespace commit emails. (see [Connections](#connections)) |
 | <a id="mergerequestparticipantpreferencesgitpodpath"></a>`preferencesGitpodPath` | [`String`](#string) | Web path to the Gitpod section within user preferences. |
 | <a id="mergerequestparticipantprofileenablegitpodpath"></a>`profileEnableGitpodPath` | [`String`](#string) | Web path to enable Gitpod for the user. |
 | <a id="mergerequestparticipantprojectmemberships"></a>`projectMemberships` | [`ProjectMemberConnection`](#projectmemberconnection) | Project memberships of the user. (see [Connections](#connections)) |
@@ -16019,7 +16108,9 @@ A user assigned to a merge request as a reviewer.
 | <a id="mergerequestrevieweravatarurl"></a>`avatarUrl` | [`String`](#string) | URL of the user's avatar. |
 | <a id="mergerequestreviewerbot"></a>`bot` | [`Boolean!`](#boolean) | Indicates if the user is a bot. |
 | <a id="mergerequestreviewercallouts"></a>`callouts` | [`UserCalloutConnection`](#usercalloutconnection) | User callouts that belong to the user. (see [Connections](#connections)) |
+| <a id="mergerequestreviewercommitemail"></a>`commitEmail` | [`String`](#string) | User's default commit email. |
 | <a id="mergerequestrevieweremail"></a>`email` **{warning-solid}** | [`String`](#string) | **Deprecated** in 13.7. This was renamed. Use: [`User.publicEmail`](#userpublicemail). |
+| <a id="mergerequestrevieweremails"></a>`emails` | [`EmailConnection`](#emailconnection) | User's email addresses. (see [Connections](#connections)) |
 | <a id="mergerequestreviewergitpodenabled"></a>`gitpodEnabled` | [`Boolean`](#boolean) | Whether Gitpod is enabled at the user level. |
 | <a id="mergerequestreviewergroupcount"></a>`groupCount` | [`Int`](#int) | Group count for the user. |
 | <a id="mergerequestreviewergroupmemberships"></a>`groupMemberships` | [`GroupMemberConnection`](#groupmemberconnection) | Group memberships of the user. (see [Connections](#connections)) |
@@ -16028,6 +16119,7 @@ A user assigned to a merge request as a reviewer.
 | <a id="mergerequestreviewermergerequestinteraction"></a>`mergeRequestInteraction` | [`UserMergeRequestInteraction`](#usermergerequestinteraction) | Details of this user's interactions with the merge request. |
 | <a id="mergerequestreviewername"></a>`name` | [`String!`](#string) | Human-readable name of the user. Returns `****` if the user is a project bot and the requester does not have permission to view the project. |
 | <a id="mergerequestreviewernamespace"></a>`namespace` | [`Namespace`](#namespace) | Personal namespace of the user. |
+| <a id="mergerequestreviewernamespacecommitemails"></a>`namespaceCommitEmails` | [`NamespaceCommitEmailConnection`](#namespacecommitemailconnection) | User's custom namespace commit emails. (see [Connections](#connections)) |
 | <a id="mergerequestreviewerpreferencesgitpodpath"></a>`preferencesGitpodPath` | [`String`](#string) | Web path to the Gitpod section within user preferences. |
 | <a id="mergerequestreviewerprofileenablegitpodpath"></a>`profileEnableGitpodPath` | [`String`](#string) | Web path to enable Gitpod for the user. |
 | <a id="mergerequestreviewerprojectmemberships"></a>`projectMemberships` | [`ProjectMemberConnection`](#projectmemberconnection) | Project memberships of the user. (see [Connections](#connections)) |
@@ -16476,6 +16568,18 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="namespacecicdsettingallowstalerunnerpruning"></a>`allowStaleRunnerPruning` | [`Boolean`](#boolean) | Indicates if stale runners directly belonging to this namespace should be periodically pruned. |
 | <a id="namespacecicdsettingnamespace"></a>`namespace` | [`Namespace`](#namespace) | Namespace the CI/CD settings belong to. |
+
+### `NamespaceCommitEmail`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="namespacecommitemailcreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp the namespace commit email was created. |
+| <a id="namespacecommitemailemail"></a>`email` | [`Email!`](#email) | Email. |
+| <a id="namespacecommitemailid"></a>`id` | [`ID!`](#id) | Internal ID of the namespace commit email. |
+| <a id="namespacecommitemailnamespace"></a>`namespace` | [`Namespace!`](#namespace) | Namespace. |
+| <a id="namespacecommitemailupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp the namespace commit email was last updated. |
 
 ### `NestedEnvironment`
 
@@ -17194,6 +17298,7 @@ Represents vulnerability finding of a security report on the pipeline.
 | <a id="pipelinesecurityreportfindingname"></a>`name` **{warning-solid}** | [`String`](#string) | **Deprecated** in 15.1. Use `title`. |
 | <a id="pipelinesecurityreportfindingproject"></a>`project` | [`Project`](#project) | Project on which the vulnerability finding was found. |
 | <a id="pipelinesecurityreportfindingprojectfingerprint"></a>`projectFingerprint` **{warning-solid}** | [`String`](#string) | **Deprecated** in 15.1. The `project_fingerprint` attribute is being deprecated. Use `uuid` to identify findings. |
+| <a id="pipelinesecurityreportfindingremediations"></a>`remediations` | [`[VulnerabilityRemediationType!]`](#vulnerabilityremediationtype) | Remediations of the security report finding. |
 | <a id="pipelinesecurityreportfindingreporttype"></a>`reportType` | [`VulnerabilityReportType`](#vulnerabilityreporttype) | Type of the security report that found the vulnerability finding. |
 | <a id="pipelinesecurityreportfindingscanner"></a>`scanner` | [`VulnerabilityScanner`](#vulnerabilityscanner) | Scanner metadata for the vulnerability. |
 | <a id="pipelinesecurityreportfindingseverity"></a>`severity` | [`VulnerabilitySeverity`](#vulnerabilityseverity) | Severity of the vulnerability finding. |
@@ -20137,7 +20242,9 @@ Core represention of a GitLab user.
 | <a id="usercoreavatarurl"></a>`avatarUrl` | [`String`](#string) | URL of the user's avatar. |
 | <a id="usercorebot"></a>`bot` | [`Boolean!`](#boolean) | Indicates if the user is a bot. |
 | <a id="usercorecallouts"></a>`callouts` | [`UserCalloutConnection`](#usercalloutconnection) | User callouts that belong to the user. (see [Connections](#connections)) |
+| <a id="usercorecommitemail"></a>`commitEmail` | [`String`](#string) | User's default commit email. |
 | <a id="usercoreemail"></a>`email` **{warning-solid}** | [`String`](#string) | **Deprecated** in 13.7. This was renamed. Use: [`User.publicEmail`](#userpublicemail). |
+| <a id="usercoreemails"></a>`emails` | [`EmailConnection`](#emailconnection) | User's email addresses. (see [Connections](#connections)) |
 | <a id="usercoregitpodenabled"></a>`gitpodEnabled` | [`Boolean`](#boolean) | Whether Gitpod is enabled at the user level. |
 | <a id="usercoregroupcount"></a>`groupCount` | [`Int`](#int) | Group count for the user. |
 | <a id="usercoregroupmemberships"></a>`groupMemberships` | [`GroupMemberConnection`](#groupmemberconnection) | Group memberships of the user. (see [Connections](#connections)) |
@@ -20145,6 +20252,7 @@ Core represention of a GitLab user.
 | <a id="usercorelocation"></a>`location` | [`String`](#string) | Location of the user. |
 | <a id="usercorename"></a>`name` | [`String!`](#string) | Human-readable name of the user. Returns `****` if the user is a project bot and the requester does not have permission to view the project. |
 | <a id="usercorenamespace"></a>`namespace` | [`Namespace`](#namespace) | Personal namespace of the user. |
+| <a id="usercorenamespacecommitemails"></a>`namespaceCommitEmails` | [`NamespaceCommitEmailConnection`](#namespacecommitemailconnection) | User's custom namespace commit emails. (see [Connections](#connections)) |
 | <a id="usercorepreferencesgitpodpath"></a>`preferencesGitpodPath` | [`String`](#string) | Web path to the Gitpod section within user preferences. |
 | <a id="usercoreprofileenablegitpodpath"></a>`profileEnableGitpodPath` | [`String`](#string) | Web path to enable Gitpod for the user. |
 | <a id="usercoreprojectmemberships"></a>`projectMemberships` | [`ProjectMemberConnection`](#projectmemberconnection) | Project memberships of the user. (see [Connections](#connections)) |
@@ -20456,6 +20564,7 @@ Represents a vulnerability.
 | <a id="vulnerabilityseverity"></a>`severity` | [`VulnerabilitySeverity`](#vulnerabilityseverity) | Severity of the vulnerability (INFO, UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL). |
 | <a id="vulnerabilitystate"></a>`state` | [`VulnerabilityState`](#vulnerabilitystate) | State of the vulnerability (DETECTED, CONFIRMED, RESOLVED, DISMISSED). |
 | <a id="vulnerabilitytitle"></a>`title` | [`String`](#string) | Title of the vulnerability. |
+| <a id="vulnerabilityupdatedat"></a>`updatedAt` | [`Time`](#time) | Timestamp of when the vulnerability was last updated. |
 | <a id="vulnerabilityusernotescount"></a>`userNotesCount` | [`Int!`](#int) | Number of user notes attached to the vulnerability. |
 | <a id="vulnerabilityuserpermissions"></a>`userPermissions` | [`VulnerabilityPermissions!`](#vulnerabilitypermissions) | Permissions for the current user on the resource. |
 | <a id="vulnerabilityvulnerabilitypath"></a>`vulnerabilityPath` | [`String`](#string) | Path to the vulnerability's details page. |
@@ -20876,6 +20985,17 @@ Check permissions for the current user on a vulnerability.
 | <a id="vulnerabilitypermissionsreadvulnerabilityfeedback"></a>`readVulnerabilityFeedback` | [`Boolean!`](#boolean) | Indicates the user can perform `read_vulnerability_feedback` on this resource. |
 | <a id="vulnerabilitypermissionsupdatevulnerabilityfeedback"></a>`updateVulnerabilityFeedback` | [`Boolean!`](#boolean) | Indicates the user can perform `update_vulnerability_feedback` on this resource. |
 
+### `VulnerabilityRemediationType`
+
+Represents a vulnerability remediation type.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="vulnerabilityremediationtypediff"></a>`diff` | [`String`](#string) | Diff of the remediation. |
+| <a id="vulnerabilityremediationtypesummary"></a>`summary` | [`String`](#string) | Summary of the remediation. |
+
 ### `VulnerabilityRequest`
 
 Represents a Vulnerability Request.
@@ -21161,6 +21281,17 @@ Represents a progress widget.
 | ---- | ---- | ----------- |
 | <a id="workitemwidgetprogressprogress"></a>`progress` | [`Int`](#int) | Progress of the work item. |
 | <a id="workitemwidgetprogresstype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
+
+### `WorkItemWidgetRequirementLegacy`
+
+Represents a legacy requirement widget.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemwidgetrequirementlegacylegacyiid"></a>`legacyIid` **{warning-solid}** | [`Int`](#int) | **Deprecated** in 15.9. Use Work Item IID instead. |
+| <a id="workitemwidgetrequirementlegacytype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 
 ### `WorkItemWidgetStartAndDueDate`
 
@@ -22356,6 +22487,19 @@ Possible identifier types for a measurement.
 | <a id="measurementidentifierprojects"></a>`PROJECTS` | Project count. |
 | <a id="measurementidentifierusers"></a>`USERS` | User count. |
 
+### `MemberAccessLevel`
+
+Access level of a group or project member.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="memberaccessleveldeveloper"></a>`DEVELOPER` | Developer access. |
+| <a id="memberaccesslevelguest"></a>`GUEST` | Guest access. |
+| <a id="memberaccesslevelmaintainer"></a>`MAINTAINER` | Maintainer access. |
+| <a id="memberaccesslevelminimal_access"></a>`MINIMAL_ACCESS` | Minimal access. |
+| <a id="memberaccesslevelowner"></a>`OWNER` | Owner access. |
+| <a id="memberaccesslevelreporter"></a>`REPORTER` | Reporter access. |
+
 ### `MemberSort`
 
 Values for sorting members.
@@ -23372,6 +23516,7 @@ Type of a work item widget.
 | <a id="workitemwidgettypemilestone"></a>`MILESTONE` | Milestone widget. |
 | <a id="workitemwidgettypenotes"></a>`NOTES` | Notes widget. |
 | <a id="workitemwidgettypeprogress"></a>`PROGRESS` | Progress widget. |
+| <a id="workitemwidgettyperequirement_legacy"></a>`REQUIREMENT_LEGACY` | Requirement Legacy widget. |
 | <a id="workitemwidgettypestart_and_due_date"></a>`START_AND_DUE_DATE` | Start And Due Date widget. |
 | <a id="workitemwidgettypestatus"></a>`STATUS` | Status widget. |
 | <a id="workitemwidgettypeweight"></a>`WEIGHT` | Weight widget. |
@@ -24465,7 +24610,9 @@ Implementations:
 | <a id="useravatarurl"></a>`avatarUrl` | [`String`](#string) | URL of the user's avatar. |
 | <a id="userbot"></a>`bot` | [`Boolean!`](#boolean) | Indicates if the user is a bot. |
 | <a id="usercallouts"></a>`callouts` | [`UserCalloutConnection`](#usercalloutconnection) | User callouts that belong to the user. (see [Connections](#connections)) |
+| <a id="usercommitemail"></a>`commitEmail` | [`String`](#string) | User's default commit email. |
 | <a id="useremail"></a>`email` **{warning-solid}** | [`String`](#string) | **Deprecated** in 13.7. This was renamed. Use: [`User.publicEmail`](#userpublicemail). |
+| <a id="useremails"></a>`emails` | [`EmailConnection`](#emailconnection) | User's email addresses. (see [Connections](#connections)) |
 | <a id="usergitpodenabled"></a>`gitpodEnabled` | [`Boolean`](#boolean) | Whether Gitpod is enabled at the user level. |
 | <a id="usergroupcount"></a>`groupCount` | [`Int`](#int) | Group count for the user. |
 | <a id="usergroupmemberships"></a>`groupMemberships` | [`GroupMemberConnection`](#groupmemberconnection) | Group memberships of the user. (see [Connections](#connections)) |
@@ -24473,6 +24620,7 @@ Implementations:
 | <a id="userlocation"></a>`location` | [`String`](#string) | Location of the user. |
 | <a id="username"></a>`name` | [`String!`](#string) | Human-readable name of the user. Returns `****` if the user is a project bot and the requester does not have permission to view the project. |
 | <a id="usernamespace"></a>`namespace` | [`Namespace`](#namespace) | Personal namespace of the user. |
+| <a id="usernamespacecommitemails"></a>`namespaceCommitEmails` | [`NamespaceCommitEmailConnection`](#namespacecommitemailconnection) | User's custom namespace commit emails. (see [Connections](#connections)) |
 | <a id="userpreferencesgitpodpath"></a>`preferencesGitpodPath` | [`String`](#string) | Web path to the Gitpod section within user preferences. |
 | <a id="userprofileenablegitpodpath"></a>`profileEnableGitpodPath` | [`String`](#string) | Web path to enable Gitpod for the user. |
 | <a id="userprojectmemberships"></a>`projectMemberships` | [`ProjectMemberConnection`](#projectmemberconnection) | Project memberships of the user. (see [Connections](#connections)) |
@@ -24697,6 +24845,7 @@ Implementations:
 - [`WorkItemWidgetMilestone`](#workitemwidgetmilestone)
 - [`WorkItemWidgetNotes`](#workitemwidgetnotes)
 - [`WorkItemWidgetProgress`](#workitemwidgetprogress)
+- [`WorkItemWidgetRequirementLegacy`](#workitemwidgetrequirementlegacy)
 - [`WorkItemWidgetStartAndDueDate`](#workitemwidgetstartandduedate)
 - [`WorkItemWidgetStatus`](#workitemwidgetstatus)
 - [`WorkItemWidgetWeight`](#workitemwidgetweight)

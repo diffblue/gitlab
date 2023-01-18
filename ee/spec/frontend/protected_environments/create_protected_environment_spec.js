@@ -10,7 +10,7 @@ import axios from '~/lib/utils/axios_utils';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
 import { ACCESS_LEVELS } from 'ee/protected_environments/constants';
 import CreateProtectedEnvironment from 'ee/protected_environments/create_protected_environment.vue';
-import httpStatusCodes, { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
+import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { __, s__ } from '~/locale';
 
 const SEARCH_URL = '/search';
@@ -112,7 +112,7 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
       const query = 'staging';
       createComponent();
 
-      mockAxios.onGet(SEARCH_URL, { params: { query } }).reply(httpStatusCodes.OK, [query]);
+      mockAxios.onGet(SEARCH_URL, { params: { query } }).reply(HTTP_STATUS_OK, [query]);
 
       const environmentSearch = findEnvironmentsListbox();
       environmentSearch.vm.$emit('search', query);
@@ -151,7 +151,7 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
     describe('on successful protected environment', () => {
       it('should reload the page', async () => {
         createComponent();
-        mockAxios.onPost().replyOnce(httpStatusCodes.OK);
+        mockAxios.onPost().replyOnce(HTTP_STATUS_OK);
         await submitForm();
         await waitForPromises();
 
@@ -182,7 +182,7 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
       name = 'production',
       requiredApprovalCount = '3',
     ) => {
-      mockAxios.onGet('/api/v4/users/1').reply(httpStatusCodes.OK, {
+      mockAxios.onGet('/api/v4/users/1').reply(HTTP_STATUS_OK, {
         name: 'root',
         web_url: '/root',
         avatar_url: '/root.png',
@@ -210,7 +210,7 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
       const query = 'staging';
       createComponent();
 
-      mockAxios.onGet(SEARCH_URL, { params: { query } }).reply(httpStatusCodes.OK, [query]);
+      mockAxios.onGet(SEARCH_URL, { params: { query } }).reply(HTTP_STATUS_OK, [query]);
 
       const environmentSearch = findEnvironmentsListbox();
       environmentSearch.vm.$emit('search', query);
@@ -252,7 +252,7 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
     describe('on successful protected environment', () => {
       it('should reload the page', async () => {
         createComponent();
-        mockAxios.onPost().replyOnce(httpStatusCodes.OK);
+        mockAxios.onPost().replyOnce(HTTP_STATUS_OK);
         await submitForm();
         await waitForPromises();
 
@@ -276,13 +276,13 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
     describe('information for approvers', () => {
       unmockLocation();
       beforeEach(() => {
-        mockAxios.onGet('/api/v4/users/1').replyOnce(httpStatusCodes.OK, {
+        mockAxios.onGet('/api/v4/users/1').replyOnce(HTTP_STATUS_OK, {
           name: 'root',
           web_url: `${TEST_HOST}/root`,
           avatar_url: '/root.png',
           id: 1,
         });
-        mockAxios.onGet('/api/v4/groups/1').replyOnce(httpStatusCodes.OK, {
+        mockAxios.onGet('/api/v4/groups/1').replyOnce(HTTP_STATUS_OK, {
           full_name: 'root / group',
           name: 'group',
           web_url: `${TEST_HOST}/root/group`,

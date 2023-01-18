@@ -80,12 +80,6 @@ export default {
       // we need to make both accessible.
       return this.item.path || this.item.webPath;
     },
-    canAdmin() {
-      if (this.isEpic) {
-        return this.parentItem.userPermissions.canAdminRelation;
-      }
-      return this.parentItem.userPermissions.canAdmin;
-    },
     isOpen() {
       return this.item.state === ChildState.Open;
     },
@@ -139,6 +133,9 @@ export default {
     computedPath() {
       return this.itemWebPath.length ? this.itemWebPath : null;
     },
+    canAdminRelation() {
+      return this.parentItem.userPermissions.canAdminRelation;
+    },
     itemActionInProgress() {
       return (
         this.childrenFlags[this.itemReference].itemChildrenFetchInProgress ||
@@ -146,7 +143,7 @@ export default {
       );
     },
     showEmptySpacer() {
-      return !this.canAdmin && this.userSignedIn;
+      return !this.canAdminRelation && this.userSignedIn;
     },
     totalEpicsCount() {
       const { descendantCounts: { openedEpics = 0, closedEpics = 0 } = {} } = this.item;
@@ -350,7 +347,7 @@ export default {
         </div>
 
         <gl-button
-          v-if="canAdmin"
+          v-if="canAdminRelation"
           v-gl-tooltip.hover
           v-gl-modal-directive="$options.itemRemoveModalId"
           category="tertiary"
