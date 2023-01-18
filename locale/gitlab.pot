@@ -8293,9 +8293,6 @@ msgstr ""
 msgid "Check your Docker images for known vulnerabilities."
 msgstr ""
 
-msgid "Check your Kubernetes cluster images for known vulnerabilities."
-msgstr ""
-
 msgid "Check your sign-up restrictions"
 msgstr ""
 
