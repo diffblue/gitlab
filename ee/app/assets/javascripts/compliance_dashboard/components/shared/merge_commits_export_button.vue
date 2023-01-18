@@ -9,6 +9,8 @@ import {
   GlTooltip,
 } from '@gitlab/ui';
 
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+
 import { isValidSha1Hash } from '~/lib/utils/text_utility';
 import { __ } from '~/locale';
 import { INPUT_DEBOUNCE, CUSTODY_REPORT_PARAMETER } from '../../constants';
@@ -23,6 +25,7 @@ export default {
     GlFormInput,
     GlTooltip,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     mergeCommitsCsvExportPath: {
       required: true,
@@ -39,6 +42,13 @@ export default {
     mergeCommitButtonDisabled() {
       return !this.validMergeCommitHash;
     },
+    listMergeCommitsButtonFF() {
+      if (this.glFeatures.allCommitsComplianceReport) {
+        return __('List of all commits');
+      }
+
+      return __('List of all merge commits');
+    },
   },
   mounted() {
     this.listMergeCommitsButton = this.$refs.listMergeCommitsButton;
@@ -52,7 +62,6 @@ export default {
     mergeCommitInputLabel: __('Merge commit SHA'),
     mergeCommitInvalidMessage: __('Invalid hash'),
     mergeCommitButtonText: __('Export commit custody report'),
-    listMergeCommitsButtonText: __('List of all merge commits'),
     exportAsCsv: __('Export as CSV'),
     csvSizeLimit: __('(max size 15 MB)'),
   },
@@ -72,7 +81,7 @@ export default {
           icon="export"
           :href="mergeCommitsCsvExportPath"
         >
-          {{ $options.strings.listMergeCommitsButtonText }}
+          {{ listMergeCommitsButtonFF }}
         </gl-button>
       </template>
       <gl-dropdown-form>
