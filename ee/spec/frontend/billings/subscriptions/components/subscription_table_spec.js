@@ -15,6 +15,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/flash';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { getSubscriptionData } from 'ee/billings/subscriptions/subscription_actions.customer.query.graphql';
 
 jest.mock('~/flash');
@@ -320,7 +321,7 @@ describe('SubscriptionTable component', () => {
 
     describe('when clicked', () => {
       beforeEach(async () => {
-        mock.onPost(refreshSeatsHref).reply(200);
+        mock.onPost(refreshSeatsHref).reply(HTTP_STATUS_OK);
         findRefreshSeatsButton().trigger('click');
 
         await waitForPromises();

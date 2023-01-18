@@ -7,6 +7,7 @@ import ApproversSelect from 'ee/approvals/components/approvers_select.vue';
 import ApproversList from 'ee/approvals/components/approvers_list.vue';
 import ApproversListItem from 'ee/approvals/components/approvers_list_item.vue';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 const APPROVER_1 = {
   id: 1,
@@ -69,8 +70,8 @@ describe('PolicyActionBuilder', () => {
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    mock.onGet('/api/undefined/projects/1/users').reply(200);
-    mock.onGet('/api/undefined/projects/1/groups.json').reply(200);
+    mock.onGet('/api/undefined/projects/1/users').reply(HTTP_STATUS_OK);
+    mock.onGet('/api/undefined/projects/1/groups.json').reply(HTTP_STATUS_OK);
   });
 
   afterEach(() => {

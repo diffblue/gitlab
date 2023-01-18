@@ -8,6 +8,7 @@ import Project from 'ee/operations/components/dashboard/project.vue';
 import createStore from 'ee/vue_shared/dashboards/store';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { mockProjectData, mockText } from '../../mock_data';
 
 Vue.use(Vuex);
@@ -120,8 +121,8 @@ describe('dashboard component', () => {
       describe('when a project is removed', () => {
         it('immediately requests the project list again', () => {
           mockAxios.reset();
-          mockAxios.onDelete(store.state.projects[0].remove_path).reply(200);
-          mockAxios.onGet(mockListEndpoint).replyOnce(200, { projects: [] });
+          mockAxios.onDelete(store.state.projects[0].remove_path).reply(HTTP_STATUS_OK);
+          mockAxios.onGet(mockListEndpoint).replyOnce(HTTP_STATUS_OK, { projects: [] });
 
           wrapper.find('[data-testid="remove-project-button"]').vm.$emit('click');
 
