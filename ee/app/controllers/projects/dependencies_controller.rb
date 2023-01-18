@@ -26,54 +26,34 @@ module Projects
 
     private
 
-    def can_access_vulnerable?
-      return true unless query_params[:filter] == 'vulnerable'
-
-      can?(current_user, :read_security_resource, project)
+    def not_able_to_collect_dependencies?
+      !report_service.able_to_fetch? || user_requested_filters_that_they_cannot_see?
     end
 
-    def can_collect_dependencies?
-      report_service.able_to_fetch? && can_access_vulnerable?
+    def user_requested_filters_that_they_cannot_see?
+      params[:filter] == 'vulnerable' && !can?(current_user, :read_security_resource, project)
     end
 
     def collect_dependencies
-      found_dependencies = can_collect_dependencies? ? service.execute : []
-      ::Gitlab::ItemsCollection.new(found_dependencies)
+      return [] if not_able_to_collect_dependencies?
+
+      ::Security::DependencyListService.new(pipeline: pipeline, params: dependency_list_params).execute
     end
 
     def authorize_read_dependency_list!
-      return if can?(current_user, :read_dependencies, project)
-
-      respond_to do |format|
-        format.html do
-          render_404
-        end
-        format.json do
-          render_403
-        end
-      end
+      render_not_authorized unless can?(current_user, :read_dependencies, project)
     end
 
     def dependencies
-      @dependencies ||= collect_dependencies
-    end
-
-    def match_disallowed(param, value)
-      param == :sort_by && !value.in?(::Security::DependencyListService::SORT_BY_VALUES) ||
-        param == :sort && !value.in?(::Security::DependencyListService::SORT_VALUES) ||
-        param == :filter && !value.in?(::Security::DependencyListService::FILTER_VALUES)
+      @dependencies ||= ::Gitlab::ItemsCollection.new(collect_dependencies)
     end
 
     def pipeline
       @pipeline ||= report_service.pipeline
     end
 
-    def query_params
-      return @permitted_params if @permitted_params
-
-      @permitted_params = params.permit(:sort, :sort_by, :filter).delete_if do |key, value|
-        match_disallowed(key, value)
-      end
+    def dependency_list_params
+      params.permit(:sort_by, :sort, :filter)
     end
 
     def report_service
@@ -91,8 +71,15 @@ module Projects
       serializer
     end
 
-    def service
-      ::Security::DependencyListService.new(pipeline: pipeline, params: query_params)
+    def render_not_authorized
+      respond_to do |format|
+        format.html do
+          render_404
+        end
+        format.json do
+          render_403
+        end
+      end
     end
   end
 end
