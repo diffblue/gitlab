@@ -202,6 +202,16 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
     context 'when file is valid' do
       it { is_expected.to eq(true) }
+
+      context 'with license_scanning policy' do
+        let(:policy_yaml) do
+          build(:orchestration_policy_yaml,
+                scan_execution_policy: [],
+                scan_result_policy: [build(:scan_result_policy, :license_finding)])
+        end
+
+        it { is_expected.to eq(true) }
+      end
     end
 
     context 'when policy is passed as argument' do

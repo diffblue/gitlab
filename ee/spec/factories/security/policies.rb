@@ -65,6 +65,20 @@ FactoryBot.define do
     end
 
     actions { [{ type: 'require_approval', approvals_required: 1, user_approvers: %w[admin] }] }
+
+    trait :license_finding do
+      rules do
+        [
+          {
+            type: 'license_finding',
+            branches: %w[master],
+            match_on_inclusion: true,
+            license_types: %w[BSD MIT],
+            license_states: %w[newly_detected detected]
+          }
+        ]
+      end
+    end
   end
 
   factory :orchestration_policy_yaml, class: Struct.new(:scan_execution_policy, :scan_result_policy) do
