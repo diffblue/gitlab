@@ -130,6 +130,26 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
           expect(page).not_to have_css('.js-storage-enforcement-banner')
         end
       end
+
+      context 'when the user has dismissed the banner and namespace is over storage limit' do
+        let(:over_storage_limit) { true }
+
+        before do
+          create(
+            :group_callout,
+            user: user,
+            group: group,
+            feature_name: 'storage_enforcement_banner_first_enforcement_threshold'
+          )
+        end
+
+        it 'renders the banner' do
+          render_inline(component)
+
+          expect(page).to have_css(".gl-alert-not-dismissible")
+          expect(page).to have_css('.js-storage-enforcement-banner')
+        end
+      end
     end
 
     context 'when user is allowed to see but not dismiss the alert' do
