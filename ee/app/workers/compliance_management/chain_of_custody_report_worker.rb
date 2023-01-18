@@ -18,9 +18,7 @@ module ComplianceManagement
       @group = Group.find(options[:group_id])
       @filter_params = { commit_sha: options[:commit_sha] }.compact
 
-      response = ::MergeCommits::ExportCsvService.new(
-        @user, @group, @filter_params
-      ).csv_data
+      response = csv_response
 
       raise 'An error occurred generating the chain of custody report' unless response&.success?
 
@@ -37,8 +35,26 @@ module ComplianceManagement
 
     private
 
+    def csv_response
+      # currently the commit sha filter still uses the original code
+      # path, once that is migrated to
+      # Groups::ComplianceReportCsvService the below
+      # @filter_params.blank? can be removed
+      if Feature.enabled?(:all_commits_compliance_report, @group) && @filter_params.blank?
+        Groups::ComplianceReportCsvService.new(
+          @user, @group, @filter_params
+        ).csv_data
+      else
+        ::MergeCommits::ExportCsvService.new(@user, @group, @filter_params).csv_data
+      end
+    end
+
     def merge_commits_csv_filename
-      "#{@group.id}-merge-commits-#{Time.current.to_i}.csv"
+      if Feature.enabled?(:all_commits_compliance_report, @group)
+        "#{@group.id}-commits-#{Time.current.to_i}.csv"
+      else
+        "#{@group.id}-merge-commits-#{Time.current.to_i}.csv"
+      end
     end
   end
 end

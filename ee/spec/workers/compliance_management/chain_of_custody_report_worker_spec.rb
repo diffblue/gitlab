@@ -22,10 +22,31 @@ RSpec.describe ComplianceManagement::ChainOfCustodyReportWorker do
                                                    .with(user, group, filters)
                                                    .and_return(service)
       allow(service).to receive(:csv_data).and_return(service_response)
+      stub_feature_flags(all_commits_compliance_report: false)
     end
 
     it 'has the `until_executed` deduplicate strategy' do
       expect(described_class.get_deduplicate_strategy).to eq(:until_executed)
+    end
+
+    context 'when full commit feature flag is enabled' do
+      let(:service) { instance_double(Groups::ComplianceReportCsvService, csv_data: 'data') }
+
+      before do
+        allow(Groups::ComplianceReportCsvService).to receive(:new)
+                                                       .with(user, group, filters)
+                                                       .and_return(service)
+        allow(service).to receive(:csv_data).and_return(service_response)
+
+        stub_feature_flags(all_commits_compliance_report: true)
+      end
+
+      it 'calls the new csv service' do
+        worker.perform(job_args)
+
+        expect(Groups::ComplianceReportCsvService).to have_received(:new)
+        expect(service).to have_received(:csv_data)
+      end
     end
 
     context 'when the params are valid' do

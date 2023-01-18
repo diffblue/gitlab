@@ -16,11 +16,12 @@ describe('MergeCommitsExportButton component', () => {
   const findCommitExportButton = () => wrapper.find('[data-test-id="merge-commit-submit-button"]');
   const findCsvExportButton = () => wrapper.findComponent({ ref: 'listMergeCommitsButton' });
 
-  const createComponent = ({ mountFn = shallowMount, data = {} } = {}) => {
+  const createComponent = ({ mountFn = shallowMount, data = {}, provide = {} } = {}) => {
     return mountFn(MergeCommitsExportButton, {
       propsData: {
         mergeCommitsCsvExportPath: CSV_EXPORT_PATH,
       },
+      provide: () => provide,
       data: () => data,
     });
   };
@@ -36,6 +37,10 @@ describe('MergeCommitsExportButton component', () => {
 
     it('renders the button', () => {
       expect(findCsvExportButton().exists()).toBe(true);
+    });
+
+    it('renders the correct button text', () => {
+      expect(findCsvExportButton().text()).toEqual('List of all merge commits');
     });
 
     it('renders the export icon', () => {
@@ -72,6 +77,20 @@ describe('MergeCommitsExportButton component', () => {
       wrapper = createComponent({ mountFn: mount });
 
       expect(findCommitInputFeedback().text()).toBe('Invalid hash');
+    });
+
+    describe('when report FF is enabled', () => {
+      beforeEach(() => {
+        wrapper = createComponent({
+          mountFn: mount,
+          data: { validMergeCommitHash: true },
+          provide: { glFeatures: { allCommitsComplianceReport: true } },
+        });
+      });
+
+      it('renders the correct button text', () => {
+        expect(findCsvExportButton().text()).toEqual('List of all commits');
+      });
     });
 
     describe('when the commit input is valid', () => {
