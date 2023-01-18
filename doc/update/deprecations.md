@@ -313,6 +313,20 @@ When creating and updating users through the API, `null` was a valid value for t
 
 </div>
 
+<div class="deprecation removal-160 breaking-change">
+
+### Projects API field `operations_access_level` is deprecated
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+We are deprecating the `operations_access_level` field in the Projects API. This field has been replaced by fields to control specific features: `releases_access_level`, `environments_access_level`, `feature_flags_access_level`, `infrastructure_access_level`, and `monitor_access_level`.
+
+</div>
+
 <div class="deprecation removal-160">
 
 ### Rake task for importing bare repositories
