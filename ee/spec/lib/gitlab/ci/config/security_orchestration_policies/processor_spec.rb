@@ -251,43 +251,20 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
       end
 
       context 'when scan type is sast is configured for namespace policy project' do
-        context 'when scan_execution_policies_run_sast_and_ds_in_single_pipeline is enabled' do
-          before do
-            stub_feature_flags(scan_execution_policies_run_sast_and_ds_in_single_pipeline: true)
-          end
-
-          it_behaves_like 'with different scan type' do
-            let(:extended_job) { :'sast-0' }
-            let(:expected_jobs) { ending_with('-sast-0') }
-            let(:expected_configuration) do
-              hash_including(
-                artifacts: { reports: { sast: 'gl-sast-report.json' } },
-                script: ['/analyzer run'],
-                image: { name: '$SAST_ANALYZER_IMAGE' },
-                rules: [
-                  { if: '$SAST_DISABLED', when: 'never' },
-                  { if: '$SAST_EXCLUDED_ANALYZERS =~ /brakeman/', when: 'never' },
-                  { if: '$CI_COMMIT_BRANCH', exists: ['**/*.rb', '**/Gemfile'] }
-                ]
-              )
-            end
-          end
-        end
-
-        context 'when scan_execution_policies_run_sast_and_ds_in_single_pipeline is disabled' do
-          before do
-            stub_feature_flags(scan_execution_policies_run_sast_and_ds_in_single_pipeline: false)
-          end
-
-          it_behaves_like 'with different scan type' do
-            let(:extended_job) { :'sast-0' }
-            let(:expected_jobs) { starting_with('sast-') }
-            let(:expected_configuration) do
-              hash_including(
-                inherit: { variables: false },
-                trigger: { include: [{ template: "Security/SAST.gitlab-ci.yml" }] }
-              )
-            end
+        it_behaves_like 'with different scan type' do
+          let(:extended_job) { :'sast-0' }
+          let(:expected_jobs) { ending_with('-sast-0') }
+          let(:expected_configuration) do
+            hash_including(
+              artifacts: { reports: { sast: 'gl-sast-report.json' } },
+              script: ['/analyzer run'],
+              image: { name: '$SAST_ANALYZER_IMAGE' },
+              rules: [
+                { if: '$SAST_DISABLED', when: 'never' },
+                { if: '$SAST_EXCLUDED_ANALYZERS =~ /brakeman/', when: 'never' },
+                { if: '$CI_COMMIT_BRANCH', exists: ['**/*.rb', '**/Gemfile'] }
+              ]
+            )
           end
         end
       end
