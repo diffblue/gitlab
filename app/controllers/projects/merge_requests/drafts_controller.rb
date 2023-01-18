@@ -143,7 +143,7 @@ class Projects::MergeRequests::DraftsController < Projects::MergeRequests::Appli
     user_ids = notes.map(&:author_id)
     project.team.max_member_access_for_user_ids(user_ids)
 
-    notes.map(&method(:render_draft_note))
+    notes.map { |note| render_draft_note(note) }
   end
 
   def render_draft_note(note)

@@ -11,7 +11,7 @@ module Resolvers
         vulnerable
           .vulnerability_scanners
           .with_report_type
-          .map(&Representation::VulnerabilityScannerEntry.method(:new))
+          .map { |entry| Representation::VulnerabilityScannerEntry.new(entry) }
       end
     end
   end

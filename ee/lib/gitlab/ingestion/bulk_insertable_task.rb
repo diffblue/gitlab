@@ -93,7 +93,7 @@ module Gitlab
       end
 
       def bulk_upsert
-        klass.bulk_upsert!(insert_objects, unique_by: unique_by, returns: uses, &method(:slice_attributes))
+        klass.bulk_upsert!(insert_objects, unique_by: unique_by, returns: uses) { |attr| slice_attributes(attr) }
       end
 
       def after_ingest

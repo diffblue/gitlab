@@ -78,7 +78,7 @@ module EE
       def faraday_raw
         strong_memoize(:faraday_raw) do
           faraday_base do |conn|
-            initialize_connection(conn, options, &method(:accept_raw_manifest))
+            initialize_connection(conn, options) { |connection| accept_raw_manifest(connection) }
           end
         end
       end

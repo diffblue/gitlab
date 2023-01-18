@@ -44,7 +44,7 @@ RSpec.describe Groups::ParticipantsService do
       service.instance_variable_set(:@noteable, epic)
       result = service.execute(epic)
 
-      expected_users = (@users + [user]).map(&method(:user_to_autocompletable))
+      expected_users = (@users + [user]).map { |user| user_to_autocompletable(user) }
 
       expect(result).to include(*expected_users)
     end
@@ -67,7 +67,7 @@ RSpec.describe Groups::ParticipantsService do
       result = service.execute(epic)
 
       expected_users = (group.self_and_hierarchy.flat_map(&:users) + subproject.users)
-        .map(&method(:user_to_autocompletable))
+        .map { |user| user_to_autocompletable(user) }
 
       expect(expected_users.count).to eq(5)
       expect(result).to include(*expected_users)
