@@ -29,7 +29,7 @@ module EE
             end
 
             def ee_routes
-              EE_ROUTE_DEFINITONS.map { |route_definition| build_rails_route(route_definition) }
+              EE_ROUTE_DEFINITONS.map { |route_definition| build_rails_route(*route_definition) }
             end
           end
         end
