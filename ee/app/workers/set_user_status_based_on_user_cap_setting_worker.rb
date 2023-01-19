@@ -8,7 +8,7 @@ class SetUserStatusBasedOnUserCapSettingWorker
   sidekiq_options retry: 3
   include ::Gitlab::Utils::StrongMemoize
 
-  feature_category :users
+  feature_category :user_profile
 
   idempotent!
 
