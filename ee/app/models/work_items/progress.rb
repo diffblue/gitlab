@@ -20,11 +20,16 @@ module WorkItems
       return unless parent && parent.work_item_type.widgets.include?(WorkItems::Widgets::Progress)
 
       new_progress = WorkItems::Progress.where(work_item: parent.work_item_children).average(:progress).to_i
-
       parent_progress = parent.progress || parent.build_progress
       parent_progress.progress = new_progress
+      return unless parent_progress.progress_changed?
 
-      parent_progress.save!
+      parent_progress.update!(progress: new_progress)
+
+      # rubocop: disable CodeReuse/ServiceClass
+      # This will go away once this logic goes into worker via https://gitlab.com/gitlab-org/gitlab/-/issues/388394
+      ::SystemNoteService.change_progress_note(parent, User.automation_bot)
+      # rubocop: enable CodeReuse/ServiceClass
     end
   end
 end

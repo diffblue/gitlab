@@ -35,14 +35,26 @@ RSpec.describe WorkItems::Progress do
     end
 
     shared_examples 'parent progress is not changed' do
-      it 'doesnt update parent progress' do
+      it "doesn't update parent progress" do
         expect { subject }.to not_change { parent_work_item_progress }
+      end
+
+      it "doesn't create system note" do
+        expect { subject }.to not_change(parent_work_item.notes, :count)
       end
     end
 
     shared_examples 'parent progress is updated' do |new_value|
       it 'updates parent progress value' do
         expect { subject }.to change { parent_work_item_progress }.to(new_value)
+      end
+
+      it 'creates notes' do
+        subject
+
+        work_item_note = parent_work_item.reload.notes.last
+
+        expect(work_item_note.note).to eq("changed progress to **#{new_value}**")
       end
     end
 
