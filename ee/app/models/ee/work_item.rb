@@ -13,7 +13,11 @@ module EE
     LICENSED_WIDGETS = {
       iterations: ::WorkItems::Widgets::Iteration,
       issue_weights: ::WorkItems::Widgets::Weight,
-      requirements: [::WorkItems::Widgets::Status, ::WorkItems::Widgets::RequirementLegacy],
+      requirements: [
+        ::WorkItems::Widgets::Status,
+        ::WorkItems::Widgets::RequirementLegacy,
+        ::WorkItems::Widgets::TestReports
+      ],
       issuable_health_status: ::WorkItems::Widgets::HealthStatus,
       okrs: ::WorkItems::Widgets::Progress
     }.freeze

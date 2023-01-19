@@ -261,6 +261,68 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
         end
       end
 
+      describe 'test reports widget' do
+        let_it_be(:work_item) { create(:work_item, :requirement, project: project) }
+
+        let(:work_item_fields) do
+          <<~GRAPHQL
+            id
+            widgets {
+              type
+              ... on WorkItemWidgetTestReports {
+                testReports {
+                  nodes {
+                    id
+                  }
+                }
+              }
+            }
+          GRAPHQL
+        end
+
+        context 'when requirements is licensed' do
+          let_it_be(:test_report1) { create(:test_report, requirement_issue: work_item) }
+          let_it_be(:test_report2) { create(:test_report, requirement_issue: work_item) }
+
+          before do
+            stub_licensed_features(requirements: true)
+
+            post_graphql(query, current_user: current_user)
+          end
+
+          it 'returns correct widget data' do
+            expect(work_item_data).to include(
+              'id' => work_item.to_gid.to_s,
+              'widgets' => include(
+                hash_including(
+                  'type' => 'TEST_REPORTS',
+                  'testReports' => {
+                    'nodes' => array_including(
+                      { 'id' => test_report1.to_global_id.to_s },
+                      { 'id' => test_report2.to_global_id.to_s }
+                    )
+                  }
+                )
+              )
+            )
+          end
+        end
+
+        context 'when requirements is not licensed' do
+          before do
+            post_graphql(query, current_user: current_user)
+          end
+
+          it 'returns empty widget data' do
+            expect(work_item_data['widgets']).not_to include(
+              hash_including(
+                'type' => 'TEST_REPORTS'
+              )
+            )
+          end
+        end
+      end
+
       describe 'labels widget' do
         let(:labels) { create_list(:label, 2, project: project) }
         let(:work_item) { create(:work_item, project: project, labels: labels) }

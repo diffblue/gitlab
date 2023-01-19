@@ -7,8 +7,16 @@ module EE
       extend ::Gitlab::Utils::Override
 
       EE_WIDGETS_FOR_TYPE = {
-        issue: [::WorkItems::Widgets::Iteration, ::WorkItems::Widgets::Weight, ::WorkItems::Widgets::HealthStatus],
-        requirement: [::WorkItems::Widgets::Status, ::WorkItems::Widgets::RequirementLegacy],
+        issue: [
+          ::WorkItems::Widgets::Iteration,
+          ::WorkItems::Widgets::Weight,
+          ::WorkItems::Widgets::HealthStatus
+        ],
+        requirement: [
+          ::WorkItems::Widgets::Status,
+          ::WorkItems::Widgets::RequirementLegacy,
+          ::WorkItems::Widgets::TestReports
+        ],
         task: [::WorkItems::Widgets::Iteration, ::WorkItems::Widgets::Weight],
         objective: [::WorkItems::Widgets::HealthStatus, ::WorkItems::Widgets::Progress],
         key_result: [::WorkItems::Widgets::HealthStatus, ::WorkItems::Widgets::Progress]
