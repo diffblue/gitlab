@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SoftwareLicensePolicies::CreateService do
+RSpec.describe SoftwareLicensePolicies::CreateService, feature_category: :security_policy_management do
   let(:project) { create(:project) }
   let(:params) { { name: 'ExamplePL/2.1', approval_status: 'denied' } }
 
@@ -47,6 +47,17 @@ RSpec.describe SoftwareLicensePolicies::CreateService do
           expect(result[:software_license_policy].name).to eq(params[:name])
           expect(result[:software_license_policy].classification).to eq(params[:approval_status])
           expect(RefreshLicenseComplianceChecksWorker).to have_received(:perform_async).with(project.id)
+        end
+
+        context 'when name contains whitespaces' do
+          let(:params) { { name: '  MIT   ', approval_status: 'allowed' } }
+
+          it 'creates one software license policy with stripped name' do
+            expect(project.software_license_policies.count).to be(1)
+            expect(result[:status]).to be(:success)
+            expect(result[:software_license_policy]).to be_persisted
+            expect(result[:software_license_policy].name).to eq('MIT')
+          end
         end
       end
 
