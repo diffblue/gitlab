@@ -156,6 +156,22 @@ feature_category: :vulnerability_management do
     end
   end
 
+  context 'when the identifier of the finding already exists in the database' do
+    let(:report_finding) { report_sast.findings.first }
+    let(:report_identifier) { report_finding.identifiers.first }
+    let(:persisted_identifier) { subject.payload[:vulnerability_finding].identifiers.reload.first }
+
+    before do
+      create(:vulnerabilities_identifier, project: project, fingerprint: report_identifier.fingerprint)
+    end
+
+    it_behaves_like 'create vulnerability finding'
+
+    it 'associates the correct identifier with the new finding' do
+      expect(persisted_identifier.fingerprint).to eq(report_identifier.fingerprint)
+    end
+  end
+
   def insert_security_findings(report, scan)
     report.findings.map do |finding|
       create(:security_finding,
