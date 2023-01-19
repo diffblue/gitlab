@@ -1,5 +1,5 @@
 <script>
-import { GlTable, GlBadge, GlLink } from '@gitlab/ui';
+import { GlTableLite, GlBadge, GlLink } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { DETAILS_FIELDS } from '../constants';
@@ -9,7 +9,7 @@ export default {
   name: 'SubscriptionSeatDetails',
   components: {
     GlBadge,
-    GlTable,
+    GlTableLite,
     GlLink,
     SubscriptionSeatDetailsLoader,
   },
@@ -47,7 +47,14 @@ export default {
   <div v-if="isLoaderShown">
     <subscription-seat-details-loader />
   </div>
-  <gl-table v-else :fields="$options.fields" :items="items" data-testid="seat-usage-details">
+  <gl-table-lite
+    v-else
+    :fields="$options.fields"
+    :items="items"
+    data-testid="seat-usage-details"
+    borderless
+    class="gl-mb-0!"
+  >
     <template #cell(source_full_name)="{ item }">
       <gl-link :href="item.source_members_url" target="_blank">{{ item.source_full_name }}</gl-link>
     </template>
@@ -60,5 +67,5 @@ export default {
     <template #cell(role)="{ item }">
       <gl-badge>{{ item.access_level.string_value }}</gl-badge>
     </template>
-  </gl-table>
+  </gl-table-lite>
 </template>

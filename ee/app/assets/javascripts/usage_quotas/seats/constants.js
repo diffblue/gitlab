@@ -9,43 +9,54 @@ export const HEADER_ITEMS_PER_PAGE = 'x-per-page';
 
 export const FIELDS = [
   {
+    key: 'disclosure',
+    label: '',
+    thClass: 'gl-p-0!',
+    tdClass: 'gl-p-0! gl-vertical-align-middle!',
+  },
+  {
     key: 'user',
     label: __('User'),
-    thClass: thWidthPercent(30),
+    // eslint-disable-next-line @gitlab/require-i18n-strings
+    thClass: `${thWidthPercent(30)} gl-pl-2!`,
+    tdClass: 'gl-vertical-align-middle! gl-pl-2!',
   },
   {
     key: 'email',
     label: __('Email'),
     thClass: thWidthPercent(20),
+    tdClass: 'gl-vertical-align-middle!',
   },
   {
     key: 'lastActivityTime',
     label: __('Last activity'),
     thClass: thWidthPercent(20),
+    tdClass: 'gl-vertical-align-middle!',
   },
   {
     key: 'lastLoginAt',
     label: __('Last login'),
     thClass: thWidthPercent(20),
+    tdClass: 'gl-vertical-align-middle!',
   },
   {
     key: 'actions',
     label: '',
-    thClass: thWidthPercent(20),
-    tdClass: 'text-right',
+    thClass: thWidthPercent(10),
+    tdClass: 'gl-vertical-align-middle! text-right',
   },
 ];
 
 export const DETAILS_FIELDS = [
-  {
-    key: 'source_full_name',
-    label: s__('Billing|Direct memberships'),
-    thClass: thWidthPercent(40),
-  },
-  { key: 'created_at', label: __('Access granted'), thClass: thWidthPercent(40) },
-  { key: 'expires_at', label: __('Access expires'), thClass: thWidthPercent(40) },
-  { key: 'role', label: __('Role'), thClass: thWidthPercent(40) },
-];
+  { key: 'source_full_name', label: s__('Billing|Direct memberships') },
+  { key: 'created_at', label: __('Access granted') },
+  { key: 'expires_at', label: __('Access expires') },
+  { key: 'role', label: __('Role') },
+].map((field) => ({
+  ...field,
+  thClass: 'gl-border-0!',
+  tdClass: 'gl-border-0! gl-vertical-align-middle!',
+}));
 
 export const CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_ID = 'cannot-remove-member-modal';
 export const CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_TITLE = s__('Billing|Cannot remove user');

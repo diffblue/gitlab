@@ -230,17 +230,13 @@ describe('Subscription Seats', () => {
       `(
         'when membershipType is $membershipType, shouldShowDetails should be $shouldShowDetails',
         ({ membershipType, shouldShowDetails }) => {
-          const seatCells = findTable().findAll('[data-testid*="seat-cell-"]');
-
-          seatCells.wrappers.forEach((seatCellWrapper) => {
-            const currentMember = mockTableItems.find(
-              (item) => seatCellWrapper.attributes('data-testid') === `seat-cell-${item.user.id}`,
+          mockTableItems.forEach((item) => {
+            const detailsExpandButtons = findTable().find(
+              `[data-testid="toggle-seat-usage-details-${item.user.id}"]`,
             );
 
-            if (membershipType === currentMember.user.membership_type) {
-              expect(
-                seatCellWrapper.find('[data-testid="toggle-seat-usage-details"]').exists(),
-              ).toBe(shouldShowDetails);
+            if (membershipType === item.user.membership_type) {
+              expect(detailsExpandButtons.exists()).toBe(shouldShowDetails);
             }
           });
         },
