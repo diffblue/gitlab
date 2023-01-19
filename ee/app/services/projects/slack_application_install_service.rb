@@ -4,11 +4,6 @@ module Projects
   class SlackApplicationInstallService < BaseService
     include Gitlab::Routing
 
-    # These scopes are requested when installing the app, additional scopes
-    # will need reauthorization.
-    # https://api.slack.com/authentication/oauth-v2#asking
-    DEFAULT_SCOPES = %w[commands].freeze
-
     # Endpoint to initiate the OAuth flow, redirects to Slack's authorization screen
     # https://api.slack.com/authentication/oauth-v2#asking
     SLACK_AUTHORIZE_URL = 'https://slack.com/oauth/v2/authorize'

@@ -34,7 +34,7 @@ module EE
 
     def add_to_slack_link(project, slack_app_id)
       query = {
-        scope: ::Projects::SlackApplicationInstallService::DEFAULT_SCOPES.join(','),
+        scope: slack_scopes(project).join(','),
         client_id: slack_app_id,
         redirect_uri: slack_auth_project_settings_slack_url(project),
         state: form_authenticity_token
@@ -111,6 +111,12 @@ module EE
       )
 
       [icon, link].join.html_safe
+    end
+
+    def slack_scopes(project)
+      return SlackIntegration::SCOPES if ::Feature.enabled?(:integration_slack_app_notifications, project)
+
+      [SlackIntegration::SCOPE_COMMANDS]
     end
   end
 end

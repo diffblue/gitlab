@@ -124,11 +124,21 @@ RSpec.describe EE::IntegrationsHelper do
       expect(slack_link).to include('&state=a+token')
 
       expect(query).to include(
-        'scope' => 'commands',
+        'scope' => 'commands,chat:write,chat:write.public',
         'client_id' => 'A12345',
         'redirect_uri' => subject.slack_auth_project_settings_slack_url(project),
         'state' => 'a token'
       )
+    end
+
+    context 'when flag is disabled' do
+      before do
+        stub_feature_flags(integration_slack_app_notifications: false)
+      end
+
+      it 'returns limited scopes in scope param' do
+        expect(query).to include('scope' => 'commands')
+      end
     end
   end
 
