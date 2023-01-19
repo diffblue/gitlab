@@ -63,6 +63,10 @@ exports[`DastScannerProfileSummary renders properly 1`] = `
     <dast-site-validation-badge-stub
       status="PENDING_VALIDATION"
     />
+     
+    <!---->
+     
+    <!---->
   </summary-cell-stub>
    
   <summary-cell-stub

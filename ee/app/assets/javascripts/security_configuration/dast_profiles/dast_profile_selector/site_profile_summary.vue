@@ -1,11 +1,17 @@
 <script>
+import { GlButton, GlTooltipDirective } from '@gitlab/ui';
 import DastSiteValidationBadge from 'ee/security_configuration/dast_profiles/components/dast_site_validation_badge.vue';
+import DastSiteValidationModal from 'ee/security_configuration/dast_site_validation/components/dast_site_validation_modal.vue';
+import {
+  DAST_SITE_VALIDATION_STATUS,
+  DAST_SITE_VALIDATION_MODAL_ID,
+} from 'ee/security_configuration/dast_site_validation/constants';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   EXCLUDED_URLS_SEPARATOR,
   TARGET_TYPES,
   SCAN_METHODS,
 } from 'ee/security_configuration/dast_profiles/dast_site_profiles/constants';
-import { DAST_SITE_VALIDATION_STATUS } from 'ee/security_configuration/dast_site_validation/constants';
 import { SITE_TYPE } from 'ee/on_demand_scans/constants';
 import { s__ } from '~/locale';
 import DastProfileSummaryCard from './dast_profile_summary_card.vue';
@@ -14,11 +20,19 @@ import SummaryCell from './summary_cell.vue';
 export default {
   SITE_TYPE,
   name: 'DastSiteProfileSummary',
+  dastSiteValidationModalId: DAST_SITE_VALIDATION_MODAL_ID,
   components: {
     DastProfileSummaryCard,
     SummaryCell,
     DastSiteValidationBadge,
+    GlButton,
+    DastSiteValidationModal,
   },
+  directives: {
+    GlTooltip: GlTooltipDirective,
+  },
+  mixins: [glFeatureFlagMixin()],
+  inject: ['projectPath'],
   props: {
     profile: {
       type: Object,
@@ -29,6 +43,11 @@ export default {
       required: false,
       default: false,
     },
+  },
+  data() {
+    return {
+      validateTargetUrl: null,
+    };
   },
   computed: {
     i18n() {
@@ -49,6 +68,7 @@ export default {
         requestHeaders: s__('DastProfiles|Request headers'),
         validationStatus: s__('DastProfiles|Validation status'),
         scanMethod: s__('DastProfiles|Scan Method'),
+        validateProfileTooltip: s__('DastProfiles|Validate site profile'),
       };
     },
     hasExcludedUrls() {
@@ -75,6 +95,23 @@ export default {
     },
     hasScanMethod() {
       return Boolean(this.selectedScanMethod);
+    },
+  },
+  methods: {
+    validateUrl(url) {
+      this.validateTargetUrl = url;
+      this.$nextTick(() => {
+        this.$refs[DAST_SITE_VALIDATION_MODAL_ID].show();
+      });
+    },
+    showValidatebutton(status) {
+      const { NONE, FAILED } = DAST_SITE_VALIDATION_STATUS;
+      return this.glFeatures.dastSiteValidationDrawer && [NONE, FAILED].includes(status);
+    },
+    validateButtonLabel(status) {
+      return status === DAST_SITE_VALIDATION_STATUS.NONE
+        ? s__('DastProfiles|Validate')
+        : s__('DastProfiles|Retry');
     },
   },
   EXCLUDED_URLS_SEPARATOR,
@@ -108,6 +145,22 @@ export default {
       />
       <summary-cell :label="i18n.validationStatus">
         <dast-site-validation-badge :status="profile.validationStatus" />
+        <gl-button
+          v-if="showValidatebutton(profile.validationStatus)"
+          v-gl-tooltip.hover
+          :title="i18n.validateProfileTooltip"
+          class="gl-ml-2"
+          variant="link"
+          @click="validateUrl(profile.targetUrl)"
+          >{{ validateButtonLabel(profile.validationStatus) }}</gl-button
+        >
+        <dast-site-validation-modal
+          v-if="glFeatures.dastSiteValidationDrawer && validateTargetUrl"
+          :ref="$options.dastSiteValidationModalId"
+          :full-path="projectPath"
+          :target-url="validateTargetUrl"
+          @hidden="validateTargetUrl = null"
+        />
       </summary-cell>
       <summary-cell
         v-if="hasScanMethod"

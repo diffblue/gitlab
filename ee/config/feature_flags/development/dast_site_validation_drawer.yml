@@ -1,0 +1,8 @@
+---
+name: dast_site_validation_drawer
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/106444
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/387619
+milestone: '15.9'
+type: development
+group: group::dynamic analysis
+default_enabled: false
