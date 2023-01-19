@@ -11,7 +11,10 @@ import testAction from 'helpers/vuex_action_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+} from '~/lib/utils/http_status';
 import Poll from '~/lib/utils/poll';
 
 jest.mock('~/flash');
@@ -68,7 +71,7 @@ describe('EE DiffsStoreActions', () => {
         pollDelayedRequest = jest.spyOn(Poll.prototype, 'makeDelayedRequest');
         pollStop = jest.spyOn(Poll.prototype, 'stop');
 
-        mock.onGet(endpointCodequality).reply(400);
+        mock.onGet(endpointCodequality).reply(HTTP_STATUS_BAD_REQUEST);
       });
 
       it('should not show a flash message', async () => {

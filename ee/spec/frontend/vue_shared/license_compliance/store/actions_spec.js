@@ -7,6 +7,7 @@ import createState from 'ee/vue_shared/license_compliance/store/state';
 import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
 import { allowedLicense, deniedLicense } from '../mock_data';
 
 describe('License store actions', () => {
@@ -643,7 +644,7 @@ describe('License store actions', () => {
       });
 
       it('should send an error on an unsuccesful request', async () => {
-        licensesApiMock.replyOnce(400);
+        licensesApiMock.replyOnce(HTTP_STATUS_BAD_REQUEST);
 
         await testAction(
           actions.fetchParsedLicenseReport,
