@@ -8,21 +8,4 @@
   = _('Send email notification')
 %p
   = _('You can notify the app / group or a project by sending them an email notification')
-- if Feature.enabled?(:admin_emails_vue)
-  #js-admin-emails-form{ data: { admin_email_path: admin_email_path, admin_emails_are_currently_rate_limited: admin_emails_are_currently_rate_limited? } }
-- else
-  = form_tag admin_email_path, id: 'new-admin-email', class: 'gl-show-field-errors' do
-    .form-group.gl-form-group{ role: 'group' }
-      = label_tag :subject, s_('AdminEmail|Subject'), class: 'gl-display-block col-form-label'
-      = text_field_tag :subject, '', class: 'gl-form-input form-control gl-lg-form-input-xl', required: true, title: s_('AdminEmail|Subject is required.')
-
-    .form-group.gl-form-group{ role: 'group' }
-      = label_tag :body, s_('AdminEmail|Body'), class: 'gl-display-block col-form-label'
-      = text_area_tag :body, '', class: 'gl-form-input gl-form-textarea form-control gl-lg-form-input-xl', rows: 15, required: true, title: s_('AdminEmail|Body is required.')
-
-    .form-group.gl-form-group{ role: 'group' }
-      = label_tag :recipients, s_('AdminEmail|Recipient group or project'), class: 'gl-display-block col-form-label'
-      .gl-lg-form-input-xl
-        = admin_email_select_tag(:recipients)
-    .gl-mt-5
-      = submit_tag _('Send message'), class: 'gl-button btn btn-confirm', disabled: admin_emails_are_currently_rate_limited?
+#js-admin-emails-form{ data: { admin_email_path: admin_email_path, admin_emails_are_currently_rate_limited: admin_emails_are_currently_rate_limited? } }

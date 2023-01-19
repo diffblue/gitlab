@@ -6,8 +6,6 @@ RSpec.describe 'Admin::Emails', :clean_gitlab_redis_shared_state do
   include ExclusiveLeaseHelpers
 
   before do
-    stub_feature_flags(admin_emails_vue: false)
-
     admin = create(:admin)
     sign_in(admin)
     gitlab_enable_admin_mode_sign_in(admin)
@@ -59,13 +57,13 @@ RSpec.describe 'Admin::Emails', :clean_gitlab_redis_shared_state do
   end
 
   context 'when `send_emails_from_admin_area` feature is licensed',
-  feature_category: :authentication_and_authorization do
+  :js, feature_category: :authentication_and_authorization do
     let(:rate_limited_alert) do
       'An email notification was recently sent from the admin panel. '\
       'Please wait 10 minutes before attempting to send another message.'
     end
 
-    let(:submit_button) { find('input[type="submit"]') }
+    let(:submit_button) { find('button[type="submit"]') }
 
     before do
       stub_licensed_features(send_emails_from_admin_area: true)

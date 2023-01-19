@@ -1,4 +1,4 @@
-import { GlAlert, GlListbox } from '@gitlab/ui';
+import { GlAlert, GlForm, GlListbox } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import AdminEmailsForm from 'ee/admin/emails/components/admin_emails_form.vue';
@@ -32,9 +32,18 @@ describe('AdminEmailsForm', () => {
     wrapper.findByText(AdminEmailsForm.fields.body.validationMessage);
   const findRecipientsValidationMessage = () =>
     wrapper.findByText(AdminEmailsForm.fields.recipients.validationMessage);
+  const submitForm = async () => {
+    const event = {
+      preventDefault: jest.fn(),
+    };
+
+    wrapper.findComponent(GlForm).vm.$emit('submit', event);
+    await nextTick();
+
+    return event;
+  };
   const findSubmitButton = () =>
     wrapper.findByRole('button', { name: AdminEmailsForm.i18n.submitButton });
-  const clickSubmitButton = () => findSubmitButton().trigger('click');
   const findGlListbox = () => wrapper.findComponent(GlListbox);
   const showGlListbox = async () => {
     findGlListbox().vm.$emit('shown');
@@ -201,11 +210,12 @@ describe('AdminEmailsForm', () => {
     it('renders validation messages', async () => {
       createComponent();
 
-      await clickSubmitButton();
+      const event = await submitForm();
 
       expect(findSubjectValidationMessage().exists()).toBe(true);
       expect(findBodyValidationMessage().exists()).toBe(true);
       expect(findRecipientsValidationMessage().exists()).toBe(true);
+      expect(event.preventDefault).toHaveBeenCalled();
     });
   });
 
@@ -215,7 +225,7 @@ describe('AdminEmailsForm', () => {
 
       await findSubjectField().setValue('Foo');
 
-      await clickSubmitButton();
+      await submitForm();
 
       expect(findSubjectValidationMessage().exists()).toBe(false);
     });

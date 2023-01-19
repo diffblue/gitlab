@@ -115,6 +115,9 @@ export default {
     async handleSubmit(event) {
       this.form.showValidation = true;
 
+      // Wait for `v-validation` to update `this.form.state`
+      await this.$nextTick();
+
       if (!this.form.state) {
         event.preventDefault();
 
