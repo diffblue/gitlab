@@ -1,4 +1,4 @@
-import { GlTable } from '@gitlab/ui';
+import { GlTableLite } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -38,7 +38,7 @@ describe('SubscriptionSeatDetails', () => {
       },
       store: new Vuex.Store({ ...store, actions }),
       stubs: {
-        GlTable: stubComponent(GlTable),
+        GlTableLite: stubComponent(GlTableLite),
       },
     });
   };

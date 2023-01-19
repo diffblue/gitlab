@@ -329,22 +329,27 @@ export default {
       data-qa-selector="subscription_users"
       :empty-text="emptyText"
     >
-      <template #cell(user)="{ item, toggleDetails, detailsShowing }">
-        <div class="gl-display-flex" :data-testid="`seat-cell-${item.user.id}`">
-          <gl-button
-            v-if="shouldShowDetails(item)"
-            variant="link"
-            class="gl-mr-2"
-            :aria-label="s__('Billing|Toggle seat details')"
-            data-testid="toggle-seat-usage-details"
-            @click="toggleDetails"
-          >
-            <gl-icon
-              :name="detailsShowing ? 'chevron-lg-down' : 'chevron-lg-right'"
-              class="text-secondary-900"
-            />
-          </gl-button>
+      <template #cell(disclosure)="{ item, toggleDetails, detailsShowing }">
+        <gl-button
+          v-if="shouldShowDetails(item)"
+          variant="link"
+          class="gl-w-7 gl-h-7"
+          :aria-label="s__('Billing|Toggle seat details')"
+          :aria-expanded="detailsShowing ? 'true' : 'false'"
+          :data-testid="`toggle-seat-usage-details-${item.user.id}`"
+          @click="toggleDetails"
+        >
+          <gl-icon
+            :name="detailsShowing ? 'chevron-lg-down' : 'chevron-lg-right'"
+            class="text-secondary-900"
+          />
+        </gl-button>
 
+        <span v-else class="gl-inline-block gl-w-7"></span>
+      </template>
+
+      <template #cell(user)="{ item }">
+        <div class="gl-display-flex">
           <gl-avatar-link target="blank" :href="item.user.web_url" :alt="item.user.name">
             <gl-avatar-labeled
               :src="item.user.avatar_url"
@@ -438,3 +443,12 @@ export default {
     </gl-modal>
   </section>
 </template>
+<style>
+.b-table-has-details > td:first-child {
+  border-bottom: none;
+}
+.b-table-details > td {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+</style>

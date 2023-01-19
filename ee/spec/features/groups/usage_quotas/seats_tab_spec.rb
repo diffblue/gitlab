@@ -43,7 +43,7 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
 
     context 'with seat usage details table' do
       it 'expands the details on click' do
-        first('[data-testid="toggle-seat-usage-details"]').click
+        first('[data-testid*="toggle-seat-usage-details-"]').click
 
         wait_for_requests
 
@@ -52,12 +52,12 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
 
       it 'hides the details table on click' do
         # expand the details table first
-        first('[data-testid="toggle-seat-usage-details"]').click
+        first('[data-testid*="toggle-seat-usage-details-"]').click
 
         wait_for_requests
 
         # and collapse it
-        first('[data-testid="toggle-seat-usage-details"]').click
+        first('[data-testid*="toggle-seat-usage-details-"]').click
 
         expect(page).not_to have_selector('[data-testid="seat-usage-details"]')
       end
