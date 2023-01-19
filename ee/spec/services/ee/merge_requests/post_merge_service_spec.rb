@@ -188,5 +188,23 @@ RSpec.describe MergeRequests::PostMergeService do
         end
       end
     end
+
+    context 'when merge request is a blocker for other merge requests' do
+      let(:blocked_mr_1) { create(:merge_request) }
+      let(:blocked_mr_2) { create(:merge_request) }
+
+      before do
+        create(:merge_request_block, blocking_merge_request: merge_request, blocked_merge_request: blocked_mr_1)
+        create(:merge_request_block, blocking_merge_request: merge_request, blocked_merge_request: blocked_mr_2)
+      end
+
+      it 'triggers GraphQL subscription mergeRequestMergeStatusUpdated for each blocked merge request' do
+        expect(GraphqlTriggers).not_to receive(:merge_request_merge_status_updated).with(merge_request)
+        expect(GraphqlTriggers).to receive(:merge_request_merge_status_updated).with(blocked_mr_1)
+        expect(GraphqlTriggers).to receive(:merge_request_merge_status_updated).with(blocked_mr_2)
+
+        subject
+      end
+    end
   end
 end

@@ -16,14 +16,8 @@ module EE
         end
 
         audit_approval_rules(merge_request)
-
-        return unless target_project.licensed_feature_available?(:security_orchestration_policies)
-
-        Security::OrchestrationPolicyConfiguration
-          .for_management_project(target_project)
-          .each do |configuration|
-          Security::SyncScanPoliciesWorker.perform_async(configuration.id)
-        end
+        sync_security_scan_orchestration_policies(target_project)
+        trigger_blocked_merge_requests_merge_status_updated(merge_request)
       end
 
       private
@@ -64,6 +58,22 @@ module EE
         }
 
         ::Gitlab::Audit::Auditor.audit(audit_context)
+      end
+
+      def sync_security_scan_orchestration_policies(project)
+        return unless project.licensed_feature_available?(:security_orchestration_policies)
+
+        Security::OrchestrationPolicyConfiguration
+          .for_management_project(project)
+          .each do |configuration|
+          Security::SyncScanPoliciesWorker.perform_async(configuration.id)
+        end
+      end
+
+      def trigger_blocked_merge_requests_merge_status_updated(merge_request)
+        merge_request.blocked_merge_requests.find_each do |blocked_mr|
+          ::GraphqlTriggers.merge_request_merge_status_updated(blocked_mr)
+        end
       end
     end
   end
