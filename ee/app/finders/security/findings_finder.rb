@@ -99,7 +99,7 @@ module Security
               .with_scanner
               .deduplicated
               .ordered
-              .latest
+              .merge(::Security::Scan.latest_successful)
               .page(page)
               .per(per_page)
               .then { |relation| by_uuid(relation) }

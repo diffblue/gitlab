@@ -108,7 +108,6 @@ module Security
                 .where('vulnerability_feedback.finding_uuid = security_findings.uuid'))
     end
 
-    scope :latest, -> { joins(:scan).merge(Security::Scan.latest_successful) }
     scope :ordered, -> { order(severity: :desc, id: :asc) }
     scope :with_pipeline_entities, -> { preload(build: [:job_artifacts, :pipeline]) }
     scope :with_scan, -> { preload(:scan) }
