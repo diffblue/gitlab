@@ -15716,7 +15716,10 @@ msgstr ""
 msgid "Environments Dashboard"
 msgstr ""
 
-msgid "Environments allow you to track deployments of your application. %{linkStart}More information%{linkEnd}."
+msgid "Environments allow you to track deployments of your application. To protect this environment, go to the CI/CD settings %{linkStart}Protected environments%{linkEnd} section."
+msgstr ""
+
+msgid "Environments allow you to track deployments of your application.%{linkStart} More information.%{linkEnd}"
 msgstr ""
 
 msgid "Environments in %{name}"
