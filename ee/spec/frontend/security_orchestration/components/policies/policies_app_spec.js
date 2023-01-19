@@ -14,10 +14,6 @@ describe('Policies App', () => {
     wrapper = shallowMountExtended(PoliciesApp, { provide: { assignedPolicyProject } });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default', () => {
     beforeEach(() => {
       createWrapper();

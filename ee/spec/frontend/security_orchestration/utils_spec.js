@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
 import { getPolicyType, removeUnnecessaryDashes } from 'ee/security_orchestration/utils';
-import { mockProjectScanExecutionPolicy } from './mocks/mock_data';
+import { mockProjectScanExecutionPolicy } from './mocks/mock_scan_execution_policy_data';
 
 describe('Threat Monitoring Utils', () => {
   describe('getPolicyType', () => {

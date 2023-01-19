@@ -2,7 +2,7 @@ import { toYaml } from 'ee/security_orchestration/components/policy_editor/scan_
 import {
   mockDastScanExecutionManifest,
   mockDastScanExecutionObject,
-} from 'ee_jest/security_orchestration/mocks/mock_data';
+} from 'ee_jest/security_orchestration/mocks/mock_scan_execution_policy_data';
 
 describe('toYaml', () => {
   it('returns policy object as yaml', () => {

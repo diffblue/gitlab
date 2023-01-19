@@ -15,7 +15,7 @@ import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/security_orchestration/const
 import {
   mockDastScanExecutionManifest,
   mockDastScanExecutionObject,
-} from 'ee_jest/security_orchestration/mocks/mock_data';
+} from 'ee_jest/security_orchestration/mocks/mock_scan_execution_policy_data';
 import { visitUrl } from '~/lib/utils/url_utility';
 
 import { modifyPolicy } from 'ee/security_orchestration/components/policy_editor/utils';
@@ -93,10 +93,6 @@ describe('ScanExecutionPolicyEditor', () => {
   const findAllPolicyActionBuilders = () => wrapper.findAllComponents(PolicyActionBuilder);
   const findPolicyRuleBuilder = () => wrapper.findComponent(PolicyRuleBuilder);
   const findAllPolicyRuleBuilders = () => wrapper.findAllComponents(PolicyRuleBuilder);
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   describe('saving a policy', () => {
     it.each`

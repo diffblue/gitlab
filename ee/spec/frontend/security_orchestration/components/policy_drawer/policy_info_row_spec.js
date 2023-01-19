@@ -22,10 +22,6 @@ describe('PolicyInfoRow component', () => {
     factory();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders the label', () => {
     expect(findLabel().text()).toBe('Some label');
   });

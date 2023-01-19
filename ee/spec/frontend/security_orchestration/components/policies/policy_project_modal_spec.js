@@ -75,10 +75,6 @@ describe('PolicyProjectModal Component', () => {
     await selectProject();
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default', () => {
     beforeEach(() => {
       createWrapper();

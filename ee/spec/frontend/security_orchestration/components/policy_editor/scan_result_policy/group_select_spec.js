@@ -69,10 +69,6 @@ describe('GroupSelect component', () => {
     await waitForApolloAndVue();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('filters groups when search is performed in listbox', async () => {
     expect(searchQueryHandlerSuccess).toHaveBeenCalledWith({ search: '' });
 

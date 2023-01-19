@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import RequireApprovals from 'ee/security_orchestration/components/policy_drawer/require_approvals.vue';
-import { createRequiredApprovers } from '../../mocks/mock_data';
+import { createRequiredApprovers } from '../../mocks/mock_scan_result_policy_data';
 
 describe('RequireApprovals component', () => {
   let wrapper;
@@ -12,10 +12,6 @@ describe('RequireApprovals component', () => {
       propsData,
     });
   };
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   describe.each`
     approvalsRequired | approvers                     | expectedAttributes                                                                                         | expectedApprovalText | expectedApproverText

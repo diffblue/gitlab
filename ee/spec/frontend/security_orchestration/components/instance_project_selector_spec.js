@@ -96,10 +96,6 @@ describe('InstanceProjectSelector Component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default', () => {
     beforeEach(() => {
       querySpy = jest.fn().mockResolvedValue(mockGetUsersProjects.success);

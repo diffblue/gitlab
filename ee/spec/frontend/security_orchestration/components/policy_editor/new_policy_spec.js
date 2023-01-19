@@ -25,10 +25,6 @@ describe('NewPolicy component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when there is no type query parameter', () => {
     describe('projects', () => {
       beforeEach(() => {

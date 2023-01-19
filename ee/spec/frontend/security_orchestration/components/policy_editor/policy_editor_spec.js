@@ -31,10 +31,6 @@ describe('PolicyEditor component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('project-level', () => {
     beforeEach(factory);
 

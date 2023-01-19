@@ -22,10 +22,6 @@ describe('Policy Rule Multi Select', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   beforeEach(() => {
     createComponent();
   });

@@ -21,10 +21,6 @@ describe('DimDisableContainer component', () => {
     factory();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders title slot component', () => {
     expect(wrapper.find('h1').exists()).toBe(true);
   });

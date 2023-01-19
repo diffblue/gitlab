@@ -14,7 +14,7 @@ import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
   mockGroupScanExecutionPolicy,
   mockProjectScanExecutionPolicy,
-} from '../../mocks/mock_data';
+} from '../../mocks/mock_scan_execution_policy_data';
 
 describe('PolicyDrawerLayout component', () => {
   let wrapper;
@@ -47,10 +47,6 @@ describe('PolicyDrawerLayout component', () => {
       },
     });
   };
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   describe.each`
     context                 | propsData                                                               | enabled  | hasDescription

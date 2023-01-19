@@ -6,7 +6,7 @@ import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_help
 import {
   mockProjectScanExecutionPolicy,
   mockGroupScanExecutionPolicy,
-} from '../../mocks/mock_data';
+} from '../../mocks/mock_scan_execution_policy_data';
 
 describe('PolicyDrawer component', () => {
   let wrapper;
@@ -39,11 +39,6 @@ describe('PolicyDrawer component', () => {
       expect(button.attributes().href).toBe('/policies/policy-name/edit?type="scanExecution"');
     });
   };
-
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
 
   describe('without a policy', () => {
     beforeEach(() => {

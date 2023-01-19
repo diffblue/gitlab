@@ -45,10 +45,6 @@ describe('Policies Header Component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('project owner', () => {
     beforeEach(() => {
       createWrapper();

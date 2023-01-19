@@ -10,8 +10,8 @@ import ScanResultPolicy from 'ee/approvals/components/security_orchestration/sca
 import PolicyDetails from 'ee/approvals/components/security_orchestration/policy_details.vue';
 import {
   mockProjectScanResultPolicy,
-  mockProjectScanResultPolicySecond,
-} from '../../../security_orchestration/mocks/mock_data';
+  mockProjectWithBranchesScanResultPolicy,
+} from '../../../security_orchestration/mocks/mock_scan_result_policy_data';
 
 Vue.use(Vuex);
 
@@ -19,7 +19,7 @@ const queryResponse = {
   data: {
     namespace: {
       scanResultPolicies: {
-        nodes: [mockProjectScanResultPolicy, mockProjectScanResultPolicySecond],
+        nodes: [mockProjectScanResultPolicy, mockProjectWithBranchesScanResultPolicy],
       },
     },
   },

@@ -27,9 +27,11 @@ import {
 import {
   mockGroupScanExecutionPolicy,
   mockScanExecutionPoliciesResponse,
+} from '../../mocks/mock_scan_execution_policy_data';
+import {
   mockScanResultPoliciesResponse,
   mockGroupScanResultPolicy,
-} from '../../mocks/mock_data';
+} from '../../mocks/mock_scan_result_policy_data';
 
 Vue.use(VueApollo);
 
@@ -94,10 +96,6 @@ describe('PoliciesList component', () => {
   const findPolicySourceCells = () => wrapper.findAllByTestId('policy-source-cell');
   const findPolicyTypeCells = () => wrapper.findAllByTestId('policy-type-cell');
   const findPolicyDrawer = () => wrapper.findByTestId('policyDrawer');
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   describe('initial state', () => {
     it('renders closed editor drawer', () => {
