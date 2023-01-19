@@ -255,10 +255,24 @@ export const rawIssue = {
   iid: 27,
   dueDate: null,
   timeEstimate: 0,
+  totalTimeSpent: 0,
+  humanTimeEstimate: null,
+  humanTotalTimeSpent: null,
+  emailsDisabled: false,
+  hidden: false,
+  webUrl: 'http://127.0.0.1:3000/gitlab-org/gitlab-shell/-/issues/32',
+  relativePosition: 0,
+  type: 'ISSUE',
+  severity: 'UNKNOWN',
+  milestone: null,
   weight: null,
   confidential: false,
   referencePath: 'gitlab-org/test-subgroup/gitlab-test#27',
   path: '/gitlab-org/test-subgroup/gitlab-test/-/issues/27',
+  blocked: false,
+  blockedByCount: 0,
+  healthStatus: null,
+  iteration: null,
   labels: {
     nodes: [
       {
@@ -275,6 +289,7 @@ export const rawIssue = {
   epic: {
     id: 'gid://gitlab/Epic/41',
   },
+  __typename: 'Issue',
 };
 
 export const mockIssueGroupPath = 'gitlab-org';
@@ -350,6 +365,60 @@ export const mockIssue4 = {
 
 export const mockIssues = [mockIssue, mockIssue2];
 
+export const mockGroupIssuesResponse = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/1',
+      board: {
+        id: 'gid://gitlab/Board/1',
+        lists: {
+          nodes: [
+            {
+              id: 'gid://gitlab/List/1',
+              listType: 'backlog',
+              issues: {
+                nodes: [rawIssue],
+                pageInfo: {
+                  endCursor: null,
+                  hasNextPage: false,
+                },
+              },
+            },
+          ],
+        },
+      },
+      __typename: 'Group',
+    },
+  },
+};
+
+export const mockProjectIssuesResponse = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/1',
+      board: {
+        id: 'gid://gitlab/Board/1',
+        lists: {
+          nodes: [
+            {
+              id: 'gid://gitlab/List/1',
+              listType: 'backlog',
+              issues: {
+                nodes: [rawIssue],
+                pageInfo: {
+                  endCursor: null,
+                  hasNextPage: false,
+                },
+              },
+            },
+          ],
+        },
+      },
+      __typename: 'Project',
+    },
+  },
+};
+
 export const mockEpic = {
   id: 'gid://gitlab/Epic/41',
   iid: '1',
@@ -357,9 +426,22 @@ export const mockEpic = {
   state: 'opened',
   webUrl: '/groups/gitlab-org/-/epics/1',
   group: { fullPath: 'gitlab-org' },
+  referencePath: 'gitlab-org/gitlab-subgroup&41',
+  relativePosition: '1',
+  confidential: false,
+  subscribed: false,
+  blocked: false,
+  blockedByCount: 0,
+  hasIssues: true,
   descendantCounts: {
     openedIssues: 3,
     closedIssues: 2,
+    closedEpics: 0,
+    openedEpics: 0,
+  },
+  descendantWeightSum: {
+    openedIssues: 0,
+    closedIssues: 0,
   },
   issues: [mockIssue],
   labels: [],
@@ -461,6 +543,33 @@ export const mockEpics = [
     labels: [],
   },
 ];
+
+export const mockGroupEpicsResponse = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/1',
+      board: {
+        id: 'gid://gitlab/Boards::EpicBoard/1',
+        lists: {
+          nodes: [
+            {
+              id: 'gid://gitlab/Boards::EpicList/4',
+              listType: 'backlog',
+              epics: {
+                nodes: [mockEpic],
+                pageInfo: {
+                  endCursor: null,
+                  hasNextPage: false,
+                },
+              },
+            },
+          ],
+        },
+      },
+      __typename: 'Group',
+    },
+  },
+};
 
 export const mockIssuesByListId = {
   'gid://gitlab/List/1': [mockIssue.id, mockIssue3.id, mockIssue4.id],
