@@ -20,7 +20,7 @@ import { chartKeys } from 'ee/analytics/productivity_analytics/constants';
 import { getStoreConfig } from 'ee/analytics/productivity_analytics/store';
 import Scatterplot from 'ee/analytics/shared/components/scatterplot.vue';
 import { TEST_HOST } from 'helpers/test_constants';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_FORBIDDEN, HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import { mockFilters } from '../mock_data';
 
 Vue.use(Vuex);
@@ -134,12 +134,12 @@ describe('ProductivityApp component', () => {
       describe('user has no access to the group', () => {
         beforeEach(() => {
           createComponent();
-          const error = { response: { status: 403 } };
+          const error = { response: { status: HTTP_STATUS_FORBIDDEN } };
           mockStore.dispatch('charts/receiveChartDataError', {
             chartKey: chartKeys.main,
             error,
           });
-          mockStore.state.charts.charts[chartKeys.main].errorCode = 403;
+          mockStore.state.charts.charts[chartKeys.main].errorCode = HTTP_STATUS_FORBIDDEN;
         });
 
         it('renders the no access illustration', () => {

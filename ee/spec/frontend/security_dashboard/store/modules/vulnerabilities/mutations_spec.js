@@ -1,6 +1,7 @@
 import * as types from 'ee/security_dashboard/store/modules/vulnerabilities/mutation_types';
 import mutations from 'ee/security_dashboard/store/modules/vulnerabilities/mutations';
 import createState from 'ee/security_dashboard/store/modules/vulnerabilities/state';
+import { HTTP_STATUS_FORBIDDEN } from '~/lib/utils/http_status';
 import { visitUrl } from '~/lib/utils/url_utility';
 import mockData from './data/mock_data_vulnerabilities';
 
@@ -55,7 +56,7 @@ describe('vulnerabilities module mutations', () => {
   describe('REQUEST_VULNERABILITIES', () => {
     it('should set properties to expected values', () => {
       state.errorLoadingVulnerabilities = true;
-      state.loadingVulnerabilitiesErrorCode = 403;
+      state.loadingVulnerabilitiesErrorCode = HTTP_STATUS_FORBIDDEN;
       mutations[types.REQUEST_VULNERABILITIES](state);
 
       expect(state).toMatchObject({
@@ -91,10 +92,8 @@ describe('vulnerabilities module mutations', () => {
   });
 
   describe('RECEIVE_VULNERABILITIES_ERROR', () => {
-    const errorCode = 403;
-
     beforeEach(() => {
-      mutations[types.RECEIVE_VULNERABILITIES_ERROR](state, errorCode);
+      mutations[types.RECEIVE_VULNERABILITIES_ERROR](state, HTTP_STATUS_FORBIDDEN);
     });
 
     it('should set `isLoadingVulnerabilities` to `false`', () => {
@@ -102,7 +101,7 @@ describe('vulnerabilities module mutations', () => {
     });
 
     it('should set `loadingVulnerabilitiesErrorCode`', () => {
-      expect(state.loadingVulnerabilitiesErrorCode).toBe(errorCode);
+      expect(state.loadingVulnerabilitiesErrorCode).toBe(HTTP_STATUS_FORBIDDEN);
     });
   });
 

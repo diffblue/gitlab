@@ -1,3 +1,4 @@
+import { HTTP_STATUS_FORBIDDEN } from '~/lib/utils/http_status';
 import * as getters from 'ee/analytics/cycle_analytics/store/getters';
 import {
   createdAfter,
@@ -40,7 +41,7 @@ describe('Value Stream Analytics getters', () => {
     });
 
     it('returns true if "hasError" is set to 403', () => {
-      state.errorCode = 403;
+      state.errorCode = HTTP_STATUS_FORBIDDEN;
       expect(getters.hasNoAccessError(state)).toEqual(true);
     });
 

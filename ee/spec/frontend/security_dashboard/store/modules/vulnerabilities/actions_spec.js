@@ -7,7 +7,7 @@ import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
 
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
+import { HTTP_STATUS_FORBIDDEN, HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 import toast from '~/vue_shared/plugins/global_toast';
 
 import mockDataVulnerabilities from './data/mock_data_vulnerabilities';
@@ -207,10 +207,8 @@ describe('vulnerabilities actions', () => {
 
   describe('receiveVulnerabilitiesError', () => {
     it('should commit the error mutation', () => {
-      const errorCode = 403;
-
-      return testAction(actions.receiveVulnerabilitiesError, errorCode, state, [
-        { type: types.RECEIVE_VULNERABILITIES_ERROR, payload: errorCode },
+      return testAction(actions.receiveVulnerabilitiesError, HTTP_STATUS_FORBIDDEN, state, [
+        { type: types.RECEIVE_VULNERABILITIES_ERROR, payload: HTTP_STATUS_FORBIDDEN },
       ]);
     });
   });
