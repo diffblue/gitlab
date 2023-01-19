@@ -156,7 +156,7 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService do
       end
     end
 
-    context 'for specific runner' do
+    context 'for project runner' do
       let(:runner) { create(:ci_runner, :project) }
 
       it_behaves_like 'does nothing'
