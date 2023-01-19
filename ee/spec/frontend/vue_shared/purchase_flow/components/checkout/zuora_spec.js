@@ -13,6 +13,7 @@ import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_
 import axios from '~/lib/utils/axios_utils';
 import waitForPromises from 'helpers/wait_for_promises';
 import { mockTracking } from 'helpers/tracking_helper';
+import { HTTP_STATUS_UNAUTHORIZED } from '~/lib/utils/http_status';
 
 Vue.use(VueApollo);
 
@@ -119,7 +120,7 @@ describe('Zuora', () => {
     beforeEach(() => {
       createComponent({}, { isLoading: false });
       wrapper.vm.zuoraScriptEl.onload();
-      axiosMock.onGet(`/-/subscriptions/payment_form`).reply(401, {});
+      axiosMock.onGet(`/-/subscriptions/payment_form`).reply(HTTP_STATUS_UNAUTHORIZED, {});
       return waitForPromises();
     });
 
@@ -168,7 +169,7 @@ describe('Zuora', () => {
 
       createComponent({}, { isLoading: false });
       wrapper.vm.zuoraScriptEl.onload();
-      axiosMock.onGet(`/-/subscriptions/payment_method`).reply(401, {});
+      axiosMock.onGet(`/-/subscriptions/payment_method`).reply(HTTP_STATUS_UNAUTHORIZED, {});
       return waitForPromises();
     });
 

@@ -16,6 +16,7 @@ import SecurityDashboard from 'ee/security_dashboard/components/pipeline/securit
 import SecurityReportsSummary from 'ee/security_dashboard/components/pipeline/security_reports_summary.vue';
 import PipelineVulnerabilityReport from 'ee/security_dashboard/components/pipeline/pipeline_vulnerability_report.vue';
 import { DOC_PATH_SECURITY_CONFIGURATION } from 'ee/security_dashboard/constants';
+import { HTTP_STATUS_FORBIDDEN, HTTP_STATUS_UNAUTHORIZED } from '~/lib/utils/http_status';
 import {
   pipelineSecurityReportSummary,
   pipelineSecurityReportSummaryWithErrors,
@@ -33,8 +34,8 @@ const pipelineId = 1234;
 const pipelineIid = 4321;
 const vulnerabilitiesEndpoint = '/vulnerabilities';
 const loadingErrorIllustrations = {
-  401: '/401.svg',
-  403: '/403.svg',
+  [HTTP_STATUS_UNAUTHORIZED]: '/401.svg',
+  [HTTP_STATUS_FORBIDDEN]: '/403.svg',
 };
 
 describe('Pipeline Security Dashboard component', () => {

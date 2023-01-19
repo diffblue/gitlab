@@ -6,7 +6,7 @@ import CcValidationRequiredAlert from 'ee_component/billings/components/cc_valid
 import { TEST_HOST } from 'helpers/test_constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
+import { HTTP_STATUS_OK, HTTP_STATUS_UNAUTHORIZED } from '~/lib/utils/http_status';
 import SharedRunnersToggleComponent from '~/projects/settings/components/shared_runners_toggle.vue';
 import { CC_VALIDATION_REQUIRED_ERROR } from '~/projects/settings/constants';
 
@@ -65,7 +65,9 @@ describe('projects/settings/components/shared_runners', () => {
 
     describe('when credit card is unvalidated', () => {
       beforeEach(() => {
-        mockAxios.onPost(TEST_UPDATE_PATH).reply(401, { error: CC_VALIDATION_REQUIRED_ERROR });
+        mockAxios
+          .onPost(TEST_UPDATE_PATH)
+          .reply(HTTP_STATUS_UNAUTHORIZED, { error: CC_VALIDATION_REQUIRED_ERROR });
       });
 
       it('should show credit card validation error on toggle', async () => {

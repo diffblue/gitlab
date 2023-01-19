@@ -12,6 +12,7 @@ import * as types from 'ee/vue_shared/metrics_reports/store/mutation_types';
 import state from 'ee/vue_shared/metrics_reports/store/state';
 import testAction from 'helpers/vuex_action_helper';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_NO_CONTENT } from '~/lib/utils/http_status';
 
 describe('metrics reports actions', () => {
   let mockedState;
@@ -140,7 +141,7 @@ describe('metrics reports actions', () => {
       const response = { metrics: [] };
       return testAction(
         receiveMetricsSuccess,
-        { status: 204, data: response },
+        { status: HTTP_STATUS_NO_CONTENT, data: response },
         mockedState,
         [],
         [],
