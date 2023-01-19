@@ -19,7 +19,6 @@ RSpec.describe WorkItems::Progress do
     let_it_be_with_reload(:child_work_item1) { create(:work_item, :objective, project: project) }
     let_it_be_with_reload(:child_work_item2) { create(:work_item, :objective, project: project) }
     let_it_be_with_reload(:child1_progress) { create(:progress, work_item: child_work_item1, progress: 20) }
-    let_it_be_with_reload(:child2_progress) { create(:progress, work_item: child_work_item2, progress: 20) }
 
     before_all do
       create(:parent_link, work_item: child_work_item1, work_item_parent: parent_work_item)
@@ -79,17 +78,17 @@ RSpec.describe WorkItems::Progress do
         context 'when parent progress is not created' do
           subject { child1_progress.update!(progress: 30) }
 
-          it_behaves_like 'parent progress is updated', 25
+          it_behaves_like 'parent progress is updated', 15
         end
 
         context 'when parent progress is created' do
           before do
-            create(:progress, work_item: parent_work_item, progress: 20)
+            create(:progress, work_item: parent_work_item, progress: 10)
           end
 
           subject { child1_progress.update!(progress: 40) }
 
-          it_behaves_like 'parent progress is updated', 30
+          it_behaves_like 'parent progress is updated', 20
         end
       end
 
@@ -105,7 +104,7 @@ RSpec.describe WorkItems::Progress do
         end
         subject { child3_progress.update!(progress: 80) }
 
-        it_behaves_like 'parent progress is updated', 35
+        it_behaves_like 'parent progress is updated', 25
       end
     end
   end
