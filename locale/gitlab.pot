@@ -42573,6 +42573,9 @@ msgstr ""
 msgid "There was a problem fetching labels."
 msgstr ""
 
+msgid "There was a problem fetching latest labels."
+msgstr ""
+
 msgid "There was a problem fetching linked pipelines."
 msgstr ""
 
