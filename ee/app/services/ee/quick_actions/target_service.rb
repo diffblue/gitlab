@@ -3,8 +3,8 @@
 module EE
   module QuickActions
     module TargetService
-      def execute(type, type_id)
-        return epic(type_id) if type.casecmp('epic') == 0
+      def execute(type, type_iid)
+        return epic(type_iid) if type.casecmp('epic') == 0
 
         super
       end
@@ -12,12 +12,12 @@ module EE
       private
 
       # rubocop: disable CodeReuse/ActiveRecord
-      def epic(type_id)
+      def epic(type_iid)
         group = params[:group]
 
-        return group.epics.build if type_id.nil?
+        return group.epics.build if type_iid.nil?
 
-        EpicsFinder.new(current_user, group_id: group.id).find_by(iid: type_id) || group.epics.build
+        EpicsFinder.new(current_user, group_id: group.id).find_by(iid: type_iid) || group.epics.build
       end
       # rubocop: enable CodeReuse/ActiveRecord
     end
