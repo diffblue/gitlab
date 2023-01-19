@@ -405,6 +405,22 @@ Moving forward, we'll continue to invest in developing and releasing new feature
 
 <div class="deprecation removal-160 breaking-change">
 
+### Test system hook endpoint
+
+End of Support: GitLab <span class="removal-milestone">16.0</span> <span class="support-end-date"></span><br />
+Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+The [test system hook](https://docs.gitlab.com/ee/api/system_hooks.html#test-system-hook) endpoint returns dummy data.
+This endpoint is now deprecated and will be removed from the GitLab codebase.
+
+</div>
+
+<div class="deprecation removal-160 breaking-change">
+
 ### The API no longer returns revoked tokens for the agent for Kubernetes
 
 Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
