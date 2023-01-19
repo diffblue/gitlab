@@ -264,18 +264,6 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
     it { is_expected.to eq(newer_finding) }
   end
 
-  describe '.latest' do
-    subject { described_class.latest }
-
-    let(:expected_findings) { [finding_2] }
-
-    before do
-      scan_1.update!(latest: false)
-    end
-
-    it { is_expected.to eq(expected_findings) }
-  end
-
   describe '.partition_full?' do
     using RSpec::Parameterized::TableSyntax
 
