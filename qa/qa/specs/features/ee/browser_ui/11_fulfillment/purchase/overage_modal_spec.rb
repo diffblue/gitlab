@@ -181,7 +181,7 @@ module QA
       end
 
       def find_member_in_group(user)
-        group.reload!.list_members.find { |usr| usr['username'] == user.username }
+        group.reload!.list_members.find { |usr| usr[:username] == user.username }
       end
 
       def find_shared_group(member_group)
