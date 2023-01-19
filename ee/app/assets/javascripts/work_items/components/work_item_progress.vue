@@ -183,6 +183,7 @@ export default {
         :title="getProgressTooltip"
         :min="$options.minValue"
         :max="$options.maxValue"
+        data-testid="work-item-progress-input"
         class="gl-hover-border-gray-200! gl-border-solid! gl-border-white!"
         :class="{ 'hide-spinners gl-shadow-none!': !isEditing }"
         :placeholder="placeholder"

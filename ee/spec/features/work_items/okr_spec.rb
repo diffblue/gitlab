@@ -16,10 +16,76 @@ RSpec.describe 'OKR', :js, feature_category: :product_planning do
 
     sign_in(user)
 
-    stub_licensed_features(okrs: true)
+    stub_licensed_features(okrs: true, issuable_health_status: true)
+    stub_feature_flags(work_items: true, okrs_mvc: true)
+  end
 
-    stub_feature_flags(work_items: true)
-    stub_feature_flags(okrs_mvc: true)
+  shared_examples 'work items progress' do
+    let(:form_selector) { '[data-testid="work-item-progress"]' }
+    let(:input_selector) { '[data-testid="work-item-progress-input"]' }
+
+    it 'successfully sets the progress' do
+      find(input_selector).fill_in(with: '30')
+      send_keys(:tab) # Simulate blur
+
+      wait_for_requests
+
+      expect(find(form_selector)).to have_content "30%"
+      expect(work_item.reload.progress.progress).to eq 30
+    end
+
+    it 'prevents typing values outside min and max range', :aggregate_failures do
+      page_body = page.find('body')
+      page.within(form_selector) do
+        progress_input = find(input_selector)
+        progress_input.native.send_keys('101')
+        page_body.click
+
+        expect(progress_input.value).to eq('0')
+
+        # Clear input
+        progress_input.set('')
+        progress_input.native.send_keys('-')
+        page_body.click
+
+        expect(progress_input.value).to eq('')
+      end
+    end
+
+    it 'prevent typing special characters `+`, `-`, and `e`', :aggregate_failures do
+      page_body = page.find('body')
+      page.within(form_selector) do
+        progress_input = find(input_selector)
+
+        progress_input.native.send_keys('+')
+        page_body.click
+        expect(progress_input.value).to eq('0')
+
+        progress_input.native.send_keys('-')
+        page_body.click
+        expect(progress_input.value).to eq('0')
+
+        progress_input.native.send_keys('e')
+        page_body.click
+        expect(progress_input.value).to eq('0')
+      end
+    end
+  end
+
+  shared_examples 'work items health status' do
+    let(:dropdown_selector) { '[data-testid="work-item-health-status-dropdown"]' }
+
+    it 'successfully sets health status' do
+      expect(find(dropdown_selector)).to have_content 'None'
+
+      page.find(dropdown_selector).click
+      page.find(dropdown_selector).click_on "Needs attention"
+
+      wait_for_requests
+
+      expect(find(dropdown_selector)).to have_content 'Needs attention'
+      expect(work_item.reload.health_status).to eq('needs_attention')
+    end
   end
 
   context 'for objective' do
@@ -27,9 +93,15 @@ RSpec.describe 'OKR', :js, feature_category: :product_planning do
       visit project_work_items_path(project, work_items_path: objective.id)
     end
 
-    it 'has progress widget' do
-      expect(page).to have_selector('[data-testid="work-item-progress"]')
-    end
+    let(:work_item) { objective }
+
+    it_behaves_like 'work items status'
+    it_behaves_like 'work items assignees'
+    it_behaves_like 'work items labels'
+    it_behaves_like 'work items progress'
+    it_behaves_like 'work items health status'
+    it_behaves_like 'work items comments'
+    it_behaves_like 'work items description'
 
     context 'in hierarchy' do
       it 'shows no children', :aggregate_failures do
@@ -142,52 +214,15 @@ RSpec.describe 'OKR', :js, feature_category: :product_planning do
       visit project_work_items_path(project, work_items_path: key_result.id)
     end
 
-    it 'has progress widget' do
-      expect(page).to have_selector('[data-testid="work-item-progress"]')
-    end
-  end
+    let(:work_item) { key_result }
 
-  context 'for progress input widget' do
-    before do
-      visit project_work_items_path(project, work_items_path: objective.id)
-    end
-
-    it 'prevents typing values outside min and max range', :aggregate_failures do
-      page_body = page.find('body')
-      page.within('[data-testid="work-item-progress"]') do
-        progress_input = find('input#progress-widget-input')
-        progress_input.native.send_keys('101')
-        page_body.click
-
-        expect(progress_input.value).to eq('0')
-
-        # Clear input
-        progress_input.set('')
-        progress_input.native.send_keys('-')
-        page_body.click
-
-        expect(progress_input.value).to eq('')
-      end
-    end
-
-    it 'prevent typing special characters `+`, `-`, and `e`', :aggregate_failures do
-      page_body = page.find('body')
-      page.within('[data-testid="work-item-progress"]') do
-        progress_input = find('input#progress-widget-input')
-
-        progress_input.native.send_keys('+')
-        page_body.click
-        expect(progress_input.value).to eq('0')
-
-        progress_input.native.send_keys('-')
-        page_body.click
-        expect(progress_input.value).to eq('0')
-
-        progress_input.native.send_keys('e')
-        page_body.click
-        expect(progress_input.value).to eq('0')
-      end
-    end
+    it_behaves_like 'work items status'
+    it_behaves_like 'work items assignees'
+    it_behaves_like 'work items labels'
+    it_behaves_like 'work items progress'
+    it_behaves_like 'work items health status'
+    it_behaves_like 'work items comments'
+    it_behaves_like 'work items description'
   end
 
   def create_okr(type, title)
