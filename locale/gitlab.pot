@@ -44211,6 +44211,9 @@ msgstr ""
 msgid "Too many references. Quick actions are limited to at most %{max_count} user references"
 msgstr ""
 
+msgid "Too many results to display. Edit your search or add a filter."
+msgstr ""
+
 msgid "Too many users found. Quick actions are limited to at most %{max_count} users"
 msgstr ""
 
