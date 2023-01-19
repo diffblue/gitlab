@@ -76,15 +76,27 @@ RSpec.describe API::ProviderIdentity, api: true, feature_category: :authenticati
           it "returns the list of identities" do
             get_identities
 
-            expect(json_response).to(
-              match_array(
-                [
-                  { "extern_uid" => provider_extern_uid_1, "user_id" => guest_user_1.id },
-                  { "extern_uid" => provider_extern_uid_2, "user_id" => owner.id },
-                  { "extern_uid" => provider_extern_uid_with_dot, "user_id" => guest_user_2.id }
-                ]
+            if identity_type == ScimIdentity
+              expect(json_response).to(
+                match_array(
+                  [
+                    { "extern_uid" => provider_extern_uid_1, "user_id" => guest_user_1.id, "active" => true },
+                    { "extern_uid" => provider_extern_uid_2, "user_id" => owner.id, "active" => true },
+                    { "extern_uid" => provider_extern_uid_with_dot, "user_id" => guest_user_2.id, "active" => true }
+                  ]
+                )
               )
-            )
+            else
+              expect(json_response).to(
+                match_array(
+                  [
+                    { "extern_uid" => provider_extern_uid_1, "user_id" => guest_user_1.id },
+                    { "extern_uid" => provider_extern_uid_2, "user_id" => owner.id },
+                    { "extern_uid" => provider_extern_uid_with_dot, "user_id" => guest_user_2.id }
+                  ]
+                )
+              )
+            end
           end
         end
       end
