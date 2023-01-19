@@ -31,6 +31,7 @@ module Elastic
         indexes :updated_at, type: :date
 
         indexes :confidential, type: :boolean
+        indexes :internal, type: :boolean
 
         indexes :visibility_level, type: :integer
         indexes :issues_access_level, type: :integer
