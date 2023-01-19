@@ -58,6 +58,18 @@ Not all group and project resources are imported. See list of migrated resources
 - [Migrated group items](#migrated-group-items).
 - [Migrated project items](#migrated-project-items).
 
+### Visibility rules
+
+After migration:
+
+- Private groups and projects stay private.
+- Public groups and projects:
+  - Stay public when imported into a public group.
+  - Become private when imported into a private group.
+
+If used a private network on your source instance to hide content from the general public,
+make sure to have a similar setup on the destination instance, or to import into a private group.
+
 ### Preparation
 
 GitLab maps users and their contributions correctly provided:

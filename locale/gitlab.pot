@@ -7377,6 +7377,9 @@ msgstr ""
 msgid "BulkImport|%{feature} (require v%{version})"
 msgstr ""
 
+msgid "BulkImport|Be aware of %{linkStart}visibility rules%{linkEnd} when importing groups."
+msgstr ""
+
 msgid "BulkImport|Destination"
 msgstr ""
 
