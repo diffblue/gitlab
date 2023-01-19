@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::SlackApplicationInstallService do
+RSpec.describe Projects::SlackApplicationInstallService, feature_category: :integrations do
   let_it_be(:user) { create(:user) }
   let_it_be_with_refind(:project) { create(:project) }
 
@@ -114,7 +114,8 @@ RSpec.describe Projects::SlackApplicationInstallService do
       end
     end
 
-    context 'when the team has legacy Slack installation records' do
+    context 'when the team has other Slack installation records' do
+      let_it_be_with_reload(:other_installation) { create(:slack_integration, team_id: team_id) }
       let_it_be_with_reload(:other_legacy_installation) { create(:slack_integration, :legacy, team_id: team_id) }
       let_it_be_with_reload(:legacy_installation_for_other_team) { create(:slack_integration, :legacy) }
 
@@ -132,6 +133,7 @@ RSpec.describe Projects::SlackApplicationInstallService do
 
           service.execute
 
+          expect(other_installation).to have_attributes(expected_attributes)
           expect(other_legacy_installation).to have_attributes(expected_attributes)
           expect(legacy_installation_for_other_team).not_to have_attributes(expected_attributes)
         end

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SlackIntegration do
+RSpec.describe SlackIntegration, feature_category: :integrations do
   describe "Associations" do
     it { is_expected.to belong_to(:integration) }
   end
@@ -130,15 +130,6 @@ RSpec.describe SlackIntegration do
         team_slack_integration = create(:slack_integration, team_id: team_id)
 
         expect(described_class.by_team(team_id)).to contain_exactly(slack_integration, team_slack_integration)
-      end
-    end
-
-    describe '#legacy_by_team' do
-      it 'returns records with shared team_id and no bot data' do
-        team_id = legacy_slack_integration.team_id
-        create(:slack_integration, team_id: team_id)
-
-        expect(described_class.legacy_by_team(team_id)).to contain_exactly(legacy_slack_integration)
       end
     end
   end

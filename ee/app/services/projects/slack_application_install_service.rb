@@ -70,7 +70,7 @@ module Projects
         'updated_at'
       )
 
-      SlackIntegration.legacy_by_team(installation.team_id).each_batch do |batch|
+      SlackIntegration.by_team(installation.team_id).id_not_in(installation.id).each_batch do |batch|
         batch_ids = batch.pluck(:id) # rubocop: disable CodeReuse/ActiveRecord
         batch.update_all(updatable_attributes)
 

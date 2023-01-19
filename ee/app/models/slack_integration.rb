@@ -23,7 +23,6 @@ class SlackIntegration < ApplicationRecord
 
   scope :with_bot, -> { where.not(bot_user_id: nil) }
   scope :by_team, -> (team_id) { where(team_id: team_id) }
-  scope :legacy_by_team, -> (team_id) { by_team(team_id).where(bot_user_id: nil) }
 
   validates :team_id, presence: true
   validates :team_name, presence: true
