@@ -90,6 +90,8 @@ module Gitlab
         command = [path_to_indexer, project_id_argument, timeout_argument]
 
         command << "--search-curation" if Feature.enabled?(:search_index_curation)
+        command << "--from-sha=#{base_sha}"
+        command << "--to-sha=#{to_sha}"
 
         command += if index_wiki?
                      ["--blob-type=wiki_blob", "--skip-commits", "--full-path=#{project.full_path}"]
@@ -148,8 +150,6 @@ module Gitlab
           'RAILS_ENV' => Rails.env,
           'ELASTIC_CONNECTION_INFO' => elasticsearch_config(target),
           'GITALY_CONNECTION_INFO' => gitaly_config,
-          'FROM_SHA' => from_sha,
-          'TO_SHA' => to_sha,
           'CORRELATION_ID' => Labkit::Correlation::CorrelationId.current_id,
           'SSL_CERT_FILE' => Gitlab::X509::Certificate.default_cert_file,
           'SSL_CERT_DIR' => Gitlab::X509::Certificate.default_cert_dir
