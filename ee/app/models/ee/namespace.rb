@@ -27,6 +27,7 @@ module EE
       has_one :gitlab_subscription
       has_one :elasticsearch_indexed_namespace
       has_one :upcoming_reconciliation, inverse_of: :namespace, class_name: "GitlabSubscriptions::UpcomingReconciliation"
+      has_one :storage_limit_exclusion, class_name: 'Namespaces::Storage::LimitExclusion'
 
       has_many :compliance_management_frameworks, class_name: "ComplianceManagement::Framework"
 
