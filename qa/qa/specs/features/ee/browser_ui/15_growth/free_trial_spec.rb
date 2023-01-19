@@ -1,8 +1,8 @@
 # frozen_string_literal: true
-
+# rubocop:disable RSpec/MissingFeatureCategory
 module QA
-  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, product_group: :purchase do
-    describe 'Purchase' do
+  RSpec.describe 'Growth', :requires_admin, only: { subdomain: :staging }, product_group: :acquisition do
+    describe 'SaaS trials' do
       let(:api_client) { Runtime::API::Client.as_admin }
       let(:user) do
         Resource::User.fabricate_via_api! do |user|
@@ -49,14 +49,17 @@ module QA
             group.remove_via_api!
           end
 
-          it 'registers for a new trial', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347671', quarantine: {
-            issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/385866',
-            type: :stale
-          } do
+          it 'registers for a new trial',
+             testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347671',
+             quarantine: {
+               issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/385866',
+               type: :stale
+             } do
             register_for_trial
 
             Page::Alert::FreeTrial.perform do |free_trial_alert|
-              expect(free_trial_alert.trial_activated_message).to have_text('Congratulations, your free trial is activated')
+              expect(free_trial_alert.trial_activated_message)
+                .to have_text('Congratulations, your free trial is activated')
             end
 
             Page::Group::Menu.perform(&:go_to_billing)
@@ -64,7 +67,8 @@ module QA
             Gitlab::Page::Group::Settings::Billing.perform do |billing|
               expect do
                 billing.billing_plan_header
-              end.to eventually_include("#{group_for_trial.path} is currently using the Ultimate SaaS Trial Plan").within(max_duration: 120, max_attempts: 60, reload_page: page)
+              end.to eventually_include("#{group_for_trial.path} is currently using the Ultimate SaaS Trial Plan")
+                       .within(max_duration: 120, max_attempts: 60, reload_page: page)
             end
           end
         end
@@ -75,12 +79,14 @@ module QA
             Page::Group::Menu.perform(&:go_to_billing)
           end
 
-          it 'registers for a new trial', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/349163' do
+          it 'registers for a new trial',
+             testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/349163' do
             Gitlab::Page::Group::Settings::Billing.perform(&:start_your_free_trial)
             Flow::Trial.register_for_trial(skip_select: true)
 
             Page::Alert::FreeTrial.perform do |free_trial_alert|
-              expect(free_trial_alert.trial_activated_message).to have_text('Congratulations, your free trial is activated')
+              expect(free_trial_alert.trial_activated_message)
+                .to have_text('Congratulations, your free trial is activated')
             end
 
             Page::Group::Menu.perform(&:go_to_billing)
@@ -88,7 +94,8 @@ module QA
             Gitlab::Page::Group::Settings::Billing.perform do |billing|
               expect do
                 billing.billing_plan_header
-              end.to eventually_include("#{group_for_trial.path} is currently using the Ultimate SaaS Trial Plan").within(max_duration: 120, max_attempts: 60, reload_page: page)
+              end.to eventually_include("#{group_for_trial.path} is currently using the Ultimate SaaS Trial Plan")
+                       .within(max_duration: 120, max_attempts: 60, reload_page: page)
             end
           end
         end
@@ -96,3 +103,4 @@ module QA
     end
   end
 end
+# rubocop:enable RSpec/MissingFeatureCategory
