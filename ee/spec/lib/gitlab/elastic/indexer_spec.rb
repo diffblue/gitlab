@@ -120,6 +120,8 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
               TestEnv.indexer_bin_path,
               "--project-id=#{project.id}",
               "--timeout=#{Gitlab::Elastic::Indexer::TIMEOUT}s",
+              "--from-sha=#{expected_from_sha}",
+              "--to-sha=#{to_sha}",
               "--full-path=#{project.full_path}",
               "--visibility-level=#{project.visibility_level}",
               "--repository-access-level=#{project.repository_access_level}",
@@ -131,9 +133,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
               'GITALY_CONNECTION_INFO' => gitaly_connection_data.to_json,
               'ELASTIC_CONNECTION_INFO' => elasticsearch_config.to_json,
               'RAILS_ENV' => Rails.env,
-              'CORRELATION_ID' => Labkit::Correlation::CorrelationId.current_id,
-              'FROM_SHA' => expected_from_sha,
-              'TO_SHA' => to_sha
+              'CORRELATION_ID' => Labkit::Correlation::CorrelationId.current_id
             )
           ).and_return(popen_success)
 
@@ -158,6 +158,8 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
               "--project-id=#{project.id}",
               "--timeout=#{Gitlab::Elastic::Indexer::TIMEOUT}s",
               '--search-curation',
+              "--from-sha=#{expected_from_sha}",
+              "--to-sha=#{to_sha}",
               "--full-path=#{project.full_path}",
               "--visibility-level=#{project.visibility_level}",
               "--repository-access-level=#{project.repository_access_level}",
@@ -168,9 +170,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
               'GITALY_CONNECTION_INFO' => gitaly_connection_data.to_json,
               'ELASTIC_CONNECTION_INFO' => elasticsearch_config.to_json,
               'RAILS_ENV' => Rails.env,
-              'CORRELATION_ID' => Labkit::Correlation::CorrelationId.current_id,
-              'FROM_SHA' => expected_from_sha,
-              'TO_SHA' => to_sha
+              'CORRELATION_ID' => Labkit::Correlation::CorrelationId.current_id
             )
           ).and_return(popen_success)
 
@@ -190,6 +190,8 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
             "--project-id=#{project.id}",
             "--timeout=#{Gitlab::Elastic::Indexer::TIMEOUT}s",
             '--search-curation',
+            "--from-sha=#{expected_from_sha}",
+            "--to-sha=#{to_sha}",
             "--full-path=#{project.full_path}",
             "--visibility-level=#{project.visibility_level}",
             "--repository-access-level=#{project.repository_access_level}",
@@ -201,9 +203,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
             'GITALY_CONNECTION_INFO' => gitaly_connection_data.to_json,
             'ELASTIC_CONNECTION_INFO' => elasticsearch_config.to_json,
             'RAILS_ENV' => Rails.env,
-            'CORRELATION_ID' => Labkit::Correlation::CorrelationId.current_id,
-            'FROM_SHA' => expected_from_sha,
-            'TO_SHA' => to_sha
+            'CORRELATION_ID' => Labkit::Correlation::CorrelationId.current_id
           )
         ).and_return(popen_success)
 
@@ -320,6 +320,8 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
               TestEnv.indexer_bin_path,
               "--project-id=#{project.id}",
               "--timeout=#{Gitlab::Elastic::Indexer::TIMEOUT}s",
+              "--from-sha=#{expected_from_sha}",
+              "--to-sha=#{to_sha}",
               '--blob-type=wiki_blob',
               '--skip-commits',
               "--full-path=#{project.full_path}",
@@ -329,9 +331,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
             nil,
             hash_including(
               'ELASTIC_CONNECTION_INFO' => elasticsearch_config.to_json,
-              'RAILS_ENV' => Rails.env,
-              'FROM_SHA' => expected_from_sha,
-              'TO_SHA' => to_sha
+              'RAILS_ENV' => Rails.env
             )
           ).and_return(popen_success)
 
@@ -346,6 +346,8 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
             "--project-id=#{project.id}",
             "--timeout=#{Gitlab::Elastic::Indexer::TIMEOUT}s",
             '--search-curation',
+            "--from-sha=#{expected_from_sha}",
+            "--to-sha=#{to_sha}",
             '--blob-type=wiki_blob',
             '--skip-commits',
             "--full-path=#{project.full_path}",
@@ -355,9 +357,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
           nil,
           hash_including(
             'ELASTIC_CONNECTION_INFO' => elasticsearch_config.to_json,
-            'RAILS_ENV' => Rails.env,
-            'FROM_SHA' => expected_from_sha,
-            'TO_SHA' => to_sha
+            'RAILS_ENV' => Rails.env
           )
         ).and_return(popen_success)
 
