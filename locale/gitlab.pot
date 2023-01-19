@@ -4118,6 +4118,9 @@ msgstr ""
 msgid "Allow password authentication for the web interface"
 msgstr ""
 
+msgid "Allow possible spam"
+msgstr ""
+
 msgid "Allow project maintainers to configure repository mirroring"
 msgstr ""
 
@@ -29199,6 +29202,9 @@ msgid "Only group members with at least the Reporter role can view or be notifie
 msgstr ""
 
 msgid "Only include features new to your current subscription tier."
+msgstr ""
+
+msgid "Only log Akismet verdict, do not prevent issue or snippet creation when spam is detected."
 msgstr ""
 
 msgid "Only members of this group can access the wiki."
