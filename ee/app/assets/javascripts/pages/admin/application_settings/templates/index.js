@@ -1,3 +1,3 @@
-import { initGroupSelects } from '~/vue_shared/components/group_select/init_group_selects';
+import { initGroupSelects } from '~/vue_shared/components/entity_select/init_group_selects';
 
 initGroupSelects();
