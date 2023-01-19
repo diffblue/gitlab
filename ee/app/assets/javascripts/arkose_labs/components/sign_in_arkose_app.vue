@@ -3,6 +3,7 @@ import { uniqueId } from 'lodash';
 import { GlAlert } from '@gitlab/ui';
 import { needsArkoseLabsChallenge } from 'ee/rest_api';
 import { logError } from '~/lib/logger';
+import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 import { loadingIconForLegacyJS } from '~/loading_icon_for_legacy_js';
 import { __ } from '~/locale';
 import DomElementListener from '~/vue_shared/components/dom_element_listener.vue';
@@ -141,7 +142,7 @@ export default {
           await this.initArkoseLabs();
         }
       } catch (e) {
-        if (e.response?.status === 404) {
+        if (e.response?.status === HTTP_STATUS_NOT_FOUND) {
           // We ignore 404 errors as it just means the username does not exist.
         } else if (e.response?.status) {
           // If the request failed with any other error code, we initialize the challenge to make

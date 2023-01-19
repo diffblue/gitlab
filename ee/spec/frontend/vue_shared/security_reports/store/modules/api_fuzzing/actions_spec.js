@@ -4,6 +4,7 @@ import * as types from 'ee/vue_shared/security_reports/store/modules/api_fuzzing
 import createState from 'ee/vue_shared/security_reports/store/modules/api_fuzzing/state';
 import testAction from 'helpers/vuex_action_helper';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 
 const diffEndpoint = 'diff-endpoint.json';
 const blobPath = 'blob-path.json';
@@ -175,7 +176,7 @@ describe('EE api fuzzing report actions', () => {
           .onGet(diffEndpoint)
           .replyOnce(200, reports.diff)
           .onGet(vulnerabilityFeedbackPath)
-          .replyOnce(404);
+          .replyOnce(HTTP_STATUS_NOT_FOUND);
       });
 
       it('should dispatch the `receiveError` action', async () => {
@@ -193,7 +194,7 @@ describe('EE api fuzzing report actions', () => {
       beforeEach(() => {
         mock
           .onGet(diffEndpoint)
-          .replyOnce(404)
+          .replyOnce(HTTP_STATUS_NOT_FOUND)
           .onGet(vulnerabilityFeedbackPath)
           .replyOnce(200, reports.enrichData);
       });

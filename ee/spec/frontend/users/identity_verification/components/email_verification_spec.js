@@ -4,6 +4,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { s__ } from '~/locale';
 import { createAlert, VARIANT_SUCCESS } from '~/flash';
+import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 import { visitUrl } from '~/lib/utils/url_utility';
 import EmailVerification from 'ee/users/identity_verification/components/email_verification.vue';
 import {
@@ -135,7 +136,7 @@ describe('EmailVerification', () => {
       it('captures the error and shows a flash message when the request failed', async () => {
         enterCode('123456');
 
-        axiosMock.onPost(PROVIDE.email.verifyPath).replyOnce(404);
+        axiosMock.onPost(PROVIDE.email.verifyPath).replyOnce(HTTP_STATUS_NOT_FOUND);
 
         await submitForm();
         await axios.waitForAll();
@@ -151,10 +152,10 @@ describe('EmailVerification', () => {
 
   describe('resending the code', () => {
     it.each`
-      scenario                                    | statusCode | response
-      ${'the code was successfully resend'}       | ${200}     | ${{ status: 'success' }}
-      ${'there was a problem resending the code'} | ${200}     | ${{ status: 'failure', message: 'Failure sending the code' }}
-      ${'when the request failed'}                | ${404}     | ${null}
+      scenario                                    | statusCode               | response
+      ${'the code was successfully resend'}       | ${200}                   | ${{ status: 'success' }}
+      ${'there was a problem resending the code'} | ${200}                   | ${{ status: 'failure', message: 'Failure sending the code' }}
+      ${'when the request failed'}                | ${HTTP_STATUS_NOT_FOUND} | ${null}
     `(`shows a flash message when $scenario`, async ({ statusCode, response }) => {
       enterCode('xxx');
 

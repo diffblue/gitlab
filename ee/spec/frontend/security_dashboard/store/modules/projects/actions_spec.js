@@ -6,7 +6,7 @@ import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
 
 import axios from '~/lib/utils/axios_utils';
-
+import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 import mockData from './data/mock_data.json';
 
 describe('projects actions', () => {
@@ -88,7 +88,7 @@ describe('projects actions', () => {
 
     describe('on error', () => {
       beforeEach(() => {
-        mock.onGet(state.projectsEndpoint).replyOnce(404, {});
+        mock.onGet(state.projectsEndpoint).replyOnce(HTTP_STATUS_NOT_FOUND, {});
       });
 
       it('should dispatch the request and error actions', async () => {
