@@ -15,6 +15,7 @@ import { TEST_HOST } from 'helpers/test_constants';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
 import download from '~/lib/utils/downloader';
+import { HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
 
 import mockDependenciesResponse from './data/mock_dependencies.json';
 
@@ -309,7 +310,9 @@ describe('Dependencies actions', () => {
 
     describe('on success', () => {
       beforeEach(() => {
-        mock.onPost(state.exportEndpoint).replyOnce(201, mockResponseExportEndpoint);
+        mock
+          .onPost(state.exportEndpoint)
+          .replyOnce(HTTP_STATUS_CREATED, mockResponseExportEndpoint);
       });
 
       it('sets SET_FETCHING_IN_PROGRESS and dispatches downloadExport', () =>

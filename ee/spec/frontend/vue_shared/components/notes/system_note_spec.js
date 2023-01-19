@@ -3,6 +3,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_SERVICE_UNAVAILABLE } from '~/lib/utils/http_status';
 import createStore from '~/notes/stores';
 import IssueSystemNote from '~/vue_shared/components/notes/system_note.vue';
 
@@ -105,7 +106,7 @@ describe('system note component', () => {
     });
 
     it('does not delete description diff if the delete request fails', () => {
-      mockDeleteDiff(503);
+      mockDeleteDiff(HTTP_STATUS_SERVICE_UNAVAILABLE);
       findDeleteDescriptionVersionButton().trigger('click');
       return waitForPromises().then(() => {
         expect(findDeleteDescriptionVersionButton().exists()).toBe(true);

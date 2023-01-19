@@ -13,7 +13,11 @@ import axios from '~/lib/utils/axios_utils';
 import extensionsContainer from '~/vue_merge_request_widget/components/extensions/container';
 import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
 import statusChecksExtension from 'ee/vue_merge_request_widget/extensions/status_checks';
-import { HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from '~/lib/utils/http_status';
+import {
+  HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_OK,
+  HTTP_STATUS_UNPROCESSABLE_ENTITY,
+} from '~/lib/utils/http_status';
 import waitForPromises from 'helpers/wait_for_promises';
 import * as StatusCheckRetryApi from 'ee/api/status_check_api';
 
@@ -196,11 +200,10 @@ describe('Status checks extension', () => {
       });
 
       it('should refetch the status checks when retried status check is already approved', async () => {
-        const alreadyApprovedStatusCode = 422;
         jest
           .spyOn(StatusCheckRetryApi, 'mrStatusCheckRetry')
-          .mockRejectedValue({ response: { status: alreadyApprovedStatusCode, data: {} } });
-        mock.onGet(getChecksEndpoint).reply(200, approvedChecks);
+          .mockRejectedValue({ response: { status: HTTP_STATUS_UNPROCESSABLE_ENTITY, data: {} } });
+        mock.onGet(getChecksEndpoint).reply(HTTP_STATUS_OK, approvedChecks);
         const getSpy = jest.spyOn(axios, 'get');
 
         getAndClickRetryActionButton();

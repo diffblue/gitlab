@@ -10,6 +10,12 @@ import IssueModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import { TEST_HOST } from 'helpers/test_constants';
 import axios from '~/lib/utils/axios_utils';
 import { BV_HIDE_MODAL } from '~/lib/utils/constants';
+import {
+  HTTP_STATUS_FORBIDDEN,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_UNAUTHORIZED,
+} from '~/lib/utils/http_status';
 
 Vue.use(Vuex);
 
@@ -170,16 +176,22 @@ describe('Security Dashboard component', () => {
       expect(rootEmit).not.toHaveBeenCalled();
     });
 
-    it.each([401, 403])('displays an error on error %s', async (errorCode) => {
-      store.dispatch('vulnerabilities/receiveVulnerabilitiesError', errorCode);
-      await nextTick();
-      expect(wrapper.findComponent(LoadingError).exists()).toBe(true);
-    });
+    it.each([HTTP_STATUS_UNAUTHORIZED, HTTP_STATUS_FORBIDDEN])(
+      'displays an error on error %s',
+      async (errorCode) => {
+        store.dispatch('vulnerabilities/receiveVulnerabilitiesError', errorCode);
+        await nextTick();
+        expect(wrapper.findComponent(LoadingError).exists()).toBe(true);
+      },
+    );
 
-    it.each([404, 500])('does not display an error on error %s', async (errorCode) => {
-      store.dispatch('vulnerabilities/receiveVulnerabilitiesError', errorCode);
-      await nextTick();
-      expect(wrapper.findComponent(LoadingError).exists()).toBe(false);
-    });
+    it.each([HTTP_STATUS_NOT_FOUND, HTTP_STATUS_INTERNAL_SERVER_ERROR])(
+      'does not display an error on error %s',
+      async (errorCode) => {
+        store.dispatch('vulnerabilities/receiveVulnerabilitiesError', errorCode);
+        await nextTick();
+        expect(wrapper.findComponent(LoadingError).exists()).toBe(false);
+      },
+    );
   });
 });
