@@ -32,6 +32,24 @@ RSpec.describe ApplicationSetting do
     end
 
     describe 'elasticsearch', feature_category: :global_search do
+      it { is_expected.to allow_value(10).for(:search_max_shard_size_gb) }
+      it { is_expected.not_to allow_value(0).for(:search_max_shard_size_gb) }
+      it { is_expected.not_to allow_value(nil).for(:search_max_shard_size_gb) }
+      it { is_expected.not_to allow_value(1.1).for(:search_max_shard_size_gb) }
+      it { is_expected.not_to allow_value(-1).for(:search_max_shard_size_gb) }
+
+      it { is_expected.to allow_value(10).for(:search_max_docs_denominator) }
+      it { is_expected.not_to allow_value(0).for(:search_max_docs_denominator) }
+      it { is_expected.not_to allow_value(nil).for(:search_max_docs_denominator) }
+      it { is_expected.not_to allow_value(1.1).for(:search_max_docs_denominator) }
+      it { is_expected.not_to allow_value(-1).for(:search_max_docs_denominator) }
+
+      it { is_expected.to allow_value(10).for(:search_min_docs_before_rollover) }
+      it { is_expected.not_to allow_value(0).for(:search_min_docs_before_rollover) }
+      it { is_expected.not_to allow_value(nil).for(:search_min_docs_before_rollover) }
+      it { is_expected.not_to allow_value(1.1).for(:search_min_docs_before_rollover) }
+      it { is_expected.not_to allow_value(-1).for(:search_min_docs_before_rollover) }
+
       it { is_expected.to allow_value(10).for(:elasticsearch_indexed_file_size_limit_kb) }
       it { is_expected.not_to allow_value(0).for(:elasticsearch_indexed_file_size_limit_kb) }
       it { is_expected.not_to allow_value(nil).for(:elasticsearch_indexed_file_size_limit_kb) }

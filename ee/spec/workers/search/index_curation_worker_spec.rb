@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Search::IndexCurationWorker do
+RSpec.describe Search::IndexCurationWorker, feature_category: :global_search do
   include StubFeatureFlags
   subject { described_class.new }
 
@@ -17,6 +17,8 @@ RSpec.describe Search::IndexCurationWorker do
     let(:main_index_name) { "gitlab-test-20220923-1517" }
     let(:main_index_pattern) { /gitlab-test-20220923-/ }
     let(:stubbed_helper) { instance_double(::Gitlab::Elastic::Helper) }
+    let(:curator_settings) { described_class.new.curator_settings }
+    let(:application_settings) { Gitlab::CurrentSettings }
 
     before do
       allow(::Gitlab::Elastic::Helper).to receive(:default).and_return(stubbed_helper)
@@ -40,6 +42,18 @@ RSpec.describe Search::IndexCurationWorker do
       curation_include_patterns.delete(main_index_pattern)
       expect(described_class.new.curator_settings[:include_patterns]).to contain_exactly(*curation_include_patterns)
     end
+
+    it 'has correct value for max_shard_size_gb' do
+      expect(curator_settings[:max_shard_size_gb]).to eq(application_settings.search_max_shard_size_gb)
+    end
+
+    it 'has correct value for max_docs_denominator' do
+      expect(curator_settings[:max_docs_denominator]).to eq(application_settings.search_max_docs_denominator)
+    end
+
+    it 'has correct value for min_docs_before_rollover' do
+      expect(curator_settings[:min_docs_before_rollover]).to eq(application_settings.search_min_docs_before_rollover)
+    end
   end
 
   describe '#perform' do
@@ -48,7 +62,7 @@ RSpec.describe Search::IndexCurationWorker do
     end
 
     it 'calls on the curator' do
-      expect(curator).to receive(:curate).with(settings: settings)
+      expect(curator).to receive(:curate).with(settings)
       expect(subject.perform).not_to be_falsey
     end
 
