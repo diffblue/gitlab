@@ -171,6 +171,7 @@ module GitlabSubscriptions
 
     ULTIMATE_FEATURES = %i[
       ai_assist
+      api_discovery
       api_fuzzing
       auto_rollback
       cluster_image_scanning
