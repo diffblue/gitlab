@@ -108,6 +108,21 @@ RSpec.describe Epics::UpdateCachedMetadataWorker do
 
         perform
       end
+
+      context 'when some epics are locked' do
+        before do
+          stub_exclusive_lease_taken("#{described_class.name.underscore}-#{epic.id}",
+                                     timeout: described_class::LEASE_TIMEOUT)
+        end
+
+        it 're-schedules the job for locked epics' do
+          expect(worker).to receive(:update_epic).with(other_epic)
+          expect(worker).not_to receive(:update_epic).with(epic)
+          expect(described_class).to receive(:perform_in).with(described_class::LEASE_TIMEOUT, [epic.id])
+
+          perform
+        end
+      end
     end
   end
 end
