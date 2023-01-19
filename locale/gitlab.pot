@@ -12731,6 +12731,9 @@ msgstr ""
 msgid "DastProfiles|Request headers"
 msgstr ""
 
+msgid "DastProfiles|Retry"
+msgstr ""
+
 msgid "DastProfiles|Run the AJAX spider, in addition to the traditional spider, to crawl the target site."
 msgstr ""
 
@@ -12831,6 +12834,12 @@ msgid "DastProfiles|Username"
 msgstr ""
 
 msgid "DastProfiles|Username form field"
+msgstr ""
+
+msgid "DastProfiles|Validate"
+msgstr ""
+
+msgid "DastProfiles|Validate site profile"
 msgstr ""
 
 msgid "DastProfiles|Validated"

@@ -17,6 +17,9 @@ describe('DastProfilesDrawerList', () => {
       propsData: {
         ...options,
       },
+      provide: {
+        projectPath: 'group/project',
+      },
     });
   };
 
