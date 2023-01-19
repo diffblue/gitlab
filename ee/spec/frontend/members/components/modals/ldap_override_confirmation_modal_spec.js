@@ -3,7 +3,7 @@ import { within } from '@testing-library/dom';
 import { mount, createWrapper } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
-import LdapOverrideConfirmationModal from 'ee/members/components/ldap/ldap_override_confirmation_modal.vue';
+import LdapOverrideConfirmationModal from 'ee/members/components/modals/ldap_override_confirmation_modal.vue';
 import { LDAP_OVERRIDE_CONFIRMATION_MODAL_ID } from 'ee/members/constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import { member } from 'jest/members/mock_data';

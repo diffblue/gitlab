@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import DisableTwoFactorDropdownItem from 'ee/members/components/action_dropdowns/disable_two_factor_dropdown_item.vue';
-import LdapOverrideDropdownItem from 'ee/members/components/ldap/ldap_override_dropdown_item.vue';
+import LdapOverrideDropdownItem from 'ee/members/components/action_dropdowns/ldap_override_dropdown_item.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { member } from 'jest/members/mock_data';
 import { sprintf } from '~/locale';
