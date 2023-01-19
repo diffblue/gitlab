@@ -4621,6 +4621,11 @@ msgstr ""
 msgid "An issue already exists"
 msgstr ""
 
+msgid "An issue has been assigned to you."
+msgid_plural "%d issues have been assigned to you."
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "An unauthenticated user"
 msgstr ""
 
@@ -16892,6 +16897,9 @@ msgid "Failed to assign a reviewer because no user was specified."
 msgstr ""
 
 msgid "Failed to assign a user because no user was found."
+msgstr ""
+
+msgid "Failed to assign you issues related to the merge request."
 msgstr ""
 
 msgid "Failed to cancel auto stop because failed to update the environment."
