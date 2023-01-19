@@ -35,10 +35,10 @@ module QA
       before do
         Resource::Repository::ProjectPush.fabricate! do |project_push|
           project_push.project = project
-          project_push.directory = Pathname
-                                       .new(__dir__)
-                                       .join('../../../../../ee/fixtures/secure_scanning_enable_from_ui_files')
           project_push.commit_message = 'Create Secure compatible application to serve premade reports'
+          project_push.directory = Pathname.new(
+            File.join(EE::Runtime::Path.fixtures_path, 'secure_scanning_enable_from_ui_files')
+          )
         end
 
         Flow::Login.sign_in_unless_signed_in
@@ -189,16 +189,24 @@ module QA
           Resource::Repository::Commit.fabricate_via_api! do |commit|
             commit.project = project
 
-            commit.add_files([{ file_path: '.gitlab-ci.yml',
-                                content: File.read(
-                                  Pathname
-                                    .new(__dir__)
-                                    .join('../../../../../ee/fixtures/secure_license_files/.gitlab-ci.yml')) },
-                              { file_path: 'gl-license-scanning-report.json',
-                                content: File.read(
-                                  Pathname
-                                    .new(__dir__)
-                                    .join('../../../../../ee/fixtures/secure_premade_reports/gl-license-scanning-report.json')) }])
+            commit.add_files([
+              {
+                file_path: '.gitlab-ci.yml',
+                content: File.read(
+                  File.join(EE::Runtime::Path.fixtures_path, 'secure_license_files', '.gitlab-ci.yml')
+                )
+              },
+              {
+                file_path: 'gl-license-scanning-report.json',
+                content: File.read(
+                  File.join(
+                    EE::Runtime::Path.fixtures_path,
+                    'secure_premade_reports',
+                    'gl-license-scanning-report.json'
+                  )
+                )
+              }
+            ])
             commit.commit_message = 'Add license scanning to project'
           end
           Flow::Login.sign_in_unless_signed_in

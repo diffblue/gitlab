@@ -190,9 +190,7 @@ module QA
       def push_security_reports
         Resource::Repository::ProjectPush.fabricate! do |project_push|
           project_push.project = project
-          project_push.directory = Pathname
-            .new(__dir__)
-            .join('../../../../../ee/fixtures/secure_premade_reports')
+          project_push.directory = Pathname.new(File.join(EE::Runtime::Path.fixtures_path, 'secure_premade_reports'))
           project_push.commit_message = 'Create Secure compatible application to serve premade reports'
         end.project.visit!
 

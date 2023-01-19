@@ -40,7 +40,10 @@ module QA
       private
 
       def manifest_deployed?
-        wait_until_shell_command_matches('kubectl get namespace --no-headers --ignore-not-found galatic-empire', /galatic-empire   Active/, sleep_interval: 5)
+        wait_until_shell_command_matches(
+          'kubectl get namespace --no-headers --ignore-not-found galatic-empire',
+          /galatic-empire   Active/, sleep_interval: 5
+        )
       end
 
       def install_agentk(cluster, agent_token)
@@ -54,11 +57,7 @@ module QA
       end
 
       def read_agent_fixture(file_name)
-        file_path = Pathname
-          .new(__dir__)
-          .join("../../../../../../fixtures/kubernetes_agent/#{file_name}")
-
-        File.read(file_path)
+        File.read(File.join(Runtime::Path.fixtures_path, 'kubernetes_agent', file_name))
       end
 
       def creates_agent_config(project)

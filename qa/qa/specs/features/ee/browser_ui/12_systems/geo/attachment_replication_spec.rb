@@ -3,7 +3,7 @@
 module QA
   RSpec.describe 'Systems', :orchestrated, :geo, product_group: :geo do
     describe 'GitLab Geo attachment replication' do
-      let(:file_to_attach) { File.absolute_path(File.join('qa', 'fixtures', 'designs', 'banana_sample.gif')) }
+      let(:file_to_attach) { File.join(Runtime::Path.fixtures_path, 'designs', 'banana_sample.gif') }
       let(:project) do
         Resource::Project.fabricate_via_api! do |project|
           project.name = 'project-for-issues'
@@ -19,12 +19,12 @@ module QA
       end
 
       it 'user uploads attachment to the primary node',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348052',
-         quarantine: {
-           only: { subdomain: 'staging-ref' },
-           type: :test_environment,
-           issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/374550'
-         } do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348052',
+        quarantine: {
+          only: { subdomain: 'staging-ref' },
+          type: :test_environment,
+          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/374550'
+        } do
         QA::Flow::Login.while_signed_in(address: :geo_primary) do
           issue.visit!
 

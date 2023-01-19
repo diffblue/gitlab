@@ -22,7 +22,8 @@ module QA
         EE::Page::Project::Secure::LicenseCompliance.perform do |license_compliance|
           aggregate_failures do
             expect(license_compliance).to have_empty_state_description('The license list details information about the licenses used within your project.')
-            expect(license_compliance).to have_link('More Information', href: %r{\/help\/user\/compliance\/license_compliance\/index})
+            expect(license_compliance).to have_link('More Information',
+              href: %r{/help/user/compliance/license_compliance/index})
           end
         end
       end
@@ -40,16 +41,24 @@ module QA
           # Push fixture to generate Secure reports
           Resource::Repository::ProjectPush.fabricate! do |project_push|
             project_push.project = @project
-            project_push.files = [{ name: '.gitlab-ci.yml',
-                                    content: File.read(
-                                      Pathname
-                                       .new(__dir__)
-                                       .join('../../../../../ee/fixtures/secure_license_files/.gitlab-ci.yml')) },
-                                  { name: 'gl-license-scanning-report.json',
-                                    content: File.read(
-                                      Pathname
-                                       .new(__dir__)
-                                       .join('../../../../../ee/fixtures/secure_premade_reports/gl-license-scanning-report.json')) }]
+            project_push.files = [
+              {
+                name: '.gitlab-ci.yml',
+                content: File.read(
+                  File.join(EE::Runtime::Path.fixtures_path, 'secure_license_files', '.gitlab-ci.yml')
+                )
+              },
+              {
+                name: 'gl-license-scanning-report.json',
+                content: File.read(
+                  File.join(
+                    EE::Runtime::Path.fixtures_path,
+                    'secure_premade_reports',
+                    'gl-license-scanning-report.json'
+                  )
+                )
+              }
+            ]
             project_push.commit_message = 'Create Secure compatible application to serve premade reports'
           end
           Flow::Login.sign_in_unless_signed_in
@@ -74,14 +83,16 @@ module QA
           @runner&.remove_via_api!
         end
 
-        it 'can approve a license in the settings page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348078' do
+        it 'can approve a license in the settings page',
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348078' do
           EE::Page::Project::Secure::LicenseCompliance.perform do |license_compliance|
             license_compliance.open_tab
             expect(license_compliance).to have_approved_license(approved_license_name)
           end
         end
 
-        it 'can deny a license in the settings page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348077' do
+        it 'can deny a license in the settings page',
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348077' do
           EE::Page::Project::Secure::LicenseCompliance.perform do |license_compliance|
             license_compliance.open_tab
             expect(license_compliance).to have_denied_license(denied_license_name)
@@ -89,7 +100,8 @@ module QA
         end
 
         describe 'Pipeline Licence tab', only: { subdomain: %i[staging production pre staging-canary] } do
-          it 'can approve and deny licenses in the pipeline', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348079' do
+          it 'can approve and deny licenses in the pipeline',
+            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348079' do
             @project.visit!
             Flow::Pipeline.visit_latest_pipeline
 
