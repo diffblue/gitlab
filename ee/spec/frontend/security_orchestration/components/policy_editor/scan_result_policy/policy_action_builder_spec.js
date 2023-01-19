@@ -75,7 +75,6 @@ describe('PolicyActionBuilder', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     mock.restore();
   });
 

@@ -33,10 +33,6 @@ describe('NoPoliciesEmptyState component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it.each`
     title                                        | findComponent           | state    | factoryFn
     ${'does not display the empty filter state'} | ${findEmptyFilterState} | ${false} | ${factory}

@@ -17,9 +17,9 @@ import {
   NAMESPACE_TYPES,
 } from 'ee/security_orchestration/constants';
 import {
-  mockScanResultManifest,
-  mockScanResultObject,
-} from 'ee_jest/security_orchestration/mocks/mock_data';
+  mockDefaultBranchesScanResultManifest,
+  mockDefaultBranchesScanResultObject,
+} from 'ee_jest/security_orchestration/mocks/mock_scan_result_policy_data';
 import { visitUrl } from '~/lib/utils/url_utility';
 
 import { modifyPolicy } from 'ee/security_orchestration/components/policy_editor/utils';
@@ -100,7 +100,7 @@ describe('ScanResultPolicyEditor', () => {
     return factory({
       propsData: {
         assignedPolicyProject,
-        existingPolicy: { ...mockScanResultObject, ...policy },
+        existingPolicy: { ...mockDefaultBranchesScanResultObject, ...policy },
         isEditing: true,
       },
       provide,
@@ -131,7 +131,6 @@ describe('ScanResultPolicyEditor', () => {
 
   afterEach(() => {
     mock.restore();
-    wrapper.destroy();
   });
 
   describe('default', () => {
@@ -233,10 +232,10 @@ describe('ScanResultPolicyEditor', () => {
     });
 
     it.each`
-      status                            | action                             | event              | factoryFn                    | yamlEditorValue               | currentlyAssignedPolicyProject
-      ${'to save a new policy'}         | ${SECURITY_POLICY_ACTIONS.APPEND}  | ${'save-policy'}   | ${factory}                   | ${DEFAULT_SCAN_RESULT_POLICY} | ${newlyCreatedPolicyProject}
-      ${'to update an existing policy'} | ${SECURITY_POLICY_ACTIONS.REPLACE} | ${'save-policy'}   | ${factoryWithExistingPolicy} | ${mockScanResultManifest}     | ${assignedPolicyProject}
-      ${'to delete an existing policy'} | ${SECURITY_POLICY_ACTIONS.REMOVE}  | ${'remove-policy'} | ${factoryWithExistingPolicy} | ${mockScanResultManifest}     | ${assignedPolicyProject}
+      status                            | action                             | event              | factoryFn                    | yamlEditorValue                          | currentlyAssignedPolicyProject
+      ${'to save a new policy'}         | ${SECURITY_POLICY_ACTIONS.APPEND}  | ${'save-policy'}   | ${factory}                   | ${DEFAULT_SCAN_RESULT_POLICY}            | ${newlyCreatedPolicyProject}
+      ${'to update an existing policy'} | ${SECURITY_POLICY_ACTIONS.REPLACE} | ${'save-policy'}   | ${factoryWithExistingPolicy} | ${mockDefaultBranchesScanResultManifest} | ${assignedPolicyProject}
+      ${'to delete an existing policy'} | ${SECURITY_POLICY_ACTIONS.REMOVE}  | ${'remove-policy'} | ${factoryWithExistingPolicy} | ${mockDefaultBranchesScanResultManifest} | ${assignedPolicyProject}
     `(
       'navigates to the new merge request when "modifyPolicy" is emitted $status',
       async ({ action, event, factoryFn, yamlEditorValue, currentlyAssignedPolicyProject }) => {
@@ -253,7 +252,7 @@ describe('ScanResultPolicyEditor', () => {
           name:
             action === SECURITY_POLICY_ACTIONS.APPEND
               ? fromYaml(yamlEditorValue).name
-              : mockScanResultObject.name,
+              : mockDefaultBranchesScanResultObject.name,
           namespacePath: defaultProjectPath,
           yamlEditorValue,
         });
@@ -278,7 +277,7 @@ describe('ScanResultPolicyEditor', () => {
 
     it('hides add button when the limit of five rules has been reached', async () => {
       const limit = 5;
-      const rule = mockScanResultObject.rules[0];
+      const rule = mockDefaultBranchesScanResultObject.rules[0];
       factoryWithExistingPolicy({ rules: [rule, rule, rule, rule, rule] });
       await nextTick();
 
@@ -395,7 +394,7 @@ describe('ScanResultPolicyEditor', () => {
   `(
     'triggers error event with content: "$errorMessage" when http status is $status',
     async ({ status, errorMessage }) => {
-      const rule = { ...mockScanResultObject.rules[0], branches: ['main'] };
+      const rule = { ...mockDefaultBranchesScanResultObject.rules[0], branches: ['main'] };
 
       mock.onGet('/api/undefined/projects/1/protected_branches/main').replyOnce(status, {});
 

@@ -16,10 +16,6 @@ describe('PolicySourceFilter component', () => {
 
   const findToggle = () => wrapper.find('button[aria-haspopup="true"]');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it.each`
     value                                    | expectedToggleText
     ${POLICY_SOURCE_OPTIONS.ALL.value}       | ${POLICY_SOURCE_OPTIONS.ALL.text}

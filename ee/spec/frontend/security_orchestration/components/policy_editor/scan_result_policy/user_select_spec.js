@@ -93,10 +93,6 @@ describe('UserSelect component', () => {
     await waitForPromises();
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default', () => {
     beforeEach(async () => {
       createComponent();

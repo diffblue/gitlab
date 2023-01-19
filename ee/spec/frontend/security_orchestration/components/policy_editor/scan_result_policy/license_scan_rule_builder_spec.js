@@ -56,10 +56,6 @@ describe('LicenseScanRuleBuilder', () => {
       .mockReturnValue(Promise.resolve(PROTECTED_BRANCHES_MOCK));
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('initial rendering', () => {
     beforeEach(() => {
       factory();

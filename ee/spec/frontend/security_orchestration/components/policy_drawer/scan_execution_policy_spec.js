@@ -2,11 +2,11 @@ import ScanExecutionPolicy from 'ee/security_orchestration/components/policy_dra
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
-  mockProjectScanExecutionPolicy,
-  mockScanExecutionManifestNoActions,
-  mockScanExecutionManifestMultipleActions,
   mockUnsupportedAttributeScanExecutionPolicy,
-} from '../../mocks/mock_data';
+  mockProjectScanExecutionPolicy,
+  mockNoActionsScanExecutionManifest,
+  mockMultipleActionsScanExecutionManifest,
+} from '../../mocks/mock_scan_execution_policy_data';
 
 describe('ScanExecutionPolicy component', () => {
   let wrapper;
@@ -20,15 +20,11 @@ describe('ScanExecutionPolicy component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe.each`
     title                                   | propsData
     ${'default policy'}                     | ${{ policy: mockProjectScanExecutionPolicy }}
-    ${'no action policy'}                   | ${{ policy: { ...mockProjectScanExecutionPolicy, yaml: mockScanExecutionManifestNoActions } }}
-    ${'multiple action policy'}             | ${{ policy: { ...mockProjectScanExecutionPolicy, yaml: mockScanExecutionManifestMultipleActions } }}
+    ${'no action policy'}                   | ${{ policy: { ...mockProjectScanExecutionPolicy, yaml: mockNoActionsScanExecutionManifest } }}
+    ${'multiple action policy'}             | ${{ policy: { ...mockProjectScanExecutionPolicy, yaml: mockMultipleActionsScanExecutionManifest } }}
     ${'policy with unsupported attributes'} | ${{ policy: mockUnsupportedAttributeScanExecutionPolicy }}
   `('$title', ({ propsData }) => {
     beforeEach(() => {

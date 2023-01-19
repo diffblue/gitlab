@@ -50,11 +50,6 @@ describe('PolicyYamlEditor component', () => {
     factory();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   it('renders container element', () => {
     expect(findEditor().exists()).toBe(true);
   });

@@ -21,8 +21,8 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
   mockDastScanExecutionManifest,
   mockDastScanExecutionObject,
-  mockScanResultObject,
-} from '../../mocks/mock_data';
+} from '../../mocks/mock_scan_execution_policy_data';
+import { mockDefaultBranchesScanResultObject } from '../../mocks/mock_scan_result_policy_data';
 
 describe('PolicyEditorLayout component', () => {
   let wrapper;
@@ -68,10 +68,6 @@ describe('PolicyEditorLayout component', () => {
     wrapper.findByTestId('scan-result-policy-run-time-info');
   const findScanResultPolicyRunTimeTooltip = () =>
     findScanResultPolicyRunTimeInfo().findComponent(GlIcon);
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   describe('default behavior', () => {
     beforeEach(() => {
@@ -246,7 +242,7 @@ describe('PolicyEditorLayout component', () => {
       title                                                           | currentNamespaceType       | propsData
       ${'does not display for project-level scan execution policies'} | ${NAMESPACE_TYPES.PROJECT} | ${{}}
       ${'does not display for group-level scan execution policies'}   | ${NAMESPACE_TYPES.GROUP}   | ${{}}
-      ${'does not display for project-level scan result policies'}    | ${NAMESPACE_TYPES.PROJECT} | ${{ policy: mockScanResultObject }}
+      ${'does not display for project-level scan result policies'}    | ${NAMESPACE_TYPES.PROJECT} | ${{ policy: mockDefaultBranchesScanResultObject }}
     `('$title', async ({ currentNamespaceType, propsData }) => {
       factory({ propsData, provide: { namespaceType: currentNamespaceType } });
       await nextTick();
@@ -256,7 +252,7 @@ describe('PolicyEditorLayout component', () => {
 
     it('does display for group-level scan result policies', async () => {
       factory({
-        propsData: { policy: mockScanResultObject },
+        propsData: { policy: mockDefaultBranchesScanResultObject },
         provide: { namespaceType: NAMESPACE_TYPES.GROUP },
       });
       await nextTick();

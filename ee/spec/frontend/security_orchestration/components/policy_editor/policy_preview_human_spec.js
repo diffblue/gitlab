@@ -15,10 +15,6 @@ describe('PolicyPreviewHuman component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when policy description is not defined', () => {
     beforeEach(() => {
       factory();

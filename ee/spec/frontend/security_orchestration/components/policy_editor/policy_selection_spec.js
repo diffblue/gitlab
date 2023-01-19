@@ -16,10 +16,6 @@ describe('PolicySelection component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe.each`
     id                                                          | title                                            | description                                     | licenseScanFlag
     ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter}    | ${PolicySelection.i18n.scanResultPolicyTitle}    | ${PolicySelection.i18n.scanResultPolicyDesc}    | ${false}
