@@ -73,7 +73,9 @@ module QA
           private_group.add_member(user_6)
           page.refresh
 
-          expect(page).to have_content(notifications(private_group, :limit_overage_preview_notification))
+          expect { page }
+            .to eventually_have_content(notifications(private_group, :limit_overage_preview_msg))
+                  .within(max_attempts: 5, sleep_interval: 2, reload_page: page)
         end
 
         it(
@@ -87,7 +89,9 @@ module QA
           Runtime::Feature.enable(:free_user_cap_new_namespaces, group: private_group)
           page.refresh
 
-          expect(page).to have_content(notifications(private_group, :limit_overage_enforcement_notification))
+          expect { page }
+            .to eventually_have_content(notifications(private_group, :limit_overage_enforcement_msg))
+                  .within(max_attempts: 5, sleep_interval: 2, reload_page: page)
 
           # Remove the enforcement by starting a free Ultimate Trial
           Page::Trials::New.perform(&:visit)
@@ -96,7 +100,7 @@ module QA
           private_group.visit!
 
           aggregate_failures do
-            expect(page).not_to have_content(notifications(private_group, :limit_overage_enforcement_notification))
+            expect(page).not_to have_content(notifications(private_group, :limit_overage_enforcement_msg))
             expect { private_group.list_members.count }.to eventually_eq(7)
           end
         end
@@ -110,13 +114,15 @@ module QA
           create_private_group_with_members
           page.refresh
 
-          expect(page).to have_content(notifications(private_group, :limit_reached_enforcement_notification))
+          expect { page }
+            .to eventually_have_content(notifications(private_group, :limit_reached_enforcement_msg))
+                  .within(max_attempts: 5, sleep_interval: 2, reload_page: page)
 
           Page::Trials::New.perform(&:visit)
           Flow::Trial.register_for_trial(skip_select: true)
           private_group.visit!
 
-          expect(page).not_to have_content(notifications(private_group, :limit_reached_enforcement_notification))
+          expect(page).not_to have_content(notifications(private_group, :limit_reached_enforcement_msg))
         end
 
         it(
@@ -150,9 +156,11 @@ module QA
           private_group.visit!
 
           aggregate_failures do
-            expect { private_group.list_all_members.count }.to eventually_eq(5) # excludes project unique members
+            expect { page }
+              .to eventually_have_content(notifications(private_group, :limit_overage_enforcement_msg))
+                    .within(max_attempts: 5, sleep_interval: 2, reload_page: page)
+            expect(private_group.list_all_members.count).to eq(5) # excludes project unique members
             expect(invitee_group.list_members.count).to eq(4)
-            expect(page).to have_content(notifications(private_group, :limit_overage_enforcement_notification))
           end
         end
       end
@@ -184,16 +192,16 @@ module QA
       # Returns user limit notification message
       #
       # @param [Resource::Group] group
-      # @param [Symbol] type notification type
+      # @param [Symbol] type notification message type
       def notifications(group, type)
         {
-          limit_overage_preview_notification:
+          limit_overage_preview_msg:
             "Your top-level group #{group.path} is over the 5 user limit GitLab will enforce this limit in the future",
-          limit_reached_enforcement_notification:
+          limit_reached_enforcement_msg:
             "Your top-level group #{group.path} has reached the 5 user limit To invite more users,
             you can reduce the number of users in your top-level group to 5 users or less",
-          limit_overage_enforcement_notification: "Your top-level group #{group.path} is over the 5 user limit
-            and has been placed in a read-only state"
+          limit_overage_enforcement_msg:
+            "Your top-level group #{group.path} is over the 5 user limit and has been placed in a read-only state"
         }.fetch(type).squish
       end
     end
