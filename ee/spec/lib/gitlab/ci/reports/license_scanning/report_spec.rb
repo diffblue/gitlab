@@ -26,56 +26,6 @@ RSpec.describe Gitlab::Ci::Reports::LicenseScanning::Report, feature_category: :
     end
   end
 
-  describe '#merge_dependencies_info!' do
-    subject { report.merge_dependencies_info!(dependencies) }
-
-    let(:report) { build(:ci_reports_license_scanning_report, :report_2) }
-    let(:dependency_list_report) { Gitlab::Ci::Reports::DependencyList::Report.new }
-
-    context 'without licensed dependencies' do
-      let(:library1) { build(:dependency, name: 'Library1') }
-      let(:library3) { build(:dependency, name: 'Library3') }
-      let(:dependencies) { [library3, library1] }
-
-      before do
-        subject
-      end
-
-      it 'does not merge dependency path' do
-        paths = all_dependency_paths(report)
-
-        expect(paths).to be_empty
-      end
-    end
-
-    context 'with licensed dependencies' do
-      let(:library1) { build(:dependency, :with_licenses, name: 'Library1') }
-      let(:library3) { build(:dependency, :with_licenses, name: 'Library3') }
-      let(:library4) { build(:dependency, :with_licenses, name: 'Library4') }
-      let(:dependencies) { [library1, library3, library4] }
-
-      let(:mit_license) { report.by_license_name('MIT') }
-      let(:apache_license) { report.by_license_name('Apache 2.0') }
-
-      before do
-        mit_license.add_dependency(name: 'Library4')
-        apache_license.add_dependency(name: 'Library3')
-
-        subject
-      end
-
-      it 'merge path to matched dependencies' do
-        dep1 = dependency_by_name(mit_license, 'Library1')
-        dep4 = dependency_by_name(mit_license, 'Library4')
-        dep3 = dependency_by_name(apache_license, 'Library3')
-
-        expect(dep1.path).to eq(library1.dig(:location, :blob_path))
-        expect(dep4.path).to eq(library4.dig(:location, :blob_path))
-        expect(dep3.path).to be_nil
-      end
-    end
-  end
-
   describe '#violates?' do
     subject { report.violates?(project.software_license_policies) }
 
