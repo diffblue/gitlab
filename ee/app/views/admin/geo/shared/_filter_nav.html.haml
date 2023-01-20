@@ -7,7 +7,14 @@
       .gl-sm-display-flex.gl-mx-n1
         = gl_redirect_listbox_tag geo_filter_nav_options(replicable_controller, replicable_name), filter_by, class: 'gl-px-2 gl-my-2 my-sm-0 gl-w-full'
         .replicable-search.px-1.my-1.my-sm-0.w-100
-          = render 'shared/projects/search_form', autofocus: true, search_form_placeholder: _("Filter by name"), icon: true
+          = form_tag filter_projects_path, method: :get, data: { qa_selector: 'project_filter_form_container' } do |f|
+            .gl-search-box-by-type
+              = sprite_icon('search', css_class: 'gl-search-box-by-type-search-icon gl-icon')
+              = search_field_tag :name, params[:name], placeholder: _('Filter by name'), class: "gl-form-input form-control gl-search-box-by-type-input", spellcheck: false, autofocus: true, data: { testid: 'geo-projects-filter-field' }
+
+            = render_if_exists 'shared/projects/search_fields'
+            = submit_tag nil, class: 'gl-display-none!'
+
     .col.col-sm-5.d-flex.justify-content-end.my-1.my-sm-0.w-100
       - action_buttons.each do |action_button|
         = action_button
