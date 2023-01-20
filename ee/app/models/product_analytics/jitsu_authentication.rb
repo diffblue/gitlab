@@ -7,7 +7,7 @@ module ProductAnalytics
       @project = project
 
       @root_url = Gitlab::CurrentSettings.jitsu_host
-      @clickhouse_connection_string = Gitlab::CurrentSettings.clickhouse_connection_string
+      @clickhouse_connection_string = Gitlab::CurrentSettings.product_analytics_clickhouse_connection_string
       @jitsu_project_xid = Gitlab::CurrentSettings.jitsu_project_xid
       @jitsu_administrator_email = Gitlab::CurrentSettings.jitsu_administrator_email
       @jitsu_administrator_password = Gitlab::CurrentSettings.jitsu_administrator_password

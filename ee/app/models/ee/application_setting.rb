@@ -160,6 +160,10 @@ module EE
                 presence: true,
                 if: :product_analytics_enabled
 
+      validates :product_analytics_clickhouse_connection_string,
+                presence: true,
+                if: :product_analytics_enabled
+
       validates :cube_api_key,
                 presence: true,
                 if: :product_analytics_enabled
@@ -234,6 +238,7 @@ module EE
           jitsu_host: nil,
           jitsu_project_xid: nil,
           clickhouse_connection_string: nil,
+          product_analytics_clickhouse_connection_string: nil,
           jitsu_administrator_email: nil,
           jitsu_administrator_password: nil,
           cube_api_base_url: nil,

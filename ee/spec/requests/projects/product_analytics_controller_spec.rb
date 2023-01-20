@@ -14,7 +14,7 @@ RSpec.describe Projects::ProductAnalyticsController, type: :request, feature_cat
       stub_application_setting(jitsu_project_xid: '123')
       stub_application_setting(jitsu_administrator_email: 'test@example.com')
       stub_application_setting(jitsu_administrator_password: 'password')
-      stub_application_setting(clickhouse_connection_string: 'clickhouse://localhost:9000')
+      stub_application_setting(product_analytics_clickhouse_connection_string: 'clickhouse://localhost:9000')
       stub_application_setting(cube_api_base_url: 'https://cube.example.com')
       stub_application_setting(cube_api_key: '123')
       stub_application_setting(product_analytics_enabled: true)
@@ -102,9 +102,9 @@ RSpec.describe Projects::ProductAnalyticsController, type: :request, feature_cat
       it_behaves_like 'returns not found'
     end
 
-    context 'without clickhouse_connection_string application setting' do
+    context 'without product_analytics_clickhouse_connection_string application setting' do
       before do
-        stub_application_setting(clickhouse_connection_string: nil)
+        stub_application_setting(product_analytics_clickhouse_connection_string: nil)
       end
 
       it_behaves_like 'returns not found'
