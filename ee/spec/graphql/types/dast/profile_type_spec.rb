@@ -10,15 +10,19 @@ RSpec.describe GitlabSchema.types['DastProfile'], :dynamic_analysis,
   let_it_be(:object) { create(:dast_profile, project: project) }
   let_it_be(:dast_pre_scan_verification) { create(:dast_pre_scan_verification, dast_profile: object) }
   let_it_be(:user) { create(:user, developer_projects: [project]) }
+  let_it_be(:tag_list) { %w[ruby postgres] }
+
   let_it_be(:fields) do
     %i[id name description dastSiteProfile dastScannerProfile dastProfileSchedule branch editPath
-      dastPreScanVerification]
+      dastPreScanVerification tagList]
   end
 
   specify { expect(described_class.graphql_name).to eq('DastProfile') }
   specify { expect(described_class).to require_graphql_authorizations(:read_on_demand_dast_scan) }
 
   before do
+    ActsAsTaggableOn::Tag.create!(name: 'ruby')
+    ActsAsTaggableOn::Tag.create!(name: 'postgres')
     stub_licensed_features(security_on_demand_scans: true)
   end
 
@@ -61,6 +65,12 @@ RSpec.describe GitlabSchema.types['DastProfile'], :dynamic_analysis,
       it 'is nil' do
         expect(resolve_field(:dast_pre_scan_verification, object, current_user: user)).to be_nil
       end
+    end
+  end
+
+  describe 'tagList field' do
+    it 'correctly resolves the field' do
+      expect(resolve_field(:tag_list, object, current_user: user)).to eq(object.tag_list)
     end
   end
 end

@@ -2,9 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe AppSec::Dast::Profiles::CreateService do
+RSpec.describe AppSec::Dast::Profiles::CreateService, :dynamic_analysis,
+               feature_category: :dynamic_application_security_testing do
   let_it_be(:project) { create(:project, :repository) }
-  let_it_be(:developer) { create(:user, developer_projects: [project] ) }
+  let_it_be(:developer) { create(:user, developer_projects: [project]) }
   let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
   let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project) }
   let_it_be(:time_zone) { Time.zone.tzinfo.name }
@@ -21,7 +22,7 @@ RSpec.describe AppSec::Dast::Profiles::CreateService do
 
   let(:params) { default_params }
 
-  subject { described_class.new(container: project, current_user: developer, params: params).execute }
+  subject { described_class.new(project: project, current_user: developer, params: params).execute }
 
   describe 'execute' do
     context 'when on demand scan licensed feature is not available' do
@@ -139,7 +140,7 @@ RSpec.describe AppSec::Dast::Profiles::CreateService do
 
           it 'rollback the transaction' do
             expect { subject }.to change { ::Dast::ProfileSchedule.count }.by(0)
-            .and change { ::Dast::Profile.count }.by(0)
+                                                                          .and change { ::Dast::Profile.count }.by(0)
           end
 
           it 'returns the error service response' do
@@ -155,6 +156,50 @@ RSpec.describe AppSec::Dast::Profiles::CreateService do
           aggregate_failures do
             expect(subject.status).to eq(:error)
             expect(subject.message).to eq('Key not found: :run_after_create')
+          end
+        end
+      end
+
+      context 'when param tag_list is present' do
+        let_it_be(:tags) do
+          [ActsAsTaggableOn::Tag.create!(name: 'ruby'), ActsAsTaggableOn::Tag.create!(name: 'postgres')]
+        end
+
+        let(:tag_list) { tags.map(&:name) }
+
+        let(:params) { default_params.merge(tag_list: tag_list) }
+
+        it 'creates a dast_profile with tags' do
+          expect(subject.payload[:dast_profile].tags).to match_array(tags)
+        end
+
+        context 'when there is a invalid tag' do
+          let(:tag_list) { %w[invalid_tag] }
+
+          it 'does not create a new dast_profile' do
+            expect { subject }.not_to change { Dast::Profile.count }
+          end
+
+          it 'returns an error status' do
+            expect(subject.status).to eq(:error)
+          end
+
+          it 'populates message' do
+            expect(subject.message).to eq('Invalid tags')
+          end
+        end
+
+        context 'when feature flag on_demand_scans_runner_tags is disabled' do
+          before do
+            stub_feature_flags(on_demand_scans_runner_tags: false)
+          end
+
+          it 'returns a success status' do
+            expect(subject.status).to eq(:success)
+          end
+
+          it 'creates a dast_profile ignoring the tags' do
+            expect(subject.payload[:dast_profile].tags).to be_empty
           end
         end
       end

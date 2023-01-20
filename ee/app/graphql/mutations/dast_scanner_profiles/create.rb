@@ -49,9 +49,11 @@ module Mutations
                 description: 'Indicates if debug messages should be included in DAST console output. ' \
                 'True to include the debug messages.',
                 default_value: false
+
       argument :tag_list, [GraphQL::Types::String],
                required: false,
-               description: 'Indicates the runner tags associated with the scanner profile.'
+               description: 'Indicates the runner tags associated with the scanner profile.',
+               deprecated: { reason: 'Moved to DastProfile', milestone: '15.8' }
 
       authorize :create_on_demand_dast_scan
 

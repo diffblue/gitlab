@@ -2,14 +2,19 @@
 
 require 'spec_helper'
 
-RSpec.describe AppSec::Dast::Profiles::UpdateService do
+RSpec.describe AppSec::Dast::Profiles::UpdateService, :dynamic_analysis,
+                                                      feature_category: :dynamic_application_security_testing do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:dast_profile, reload: true) { create(:dast_profile, project: project, branch_name: 'orphaned-branch') }
+  let_it_be(:old_tags) { [ActsAsTaggableOn::Tag.create!(name: 'ruby'), ActsAsTaggableOn::Tag.create!(name: 'postgres')] }
+  let_it_be(:dast_profile, reload: true) { create(:dast_profile, project: project, branch_name: 'orphaned-branch', tags: old_tags) }
   let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
   let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project) }
   let_it_be(:plan_limits) { create(:plan_limits, :default_plan) }
   let_it_be(:scheduler_owner) { create(:user, name: 'Scheduler Owner') }
+
+  let_it_be(:new_tags) { [ActsAsTaggableOn::Tag.create!(name: 'rails'), ActsAsTaggableOn::Tag.create!(name: 'docker')] }
+  let_it_be(:new_tag_list) { new_tags.map(&:name) }
 
   let(:default_params) do
     {
@@ -26,7 +31,7 @@ RSpec.describe AppSec::Dast::Profiles::UpdateService do
 
   subject do
     described_class.new(
-      container: project,
+      project: project,
       current_user: user,
       params: params
     ).execute
@@ -274,6 +279,44 @@ RSpec.describe AppSec::Dast::Profiles::UpdateService do
             aggregate_failures do
               expect(subject.status).to eq(:error)
               expect(subject.message).to eq('Profile parameter missing')
+            end
+          end
+        end
+
+        context 'with tag_list param' do
+          let(:params) { default_params.merge(tag_list: new_tag_list) }
+
+          it 'updates the tags' do
+            subject
+
+            expect(dast_profile.tags).to match_array(new_tags)
+          end
+
+          context 'when there is a invalid tag' do
+            let(:new_tag_list) { %w[invalid_tag] }
+
+            it 'returns an error status' do
+              expect(subject.status).to eq(:error)
+            end
+
+            it 'populates message' do
+              expect(subject.message).to eq('Invalid tags')
+            end
+          end
+
+          context 'when feature flag on_demand_scans_runner_tags is disabled' do
+            before do
+              stub_feature_flags(on_demand_scans_runner_tags: false)
+            end
+
+            it 'returns a success status' do
+              expect(subject.status).to eq(:success)
+            end
+
+            it 'does not update the tags' do
+              updated_profile = dast_profile.reload
+
+              expect(updated_profile.tag_list).to match_array(old_tags.map(&:name))
             end
           end
         end

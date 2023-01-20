@@ -53,18 +53,16 @@ module Mutations
                required: false,
                description: 'Indicates if debug messages should be included in DAST console output. ' \
                             'True to include the debug messages.'
+
       argument :tag_list, [GraphQL::Types::String],
                required: false,
-               description: 'Indicates the runner tags associated with the scanner profile.'
+               description: 'Indicates the runner tags associated with the scanner profile.',
+               deprecated: { reason: 'Moved to DastProfile', milestone: '15.8' }
 
       authorize :create_on_demand_dast_scan
 
       def resolve(id:, full_path: nil, **service_args)
         dast_scanner_profile = authorized_find!(id)
-
-        unless Feature.enabled?(:on_demand_scans_runner_tags, dast_scanner_profile.project)
-          service_args.delete(:tag_list)
-        end
 
         params = { **service_args, id: dast_scanner_profile.id }
         service = ::AppSec::Dast::ScannerProfiles::UpdateService.new(project: dast_scanner_profile.project, current_user: current_user, params: params)

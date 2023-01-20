@@ -2,14 +2,22 @@
 
 require 'spec_helper'
 
-RSpec.describe Mutations::Dast::Profiles::Update do
+RSpec.describe Mutations::Dast::Profiles::Update, :dynamic_analysis,
+                                                  feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:dast_profile, reload: true) { create(:dast_profile, project: project) }
+  let_it_be(:old_tags) do
+    [ActsAsTaggableOn::Tag.create!(name: 'ruby'), ActsAsTaggableOn::Tag.create!(name: 'postgres')]
+  end
+
+  let_it_be(:dast_profile, reload: true) { create(:dast_profile, project: project, tags: old_tags) }
   let_it_be(:new_dast_site_profile) { create(:dast_site_profile, project: project) }
   let_it_be(:new_dast_scanner_profile) { create(:dast_scanner_profile, project: project) }
+
+  let_it_be(:new_tags) { [ActsAsTaggableOn::Tag.create!(name: 'rails'), ActsAsTaggableOn::Tag.create!(name: 'docker')] }
+  let_it_be(:new_tag_list) { new_tags.map(&:name) }
 
   let(:dast_profile_schedule_attrs) { nil }
 
@@ -25,7 +33,8 @@ RSpec.describe Mutations::Dast::Profiles::Update do
       dast_site_profile_id: global_id_of(new_dast_site_profile),
       dast_scanner_profile_id: global_id_of(new_dast_scanner_profile),
       run_after_update: run_after_update,
-      dast_profile_schedule: dast_profile_schedule_attrs
+      dast_profile_schedule: dast_profile_schedule_attrs,
+      tag_list: new_tag_list
     }
   end
 
@@ -81,6 +90,7 @@ RSpec.describe Mutations::Dast::Profiles::Update do
             expect(updated_dast_profile.name).to eq(params[:name])
             expect(updated_dast_profile.description).to eq(params[:description])
             expect(updated_dast_profile.branch_name).to eq(params[:branch_name])
+            expect(updated_dast_profile.tags).to match_array(new_tags)
           end
         end
 
@@ -173,6 +183,20 @@ RSpec.describe Mutations::Dast::Profiles::Update do
             end
 
             expect(subject[:errors]).to include('Profile failed to update')
+          end
+        end
+
+        context 'when feature flag on_demand_scans_runner_tags is disabled' do
+          before do
+            stub_feature_flags(on_demand_scans_runner_tags: false)
+          end
+
+          it 'does not update the tag_list' do
+            subject
+
+            updated_dast_profile = dast_profile.reload
+
+            expect(updated_dast_profile.tags).to match_array(old_tags)
           end
         end
       end
