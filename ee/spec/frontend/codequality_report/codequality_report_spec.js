@@ -4,6 +4,7 @@ import Vuex from 'vuex';
 import MockAdapter from 'axios-mock-adapter';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import CodequalityReportApp from 'ee/codequality_report/codequality_report.vue';
 import PaginationLinks from '~/vue_shared/components/pagination_links.vue';
 import { parsedIssues } from './mock_data';
@@ -62,7 +63,7 @@ describe('Codequality report app', () => {
   describe('on error', () => {
     beforeEach(() => {
       createComponent();
-      mock.onGet(ENDPOINT).reply(500);
+      mock.onGet(ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
     });
 
     it('shows a warning icon and error message', async () => {

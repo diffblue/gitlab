@@ -7,6 +7,7 @@ import testAction from 'helpers/vuex_action_helper';
 
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 
 const ERROR_MESSAGE = 'TEST_ERROR_MESSAGE';
 
@@ -112,7 +113,7 @@ describe('Insights store actions', () => {
 
     describe('failed calls', () => {
       beforeEach(() => {
-        mock.onGet(TEST_HOST).reply(500, { message: ERROR_MESSAGE });
+        mock.onGet(TEST_HOST).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, { message: ERROR_MESSAGE });
       });
 
       it('calls receiveConfigError upon error from service', () => {
@@ -234,7 +235,7 @@ describe('Insights store actions', () => {
 
     describe('failed request', () => {
       beforeEach(() => {
-        mock.onPost(`${TEST_HOST}/query`, chart).reply(500);
+        mock.onPost(`${TEST_HOST}/query`, chart).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
       });
 
       it('calls receiveChartDataError with error message', () => {

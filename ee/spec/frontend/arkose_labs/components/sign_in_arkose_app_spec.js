@@ -4,6 +4,7 @@ import { loadHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import SignInArkoseApp from 'ee/arkose_labs/components/sign_in_arkose_app.vue';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import { logError } from '~/lib/logger';
 import waitForPromises from 'helpers/wait_for_promises';
 import { initArkoseLabsScript } from 'ee/arkose_labs/init_arkose_labs_script';
@@ -342,7 +343,7 @@ describe('SignInArkoseApp', () => {
     });
 
     it('with some other HTTP error, the challenge is initialized', async () => {
-      axiosMock.onPost().reply(500);
+      axiosMock.onPost().reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
       initArkoseLabs(MOCK_USERNAME);
       await waitForPromises();
 

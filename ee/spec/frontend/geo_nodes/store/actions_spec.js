@@ -5,6 +5,7 @@ import createState from 'ee/geo_nodes/store/state';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import {
   MOCK_PRIMARY_VERSION,
   MOCK_REPLICABLE_TYPES,
@@ -55,8 +56,8 @@ describe('GeoNodes Store Actions', () => {
 
     describe('on error', () => {
       beforeEach(() => {
-        mock.onGet(/api\/(.*)\/geo_nodes/).reply(500);
-        mock.onGet(/api\/(.*)\/geo_nodes\/status/).reply(500);
+        mock.onGet(/api\/(.*)\/geo_nodes/).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+        mock.onGet(/api\/(.*)\/geo_nodes\/status/).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
       });
 
       it('should dispatch the correct mutations', () => {
@@ -94,7 +95,7 @@ describe('GeoNodes Store Actions', () => {
 
     describe('on error', () => {
       beforeEach(() => {
-        mock.onDelete(/api\/(.*)\/geo_nodes/).reply(500);
+        mock.onDelete(/api\/(.*)\/geo_nodes/).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
       });
 
       it('should dispatch the correct mutations', () => {

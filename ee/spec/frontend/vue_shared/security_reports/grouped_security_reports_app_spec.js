@@ -12,6 +12,7 @@ import { trimText } from 'helpers/text_helper';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import { waitForMutation, mountExtended } from 'helpers/vue_test_utils_helper';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import { mrStates } from '~/issuable/popover/constants';
 import GroupedIssuesList from '~/ci/reports/components/grouped_issues_list.vue';
 import ReportSection from '~/ci/reports/components/report_section.vue';
@@ -166,13 +167,13 @@ describe('Grouped security reports app', () => {
 
     describe('with error', () => {
       beforeEach(() => {
-        mock.onGet(CONTAINER_SCANNING_DIFF_ENDPOINT).reply(500);
-        mock.onGet(DEPENDENCY_SCANNING_DIFF_ENDPOINT).reply(500);
-        mock.onGet(DAST_DIFF_ENDPOINT).reply(500);
-        mock.onGet(SAST_DIFF_ENDPOINT).reply(500);
-        mock.onGet(SECRET_DETECTION_DIFF_ENDPOINT).reply(500);
-        mock.onGet(COVERAGE_FUZZING_DIFF_ENDPOINT).reply(500);
-        mock.onGet(API_FUZZING_DIFF_ENDPOINT).reply(500);
+        mock.onGet(CONTAINER_SCANNING_DIFF_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+        mock.onGet(DEPENDENCY_SCANNING_DIFF_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+        mock.onGet(DAST_DIFF_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+        mock.onGet(SAST_DIFF_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+        mock.onGet(SECRET_DETECTION_DIFF_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+        mock.onGet(COVERAGE_FUZZING_DIFF_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+        mock.onGet(API_FUZZING_DIFF_ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
         createWrapper(allReportProps);
 

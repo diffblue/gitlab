@@ -10,6 +10,7 @@ import {
   ENTITIES_FETCH_ERROR,
 } from 'ee/admin/application_settings/advanced_search/constants';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import { entities, projectsMock } from '../mock_data';
 
 describe('IndexEntitiesSelector', () => {
@@ -135,7 +136,7 @@ describe('IndexEntitiesSelector', () => {
 
   describe('when request fails', () => {
     beforeEach(() => {
-      mockAxios.onGet(apiPath).reply(500);
+      mockAxios.onGet(apiPath).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
       createComponent();
       openListbox();
       return waitForPromises();

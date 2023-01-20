@@ -673,7 +673,7 @@ describe('security reports actions', () => {
     });
 
     it('with error should dispatch `receiveDismissVulnerabilityError`', async () => {
-      mock.onDelete('dismiss_vulnerability_path/123').reply(500, {});
+      mock.onDelete('dismiss_vulnerability_path/123').reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
       mockedState.modal.vulnerability.dismissalFeedback = { id: 123 };
       mockedState.createVulnerabilityFeedbackDismissalPath = 'dismiss_vulnerability_path';
 
@@ -766,7 +766,7 @@ describe('security reports actions', () => {
     });
 
     it('with error should dispatch `receiveCreateIssueError`', async () => {
-      mock.onPost('create_issue_path').reply(500, {});
+      mock.onPost('create_issue_path').reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
       mockedState.vulnerabilityFeedbackPath = 'create_issue_path';
       mockedState.canReadVulnerabilityFeedback = true;
 
@@ -890,7 +890,7 @@ describe('security reports actions', () => {
     });
 
     it('with error should dispatch `receiveCreateMergeRequestError`', async () => {
-      mock.onPost('create_merge_request_path').reply(500, {});
+      mock.onPost('create_merge_request_path').reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
       mockedState.vulnerabilityFeedbackPath = 'create_merge_request_path';
       mockedState.canReadVulnerabilityFeedback = true;
 
@@ -1114,7 +1114,7 @@ describe('security reports actions', () => {
 
     describe('when vulnerabilities path errors', () => {
       it('should dispatch `receiveContainerScanningError`', async () => {
-        mock.onGet(endpoint).reply(500);
+        mock.onGet(endpoint).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
         mock
           .onGet('vulnerabilities_feedback', {
             params: {
@@ -1149,7 +1149,7 @@ describe('security reports actions', () => {
               category: 'container_scanning',
             },
           })
-          .reply(500);
+          .reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
         await testAction(
           securityReportsAction.fetchContainerScanningDiff,
@@ -1294,7 +1294,7 @@ describe('security reports actions', () => {
 
     describe('when vulnerabilities path errors', () => {
       it('should dispatch `receiveDependencyScanningError`', async () => {
-        mock.onGet('dependency_scanning_diff.json').reply(500);
+        mock.onGet('dependency_scanning_diff.json').reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
         mock
           .onGet('vulnerabilities_feedback', {
             params: {
@@ -1329,7 +1329,7 @@ describe('security reports actions', () => {
               category: 'dependency_scanning',
             },
           })
-          .reply(500);
+          .reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
         await testAction(
           securityReportsAction.fetchDependencyScanningDiff,
@@ -1474,7 +1474,7 @@ describe('security reports actions', () => {
 
     describe('when vulnerabilities path errors', () => {
       it('should dispatch `receiveDastError`', async () => {
-        mock.onGet('dast_diff.json').reply(500);
+        mock.onGet('dast_diff.json').reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
         mock
           .onGet('vulnerabilities_feedback', {
             params: {
@@ -1509,7 +1509,7 @@ describe('security reports actions', () => {
               category: 'dast',
             },
           })
-          .reply(500);
+          .reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
         await testAction(
           securityReportsAction.fetchDastDiff,
@@ -1625,7 +1625,7 @@ describe('security reports actions', () => {
 
     describe('when vulnerabilities path errors', () => {
       it('should dispatch `receiveCoverageFuzzingError`', async () => {
-        mock.onGet('coverage_fuzzing_diff.json').reply(500);
+        mock.onGet('coverage_fuzzing_diff.json').reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
         mock
           .onGet('vulnerabilities_feedback', {
             params: {
@@ -1660,7 +1660,7 @@ describe('security reports actions', () => {
               category: 'coverage_fuzzing',
             },
           })
-          .reply(500);
+          .reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
         await testAction(
           securityReportsAction.fetchCoverageFuzzingDiff,
