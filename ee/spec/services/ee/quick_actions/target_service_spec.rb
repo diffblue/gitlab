@@ -17,7 +17,7 @@ RSpec.describe QuickActions::TargetService do
     context 'for epic' do
       let(:type) { 'Epic' }
 
-      it 'finds target with valid id' do
+      it 'finds target with valid iid' do
         epic = create(:epic, group: group)
 
         target = service.execute(type, epic.iid)
@@ -25,7 +25,7 @@ RSpec.describe QuickActions::TargetService do
         expect(target).to eq(epic)
       end
 
-      it 'builds a new target if id from a different group passed' do
+      it 'builds a new target if iid from a different group passed' do
         epic = create(:epic)
 
         target = service.execute(type, epic.iid)
