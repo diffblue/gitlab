@@ -367,6 +367,12 @@ export const vulnerabilityDetailDiff = {
   after: '<div>after</div>',
 };
 
+export const vulnerabilityDetailCode = {
+  type: 'VulnerabilityDetailCode',
+  name: 'vulnerable code snippet',
+  value: '<h1>hello world</h1>',
+};
+
 export const pipelineSecurityReportFinding = {
   uuid: '1',
   title: 'Vulnerability title',
@@ -433,7 +439,7 @@ export const pipelineSecurityReportFinding = {
     { url: 'http://example.com/asset-1', name: 'assets name - 1' },
     { url: 'http://example.com/asset-2', name: 'assets name - 2' },
   ],
-  details: [vulnerabilityDetailUrl, vulnerabilityDetailDiff],
+  details: [vulnerabilityDetailUrl, vulnerabilityDetailDiff, vulnerabilityDetailCode],
 };
 
 export const getPipelineSecurityReportFindingResponse = (withoutFindingData = false) => ({
