@@ -90,6 +90,7 @@ export default {
     searchable
     is-check-centered
     multiple
+    toggle-class="gl-max-w-26"
     :searching="$apollo.loading"
     :selected="selectedGroupsValues"
     :toggle-text="toggleText"
