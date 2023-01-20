@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Profiles::KeysController, feature_category: :users do
+RSpec.describe Profiles::KeysController, feature_category: :user_profile do
   let(:user) { create(:user) }
 
   describe '#create' do

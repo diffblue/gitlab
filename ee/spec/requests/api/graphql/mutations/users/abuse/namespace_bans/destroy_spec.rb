@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Removing a namespace ban', feature_category: :users do
+RSpec.describe 'Removing a namespace ban', feature_category: :user_profile do
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }

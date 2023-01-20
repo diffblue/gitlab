@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe "Profile access", feature_category: :users do
+RSpec.describe "Profile access", feature_category: :user_profile do
   include AccessMatchers
 
   describe "GET /-/profile/keys" do

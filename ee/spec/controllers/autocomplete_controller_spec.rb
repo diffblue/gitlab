@@ -6,7 +6,7 @@ RSpec.describe AutocompleteController do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, namespace: user.namespace) }
 
-  context 'GET users', feature_category: :users do
+  context 'GET user_profile', feature_category: :user_profile do
     let_it_be(:user2) { create(:user) }
     let_it_be(:non_member) { create(:user) }
 

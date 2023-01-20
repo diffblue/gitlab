@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::UserPermissionExportsController, feature_category: :users do
+RSpec.describe Admin::UserPermissionExportsController, feature_category: :user_profile do
   let_it_be(:admin) { create(:admin) }
 
   subject { get admin_user_permission_exports_path(format: :csv) }

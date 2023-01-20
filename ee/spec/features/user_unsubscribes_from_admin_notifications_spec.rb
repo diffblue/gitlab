@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe "Admin unsubscribes from notification", feature_category: :users do
+RSpec.describe "Admin unsubscribes from notification", feature_category: :user_profile do
   let_it_be(:user) { create(:user) }
   let_it_be(:urlsafe_email) { Base64.urlsafe_encode64(user.email) }
 

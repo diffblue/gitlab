@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Invitations, 'EE Invitations', feature_category: :users do
+RSpec.describe API::Invitations, 'EE Invitations', feature_category: :user_profile do
   include GroupAPIHelpers
 
   let_it_be(:admin) { create(:user, :admin, email: 'admin@example.com') }
