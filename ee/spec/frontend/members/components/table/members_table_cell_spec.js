@@ -89,9 +89,9 @@ describe('MemberTableCell', () => {
         gon.features = { groupOwnersToDisableTwoFactor: true };
       });
 
-      it('returns `true` when `canGetTwoFactorDisabled` is `true`', () => {
+      it('returns `true` when `canDisableTwoFactor` is `true`', () => {
         createComponent({
-          member: { ...directMember, canGetTwoFactorDisabled: true },
+          member: { ...directMember, canDisableTwoFactor: true },
         });
 
         expect(findWrappedComponent().props('permissions').canDisableTwoFactor).toBe(true);
@@ -99,7 +99,7 @@ describe('MemberTableCell', () => {
 
       it('returns `false` when `canDisableTwoFactor` is `false`', () => {
         createComponent({
-          member: { ...directMember, canGetTwoFactorDisabled: false },
+          member: { ...directMember, canDisableTwoFactor: false },
         });
 
         expect(findWrappedComponent().props('permissions').canDisableTwoFactor).toBe(false);
