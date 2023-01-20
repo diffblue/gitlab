@@ -41,9 +41,9 @@ describe('Members Utils', () => {
     });
 
     it.each`
-      member                                               | expected
-      ${{ ...memberMock, canGetTwoFactorDisabled: true }}  | ${true}
-      ${{ ...memberMock, canGetTwoFactorDisabled: false }} | ${false}
+      member                                           | expected
+      ${{ ...memberMock, canDisableTwoFactor: true }}  | ${true}
+      ${{ ...memberMock, canDisableTwoFactor: false }} | ${false}
     `(
       'returns $expected for members whose two factor authentication can be disabled',
       ({ member, expected }) => {

@@ -42,7 +42,7 @@ export const generateBadges = ({ member, isCurrentUser, canManageMembers }) => [
 
 export const canDisableTwoFactor = (member) => {
   if (gon.features?.groupOwnersToDisableTwoFactor) {
-    return Boolean(member.canGetTwoFactorDisabled);
+    return Boolean(member.canDisableTwoFactor);
   }
   return false;
 };

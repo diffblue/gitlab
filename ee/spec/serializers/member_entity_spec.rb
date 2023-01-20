@@ -62,18 +62,18 @@ RSpec.describe MemberEntity, feature_category: :authentication_and_authorization
       expect(entity_hash[:can_unban]).to be(true)
     end
 
-    it 'correctly exposes `can_get_two_factor_disabled`' do
-      allow(member.user).to receive(:can_get_two_factor_disabled?).with(group, current_user).and_return(true)
+    it 'correctly exposes `can_disable_two_factor`' do
+      allow(member.user).to receive(:can_group_owner_disable_two_factor?).with(group, current_user).and_return(true)
       allow(member.user).to receive(:two_factor_enabled?).and_return(true)
 
-      expect(entity_hash[:can_get_two_factor_disabled]).to be(true)
+      expect(entity_hash[:can_disable_two_factor]).to be(true)
     end
 
-    it 'always returns boolean value for `can_get_two_factor_disabled`' do
-      allow(member.user).to receive(:can_get_two_factor_disabled?).with(group, current_user).and_return(nil)
+    it 'always returns boolean value for `can_disable_two_factor`' do
+      allow(member.user).to receive(:can_group_owner_disable_two_factor?).with(group, current_user).and_return(nil)
       allow(member.user).to receive(:two_factor_enabled?).and_return(true)
 
-      expect(entity_hash[:can_get_two_factor_disabled]).to be(false)
+      expect(entity_hash[:can_disable_two_factor]).to be(false)
     end
   end
 

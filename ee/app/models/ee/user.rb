@@ -508,7 +508,7 @@ module EE
       end
     end
 
-    def can_get_two_factor_disabled?(group, user)
+    def can_group_owner_disable_two_factor?(group, user)
       return false unless group && user
 
       group.root? &&

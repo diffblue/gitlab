@@ -85,9 +85,9 @@ describe('MemberList', () => {
         canUnban: true,
       };
 
-      const memberCanGetTwoFactorDisabled = {
+      const memberCanDisableTwoFactor = {
         ...memberMock,
-        canGetTwoFactorDisabled: true,
+        canDisableTwoFactor: true,
       };
 
       const memberNoPermissions = {
@@ -98,7 +98,7 @@ describe('MemberList', () => {
       describe.each([
         ['canOverride', memberCanOverride],
         ['canUnban', memberCanUnban],
-        ['canDisableTwoFactor', memberCanGetTwoFactorDisabled],
+        ['canDisableTwoFactor', memberCanDisableTwoFactor],
       ])('when one of the members has `%s` permissions', (_, memberWithPermission) => {
         beforeEach(() => {
           gon.features = { groupOwnersToDisableTwoFactor: true };

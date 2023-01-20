@@ -1996,7 +1996,7 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
     end
   end
 
-  describe '#can_get_two_factor_disabled?' do
+  describe '#can_group_owner_disable_two_factor?' do
     let_it_be(:group) { create(:group) }
     let_it_be(:owner) { create(:user) }
 
@@ -2010,7 +2010,7 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
 
         context 'when group is root group' do
           it 'returns true' do
-            expect(user.can_get_two_factor_disabled?(group, owner)).to eq true
+            expect(user.can_group_owner_disable_two_factor?(group, owner)).to eq true
           end
         end
 
@@ -2023,7 +2023,7 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
           end
 
           it 'returns false' do
-            expect(user.can_get_two_factor_disabled?(group, owner)).to eq false
+            expect(user.can_group_owner_disable_two_factor?(group, owner)).to eq false
           end
         end
       end
@@ -2032,7 +2032,7 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
         let_it_be(:user) { create(:user) }
 
         it 'returns false' do
-          expect(user.can_get_two_factor_disabled?(group, owner)).to eq false
+          expect(user.can_group_owner_disable_two_factor?(group, owner)).to eq false
         end
       end
     end
@@ -2045,7 +2045,7 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
       end
 
       it 'returns false' do
-        expect(user.can_get_two_factor_disabled?(group, owner)).to eq false
+        expect(user.can_group_owner_disable_two_factor?(group, owner)).to eq false
       end
     end
 
@@ -2053,7 +2053,7 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
       let_it_be(:user) { create(:user, :two_factor, provisioned_by_group_id: group.id) }
 
       it 'returns false' do
-        expect(user.can_get_two_factor_disabled?(group, nil)).to eq false
+        expect(user.can_group_owner_disable_two_factor?(group, nil)).to eq false
       end
     end
   end
