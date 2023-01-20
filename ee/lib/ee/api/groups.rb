@@ -98,8 +98,7 @@ module EE
           def delete_group(group)
             return super unless group.adjourned_deletion?
 
-            if ::Feature.enabled?(:immediate_delete_subgroup_api, group.parent) &&
-                ::Gitlab::Utils.to_boolean(params[:permanently_remove])
+            if ::Gitlab::Utils.to_boolean(params[:permanently_remove])
               error = immediately_delete_subgroup_error(group)
               return super if error.nil?
 

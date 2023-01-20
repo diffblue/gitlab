@@ -1075,17 +1075,7 @@ RSpec.describe API::Groups, feature_category: :subgroups do
                 context 'when the full_path param is passed and it matches the full path of subgroup' do
                   let(:params) { { permanently_remove: true, full_path: subgroup.full_path } }
 
-                  context 'when feature flag is enabled for the group' do
-                    it_behaves_like 'immediately enqueues the job to delete the group'
-                  end
-
-                  context 'when feature flag is disabled for the group' do
-                    before do
-                      stub_feature_flags(immediate_delete_subgroup_api: false)
-                    end
-
-                    it_behaves_like 'does not immediately enqueues the job to delete the group', 'Group has been already marked for deletion'
-                  end
+                  it_behaves_like 'immediately enqueues the job to delete the group'
                 end
               end
 
