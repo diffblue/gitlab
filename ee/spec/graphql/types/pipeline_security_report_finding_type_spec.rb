@@ -288,7 +288,7 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
     let_it_be(:finding_data) { { remediation_byte_offsets: [{ start_byte: 3769, end_byte: 13792 }] } }
 
     let(:response) { GitlabSchema.execute(remediations_query, context: { current_user: user }) }
-    let(:expected_remediation) { dep_scan_findings.flat_map(&:remediations).first }
+    let(:expected_remediation) { dep_scan_findings.flat_map(&:remediations).first.slice('summary', 'diff') }
     let(:response_remediation) { get_findings_from_response(response).second['remediations'].first }
     let(:remediations_query) do
       %(
@@ -314,9 +314,46 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
       dep_scan_findings.first.save!
     end
 
-    it 'returns remediations for the security findings' do
-      expect(response_remediation['summary']).to eq(expected_remediation['summary'])
-      expect(response_remediation['diff']).to eq(expected_remediation['diff'])
+    it 'returns remediations for security findings which have one' do
+      expect(response_remediation).to match(expected_remediation)
+    end
+
+    it 'responds with an empty array for security findings which have none' do
+      expect(dep_scan_findings.map(&:remediations)).to include([])
+    end
+
+    context 'when a remediation does not exist for a single finding query' do
+      let(:response_remediation) { response.dig('data', 'project', 'pipeline', 'securityReportFinding', 'remediations') }
+      let(:remediations_query) do
+        %(
+          query {
+            project(fullPath: "#{project.full_path}") {
+              pipeline(iid: "#{pipeline.iid}") {
+                securityReportFinding(uuid: "#{dep_scan_findings.first.uuid}") {
+                  remediations {
+                    summary
+                    diff
+                  }
+                }
+              }
+            }
+          }
+        )
+      end
+
+      context 'when a vulnerability finding exists for the report finding' do
+        let_it_be(:vulnerability_finding) { create(:vulnerabilities_finding, project: project, uuid: dep_scan_findings.first.uuid) }
+
+        it 'responds with an empty array' do
+          expect(response_remediation).to be_empty
+        end
+      end
+
+      context 'when a vulnerability finding does not exist for the report finding' do
+        it 'responds with an empty array' do
+          expect(response_remediation).to be_empty
+        end
+      end
     end
   end
 
@@ -325,7 +362,7 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
     ::Gitlab::Ci::Parsers.parsers[report.type].parse!(content, report)
     report.merge!(report)
     report.findings.map do |finding|
-      create(:security_finding, uuid: finding.uuid, scan: scan)
+      create(:security_finding, uuid: finding.uuid, scan: scan, deduplicated: true)
     end
   end
 
