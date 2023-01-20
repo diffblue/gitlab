@@ -103,8 +103,8 @@ RSpec.describe 'Groups > Settings > Group Hooks', feature_category: :integration
         WebMock.stub_request(:post, hook.url)
         visit webhooks_path
 
-        find('.hook-test-button.dropdown').click
-        click_link 'Push events'
+        click_button 'Test'
+        click_button 'Push events'
 
         expect(WebMock).to have_requested(:post, hook.url)
         expect(page).to have_current_path(webhooks_path, ignore_query: true)
@@ -114,8 +114,8 @@ RSpec.describe 'Groups > Settings > Group Hooks', feature_category: :integration
       it 'fails testing when there is no project with commits', :js do
         visit webhooks_path
 
-        find('.hook-test-button.dropdown').click
-        click_link 'Push events'
+        click_button 'Test'
+        click_button 'Push events'
 
         expect(page).to have_current_path(webhooks_path, ignore_query: true)
         expect(page).to have_content 'Hook execution failed'
