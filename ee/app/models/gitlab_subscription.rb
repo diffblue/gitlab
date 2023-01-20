@@ -125,23 +125,6 @@ class GitlabSubscription < ApplicationRecord
     trial_extension_type.present?
   end
 
-  def trial_days_remaining
-    (trial_ends_on - Date.current).to_i
-  end
-
-  def trial_duration
-    (trial_ends_on - trial_starts_on).to_i
-  end
-
-  def trial_days_used
-    duration = trial_duration - trial_days_remaining
-    duration.nonzero? || 1 # prevent showing 0 on day 1 of a trial
-  end
-
-  def trial_percentage_complete(decimal_places = 2)
-    (trial_days_used / trial_duration.to_f * 100).round(decimal_places)
-  end
-
   private
 
   def seats_in_use_now

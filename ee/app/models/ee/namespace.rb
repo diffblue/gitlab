@@ -102,8 +102,7 @@ module EE
                 numericality: { only_integer: true, greater_than_or_equal_to: 0, allow_nil: true,
                                 less_than: ::Gitlab::Pages::MAX_SIZE / 1.megabyte }
 
-      delegate :trial_ends_on, :trial_starts_on, :trial_days_remaining,
-        :trial_percentage_complete, to: :gitlab_subscription, allow_nil: true
+      delegate :trial_ends_on, :trial_starts_on, to: :gitlab_subscription, allow_nil: true
 
       before_create :sync_membership_lock_with_parent
 

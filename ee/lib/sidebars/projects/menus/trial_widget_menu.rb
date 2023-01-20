@@ -3,7 +3,7 @@
 module Sidebars
   module Projects
     module Menus
-      class TrialExperimentMenu < ::Sidebars::Groups::Menus::TrialExperimentMenu
+      class TrialWidgetMenu < ::Sidebars::Groups::Menus::TrialWidgetMenu
         private
 
         def root_group
