@@ -16,7 +16,7 @@ module EE
         private
 
         def block_user(user)
-          user.ldap_block
+          user.system_block
         end
       end
     end
