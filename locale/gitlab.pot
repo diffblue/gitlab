@@ -15638,6 +15638,18 @@ msgstr ""
 msgid "Enterprise"
 msgstr ""
 
+msgid "EnterpriseUsers|The user detail cannot be updated"
+msgstr ""
+
+msgid "EnterpriseUsers|The user does not match the \"Enterprise User\" definition for the group"
+msgstr ""
+
+msgid "EnterpriseUsers|The user is already an enterprise user"
+msgstr ""
+
+msgid "EnterpriseUsers|The user is not a member of the group"
+msgstr ""
+
 msgid "Environment"
 msgstr ""
 
