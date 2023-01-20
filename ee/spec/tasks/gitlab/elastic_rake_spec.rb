@@ -2,7 +2,8 @@
 
 require 'rake_helper'
 
-RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_stdout do
+RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_stdout,
+feature_category: :global_search do
   before do
     Rake.application.rake_require 'tasks/gitlab/elastic'
   end

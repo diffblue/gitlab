@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Group do
+RSpec.describe Group, feature_category: :subgroups do
   using RSpec::Parameterized::TableSyntax
 
   let(:group) { create(:group) }
