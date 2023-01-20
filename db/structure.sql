@@ -19656,6 +19656,7 @@ CREATE TABLE plan_limits (
     notification_limit integer DEFAULT 0 NOT NULL,
     dashboard_limit_enabled_at timestamp with time zone,
     web_hook_calls_high integer DEFAULT 0,
+    web_hook_calls integer DEFAULT 0 NOT NULL,
     CONSTRAINT check_0fa68f370e CHECK ((web_hook_calls_high IS NOT NULL))
 );
 
