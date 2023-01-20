@@ -6,6 +6,7 @@ import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
 
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 
 describe('pipeling jobs actions', () => {
   let state;
@@ -180,7 +181,7 @@ describe('pipeling jobs actions', () => {
 
     describe('with server error', () => {
       beforeEach(() => {
-        mock.onGet(state.pipelineJobsPath).replyOnce(404);
+        mock.onGet(state.pipelineJobsPath).replyOnce(HTTP_STATUS_NOT_FOUND);
       });
 
       it('should commit REQUEST_PIPELINE_JOBS and RECEIVE_PIPELINE_JOBS_ERROR mutation', async () => {

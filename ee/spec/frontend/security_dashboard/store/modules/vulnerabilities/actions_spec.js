@@ -7,6 +7,7 @@ import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
 
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 import toast from '~/vue_shared/plugins/global_toast';
 
 import mockDataVulnerabilities from './data/mock_data_vulnerabilities';
@@ -136,10 +137,8 @@ describe('vulnerabilities actions', () => {
     });
 
     describe('on error', () => {
-      const errorCode = 404;
-
       beforeEach(() => {
-        mock.onGet(state.vulnerabilitiesEndpoint).replyOnce(errorCode, {});
+        mock.onGet(state.vulnerabilitiesEndpoint).replyOnce(HTTP_STATUS_NOT_FOUND, {});
       });
 
       it('should dispatch the request and error actions', () => {
@@ -150,7 +149,7 @@ describe('vulnerabilities actions', () => {
           [],
           [
             { type: 'requestVulnerabilities' },
-            { type: 'receiveVulnerabilitiesError', payload: errorCode },
+            { type: 'receiveVulnerabilitiesError', payload: HTTP_STATUS_NOT_FOUND },
           ],
         );
       });
@@ -343,7 +342,9 @@ describe('issue creation', () => {
 
     describe('on error', () => {
       beforeEach(() => {
-        mock.onPost(vulnerability.create_vulnerability_feedback_issue_path).replyOnce(404, {});
+        mock
+          .onPost(vulnerability.create_vulnerability_feedback_issue_path)
+          .replyOnce(HTTP_STATUS_NOT_FOUND, {});
       });
 
       it('should dispatch the request and error actions', () => {
@@ -439,7 +440,9 @@ describe('merge request creation', () => {
 
     describe('on error', () => {
       beforeEach(() => {
-        mock.onPost(vulnerability.vulnerability_feedback_merge_request_path).replyOnce(404, {});
+        mock
+          .onPost(vulnerability.vulnerability_feedback_merge_request_path)
+          .replyOnce(HTTP_STATUS_NOT_FOUND, {});
       });
 
       it('should dispatch the request and error actions', () => {
@@ -560,7 +563,9 @@ describe('vulnerability dismissal', () => {
 
     describe('on error', () => {
       beforeEach(() => {
-        mock.onPost(vulnerability.create_vulnerability_feedback_dismissal_path).replyOnce(404, {});
+        mock
+          .onPost(vulnerability.create_vulnerability_feedback_dismissal_path)
+          .replyOnce(HTTP_STATUS_NOT_FOUND, {});
       });
 
       it('should dispatch the request and error actions', () => {
@@ -750,7 +755,7 @@ describe('add vulnerability dismissal comment', () => {
 
     describe('on error', () => {
       beforeEach(() => {
-        mock.onPatch(url).replyOnce(404);
+        mock.onPatch(url).replyOnce(HTTP_STATUS_NOT_FOUND);
       });
 
       it('should dispatch the request and error actions', () => {
@@ -863,7 +868,7 @@ describe('add vulnerability dismissal comment', () => {
 
     describe('on error', () => {
       beforeEach(() => {
-        mock.onPatch(url).replyOnce(404);
+        mock.onPatch(url).replyOnce(HTTP_STATUS_NOT_FOUND);
       });
 
       it('should dispatch the request and error actions', () => {
@@ -1153,7 +1158,7 @@ describe('revert vulnerability dismissal', () => {
 
     describe('on error', () => {
       beforeEach(() => {
-        mock.onDelete(url).replyOnce(404, {});
+        mock.onDelete(url).replyOnce(HTTP_STATUS_NOT_FOUND, {});
       });
 
       it('should dispatch the request and error actions', () => {

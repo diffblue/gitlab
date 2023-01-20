@@ -9,6 +9,7 @@ import createStore from 'ee/analytics/cycle_analytics/store';
 import * as getters from 'ee/analytics/cycle_analytics/store/getters';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/flash';
+import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 import { groupLabels } from '../mock_data';
 
 jest.mock('~/flash');
@@ -88,7 +89,7 @@ describe('Value Stream Analytics LabelsSelector', () => {
 
     describe('with a failed request', () => {
       beforeEach(() => {
-        mock = mockGroupLabelsRequest(404);
+        mock = mockGroupLabelsRequest(HTTP_STATUS_NOT_FOUND);
         wrapper = createComponent({ state: { defaultGroupLabels: [] } });
 
         return waitForPromises();

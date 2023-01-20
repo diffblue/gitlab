@@ -6,6 +6,7 @@ import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
 
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 
 describe('security configuration module actions', () => {
   let state;
@@ -74,7 +75,7 @@ describe('security configuration module actions', () => {
 
     describe('with server error', () => {
       beforeEach(() => {
-        mock.onGet(state.securityConfigurationPath).replyOnce(404);
+        mock.onGet(state.securityConfigurationPath).replyOnce(HTTP_STATUS_NOT_FOUND);
       });
 
       it('should commit REQUEST_SECURITY_CONFIGURATION and RECEIVE_SECURITY_CONFIGURATION_ERRORmutation', async () => {

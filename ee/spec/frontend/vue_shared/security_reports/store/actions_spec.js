@@ -6,6 +6,7 @@ import testAction from 'helpers/vuex_action_helper';
 import axios from '~/lib/utils/axios_utils';
 import {
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_NOT_FOUND,
   HTTP_STATUS_UNPROCESSABLE_ENTITY,
 } from '~/lib/utils/http_status';
 import toasted from '~/vue_shared/plugins/global_toast';
@@ -430,7 +431,7 @@ describe('security reports actions', () => {
 
     describe('on error', () => {
       beforeEach(() => {
-        mock.onPatch(url).replyOnce(404);
+        mock.onPatch(url).replyOnce(HTTP_STATUS_NOT_FOUND);
       });
 
       it('should dispatch the request and error actions', async () => {
@@ -546,7 +547,7 @@ describe('security reports actions', () => {
 
     describe('on error', () => {
       beforeEach(() => {
-        mock.onPatch(url).replyOnce(404);
+        mock.onPatch(url).replyOnce(HTTP_STATUS_NOT_FOUND);
       });
 
       it('should dispatch the request and error actions', async () => {
