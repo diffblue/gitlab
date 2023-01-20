@@ -19,24 +19,6 @@ module Groups
           super
         end
 
-        def create
-          return render_403 unless can?(current_user, :create_group_stage, @group)
-
-          render_stage_service_result(create_service.execute)
-        end
-
-        def update
-          return render_403 unless can?(current_user, :update_group_stage, @group)
-
-          render_stage_service_result(update_service.execute)
-        end
-
-        def destroy
-          return render_403 unless can?(current_user, :delete_group_stage, @group)
-
-          render_stage_service_result(delete_service.execute)
-        end
-
         def average_duration_chart
           date_with_value = data_collector
             .duration_chart_average_data
@@ -64,42 +46,9 @@ module Groups
           ::Analytics::CycleAnalytics::ValueStream
         end
 
-        def create_service
-          ::Analytics::CycleAnalytics::Stages::CreateService.new(parent: @group, current_user: current_user, params: create_params)
-        end
-
-        def update_service
-          ::Analytics::CycleAnalytics::Stages::UpdateService.new(parent: @group, current_user: current_user, params: update_params)
-        end
-
-        def delete_service
-          ::Analytics::CycleAnalytics::Stages::DeleteService.new(parent: @group, current_user: current_user, params: delete_params)
-        end
-
-        def render_stage_service_result(result)
-          if result.success?
-            stage = ::Analytics::CycleAnalytics::StagePresenter.new(result.payload[:stage])
-            render json: ::Analytics::CycleAnalytics::StageEntity.new(stage), status: result.http_status
-          else
-            render json: { message: result.message, errors: result.payload[:errors] }, status: result.http_status
-          end
-        end
-
         override :all_cycle_analytics_params
         def all_cycle_analytics_params
           super.merge({ group: @group })
-        end
-
-        def update_params
-          params.permit(:name, :start_event_identifier, :end_event_identifier, :id, :move_after_id, :move_before_id, :hidden, :start_event_label_id, :end_event_label_id).merge(list_params)
-        end
-
-        def create_params
-          params.permit(:name, :start_event_identifier, :end_event_identifier, :start_event_label_id, :end_event_label_id).merge(list_params)
-        end
-
-        def delete_params
-          params.permit(:id)
         end
 
         def value_stream

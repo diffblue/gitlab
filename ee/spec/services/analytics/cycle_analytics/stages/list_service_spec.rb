@@ -19,7 +19,25 @@ RSpec.describe Analytics::CycleAnalytics::Stages::ListService do
     stub_licensed_features(cycle_analytics_for_groups: true)
   end
 
-  it_behaves_like 'permission check for Value Stream Analytics Stage services', :cycle_analytics_for_groups
+  describe 'permission check' do
+    context 'when user has no access' do
+      before do
+        group.add_member(user, :guest)
+      end
+
+      it { expect(subject).to be_error }
+      it { expect(subject.http_status).to eq(:forbidden) }
+    end
+
+    context 'when license is missing' do
+      before do
+        stub_licensed_features(cycle_analytics_for_groups: false)
+      end
+
+      it { expect(subject).to be_error }
+      it { expect(subject.http_status).to eq(:forbidden) }
+    end
+  end
 
   it 'returns empty array' do
     expect(stages.size).to eq(0)

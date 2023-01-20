@@ -31,14 +31,6 @@ RSpec.describe Analytics::CycleAnalytics::Stage, feature_category: :value_stream
     let_it_be(:parent_outside_of_group_label_scope) { create(:group) }
   end
 
-  describe 'relative positioning' do
-    it_behaves_like 'a class that supports relative positioning' do
-      let(:parent) { create(:group) }
-      let(:factory) { :cycle_analytics_stage }
-      let(:default_params) { { parent: parent } }
-    end
-  end
-
   describe '.distinct_stages_within_hierarchy' do
     let_it_be(:group) { create(:group) }
     let_it_be(:sub_group) { create(:group, parent: group) }

@@ -82,10 +82,11 @@ class Gitlab::Seeder::CustomizableCycleAnalytics
       }
     ]
 
+    value_stream = ::Analytics::CycleAnalytics::ValueStream.create!(namespace: group, name: 'Test Value Stream')
     stages_params.each do |params|
-      next if ::Analytics::CycleAnalytics::Stage.where(group: group).find_by(name: params[:name])
+      next if ::Analytics::CycleAnalytics::Stage.where(namespace: group).find_by(name: params[:name])
 
-      ::Analytics::CycleAnalytics::Stages::CreateService.new(parent: group, current_user: user, params: params).execute
+      ::Analytics::CycleAnalytics::Stage.create!(params.merge(namespace: group, value_stream: value_stream))
     end
   end
 
