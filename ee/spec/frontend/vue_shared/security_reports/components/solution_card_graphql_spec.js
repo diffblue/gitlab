@@ -16,6 +16,7 @@ describe('Solution Card GraphQL', () => {
   const findGlCard = () => wrapper.findComponent(GlCard);
   const findSolutionTitle = () => wrapper.findByTestId('solution-title');
   const findSolutionText = () => wrapper.findByTestId('solution-text');
+  const findMergeRequestSolution = () => wrapper.findByTestId('merge-request-solution');
 
   afterEach(() => {
     wrapper.destroy();
@@ -47,5 +48,29 @@ describe('Solution Card GraphQL', () => {
       createWrapper({ propsData: { solution: TEST_SOLUTION, remediation: TEST_REMEDIATION } });
       expect(findSolutionText().text()).toBe(TEST_SOLUTION);
     });
+  });
+
+  describe('create merge request text', () => {
+    const hasMergeRequest = { id: 123 };
+    const noMergeRequest = null;
+
+    it.each`
+      mergeRequest       | diff     | exists
+      ${hasMergeRequest} | ${'abc'} | ${false}
+      ${hasMergeRequest} | ${''}    | ${false}
+      ${hasMergeRequest} | ${null}  | ${false}
+      ${noMergeRequest}  | ${''}    | ${false}
+      ${noMergeRequest}  | ${null}  | ${false}
+      ${noMergeRequest}  | ${'abc'} | ${true}
+    `(
+      `renders $exists when "mergeRequest=$mergeRequest" and "diff=$diff"`,
+      ({ mergeRequest, diff, exists }) => {
+        const remediation = { ...TEST_REMEDIATION, diff };
+
+        createWrapper({ propsData: { mergeRequest, remediation } });
+
+        expect(findMergeRequestSolution().exists()).toBe(exists);
+      },
+    );
   });
 });
