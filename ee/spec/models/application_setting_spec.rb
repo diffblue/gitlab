@@ -285,9 +285,9 @@ RSpec.describe ApplicationSetting do
         it { is_expected.not_to allow_value(nil).for(:jitsu_administrator_password) }
         it { is_expected.not_to allow_value("").for(:jitsu_administrator_password) }
 
-        it { is_expected.to allow_value('https://user:pass@clickhouse.gitlab.com:8123').for(:clickhouse_connection_string) }
-        it { is_expected.not_to allow_value(nil).for(:clickhouse_connection_string) }
-        it { is_expected.not_to allow_value("").for(:clickhouse_connection_string) }
+        it { is_expected.to allow_value('https://user:pass@clickhouse.gitlab.com:8123').for(:product_analytics_clickhouse_connection_string) }
+        it { is_expected.not_to allow_value(nil).for(:product_analytics_clickhouse_connection_string) }
+        it { is_expected.not_to allow_value("").for(:product_analytics_clickhouse_connection_string) }
 
         it { is_expected.to allow_value('https://cube.gitlab.com').for(:cube_api_base_url) }
         it { is_expected.to allow_value('https://localhost:4000').for(:cube_api_base_url) }
@@ -308,7 +308,7 @@ RSpec.describe ApplicationSetting do
         it { is_expected.to allow_value(nil).for(:jitsu_project_xid) }
         it { is_expected.to allow_value(nil).for(:jitsu_administrator_email) }
         it { is_expected.to allow_value(nil).for(:jitsu_administrator_password) }
-        it { is_expected.to allow_value(nil).for(:clickhouse_connection_string) }
+        it { is_expected.to allow_value(nil).for(:product_analytics_clickhouse_connection_string) }
         it { is_expected.to allow_value(nil).for(:cube_api_base_url) }
         it { is_expected.to allow_value(nil).for(:cube_api_key) }
       end

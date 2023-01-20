@@ -38,8 +38,8 @@
           .form-text.text-muted
             = s_('AdminSettings|Used to generate short-lived API access tokens.')
         .form-group
-          = f.label :clickhouse_connection_string, s_('AdminSettings|Clickhouse URL'), class: 'label-light'
-          = f.url_field :clickhouse_connection_string, class: 'form-control gl-form-input', placeholder: 'https://user:pass@clickhouse.gitlab.com:8123'
+          = f.label :product_analytics_clickhouse_connection_string, s_('AdminSettings|Clickhouse URL'), class: 'label-light'
+          = f.url_field :product_analytics_clickhouse_connection_string, class: 'form-control gl-form-input', placeholder: 'https://user:pass@clickhouse.gitlab.com:8123'
           .form-text.text-muted
             = s_('AdminSettings|Used to connect Jitsu to the Clickhouse instance.')
         .form-group
