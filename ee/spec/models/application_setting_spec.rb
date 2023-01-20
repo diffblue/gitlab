@@ -126,7 +126,7 @@ RSpec.describe ApplicationSetting do
       it { is_expected.not_to allow_value(nil).for(:dashboard_limit_enabled) }
     end
 
-    describe 'when additional email text is enabled', feature_category: :users do
+    describe 'when additional email text is enabled', feature_category: :user_profile do
       before do
         stub_licensed_features(email_additional_text: true)
       end

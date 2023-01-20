@@ -29,7 +29,7 @@ RSpec.describe UsersController do
     end
   end
 
-  describe 'GET #available_group_templates', feature_category: :users do
+  describe 'GET #available_group_templates', feature_category: :user_profile do
     context 'a user requests templates for themselves' do
       it 'responds successfully' do
         get :available_group_templates, params: { username: user.username }, xhr: true

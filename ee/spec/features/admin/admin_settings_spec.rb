@@ -350,7 +350,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
   end
 
-  context 'sign up settings', :js, feature_category: :users do
+  context 'sign up settings', :js, feature_category: :user_profile do
     before do
       visit general_admin_application_settings_path
     end

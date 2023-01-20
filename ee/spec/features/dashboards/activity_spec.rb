@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Dashboard activity', feature_category: :users do
+RSpec.describe 'Dashboard activity', feature_category: :user_profile do
   let(:user) { create(:user) }
   let(:page_path) { activity_dashboard_path }
 
