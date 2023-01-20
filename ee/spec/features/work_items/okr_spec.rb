@@ -86,11 +86,19 @@ RSpec.describe 'OKR', :js, feature_category: :product_planning do
     end
 
     context 'in child metadata' do
-      it 'displays progress of 0% by default' do
+      it 'displays progress of 0% by default, in tree and modal' do
         create_okr('objective', 'Objective 2')
 
         page.within('[data-testid="work-item-tree"]') do
           expect(page).to have_content('Objective 2')
+          expect(page).to have_content('0%')
+
+          click_link 'Objective 2'
+        end
+
+        wait_for_all_requests
+
+        page.within('[data-testid="work-item-detail-modal"]') do
           expect(page).to have_content('0%')
         end
       end
