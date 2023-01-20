@@ -35,6 +35,9 @@ module EE
       has_many :protected_environments, inverse_of: :group
       has_one :insight, foreign_key: :namespace_id
       accepts_nested_attributes_for :insight, allow_destroy: true
+      has_one :analytics_dashboards_pointer, class_name: 'Analytics::DashboardsPointer', foreign_key: :namespace_id
+      accepts_nested_attributes_for :analytics_dashboards_pointer, allow_destroy: true
+      has_one :analytics_dashboards_configuration_project, through: :analytics_dashboards_pointer, source: :project
       has_one :scim_oauth_access_token
       has_one :index_status, class_name: 'Elastic::GroupIndexStatus', foreign_key: :namespace_id
       has_many :external_audit_event_destinations, class_name: "AuditEvents::ExternalAuditEventDestination", foreign_key: 'namespace_id'

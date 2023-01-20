@@ -33,6 +33,8 @@ RSpec.describe Group do
     it { is_expected.to have_many(:iterations_cadences) }
     it { is_expected.to have_many(:epic_board_recent_visits).inverse_of(:group) }
     it { is_expected.to have_many(:external_audit_event_destinations) }
+    it { is_expected.to have_one(:analytics_dashboards_pointer) }
+    it { is_expected.to have_one(:analytics_dashboards_configuration_project) }
 
     it_behaves_like 'model with wiki' do
       let(:container) { create(:group, :nested, :wiki_repo) }

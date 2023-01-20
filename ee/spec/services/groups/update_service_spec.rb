@@ -371,6 +371,32 @@ RSpec.describe Groups::UpdateService, '#execute' do
     end
   end
 
+  context 'updating analytics_dashboards_pointer_attributes.project_id param' do
+    let(:attrs) { { analytics_dashboards_pointer_attributes: { project_id: private_project.id } } }
+    let(:private_project) do
+      create(:project, :private).tap do |project|
+        project.add_maintainer(user)
+      end
+    end
+
+    it 'updates the Analytics Dashboards pointer project' do
+      update_group(group, user, attrs)
+
+      expect(group.analytics_dashboards_pointer.project).to eq(private_project)
+    end
+
+    context 'when pointer project is empty' do
+      let(:existing_pointer) { create(:analytics_dashboards_pointer, namespace: group, project: private_project) }
+      let(:attrs) { { analytics_dashboards_pointer_attributes: { id: existing_pointer.id, project_id: '' } } }
+
+      it 'removes pointer project' do
+        update_group(group, user, attrs)
+
+        expect(group.reload.analytics_dashboards_pointer).to eq(nil)
+      end
+    end
+  end
+
   context 'updating `max_personal_access_token_lifetime` param' do
     subject { update_group(group, user, attrs) }
 
@@ -382,7 +408,7 @@ RSpec.describe Groups::UpdateService, '#execute' do
     let(:attrs) { { max_personal_access_token_lifetime: limit } }
 
     shared_examples_for 'it does not call the update lifetime service' do
-      it 'doesn not call the update lifetime service' do
+      it "doesn't call the update lifetime service" do
         expect(::PersonalAccessTokens::Groups::UpdateLifetimeService).not_to receive(:new)
 
         subject
