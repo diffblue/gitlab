@@ -39,7 +39,7 @@ module QA
                     select_member(user.username)
                   end
                   rule.key?(:groups) && rule[:groups].each do |group|
-                    select_member(group.name)
+                    select_member(group.full_path)
                   end
 
                   click_approvers_modal_ok_button
