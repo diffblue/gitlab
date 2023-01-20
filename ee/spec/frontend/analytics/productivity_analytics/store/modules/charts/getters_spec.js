@@ -1,3 +1,4 @@
+import { HTTP_STATUS_FORBIDDEN } from '~/lib/utils/http_status';
 import {
   metricTypes,
   chartKeys,
@@ -246,7 +247,7 @@ describe('Productivity analytics chart getters', () => {
 
   describe('hasNoAccessError', () => {
     it('returns true if errorCode is set to 403', () => {
-      state.charts[chartKeys.main].errorCode = 403;
+      state.charts[chartKeys.main].errorCode = HTTP_STATUS_FORBIDDEN;
       expect(getters.hasNoAccessError(state)).toEqual(true);
     });
 

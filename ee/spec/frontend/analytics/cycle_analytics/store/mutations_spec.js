@@ -1,3 +1,4 @@
+import { HTTP_STATUS_FORBIDDEN } from '~/lib/utils/http_status';
 import * as types from 'ee/analytics/cycle_analytics/store/mutation_types';
 import mutations from 'ee/analytics/cycle_analytics/store/mutations';
 import {
@@ -175,7 +176,7 @@ describe('Value Stream Analytics mutations', () => {
 
   describe(`${types.RECEIVE_VALUE_STREAM_DATA_ERROR}`, () => {
     it('sets errorCode correctly', () => {
-      const errorCode = 403;
+      const errorCode = HTTP_STATUS_FORBIDDEN;
 
       mutations[types.RECEIVE_VALUE_STREAM_DATA_ERROR](state, errorCode);
 

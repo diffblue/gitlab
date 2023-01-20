@@ -14,7 +14,11 @@ import {
   I18N_VSA_ERROR_STAGE_MEDIAN,
 } from '~/analytics/cycle_analytics/constants';
 import { createAlert } from '~/flash';
-import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
+import {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_FORBIDDEN,
+  HTTP_STATUS_OK,
+} from '~/lib/utils/http_status';
 import { allowedStages as stages, valueStreams, endpoints, groupLabels } from '../mock_data';
 
 const group = { fullPath: 'fake_group_full_path' };
@@ -203,7 +207,7 @@ describe('Value Stream Analytics actions', () => {
 
   describe('receiveCycleAnalyticsDataError', () => {
     it(`commits the ${types.RECEIVE_VALUE_STREAM_DATA_ERROR} mutation on a 403 response`, () => {
-      const response = { status: 403 };
+      const response = { status: HTTP_STATUS_FORBIDDEN };
       return testAction(
         actions.receiveCycleAnalyticsDataError,
         { response },
