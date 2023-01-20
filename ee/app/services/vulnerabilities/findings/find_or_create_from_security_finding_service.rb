@@ -29,8 +29,35 @@ errors: vulnerability_finding.errors.full_messages.join(', '))
         return vulnerability_finding if vulnerability_finding.present?
 
         vulnerability_finding = build_vulnerability_finding(security_finding)
-        vulnerability_finding.save
+
+        Vulnerabilities::Finding.transaction do
+          save_identifiers(vulnerability_finding.identifiers)
+
+          raise ActiveRecord::Rollback unless vulnerability_finding.save
+        end
+
         vulnerability_finding
+      end
+
+      def save_identifiers(identifiers)
+        return if identifiers.blank?
+
+        identifiers = identifiers.each do |identifier|
+          identifier.created_at = identifier.updated_at = Time.zone.now
+        end
+
+        identifier_ids = Vulnerabilities::Identifier.bulk_upsert!(
+          identifiers,
+          unique_by: %i[project_id fingerprint],
+          returns: :id
+        )
+
+        identifier_ids.each_with_index do |id, index|
+          identifiers[index].id = id
+          # We need to mark the identifiers as persisted, otherwise ActiveRecord
+          # will try to insert identifiers again while saving the finding object
+          identifiers[index].instance_variable_set(:@new_record, false)
+        end
       end
 
       def security_finding

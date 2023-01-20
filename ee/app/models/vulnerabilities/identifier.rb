@@ -38,5 +38,10 @@ module Vulnerabilities
     def other?
       !(cve? || cwe?)
     end
+
+    # This is included at the bottom of the model definition because
+    # BulkInsertSafe complains about the autosave callbacks generated
+    # for the `has_many` associations otherwise.
+    include BulkInsertSafe
   end
 end
