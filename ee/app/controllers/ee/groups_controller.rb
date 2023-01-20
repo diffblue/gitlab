@@ -87,6 +87,7 @@ module EE
         :new_user_signups_cap
       ].tap do |params_ee|
         params_ee << { insight_attributes: [:id, :project_id, :_destroy] } if current_group&.insights_available?
+        params_ee << { analytics_dashboards_pointer_attributes: [:id, :project_id, :_destroy] } if current_group&.feature_available?(:group_level_analytics_dashboard)
         params_ee << :file_template_project_id if current_group&.feature_available?(:custom_file_templates_for_namespace)
         params_ee << :custom_project_templates_group_id if current_group&.group_project_template_available?
         params_ee << :ip_restriction_ranges if current_group && ip_restriction_feature_available?(current_group)

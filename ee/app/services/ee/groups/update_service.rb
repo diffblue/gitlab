@@ -13,9 +13,9 @@ module EE
           return false if group.errors.present?
         end
 
-        handle_changes
+        prepare_params!
 
-        remove_insight_if_insight_project_absent
+        handle_changes
 
         return false if group.errors.present?
 
@@ -86,10 +86,16 @@ module EE
         ).execute.exists?
       end
 
-      def remove_insight_if_insight_project_absent
-        if params.dig(:insight_attributes, :project_id) == ''
-          params[:insight_attributes][:_destroy] = true
-          params[:insight_attributes].delete(:project_id)
+      def prepare_params!
+        destroy_association_if_project_is_empty(:insight)
+        destroy_association_if_project_is_empty(:analytics_dashboards_pointer)
+      end
+
+      def destroy_association_if_project_is_empty(association_name)
+        attributes_path = :"#{association_name}_attributes"
+        if params.dig(attributes_path, :project_id) == ''
+          params[attributes_path][:_destroy] = true
+          params[attributes_path].delete(:project_id)
         end
       end
 

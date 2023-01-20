@@ -19861,6 +19861,9 @@ msgstr ""
 msgid "GroupSelect|Select a group"
 msgstr ""
 
+msgid "GroupSettings|Analytics Dashboards"
+msgstr ""
+
 msgid "GroupSettings|Applied to all subgroups unless overridden by a group owner. Groups already added to the project lose access."
 msgstr ""
 
@@ -19963,6 +19966,12 @@ msgstr ""
 msgid "GroupSettings|Select parent group"
 msgstr ""
 
+msgid "GroupSettings|Select the project containing Analytics Dashboards configuration files"
+msgstr ""
+
+msgid "GroupSettings|Select the project containing Analytics Dashboards configuration files."
+msgstr ""
+
 msgid "GroupSettings|Select the project containing the %{code_start}.gitlab/insights.yml%{code_end} file"
 msgstr ""
 
@@ -20000,6 +20009,9 @@ msgid "GroupSettings|Users can create %{link_start_project}project access tokens
 msgstr ""
 
 msgid "GroupSettings|What are badges?"
+msgstr ""
+
+msgid "GroupSettings|What is Analytics Dashboards?"
 msgstr ""
 
 msgid "GroupSettings|What is Insights?"
