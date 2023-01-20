@@ -39,7 +39,7 @@ module QA
           Page::Dashboard::Todos.perform do |todos|
             todos.wait_until(reload: true, sleep_interval: 1) { todos.has_todo_list? }
 
-            expect(todos).to have_latest_todo_item_with_content("Removed from Merge Train", mr_title)
+            expect(todos).to have_latest_todo_with_title(title: mr_title, action: "Removed from Merge Train")
           end
         end
       end
