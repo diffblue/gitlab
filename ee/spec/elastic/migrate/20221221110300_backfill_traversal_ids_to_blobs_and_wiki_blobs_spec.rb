@@ -70,11 +70,11 @@ feature_category: :global_search do
         allow(migration).to receive(:completed?).and_return(false)
       end
 
-      it 'log failure when project is not found' do
+      it 'logs failure when project is not found and schedules ElasticDeleteProjectWorker' do
         migration.migrate
         expect(migration).to receive(:log).with(/Searching for the projects with missing traversal_ids/).once
-        expect(migration).to receive(:log).with(/projects with missing traversal_ids/).once
         expect(migration).to receive(:log).with(/Project not found/).once
+        expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(0, "project_0")
         migration.migrate
       end
     end
@@ -99,8 +99,8 @@ feature_category: :global_search do
           it 'resets task_id' do
             migration.set_migration_state(task_id: 'task_1') # simulate a task in progress
 
-            expect { migration.migrate }.to raise_error(/Failed to update projects/)
-            expect(migration.migration_state).to match(task_id: nil)
+            expect { migration.migrate }.to raise_error(/Failed to update project/)
+            expect(migration.migration_state).to match(task_id: nil, project_id: nil)
           end
         end
 
@@ -111,15 +111,15 @@ feature_category: :global_search do
           it 'sets task_id to nil' do
             migration.set_migration_state(task_id: nil) # simulate a new task being created
 
-            expect { migration.migrate }.to raise_error(/Failed to update project with project_id/)
-            expect(migration.migration_state).to match(task_id: nil)
+            expect { migration.migrate }.to raise_error(/Failed to update project/)
+            expect(migration.migration_state).to match(task_id: nil, project_id: nil)
           end
         end
       end
     end
   end
 
-  describe 'integration test' do
+  describe 'integration test', :elastic_clean do
     before do
       set_elasticsearch_migration_to(old_version_without_traversal_ids, including: false)
 
@@ -132,20 +132,23 @@ feature_category: :global_search do
       set_elasticsearch_migration_to(version, including: false)
     end
 
-    it 'updates all documents in single batch' do
-      expect(migration.completed?).to be_falsey
+    it 'updates documents one project at a time' do
+      projects.each do |p|
+        expect(migration.completed?).to eq(false)
+        expect(migration).to receive(:update_by_query).once.and_call_original
 
-      migration.migrate
-
-      expect(migration.migration_state).to match(task_id: anything)
-
-      # the migration might not complete after the initial task is created
-      # so make sure it actually completes
-      100.times do |_| # Max 1s waiting
         migration.migrate
-        break if migration.migration_state[:task_id].nil?
+        expect(migration.migration_state).to match(task_id: anything, project_id: p.id)
 
-        sleep 0.01
+        # ensure project is done processing
+        20.times do |_| # Max 0.2s waiting
+          migration.migrate
+          break if migration.migration_state[:task_id].nil?
+
+          sleep 0.01
+        end
+
+        expect(migration.migration_state).to match(task_id: nil, project_id: nil)
       end
 
       expect(migration.completed?).to be_truthy
@@ -156,33 +159,11 @@ feature_category: :global_search do
         allow(migration).to receive(:batch_size).and_return(2)
       end
 
-      it 'tracks all blobs and wiki_blobs in two iterations in one batch' do
-        # First batch
-        # the migration might not complete after the initial task is created
-        # so make sure it actually completes
-        50.times do |_| # Max 0.5s waiting
-          migration.migrate
-          break if migration.migration_state[:task_id].nil?
-
-          sleep 0.01
-        end
-
-        expect(migration.completed?).to be_falsey
-
-        # Second batch
-        # the migration might not complete after the initial task is created
-        # so make sure it actually completes
-        100.times do |_| # Max 1s waiting
-          migration.migrate
-          break if migration.completed?
-
-          sleep 0.01
-        end
+      it 'updates documents in multiple batches' do
+        expect(migration.completed?).to eq(false)
+        expect(helper.client).to receive(:update_by_query).with(a_hash_including(max_docs: 2)).once.and_call_original
 
         migration.migrate
-
-        expect(migration.completed?).to be_truthy
-        expect(migration.migration_state).to match(task_id: nil)
       end
     end
   end
