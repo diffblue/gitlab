@@ -13,8 +13,6 @@ module AppSec
           return ServiceResponse.error(message: _('Scanner profile not found for given parameters')) unless dast_scanner_profile
           return ServiceResponse.error(message: _('Cannot modify %{profile_name} referenced in security policy') % { profile_name: dast_scanner_profile.name }) if referenced_in_security_policy?(dast_scanner_profile)
 
-          return ServiceResponse.error(message: 'Invalid tag_list') unless valid_tags?
-
           old_params = dast_scanner_profile.attributes.symbolize_keys
           update_params = update_params(params[:profile_name])
 
@@ -46,8 +44,6 @@ module AppSec
         end
 
         def create_audit_events(profile, params, old_params)
-          params.delete(:tags) if tag_list?
-
           params.each do |property, new_value|
             old_value = old_params[property]
 
@@ -66,7 +62,6 @@ module AppSec
         def update_params(profile_name)
           params = base_params
           params[:name] = profile_name
-          params[:tags] = tags if tag_list?
           params.compact
         end
       end

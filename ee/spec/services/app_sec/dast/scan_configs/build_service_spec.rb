@@ -45,15 +45,73 @@ RSpec.describe AppSec::Dast::ScanConfigs::BuildService, :dynamic_analysis, featu
     shared_examples 'build service execute tests' do
       context 'when a dast_profile is provided' do
         let(:params) { { dast_profile: dast_profile } }
-
-        it 'returns a dast_profile, branch and YAML configuration' do
-          expected_payload = {
+        let(:expected_payload) do
+          {
             dast_profile: dast_profile,
             branch: dast_profile.branch_name,
             ci_configuration: expected_yaml_configuration
           }
+        end
 
+        shared_examples 'a payload with a dast_profile' do
+          it 'returns a branch and YAML configuration' do
+            expected_payload = {
+              dast_profile: dast_profile,
+              branch: dast_profile.branch_name,
+              ci_configuration: expected_yaml_configuration
+            }
+
+            expect(subject.payload).to eq(expected_payload)
+          end
+        end
+
+        it 'returns a dast_profile, branch and YAML configuration' do
           expect(subject.payload).to eq(expected_payload)
+        end
+
+        context 'when the dast_profile has tag_list' do
+          context 'when feature flag on_demand_scans_runner_tags is disabled' do
+            before do
+              stub_feature_flags(on_demand_scans_runner_tags: false)
+            end
+
+            it_behaves_like 'a payload with a dast_profile'
+          end
+
+          context 'when feature flag on_demand_scans_runner_tags is enabled' do
+            let_it_be(:tags) { [ActsAsTaggableOn::Tag.create!(name: 'ruby'), ActsAsTaggableOn::Tag.create!(name: 'postgres')] }
+            let_it_be(:dast_profile) do
+              create(:dast_profile,
+                     project: project,
+                     dast_site_profile: dast_site_profile,
+                     dast_scanner_profile: dast_scanner_profile,
+                     branch_name: 'master',
+                     tags: tags)
+            end
+
+            let(:expected_yaml_configuration) do
+              <<~YAML
+                ---
+                stages:
+                - dast
+                include:
+                - template: #{template}
+                dast:
+                  dast_configuration:
+                    site_profile: #{dast_site_profile.name}
+                    scanner_profile: #{dast_scanner_profile.name}
+                  tags:
+                  - ruby
+                  - postgres
+              YAML
+            end
+
+            it_behaves_like 'a payload with a dast_profile'
+          end
+        end
+
+        context 'when the scanner profile has no runner tags' do
+          it_behaves_like 'a payload with a dast_profile'
         end
       end
 
@@ -84,44 +142,6 @@ RSpec.describe AppSec::Dast::ScanConfigs::BuildService, :dynamic_analysis, featu
               expect(subject).not_to be_success
               expect(subject.message).to eq('Cannot run active scan against unvalidated target')
             end
-          end
-
-          context 'when the dast_scanner_profile has tag_list' do
-            context 'when feature flag on_demand_scans_runner_tags is disabled' do
-              before do
-                stub_feature_flags(on_demand_scans_runner_tags: false)
-              end
-
-              it_behaves_like 'a payload without a dast_profile'
-            end
-
-            context 'when feature flag on_demand_scans_runner_tags is enabled' do
-              let_it_be(:tags) { [ActsAsTaggableOn::Tag.create!(name: 'ruby'), ActsAsTaggableOn::Tag.create!(name: 'postgres')] }
-              let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project, tags: tags) }
-
-              let(:expected_yaml_configuration) do
-                <<~YAML
-                  ---
-                  stages:
-                  - dast
-                  include:
-                  - template: #{template}
-                  dast:
-                    dast_configuration:
-                      site_profile: #{dast_site_profile.name}
-                      scanner_profile: #{dast_scanner_profile.name}
-                    tags:
-                    - ruby
-                    - postgres
-                YAML
-              end
-
-              it_behaves_like 'a payload without a dast_profile'
-            end
-          end
-
-          context 'when the scanner profile has no runner tags' do
-            it_behaves_like 'a payload without a dast_profile'
           end
         end
 
@@ -163,18 +183,18 @@ RSpec.describe AppSec::Dast::ScanConfigs::BuildService, :dynamic_analysis, featu
       end
     end
 
+    context 'when the target_type is NOT api' do
+      let(:template) { on_demand_scan_template }
+
+      it_behaves_like 'build service execute tests'
+    end
+
     context 'when the target_type is api' do
       before do
         dast_site_profile.target_type = 'api'
       end
 
       let(:template) { api_scan_template }
-
-      it_behaves_like 'build service execute tests'
-    end
-
-    context 'when the target_type is NOT api' do
-      let(:template) { on_demand_scan_template }
 
       it_behaves_like 'build service execute tests'
     end

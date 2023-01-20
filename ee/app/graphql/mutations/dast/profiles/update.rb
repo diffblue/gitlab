@@ -61,6 +61,10 @@ module Mutations
                  description: 'Run scan using profile after update. Defaults to false.',
                  default_value: false
 
+        argument :tag_list, [GraphQL::Types::String],
+                 required: false,
+                 description: 'Indicates the runner tags associated with the profile.'
+
         authorize :create_on_demand_dast_scan
 
         def resolve(id:, name:, description:, full_path: nil, branch_name: nil, dast_scanner_profile_id: nil, run_after_update: false, **args)
@@ -77,8 +81,10 @@ module Mutations
             run_after_update: run_after_update
           }.compact
 
+          params[:tag_list] = args[:tag_list] if Feature.enabled?(:on_demand_scans_runner_tags, dast_profile.project)
+
           response = ::AppSec::Dast::Profiles::UpdateService.new(
-            container: dast_profile.project,
+            project: dast_profile.project,
             current_user: current_user,
             params: params
           ).execute

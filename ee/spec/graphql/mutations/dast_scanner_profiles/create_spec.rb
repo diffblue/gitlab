@@ -9,14 +9,11 @@ RSpec.describe Mutations::DastScannerProfiles::Create, :dynamic_analysis,
   let(:user) { create(:user) }
   let(:full_path) { project.full_path }
   let(:profile_name) { SecureRandom.hex }
-  let(:tag_list) { %w[ruby postgres] }
   let(:dast_scanner_profile) { DastScannerProfile.find_by(project: project, name: profile_name) }
 
   subject(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
 
   before do
-    ActsAsTaggableOn::Tag.create!(name: 'ruby')
-    ActsAsTaggableOn::Tag.create!(name: 'postgres')
     stub_licensed_features(security_on_demand_scans: true)
   end
 
@@ -29,8 +26,7 @@ RSpec.describe Mutations::DastScannerProfiles::Create, :dynamic_analysis,
         profile_name: profile_name,
         scan_type: DastScannerProfile.scan_types[:passive],
         use_ajax_spider: false,
-        show_debug_messages: false,
-        tag_list: tag_list
+        show_debug_messages: false
       )
     end
 
@@ -66,8 +62,7 @@ RSpec.describe Mutations::DastScannerProfiles::Create, :dynamic_analysis,
             name: profile_name,
             scan_type: DastScannerProfile.scan_types[:passive],
             show_debug_messages: false,
-            use_ajax_spider: false,
-            tag_list: tag_list
+            use_ajax_spider: false
           }
         }
 
@@ -76,34 +71,6 @@ RSpec.describe Mutations::DastScannerProfiles::Create, :dynamic_analysis,
         expect(service).to receive(:execute).and_return(result)
 
         subject
-      end
-
-      context 'when feature flag on_demand_scans_runner_tags is disabled' do
-        before do
-          stub_feature_flags(on_demand_scans_runner_tags: false)
-        end
-
-        it 'calls the dast_scanner_profile creation service without the tag_list' do
-          service = double(described_class)
-          result = double('result', success?: false, errors: [])
-
-          args = {
-            project: project,
-            current_user: user,
-            params: {
-              name: profile_name,
-              scan_type: DastScannerProfile.scan_types[:passive],
-              show_debug_messages: false,
-              use_ajax_spider: false
-            }
-          }
-
-          expect(::AppSec::Dast::ScannerProfiles::CreateService).to receive(:new).with(args).and_return(service)
-
-          expect(service).to receive(:execute).and_return(result)
-
-          subject
-        end
       end
 
       context 'when the dast_scanner_profile already exists' do

@@ -3,9 +3,11 @@
 module AppSec
   module Dast
     module Profiles
-      class CreateService < BaseContainerService
+      class CreateService < BaseService
         def execute
-          return ServiceResponse.error(message: _('Insufficient permissions')) unless allowed?
+          return error(_('Insufficient permissions')) unless allowed?
+
+          return error(_('Invalid tags')) unless valid_tags?
 
           ApplicationRecord.transaction do
             @dast_profile = create_profile
@@ -38,21 +40,26 @@ module AppSec
         private
 
         def create_profile
-          ::Dast::Profile.create!(
-            project: container,
+          ::Dast::Profile.create!(create_params)
+        end
+
+        def create_params
+          {
+            project: project,
             name: params.fetch(:name),
             description: params.fetch(:description),
             branch_name: params[:branch_name],
             dast_site_profile: dast_site_profile,
-            dast_scanner_profile: dast_scanner_profile
-          )
+            dast_scanner_profile: dast_scanner_profile,
+            tags: tags
+          }
         end
 
         def create_schedule(dast_profile)
           ::Dast::ProfileSchedule.create!(
             owner: current_user,
             dast_profile: dast_profile,
-            project_id: container.id,
+            project_id: project.id,
             cadence: dast_profile_schedule[:cadence],
             timezone: dast_profile_schedule[:timezone],
             starts_at: dast_profile_schedule[:starts_at]
@@ -61,14 +68,14 @@ module AppSec
 
         def create_on_demand_scan(dast_profile)
           ::AppSec::Dast::Scans::CreateService.new(
-            container: container,
+            container: project,
             current_user: current_user,
             params: { dast_profile: dast_profile }
           ).execute
         end
 
         def allowed?
-          container.licensed_feature_available?(:security_on_demand_scans)
+          project.licensed_feature_available?(:security_on_demand_scans)
         end
 
         def dast_site_profile
@@ -87,7 +94,7 @@ module AppSec
           ::Gitlab::Audit::Auditor.audit(
             name: 'dast_profile_create',
             author: current_user,
-            scope: container,
+            scope: project,
             target: dast_profile,
             message: 'Added DAST profile'
           )
@@ -96,7 +103,7 @@ module AppSec
             ::Gitlab::Audit::Auditor.audit(
               name: 'dast_profile_schedule_create',
               author: current_user,
-              scope: container,
+              scope: project,
               target: schedule,
               message: 'Added DAST profile schedule'
             )

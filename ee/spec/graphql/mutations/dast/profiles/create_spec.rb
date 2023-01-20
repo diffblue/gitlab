@@ -15,10 +15,13 @@ RSpec.describe Mutations::Dast::Profiles::Create, :dynamic_analysis,
   let(:run_after_create) { false }
   let(:dast_profile) { Dast::Profile.find_by(project: project, name: name) }
   let(:dast_profile_schedule) { nil }
+  let(:tag_list) { %w[ruby postgres] }
 
   subject(:mutation) { described_class.new(object: nil, context: { current_user: developer }, field: nil) }
 
   before do
+    ActsAsTaggableOn::Tag.create!(name: 'ruby')
+    ActsAsTaggableOn::Tag.create!(name: 'postgres')
     stub_licensed_features(security_on_demand_scans: true)
   end
 
@@ -34,7 +37,8 @@ RSpec.describe Mutations::Dast::Profiles::Create, :dynamic_analysis,
         dast_site_profile_id: dast_site_profile.to_global_id,
         dast_scanner_profile_id: dast_scanner_profile.to_global_id,
         run_after_create: run_after_create,
-        dast_profile_schedule: dast_profile_schedule
+        dast_profile_schedule: dast_profile_schedule,
+        tag_list: tag_list
       )
     end
 

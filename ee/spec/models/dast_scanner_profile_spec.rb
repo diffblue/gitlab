@@ -9,8 +9,6 @@ RSpec.describe DastScannerProfile, :dynamic_analysis, feature_category: :dynamic
 
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
-    it { is_expected.to have_many(:scanner_profile_runner_tags) }
-    it { is_expected.to have_many(:tags) }
   end
 
   describe 'validations' do

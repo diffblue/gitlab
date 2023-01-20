@@ -50,27 +50,24 @@ module Mutations
                  description: 'Run scan using profile after creation. Defaults to false.',
                  default_value: false
 
+        argument :tag_list, [GraphQL::Types::String],
+                 required: false,
+                 description: 'Indicates the runner tags associated with the profile.'
+
         authorize :create_on_demand_dast_scan
 
-        def resolve(full_path:, name:, dast_site_profile_id:, dast_scanner_profile_id:, description: '', branch_name: nil, run_after_create: false, dast_profile_schedule: nil)
-          project = authorized_find!(full_path)
+        def resolve(**args)
+          project = authorized_find!(args.delete(:full_path))
 
-          dast_site_profile = project.dast_site_profiles.find(dast_site_profile_id.model_id)
-          dast_scanner_profile = project.dast_scanner_profiles.find(dast_scanner_profile_id.model_id)
+          dast_site_profile = project.dast_site_profiles.find(args.delete(:dast_site_profile_id).model_id)
+          dast_scanner_profile = project.dast_scanner_profiles.find(args.delete(:dast_scanner_profile_id).model_id)
+
+          args.delete(:tag_list) unless Feature.enabled?(:on_demand_scans_runner_tags, project)
 
           response = ::AppSec::Dast::Profiles::CreateService.new(
-            container: project,
+            project: project,
             current_user: current_user,
-            params: {
-              project: project,
-              name: name,
-              description: description,
-              branch_name: branch_name,
-              dast_site_profile: dast_site_profile,
-              dast_scanner_profile: dast_scanner_profile,
-              run_after_create: run_after_create,
-              dast_profile_schedule: dast_profile_schedule
-            }
+            params: args.merge({ dast_site_profile: dast_site_profile, dast_scanner_profile: dast_scanner_profile })
           ).execute
 
           return { errors: response.errors } if response.error?

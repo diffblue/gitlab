@@ -12,8 +12,7 @@ RSpec.describe AppSec::Dast::ScannerProfiles::CreateService, :dynamic_analysis,
   let(:scan_type) { 1 }
   let(:use_ajax_spider) { true }
   let(:show_debug_messages) { true }
-  let(:tags) { [ActsAsTaggableOn::Tag.create!(name: 'ruby'), ActsAsTaggableOn::Tag.create!(name: 'postgres')] }
-  let(:tag_list) { tags.map(&:name) }
+
   let(:params) do
     {
       name: name,
@@ -21,8 +20,7 @@ RSpec.describe AppSec::Dast::ScannerProfiles::CreateService, :dynamic_analysis,
       spider_timeout: spider_timeout,
       scan_type: scan_type,
       use_ajax_spider: use_ajax_spider,
-      show_debug_messages: show_debug_messages,
-      tag_list: tag_list
+      show_debug_messages: show_debug_messages
     }
   end
 
@@ -86,7 +84,6 @@ RSpec.describe AppSec::Dast::ScannerProfiles::CreateService, :dynamic_analysis,
           expect(DastScannerProfile.scan_types[payload.scan_type]).to eq(scan_type)
           expect(payload.use_ajax_spider).to eq(use_ajax_spider)
           expect(payload.show_debug_messages).to eq(show_debug_messages)
-          expect(payload.tags).to match_array(tags)
         end
       end
 
@@ -145,36 +142,6 @@ RSpec.describe AppSec::Dast::ScannerProfiles::CreateService, :dynamic_analysis,
 
         it 'populates message' do
           expect(message).to eq('Insufficient permissions')
-        end
-      end
-
-      context 'when there is a invalid tag' do
-        let(:tag_list) { %w[invalid_tag] }
-
-        it 'does not create a new dast_scanner_profile' do
-          expect { subject }.not_to change(DastScannerProfile, :count)
-        end
-
-        it 'returns an error status' do
-          expect(status).to eq(:error)
-        end
-
-        it 'populates message' do
-          expect(message).to eq('Invalid tag_list')
-        end
-      end
-
-      context 'when feature flag on_demand_scans_runner_tags is disabled' do
-        before do
-          stub_feature_flags(on_demand_scans_runner_tags: false)
-        end
-
-        it 'returns a success status' do
-          expect(status).to eq(:success)
-        end
-
-        it 'creates a dast_scanner_profile ignoring the tags' do
-          expect(payload.tags).to be_empty
         end
       end
     end

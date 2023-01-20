@@ -7,8 +7,6 @@ module AppSec
         def execute
           return ServiceResponse.error(message: 'Insufficient permissions') unless allowed?
 
-          return ServiceResponse.error(message: 'Invalid tag_list') unless valid_tags?
-
           dast_scanner_profile = DastScannerProfile.create(create_params)
 
           if dast_scanner_profile.valid?
@@ -37,7 +35,7 @@ module AppSec
         end
 
         def create_params
-          base_params.merge({ name: params[:name], project: project, tags: tags })
+          base_params.merge({ name: params[:name], project: project })
         end
       end
     end

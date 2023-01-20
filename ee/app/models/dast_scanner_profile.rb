@@ -4,8 +4,6 @@ class DastScannerProfile < ApplicationRecord
   include Sanitizable
 
   belongs_to :project
-  has_many :scanner_profile_runner_tags, class_name: 'Dast::ScannerProfileTag'
-  has_many :tags, through: :scanner_profile_runner_tags, disable_joins: true
 
   validates :project_id, presence: true
   validates :name, length: { maximum: 255 }, uniqueness: { scope: :project_id }, presence: true
@@ -53,9 +51,5 @@ class DastScannerProfile < ApplicationRecord
       .map { |configuration| configuration.active_policy_names_with_dast_scanner_profile(name) }
       .inject(&:merge)
       .to_a
-  end
-
-  def tag_list
-    tags.map(&:name)
   end
 end

@@ -3,17 +3,19 @@
 module AppSec
   module Dast
     module Profiles
-      class UpdateService < BaseContainerService
+      class UpdateService < BaseService
         include Gitlab::Utils::StrongMemoize
 
         def execute
           return unauthorized unless allowed?
           return error(_('Profile parameter missing')) unless dast_profile
 
+          return error(_('Invalid tags')) unless valid_tags?
+
           build_auditors!
 
           ApplicationRecord.transaction do
-            dast_profile.update!(dast_profile_params)
+            dast_profile.update!(update_params)
 
             update_or_create_schedule! if schedule_input_params
           end
@@ -43,11 +45,17 @@ module AppSec
 
         private
 
+        def update_params
+          update_params = dast_profile_params
+          update_params[:tags] = tags if tag_list?
+          update_params
+        end
+
         attr_reader :auditors, :create_schedule_audit
 
         def allowed?
-          container.licensed_feature_available?(:security_on_demand_scans) &&
-            can?(current_user, :create_on_demand_dast_scan, container)
+          project.licensed_feature_available?(:security_on_demand_scans) &&
+            can?(current_user, :create_on_demand_dast_scan, project)
         end
 
         def update_or_create_schedule!
@@ -57,7 +65,7 @@ module AppSec
             ::Dast::ProfileSchedule.new(
               dast_profile: dast_profile,
               owner: current_user,
-              project: container
+              project: project
             ).tap do |dast_schedule|
               dast_schedule.update!(schedule_input_params)
             end
@@ -68,10 +76,6 @@ module AppSec
 
         def schedule
           dast_profile.dast_profile_schedule
-        end
-
-        def error(message, opts = {})
-          ServiceResponse.error(message: message, **opts)
         end
 
         def success(payload)
@@ -106,7 +110,7 @@ module AppSec
 
         def build_auditors!
           @auditors = [
-            AppSec::Dast::Profiles::Audit::UpdateService.new(container: container, current_user: current_user, params: {
+            AppSec::Dast::Profiles::Audit::UpdateService.new(container: project, current_user: current_user, params: {
             dast_profile: dast_profile,
             new_params: dast_profile_params,
             old_params: dast_profile.attributes.symbolize_keys
@@ -115,7 +119,7 @@ module AppSec
 
           if schedule_input_params && schedule
             @auditors <<
-              AppSec::Dast::ProfileSchedules::Audit::UpdateService.new(project: container, current_user: current_user, params: {
+              AppSec::Dast::ProfileSchedules::Audit::UpdateService.new(project: project, current_user: current_user, params: {
                 dast_profile_schedule: schedule,
                 new_params: schedule_input_params,
                 old_params: schedule.attributes.symbolize_keys
@@ -130,7 +134,7 @@ module AppSec
             ::Gitlab::Audit::Auditor.audit(
               name: 'dast_profile_schedule_create',
               author: current_user,
-              scope: container,
+              scope: project,
               target: schedule,
               message: 'Added DAST profile schedule'
             )
@@ -139,7 +143,7 @@ module AppSec
 
         def create_scan(dast_profile)
           ::AppSec::Dast::Scans::CreateService.new(
-            container: container,
+            container: project,
             current_user: current_user,
             params: { dast_profile: dast_profile }
           ).execute

@@ -15,6 +15,9 @@ module Dast
     has_one :dast_profile_schedule, class_name: 'Dast::ProfileSchedule', foreign_key: :dast_profile_id, inverse_of: :dast_profile
     has_one :dast_pre_scan_verification, class_name: 'Dast::PreScanVerification', foreign_key: :dast_profile_id, inverse_of: :dast_profile
 
+    has_many :profile_runner_tags, class_name: 'Dast::ProfileTag', foreign_key: :dast_profile_id, inverse_of: :dast_profile
+    has_many :tags, through: :profile_runner_tags, disable_joins: true
+
     validates :description, length: { maximum: 255 }
     validates :name, length: { maximum: 255 }, uniqueness: { scope: :project_id }, presence: true
     validates :branch_name, length: { maximum: 255 }
@@ -44,6 +47,10 @@ module Dast
       return unless project.repository.exists?
 
       Dast::Branch.new(self)
+    end
+
+    def tag_list
+      tags.map(&:name)
     end
 
     private
