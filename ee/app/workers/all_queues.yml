@@ -1526,7 +1526,7 @@
   :tags: []
 - :name: set_user_status_based_on_user_cap_setting
   :worker_name: SetUserStatusBasedOnUserCapSettingWorker
-  :feature_category: :users
+  :feature_category: :user_profile
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown

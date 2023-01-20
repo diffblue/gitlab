@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Admin::UserPermissionExportsController < Admin::ApplicationController
-  feature_category :users
+  feature_category :user_profile
 
   before_action :check_user_permission_export_availability!
 

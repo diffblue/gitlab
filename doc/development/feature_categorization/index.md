@@ -166,7 +166,7 @@ specific routes:
 ```ruby
 module API
   class Users < ::API::Base
-    feature_category :users, ['/users/:id/custom_attributes', '/users/:id/custom_attributes/:key']
+    feature_category :user_profile, ['/users/:id/custom_attributes', '/users/:id/custom_attributes/:key']
   end
 end
 ```

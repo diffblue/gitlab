@@ -8,7 +8,7 @@ module EE
     prepended do
       include GeoInstrumentation
 
-      feature_category :users, [:available_group_templates]
+      feature_category :user_profile, [:available_group_templates]
 
       feature_category :source_code_management, [:available_project_templates]
 
