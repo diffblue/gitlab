@@ -24,6 +24,12 @@ module EE
             post_modal
           end
 
+          def self.cache_write(view_id, project_id)
+            cache_key = "slack:incident_modal_opened:#{view_id}"
+
+            Rails.cache.write(cache_key, project_id, expires_in: CACHE_EXPIRES_IN)
+          end
+
           private
 
           attr_reader :slack_installation, :current_user, :team_id, :response_url, :trigger_id
@@ -48,11 +54,7 @@ module EE
             end
 
             if response['ok']
-              Rails.cache.write(
-                cache_key(response),
-                project_id(response),
-                expires_in: CACHE_EXPIRES_IN
-              )
+              self.class.cache_write(view_id(response), project_id(response))
 
               return ServiceResponse.success(message: _('Please complete the incident creation form.'))
             end
@@ -85,14 +87,12 @@ module EE
             response.dig(
               'view', 'state', 'values',
               'project_and_severity_selector',
-              'project', 'selected_option',
+              'incident_management_project', 'selected_option',
               'value')
           end
 
-          def cache_key(response)
-            view_id = response.dig('view', 'id')
-
-            ['slack:incident_modal_opened', view_id].join(':')
+          def view_id(response)
+            response.dig('view', 'id')
           end
         end
       end

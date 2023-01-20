@@ -88,7 +88,11 @@ module Integrations
         end
 
         def project
-          project_id = values.dig(:project_and_severity_selector, :project, :selected_option, :value)
+          project_id = values.dig(
+            :project_and_severity_selector,
+            :incident_management_project,
+            :selected_option,
+            :value)
 
           Project.find(project_id)
         end
@@ -98,7 +102,10 @@ module Integrations
         end
 
         def description
-          description = values.dig(:incident_description, :description, :value)
+          description =
+            values.dig(:incident_description, :description, :value) ||
+            values.dig(project.id.to_s.to_sym, :description, :value)
+
           zoom_link = values.dig(:zoom, :link, :value)
 
           return description if zoom_link.blank?

@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Integrations::SlackInteractions::IncidentManagement::IncidentModalOpenedService do
+RSpec.describe EE::Integrations::SlackInteractions::IncidentManagement::IncidentModalOpenedService,
+  feature_category: :incident_management do
   describe '#execute' do
     let_it_be(:slack_installation) { create(:slack_integration) }
     let_it_be(:project) { create(:project) }
@@ -27,7 +28,7 @@ RSpec.describe EE::Integrations::SlackInteractions::IncidentManagement::Incident
         state: {
           values: {
             project_and_severity_selector: {
-              project: {
+              incident_management_project: {
                 selected_option: {
                   value: project.id.to_s
                 }
