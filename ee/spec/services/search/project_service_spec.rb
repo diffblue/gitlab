@@ -17,7 +17,7 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
       let_it_be(:scope) { create(:project) }
 
       let(:user) { scope.first_owner }
-      let(:service) { described_class.new(scope, user, params) }
+      let(:service) { described_class.new(user, scope, params) }
     end
 
     context 'and project is archived' do
@@ -26,7 +26,7 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
         user           = instance_double(User)
         search_results = instance_double(Gitlab::ProjectSearchResults)
         params         = { search: "foo" }
-        search_service = described_class.new(project, user, params)
+        search_service = described_class.new(user, project, params)
 
         expect(Gitlab::ProjectSearchResults).to receive(:new).with(
           user,
@@ -49,7 +49,7 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
       let_it_be(:scope) { create_list(:project, 3, namespace: group) }
 
       let(:user) { group.owner }
-      let(:service) { described_class.new(scope, user, params) }
+      let(:service) { described_class.new(user, scope, params) }
     end
   end
 
@@ -57,7 +57,7 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
     let_it_be(:scope) { create(:project) }
 
     let(:user) { scope.owner }
-    let(:service) { described_class.new(scope, user, params) }
+    let(:service) { described_class.new(user, scope, params) }
 
     describe '#use_default_branch?' do
       subject { service.use_default_branch? }
@@ -130,7 +130,7 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
         ensure_elasticsearch_index!
 
         expect_search_results(user, scope, expected_count: expected_count) do |user|
-          described_class.new(project, user, search: search).execute
+          described_class.new(user, project, search: search).execute
         end
       end
     end
@@ -319,7 +319,7 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
           ensure_elasticsearch_index!
 
           expect_search_results(user, 'milestones', expected_count: expected_count) do |user|
-            described_class.new(project, user, search: milestone.title).execute
+            described_class.new(user, project, search: milestone.title).execute
           end
         end
       end
@@ -344,8 +344,8 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
       end
 
       include_examples 'search results sorted' do
-        let(:results_created) { described_class.new(project, nil, search: 'sorted', sort: sort).execute }
-        let(:results_updated) { described_class.new(project, nil, search: 'updated', sort: sort).execute }
+        let(:results_created) { described_class.new(nil, project, search: 'sorted', sort: sort).execute }
+        let(:results_updated) { described_class.new(nil, project, search: 'updated', sort: sort).execute }
       end
     end
 
@@ -366,8 +366,8 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
       end
 
       include_examples 'search results sorted' do
-        let(:results_created) { described_class.new(project, nil, search: 'sorted', sort: sort).execute }
-        let(:results_updated) { described_class.new(project, nil, search: 'updated', sort: sort).execute }
+        let(:results_created) { described_class.new(nil, project, search: 'sorted', sort: sort).execute }
+        let(:results_updated) { described_class.new(nil, project, search: 'updated', sort: sort).execute }
       end
     end
   end

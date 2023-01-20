@@ -43,7 +43,7 @@ module EE
     def search_service
       return super unless projects
 
-      @search_service ||= ::Search::ProjectService.new(projects, current_user, params) # rubocop: disable Gitlab/ModuleWithInstanceVariables
+      @search_service ||= ::Search::ProjectService.new(current_user, projects, params) # rubocop: disable Gitlab/ModuleWithInstanceVariables
     end
   end
 end

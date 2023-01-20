@@ -91,4 +91,28 @@ RSpec.describe SearchService, feature_category: :global_search do
       end
     end
   end
+
+  describe '#use_elasticsearch?' do
+    let_it_be(:user) { create(:user) }
+
+    context 'when project is present' do
+      let_it_be(:project) { create(:project, :public) }
+
+      it 'Search::ProjectService receives use_elasticsearch?' do
+        expect_next_instance_of(::Search::ProjectService) do |project_service|
+          expect(project_service).to receive(:use_elasticsearch?).and_return 'result'
+        end
+        expect(described_class.new(user, project_ids: project.id.to_s).use_elasticsearch?).to eq 'result'
+      end
+    end
+
+    context 'when project is not present' do
+      it 'Search::GlobalService receives use_elasticsearch?' do
+        expect_next_instance_of(::Search::GlobalService) do |global_service|
+          expect(global_service).to receive(:use_elasticsearch?).and_return 'result'
+        end
+        expect(described_class.new(user).use_elasticsearch?).to eq 'result'
+      end
+    end
+  end
 end
