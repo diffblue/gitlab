@@ -1077,6 +1077,16 @@ If a branch is merged while open merge requests still point to it, GitLab can
 retarget merge requests pointing to the now-merged branch. To learn more, read
 [Update merge requests when target branch merges](../user/project/merge_requests/index.md#update-merge-requests-when-target-branch-merges).
 
+## Maximum number of assignees and reviewers
+
+> - Maximum assignees [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/368936) in GitLab 15.6.
+> - Maximum reviewers [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/366485) in GitLab 15.9.
+
+Issues and merge requests enforce these maximums:
+
+- Maximum assignees: 200
+- Maximum reviewers: 200
+
 ## CDN-based limits on GitLab.com
 
 In addition to application-based limits, GitLab.com is configured to use Cloudflare's standard DDoS protection and Spectrum to protect Git over SSH. Cloudflare terminates client TLS connections but is not application aware and cannot be used for limits tied to users or groups. Cloudflare page rules and rate limits are configured with Terraform. These configurations are [not public](https://about.gitlab.com/handbook/communication/#not-public) because they include security and abuse implementations that detect malicious activities and making them public would undermine those operations.
