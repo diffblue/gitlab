@@ -14820,9 +14820,6 @@ msgstr ""
 msgid "Download codes"
 msgstr ""
 
-msgid "Download evidence JSON"
-msgstr ""
-
 msgid "Download export"
 msgstr ""
 
@@ -29321,6 +29318,9 @@ msgid "Open Selection"
 msgstr ""
 
 msgid "Open errors"
+msgstr ""
+
+msgid "Open evidence JSON in new tab"
 msgstr ""
 
 msgid "Open in Gitpod"
