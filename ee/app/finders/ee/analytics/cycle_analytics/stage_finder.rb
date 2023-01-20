@@ -17,6 +17,8 @@ module EE
         def execute
           return super if in_memory_default_stage?
 
+          raise(::Gitlab::Access::AccessDeniedError) unless persisted_stages_available?
+
           parent.cycle_analytics_stages.find(stage_id)
         end
 
@@ -26,6 +28,10 @@ module EE
 
         def in_memory_default_stage?
           !NUMBERS_ONLY.match?(stage_id.to_s)
+        end
+
+        def persisted_stages_available?
+          ::Gitlab::Analytics::CycleAnalytics.licensed?(parent)
         end
       end
     end

@@ -9,7 +9,7 @@ RSpec.describe Analytics::CycleAnalytics::Stages::ListService do
 
   let(:stages) { subject.payload[:stages] }
 
-  subject { described_class.new(parent: group, current_user: user).execute }
+  subject { described_class.new(parent: group, current_user: user, params: { value_stream: value_stream }).execute }
 
   before_all do
     group.add_reporter(user)

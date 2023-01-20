@@ -190,6 +190,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams do
     let_it_be(:stage) { create(:cycle_analytics_stage, namespace: root_group) }
 
     before do
+      stub_licensed_features(cycle_analytics_for_groups: true)
+
       params.merge!(
         milestone_title: 'title',
         assignee_username: ['username1'],

@@ -7,35 +7,26 @@ module EE
         module ListService
           extend ::Gitlab::Utils::Override
 
-          override :value_stream
           def execute
-            return forbidden unless allowed?
+            return super unless value_stream.custom?
+            return forbidden unless allowed? && ::Gitlab::Analytics::CycleAnalytics.licensed?(parent)
 
-            if parent.is_a?(Group)
-              success(persisted_stages)
-            else
-              success(persisted_stages.presence || build_default_stages)
-            end
+            success(persisted_stages)
           end
 
           private
 
-          override :allowed?
-          def allowed?
-            return super unless parent.is_a?(Group)
-
-            can?(current_user, :read_group_cycle_analytics, parent)
-          end
-
           def persisted_stages
-            scope = parent.cycle_analytics_stages
-            scope = scope.by_value_stream(params[:value_stream]) if params[:value_stream]
-            scope.for_list
+            parent.cycle_analytics_stages.by_value_stream(params[:value_stream]).for_list
           end
 
-          override :value_stream
-          def value_stream
-            @value_stream ||= (params[:value_stream] || parent.value_streams.new(name: ::Analytics::CycleAnalytics::Stages::ListService::DEFAULT_VALUE_STREAM_NAME))
+          def allowed?
+            case parent
+            when Group
+              can?(current_user, :read_group_cycle_analytics, parent)
+            else
+              super
+            end
           end
         end
       end
