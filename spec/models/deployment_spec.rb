@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Deployment do
+RSpec.describe Deployment, feature_category: :continuous_delivery do
   subject { build(:deployment) }
 
   it { is_expected.to belong_to(:project).required }

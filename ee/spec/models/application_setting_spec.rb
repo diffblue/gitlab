@@ -8,109 +8,125 @@ RSpec.describe ApplicationSetting do
   subject(:setting) { described_class.create_from_defaults }
 
   describe 'validations' do
-    it { is_expected.to allow_value(100).for(:mirror_max_delay) }
-    it { is_expected.not_to allow_value(nil).for(:mirror_max_delay) }
-    it { is_expected.not_to allow_value(0).for(:mirror_max_delay) }
-    it { is_expected.not_to allow_value(1.1).for(:mirror_max_delay) }
-    it { is_expected.not_to allow_value(-1).for(:mirror_max_delay) }
-    it { is_expected.not_to allow_value((Gitlab::Mirror::MIN_DELAY - 1.minute) / 60).for(:mirror_max_delay) }
+    describe 'mirror', feature_category: :source_code_management do
+      it { is_expected.to allow_value(100).for(:mirror_max_delay) }
+      it { is_expected.not_to allow_value(nil).for(:mirror_max_delay) }
+      it { is_expected.not_to allow_value(0).for(:mirror_max_delay) }
+      it { is_expected.not_to allow_value(1.1).for(:mirror_max_delay) }
+      it { is_expected.not_to allow_value(-1).for(:mirror_max_delay) }
+      it { is_expected.not_to allow_value((Gitlab::Mirror::MIN_DELAY - 1.minute) / 60).for(:mirror_max_delay) }
 
-    it { is_expected.to allow_value(10).for(:mirror_max_capacity) }
-    it { is_expected.not_to allow_value(nil).for(:mirror_max_capacity) }
-    it { is_expected.not_to allow_value(0).for(:mirror_max_capacity) }
-    it { is_expected.not_to allow_value(1.1).for(:mirror_max_capacity) }
-    it { is_expected.not_to allow_value(-1).for(:mirror_max_capacity) }
+      it { is_expected.to allow_value(10).for(:mirror_max_capacity) }
+      it { is_expected.not_to allow_value(nil).for(:mirror_max_capacity) }
+      it { is_expected.not_to allow_value(0).for(:mirror_max_capacity) }
+      it { is_expected.not_to allow_value(1.1).for(:mirror_max_capacity) }
+      it { is_expected.not_to allow_value(-1).for(:mirror_max_capacity) }
 
-    it { is_expected.to allow_value(10).for(:mirror_capacity_threshold) }
-    it { is_expected.not_to allow_value(nil).for(:mirror_capacity_threshold) }
-    it { is_expected.not_to allow_value(0).for(:mirror_capacity_threshold) }
-    it { is_expected.not_to allow_value(1.1).for(:mirror_capacity_threshold) }
-    it { is_expected.not_to allow_value(-1).for(:mirror_capacity_threshold) }
-    it { is_expected.not_to allow_value(subject.mirror_max_capacity + 1).for(:mirror_capacity_threshold) }
-    it { is_expected.to allow_value(nil).for(:custom_project_templates_group_id) }
+      it { is_expected.to allow_value(10).for(:mirror_capacity_threshold) }
+      it { is_expected.not_to allow_value(nil).for(:mirror_capacity_threshold) }
+      it { is_expected.not_to allow_value(0).for(:mirror_capacity_threshold) }
+      it { is_expected.not_to allow_value(1.1).for(:mirror_capacity_threshold) }
+      it { is_expected.not_to allow_value(-1).for(:mirror_capacity_threshold) }
+      it { is_expected.not_to allow_value(subject.mirror_max_capacity + 1).for(:mirror_capacity_threshold) }
+      it { is_expected.to allow_value(nil).for(:custom_project_templates_group_id) }
+    end
 
-    it { is_expected.to allow_value(10).for(:elasticsearch_indexed_file_size_limit_kb) }
-    it { is_expected.not_to allow_value(0).for(:elasticsearch_indexed_file_size_limit_kb) }
-    it { is_expected.not_to allow_value(nil).for(:elasticsearch_indexed_file_size_limit_kb) }
-    it { is_expected.not_to allow_value(1.1).for(:elasticsearch_indexed_file_size_limit_kb) }
-    it { is_expected.not_to allow_value(-1).for(:elasticsearch_indexed_file_size_limit_kb) }
+    describe 'elasticsearch', feature_category: :global_search do
+      it { is_expected.to allow_value(10).for(:elasticsearch_indexed_file_size_limit_kb) }
+      it { is_expected.not_to allow_value(0).for(:elasticsearch_indexed_file_size_limit_kb) }
+      it { is_expected.not_to allow_value(nil).for(:elasticsearch_indexed_file_size_limit_kb) }
+      it { is_expected.not_to allow_value(1.1).for(:elasticsearch_indexed_file_size_limit_kb) }
+      it { is_expected.not_to allow_value(-1).for(:elasticsearch_indexed_file_size_limit_kb) }
 
-    it { is_expected.to allow_value(10).for(:elasticsearch_indexed_field_length_limit) }
-    it { is_expected.to allow_value(0).for(:elasticsearch_indexed_field_length_limit) }
-    it { is_expected.not_to allow_value(nil).for(:elasticsearch_indexed_field_length_limit) }
-    it { is_expected.not_to allow_value(1.1).for(:elasticsearch_indexed_field_length_limit) }
-    it { is_expected.not_to allow_value(-1).for(:elasticsearch_indexed_field_length_limit) }
+      it { is_expected.to allow_value(10).for(:elasticsearch_indexed_field_length_limit) }
+      it { is_expected.to allow_value(0).for(:elasticsearch_indexed_field_length_limit) }
+      it { is_expected.not_to allow_value(nil).for(:elasticsearch_indexed_field_length_limit) }
+      it { is_expected.not_to allow_value(1.1).for(:elasticsearch_indexed_field_length_limit) }
+      it { is_expected.not_to allow_value(-1).for(:elasticsearch_indexed_field_length_limit) }
 
-    it { is_expected.to allow_value(25).for(:elasticsearch_max_bulk_size_mb) }
-    it { is_expected.not_to allow_value(nil).for(:elasticsearch_max_bulk_size_mb) }
-    it { is_expected.not_to allow_value(0).for(:elasticsearch_max_bulk_size_mb) }
-    it { is_expected.not_to allow_value(1.1).for(:elasticsearch_max_bulk_size_mb) }
-    it { is_expected.not_to allow_value(-1).for(:elasticsearch_max_bulk_size_mb) }
+      it { is_expected.to allow_value(25).for(:elasticsearch_max_bulk_size_mb) }
+      it { is_expected.not_to allow_value(nil).for(:elasticsearch_max_bulk_size_mb) }
+      it { is_expected.not_to allow_value(0).for(:elasticsearch_max_bulk_size_mb) }
+      it { is_expected.not_to allow_value(1.1).for(:elasticsearch_max_bulk_size_mb) }
+      it { is_expected.not_to allow_value(-1).for(:elasticsearch_max_bulk_size_mb) }
 
-    it { is_expected.to allow_value(2).for(:elasticsearch_max_bulk_concurrency) }
-    it { is_expected.not_to allow_value(nil).for(:elasticsearch_max_bulk_concurrency) }
-    it { is_expected.not_to allow_value(0).for(:elasticsearch_max_bulk_concurrency) }
-    it { is_expected.not_to allow_value(1.1).for(:elasticsearch_max_bulk_concurrency) }
-    it { is_expected.not_to allow_value(-1).for(:elasticsearch_max_bulk_concurrency) }
+      it { is_expected.to allow_value(2).for(:elasticsearch_max_bulk_concurrency) }
+      it { is_expected.not_to allow_value(nil).for(:elasticsearch_max_bulk_concurrency) }
+      it { is_expected.not_to allow_value(0).for(:elasticsearch_max_bulk_concurrency) }
+      it { is_expected.not_to allow_value(1.1).for(:elasticsearch_max_bulk_concurrency) }
+      it { is_expected.not_to allow_value(-1).for(:elasticsearch_max_bulk_concurrency) }
 
-    it { is_expected.to allow_value(30).for(:elasticsearch_client_request_timeout) }
-    it { is_expected.to allow_value(0).for(:elasticsearch_client_request_timeout) }
-    it { is_expected.not_to allow_value(nil).for(:elasticsearch_client_request_timeout) }
-    it { is_expected.not_to allow_value(1.1).for(:elasticsearch_client_request_timeout) }
-    it { is_expected.not_to allow_value(-1).for(:elasticsearch_client_request_timeout) }
+      it { is_expected.to allow_value(30).for(:elasticsearch_client_request_timeout) }
+      it { is_expected.to allow_value(0).for(:elasticsearch_client_request_timeout) }
+      it { is_expected.not_to allow_value(nil).for(:elasticsearch_client_request_timeout) }
+      it { is_expected.not_to allow_value(1.1).for(:elasticsearch_client_request_timeout) }
+      it { is_expected.not_to allow_value(-1).for(:elasticsearch_client_request_timeout) }
 
-    it { is_expected.to allow_value('').for(:elasticsearch_username) }
-    it { is_expected.to allow_value('a' * 255).for(:elasticsearch_username) }
-    it { is_expected.not_to allow_value('a' * 256).for(:elasticsearch_username) }
+      it { is_expected.to allow_value('').for(:elasticsearch_username) }
+      it { is_expected.to allow_value('a' * 255).for(:elasticsearch_username) }
+      it { is_expected.not_to allow_value('a' * 256).for(:elasticsearch_username) }
+    end
 
-    it { is_expected.to allow_value([{}]).for(:future_subscriptions) }
-    it { is_expected.not_to allow_value({}).for(:future_subscriptions) }
-    it { is_expected.not_to allow_value(nil).for(:future_subscriptions) }
+    describe 'future_subscriptions', feature_category: :subscription_management do
+      it { is_expected.to allow_value([{}]).for(:future_subscriptions) }
+      it { is_expected.not_to allow_value({}).for(:future_subscriptions) }
+      it { is_expected.not_to allow_value(nil).for(:future_subscriptions) }
+    end
 
-    it { is_expected.to allow_value(nil).for(:required_instance_ci_template) }
-    it { is_expected.not_to allow_value("").for(:required_instance_ci_template) }
-    it { is_expected.not_to allow_value("  ").for(:required_instance_ci_template) }
-    it { is_expected.to allow_value("template_name").for(:required_instance_ci_template) }
+    describe 'required_instance', feature_category: :pipeline_authoring do
+      it { is_expected.to allow_value(nil).for(:required_instance_ci_template) }
+      it { is_expected.not_to allow_value("").for(:required_instance_ci_template) }
+      it { is_expected.not_to allow_value("  ").for(:required_instance_ci_template) }
+      it { is_expected.to allow_value("template_name").for(:required_instance_ci_template) }
+    end
 
-    it { is_expected.to allow_value(1).for(:max_personal_access_token_lifetime) }
-    it { is_expected.to allow_value(nil).for(:max_personal_access_token_lifetime) }
-    it { is_expected.to allow_value(10).for(:max_personal_access_token_lifetime) }
-    it { is_expected.to allow_value(365).for(:max_personal_access_token_lifetime) }
-    it { is_expected.not_to allow_value("value").for(:max_personal_access_token_lifetime) }
-    it { is_expected.not_to allow_value(2.5).for(:max_personal_access_token_lifetime) }
-    it { is_expected.not_to allow_value(-5).for(:max_personal_access_token_lifetime) }
-    it { is_expected.not_to allow_value(366).for(:max_personal_access_token_lifetime) }
+    describe 'max_personal_access_token', feature_category: :credential_management do
+      it { is_expected.to allow_value(1).for(:max_personal_access_token_lifetime) }
+      it { is_expected.to allow_value(nil).for(:max_personal_access_token_lifetime) }
+      it { is_expected.to allow_value(10).for(:max_personal_access_token_lifetime) }
+      it { is_expected.to allow_value(365).for(:max_personal_access_token_lifetime) }
+      it { is_expected.not_to allow_value("value").for(:max_personal_access_token_lifetime) }
+      it { is_expected.not_to allow_value(2.5).for(:max_personal_access_token_lifetime) }
+      it { is_expected.not_to allow_value(-5).for(:max_personal_access_token_lifetime) }
+      it { is_expected.not_to allow_value(366).for(:max_personal_access_token_lifetime) }
+    end
 
-    it { is_expected.to allow_value(nil).for(:new_user_signups_cap) }
-    it { is_expected.to allow_value(1).for(:new_user_signups_cap) }
-    it { is_expected.to allow_value(10).for(:new_user_signups_cap) }
-    it { is_expected.to allow_value("").for(:new_user_signups_cap) }
-    it { is_expected.not_to allow_value("value").for(:new_user_signups_cap) }
-    it { is_expected.not_to allow_value(-1).for(:new_user_signups_cap) }
-    it { is_expected.not_to allow_value(2.5).for(:new_user_signups_cap) }
+    describe 'new_user_signups', feature_category: :onboarding do
+      it { is_expected.to allow_value(nil).for(:new_user_signups_cap) }
+      it { is_expected.to allow_value(1).for(:new_user_signups_cap) }
+      it { is_expected.to allow_value(10).for(:new_user_signups_cap) }
+      it { is_expected.to allow_value("").for(:new_user_signups_cap) }
+      it { is_expected.not_to allow_value("value").for(:new_user_signups_cap) }
+      it { is_expected.not_to allow_value(-1).for(:new_user_signups_cap) }
+      it { is_expected.not_to allow_value(2.5).for(:new_user_signups_cap) }
+    end
 
-    it { is_expected.to allow_value(1).for(:git_two_factor_session_expiry) }
-    it { is_expected.to allow_value(10).for(:git_two_factor_session_expiry) }
-    it { is_expected.to allow_value(10079).for(:git_two_factor_session_expiry) }
-    it { is_expected.to allow_value(10080).for(:git_two_factor_session_expiry) }
-    it { is_expected.not_to allow_value(nil).for(:git_two_factor_session_expiry) }
-    it { is_expected.not_to allow_value("value").for(:git_two_factor_session_expiry) }
-    it { is_expected.not_to allow_value(2.5).for(:git_two_factor_session_expiry) }
-    it { is_expected.not_to allow_value(-5).for(:git_two_factor_session_expiry) }
-    it { is_expected.not_to allow_value(0).for(:git_two_factor_session_expiry) }
-    it { is_expected.not_to allow_value(10081).for(:git_two_factor_session_expiry) }
+    describe 'git_two_factor', feature_category: :authentication_and_authorization do
+      it { is_expected.to allow_value(1).for(:git_two_factor_session_expiry) }
+      it { is_expected.to allow_value(10).for(:git_two_factor_session_expiry) }
+      it { is_expected.to allow_value(10079).for(:git_two_factor_session_expiry) }
+      it { is_expected.to allow_value(10080).for(:git_two_factor_session_expiry) }
+      it { is_expected.not_to allow_value(nil).for(:git_two_factor_session_expiry) }
+      it { is_expected.not_to allow_value("value").for(:git_two_factor_session_expiry) }
+      it { is_expected.not_to allow_value(2.5).for(:git_two_factor_session_expiry) }
+      it { is_expected.not_to allow_value(-5).for(:git_two_factor_session_expiry) }
+      it { is_expected.not_to allow_value(0).for(:git_two_factor_session_expiry) }
+      it { is_expected.not_to allow_value(10081).for(:git_two_factor_session_expiry) }
 
-    it { is_expected.to validate_numericality_of(:max_ssh_key_lifetime).is_greater_than(0).is_less_than_or_equal_to(365).allow_nil }
-    it { is_expected.to validate_numericality_of(:deletion_adjourned_period).is_greater_than(0).is_less_than_or_equal_to(90) }
+      it { is_expected.to validate_numericality_of(:max_ssh_key_lifetime).is_greater_than(0).is_less_than_or_equal_to(365).allow_nil }
+      it { is_expected.to validate_numericality_of(:deletion_adjourned_period).is_greater_than(0).is_less_than_or_equal_to(90) }
+    end
 
-    it { is_expected.to validate_numericality_of(:dashboard_limit).only_integer.is_greater_than_or_equal_to(0) }
-    it { is_expected.to validate_numericality_of(:dashboard_notification_limit).only_integer.is_greater_than_or_equal_to(0) }
-    it { is_expected.to validate_numericality_of(:dashboard_enforcement_limit).only_integer.is_greater_than_or_equal_to(0) }
-    it { is_expected.to allow_value(true).for(:dashboard_limit_enabled) }
-    it { is_expected.to allow_value(false).for(:dashboard_limit_enabled) }
-    it { is_expected.not_to allow_value(nil).for(:dashboard_limit_enabled) }
+    describe 'dashboard', feature_category: :metrics do
+      it { is_expected.to validate_numericality_of(:dashboard_limit).only_integer.is_greater_than_or_equal_to(0) }
+      it { is_expected.to validate_numericality_of(:dashboard_notification_limit).only_integer.is_greater_than_or_equal_to(0) }
+      it { is_expected.to validate_numericality_of(:dashboard_enforcement_limit).only_integer.is_greater_than_or_equal_to(0) }
+      it { is_expected.to allow_value(true).for(:dashboard_limit_enabled) }
+      it { is_expected.to allow_value(false).for(:dashboard_limit_enabled) }
+      it { is_expected.not_to allow_value(nil).for(:dashboard_limit_enabled) }
+    end
 
-    describe 'when additional email text is enabled' do
+    describe 'when additional email text is enabled', feature_category: :users do
       before do
         stub_licensed_features(email_additional_text: true)
       end
@@ -119,7 +135,7 @@ RSpec.describe ApplicationSetting do
       it { is_expected.not_to allow_value("a" * (subject.email_additional_text_character_limit + 1)).for(:email_additional_text) }
     end
 
-    describe 'when secret detection token revocation is enabled' do
+    describe 'when secret detection token revocation is enabled', feature_category: :secret_detection do
       before do
         stub_application_setting(secret_detection_token_revocation_enabled: true)
       end
@@ -129,7 +145,7 @@ RSpec.describe ApplicationSetting do
       it { is_expected.to allow_value("http://test.com").for(:secret_detection_revocation_token_types_url) }
     end
 
-    context 'when validating geo_node_allowed_ips' do
+    context 'when validating geo_node_allowed_ips', feature_category: :geo_replication do
       where(:allowed_ips, :is_valid) do
         "192.1.1.1"                   | true
         "192.1.1.0/24"                | true
@@ -150,7 +166,7 @@ RSpec.describe ApplicationSetting do
       end
     end
 
-    context 'when validating globally_allowed_ips' do
+    context 'when validating globally_allowed_ips', feature_category: :geo_replication do
       where(:allowed_ips, :is_valid) do
         "192.1.1.1"                   | true
         "192.1.1.0/24"                | true
@@ -171,7 +187,7 @@ RSpec.describe ApplicationSetting do
       end
     end
 
-    context 'when validating elasticsearch_url' do
+    context 'when validating elasticsearch_url', feature_category: :global_search do
       where(:elasticsearch_url, :is_valid) do
         "http://es.localdomain" | true
         "https://es.localdomain" | true
@@ -198,7 +214,7 @@ RSpec.describe ApplicationSetting do
       end
     end
 
-    context 'Sentry validations' do
+    context 'Sentry validations', feature_category: :error_tracking do
       context 'when Sentry is enabled' do
         before do
           setting.sentry_enabled = true
@@ -257,7 +273,7 @@ RSpec.describe ApplicationSetting do
       end
     end
 
-    describe 'when validating product analytics settings' do
+    describe 'when validating product analytics settings', feature_category: :product_analytics do
       context 'when product analytics is enabled' do
         before do
           setting.product_analytics_enabled = true
@@ -315,7 +331,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#should_check_namespace_plan?' do
+  describe '#should_check_namespace_plan?', feature_category: :subgroups do
     before do
       stub_application_setting(check_namespace_plan: check_namespace_plan_column)
       allow(::Gitlab).to receive(:org_or_com?) { gl_com }
@@ -360,7 +376,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#repository_size_limit column' do
+  describe '#repository_size_limit column', feature_category: :source_code_management do
     it 'support values up to 8 exabytes' do
       setting.update_column(:repository_size_limit, 8.exabytes - 1)
 
@@ -370,7 +386,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe 'elasticsearch licensing' do
+  describe 'elasticsearch licensing', feature_category: :global_search do
     before do
       setting.elasticsearch_search = true
       setting.elasticsearch_indexing = true
@@ -399,7 +415,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#elasticsearch_pause_indexing' do
+  describe '#elasticsearch_pause_indexing', feature_category: :global_search do
     before do
       setting.elasticsearch_pause_indexing = true
     end
@@ -413,7 +429,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#elasticsearch_url' do
+  describe '#elasticsearch_url', feature_category: :global_search do
     it 'presents a single URL as a one-element array' do
       setting.elasticsearch_url = 'http://example.com'
 
@@ -439,7 +455,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#elasticsearch_url_with_credentials' do
+  describe '#elasticsearch_url_with_credentials', feature_category: :global_search do
     let(:elasticsearch_url) { "#{host1},#{host2}" }
     let(:host1) { 'http://example.com' }
     let(:host2) { 'https://example.org:9200' }
@@ -514,7 +530,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#elasticsearch_password' do
+  describe '#elasticsearch_password', feature_category: :global_search do
     it 'does not modify password if it is unchanged in the form' do
       setting.elasticsearch_password = 'foo'
       setting.elasticsearch_password = ApplicationSetting::MASK_PASSWORD
@@ -523,7 +539,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#elasticsearch_config' do
+  describe '#elasticsearch_config', feature_category: :global_search do
     it 'places all elasticsearch configuration values into a hash' do
       setting.update!(
         elasticsearch_url: 'http://example.com:9200',
@@ -649,7 +665,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#invalidate_elasticsearch_indexes_cache' do
+  describe '#invalidate_elasticsearch_indexes_cache', feature_category: :global_search do
     it 'deletes the ElasticsearchEnabledCache for projects and namespaces' do
       expect(::Gitlab::Elastic::ElasticsearchEnabledCache).to receive(:delete).with(:project)
       expect(::Gitlab::Elastic::ElasticsearchEnabledCache).to receive(:delete).with(:namespace)
@@ -658,7 +674,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#invalidate_elasticsearch_indexes_cache_for_project!' do
+  describe '#invalidate_elasticsearch_indexes_cache_for_project!', feature_category: :global_search do
     it 'deletes the ElasticsearchEnabledCache for a single project' do
       project_id = 1
       expect(::Gitlab::Elastic::ElasticsearchEnabledCache).to receive(:delete_record).with(:project, project_id)
@@ -667,7 +683,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#invalidate_elasticsearch_indexes_cache_for_namespace!' do
+  describe '#invalidate_elasticsearch_indexes_cache_for_namespace!', feature_category: :global_search do
     it 'deletes the ElasticsearchEnabledCache for a namespace' do
       namespace_id = 1
       expect(::Gitlab::Elastic::ElasticsearchEnabledCache).to receive(:delete_record).with(:namespace, namespace_id)
@@ -676,7 +692,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#search_using_elasticsearch?' do
+  describe '#search_using_elasticsearch?', feature_category: :global_search do
     # Constructs a truth table to run the specs against
     where(indexing: [true, false], searching: [true, false], limiting: [true, false], advanced_global_search_for_limited_indexing: [true, false])
 
@@ -754,7 +770,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe 'custom project templates' do
+  describe 'custom project templates', feature_category: :projects do
     let(:group) { create(:group) }
     let(:projects) { create_list(:project, 3, namespace: group) }
 
@@ -819,7 +835,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#instance_review_permitted?' do
+  describe '#instance_review_permitted?', feature_category: :onboarding do
     subject { setting.instance_review_permitted? }
 
     context 'for instances with a valid license' do
@@ -849,7 +865,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#max_personal_access_token_lifetime_from_now' do
+  describe '#max_personal_access_token_lifetime_from_now', feature_category: :credential_management do
     subject { setting.max_personal_access_token_lifetime_from_now }
 
     let(:days_from_now) { nil }
@@ -881,7 +897,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe 'updates to max_personal_access_token_lifetime' do
+  describe 'updates to max_personal_access_token_lifetime', feature_category: :credential_management do
     context 'without personal_access_token_expiration_policy licensed' do
       before do
         stub_licensed_features(personal_access_token_expiration_policy: false)
@@ -910,7 +926,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#compliance_frameworks' do
+  describe '#compliance_frameworks', feature_category: :compliance_management do
     it 'sorts the list' do
       setting.compliance_frameworks = [5, 4, 1, 3, 2]
 
@@ -930,7 +946,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#should_apply_user_signup_cap?' do
+  describe '#should_apply_user_signup_cap?', feature_category: :onboarding do
     subject { setting.should_apply_user_signup_cap? }
 
     before do
@@ -950,13 +966,13 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe 'maintenance mode setting' do
+  describe 'maintenance mode setting', feature_category: :geo_replication do
     it 'defaults to false' do
       expect(subject.maintenance_mode).to be false
     end
   end
 
-  describe "#max_ssh_key_lifetime_from_now", :freeze_time do
+  describe "#max_ssh_key_lifetime_from_now", :freeze_time, feature_category: :authentication_and_authorization do
     subject { setting.max_ssh_key_lifetime_from_now }
 
     let(:days_from_now) { nil }
@@ -988,7 +1004,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe 'delayed deletion' do
+  describe 'delayed deletion', feature_category: :subgroups do
     context 'when delayed_group_deletion is set to false' do
       before do
         setting.update!(delayed_group_deletion: false)
@@ -1016,7 +1032,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#personal_access_tokens_disabled?' do
+  describe '#personal_access_tokens_disabled?', feature_category: :credential_management do
     subject { setting.personal_access_tokens_disabled? }
 
     context 'when disable_personal_access_tokens feature is available' do
@@ -1038,7 +1054,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#disable_feed_token' do
+  describe '#disable_feed_token', feature_category: :credential_management do
     subject { setting.disable_feed_token }
 
     before do
@@ -1059,7 +1075,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#jitsu_administrator_password' do
+  describe '#jitsu_administrator_password', feature_category: :build do
     it 'does not modify password if it is unchanged in the form' do
       setting.jitsu_administrator_password = 'foo'
       setting.jitsu_administrator_password = ApplicationSetting::MASK_PASSWORD

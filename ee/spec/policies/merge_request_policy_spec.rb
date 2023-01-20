@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequestPolicy do
+RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
   include ProjectForksHelper
   include AdminModeHelper
 
