@@ -169,8 +169,13 @@ export default {
       this.projects = [];
       this.pageInfo = { hasNextPage: true };
     },
-    selected() {
-      this.$emit('filter-changed', { projectId: this.validIds });
+    validIds() {
+      // If there are project IDs that we didn't check yet to see if they're valid, or if there's
+      // at least one valid ID, use the selected IDs. Otherwise, none of the IDs are valid, so use
+      // an empty array to disable the filter.
+      const projectIds = this.unfetchedIds.length || this.validIds.length ? this.selected : [];
+
+      this.$emit('filter-changed', { projectId: projectIds });
     },
   },
   methods: {
@@ -202,7 +207,7 @@ export default {
       this.selected = [];
     },
     toggleSelected(id) {
-      this.selected = xor(this.selected, [id]);
+      this.selected = xor(this.validIds, [id]);
     },
   },
   i18n: {
@@ -267,7 +272,7 @@ export default {
       <template v-else>
         <filter-item
           v-if="!isSearching"
-          :is-checked="!selected.length"
+          :is-checked="!validIds.length"
           :text="$options.i18n.allItemsText"
           :data-testid="$options.ALL_ID"
           @click="deselectAll"
@@ -276,7 +281,7 @@ export default {
         <filter-item
           v-for="{ id, name } in selectableProjects"
           :key="id"
-          :is-checked="selected.includes(id)"
+          :is-checked="validIds.includes(id)"
           :text="name"
           :data-testid="id"
           @click="toggleSelected(id)"
