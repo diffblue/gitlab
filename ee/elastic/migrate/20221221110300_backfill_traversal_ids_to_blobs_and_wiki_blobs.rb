@@ -14,18 +14,19 @@ class BackfillTraversalIdsToBlobsAndWikiBlobs < Elastic::Migration
     task_id = migration_state[:task_id]
 
     if task_id
+      project_id = migration_state[:project_id]
       task_status = helper.task_status(task_id: task_id)
 
       if task_status['failures'].present?
-        set_migration_state(task_id: nil)
-        log_raise "Failed to update projects : #{task_status['failures']}"
+        set_migration_state(default_migration_state)
+        log_raise "Failed to update project #{project_id}: #{task_status['failures']}"
       end
 
       if task_status['completed'].present?
-        log "Updating traversal_ids in original index is completed for task_id:#{task_id}"
-        set_migration_state(task_id: nil)
+        log "Updating traversal_ids in main index is completed for project #{project_id} with task_id: #{task_id}"
+        set_migration_state(default_migration_state)
       else
-        log "Updating traversal_ids in original index is still in progress for task_id: #{task_id}"
+        log "Updating traversal_ids in main index is in progress for project #{project_id} with task_id: #{task_id}"
       end
 
       return
@@ -38,12 +39,17 @@ class BackfillTraversalIdsToBlobsAndWikiBlobs < Elastic::Migration
 
     log "Searching for the projects with missing traversal_ids"
     project_ids = projects_with_missing_traversal_ids
-    log "Found #{project_ids.size} projects with missing traversal_ids"
-    project_ids.each do |project_id|
-      update_by_query(Project.find(project_id))
-    rescue ActiveRecord::RecordNotFound
-      log "Project not found: #{project_ids[0]}"
-    end
+
+    return if project_ids.empty?
+
+    # need to run one project at a time due to using Elasticsearch tasks to track the work
+    project_id = project_ids[0]
+    update_by_query(Project.find(project_id))
+  rescue ActiveRecord::RecordNotFound
+    log "Project not found: #{project_id}. Scheduling ElasticDeleteProjectWorker"
+    # project must be removed from the index or it will continue to show up in the missing query
+    # since we do not have access to the project record, the es_id input must be constructed manually
+    ElasticDeleteProjectWorker.perform_async(project_id, "#{Project.es_type}_#{project_id}")
   end
 
   def completed?
@@ -76,23 +82,25 @@ class BackfillTraversalIdsToBlobsAndWikiBlobs < Elastic::Migration
         }
       },
       wait_for_completion: false,
+      max_docs: batch_size,
       timeout: ELASTIC_TIMEOUT,
       conflicts: 'proceed'
     )
 
     if response['failures'].present?
-      set_migration_state(task_id: nil)
-      log_raise "Failed to update project with project_id: #{project.id} - #{response['failures']}"
+      set_migration_state(default_migration_state)
+      log_raise "Failed to update project #{project.id} - #{response['failures']}"
     end
 
     task_id = response['task']
-    log "Adding traversal_ids to original index is started with task_id: #{task_id}"
+    log "Adding traversal_ids to original index is started for project #{project.id} with task_id: #{task_id}"
 
     set_migration_state(
-      task_id: task_id
+      task_id: task_id,
+      project_id: project.id
     )
   rescue StandardError => e
-    set_migration_state(task_id: nil)
+    set_migration_state(default_migration_state)
     raise e
   end
 
@@ -106,6 +114,7 @@ class BackfillTraversalIdsToBlobsAndWikiBlobs < Elastic::Migration
   end
 
   def projects_with_missing_traversal_ids
+    # aggregations will return top 10 values by default
     results = client.search(
       index: helper.target_name,
       body: {
@@ -113,7 +122,7 @@ class BackfillTraversalIdsToBlobsAndWikiBlobs < Elastic::Migration
         query: query_missing_traversal_ids,
         aggs: {
           project_ids: {
-            terms: { size: batch_size, field: "project_id" }
+            terms: { field: "project_id" }
           }
         }
       }
@@ -128,6 +137,13 @@ class BackfillTraversalIdsToBlobsAndWikiBlobs < Elastic::Migration
         must_not: { exists: { field: "traversal_ids" } },
         must: { terms: { type: BLOB_AND_WIKI_BLOB } }
       }
+    }
+  end
+
+  def default_migration_state
+    {
+      task_id: nil,
+      project_id: nil
     }
   end
 end
