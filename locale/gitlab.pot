@@ -47760,9 +47760,6 @@ msgstr ""
 msgid "WorkItem|Create objective"
 msgstr ""
 
-msgid "WorkItem|Create task"
-msgstr ""
-
 msgid "WorkItem|Create work item"
 msgstr ""
 
@@ -47899,6 +47896,9 @@ msgid "WorkItem|Start date"
 msgstr ""
 
 msgid "WorkItem|Task"
+msgstr ""
+
+msgid "WorkItem|Task actions"
 msgstr ""
 
 msgid "WorkItem|Task deleted"
