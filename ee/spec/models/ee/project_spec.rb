@@ -3987,4 +3987,18 @@ RSpec.describe Project, feature_category: :projects do
       expect(project.mirror_branches_setting).to eq('regex')
     end
   end
+
+  describe 'deprecated requirements_enabled attribute' do
+    it 'delegates the attribute to project feature' do
+      project = Project.new(requirements_enabled: false)
+
+      expect(project.project_feature.requirements_access_level).to eq(ProjectFeature::DISABLED)
+    end
+
+    it 'sets the default value' do
+      project = Project.new
+
+      expect(project.project_feature.requirements_access_level).to eq(ProjectFeature::ENABLED)
+    end
+  end
 end

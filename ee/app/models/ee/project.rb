@@ -276,17 +276,6 @@ module EE
         validates :mirror_user, presence: true
       end
 
-      # Because we use default_value_for we need to be sure
-      # requirements_enabled= method does exist even if we rollback migration.
-      # Otherwise many tests from spec/migrations will fail.
-      def requirements_enabled=(value)
-        if has_attribute?(:requirements_enabled)
-          write_attribute(:requirements_enabled, value)
-        end
-      end
-
-      default_value_for :requirements_enabled, true
-
       accepts_nested_attributes_for :status_page_setting, update_only: true, allow_destroy: true
       accepts_nested_attributes_for :compliance_framework_setting, update_only: true, allow_destroy: true
 
@@ -428,6 +417,11 @@ module EE
           .joins(:statistics)
           .where((statistics[:storage_size]).gt(minimum_size_mb))
           .where('last_activity_at < ?', last_activity_cutoff)
+      end
+
+      override :project_features_defaults
+      def project_features_defaults
+        super.merge(requirements: true)
       end
     end
 
