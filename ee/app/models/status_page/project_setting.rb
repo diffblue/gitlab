@@ -9,7 +9,8 @@ module StatusPage
 
     self.table_name = 'status_page_settings'
 
-    belongs_to :project
+    belongs_to :project,
+      inverse_of: :status_page_setting
 
     attr_encrypted :aws_secret_key,
       mode: :per_attribute_iv,
