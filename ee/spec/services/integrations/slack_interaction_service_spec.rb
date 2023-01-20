@@ -41,6 +41,20 @@ RSpec.describe Integrations::SlackInteractionService, feature_category: :integra
       end
     end
 
+    context 'when block action service is submitted' do
+      let(:slack_interaction) { 'block_actions' }
+
+      it 'executes the block actions service' do
+        block_action_service = described_class::INTERACTIONS['block_actions']
+
+        expect_next_instance_of(block_action_service, { foo: 'bar' }) do |service|
+          expect(service).to receive(:execute).and_return(ServiceResponse.success)
+        end
+
+        execute
+      end
+    end
+
     context 'when slack_interaction is not known' do
       let(:slack_interaction) { 'foo' }
 

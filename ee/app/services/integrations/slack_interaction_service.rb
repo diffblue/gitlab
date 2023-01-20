@@ -6,7 +6,8 @@ module Integrations
 
     INTERACTIONS = {
       'view_closed' => SlackInteractions::IncidentManagement::IncidentModalClosedService,
-      'view_submission' => SlackInteractions::IncidentManagement::IncidentModalSubmitService
+      'view_submission' => SlackInteractions::IncidentManagement::IncidentModalSubmitService,
+      'block_actions' => SlackInteractions::BlockActionService
     }.freeze
 
     def initialize(params)

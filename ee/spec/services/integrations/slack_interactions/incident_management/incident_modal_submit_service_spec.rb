@@ -58,7 +58,7 @@ RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModa
                 }
               },
               project_and_severity_selector: {
-                project: {
+                incident_management_project: {
                   selected_option: {
                     value: project.id.to_s
                   }

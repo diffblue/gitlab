@@ -77,11 +77,18 @@ module Slack
         def project_selection
           {
             "type": "static_select",
-            "action_id": "project",
+            "action_id": "incident_management_project",
             "placeholder": {
               "type": "plain_text",
               "text": _("Select project")
             },
+            "confirm": confirmation_dialog(
+              s_("SlackModal|Are you sure you want to change the project?"),
+              [
+                s_("SlackModal|If you change the project, you'll lose any text entered in the form."),
+                s_("SlackModal|If you've entered some text, consider saving it somewhere to avoid losing any content.")
+              ].join("\n")
+            ),
             "options": construct_project_selector,
             "initial_option": project_selector_option(projects.first)
           }
@@ -219,7 +226,8 @@ module Slack
                   _("Write a description..."),
                   _("[Supports GitLab-flavored markdown, including quick actions]")
                 ].join("\n\n")
-              }
+              },
+              "initial_value": project_incident_template(projects.first)
             },
             "label": {
               "type": "plain_text",
@@ -261,6 +269,31 @@ module Slack
               "text": project.full_path
             },
             "value": project.id.to_s
+          }
+        end
+
+        def project_incident_template(project)
+          project.incident_management_setting&.issue_template_content.to_s
+        end
+
+        def confirmation_dialog(question, warning)
+          {
+            "title": {
+              "type": "plain_text",
+              "text": question
+            },
+            "text": {
+              "type": "plain_text",
+              "text": warning
+            },
+            "confirm": {
+              "type": "plain_text",
+              "text": "Yes"
+            },
+            "deny": {
+              "type": "plain_text",
+              "text": "No"
+            }
           }
         end
       end
