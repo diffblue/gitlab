@@ -35,12 +35,15 @@ export default {
   metadataModalId: 'metadataModalId',
   methods: {
     cerFile() {
+      this.track('load_secure_file_metadata_cer');
       return this.secureFile.file_extension === 'cer';
     },
     p12File() {
+      this.track('load_secure_file_metadata_p12');
       return this.secureFile.file_extension === 'p12';
     },
     mobileprovisionFile() {
+      this.track('load_secure_file_metadata_mobileprovision');
       return this.secureFile.file_extension === 'mobileprovision';
     },
   },
