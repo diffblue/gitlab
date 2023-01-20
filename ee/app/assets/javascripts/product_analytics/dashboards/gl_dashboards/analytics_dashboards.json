@@ -5,7 +5,9 @@
       "title": "Audience",
       "description": "Understand your audience",
       "icon": "users",
-      "labels": ["Audience"]
+      "labels": [
+        "Audience"
+      ]
     },
     {
       "id": "dashboard_behavior",
