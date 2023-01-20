@@ -4719,9 +4719,6 @@ msgstr ""
 msgid "Any milestone"
 msgstr ""
 
-msgid "Any namespace"
-msgstr ""
-
 msgid "App ID"
 msgstr ""
 
