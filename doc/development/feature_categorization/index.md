@@ -208,11 +208,13 @@ Example:
 
 For examples that don't have a `feature_category` set we add a warning when running them in local environment.
 
-In order to disable the warning use `RSPEC_WARN_MISSING_FEATURE_CATEGORY=false` when running RSpec tests:
+To disable the warning use `RSPEC_WARN_MISSING_FEATURE_CATEGORY=false` when running RSpec tests:
 
 ```shell
 RSPEC_WARN_MISSING_FEATURE_CATEGORY=false bin/rspec spec/<test_file>
 ```
+
+Additionally, we flag the offenses via `RSpec/MissingFeatureCategory` RuboCop rule.
 
 ### Tooling feature category
 
