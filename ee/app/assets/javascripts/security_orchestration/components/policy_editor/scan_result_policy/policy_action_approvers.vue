@@ -74,6 +74,9 @@ export default {
         this.approverIndex + 1 === this.numOfApproverTypes
       );
     },
+    showRemoveButton() {
+      return this.numOfApproverTypes > 1;
+    },
   },
   methods: {
     addApproverType() {
@@ -110,62 +113,60 @@ export default {
 </script>
 
 <template>
-  <div>
-    <gl-form inline class="gl-display-inline-block" @submit.prevent>
-      <gl-sprintf :message="actionText">
-        <template #require="{ content }">
-          <strong>{{ content }}</strong>
-        </template>
+  <div class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-gap-3">
+    <gl-form class="gl-display-flex gl-align-items-center" @submit.prevent>
+      <div class="gl-display-flex gl-align-items-center gl-justify-content-end gl-w-28">
+        <gl-sprintf :message="actionText">
+          <template #require="{ content }">
+            <strong>{{ content }}</strong>
+          </template>
 
-        <template #approvalsRequired>
-          <gl-form-input
-            :value="approvalsRequired"
-            type="number"
-            class="gl-w-11!"
-            :min="1"
-            data-testid="approvals-required-input"
-            @update="approvalsRequiredChanged"
-          />
-        </template>
-
-        <template #approval="{ content }">
-          <strong>{{ content }}</strong>
-        </template>
-
-        <template #approverType>
-          <gl-collapsible-listbox
-            class="gl-mr-3"
-            :items="approverTypes"
-            :toggle-text="approverTypeToggleText"
-            @select="handleSelectedApproverType"
-          />
-        </template>
-
-        <template #approvers>
-          <template v-if="approverType === $options.USER_TYPE">
-            <user-select
-              :existing-approvers="approvers.users"
-              @updateSelectedApprovers="
-                handleApproversUpdate({
-                  updatedApprovers: $event,
-                  type: $options.USER_TYPE,
-                })
-              "
+          <template #approvalsRequired>
+            <gl-form-input
+              :value="approvalsRequired"
+              type="number"
+              class="gl-w-11! gl-mx-3"
+              :min="1"
+              data-testid="approvals-required-input"
+              @update="approvalsRequiredChanged"
             />
           </template>
-          <template v-else-if="approverType === $options.GROUP_TYPE">
-            <group-select
-              :existing-approvers="approvers.groups"
-              @updateSelectedApprovers="
-                handleApproversUpdate({
-                  updatedApprovers: $event,
-                  type: $options.GROUP_TYPE,
-                })
-              "
-            />
+
+          <template #approval="{ content }">
+            <strong class="gl-mr-3">{{ content }}</strong>
           </template>
-        </template>
-      </gl-sprintf>
+        </gl-sprintf>
+      </div>
+
+      <gl-collapsible-listbox
+        class="gl-mx-3"
+        :items="approverTypes"
+        :toggle-text="approverTypeToggleText"
+        @select="handleSelectedApproverType"
+      />
+
+      <template v-if="approverType === $options.USER_TYPE">
+        <user-select
+          :existing-approvers="approvers.users"
+          @updateSelectedApprovers="
+            handleApproversUpdate({
+              updatedApprovers: $event,
+              type: $options.USER_TYPE,
+            })
+          "
+        />
+      </template>
+      <template v-else-if="approverType === $options.GROUP_TYPE">
+        <group-select
+          :existing-approvers="approvers.groups"
+          @updateSelectedApprovers="
+            handleApproversUpdate({
+              updatedApprovers: $event,
+              type: $options.GROUP_TYPE,
+            })
+          "
+        />
+      </template>
     </gl-form>
     <gl-button
       v-if="showAddButton"
@@ -177,7 +178,8 @@ export default {
       {{ $options.i18n.ADD_APPROVER_LABEL }}
     </gl-button>
     <gl-button
-      v-if="numOfApproverTypes > 1"
+      v-if="showRemoveButton"
+      :key="approverType"
       icon="remove"
       category="tertiary"
       data-testid="remove-approver"

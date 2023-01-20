@@ -159,14 +159,12 @@ export function approversOutOfSync(action, existingApprovers) {
 
 export const getDefaultHumanizedTemplate = (numOfApproversRequired) => {
   return n__(
-    '%{requireStart}Require%{requireEnd} %{approvalsRequired} %{approvalStart}approval%{approvalEnd} from: %{approverType}%{approvers}',
-    '%{requireStart}Require%{requireEnd} %{approvalsRequired} %{approvalStart}approvals%{approvalEnd} from: %{approverType}%{approvers}',
+    '%{requireStart}Require%{requireEnd} %{approvalsRequired} %{approvalStart}approval%{approvalEnd} from:',
+    '%{requireStart}Require%{requireEnd} %{approvalsRequired} %{approvalStart}approvals%{approvalEnd} from:',
     numOfApproversRequired,
   );
 };
 
-export const MULTIPLE_APPROVER_TYPES_HUMANIZED_TEMPLATE = s__(
-  'SecurityOrchestration|or from: %{approverType}%{approvers}',
-);
+export const MULTIPLE_APPROVER_TYPES_HUMANIZED_TEMPLATE = s__('SecurityOrchestration|or from:');
 
 export const DEFAULT_APPROVER_DROPDOWN_TEXT = s__('SecurityOrchestration|Choose approver type');
