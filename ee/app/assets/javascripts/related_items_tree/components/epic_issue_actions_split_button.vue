@@ -61,7 +61,12 @@ export default {
 </script>
 
 <template>
-  <gl-dropdown :text="__('Add')" data-qa-selector="epic_issue_actions_split_button" right>
+  <gl-dropdown
+    :text="__('Add')"
+    data-qa-selector="epic_issue_actions_split_button"
+    size="small"
+    right
+  >
     <gl-dropdown-section-header>{{ __('Issue') }}</gl-dropdown-section-header>
     <gl-dropdown-item
       v-for="item in $options.issueActionItems"
