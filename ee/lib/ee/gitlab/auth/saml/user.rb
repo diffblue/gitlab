@@ -40,7 +40,7 @@ module EE
           protected
 
           def block_user(user, reason)
-            user.ldap_block
+            user.system_block
             log_user_changes(user, 'SAML', "#{reason}, blocking")
           end
 
