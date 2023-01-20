@@ -5,7 +5,9 @@
   "data": {
     "type": "cube_analytics",
     "query": {
-      "measures": ["Sessions.repeatPercent"],
+      "measures": [
+        "Sessions.repeatPercent"
+      ],
       "limit": 100,
       "timezone": "UTC",
       "filters": [],
@@ -13,5 +15,7 @@
       "timeDimensions": []
     }
   },
-  "options": {}
+  "options": {
+    "decimalPlaces": 1
+  }
 }
