@@ -27,6 +27,8 @@ module SystemCheck
           'Enable an NTP update service on this machine to keep clocks synchronized'
         )
 
+        for_more_information('administration/geo/replication/troubleshooting#health-check-rake-task')
+
         false
       rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, SocketError
         print_warning("NTP Server #{ntp_host} cannot be reached")
@@ -40,8 +42,10 @@ module SystemCheck
         try_fixing_it(
           "Check whether you have a connectivity problem or if there is a firewall blocking it",
           "If this is an offline environment, you can ignore this error, " \
-          "but make sure you have a way to keep clocks synced"
+          "but make sure you have a way to keep clocks synced."
         )
+
+        for_more_information('administration/geo/replication/troubleshooting#health-check-rake-task')
       end
 
       private
