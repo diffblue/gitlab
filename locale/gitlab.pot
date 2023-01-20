@@ -5980,9 +5980,6 @@ msgstr ""
 msgid "Available on-demand"
 msgstr ""
 
-msgid "Available specific runners"
-msgstr ""
-
 msgid "Avatar for %{assigneeName}"
 msgstr ""
 
@@ -36272,6 +36269,9 @@ msgstr ""
 msgid "Runners|Assigned Projects (%{projectCount})"
 msgstr ""
 
+msgid "Runners|Assigned project runners"
+msgstr ""
+
 msgid "Runners|Associated with one or more projects"
 msgstr ""
 
@@ -36486,6 +36486,9 @@ msgstr ""
 msgid "Runners|Project"
 msgstr ""
 
+msgid "Runners|Project runners"
+msgstr ""
+
 msgid "Runners|Property Name"
 msgstr ""
 
@@ -36666,6 +36669,9 @@ msgstr ""
 msgid "Runners|The runner will be permanently deleted and no longer available for projects or groups in the instance. Are you sure you want to continue?"
 msgstr ""
 
+msgid "Runners|These runners are assigned to this project."
+msgstr ""
+
 msgid "Runners|This group currently has 1 stale runner."
 msgid_plural "Runners|This group currently has %d stale runners."
 msgstr[0] ""
@@ -36755,7 +36761,7 @@ msgstr ""
 msgid "Runners|Yes, start deleting stale runners"
 msgstr ""
 
-msgid "Runners|You can set up a specific runner to be used by multiple projects but you cannot make this a shared or group runner."
+msgid "Runners|You can set up a project runner to be used by multiple projects but you cannot make this a shared or group runner."
 msgstr ""
 
 msgid "Runners|You have used %{quotaUsed} out of %{quotaLimit} of your shared Runners pipeline minutes."
@@ -36770,10 +36776,10 @@ msgstr ""
 msgid "Runners|paused"
 msgstr ""
 
-msgid "Runners|shared"
+msgid "Runners|project"
 msgstr ""
 
-msgid "Runners|specific"
+msgid "Runners|shared"
 msgstr ""
 
 msgid "Runner|Owner"
@@ -40195,9 +40201,6 @@ msgstr ""
 msgid "Spam log successfully submitted as ham."
 msgstr ""
 
-msgid "Specific runners"
-msgstr ""
-
 msgid "Specified URL cannot be used: \"%{reason}\""
 msgstr ""
 
@@ -42813,9 +42816,6 @@ msgid "These existing issues have a similar title. It might be better to comment
 msgstr ""
 
 msgid "These runners are shared across projects in this group."
-msgstr ""
-
-msgid "These runners are specific to this project."
 msgstr ""
 
 msgid "These variables are inherited from the parent group."
