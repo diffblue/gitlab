@@ -12,6 +12,7 @@ RSpec.describe 'epic boards', :js, feature_category: :portfolio_management do
   context 'multiple epic boards' do
     before do
       stub_licensed_features(epics: true)
+      stub_feature_flags(apollo_boards: false)
 
       group.add_maintainer(user)
       sign_in(user)
