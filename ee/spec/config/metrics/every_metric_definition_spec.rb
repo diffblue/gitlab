@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Every metric definition' do
+RSpec.describe 'Every metric definition', feature_category: :service_ping do
   include UsageDataHelpers
 
   let(:usage_ping) { Gitlab::Usage::ServicePingReport.for(output: :all_metrics_values) }

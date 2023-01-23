@@ -2,7 +2,7 @@
 
 require 'rake_helper'
 
-RSpec.describe 'EE check.rake', :silence_stdout do
+RSpec.describe 'EE check.rake', :silence_stdout, feature_category: :geo_replication do
   before do
     Rake.application.rake_require 'ee/lib/tasks/gitlab/check', [Rails.root.to_s]
 
