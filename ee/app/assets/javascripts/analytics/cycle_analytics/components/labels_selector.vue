@@ -9,7 +9,7 @@ import {
 } from '@gitlab/ui';
 import { debounce } from 'lodash';
 import { mapGetters, mapState } from 'vuex';
-import Api from 'ee/api';
+import { getGroupLabels } from 'ee/api/analytics_api';
 import { removeFlash } from '~/analytics/shared/utils';
 import { createAlert } from '~/flash';
 import { __ } from '~/locale';
@@ -95,7 +95,7 @@ export default {
     fetchData() {
       removeFlash();
       this.loading = true;
-      return Api.cycleAnalyticsGroupLabels(this.currentGroupPath, {
+      return getGroupLabels(this.currentGroupPath, {
         search: this.searchTerm,
         only_group_labels: true,
       })

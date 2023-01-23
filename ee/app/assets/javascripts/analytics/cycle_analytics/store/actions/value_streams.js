@@ -1,4 +1,9 @@
-import Api from 'ee/api';
+import {
+  createValueStream as apiCreateValueStream,
+  updateValueStream as apiUpdateValueStream,
+  deleteValueStream as apiDeleteValueStream,
+  getValueStreams,
+} from 'ee/api/analytics_api';
 import { FETCH_VALUE_STREAM_DATA } from '../../constants';
 import * as types from '../mutation_types';
 
@@ -11,7 +16,7 @@ export const createValueStream = ({ commit, dispatch, getters }, data) => {
   const { currentGroupPath } = getters;
   commit(types.REQUEST_CREATE_VALUE_STREAM);
 
-  return Api.cycleAnalyticsCreateValueStream(currentGroupPath, data)
+  return apiCreateValueStream(currentGroupPath, data)
     .then(({ data: newValueStream }) => dispatch('receiveCreateValueStreamSuccess', newValueStream))
     .catch(({ response } = {}) => {
       const { data: { message, payload: { errors } } = null } = response;
@@ -26,7 +31,7 @@ export const updateValueStream = (
   const { currentGroupPath } = getters;
   commit(types.REQUEST_UPDATE_VALUE_STREAM);
 
-  return Api.cycleAnalyticsUpdateValueStream({ groupId: currentGroupPath, valueStreamId, data })
+  return apiUpdateValueStream({ groupId: currentGroupPath, valueStreamId, data })
     .then(({ data: newValueStream }) => {
       commit(types.RECEIVE_UPDATE_VALUE_STREAM_SUCCESS, newValueStream);
       return dispatch('fetchCycleAnalyticsData');
@@ -41,7 +46,7 @@ export const deleteValueStream = ({ commit, dispatch, getters }, valueStreamId) 
   const { currentGroupPath } = getters;
   commit(types.REQUEST_DELETE_VALUE_STREAM);
 
-  return Api.cycleAnalyticsDeleteValueStream(currentGroupPath, valueStreamId)
+  return apiDeleteValueStream(currentGroupPath, valueStreamId)
     .then(() => commit(types.RECEIVE_DELETE_VALUE_STREAM_SUCCESS))
     .then(() => dispatch('fetchCycleAnalyticsData'))
     .catch(({ response } = {}) => {
@@ -88,7 +93,7 @@ export const fetchValueStreams = ({ commit, dispatch, getters }) => {
 
   commit(types.REQUEST_VALUE_STREAMS);
 
-  return Api.cycleAnalyticsValueStreams(currentGroupPath)
+  return getValueStreams(currentGroupPath)
     .then(({ data }) => dispatch('receiveValueStreamsSuccess', data))
     .catch((error) => {
       const {
