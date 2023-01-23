@@ -1,4 +1,4 @@
-import Api from 'ee/api';
+import { getTypeOfWorkTopLabels, getTypeOfWorkTasksByType } from 'ee/api/analytics_api';
 import { __ } from '~/locale';
 import { throwIfUserForbidden, checkForDataError, flashErrorIfStatusNotOk } from '../../../utils';
 import * as types from './mutation_types';
@@ -33,7 +33,7 @@ export const fetchTopRankedGroupLabels = ({ dispatch, commit, state, rootGetters
   } = rootGetters;
   const { subject } = state;
 
-  return Api.cycleAnalyticsTopLabels(currentGroupPath, {
+  return getTypeOfWorkTopLabels(currentGroupPath, {
     subject,
     project_ids,
     created_after,
@@ -77,7 +77,7 @@ export const fetchTasksByTypeData = ({ dispatch, commit, state, rootGetters, get
 
   // dont request if we have no labels selected...for now
   if (selectedLabelNames.length) {
-    return Api.cycleAnalyticsTasksByType(currentGroupPath, {
+    return getTypeOfWorkTasksByType(currentGroupPath, {
       project_ids,
       created_after,
       created_before,

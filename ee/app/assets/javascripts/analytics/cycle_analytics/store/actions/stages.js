@@ -1,5 +1,9 @@
-import Api from 'ee/api';
-import { getGroupValueStreamStageMedian } from 'ee/api/analytics_api';
+import {
+  getGroupValueStreamStageMedian,
+  getStageEvents,
+  getStageCount,
+  getGroupStagesAndEvents,
+} from 'ee/api/analytics_api';
 import {
   I18N_VSA_ERROR_STAGES,
   I18N_VSA_ERROR_STAGE_MEDIAN,
@@ -33,7 +37,7 @@ export const fetchStageData = ({ dispatch, getters, commit }, stageId) => {
   } = getters;
   dispatch('requestStageData');
 
-  return Api.cycleAnalyticsStageEvents({
+  return getStageEvents({
     groupId: currentGroupPath,
     valueStreamId: currentValueStreamId,
     stageId,
@@ -96,7 +100,7 @@ export const fetchStageMedianValues = ({ dispatch, commit, getters }) => {
 };
 
 const fetchStageCount = ({ groupId, valueStreamId, stageId, params }) =>
-  Api.cycleAnalyticsStageCount({ groupId, valueStreamId, stageId, params }).then(({ data }) => {
+  getStageCount({ groupId, valueStreamId, stageId, params }).then(({ data }) => {
     return {
       id: stageId,
       ...(data?.error
@@ -152,7 +156,7 @@ export const fetchGroupStagesAndEvents = ({ dispatch, commit, getters }) => {
   dispatch('requestGroupStages');
   commit(types.SET_STAGE_EVENTS, []);
 
-  return Api.cycleAnalyticsGroupStagesAndEvents({
+  return getGroupStagesAndEvents({
     groupId,
     valueStreamId,
     params: {

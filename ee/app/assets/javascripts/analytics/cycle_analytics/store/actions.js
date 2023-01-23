@@ -1,4 +1,4 @@
-import Api from 'ee/api';
+import { getGroupLabels } from 'ee/api/analytics_api';
 import { removeFlash } from '~/analytics/shared/utils';
 import { createAlert } from '~/flash';
 import { HTTP_STATUS_FORBIDDEN, HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
@@ -24,7 +24,7 @@ export const setFeatureFlags = ({ commit }, featureFlags) =>
 
 export const fetchGroupLabels = ({ commit, getters: { currentGroupPath } }) => {
   commit(types.REQUEST_GROUP_LABELS);
-  return Api.cycleAnalyticsGroupLabels(currentGroupPath, { only_group_labels: true })
+  return getGroupLabels(currentGroupPath, { only_group_labels: true })
     .then(({ data = [] }) => commit(types.RECEIVE_GROUP_LABELS_SUCCESS, data))
     .catch(() => commit(types.RECEIVE_GROUP_LABELS_ERROR));
 };

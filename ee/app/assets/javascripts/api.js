@@ -11,16 +11,6 @@ export default {
   ldapGroupsPath: '/api/:version/ldap/:provider/groups.json',
   subscriptionPath: '/api/:version/namespaces/:id/gitlab_subscription',
   childEpicPath: '/api/:version/groups/:id/epics',
-  cycleAnalyticsTasksByTypePath: '/groups/:id/-/analytics/type_of_work/tasks_by_type',
-  cycleAnalyticsTopLabelsPath: '/groups/:id/-/analytics/type_of_work/tasks_by_type/top_labels',
-  cycleAnalyticsGroupStagesAndEventsPath:
-    '/groups/:id/-/analytics/value_stream_analytics/value_streams/:value_stream_id/stages',
-  cycleAnalyticsValueStreamsPath: '/groups/:id/-/analytics/value_stream_analytics/value_streams',
-  cycleAnalyticsValueStreamPath:
-    '/groups/:id/-/analytics/value_stream_analytics/value_streams/:value_stream_id',
-  cycleAnalyticsStagePath:
-    '/groups/:id/-/analytics/value_stream_analytics/value_streams/:value_stream_id/stages/:stage_id',
-  cycleAnalyticsGroupLabelsPath: '/groups/:namespace_path/-/labels.json',
   codeReviewAnalyticsPath: '/api/:version/analytics/code_review',
   groupActivityIssuesPath: '/api/:version/analytics/group_activity/issues_count',
   groupActivityMergeRequestsPath: '/api/:version/analytics/group_activity/merge_requests_count',
@@ -87,88 +77,6 @@ export default {
       params: {
         search,
       },
-    });
-  },
-
-  cycleAnalyticsTasksByType(groupId, params = {}) {
-    const url = Api.buildUrl(this.cycleAnalyticsTasksByTypePath).replace(':id', groupId);
-
-    return axios.get(url, { params });
-  },
-
-  cycleAnalyticsTopLabels(groupId, params = {}) {
-    const url = Api.buildUrl(this.cycleAnalyticsTopLabelsPath).replace(':id', groupId);
-
-    return axios.get(url, { params });
-  },
-
-  cycleAnalyticsGroupStagesAndEvents({ groupId, valueStreamId, params = {} }) {
-    const url = Api.buildUrl(this.cycleAnalyticsGroupStagesAndEventsPath)
-      .replace(':id', groupId)
-      .replace(':value_stream_id', valueStreamId);
-
-    return axios.get(url, { params });
-  },
-
-  cycleAnalyticsStageEvents({ groupId, valueStreamId, stageId, params = {} }) {
-    const stageBase = this.cycleAnalyticsStageUrl({ groupId, valueStreamId, stageId });
-    const url = `${stageBase}/records`;
-    return axios.get(url, { params });
-  },
-
-  cycleAnalyticsStageCount({ groupId, valueStreamId, stageId, params = {} }) {
-    const stageBase = this.cycleAnalyticsStageUrl({ groupId, valueStreamId, stageId });
-    const url = `${stageBase}/count`;
-    return axios.get(url, { params });
-  },
-
-  cycleAnalyticsCreateValueStream(groupId, data) {
-    const url = Api.buildUrl(this.cycleAnalyticsValueStreamsPath).replace(':id', groupId);
-    return axios.post(url, data);
-  },
-
-  cycleAnalyticsUpdateValueStream({ groupId, valueStreamId, data }) {
-    const url = Api.buildUrl(this.cycleAnalyticsValueStreamPath)
-      .replace(':id', groupId)
-      .replace(':value_stream_id', valueStreamId);
-    return axios.put(url, data);
-  },
-
-  cycleAnalyticsDeleteValueStream(groupId, valueStreamId) {
-    const url = Api.buildUrl(this.cycleAnalyticsValueStreamPath)
-      .replace(':id', groupId)
-      .replace(':value_stream_id', valueStreamId);
-    return axios.delete(url);
-  },
-
-  cycleAnalyticsValueStreams(groupId, data) {
-    const url = Api.buildUrl(this.cycleAnalyticsValueStreamsPath).replace(':id', groupId);
-    return axios.get(url, data);
-  },
-
-  cycleAnalyticsStageUrl({ groupId, valueStreamId, stageId }) {
-    return Api.buildUrl(this.cycleAnalyticsStagePath)
-      .replace(':id', groupId)
-      .replace(':value_stream_id', valueStreamId)
-      .replace(':stage_id', stageId);
-  },
-
-  cycleAnalyticsDurationChart({ groupId, valueStreamId, stageId, params = {} }) {
-    const stageBase = this.cycleAnalyticsStageUrl({ groupId, valueStreamId, stageId });
-    const url = `${stageBase}/average_duration_chart`;
-    return axios.get(url, { params });
-  },
-
-  cycleAnalyticsGroupLabels(groupId, params = { search: null }) {
-    // TODO: This can be removed when we resolve the labels endpoint
-    // https://gitlab.com/gitlab-org/gitlab/-/merge_requests/25746
-    const url = Api.buildUrl(this.cycleAnalyticsGroupLabelsPath).replace(
-      ':namespace_path',
-      groupId,
-    );
-
-    return axios.get(url, {
-      params,
     });
   },
 

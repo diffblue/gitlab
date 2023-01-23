@@ -1,4 +1,4 @@
-import Api from 'ee/api';
+import { getDurationChart } from 'ee/api/analytics_api';
 import { __ } from '~/locale';
 import { checkForDataError, flashErrorIfStatusNotOk } from '../../../utils';
 import * as types from './mutation_types';
@@ -27,7 +27,7 @@ export const fetchDurationData = ({ dispatch, commit, rootGetters }) => {
     activeStages.map((stage) => {
       const { id } = stage;
 
-      return Api.cycleAnalyticsDurationChart({
+      return getDurationChart({
         groupId: currentGroupPath,
         valueStreamId: currentValueStreamId,
         stageId: id,
