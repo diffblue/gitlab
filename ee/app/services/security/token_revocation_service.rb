@@ -44,7 +44,7 @@ module Security
     def revoke_glpat(token)
       pat = PersonalAccessToken.active.find_by_token(token[:token])
 
-      return unless pat && Feature.enabled?(:gitlab_pat_auto_revocation, pat.user)
+      return unless pat
       return unless AccessTokenValidationService.new(pat).validate == :valid
 
       result = PersonalAccessTokens::RevokeService.new(

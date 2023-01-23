@@ -34,7 +34,6 @@ RSpec.describe Security::TokenRevocationService, '#execute' do
     stub_application_setting(secret_detection_revocation_token_types_url: revocation_token_types_url)
     stub_application_setting(secret_detection_token_revocation_token: 'token1')
     stub_application_setting(secret_detection_token_revocation_url: token_revocation_url)
-    stub_feature_flags(gitlab_pat_auto_revocation: false)
   end
 
   context 'when revoking a glpat token' do
@@ -59,10 +58,6 @@ RSpec.describe Security::TokenRevocationService, '#execute' do
           'vulnerability': vulnerability
         }
       ]
-    end
-
-    before do
-      stub_feature_flags(gitlab_pat_auto_revocation: true)
     end
 
     it 'returns success' do
