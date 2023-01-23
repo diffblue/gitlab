@@ -6,6 +6,7 @@ import { mockHeaders, mockText, mockProjectData } from 'ee_jest/vue_shared/dashb
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 import clearState from '../helpers';
 
@@ -36,7 +37,7 @@ describe('actions', () => {
       store.state.projectEndpoints.add = mockAddEndpoint;
       store.state.selectedProjects = mockProjects;
 
-      mockAxios.onPost(mockAddEndpoint).replyOnce(200, mockResponse);
+      mockAxios.onPost(mockAddEndpoint).replyOnce(HTTP_STATUS_OK, mockResponse);
 
       return testAction(
         actions.addProjectsToDashboard,
@@ -200,7 +201,7 @@ describe('actions', () => {
             page,
           },
         })
-        .replyOnce(200, { projects: mockProjects }, mockHeaders);
+        .replyOnce(HTTP_STATUS_OK, { projects: mockProjects }, mockHeaders);
 
       return testAction(
         actions.fetchProjects,
@@ -275,7 +276,7 @@ describe('actions', () => {
     const mockRemovePath = 'mock-removePath';
 
     it('calls project removal path and fetches projects on success', () => {
-      mockAxios.onDelete(mockRemovePath).replyOnce(200);
+      mockAxios.onDelete(mockRemovePath).replyOnce(HTTP_STATUS_OK);
 
       return testAction(
         actions.removeProject,
@@ -386,7 +387,7 @@ describe('actions', () => {
     });
 
     it(`dispatches the correct actions when the query is valid`, () => {
-      mockAxios.onAny().reply(200, mockProjects, mockHeaders);
+      mockAxios.onAny().reply(HTTP_STATUS_OK, mockProjects, mockHeaders);
       store.state.searchQuery = 'mock-query';
 
       return testAction(
@@ -409,7 +410,7 @@ describe('actions', () => {
 
   describe('fetchNextPage', () => {
     it(`fetches the next page`, () => {
-      mockAxios.onAny().reply(200, mockProjects, mockHeaders);
+      mockAxios.onAny().reply(HTTP_STATUS_OK, mockProjects, mockHeaders);
       store.state.pageInfo = mockHeaders.pageInfo;
 
       return testAction(
@@ -427,7 +428,7 @@ describe('actions', () => {
     });
 
     it(`stops fetching if current page is the last page`, () => {
-      mockAxios.onAny().reply(200, mockProjects, mockHeaders);
+      mockAxios.onAny().reply(HTTP_STATUS_OK, mockProjects, mockHeaders);
       store.state.pageInfo.totalPages = 3;
       store.state.pageInfo.currentPage = 3;
 

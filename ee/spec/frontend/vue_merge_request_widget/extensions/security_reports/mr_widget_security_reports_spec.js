@@ -13,7 +13,7 @@ import MrWidgetRow from '~/vue_merge_request_widget/components/widget/widget_con
 import * as urlUtils from '~/lib/utils/url_utility';
 import { BV_HIDE_MODAL } from '~/lib/utils/constants';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
+import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 jest.mock('~/vue_shared/components/user_callout_dismisser.vue', () => ({ render: () => {} }));
 jest.mock('~/vue_shared/plugins/global_toast');
@@ -129,7 +129,7 @@ describe('MR Widget Security Reports', () => {
 
   describe('with MR data', () => {
     const mockWithData = () => {
-      mockAxios.onGet(reportEndpoints.sastComparisonPath).replyOnce(200, {
+      mockAxios.onGet(reportEndpoints.sastComparisonPath).replyOnce(HTTP_STATUS_OK, {
         added: [
           {
             uuid: 1,
@@ -141,7 +141,7 @@ describe('MR Widget Security Reports', () => {
         ],
       });
 
-      mockAxios.onGet(reportEndpoints.dastComparisonPath).replyOnce(200, {
+      mockAxios.onGet(reportEndpoints.dastComparisonPath).replyOnce(HTTP_STATUS_OK, {
         added: [
           { uuid: 5, severity: 'low', name: 'SQL Injection' },
           { uuid: 3, severity: 'unknown', name: 'Weak password' },
@@ -155,7 +155,7 @@ describe('MR Widget Security Reports', () => {
         reportEndpoints.secretDetectionComparisonPath,
         reportEndpoints.containerScanningComparisonPath,
       ].forEach((path) => {
-        mockAxios.onGet(path).replyOnce(200, {
+        mockAxios.onGet(path).replyOnce(HTTP_STATUS_OK, {
           added: [],
         });
       });
@@ -300,7 +300,7 @@ describe('MR Widget Security Reports', () => {
     const mockWithData = () => {
       mockAxios.onGet(reportEndpoints.sastComparisonPath).replyOnce(HTTP_STATUS_BAD_REQUEST);
 
-      mockAxios.onGet(reportEndpoints.dastComparisonPath).replyOnce(200, {
+      mockAxios.onGet(reportEndpoints.dastComparisonPath).replyOnce(HTTP_STATUS_OK, {
         added: [
           { uuid: 5, severity: 'low', name: 'SQL Injection' },
           { uuid: 3, severity: 'unknown', name: 'Weak password' },
@@ -314,7 +314,7 @@ describe('MR Widget Security Reports', () => {
         reportEndpoints.secretDetectionComparisonPath,
         reportEndpoints.containerScanningComparisonPath,
       ].forEach((path) => {
-        mockAxios.onGet(path).replyOnce(200, {
+        mockAxios.onGet(path).replyOnce(HTTP_STATUS_OK, {
           added: [],
         });
       });
@@ -342,7 +342,7 @@ describe('MR Widget Security Reports', () => {
   describe('help popovers', () => {
     const mockWithData = () => {
       Object.keys(reportEndpoints).forEach((key, i) => {
-        mockAxios.onGet(reportEndpoints[key]).replyOnce(200, {
+        mockAxios.onGet(reportEndpoints[key]).replyOnce(HTTP_STATUS_OK, {
           added: [{ uuid: i, severity: 'critical', name: 'Password leak' }],
         });
       });
@@ -386,7 +386,7 @@ describe('MR Widget Security Reports', () => {
   describe('modal', () => {
     const mockWithData = (props) => {
       Object.keys(reportEndpoints).forEach((key, i) => {
-        mockAxios.onGet(reportEndpoints[key]).replyOnce(200, {
+        mockAxios.onGet(reportEndpoints[key]).replyOnce(HTTP_STATUS_OK, {
           added: [{ uuid: i, severity: 'critical', name: 'Password leak', ...props }],
         });
       });
@@ -502,7 +502,7 @@ describe('MR Widget Security Reports', () => {
 
         const spy = jest.spyOn(urlUtils, 'visitUrl');
 
-        mockAxios.onPost(createVulnerabilityFeedbackIssuePath).replyOnce(200, {
+        mockAxios.onPost(createVulnerabilityFeedbackIssuePath).replyOnce(HTTP_STATUS_OK, {
           issue_url: '/my/issue/url',
         });
 
@@ -603,7 +603,7 @@ describe('MR Widget Security Reports', () => {
       it('handles dismissing finding - success', async () => {
         mockWithData();
 
-        mockAxios.onPost(createVulnerabilityFeedbackDismissalPath).replyOnce(200);
+        mockAxios.onPost(createVulnerabilityFeedbackDismissalPath).replyOnce(HTTP_STATUS_OK);
 
         createComponent({
           mountFn: mountExtended,
@@ -685,7 +685,7 @@ describe('MR Widget Security Reports', () => {
       `('handles opening dismissal comment for event $event', async ({ event, booleanValue }) => {
         mockWithData();
 
-        mockAxios.onPost(createVulnerabilityFeedbackDismissalPath).replyOnce(200);
+        mockAxios.onPost(createVulnerabilityFeedbackDismissalPath).replyOnce(HTTP_STATUS_OK);
 
         createComponent({
           mountFn: mountExtended,
@@ -732,7 +732,7 @@ describe('MR Widget Security Reports', () => {
 
         mockAxios
           .onPatch(`${createVulnerabilityFeedbackDismissalPath}/15`)
-          .replyOnce(200, dismissalFeedback);
+          .replyOnce(HTTP_STATUS_OK, dismissalFeedback);
 
         createComponent({
           mountFn: mountExtended,
@@ -829,7 +829,7 @@ describe('MR Widget Security Reports', () => {
           },
         });
 
-        mockAxios.onDelete(feedbackDismissalPath).replyOnce(200);
+        mockAxios.onDelete(feedbackDismissalPath).replyOnce(HTTP_STATUS_OK);
 
         createComponent({
           mountFn: mountExtended,
