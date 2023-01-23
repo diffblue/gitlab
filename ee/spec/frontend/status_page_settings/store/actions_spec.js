@@ -4,6 +4,7 @@ import * as types from 'ee/status_page_settings/store/mutation_types';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
 import { refreshCurrentPage } from '~/lib/utils/url_utility';
 
 jest.mock('~/flash.js');
@@ -71,7 +72,7 @@ describe('Status Page actions', () => {
     });
 
     it('should handle unsuccessful status update', () => {
-      mock.onPatch().reply(400, {});
+      mock.onPatch().reply(HTTP_STATUS_BAD_REQUEST, {});
       testAction(
         actions.updateStatusPageSettings,
         null,

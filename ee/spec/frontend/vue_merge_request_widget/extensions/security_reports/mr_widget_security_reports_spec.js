@@ -13,6 +13,7 @@ import MrWidgetRow from '~/vue_merge_request_widget/components/widget/widget_con
 import * as urlUtils from '~/lib/utils/url_utility';
 import { BV_HIDE_MODAL } from '~/lib/utils/constants';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
 
 jest.mock('~/vue_shared/components/user_callout_dismisser.vue', () => ({ render: () => {} }));
 jest.mock('~/vue_shared/plugins/global_toast');
@@ -297,7 +298,7 @@ describe('MR Widget Security Reports', () => {
 
   describe('error states', () => {
     const mockWithData = () => {
-      mockAxios.onGet(reportEndpoints.sastComparisonPath).replyOnce(400);
+      mockAxios.onGet(reportEndpoints.sastComparisonPath).replyOnce(HTTP_STATUS_BAD_REQUEST);
 
       mockAxios.onGet(reportEndpoints.dastComparisonPath).replyOnce(200, {
         added: [
@@ -537,7 +538,7 @@ describe('MR Widget Security Reports', () => {
       it('handles issue creation - error', async () => {
         mockWithData();
 
-        mockAxios.onPost(createVulnerabilityFeedbackIssuePath).replyOnce(400);
+        mockAxios.onPost(createVulnerabilityFeedbackIssuePath).replyOnce(HTTP_STATUS_BAD_REQUEST);
 
         createComponent({
           mountFn: mountExtended,
@@ -639,7 +640,9 @@ describe('MR Widget Security Reports', () => {
       it('handles issue creation - error', async () => {
         mockWithData();
 
-        mockAxios.onPost(createVulnerabilityFeedbackDismissalPath).replyOnce(400);
+        mockAxios
+          .onPost(createVulnerabilityFeedbackDismissalPath)
+          .replyOnce(HTTP_STATUS_BAD_REQUEST);
 
         createComponent({
           mountFn: mountExtended,
@@ -777,7 +780,9 @@ describe('MR Widget Security Reports', () => {
           dismissal_feedback: dismissalFeedback,
         });
 
-        mockAxios.onPatch(`${createVulnerabilityFeedbackDismissalPath}/15`).replyOnce(400);
+        mockAxios
+          .onPatch(`${createVulnerabilityFeedbackDismissalPath}/15`)
+          .replyOnce(HTTP_STATUS_BAD_REQUEST);
 
         createComponent({
           mountFn: mountExtended,
@@ -866,7 +871,7 @@ describe('MR Widget Security Reports', () => {
           },
         });
 
-        mockAxios.onDelete(feedbackDismissalPath).replyOnce(400);
+        mockAxios.onDelete(feedbackDismissalPath).replyOnce(HTTP_STATUS_BAD_REQUEST);
 
         createComponent({
           mountFn: mountExtended,
