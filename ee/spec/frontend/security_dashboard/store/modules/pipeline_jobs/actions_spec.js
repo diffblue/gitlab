@@ -6,7 +6,7 @@ import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
 
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
+import { HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 describe('pipeling jobs actions', () => {
   let state;
@@ -87,7 +87,7 @@ describe('pipeling jobs actions', () => {
 
     describe('on success with pipeline path', () => {
       beforeEach(() => {
-        mock.onGet(state.pipelineJobsPath).replyOnce(200, jobs);
+        mock.onGet(state.pipelineJobsPath).replyOnce(HTTP_STATUS_OK, jobs);
       });
 
       it('should commit the request and success mutations', async () => {
@@ -109,7 +109,9 @@ describe('pipeling jobs actions', () => {
 
     describe('on success with pipeline id and project id', () => {
       beforeEach(() => {
-        mock.onGet('/api/undefined/projects/123/pipelines/321/jobs').replyOnce(200, jobs);
+        mock
+          .onGet('/api/undefined/projects/123/pipelines/321/jobs')
+          .replyOnce(HTTP_STATUS_OK, jobs);
       });
 
       it('should commit the request and success mutations', async () => {
@@ -135,7 +137,7 @@ describe('pipeling jobs actions', () => {
 
     describe('without pipelineJobsPath set', () => {
       beforeEach(() => {
-        mock.onGet(state.pipelineJobsPath).replyOnce(200, jobs);
+        mock.onGet(state.pipelineJobsPath).replyOnce(HTTP_STATUS_OK, jobs);
       });
 
       it('should commit RECEIVE_PIPELINE_JOBS_ERROR mutation', async () => {
@@ -157,7 +159,7 @@ describe('pipeling jobs actions', () => {
 
     describe('without projectId or pipelineId set', () => {
       beforeEach(() => {
-        mock.onGet(state.pipelineJobsPath).replyOnce(200, jobs);
+        mock.onGet(state.pipelineJobsPath).replyOnce(HTTP_STATUS_OK, jobs);
       });
 
       it('should commit RECEIVE_PIPELINE_JOBS_ERROR mutation', async () => {

@@ -8,6 +8,7 @@ import testAction from 'helpers/vuex_action_helper';
 import Api from '~/api';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { unparsedIssues, parsedIssues } from '../mock_data';
 
 jest.mock('~/api.js');
@@ -77,7 +78,7 @@ describe('Codequality report actions', () => {
 
   describe('fetchReport', () => {
     beforeEach(() => {
-      mock.onGet(endpoint).replyOnce(200, unparsedIssues);
+      mock.onGet(endpoint).replyOnce(HTTP_STATUS_OK, unparsedIssues);
     });
 
     it('fetches the report', async () => {

@@ -19,7 +19,7 @@ import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import download from '~/lib/utils/downloader';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import * as urlUtility from '~/lib/utils/url_utility';
 
 Vue.use(VueApollo);
@@ -76,7 +76,7 @@ describe('Vulnerability Header', () => {
   const createRandomUser = () => {
     const user = UsersMockHelper.createRandomUser();
     const url = Api.buildUrl(Api.userPath).replace(':id', user.id);
-    mockAxios.onGet(url).replyOnce(200, user);
+    mockAxios.onGet(url).replyOnce(HTTP_STATUS_OK, user);
 
     return user;
   };
@@ -248,7 +248,7 @@ describe('Vulnerability Header', () => {
       it('emits createMergeRequest when create merge request button is clicked', () => {
         const mergeRequestPath = '/group/project/merge_request/123';
         const spy = jest.spyOn(urlUtility, 'redirectTo');
-        mockAxios.onPost(defaultVulnerability.createMrUrl).reply(200, {
+        mockAxios.onPost(defaultVulnerability.createMrUrl).reply(HTTP_STATUS_OK, {
           merge_request_path: mergeRequestPath,
         });
         findGlButton().vm.$emit('click');

@@ -5,7 +5,7 @@ import * as types from 'ee/analytics/code_review_analytics/store/modules/merge_r
 import getInitialState from 'ee/analytics/code_review_analytics/store/modules/merge_requests/state';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { mockMergeRequests } from '../../../mock_data';
 
 jest.mock('~/flash');
@@ -67,7 +67,9 @@ describe('Code review analytics mergeRequests actions', () => {
   describe('fetchMergeRequests', () => {
     describe('success', () => {
       beforeEach(() => {
-        mock.onGet(/api\/(.*)\/analytics\/code_review/).replyOnce(200, mockMergeRequests, headers);
+        mock
+          .onGet(/api\/(.*)\/analytics\/code_review/)
+          .replyOnce(HTTP_STATUS_OK, mockMergeRequests, headers);
       });
 
       it('dispatches success with received data', () => {

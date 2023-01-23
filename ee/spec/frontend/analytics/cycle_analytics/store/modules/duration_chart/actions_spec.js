@@ -66,12 +66,12 @@ describe('DurationChart actions', () => {
       // The first 2 stages have different duration values
       mock
         .onGet(endpoints.durationData)
-        .replyOnce(200, transformedDurationData[0].data)
+        .replyOnce(HTTP_STATUS_OK, transformedDurationData[0].data)
         .onGet(endpoints.durationData)
-        .replyOnce(200, transformedDurationData[1].data);
+        .replyOnce(HTTP_STATUS_OK, transformedDurationData[1].data);
 
       // all subsequent requests should get the same data
-      mock.onGet(endpoints.durationData).reply(200, transformedDurationData[2].data);
+      mock.onGet(endpoints.durationData).reply(HTTP_STATUS_OK, transformedDurationData[2].data);
     });
 
     it("dispatches the 'requestDurationData' and 'receiveDurationDataSuccess' actions on success", () => {

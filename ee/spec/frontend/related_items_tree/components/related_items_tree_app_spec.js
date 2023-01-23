@@ -16,6 +16,7 @@ import RelatedItemsRoadmapApp from 'ee/related_items_tree/components/related_ite
 
 import createDefaultStore from 'ee/related_items_tree/store';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { ITEM_TABS } from 'ee/related_items_tree/constants';
 import { issuableTypesMap } from '~/related_issues/constants';
 
@@ -50,7 +51,7 @@ describe('RelatedItemsTreeApp', () => {
 
   beforeEach(() => {
     axiosMock = new AxiosMockAdapter(axios);
-    axiosMock.onGet(mockInitialConfig.projectsEndpoint).replyOnce(200, mockProjects);
+    axiosMock.onGet(mockInitialConfig.projectsEndpoint).replyOnce(HTTP_STATUS_OK, mockProjects);
   });
 
   afterEach(() => {

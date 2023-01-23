@@ -9,7 +9,8 @@ import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
 import { EVENT_ISSUABLE_VUE_APP_CHANGE } from '~/issuable/constants';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
+
 import { mockEpicMeta, mockEpicData } from '../mock_data';
 
 jest.mock('~/flash');
@@ -100,7 +101,7 @@ describe('Epic Store Actions', () => {
     });
 
     it('dispatches setEpicData when request is successful', async () => {
-      mock.onPut(/(.*)/).replyOnce(200, {});
+      mock.onPut(/(.*)/).replyOnce(HTTP_STATUS_OK, {});
       jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(
         Promise.resolve({
           data: gqlQueryResponse,
@@ -229,7 +230,7 @@ describe('Epic Store Actions', () => {
 
     describe('success', () => {
       it('dispatches requestEpicStatusChange and requestEpicStatusChangeSuccess when request is complete', async () => {
-        mock.onPut(/(.*)/).replyOnce(200, {
+        mock.onPut(/(.*)/).replyOnce(HTTP_STATUS_OK, {
           state: statusType.close,
         });
 
@@ -427,7 +428,7 @@ describe('Epic Store Actions', () => {
 
     describe('when `state.togoExists` is false', () => {
       it('dispatches requestEpicTodoToggle, triggerTodoToggleEvent and requestEpicTodoToggleSuccess when request is successful', async () => {
-        mock.onPost(/(.*)/).replyOnce(200, {
+        mock.onPost(/(.*)/).replyOnce(HTTP_STATUS_OK, {
           count: 5,
           delete_path: '/foo/bar',
         });
@@ -475,7 +476,7 @@ describe('Epic Store Actions', () => {
 
     describe('when `state.togoExists` is true', () => {
       it('dispatches requestEpicTodoToggle, triggerTodoToggleEvent and requestEpicTodoToggleSuccess when request is successful', async () => {
-        mock.onDelete(/(.*)/).replyOnce(200, {
+        mock.onDelete(/(.*)/).replyOnce(HTTP_STATUS_OK, {
           count: 5,
         });
 
@@ -602,7 +603,7 @@ describe('Epic Store Actions', () => {
 
     describe('success', () => {
       it('dispatches requestEpicCreate when request is complete', async () => {
-        mock.onPost(/(.*)/).replyOnce(200, {});
+        mock.onPost(/(.*)/).replyOnce(HTTP_STATUS_OK, {});
 
         await testAction(
           actions.createEpic,

@@ -5,7 +5,7 @@ import createState from 'ee/geo_nodes/store/state';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import {
   MOCK_PRIMARY_VERSION,
   MOCK_REPLICABLE_TYPES,
@@ -37,8 +37,10 @@ describe('GeoNodes Store Actions', () => {
   describe('fetchNodes', () => {
     describe('on success', () => {
       beforeEach(() => {
-        mock.onGet(/api\/(.*)\/geo_nodes/).replyOnce(200, MOCK_NODES_RES);
-        mock.onGet(/api\/(.*)\/geo_nodes\/status/).replyOnce(200, MOCK_NODE_STATUSES_RES);
+        mock.onGet(/api\/(.*)\/geo_nodes/).replyOnce(HTTP_STATUS_OK, MOCK_NODES_RES);
+        mock
+          .onGet(/api\/(.*)\/geo_nodes\/status/)
+          .replyOnce(HTTP_STATUS_OK, MOCK_NODE_STATUSES_RES);
       });
 
       it('should dispatch the correct mutations', () => {
@@ -77,7 +79,7 @@ describe('GeoNodes Store Actions', () => {
   describe('removeNode', () => {
     describe('on success', () => {
       beforeEach(() => {
-        mock.onDelete(/api\/.*\/geo_nodes/).replyOnce(200, {});
+        mock.onDelete(/api\/.*\/geo_nodes/).replyOnce(HTTP_STATUS_OK, {});
       });
 
       it('should dispatch the correct mutations', () => {
