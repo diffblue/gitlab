@@ -3,6 +3,7 @@
 exports[`DependenciesApp component on creation given the dependency list job has not yet run shows only the empty state 1`] = `
 Object {
   "compact": false,
+  "contentClass": Array [],
   "description": null,
   "invertInDarkMode": true,
   "primaryButtonLink": null,
@@ -18,6 +19,7 @@ Object {
 exports[`DependenciesApp component on creation given there are no dependencies detected shows only the empty state 1`] = `
 Object {
   "compact": false,
+  "contentClass": Array [],
   "description": null,
   "invertInDarkMode": true,
   "primaryButtonLink": null,

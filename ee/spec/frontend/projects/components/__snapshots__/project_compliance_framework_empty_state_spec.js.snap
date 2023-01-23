@@ -3,6 +3,7 @@
 exports[`Project compliance framework empty state matches the snapshot when "addFrameworkPath" is a string path 1`] = `
 <gl-empty-state-stub
   compact="true"
+  contentclass=""
   invertindarkmode="true"
   primarybuttonlink="/edit-group"
   primarybuttontext="Add framework in group-name"
@@ -27,6 +28,7 @@ exports[`Project compliance framework empty state matches the snapshot when "add
 exports[`Project compliance framework empty state matches the snapshot when "addFrameworkPath" is undefined 1`] = `
 <gl-empty-state-stub
   compact="true"
+  contentclass=""
   invertindarkmode="true"
   svgheight="100"
   svgpath="/image.svg"

@@ -32,7 +32,7 @@ exports[`TrialStatusPopover component group_contact_sales experiment candidate m
     </div>
      
     <gl-button-stub
-      block=""
+      block="true"
       buttontextclasses=""
       category="secondary"
       class="gl-mb-0"
@@ -70,7 +70,7 @@ exports[`TrialStatusPopover component group_contact_sales experiment control mat
     class="gl-mt-5"
   >
     <gl-button-stub
-      block=""
+      block="true"
       buttontextclasses=""
       category="primary"
       class="gl-mb-0"
@@ -88,7 +88,7 @@ exports[`TrialStatusPopover component group_contact_sales experiment control mat
     </gl-button-stub>
      
     <gl-button-stub
-      block=""
+      block="true"
       buttontextclasses=""
       category="secondary"
       class="gl-mb-0"
