@@ -7,16 +7,19 @@ RSpec.describe Users::Abuse::NamespaceBans::CreateService do
   let(:namespace) { build(:group) }
   let(:service) { described_class.new(user: user, namespace: namespace) }
 
-  subject(:execute) { service.execute }
+  subject(:response) { service.execute }
 
   describe 'when passing a root namespace' do
-    it { is_expected.to match(status: :success) }
+    it { is_expected.to be_success }
   end
 
   describe 'when passing a nested namespace' do
     let(:namespace) { build(:group, :nested) }
 
-    it { is_expected.to match(status: :error, message: 'Namespace must be a root namespace') }
+    it 'returns an error response' do
+      expect(response).to be_error
+      expect(response.message).to eq('Namespace must be a root namespace')
+    end
   end
 
   describe 'when passing an already banned user' do
@@ -24,6 +27,9 @@ RSpec.describe Users::Abuse::NamespaceBans::CreateService do
       service.execute
     end
 
-    it { is_expected.to match(status: :error, message: 'User already banned from namespace') }
+    it 'returns an error response' do
+      expect(response).to be_error
+      expect(response.message).to eq('User already banned from namespace')
+    end
   end
 end

@@ -95,7 +95,7 @@ RSpec.describe Groups::GroupMembersController, feature_category: :subgroups do
         it 'bans the user' do
           expected_args = { user: member.user, namespace: group }
           expect_next_instance_of(::Users::Abuse::NamespaceBans::CreateService, expected_args) do |service|
-            expect(service).to receive(:execute).and_return({ status: :success })
+            expect(service).to receive(:execute).and_return(ServiceResponse.success)
           end
 
           request
@@ -117,7 +117,7 @@ RSpec.describe Groups::GroupMembersController, feature_category: :subgroups do
         it 'redirects back to group members page with the error message as alert' do
           expected_args = { user: member.user, namespace: group }
           allow_next_instance_of(::Users::Abuse::NamespaceBans::CreateService, expected_args) do |service|
-            allow(service).to receive(:execute).and_return({ status: :error, message: error_message })
+            allow(service).to receive(:execute).and_return(ServiceResponse.error(message: error_message))
           end
 
           request

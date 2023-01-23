@@ -70,10 +70,10 @@ module EE
 
         result = ::Users::Abuse::NamespaceBans::CreateService.new(user: member.user, namespace: group).execute
 
-        if result[:status] == :success
+        if result.success?
           redirect_to group_group_members_path, notice: _("User was successfully banned.")
         else
-          redirect_to group_group_members_path, alert: result[:message]
+          redirect_to group_group_members_path, alert: result.message
         end
       end
 

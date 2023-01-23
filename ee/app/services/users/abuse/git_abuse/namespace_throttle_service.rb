@@ -25,7 +25,7 @@ module Users
           return false if user_owns_namespace?
 
           result = ::Users::Abuse::NamespaceBans::CreateService.new(namespace: namespace, user: current_user).execute
-          banned = result[:status] == :success
+          banned = result.success?
 
           if banned
             log_info(
