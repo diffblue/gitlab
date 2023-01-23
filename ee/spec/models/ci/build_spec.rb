@@ -63,7 +63,7 @@ RSpec.describe Ci::Build, :saas do
       allow(::Gitlab::CurrentSettings).to receive(:shared_runners_minutes) { 400 }
     end
 
-    context 'for shared runner' do
+    context 'with shared runner' do
       before do
         job.runner = create(:ci_runner, :instance)
       end
@@ -71,7 +71,7 @@ RSpec.describe Ci::Build, :saas do
       it { is_expected.to be_truthy }
     end
 
-    context 'with specific runner' do
+    context 'with project runner' do
       before do
         job.runner = create(:ci_runner, :project)
       end
@@ -84,7 +84,7 @@ RSpec.describe Ci::Build, :saas do
     end
   end
 
-  context 'updates pipeline minutes' do
+  describe 'updates pipeline minutes' do
     let(:job) { create(:ci_build, :running, pipeline: pipeline) }
 
     %w(success drop cancel).each do |event|
@@ -125,7 +125,7 @@ RSpec.describe Ci::Build, :saas do
         end
       end
 
-      context 'dast' do
+      describe 'dast' do
         let_it_be(:project) { create(:project, :repository) }
         let_it_be(:user) { create(:user, developer_projects: [project]) }
         let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
@@ -367,7 +367,7 @@ RSpec.describe Ci::Build, :saas do
           end
         end
 
-        context 'vulnerability_finding_signatures' do
+        describe 'vulnerability_finding_signatures' do
           let!(:artifact) { create(:ee_ci_job_artifact, :sast, job: job, project: job.project) }
 
           where(signatures_enabled: [true, false])
