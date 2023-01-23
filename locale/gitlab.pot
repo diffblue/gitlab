@@ -22152,6 +22152,9 @@ msgstr ""
 msgid "Incident|Add new timeline event"
 msgstr ""
 
+msgid "Incident|Adding an event tag associates the timeline comment with specific incident metrics."
+msgstr ""
+
 msgid "Incident|Alert details"
 msgstr ""
 
@@ -22183,6 +22186,9 @@ msgid "Incident|Error deleting incident timeline event: %{error}"
 msgstr ""
 
 msgid "Incident|Error updating incident timeline event: %{error}"
+msgstr ""
+
+msgid "Incident|Event tag"
 msgstr ""
 
 msgid "Incident|Incident"
