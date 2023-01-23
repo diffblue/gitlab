@@ -55,9 +55,15 @@ describe('Analytics Dashboards utils', () => {
       ]);
     });
 
-    it('returns the comparison table fields for each row', () => {
+    it('returns the comparison table fields + metadata for each row', () => {
       res.forEach((row) => {
-        expect(Object.keys(row)).toEqual(['metric', 'thisMonth', 'lastMonth', 'twoMonthsAgo']);
+        expect(Object.keys(row)).toEqual([
+          'invertTrendColor',
+          'metric',
+          'thisMonth',
+          'lastMonth',
+          'twoMonthsAgo',
+        ]);
       });
     });
 

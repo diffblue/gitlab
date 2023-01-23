@@ -89,6 +89,8 @@ export const DASHBOARD_FEEDBACK_INFORMATION = s__(
 );
 export const DASHBOARD_FEEDBACK_LINK = 'https://gitlab.com/gitlab-org/gitlab/-/issues/381787';
 
+export const CHART_GRADIENT = ['#499767', '#5252B5'];
+export const CHART_GRADIENT_INVERTED = [...CHART_GRADIENT].reverse();
 export const CHART_LOADING_FAILURE = s__('DORA4Metrics|Failed to load charts');
 
 const NOW = new Date();
@@ -149,6 +151,7 @@ export const DASHBOARD_TABLE_FIELDS = [
     start: nMonthsBefore(NOW, 6),
     end: NOW,
     thClass: thWidthPercent(15),
+    tdClass: 'gl-py-2! gl-pointer-events-none',
   },
 ];
 
