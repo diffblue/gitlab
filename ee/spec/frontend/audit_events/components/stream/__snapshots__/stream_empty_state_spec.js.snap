@@ -3,6 +3,7 @@
 exports[`StreamEmptyState should render correctly 1`] = `
 <gl-empty-state-stub
   class="gl-mt-5"
+  contentclass=""
   invertindarkmode="true"
   svgheight="72"
   svgpath="mock/path"

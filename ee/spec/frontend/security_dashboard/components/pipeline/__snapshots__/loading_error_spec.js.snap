@@ -3,6 +3,7 @@
 exports[`LoadingError component with error code 401 empty state has correct props 1`] = `
 Object {
   "compact": false,
+  "contentClass": Array [],
   "description": "Security reports can only be accessed by authorized users.",
   "invertInDarkMode": true,
   "primaryButtonLink": "/users/sign_in",
@@ -18,6 +19,7 @@ Object {
 exports[`LoadingError component with error code 403 empty state has correct props 1`] = `
 Object {
   "compact": false,
+  "contentClass": Array [],
   "description": "Security reports can only be accessed by authorized users.",
   "invertInDarkMode": true,
   "primaryButtonLink": null,

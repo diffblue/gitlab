@@ -245,6 +245,7 @@ exports[`Security Dashboard error states has unavailable pages 1`] = `
     </div>
     <div
       class="gl-max-w-full gl-m-auto"
+      data-testid="gl-empty-state-content"
     >
       <div
         class="gl-mx-auto gl-my-0 gl-p-5"
