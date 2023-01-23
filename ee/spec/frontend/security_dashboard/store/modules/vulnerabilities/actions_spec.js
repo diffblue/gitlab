@@ -7,7 +7,11 @@ import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
 
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_FORBIDDEN, HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
+import {
+  HTTP_STATUS_FORBIDDEN,
+  HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_OK,
+} from '~/lib/utils/http_status';
 import toast from '~/vue_shared/plugins/global_toast';
 
 import mockDataVulnerabilities from './data/mock_data_vulnerabilities';
@@ -98,9 +102,9 @@ describe('vulnerabilities actions', () => {
       beforeEach(() => {
         mock
           .onGet(state.vulnerabilitiesEndpoint, { params })
-          .replyOnce(200, filteredData, headers)
+          .replyOnce(HTTP_STATUS_OK, filteredData, headers)
           .onGet(state.vulnerabilitiesEndpoint)
-          .replyOnce(200, data, headers);
+          .replyOnce(HTTP_STATUS_OK, data, headers);
       });
 
       it('should dispatch the request and success actions', () => {
@@ -318,7 +322,7 @@ describe('issue creation', () => {
       beforeEach(() => {
         mock
           .onPost(vulnerability.create_vulnerability_feedback_issue_path)
-          .replyOnce(200, { data });
+          .replyOnce(HTTP_STATUS_OK, { data });
       });
 
       it('should dispatch the request and success actions', () => {
@@ -416,7 +420,7 @@ describe('merge request creation', () => {
       beforeEach(() => {
         mock
           .onPost(vulnerability.vulnerability_feedback_merge_request_path)
-          .replyOnce(200, { data });
+          .replyOnce(HTTP_STATUS_OK, { data });
       });
 
       it('should dispatch the request and success actions', () => {
@@ -516,7 +520,7 @@ describe('vulnerability dismissal', () => {
       beforeEach(() => {
         mock
           .onPost(vulnerability.create_vulnerability_feedback_dismissal_path)
-          .replyOnce(200, data);
+          .replyOnce(HTTP_STATUS_OK, data);
       });
 
       it('should dispatch the request and success actions', () => {
@@ -594,7 +598,7 @@ describe('vulnerability dismissal', () => {
         };
         mock
           .onPost(vulnerability.create_vulnerability_feedback_dismissal_path)
-          .replyOnce(200, data);
+          .replyOnce(HTTP_STATUS_OK, data);
       });
 
       it('should show the dismissal toast message and refresh vulnerabilities', () => {
@@ -701,7 +705,7 @@ describe('add vulnerability dismissal comment', () => {
 
     describe('on success', () => {
       beforeEach(() => {
-        mock.onPatch(url).replyOnce(200, data);
+        mock.onPatch(url).replyOnce(HTTP_STATUS_OK, data);
       });
 
       it('should dispatch the request and success actions', () => {
@@ -809,7 +813,7 @@ describe('add vulnerability dismissal comment', () => {
 
     describe('on success', () => {
       beforeEach(() => {
-        mock.onPatch(url).replyOnce(200, data);
+        mock.onPatch(url).replyOnce(HTTP_STATUS_OK, data);
       });
 
       it('should dispatch the request and success actions', () => {
@@ -939,9 +943,9 @@ describe('dismiss multiple vulnerabilities', () => {
       beforeEach(() => {
         mock
           .onPost(state.vulnerabilities[0].create_vulnerability_feedback_dismissal_path)
-          .replyOnce(200)
+          .replyOnce(HTTP_STATUS_OK)
           .onPost(state.vulnerabilities[1].create_vulnerability_feedback_dismissal_path)
-          .replyOnce(200);
+          .replyOnce(HTTP_STATUS_OK);
       });
 
       it('should fire the dismissSelected mutations and refetch vulnerabilities when all is well', () => {
@@ -1008,7 +1012,7 @@ describe('dismiss multiple vulnerabilities', () => {
     it('should trigger the error state when something goes wrong', () => {
       mock
         .onPost(state.vulnerabilities[0].create_vulnerability_feedback_dismissal_path)
-        .replyOnce(200)
+        .replyOnce(HTTP_STATUS_OK)
         .onPost(state.vulnerabilities[1].create_vulnerability_feedback_dismissal_path)
         .replyOnce(500);
 
@@ -1137,7 +1141,7 @@ describe('revert vulnerability dismissal', () => {
 
     describe('on success', () => {
       beforeEach(() => {
-        mock.onDelete(url).replyOnce(200, {});
+        mock.onDelete(url).replyOnce(HTTP_STATUS_OK, {});
       });
 
       it('should dispatch the request and success actions', () => {

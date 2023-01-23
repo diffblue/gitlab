@@ -20,7 +20,11 @@ import { chartKeys } from 'ee/analytics/productivity_analytics/constants';
 import { getStoreConfig } from 'ee/analytics/productivity_analytics/store';
 import Scatterplot from 'ee/analytics/shared/components/scatterplot.vue';
 import { TEST_HOST } from 'helpers/test_constants';
-import { HTTP_STATUS_FORBIDDEN, HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import {
+  HTTP_STATUS_FORBIDDEN,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_OK,
+} from '~/lib/utils/http_status';
 import { mockFilters } from '../mock_data';
 
 Vue.use(Vuex);
@@ -128,7 +132,7 @@ describe('ProductivityApp component', () => {
           },
         });
         mockStore.dispatch('filters/setGroupNamespace', 'gitlab-org');
-        mock.onGet(mockStore.state.endpoint).replyOnce(200);
+        mock.onGet(mockStore.state.endpoint).replyOnce(HTTP_STATUS_OK);
       });
 
       describe('user has no access to the group', () => {

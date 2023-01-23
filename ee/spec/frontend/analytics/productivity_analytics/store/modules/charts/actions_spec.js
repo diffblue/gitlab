@@ -1,5 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { chartKeys } from 'ee/analytics/productivity_analytics/constants';
 import * as actions from 'ee/analytics/productivity_analytics/store/modules/charts/actions';
 import * as types from 'ee/analytics/productivity_analytics/store/modules/charts/mutation_types';
@@ -61,7 +62,7 @@ describe('Productivity analytics chart actions', () => {
       describe('success', () => {
         describe('histogram charts', () => {
           beforeEach(() => {
-            mock.onGet(mockedState.endpoint).replyOnce(200, mockHistogramData);
+            mock.onGet(mockedState.endpoint).replyOnce(HTTP_STATUS_OK, mockHistogramData);
           });
 
           it('calls API with params', () => {
@@ -90,7 +91,7 @@ describe('Productivity analytics chart actions', () => {
 
         describe('scatterplot chart', () => {
           beforeEach(() => {
-            mock.onGet(mockedState.endpoint).replyOnce(200, mockScatterplotData);
+            mock.onGet(mockedState.endpoint).replyOnce(HTTP_STATUS_OK, mockScatterplotData);
           });
 
           it('dispatches success with received data and transformedData', async () => {
@@ -159,7 +160,7 @@ describe('Productivity analytics chart actions', () => {
     describe('when chart is disabled', () => {
       const disabledChartKey = chartKeys.scatterplot;
       beforeEach(() => {
-        mock.onGet(mockedState.endpoint).replyOnce(200);
+        mock.onGet(mockedState.endpoint).replyOnce(HTTP_STATUS_OK);
         mockedState.charts[disabledChartKey].enabled = false;
       });
 

@@ -5,6 +5,7 @@ import * as actions from 'ee/approvals/stores/modules/license_compliance/actions
 import { createAlert } from '~/flash';
 import testAction from 'helpers/vuex_action_helper';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 jest.mock('~/flash');
 
@@ -51,7 +52,7 @@ describe('EE approvals license-compliance actions', () => {
   describe('fetchRules', () => {
     it('sets "loading" to be true and dispatches "receiveRuleSuccess"', () => {
       const responseData = { rules: [] };
-      axiosMock.onGet(mocks.state.settingsPath).replyOnce(200, responseData);
+      axiosMock.onGet(mocks.state.settingsPath).replyOnce(HTTP_STATUS_OK, responseData);
 
       return testAction(
         actions.fetchRules,
@@ -89,7 +90,7 @@ describe('EE approvals license-compliance actions', () => {
         users: [8, 9],
         groups: [7],
       };
-      axiosMock.onPost(mocks.state.rulesPath).replyOnce(200);
+      axiosMock.onPost(mocks.state.rulesPath).replyOnce(HTTP_STATUS_OK);
 
       await testAction(
         actions.postRule,
@@ -128,7 +129,7 @@ describe('EE approvals license-compliance actions', () => {
         users: [8, 9],
         groups: [7],
       };
-      axiosMock.onPut(putUrl).replyOnce(200);
+      axiosMock.onPut(putUrl).replyOnce(HTTP_STATUS_OK);
 
       await testAction(
         actions.putRule,
@@ -160,7 +161,7 @@ describe('EE approvals license-compliance actions', () => {
     const deleteUrl = `${mocks.state.rulesPath}/${id}`;
 
     it('dispatches "fetchRules" when the deletion is successful', () => {
-      axiosMock.onDelete(deleteUrl).replyOnce(200);
+      axiosMock.onDelete(deleteUrl).replyOnce(HTTP_STATUS_OK);
 
       return testAction(
         actions.deleteRule,
@@ -192,7 +193,7 @@ describe('EE approvals license-compliance actions', () => {
         users: [8, 9],
         groups: [7],
       };
-      axiosMock.onPut(mocks.state.projectPath).replyOnce(200);
+      axiosMock.onPut(mocks.state.projectPath).replyOnce(HTTP_STATUS_OK);
 
       return testAction(
         actions.putFallbackRule,
