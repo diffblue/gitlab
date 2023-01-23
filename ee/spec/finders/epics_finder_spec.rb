@@ -91,35 +91,6 @@ RSpec.describe EpicsFinder do
           it 'returns all epics that match the search' do
             expect(epics(search: 'awesome')).to contain_exactly(epic1, epic3)
           end
-
-          context 'with anonymous user' do
-            let_it_be(:public_group) { create(:group, :public) }
-            let_it_be(:epic5) { create(:epic, group: public_group, title: 'tanuki') }
-            let_it_be(:epic6) { create(:epic, group: public_group, title: 'ikunat') }
-
-            let(:search_user) { nil }
-            let(:params) { { group_id: public_group.id, search: 'tanuki' } }
-
-            context 'with disable_anonymous_search feature flag enabled' do
-              before do
-                stub_feature_flags(disable_anonymous_search: true)
-              end
-
-              it 'does not perform search' do
-                expect(epics(params)).to contain_exactly(epic5, epic6)
-              end
-            end
-
-            context 'with disable_anonymous_search feature flag disabled' do
-              before do
-                stub_feature_flags(disable_anonymous_search: false)
-              end
-
-              it 'returns matching epics' do
-                expect(epics(params)).to contain_exactly(epic5)
-              end
-            end
-          end
         end
 
         context 'by user reaction emoji' do

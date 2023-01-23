@@ -65,7 +65,6 @@ describe('EE IssuesListApp component', () => {
     hasOkrsFeature: true,
     initialEmail: 'email@example.com',
     initialSort: CREATED_DESC,
-    isAnonymousSearchDisabled: false,
     isIssueRepositioningDisabled: false,
     isProject: true,
     isPublicVisibilityRestricted: false,
