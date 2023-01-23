@@ -3,7 +3,7 @@
 require 'spec_helper'
 require File.expand_path('ee/elastic/migrate/20220119120500_populate_commit_permissions_in_main_index.rb')
 
-RSpec.describe PopulateCommitPermissionsInMainIndex do
+RSpec.describe PopulateCommitPermissionsInMainIndex, feature_category: :global_search do
   let(:version) { 20220119120500 }
   let(:migration) { described_class.new(version) }
   let(:client) { Project.__elasticsearch__.client }

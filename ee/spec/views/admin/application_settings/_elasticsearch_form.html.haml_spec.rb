@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'admin/application_settings/_elasticsearch_form' do
+RSpec.describe 'admin/application_settings/_elasticsearch_form', feature_category: :global_search do
   let_it_be(:admin) { create(:admin) }
 
   let(:page) { Capybara::Node::Simple.new(rendered) }
