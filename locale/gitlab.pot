@@ -29132,6 +29132,9 @@ msgstr ""
 msgid "OnDemandScans|Run scan"
 msgstr ""
 
+msgid "OnDemandScans|Runner tags (optional)"
+msgstr ""
+
 msgid "OnDemandScans|Save and run scan"
 msgstr ""
 
@@ -36232,9 +36235,6 @@ msgid "Runner"
 msgstr ""
 
 msgid "Runner API"
-msgstr ""
-
-msgid "Runner tags (optional)"
 msgstr ""
 
 msgid "Runner tokens"

@@ -39,15 +39,12 @@ describe('On-demand scans utils', () => {
 
   describe('getUniqueTagListFromEdges', () => {
     it('should join tagLists on node and return unique list of tags', () => {
-      expect(getUniqueTagListFromEdges(RUNNER_TAG_LIST_MOCK.data.project.runners.nodes)).toEqual([
+      expect(getUniqueTagListFromEdges(RUNNER_TAG_LIST_MOCK)).toEqual([
         'macos',
         'linux',
         'docker',
         'backup',
         'development',
-        'east-c',
-        'mango',
-        'maven',
       ]);
     });
   });

@@ -83,7 +83,11 @@ RSpec.describe Projects::OnDemandScansController, type: :request,
   end
 
   describe 'GET #edit' do
-    let_it_be(:dast_profile) { create(:dast_profile, project: project, branch_name: project.default_branch_or_main) }
+    let_it_be(:tags) { [ActsAsTaggableOn::Tag.create!(name: 'ruby'), ActsAsTaggableOn::Tag.create!(name: 'postgres')] }
+    let_it_be(:dast_profile) do
+      create(:dast_profile, project: project, branch_name: project.default_branch_or_main, tags: tags)
+    end
+
     let_it_be(:dast_profile_schedule) { create(:dast_profile_schedule, project: project, dast_profile: dast_profile) }
 
     let(:dast_profile_id) { dast_profile.id }

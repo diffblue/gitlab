@@ -70,6 +70,7 @@ export default {
     dastConfigurationDescription: s__(
       "OnDemandScans|DAST scans for vulnerabilities in your project's running application, website, or API.  For details of all configuration options, see the %{linkStart}GitLab DAST documentation%{linkEnd}.",
     ),
+    runnerTagsLabel: s__('OnDemandScans|Runner tags (optional)'),
     scanConfigurationNameLabel: s__('OnDemandScans|Scan name'),
     scanConfigurationNamePlaceholder: s__('OnDemandScans|My daily scan'),
     scanConfigurationDescriptionLabel: s__('OnDemandScans|Description (optional)'),
@@ -407,7 +408,7 @@ export default {
           <gl-form-group
             v-if="glFeatures.onDemandScansRunnerTags"
             class="gl-mt-6 gl-mb-3"
-            :label="__('Runner tags (optional)')"
+            :label="$options.i18n.runnerTagsLabel"
           >
             <runner-tags
               v-model="selectedTags"

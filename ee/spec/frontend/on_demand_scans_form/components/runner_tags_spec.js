@@ -5,18 +5,35 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createApolloProvider from 'helpers/mock_apollo_helper';
 import RunnerTags from 'ee/on_demand_scans_form/components/runner_tags.vue';
+import getAllProjectRunners from 'ee/on_demand_scans_form/graphql/all_runners.query.graphql';
 import { getUniqueTagListFromEdges } from 'ee/on_demand_scans_form/utils';
 import { RUNNER_TAG_LIST_MOCK } from '../../on_demand_scans/mocks';
 
-Vue.use(VueApollo);
-
 describe('RunnersTag', () => {
   let wrapper;
-  let queryMock;
+  let requestHandlers;
+  const projectId = 'gid://gitlab/Project/20';
 
-  const createComponent = (propsData = {}) => {
+  const defaultHandlerValue = jest.fn().mockResolvedValue({
+    data: {
+      project: {
+        id: projectId,
+        runners: {
+          nodes: RUNNER_TAG_LIST_MOCK,
+        },
+      },
+    },
+  });
+  const createMockApolloProvider = (handlers) => {
+    Vue.use(VueApollo);
+
+    requestHandlers = handlers;
+    return createApolloProvider([[getAllProjectRunners, requestHandlers]]);
+  };
+
+  const createComponent = (propsData = {}, handlers = defaultHandlerValue) => {
     wrapper = mountExtended(RunnerTags, {
-      apolloProvider: createApolloProvider(),
+      apolloProvider: createMockApolloProvider(handlers),
       propsData: {
         projectPath: 'gitlab-org/testPath',
         ...propsData,
@@ -29,30 +46,29 @@ describe('RunnersTag', () => {
   const findEmptyPlaceholder = () => wrapper.findByTestId('listbox-no-results-text');
   const findSearchBox = () => wrapper.findByTestId('listbox-search-input');
 
-  const toggleDropdown = async (event = 'shown') => {
-    await findDropdown().vm.$emit(event);
-    await nextTick();
+  const toggleDropdown = (event = 'shown') => {
+    findDropdown().vm.$emit(event);
   };
 
   beforeEach(() => {
     createComponent();
-    queryMock = jest.spyOn(wrapper.vm.$apollo, 'query').mockResolvedValue(RUNNER_TAG_LIST_MOCK);
   });
 
-  it('should load data only when dropdown is opened for the first time', async () => {
-    await toggleDropdown();
-    expect(queryMock).toHaveBeenCalledTimes(1);
+  it('should load data only when dropdown is opened for the first time', () => {
+    toggleDropdown();
 
-    await toggleDropdown('hidden');
-    await toggleDropdown();
+    expect(requestHandlers).toHaveBeenCalledTimes(1);
 
-    expect(queryMock).toHaveBeenCalledTimes(1);
+    toggleDropdown('hidden');
+    toggleDropdown();
+
+    expect(requestHandlers).toHaveBeenCalledTimes(1);
   });
 
   it('should select tags', async () => {
     expect(findDropdown().props('toggleText')).toBe('Select runner tags');
 
-    await toggleDropdown();
+    toggleDropdown();
     await waitForPromises();
 
     findDropdownItems().at(0).vm.$emit('select', ['macos']);
@@ -67,13 +83,13 @@ describe('RunnersTag', () => {
     query       | expectedLength | expectedTagText
     ${'macos'}  | ${1}           | ${'macos'}
     ${'docker'} | ${1}           | ${'docker'}
-    ${'ma'}     | ${3}           | ${'macos'}
+    ${'ma'}     | ${1}           | ${'macos'}
   `('should filter out results by search', async ({ query, expectedLength, expectedTagText }) => {
-    await toggleDropdown();
+    toggleDropdown();
     await waitForPromises();
 
     expect(findDropdownItems()).toHaveLength(
-      getUniqueTagListFromEdges(RUNNER_TAG_LIST_MOCK.data.project.runners.nodes).length,
+      getUniqueTagListFromEdges(RUNNER_TAG_LIST_MOCK).length,
     );
 
     findSearchBox().vm.$emit('input', query);
@@ -83,16 +99,8 @@ describe('RunnersTag', () => {
     expect(findDropdownItems().at(0).text()).toBe(expectedTagText);
   });
 
-  it('should display empty placeholder if no tags found', async () => {
-    jest.spyOn(wrapper.vm.$apollo, 'query').mockResolvedValue([]);
-
-    await waitForPromises();
-
-    expect(findEmptyPlaceholder().text()).toBe('No matching results');
-  });
-
   it('should render selected tags on top after re-open', async () => {
-    await toggleDropdown();
+    toggleDropdown();
     await waitForPromises();
 
     expect(findDropdownItems().at(3).text()).toEqual('backup');
@@ -101,22 +109,21 @@ describe('RunnersTag', () => {
     findDropdownItems().at(3).vm.$emit('select', ['backup']);
     await nextTick();
     findDropdownItems().at(4).vm.$emit('select', ['development']);
-    await nextTick();
 
     /**
      * close - open dropdown
      */
-    await toggleDropdown('hidden');
-    await toggleDropdown();
+    toggleDropdown('hidden');
+    await nextTick();
+    toggleDropdown();
 
     expect(findDropdownItems().at(0).text()).toEqual('development');
     expect(findDropdownItems().at(1).text()).toEqual('backup');
   });
 
   it('should emit select event', async () => {
-    await toggleDropdown();
+    toggleDropdown();
 
-    await toggleDropdown();
     await waitForPromises();
 
     findDropdownItems().at(0).trigger('click');
@@ -124,36 +131,46 @@ describe('RunnersTag', () => {
     expect(wrapper.emitted('input')).toHaveLength(1);
   });
 
-  it.each`
-    mockedValue                     | expectedResult
-    ${{}}                           | ${'Unable to fetch runner tags. Try reloading the page.'}
-    ${null}                         | ${'Unable to fetch runner tags. Try reloading the page.'}
-    ${{ message: 'error message' }} | ${'error message'}
-  `('should emit error event', async ({ mockedValue, expectedResult }) => {
-    jest.spyOn(wrapper.vm.$apollo, 'query').mockRejectedValue(mockedValue);
+  describe('error handling', () => {
+    it.each`
+      mockedValue                     | expectedResult
+      ${new Error()}                  | ${'Unable to fetch runner tags. Try reloading the page.'}
+      ${{ message: 'error message' }} | ${'error message'}
+    `('should emit error event', async ({ mockedValue, expectedResult }) => {
+      createComponent({}, jest.fn().mockRejectedValue(mockedValue));
 
-    await toggleDropdown();
+      toggleDropdown();
 
-    await toggleDropdown();
-    await waitForPromises();
+      toggleDropdown();
+      await waitForPromises();
 
-    const [[errorPayload]] = wrapper.emitted('error');
-    expect(errorPayload).toBe(expectedResult);
+      const [[errorPayload]] = wrapper.emitted('error');
+      expect(errorPayload).toBe(expectedResult);
+    });
+  });
+
+  describe('no tags found', () => {
+    beforeEach(() => {
+      createComponent({}, jest.fn().mockResolvedValue([]));
+    });
+
+    it('should display empty placeholder if no tags found', () => {
+      expect(findEmptyPlaceholder().text()).toBe('No matching results');
+    });
   });
 
   describe('selected tags', () => {
-    const savedOnBackendTags = ['macos', 'maven'];
+    const savedOnBackendTags = ['linux', 'macos'];
 
     beforeEach(() => {
       createComponent({ value: savedOnBackendTags });
-      queryMock = jest.spyOn(wrapper.vm.$apollo, 'query').mockResolvedValue(RUNNER_TAG_LIST_MOCK);
     });
 
     it('should render saved on backend selected tags', async () => {
-      await toggleDropdown();
+      toggleDropdown();
       await waitForPromises();
 
-      expect(findDropdownItems().at(0).text()).toBe('maven');
+      expect(findDropdownItems().at(0).text()).toBe('linux');
       expect(findDropdownItems().at(1).text()).toBe('macos');
 
       expect(findDropdownItems().at(0).props('isSelected')).toBe(true);
