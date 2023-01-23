@@ -21354,6 +21354,9 @@ msgstr ""
 msgid "Improve quality with test cases"
 msgstr ""
 
+msgid "In GitLab"
+msgstr ""
+
 msgid "In case of pull mirroring, your user will be the author of all events in the activity feed that are the result of an update, like new branches being created or new commits being pushed to existing branches."
 msgstr ""
 
@@ -21366,7 +21369,13 @@ msgstr ""
 msgid "In the background, we're attempting to connect you again."
 msgstr ""
 
+msgid "In this group"
+msgstr ""
+
 msgid "In this page you will find information about the settings that are used in your current instance."
+msgstr ""
+
+msgid "In this project"
 msgstr ""
 
 msgid "In use"
@@ -43335,9 +43344,6 @@ msgid "This pipeline was triggered by a schedule."
 msgstr ""
 
 msgid "This process deletes the project repository and all related resources."
-msgstr ""
-
-msgid "This project"
 msgstr ""
 
 msgid "This project can be restored until %{date}."

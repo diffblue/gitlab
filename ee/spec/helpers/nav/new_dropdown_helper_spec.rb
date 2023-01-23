@@ -18,7 +18,7 @@ RSpec.describe Nav::NewDropdownHelper do
     context 'with group and can create_epic' do
       it 'shows create epic menu item' do
         expect(subject[:menu_sections][0]).to eq({
-          title: 'This group',
+          title: 'In this group',
           menu_items: [
             ::Gitlab::Nav::TopNavMenuItem.build(
               id: 'create_epic',
