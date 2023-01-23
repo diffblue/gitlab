@@ -46340,9 +46340,6 @@ msgstr ""
 msgid "ValueStreamEvent|Stop"
 msgstr ""
 
-msgid "ValueStream|The Default Value Stream cannot be deleted"
-msgstr ""
-
 msgid "Variable"
 msgstr ""
 

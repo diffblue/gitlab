@@ -39,7 +39,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
       resource :repository_analytics, only: :show
       resource :cycle_analytics, only: :show, path: 'value_stream_analytics'
       scope module: :cycle_analytics, as: 'cycle_analytics', path: 'value_stream_analytics' do
-        resources :value_streams, only: [:index, :new, :edit, :show, :create, :update, :destroy] do
+        resources :value_streams do
           resources :stages, only: [:index] do
             member do
               get :average_duration_chart
