@@ -28,15 +28,10 @@ module EE
       def set_skip_confirmation_param
         return if params[:skip_confirmation] # Explicit skip confirmation passed as param
         return unless PROVIDERS_ALLOWED_TO_SKIP_CONFIRMATION.include?(params[:provider])
-        return unless group&.domain_verification_available?
 
-        verified_domains = group&.all_projects_pages_domains(only_verified: true)
-        return unless verified_domains.present? && params[:email] && ValidateEmail.valid?(params[:email])
+        return unless params[:email] && ValidateEmail.valid?(params[:email])
 
-        email_domain = Mail::Address.new(params[:email]).domain.downcase
-        matches_verified_domain = verified_domains.map(&:domain).map(&:downcase).include?(email_domain)
-
-        params[:skip_confirmation] = true if matches_verified_domain
+        params[:skip_confirmation] = true if group&.owner_of_email?(params[:email])
       end
     end
   end
