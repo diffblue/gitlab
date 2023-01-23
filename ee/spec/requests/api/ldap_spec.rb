@@ -13,8 +13,8 @@ RSpec.describe API::Ldap, feature_category: :authentication_and_authorization do
 
   before do
     groups = [
-      double('group', cn: 'developers'),
-      double('group', cn: 'students')
+      instance_double(EE::Gitlab::Auth::Ldap::Group, cn: 'developers'),
+      instance_double(EE::Gitlab::Auth::Ldap::Group, cn: 'students')
     ]
 
     allow(Gitlab::Auth::Ldap::Config).to receive(:enabled?).and_return(true)
