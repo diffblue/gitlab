@@ -1,123 +1,123 @@
-import { mount } from '@vue/test-utils';
+import { GlInfiniteScroll } from '@gitlab/ui';
+import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
-import Vuex from 'vuex';
-import MockAdapter from 'axios-mock-adapter';
+import VueApollo from 'vue-apollo';
 import waitForPromises from 'helpers/wait_for_promises';
-import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { RENDER_ALL_SLOTS_TEMPLATE, stubComponent } from 'helpers/stub_component';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import CodequalityReportApp from 'ee/codequality_report/codequality_report.vue';
-import PaginationLinks from '~/vue_shared/components/pagination_links.vue';
-import { parsedIssues } from './mock_data';
+import ReportSection from '~/ci/reports/components/report_section.vue';
+import getCodeQualityViolations from 'ee/codequality_report/graphql/queries/get_code_quality_violations.query.graphql';
+import { LOADING, ERROR, SUCCESS } from '~/ci/reports/constants';
+import { mockGetCodeQualityViolationsResponse, codeQualityViolations } from './mock_data';
 
-jest.mock('~/flash');
-
-Vue.use(Vuex);
-const ENDPOINT = '/testendpoint';
-const BLOBPATH = '/blobPath';
-const PROJECTPATH = '/projectPath';
-const PIPELINEIID = '0';
+Vue.use(VueApollo);
 
 describe('Codequality report app', () => {
   let wrapper;
-  let store;
-  let mock;
 
-  beforeEach(() => {
-    mock = new MockAdapter(axios);
-  });
+  const createComponent = (
+    mockReturnValue = jest.fn().mockResolvedValue(mockGetCodeQualityViolationsResponse),
+  ) => {
+    const apolloProvider = createMockApollo([[getCodeQualityViolations, mockReturnValue]]);
 
-  afterEach(() => {
-    mock.restore();
-    wrapper.destroy();
-  });
-
-  const createComponent = () => {
-    store = new Vuex.Store();
-
-    wrapper = mount(CodequalityReportApp, {
-      store,
-      propsData: {
-        endpoint: ENDPOINT,
-        blobPath: BLOBPATH,
-        projectPath: PROJECTPATH,
-        pipelineIid: PIPELINEIID,
+    wrapper = shallowMount(CodequalityReportApp, {
+      apolloProvider,
+      provide: {
+        projectPath: 'project-path',
+        pipelineIid: 'pipeline-iid',
+        blobPath: '/blob/path',
+      },
+      stubs: {
+        ReportSection: stubComponent(ReportSection, {
+          template: RENDER_ALL_SLOTS_TEMPLATE,
+        }),
       },
     });
   };
 
-  const findStatus = () => wrapper.find('.js-code-text');
-  const findSuccessIcon = () => wrapper.find('svg[aria-label~="Success"]');
-  const findWarningIcon = () => wrapper.find('svg[aria-label~="Warning"]');
-  const findPagination = () => wrapper.findComponent(PaginationLinks);
+  const findReportSection = () => wrapper.findComponent(ReportSection);
+  const findInfiniteScroll = () => wrapper.findComponent(GlInfiniteScroll);
+
+  afterEach(() => {
+    wrapper.destroy();
+  });
 
   describe('when loading', () => {
     beforeEach(() => {
-      createComponent();
+      createComponent(jest.fn().mockReturnValueOnce(new Promise(() => {})));
     });
 
     it('shows a loading state', () => {
-      expect(findStatus().text()).toBe('Loading Code Quality report');
+      expect(findReportSection().props().status).toBe(LOADING);
     });
   });
 
   describe('on error', () => {
-    beforeEach(() => {
-      createComponent();
-      mock.onGet(ENDPOINT).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+    beforeEach(async () => {
+      createComponent(jest.fn().mockRejectedValueOnce(new Error('Error!')));
+      await waitForPromises();
     });
 
-    it('shows a warning icon and error message', async () => {
-      await waitForPromises();
-      expect(findWarningIcon().exists()).toBe(true);
-      expect(findStatus().text()).toBe('Failed to load Code Quality report');
+    it('shows error message', () => {
+      expect(findReportSection().props().status).toBe(ERROR);
+      expect(findReportSection().props().errorText).toBe('Failed to load Code Quality report');
     });
   });
 
   describe('when there are codequality issues', () => {
-    beforeEach(() => {
-      createComponent();
-      mock.onGet(ENDPOINT).reply(200, parsedIssues);
-    });
-
-    it('renders the codequality issues', async () => {
+    beforeEach(async () => {
+      createComponent(jest.fn().mockResolvedValue(mockGetCodeQualityViolationsResponse));
       await waitForPromises();
-      const expectedIssueTotal = parsedIssues.length;
-
-      expect(findWarningIcon().exists()).toBe(true);
-      expect(findStatus().text()).toContain(`Found ${expectedIssueTotal} code quality issues`);
-      expect(findStatus().text()).toContain(
-        `This report contains all Code Quality issues in the source branch.`,
-      );
-      expect(wrapper.emitted().updateBadgeCount).toBeDefined();
-      expect(wrapper.findAll('.report-block-list-issue')).toHaveLength(expectedIssueTotal);
     });
 
-    it('renders a link to the line where the issue was found', async () => {
+    it('renders the codequality issues', () => {
+      const expectedIssueTotal = codeQualityViolations.count;
+
+      expect(findReportSection().props().status).toBe(SUCCESS);
+      expect(findInfiniteScroll().exists()).toBe(true);
+      expect(findReportSection().props().successText).toBe(
+        `Found ${expectedIssueTotal} code quality issues`,
+      );
+      expect(findReportSection().props().unresolvedIssues).toHaveLength(expectedIssueTotal);
+    });
+
+    it('loads the next page when the end of the list is reached', async () => {
+      const expectedIssueTotal = codeQualityViolations.count * 2;
+      findInfiniteScroll().vm.$emit('bottomReached');
+
       await waitForPromises();
-      const issueLink = wrapper.find('.report-block-list-issue a');
 
-      expect(issueLink.text()).toBe('ee/spec/features/admin/geo/admin_geo_projects_spec.rb:152');
-      expect(issueLink.attributes('href')).toBe(
-        `${BLOBPATH}/ee/spec/features/admin/geo/admin_geo_projects_spec.rb#L152`,
-      );
-    });
-
-    it('renders the pagination component', () => {
-      expect(findPagination().exists()).toBe(true);
+      expect(findReportSection().props().unresolvedIssues).toHaveLength(expectedIssueTotal);
     });
   });
 
   describe('when there are no codequality issues', () => {
-    beforeEach(() => {
-      createComponent();
-      mock.onGet(ENDPOINT).reply(200, []);
+    beforeEach(async () => {
+      const emptyResponse = {
+        data: {
+          project: {
+            id: '1',
+            pipeline: {
+              id: 'pipeline-1',
+              codeQualityReports: {
+                ...codeQualityViolations,
+                nodes: [],
+                count: 0,
+              },
+            },
+          },
+        },
+      };
+
+      createComponent(jest.fn().mockResolvedValue(emptyResponse));
+      await waitForPromises();
     });
 
-    it('shows a message that no codequality issues were found', async () => {
-      await waitForPromises();
-      expect(findSuccessIcon().exists()).toBe(true);
-      expect(findStatus().text()).toBe('No code quality issues found');
-      expect(wrapper.findAll('.report-block-list-issue')).toHaveLength(0);
+    it('shows a message that no codequality issues were found', () => {
+      expect(findReportSection().props().status).toBe(SUCCESS);
+      expect(findReportSection().props().successText).toBe('No code quality issues found');
+      expect(findReportSection().props().unresolvedIssues).toHaveLength(0);
     });
   });
 });

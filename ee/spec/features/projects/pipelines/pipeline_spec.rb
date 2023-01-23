@@ -305,14 +305,6 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
 
       it_behaves_like 'full codequality report'
     end
-
-    context 'with graphql feature flag disabled' do
-      let(:pipeline) { create(:ci_pipeline, project: project, ref: 'master', sha: project.commit.id) }
-
-      stub_feature_flags(graphql_code_quality_full_report: false)
-
-      it_behaves_like 'full codequality report'
-    end
   end
 
   describe 'GET /:project/-/pipelines/:id/validate_account' do

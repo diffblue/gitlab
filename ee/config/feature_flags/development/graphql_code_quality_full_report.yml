@@ -1,8 +1,0 @@
----
-name: graphql_code_quality_full_report
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/69917
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/340525
-milestone: '14.4'
-type: development
-group: group::static analysis
-default_enabled: true

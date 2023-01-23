@@ -10,7 +10,6 @@ module EE
         before_action :authorize_read_licenses!, only: [:licenses]
         before_action do
           push_frontend_feature_flag(:pipeline_security_dashboard_graphql, project, type: :development)
-          push_frontend_feature_flag(:graphql_code_quality_full_report, project, type: :development)
         end
 
         feature_category :license_compliance, [:licenses]
