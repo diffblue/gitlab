@@ -156,10 +156,6 @@ module EE
                 presence: true,
                 if: :product_analytics_enabled
 
-      validates :clickhouse_connection_string,
-                presence: true,
-                if: :product_analytics_enabled
-
       validates :product_analytics_clickhouse_connection_string,
                 presence: true,
                 if: :product_analytics_enabled
