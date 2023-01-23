@@ -44,36 +44,23 @@ describe('UnconfiguredSecurityRules component', () => {
       createWrapper();
     });
 
-    it('should fetch the security configuration', () => {
-      expect(store.dispatch).toHaveBeenCalledWith(
-        'securityConfiguration/fetchSecurityConfiguration',
-        undefined,
-      );
-    });
-
     it('should render a unconfigured-security-rule component for every security rule', () => {
       expect(wrapper.findAllComponents(UnconfiguredSecurityRule).length).toBe(2);
     });
   });
 
   describe.each`
-    approvalsLoading | securityConfigurationLoading | shouldRender
-    ${false}         | ${false}                     | ${false}
-    ${true}          | ${false}                     | ${true}
-    ${false}         | ${true}                      | ${true}
-    ${true}          | ${true}                      | ${true}
-  `(
-    'while approvalsLoading is $approvalsLoading and securityConfigurationLoading is $securityConfigurationLoading',
-    ({ approvalsLoading, securityConfigurationLoading, shouldRender }) => {
-      beforeEach(() => {
-        createWrapper();
-        store.state.approvals.isLoading = approvalsLoading;
-        store.state.securityConfiguration.isLoading = securityConfigurationLoading;
-      });
+    approvalsLoading | shouldRender
+    ${false}         | ${false}
+    ${true}          | ${true}
+  `('while approvalsLoading is $approvalsLoading', ({ approvalsLoading, shouldRender }) => {
+    beforeEach(() => {
+      createWrapper();
+      store.state.approvals.isLoading = approvalsLoading;
+    });
 
-      it(`should ${shouldRender ? '' : 'not'} render the loading skeleton`, () => {
-        expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(shouldRender);
-      });
-    },
-  );
+    it(`should ${shouldRender ? '' : 'not'} render the loading skeleton`, () => {
+      expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(shouldRender);
+    });
+  });
 });
