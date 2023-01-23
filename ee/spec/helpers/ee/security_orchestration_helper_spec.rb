@@ -161,6 +161,9 @@ RSpec.describe EE::SecurityOrchestrationHelper do
     end
 
     context 'for namespace' do
+      let_it_be(:mit_license) { create(:software_license, :mit) }
+      let_it_be(:apache_license) { create(:software_license, :apache_2_0) }
+
       let(:approvers) { %w(approver1 approver2) }
       let(:owner) { namespace.first_owner }
       let(:policy) { nil }
@@ -176,7 +179,8 @@ RSpec.describe EE::SecurityOrchestrationHelper do
           scan_policy_documentation_path: kind_of(String),
           namespace_path: namespace.full_path,
           namespace_id: namespace.id,
-          scan_result_approvers: approvers&.to_json
+          scan_result_approvers: approvers&.to_json,
+          software_licenses: [apache_license.name, mit_license.name]
         }
       end
 

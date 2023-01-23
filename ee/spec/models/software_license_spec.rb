@@ -108,4 +108,16 @@ RSpec.describe SoftwareLicense do
       end
     end
   end
+
+  describe '.all_license_names' do
+    subject { described_class.all_license_names }
+
+    let_it_be(:mit_license) { create(:software_license, :mit) }
+    let_it_be(:apache_license) { create(:software_license, :apache_2_0) }
+    let_it_be(:nonstandard_license) { create(:software_license, :user_entered) }
+
+    it 'returns ordered list of license names from the SPDX catalogue' do
+      expect(subject.to_a).to eql([apache_license.name, mit_license.name])
+    end
+  end
 end

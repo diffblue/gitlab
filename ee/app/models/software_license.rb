@@ -20,6 +20,10 @@ class SoftwareLicense < ApplicationRecord
     spdx.id_not_in(project.software_licenses).ordered.unreachable_limit
   end
 
+  def self.all_license_names
+    spdx.ordered.unreachable_limit.pluck_names
+  end
+
   def self.pluck_names
     pluck(:name)
   end
