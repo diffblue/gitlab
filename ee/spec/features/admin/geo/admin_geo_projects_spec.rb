@@ -49,7 +49,7 @@ RSpec.describe 'admin Geo Projects', :js, :geo, feature_category: :geo_replicati
       describe 'searching for a geo project' do
         it 'filters out projects with the search term' do
           fill_in :name, with: synced_registry.project.name
-          find('#project-filter-form-field').native.send_keys(:enter)
+          find('[data-testid="geo-projects-filter-field"]').native.send_keys(:enter)
 
           wait_for_requests
 
@@ -166,7 +166,7 @@ RSpec.describe 'admin Geo Projects', :js, :geo, feature_category: :geo_replicati
     describe 'searching for a geo project' do
       it 'finds the project with the same name' do
         fill_in :name, with: sync_pending_sync_registry.project.name
-        find('#project-filter-form-field').native.send_keys(:enter)
+        find('[data-testid="geo-projects-filter-field"]').native.send_keys(:enter)
 
         wait_for_requests
 
@@ -181,7 +181,7 @@ RSpec.describe 'admin Geo Projects', :js, :geo, feature_category: :geo_replicati
 
       it 'filters out project that matches with search but shouldnt be in the view' do
         fill_in :name, with: synced_registry.project.name
-        find('#project-filter-form-field').native.send_keys(:enter)
+        find('[data-testid="geo-projects-filter-field"]').native.send_keys(:enter)
 
         wait_for_requests
 
