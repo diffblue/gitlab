@@ -26,7 +26,7 @@ describe('Codequality report actions', () => {
   beforeEach(() => {
     mock = new MockAdapter(axios);
     state = defaultState;
-    window.gon = { features: { graphqlCodeQualityFullReport: false } };
+    window.gon = { features: {} };
   });
 
   afterEach(() => {

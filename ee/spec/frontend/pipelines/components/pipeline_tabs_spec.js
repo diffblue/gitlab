@@ -4,7 +4,7 @@ import { shallowMount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import BasePipelineTabs from '~/pipelines/components/pipeline_tabs.vue';
 import PipelineTabs from 'ee/pipelines/components/pipeline_tabs.vue';
-import CodequalityReportAppWrapper from 'ee/pipelines/components/codequality_report_app_wrapper.vue';
+import CodequalityReportApp from 'ee/codequality_report/codequality_report.vue';
 
 describe('The Pipeline Tabs', () => {
   let wrapper;
@@ -150,7 +150,7 @@ describe('The Pipeline Tabs', () => {
           canGenerateCodequalityReports: true,
           codequalityReportDownloadPath: '/dsda',
         },
-        stubs: { GlTab, CodequalityReportAppWrapper },
+        stubs: { GlTab, CodequalityReportApp },
       });
     });
 

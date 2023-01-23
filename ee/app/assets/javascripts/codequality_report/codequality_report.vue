@@ -1,93 +1,133 @@
 <script>
-import { mapActions, mapState, mapGetters } from 'vuex';
+import { GlSkeletonLoader, GlInfiniteScroll, GlLoadingIcon, GlSprintf } from '@gitlab/ui';
+import { once } from 'lodash';
+import produce from 'immer';
+import api from '~/api';
 import { componentNames } from 'ee/ci/reports/components/issue_body';
 import reportsMixin from 'ee/vue_shared/security_reports/mixins/reports_mixin';
 import { n__, s__, sprintf } from '~/locale';
 import ReportSection from '~/ci/reports/components/report_section.vue';
-import PaginationLinks from '~/vue_shared/components/pagination_links.vue';
-import { setupStore } from './store';
+import CodequalityIssueBody from '~/ci/reports/codequality_report/components/codequality_issue_body.vue';
+import { parseCodeclimateMetrics } from '~/ci/reports/codequality_report/store/utils/codequality_parser';
+import getCodeQualityViolations from './graphql/queries/get_code_quality_violations.query.graphql';
+import { PAGE_SIZE, VIEW_EVENT_NAME } from './store/constants';
 
 export default {
   components: {
     ReportSection,
-    PaginationLinks,
+    CodequalityIssueBody,
+    GlSkeletonLoader,
+    GlInfiniteScroll,
+    GlLoadingIcon,
+    GlSprintf,
   },
   mixins: [reportsMixin],
-  props: {
-    endpoint: {
-      type: String,
-      required: true,
-    },
-    blobPath: {
-      type: String,
-      required: true,
-    },
-    projectPath: {
-      type: String,
-      required: true,
-    },
-    pipelineIid: {
-      type: String,
-      required: true,
+  componentNames,
+  inject: ['projectPath', 'pipelineIid', 'blobPath'],
+  apollo: {
+    codequalityViolations: {
+      query: getCodeQualityViolations,
+      variables() {
+        return {
+          projectPath: this.projectPath,
+          iid: this.pipelineIid,
+          first: PAGE_SIZE,
+        };
+      },
+      update({
+        project: {
+          pipeline: { codeQualityReports: { nodes = [], pageInfo = {}, count = 0 } = {} } = {},
+        } = {},
+      }) {
+        return {
+          nodes,
+          parsedList: parseCodeclimateMetrics(nodes, this.blobPath),
+          count,
+          pageInfo,
+        };
+      },
+      error() {
+        this.errored = true;
+      },
+      watchLoading(isLoading) {
+        if (isLoading) {
+          this.trackViewEvent();
+        }
+      },
     },
   },
-  componentNames,
+  data() {
+    return {
+      codequalityViolations: {
+        nodes: [],
+        parsedList: [],
+        count: 0,
+        pageInfo: {},
+      },
+      errored: false,
+    };
+  },
   computed: {
-    ...mapState('codeQualityReport', [
-      'isLoadingCodequality',
-      'loadingCodequalityFailed',
-      'pageInfo',
-    ]),
-    ...mapGetters('codeQualityReport', ['codequalityIssues', 'codequalityIssueTotal']),
-    hasCodequalityIssues() {
-      return this.codequalityIssueTotal > 0;
+    isLoading() {
+      return this.$apollo.queries.codequalityViolations.loading;
+    },
+    hasCodequalityViolations() {
+      return this.codequalityViolations.count > 0;
+    },
+    trackViewEvent() {
+      return once(() => {
+        api.trackRedisHllUserEvent(VIEW_EVENT_NAME);
+      });
     },
     codequalityText() {
       const text = [];
-      const { codequalityIssueTotal } = this;
-      this.$emit('updateBadgeCount', codequalityIssueTotal);
+      const { count } = this.codequalityViolations;
 
-      if (codequalityIssueTotal === 0) {
+      if (count === 0) {
         return s__('ciReport|No code quality issues found');
-      } else if (codequalityIssueTotal > 0) {
+      } else if (count > 0) {
         return sprintf(s__('ciReport|Found %{issuesWithCount}'), {
-          issuesWithCount: n__(
-            '%d code quality issue',
-            '%d code quality issues',
-            codequalityIssueTotal,
-          ),
+          issuesWithCount: n__('%d code quality issue', '%d code quality issues', count),
         });
       }
 
       return text.join('');
     },
     codequalityStatus() {
-      return this.checkReportStatus(this.isLoadingCodequality, this.loadingCodequalityFailed);
+      return this.checkReportStatus(this.isLoading && !this.hasCodequalityViolations, this.errored);
+    },
+  },
+  watch: {
+    codequalityViolations() {
+      this.$emit('updateBadgeCount', this.codequalityViolations.count);
     },
   },
   i18n: {
     subHeading: s__('ciReport|This report contains all Code Quality issues in the source branch.'),
-  },
-  created() {
-    setupStore(this.$store, {
-      blobPath: this.$props.blobPath,
-      endpoint: this.$props.endpoint,
-      pipelineIid: this.$props.pipelineIid,
-      projectPath: this.$props.projectPath,
-    });
-    this.fetchReport();
+    loadingText: s__('ciReport|Loading Code Quality report'),
+    errorText: s__('ciReport|Failed to load Code Quality report'),
+    showingCount: s__('ciReport|Showing %{fetchedItems} of %{totalItems} items'),
   },
   methods: {
-    ...mapActions('codeQualityReport', ['setPage', 'fetchReport']),
-    translateText(type) {
-      return {
-        error: sprintf(s__('ciReport|Failed to load %{reportName} report'), {
-          reportName: type,
-        }),
-        loading: sprintf(s__('ciReport|Loading %{reportName} report'), {
-          reportName: type,
-        }),
-      };
+    fetchMoreViolations() {
+      this.$apollo.queries.codequalityViolations
+        .fetchMore({
+          variables: {
+            first: PAGE_SIZE,
+            after: this.codequalityViolations.pageInfo.endCursor,
+          },
+          updateQuery: (previousResult, { fetchMoreResult }) => {
+            return produce(fetchMoreResult, (draftData) => {
+              draftData.project.pipeline.codeQualityReports.nodes = [
+                ...previousResult.project.pipeline.codeQualityReports.nodes,
+                ...draftData.project.pipeline.codeQualityReports.nodes,
+              ];
+            });
+          },
+        })
+        .catch(() => {
+          this.errored = true;
+        });
     },
   },
 };
@@ -98,21 +138,50 @@ export default {
     <report-section
       always-open
       :status="codequalityStatus"
-      :loading-text="translateText('Code Quality').loading"
-      :error-text="translateText('Code Quality').error"
+      :loading-text="$options.i18n.loadingText"
+      :error-text="$options.i18n.errorText"
       :success-text="codequalityText"
-      :unresolved-issues="codequalityIssues"
+      :unresolved-issues="codequalityViolations.parsedList"
       :resolved-issues="[] /* eslint-disable-line @gitlab/vue-no-new-non-primitive-in-template */"
-      :has-issues="hasCodequalityIssues"
+      :has-issues="hasCodequalityViolations"
       :component="$options.componentNames.CodequalityIssueBody"
       class="codequality-report"
     >
-      <template v-if="hasCodequalityIssues" #sub-heading>{{ $options.i18n.subHeading }}</template>
+      <template v-if="hasCodequalityViolations" #sub-heading>{{
+        $options.i18n.subHeading
+      }}</template>
+      <template #body>
+        <gl-infinite-scroll
+          :max-list-height="500"
+          :fetched-items="codequalityViolations.parsedList.length"
+          :total-items="codequalityViolations.count"
+          @bottomReached="fetchMoreViolations"
+        >
+          <template #items>
+            <div class="report-block-container">
+              <template v-for="(issue, index) in codequalityViolations.parsedList">
+                <codequality-issue-body
+                  :key="index"
+                  :issue="issue"
+                  class="report-block-list-issue"
+                />
+              </template>
+            </div>
+          </template>
+          <template #default>
+            <div class="gl-mt-3">
+              <gl-loading-icon v-if="isLoading" />
+              <gl-sprintf v-else :message="$options.i18n.showingCount"
+                ><template #fetchedItems>{{ codequalityViolations.parsedList.length }}</template
+                ><template #totalItems>{{ codequalityViolations.count }}</template></gl-sprintf
+              >
+            </div>
+          </template>
+        </gl-infinite-scroll>
+      </template>
     </report-section>
-    <pagination-links
-      :change="setPage"
-      :page-info="pageInfo"
-      class="d-flex justify-content-center gl-mt-3"
-    />
+    <div v-if="isLoading && !hasCodequalityViolations" class="report-block-container">
+      <gl-skeleton-loader :lines="36" />
+    </div>
   </div>
 </template>
