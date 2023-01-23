@@ -23,7 +23,6 @@ RSpec.describe IssuablesHelper, feature_category: :team_planning do
           canAdminRelation: permission,
           canDestroy: permission,
           canUpdate: permission,
-          canUpdateTimelineEvent: permission,
           confidential: epic.confidential,
           endpoint: "/groups/#{@group.full_path}/-/epics/#{epic.iid}",
           epicLinksEndpoint: "/groups/#{@group.full_path}/-/epics/#{epic.iid}/links",
@@ -98,13 +97,28 @@ RSpec.describe IssuablesHelper, feature_category: :team_planning do
     end
 
     context 'for an incident' do
-      context 'default state' do
-        let_it_be(:issue) { create(:issue, author: user, description: 'issue text', issue_type: :incident) }
+      let_it_be(:issue) { create(:issue, author: user, description: 'issue text', issue_type: :incident) }
 
+      let(:params) do
+        ActionController::Parameters.new({
+          controller: "projects/issues",
+          action: "show",
+          namespace_id: "foo",
+          project_id: "bar",
+          id: issue.iid
+        }).permit!
+      end
+
+      before do
+        allow(helper).to receive(:safe_params).and_return(params)
+      end
+
+      context 'default state' do
         it 'returns the correct data' do
           @project = issue.project
 
           expect(helper.issuable_initial_data(issue)).to include(uploadMetricsFeatureAvailable: "false")
+          expect(helper.issuable_initial_data(issue)).to include(canUpdateTimelineEvent: permission)
         end
       end
 
@@ -112,8 +126,6 @@ RSpec.describe IssuablesHelper, feature_category: :team_planning do
         before do
           stub_licensed_features(incident_metric_upload: true)
         end
-
-        let_it_be(:issue) { create(:issue, author: user, description: 'issue text', issue_type: :incident) }
 
         it 'correctly returns uploadMetricsFeatureAvailable as true' do
           @project = issue.project
