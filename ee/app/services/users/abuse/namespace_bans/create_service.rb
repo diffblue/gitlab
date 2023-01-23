@@ -3,7 +3,7 @@
 module Users
   module Abuse
     module NamespaceBans
-      class CreateService < BaseService
+      class CreateService
         attr_accessor :user, :namespace
 
         def initialize(user:, namespace:)
@@ -13,11 +13,12 @@ module Users
 
         def execute
           ban = ::Namespaces::NamespaceBan.new(user: user, namespace: namespace)
+
           if ban.save
-            success
+            ServiceResponse.success
           else
             messages = ban.errors.full_messages
-            error(messages.uniq.join('. '))
+            ServiceResponse.error(message: messages.uniq.join('. '))
           end
         end
       end
