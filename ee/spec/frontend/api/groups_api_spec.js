@@ -104,6 +104,20 @@ describe('GroupsApi', () => {
     });
   });
 
+  describe('approveAllPendingGroupMembers', () => {
+    const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${namespaceId}/members/approve_all`;
+
+    it('approves all pending members from a group', async () => {
+      jest.spyOn(axios, 'post');
+      mock.onPost(expectedUrl).replyOnce(HTTP_STATUS_OK, []);
+
+      const { data } = await GroupsApi.approveAllPendingGroupMembers(namespaceId);
+
+      expect(data).toEqual([]);
+      expect(axios.post).toHaveBeenCalledWith(expectedUrl);
+    });
+  });
+
   describe('updateGroupSettings', () => {
     const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${namespaceId}`;
 
