@@ -627,7 +627,7 @@ module Gitlab
       # [0]: https://github.com/rails/rails/commit/94d81c3c39e3ddc441c3af3f874e53b197cf3f54
       # [1]: https://salsa.debian.org/ruby-team/rails/-/commit/5663e598b41dc4e2058db22e1ee0d678e5c483ba
       #
-      ActiveRecord::Base.yaml_column_permitted_classes = config.active_record.yaml_column_permitted_classes
+      ActiveRecord.yaml_column_permitted_classes = config.active_record.yaml_column_permitted_classes
 
       # on_master_start yields immediately in unclustered environments and runs
       # when the primary process is done initializing otherwise.
