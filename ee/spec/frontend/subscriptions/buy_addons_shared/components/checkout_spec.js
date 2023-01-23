@@ -105,7 +105,7 @@ describe('Checkout', () => {
   });
 
   describe('when the children component emit error', () => {
-    const errorMessage = 'Yikes!';
+    const error = new Error('Yikes!');
 
     beforeEach(() => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -116,22 +116,32 @@ describe('Checkout', () => {
     });
 
     it('emits an error message from billing address', () => {
-      findBillingAddress().vm.$emit('error', errorMessage);
+      findBillingAddress().vm.$emit('error', { error });
 
       expect(createAlert).toHaveBeenCalledWith({
         message: GENERAL_ERROR_MESSAGE,
         captureError: true,
-        error: errorMessage,
+        error,
+      });
+    });
+
+    it('emits an error message from payment method', () => {
+      findPaymentMethod().vm.$emit('error', { error });
+
+      expect(createAlert).toHaveBeenCalledWith({
+        message: GENERAL_ERROR_MESSAGE,
+        captureError: true,
+        error,
       });
     });
 
     it('emits an error message from order confirmation', () => {
-      findOrderConfirmation().vm.$emit('error', errorMessage);
+      findOrderConfirmation().vm.$emit('error', { error });
 
       expect(createAlert).toHaveBeenCalledWith({
         message: GENERAL_ERROR_MESSAGE,
         captureError: true,
-        error: errorMessage,
+        error,
       });
     });
   });

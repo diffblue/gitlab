@@ -140,11 +140,7 @@ describe('Confirm Order', () => {
         });
 
         it('emits an error', () => {
-          expect(wrapper.emitted('error')).toEqual([[expectedError]]);
-        });
-
-        it('captures the exception', () => {
-          expect(Sentry.captureException).toHaveBeenCalledWith(expectedError);
+          expect(wrapper.emitted('error')).toEqual([[{ error: expectedError }]]);
         });
       });
     });
