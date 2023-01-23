@@ -15,14 +15,28 @@ module Epics
     feature_category :portfolio_management
 
     def perform(ids)
+      locked_ids = []
+
       ::Epic.id_in(ids).find_each do |epic|
         # epic_id is set to assure epic-specific lease key
         @epic_id = epic.id
 
-        try_obtain_lease do
+        lease = exclusive_lease.try_obtain
+
+        if lease
           update_epic(epic)
+        else
+          locked_ids << epic.id
         end
+
+      ensure
+        release_lease(lease) if lease
       end
+
+      return if locked_ids.empty?
+
+      log_error("Following epic ids are locked, re-scheduling cache update: #{locked_ids}")
+      self.class.perform_in(LEASE_TIMEOUT, locked_ids)
     end
 
     private
