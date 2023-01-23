@@ -1,14 +1,14 @@
 import { nextTick } from 'vue';
 import { GlForm, GlFormInput, GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { GROUP_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
 import PolicyActionApprovers from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_approvers.vue';
 import GroupSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/group_select.vue';
 import UserSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/user_select.vue';
 import {
+  APPROVER_TYPE_LIST_ITEMS,
   getDefaultHumanizedTemplate,
-  GROUP_TYPE,
   MULTIPLE_APPROVER_TYPES_HUMANIZED_TEMPLATE,
-  USER_TYPE,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/actions';
 
 const DEFAULT_ACTION = {
@@ -22,10 +22,10 @@ describe('PolicyActionApprovers', () => {
   const factory = ({ propsData = {}, stubs = {} } = {}) => {
     wrapper = shallowMountExtended(PolicyActionApprovers, {
       propsData: {
+        availableTypes: APPROVER_TYPE_LIST_ITEMS,
         approverIndex: 0,
-        approverTypes: [],
         approvalsRequired: 1,
-        existingApprovers: [],
+        existingApprovers: {},
         numOfApproverTypes: 1,
         ...propsData,
       },
@@ -67,6 +67,14 @@ describe('PolicyActionApprovers', () => {
       expect(findRemoveButton().exists()).toBe(false);
     });
 
+    it('does not render the user select when the "user" type approver is not selected', async () => {
+      expect(findUserSelect().exists()).toBe(false);
+    });
+
+    it('does not render the group select when the "group" type approver is not selected', async () => {
+      expect(findGroupSelect().exists()).toBe(false);
+    });
+
     it('triggers an update when changing number of approvals required', async () => {
       const approvalRequestPlusOne = DEFAULT_ACTION.approvals_required + 1;
       const formInput = findApprovalsRequiredInput();
@@ -76,45 +84,49 @@ describe('PolicyActionApprovers', () => {
       expect(wrapper.emitted('updateApprovalsRequired')).toEqual([[approvalRequestPlusOne]]);
     });
 
-    it('renders the user select when the "user" type approver is selected', async () => {
-      expect(findUserSelect().exists()).toBe(false);
-      await findApproverTypeDropdown().vm.$emit('select', USER_TYPE);
-      expect(findUserSelect().exists()).toBe(true);
-    });
-
-    it('does not render the group select when the "user" type approver is selected', async () => {
-      expect(findGroupSelect().exists()).toBe(false);
-      await findApproverTypeDropdown().vm.$emit('select', USER_TYPE);
-      expect(findGroupSelect().exists()).toBe(false);
-    });
-
-    it('does not render the user select when the "group" type approver is selected', async () => {
-      expect(findUserSelect().exists()).toBe(false);
+    it('triggers an update when changing the approver type', async () => {
       await findApproverTypeDropdown().vm.$emit('select', GROUP_TYPE);
-      expect(findUserSelect().exists()).toBe(false);
-    });
-
-    it('triggers an update when changing available group approvers', async () => {
-      const newGroup = { id: 1, type: GROUP_TYPE };
-
-      await findApproverTypeDropdown().vm.$emit('select', GROUP_TYPE);
-      await findGroupSelect().vm.$emit('updateSelectedApprovers', [newGroup]);
 
       expect(wrapper.emitted()).toEqual({
         updateApproverType: [[{ newApproverType: GROUP_TYPE, oldApproverType: '' }]],
-        updateApprovers: [[[{ id: newGroup.id, type: GROUP_TYPE }]]],
       });
+    });
+  });
+
+  describe('selected approver types', () => {
+    it('renders the user select when the "user" type approver is selected', async () => {
+      factory({ propsData: { approverType: USER_TYPE } });
+      await nextTick();
+      expect(findUserSelect().exists()).toBe(true);
+    });
+
+    it('renders the group select when the "group" type approver is selected', async () => {
+      factory({ propsData: { approverType: GROUP_TYPE } });
+      await nextTick();
+      expect(findGroupSelect().exists()).toBe(true);
     });
 
     it('triggers an update when changing available user approvers', async () => {
+      factory({ propsData: { approverType: USER_TYPE } });
+      await nextTick();
       const newUser = { id: 1, type: USER_TYPE };
 
-      await findApproverTypeDropdown().vm.$emit('select', USER_TYPE);
       await findUserSelect().vm.$emit('updateSelectedApprovers', [newUser]);
 
       expect(wrapper.emitted()).toEqual({
-        updateApproverType: [[{ newApproverType: 'user', oldApproverType: '' }]],
-        updateApprovers: [[[{ id: newUser.id, type: USER_TYPE }]]],
+        updateApprovers: [[{ [USER_TYPE]: [{ id: newUser.id, type: USER_TYPE }] }]],
+      });
+    });
+
+    it('triggers an update when changing available group approvers', async () => {
+      factory({ propsData: { approverType: GROUP_TYPE } });
+      await nextTick();
+      const newGroup = { id: 1, type: GROUP_TYPE };
+
+      await findGroupSelect().vm.$emit('updateSelectedApprovers', [newGroup]);
+
+      expect(wrapper.emitted()).toEqual({
+        updateApprovers: [[{ [GROUP_TYPE]: [{ id: newGroup.id, type: GROUP_TYPE }] }]],
       });
     });
   });

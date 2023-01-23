@@ -1,10 +1,8 @@
 import { omitBy, isEmpty } from 'lodash';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { n__, s__ } from '~/locale';
-import { TYPE_GROUP, TYPE_USER } from '~/graphql_shared/constants';
-
-export const GROUP_TYPE = 'group';
-export const USER_TYPE = 'user';
+import { TYPE_USER } from '~/graphql_shared/constants';
+import { GROUP_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
 
 export const APPROVER_TYPE_DICT = {
   [GROUP_TYPE]: ['group_approvers', 'group_approvers_ids'],
@@ -18,7 +16,6 @@ export const APPROVER_TYPE_LIST_ITEMS = [
   { text: s__('SecurityOrchestration|Groups'), value: GROUP_TYPE },
 ];
 
-// TODO delete this function as part of the clean up for the `:scan_result_role_action` feature
 /*
   Return the ids for all approvers of the group type.
 */
@@ -28,7 +25,6 @@ export function groupIds(approvers) {
     .map((approver) => approver.id);
 }
 
-// TODO delete this file as part of the clean up for the `:scan_result_role_action` feature
 /*
   Return the ids for all approvers of the user type.
 */
@@ -60,44 +56,7 @@ export function groupApprovers(existingApprovers) {
   });
 }
 
-/**
- * Separate existing approvers by type
- * @param {Array} existingApprovers all approvers
- * @returns {Object} approvers separated by type
- */
-export function groupApproversV2(existingApprovers) {
-  const USER_TYPE_UNIQ_KEY = 'username';
-  // TODO remove groupUniqKeys with the removal of the `:scan_result_role_action` feature flag (https://gitlab.com/gitlab-org/gitlab/-/issues/377866)
-  const GROUP_TYPE_UNIQ_KEY = 'full_name';
-  const GROUP_TYPE_UNIQ_KEY_V2 = 'fullName';
-
-  return existingApprovers.reduce(
-    (acc, approver) => {
-      const approverKeys = Object.keys(approver);
-
-      if (
-        approverKeys.includes(GROUP_TYPE_UNIQ_KEY) ||
-        approverKeys.includes(GROUP_TYPE_UNIQ_KEY_V2)
-      ) {
-        acc.groups.push({
-          ...approver,
-          type: GROUP_TYPE,
-          value: convertToGraphQLId(TYPE_GROUP, approver.id),
-        });
-      } else if (approverKeys.includes(USER_TYPE_UNIQ_KEY)) {
-        acc.users.push({
-          ...approver,
-          type: USER_TYPE,
-          value: convertToGraphQLId(TYPE_USER, approver.id),
-        });
-      }
-
-      return acc;
-    },
-    { users: [], groups: [] },
-  );
-}
-
+// TODO delete this function as part of the clean up for the `:scan_result_role_action` feature
 /*
   Convert approvers into yaml fields (user_approvers, users_approvers_ids) in relation to action.
 */
@@ -112,6 +71,26 @@ export function decomposeApprovers(action, approvers) {
   );
   return { ...newAction, ...approversInfo };
 }
+
+export const removeAvailableApproverType = (array, type) =>
+  array.filter(({ value }) => value !== type);
+
+/*
+  Convert approvers into yaml fields (user_approvers, users_approvers_ids) in relation to action.
+*/
+export const createActionFromApprovers = ({ type, approvals_required }, approvers) => {
+  const newAction = { type, approvals_required };
+
+  if (approvers[USER_TYPE]) {
+    newAction.user_approvers_ids = userIds(approvers[USER_TYPE]);
+  }
+
+  if (approvers[GROUP_TYPE]) {
+    newAction.group_approvers_ids = groupIds(approvers[GROUP_TYPE]);
+  }
+
+  return newAction;
+};
 
 /*
   Check if users are present in approvers

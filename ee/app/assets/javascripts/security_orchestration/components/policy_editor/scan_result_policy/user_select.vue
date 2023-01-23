@@ -5,8 +5,7 @@ import searchProjectMembers from '~/graphql_shared/queries/project_user_members_
 import searchGroupMembers from '~/graphql_shared/queries/group_users_search.query.graphql';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import { USER_TYPE } from './lib/actions';
+import { NAMESPACE_TYPES, USER_TYPE } from 'ee/security_orchestration/constants';
 
 const createUserObject = (user) => ({
   ...user,

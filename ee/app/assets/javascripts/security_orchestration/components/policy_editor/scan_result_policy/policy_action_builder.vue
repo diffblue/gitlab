@@ -5,7 +5,8 @@ import { s__ } from '~/locale';
 import { AVATAR_SHAPE_OPTION_CIRCLE, AVATAR_SHAPE_OPTION_RECT } from '~/vue_shared/constants';
 import ApproversSelect from 'ee/approvals/components/approvers_select.vue';
 import ApproversList from 'ee/approvals/components/approvers_list.vue';
-import { groupApprovers, decomposeApprovers, groupIds, userIds, USER_TYPE } from './lib/actions';
+import { USER_TYPE } from 'ee/security_orchestration/constants';
+import { groupApprovers, decomposeApprovers, groupIds, userIds } from './lib/actions';
 
 export default {
   components: {
