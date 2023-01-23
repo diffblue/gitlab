@@ -7,7 +7,7 @@ import searchGroupsGroups from 'ee/security_orchestration/graphql/queries/get_us
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import GroupSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/group_select.vue';
-import { GROUP_TYPE } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/actions';
+import { GROUP_TYPE } from 'ee/security_orchestration/constants';
 
 Vue.use(VueApollo);
 

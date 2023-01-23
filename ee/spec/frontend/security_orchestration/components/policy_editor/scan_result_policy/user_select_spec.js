@@ -8,8 +8,7 @@ import searchGroupMembers from '~/graphql_shared/queries/group_users_search.quer
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import UserSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/user_select.vue';
-import { USER_TYPE } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/actions';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import { NAMESPACE_TYPES, USER_TYPE } from 'ee/security_orchestration/constants';
 
 Vue.use(VueApollo);
 

@@ -1,12 +1,7 @@
-import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { TYPE_GROUP, TYPE_USER } from '~/graphql_shared/constants';
 import {
   groupIds,
-  GROUP_TYPE,
   userIds,
-  USER_TYPE,
   groupApprovers,
-  groupApproversV2,
   decomposeApprovers,
   approversOutOfSync,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/actions';
@@ -78,81 +73,6 @@ describe('groupApprovers', () => {
     expect(groupApprovers([unknownApprover])).toStrictEqual([
       { id: unknownApprover.id, name: null },
     ]);
-  });
-});
-
-describe('groupApproversV2', () => {
-  describe('with mixed approvers', () => {
-    it('returns a copy of the input values with their proper type attribute', () => {
-      expect(groupApproversV2(allApprovers)).toStrictEqual({
-        groups: [
-          {
-            ...groupApprover,
-            type: GROUP_TYPE,
-            value: convertToGraphQLId(TYPE_GROUP, groupApprover.id),
-          },
-        ],
-        users: [
-          {
-            ...userApprover,
-            type: USER_TYPE,
-            value: convertToGraphQLId(TYPE_USER, userApprover.id),
-          },
-        ],
-      });
-    });
-
-    it('sets types depending on whether the approver is a group or a user', () => {
-      const approvers = groupApproversV2(allApprovers);
-      expect(approvers.users.find((approver) => approver.id === userApprover.id)).toEqual(
-        expect.objectContaining({ type: USER_TYPE }),
-      );
-      expect(approvers.groups.find((approver) => approver.id === groupApprover.id)).toEqual(
-        expect.objectContaining({ type: GROUP_TYPE }),
-      );
-    });
-  });
-
-  it('sets group as a type for group related approvers with snake_case properties', () => {
-    expect(groupApproversV2([groupApprover])).toStrictEqual({
-      groups: [
-        {
-          ...groupApprover,
-          type: GROUP_TYPE,
-          value: convertToGraphQLId(TYPE_GROUP, groupApprover.id),
-        },
-      ],
-      users: [],
-    });
-  });
-
-  it('sets group as a type for group related approvers with camelCase properties', () => {
-    const camelCaseGroupApprover = {
-      ...groupApprover,
-      fullPath: groupApprover.fullPath,
-      fullName: groupApprover.fullName,
-      full_path: undefined,
-      full_name: undefined,
-    };
-    expect(groupApproversV2([camelCaseGroupApprover])).toStrictEqual({
-      groups: [
-        {
-          ...camelCaseGroupApprover,
-          type: GROUP_TYPE,
-          value: convertToGraphQLId(TYPE_GROUP, groupApprover.id),
-        },
-      ],
-      users: [],
-    });
-  });
-
-  it('sets user as a type for user related approvers', () => {
-    expect(groupApproversV2([userApprover])).toStrictEqual({
-      groups: [],
-      users: [
-        { ...userApprover, type: USER_TYPE, value: convertToGraphQLId(TYPE_USER, userApprover.id) },
-      ],
-    });
   });
 });
 

@@ -10,3 +10,7 @@ export const NAMESPACE_TYPES = {
   PROJECT: 'project',
   GROUP: 'group',
 };
+
+export const GROUP_TYPE = 'group';
+
+export const USER_TYPE = 'user';

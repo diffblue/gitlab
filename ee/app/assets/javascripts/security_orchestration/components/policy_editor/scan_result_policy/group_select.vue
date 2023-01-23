@@ -4,7 +4,7 @@ import { s__ } from '~/locale';
 import searchUsersGroups from 'ee/security_orchestration/graphql/queries/get_users_groups.query.graphql';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
-import { GROUP_TYPE } from './lib/actions';
+import { GROUP_TYPE } from 'ee/security_orchestration/constants';
 
 const createGroupObject = (group) => ({
   ...group,

@@ -1,5 +1,6 @@
 <script>
 import { GlButton, GlForm, GlFormInput, GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
+import { GROUP_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
 import UserSelect from './user_select.vue';
 import GroupSelect from './group_select.vue';
 import {
@@ -7,10 +8,7 @@ import {
   APPROVER_TYPE_LIST_ITEMS,
   DEFAULT_APPROVER_DROPDOWN_TEXT,
   getDefaultHumanizedTemplate,
-  groupApproversV2,
-  GROUP_TYPE,
   MULTIPLE_APPROVER_TYPES_HUMANIZED_TEMPLATE,
-  USER_TYPE,
 } from './lib/actions';
 
 export default {
@@ -29,7 +27,7 @@ export default {
       type: Number,
       required: true,
     },
-    approverTypes: {
+    availableTypes: {
       type: Array,
       required: true,
     },
@@ -38,27 +36,33 @@ export default {
       required: true,
     },
     existingApprovers: {
-      type: Array,
+      type: Object,
       required: true,
     },
     numOfApproverTypes: {
       type: Number,
       required: true,
     },
-  },
-  data() {
-    return {
-      approverType: '',
-    };
+    approverType: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   computed: {
-    approvers() {
-      return groupApproversV2(this.existingApprovers);
-    },
     approverTypeToggleText() {
       return this.approverType
         ? APPROVER_TYPE_LIST_ITEMS.find((v) => v.value === this.approverType).text
         : DEFAULT_APPROVER_DROPDOWN_TEXT;
+    },
+    groupTypeApprovers() {
+      return this.existingApprovers[GROUP_TYPE];
+    },
+    userTypeApprovers() {
+      return this.existingApprovers[USER_TYPE];
+    },
+    hasAvailableTypes() {
+      return Boolean(this.availableTypes.length);
     },
     humanizedTemplate() {
       return getDefaultHumanizedTemplate(this.approvalsRequired);
@@ -86,19 +90,20 @@ export default {
       this.$emit('updateApprovalsRequired', parseInt(value, 10));
     },
     handleApproversUpdate({ updatedApprovers, type }) {
-      let allApprovers;
+      const updatedExistingApprovers = { ...this.existingApprovers };
       if (type === GROUP_TYPE) {
-        allApprovers = [...updatedApprovers, ...this.approvers.users];
-      } else if (type === USER_TYPE) {
-        allApprovers = [...updatedApprovers, ...this.approvers.groups];
+        updatedExistingApprovers[GROUP_TYPE] = updatedApprovers;
+      } else {
+        updatedExistingApprovers[USER_TYPE] = updatedApprovers;
       }
 
-      this.$emit('updateApprovers', allApprovers);
+      this.$emit('updateApprovers', updatedExistingApprovers);
     },
-    handleSelectedApproverType(type) {
-      const oldApproverType = this.approverType;
-      this.approverType = type;
-      this.$emit('updateApproverType', { newApproverType: type, oldApproverType });
+    handleSelectedApproverType(newType) {
+      this.$emit('updateApproverType', {
+        newApproverType: newType,
+        oldApproverType: this.approverType,
+      });
     },
     handleRemoveApprover() {
       this.$emit('removeApproverType', this.approverType);
@@ -140,14 +145,15 @@ export default {
 
       <gl-collapsible-listbox
         class="gl-mx-3"
-        :items="approverTypes"
+        :items="availableTypes"
         :toggle-text="approverTypeToggleText"
+        :disabled="!hasAvailableTypes"
         @select="handleSelectedApproverType"
       />
 
       <template v-if="approverType === $options.USER_TYPE">
         <user-select
-          :existing-approvers="approvers.users"
+          :existing-approvers="userTypeApprovers"
           @updateSelectedApprovers="
             handleApproversUpdate({
               updatedApprovers: $event,
@@ -158,7 +164,7 @@ export default {
       </template>
       <template v-else-if="approverType === $options.GROUP_TYPE">
         <group-select
-          :existing-approvers="approvers.groups"
+          :existing-approvers="groupTypeApprovers"
           @updateSelectedApprovers="
             handleApproversUpdate({
               updatedApprovers: $event,
