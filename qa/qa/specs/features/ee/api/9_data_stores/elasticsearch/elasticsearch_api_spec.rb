@@ -8,7 +8,7 @@ module QA
       'When using elasticsearch API to search for a known blob',
       :orchestrated,
       :elasticsearch,
-      :skip_live_env
+      except: :production
     ) do
       include_context 'advanced search active'
 
