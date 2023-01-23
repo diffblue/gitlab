@@ -172,6 +172,10 @@ module Types
       object.false_positive?
     end
 
+    def remediations
+      object.remediations&.compact || []
+    end
+
     def description_html_resolver
       ::MarkupHelper.markdown(object.description, context.to_h.dup)
     end
