@@ -35410,13 +35410,13 @@ msgstr ""
 msgid "ReportAbuse|Something else."
 msgstr ""
 
-msgid "ReportAbuse|They're being offsensive or abusive."
+msgid "ReportAbuse|They're being offensive or abusive."
 msgstr ""
 
 msgid "ReportAbuse|They're crypto mining."
 msgstr ""
 
-msgid "ReportAbuse|They're phising."
+msgid "ReportAbuse|They're phishing."
 msgstr ""
 
 msgid "ReportAbuse|They're posting malware."
