@@ -10,6 +10,10 @@ module EE
         argument :status_widget, ::Types::WorkItems::Widgets::StatusFilterInputType,
                  required: false,
                  description: 'Input for status widget filter. Ignored if `work_items_mvc_2` is disabled.'
+        argument :requirement_legacy_widget, ::Types::WorkItems::Widgets::RequirementLegacyFilterInputType,
+                 required: false,
+                 deprecated: { reason: 'Use work item IID filter instead', milestone: '15.9' },
+                 description: 'Input for legacy requirement widget filter.'
       end
 
       override :resolve_with_lookahead
