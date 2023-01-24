@@ -12,12 +12,6 @@
   .settings-content
     = gitlab_ui_form_for @group, url: group_path, html: { class: 'fieldset-form' } do |f|
       = form_errors(@group)
-
-      %fieldset
-        .form-group
-          = f.label :file_template_project_id, class: 'label-light' do
-            = _('Select a template repository')
-          = project_select_tag('group[file_template_project_id]', class: 'project-item-select hidden-filter-value', toggle_class: 'js-project-search js-project-filter js-filter-submit', dropdown_class: 'dropdown-menu-selectable dropdown-menu-project js-filter-submit',
-            placeholder: _('Search projects'), idAttribute: 'id', data: { order_by: 'last_activity_at', idattribute: 'id', simple_filter: true, allow_clear: true }, value: @group.checked_file_template_project_id)
-          = s_('Create common files more quickly, and standardize their format.')
+      .js-vue-project-select{ data: { label: _('Select a template repository'), input_name: 'group[file_template_project_id]', input_id: 'group[file_template_project_id]', group_id: @group.id, clearable: true.to_s, selected: @group.checked_file_template_project_id } }
+      %p.gl-mt-n5= s_('Create common files more quickly, and standardize their format.')
       = f.submit _('Save changes'), pajamas_button: true, data: { qa_selector: 'save_changes_button' }
