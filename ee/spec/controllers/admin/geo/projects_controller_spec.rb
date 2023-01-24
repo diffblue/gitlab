@@ -239,7 +239,7 @@ RSpec.describe Admin::Geo::ProjectsController, :geo do
       it 'flags registry for re-download' do
         expect(subject).to redirect_to(admin_geo_projects_path)
         expect(flash[:toast]).to include('is scheduled for forced re-download')
-        expect(synced_registry.reload.force_to_redownload_repository).to be_truthy
+        expect(synced_registry.reload.should_be_redownloaded?('repository')).to be_truthy
       end
     end
   end

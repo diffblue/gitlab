@@ -2,17 +2,16 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::RepositoryVerificationPrimaryService do
+RSpec.describe Geo::RepositoryVerificationPrimaryService, feature_category: :geo_replication do
   include EE::GeoHelpers
 
   let(:project) { create(:project) }
-  let(:project_wiki_repository) { create(:project_wiki_repository, project: project) }
   let(:repository) { double(checksum: 'f123') }
   let(:wiki) { double(checksum: 'e321') }
 
   subject(:service) { described_class.new(project) }
 
-  describe '#perform', :aggregate_failures do
+  describe '#perform' do
     it 'calculates the checksum for unverified projects' do
       stub_project_repository(project, repository)
       stub_wiki_repository(project.wiki, wiki)
@@ -31,43 +30,22 @@ RSpec.describe Geo::RepositoryVerificationPrimaryService do
         wiki_retry_at: nil,
         wiki_retry_count: nil
       )
-
-      expect(project.wiki_repository_state).to have_attributes(
-        project_wiki_repository: be_present,
-        verification_state: Projects::WikiRepository.verification_state_value(:verification_succeeded),
-        verification_checksum: 'e321',
-        verification_started_at: be_present,
-        verification_failure: nil,
-        verification_retry_at: nil,
-        verification_retry_count: 0,
-        verified_at: be_present
-      )
     end
 
     it 'calculates the checksum for outdated repositories/wikis' do
       stub_project_repository(project, repository)
       stub_wiki_repository(project.wiki, wiki)
 
-      project_repository_state =
-        create(:project_repository_state,
+      repository_state =
+        create(:repository_state,
           :repository_outdated,
           :wiki_outdated,
           project: project
         )
 
-      wiki_repository_state =
-        create(:geo_project_wiki_repository_state,
-          project: project,
-          project_wiki_repository: project_wiki_repository,
-          verification_state: Projects::WikiRepository.verification_state_value(:verification_pending),
-          verification_checksum: nil,
-          verification_started_at: 1.day.ago,
-          verified_at: 1.day.ago,
-          verification_failure: nil)
-
       subject.execute
 
-      expect(project_repository_state.reload).to have_attributes(
+      expect(repository_state.reload).to have_attributes(
         repository_verification_checksum: 'f123',
         last_repository_verification_ran_at: be_present,
         last_repository_verification_failure: nil,
@@ -79,51 +57,27 @@ RSpec.describe Geo::RepositoryVerificationPrimaryService do
         wiki_retry_at: nil,
         wiki_retry_count: nil
       )
-
-      expect(wiki_repository_state.reload).to have_attributes(
-        project_wiki_repository: be_present,
-        verification_state: Projects::WikiRepository.verification_state_value(:verification_succeeded),
-        verification_checksum: 'e321',
-        verification_started_at: be_present,
-        verification_failure: nil,
-        verification_retry_at: nil,
-        verification_retry_count: 0,
-        verified_at: be_present
-      )
     end
 
     it 'recalculates the checksum for projects up to date' do
       stub_project_repository(project, repository)
       stub_wiki_repository(project.wiki, wiki)
 
-      create(:project_repository_state,
+      create(:repository_state,
         project: project,
         repository_verification_checksum: 'f079a831cab27bcda7d81cd9b48296d0c3dd92ee',
         last_repository_verification_ran_at: 1.day.ago,
         wiki_verification_checksum: 'e079a831cab27bcda7d81cd9b48296d0c3dd92ef',
         last_wiki_verification_ran_at: 1.day.ago)
 
-      create(:geo_project_wiki_repository_state,
-        project: project,
-        project_wiki_repository: project_wiki_repository,
-        verification_state: Projects::WikiRepository.verification_state_value(:verification_succeeded),
-        verification_checksum: 'f079a831cab27bcda7d81cd9b48296d0c3dd92ee',
-        verification_started_at: 1.day.ago,
-        verified_at: 1.day.ago)
-
-      expect(repository).to receive(:checksum).once
-      expect(wiki).to receive(:checksum).once
+      expect(repository).to receive(:checksum)
+      expect(wiki).to receive(:checksum)
 
       subject.execute
 
       expect(project.repository_state).to have_attributes(
         last_repository_verification_ran_at: be_within(100.seconds).of(Time.current),
         last_wiki_verification_ran_at: be_within(100.seconds).of(Time.current)
-      )
-
-      expect(project.wiki_repository_state.reload).to have_attributes(
-        verification_started_at: be_within(100.seconds).of(Time.current),
-        verified_at: be_within(100.seconds).of(Time.current)
       )
     end
 
@@ -147,17 +101,6 @@ RSpec.describe Geo::RepositoryVerificationPrimaryService do
         wiki_retry_at: nil,
         wiki_retry_count: nil
       )
-
-      expect(project.wiki_repository_state).to have_attributes(
-        project_wiki_repository: be_present,
-        verification_state: Projects::WikiRepository.verification_state_value(:verification_succeeded),
-        verification_checksum: 'e321',
-        verification_started_at: be_present,
-        verification_failure: nil,
-        verification_retry_at: nil,
-        verification_retry_count: 0,
-        verified_at: be_present
-      )
     end
 
     it 'does not mark the calculating as failed when there is no repo' do
@@ -175,17 +118,6 @@ RSpec.describe Geo::RepositoryVerificationPrimaryService do
         wiki_retry_at: nil,
         wiki_retry_count: nil
       )
-
-      expect(project.wiki_repository_state).to have_attributes(
-        project_wiki_repository: be_present,
-        verification_state: Projects::WikiRepository.verification_state_value(:verification_succeeded),
-        verification_checksum: '0000000000000000000000000000000000000000',
-        verification_started_at: be_present,
-        verification_failure: nil,
-        verification_retry_at: nil,
-        verification_retry_count: 0,
-        verified_at: be_present
-      )
     end
 
     it 'does not mark the calculating as failed for non-valid repo' do
@@ -195,7 +127,7 @@ RSpec.describe Geo::RepositoryVerificationPrimaryService do
       expect(repository).to receive(:checksum).and_raise(Gitlab::Git::Repository::InvalidRepository)
       expect(wiki).to receive(:checksum).and_raise(Gitlab::Git::Repository::InvalidRepository)
 
-      subject.execute
+      service.execute
 
       expect(project.repository_state).to have_attributes(
         repository_verification_checksum: '0000000000000000000000000000000000000000',
@@ -208,17 +140,6 @@ RSpec.describe Geo::RepositoryVerificationPrimaryService do
         repository_retry_count: nil,
         wiki_retry_at: nil,
         wiki_retry_count: nil
-      )
-
-      expect(project.wiki_repository_state).to have_attributes(
-        project_wiki_repository: be_present,
-        verification_state: Projects::WikiRepository.verification_state_value(:verification_succeeded),
-        verification_checksum: '0000000000000000000000000000000000000000',
-        verification_started_at: be_present,
-        verification_failure: nil,
-        verification_retry_at: nil,
-        verification_retry_count: 0,
-        verified_at: be_present
       )
     end
 
@@ -264,35 +185,18 @@ RSpec.describe Geo::RepositoryVerificationPrimaryService do
           wiki_retry_at: be_present,
           wiki_retry_count: 1
         )
-
-        expect(project.wiki_repository_state).to have_attributes(
-          project_wiki_repository: be_present,
-          verification_state: Projects::WikiRepository.verification_state_value(:verification_failed),
-          verification_checksum: nil,
-          verification_started_at: be_present,
-          verification_failure: 'Something went wrong with wiki',
-          verification_retry_at: be_present,
-          verification_retry_count: 1,
-          verified_at: be_present
-        )
       end
 
       it 'ensures the next retry time is capped properly' do
-        project_repository_state =
-          create(:project_repository_state,
+        repository_state =
+          create(:repository_state,
             project: project,
             repository_retry_count: 30,
             wiki_retry_count: 30)
 
-        wiki_repository_state =
-          create(:geo_project_wiki_repository_state,
-            project: project,
-            project_wiki_repository: project_wiki_repository,
-            verification_retry_count: 30)
-
         subject.execute
 
-        expect(project_repository_state.reload).to have_attributes(
+        expect(repository_state.reload).to have_attributes(
           repository_verification_checksum: nil,
           last_repository_verification_ran_at: be_present,
           last_repository_verification_failure: 'Something went wrong with repository',
@@ -303,17 +207,6 @@ RSpec.describe Geo::RepositoryVerificationPrimaryService do
           repository_retry_count: 31,
           wiki_retry_at: be_within(100.seconds).of(1.hour.from_now),
           wiki_retry_count: 31
-        )
-
-        expect(wiki_repository_state.reload).to have_attributes(
-          project_wiki_repository: be_present,
-          verification_state: Projects::WikiRepository.verification_state_value(:verification_failed),
-          verification_checksum: nil,
-          verification_started_at: be_present,
-          verification_failure: 'Something went wrong with wiki',
-          verification_retry_at: be_within(100.seconds).of(1.hour.from_now),
-          verification_retry_count: 31,
-          verified_at: be_present
         )
       end
     end
