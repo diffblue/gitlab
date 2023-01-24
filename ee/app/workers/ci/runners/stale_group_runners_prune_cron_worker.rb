@@ -21,7 +21,7 @@ module Ci
 
         result = ::Ci::Runners::StaleGroupRunnersPruneService.new.execute(namespace_ids)
         log_extra_metadata_on_done(:status, result.status)
-        result.payload.each { |key, value| log_extra_metadata_on_done(key, value) }
+        log_hash_metadata_on_done(result.payload)
       end
     end
   end
