@@ -4,7 +4,6 @@ module Geo
   class EventLog < ApplicationRecord
     include Geo::Model
     include ::EachBatch
-    include IgnorableColumns
 
     EVENT_CLASSES = %w[Geo::CacheInvalidationEvent
                        Geo::RepositoryCreatedEvent
@@ -57,8 +56,6 @@ module Geo
       class_name: 'Geo::Event',
       foreign_key: :geo_event_id,
       inverse_of: :geo_event_log
-
-    ignore_column :container_repository_updated_event_id, remove_with: '15.9', remove_after: '2023-01-22'
 
     def self.latest_event
       order(id: :desc).first
