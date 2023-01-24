@@ -73,6 +73,10 @@ module Resolvers
              required: false,
              description: 'Negated epic arguments.'
 
+    argument :or, Types::Epics::UnionedEpicFilterInputType,
+             description: 'List of arguments with inclusive OR.',
+             required: false
+
     argument :top_level_hierarchy_only, GraphQL::Types::Boolean,
              required: false,
              description: 'Filter epics with a top-level hierarchy.'
@@ -134,6 +138,8 @@ module Resolvers
 
     def prepare_finder_params(args)
       params = transform_args(args)
+      params[:not] = params[:not].to_h if params[:not]
+      params[:or] = params[:or].to_h if params[:or]
 
       super(params)
     end
