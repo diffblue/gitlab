@@ -18,6 +18,7 @@ RSpec.describe Projects::Security::PoliciesController, type: :request, feature_c
 
   before do
     project.add_developer(user)
+    policy_management_project.add_developer(user)
     sign_in(user)
     stub_licensed_features(security_orchestration_policies: feature_enabled)
     allow_next_instance_of(Repository) do |repository|
@@ -111,10 +112,10 @@ RSpec.describe Projects::Security::PoliciesController, type: :request, feature_c
           let_it_be(:policy_configuration) { nil }
           let_it_be(:edit) { edit_project_security_policy_url(project, id: policy[:name], type: type) }
 
-          it 'redirects to #index' do
+          it 'returns 404' do
             get edit
 
-            expect(response).to redirect_to(project_security_policies_path(project))
+            expect(response).to have_gitlab_http_status(:not_found)
           end
         end
 

@@ -8,7 +8,7 @@ module Mutations
 
       include FindsProjectOrGroupForSecurityPolicies
 
-      authorize :read_security_orchestration_policies
+      authorize :modify_security_policy
 
       argument :full_path, GraphQL::Types::String,
                required: false,

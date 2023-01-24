@@ -14,6 +14,7 @@ export default (el, namespaceType) => {
   const {
     assignedPolicyProject,
     disableSecurityPolicyProject,
+    disableScanPolicyUpdate,
     emptyFilterSvgPath,
     emptyListSvgPath,
     documentationPath,
@@ -28,6 +29,7 @@ export default (el, namespaceType) => {
     provide: {
       assignedPolicyProject: JSON.parse(assignedPolicyProject),
       disableSecurityPolicyProject: parseBoolean(disableSecurityPolicyProject),
+      disableScanPolicyUpdate: parseBoolean(disableScanPolicyUpdate),
       documentationPath,
       newPolicyPath,
       emptyFilterSvgPath,

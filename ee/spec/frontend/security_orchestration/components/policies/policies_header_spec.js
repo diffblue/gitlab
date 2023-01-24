@@ -35,6 +35,7 @@ describe('Policies Header Component', () => {
         documentationPath,
         newPolicyPath,
         assignedPolicyProject: null,
+        disableScanPolicyUpdate: false,
         disableSecurityPolicyProject: false,
         ...provide,
       },
@@ -50,7 +51,8 @@ describe('Policies Header Component', () => {
       createWrapper();
     });
 
-    it('displays New policy button with correct text and link', () => {
+    it('displays "New policy" button with correct text and link', () => {
+      expect(findNewPolicyButton().exists()).toBe(true);
       expect(findNewPolicyButton().text()).toBe(NEW_POLICY_BUTTON_TEXT);
       expect(findNewPolicyButton().attributes('href')).toBe(newPolicyPath);
     });
@@ -108,6 +110,18 @@ describe('Policies Header Component', () => {
   });
 
   describe('project user', () => {
+    it('does not display "New policy" button', () => {
+      createWrapper({
+        provide: {
+          assignedPolicyProject: { id: '1' },
+          disableSecurityPolicyProject: true,
+          disableScanPolicyUpdate: true,
+        },
+      });
+
+      expect(findNewPolicyButton().exists()).toBe(false);
+    });
+
     describe('with a security policy project', () => {
       beforeEach(() => {
         createWrapper({

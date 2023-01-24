@@ -5,6 +5,10 @@ module EE::SecurityOrchestrationHelper
     can?(current_user, :update_security_orchestration_policy_project, container)
   end
 
+  def can_modify_security_policy?(container)
+    can?(current_user, :modify_security_policy, container)
+  end
+
   def assigned_policy_project(container)
     return unless container&.security_orchestration_policy_configuration
 
@@ -22,7 +26,7 @@ module EE::SecurityOrchestrationHelper
   def orchestration_policy_data(container, policy_type = nil, policy = nil, approvers = nil)
     return unless container
 
-    disable_scan_policy_update = !can_update_security_orchestration_policy_project?(container)
+    disable_scan_policy_update = !can_modify_security_policy?(container)
 
     policy_data = {
       assigned_policy_project: assigned_policy_project(container).to_json,

@@ -5,7 +5,8 @@ module Projects
     class PoliciesController < Projects::ApplicationController
       include SecurityAndCompliancePermissions
 
-      before_action :authorize_read_security_orchestration_policies!
+      before_action :authorize_read_security_orchestration_policies!, except: :edit
+      before_action :authorize_modify_security_policy!, only: :edit
       before_action :validate_policy_configuration, only: :edit
 
       before_action do
