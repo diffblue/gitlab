@@ -20891,6 +20891,9 @@ msgstr ""
 msgid "IdentityVerification|Before you sign in, we need to verify your identity. Enter the following code on the sign-in page."
 msgstr ""
 
+msgid "IdentityVerification|Complete verification to sign in."
+msgstr ""
+
 msgid "IdentityVerification|Confirm your email address"
 msgstr ""
 
