@@ -25,7 +25,7 @@
         .col-sm-2.col-form-label
           = f.label :cn, "LDAP Group cn"
         .col-sm-10{ data: { qa_selector: 'ldap_group_field' } }
-          = f.hidden_field :cn, placeholder: 'Ex. QA group', class: 'xxlarge ajax-ldap-groups-select input-mn-300'
+          #js-ldap-groups-select
           .form-text.text-muted
             Synchronize #{group.name}'s members with this LDAP group.
             %br
