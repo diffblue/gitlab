@@ -21074,9 +21074,6 @@ msgstr ""
 msgid "If enabled, only protected branches will be mirrored."
 msgstr ""
 
-msgid "If no options are selected, only administrators can register runners."
-msgstr ""
-
 msgid "If the number of active users exceeds the user limit, you will be charged for the number of %{users_over_license_link} at your next license reconciliation."
 msgstr ""
 
@@ -36475,6 +36472,9 @@ msgid "Runners|IP Address"
 msgstr ""
 
 msgid "Runners|Idle"
+msgstr ""
+
+msgid "Runners|If both settings are disabled, new runners cannot be registered."
 msgstr ""
 
 msgid "Runners|Install a runner"
