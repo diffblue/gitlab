@@ -1,3 +1,4 @@
+import initUsageQuotas from '~/usage_quotas';
 import SeatUsageApp from 'ee/usage_quotas/seats';
 import initPipelineUsageApp from 'ee/usage_quotas/pipelines';
 import initNamespaceStorage from 'ee/usage_quotas/storage/init_namespace_storage';
@@ -14,8 +15,16 @@ const initGlTabs = () => {
   new GlTabsBehavior(tabsEl, { history: HISTORY_TYPE_HASH });
 };
 
-SeatUsageApp();
-initPipelineUsageApp();
-initNamespaceStorage();
-initGlTabs();
-trackAddToCartUsageTab();
+const legacyInitUsageQuotas = () => {
+  SeatUsageApp();
+  initPipelineUsageApp();
+  initNamespaceStorage();
+  initGlTabs();
+  trackAddToCartUsageTab();
+};
+
+if (gon.features?.usageQuotasForAllEditions) {
+  initUsageQuotas();
+} else {
+  legacyInitUsageQuotas();
+}

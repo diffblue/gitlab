@@ -5,14 +5,12 @@
 
 - page_title s_("UsageQuota|Usage")
 
-- if show_product_purchase_success_alert?
-  = render 'product_purchase_success_alert', product_name: params[:purchased_product]
-
 - if Feature.enabled?(:usage_quotas_for_all_editions, @group)
-  = render Pajamas::AlertComponent.new(title: _('Development')) do |c|
-    = c.body do
-      Placeholder for usage quotas Vue app
+  #js-usage-quotas-view{ data: { namespace_name: @group.name } }
 - else
+  - if show_product_purchase_success_alert?
+    = render 'product_purchase_success_alert', product_name: params[:purchased_product]
+
   %h1.page-title.gl-font-size-h-display
     = s_('UsageQuota|Usage Quotas')
 
