@@ -3253,7 +3253,7 @@ RSpec.describe Project, feature_category: :projects do
     context 'when out of CI minutes for project' do
       let(:minutes_used_up) { true }
 
-      it 'returns a list with specific runners' do
+      it 'returns a list with non-instance runners' do
         is_expected.to match_array([group_runner, project_runner])
       end
     end
