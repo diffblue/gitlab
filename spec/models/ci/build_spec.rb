@@ -5779,4 +5779,43 @@ RSpec.describe Ci::Build, feature_category: :continuous_integration do
       expect(build.metadata.partition_id).to eq(ci_testing_partition_id)
     end
   end
+
+  describe 'secrets management id_tokens usage data' do
+    context 'when ID tokens are defined' do
+      let(:ci_build) { FactoryBot.build(:ci_build, user: user, id_tokens: { 'ID_TOKEN_1' => { aud: 'developers' } }) }
+
+      context 'on create' do
+        it 'tracks event with user_id' do
+          expect(::Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event)
+            .with('i_ci_secrets_management_id_tokens_build_created', values: user.id)
+
+          ci_build.save!
+        end
+      end
+
+      context 'on update' do
+        before do
+          ci_build.save!
+        end
+
+        it 'does not track event' do
+          expect(Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event)
+
+          ci_build.success
+        end
+      end
+    end
+
+    context 'when ID tokens are not defined' do
+      let(:ci_build) { FactoryBot.build(:ci_build, user: user) }
+
+      context 'on create' do
+        it 'does not track event' do
+          expect(Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event)
+
+          ci_build.save!
+        end
+      end
+    end
+  end
 end
