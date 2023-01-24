@@ -1,8 +1,7 @@
 <script>
 import { GlCollapse, GlIcon } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { GRAPHQL_TYPENAMES } from 'ee/vulnerabilities/components/generic_report/types/constants';
-import ReportItem from './report_item_graphql.vue';
+import ReportItem, { GRAPHQL_TYPENAMES } from './report_item_graphql.vue';
 
 export default {
   i18n: {

@@ -354,31 +354,66 @@ export const pipelineSecurityReportSummaryEmpty = merge({}, pipelineSecurityRepo
   },
 });
 
-export const vulnerabilityDetailUrl = {
-  type: 'VulnerabilityDetailUrl',
-  href: 'http://google.com',
-  name: 'GitLab',
-};
-
-export const vulnerabilityDetailDiff = {
-  type: 'VulnerabilityDetailDiff',
-  name: 'Code Diff',
-  before: '<div>before</div>',
-  after: '<div>after</div>',
-};
-
-export const vulnerabilityDetailCode = {
-  type: 'VulnerabilityDetailCode',
-  name: 'vulnerable code snippet',
-  value: '<h1>hello world</h1>',
-};
-
-export const vulnerabilityDetailFileLocation = {
-  type: 'VulnerabilityDetailFileLocation',
-  name: 'A vulnerable file',
-  fileName: 'vulnerable.js',
-  lineStart: '3',
-  lineEnd: '5',
+export const vulnerabilityDetails = {
+  url: {
+    type: 'VulnerabilityDetailUrl',
+    href: 'http://google.com',
+    name: 'GitLab',
+  },
+  diff: {
+    type: 'VulnerabilityDetailDiff',
+    name: 'Code Diff',
+    before: '<div>before</div>',
+    after: '<div>after</div>',
+  },
+  code: {
+    type: 'VulnerabilityDetailCode',
+    name: 'vulnerable code snippet',
+    value: '<h1>hello world</h1>',
+  },
+  commit: {
+    type: 'VulnerabilityDetailCommit',
+    name: 'Commit with vulnerability',
+    value: '<h1>some vulnerable code</h1>',
+  },
+  moduleLocation: {
+    type: 'VulnerabilityDetailModuleLocation',
+    name: 'Vulnerable Module',
+    moduleName: 'compiled binary',
+    offset: 100,
+  },
+  fileLocation: {
+    type: 'VulnerabilityDetailFileLocation',
+    name: 'A vulnerable file',
+    fileName: 'vulnerable.js',
+    lineStart: '3',
+    lineEnd: '5',
+  },
+  text: {
+    type: 'VulnerabilityDetailText',
+    name: 'Commit with vulnerability',
+    value: 'text',
+  },
+  markdown: {
+    type: 'VulnerabilityDetailMarkdown',
+    name: 'Markdown value',
+    value: '# heading',
+  },
+  boolean: {
+    type: 'VulnerabilityDetailBoolean',
+    name: 'Boolean value',
+    value: 'true',
+  },
+  value: {
+    type: 'VulnerabilityDetailValue',
+    name: 'Boolean value',
+    value: 'true',
+  },
+  int: {
+    type: 'VulnerabilityDetailInt',
+    name: 'Integer value',
+    value: 'true',
+  },
 };
 
 export const pipelineSecurityReportFinding = {
@@ -447,12 +482,7 @@ export const pipelineSecurityReportFinding = {
     { url: 'http://example.com/asset-1', name: 'assets name - 1' },
     { url: 'http://example.com/asset-2', name: 'assets name - 2' },
   ],
-  details: [
-    vulnerabilityDetailUrl,
-    vulnerabilityDetailDiff,
-    vulnerabilityDetailCode,
-    vulnerabilityDetailFileLocation,
-  ],
+  details: Object.values(vulnerabilityDetails),
 };
 
 export const getPipelineSecurityReportFindingResponse = (withoutFindingData = false) => ({

@@ -82,6 +82,37 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
             lineStart
             lineEnd
           }
+          ... on VulnerabilityDetailModuleLocation {
+            type: __typename
+            name
+            moduleName
+            offset
+          }
+          ... on VulnerabilityDetailCommit {
+            type: __typename
+            name
+            value
+          }
+          ... on VulnerabilityDetailText {
+            type: __typename
+            name
+            value
+          }
+          ... on VulnerabilityDetailMarkdown {
+            type: __typename
+            name
+            value
+          }
+          ... on VulnerabilityDetailBoolean {
+            type: __typename
+            name
+            value
+          }
+          ... on VulnerabilityDetailInt {
+            type: __typename
+            name
+            value
+          }
         }
       }
     }

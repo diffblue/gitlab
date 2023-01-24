@@ -1,26 +1,9 @@
 import { shallowMount } from '@vue/test-utils';
-import ReportItem from 'ee/vulnerabilities/components/generic_report/report_item_graphql.vue';
-import {
-  GRAPHQL_TYPENAME_DIFF,
-  GRAPHQL_TYPENAME_CODE,
-  GRAPHQL_TYPENAME_FILE_LOCATION,
-  GRAPHQL_TYPENAME_URL,
+import ReportItem, {
   GRAPHQL_TYPENAMES,
-} from 'ee/vulnerabilities/components/generic_report/types/constants';
-import {
-  vulnerabilityDetailDiff,
-  vulnerabilityDetailCode,
-  vulnerabilityDetailFileLocation,
-  vulnerabilityDetailUrl,
-} from 'ee_jest/security_dashboard/components/pipeline/mock_data';
+} from 'ee/vulnerabilities/components/generic_report/report_item_graphql.vue';
+import { vulnerabilityDetails } from 'ee_jest/security_dashboard/components/pipeline/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-
-const TEST_DATA = {
-  [GRAPHQL_TYPENAME_URL]: vulnerabilityDetailUrl,
-  [GRAPHQL_TYPENAME_DIFF]: vulnerabilityDetailDiff,
-  [GRAPHQL_TYPENAME_CODE]: vulnerabilityDetailCode,
-  [GRAPHQL_TYPENAME_FILE_LOCATION]: vulnerabilityDetailFileLocation,
-};
 
 describe('ee/vulnerabilities/components/generic_report/report_item_graphql.vue', () => {
   let wrapper;
@@ -44,7 +27,8 @@ describe('ee/vulnerabilities/components/generic_report/report_item_graphql.vue',
   });
 
   describe.each(GRAPHQL_TYPENAMES)('with report type "%s"', (reportType) => {
-    const reportItem = { type: reportType, ...TEST_DATA[reportType] };
+    const testData = Object.values(vulnerabilityDetails).find((item) => item.type === reportType);
+    const reportItem = { type: reportType, ...testData };
 
     beforeEach(() => {
       wrapper = createWrapper({ props: { item: reportItem } });

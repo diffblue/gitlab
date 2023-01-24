@@ -40,20 +40,6 @@ export const REPORT_COMPONENTS = Object.fromEntries(
   ]),
 );
 
-export const GRAPHQL_TYPENAME_URL = 'VulnerabilityDetailUrl';
-export const GRAPHQL_TYPENAME_DIFF = 'VulnerabilityDetailDiff';
-export const GRAPHQL_TYPENAME_CODE = 'VulnerabilityDetailCode';
-export const GRAPHQL_TYPENAME_FILE_LOCATION = 'VulnerabilityDetailFileLocation';
-
-export const GRAPHQL_TYPENAME_TO_COMPONENT_MAP = {
-  [GRAPHQL_TYPENAME_URL]: () => import('./url.vue'),
-  [GRAPHQL_TYPENAME_DIFF]: () => import('./diff.vue'),
-  [GRAPHQL_TYPENAME_CODE]: () => import('./code.vue'),
-  [GRAPHQL_TYPENAME_FILE_LOCATION]: () => import('./file_location.vue'),
-};
-
-export const GRAPHQL_TYPENAMES = Object.keys(GRAPHQL_TYPENAME_TO_COMPONENT_MAP);
-
 /*
  * Diff component
  */
