@@ -146,6 +146,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
 
       expect(parsed).to be_kind_of(::Gitlab::Search::FoundBlob)
       expect(parsed).to have_attributes(
+        matched_lines_count: 0,
         startline: 1,
         highlight_line: nil,
         project: project,
@@ -169,6 +170,31 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
         path: 'path/file.ext',
         basename: 'path/file',
         ref: 'sha',
+        matched_lines_count: 1,
+        startline: 2,
+        highlight_line: 2,
+        project: project,
+        data: "bar\n"
+      )
+    end
+
+    it 'sets the correct matched_lines_count when the searched text found on the multiple lines' do
+      result = {
+        '_source' => blob,
+        'highlight' => {
+          'blob.content' => ["foo\n#{::Elastic::Latest::GitClassProxy::HIGHLIGHT_START_TAG}bar#{::Elastic::Latest::GitClassProxy::HIGHLIGHT_END_TAG}\nbaz\nfoo\n#{::Elastic::Latest::GitClassProxy::HIGHLIGHT_START_TAG}bar#{::Elastic::Latest::GitClassProxy::HIGHLIGHT_END_TAG}\nbaz\n"]
+        }
+      }
+
+      parsed = described_class.parse_search_result(result, project)
+
+      expect(parsed).to be_kind_of(::Gitlab::Search::FoundBlob)
+      expect(parsed).to have_attributes(
+        id: nil,
+        path: 'path/file.ext',
+        basename: 'path/file',
+        ref: 'sha',
+        matched_lines_count: 2,
         startline: 2,
         highlight_line: 2,
         project: project,
