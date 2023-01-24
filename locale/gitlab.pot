@@ -60,7 +60,7 @@ msgstr ""
 msgid " or %{emphasisStart}&epic id%{emphasisEnd}"
 msgstr ""
 
-msgid " or references (e.g. path/to/project!merge_request_id)"
+msgid " or references"
 msgstr ""
 
 msgid " reacted with :%{name}:"
@@ -34830,6 +34830,9 @@ msgid "Reference"
 msgstr ""
 
 msgid "References"
+msgstr ""
+
+msgid "References should be in the form of path/to/project!merge_request_id"
 msgstr ""
 
 msgid "Refine your search criteria (select a %{strong_open}group%{strong_close} and %{strong_open}project%{strong_close} when possible)"

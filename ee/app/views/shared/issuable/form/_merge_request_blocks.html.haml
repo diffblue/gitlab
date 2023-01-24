@@ -10,10 +10,15 @@
 .form-group.row.blocking-merge-requests
   = form.label :blocking_merge_request_references, _('Merge request dependencies'), class: 'col-12'
   .col-12
+    .gl-mb-2
+      = _("List the merge requests that must be merged before this one.")
+      = link_to "Learn more.", Rails.application.routes.url_helpers.help_page_url('user/project/merge_requests/dependencies.html', anchor: 'complex-merge-order-dependencies-are-unsupported')
+  .col-12
     = text_field_tag 'blocking_merge_request_refs', nil,
                      class: 'form-control',
                      id: 'js-blocking-merge-requests-input',
                      data: { hidden_blocking_mrs_count: merge_request.hidden_blocking_merge_requests_count(current_user),
                              visible_blocking_mr_refs: merge_request.visible_blocking_merge_request_refs(current_user) }
-    .form-text.text-muted
-      = _('List the merge requests that must be merged before this one.')
+  .col-12
+    .gl-text-gray-500
+      %p= _("References should be in the form of path/to/project!merge_request_id")
