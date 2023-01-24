@@ -4375,9 +4375,6 @@ msgstr ""
 msgid "An error occurred while fetching pending comments"
 msgstr ""
 
-msgid "An error occurred while fetching projects autocomplete."
-msgstr ""
-
 msgid "An error occurred while fetching reference"
 msgstr ""
 
@@ -27340,6 +27337,9 @@ msgid "Moves issue to %{label} column in the board."
 msgstr ""
 
 msgid "Moves this issue to %{path_to_project}."
+msgstr ""
+
+msgid "Moving issue"
 msgstr ""
 
 msgid "MrDeploymentActions|Deploy"
