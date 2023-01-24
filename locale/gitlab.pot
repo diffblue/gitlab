@@ -17827,10 +17827,10 @@ msgstr ""
 msgid "Forks"
 msgstr ""
 
-msgid "ForksDivergence|%{ahead} %{commit_word} ahead of"
+msgid "ForksDivergence|%{aheadLinkStart}%{ahead} %{commit_word} ahead%{aheadLinkEnd} of"
 msgstr ""
 
-msgid "ForksDivergence|%{behind} %{commit_word} behind"
+msgid "ForksDivergence|%{behindLinkStart}%{behind} %{commit_word} behind%{behindLinkEnd}"
 msgstr ""
 
 msgid "ForksDivergence|%{messages} the upstream repository."
