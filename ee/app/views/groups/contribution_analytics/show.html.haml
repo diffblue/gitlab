@@ -10,6 +10,10 @@
 
 #js-contribution-analytics{
   data: {
+    full_path: @group.full_path,
+    start_date: @start_date.to_date.iso8601,
+    end_date: Date.today.iso8601,
+
     analytics_data: @data_collector.group_member_contributions_table_data.to_json.html_safe,
     total_push_count: @data_collector.total_push_count,
     total_commit_count: @data_collector.total_commit_count,
