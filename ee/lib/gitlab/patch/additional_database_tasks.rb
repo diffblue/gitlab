@@ -9,8 +9,8 @@ module Gitlab
       # Returns the proper path for the structure.sql and schema_cache.yml
       # files for additional databases.
       module ActiveRecordDatabaseTasksDumpFilename
-        def dump_filename(database, format = ApplicationRecord.schema_format)
-          db_dir = Gitlab::Database.all_database_connections[database]&.db_dir
+        def schema_dump_path(db_config, format = ActiveRecord.schema_format)
+          db_dir = Gitlab::Database.all_database_connections[db_config.name.to_s]&.db_dir
           return super if default_db_dir?(db_dir)
 
           Rails.root.join(db_dir, 'structure.sql').to_s

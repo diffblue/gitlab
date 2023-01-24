@@ -8,7 +8,7 @@ RSpec.describe Gitlab::Patch::AdditionalDatabaseTasks, feature_category: :geo_re
       Class.new do
         prepend Gitlab::Patch::AdditionalDatabaseTasks::ActiveRecordDatabaseTasksDumpFilename
 
-        def dump_filename(*)
+        def schema_dump_path(*)
           Rails.root.join('foo.sql').to_s
         end
 
@@ -18,7 +18,7 @@ RSpec.describe Gitlab::Patch::AdditionalDatabaseTasks, feature_category: :geo_re
       end.new
     end
 
-    describe '#dump_filename' do
+    describe '#schema_dump_path' do
       using RSpec::Parameterized::TableSyntax
 
       where(:db_config_name, :structure_path) do
@@ -28,8 +28,10 @@ RSpec.describe Gitlab::Patch::AdditionalDatabaseTasks, feature_category: :geo_re
       end
 
       with_them do
+        let(:db_config) { ActiveRecord::DatabaseConfigurations::HashConfig.new('test', db_config_name, {}) }
+
         it 'returns the correct path for the structure.sql file' do
-          expect(subject.dump_filename(db_config_name)).to eq Rails.root.join(structure_path).to_s
+          expect(subject.schema_dump_path(db_config)).to eq Rails.root.join(structure_path).to_s
         end
       end
     end
