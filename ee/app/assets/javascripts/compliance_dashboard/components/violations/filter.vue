@@ -93,7 +93,7 @@ export default {
 
 <template>
   <div
-    class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row row-content-block gl-pb-0 gl-mb-5"
+    class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row row-content-block gl-pb-0 gl-mb-5 gl-gap-5"
   >
     <div class="gl-display-flex gl-flex-direction-column gl-mb-5 gl-md-pr-5 gl-sm-gap-3">
       <label data-testid="dropdown-label" class="gl-line-height-normal">{{
