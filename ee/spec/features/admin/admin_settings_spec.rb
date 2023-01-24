@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Admin updates EE-only settings' do
   include StubENV
   include Spec::Support::Helpers::ModalHelpers
+  include ListboxHelpers
 
   before do
     stub_env('IN_MEMORY_APPLICATION_SETTINGS', 'false')
@@ -125,27 +126,15 @@ RSpec.describe 'Admin updates EE-only settings' do
         expect(page).to have_content('Namespaces to index')
         expect(page).to have_content('Projects to index')
 
-        fill_in 'Namespaces to index', with: namespace.path
+        click_button 'Select namespaces to index'
+        send_keys namespace.path
         wait_for_requests
-      end
+        select_listbox_item namespace.full_path
 
-      page.within('#select2-drop') do
-        expect(page).to have_content(namespace.full_path)
-      end
-
-      page.within('.as-elasticsearch') do
-        find('.js-limit-namespaces .select2-choices input[type=text]').native.send_keys(:enter)
-
-        fill_in 'Projects to index', with: project.path
+        click_button 'Select projects to index'
+        send_keys project.path
         wait_for_requests
-      end
-
-      page.within('#select2-drop') do
-        expect(page).to have_content(project.name_with_namespace)
-      end
-
-      page.within('.as-elasticsearch') do
-        find('.js-limit-projects .select2-choices input[type=text]').native.send_keys(:enter)
+        select_listbox_item project.name_with_namespace
 
         click_button 'Save changes'
       end
@@ -172,8 +161,8 @@ RSpec.describe 'Admin updates EE-only settings' do
         expect(page).to have_content(namespace.full_path)
         expect(page).to have_content(project.full_path)
 
-        find('.js-limit-namespaces .select2-search-choice-close').click
-        find('.js-limit-projects .select2-search-choice-close').click
+        find('.js-limit-namespaces button[data-testid="remove-index-entity"]').click
+        find('.js-limit-projects button[data-testid="remove-index-entity"]').click
 
         expect(page).not_to have_content(namespace.full_path)
         expect(page).not_to have_content(project.full_path)

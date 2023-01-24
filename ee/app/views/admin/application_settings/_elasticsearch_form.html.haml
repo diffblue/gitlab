@@ -1,5 +1,6 @@
 - return unless License.feature_available?(:elastic_search)
 
+- add_page_specific_style 'page_bundles/admin/elasticsearch_form'
 - elastic_helper = Gitlab::Elastic::Helper.default
 - elasticsearch_available = elastic_helper.ping?
 
@@ -135,14 +136,14 @@
               - if elasticsearch_too_many_namespaces?
                 %p= _('Too many namespaces enabled. Manage them through the console or the API.')
               - else
-                = f.text_field :elasticsearch_namespace_ids, class: 'js-elasticsearch-namespaces', value: elasticsearch_namespace_ids, data: { selected: elasticsearch_objects_options(@application_setting.elasticsearch_limited_namespaces(true)).to_json }
+                .js-namespaces-indexing-restrictions{ data: { selected: elasticsearch_objects_options(@application_setting.elasticsearch_limited_namespaces(true)).to_json } }
 
             .form-group.js-limit-projects{ class: ('hidden' unless @application_setting.elasticsearch_limit_indexing) }
               = f.label :elasticsearch_project_ids, _('Projects to index'), class: 'label-bold'
               - if elasticsearch_too_many_projects?
                 %p= _('Too many projects enabled. Manage them through the console or the API.')
               - else
-                = f.text_field :elasticsearch_project_ids, class: 'js-elasticsearch-projects', value: elasticsearch_project_ids, data: { selected: elasticsearch_objects_options(@application_setting.elasticsearch_limited_projects(true)).to_json }
+                .js-projects-indexing-restrictions{ data: { selected: elasticsearch_objects_options(@application_setting.elasticsearch_limited_projects(true)).to_json } }
 
         = render Pajamas::CardComponent.new(**component_params) do |c|
           = c.body do

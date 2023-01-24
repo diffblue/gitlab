@@ -202,7 +202,7 @@ RSpec.describe 'admin/application_settings/_elasticsearch_form', feature_categor
 
     it 'shows the input' do
       render
-      expect(rendered).to have_field('application_setting[elasticsearch_namespace_ids]')
+      expect(rendered).to have_selector('.js-namespaces-indexing-restrictions')
     end
 
     context 'when there are too many elasticsearch indexed namespaces' do
@@ -212,7 +212,7 @@ RSpec.describe 'admin/application_settings/_elasticsearch_form', feature_categor
 
       it 'hides the input' do
         render
-        expect(rendered).not_to have_field('application_setting[elasticsearch_namespace_ids]')
+        expect(rendered).not_to have_selector('.js-namespaces-indexing-restrictions')
       end
     end
   end
@@ -228,7 +228,7 @@ RSpec.describe 'admin/application_settings/_elasticsearch_form', feature_categor
 
     it 'shows the input' do
       render
-      expect(rendered).to have_field('application_setting[elasticsearch_project_ids]')
+      expect(rendered).to have_selector('.js-projects-indexing-restrictions')
     end
 
     context 'when there are too many elasticsearch indexed projects' do
@@ -238,7 +238,7 @@ RSpec.describe 'admin/application_settings/_elasticsearch_form', feature_categor
 
       it 'hides the input' do
         render
-        expect(rendered).not_to have_field('application_setting[elasticsearch_project_ids]')
+        expect(rendered).not_to have_selector('.js-projects-indexing-restrictions')
       end
     end
   end
