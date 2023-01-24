@@ -3,27 +3,33 @@
 module Security
   module Ingestion
     # This service class takes the IDs of recently ingested
-    # vulnerabilities for a project and marks the missing
-    # vulnerabilities as resolved on default branch.
+    # vulnerabilities for a project which had been previously
+    # detected by the same scanner, and marks them as resolved
+    # on the default branch if they were not detected again.
     class MarkAsResolvedService
-      def self.execute(project, ingested_ids)
-        new(project, ingested_ids).execute
+      def self.execute(scanner, ingested_ids)
+        new(scanner, ingested_ids).execute
       end
 
-      def initialize(project, ingested_ids)
-        @project = project
+      def initialize(scanner, ingested_ids)
+        @scanner = scanner
         @ingested_ids = ingested_ids
       end
 
       def execute
-        vulnerabilities.present_on_default_branch.each_batch { |batch| process_batch(batch) }
+        return unless scanner
+
+        vulnerability_reads
+          .by_scanner(scanner)
+          .each_batch { |batch| process_batch(batch) }
       end
 
       private
 
-      attr_reader :project, :ingested_ids
+      attr_reader :ingested_ids, :scanner
 
-      delegate :vulnerabilities, to: :project, private: true
+      delegate :project, to: :scanner, private: true
+      delegate :vulnerability_reads, to: :project, private: true
 
       def process_batch(batch)
         (batch.pluck_primary_key - ingested_ids).then { |missing_ids| mark_as_resolved(missing_ids) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Ingestion::IngestReportsService do
+RSpec.describe Security::Ingestion::IngestReportsService, feature_category: :vulnerability_management do
   let(:service_object) { described_class.new(pipeline) }
 
   let_it_be(:project) { create(:project) }
@@ -22,7 +22,6 @@ RSpec.describe Security::Ingestion::IngestReportsService do
 
     before do
       allow(Security::Ingestion::IngestReportService).to receive(:execute).and_return(ids_1, ids_2)
-      allow(Security::Ingestion::MarkAsResolvedService).to receive(:execute)
       allow(Security::Ingestion::ScheduleMarkDroppedAsResolvedService).to receive(:execute)
     end
 
@@ -36,13 +35,7 @@ RSpec.describe Security::Ingestion::IngestReportsService do
 
     it 'sets the resolved vulnerabilities, latest pipeline ID and has_vulnerabilities flag' do
       expect { ingest_reports }.to change { project.reload.project_setting&.has_vulnerabilities }.to(true)
-                               .and change { project.reload.vulnerability_statistic&.latest_pipeline_id }.to(pipeline.id)
-    end
-
-    it 'calls MarkAsResolvedService with the recently ingested vulnerability IDs' do
-      ingest_reports
-
-      expect(Security::Ingestion::MarkAsResolvedService).to have_received(:execute).with(project, ids_1)
+        .and change { project.reload.vulnerability_statistic&.latest_pipeline_id }.to(pipeline.id)
     end
 
     it 'calls ScheduleMarkDroppedAsResolvedService with primary identifier IDs' do

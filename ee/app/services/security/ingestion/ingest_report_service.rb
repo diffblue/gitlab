@@ -23,7 +23,9 @@ module Security
       end
 
       def execute
-        finding_map_collection.each_slice(BATCH_SIZE).flat_map { |slice| ingest_slice(slice) }
+        finding_map_collection.each_slice(BATCH_SIZE)
+          .flat_map { |slice| ingest_slice(slice) }
+          .tap { |ids| MarkAsResolvedService.execute(scanner, ids) }
       end
 
       private
@@ -31,7 +33,7 @@ module Security
       attr_reader :security_scan
       attr_accessor :errored
 
-      delegate :pipeline, to: :security_scan, private: true
+      delegate :pipeline, :scanner, to: :security_scan, private: true
 
       def finding_map_collection
         @finding_map_collection ||= FindingMapCollection.new(security_scan)

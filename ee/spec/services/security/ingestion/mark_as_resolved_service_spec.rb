@@ -2,32 +2,74 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Ingestion::MarkAsResolvedService do
+RSpec.describe Security::Ingestion::MarkAsResolvedService, feature_category: :vulnerability_management do
   let_it_be(:project) { create(:project) }
-  let_it_be(:non_default_vulnerability) { create(:vulnerability, project: project, present_on_default_branch: false) }
-
-  let_it_be_with_reload(:not_ingested_vulnerability) { create(:vulnerability, project: project) }
-  let_it_be_with_reload(:ingested_vulnerability) { create(:vulnerability, project: project) }
-  let_it_be_with_reload(:generic_vulnerability) { create(:vulnerability, project: project, report_type: :generic) }
-
-  let(:ingested_ids) { [ingested_vulnerability.id] }
-  let(:service_object) { described_class.new(project, ingested_ids) }
 
   describe '#execute' do
-    subject(:mark_as_resolved) { service_object.execute }
+    context 'when using a vulnerability scanner' do
+      let(:command) { described_class.new(scanner, ingested_ids) }
+      let(:ingested_ids) { [] }
+      let_it_be(:scanner) { create(:vulnerabilities_scanner, project: project) }
 
-    it 'marks the missing vulnerabilities as resolved on default branch except the generic ones' do
-      expect { mark_as_resolved }
-        .to change { not_ingested_vulnerability.reload.resolved_on_default_branch }.from(false).to(true)
-        .and not_change { ingested_vulnerability.reload.resolved_on_default_branch }.from(false)
-        .and not_change { generic_vulnerability.reload.resolved_on_default_branch }.from(false)
+      it 'resolves non-generic vulnerabilities detected by the scanner' do
+        vulnerability = create(:vulnerability, :sast,
+          project: project,
+          present_on_default_branch: true,
+          resolved_on_default_branch: false,
+          findings: [create(:vulnerabilities_finding, project: project, scanner: scanner)]
+        )
+
+        command.execute
+
+        expect(vulnerability.reload).to be_resolved_on_default_branch
+      end
+
+      it 'does not resolve vulnerabilities detected by a different scanner' do
+        vulnerability = create(:vulnerability, :sast, project: project, present_on_default_branch: true)
+
+        command.execute
+
+        expect(vulnerability.reload).not_to be_resolved_on_default_branch
+      end
+
+      it 'does not resolve generic vulnerabilities' do
+        vulnerability = create(:vulnerability, :generic, project: project)
+
+        command.execute
+
+        expect(vulnerability.reload).not_to be_resolved_on_default_branch
+      end
+
+      context 'when a vulnerability is already ingested' do
+        let_it_be(:ingested_vulnerability) { create(:vulnerability, project: project) }
+
+        before do
+          ingested_ids << ingested_vulnerability.id
+        end
+
+        it 'does not resolve ingested vulnerabilities' do
+          command.execute
+
+          expect(ingested_vulnerability.reload).not_to be_resolved_on_default_branch
+        end
+      end
     end
 
-    it 'does not process vulnerabilities which are not present on the default branch' do
-      expect(service_object).to receive(:process_batch)
-        .with(match_array([not_ingested_vulnerability, ingested_vulnerability, generic_vulnerability]))
+    context 'when a scanner is not available' do
+      let(:command) { described_class.new(nil, []) }
 
-      mark_as_resolved
+      it 'does not resolve any vulnerabilities' do
+        vulnerability = create(:vulnerability, :sast,
+          project: project,
+          present_on_default_branch: true,
+          resolved_on_default_branch: false,
+          findings: []
+        )
+
+        command.execute
+
+        expect(vulnerability.reload).not_to be_resolved_on_default_branch
+      end
     end
   end
 end
