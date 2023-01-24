@@ -5,30 +5,28 @@ module EE
     module CreateService
       def execute
         super.tap do |response|
-          log_audit_event(response.payload[:personal_access_token], response)
+          send_audit_event(response)
         end
       end
 
       private
 
-      def log_audit_event(token, response)
-        audit_event_service(token, response).for_user(full_path: target_user.username, entity_id: target_user.id).security_event
-      end
-
-      def audit_event_service(token, response)
+      def send_audit_event(response)
         message = if response.success?
-                    "Created personal access token with id #{token.id}"
+                    "Created personal access token with id #{response.payload[:personal_access_token].id}"
                   else
                     "Attempted to create personal access token but failed with message: #{response.message}"
                   end
 
-        ::AuditEventService.new(
-          current_user,
-          target_user,
-          action: :custom,
-          custom_message: message,
-          ip_address: ip_address
-        )
+        audit_context = {
+          name: 'personal_access_token_created',
+          author: current_user,
+          scope: current_user,
+          target: target_user,
+          message: message
+        }
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
       end
     end
   end

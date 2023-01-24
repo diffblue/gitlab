@@ -1,0 +1,9 @@
+---
+name: personal_access_token_created
+description: Event triggered when a user creates a personal access token
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/374113
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/108952
+feature_category: compliance_management
+milestone: '15.9'
+saved_to_database: true
+streamed: true

@@ -8,7 +8,7 @@ module EE
 
       def execute
         super.tap do |response|
-          log_audit_event(token, response)
+          send_audit_event(token, response)
         end
       end
 
@@ -28,25 +28,24 @@ module EE
           can?(current_user, :admin_group_credentials_inventory, group)
       end
 
-      def log_audit_event(token, response)
-        return unless token.present?
+      def send_audit_event(token, response)
+        return unless token
 
-        audit_event_service(token, response).for_user(full_path: token.user.username, entity_id: token.user.id).security_event
-      end
-
-      def audit_event_service(token, response)
         message = if response.success?
                     "Revoked personal access token with id #{token.id}"
                   else
                     "Attempted to revoke personal access token with id #{token.id} but failed with message: #{response.message}"
                   end
 
-        ::AuditEventService.new(
-          current_user,
-          token.user,
-          action: :custom,
-          custom_message: message
-        )
+        audit_context = {
+          name: 'personal_access_token_revoked',
+          author: current_user,
+          scope: current_user,
+          target: token&.user,
+          message: message
+        }
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
       end
     end
   end
