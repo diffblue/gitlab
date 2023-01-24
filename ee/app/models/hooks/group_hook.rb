@@ -3,6 +3,7 @@
 class GroupHook < WebHook
   include CustomModelNaming
   include TriggerableHooks
+  include WebHooks::Unstoppable
   include Presentable
   include Limitable
   extend ::Gitlab::Utils::Override
@@ -30,11 +31,6 @@ class GroupHook < WebHook
   belongs_to :group
 
   validates :url, presence: true, addressable_url: true
-
-  override :executable?
-  def executable?
-    true
-  end
 
   def pluralized_name
     _('Group Hooks')
