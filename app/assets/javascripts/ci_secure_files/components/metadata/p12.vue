@@ -1,5 +1,5 @@
 <script>
-import { GlTable } from '@gitlab/ui';
+import { GlTableLite } from '@gitlab/ui';
 import { s__, createDateTimeFormat } from '~/locale';
 
 const dateFormat = createDateTimeFormat({
@@ -9,7 +9,7 @@ const dateFormat = createDateTimeFormat({
 
 export default {
   components: {
-    GlTable,
+    GlTableLite,
   },
   props: {
     metadata: {
@@ -60,13 +60,13 @@ export default {
 
 <template>
   <div>
-    <gl-table :items="items" :fields="fields">
+    <gl-table-lite :items="items" :fields="fields">
       <template #cell(item_name)="{ item }">
         <strong>{{ item.name }}</strong>
       </template>
       <template #cell(item_data)="{ item }">
         {{ item.data }}
       </template>
-    </gl-table>
+    </gl-table-lite>
   </div>
 </template>

@@ -1,7 +1,6 @@
 <script>
 import { GlButton, GlModalDirective, GlTooltipDirective } from '@gitlab/ui';
 import { __ } from '~/locale';
-import Tracking from '~/tracking';
 
 export default {
   components: {
@@ -11,7 +10,6 @@ export default {
     GlTooltip: GlTooltipDirective,
     GlModal: GlModalDirective,
   },
-  mixins: [Tracking.mixin()],
   props: {
     secureFile: {
       type: Object,
