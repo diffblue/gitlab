@@ -18,6 +18,7 @@ import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import {
   issuableTypesMap,
   itemAddFailureTypesMap,
@@ -816,7 +817,7 @@ describe('RelatedItemTree', () => {
         });
 
         it('should dispatch `requestRemoveItem` and `receiveRemoveItemFailure` actions on request failure', () => {
-          mock.onDelete(data.item.relationPath).replyOnce(500, {});
+          mock.onDelete(data.item.relationPath).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
 
           testAction(
             actions.removeItem,
@@ -1082,7 +1083,7 @@ describe('RelatedItemTree', () => {
           state.epicsEndpoint = '/foo/bar';
           state.pendingReferences = ['foo'];
 
-          mock.onPost(state.epicsEndpoint).replyOnce(500, {});
+          mock.onPost(state.epicsEndpoint).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
 
           testAction(
             actions.addItem,
@@ -1225,7 +1226,7 @@ describe('RelatedItemTree', () => {
         });
 
         it('should dispatch `requestCreateItem` and `receiveCreateItemFailure` actions on request failure', () => {
-          mock.onPost(/(.*)/).replyOnce(500, {});
+          mock.onPost(/(.*)/).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
 
           return testAction(
             actions.createItem,
@@ -1707,7 +1708,7 @@ describe('RelatedItemTree', () => {
 
         describe('for failed request', () => {
           beforeEach(() => {
-            requestSpy.mockReturnValue([500, '']);
+            requestSpy.mockReturnValue([HTTP_STATUS_INTERNAL_SERVER_ERROR, '']);
           });
 
           it('fails and shows flash message', async () => {
@@ -1806,7 +1807,7 @@ describe('RelatedItemTree', () => {
         });
 
         it('should dispatch `requestProjects` and `receiveProjectsFailure` actions on request failure', () => {
-          mock.onGet(/(.*)/).replyOnce(500, {});
+          mock.onGet(/(.*)/).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
 
           return testAction(
             actions.fetchProjects,

@@ -9,6 +9,7 @@ import { TEST_HOST } from 'spec/test_constants';
 import axios from '~/lib/utils/axios_utils';
 import {
   HTTP_STATUS_FORBIDDEN,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_NOT_FOUND,
   HTTP_STATUS_OK,
 } from '~/lib/utils/http_status';
@@ -1014,7 +1015,7 @@ describe('dismiss multiple vulnerabilities', () => {
         .onPost(state.vulnerabilities[0].create_vulnerability_feedback_dismissal_path)
         .replyOnce(HTTP_STATUS_OK)
         .onPost(state.vulnerabilities[1].create_vulnerability_feedback_dismissal_path)
-        .replyOnce(500);
+        .replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       return testAction(
         actions.dismissSelectedVulnerabilities,

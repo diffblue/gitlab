@@ -6,7 +6,7 @@ import { mockHeaders, mockText, mockProjectData } from 'ee_jest/vue_shared/dashb
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 import clearState from '../helpers';
 
@@ -54,7 +54,7 @@ describe('actions', () => {
     });
 
     it('calls addProjectsToDashboard error handler on error', () => {
-      mockAxios.onPost(mockAddEndpoint).replyOnce(500);
+      mockAxios.onPost(mockAddEndpoint).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       return testAction(
         actions.addProjectsToDashboard,
@@ -226,7 +226,7 @@ describe('actions', () => {
 
     it('handles response errors', () => {
       store.state.projectEndpoints.list = mockListEndpoint;
-      mockAxios.onGet(mockListEndpoint).replyOnce(500);
+      mockAxios.onGet(mockListEndpoint).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       return testAction(
         actions.fetchProjects,
@@ -288,7 +288,7 @@ describe('actions', () => {
     });
 
     it('passes off handling of project removal errors', () => {
-      mockAxios.onDelete(mockRemovePath).replyOnce(500);
+      mockAxios.onDelete(mockRemovePath).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       return testAction(
         actions.removeProject,

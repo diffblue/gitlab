@@ -12,6 +12,7 @@ import getInitialState from 'ee/license_compliance/store/modules/list/state';
 import { TEST_HOST } from 'helpers/test_constants';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 
 import mockLicensesResponse from './data/mock_licenses.json';
 
@@ -213,7 +214,7 @@ describe('Licenses actions', () => {
 
     describe('given a response error', () => {
       beforeEach(() => {
-        mock.onGet(state.endpoint).replyOnce([500]);
+        mock.onGet(state.endpoint).replyOnce([HTTP_STATUS_INTERNAL_SERVER_ERROR]);
       });
 
       it('dispatches the receiveLicensesError action and creates a flash', () =>

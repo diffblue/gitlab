@@ -14,6 +14,7 @@ import extensionsContainer from '~/vue_merge_request_widget/components/extension
 import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
 import statusChecksExtension from 'ee/vue_merge_request_widget/extensions/status_checks';
 import {
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_NOT_FOUND,
   HTTP_STATUS_OK,
   HTTP_STATUS_UNPROCESSABLE_ENTITY,
@@ -217,7 +218,7 @@ describe('Status checks extension', () => {
         const sentrySpy = jest.spyOn(Sentry, 'captureException');
         jest
           .spyOn(StatusCheckRetryApi, 'mrStatusCheckRetry')
-          .mockRejectedValue({ status: 500, data: {} });
+          .mockRejectedValue({ status: HTTP_STATUS_INTERNAL_SERVER_ERROR, data: {} });
 
         getAndClickRetryActionButton();
         await waitForPromises();

@@ -1,3 +1,4 @@
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import { tableSortOrder } from 'ee/analytics/productivity_analytics/constants';
 import * as types from 'ee/analytics/productivity_analytics/store/modules/table/mutation_types';
 import mutations from 'ee/analytics/productivity_analytics/store/modules/table/mutations';
@@ -40,14 +41,13 @@ describe('Productivity analytics table mutations', () => {
   });
 
   describe(types.RECEIVE_MERGE_REQUESTS_ERROR, () => {
-    const errorCode = 500;
     beforeEach(() => {
-      mutations[types.RECEIVE_MERGE_REQUESTS_ERROR](state, errorCode);
+      mutations[types.RECEIVE_MERGE_REQUESTS_ERROR](state, HTTP_STATUS_INTERNAL_SERVER_ERROR);
     });
 
     it('sets errorCode to 500', () => {
       expect(state.isLoadingTable).toBe(false);
-      expect(state.errorCode).toBe(errorCode);
+      expect(state.errorCode).toBe(HTTP_STATUS_INTERNAL_SERVER_ERROR);
     });
 
     it('clears data', () => {

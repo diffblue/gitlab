@@ -7,7 +7,10 @@ import createState from 'ee/vue_shared/license_compliance/store/state';
 import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
+import {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+} from '~/lib/utils/http_status';
 import { allowedLicense, deniedLicense } from '../mock_data';
 
 describe('License store actions', () => {
@@ -155,7 +158,7 @@ describe('License store actions', () => {
     it('dispatches addPendingLicense, receiveDeleteLicenseError and removePendingLicense for error response', () => {
       endpointMock.replyOnce((req) => {
         expect(req.url).toBe(deleteUrl);
-        return [500, ''];
+        return [HTTP_STATUS_INTERNAL_SERVER_ERROR, ''];
       });
 
       return actions.deleteLicense(store).then(() => {
@@ -237,7 +240,7 @@ describe('License store actions', () => {
       it('dispatches addPendingLicense, receiveSetLicenseApprovalError and removePendingLicense for error response', () => {
         putEndpointMock.replyOnce((req) => {
           expect(req.url).toBe(apiUrlManageLicenses);
-          return [500, ''];
+          return [HTTP_STATUS_INTERNAL_SERVER_ERROR, ''];
         });
 
         return actions.setLicenseApproval(store, { license: newLicense, newStatus }).then(() => {
@@ -278,7 +281,7 @@ describe('License store actions', () => {
       it('dispatches addPendingLicense, receiveSetLicenseApprovalError and removePendingLicense for error response', () => {
         patchEndpointMock.replyOnce((req) => {
           expect(req.url).toBe(licenseUrl);
-          return [500, ''];
+          return [HTTP_STATUS_INTERNAL_SERVER_ERROR, ''];
         });
 
         return actions
@@ -415,7 +418,7 @@ describe('License store actions', () => {
     });
 
     it('dispatches requestManagedLicenses and receiveManagedLicensesError for error response', async () => {
-      endpointMock.replyOnce(() => [500, '']);
+      endpointMock.replyOnce(() => [HTTP_STATUS_INTERNAL_SERVER_ERROR, '']);
 
       await testAction(
         actions.fetchManagedLicenses,
@@ -474,7 +477,7 @@ describe('License store actions', () => {
 
     it('dispatches request/receive error when no approvalsAPiPath is provided', async () => {
       const error = new Error('approvalsApiPath not provided');
-      axiosMock.onGet(approvalsApiPath).replyOnce(500);
+      axiosMock.onGet(approvalsApiPath).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       await testAction(
         actions.fetchLicenseCheckApprovalRule,
@@ -490,7 +493,7 @@ describe('License store actions', () => {
 
     it('dispatches request/receive on error', async () => {
       const error = new Error('Request failed with status code 500');
-      axiosMock.onGet(approvalsApiPath).replyOnce(500);
+      axiosMock.onGet(approvalsApiPath).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       await testAction(
         actions.fetchLicenseCheckApprovalRule,

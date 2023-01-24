@@ -1,3 +1,4 @@
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import * as types from 'ee/maintenance_mode_settings/store/mutation_types';
 
 export const MOCK_APPLICATION_SETTINGS_UPDATE_RESPONSE = {
@@ -33,7 +34,7 @@ export const ACTIONS_TEST_DATA = {
       payload: MOCK_BASIC_SETTINGS_DATA,
     },
   ],
-  errorAxiosCall: { method: 'onPut', code: 500, res: null },
+  errorAxiosCall: { method: 'onPut', code: HTTP_STATUS_INTERNAL_SERVER_ERROR, res: null },
   updateErrorMutations: [
     { type: types.REQUEST_UPDATE_MAINTENANCE_MODE_SETTINGS },
     { type: types.RECEIVE_UPDATE_MAINTENANCE_MODE_SETTINGS_ERROR },
