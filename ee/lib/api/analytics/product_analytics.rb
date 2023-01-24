@@ -36,6 +36,11 @@ module API
             iat: Time.now.utc.to_i,
             exp: Time.now.utc.to_i + 180,
             appId: "gitlab_project_#{params[:project_id]}",
+            gitlabToken: ::ResourceAccessTokens::CreateService.new(
+              current_user,
+              project,
+              { expires_at: 1.day.from_now })
+                .execute.payload[:access_token]&.token,
             iss: ::Settings.gitlab.host
           }
 
@@ -114,6 +119,19 @@ module API
 
           status :ok
           Gitlab::Json.parse(response.body)
+        end
+
+        desc 'Get a list of defined funnels for a project'
+        get ':project_id/product_analytics/funnels' do
+          check_access_rights!
+
+          project.product_analytics_funnels.map do |funnel|
+            {
+              name: funnel.name,
+              sql: funnel.to_sql,
+              steps: funnel.steps.map(&:step_definition)
+            }
+          end
         end
       end
     end

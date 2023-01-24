@@ -1,0 +1,9 @@
+name: Completed Purchase
+seconds_to_convert: 3600
+steps:
+  - name: view_page_1
+    target: '/page1.html'
+    action: 'pageview'
+  - name: view_page_2
+    target: '/page2.html'
+    action: 'pageview'

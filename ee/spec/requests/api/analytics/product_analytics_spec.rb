@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe API::Analytics::ProductAnalytics, feature_category: :product_analytics do
-  let_it_be(:project) { create(:project) }
+  let_it_be(:project) { create(:project, :with_product_analytics_funnel) }
 
   let(:current_user) { project.owner }
   let(:cube_api_load_url) { "http://cube.dev/cubejs-api/v1/load" }
@@ -200,6 +200,41 @@ RSpec.describe API::Analytics::ProductAnalytics, feature_category: :product_anal
 
       it 'returns a 200' do
         request_meta
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+  end
+
+  describe 'GET projects/:id/product_analytics/funnels' do
+    before do
+      stub_cube_meta
+      stub_cube_proxy_setup
+    end
+
+    context 'when current user has guest project access' do
+      let_it_be(:current_user) { create(:user) }
+
+      before do
+        project.add_guest(current_user)
+      end
+
+      it 'returns an unauthorized error' do
+        get api("/projects/#{project.id}/product_analytics/funnels", current_user)
+
+        expect(response).to have_gitlab_http_status(:unauthorized)
+      end
+    end
+
+    context 'when current user is a project developer' do
+      let_it_be(:current_user) { create(:user) }
+
+      before do
+        project.add_developer(current_user)
+      end
+
+      it 'returns a 200' do
+        get api("/projects/#{project.id}/product_analytics/funnels", current_user)
 
         expect(response).to have_gitlab_http_status(:ok)
       end

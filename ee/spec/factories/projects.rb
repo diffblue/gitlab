@@ -104,6 +104,20 @@ FactoryBot.modify do
       end
     end
 
+    trait :with_product_analytics_funnel do
+      repository
+
+      after(:create) do |project|
+        project.repository.create_file(
+          project.creator,
+          '.gitlab/product_analytics/funnels/funnel_example_1.yaml',
+          File.open(Rails.root.join('ee/spec/fixtures/product_analytics/funnel_example_1.yaml')).read,
+          message: 'Add funnel definition',
+          branch_name: 'master'
+        )
+      end
+    end
+
     trait(:allow_pipeline_trigger_approve_deployment) { allow_pipeline_trigger_approve_deployment { true } }
   end
 end
