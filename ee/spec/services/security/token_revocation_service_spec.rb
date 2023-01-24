@@ -68,14 +68,15 @@ RSpec.describe Security::TokenRevocationService, '#execute' do
     it 'returns success' do
       expect(PersonalAccessTokens::RevokeService).to receive(:new).once.and_call_original
 
-      expect(::AuditEventService)
-        .to receive(:new)
-        .with(
-          User.security_bot,
-          glpat_token.user,
-          action: :custom,
-          custom_message: "Revoked personal access token with id #{glpat_token.id}"
-        ).and_call_original
+      audit_context = {
+        name: 'personal_access_token_revoked',
+        author: User.security_bot,
+        scope: User.security_bot,
+        target: glpat_token.user,
+        message: "Revoked personal access token with id #{glpat_token.id}"
+      }
+
+      expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context).and_call_original
 
       expect(SystemNoteService)
         .to receive(:change_vulnerability_state)

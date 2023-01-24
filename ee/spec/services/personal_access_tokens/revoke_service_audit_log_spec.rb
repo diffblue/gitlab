@@ -11,9 +11,15 @@ RSpec.describe PersonalAccessTokens::RevokeService do
     let(:service) { described_class.new(user, token: token) }
 
     it 'creates audit events' do
-      expect(::AuditEventService)
-        .to receive(:new)
-        .with(user, user, action: :custom, custom_message: "Revoked personal access token with id #{token.id}")
+      audit_context = {
+        name: 'personal_access_token_revoked',
+        author: user,
+        scope: user,
+        target: user,
+        message: "Revoked personal access token with id #{token.id}"
+      }
+
+      expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
         .and_call_original
 
       subject
