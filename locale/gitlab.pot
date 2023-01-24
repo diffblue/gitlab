@@ -10145,9 +10145,6 @@ msgstr ""
 msgid "Commits|An error occurred while fetching merge requests data."
 msgstr ""
 
-msgid "Commits|History"
-msgstr ""
-
 msgid "Commits|No related merge requests found"
 msgstr ""
 
