@@ -8,10 +8,5 @@ module EE
     prepended do
       include UsageStatistics
     end
-
-    override :resource_parent
-    def resource_parent
-      project || group
-    end
   end
 end
