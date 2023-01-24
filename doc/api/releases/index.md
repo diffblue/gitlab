@@ -153,14 +153,14 @@ Example response:
                "id":2,
                "name":"awesome-v0.2.msi",
                "url":"http://192.168.10.15:3000/msi",
-               "external":true,
+               "external":true, // deprecated in GitLab 15.9, will be removed in GitLab 16.0.
                "link_type":"other"
             },
             {
                "id":1,
                "name":"awesome-v0.2.dmg",
                "url":"http://192.168.10.15:3000",
-               "external":true,
+               "external":true, // deprecated in GitLab 15.9, will be removed in GitLab 16.0.
                "link_type":"other"
             }
          ],
@@ -371,7 +371,7 @@ Example response:
             "id":3,
             "name":"hoge",
             "url":"https://gitlab.example.com/root/awesome-app/-/tags/v0.11.1/binaries/linux-amd64",
-            "external":true,
+            "external":true, // deprecated in GitLab 15.9, will be removed in GitLab 16.0.
             "link_type":"other"
          }
       ]
@@ -574,7 +574,7 @@ Example response:
             "id":3,
             "name":"hoge",
             "url":"https://gitlab.example.com/root/awesome-app/-/tags/v0.11.1/binaries/linux-amd64",
-            "external":true,
+            "external":true, // deprecated in GitLab 15.9, will be removed in GitLab 16.0.
             "link_type":"other"
          }
       ],
