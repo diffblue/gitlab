@@ -217,7 +217,7 @@ class TrialsController < ApplicationController
   def apply_trial_and_redirect
     return render(:select) if @namespace.invalid?
 
-    @result = GitlabSubscriptions::Trials::ApplyTrialService.new(apply_trial_params).execute
+    @result = GitlabSubscriptions::Trials::ApplyTrialService.new(**apply_trial_params).execute
 
     if @result.success?
       Gitlab::Tracking.event(self.class.name, 'create_trial', namespace: @namespace, user: current_user)
