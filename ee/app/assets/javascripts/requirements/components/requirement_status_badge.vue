@@ -57,7 +57,12 @@ export default {
 
 <template>
   <component :is="elementType" class="requirement-status-badge">
-    <gl-badge ref="testReportBadge" :variant="testReportBadge.variant" :icon="testReportBadge.icon">
+    <gl-badge
+      ref="testReportBadge"
+      :variant="testReportBadge.variant"
+      :icon="testReportBadge.icon"
+      icon-size="sm"
+    >
       {{ testReportBadge.text }}
     </gl-badge>
     <gl-tooltip
