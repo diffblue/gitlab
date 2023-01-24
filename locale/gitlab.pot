@@ -14272,9 +14272,6 @@ msgstr ""
 msgid "Developer"
 msgstr ""
 
-msgid "Development"
-msgstr ""
-
 msgid "Devices (optional)"
 msgstr ""
 
@@ -45413,6 +45410,9 @@ msgid "UsageQuota|Usage by month"
 msgstr ""
 
 msgid "UsageQuota|Usage by project"
+msgstr ""
+
+msgid "UsageQuota|Usage of group resources across the projects in the %{namespaceName} group"
 msgstr ""
 
 msgid "UsageQuota|Usage of group resources across the projects in the %{strong_start}%{group_name}%{strong_end} group"
