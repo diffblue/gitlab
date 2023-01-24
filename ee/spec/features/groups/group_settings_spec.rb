@@ -4,7 +4,6 @@ require 'spec_helper'
 
 RSpec.describe 'Edit group settings', feature_category: :subgroups do
   include ListboxHelpers
-  include Select2Helper
 
   let_it_be(:user) { create(:user) }
   let_it_be(:developer) { create(:user) }
@@ -104,7 +103,7 @@ RSpec.describe 'Edit group settings', feature_category: :subgroups do
     end
   end
 
-  describe 'Group file templates setting' do
+  describe 'Group file templates setting', :js do
     context 'without a license key' do
       before do
         stub_licensed_features(custom_file_templates_for_namespace: false)
@@ -134,7 +133,7 @@ RSpec.describe 'Edit group settings', feature_category: :subgroups do
         visit edit_group_path(group)
 
         page.within('section#js-templates') do |page|
-          select2(project.id, from: '#group_file_template_project_id')
+          select_from_listbox(project.name_with_namespace, from: 'Search for project')
           click_button 'Save changes'
           wait_for_requests
 

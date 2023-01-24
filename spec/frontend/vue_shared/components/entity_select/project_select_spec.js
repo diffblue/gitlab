@@ -1,28 +1,21 @@
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import MockAdapter from 'axios-mock-adapter';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
-import GroupSelect from '~/vue_shared/components/entity_select/group_select.vue';
+import { HTTP_STATUS_OK, HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import ProjectSelect from '~/vue_shared/components/entity_select/project_select.vue';
 import EntitySelect from '~/vue_shared/components/entity_select/entity_select.vue';
 import {
-  GROUP_TOGGLE_TEXT,
-  GROUP_HEADER_TEXT,
-  FETCH_GROUPS_ERROR,
-  FETCH_GROUP_ERROR,
+  PROJECT_TOGGLE_TEXT,
+  PROJECT_HEADER_TEXT,
+  FETCH_PROJECTS_ERROR,
+  FETCH_PROJECT_ERROR,
 } from '~/vue_shared/components/entity_select/constants';
 import waitForPromises from 'helpers/wait_for_promises';
 
-describe('GroupSelect', () => {
+describe('ProjectSelect', () => {
   let wrapper;
   let mock;
-
-  // Mocks
-  const groupMock = {
-    full_name: 'selectedGroup',
-    id: '1',
-  };
-  const groupEndpoint = `/api/undefined/groups/${groupMock.id}`;
 
   // Stubs
   const GlAlert = {
@@ -33,6 +26,16 @@ describe('GroupSelect', () => {
   const label = 'label';
   const inputName = 'inputName';
   const inputId = 'inputId';
+  const groupId = '22';
+
+  // Mocks
+  const apiVersion = 'v4';
+  const projectMock = {
+    name_with_namespace: 'selectedProject',
+    id: '1',
+  };
+  const groupProjectEndpoint = `/api/${apiVersion}/groups/${groupId}/projects.json`;
+  const projectEndpoint = `/api/${apiVersion}/projects/${projectMock.id}`;
 
   // Finders
   const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
@@ -41,11 +44,12 @@ describe('GroupSelect', () => {
 
   // Helpers
   const createComponent = ({ props = {} } = {}) => {
-    wrapper = shallowMountExtended(GroupSelect, {
+    wrapper = mountExtended(ProjectSelect, {
       propsData: {
         label,
         inputName,
         inputId,
+        groupId,
         ...props,
       },
       stubs: {
@@ -55,6 +59,10 @@ describe('GroupSelect', () => {
     });
   };
   const openListbox = () => findListbox().vm.$emit('shown');
+
+  beforeAll(() => {
+    gon.api_version = apiVersion;
+  });
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
@@ -74,15 +82,15 @@ describe('GroupSelect', () => {
       ${'label'}             | ${label}
       ${'inputName'}         | ${inputName}
       ${'inputId'}           | ${inputId}
-      ${'defaultToggleText'} | ${GROUP_TOGGLE_TEXT}
-      ${'headerText'}        | ${GROUP_HEADER_TEXT}
+      ${'defaultToggleText'} | ${PROJECT_TOGGLE_TEXT}
+      ${'headerText'}        | ${PROJECT_HEADER_TEXT}
     `('passes the $prop prop to entity-select', ({ prop, expectedValue }) => {
       expect(findEntitySelect().props(prop)).toBe(expectedValue);
     });
   });
 
   describe('on mount', () => {
-    it('fetches groups when the listbox is opened', async () => {
+    it('fetches projects when the listbox is opened', async () => {
       createComponent();
       await waitForPromises();
 
@@ -92,37 +100,46 @@ describe('GroupSelect', () => {
       await waitForPromises();
 
       expect(mock.history.get).toHaveLength(1);
+      expect(mock.history.get[0].url).toBe(groupProjectEndpoint);
+      expect(mock.history.get[0].params).toEqual({
+        include_subgroups: false,
+        order_by: 'similarity',
+        per_page: 20,
+        search: '',
+        simple: true,
+        with_shared: true,
+      });
     });
 
     describe('with an initial selection', () => {
       it("fetches the initially selected value's name", async () => {
-        mock.onGet(groupEndpoint).reply(200, groupMock);
-        createComponent({ props: { initialSelection: groupMock.id } });
+        mock.onGet(projectEndpoint).reply(HTTP_STATUS_OK, projectMock);
+        createComponent({ props: { initialSelection: projectMock.id } });
         await waitForPromises();
 
         expect(mock.history.get).toHaveLength(1);
-        expect(findListbox().props('toggleText')).toBe(groupMock.full_name);
+        expect(findListbox().props('toggleText')).toBe(projectMock.name_with_namespace);
       });
 
-      it('show an error if fetching the individual group fails', async () => {
+      it('show an error if fetching the individual project fails', async () => {
         mock
-          .onGet('/api/undefined/groups.json')
-          .reply(200, [{ full_name: 'notTheSelectedGroup', id: '2' }]);
-        mock.onGet(groupEndpoint).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
-        createComponent({ props: { initialSelection: groupMock.id } });
+          .onGet(groupProjectEndpoint)
+          .reply(200, [{ full_name: 'notTheSelectedProject', id: '2' }]);
+        mock.onGet(projectEndpoint).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+        createComponent({ props: { initialSelection: projectMock.id } });
 
         expect(findAlert().exists()).toBe(false);
 
         await waitForPromises();
 
         expect(findAlert().exists()).toBe(true);
-        expect(findAlert().text()).toBe(FETCH_GROUP_ERROR);
+        expect(findAlert().text()).toBe(FETCH_PROJECT_ERROR);
       });
     });
   });
 
-  it('shows an error when fetching groups fails', async () => {
-    mock.onGet('/api/undefined/groups.json').reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+  it('shows an error when fetching projects fails', async () => {
+    mock.onGet(groupProjectEndpoint).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
     createComponent();
     openListbox();
     expect(findAlert().exists()).toBe(false);
@@ -130,6 +147,6 @@ describe('GroupSelect', () => {
     await waitForPromises();
 
     expect(findAlert().exists()).toBe(true);
-    expect(findAlert().text()).toBe(FETCH_GROUPS_ERROR);
+    expect(findAlert().text()).toBe(FETCH_PROJECTS_ERROR);
   });
 });

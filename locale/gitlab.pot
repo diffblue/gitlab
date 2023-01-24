@@ -44856,6 +44856,12 @@ msgstr ""
 msgid "Unable to fetch groups. Reload the page to try again."
 msgstr ""
 
+msgid "Unable to fetch project. Reload the page to try again."
+msgstr ""
+
+msgid "Unable to fetch projects. Reload the page to try again."
+msgstr ""
+
 msgid "Unable to fetch upstream and downstream pipelines."
 msgstr ""
 
