@@ -55,17 +55,16 @@ module EE
         end
 
         def alert_level
-          strong_memoize(:alert_level) do
-            usage_ratio = root_storage_size.usage_ratio
-            current_level = USAGE_THRESHOLDS.each_key.first
+          usage_ratio = root_storage_size.usage_ratio
+          current_level = USAGE_THRESHOLDS.each_key.first
 
-            USAGE_THRESHOLDS.each do |level, threshold|
-              current_level = level if usage_ratio >= threshold
-            end
-
-            current_level
+          USAGE_THRESHOLDS.each do |level, threshold|
+            current_level = level if usage_ratio >= threshold
           end
+
+          current_level
         end
+        strong_memoize_attr :alert_level
 
         def usage_message
           if enforcement_type == :repository && root_namespace.contains_locked_projects?
@@ -107,10 +106,9 @@ module EE
 
         def namespace_above_size_limit_message_body
           {
-            text:
-              s_("NamespaceStorageSize|%{namespace_name} is now read-only. " \
-              "Projects under this namespace are locked and actions are restricted.") %
-                { namespace_name: root_namespace.name },
+            text: format(s_("NamespaceStorageSize|%{namespace_name} is now read-only. " \
+                            "Projects under this namespace are locked and actions are restricted."),
+                            namespace_name: root_namespace.name),
             link:
               {
                 text: s_("NamespaceStorageSize|Which actions are restricted?"),
@@ -121,9 +119,9 @@ module EE
 
         def namespace_below_size_limit_message_body
           {
-            text: s_("NamespaceStorageSize|If %{namespace_name} exceeds the storage quota, " \
-                    "all projects in the namespace will be locked and actions will be restricted.") %
-              { namespace_name: root_namespace.name },
+            text: format(s_("NamespaceStorageSize|If %{namespace_name} exceeds the storage quota, " \
+                            "all projects in the namespace will be locked and actions will be restricted."),
+                            namespace_name: root_namespace.name),
             link: {
               text: s_("NamespaceStorageSize|Which actions become restricted?"),
               href: help_page_path("user/read_only_namespaces")
@@ -138,7 +136,7 @@ module EE
 
           if root_namespace.additional_purchased_storage_size == 0
             s_("NamespaceStorageSize|You have reached the free storage limit of %{free_size_limit} " \
-              "on one or more projects.") % params
+               "on one or more projects.") % params
           else
             ns_("NamespaceStorageSize|%{namespace_name} contains %{locked_project_count} locked project",
                 "NamespaceStorageSize|%{namespace_name} contains %{locked_project_count} locked projects",
@@ -170,8 +168,8 @@ module EE
 
           if root_namespace.additional_purchased_storage_size > 0
             s_("NamespaceStorageSize|You have consumed all of your additional storage, please purchase " \
-              "more to unlock your projects over the free %{free_size_limit} limit. " \
-              "You can't %{repository_limits_description}") % params
+               "more to unlock your projects over the free %{free_size_limit} limit. " \
+               "You can't %{repository_limits_description}") % params
           else
             s_("NamespaceStorageSize|Please purchase additional storage to unlock your projects over the " \
                "free %{free_size_limit} project limit. You can't %{repository_limits_description}") % params
@@ -179,13 +177,14 @@ module EE
         end
 
         def repository_below_size_limit_message_text
-          s_("NamespaceStorageSize|If you reach 100%% storage capacity, you will not be able " \
-            "to: %{repository_limits_description}") % { repository_limits_description: repository_limits_description }
+          format(s_("NamespaceStorageSize|If you reach 100%% storage capacity, you will not be able " \
+                    "to: %{repository_limits_description}"),
+                    repository_limits_description: repository_limits_description)
         end
 
         def repository_limits_description
           s_("NamespaceStorageSize|push to your repository, create pipelines, create issues or add comments. " \
-            "To reduce storage capacity, delete unused repositories, artifacts, wikis, issues, and pipelines.")
+             "To reduce storage capacity, delete unused repositories, artifacts, wikis, issues, and pipelines.")
         end
 
         def current_usage_params

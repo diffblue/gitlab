@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Namespace::Storage::Notification do
+RSpec.describe EE::Namespace::Storage::Notification, feature_category: :subscription_cost_management do
   include NamespaceStorageHelpers
 
   let_it_be(:group, refind: true) { create(:group) }
@@ -170,11 +170,11 @@ RSpec.describe EE::Namespace::Storage::Notification do
 
       context 'when above the limit' do
         before do
-          expect_next_instance_of(Namespaces::Storage::RootSize) do |root_storage_size|
-            expect(root_storage_size).to receive(:above_size_limit?).and_return(true)
-            expect(root_storage_size).to receive(:usage_ratio).and_return(5.5).at_least(:once)
-            expect(root_storage_size).to receive(:current_size).and_return(55)
-            expect(root_storage_size).to receive(:limit).and_return(10)
+          allow_next_instance_of(Namespaces::Storage::RootSize) do |root_storage_size|
+            allow(root_storage_size).to receive(:above_size_limit?).and_return(true)
+            allow(root_storage_size).to receive(:usage_ratio).and_return(5.5).at_least(:once)
+            allow(root_storage_size).to receive(:current_size).and_return(55)
+            allow(root_storage_size).to receive(:limit).and_return(10)
           end
         end
 
@@ -206,8 +206,8 @@ RSpec.describe EE::Namespace::Storage::Notification do
 
       context 'when below the limit' do
         before do
-          expect_next_instance_of(Namespaces::Storage::RootSize) do |root_storage_size|
-            expect(root_storage_size).to receive(:above_size_limit?).and_return(false)
+          allow_next_instance_of(Namespaces::Storage::RootSize) do |root_storage_size|
+            allow(root_storage_size).to receive(:above_size_limit?).and_return(false)
           end
         end
 
