@@ -3,7 +3,8 @@
 module Groups
   module Security
     class PoliciesController < Groups::ApplicationController
-      before_action :authorize_group_security_policies!
+      before_action :authorize_group_security_policies!, except: :edit
+      before_action :authorize_modify_security_policy!, only: :edit
       before_action :validate_policy_configuration, only: :edit
 
       before_action do

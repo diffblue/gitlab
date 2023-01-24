@@ -17,7 +17,13 @@ export default {
     EMPTY_POLICY_PROJECT_DESCRIPTION,
     newPolicyButtonText: NEW_POLICY_BUTTON_TEXT,
   },
-  inject: ['emptyFilterSvgPath', 'emptyListSvgPath', 'namespaceType', 'newPolicyPath'],
+  inject: [
+    'disableScanPolicyUpdate',
+    'emptyFilterSvgPath',
+    'emptyListSvgPath',
+    'namespaceType',
+    'newPolicyPath',
+  ],
   props: {
     hasExistingPolicies: {
       type: Boolean,
@@ -31,6 +37,9 @@ export default {
     },
   },
   computed: {
+    emptyStatePrimaryButtonText() {
+      return this.disableScanPolicyUpdate ? '' : this.$options.i18n.newPolicyButtonText;
+    },
     emptyStateDescription() {
       return sprintf(
         this.hasPolicyProject
@@ -58,7 +67,7 @@ export default {
     key="empty-list-state"
     data-testid="empty-list-state"
     :primary-button-link="newPolicyPath"
-    :primary-button-text="$options.i18n.newPolicyButtonText"
+    :primary-button-text="emptyStatePrimaryButtonText"
     :svg-path="emptyListSvgPath"
     title=""
   >

@@ -51,7 +51,7 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
             full_path: policy_management_project.full_path,
             branch: policy_management_project.default_branch_or_main
           }.to_json)
-          expect(app.attributes['data-disable-scan-policy-update'].value).to eq('true')
+          expect(app.attributes['data-disable-scan-policy-update'].value).to eq('false')
           expect(app.attributes['data-policies-path'].value).to eq(
             "/groups/#{group.full_path}/-/security/policies"
           )
@@ -135,11 +135,10 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
             let_it_be(:group) { create(:group) }
             let_it_be(:policy_configuration) { nil }
 
-            it 'redirects to #index', :aggregate_failures do
+            it 'returns 404', :aggregate_failures do
               get edit
 
-              expect(response).to redirect_to(group_security_policies_path(group))
-              expect(flash[:alert]).to eq(_('Project does not have a policy configuration'))
+              expect(response).to have_gitlab_http_status(:not_found)
             end
           end
 
@@ -195,10 +194,12 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
     end
 
     context 'with unauthorized user' do
+      let_it_be(:new_user) { create(:user) }
+
       before do
-        group.add_reporter(user)
+        group.add_reporter(new_user)
         stub_licensed_features(security_orchestration_policies: true)
-        sign_in(user)
+        sign_in(new_user)
       end
 
       it 'returns 404' do

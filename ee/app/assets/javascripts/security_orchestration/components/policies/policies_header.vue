@@ -16,6 +16,7 @@ export default {
   inject: [
     'assignedPolicyProject',
     'disableSecurityPolicyProject',
+    'disableScanPolicyUpdate',
     'documentationPath',
     'newPolicyPath',
   ],
@@ -118,6 +119,7 @@ export default {
         {{ $options.i18n.viewPolicyProjectButtonText }}
       </gl-button>
       <gl-button
+        v-if="!disableScanPolicyUpdate"
         data-testid="new-policy-button"
         data-qa-selector="new_policy_button"
         variant="confirm"

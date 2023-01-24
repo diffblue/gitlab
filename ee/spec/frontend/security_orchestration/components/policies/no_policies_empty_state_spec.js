@@ -15,6 +15,7 @@ describe('NoPoliciesEmptyState component', () => {
   const findEmptyListState = () => wrapper.findByTestId('empty-list-state');
 
   const factory = ({
+    disableScanPolicyUpdate = false,
     hasExistingPolicies = false,
     hasPolicyProject = false,
     namespaceType = NAMESPACE_TYPES.PROJECT,
@@ -25,6 +26,7 @@ describe('NoPoliciesEmptyState component', () => {
         hasPolicyProject,
       },
       provide: {
+        disableScanPolicyUpdate,
         emptyFilterSvgPath: 'path/to/filter/svg',
         emptyListSvgPath: 'path/to/list/svg',
         namespaceType,
@@ -65,5 +67,17 @@ describe('NoPoliciesEmptyState component', () => {
     factory({ namespaceType });
     await nextTick();
     expect(findEmptyListState().text()).toContain(namespaceType);
+  });
+
+  it('does display the "New policy" button for non-owners', async () => {
+    factory();
+    await nextTick();
+    expect(findEmptyListState().attributes('primarybuttontext')).toBe('New policy');
+  });
+
+  it('does not display the "New policy" button for non-owners', async () => {
+    factory({ disableScanPolicyUpdate: true });
+    await nextTick();
+    expect(findEmptyListState().attributes('primarybuttontext')).toBe('');
   });
 });

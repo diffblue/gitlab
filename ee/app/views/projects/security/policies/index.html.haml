@@ -1,9 +1,11 @@
 - breadcrumb_title _("Policies")
 - @content_wrapper_class = 'js-security-policies-container-wrapper'
 - disable_security_policy_project = !can_update_security_orchestration_policy_project?(project)
+- disable_scan_policy_update = !can_modify_security_policy?(project)
 
 #js-security-policies-list{ data: { assigned_policy_project: assigned_policy_project(project).to_json,
   disable_security_policy_project: disable_security_policy_project.to_s,
+  disable_scan_policy_update: disable_scan_policy_update.to_s,
   documentation_path: help_page_path('user/application_security/policies/index.md'),
   empty_filter_svg_path: image_path('illustrations/issues.svg'),
   empty_list_svg_path: image_path('illustrations/security-dashboard_empty.svg'),

@@ -953,6 +953,7 @@ RSpec.describe ProjectPolicy, feature_category: :authentication_and_authorizatio
 
         it { is_expected.to be_allowed(:read_security_orchestration_policies) }
         it { is_expected.to be_allowed(:update_security_orchestration_policy_project) }
+        it { is_expected.to be_allowed(:modify_security_policy) }
       end
     end
 
@@ -983,6 +984,27 @@ RSpec.describe ProjectPolicy, feature_category: :authentication_and_authorizatio
           it { is_expected.to be_disallowed(:read_security_orchestration_policies) }
           it { is_expected.to be_disallowed(:update_security_orchestration_policy_project) }
         end
+      end
+    end
+
+    context 'when security_orchestration_policy_configuration is present' do
+      let_it_be(:security_policy_management_project) { create(:project) }
+      let(:current_user) { developer }
+
+      before do
+        create(:security_orchestration_policy_configuration, project: project, security_policy_management_project: security_policy_management_project)
+      end
+
+      context 'when current_user is developer of security_policy_management_project' do
+        before do
+          security_policy_management_project.add_developer(developer)
+        end
+
+        it { is_expected.to be_allowed(:modify_security_policy) }
+      end
+
+      context 'when current_user is not developer of security_policy_management_project' do
+        it { is_expected.to be_disallowed(:modify_security_policy) }
       end
     end
   end

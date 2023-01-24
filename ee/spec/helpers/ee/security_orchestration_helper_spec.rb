@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::SecurityOrchestrationHelper do
+RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_policy_management do
   let_it_be_with_reload(:project) { create(:project) }
   let_it_be_with_reload(:namespace) { create(:group, :public) }
 
@@ -112,7 +112,7 @@ RSpec.describe EE::SecurityOrchestrationHelper do
 
       before do
         allow(helper).to receive(:current_user) { owner }
-        allow(helper).to receive(:can?).with(owner, :update_security_orchestration_policy_project, project) { true }
+        allow(helper).to receive(:can?).with(owner, :modify_security_policy, project) { true }
       end
 
       subject { helper.orchestration_policy_data(project, policy_type, policy, approvers) }
@@ -133,7 +133,7 @@ RSpec.describe EE::SecurityOrchestrationHelper do
 
       context 'when scan policy update is disabled' do
         before do
-          allow(helper).to receive(:can?).with(owner, :update_security_orchestration_policy_project, project) { false }
+          allow(helper).to receive(:can?).with(owner, :modify_security_policy, project) { false }
         end
 
         it { is_expected.to match(base_data.merge(disable_scan_policy_update: 'true')) }
@@ -186,7 +186,7 @@ RSpec.describe EE::SecurityOrchestrationHelper do
 
       before do
         allow(helper).to receive(:current_user) { owner }
-        allow(helper).to receive(:can?).with(owner, :update_security_orchestration_policy_project, namespace) { true }
+        allow(helper).to receive(:can?).with(owner, :modify_security_policy, namespace) { true }
       end
 
       subject { helper.orchestration_policy_data(namespace, policy_type, policy, approvers) }
@@ -212,7 +212,7 @@ RSpec.describe EE::SecurityOrchestrationHelper do
       context 'when scan policy update is disabled' do
         before do
           allow(helper).to receive(:can?)
-            .with(owner, :update_security_orchestration_policy_project, namespace)
+            .with(owner, :modify_security_policy, namespace)
             .and_return(false)
         end
 

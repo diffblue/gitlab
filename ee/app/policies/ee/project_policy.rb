@@ -163,6 +163,20 @@ module EE
       end
 
       with_scope :subject
+      condition(:security_policy_project_available) do
+        @subject.security_orchestration_policy_configuration.present?
+      end
+
+      with_scope :subject
+      condition(:can_commit_to_security_policy_project) do
+        security_orchestration_policy_configuration = @subject.security_orchestration_policy_configuration
+
+        next unless security_orchestration_policy_configuration
+
+        Ability.allowed?(@user, :developer_access, security_orchestration_policy_configuration.security_policy_management_project)
+      end
+
+      with_scope :subject
       condition(:okrs_enabled) do
         @subject.okrs_mvc_feature_flag_enabled? && @subject.feature_available?(:okrs)
       end
@@ -268,11 +282,16 @@ module EE
       end
 
       rule { security_orchestration_policies_enabled & can?(:owner_access) }.policy do
+        enable :modify_security_policy
         enable :update_security_orchestration_policy_project
       end
 
       rule { security_orchestration_policies_enabled & auditor }.policy do
         enable :read_security_orchestration_policies
+      end
+
+      rule { security_orchestration_policies_enabled & security_policy_project_available & can_commit_to_security_policy_project }.policy do
+        enable :modify_security_policy
       end
 
       rule { security_dashboard_enabled & can?(:developer_access) }.policy do

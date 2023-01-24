@@ -185,6 +185,18 @@ module EE
         enable :ban_group_member
       end
 
+      condition(:security_policy_project_available) do
+        @subject.security_orchestration_policy_configuration.present?
+      end
+
+      condition(:can_commit_to_security_policy_project) do
+        security_orchestration_policy_configuration = @subject.security_orchestration_policy_configuration
+
+        next unless security_orchestration_policy_configuration
+
+        Ability.allowed?(@user, :developer_access, security_orchestration_policy_configuration.security_policy_management_project)
+      end
+
       # Owners can be banned from their own group except for top-level group
       # owners. This exception is made at the service layer
       # (Users::Abuse::GitAbuse::NamespaceThrottleService) where the ban record
@@ -397,6 +409,15 @@ module EE
         enable :read_security_orchestration_policies
       end
 
+      rule { security_orchestration_policies_enabled & can?(:owner_access) }.policy do
+        enable :update_security_orchestration_policy_project
+        enable :modify_security_policy
+      end
+
+      rule { security_orchestration_policies_enabled & security_policy_project_available & can_commit_to_security_policy_project }.policy do
+        enable :modify_security_policy
+      end
+
       rule { security_dashboard_enabled & developer }.policy do
         enable :read_group_security_dashboard
         enable :admin_vulnerability
@@ -506,10 +527,6 @@ module EE
       rule { can?(:owner_access) & group_level_compliance_pipeline_available }.enable :admin_compliance_pipeline_configuration
       rule { can?(:owner_access) & external_audit_events_available }.policy do
         enable :admin_external_audit_events
-      end
-
-      rule { security_orchestration_policies_enabled & can?(:owner_access) }.policy do
-        enable :update_security_orchestration_policy_project
       end
 
       # Special case to allow support bot assigning service desk

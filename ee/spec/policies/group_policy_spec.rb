@@ -2201,6 +2201,7 @@ RSpec.describe GroupPolicy do
 
           it { is_expected.to be_disallowed(:read_security_orchestration_policies) }
           it { is_expected.to be_disallowed(:update_security_orchestration_policy_project) }
+          it { is_expected.to be_disallowed(:modify_security_policy) }
         end
       end
     end
@@ -2210,25 +2211,49 @@ RSpec.describe GroupPolicy do
         stub_licensed_features(security_orchestration_policies: true)
       end
 
-      context 'with developer or maintainer role' do
-        where(role: %w[maintainer developer])
+      context 'when security_orchestration_policy_configuration is not present' do
+        context 'with developer or maintainer role' do
+          where(role: %w[maintainer developer])
 
-        with_them do
-          let(:current_user) { public_send(role) }
+          with_them do
+            let(:current_user) { public_send(role) }
 
-          it { is_expected.to be_allowed(:read_security_orchestration_policies) }
-          it { is_expected.to be_disallowed(:update_security_orchestration_policy_project) }
+            it { is_expected.to be_allowed(:read_security_orchestration_policies) }
+            it { is_expected.to be_disallowed(:update_security_orchestration_policy_project) }
+          end
+        end
+
+        context 'with owner role' do
+          where(role: %w[owner])
+
+          with_them do
+            let(:current_user) { public_send(role) }
+
+            it { is_expected.to be_allowed(:read_security_orchestration_policies) }
+            it { is_expected.to be_allowed(:update_security_orchestration_policy_project) }
+            it { is_expected.to be_allowed(:modify_security_policy) }
+          end
         end
       end
 
-      context 'with owner role' do
-        where(role: %w[owner])
+      context 'when security_orchestration_policy_configuration is present' do
+        let_it_be(:security_policy_management_project) { create(:project) }
+        let(:current_user) { developer }
 
-        with_them do
-          let(:current_user) { public_send(role) }
+        before do
+          create(:security_orchestration_policy_configuration, project: nil, namespace: group, security_policy_management_project: security_policy_management_project)
+        end
 
-          it { is_expected.to be_allowed(:read_security_orchestration_policies) }
-          it { is_expected.to be_allowed(:update_security_orchestration_policy_project) }
+        context 'when current_user is developer of security_policy_management_project' do
+          before do
+            security_policy_management_project.add_developer(developer)
+          end
+
+          it { is_expected.to be_allowed(:modify_security_policy) }
+        end
+
+        context 'when current_user is not developer of security_policy_management_project' do
+          it { is_expected.to be_disallowed(:modify_security_policy) }
         end
       end
     end
