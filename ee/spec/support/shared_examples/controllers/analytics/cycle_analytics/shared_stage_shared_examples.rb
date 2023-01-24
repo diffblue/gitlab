@@ -49,7 +49,7 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
     end
 
     it 'renders `forbidden` based on the response of the service object' do
-      expect_any_instance_of(Analytics::CycleAnalytics::Stages::ListService).to receive(:can?).and_return(false)
+      stub_licensed_features(cycle_analytics_for_groups: false)
 
       subject
 

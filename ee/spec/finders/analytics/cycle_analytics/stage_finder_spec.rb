@@ -9,6 +9,10 @@ RSpec.describe Analytics::CycleAnalytics::StageFinder do
 
   subject { described_class.new(parent: group, stage_id: stage_id[:id]).execute }
 
+  before do
+    stub_licensed_features(cycle_analytics_for_groups: true)
+  end
+
   context 'when looking up in-memory default stage by name exists' do
     it { expect(subject).not_to be_persisted }
     it { expect(subject.name).to eq(stage_id[:id]) }
@@ -35,7 +39,7 @@ RSpec.describe Analytics::CycleAnalytics::StageFinder do
 
   context 'when persisted stage cannot be found' do
     before do
-      stage_id[:id] = -1
+      stage_id[:id] = non_existing_record_id
     end
 
     it { expect { subject }.to raise_error(ActiveRecord::RecordNotFound) }
