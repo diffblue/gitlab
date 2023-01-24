@@ -1,11 +1,11 @@
 import { within } from '@testing-library/dom';
-import { GlIcon } from '@gitlab/ui';
+import { GlIcon, GlCollapse } from '@gitlab/ui';
 import ReportSection from 'ee/vulnerabilities/components/generic_report/report_section_graphql.vue';
-import { vulnerabilityDetailUrl } from 'ee_jest/security_dashboard/components/pipeline/mock_data';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { vulnerabilityDetails } from 'ee_jest/security_dashboard/components/pipeline/mock_data';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 const TEST_DATA = {
-  supportedTypes: [vulnerabilityDetailUrl],
+  supportedTypes: Object.values(vulnerabilityDetails),
   unsupportedTypes: [
     {
       type: 'Unsupported',
@@ -18,7 +18,7 @@ describe('ee/vulnerabilities/components/generic_report/report_section_graphql.vu
   let wrapper;
 
   const createWrapper = (options) =>
-    mountExtended(ReportSection, {
+    shallowMountExtended(ReportSection, {
       propsData: {
         reportItems: [...TEST_DATA.supportedTypes, ...TEST_DATA.unsupportedTypes],
       },
@@ -31,6 +31,7 @@ describe('ee/vulnerabilities/components/generic_report/report_section_graphql.vu
     withinWrapper().getByRole('heading', {
       name: /evidence/i,
     });
+  const findCollapsible = () => wrapper.findComponent(GlCollapse);
   const findReportsSection = () => wrapper.findByTestId('reports');
   const findAllReportRows = () => wrapper.findAll('[data-testid*="report-row"]');
   const findReportRowByType = (type) => wrapper.findByTestId(`report-row-${type}`);
@@ -51,11 +52,11 @@ describe('ee/vulnerabilities/components/generic_report/report_section_graphql.vu
       });
 
       it('collapses when the header is clicked', async () => {
-        expect(findReportsSection().isVisible()).toBe(true);
+        expect(findCollapsible().attributes('visible')).toBe('true');
 
         await findHeader().trigger('click');
 
-        expect(findReportsSection().isVisible()).toBe(false);
+        expect(findCollapsible().attributes('visible')).toBeUndefined();
       });
     });
 

@@ -1,5 +1,19 @@
 <script>
-import { GRAPHQL_TYPENAME_TO_COMPONENT_MAP } from './types/constants';
+const GRAPHQL_TYPENAME_TO_COMPONENT_MAP = {
+  VulnerabilityDetailUrl: () => import('./types/url.vue'),
+  VulnerabilityDetailDiff: () => import('./types/diff.vue'),
+  VulnerabilityDetailCode: () => import('./types/code.vue'),
+  VulnerabilityDetailFileLocation: () => import('./types/file_location.vue'),
+  VulnerabilityDetailModuleLocation: () => import('./types/module_location.vue'),
+  VulnerabilityDetailCommit: () => import('./types/commit.vue'),
+  VulnerabilityDetailValue: () => import('./types/value.vue'),
+  VulnerabilityDetailText: () => import('./types/value.vue'),
+  VulnerabilityDetailMarkdown: () => import('./types/markdown.vue'),
+  VulnerabilityDetailBoolean: () => import('./types/value.vue'),
+  VulnerabilityDetailInt: () => import('./types/value.vue'),
+};
+
+export const GRAPHQL_TYPENAMES = Object.keys(GRAPHQL_TYPENAME_TO_COMPONENT_MAP);
 
 export default {
   components: {
