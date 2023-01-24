@@ -18724,6 +18724,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="projectworkitemsiid"></a>`iid` | [`String`](#string) | IID of the issue. For example, "1". |
 | <a id="projectworkitemsiids"></a>`iids` | [`[String!]`](#string) | List of IIDs of work items. For example, `["1", "2"]`. |
 | <a id="projectworkitemsin"></a>`in` | [`[IssuableSearchableField!]`](#issuablesearchablefield) | Specify the fields to perform the search in. Defaults to `[TITLE, DESCRIPTION]`. Requires the `search` argument.'. |
+| <a id="projectworkitemsrequirementlegacywidget"></a>`requirementLegacyWidget` **{warning-solid}** | [`RequirementLegacyFilterInput`](#requirementlegacyfilterinput) | **Deprecated** in 15.9. Use work item IID filter instead. |
 | <a id="projectworkitemssearch"></a>`search` | [`String`](#string) | Search query for title or description. |
 | <a id="projectworkitemssort"></a>`sort` | [`WorkItemSort`](#workitemsort) | Sort work items by this criteria. |
 | <a id="projectworkitemsstate"></a>`state` | [`IssuableState`](#issuablestate) | Current state of this work item. |
@@ -25283,6 +25284,14 @@ Fields that are available when modifying release assets.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="releaseassetsinputlinks"></a>`links` | [`[ReleaseAssetLinkInput!]`](#releaseassetlinkinput) | List of asset links to associate to the release. |
+
+### `RequirementLegacyFilterInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="requirementlegacyfilterinputlegacyiids"></a>`legacyIids` | [`[String!]!`](#string) | List of legacy requirement IIDs of work items. or example `["1", "2"]`. |
 
 ### `SastCiConfigurationAnalyzersEntityInput`
 

@@ -90,19 +90,44 @@ RSpec.describe Issue, feature_category: :team_planning do
 
     describe '.for_requirement_iids' do
       let_it_be(:project) { create(:project) }
-      let_it_be(:requirement_1) { create(:work_item, :requirement, project: project).requirement }
-      let_it_be(:requirement_2) { create(:work_item, :requirement, project: project).requirement }
-      let_it_be(:requirement_3) { create(:work_item, :requirement, project: project).requirement }
-      let_it_be(:requirement_4) { create(:work_item, :requirement, project: project).requirement }
+      let_it_be(:requirement1) { create(:work_item, :requirement, project: project).requirement }
+      let_it_be(:requirement2) { create(:work_item, :requirement, project: project).requirement }
+      let_it_be(:requirement3) { create(:work_item, :requirement, project: project).requirement }
+      let_it_be(:requirement4) { create(:work_item, :requirement, project: project).requirement }
 
       context 'when issue is of type requirement' do
+        let(:iids) { [requirement1.iid, requirement3.iid, requirement4.iid] }
+
         it 'filters requirement issues by associated requirements iids' do
-          iids = [requirement_1.iid, requirement_3.iid, requirement_4.iid]
-          requirement_4.requirement_issue.update!(issue_type: WorkItems::Type.base_types[:issue])
+          issue4 = requirement4.requirement_issue
+          issue4.assign_attributes(
+            issue_type: WorkItems::Type.base_types[:issue],
+            work_item_type: WorkItems::Type.default_by_type(:issue)
+          )
+          # there should be no way to update a requirement to issue type, doing this to test the scope
+          issue4.save!(validate: false)
 
           requirement_issues = Issue.for_requirement_iids(iids)
 
-          expect(requirement_issues).to match_array([requirement_1.requirement_issue, requirement_3.requirement_issue])
+          expect(requirement_issues).to match_array([requirement1.requirement_issue, requirement3.requirement_issue])
+        end
+
+        it 'uses work_item_type_id to filter requirements' do
+          expect { Issue.for_requirement_iids(iids).to_a }.to make_queries_matching(
+            /"work_item_type"\."base_type" = #{WorkItems::Type.base_types[:requirement]}/
+          )
+        end
+
+        context 'when issue_type_uses_work_item_types_table feature flag is disabled' do
+          before do
+            stub_feature_flags(issue_type_uses_work_item_types_table: false)
+          end
+
+          it 'uses the issue_type column to filter requirements' do
+            expect { Issue.for_requirement_iids(iids).to_a }.to make_queries_matching(
+              /"issues"\."issue_type" = #{WorkItems::Type.base_types[:requirement]}/
+            )
+          end
         end
       end
     end

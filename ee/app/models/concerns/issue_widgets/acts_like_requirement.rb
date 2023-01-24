@@ -16,7 +16,15 @@ module IssueWidgets
       has_one :requirement, class_name: 'RequirementsManagement::Requirement'
 
       scope :for_requirement_iids, -> (requirements_iids) do
-        requirement.joins(:requirement)
+        base_scope = if Feature.enabled?(:issue_type_uses_work_item_types_table)
+                       joins(:work_item_type).where(
+                         work_item_type: { base_type: WorkItems::Type.base_types[:requirement] }
+                       )
+                     else
+                       requirement
+                     end
+
+        base_scope.joins(:requirement)
           .where(requirement: { iid: requirements_iids })
           .where('requirement.project_id = issues.project_id') # Prevents filtering too many rows by iids. Greatly increases performance.
       end

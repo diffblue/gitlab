@@ -98,6 +98,72 @@ RSpec.describe 'getting a work item list for a project', feature_category: :team
       end
     end
 
+    context 'with legacy requirement widget' do
+      let_it_be(:work_item1) { create(:work_item, :requirement, project: project) }
+      let_it_be(:work_item2) { create(:work_item, :requirement, project: project) }
+      let_it_be(:work_item3) { create(:work_item, :requirement, project: project) }
+      let_it_be(:work_item3_different_project) { create(:work_item, :requirement, iid: work_item3.iid) }
+
+      let(:fields) do
+        <<~QUERY
+        edges {
+          node {
+            id
+            widgets {
+              type
+              ... on WorkItemWidgetRequirementLegacy {
+                legacyIid
+              }
+            }
+          }
+        }
+        QUERY
+      end
+
+      before do
+        stub_licensed_features(requirements: true)
+      end
+
+      it 'returns work items including legacy iid', :aggregate_failures do
+        post_graphql(query, current_user: current_user)
+
+        expect(item_ids).to contain_exactly(
+          work_item1.to_global_id.to_s,
+          work_item2.to_global_id.to_s,
+          work_item3.to_global_id.to_s
+        )
+
+        expect(widgets_data).to include(
+          a_hash_including('legacyIid' => work_item1.requirement.iid),
+          a_hash_including('legacyIid' => work_item2.requirement.iid),
+          a_hash_including('legacyIid' => work_item3.requirement.iid)
+        )
+      end
+
+      it 'avoids N+1 queries', :use_sql_query_cache do
+        control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+          post_graphql(query, current_user: current_user)
+        end
+
+        create_list(:work_item, 3, :requirement, project: project)
+
+        expect { post_graphql(query, current_user: current_user) }.not_to exceed_all_query_limit(control)
+      end
+
+      context 'when filtering' do
+        context 'with legacy requirement widget' do
+          let(:item_filter_params) { "requirementLegacyWidget: { legacyIids: [\"#{work_item2.requirement.iid}\"] }" }
+
+          it 'filters by legacy IID argument' do
+            post_graphql(query, current_user: current_user)
+
+            expect(response).to have_gitlab_http_status(:success)
+            expect(item_ids).to contain_exactly(work_item2.to_global_id.to_s)
+          end
+        end
+      end
+    end
+
     describe 'fetching work item notes widget' do
       let(:work_item) { create(:work_item, :issue, project: project) }
       let(:item_filter_params) { { iid: work_item.iid.to_s } }

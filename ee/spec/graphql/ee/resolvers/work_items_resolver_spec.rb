@@ -12,12 +12,12 @@ RSpec.describe Resolvers::WorkItemsResolver do
     project.add_reporter(user)
   end
 
-  describe '#resolve' do
-    context 'with status widget arguments' do
-      let_it_be(:work_item1) { create(:work_item, :satisfied_status, project: project) }
-      let_it_be(:work_item2) { create(:work_item, :failed_status, project: project) }
-      let_it_be(:work_item3) { create(:work_item, :requirement, project: project) }
+  describe '#resolve', :aggregate_failures do
+    let_it_be(:work_item1) { create(:work_item, :satisfied_status, project: project) }
+    let_it_be(:work_item2) { create(:work_item, :failed_status, project: project) }
+    let_it_be(:work_item3) { create(:work_item, :requirement, project: project) }
 
+    context 'with status widget arguments', feature_category: :requirements do
       it 'filters work items by status' do
         expect(resolve_items(status_widget: { status: 'passed' })).to contain_exactly(work_item1)
         expect(resolve_items(status_widget: { status: 'failed' })).to contain_exactly(work_item2)
@@ -33,6 +33,26 @@ RSpec.describe Resolvers::WorkItemsResolver do
           expect(resolve_items(status_widget: { status: 'passed' }))
             .to contain_exactly(work_item1, work_item2, work_item3)
         end
+      end
+    end
+
+    context 'with legacy requirement widget arguments', feature_category: :requirements do
+      let_it_be(:work_item_from_other_project) do
+        create(:work_item, :requirement, project: create(:project), iid: work_item1.iid)
+      end
+
+      it 'filters work items by legacy iid' do
+        expect(resolve_items(
+          requirement_legacy_widget: { legacy_iids: [work_item1.requirement.iid.to_s] }
+        )).to contain_exactly(work_item1)
+
+        expect(resolve_items(
+          requirement_legacy_widget: { legacy_iids: [work_item1.requirement.iid.to_s, work_item2.requirement.iid.to_s] }
+        )).to contain_exactly(work_item1, work_item2)
+
+        expect(resolve_items(
+          requirement_legacy_widget: { legacy_iids: ['nonsense'] }
+        )).to be_empty
       end
     end
   end
