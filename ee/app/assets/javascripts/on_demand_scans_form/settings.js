@@ -5,6 +5,7 @@ import { __, s__ } from '~/locale';
 export const ERROR_RUN_SCAN = 'ERROR_RUN_SCAN';
 export const ERROR_FETCH_SCANNER_PROFILES = 'ERROR_FETCH_SCANNER_PROFILES';
 export const ERROR_FETCH_SITE_PROFILES = 'ERROR_FETCH_SITE_PROFILES';
+export const ERROR_FETCH_RUNNER_TAGS = 'ERROR_FETCH_RUNNER_TAGS';
 
 export const ERROR_MESSAGES = {
   [ERROR_RUN_SCAN]: s__('OnDemandScans|Could not run the scan. Please try again.'),
@@ -13,6 +14,9 @@ export const ERROR_MESSAGES = {
   ),
   [ERROR_FETCH_SITE_PROFILES]: s__(
     'OnDemandScans|Could not fetch site profiles. Please refresh the page, or try again later.',
+  ),
+  [ERROR_FETCH_RUNNER_TAGS]: s__(
+    'OnDemandScans|Unable to fetch runner tags. Try reloading the page.',
   ),
 };
 

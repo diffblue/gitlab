@@ -29131,6 +29131,9 @@ msgstr ""
 msgid "OnDemandScans|No %{profileType} profiles found for DAST"
 msgstr ""
 
+msgid "OnDemandScans|No matching results"
+msgstr ""
+
 msgid "OnDemandScans|On-demand Scans"
 msgstr ""
 
@@ -29147,6 +29150,9 @@ msgid "OnDemandScans|Repeats"
 msgstr ""
 
 msgid "OnDemandScans|Run scan"
+msgstr ""
+
+msgid "OnDemandScans|Runner tags (optional)"
 msgstr ""
 
 msgid "OnDemandScans|Save and run scan"
@@ -29171,6 +29177,9 @@ msgid "OnDemandScans|Scan schedule"
 msgstr ""
 
 msgid "OnDemandScans|Scan type"
+msgstr ""
+
+msgid "OnDemandScans|Select runner tags"
 msgstr ""
 
 msgid "OnDemandScans|Start by creating a new profile. Profiles make it easy to save and reuse configuration details for GitLab’s security tools."
@@ -29201,6 +29210,12 @@ msgid "OnDemandScans|There are no scheduled scans."
 msgstr ""
 
 msgid "OnDemandScans|Timezone"
+msgstr ""
+
+msgid "OnDemandScans|Unable to fetch runner tags. Try reloading the page."
+msgstr ""
+
+msgid "OnDemandScans|Use runner tags to select specific runners for this security scan. %{linkStart}What are runner tags?%{linkEnd}"
 msgstr ""
 
 msgid "OnDemandScans|Verify configuration"
