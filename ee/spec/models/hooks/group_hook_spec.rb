@@ -2,39 +2,25 @@
 
 require 'spec_helper'
 
-RSpec.describe GroupHook do
+RSpec.describe GroupHook, feature_category: :integrations do
+  include_examples 'a hook that does not get automatically disabled on failure' do
+    let_it_be(:group) { create(:group) }
+
+    let(:hook) { build(:group_hook, group: group) }
+    let(:hook_factory) { :group_hook }
+    let(:default_factory_arguments) { { group: group } }
+
+    def find_hooks
+      group.hooks
+    end
+  end
+
   describe 'associations' do
     it { is_expected.to belong_to :group }
   end
 
   it_behaves_like 'includes Limitable concern' do
     subject { build(:group_hook) }
-  end
-
-  describe 'executable?' do
-    let!(:hooks) do
-      [
-        [0, Time.current],
-        [0, 1.minute.from_now],
-        [1, 1.minute.from_now],
-        [3, 1.minute.from_now],
-        [4, nil],
-        [4, 1.day.ago],
-        [4, 1.minute.from_now],
-        [0, nil],
-        [0, 1.day.ago],
-        [1, nil],
-        [1, 1.day.ago],
-        [3, nil],
-        [3, 1.day.ago]
-      ].map do |(recent_failures, disabled_until)|
-        create(:service_hook, recent_failures: recent_failures, disabled_until: disabled_until)
-      end
-    end
-
-    it 'is always true' do
-      expect(hooks).to all(be_executable)
-    end
   end
 
   describe '#parent' do
