@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Edit group settings', :js, feature_category: :authentication_and_authorization do
-  include Select2Helper
+  include LdapHelpers
 
   let(:user) { create(:user) }
   let(:group) { create(:group, path: 'foo') }
@@ -16,6 +16,12 @@ RSpec.describe 'Edit group settings', :js, feature_category: :authentication_and
   context 'LDAP sync method' do
     before do
       allow(Gitlab.config.ldap).to receive(:enabled).and_return(true)
+
+      groups = [instance_double(EE::Gitlab::Auth::Ldap::Group, cn: 'my-group-cn')]
+
+      adapter = ldap_adapter
+      allow(Gitlab::Auth::Ldap::Adapter).to receive(:new).and_return(adapter)
+      allow(adapter).to receive_messages(groups: groups)
     end
 
     context 'when the LDAP group sync filter feature is available' do
@@ -29,7 +35,8 @@ RSpec.describe 'Edit group settings', :js, feature_category: :authentication_and
         page.within('form#new_ldap_group_link') do
           choose('sync_method_group')
 
-          select2 'my-group-cn', from: '#ldap_group_link_cn'
+          find('.gl-dropdown-toggle').click
+          find('.gl-dropdown-item', text: 'my-group-cn').click
           select 'Developer', from: 'ldap_group_link_group_access'
 
           click_button 'Add synchronization'

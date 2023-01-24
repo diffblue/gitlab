@@ -1,5 +1,5 @@
 import initLDAPGroupLinks from 'ee/groups/ldap_group_links';
-import initLDAPGroupsSelect from 'ee/ldap_groups_select';
+import initLDAPGroupSelect from 'ee/ldap';
 
-initLDAPGroupsSelect();
+initLDAPGroupSelect();
 initLDAPGroupLinks();
