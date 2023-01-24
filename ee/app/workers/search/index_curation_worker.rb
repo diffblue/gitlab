@@ -24,7 +24,10 @@ module Search
       @curator_settings = {
         dry_run: Feature.enabled?(:search_curation_dry_run, type: :ops),
         ignore_patterns: [/.*/],
-        include_patterns: curation_include_patterns
+        include_patterns: curation_include_patterns,
+        max_shard_size_gb: ::Gitlab::CurrentSettings.search_max_shard_size_gb,
+        max_docs_denominator: ::Gitlab::CurrentSettings.search_max_docs_denominator,
+        min_docs_before_rollover: ::Gitlab::CurrentSettings.search_min_docs_before_rollover
       }
     end
 
@@ -32,7 +35,7 @@ module Search
       return unless Feature.enabled?(:search_index_curation)
 
       in_lock(self.class.name.underscore, ttl: 10.minutes, retries: 10, sleep_sec: 1) do
-        ::Gitlab::Search::IndexCurator.curate(settings: curator_settings).each do |rolled_over_index|
+        ::Gitlab::Search::IndexCurator.curate(curator_settings).each do |rolled_over_index|
           logger.info("Rollover: #{rolled_over_index[:from]} => #{rolled_over_index[:to]}")
         end
       end

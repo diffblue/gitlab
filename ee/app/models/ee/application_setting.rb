@@ -41,6 +41,18 @@ module EE
                 presence: true,
                 numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 90 }
 
+      validates :search_max_shard_size_gb,
+                presence: true,
+                numericality: { only_integer: true, greater_than: 0 }
+
+      validates :search_max_docs_denominator,
+                presence: true,
+                numericality: { only_integer: true, greater_than: 0 }
+
+      validates :search_min_docs_before_rollover,
+                presence: true,
+                numericality: { only_integer: true, greater_than: 0 }
+
       validates :elasticsearch_max_bulk_size_mb,
                 presence: true,
                 numericality: { only_integer: true, greater_than: 0 }
