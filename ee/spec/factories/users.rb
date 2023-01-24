@@ -20,11 +20,23 @@ FactoryBot.modify do
     trait :service_user do
       user_type { :service_user }
     end
+
+    trait :arkose_verified do
+      after(:create) do |user|
+        create(:user_custom_attribute, key: 'arkose_risk_band', value: 'Low', user: user)
+      end
+    end
   end
 
   factory :omniauth_user do
     transient do
       saml_provider { nil }
+    end
+
+    trait :arkose_verified do
+      after(:create) do |user|
+        create(:user_custom_attribute, key: 'arkose_risk_band', value: 'Low', user: user)
+      end
     end
   end
 end

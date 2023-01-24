@@ -16,7 +16,17 @@ feature_category: :authentication_and_authorization do
       stub_application_setting(require_admin_approval_after_user_signup: false)
       stub_feature_flags(identity_verification_credit_card: false)
       stub_feature_flags(soft_email_confirmation: false)
+
+      # Identity Verification page requires the user to have an
+      # `arkose_risk_band` to determine what verification methods will be
+      # required. Here, we stub the `arkose_risk_band` method to return a valid
+      # risk band value instead of solving the actual ArkoseLabs challenge
       stub_feature_flags(arkose_labs_signup_challenge: false)
+      allow_next_found_instance_of(User) do |user|
+        # Having a 'low' ArkoseLabs risk band will require the user to verify
+        # their email
+        allow(user).to receive(:arkose_risk_band).and_return('low')
+      end
 
       sign_up
     end

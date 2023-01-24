@@ -45,6 +45,13 @@ module IdentityVerifiable
     credit_card_validation.present?
   end
 
+  def arkose_risk_band
+    risk_band_attr = custom_attributes.by_key('arkose_risk_band').first
+    return unless risk_band_attr.present?
+
+    risk_band_attr.value.downcase
+  end
+
   private
 
   def verification_state
@@ -61,13 +68,6 @@ module IdentityVerifiable
 
   def email_verified?
     confirmed?
-  end
-
-  def arkose_risk_band
-    risk_band_attr = custom_attributes.by_key('arkose_risk_band').first
-    return unless risk_band_attr.present?
-
-    risk_band_attr.value.downcase
   end
 
   def credit_card_verification_enabled?

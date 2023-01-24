@@ -4,9 +4,11 @@ module Users
   class IdentityVerificationController < ApplicationController
     include AcceptsPendingInvitations
     include ActionView::Helpers::DateHelper
+    include ArkoseLabsCSP
 
     skip_before_action :authenticate_user!
-    before_action :require_unconfirmed_user!
+    before_action :require_unverified_user!
+    before_action :require_arkose_verification!, except: [:arkose_labs_challenge, :verify_arkose_labs_session]
 
     feature_category :authentication_and_authorization
 
@@ -66,11 +68,31 @@ module Users
       render json: { status: :success }
     end
 
+    def arkose_labs_challenge; end
+
+    def verify_arkose_labs_session
+      unless verify_arkose_labs_token
+        flash[:alert] = _('IdentityVerification|Complete verification to sign in.')
+        return render action: :arkose_labs_challenge
+      end
+
+      redirect_to action: :show
+    end
+
     private
 
-    def require_unconfirmed_user!
+    def require_unverified_user!
       @user = User.find_by_id(session[:verification_user_id])
+
       access_denied! if !@user || @user.identity_verified?
+    end
+
+    def require_arkose_verification!
+      return unless Feature.enabled?(:arkose_labs_oauth_signup_challenge)
+      return unless @user.identities.any?
+      return unless @user.arkose_risk_band.blank?
+
+      redirect_to action: :arkose_labs_challenge
     end
 
     def log_identity_verification(method, event, reason = nil)
@@ -127,6 +149,13 @@ module Users
 
     def verify_phone_verification_code_params
       params.require(:identity_verification).permit(:verification_code)
+    end
+
+    def verify_arkose_labs_token
+      return false unless params[:arkose_labs_token].present?
+
+      result = Arkose::TokenVerificationService.new(session_token: params[:arkose_labs_token], user: @user).execute
+      result.success?
     end
   end
 end

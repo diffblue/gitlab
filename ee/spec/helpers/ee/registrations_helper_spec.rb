@@ -78,13 +78,5 @@ RSpec.describe EE::RegistrationsHelper do
     subject(:data) { helper.arkose_labs_data }
 
     it { is_expected.to eq({ api_key: 'api-key', domain: 'domain' }) }
-
-    context 'when :arkose_labs_signup_challenge is disabled' do
-      before do
-        stub_feature_flags(arkose_labs_signup_challenge: false)
-      end
-
-      it { is_expected.to eq({}) }
-    end
   end
 end

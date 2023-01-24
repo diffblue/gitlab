@@ -168,4 +168,20 @@ RSpec.describe IdentityVerifiable do
       it { is_expected.to eq true }
     end
   end
+
+  describe('#arkose_risk_band') do
+    subject { user.arkose_risk_band }
+
+    context 'when user does not have an arkose labs risk band' do
+      it { is_expected.to be_nil }
+    end
+
+    context 'when user has an arkose labs risk band' do
+      before do
+        add_user_risk_band('High')
+      end
+
+      it { is_expected.to eq 'high' }
+    end
+  end
 end

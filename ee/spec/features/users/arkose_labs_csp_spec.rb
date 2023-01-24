@@ -44,7 +44,8 @@ RSpec.describe 'ArkoseLabs content security policy', feature_category: :authenti
     before do
       stub_feature_flags(
         arkose_labs_signup_challenge: false,
-        arkose_labs_login_challenge: feature_flag_state
+        arkose_labs_login_challenge: feature_flag_state,
+        arkose_labs_oauth_signup_challenge: false
       )
     end
 
@@ -57,10 +58,25 @@ RSpec.describe 'ArkoseLabs content security policy', feature_category: :authenti
     before do
       stub_feature_flags(
         arkose_labs_login_challenge: false,
-        arkose_labs_signup_challenge: feature_flag_state
+        arkose_labs_signup_challenge: feature_flag_state,
+        arkose_labs_oauth_signup_challenge: false
       )
     end
 
     it_behaves_like 'configures Content Security Policy headers correctly', RegistrationsController
+  end
+
+  context 'when in identity verification page' do
+    let(:page_path) { arkose_labs_challenge_identity_verification_path }
+
+    before do
+      stub_feature_flags(
+        arkose_labs_login_challenge: false,
+        arkose_labs_signup_challenge: false,
+        arkose_labs_oauth_signup_challenge: feature_flag_state
+      )
+    end
+
+    it_behaves_like 'configures Content Security Policy headers correctly', Users::IdentityVerificationController
   end
 end

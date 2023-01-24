@@ -9,8 +9,10 @@ module ArkoseLabsCSP
 
       allow_for_login = self == SessionsController && Feature.enabled?(:arkose_labs_login_challenge)
       allow_for_signup = self == RegistrationsController && Feature.enabled?(:arkose_labs_signup_challenge)
+      allow_for_identity_verification = self == Users::IdentityVerificationController && \
+        Feature.enabled?(:arkose_labs_oauth_signup_challenge)
 
-      next unless allow_for_login || allow_for_signup
+      next unless allow_for_login || allow_for_signup || allow_for_identity_verification
 
       default_script_src = policy.directives['script-src'] || policy.directives['default-src']
       script_src_values = Array.wrap(default_script_src) | ["https://*.arkoselabs.com"]
