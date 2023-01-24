@@ -58,7 +58,7 @@ class GroupSamlGroupSyncWorker
     default_membership_role = top_level_group.saml_provider.default_membership_role
     return false if top_level_group.max_member_access_for_user(user) == default_membership_role
 
-    top_level_group.add_member(user, default_membership_role, blocking_refresh: false)
+    top_level_group.add_member(user, default_membership_role)
   end
 
   def group_links
