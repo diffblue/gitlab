@@ -120,9 +120,10 @@ module QA
               within_element(:file_template_repositories_container) do
                 clear_current_selection_if_present
                 expand_select_list
+
+                search_and_select(path)
+                click_element(:save_changes_button)
               end
-              search_and_select(path)
-              click_element(:save_changes_button)
             end
           end
         end
