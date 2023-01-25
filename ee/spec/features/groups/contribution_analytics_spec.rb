@@ -52,7 +52,7 @@ RSpec.describe 'Groups > Contribution Analytics', :js, feature_category: :value_
         expect(page).to have_link 'Last month',
           href: group_contribution_analytics_path(group, start_date: 1.month.ago.to_date)
         expect(page).to have_link 'Last 3 months',
-          href: group_contribution_analytics_path(group, start_date: 3.months.ago.to_date)
+          href: group_contribution_analytics_path(group, start_date: (3.months.ago + 1.day).to_date)
       end
     end
 
