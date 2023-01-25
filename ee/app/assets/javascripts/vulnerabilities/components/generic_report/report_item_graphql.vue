@@ -11,6 +11,7 @@ const GRAPHQL_TYPENAME_TO_COMPONENT_MAP = {
   VulnerabilityDetailMarkdown: () => import('./types/markdown.vue'),
   VulnerabilityDetailBoolean: () => import('./types/value.vue'),
   VulnerabilityDetailInt: () => import('./types/value.vue'),
+  VulnerabilityDetailList: () => import('./types/list_graphql.vue'),
 };
 
 export const GRAPHQL_TYPENAMES = Object.keys(GRAPHQL_TYPENAME_TO_COMPONENT_MAP);
