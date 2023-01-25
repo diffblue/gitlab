@@ -113,15 +113,15 @@ RSpec.describe 'OKR', :js, feature_category: :product_planning do
 
       it 'toggles widget body', :aggregate_failures do
         page.within('[data-testid="work-item-tree"]') do
-          expect(page).to have_selector('[data-testid="tree-body"]')
+          expect(page).to have_selector('[data-testid="widget-body"]')
 
           click_button 'Collapse'
 
-          expect(page).not_to have_selector('[data-testid="tree-body"]')
+          expect(page).not_to have_selector('[data-testid="widget-body"]')
 
           click_button 'Expand'
 
-          expect(page).to have_selector('[data-testid="tree-body"]')
+          expect(page).to have_selector('[data-testid="widget-body"]')
         end
       end
 
