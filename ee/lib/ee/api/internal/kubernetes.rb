@@ -9,7 +9,7 @@ module EE
             namespace 'kubernetes' do
               before { check_agent_token }
 
-              namespace 'modules/starboard_vulnerability', urgency: :low do
+              namespace 'modules/starboard_vulnerability' do
                 desc 'PUT starboard vulnerability' do
                   detail 'Idempotently creates a security vulnerability from starboard'
                 end
@@ -64,7 +64,7 @@ module EE
                 end
 
                 route_setting :authentication, cluster_agent_token_allowed: true
-                put '/', feature_category: :container_scanning do
+                put '/', feature_category: :container_scanning, urgency: :low do
                   not_found! if agent.project.nil?
 
                   result = ::Vulnerabilities::StarboardVulnerabilityCreateService.new(
@@ -102,7 +102,7 @@ module EE
                 end
 
                 route_setting :authentication, cluster_agent_token_allowed: true
-                get '/policies_configuration', feature_category: :container_scanning do
+                get '/policies_configuration', feature_category: :container_scanning, urgency: :low do
                   not_found! if agent.project.nil?
                   not_found! unless agent.project.licensed_feature_available?(:security_orchestration_policies)
 
