@@ -25,7 +25,9 @@ module Vulnerabilities
           @current_user,
           finding_id: vulnerability_finding.id,
           state: @state,
-          present_on_default_branch: @present_on_default_branch
+          present_on_default_branch: @present_on_default_branch,
+          comment: params[:comment],
+          dismissal_reason: params[:dismissal_reason]
         ).execute
       else
         vulnerability = Vulnerability.find(vulnerability_finding.vulnerability_id)

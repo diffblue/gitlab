@@ -38,15 +38,30 @@ RSpec.describe Security::AutoFixService do
     end
 
     context 'when remediations' do
-      let!(:vulnerability) do
+      let!(:vulnerability_finding) do
         create(:vulnerabilities_finding_with_remediation, :yarn_remediation, :identifier,
                project: project,
                report_type: :dependency_scanning,
-               summary: 'Test remediation')
+               summary: 'Test remediation',
+               vulnerability: vulnerability)
       end
 
+      let(:vulnerability) { create(:vulnerability) }
+
       before do
-        create(:vulnerabilities_finding_pipeline, finding: vulnerability, pipeline: pipeline)
+        create(:vulnerabilities_finding_pipeline, finding: vulnerability_finding, pipeline: pipeline)
+
+        # Added the foloowing two stubbing just to pass the specs as this service is currently not in use
+        # we can update this and also refactor the service for feedback deprecation when we will work on this service
+        allow_next_instance_of(Vulnerabilities::FindOrCreateFromSecurityFindingService) do |instance|
+          allow(instance).to receive(:execute)
+            .and_return(ServiceResponse.success(payload: { vulnerability: vulnerability }))
+        end
+
+        allow_next_instance_of(VulnerabilityMergeRequestLinks::CreateService) do |instance|
+          allow(instance).to receive(:execute)
+            .and_return(ServiceResponse.success(payload: { payload: {} }))
+        end
       end
 
       it 'creates MR' do
