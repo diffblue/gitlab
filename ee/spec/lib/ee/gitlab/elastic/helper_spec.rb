@@ -684,4 +684,10 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
       end
     end
   end
+
+  describe '.build_es_id' do
+    it 'returns a calculated es_id' do
+      expect(described_class.build_es_id(es_type: 'project', target_id: 123)).to eq('project_123')
+    end
+  end
 end

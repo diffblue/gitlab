@@ -69,6 +69,10 @@ module Gitlab
           # Converts the hash from connection_settings into a percent encoded URL string.
           Addressable::URI.new(url_settings).normalize.to_s
         end
+
+        def build_es_id(es_type:, target_id:)
+          "#{es_type}_#{target_id}"
+        end
       end
 
       def default_settings

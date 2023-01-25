@@ -14,7 +14,7 @@ module Elastic
       end
 
       def es_id
-        "#{es_type}_#{target.id}"
+        ::Gitlab::Elastic::Helper.build_es_id(es_type: es_type, target_id: target.id)
       end
 
       def namespace_ancestry
