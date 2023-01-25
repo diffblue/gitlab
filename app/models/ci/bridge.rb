@@ -190,6 +190,10 @@ module Ci
     def persisted_environment
     end
 
+    def deployment_job?
+      false
+    end
+
     def execute_hooks
       raise NotImplementedError
     end
