@@ -129,7 +129,7 @@ export default {
     </div>
     <div v-for="(owner, index) in visibleCodeOwners" :key="owner.id" data-testid="code-owners">
       <span v-if="commaSeparateList && index > 0" data-testid="comma-separator">, </span>
-      <gl-link :href="owner.webPath" target="_blank" :title="$options.i18n.about">
+      <gl-link :href="owner.webPath" target="_blank">
         {{ owner.name }}
       </gl-link>
     </div>
@@ -145,7 +145,7 @@ export default {
           >,
         </span>
         <span v-else data-testid="and-separator" class="gl-ml-2"> {{ $options.i18n.and }} </span>
-        <gl-link :href="owner.webPath" target="_blank" :title="$options.i18n.about">
+        <gl-link :href="owner.webPath" target="_blank">
           {{ owner.name }}
         </gl-link>
       </div>
