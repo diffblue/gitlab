@@ -27,39 +27,31 @@ describe('Secure File Metadata Button', () => {
   };
 
   describe('when a secure file contains metadata', () => {
-    describe('when the user is an admin', () => {
-      it('displays the button', () => {
-        createWrapper(secureFileWithMetadata, true);
+    it('displays the button when the user is an admin', () => {
+      createWrapper(secureFileWithMetadata, true);
 
-        expect(findButton().isVisible()).toBe(true);
-        expect(findButton().attributes('aria-label')).toBe('View File Metadata');
-      });
+      expect(findButton().isVisible()).toBe(true);
+      expect(findButton().attributes('aria-label')).toBe('View File Metadata');
     });
 
-    describe('when the user is not an admin', () => {
-      it('does not display the button', () => {
-        createWrapper(secureFileWithMetadata, false);
+    it('does not display the button when the user is not an admin', () => {
+      createWrapper(secureFileWithMetadata, false);
 
-        expect(findButton().exists()).toBe(false);
-      });
+      expect(findButton().exists()).toBe(false);
     });
   });
 
   describe('when a secure file contains no metadata', () => {
-    describe('when the user is an admin', () => {
-      it('does not display the button', () => {
-        createWrapper(secureFileWithoutMetadata, true);
+    it('does not display the button when the user is an admin', () => {
+      createWrapper(secureFileWithoutMetadata, true);
 
-        expect(findButton().exists()).toBe(false);
-      });
+      expect(findButton().exists()).toBe(false);
     });
 
-    describe('when the user is not an admin', () => {
-      it('does not display the button', () => {
-        createWrapper(secureFileWithoutMetadata, false);
+    it('does not display the button when the user is not an admin', () => {
+      createWrapper(secureFileWithoutMetadata, false);
 
-        expect(findButton().exists()).toBe(false);
-      });
+      expect(findButton().exists()).toBe(false);
     });
   });
 });

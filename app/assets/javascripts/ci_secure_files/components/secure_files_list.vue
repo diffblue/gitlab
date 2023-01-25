@@ -288,6 +288,11 @@ export default {
       </gl-sprintf>
     </gl-modal>
 
-    <metadata-modal :secure-file="metadataSecureFile" modal-id="$options.metadataModalId" />
+    <metadata-modal
+      :name="metadataSecureFile.name"
+      :file-extension="metadataSecureFile.file_extension"
+      :metadata="metadataSecureFile.metadata"
+      modal-id="$options.metadataModalId"
+    />
   </div>
 </template>
