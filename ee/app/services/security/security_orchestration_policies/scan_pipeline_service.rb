@@ -5,17 +5,7 @@ module Security
     class ScanPipelineService
       SCAN_VARIABLES = {
         secret_detection: {
-          'SECRET_DETECTION_HISTORIC_SCAN' => 'false',
-          'SECRET_DETECTION_DISABLED' => nil
-        },
-        container_scanning: {
-          'CONTAINER_SCANNING_DISABLED' => nil
-        },
-        sast: {
-          'SAST_DISABLED' => nil
-        },
-        dependency_scanning: {
-          'DEPENDENCY_SCANNING_DISABLED' => nil
+          'SECRET_DETECTION_HISTORIC_SCAN' => 'false'
         }
       }.freeze
 
