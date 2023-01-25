@@ -79,5 +79,34 @@ RSpec.describe Security::ProcessScanResultPolicyWorker do
         worker.perform(configuration.project_id, 'invalid_id')
       end
     end
+
+    describe "lease acquisition" do
+      let(:lease_key) { described_class.lease_key(configuration.project, configuration) }
+
+      subject { worker.perform(configuration.project_id, configuration.id) }
+
+      it "obtains a #{described_class::LEASE_TTL} second exclusive lease" do
+        expect(Gitlab::ExclusiveLeaseHelpers::SleepingLock)
+          .to receive(:new)
+                .with(lease_key, hash_including(timeout: described_class::LEASE_TTL))
+                .and_call_original
+
+        subject
+      end
+
+      context 'when lease is not obtained' do
+        before do
+          Gitlab::ExclusiveLease.new(lease_key, timeout: described_class::LEASE_TTL).try_obtain
+        end
+
+        it 'does not invoke Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService' do
+          allow_next_instance_of(Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService) do |service|
+            expect(service).not_to receive(:execute)
+          end
+
+          expect { subject }.to raise_error(Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError)
+        end
+      end
+    end
   end
 end
