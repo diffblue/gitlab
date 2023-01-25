@@ -7,10 +7,9 @@ module ArkoseLabsCSP
     content_security_policy do |policy|
       next unless policy.directives.present?
 
-      allow_for_login = self == SessionsController && Feature.enabled?(:arkose_labs_login_challenge)
-      allow_for_signup = self == RegistrationsController && Feature.enabled?(:arkose_labs_signup_challenge)
-      allow_for_identity_verification = self == Users::IdentityVerificationController && \
-        Feature.enabled?(:arkose_labs_oauth_signup_challenge)
+      allow_for_login = Feature.enabled?(:arkose_labs_login_challenge)
+      allow_for_signup = Feature.enabled?(:arkose_labs_signup_challenge)
+      allow_for_identity_verification = Feature.enabled?(:arkose_labs_oauth_signup_challenge)
 
       next unless allow_for_login || allow_for_signup || allow_for_identity_verification
 
