@@ -48,6 +48,25 @@ sole discretion of GitLab Inc.
 
 <div class="announcement-milestone">
 
+## Announced in 15.9
+
+<div class="deprecation removal-170 breaking-change">
+
+### Load Performance Testing is deprecated
+
+Planned removal: GitLab <span class="removal-milestone">17.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+Due to low customer usage, Load Performance Testing is deprecated and will be removed. There is no planned replacement and users should stop using Load Performance Testing before GitLab 17.0.
+
+</div>
+</div>
+
+<div class="announcement-milestone">
+
 ## Announced in 15.8
 
 <div class="deprecation removal-160 breaking-change">
