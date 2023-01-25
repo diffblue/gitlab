@@ -51,4 +51,28 @@ RSpec.describe Vulnerabilities::StateTransition, type: :model, feature_category:
     it { is_expected.to define_enum_for(:from_state).with_values(**vulnerability_states).with_prefix }
     it { is_expected.to define_enum_for(:to_state).with_values(**vulnerability_states).with_prefix }
   end
+
+  describe '.by_to_states' do
+    let!(:dismissed_state_transition) do
+      create(:vulnerability_state_transitions,
+             vulnerability: vulnerability,
+             from_state: :detected,
+             to_state: :dismissed)
+    end
+
+    let!(:resolved_state_transition) do
+      create(:vulnerability_state_transitions,
+             vulnerability: vulnerability,
+             from_state: :detected,
+             to_state: :resolved)
+    end
+
+    let(:states) { %w[dismissed] }
+
+    subject { described_class.by_to_states(states) }
+
+    it 'returns state transitions matching the given states' do
+      is_expected.to contain_exactly(dismissed_state_transition)
+    end
+  end
 end
