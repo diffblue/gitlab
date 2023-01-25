@@ -6,6 +6,7 @@ Object {
   "isDirectMember": false,
   "memberType": "user",
   "permissions": Object {
+    "canBan": undefined,
     "canDisableTwoFactor": false,
     "canOverride": false,
     "canRemove": false,

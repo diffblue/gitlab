@@ -62,7 +62,6 @@ export const TAB_QUERY_PARAM_VALUES = {
 export const EE_TABS = [
   {
     namespace: MEMBER_TYPES.banned,
-    requiredPermissions: ['canManageMembers'],
     title: __('Banned'),
     queryParamValue: TAB_QUERY_PARAM_VALUES.banned,
   },

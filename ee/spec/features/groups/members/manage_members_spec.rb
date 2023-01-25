@@ -312,6 +312,67 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
     end
   end
 
+  describe 'banning' do
+    let(:licensed_feature_available) { true }
+    let(:owner) { user1 }
+    let(:current_user) { owner }
+    let(:group_member) { user2 }
+
+    before do
+      stub_licensed_features(unique_project_download_limit: licensed_feature_available)
+
+      group.add_owner(owner)
+      group.add_developer(group_member)
+
+      sign_in(current_user)
+    end
+
+    it 'allows owner to ban a member' do
+      visit group_group_members_path(group)
+
+      expect(all_rows.count).to eq 2
+
+      show_actions_for_username(group_member)
+      click_button 'Ban member'
+
+      expect(page).to have_content('User was successfully banned.')
+
+      click_on 'Banned'
+
+      expect(all_rows.count).to eq 1
+    end
+
+    shared_examples 'action is not available' do
+      it 'action is not available' do
+        visit group_group_members_path(group)
+
+        show_actions_for_username(group_member)
+
+        expect(page).not_to have_content('Ban member')
+      end
+    end
+
+    context 'when non-owner' do
+      let(:current_user) { group_member }
+
+      it_behaves_like 'action is not available'
+    end
+
+    context 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(limit_unique_project_downloads_per_namespace_user: false)
+      end
+
+      it_behaves_like 'action is not available'
+    end
+
+    context 'when licensed feature is not available' do
+      let(:licensed_feature_available) { false }
+
+      it_behaves_like 'action is not available'
+    end
+  end
+
   context 'with free user limit', :saas do
     let_it_be(:user) { create(:user) }
     let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan, name: 'free-user-limit-group') }

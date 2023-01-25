@@ -101,12 +101,17 @@ module EE
 
       override :non_invited_members
       def non_invited_members
-        super.non_awaiting
+        members = super.non_awaiting
+
+        if group.unique_project_download_limit_enabled?
+          members.where.not(id: banned_members) # rubocop: disable CodeReuse/ActiveRecord
+        else
+          members
+        end
       end
 
       def presented_banned_members
         return unless group.unique_project_download_limit_enabled?
-        return unless can?(current_user, :admin_group_member, group)
 
         present_members(banned_members(params: filter_params))
       end

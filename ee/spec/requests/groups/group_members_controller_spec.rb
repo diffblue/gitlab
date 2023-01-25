@@ -34,24 +34,36 @@ RSpec.describe Groups::GroupMembersController, feature_category: :subgroups do
       expect(response.body).to have_pushed_frontend_feature_flags(limitUniqueProjectDownloadsPerNamespaceUser: true)
     end
 
-    it 'sets banned to include banned group members' do
+    it 'sets @banned to include banned group members' do
       request
 
       expect(assigns(:banned).map(&:user_id)).to contain_exactly(banned_member.user.id)
     end
 
-    shared_examples 'does not assign @banned' do
+    it 'sets @members not to include banned group members' do
+      request
+
+      expect(assigns(:members).map(&:user_id)).not_to include(banned_member.user.id)
+    end
+
+    shared_examples 'assigns @banned and @members correctly' do
       it 'does not assign @banned' do
         request
 
         expect(assigns(:banned)).to be_nil
+      end
+
+      it 'sets @members to include banned group members' do
+        request
+
+        expect(assigns(:members).map(&:user_id)).to include(banned_member.user.id)
       end
     end
 
     context 'when licensed feature is not available' do
       let(:licensed_feature_available) { false }
 
-      it_behaves_like 'does not assign @banned'
+      it_behaves_like 'assigns @banned and @members correctly'
     end
 
     context 'when feature flag is disabled' do
@@ -59,7 +71,7 @@ RSpec.describe Groups::GroupMembersController, feature_category: :subgroups do
         stub_feature_flags(limit_unique_project_downloads_per_namespace_user: false)
       end
 
-      it_behaves_like 'does not assign @banned'
+      it_behaves_like 'assigns @banned and @members correctly'
     end
 
     context 'when sub-group' do
@@ -67,19 +79,7 @@ RSpec.describe Groups::GroupMembersController, feature_category: :subgroups do
         group.update!(parent: create(:group))
       end
 
-      it_behaves_like 'does not assign @banned'
-    end
-
-    context 'when user cannot manage members' do
-      let(:another_group) { create(:group, :public) }
-
-      subject(:request) do
-        another_group.add_developer(user)
-
-        get group_group_members_path(group_id: another_group)
-      end
-
-      it_behaves_like 'does not assign @banned'
+      it_behaves_like 'assigns @banned and @members correctly'
     end
   end
 
