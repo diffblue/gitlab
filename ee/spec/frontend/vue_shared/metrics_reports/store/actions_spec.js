@@ -12,7 +12,7 @@ import * as types from 'ee/vue_shared/metrics_reports/store/mutation_types';
 import state from 'ee/vue_shared/metrics_reports/store/state';
 import testAction from 'helpers/vuex_action_helper';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_NO_CONTENT } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_NO_CONTENT } from '~/lib/utils/http_status';
 
 describe('metrics reports actions', () => {
   let mockedState;
@@ -101,7 +101,7 @@ describe('metrics reports actions', () => {
     });
 
     it('handles errors', () => {
-      mock.onGet(endpoint).replyOnce(500);
+      mock.onGet(endpoint).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       return testAction(
         fetchMetrics,

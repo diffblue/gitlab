@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { chartKeys } from 'ee/analytics/productivity_analytics/constants';
 import * as actions from 'ee/analytics/productivity_analytics/store/modules/charts/actions';
 import * as types from 'ee/analytics/productivity_analytics/store/modules/charts/mutation_types';
@@ -118,7 +118,7 @@ describe('Productivity analytics chart actions', () => {
 
       describe('error', () => {
         beforeEach(() => {
-          mock.onGet(mockedState.endpoint).replyOnce(500);
+          mock.onGet(mockedState.endpoint).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
         });
 
         it('dispatches error', async () => {
@@ -195,7 +195,7 @@ describe('Productivity analytics chart actions', () => {
 
   describe('receiveChartDataError', () => {
     it('should commit error', async () => {
-      const error = { response: { status: 500 } };
+      const error = { response: { status: HTTP_STATUS_INTERNAL_SERVER_ERROR } };
       await testAction(
         actions.receiveChartDataError,
         { chartKey, error },
@@ -205,7 +205,7 @@ describe('Productivity analytics chart actions', () => {
             type: types.RECEIVE_CHART_DATA_ERROR,
             payload: {
               chartKey,
-              status: 500,
+              status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
             },
           },
         ],

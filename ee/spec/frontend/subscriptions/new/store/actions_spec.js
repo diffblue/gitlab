@@ -10,6 +10,7 @@ import testAction from 'helpers/vuex_action_helper';
 import Tracking from '~/tracking';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import * as googleTagManager from '~/google_tag_manager';
 
 const {
@@ -122,7 +123,7 @@ describe('Subscriptions Actions', () => {
     });
 
     it('calls fetchCountriesError on error', async () => {
-      mock.onGet(countriesPath).replyOnce(500);
+      mock.onGet(countriesPath).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       await testAction(actions.fetchCountries, null, {}, [], [{ type: 'fetchCountriesError' }]);
     });
@@ -175,13 +176,13 @@ describe('Subscriptions Actions', () => {
     });
 
     it('only calls resetStates when no country selected', async () => {
-      mock.onGet(countryStatesPath).replyOnce(500);
+      mock.onGet(countryStatesPath).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       await testAction(actions.fetchStates, null, { country: null }, [], [{ type: 'resetStates' }]);
     });
 
     it('calls resetStates and fetchStatesError on error', async () => {
-      mock.onGet(countryStatesPath).replyOnce(500);
+      mock.onGet(countryStatesPath).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       await testAction(
         actions.fetchStates,
@@ -339,7 +340,7 @@ describe('Subscriptions Actions', () => {
     });
 
     it('calls fetchPaymentFormParamsError on error', async () => {
-      mock.onGet(paymentFormPath).replyOnce(500);
+      mock.onGet(paymentFormPath).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       await testAction(
         actions.fetchPaymentFormParams,
@@ -467,7 +468,7 @@ describe('Subscriptions Actions', () => {
     });
 
     it('calls fetchPaymentMethodDetailsError on error and updates isLoadingPaymentMethod to false', async () => {
-      mock.onGet(paymentMethodPath).replyOnce(500);
+      mock.onGet(paymentMethodPath).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       await testAction(
         actions.fetchPaymentMethodDetails,
@@ -610,7 +611,7 @@ describe('Subscriptions Actions', () => {
     });
 
     describe('on failure', () => {
-      beforeEach(() => mock.onPost(confirmOrderPath).replyOnce(500));
+      beforeEach(() => mock.onPost(confirmOrderPath).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR));
 
       it('calls tracking event', async () => {
         const spy = jest.spyOn(Tracking, 'event');

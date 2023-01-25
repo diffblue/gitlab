@@ -8,7 +8,7 @@ import Project from 'ee/operations/components/dashboard/project.vue';
 import createStore from 'ee/vue_shared/dashboards/store';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { mockProjectData, mockText } from '../../mock_data';
 
 Vue.use(Vuex);
@@ -169,7 +169,7 @@ describe('dashboard component', () => {
       });
 
       it('clears state on error', async () => {
-        mockAxios.onPost(mockAddEndpoint).replyOnce(500, {});
+        mockAxios.onPost(mockAddEndpoint).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
 
         await nextTick();
         expect(store.state.projectSearchResults.length).not.toBe(0);
