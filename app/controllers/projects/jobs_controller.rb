@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Projects::JobsController < Projects::ApplicationController
+  include Ci::AuthBuildTrace
   include SendFileUpload
   include ContinueParams
   include ProjectStatsRefreshConflictsGuard
