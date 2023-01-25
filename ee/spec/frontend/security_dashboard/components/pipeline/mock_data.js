@@ -426,6 +426,11 @@ export const pipelineSecurityReportFinding = {
   solution: 'Some solution',
   reportType: 'reportType',
   falsePositive: false,
+  remediations: [
+    {
+      summary: 'Upgrade libcurl to 7.79.1-2.amzn2.0.1',
+    },
+  ],
   project: {
     id: '1',
     name: 'project name',

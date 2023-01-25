@@ -13,6 +13,9 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
         solution
         reportType
         falsePositive
+        remediations {
+          summary
+        }
         scanner {
           id
           name
