@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSchema.types['MergeRequestApprovalState'] do
-  let(:fields) { %i[approval_rules_overwritten rules] }
+  let(:fields) { %i[approval_rules_overwritten rules invalid_approvers_rules] }
 
   it { expect(described_class).to have_graphql_fields(fields) }
   it { expect(described_class).to require_graphql_authorizations(:read_merge_request) }

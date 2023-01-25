@@ -47,6 +47,14 @@ RSpec.describe 'Query.project.mergeRequest.approvalState', feature_category: :so
                 id
               }
             }
+            commentedBy {
+              nodes {
+                id
+              }
+            }
+          }
+          invalidApproversRules {
+            id
           }
         }
       QUERY
@@ -78,7 +86,11 @@ RSpec.describe 'Query.project.mergeRequest.approvalState', feature_category: :so
       it 'returns null data' do
         post_graphql(query)
 
-        expect(approval_state).to eq('approvalRulesOverwritten' => false, 'rules' => [])
+        expect(approval_state).to eq(
+          'approvalRulesOverwritten' => false,
+          'invalidApproversRules' => [],
+          'rules' => []
+        )
       end
     end
 
@@ -95,12 +107,14 @@ RSpec.describe 'Query.project.mergeRequest.approvalState', feature_category: :so
 
         expect(approval_state).to match a_hash_including(
           'approvalRulesOverwritten' => false,
+          'invalidApproversRules' => [],
           'rules' => contain_exactly(
             a_graphql_entity_for(
               code_owner_rule, :name,
               'approvalsRequired' => 0,
               'approved' => true,
               'approvedBy' => { 'nodes' => [] },
+              'commentedBy' => { 'nodes' => [] },
               'containsHiddenGroups' => false,
               'eligibleApprovers' => contain_exactly(a_graphql_entity_for(user)),
               'groups' => { 'nodes' => [] },
@@ -111,6 +125,56 @@ RSpec.describe 'Query.project.mergeRequest.approvalState', feature_category: :so
               'users' => { 'nodes' => contain_exactly(a_graphql_entity_for(user)) }
             )
           )
+        )
+      end
+
+      context 'when there are commented approvers' do
+        before do
+          create(
+            :diff_note_on_merge_request,
+            author: user,
+            noteable: merge_request,
+            project: merge_request.project
+          )
+        end
+
+        it 'returns appropriate data' do
+          post_graphql(query)
+
+          expect(approval_state).to match a_hash_including(
+            'rules' => contain_exactly(
+              a_graphql_entity_for(
+                code_owner_rule,
+                'commentedBy' => {
+                  'nodes' => contain_exactly(a_graphql_entity_for(user))
+                }
+              )
+            )
+          )
+        end
+      end
+    end
+
+    context 'when there are invalid approvers rules' do
+      let!(:invalid_approvers_rule) do
+        create(
+          :approval_merge_request_rule,
+          merge_request: merge_request,
+          approvals_required: 1
+        )
+      end
+
+      before do
+        stub_licensed_features(merge_request_approvers: true)
+      end
+
+      it 'returns appropriate data' do
+        post_graphql(query)
+
+        expect(approval_state).to match a_hash_including(
+          'invalidApproversRules' => [
+            a_graphql_entity_for(invalid_approvers_rule)
+          ]
         )
       end
     end
