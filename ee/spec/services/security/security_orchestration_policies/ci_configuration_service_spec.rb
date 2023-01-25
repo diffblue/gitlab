@@ -24,12 +24,24 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
       context 'when scan type is secret_detection' do
         let_it_be(:action) { { scan: 'secret_detection', tags: ['runner-tag'] } }
         let_it_be(:template_name) { 'Jobs/Secret-Detection' }
+        let_it_be(:ci_variables) do
+          { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false', 'SECRET_DETECTION_IMAGE_SUFFIX' => 'suffix' }
+        end
 
         it_behaves_like 'with template name for scan type'
 
+        it 'merges template variables with ci variables and returns them as string' do
+          expect(subject[:'secret-detection-0']).to include(
+            variables: hash_including(
+              'SECRET_DETECTION_HISTORIC_SCAN' => 'false',
+              'SECRET_DETECTION_IMAGE_SUFFIX' => 'suffix'
+            )
+          )
+        end
+
         it 'returns prepared CI configuration with Secret Detection scans' do
           expected_configuration = {
-            rules: [{ if: '$SECRET_DETECTION_DISABLED', when: 'never' }, { if: '$CI_COMMIT_BRANCH' }],
+            rules: [{ if: '$CI_COMMIT_BRANCH' }],
             script: ["/analyzer run"],
             tags: ['runner-tag'],
             stage: 'test',
@@ -45,7 +57,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
               GIT_DEPTH: '50',
               SECURE_ANALYZERS_PREFIX: '$CI_TEMPLATE_REGISTRY_HOST/security-products',
               SECRETS_ANALYZER_VERSION: '4',
-              SECRET_DETECTION_IMAGE_SUFFIX: '',
+              SECRET_DETECTION_IMAGE_SUFFIX: 'suffix',
               SECRET_DETECTION_EXCLUDED_PATHS: '',
               SECRET_DETECTION_HISTORIC_SCAN: 'false'
             }
@@ -58,9 +70,18 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
       context 'when scan type is container_scanning' do
         let_it_be(:action) { { scan: 'container_scanning', tags: ['runner-tag'] } }
         let_it_be(:template_name) { 'Jobs/Container-Scanning' }
-        let_it_be(:ci_variables) { {} }
+        let_it_be(:ci_variables) { { 'GIT_STRATEGY' => 'fetch', 'VARIABLE_1' => 10 } }
 
         it_behaves_like 'with template name for scan type'
+
+        it 'merges template variables with ci variables and returns them as string' do
+          expect(subject[:'container-scanning-0']).to include(
+            variables: hash_including(
+              'GIT_STRATEGY' => 'fetch',
+              'VARIABLE_1' => 10
+            )
+          )
+        end
 
         it 'returns prepared CI configuration for Container Scanning' do
           expected_configuration = {
@@ -79,10 +100,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
             script: ['gtcs scan'],
             variables: {
               CS_ANALYZER_IMAGE: "$CI_TEMPLATE_REGISTRY_HOST/security-products/container-scanning:5",
-              GIT_STRATEGY: 'none'
+              GIT_STRATEGY: 'fetch',
+              VARIABLE_1: 10
             },
             rules: [
-              { if: "$CONTAINER_SCANNING_DISABLED", when: "never" },
               {
                 if: '$CI_COMMIT_BRANCH && '\
                     '$CI_GITLAB_FIPS_MODE == "true" && $CS_ANALYZER_IMAGE !~ /-(fips|ubi)\z/',
@@ -138,7 +159,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
       context 'when scan type is dependency_scanning', :aggregate_failures do
         let_it_be(:action) { { scan: 'dependency_scanning', tags: ['runner-tag'] } }
         let_it_be(:ci_variables) do
-          { 'DS_EXCLUDED_ANALYZERS' => 'gemnasium-python', 'DEPENDENCY_SCANNING_DISABLED' => nil }
+          { 'DS_EXCLUDED_ANALYZERS' => 'gemnasium-python' }
         end
 
         it 'returns prepared CI configuration for Dependency Scanning' do
@@ -152,10 +173,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
           ]
 
           expected_variables = {
-            SECURE_ANALYZERS_PREFIX: "$CI_TEMPLATE_REGISTRY_HOST/security-products",
-            DS_EXCLUDED_PATHS: "spec, test, tests, tmp",
-            DS_MAJOR_VERSION: 3,
-            DS_EXCLUDED_ANALYZERS: ""
+            'SECURE_ANALYZERS_PREFIX' => "$CI_TEMPLATE_REGISTRY_HOST/security-products",
+            'DS_EXCLUDED_PATHS' => "spec, test, tests, tmp",
+            'DS_MAJOR_VERSION' => 3,
+            'DS_EXCLUDED_ANALYZERS' => "gemnasium-python"
           }
 
           expect(subject[:variables]).to be_nil

@@ -227,7 +227,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
           let(:expected_jobs) { starting_with('secret-detection-') }
           let(:expected_configuration) do
             hash_including(
-              rules: [{ if: '$SECRET_DETECTION_DISABLED', when: 'never' }, { if: '$CI_COMMIT_BRANCH' }],
+              rules: [{ if: '$CI_COMMIT_BRANCH' }],
               script: ["/analyzer run"],
               stage: scan_policy_stage,
               image: '$SECURE_ANALYZERS_PREFIX/secrets:$SECRETS_ANALYZER_VERSION$SECRET_DETECTION_IMAGE_SUFFIX',
@@ -260,7 +260,6 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
               script: ['/analyzer run'],
               image: { name: '$SAST_ANALYZER_IMAGE' },
               rules: [
-                { if: '$SAST_DISABLED', when: 'never' },
                 { if: '$SAST_EXCLUDED_ANALYZERS =~ /brakeman/', when: 'never' },
                 { if: '$CI_COMMIT_BRANCH', exists: ['**/*.rb', '**/Gemfile'] }
               ]
