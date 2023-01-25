@@ -12394,9 +12394,6 @@ msgstr ""
 msgid "DORA4Metrics|Average (last %{days}d)"
 msgstr ""
 
-msgid "DORA4Metrics|Average number of deployments to production per day. This metric measures how often value is delivered to end users."
-msgstr ""
-
 msgid "DORA4Metrics|Change Failure Rate"
 msgstr ""
 
@@ -12454,12 +12451,6 @@ msgstr ""
 msgid "DORA4Metrics|Median time an incident was open in a production environment over the given time period."
 msgstr ""
 
-msgid "DORA4Metrics|Median time from issue created to issue closed."
-msgstr ""
-
-msgid "DORA4Metrics|Median time from the earliest commit of a linked issue's merge request to when that issue is closed."
-msgstr ""
-
 msgid "DORA4Metrics|Metrics comparison for %{name} group"
 msgstr ""
 
@@ -12484,13 +12475,7 @@ msgstr ""
 msgid "DORA4Metrics|Number of incidents divided by the number of deployments to a production environment in the given time period."
 msgstr ""
 
-msgid "DORA4Metrics|Number of new issues created."
-msgstr ""
-
 msgid "DORA4Metrics|Past 6 Months"
-msgstr ""
-
-msgid "DORA4Metrics|Percentage of deployments that cause an incident in production."
 msgstr ""
 
 msgid "DORA4Metrics|Percentage of failed deployments"
@@ -12514,12 +12499,6 @@ msgstr ""
 msgid "DORA4Metrics|The chart displays the median time between a merge request being merged and deployed to production environment(s) that are based on the %{linkStart}deployment_tier%{linkEnd} value."
 msgstr ""
 
-msgid "DORA4Metrics|The time it takes an organization to recover from a failure in production."
-msgstr ""
-
-msgid "DORA4Metrics|The time to successfully deliver a commit into production. This metric reflects the efficiency of CI/CD pipelines."
-msgstr ""
-
 msgid "DORA4Metrics|Time to Restore Service"
 msgstr ""
 
@@ -12527,9 +12506,6 @@ msgid "DORA4Metrics|Time to restore service"
 msgstr ""
 
 msgid "DORA4Metrics|Time to restore service (median days)"
-msgstr ""
-
-msgid "DORA4Metrics|Total number of deploys to production."
 msgstr ""
 
 msgid "DSN"
@@ -46217,6 +46193,9 @@ msgstr ""
 msgid "ValueStreamAnalytics|Average number of deployments to production per day."
 msgstr ""
 
+msgid "ValueStreamAnalytics|Average number of deployments to production per day. This metric measures how often value is delivered to end users."
+msgstr ""
+
 msgid "ValueStreamAnalytics|DORA metrics"
 msgstr ""
 
@@ -46269,6 +46248,12 @@ msgid "ValueStreamAnalytics|Shows %{selectedSubjectFilterText} for group '%{grou
 msgstr ""
 
 msgid "ValueStreamAnalytics|Tasks by type"
+msgstr ""
+
+msgid "ValueStreamAnalytics|The time it takes an organization to recover from a failure in production."
+msgstr ""
+
+msgid "ValueStreamAnalytics|The time to successfully deliver a commit into production. This metric reflects the efficiency of CI/CD pipelines."
 msgstr ""
 
 msgid "ValueStreamAnalytics|There was an error while fetching value stream analytics %{requestTypeName} data."
