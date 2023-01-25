@@ -3,33 +3,40 @@
 class BackfillTraversalIdsToBlobsAndWikiBlobs < Elastic::Migration
   include Elastic::MigrationHelper
 
-  batch_size 100_000
   ELASTIC_TIMEOUT = '5m'
   BLOB_AND_WIKI_BLOB = %w[blob wiki_blob].freeze
+  MAX_PROJECTS_TO_PROCESS = 100
+
+  batch_size 100_000
   batched!
-  throttle_delay 45.seconds
+  throttle_delay 5.seconds
   retry_on_failure
 
   def migrate
-    task_id = migration_state[:task_id]
+    projects_in_progress = migration_state[:projects_in_progress] || []
+    if projects_in_progress.present?
+      failed_or_completed_projects = []
 
-    if task_id
-      project_id = migration_state[:project_id]
-      task_status = helper.task_status(task_id: task_id)
+      projects_in_progress.each do |item|
+        project_id = item[:project_id]
+        task_id = item[:task_id]
 
-      if task_status['failures'].present?
-        set_migration_state(default_migration_state)
-        log_raise "Failed to update project #{project_id}: #{task_status['failures']}"
+        task_status = helper.task_status(task_id: task_id)
+        if task_status['failures'].present?
+          log_warn "Failed to update project #{project_id} with_task_id: #{task_id} - #{task_status['failures']}"
+          failed_or_completed_projects << item
+        end
+
+        if task_status['completed'].present?
+          log "Updating traversal_ids in main index is completed for project #{project_id} with task_id: #{task_id}"
+          failed_or_completed_projects << item
+        else
+          log "Updating traversal_ids in main index is in progress for project #{project_id} with task_id: #{task_id}"
+        end
       end
 
-      if task_status['completed'].present?
-        log "Updating traversal_ids in main index is completed for project #{project_id} with task_id: #{task_id}"
-        set_migration_state(default_migration_state)
-      else
-        log "Updating traversal_ids in main index is in progress for project #{project_id} with task_id: #{task_id}"
-      end
-
-      return
+      projects_in_progress -= failed_or_completed_projects
+      set_migration_state(projects_in_progress: projects_in_progress)
     end
 
     if completed?
@@ -37,19 +44,29 @@ class BackfillTraversalIdsToBlobsAndWikiBlobs < Elastic::Migration
       return
     end
 
-    log "Searching for the projects with missing traversal_ids"
-    project_ids = projects_with_missing_traversal_ids
+    project_limit = determine_project_limit
+    return if projects_in_progress.size >= project_limit
 
-    return if project_ids.empty?
+    log "Enqueuing projects with missing traversal_ids"
+    exclude_project_ids = projects_in_progress.pluck(:project_id) # rubocop: disable CodeReuse/ActiveRecord
 
-    # need to run one project at a time due to using Elasticsearch tasks to track the work
-    project_id = project_ids[0]
-    update_by_query(Project.find(project_id))
-  rescue ActiveRecord::RecordNotFound
-    log "Project not found: #{project_id}. Scheduling ElasticDeleteProjectWorker"
-    # project must be removed from the index or it will continue to show up in the missing query
-    # since we do not have access to the project record, the es_id input must be constructed manually
-    ElasticDeleteProjectWorker.perform_async(project_id, "#{Project.es_type}_#{project_id}")
+    projects_with_missing_traversal_ids(exclude_project_ids: exclude_project_ids).each do |project_id|
+      task_id = update_by_query(Project.find(project_id))
+
+      next if task_id.nil?
+
+      projects_in_progress << { task_id: task_id, project_id: project_id }
+
+      break if projects_in_progress.size >= project_limit
+    rescue ActiveRecord::RecordNotFound
+      log "Project not found: #{project_id}. Scheduling ElasticDeleteProjectWorker"
+      # project must be removed from the index or it will continue to show up in the missing query
+      # since we do not have access to the project record, the es_id input must be constructed manually
+      es_id = ::Gitlab::Elastic::Helper.build_es_id(es_type: Project.es_type, target_id: project_id)
+      ElasticDeleteProjectWorker.perform_async(project_id, es_id)
+    end
+
+    set_migration_state(projects_in_progress: projects_in_progress)
   end
 
   def completed?
@@ -88,20 +105,11 @@ class BackfillTraversalIdsToBlobsAndWikiBlobs < Elastic::Migration
     )
 
     if response['failures'].present?
-      set_migration_state(default_migration_state)
-      log_raise "Failed to update project #{project.id} - #{response['failures']}"
+      log_warn "Failed to update project #{project.id} - #{response['failures']}"
+      return
     end
 
-    task_id = response['task']
-    log "Adding traversal_ids to original index is started for project #{project.id} with task_id: #{task_id}"
-
-    set_migration_state(
-      task_id: task_id,
-      project_id: project.id
-    )
-  rescue StandardError => e
-    set_migration_state(default_migration_state)
-    raise e
+    response['task']
   end
 
   def count_items_missing_traversal_ids
@@ -113,16 +121,18 @@ class BackfillTraversalIdsToBlobsAndWikiBlobs < Elastic::Migration
     )['count']
   end
 
-  def projects_with_missing_traversal_ids
-    # aggregations will return top 10 values by default
+  def projects_with_missing_traversal_ids(exclude_project_ids:)
     results = client.search(
       index: helper.target_name,
       body: {
         size: 0,
-        query: query_missing_traversal_ids,
+        query: query_missing_traversal_ids(exclude_project_ids),
         aggs: {
           project_ids: {
-            terms: { field: "project_id" }
+            terms: {
+              size: MAX_PROJECTS_TO_PROCESS * 2,
+              field: "project_id"
+            }
           }
         }
       }
@@ -131,19 +141,19 @@ class BackfillTraversalIdsToBlobsAndWikiBlobs < Elastic::Migration
     project_ids_hist.pluck("key") # rubocop: disable CodeReuse/ActiveRecord
   end
 
-  def query_missing_traversal_ids
-    {
+  def query_missing_traversal_ids(exclude_project_ids = nil)
+    query = {
       bool: {
-        must_not: { exists: { field: "traversal_ids" } },
+        must_not: [{ exists: { field: "traversal_ids" } }],
         must: { terms: { type: BLOB_AND_WIKI_BLOB } }
       }
     }
+
+    query[:bool][:must_not] << { terms: { project_id: exclude_project_ids } } if exclude_project_ids.present?
+    query
   end
 
-  def default_migration_state
-    {
-      task_id: nil,
-      project_id: nil
-    }
+  def determine_project_limit
+    [get_number_of_shards(index_name: helper.target_name), MAX_PROJECTS_TO_PROCESS].min
   end
 end

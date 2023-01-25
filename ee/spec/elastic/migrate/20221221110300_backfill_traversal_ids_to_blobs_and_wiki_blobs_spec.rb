@@ -23,9 +23,9 @@ feature_category: :global_search do
 
   describe 'migration_options' do
     it 'has migration options set', :aggregate_failures do
-      expect(migration.batched?).to be_truthy
-      expect(migration.retry_on_failure?).to be_truthy
-      expect(migration.throttle_delay).to eq(45.seconds)
+      expect(migration).to be_batched
+      expect(migration).to be_retry_on_failure
+      expect(migration.throttle_delay).to eq(5.seconds)
       expect(migration.batch_size).to eq(100_000)
     end
   end
@@ -40,7 +40,7 @@ feature_category: :global_search do
 
         migration.migrate
 
-        expect(migration.completed?).to be_truthy
+        expect(migration).to be_completed
         expect(helper.client).not_to receive(:update_by_query)
       end
     end
@@ -51,8 +51,9 @@ feature_category: :global_search do
       before do
         allow(migration).to receive(:completed?).and_return(false)
         allow(migration).to receive(:client).and_return(client)
-        allow(helper).to receive(:task_status).and_return('completed' => false)
-        migration.set_migration_state(task_id: 'task_1')
+        allow(migration).to receive(:projects_with_missing_traversal_ids).and_return([])
+        allow(helper).to receive(:task_status).with(task_id: 'task_1').and_return('completed' => false)
+        migration.set_migration_state(projects_in_progress: [{ task_id: 'task_1', project_id: 1 }])
       end
 
       it 'does nothing if task is not completed' do
@@ -71,9 +72,9 @@ feature_category: :global_search do
       end
 
       it 'logs failure when project is not found and schedules ElasticDeleteProjectWorker' do
-        migration.migrate
-        expect(migration).to receive(:log).with(/Searching for the projects with missing traversal_ids/).once
+        expect(migration).to receive(:log).with(/Enqueuing projects with missing traversal_ids/).once
         expect(migration).to receive(:log).with(/Project not found/).once
+        expect(migration).to receive(:log).with(/Setting migration_state to/).once
         expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(0, "project_0")
         migration.migrate
       end
@@ -96,11 +97,15 @@ feature_category: :global_search do
           let(:task_status_response) { { 'failures' => ['failed'] } }
           let(:update_by_query_response) { { 'task' => 'task_1' } }
 
-          it 'resets task_id' do
-            migration.set_migration_state(task_id: 'task_1') # simulate a task in progress
+          it 'removes entry from projects_in_progress in migration_state' do
+            migration_state = projects.map { |p| { task_id: 'task_1', project_id: p.id } }
+            migration.set_migration_state(projects_in_progress: migration_state)
+            expect(migration).to receive(:set_migration_state).with(projects_in_progress: [])
+            expect(migration).to receive(:set_migration_state).with(projects_in_progress: migration_state)
 
-            expect { migration.migrate }.to raise_error(/Failed to update project/)
-            expect(migration.migration_state).to match(task_id: nil, project_id: nil)
+            expect { migration.migrate }.not_to raise_error
+
+            expect(migration.migration_state[:projects_in_progress]).to match_array(migration_state)
           end
         end
 
@@ -108,11 +113,11 @@ feature_category: :global_search do
           let(:task_status_response) { {} }
           let(:update_by_query_response) { { 'failures' => ['failed'] } }
 
-          it 'sets task_id to nil' do
-            migration.set_migration_state(task_id: nil) # simulate a new task being created
+          it 'removes entry from projects_in_progress in migration_state' do
+            migration.set_migration_state({}) # simulate first run
 
-            expect { migration.migrate }.to raise_error(/Failed to update project/)
-            expect(migration.migration_state).to match(task_id: nil, project_id: nil)
+            expect { migration.migrate }.not_to raise_error
+            expect(migration.migration_state).to match(projects_in_progress: [])
           end
         end
       end
@@ -132,39 +137,75 @@ feature_category: :global_search do
       set_elasticsearch_migration_to(version, including: false)
     end
 
-    it 'updates documents one project at a time' do
-      projects.each do |p|
-        expect(migration.completed?).to eq(false)
-        expect(migration).to receive(:update_by_query).once.and_call_original
+    it 'updates documents in batches' do
+      # calculate how many files are in each project in the index
+      query = { bool: { must: [{ term: { project_id: projects.first.id } }, { terms: { type: %w[blob wiki_blob] } }] } }
+      file_count = helper.client.count(index: helper.target_name, body: { query: query })['count']
 
+      allow(migration).to receive(:batch_size).and_return(file_count / 2)
+      stub_const("BackfillTraversalIdsToBlobsAndWikiBlobs::MAX_PROJECTS_TO_PROCESS", 2)
+
+      expect(migration).not_to be_completed
+      expect(migration).to receive(:update_by_query).exactly(projects.size * 2).times.and_call_original
+
+      # process first two projects and half of the records
+      # the projects are returned ordered by record count, then by project_id
+      # make sure to give time to process the tasks
+      old_migration_state = migration.migration_state[:projects_in_progress]
+      5.times do |_| # Max 0.05s waiting
         migration.migrate
-        expect(migration.migration_state).to match(task_id: anything, project_id: p.id)
+        break if old_migration_state != migration.migration_state[:projects_in_progress]
 
-        # ensure project is done processing
-        20.times do |_| # Max 0.2s waiting
-          migration.migrate
-          break if migration.migration_state[:task_id].nil?
-
-          sleep 0.01
-        end
-
-        expect(migration.migration_state).to match(task_id: nil, project_id: nil)
+        sleep 0.01
       end
 
-      expect(migration.completed?).to be_truthy
-    end
+      expected_migration_state = [
+        { task_id: anything, project_id: projects.first.id },
+        { task_id: anything, project_id: projects.second.id }
+      ]
+      expect(migration.migration_state[:projects_in_progress]).to match_array(expected_migration_state)
 
-    context 'with more than one batch' do
-      before do
-        allow(migration).to receive(:batch_size).and_return(2)
-      end
-
-      it 'updates documents in multiple batches' do
-        expect(migration.completed?).to eq(false)
-        expect(helper.client).to receive(:update_by_query).with(a_hash_including(max_docs: 2)).once.and_call_original
-
+      # process two projects, the last project is now returned because it has the most documents to update
+      old_migration_state = migration.migration_state[:projects_in_progress]
+      5.times do |_| # Max 0.05s waiting
         migration.migrate
+        break if old_migration_state != migration.migration_state[:projects_in_progress]
+
+        sleep 0.01
       end
+
+      expected_migration_state = [
+        { task_id: anything, project_id: projects.third.id },
+        { task_id: anything, project_id: projects.first.id }
+      ]
+      expect(migration.migration_state[:projects_in_progress]).to match_array(expected_migration_state)
+
+      # process two projects, the second project is returned because the first project is completed
+      old_migration_state = migration.migration_state[:projects_in_progress]
+      5.times do |_| # Max 0.05s waiting
+        migration.migrate
+        break if old_migration_state != migration.migration_state[:projects_in_progress]
+
+        sleep 0.01
+      end
+
+      expected_migration_state = [
+        { task_id: anything, project_id: projects.second.id },
+        { task_id: anything, project_id: projects.third.id }
+      ]
+      expect(migration.migration_state[:projects_in_progress]).to match_array(expected_migration_state)
+
+      # all projects are marked as completed
+      old_migration_state = migration.migration_state[:projects_in_progress]
+      5.times do |_| # Max 0.05s waiting
+        migration.migrate
+        break if old_migration_state != migration.migration_state[:projects_in_progress]
+
+        sleep 0.01
+      end
+
+      expect(migration.migration_state[:projects_in_progress]).to be_empty
+      expect(migration).to be_completed
     end
   end
 end

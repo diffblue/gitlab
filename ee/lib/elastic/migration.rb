@@ -51,6 +51,10 @@ module Elastic
       logger.info "[Elastic::Migration: #{self.version}] #{message}"
     end
 
+    def log_warn(message)
+      logger.warn "[Elastic::Migration: #{self.version}] #{message}"
+    end
+
     def log_raise(message)
       logger.error "[Elastic::Migration: #{self.version}] #{message}"
       raise message
