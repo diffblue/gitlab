@@ -80,47 +80,28 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
   <div
     class="block"
   >
-    <div
-      class="sidebar-collapsed-icon"
-    >
-      <div
-        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
-      >
-        <svg
-          aria-hidden="true"
-          class="gl-icon s14 icon-unknown"
-          data-testid="severity-unknown-icon"
-          role="img"
-        >
-          <use
-            href="#severity-unknown"
-          />
-        </svg>
-         
-        <!---->
-      </div>
-       
-      <div
-        class="gl-tooltip"
-      >
-        Severity: 
-          Unknown
-        
-      </div>
-    </div>
-     
-    <div
-      class="hide-collapsed"
-    >
+    <div>
       <div
         class="gl-display-flex gl-align-items-center gl-line-height-20 gl-text-gray-900 gl-font-weight-bold"
       >
-        
+        <span
+          class="hide-collapsed"
+          data-testid="title"
+        >
+          
       Severity
-      
+    
+        </span>
+          
+        <!---->
+         
+        <!---->
+          
         <button
-          class="btn gl-ml-auto hide-collapsed gl-mr-n2 btn-default btn-sm gl-button btn-default-tertiary"
-          data-testid="editButton"
+          class="btn gl-text-gray-900! gl-ml-auto hide-collapsed gl-mr-n2 shortcut-sidebar-dropdown-toggle btn-default btn-sm gl-button btn-default-tertiary"
+          data-qa-selector="edit_link"
+          data-testid="edit-button"
+          id=""
           type="button"
         >
           <!---->
@@ -131,407 +112,451 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
             class="gl-button-text"
           >
             
-        Edit
-      
+      Edit
+    
           </span>
         </button>
       </div>
        
       <div
-        class="dropdown b-dropdown gl-dropdown gl-mt-3 gl-display-none"
-        id="__BVID__41"
+        class="gl-line-height-14"
+        data-testid="collapsed-content"
       >
-        <!---->
-        <button
-          aria-expanded="false"
-          aria-haspopup="true"
-          class="btn dropdown-toggle btn-default btn-md btn-block dropdown-menu-toggle gl-mb-2 gl-button gl-dropdown-toggle"
-          id="__BVID__41__BV_toggle_"
-          type="button"
-        >
-          <!---->
-           
-          <!---->
-           
-          <span
-            class="gl-dropdown-button-text"
-          >
-            Unknown
-          </span>
-           
-          <svg
-            aria-hidden="true"
-            class="gl-button-icon dropdown-chevron gl-icon s16"
-            data-testid="chevron-down-icon"
-            role="img"
-          >
-            <use
-              href="#chevron-down"
-            />
-          </svg>
-        </button>
-        <ul
-          aria-labelledby="__BVID__41__BV_toggle_"
-          class="dropdown-menu"
-          role="menu"
-          tabindex="-1"
+        <div
+          class="sidebar-collapsed-icon"
         >
           <div
-            class="gl-dropdown-inner"
+            class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
           >
-            <div
-              class="gl-dropdown-header gl-border-b-0!"
+            <svg
+              aria-hidden="true"
+              class="gl-icon s14 icon-unknown"
+              data-testid="severity-unknown-icon"
+              role="img"
             >
-              <p
-                class="gl-dropdown-header-top"
-              >
-                
-        Assign severity
-      
-              </p>
-               
-            </div>
-             
-            <!---->
-             
-            <div
-              class="gl-dropdown-contents"
-            >
-              <!---->
-               
-              <li
-                class="gl-dropdown-item"
-                role="presentation"
-              >
-                <button
-                  class="dropdown-item"
-                  data-testid="severityDropdownItem"
-                  role="menuitem"
-                  type="button"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="gl-icon s16 gl-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
-                    data-testid="dropdown-item-checkbox"
-                    role="img"
-                  >
-                    <use
-                      href="#mobile-issue-close"
-                    />
-                  </svg>
-                   
-                  <!---->
-                   
-                  <!---->
-                   
-                  <div
-                    class="gl-dropdown-item-text-wrapper"
-                  >
-                    <p
-                      class="gl-dropdown-item-text-primary"
-                    >
-                      <div
-                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="gl-icon s12 icon-critical gl-mr-3 gl-flex-shrink-0"
-                          data-testid="severity-critical-icon"
-                          role="img"
-                        >
-                          <use
-                            href="#severity-critical"
-                          />
-                        </svg>
-                         
-                        <span
-                          class="gl-min-w-0 gl-text-truncate"
-                        >
-                          
-    Critical - S1
-  
-                        </span>
-                      </div>
-                    </p>
-                     
-                    <!---->
-                  </div>
-                   
-                  <!---->
-                </button>
-              </li>
-              <li
-                class="gl-dropdown-item"
-                role="presentation"
-              >
-                <button
-                  class="dropdown-item"
-                  data-testid="severityDropdownItem"
-                  role="menuitem"
-                  type="button"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="gl-icon s16 gl-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
-                    data-testid="dropdown-item-checkbox"
-                    role="img"
-                  >
-                    <use
-                      href="#mobile-issue-close"
-                    />
-                  </svg>
-                   
-                  <!---->
-                   
-                  <!---->
-                   
-                  <div
-                    class="gl-dropdown-item-text-wrapper"
-                  >
-                    <p
-                      class="gl-dropdown-item-text-primary"
-                    >
-                      <div
-                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="gl-icon s12 icon-high gl-mr-3 gl-flex-shrink-0"
-                          data-testid="severity-high-icon"
-                          role="img"
-                        >
-                          <use
-                            href="#severity-high"
-                          />
-                        </svg>
-                         
-                        <span
-                          class="gl-min-w-0 gl-text-truncate"
-                        >
-                          
-    High - S2
-  
-                        </span>
-                      </div>
-                    </p>
-                     
-                    <!---->
-                  </div>
-                   
-                  <!---->
-                </button>
-              </li>
-              <li
-                class="gl-dropdown-item"
-                role="presentation"
-              >
-                <button
-                  class="dropdown-item"
-                  data-testid="severityDropdownItem"
-                  role="menuitem"
-                  type="button"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="gl-icon s16 gl-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
-                    data-testid="dropdown-item-checkbox"
-                    role="img"
-                  >
-                    <use
-                      href="#mobile-issue-close"
-                    />
-                  </svg>
-                   
-                  <!---->
-                   
-                  <!---->
-                   
-                  <div
-                    class="gl-dropdown-item-text-wrapper"
-                  >
-                    <p
-                      class="gl-dropdown-item-text-primary"
-                    >
-                      <div
-                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="gl-icon s12 icon-medium gl-mr-3 gl-flex-shrink-0"
-                          data-testid="severity-medium-icon"
-                          role="img"
-                        >
-                          <use
-                            href="#severity-medium"
-                          />
-                        </svg>
-                         
-                        <span
-                          class="gl-min-w-0 gl-text-truncate"
-                        >
-                          
-    Medium - S3
-  
-                        </span>
-                      </div>
-                    </p>
-                     
-                    <!---->
-                  </div>
-                   
-                  <!---->
-                </button>
-              </li>
-              <li
-                class="gl-dropdown-item"
-                role="presentation"
-              >
-                <button
-                  class="dropdown-item"
-                  data-testid="severityDropdownItem"
-                  role="menuitem"
-                  type="button"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="gl-icon s16 gl-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
-                    data-testid="dropdown-item-checkbox"
-                    role="img"
-                  >
-                    <use
-                      href="#mobile-issue-close"
-                    />
-                  </svg>
-                   
-                  <!---->
-                   
-                  <!---->
-                   
-                  <div
-                    class="gl-dropdown-item-text-wrapper"
-                  >
-                    <p
-                      class="gl-dropdown-item-text-primary"
-                    >
-                      <div
-                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="gl-icon s12 icon-low gl-mr-3 gl-flex-shrink-0"
-                          data-testid="severity-low-icon"
-                          role="img"
-                        >
-                          <use
-                            href="#severity-low"
-                          />
-                        </svg>
-                         
-                        <span
-                          class="gl-min-w-0 gl-text-truncate"
-                        >
-                          
-    Low - S4
-  
-                        </span>
-                      </div>
-                    </p>
-                     
-                    <!---->
-                  </div>
-                   
-                  <!---->
-                </button>
-              </li>
-              <li
-                class="gl-dropdown-item"
-                role="presentation"
-              >
-                <button
-                  class="dropdown-item"
-                  data-testid="severityDropdownItem"
-                  role="menuitem"
-                  type="button"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="gl-icon s16 gl-dropdown-item-check-icon gl-mt-3 gl-align-self-start"
-                    data-testid="dropdown-item-checkbox"
-                    role="img"
-                  >
-                    <use
-                      href="#mobile-issue-close"
-                    />
-                  </svg>
-                   
-                  <!---->
-                   
-                  <!---->
-                   
-                  <div
-                    class="gl-dropdown-item-text-wrapper"
-                  >
-                    <p
-                      class="gl-dropdown-item-text-primary"
-                    >
-                      <div
-                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="gl-icon s12 icon-unknown gl-mr-3 gl-flex-shrink-0"
-                          data-testid="severity-unknown-icon"
-                          role="img"
-                        >
-                          <use
-                            href="#severity-unknown"
-                          />
-                        </svg>
-                         
-                        <span
-                          class="gl-min-w-0 gl-text-truncate"
-                        >
-                          
-    Unknown
-  
-                        </span>
-                      </div>
-                    </p>
-                     
-                    <!---->
-                  </div>
-                   
-                  <!---->
-                </button>
-              </li>
-            </div>
+              <use
+                href="#severity-unknown"
+              />
+            </svg>
              
             <!---->
           </div>
-        </ul>
+           
+          <div
+            class="gl-tooltip"
+          >
+            Severity: 
+              Unknown
+            
+          </div>
+        </div>
+         
+        <div
+          class="hide-collapsed"
+        >
+          <div
+            class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
+          >
+            <svg
+              aria-hidden="true"
+              class="gl-icon s12 icon-unknown gl-mr-3 gl-flex-shrink-0"
+              data-testid="severity-unknown-icon"
+              role="img"
+            >
+              <use
+                href="#severity-unknown"
+              />
+            </svg>
+             
+            <span
+              class="gl-min-w-0 gl-text-truncate"
+            >
+              
+    Unknown
+  
+            </span>
+          </div>
+        </div>
       </div>
        
       <div
-        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
+        class="gl-mt-3"
+        data-testid="expanded-content"
+        style="display: none;"
       >
-        <svg
-          aria-hidden="true"
-          class="gl-icon s12 icon-unknown gl-mr-3 gl-flex-shrink-0"
-          data-testid="severity-unknown-icon"
-          role="img"
+        <div
+          class="dropdown b-dropdown gl-dropdown gl-mt-3"
+          id="__BVID__45"
         >
-          <use
-            href="#severity-unknown"
-          />
-        </svg>
-         
-        <span
-          class="gl-min-w-0 gl-text-truncate"
-        >
-          
+          <!---->
+          <button
+            aria-expanded="false"
+            aria-haspopup="true"
+            class="btn dropdown-toggle btn-default btn-md btn-block gl-button gl-dropdown-toggle"
+            id="__BVID__45__BV_toggle_"
+            type="button"
+          >
+            <!---->
+             
+            <!---->
+             
+            <span
+              class="gl-dropdown-button-text"
+            >
+              Unknown
+            </span>
+             
+            <svg
+              aria-hidden="true"
+              class="gl-button-icon dropdown-chevron gl-icon s16"
+              data-testid="chevron-down-icon"
+              role="img"
+            >
+              <use
+                href="#chevron-down"
+              />
+            </svg>
+          </button>
+          <ul
+            aria-labelledby="__BVID__45__BV_toggle_"
+            class="dropdown-menu"
+            role="menu"
+            tabindex="-1"
+          >
+            <div
+              class="gl-dropdown-inner"
+            >
+              <div
+                class="gl-dropdown-header gl-border-b-0!"
+              >
+                <p
+                  class="gl-dropdown-header-top"
+                >
+                  
+        Assign severity
+      
+                </p>
+                 
+              </div>
+               
+              <!---->
+               
+              <div
+                class="gl-dropdown-contents"
+              >
+                <!---->
+                 
+                <li
+                  class="gl-dropdown-item"
+                  role="presentation"
+                >
+                  <button
+                    class="dropdown-item"
+                    data-testid="severityDropdownItem"
+                    role="menuitem"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="gl-icon s16 gl-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                      data-testid="dropdown-item-checkbox"
+                      role="img"
+                    >
+                      <use
+                        href="#mobile-issue-close"
+                      />
+                    </svg>
+                     
+                    <!---->
+                     
+                    <!---->
+                     
+                    <div
+                      class="gl-dropdown-item-text-wrapper"
+                    >
+                      <p
+                        class="gl-dropdown-item-text-primary"
+                      >
+                        <div
+                          class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            class="gl-icon s12 icon-critical gl-mr-3 gl-flex-shrink-0"
+                            data-testid="severity-critical-icon"
+                            role="img"
+                          >
+                            <use
+                              href="#severity-critical"
+                            />
+                          </svg>
+                           
+                          <span
+                            class="gl-min-w-0 gl-text-truncate"
+                          >
+                            
+    Critical - S1
+  
+                          </span>
+                        </div>
+                      </p>
+                       
+                      <!---->
+                    </div>
+                     
+                    <!---->
+                  </button>
+                </li>
+                <li
+                  class="gl-dropdown-item"
+                  role="presentation"
+                >
+                  <button
+                    class="dropdown-item"
+                    data-testid="severityDropdownItem"
+                    role="menuitem"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="gl-icon s16 gl-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                      data-testid="dropdown-item-checkbox"
+                      role="img"
+                    >
+                      <use
+                        href="#mobile-issue-close"
+                      />
+                    </svg>
+                     
+                    <!---->
+                     
+                    <!---->
+                     
+                    <div
+                      class="gl-dropdown-item-text-wrapper"
+                    >
+                      <p
+                        class="gl-dropdown-item-text-primary"
+                      >
+                        <div
+                          class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            class="gl-icon s12 icon-high gl-mr-3 gl-flex-shrink-0"
+                            data-testid="severity-high-icon"
+                            role="img"
+                          >
+                            <use
+                              href="#severity-high"
+                            />
+                          </svg>
+                           
+                          <span
+                            class="gl-min-w-0 gl-text-truncate"
+                          >
+                            
+    High - S2
+  
+                          </span>
+                        </div>
+                      </p>
+                       
+                      <!---->
+                    </div>
+                     
+                    <!---->
+                  </button>
+                </li>
+                <li
+                  class="gl-dropdown-item"
+                  role="presentation"
+                >
+                  <button
+                    class="dropdown-item"
+                    data-testid="severityDropdownItem"
+                    role="menuitem"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="gl-icon s16 gl-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                      data-testid="dropdown-item-checkbox"
+                      role="img"
+                    >
+                      <use
+                        href="#mobile-issue-close"
+                      />
+                    </svg>
+                     
+                    <!---->
+                     
+                    <!---->
+                     
+                    <div
+                      class="gl-dropdown-item-text-wrapper"
+                    >
+                      <p
+                        class="gl-dropdown-item-text-primary"
+                      >
+                        <div
+                          class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            class="gl-icon s12 icon-medium gl-mr-3 gl-flex-shrink-0"
+                            data-testid="severity-medium-icon"
+                            role="img"
+                          >
+                            <use
+                              href="#severity-medium"
+                            />
+                          </svg>
+                           
+                          <span
+                            class="gl-min-w-0 gl-text-truncate"
+                          >
+                            
+    Medium - S3
+  
+                          </span>
+                        </div>
+                      </p>
+                       
+                      <!---->
+                    </div>
+                     
+                    <!---->
+                  </button>
+                </li>
+                <li
+                  class="gl-dropdown-item"
+                  role="presentation"
+                >
+                  <button
+                    class="dropdown-item"
+                    data-testid="severityDropdownItem"
+                    role="menuitem"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="gl-icon s16 gl-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                      data-testid="dropdown-item-checkbox"
+                      role="img"
+                    >
+                      <use
+                        href="#mobile-issue-close"
+                      />
+                    </svg>
+                     
+                    <!---->
+                     
+                    <!---->
+                     
+                    <div
+                      class="gl-dropdown-item-text-wrapper"
+                    >
+                      <p
+                        class="gl-dropdown-item-text-primary"
+                      >
+                        <div
+                          class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            class="gl-icon s12 icon-low gl-mr-3 gl-flex-shrink-0"
+                            data-testid="severity-low-icon"
+                            role="img"
+                          >
+                            <use
+                              href="#severity-low"
+                            />
+                          </svg>
+                           
+                          <span
+                            class="gl-min-w-0 gl-text-truncate"
+                          >
+                            
+    Low - S4
+  
+                          </span>
+                        </div>
+                      </p>
+                       
+                      <!---->
+                    </div>
+                     
+                    <!---->
+                  </button>
+                </li>
+                <li
+                  class="gl-dropdown-item"
+                  role="presentation"
+                >
+                  <button
+                    class="dropdown-item"
+                    data-testid="severityDropdownItem"
+                    role="menuitem"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="gl-icon s16 gl-dropdown-item-check-icon gl-mt-3 gl-align-self-start"
+                      data-testid="dropdown-item-checkbox"
+                      role="img"
+                    >
+                      <use
+                        href="#mobile-issue-close"
+                      />
+                    </svg>
+                     
+                    <!---->
+                     
+                    <!---->
+                     
+                    <div
+                      class="gl-dropdown-item-text-wrapper"
+                    >
+                      <p
+                        class="gl-dropdown-item-text-primary"
+                      >
+                        <div
+                          class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            class="gl-icon s12 icon-unknown gl-mr-3 gl-flex-shrink-0"
+                            data-testid="severity-unknown-icon"
+                            role="img"
+                          >
+                            <use
+                              href="#severity-unknown"
+                            />
+                          </svg>
+                           
+                          <span
+                            class="gl-min-w-0 gl-text-truncate"
+                          >
+                            
     Unknown
   
-        </span>
+                          </span>
+                        </div>
+                      </p>
+                       
+                      <!---->
+                    </div>
+                     
+                    <!---->
+                  </button>
+                </li>
+              </div>
+               
+              <!---->
+            </div>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
