@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Boards::EpicBoardPosition do
+RSpec.describe Boards::EpicBoardPosition, feature_category: :portfolio_management do
   let_it_be(:epic) { create(:epic) }
   let_it_be(:group) { create(:group) }
   let_it_be(:epic_board) { create(:epic_board, group: group) }
