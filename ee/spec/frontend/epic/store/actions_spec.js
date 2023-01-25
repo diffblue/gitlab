@@ -9,7 +9,7 @@ import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
 import { EVENT_ISSUABLE_VUE_APP_CHANGE } from '~/issuable/constants';
 import axios from '~/lib/utils/axios_utils';
-
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import { mockEpicMeta, mockEpicData } from '../mock_data';
 
 jest.mock('~/flash');
@@ -122,7 +122,7 @@ describe('Epic Store Actions', () => {
     });
 
     it('dispatches requestEpicParticipantsFailure when request fails', async () => {
-      mock.onPut(/(.*)/).replyOnce(500, {});
+      mock.onPut(/(.*)/).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
       jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(Promise.resolve({}));
 
       await testAction(
@@ -257,7 +257,7 @@ describe('Epic Store Actions', () => {
 
     describe('failure', () => {
       it('dispatches requestEpicStatusChange and requestEpicStatusChangeFailure when request fails', async () => {
-        mock.onPut(/(.*)/).replyOnce(500, {});
+        mock.onPut(/(.*)/).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
 
         await testAction(
           actions.toggleEpicStatus,
@@ -454,7 +454,7 @@ describe('Epic Store Actions', () => {
       });
 
       it('dispatches requestEpicTodoToggle and requestEpicTodoToggleFailure when request fails', async () => {
-        mock.onPost(/(.*)/).replyOnce(500, {});
+        mock.onPost(/(.*)/).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
 
         await testAction(
           actions.toggleTodo,
@@ -501,7 +501,7 @@ describe('Epic Store Actions', () => {
       });
 
       it('dispatches requestEpicTodoToggle and requestEpicTodoToggleFailure when request fails', async () => {
-        mock.onDelete(/(.*)/).replyOnce(500, {});
+        mock.onDelete(/(.*)/).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
 
         await testAction(
           actions.toggleTodo,
@@ -623,7 +623,7 @@ describe('Epic Store Actions', () => {
 
     describe('failure', () => {
       it('dispatches requestEpicCreate and requestEpicCreateFailure when request fails', async () => {
-        mock.onPost(/(.*)/).replyOnce(500, {});
+        mock.onPost(/(.*)/).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
 
         await testAction(
           actions.createEpic,

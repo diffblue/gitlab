@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Ingestion::Tasks::IngestIssueLinks do
+RSpec.describe Security::Ingestion::Tasks::IngestIssueLinks, feature_category: :vulnerability_management do
   describe '#execute' do
     let(:pipeline) { create(:ci_pipeline) }
     let(:report_finding_1) { create(:ci_reports_security_finding) }

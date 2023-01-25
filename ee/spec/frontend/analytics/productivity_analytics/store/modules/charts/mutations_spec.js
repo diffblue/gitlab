@@ -1,3 +1,4 @@
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import { chartKeys } from 'ee/analytics/productivity_analytics/constants';
 import * as types from 'ee/analytics/productivity_analytics/store/modules/charts/mutation_types';
 import mutations from 'ee/analytics/productivity_analytics/store/modules/charts/mutations';
@@ -67,22 +68,29 @@ describe('Productivity analytics chart mutations', () => {
   });
 
   describe(types.RECEIVE_CHART_DATA_ERROR, () => {
-    const status = 500;
-
     it('sets errorCode to 500', () => {
-      mutations[types.RECEIVE_CHART_DATA_ERROR](state, { chartKey, status });
+      mutations[types.RECEIVE_CHART_DATA_ERROR](state, {
+        chartKey,
+        status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+      });
       expect(state.charts[chartKey].isLoading).toBe(false);
-      expect(state.charts[chartKey].errorCode).toBe(status);
+      expect(state.charts[chartKey].errorCode).toBe(HTTP_STATUS_INTERNAL_SERVER_ERROR);
     });
 
     it('clears data', () => {
-      mutations[types.RECEIVE_CHART_DATA_ERROR](state, { chartKey, status });
+      mutations[types.RECEIVE_CHART_DATA_ERROR](state, {
+        chartKey,
+        status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+      });
       expect(state.charts[chartKey].isLoading).toBe(false);
       expect(state.charts[chartKey].data).toEqual({});
     });
 
     it('clears transformedData when chartKey=scatterplot', () => {
-      mutations[types.RECEIVE_CHART_DATA_ERROR](state, { chartKey: chartKeys.scatterplot, status });
+      mutations[types.RECEIVE_CHART_DATA_ERROR](state, {
+        chartKey: chartKeys.scatterplot,
+        status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+      });
       expect(state.charts[chartKey].transformedData).toEqual([]);
     });
   });

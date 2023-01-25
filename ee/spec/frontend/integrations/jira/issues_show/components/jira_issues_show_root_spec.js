@@ -11,6 +11,7 @@ import IssuableHeader from '~/vue_shared/issuable/show/components/issuable_heade
 import IssuableShow from '~/vue_shared/issuable/show/components/issuable_show_root.vue';
 import IssuableSidebar from '~/vue_shared/issuable/sidebar/components/issuable_sidebar_root.vue';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import { mockJiraIssue } from '../mock_data';
 
 const mockJiraIssuesShowPath = 'jira_issues_show_path';
@@ -60,7 +61,7 @@ describe('JiraIssuesShow', () => {
 
   describe('when error occurs during fetch', () => {
     it('renders error message', async () => {
-      mockAxios.onGet(mockJiraIssuesShowPath).replyOnce(500);
+      mockAxios.onGet(mockJiraIssuesShowPath).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
       createComponent();
 
       await waitForPromises();

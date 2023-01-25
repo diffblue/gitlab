@@ -1,5 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import * as actions from 'ee/analytics/productivity_analytics/store/modules/table/actions';
 import * as types from 'ee/analytics/productivity_analytics/store/modules/table/mutation_types';
 import getInitialState from 'ee/analytics/productivity_analytics/store/modules/table/state';
@@ -122,7 +123,7 @@ describe('Productivity analytics table actions', () => {
 
     describe('error', () => {
       beforeEach(() => {
-        mock.onGet(mockedState.endpoint).replyOnce(500);
+        mock.onGet(mockedState.endpoint).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
       });
 
       it('dispatches error', async () => {
@@ -174,9 +175,9 @@ describe('Productivity analytics table actions', () => {
     it('should commit error', async () =>
       testAction(
         actions.receiveMergeRequestsError,
-        { response: { status: 500 } },
+        { response: { status: HTTP_STATUS_INTERNAL_SERVER_ERROR } },
         mockedContext.state,
-        [{ type: types.RECEIVE_MERGE_REQUESTS_ERROR, payload: 500 }],
+        [{ type: types.RECEIVE_MERGE_REQUESTS_ERROR, payload: HTTP_STATUS_INTERNAL_SERVER_ERROR }],
         [],
       ));
   });

@@ -7,6 +7,7 @@ import createState from 'ee/geo_replicable/store/state';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
 import { normalizeHeaders, parseIntPagination } from '~/lib/utils/common_utils';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import toast from '~/vue_shared/plugins/global_toast';
 import {
   MOCK_BASIC_FETCH_DATA_MAP,
@@ -359,7 +360,9 @@ describe('GeoReplicable Store Actions', () => {
 
     describe('on error', () => {
       beforeEach(() => {
-        jest.spyOn(Api, 'getGeoReplicableItems').mockRejectedValue(new Error(500));
+        jest
+          .spyOn(Api, 'getGeoReplicableItems')
+          .mockRejectedValue(new Error(HTTP_STATUS_INTERNAL_SERVER_ERROR));
       });
 
       it('should dispatch the request and error actions', async () => {
@@ -451,7 +454,9 @@ describe('GeoReplicable Store Actions', () => {
     describe('on error', () => {
       beforeEach(() => {
         action = ACTION_TYPES.RESYNC;
-        jest.spyOn(Api, 'initiateAllGeoReplicableSyncs').mockRejectedValue(new Error(500));
+        jest
+          .spyOn(Api, 'initiateAllGeoReplicableSyncs')
+          .mockRejectedValue(new Error(HTTP_STATUS_INTERNAL_SERVER_ERROR));
       });
 
       it('should dispatch the request and error actions', async () => {
@@ -544,7 +549,9 @@ describe('GeoReplicable Store Actions', () => {
         action = ACTION_TYPES.RESYNC;
         projectId = 1;
         name = 'test';
-        jest.spyOn(Api, 'initiateGeoReplicableSync').mockRejectedValue(new Error(500));
+        jest
+          .spyOn(Api, 'initiateGeoReplicableSync')
+          .mockRejectedValue(new Error(HTTP_STATUS_INTERNAL_SERVER_ERROR));
       });
 
       it('should dispatch the request and error actions', async () => {

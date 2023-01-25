@@ -17,6 +17,7 @@ import { createAlert } from '~/flash';
 import {
   HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_FORBIDDEN,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_OK,
 } from '~/lib/utils/http_status';
 import { allowedStages as stages, valueStreams, endpoints, groupLabels } from '../mock_data';
@@ -223,7 +224,7 @@ describe('Value Stream Analytics actions', () => {
     });
 
     it(`commits the ${types.RECEIVE_VALUE_STREAM_DATA_ERROR} mutation on a non 403 error response`, () => {
-      const response = { status: 500 };
+      const response = { status: HTTP_STATUS_INTERNAL_SERVER_ERROR };
       return testAction(
         actions.receiveCycleAnalyticsDataError,
         { response },
@@ -239,7 +240,7 @@ describe('Value Stream Analytics actions', () => {
     });
 
     it('will flash an error when the response is not 403', () => {
-      const response = { status: 500 };
+      const response = { status: HTTP_STATUS_INTERNAL_SERVER_ERROR };
       actions.receiveCycleAnalyticsDataError(
         {
           commit: () => {},

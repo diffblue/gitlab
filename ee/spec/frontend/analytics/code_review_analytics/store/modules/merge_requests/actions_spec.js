@@ -5,6 +5,7 @@ import * as types from 'ee/analytics/code_review_analytics/store/modules/merge_r
 import getInitialState from 'ee/analytics/code_review_analytics/store/modules/merge_requests/state';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import { mockMergeRequests } from '../../../mock_data';
 
 jest.mock('~/flash');
@@ -88,7 +89,9 @@ describe('Code review analytics mergeRequests actions', () => {
 
     describe('error', () => {
       beforeEach(() => {
-        mock.onGet(/api\/(.*)\/analytics\/code_review/).replyOnce(500);
+        mock
+          .onGet(/api\/(.*)\/analytics\/code_review/)
+          .replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
       });
 
       it('dispatches error', async () => {
@@ -100,7 +103,7 @@ describe('Code review analytics mergeRequests actions', () => {
             { type: types.REQUEST_MERGE_REQUESTS },
             {
               type: types.RECEIVE_MERGE_REQUESTS_ERROR,
-              payload: 500,
+              payload: HTTP_STATUS_INTERNAL_SERVER_ERROR,
             },
           ],
           [],
