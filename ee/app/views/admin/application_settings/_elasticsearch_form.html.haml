@@ -109,7 +109,6 @@
               = f.number_field :elasticsearch_max_bulk_size_mb, value: @application_setting.elasticsearch_max_bulk_size_mb, class: 'form-control gl-form-input'
               .form-text.gl-text-gray-600.gl-mt-0
                 = _('Maximum size of Elasticsearch bulk indexing requests.')
-                = _('This only applies to repository indexing operations.')
 
             .form-group
               = f.label :elasticsearch_max_bulk_concurrency, _('Bulk request concurrency'), class: 'label-bold'
