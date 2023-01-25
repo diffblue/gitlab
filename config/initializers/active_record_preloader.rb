@@ -1,42 +1,49 @@
 # frozen_string_literal: true
 
+# Some polymorphic associations may refer to an object which is not a subclass of ActiveRecord.
+# This patch skips preloading of these associations.
+#
+# For example, a note's noteable can be an Issue, Merge Request, or Commit, where Commit is
+# not a subclass of ActiveRecord. When you run something like:
+#
+# Note.includes(noteable: :assignees).to_a
+#
+# This patch allows preloading of issues, merge requests, and their assignees while skipping
+# commits.
+
 module ActiveRecord
   module Associations
     class Preloader
-      def initialize(records: nil, associations: nil)
-        super()
+      class Association
+        module NonActiveRecordPreloader
+          # https://github.com/rails/rails/blob/v7.0.4.2/activerecord/lib/active_record/associations/preloader/association.rb#L114-L116
+          def run?
+            return true unless klass < ActiveRecord::Base
 
-        @records = records
-        @associations = associations
-      end
+            super
+          end
 
-      def call
-        preload(@records, @associations)
-      end
+          # https://github.com/rails/rails/blob/v7.0.4.2/activerecord/lib/active_record/associations/preloader/association.rb#L137-L141
+          def preloaded_records
+            return [] unless klass < ActiveRecord::Base
 
-      class NullPreloader
-        def self.new(*args, **kwargs)
-          self
+            super
+          end
         end
 
-        def self.run
-          self
-        end
-
-        def self.preloaded_records
-          []
-        end
+        prepend NonActiveRecordPreloader
       end
 
-      module NoCommitPreloader
-        def preloader_for(reflection, owners)
-          return NullPreloader if owners.first.association(reflection.name).klass == ::Commit
-
-          super
+      class Branch
+        module NonActiveRecordPreloader
+          # https://github.com/rails/rails/blob/v7.0.4.2/activerecord/lib/active_record/associations/preloader/branch.rb#L37-L45
+          def target_classes
+            super.delete_if { |klass| !(klass < ActiveRecord::Base) }
+          end
         end
-      end
 
-      prepend NoCommitPreloader
+        prepend NonActiveRecordPreloader
+      end
     end
   end
 end
