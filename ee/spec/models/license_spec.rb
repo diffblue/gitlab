@@ -1908,4 +1908,28 @@ RSpec.describe License do
       end
     end
   end
+
+  describe '#issued_to_gitlab_team_member?' do
+    subject { license.issued_to_gitlab_team_member? }
+
+    let(:gl_license) { build(:gitlab_license, licensee: { 'Email' => email }) }
+
+    context 'when issued to user with gitlab.com email address' do
+      let(:email) { 'user@gitlab.com' }
+
+      it { is_expected.to be(true) }
+    end
+
+    context 'when issued to user email address that somewhere includes gitlab.com' do
+      let(:email) { 'user@gitlab.com.eu' }
+
+      it { is_expected.to be(false) }
+    end
+
+    context 'when issued to user with external email address' do
+      let(:email) { 'user@example.com' }
+
+      it { is_expected.to be(false) }
+    end
+  end
 end
