@@ -9,11 +9,15 @@ export default {
       default: '',
       required: false,
     },
+    remediation: {
+      type: Object,
+      default: null,
+      required: false,
+    },
   },
   computed: {
     solutionText() {
-      // Note: this will be expanded for remediation in a follow-up issue
-      return this.solution;
+      return this.solution || this.remediation?.summary;
     },
   },
 };

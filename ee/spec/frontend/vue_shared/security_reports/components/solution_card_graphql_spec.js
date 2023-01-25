@@ -3,6 +3,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import SolutionCard from 'ee/vue_shared/security_reports/components/solution_card_graphql.vue';
 
 const TEST_SOLUTION = 'Upgrade to XYZ';
+const TEST_REMEDIATION = { summary: 'Update to 123', diff: 'SGVsbG8gR2l0TGFi' };
 
 describe('Solution Card GraphQL', () => {
   let wrapper;
@@ -34,6 +35,16 @@ describe('Solution Card GraphQL', () => {
   describe('solution text', () => {
     it('renders text from solution', () => {
       createWrapper({ propsData: { solution: TEST_SOLUTION } });
+      expect(findSolutionText().text()).toBe(TEST_SOLUTION);
+    });
+
+    it('renders from remediation summary', () => {
+      createWrapper({ propsData: { remediation: TEST_REMEDIATION } });
+      expect(findSolutionText().text()).toBe(TEST_REMEDIATION.summary);
+    });
+
+    it('renders from solution when both solution and remediation are provided', () => {
+      createWrapper({ propsData: { solution: TEST_SOLUTION, remediation: TEST_REMEDIATION } });
       expect(findSolutionText().text()).toBe(TEST_SOLUTION);
     });
   });
