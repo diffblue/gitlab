@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import FormUrlApp from './components/form_url_app.vue';
-import TestDropdwn from './components/test_dropdown.vue';
+import TestDropdown from './components/test_dropdown.vue';
 
 export default () => {
   const el = document.querySelector('.js-vue-webhook-form');
@@ -31,7 +31,7 @@ const initHookTestDropdown = (el) => {
   return new Vue({
     el,
     render(h) {
-      return h(TestDropdwn, {
+      return h(TestDropdown, {
         props: {
           items: JSON.parse(items),
           size,
