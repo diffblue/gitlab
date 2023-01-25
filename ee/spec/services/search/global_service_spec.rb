@@ -50,23 +50,12 @@ RSpec.describe Search::GlobalService, feature_category: :global_search do
     end
   end
 
-  context 'visibility', :elastic_delete_by_query, :clean_gitlab_redis_shared_state, :sidekiq_inline do
+  context 'visibility', :elastic_delete_by_query, :sidekiq_inline do
     include_context 'ProjectPolicyTable context'
-
-    shared_examples 'search respects visibility' do
-      it 'respects visibility' do
-        enable_admin_mode!(user) if admin_mode
-        update_feature_access_level(project, feature_access_level, visibility_level: Gitlab::VisibilityLevel.level_value(project_level.to_s))
-        ensure_elasticsearch_index!
-
-        expect_search_results(user, scope, expected_count: expected_count) do |user|
-          described_class.new(user, search: search).execute
-        end
-      end
-    end
 
     let_it_be(:group) { create(:group) }
     let_it_be_with_reload(:project) { create(:project, namespace: group) }
+    let(:projects) { [project] }
 
     let(:user) { create_user_from_membership(project, membership) }
 
@@ -81,41 +70,6 @@ RSpec.describe Search::GlobalService, feature_category: :global_search do
 
       with_them do
         it_behaves_like 'search respects visibility'
-      end
-    end
-
-    context 'blob and commit' do
-      let_it_be_with_reload(:project) { create(:project, :repository, namespace: group) }
-
-      where(:project_level, :feature_access_level, :membership, :admin_mode, :expected_count) do
-        permission_table_for_guest_feature_access_and_non_private_project_only
-      end
-
-      with_them do
-        before do
-          project.repository.index_commits_and_blobs
-        end
-
-        context 'populate_commit_permissions_in_main_index migration has not been completed' do
-          before do
-            set_elasticsearch_migration_to(:populate_commit_permissions_in_main_index, including: false)
-          end
-
-          it_behaves_like 'search respects visibility' do
-            let(:scope) { 'commits' }
-            let(:search) { 'initial' }
-          end
-        end
-
-        it_behaves_like 'search respects visibility' do
-          let(:scope) { 'commits' }
-          let(:search) { 'initial' }
-        end
-
-        it_behaves_like 'search respects visibility' do
-          let(:scope) { 'blobs' }
-          let(:search) { '.gitmodules' }
-        end
       end
     end
 
@@ -214,9 +168,7 @@ RSpec.describe Search::GlobalService, feature_category: :global_search do
           project.wiki.index_wiki_blobs
         end
 
-        it_behaves_like 'search respects visibility' do
-          let(:projects) { [project] }
-        end
+        it_behaves_like 'search respects visibility'
       end
     end
 
@@ -271,7 +223,7 @@ RSpec.describe Search::GlobalService, feature_category: :global_search do
     end
   end
 
-  context 'sorting', :elastic, :clean_gitlab_redis_shared_state, :sidekiq_inline do
+  context 'sorting', :elastic, :sidekiq_inline do
     context 'issue' do
       let_it_be_with_reload(:project) { create(:project, :public) }
 

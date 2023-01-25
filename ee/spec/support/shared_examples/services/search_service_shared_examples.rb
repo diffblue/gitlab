@@ -10,7 +10,11 @@ visibility_level: Gitlab::VisibilityLevel.level_value(project_level.to_s))
     ensure_elasticsearch_index!
 
     expect_search_results(user, scope, expected_count: expected_count) do |user|
-      described_class.new(user, search_level, search: search).execute
+      if described_class.eql?(Search::GlobalService)
+        described_class.new(user, search: search).execute
+      else
+        described_class.new(user, search_level, search: search).execute
+      end
     end
   end
 end
