@@ -17,33 +17,7 @@ RSpec.describe EE::NamespacesHelper do
 
   let(:ci_minutes_used) { 100 }
 
-  describe '#ci_minutes_progress_bar' do
-    it 'shows a green bar if percent is 0' do
-      expect(helper.ci_minutes_progress_bar(0)).to match(/success.*0%/)
-    end
-
-    it 'shows a green bar if percent is lower than 70' do
-      expect(helper.ci_minutes_progress_bar(69)).to match(/success.*69%/)
-    end
-
-    it 'shows a yellow bar if percent is 70' do
-      expect(helper.ci_minutes_progress_bar(70)).to match(/warning.*70%/)
-    end
-
-    it 'shows a yellow bar if percent is higher than 70 and lower than 95' do
-      expect(helper.ci_minutes_progress_bar(94)).to match(/warning.*94%/)
-    end
-
-    it 'shows a red bar if percent is 95' do
-      expect(helper.ci_minutes_progress_bar(95)).to match(/danger.*95%/)
-    end
-
-    it 'shows a red bar if percent is higher than 100 and caps the value to 100' do
-      expect(helper.ci_minutes_progress_bar(120)).to match(/danger.*100%/)
-    end
-  end
-
-  describe '#ci_minutes_report' do
+  describe '#ci_minutes_report', feature_category: :continuous_integration do
     let(:usage) { Ci::Minutes::Usage.new(user_group) }
     let(:usage_presenter) { Ci::Minutes::UsagePresenter.new(usage) }
 
@@ -123,7 +97,7 @@ RSpec.describe EE::NamespacesHelper do
     end
   end
 
-  describe '#buy_additional_minutes_path' do
+  describe '#buy_additional_minutes_path', feature_category: :subscription_cost_management do
     subject { helper.buy_additional_minutes_path(namespace) }
 
     let(:namespace) { build_stubbed(:group) }
@@ -150,7 +124,7 @@ RSpec.describe EE::NamespacesHelper do
     end
   end
 
-  describe '#buy_storage_path' do
+  describe '#buy_storage_path', feature_category: :subscription_cost_management do
     subject { helper.buy_storage_path(namespace) }
 
     let(:namespace) { build_stubbed(:group) }
@@ -176,7 +150,7 @@ RSpec.describe EE::NamespacesHelper do
     end
   end
 
-  describe '#buy_storage_url' do
+  describe '#buy_storage_url', feature_category: :subscription_cost_management do
     subject { helper.buy_storage_url(namespace) }
 
     let(:namespace) { build_stubbed(:group) }
@@ -202,7 +176,7 @@ RSpec.describe EE::NamespacesHelper do
     end
   end
 
-  describe '#buy_addon_target_attr' do
+  describe '#buy_addon_target_attr', feature_category: :subscription_cost_management do
     subject { helper.buy_addon_target_attr(namespace) }
 
     let(:namespace) { create(:group) }
@@ -219,7 +193,7 @@ RSpec.describe EE::NamespacesHelper do
     end
   end
 
-  describe '#pipeline_usage_app_data' do
+  describe '#pipeline_usage_app_data', feature_category: :subscription_cost_management do
     context 'when gitlab sass', :saas do
       let(:minutes_usage) { user_group.ci_minutes_usage }
       let(:minutes_usage_presenter) { ::Ci::Minutes::UsagePresenter.new(minutes_usage) }
@@ -270,13 +244,13 @@ RSpec.describe EE::NamespacesHelper do
     end
   end
 
-  describe '#purchase_storage_url' do
+  describe '#purchase_storage_url', feature_category: :subscription_cost_management do
     subject { helper.purchase_storage_url }
 
     it { is_expected.to eq(EE::SUBSCRIPTIONS_MORE_STORAGE_URL) }
   end
 
-  describe '#purchase_storage_link_enabled?' do
+  describe '#purchase_storage_link_enabled?', feature_category: :subscription_cost_management do
     subject { helper.purchase_storage_link_enabled?(namespace) }
 
     let_it_be(:namespace) { build(:namespace) }
@@ -296,7 +270,7 @@ RSpec.describe EE::NamespacesHelper do
     end
   end
 
-  describe '#storage_usage_app_data' do
+  describe '#storage_usage_app_data', feature_category: :subscription_cost_management do
     let_it_be(:namespace) { create(:namespace) }
     let_it_be(:admin) { create(:user, namespace: namespace) }
 
