@@ -7,8 +7,8 @@ class Projects::JobsController < Projects::ApplicationController
 
   urgency :low, [:index, :show, :trace, :retry, :play, :cancel, :unschedule, :erase, :raw]
 
-  before_action :find_job_as_build, except: [:index, :play, :show]
-  before_action :find_job_as_processable, only: [:play, :show]
+  before_action :find_job_as_build, except: [:index, :play, :show, :retry]
+  before_action :find_job_as_processable, only: [:play, :show, :retry]
   before_action :authorize_read_build_trace!, only: [:trace, :raw]
   before_action :authorize_read_build!
   before_action :authorize_update_build!,
@@ -76,7 +76,11 @@ class Projects::JobsController < Projects::ApplicationController
     response = Ci::RetryJobService.new(project, current_user).execute(@build)
 
     if response.success?
-      redirect_to build_path(response[:job])
+      if @build.is_a?(::Ci::Build)
+        redirect_to build_path(response[:job])
+      else
+        head :ok
+      end
     else
       respond_422
     end
