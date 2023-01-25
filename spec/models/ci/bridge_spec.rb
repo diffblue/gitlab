@@ -600,4 +600,10 @@ RSpec.describe Ci::Bridge, feature_category: :continuous_integration do
       expect(bridge.metadata.partition_id).to eq(ci_testing_partition_id)
     end
   end
+
+  describe '#deployment_job?' do
+    subject { bridge.deployment_job? }
+
+    it { is_expected.to eq(false) }
+  end
 end
