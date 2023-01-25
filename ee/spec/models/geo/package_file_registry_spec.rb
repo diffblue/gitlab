@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::PackageFileRegistry, :geo, type: :model do
+RSpec.describe Geo::PackageFileRegistry, :geo, type: :model, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   it_behaves_like 'a BulkInsertSafe model', Geo::PackageFileRegistry do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EpicIssue do
+RSpec.describe EpicIssue, feature_category: :portfolio_management do
   let_it_be(:ancestor) { create(:group) }
   let_it_be(:group) { create(:group, parent: ancestor) }
   let_it_be(:project) { create(:project, group: group) }

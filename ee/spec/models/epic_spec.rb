@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Epic do
+RSpec.describe Epic, feature_category: :portfolio_management do
   include NestedEpicsHelper
 
   let_it_be(:user) { create(:user) }
