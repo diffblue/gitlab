@@ -192,6 +192,7 @@ export default {
       :disabled="!canUpdate"
       :text="healthStatusText"
       class="gl-mt-3"
+      data-testid="work-item-health-status-dropdown"
       :toggle-class="dropdownToggleClasses"
       @shown="onDropdownShown"
       @hide="onDropdownHide"
