@@ -26,7 +26,7 @@ describe('Secure File Metadata Modal', () => {
         modalId,
         name: secureFile.name,
         metadata: secureFile.metadata,
-        file_extension: secureFile.file_extension,
+        fileExtension: secureFile.file_extension,
       },
     });
   };

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Secure File Metadata Modal when a .cer file is supplied matches the snapshot 1`] = `
+exports[`Secure File Metadata Modal when a .cer file is supplied matches cer the snapshot 1`] = `
 <div
   category="primary"
   hide-footer=""
@@ -183,7 +183,7 @@ exports[`Secure File Metadata Modal when a .cer file is supplied matches the sna
 </div>
 `;
 
-exports[`Secure File Metadata Modal when a .mobileprovision file is supplied matches the snapshot 1`] = `
+exports[`Secure File Metadata Modal when a .mobileprovision file is supplied matches the mobileprovision snapshot 1`] = `
 <div
   category="primary"
   hide-footer=""
