@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'layouts/application', :themed_layout do
+RSpec.describe 'layouts/application' do
   let_it_be(:user) { create(:user) }
 
   before do
@@ -11,6 +11,8 @@ RSpec.describe 'layouts/application', :themed_layout do
     allow(view).to receive(:current_user).and_return(user)
     allow(view).to receive(:current_user_mode).and_return(Gitlab::Auth::CurrentUserMode.new(user))
   end
+
+  it_behaves_like 'a layout which reflects the application theme setting'
 
   describe 'layouts/_user_notification_dot' do
     let(:track_selector) { '[data-track-action="render"][data-track-label="show_buy_ci_minutes_notification"]' }
