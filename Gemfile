@@ -387,7 +387,7 @@ group :development, :test do
   gem 'bullet', '~> 7.0.2'
   gem 'pry-byebug'
   gem 'pry-rails', '~> 0.3.9'
-  gem 'pry-shell', '~> 0.5.1'
+  gem 'pry-shell', '~> 0.6.0'
 
   gem 'awesome_print', require: false
 

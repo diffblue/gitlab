@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe Notes::CreateService do
+RSpec.describe Notes::CreateService, feature_category: :team_planning do
   context 'note with commands' do
     let(:project) { create(:project) }
     let(:note_params) { opts }
 
     let_it_be(:user) { create(:user) }
 
-    context 'for issues' do
+    context 'for issues', feature_category: :team_planning do
       let(:issuable) { create(:issue, project: project, weight: 10) }
       let(:opts) { { noteable_type: 'Issue', noteable_id: issuable.id } }
 
@@ -65,7 +65,7 @@ RSpec.describe Notes::CreateService do
       end
     end
 
-    context 'for merge_requests' do
+    context 'for merge_requests', feature_category: :code_review_workflow do
       let(:issuable) { create(:merge_request, project: project, source_project: project) }
       let(:developer) { create(:user) }
       let(:opts) { { noteable_type: 'MergeRequest', noteable_id: issuable.id } }
@@ -144,7 +144,7 @@ RSpec.describe Notes::CreateService do
       end
     end
 
-    context 'for epics' do
+    context 'for epics', feature_category: :portfolio_management do
       let_it_be(:epic) { create(:epic) }
 
       let(:opts) { { noteable_type: 'Epic', noteable_id: epic.id, note: "hello" } }
