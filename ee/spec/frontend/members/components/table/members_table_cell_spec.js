@@ -71,11 +71,6 @@ describe('MemberTableCell', () => {
 
   const findWrappedComponent = () => wrapper.findComponent(WrappedComponent);
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   // Implementation of props are tested in `spec/frontend/vue_shared/components/members/table/members_table_spec.js`
   it('exposes CE scoped slot props', () => {
     createComponent({ member: memberMock });
@@ -147,6 +142,22 @@ describe('MemberTableCell', () => {
         });
 
         expect(findWrappedComponent().props('permissions').canUnban).toBe(false);
+      });
+    });
+
+    describe('canBan', () => {
+      it.each`
+        banned   | canBan   | result
+        ${true}  | ${true}  | ${false}
+        ${true}  | ${false} | ${false}
+        ${false} | ${true}  | ${true}
+        ${false} | ${false} | ${false}
+      `('is $result when banned=$banned and canBan=$canBan', ({ banned, canBan, result }) => {
+        createComponent({
+          member: { ...memberMock, banned, canBan },
+        });
+
+        expect(findWrappedComponent().props('permissions').canBan).toBe(result);
       });
     });
   });

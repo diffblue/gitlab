@@ -45,6 +45,7 @@ export default {
               canOverride: this.canOverride,
               canUnban: this.canUnban,
               canDisableTwoFactor: this.canDisableTwoFactor,
+              canBan: this.member.canBan && !this.member.banned,
             },
           });
         },
