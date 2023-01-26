@@ -428,7 +428,7 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
       }
 
       service_instance = instance_double(GitlabSubscriptions::Trials::ApplyTrialService)
-      allow(GitlabSubscriptions::Trials::ApplyTrialService).to receive(:new).with(apply_trial_params)
+      allow(GitlabSubscriptions::Trials::ApplyTrialService).to receive(:new).with(**apply_trial_params)
                                                                             .and_return(service_instance)
 
       expect(service_instance).to receive(:execute).and_return(ServiceResponse.success)

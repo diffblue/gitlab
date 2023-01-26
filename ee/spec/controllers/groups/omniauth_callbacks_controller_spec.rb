@@ -154,7 +154,7 @@ RSpec.describe Groups::OmniauthCallbacksController, feature_category: :authentic
       it "displays a flash message verifying group sign in" do
         post provider, params: { group_id: group }
 
-        expect(flash[:notice]).to eq(s_("SAML|Sign in to GitLab to connect your organization's account"))
+        expect(flash[:notice]).to eq(s_("SAML|There is already a GitLab account associated with this email address. Sign in with your existing credentials to connect your organization's account"))
       end
 
       it 'does not add linked identity' do
@@ -301,7 +301,7 @@ RSpec.describe Groups::OmniauthCallbacksController, feature_category: :authentic
             post provider, params: { group_id: group }
 
             expect(response).to redirect_to(new_user_session_path)
-            expect(flash[:notice]).to eq(s_("SAML|Sign in to GitLab to connect your organization's account"))
+            expect(flash[:notice]).to eq(s_("SAML|There is already a GitLab account associated with this email address. Sign in with your existing credentials to connect your organization's account"))
           end
         end
 

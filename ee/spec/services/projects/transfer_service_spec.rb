@@ -78,6 +78,44 @@ RSpec.describe Projects::TransferService do
     end
   end
 
+  describe 'security policy project' do
+    context 'when project has policy project' do
+      let!(:configuration) { create(:security_orchestration_policy_configuration, project: project) }
+
+      it 'unassigns the policy project' do
+        subject.execute(group)
+
+        expect { configuration.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context 'when project has inherited policy project' do
+      let_it_be(:group, reload: true) { create(:group) }
+      let_it_be(:sub_group, reload: true) { create(:group, parent: group) }
+      let_it_be(:group_configuration, reload: true) { create(:security_orchestration_policy_configuration, project: nil, namespace: group) }
+      let_it_be(:sub_group_configuration, reload: true) { create(:security_orchestration_policy_configuration, project: nil, namespace: sub_group) }
+
+      let!(:group_approval_rule) { create(:approval_project_rule, :scan_finding, :requires_approval, project: project, security_orchestration_policy_configuration: group_configuration) }
+      let!(:sub_group_approval_rule) { create(:approval_project_rule, :scan_finding, :requires_approval, project: project, security_orchestration_policy_configuration: sub_group_configuration) }
+
+      before do
+        sub_group.add_owner(user)
+
+        allow_next_found_instance_of(Security::OrchestrationPolicyConfiguration) do |configuration|
+          allow(configuration).to receive(:policy_configuration_valid?).and_return(true)
+        end
+      end
+
+      it 'deletes scan_finding_rules for inherited policy project' do
+        subject.execute(sub_group)
+
+        expect(project.approval_rules).to be_empty
+        expect { group_approval_rule.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+        expect { sub_group_approval_rule.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+      end
+    end
+  end
+
   describe 'updating paid features' do
     let(:premium_group) { create(:group_with_plan, plan: :premium_plan) }
 

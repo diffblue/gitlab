@@ -65,6 +65,8 @@ module EE
 
         create_predefined_push_rule if ::Feature.disabled?(:inherited_push_rule_for_project, project)
         set_default_compliance_framework
+
+        sync_group_scan_result_policies if project.group
       end
 
       def create_security_policy_configuration_if_exists
@@ -81,6 +83,14 @@ module EE
           ::Project.find_by_id(security_policy_target_project_id)
         elsif security_policy_target_namespace_id.present?
           ::Namespace.find_by_id(security_policy_target_namespace_id)
+        end
+      end
+
+      def sync_group_scan_result_policies
+        configurations = project.group.all_security_orchestration_policy_configurations
+
+        configurations.each do |configuration|
+          ::Security::ProcessScanResultPolicyWorker.perform_async(project.id, configuration.id)
         end
       end
 
