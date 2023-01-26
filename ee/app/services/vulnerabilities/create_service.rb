@@ -12,7 +12,8 @@ module Vulnerabilities
       state: nil,
       present_on_default_branch: true,
       comment: nil,
-      dismissal_reason: nil
+      dismissal_reason: nil,
+      skip_permission_check: false
     )
       @project = project
       @author = author
@@ -21,10 +22,13 @@ module Vulnerabilities
       @present_on_default_branch = present_on_default_branch
       @comment = comment
       @dismissal_reason = dismissal_reason
+      @skip_permission_check = skip_permission_check
     end
 
     def execute
-      raise Gitlab::Access::AccessDeniedError unless can?(@author, :create_vulnerability, @project)
+      if !@skip_permission_check && !can?(@author, :create_vulnerability, @project)
+        raise Gitlab::Access::AccessDeniedError
+      end
 
       vulnerability = Vulnerability.new
 
