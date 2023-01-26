@@ -38555,6 +38555,9 @@ msgstr ""
 msgid "Select a branch to compare"
 msgstr ""
 
+msgid "Select a cluster management project"
+msgstr ""
+
 msgid "Select a color"
 msgstr ""
 

@@ -14,13 +14,15 @@
     = gitlab_ui_form_for @group, html: { class: 'fieldset-form' } do |form|
       = form_errors(@group)
 
-      %fieldset
-        .form-group
-          - insight = @group.insight || @group.build_insight
-          = form.fields_for :insight_attributes, insight do |insight_form|
-            = insight_form.hidden_field :id
-            = insight_form.label :project_id, class: 'label-light' do
-              = html_escape(s_('GroupSettings|Select the project containing the %{code_start}.gitlab/insights.yml%{code_end} file')) % { code_start: '<code>'.html_safe, code_end: '</code>'.html_safe }
-            = project_select_tag('group[insight_attributes][project_id]', class: 'project-item-select hidden-filter-value', toggle_class: 'js-project-search js-project-filter js-filter-submit', dropdown_class: 'dropdown-menu-selectable dropdown-menu-project js-filter-submit',
-              placeholder: _('Search projects'), idAttribute: 'id', data: { order_by: 'last_activity_at', idattribute: 'id', simple_filter: true, allow_clear: true, include_projects_in_subgroups: true }, value: insight.project_id)
+      - insight = @group.insight || @group.build_insight
+      = form.fields_for :insight_attributes, insight do |insight_form|
+        = insight_form.hidden_field :id
+        .js-vue-project-select{ data: { label: html_escape(s_('GroupSettings|Select the project containing the %{code_start}.gitlab/insights.yml%{code_end} file')) % { code_start: '<code>'.html_safe, code_end: '</code>'.html_safe },
+          has_html_label: true.to_s,
+          input_name: 'group[insight_attributes][project_id]',
+          input_id: 'group_insight_attributes_project_id',
+          group_id: @group.id,
+          order_by: 'last_activity_at',
+          include_subgroups: true.to_s,
+          selected: insight.project_id } }
       = form.submit _('Save changes'), pajamas_button: true

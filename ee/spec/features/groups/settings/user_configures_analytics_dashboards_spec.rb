@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Groups > Settings > Analytics Dashboards', :js, feature_category: :value_stream_management do
-  include Select2Helper
+  include ListboxHelpers
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group).tap { |g| g.add_owner(user) } }
@@ -37,7 +37,7 @@ RSpec.describe 'Groups > Settings > Analytics Dashboards', :js, feature_category
       expect(page).to have_content 'Analytics Dashboards'
 
       page.within '.analytics-dashboards-settings form' do
-        select2(project.id, from: '#group_analytics_dashboards_pointer_attributes_project_id')
+        select_from_listbox(project.full_name, from: 'Search for project')
 
         click_button 'Save changes'
 

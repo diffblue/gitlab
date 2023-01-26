@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Groups > Settings > User configures Insights', :js, feature_category: :value_stream_management do
-  include Select2Helper
+  include ListboxHelpers
 
   let_it_be(:group) { create(:group) }
   let_it_be(:subgroup) { create(:group, parent: group) }
@@ -37,7 +37,7 @@ RSpec.describe 'Groups > Settings > User configures Insights', :js, feature_cate
       expect(page).to have_content 'Insights'
 
       page.within '.insights-settings form' do
-        select2(project.id, from: '#group_insight_attributes_project_id')
+        select_from_listbox(project.full_name, from: "Search for project")
 
         click_button 'Save changes'
 
