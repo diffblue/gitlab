@@ -154,7 +154,7 @@ allowing you to profile which code is running on CPU in detail.
 It's important to note that profiling an application *alters its performance*.
 Different profiling strategies have different overheads. Stackprof is a sampling
 profiler. It samples stack traces from running threads at a configurable
-frequency (for example, 100hz, that is 100 stacks per second). This type of profiling
+frequency (for example, 100 hz, that is 100 stacks per second). This type of profiling
 has quite a low (albeit non-zero) overhead and is generally considered to be
 safe for production.
 
@@ -234,7 +234,7 @@ The following configuration options can be configured:
 - `STACKPROF_INTERVAL`: Sampling interval. Unit semantics depend on `STACKPROF_MODE`.
   For `object` mode this is a per-event interval (every `nth` event is sampled)
   and defaults to `100`.
-  For other modes such as `cpu` this is a frequency interval and defaults to `10100` μs (99hz).
+  For other modes such as `cpu` this is a frequency interval and defaults to `10100` μs (99 hz).
 - `STACKPROF_FILE_PREFIX`: File path prefix where profiles are stored. Defaults
   to `$TMPDIR` (often corresponds to `/tmp`).
 - `STACKPROF_TIMEOUT_S`: Profiling timeout in seconds. Profiling will
@@ -477,7 +477,7 @@ The `mem_*` values represent different aspects of how objects and memory are all
   => {:mem_objects=>1002, :mem_bytes=>32000, :mem_mallocs=>1000}
   ```
 
-- The following example will allocate over 40kB of data, and perform only a single memory allocation.
+- The following example will allocate over 40 kB of data, and perform only a single memory allocation.
    The existing object will be reallocated/resized on subsequent iterations:
 
   ```ruby
@@ -730,7 +730,7 @@ test = +"hello"
 test += " world"
 ```
 
-When adding new Ruby files, please check that you can add the above header,
+When adding new Ruby files, check that you can add the above header,
 as omitting it may lead to style check failures.
 
 ## Banzai pipelines and filters
