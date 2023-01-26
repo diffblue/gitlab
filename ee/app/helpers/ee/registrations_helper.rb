@@ -3,6 +3,7 @@
 module EE
   module RegistrationsHelper
     include ::Gitlab::Utils::StrongMemoize
+    extend ::Gitlab::Utils::Override
 
     def shuffled_registration_objective_options
       options = registration_objective_options
@@ -28,6 +29,11 @@ module EE
         iframe_url: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_URL,
         allowed_origin: ::Gitlab::SubscriptionPortal::SUBSCRIPTIONS_URL
       }
+    end
+
+    override :arkose_labs_challenge_enabled?
+    def arkose_labs_challenge_enabled?
+      ::Arkose::Settings.enabled_for_signup?
     end
 
     def arkose_labs_data
