@@ -14,13 +14,14 @@
     = gitlab_ui_form_for @group, html: { class: 'fieldset-form' } do |form|
       = form_errors(@group)
 
-      %fieldset
-        .form-group
-          - pointer = @group.analytics_dashboards_pointer || @group.build_analytics_dashboards_pointer
-          = form.fields_for :analytics_dashboards_pointer_attributes, pointer do |pointer_form|
-            = pointer_form.hidden_field :id
-            = pointer_form.label :project_id, class: 'label-light' do
-              = s_('GroupSettings|Select the project containing Analytics Dashboards configuration files')
-            = project_select_tag('group[analytics_dashboards_pointer_attributes][project_id]', class: 'project-item-select',
-              placeholder: _('Search projects'), idAttribute: 'id', data: { order_by: 'last_activity_at', idattribute: 'id', simple_filter: true, allow_clear: true, include_projects_in_subgroups: true}, value: pointer.project_id)
+      - pointer = @group.analytics_dashboards_pointer || @group.build_analytics_dashboards_pointer
+      = form.fields_for :analytics_dashboards_pointer_attributes, pointer do |pointer_form|
+        = pointer_form.hidden_field :id
+        .js-vue-project-select{ data: { label: s_('GroupSettings|Select the project containing Analytics Dashboards configuration files'),
+          input_name: 'group[analytics_dashboards_pointer_attributes][project_id]',
+          input_id: 'group_analytics_dashboards_pointer_attributes_project_id',
+          group_id: @group.id,
+          order_by: 'last_activity_at',
+          include_subgroups: true.to_s,
+          selected: pointer.project_id } }
       = form.submit _('Save changes'), pajamas_button: true
