@@ -409,10 +409,6 @@ class License < ApplicationRecord
     Date.current >= notification_start_date
   end
 
-  def issued_to_gitlab_team_member?
-    licensee_email&.ends_with?('@gitlab.com')
-  end
-
   private
 
   def restricted_attr(name, default = nil)

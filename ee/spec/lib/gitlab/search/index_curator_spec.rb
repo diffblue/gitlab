@@ -44,12 +44,11 @@ RSpec.describe Gitlab::Search::IndexCurator, feature_category: :global_search do
       described_class.curate
     end
 
-    it 'logs any exceptions' do
+    it 'bubbles up errors' do
       err = ArgumentError.new("boom")
       expect(stubbed_curator).to receive(:curate!).and_raise err
-      expect(stubbed_curator).to receive(:log_exception).with err
 
-      described_class.curate
+      expect { described_class.curate }.to raise_error err
     end
   end
 
@@ -429,22 +428,6 @@ RSpec.describe Gitlab::Search::IndexCurator, feature_category: :global_search do
           expect { curator.preflight_checks! }.not_to raise_error
         end
       end
-    end
-  end
-
-  describe 'log_exception' do
-    it 'logs an error with correct labels' do
-      err = ArgumentError.new("boom")
-
-      allow(curator).to receive(:logger).and_return stubbed_logger
-      expect(stubbed_logger).to receive(:error).with(
-        search_curation_status: "error",
-        error: "boom",
-        message: "Search curation",
-        class: "Gitlab::Search::IndexCurator"
-      )
-
-      curator.log_exception(err)
     end
   end
 end

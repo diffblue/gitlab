@@ -14,6 +14,11 @@ module Types
       field :rules, [::Types::ApprovalRuleType],
         null: true, complexity: 5, method: :wrapped_approval_rules,
         description: 'List of approval rules associated with the merge request.'
+
+      field :invalid_approvers_rules,
+        [::Types::ApprovalRuleType],
+        null: true,
+        description: 'List of approval rules that are associated with the merge request, but invalid.'
     end
   end
 end
