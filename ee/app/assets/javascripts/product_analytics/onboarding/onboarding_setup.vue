@@ -1,8 +1,8 @@
 <script>
-import { GlLink } from '@gitlab/ui';
+import { GlLink, GlButton } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import OnboardingKeyInput from './components/onboarding_key_input.vue';
+import AnalyticsClipboardInput from '../shared/analytics_clipboard_input.vue';
 import OnboardingSetupCollapse from './components/onboarding_setup_collapse.vue';
 import {
   INSTALL_NPM_PACKAGE,
@@ -14,9 +14,10 @@ import {
 export default {
   name: 'ProductAnalyticsOnboardingSetup',
   components: {
-    OnboardingKeyInput,
+    AnalyticsClipboardInput,
     OnboardingSetupCollapse,
     GlLink,
+    GlButton,
   },
   inject: {
     jitsuHost: {
@@ -26,7 +27,20 @@ export default {
       type: String,
     },
   },
+  props: {
+    isInitialSetup: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
   computed: {
+    description() {
+      if (this.isInitialSetup) {
+        return this.$options.i18n.initialSetupDescription;
+      }
+      return this.$options.i18n.description;
+    },
     instructions() {
       return {
         install: INSTALL_NPM_PACKAGE,
@@ -47,6 +61,9 @@ export default {
   i18n: {
     title: s__('Product Analytics|Instrument your application'),
     description: s__(
+      'Product Analytics|Details on how to configure product analytics to collect data.',
+    ),
+    initialSetupDescription: s__(
       'Product Analytics|For the product analytics dashboard to start showing you some data, you need to add the analytics tracking code to your project.',
     ),
     introduction: s__(
@@ -71,6 +88,7 @@ export default {
       'Product Analytics|Add the NPM package to your package.json using your preferred package manager:',
     ),
     importNpmPackage: s__('Product Analytics|Import the new package into your JS code:'),
+    backToDashboards: s__('Product Analytics|Back to dashboards'),
     addHtmlScriptToPage: s__(
       'Product Analytics|Add the script to the page and assign the client SDK to window:',
     ),
@@ -81,24 +99,39 @@ export default {
 
 <template>
   <section>
-    <h2 data-testid="title">{{ $options.i18n.title }}</h2>
-    <p data-testid="description">
-      {{ $options.i18n.description }}
-      <gl-link data-testid="help-link" :href="$options.docsPath">
-        {{ $options.i18n.learnMore }}
-      </gl-link>
+    <header class="gl-display-flex gl-justify-content-space-between gl-align-items-flex-start">
+      <div class="gl-mb-7">
+        <h2 class="gl-mb-4" data-testid="title">{{ $options.i18n.title }}</h2>
+        <p class="gl-mb-0" data-testid="description">
+          {{ description }}
+          <gl-link data-testid="help-link" :href="$options.docsPath">
+            {{ $options.i18n.learnMore }}
+          </gl-link>
+        </p>
+      </div>
+      <gl-button
+        v-if="!isInitialSetup"
+        class="gl-my-6"
+        to="/"
+        data-testid="back-to-dashboards-button"
+      >
+        {{ $options.i18n.backToDashboards }}
+      </gl-button>
+    </header>
+
+    <p v-if="isInitialSetup" class="gl-mb-6" data-testid="introduction">
+      {{ $options.i18n.introduction }}
     </p>
-    <p data-testid="introduction">{{ $options.i18n.introduction }}</p>
 
     <section class="gl-display-flex gl-flex-wrap gl-mb-6">
-      <onboarding-key-input
-        class="gl-mr-6"
+      <analytics-clipboard-input
+        class="gl-mr-6 gl-mb-6 gl-md-mb-0"
         :label="$options.i18n.sdkHost"
         :description="$options.i18n.sdkHostDescription"
         :value="jitsuHost"
       />
 
-      <onboarding-key-input
+      <analytics-clipboard-input
         :label="$options.i18n.sdkAppId"
         :description="$options.i18n.sdkAppIdDescription"
         :value="jitsuProjectId"

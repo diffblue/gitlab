@@ -157,7 +157,7 @@ export default {
 
 <template>
   <gl-loading-icon v-if="isLoading" size="lg" class="gl-my-7" />
-  <onboarding-setup v-else-if="showSetup" />
+  <onboarding-setup v-else-if="showSetup" is-initial-setup />
   <onboarding-empty-state
     v-else
     :loading="initializationIsLoading"
