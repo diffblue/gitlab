@@ -111,20 +111,19 @@ module EE
         override :perform
 
         def perform
-          each_sub_batch(
-            batching_scope: ->(relation) {
-                              Feedback.match_on_finding_uuid_or_security_finding_or_project_fingerprint.merge(relation)
-                            }
-          ) do |batch|
-            with_vulnerabilities_finding = batch
-              .preload(:security_finding, finding: [:vulnerability])
-              .select { |feedback| !feedback.finding.nil? }
+          each_sub_batch do |batch|
+            feedbacks = Feedback.where(id: batch.pluck(:id))
+
+            with_vulnerabilities_finding = feedbacks
+                .match_on_finding_uuid_or_security_finding_or_project_fingerprint
+                .preload(:security_finding, finding: [:vulnerability])
+                .select { |feedback| !feedback.finding.nil? }
 
             without_vulnerability, with_vulnerability = with_vulnerabilities_finding.partition do |feedback|
               feedback.finding.vulnerability_id.nil?
             end
 
-            security_finding_only = batch.select { |feedback| !feedback.security_finding.nil? && feedback.finding.nil? }
+            security_finding_only = feedbacks.select { |feedback| !feedback.security_finding.nil? && feedback.finding.nil? }
 
             handle_vulnerability_present_scenario(with_vulnerability)
             handle_vulnerability_finding_present_scenario(without_vulnerability)
@@ -159,7 +158,8 @@ module EE
                 project,
                 author,
                 finding_id: finding.id,
-                state: 'dismissed'
+                state: 'dismissed',
+                skip_permission_check: true
               ).execute
 
               if vulnerability.errors.any?
@@ -192,7 +192,8 @@ module EE
                 project: project,
                 current_user: author,
                 params: params,
-                state: 'dismissed'
+                state: 'dismissed',
+                skip_permission_check: true
               ).execute
 
               if response.error?
