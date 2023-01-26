@@ -10630,6 +10630,7 @@ Describes a rule for who can approve merge requests.
 | <a id="approvalruleapprovalsrequired"></a>`approvalsRequired` | [`Int`](#int) | Number of required approvals. |
 | <a id="approvalruleapproved"></a>`approved` | [`Boolean`](#boolean) | Indicates if the rule is satisfied. |
 | <a id="approvalruleapprovedby"></a>`approvedBy` | [`UserCoreConnection`](#usercoreconnection) | List of users defined in the rule that approved the merge request. (see [Connections](#connections)) |
+| <a id="approvalrulecommentedby"></a>`commentedBy` | [`UserCoreConnection`](#usercoreconnection) | List of users, defined in the rule, who commented on the merge request. (see [Connections](#connections)) |
 | <a id="approvalrulecontainshiddengroups"></a>`containsHiddenGroups` | [`Boolean`](#boolean) | Indicates if the rule contains approvers from a hidden group. |
 | <a id="approvalruleeligibleapprovers"></a>`eligibleApprovers` | [`[UserCore!]`](#usercore) | List of all users eligible to approve the merge request (defined explicitly and from associated groups). |
 | <a id="approvalrulegroups"></a>`groups` | [`GroupConnection`](#groupconnection) | List of groups added as approvers for the rule. (see [Connections](#connections)) |
@@ -15421,6 +15422,7 @@ Information relating to rules that must be satisfied to merge this merge request
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mergerequestapprovalstateapprovalrulesoverwritten"></a>`approvalRulesOverwritten` | [`Boolean`](#boolean) | Indicates if the merge request approval rules are overwritten for the merge request. |
+| <a id="mergerequestapprovalstateinvalidapproversrules"></a>`invalidApproversRules` | [`[ApprovalRule!]`](#approvalrule) | List of approval rules that are associated with the merge request, but invalid. |
 | <a id="mergerequestapprovalstaterules"></a>`rules` | [`[ApprovalRule!]`](#approvalrule) | List of approval rules associated with the merge request. |
 
 ### `MergeRequestAssignee`

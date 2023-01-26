@@ -78,5 +78,11 @@ module Types
           type: ::Types::GroupType.connection_type,
           null: true,
           description: 'List of groups added as approvers for the rule.'
+
+    field :commented_by,
+          type: ::Types::UserType.connection_type,
+          method: :commented_approvers,
+          null: true,
+          description: 'List of users, defined in the rule, who commented on the merge request.'
   end
 end
