@@ -72,8 +72,8 @@ namespace :geo do
       abort 'This is not a secondary node'
     end
 
-    from_project_id = ENV['FROM_PROJECT_ID'] || Geo::ProjectRegistry.minimum(:project_id)
-    to_project_id = ENV['TO_PROJECT_ID'] || Geo::ProjectRegistry.maximum(:project_id)
+    from_project_id = ENV.fetch('FROM_PROJECT_ID', Geo::ProjectRegistry.minimum(:project_id)).to_i
+    to_project_id = ENV.fetch('TO_PROJECT_ID', Geo::ProjectRegistry.maximum(:project_id)).to_i
 
     if from_project_id > to_project_id
       abort 'FROM_PROJECT_ID can not be greater than TO_PROJECT_ID'
