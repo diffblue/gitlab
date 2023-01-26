@@ -134,7 +134,7 @@ RSpec.describe IncidentManagement::OncallUsersFinder do
         stub_licensed_features(oncall_schedules: false)
       end
 
-      it { is_expected.to eq(IncidentManagement::OncallParticipant.none) }
+      it { is_expected.to be_none }
     end
   end
 end

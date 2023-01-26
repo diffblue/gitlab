@@ -179,6 +179,62 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       end
     end
 
+    describe 'rule params `protected_branch_ids`' do
+      let(:protected_branch_name) { 'protected-branch-name' }
+      let(:rule) do
+        {
+          type: 'scan_finding',
+          branches: [protected_branch_name],
+          scanners: %w[container_scanning],
+          vulnerabilities_allowed: 0,
+          severity_levels: %w[critical],
+          vulnerability_states: %w[detected]
+        }
+      end
+
+      let(:policy) { build(:scan_result_policy, name: 'Test Policy', rules: [rule]) }
+      let(:scan_finding_rule) { project.approval_rules.first }
+
+      let!(:project_protected_branch) do
+        create(:protected_branch, project: project, name: protected_branch_name)
+      end
+
+      let!(:group_protected_branch) do
+        create(:protected_branch, project: nil, group: group, name: protected_branch_name)
+      end
+
+      before do
+        stub_licensed_features(multiple_approval_rules: true)
+      end
+
+      context 'when feature flag `group_protected_branches` enabled' do
+        before do
+          stub_feature_flags(group_protected_branches: true)
+        end
+
+        it 'set `protected_branch_ids` from the project and group level' do
+          subject
+
+          expect(scan_finding_rule.protected_branch_ids).to match_array([
+            project_protected_branch.id,
+            group_protected_branch.id
+          ])
+        end
+      end
+
+      context 'when feature flag `group_protected_branches` disabled' do
+        before do
+          stub_feature_flags(group_protected_branches: false)
+        end
+
+        it 'set `protected_branch_ids` from only the project level' do
+          subject
+
+          expect(scan_finding_rule.protected_branch_ids).to match_array([project_protected_branch.id])
+        end
+      end
+    end
+
     it 'sets project approval rule based on policy', :aggregate_failures do
       subject
 
