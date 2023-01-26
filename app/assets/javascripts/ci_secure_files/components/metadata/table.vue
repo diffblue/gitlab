@@ -25,14 +25,12 @@ export default {
 </script>
 
 <template>
-  <div>
-    <gl-table-lite :items="items" :fields="$options.fields">
-      <template #cell(item_name)="{ item }">
-        <strong>{{ item.name }}</strong>
-      </template>
-      <template #cell(item_data)="{ item }">
-        {{ item.data }}
-      </template>
-    </gl-table-lite>
-  </div>
+  <gl-table-lite :items="items" :fields="$options.fields">
+    <template #cell(item_name)="{ item }">
+      <strong>{{ item.name }}</strong>
+    </template>
+    <template #cell(item_data)="{ item }">
+      {{ item.data }}
+    </template>
+  </gl-table-lite>
 </template>
