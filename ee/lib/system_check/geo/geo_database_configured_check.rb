@@ -3,7 +3,7 @@
 module SystemCheck
   module Geo
     class GeoDatabaseConfiguredCheck < SystemCheck::BaseCheck
-      set_name 'GitLab Geo secondary database is correctly configured'
+      set_name 'GitLab Geo tracking database is correctly configured'
       set_skip_reason 'not a secondary node'
 
       DATABASE_DOCS = 'doc/gitlab-geo/database.md'
