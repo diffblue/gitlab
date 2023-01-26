@@ -31820,6 +31820,8 @@ CREATE UNIQUE INDEX index_vulns_user_mentions_on_vulnerability_id ON vulnerabili
 
 CREATE UNIQUE INDEX index_vulns_user_mentions_on_vulnerability_id_and_note_id ON vulnerability_user_mentions USING btree (vulnerability_id, note_id);
 
+CREATE INDEX index_web_hook_logs_on_web_hook_id_and_created_at ON ONLY web_hook_logs USING btree (web_hook_id, created_at);
+
 CREATE INDEX index_web_hook_logs_part_on_created_at_and_web_hook_id ON ONLY web_hook_logs USING btree (created_at, web_hook_id);
 
 CREATE INDEX index_web_hook_logs_part_on_web_hook_id ON ONLY web_hook_logs USING btree (web_hook_id);
