@@ -36934,10 +36934,10 @@ msgstr ""
 msgid "SAML|Sign in to %{groupName}"
 msgstr ""
 
-msgid "SAML|Sign in to GitLab to connect your organization's account"
+msgid "SAML|The %{strongOpen}%{group_path}%{strongClose} group allows you to sign in using single sign-on."
 msgstr ""
 
-msgid "SAML|The %{strongOpen}%{group_path}%{strongClose} group allows you to sign in using single sign-on."
+msgid "SAML|There is already a GitLab account associated with this email address. Sign in with your existing credentials to connect your organization's account"
 msgstr ""
 
 msgid "SAML|To access %{groupName}, you must sign in using single sign-on through an external sign-in page."

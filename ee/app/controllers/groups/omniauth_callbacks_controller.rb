@@ -118,7 +118,7 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
   end
 
   def redirect_to_login_or_register
-    notice = s_("SAML|Sign in to GitLab to connect your organization's account")
+    notice = s_("SAML|There is already a GitLab account associated with this email address. Sign in with your existing credentials to connect your organization's account")
 
     after_gitlab_sign_in = sso_group_saml_providers_path(@unauthenticated_group)
 
