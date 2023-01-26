@@ -87,10 +87,12 @@ RSpec.describe ApprovalProjectRule do
   end
 
   describe '#protected_branches' do
-    let_it_be(:project) { create(:project) }
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
     let_it_be(:rule_protected_branch) { create(:protected_branch) }
     let_it_be(:rule) { create(:approval_project_rule, protected_branches: [rule_protected_branch], project: project) }
     let_it_be(:protected_branches) { create_list(:protected_branch, 3, project: project) }
+    let_it_be(:group_protected_branches) { create_list(:protected_branch, 2, project: nil, group: group) }
 
     subject { rule.protected_branches }
 
@@ -99,8 +101,24 @@ RSpec.describe ApprovalProjectRule do
         rule.update!(applies_to_all_protected_branches: true)
       end
 
-      it 'returns a collection of all protected branches belonging to the project' do
-        expect(subject).to contain_exactly(*protected_branches)
+      context 'when feature flag `group_protected_branches` disabled' do
+        before do
+          stub_feature_flags(group_protected_branches: false)
+        end
+
+        it 'returns a collection of all protected branches belonging to the project' do
+          expect(subject).to contain_exactly(*protected_branches)
+        end
+      end
+
+      context 'when feature flag `group_protected_branches` enabled' do
+        before do
+          stub_feature_flags(group_protected_branches: true)
+        end
+
+        it 'returns a collection of all protected branches belonging to the project and the group' do
+          expect(subject).to contain_exactly(*protected_branches, *group_protected_branches)
+        end
       end
     end
 

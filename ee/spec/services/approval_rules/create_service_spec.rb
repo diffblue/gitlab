@@ -193,6 +193,7 @@ RSpec.describe ApprovalRules::CreateService do
     context 'when protected_branch_ids param is present' do
       let(:protected_branch) { create(:protected_branch, project: target) }
       let(:skip_authorization) { false }
+      let(:protected_branch_ids) { [protected_branch.id] }
 
       subject do
         described_class.new(
@@ -201,7 +202,7 @@ RSpec.describe ApprovalRules::CreateService do
           name: 'developers',
           approvals_required: 1,
           skip_authorization: skip_authorization,
-          protected_branch_ids: [protected_branch.id]
+          protected_branch_ids: protected_branch_ids
         ).execute
       end
 
@@ -248,6 +249,37 @@ RSpec.describe ApprovalRules::CreateService do
           it 'does not associate the approval rule to the protected branch' do
             expect(subject[:status]).to eq(:success)
             expect(subject[:rule].protected_branches).to be_empty
+          end
+        end
+
+        context 'when feature `group_protected_branches` enabled' do
+          before do
+            stub_feature_flags(group_protected_branches: true)
+          end
+
+          context 'when the root_namespace of project is not a group' do
+            it 'associates the approval rule to the protected branch' do
+              expect(subject[:status]).to eq(:success)
+              expect(subject[:rule].protected_branches).to match_array([protected_branch])
+            end
+          end
+
+          context 'when the root_namespace of project is a group' do
+            let_it_be(:group) { create(:group) }
+            let_it_be(:project) { create(:project, group: group) }
+            let_it_be(:group_protected_branch) { create(:protected_branch, project: nil, group: group) }
+            let_it_be(:user) { create(:user) }
+
+            let(:protected_branch_ids) { [protected_branch.id, group_protected_branch.id] }
+
+            before do
+              project.add_maintainer(user)
+            end
+
+            it 'associates the approval rule to the all protected branches' do
+              expect(subject[:status]).to eq(:success)
+              expect(subject[:rule].protected_branches).to match_array([protected_branch, group_protected_branch])
+            end
           end
         end
       end
