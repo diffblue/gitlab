@@ -6,7 +6,7 @@ module EE
     extend ::Gitlab::Utils::Override
 
     prepended do
-      include ArkoseLabsCSP
+      include Arkose::ContentSecurityPolicy
 
       before_action :gitlab_geo_logout, only: [:destroy]
       before_action only: [:new] do
