@@ -1,9 +1,9 @@
 - page_title _('Your GitLab group')
 
-.row.flex-grow-1.bg-gray-light
-  .d-flex.flex-column.align-items-center.w-100.gl-p-5
+.row.gl-flex-grow-1.bg-gray-light
+  .gl-display-flex.gl-flex-direction-column.gl-align-items-center.gl-w-full.gl-p-5
     = render 'shared/thanks_for_purchase_alert', plan_title: plan_title, quantity: params[:quantity].to_i
-    .edit-group.d-flex.flex-column.align-items-center.gl-pt-7
+    .edit-group.gl-display-flex.gl-flex-direction-column.gl-align-items-center.gl-pt-7
       - if params[:new_user]
         #progress-bar
       %h2.center= _('Create your group')
@@ -11,41 +11,43 @@
         %div= _('A group represents your organization in GitLab. Groups allow you to manage users and collaborate across multiple projects.')
         %div= _('Your %{plan} plan will be applied to your group.' % { plan: plan_title })
 
-      = gitlab_ui_form_for [:subscriptions, @group], html: { class: 'gl-show-field-errors card w-100 gl-p-5' } do |f|
-        = hidden_field_tag :new_user, params[:new_user]
-        = form_errors(@group)
-        .row
-          .form-group.group-name-holder.col-sm-12
-            = f.label :name, class: 'label-bold' do
-              = _('Group name (your organization)')
-            = f.text_field :name, class: 'form-control',
-              required: true,
-              title: _('Please fill in a descriptive name for your group.'),
-              autofocus: true
-            .form-text.text-muted= _('You can always edit this later')
-        .row
-          .form-group.col-sm-12
-            = f.label :path, class: 'label-bold' do
-              = _('Group URL')
-            .input-group.gl-field-error-anchor
-              .group-root-path.input-group-prepend.has-tooltip{ title: group_path, :'data-placement' => 'bottom' }
-                .input-group-text
-                  %span= root_url
-              = f.text_field :path, class: 'form-control js-validate-group-path',
-                autofocus: local_assigns[:autofocus] || false, required: true,
-                pattern: Gitlab::PathRegex::NAMESPACE_FORMAT_REGEX_JS,
-                title: group_url_error_message,
-                maxlength: ::Namespace::URL_MAX_LENGTH
-            %p.validation-error.gl-field-error.field-validation.hide
-              = _("Group path is already taken. We've suggested one that is available.")
-            %p.validation-success.gl-field-success.field-validation.hide= _('Group path is available.')
-            %p.validation-pending.gl-field-error-ignore.field-validation.hide= _('Checking group path availability...')
-        .row
-          .form-group.col-sm-12
-            = f.label :visibility_level, class: 'label-bold' do
-              = _('Visibility level')
-            = render 'shared/visibility_level', f: f, visibility_level: default_group_visibility, can_change_visibility_level: true, form_model: @group, with_label: false
-        .row
-          .form-group.col-sm-12.mb-0
-            = render Pajamas::ButtonComponent.new(type: :submit, variant: :confirm, block: true, button_options: { class: 'gl-mb-0' }) do
-              = _('Get started')
+      = render Pajamas::CardComponent.new do |c|
+        - c.body do
+          = gitlab_ui_form_for [:subscriptions, @group], html: { class: 'gl-show-field-errors gl-w-full gl-p-5' } do |f|
+            = hidden_field_tag :new_user, params[:new_user]
+            = form_errors(@group)
+            .row
+              .form-group.group-name-holder.col-sm-12
+                = f.label :name, class: 'label-bold' do
+                  = _('Group name (your organization)')
+                = f.text_field :name, class: 'form-control',
+                  required: true,
+                  title: _('Please fill in a descriptive name for your group.'),
+                  autofocus: true
+                .form-text.text-muted= _('You can always edit this later')
+            .row
+              .form-group.col-sm-12
+                = f.label :path, class: 'label-bold' do
+                  = _('Group URL')
+                .input-group.gl-field-error-anchor
+                  .group-root-path.input-group-prepend.has-tooltip{ title: group_path, :'data-placement' => 'bottom' }
+                    .input-group-text
+                      %span= root_url
+                  = f.text_field :path, class: 'form-control js-validate-group-path',
+                    autofocus: local_assigns[:autofocus] || false, required: true,
+                    pattern: Gitlab::PathRegex::NAMESPACE_FORMAT_REGEX_JS,
+                    title: group_url_error_message,
+                    maxlength: ::Namespace::URL_MAX_LENGTH
+                %p.validation-error.gl-field-error.field-validation.hide
+                  = _("Group path is already taken. We've suggested one that is available.")
+                %p.validation-success.gl-field-success.field-validation.hide= _('Group path is available.')
+                %p.validation-pending.gl-field-error-ignore.field-validation.hide= _('Checking group path availability...')
+            .row
+              .form-group.col-sm-12
+                = f.label :visibility_level, class: 'label-bold' do
+                  = _('Visibility level')
+                = render 'shared/visibility_level', f: f, visibility_level: default_group_visibility, can_change_visibility_level: true, form_model: @group, with_label: false
+            .row
+              .form-group.col-sm-12.mb-0
+                = render Pajamas::ButtonComponent.new(type: :submit, variant: :confirm, block: true, button_options: { class: 'gl-mb-0' }) do
+                  = _('Get started')
