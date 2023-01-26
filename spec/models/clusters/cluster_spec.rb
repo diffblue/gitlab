@@ -1415,4 +1415,292 @@ RSpec.describe Clusters::Cluster, :use_clean_rails_memory_store_caching do
       end
     end
   end
+
+  describe '#on_creation?' do
+    subject(:on_creation?) { cluster.on_creation? }
+
+    context 'without provider' do
+      before do
+        allow(cluster).to receive(:provider).and_return(nil)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'with provider' do
+      let(:mock_provider) { spy('provider') }
+
+      before do
+        allow(cluster).to receive(:provider).and_return(mock_provider)
+      end
+
+      context 'with on_creation? set to true' do
+        before do
+          allow(mock_provider).to receive(:on_creation?).and_return(true)
+        end
+
+        it { is_expected.to eq(true) }
+      end
+
+      context 'with on_creation? set to false' do
+        before do
+          allow(mock_provider).to receive(:on_creation?).and_return(false)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+  end
+
+  describe '#knative_pre_installed?' do
+    subject(:knative_pre_installed?) { cluster.knative_pre_installed? }
+
+    context 'without provider' do
+      before do
+        allow(cluster).to receive(:provider).and_return(nil)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'with provider' do
+      let(:mock_provider) { spy('provider') }
+
+      before do
+        allow(cluster).to receive(:provider).and_return(mock_provider)
+      end
+
+      context 'with knative_pre_installed? set to true' do
+        before do
+          allow(mock_provider).to receive(:knative_pre_installed?).and_return(true)
+        end
+
+        it { is_expected.to eq(true) }
+      end
+
+      context 'with knative_pre_installed? set to false' do
+        before do
+          allow(mock_provider).to receive(:knative_pre_installed?).and_return(false)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+  end
+
+  describe '#platform_kubernetes_active?' do
+    subject(:platform_kubernetes_active?) { cluster.platform_kubernetes_active? }
+
+    context 'without platform_kubernetes' do
+      before do
+        allow(cluster).to receive(:platform_kubernetes).and_return(nil)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'with platform_kubernetes' do
+      let(:mock_platform_kubernetes) { spy('platform_kubernetes') }
+
+      before do
+        allow(cluster).to receive(:platform_kubernetes).and_return(mock_platform_kubernetes)
+      end
+
+      context 'with active? set to true' do
+        before do
+          allow(mock_platform_kubernetes).to receive(:active?).and_return(true)
+        end
+
+        it { is_expected.to eq(true) }
+      end
+
+      context 'with active? set to false' do
+        before do
+          allow(mock_platform_kubernetes).to receive(:active?).and_return(false)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+  end
+
+  describe '#platform_kubernetes_rbac?' do
+    subject(:platform_kubernetes_rbac?) { cluster.platform_kubernetes_rbac? }
+
+    context 'without platform_kubernetes' do
+      before do
+        allow(cluster).to receive(:platform_kubernetes).and_return(nil)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'with platform_kubernetes' do
+      let(:mock_platform_kubernetes) { spy('platform_kubernetes') }
+
+      before do
+        allow(cluster).to receive(:platform_kubernetes).and_return(mock_platform_kubernetes)
+      end
+
+      context 'with rbac? set to true' do
+        before do
+          allow(mock_platform_kubernetes).to receive(:rbac?).and_return(true)
+        end
+
+        it { is_expected.to eq(true) }
+      end
+
+      context 'with rbac? set to false' do
+        before do
+          allow(mock_platform_kubernetes).to receive(:rbac?).and_return(false)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+  end
+
+  describe '#application_helm_available?' do
+    subject(:application_helm_available?) { cluster.application_helm_available? }
+
+    context 'without application_helm' do
+      before do
+        allow(cluster).to receive(:application_helm).and_return(nil)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'with application_helm' do
+      let(:mock_application_helm) { spy('application_helm') }
+
+      before do
+        allow(cluster).to receive(:application_helm).and_return(mock_application_helm)
+      end
+
+      context 'with available? set to true' do
+        before do
+          allow(mock_application_helm).to receive(:available?).and_return(true)
+        end
+
+        it { is_expected.to eq(true) }
+      end
+
+      context 'with available? set to false' do
+        before do
+          allow(mock_application_helm).to receive(:available?).and_return(false)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+  end
+
+  describe '#application_ingress_available?' do
+    subject(:application_ingress_available?) { cluster.application_ingress_available? }
+
+    context 'without application_ingress' do
+      before do
+        allow(cluster).to receive(:application_ingress).and_return(nil)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'with application_ingress' do
+      let(:mock_application_ingress) { spy('application_ingress') }
+
+      before do
+        allow(cluster).to receive(:application_ingress).and_return(mock_application_ingress)
+      end
+
+      context 'with available? set to true' do
+        before do
+          allow(mock_application_ingress).to receive(:available?).and_return(true)
+        end
+
+        it { is_expected.to eq(true) }
+      end
+
+      context 'with available? set to false' do
+        before do
+          allow(mock_application_ingress).to receive(:available?).and_return(false)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+  end
+
+  describe '#application_knative_available?' do
+    subject(:application_knative_available?) { cluster.application_knative_available? }
+
+    context 'without application_knative' do
+      before do
+        allow(cluster).to receive(:application_knative).and_return(nil)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'with application_knative' do
+      let(:mock_application_knative) { spy('application_knative') }
+
+      before do
+        allow(cluster).to receive(:application_knative).and_return(mock_application_knative)
+      end
+
+      context 'with available? set to true' do
+        before do
+          allow(mock_application_knative).to receive(:available?).and_return(true)
+        end
+
+        it { is_expected.to eq(true) }
+      end
+
+      context 'with available? set to false' do
+        before do
+          allow(mock_application_knative).to receive(:available?).and_return(false)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+  end
+
+  describe '#integration_elastic_stack_available?' do
+    subject(:integration_elastic_stack_available?) { cluster.integration_elastic_stack_available? }
+
+    context 'without integration_elastic_stack' do
+      before do
+        allow(cluster).to receive(:integration_elastic_stack).and_return(nil)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'with integration_elastic_stack' do
+      let(:mock_integration_elastic_stack) { spy('integration_elastic_stack') }
+
+      before do
+        allow(cluster).to receive(:integration_elastic_stack).and_return(mock_integration_elastic_stack)
+      end
+
+      context 'with available? set to true' do
+        before do
+          allow(mock_integration_elastic_stack).to receive(:available?).and_return(true)
+        end
+
+        it { is_expected.to eq(true) }
+      end
+
+      context 'with available? set to false' do
+        before do
+          allow(mock_integration_elastic_stack).to receive(:available?).and_return(false)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+  end
 end
