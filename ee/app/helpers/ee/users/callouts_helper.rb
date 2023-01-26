@@ -17,22 +17,6 @@ module EE
       CL_SUBSCRIPTION_ACTIVATION = 'cloud_licensing_subscription_activation_banner'
       PROFILE_PERSONAL_ACCESS_TOKEN_EXPIRY = 'profile_personal_access_token_expiry'
 
-      def render_enable_hashed_storage_warning
-        return unless show_enable_hashed_storage_warning?
-
-        message = enable_hashed_storage_warning_message
-
-        render_flash_user_callout(:warning, message, GEO_ENABLE_HASHED_STORAGE)
-      end
-
-      def render_migrate_hashed_storage_warning
-        return unless show_migrate_hashed_storage_warning?
-
-        message = migrate_hashed_storage_warning_message
-
-        render_flash_user_callout(:warning, message, GEO_MIGRATE_HASHED_STORAGE)
-      end
-
       def show_enable_hashed_storage_warning?
         return if hashed_storage_enabled?
 
@@ -117,24 +101,6 @@ module EE
 
       def any_project_not_in_hashed_storage?
         ::Project.with_unmigrated_storage.exists?
-      end
-
-      def enable_hashed_storage_warning_message
-        message = _('Please enable and migrate to hashed storage to avoid security issues and ensure data integrity. %{migrate_link}')
-
-        add_migrate_to_hashed_storage_link(message)
-      end
-
-      def migrate_hashed_storage_warning_message
-        message = _('Please migrate all existing projects to hashed storage to avoid security issues and ensure data integrity. %{migrate_link}')
-
-        add_migrate_to_hashed_storage_link(message)
-      end
-
-      def add_migrate_to_hashed_storage_link(message)
-        migrate_link = link_to(_('For more info, read the documentation.'), help_page_path('administration/raketasks/storage.md', anchor: 'migrate-to-hashed-storage'), target: '_blank', rel: 'noopener')
-        linked_message = message % { migrate_link: migrate_link }
-        linked_message.html_safe
       end
 
       def show_ultimate_trial?(user, callout = ULTIMATE_TRIAL)

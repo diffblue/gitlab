@@ -1,8 +1,7 @@
 - add_page_specific_style 'page_bundles/admin/geo_nodes'
 - page_title _('Geo sites')
 
-= render_enable_hashed_storage_warning
-= render_migrate_hashed_storage_warning
+= render partial: 'admin/geo/shared/hashed_storage_alerts'
 = render partial: 'admin/geo/shared/license_alert'
 
 #js-geo-nodes{ data: node_vue_list_properties }
