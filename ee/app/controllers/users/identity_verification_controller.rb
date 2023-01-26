@@ -4,7 +4,7 @@ module Users
   class IdentityVerificationController < ApplicationController
     include AcceptsPendingInvitations
     include ActionView::Helpers::DateHelper
-    include ArkoseLabsCSP
+    include Arkose::ContentSecurityPolicy
 
     skip_before_action :authenticate_user!
     before_action :require_unverified_user!
