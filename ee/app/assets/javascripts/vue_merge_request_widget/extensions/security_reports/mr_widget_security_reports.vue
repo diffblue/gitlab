@@ -249,6 +249,7 @@ export default {
         error: null,
         title: finding.name,
         vulnerability: finding,
+        isShowingDeleteButtons: false,
       };
 
       // We want to keep a reference to the `finding` object so that whenever
@@ -390,6 +391,40 @@ export default {
         });
     },
 
+    hideDismissalDeleteButtons() {
+      this.modalData.isShowingDeleteButtons = false;
+    },
+
+    showDismissalDeleteButtons() {
+      this.modalData.isShowingDeleteButtons = true;
+    },
+
+    deleteDismissalComment() {
+      const { vulnerability: finding } = this.modalData;
+      const { dismissal_feedback: dismissalFeedback } = finding;
+      const url = `${this.mr.createVulnerabilityFeedbackDismissalPath}/${dismissalFeedback.id}`;
+      const toastMsg = sprintf(s__("SecurityReports|Comment deleted on '%{vulnerabilityName}'"), {
+        vulnerabilityName: finding.name,
+      });
+
+      // This will cause the spinner to be displayed
+      this.isDismissingFinding = true;
+
+      return axios
+        .patch(url, {
+          project_id: dismissalFeedback.project_id,
+          comment: '',
+        })
+        .then(({ data }) => {
+          this.modalData.vulnerability.dismissal_feedback = data;
+          toast(toastMsg);
+          this.hideModal();
+        })
+        .catch(() => {
+          this.modalData.error = s__('SecurityReports|There was an error deleting the comment.');
+        });
+    },
+
     hideModal() {
       this.$root.$emit(BV_HIDE_MODAL, VULNERABILITY_MODAL_ID);
     },
@@ -440,9 +475,12 @@ export default {
         @closeDismissalCommentBox="closeDismissalCommentBox"
         @openDismissalCommentBox="openDismissalCommentBox"
         @editVulnerabilityDismissalComment="openDismissalCommentBox"
+        @deleteDismissalComment="deleteDismissalComment"
         @revertDismissVulnerability="revertDismissVulnerability"
         @createNewIssue="createNewIssue"
         @dismissVulnerability="dismissFinding"
+        @showDismissalDeleteButtons="showDismissalDeleteButtons"
+        @hideDismissalDeleteButtons="hideDismissalDeleteButtons"
       />
       <security-training-promo-widget
         :security-configuration-path="mr.securityConfigurationPath"

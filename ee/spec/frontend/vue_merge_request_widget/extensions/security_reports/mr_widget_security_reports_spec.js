@@ -436,6 +436,7 @@ describe('MR Widget Security Reports', () => {
       expect(modal.props('modal')).toEqual({
         title: 'Password leak',
         error: null,
+        isShowingDeleteButtons: false,
         vulnerability: {
           uuid: 0,
           severity: 'critical',
@@ -814,6 +815,130 @@ describe('MR Widget Security Reports', () => {
 
         expect(toast).not.toHaveBeenCalled();
         expect(findModal().props('modal').error).toBe('There was an error adding the comment.');
+      });
+
+      it('deletes the dismissal comment - success', async () => {
+        const dismissalFeedback = {
+          author: {},
+          project_id: 20,
+          id: 15,
+          comment_details: {
+            comment: 'Test',
+            comment_author: { id: 15 },
+            comment_timestamp: '2023-01-24T12:46:03.896Z',
+          },
+        };
+
+        mockWithData({
+          state: 'dismissed',
+          dismissal_feedback: dismissalFeedback,
+        });
+
+        mockAxios
+          .onPatch(`${createVulnerabilityFeedbackDismissalPath}/15`)
+          .replyOnce(HTTP_STATUS_OK, dismissalFeedback);
+
+        createComponent({
+          mountFn: mountExtended,
+          propsData: {
+            mr: {
+              createVulnerabilityFeedbackDismissalPath,
+            },
+          },
+        });
+
+        await waitForPromises();
+
+        const emitSpy = jest.spyOn(wrapper.vm.$root, '$emit');
+
+        // Click on the toggle button to expand data
+        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+        await nextTick();
+
+        // Second one is for the dynamic scroller
+        await nextTick();
+
+        // Click on the vulnerability name
+        wrapper.findAllByText('Password leak').at(0).trigger('click');
+        await nextTick();
+
+        expect(findModal().props('modal').isShowingDeleteButtons).toBe(false);
+
+        // This displays the `Delete` button
+        findModal().vm.$emit('showDismissalDeleteButtons');
+        await nextTick();
+
+        expect(findModal().props('modal').isShowingDeleteButtons).toBe(true);
+
+        // This triggers the actual delete call
+        findModal().vm.$emit('deleteDismissalComment');
+        await nextTick();
+
+        await waitForPromises();
+
+        expect(toast).toHaveBeenCalledWith("Comment deleted on 'Password leak'");
+        expect(emitSpy).toHaveBeenCalledWith(BV_HIDE_MODAL, 'modal-mrwidget-security-issue');
+      });
+
+      it('deletes the dismissal comment - error', async () => {
+        const dismissalFeedback = {
+          author: {},
+          project_id: 20,
+          id: 15,
+          comment_details: {
+            comment: 'Test',
+            comment_author: { id: 15 },
+            comment_timestamp: '2023-01-24T12:46:03.896Z',
+          },
+        };
+
+        mockWithData({
+          state: 'dismissed',
+          dismissal_feedback: dismissalFeedback,
+        });
+
+        mockAxios
+          .onPatch(`${createVulnerabilityFeedbackDismissalPath}/15`)
+          .replyOnce(HTTP_STATUS_BAD_REQUEST);
+
+        createComponent({
+          mountFn: mountExtended,
+          propsData: {
+            mr: {
+              createVulnerabilityFeedbackDismissalPath,
+            },
+          },
+        });
+
+        await waitForPromises();
+
+        // Click on the toggle button to expand data
+        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+        await nextTick();
+
+        // Second one is for the dynamic scroller
+        await nextTick();
+
+        // Click on the vulnerability name
+        wrapper.findAllByText('Password leak').at(0).trigger('click');
+        await nextTick();
+
+        expect(findModal().props('modal').isShowingDeleteButtons).toBe(false);
+
+        // This displays the `Delete` button
+        findModal().vm.$emit('showDismissalDeleteButtons');
+        await nextTick();
+
+        expect(findModal().props('modal').isShowingDeleteButtons).toBe(true);
+
+        // This triggers the actual delete call
+        findModal().vm.$emit('deleteDismissalComment');
+        await nextTick();
+
+        await waitForPromises();
+
+        expect(toast).not.toHaveBeenCalled();
+        expect(findModal().props('modal').error).toBe('There was an error deleting the comment.');
       });
     });
 
