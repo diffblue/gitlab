@@ -825,7 +825,7 @@ source into memory, memory use grows by _at least_ the size of the data source.
 In the case of `readlines`, it grows even further, due to extra bookkeeping
 the Ruby VM has to perform to represent each line.
 
-Consider the following program, which reads a text file that is 750MB on disk:
+Consider the following program, which reads a text file that is 750 MB on disk:
 
 ```ruby
 File.readlines('large_file.txt').each do |line|
@@ -859,7 +859,7 @@ We can see that `heap_live_slots` (the number of reachable objects) jumped to ~2
 which is roughly two orders of magnitude more compared to reading the file line by
 line instead. It was not just the raw memory usage that increased, but also how the garbage collector (GC)
 responded to this change in anticipation of future memory use. We can see that `malloc_increase_bytes` jumped
-to ~30MB, which compares to just ~4kB for a "fresh" Ruby program. This figure specifies how
+to ~30 MB, which compares to just ~4 kB for a "fresh" Ruby program. This figure specifies how
 much additional heap space the Ruby GC claims from the operating system next time it runs out of memory.
 Not only did we occupy more memory, we also changed the behavior of the application
 to increase memory use at a faster rate.
