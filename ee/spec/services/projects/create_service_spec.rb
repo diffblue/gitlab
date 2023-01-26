@@ -509,6 +509,55 @@ RSpec.describe Projects::CreateService, '#execute' do
         end
       end
     end
+
+    describe 'sync scan result policies from group' do
+      let_it_be(:group, reload: true) { create(:group) }
+      let_it_be(:sub_group, reload: true) { create(:group, parent: group) }
+
+      before do
+        group.add_owner(user)
+      end
+
+      context 'when group has security_orchestration_policy_configuration' do
+        let(:policy) { build(:scan_result_policy) }
+        let_it_be(:group_configuration, reload: true) do
+          create(:security_orchestration_policy_configuration, project: nil, namespace: group)
+        end
+
+        let_it_be(:sub_group_configuration, reload: true) do
+          create(:security_orchestration_policy_configuration, project: nil, namespace: sub_group)
+        end
+
+        before do
+          allow_next_found_instance_of(Security::OrchestrationPolicyConfiguration) do |configuration|
+            allow(configuration).to receive(:policy_last_updated_by).and_return(user)
+          end
+
+          allow_next_instance_of(Repository) do |repository|
+            allow(repository).to receive(:blob_data_at).and_return({ scan_result_policy: [policy] }.to_yaml)
+          end
+        end
+
+        it 'invokes ProcessScanResultPolicyWorker', :sidekiq_inline do
+          expect(::Security::ProcessScanResultPolicyWorker).to receive(:perform_async).twice.and_call_original
+
+          project = create_project(user, { name: "GitLab", namespace_id: sub_group.id })
+
+          expect(project.approval_rules.count).to eq(2)
+          expect(project.approval_rules.map(&:security_orchestration_policy_configuration_id)).to match_array([
+            group_configuration.id, sub_group_configuration.id
+          ])
+        end
+      end
+
+      context 'when group does not have security_orchestration_policy_configuration' do
+        it 'does not invoke ProcessScanResultPolicyWorker' do
+          expect(::Security::ProcessScanResultPolicyWorker).not_to receive(:perform_async)
+
+          create_project(user, { name: "GitLab", namespace_id: sub_group.id })
+        end
+      end
+    end
   end
 
   def create_project(user, opts)
