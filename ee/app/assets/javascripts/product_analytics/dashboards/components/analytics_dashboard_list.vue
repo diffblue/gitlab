@@ -1,16 +1,28 @@
 <script>
-import { GlAvatar, GlIcon, GlLabel, GlLink } from '@gitlab/ui';
+import { GlDropdown, GlDropdownForm, GlLink, GlAvatar, GlIcon, GlLabel } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import AnalyticsClipboardInput from '../../shared/analytics_clipboard_input.vue';
 import jsonList from '../gl_dashboards/analytics_dashboards.json';
 import { I18N_DASHBOARD_LIST } from '../constants';
 
 export default {
   name: 'AnalyticsDashboard',
   components: {
+    GlDropdown,
+    GlDropdownForm,
     GlAvatar,
     GlIcon,
     GlLabel,
     GlLink,
+    AnalyticsClipboardInput,
+  },
+  inject: {
+    jitsuHost: {
+      type: String,
+    },
+    jitsuProjectId: {
+      type: String,
+    },
   },
   data() {
     return {
@@ -31,13 +43,41 @@ export default {
 
 <template>
   <div>
-    <h2 data-testid="title">{{ $options.i18n.title }}</h2>
-    <p data-testid="description">
-      {{ $options.i18n.description }}
-      <gl-link data-testid="help-link" :href="$options.helpPageUrl">{{
-        $options.i18n.learnMore
-      }}</gl-link>
-    </p>
+    <header class="gl-display-flex gl-justify-content-space-between gl-align-items-flex-start">
+      <div>
+        <h2 data-testid="title">{{ $options.i18n.title }}</h2>
+        <p data-testid="description">
+          {{ $options.i18n.description }}
+          <gl-link data-testid="help-link" :href="$options.helpPageUrl">{{
+            $options.i18n.learnMore
+          }}</gl-link>
+        </p>
+      </div>
+      <gl-dropdown
+        class="gl-my-6"
+        data-testid="intrumentation-details-dropdown"
+        :text="$options.i18n.instrumentationDetails"
+        split-to="setup"
+        split
+        right
+      >
+        <gl-dropdown-form class="gl-px-4! gl-py-2!">
+          <analytics-clipboard-input
+            class="gl-mb-6 gl-w-full"
+            :label="$options.i18n.sdkHost"
+            :description="$options.i18n.sdkHostDescription"
+            :value="jitsuHost"
+          />
+
+          <analytics-clipboard-input
+            class="gl-w-full"
+            :label="$options.i18n.sdkAppId"
+            :description="$options.i18n.sdkAppIdDescription"
+            :value="jitsuProjectId"
+          />
+        </gl-dropdown-form>
+      </gl-dropdown>
+    </header>
     <ul class="content-list gl-border-t gl-border-gray-50">
       <li
         v-for="dashboard in dashboards"

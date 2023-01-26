@@ -31,31 +31,6 @@ RSpec.shared_examples 'epics hierarchy finder with filtering' do
       it 'returns all epics that match the search' do
         expect(epics(search: 'awesome')).to eq(result_with_sort([epic3, epic1]))
       end
-
-      context 'with anonymous user' do
-        let(:search_user) { nil }
-        let(:params) { { base_param.to_s => epic7, 'search' => 'tanuki' }.symbolize_keys }
-
-        context 'with disable_anonymous_search feature flag enabled' do
-          before do
-            stub_feature_flags(disable_anonymous_search: true)
-          end
-
-          it 'does not perform search' do
-            expect(epics(params)).to eq([epic6, epic5])
-          end
-        end
-
-        context 'with disable_anonymous_search feature flag disabled' do
-          before do
-            stub_feature_flags(disable_anonymous_search: false)
-          end
-
-          it 'returns matching epics' do
-            expect(epics(params)).to contain_exactly(epic5)
-          end
-        end
-      end
     end
 
     context 'with user reaction emoji' do

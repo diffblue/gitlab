@@ -3,6 +3,8 @@ import AnalyticsDashboardList from 'ee/product_analytics/dashboards/components/a
 import { I18N_DASHBOARD_LIST } from 'ee/product_analytics/dashboards/constants';
 import jsonList from 'ee/product_analytics/dashboards/gl_dashboards/analytics_dashboards.json';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import AnalyticsClipboardInput from 'ee/product_analytics/shared/analytics_clipboard_input.vue';
+import { TEST_JITSU_HOST, TEST_JITSU_PROJECT_ID } from '../../mock_data';
 
 describe('AnalyticsDashboardList', () => {
   let wrapper;
@@ -15,6 +17,9 @@ describe('AnalyticsDashboardList', () => {
   const findPageTitle = () => wrapper.findByTestId('title');
   const findPageDescription = () => wrapper.findByTestId('description');
   const findHelpLink = () => wrapper.findByTestId('help-link');
+  const findInstrumentationDetailsDropdown = () =>
+    wrapper.findByTestId('intrumentation-details-dropdown');
+  const findKeyInputAt = (index) => wrapper.findAllComponents(AnalyticsClipboardInput).at(index);
 
   const NUMBER_OF_DASHBOARDS = jsonList.internalDashboards.length;
 
@@ -30,6 +35,10 @@ describe('AnalyticsDashboardList', () => {
       mocks: {
         $router,
       },
+      provide: {
+        jitsuHost: TEST_JITSU_HOST,
+        jitsuProjectId: TEST_JITSU_PROJECT_ID,
+      },
     });
   };
 
@@ -44,6 +53,17 @@ describe('AnalyticsDashboardList', () => {
 
     it('should render the page description', () => {
       expect(findPageDescription().text()).toContain(I18N_DASHBOARD_LIST.description);
+    });
+
+    it('should render the instrumentation details dropdown', () => {
+      expect(findInstrumentationDetailsDropdown().attributes()).toMatchObject({
+        text: I18N_DASHBOARD_LIST.instrumentationDetails,
+        'split-to': 'setup',
+        split: 'true',
+      });
+
+      expect(findKeyInputAt(0).props('value')).toBe(TEST_JITSU_HOST);
+      expect(findKeyInputAt(1).props('value')).toBe(TEST_JITSU_PROJECT_ID);
     });
 
     it('should render the help link', () => {

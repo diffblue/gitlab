@@ -11,6 +11,8 @@ module EE
     end
 
     class_methods do
+      extend ::Gitlab::Utils::Override
+
       def inverse_link_type(type)
         return IssuableLink::TYPE_IS_BLOCKED_BY if type == ::IssuableLink::TYPE_BLOCKS
 
@@ -50,6 +52,11 @@ module EE
 
       def blocking_issuables_count_for(issuable)
         blocking_issuables_for_collection(issuable.id)[0]&.count.to_i
+      end
+
+      override :available_link_types
+      def available_link_types
+        super + [::IssuableLink::TYPE_BLOCKS, ::IssuableLink::TYPE_IS_BLOCKED_BY]
       end
 
       private

@@ -6,6 +6,13 @@ import createRouter from 'ee/product_analytics/router';
 import waitForPromises from 'helpers/wait_for_promises';
 import { TEST_HOST } from 'helpers/test_constants';
 import { NO_INSTANCE_DATA, NO_PROJECT_INSTANCE } from 'ee/product_analytics/onboarding/constants';
+import {
+  TEST_JITSU_KEY,
+  TEST_JITSU_HOST,
+  TEST_JITSU_PROJECT_ID,
+  TEST_PROJECT_FULL_PATH,
+  TEST_PROJECT_ID,
+} from './mock_data';
 
 jest.mock('ee/product_analytics/dashboards/data_sources/cube_analytics', () => ({
   hasAnalyticsData: jest.fn(),
@@ -23,11 +30,11 @@ describe('ProductAnalyticsApp', () => {
       router: createRouter(),
       provide: {
         chartEmptyStateIllustrationPath: TEST_HOST,
-        jitsuKey: '123',
-        projectId: '1',
-        jitsuHost: TEST_HOST,
-        jitsuProjectId: '',
-        projectFullPath: 'group-1/project-1',
+        jitsuKey: TEST_JITSU_KEY,
+        projectId: TEST_PROJECT_ID,
+        jitsuHost: TEST_JITSU_HOST,
+        jitsuProjectId: TEST_JITSU_PROJECT_ID,
+        projectFullPath: TEST_PROJECT_FULL_PATH,
         ...provided,
       },
     });
