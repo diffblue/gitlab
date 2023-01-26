@@ -10,28 +10,6 @@ module EE
       end
     end
 
-    def ci_minutes_progress_bar(percent)
-      status =
-        if percent >= 95
-          'danger'
-        elsif percent >= 70
-          'warning'
-        else
-          'success'
-        end
-
-      width = [percent, 100].min
-
-      options = {
-        class: "progress-bar bg-#{status}",
-        style: "width: #{width}%;"
-      }
-
-      content_tag :div, class: 'progress' do
-        content_tag :div, nil, options
-      end
-    end
-
     def buy_additional_minutes_path(namespace)
       return EE::SUBSCRIPTIONS_MORE_MINUTES_URL if use_customers_dot_for_addon_path?(namespace)
 
