@@ -7,7 +7,7 @@ module EE
     include ::Gitlab::Utils::StrongMemoize
 
     prepended do
-      include ArkoseLabsCSP
+      include Arkose::ContentSecurityPolicy
 
       skip_before_action :check_captcha, if: -> { ::Feature.enabled?(:arkose_labs_signup_challenge) }
       before_action only: [:new, :create] do
