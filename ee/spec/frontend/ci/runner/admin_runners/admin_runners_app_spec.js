@@ -16,6 +16,7 @@ import {
   runnersCountData,
   onlineContactTimeoutSecs,
   staleTimeoutSecs,
+  newRunnerPath,
   emptyStateSvgPath,
   emptyStateFilteredSvgPath,
 } from 'jest/ci/runner/mock_data';
@@ -47,6 +48,7 @@ describe('AdminRunnersApp', () => {
       apolloProvider: createMockApollo(handlers, {}, cacheConfig),
       propsData: {
         registrationToken: mockRegistrationToken,
+        newRunnerPath,
         ...props,
       },
       provide: {

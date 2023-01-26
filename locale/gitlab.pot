@@ -36433,6 +36433,9 @@ msgstr ""
 msgid "Runners|Copy registration token"
 msgstr ""
 
+msgid "Runners|Create an instance runner"
+msgstr ""
+
 msgid "Runners|Created %{timeAgo}"
 msgstr ""
 
@@ -36556,6 +36559,9 @@ msgid "Runners|Never expires"
 msgstr ""
 
 msgid "Runners|New group runners can be registered"
+msgstr ""
+
+msgid "Runners|New instance runner"
 msgstr ""
 
 msgid "Runners|New registration token generated!"
