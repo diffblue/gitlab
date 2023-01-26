@@ -9,7 +9,7 @@ module EE
     prepended do
       include ArkoseLabsCSP
 
-      skip_before_action :check_captcha, if: -> { ::Feature.enabled?(:arkose_labs_signup_challenge) }
+      skip_before_action :check_captcha, if: -> { ::Arkose::Settings.enabled_for_signup? }
       before_action only: [:new, :create] do
         push_frontend_feature_flag(:arkose_labs_signup_challenge)
       end
@@ -98,7 +98,7 @@ module EE
     end
 
     def verify_arkose_labs_token
-      return true unless ::Feature.enabled?(:arkose_labs_signup_challenge)
+      return true unless ::Arkose::Settings.enabled_for_signup?
       return false unless params[:arkose_labs_token].present?
 
       arkose_labs_verify_response.present?
@@ -111,7 +111,7 @@ module EE
     strong_memoize_attr :arkose_labs_verify_response
 
     def record_arkose_data(user)
-      return unless ::Feature.enabled?(:arkose_labs_signup_challenge)
+      return unless ::Arkose::Settings.enabled_for_signup?
       return unless arkose_labs_verify_response
 
       Arkose::RecordUserDataService.new(

@@ -3,6 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe RegistrationsController, type: :request, feature_category: :authentication_and_authorization do
+  before do
+    allow(::Arkose::Settings).to receive(:enabled_for_signup?).and_return(true)
+  end
+
   describe 'POST #create' do
     let_it_be(:user_attrs) { build(:user).slice(:first_name, :last_name, :username, :email, :password) }
 
@@ -74,9 +78,9 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :authe
         end
       end
 
-      context 'when :arkose_labs_signup_challenge feature flag is disabled' do
+      context 'when feature is disabled' do
         before do
-          stub_feature_flags(arkose_labs_signup_challenge: false)
+          allow(::Arkose::Settings).to receive(:enabled_for_signup?).and_return(false)
         end
 
         it_behaves_like 'creates the user'
@@ -98,7 +102,7 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :authe
         stub_application_setting_enum('email_confirmation_setting', 'hard')
         stub_application_setting(require_admin_approval_after_user_signup: false)
         stub_feature_flags(soft_email_confirmation: false)
-        stub_feature_flags(arkose_labs_signup_challenge: false)
+        allow(::Arkose::Settings).to receive(:enabled_for_signup?).and_return(false)
       end
 
       context 'when identity verification is turned off' do
@@ -216,7 +220,7 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :authe
     context 'with onboarding progress' do
       before do
         allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_return(false)
-        stub_feature_flags(arkose_labs_signup_challenge: false)
+        allow(::Arkose::Settings).to receive(:enabled_for_signup?).and_return(false)
       end
 
       context 'when ensure_onboarding is enabled' do
