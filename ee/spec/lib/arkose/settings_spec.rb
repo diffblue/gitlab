@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Arkose::Settings do
+  using RSpec::Parameterized::TableSyntax
+
   describe '.arkose_public_api_key' do
     subject { described_class.arkose_public_api_key }
 
@@ -61,5 +63,28 @@ RSpec.describe Arkose::Settings do
     end
 
     it { is_expected.to eq "#{setting_value}-api.arkoselabs.com" }
+  end
+
+  describe '.enabled_for_signup?' do
+    subject { described_class.enabled_for_signup? }
+
+    where(:flag_enabled, :private_key, :public_key, :namespace, :result) do
+      false | 'private' | 'public' | 'namespace' | false
+      true  | nil       | 'public' | 'namespace' | false
+      true  | 'private' | nil      | 'namespace' | false
+      true  | 'private' | 'public' | nil         | false
+      true  | 'private' | 'public' | 'namespace' | true
+    end
+
+    with_them do
+      before do
+        stub_feature_flags(arkose_labs_signup_challenge: flag_enabled)
+        allow(described_class).to receive(:arkose_private_api_key).and_return(private_key)
+        allow(described_class).to receive(:arkose_public_api_key).and_return(public_key)
+        stub_application_setting(arkose_labs_namespace: namespace)
+      end
+
+      it { is_expected.to eq result }
+    end
   end
 end

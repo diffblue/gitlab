@@ -27,7 +27,7 @@
 
   .form-group
     = f.label :mirror_user_name, _('Mirror user'), class: 'label-light'
-    = f.text_field :mirror_user_name, value: current_user.name, class: 'js-mirror-user form-control gl-form-input gl-mb-2', required: true, disabled: true
+    = f.text_field :mirror_user_name, value: current_user.name, class: 'form-control gl-form-input gl-mb-2', required: true, disabled: true
     .help-block
       = _('You will be the author of all events in the activity feed that are the result of an update, like new branches being created or new commits being pushed to existing branches.')
 

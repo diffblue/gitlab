@@ -69,6 +69,18 @@ RSpec.describe EE::RegistrationsHelper do
     end
   end
 
+  describe '#arkose_labs_challenge_enabled?' do
+    it 'returns true when enabled' do
+      allow(::Arkose::Settings).to receive(:enabled_for_signup?).and_return(true)
+      expect(helper.arkose_labs_challenge_enabled?).to eq true
+    end
+
+    it 'returns false when not enabled' do
+      allow(::Arkose::Settings).to receive(:enabled_for_signup?).and_return(false)
+      expect(helper.arkose_labs_challenge_enabled?).to eq false
+    end
+  end
+
   describe '#arkose_labs_data' do
     before do
       allow(::Arkose::Settings).to receive(:arkose_public_api_key).and_return('api-key')
