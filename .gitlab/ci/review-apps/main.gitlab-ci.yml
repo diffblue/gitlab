@@ -179,7 +179,7 @@ review-deploy-sample-projects:
     - source ./scripts/review_apps/review-apps.sh
     - !reference [".use-kube-context", before_script]
   script:
-    - delete_helm_release
+    - retry delete_helm_release
 
 review-delete-deployment:
   extends:
