@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Ci::CreatePipelineService do
   include AfterNextHelpers
+  include RepoHelpers
 
   subject(:execute) { service.execute(:push) }
 
@@ -32,7 +33,12 @@ RSpec.describe Ci::CreatePipelineService do
 
   before do
     stub_licensed_features(evaluate_group_level_compliance_pipeline: true)
-    allow_next(Repository).to receive(:blob_data_at).with(ref_sha, '.compliance-gitlab-ci.yml').and_return(compliance_config)
+  end
+
+  around(:all) do |example|
+    create_and_delete_files(compliance_project, { '.compliance-gitlab-ci.yml' => compliance_config }) do
+      example.run
+    end
   end
 
   context 'when user has access to compliance project' do
