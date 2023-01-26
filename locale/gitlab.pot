@@ -48651,9 +48651,6 @@ msgstr ""
 msgid "You must sign in to search for specific projects."
 msgstr ""
 
-msgid "You must sign in to search for specific terms."
-msgstr ""
-
 msgid "You must solve the CAPTCHA in order to submit"
 msgstr ""
 
