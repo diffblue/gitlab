@@ -7,6 +7,7 @@ import axios from '~/lib/utils/axios_utils';
 import {
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_OK,
   HTTP_STATUS_UNPROCESSABLE_ENTITY,
 } from '~/lib/utils/http_status';
 import toasted from '~/vue_shared/plugins/global_toast';
@@ -294,7 +295,7 @@ describe('security reports actions', () => {
           ...mockedState.modal.vulnerability,
           dismissalFeedback,
         });
-        mock.onPost('dismiss_vulnerability_path').reply(200, dismissalFeedback);
+        mock.onPost('dismiss_vulnerability_path').reply(HTTP_STATUS_OK, dismissalFeedback);
         mockedState.createVulnerabilityFeedbackDismissalPath = 'dismiss_vulnerability_path';
       });
 
@@ -389,7 +390,7 @@ describe('security reports actions', () => {
 
     describe('on success', () => {
       beforeEach(() => {
-        mock.onPatch(url).replyOnce(200, data);
+        mock.onPatch(url).replyOnce(HTTP_STATUS_OK, data);
       });
 
       it('should dispatch the request and success actions', async () => {
@@ -505,7 +506,7 @@ describe('security reports actions', () => {
 
     describe('on success', () => {
       beforeEach(() => {
-        mock.onPatch(url).replyOnce(200, data);
+        mock.onPatch(url).replyOnce(HTTP_STATUS_OK, data);
       });
 
       it('should dispatch the request and success actions', async () => {
@@ -646,7 +647,7 @@ describe('security reports actions', () => {
       let payload;
 
       beforeEach(() => {
-        mock.onDelete('dismiss_vulnerability_path/123').reply(200, {});
+        mock.onDelete('dismiss_vulnerability_path/123').reply(HTTP_STATUS_OK, {});
         mockedState.modal.vulnerability.dismissalFeedback = {
           id: 123,
           destroy_vulnerability_feedback_dismissal_path: 'dismiss_vulnerability_path/123',
@@ -747,7 +748,7 @@ describe('security reports actions', () => {
 
   describe('createNewIssue', () => {
     it('with success should dispatch `requestCreateIssue` and `receiveCreateIssue`', async () => {
-      mock.onPost('create_issue_path').reply(200, { issue_path: 'new_issue' });
+      mock.onPost('create_issue_path').reply(HTTP_STATUS_OK, { issue_path: 'new_issue' });
       mockedState.createVulnerabilityFeedbackIssuePath = 'create_issue_path';
 
       await testAction(
@@ -871,7 +872,7 @@ describe('security reports actions', () => {
     it('with success should dispatch `receiveCreateMergeRequestSuccess`', async () => {
       const data = { merge_request_path: 'fakepath.html' };
       mockedState.createVulnerabilityFeedbackMergeRequestPath = 'create_merge_request_path';
-      mock.onPost('create_merge_request_path').reply(200, data);
+      mock.onPost('create_merge_request_path').reply(HTTP_STATUS_OK, data);
 
       await testAction(
         securityReportsAction.createMergeRequest,
@@ -1055,14 +1056,14 @@ describe('security reports actions', () => {
 
     describe('on success', () => {
       it('should dispatch `receiveContainerScanningDiffSuccess`', async () => {
-        mock.onGet(endpoint).reply(200, diff);
+        mock.onGet(endpoint).reply(HTTP_STATUS_OK, diff);
         mock
           .onGet('vulnerabilities_feedback', {
             params: {
               category: 'container_scanning',
             },
           })
-          .reply(200, containerScanningFeedbacks);
+          .reply(HTTP_STATUS_OK, containerScanningFeedbacks);
 
         await testAction(
           securityReportsAction.fetchContainerScanningDiff,
@@ -1088,7 +1089,7 @@ describe('security reports actions', () => {
     describe('when diff endpoint responds successfully and fetching vulnerability feedback is not authorized', () => {
       beforeEach(() => {
         mockedState.canReadVulnerabilityFeedback = false;
-        mock.onGet(endpoint).reply(200, diff);
+        mock.onGet(endpoint).reply(HTTP_STATUS_OK, diff);
       });
 
       it('should dispatch `receiveContainerScanningDiffSuccess`', async () => {
@@ -1122,7 +1123,7 @@ describe('security reports actions', () => {
               category: 'container_scanning',
             },
           })
-          .reply(200, containerScanningFeedbacks);
+          .reply(HTTP_STATUS_OK, containerScanningFeedbacks);
 
         await testAction(
           securityReportsAction.fetchContainerScanningDiff,
@@ -1143,7 +1144,7 @@ describe('security reports actions', () => {
 
     describe('when feedback path errors', () => {
       it('should dispatch `receiveContainerScanningError`', async () => {
-        mock.onGet(endpoint).reply(200, diff);
+        mock.onGet(endpoint).reply(HTTP_STATUS_OK, diff);
         mock
           .onGet('vulnerabilities_feedback', {
             params: {
@@ -1235,14 +1236,14 @@ describe('security reports actions', () => {
 
     describe('on success', () => {
       it('should dispatch `receiveDependencyScanningDiffSuccess`', async () => {
-        mock.onGet('dependency_scanning_diff.json').reply(200, diff);
+        mock.onGet('dependency_scanning_diff.json').reply(HTTP_STATUS_OK, diff);
         mock
           .onGet('vulnerabilities_feedback', {
             params: {
               category: 'dependency_scanning',
             },
           })
-          .reply(200, dependencyScanningFeedbacks);
+          .reply(HTTP_STATUS_OK, dependencyScanningFeedbacks);
 
         await testAction(
           securityReportsAction.fetchDependencyScanningDiff,
@@ -1268,7 +1269,7 @@ describe('security reports actions', () => {
     describe('when diff endpoint responds successfully and fetching vulnerability feedback is not authorized', () => {
       beforeEach(() => {
         mockedState.canReadVulnerabilityFeedback = false;
-        mock.onGet('dependency_scanning_diff.json').reply(200, diff);
+        mock.onGet('dependency_scanning_diff.json').reply(HTTP_STATUS_OK, diff);
       });
 
       it('should dispatch `receiveDependencyScanningDiffSuccess`', async () => {
@@ -1302,7 +1303,7 @@ describe('security reports actions', () => {
               category: 'dependency_scanning',
             },
           })
-          .reply(200, dependencyScanningFeedbacks);
+          .reply(HTTP_STATUS_OK, dependencyScanningFeedbacks);
 
         await testAction(
           securityReportsAction.fetchDependencyScanningDiff,
@@ -1323,7 +1324,7 @@ describe('security reports actions', () => {
 
     describe('when feedback path errors', () => {
       it('should dispatch `receiveDependencyScanningError`', async () => {
-        mock.onGet('dependency_scanning_diff.json').reply(200, diff);
+        mock.onGet('dependency_scanning_diff.json').reply(HTTP_STATUS_OK, diff);
         mock
           .onGet('vulnerabilities_feedback', {
             params: {
@@ -1415,14 +1416,14 @@ describe('security reports actions', () => {
 
     describe('on success', () => {
       it('should dispatch `receiveDastDiffSuccess`', async () => {
-        mock.onGet('dast_diff.json').reply(200, diff);
+        mock.onGet('dast_diff.json').reply(HTTP_STATUS_OK, diff);
         mock
           .onGet('vulnerabilities_feedback', {
             params: {
               category: 'dast',
             },
           })
-          .reply(200, dastFeedbacks);
+          .reply(HTTP_STATUS_OK, dastFeedbacks);
 
         await testAction(
           securityReportsAction.fetchDastDiff,
@@ -1448,7 +1449,7 @@ describe('security reports actions', () => {
     describe('when diff endpoint responds successfully and fetching vulnerability feedback is not authorized', () => {
       beforeEach(() => {
         mockedState.canReadVulnerabilityFeedback = false;
-        mock.onGet('dast_diff.json').reply(200, diff);
+        mock.onGet('dast_diff.json').reply(HTTP_STATUS_OK, diff);
       });
 
       it('should dispatch `receiveDastDiffSuccess`', async () => {
@@ -1482,7 +1483,7 @@ describe('security reports actions', () => {
               category: 'dast',
             },
           })
-          .reply(200, dastFeedbacks);
+          .reply(HTTP_STATUS_OK, dastFeedbacks);
 
         await testAction(
           securityReportsAction.fetchDastDiff,
@@ -1503,7 +1504,7 @@ describe('security reports actions', () => {
 
     describe('when feedback path errors', () => {
       it('should dispatch `receiveDastError`', async () => {
-        mock.onGet('dast_diff.json').reply(200, diff);
+        mock.onGet('dast_diff.json').reply(HTTP_STATUS_OK, diff);
         mock
           .onGet('vulnerabilities_feedback', {
             params: {
@@ -1594,14 +1595,14 @@ describe('security reports actions', () => {
 
     describe('on success', () => {
       it('should dispatch `receiveCoverageFuzzingDiffSuccess`', async () => {
-        mock.onGet('coverage_fuzzing_diff.json').reply(200, diff);
+        mock.onGet('coverage_fuzzing_diff.json').reply(HTTP_STATUS_OK, diff);
         mock
           .onGet('vulnerabilities_feedback', {
             params: {
               category: 'coverage_fuzzing',
             },
           })
-          .reply(200, coverageFuzzingFeedbacks);
+          .reply(HTTP_STATUS_OK, coverageFuzzingFeedbacks);
 
         await testAction(
           securityReportsAction.fetchCoverageFuzzingDiff,
@@ -1633,7 +1634,7 @@ describe('security reports actions', () => {
               category: 'coverage_fuzzing',
             },
           })
-          .reply(200, coverageFuzzingFeedbacks);
+          .reply(HTTP_STATUS_OK, coverageFuzzingFeedbacks);
 
         await testAction(
           securityReportsAction.fetchCoverageFuzzingDiff,
@@ -1654,7 +1655,7 @@ describe('security reports actions', () => {
 
     describe('when feedback path errors', () => {
       it('should dispatch `receiveCoverageFuzzingError`', async () => {
-        mock.onGet('coverage_fuzzing_diff.json').reply(200, diff);
+        mock.onGet('coverage_fuzzing_diff.json').reply(HTTP_STATUS_OK, diff);
         mock
           .onGet('vulnerabilities_feedback', {
             params: {

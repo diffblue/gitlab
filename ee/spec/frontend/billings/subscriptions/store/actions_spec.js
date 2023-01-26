@@ -6,7 +6,7 @@ import state from 'ee/billings/subscriptions/store/state';
 import { mockDataSubscription } from 'ee_jest/billings/mock_data';
 import testAction from 'helpers/vuex_action_helper';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
+import { HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 describe('subscription actions', () => {
   let mockedState;
@@ -50,7 +50,7 @@ describe('subscription actions', () => {
       beforeEach(() => {
         mock
           .onGet(/\/api\/v4\/namespaces\/\d+\/gitlab_subscription(.*)$/)
-          .replyOnce(200, mockDataSubscription.gold);
+          .replyOnce(HTTP_STATUS_OK, mockDataSubscription.gold);
       });
 
       it('should dispatch the request and success actions', () => {

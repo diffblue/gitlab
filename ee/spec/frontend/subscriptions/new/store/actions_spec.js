@@ -10,7 +10,7 @@ import testAction from 'helpers/vuex_action_helper';
 import Tracking from '~/tracking';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import * as googleTagManager from '~/google_tag_manager';
 
 const {
@@ -111,7 +111,7 @@ describe('Subscriptions Actions', () => {
 
   describe('fetchCountries', () => {
     it('calls fetchCountriesSuccess with the returned data on success', async () => {
-      mock.onGet(countriesPath).replyOnce(200, ['Netherlands', 'NL']);
+      mock.onGet(countriesPath).replyOnce(HTTP_STATUS_OK, ['Netherlands', 'NL']);
 
       await testAction(
         actions.fetchCountries,
@@ -164,7 +164,7 @@ describe('Subscriptions Actions', () => {
     it('calls resetStates and fetchStatesSuccess with the returned data on success', async () => {
       mock
         .onGet(countryStatesPath, { params: { country: 'NL' } })
-        .replyOnce(200, { utrecht: 'UT' });
+        .replyOnce(HTTP_STATUS_OK, { utrecht: 'UT' });
 
       await testAction(
         actions.fetchStates,
@@ -328,7 +328,7 @@ describe('Subscriptions Actions', () => {
     it('fetches paymentFormParams and calls fetchPaymentFormParamsSuccess with the returned data on success', async () => {
       mock
         .onGet(paymentFormPath, { params: { id: constants.PAYMENT_FORM_ID } })
-        .replyOnce(200, { token: 'x' });
+        .replyOnce(HTTP_STATUS_OK, { token: 'x' });
 
       await testAction(
         actions.fetchPaymentFormParams,
@@ -456,7 +456,7 @@ describe('Subscriptions Actions', () => {
     it('fetches paymentMethodDetails and calls fetchPaymentMethodDetailsSuccess with the returned data on success and updates isLoadingPaymentMethod to false', async () => {
       mock
         .onGet(paymentMethodPath, { params: { id: 'paymentMethodId' } })
-        .replyOnce(200, { token: 'x' });
+        .replyOnce(HTTP_STATUS_OK, { token: 'x' });
 
       await testAction(
         actions.fetchPaymentMethodDetails,
@@ -542,7 +542,7 @@ describe('Subscriptions Actions', () => {
     describe('on success', () => {
       const payload = { location: 'x' };
 
-      beforeEach(() => mock.onPost(confirmOrderPath).replyOnce(200, payload));
+      beforeEach(() => mock.onPost(confirmOrderPath).replyOnce(HTTP_STATUS_OK, payload));
 
       it('calls trackTransaction', async () => {
         const spy = jest.spyOn(googleTagManager, 'trackTransaction');
@@ -581,7 +581,7 @@ describe('Subscriptions Actions', () => {
         const errors = 'errors';
         const spy = jest.spyOn(Tracking, 'event');
 
-        mock.onPost(confirmOrderPath).replyOnce(200, { errors });
+        mock.onPost(confirmOrderPath).replyOnce(HTTP_STATUS_OK, { errors });
 
         await testAction(
           actions.confirmOrder,
@@ -598,7 +598,7 @@ describe('Subscriptions Actions', () => {
       });
 
       it('calls confirmOrderError with the returned group name error', async () => {
-        mock.onPost(confirmOrderPath).replyOnce(200, { name: ['Error_1', "Error ' 2"] });
+        mock.onPost(confirmOrderPath).replyOnce(HTTP_STATUS_OK, { name: ['Error_1', "Error ' 2"] });
 
         await testAction(
           actions.confirmOrder,
