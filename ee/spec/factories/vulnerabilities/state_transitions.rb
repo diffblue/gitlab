@@ -5,14 +5,5 @@ FactoryBot.define do
     vulnerability
     from_state { ::Enums::Vulnerability.vulnerability_states.keys[0] }
     to_state { ::Enums::Vulnerability.vulnerability_states.keys[1] }
-    comment { "a comment on StateTransition object" }
-
-    trait :from_detected do
-      from_state { ::Enums::Vulnerability.vulnerability_states[:detected] }
-    end
-
-    trait :to_dismissed do
-      to_state { ::Enums::Vulnerability.vulnerability_states[:dismissed] }
-    end
   end
 end

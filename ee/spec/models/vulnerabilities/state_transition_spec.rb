@@ -23,8 +23,7 @@ RSpec.describe Vulnerabilities::StateTransition, type: :model, feature_category:
   end
 
   describe 'associations' do
-    it { is_expected.to belong_to(:author).class_name('User').inverse_of(:vulnerability_state_transitions) }
-    it { is_expected.to belong_to(:vulnerability).class_name('Vulnerability').inverse_of(:state_transitions) }
+    it { is_expected.to belong_to(:vulnerability) }
   end
 
   describe 'validations' do
