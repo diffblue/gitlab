@@ -1,44 +1,29 @@
-import { mountExtended } from 'helpers/vue_test_utils_helper';
-import { stubComponent } from 'helpers/stub_component';
-import ColumnChart from 'ee/analytics/contribution_analytics/components/column_chart.vue';
+import { GlSprintf } from '@gitlab/ui';
+import { shallowMount } from '@vue/test-utils';
 import IssuesChart from 'ee/analytics/contribution_analytics/components/issues_chart.vue';
-import { MOCK_ISSUES } from '../mock_data';
+import { MOCK_ANALYTICS } from '../mock_data';
 
 describe('Contribution Analytics Issues Chart', () => {
   let wrapper;
 
-  const findDescription = () => wrapper.findByTestId('description').text();
-  const findChart = () => wrapper.findComponent(ColumnChart);
+  const findDescription = () => wrapper.findComponent(GlSprintf).attributes('message');
 
-  const createWrapper = (issues) => {
-    wrapper = mountExtended(IssuesChart, {
-      propsData: {
-        issues,
-      },
-      stubs: {
-        ColumnChart: stubComponent(ColumnChart, {
-          props: ['chartData'],
-        }),
+  const createWrapper = ({ provide = {} } = {}) => {
+    wrapper = shallowMount(IssuesChart, {
+      provide: {
+        ...MOCK_ANALYTICS,
+        ...provide,
       },
     });
   };
 
   it('renders the empty description when there is no table data', () => {
-    createWrapper([]);
+    createWrapper({ provide: { totalIssuesClosedCount: 0, totalIssuesCreatedCount: 0 } });
     expect(findDescription()).toBe(wrapper.vm.$options.i18n.emptyDescription);
   });
 
   it('renders the description based on the table data', () => {
-    createWrapper(MOCK_ISSUES);
-    expect(findDescription()).toBe('31 created, 36 closed.');
-  });
-
-  it('sorts the chart by closed issues in descending order', () => {
-    createWrapper(MOCK_ISSUES);
-    expect(findChart().props('chartData')).toEqual([
-      ['nami', 27],
-      ['luffy', 7],
-      ['zoro', 2],
-    ]);
+    createWrapper();
+    expect(findDescription()).toEqual(expect.stringMatching(wrapper.vm.$options.i18n.description));
   });
 });

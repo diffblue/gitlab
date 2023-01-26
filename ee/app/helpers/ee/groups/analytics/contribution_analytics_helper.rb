@@ -16,7 +16,7 @@ module EE
             },
             {
               label: s_('ContributionAnalytics|Last 3 months'),
-              date: (3.months.ago + 1.day).to_date
+              date: 3.months.ago.to_date
             }
           ]
         end
