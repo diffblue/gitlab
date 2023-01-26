@@ -22,6 +22,21 @@ RSpec.describe API::IssueLinks, feature_category: :team_planning do
           expect(response).to have_gitlab_http_status(:created)
           expect(response).to match_response_schema('public_api/v4/issue_link')
           expect(json_response['link_type']).to eq('blocks')
+          expect(json_response['source_issue']['id']).to eq(issue.id)
+          expect(json_response['target_issue']['id']).to eq(target_issue.id)
+        end
+
+        it 'returns 201 status for is_blocked_by link and contains the expected link response' do
+          post api("/projects/#{project.id}/issues/#{issue.iid}/links", user),
+               params: { target_project_id: project.id, target_issue_iid: target_issue.iid, link_type: 'is_blocked_by' }
+
+          expect(response).to have_gitlab_http_status(:created)
+          expect(response).to match_response_schema('public_api/v4/issue_link')
+
+          # For `is_blocked_by` we swap the source and target and use `block` as type.
+          expect(json_response['link_type']).to eq('blocks')
+          expect(json_response['source_issue']['id']).to eq(target_issue.id)
+          expect(json_response['target_issue']['id']).to eq(issue.id)
         end
       end
 
