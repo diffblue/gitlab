@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import * as actions from 'ee/analytics/productivity_analytics/store/modules/table/actions';
 import * as types from 'ee/analytics/productivity_analytics/store/modules/table/mutation_types';
 import getInitialState from 'ee/analytics/productivity_analytics/store/modules/table/state';
@@ -87,7 +87,7 @@ describe('Productivity analytics table actions', () => {
   describe('fetchMergeRequests', () => {
     describe('success', () => {
       beforeEach(() => {
-        mock.onGet(mockedState.endpoint).replyOnce(200, mockMergeRequests, headers);
+        mock.onGet(mockedState.endpoint).replyOnce(HTTP_STATUS_OK, mockMergeRequests, headers);
       });
 
       it('calls API with pparams', () => {

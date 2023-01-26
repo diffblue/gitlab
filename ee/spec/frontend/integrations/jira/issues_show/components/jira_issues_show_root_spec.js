@@ -11,7 +11,7 @@ import IssuableHeader from '~/vue_shared/issuable/show/components/issuable_heade
 import IssuableShow from '~/vue_shared/issuable/show/components/issuable_show_root.vue';
 import IssuableSidebar from '~/vue_shared/issuable/sidebar/components/issuable_sidebar_root.vue';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { mockJiraIssue } from '../mock_data';
 
 const mockJiraIssuesShowPath = 'jira_issues_show_path';
@@ -79,7 +79,7 @@ describe('JiraIssuesShow', () => {
   });
 
   it('renders IssuableShow', async () => {
-    mockAxios.onGet(mockJiraIssuesShowPath).replyOnce(200, mockJiraIssue);
+    mockAxios.onGet(mockJiraIssuesShowPath).replyOnce(HTTP_STATUS_OK, mockJiraIssue);
     createComponent();
 
     await waitForPromises();
@@ -94,7 +94,9 @@ describe('JiraIssuesShow', () => {
     ${IssuableStatus.Closed} | ${'mobile-issue-close'} | ${'Closed'}
   `('when issue state is `$state`', ({ state, statusIcon, badgeText }) => {
     beforeEach(async () => {
-      mockAxios.onGet(mockJiraIssuesShowPath).replyOnce(200, { ...mockJiraIssue, state });
+      mockAxios
+        .onGet(mockJiraIssuesShowPath)
+        .replyOnce(HTTP_STATUS_OK, { ...mockJiraIssue, state });
       createComponent();
 
       await waitForPromises();
@@ -111,7 +113,7 @@ describe('JiraIssuesShow', () => {
 
   describe('JiraIssueSidebar events', () => {
     beforeEach(async () => {
-      mockAxios.onGet(mockJiraIssuesShowPath).replyOnce(200, mockJiraIssue);
+      mockAxios.onGet(mockJiraIssuesShowPath).replyOnce(HTTP_STATUS_OK, mockJiraIssue);
       createComponent();
 
       await waitForPromises();

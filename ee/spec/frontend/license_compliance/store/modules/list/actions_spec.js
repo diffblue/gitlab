@@ -12,7 +12,7 @@ import getInitialState from 'ee/license_compliance/store/modules/list/state';
 import { TEST_HOST } from 'helpers/test_constants';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 import mockLicensesResponse from './data/mock_licenses.json';
 
@@ -154,7 +154,7 @@ describe('Licenses actions', () => {
 
           mock
             .onGet(state.endpoint, { params: paramsDefault })
-            .replyOnce(200, mockLicensesResponse, headers);
+            .replyOnce(HTTP_STATUS_OK, mockLicensesResponse, headers);
         });
 
         it('uses default params from state', () =>
@@ -190,7 +190,7 @@ describe('Licenses actions', () => {
         beforeEach(() => {
           mock
             .onGet(state.endpoint, { params: paramsSent })
-            .replyOnce(200, mockLicensesResponse, headers);
+            .replyOnce(HTTP_STATUS_OK, mockLicensesResponse, headers);
         });
 
         it('overrides default params', () =>

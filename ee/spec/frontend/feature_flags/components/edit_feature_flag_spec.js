@@ -8,6 +8,7 @@ import { TEST_HOST } from 'spec/test_constants';
 import EditFeatureFlag from '~/feature_flags/components/edit_feature_flag.vue';
 import createStore from '~/feature_flags/store/edit';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 Vue.use(Vuex);
 
@@ -31,7 +32,7 @@ describe('Edit feature flag form', () => {
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    mock.onGet(endpoint).replyOnce(200, {
+    mock.onGet(endpoint).replyOnce(HTTP_STATUS_OK, {
       id: 21,
       iid: 5,
       active: true,

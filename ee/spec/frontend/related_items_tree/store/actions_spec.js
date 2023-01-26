@@ -18,7 +18,7 @@ import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import {
   issuableTypesMap,
   itemAddFailureTypesMap,
@@ -792,7 +792,7 @@ describe('RelatedItemTree', () => {
         });
 
         it('should dispatch `requestRemoveItem` and `receiveRemoveItemSuccess` actions on request success', () => {
-          mock.onDelete(data.item.relationPath).replyOnce(200, {});
+          mock.onDelete(data.item.relationPath).replyOnce(HTTP_STATUS_OK, {});
 
           testAction(
             actions.removeItem,
@@ -1030,7 +1030,7 @@ describe('RelatedItemTree', () => {
           state.pendingReferences = ['foo'];
           state.isEpic = true;
 
-          mock.onPost(state.epicsEndpoint).replyOnce(200, { issuables: [mockEpic1] });
+          mock.onPost(state.epicsEndpoint).replyOnce(HTTP_STATUS_OK, { issuables: [mockEpic1] });
 
           testAction(
             actions.addItem,
@@ -1062,7 +1062,7 @@ describe('RelatedItemTree', () => {
             isEpic: true,
           };
 
-          mock.onPost(state.epicsEndpoint).replyOnce(200, { issuables: [] });
+          mock.onPost(state.epicsEndpoint).replyOnce(HTTP_STATUS_OK, { issuables: [] });
 
           actions.addItem({ state, dispatch: () => {}, getters });
           await axios.waitForAll();
@@ -1196,7 +1196,7 @@ describe('RelatedItemTree', () => {
         });
 
         it('should dispatch `requestCreateItem` and `receiveCreateItemSuccess` actions on request success', () => {
-          mock.onPost(/(.*)/).replyOnce(200, mockEpic1);
+          mock.onPost(/(.*)/).replyOnce(HTTP_STATUS_OK, mockEpic1);
 
           return testAction(
             actions.createItem,
@@ -1670,7 +1670,7 @@ describe('RelatedItemTree', () => {
             const data = { author: { id: 1 }, epic: { group_id: 2 } };
 
             axiosMock.reset();
-            axiosMock.onPost(issuesEndpoint).replyOnce(200, data);
+            axiosMock.onPost(issuesEndpoint).replyOnce(HTTP_STATUS_OK, data);
 
             actions.createNewIssue({ state, dispatch: () => {} }, { issuesEndpoint, title: '' });
             await axios.waitForAll();
@@ -1787,7 +1787,7 @@ describe('RelatedItemTree', () => {
         });
 
         it('should dispatch `requestProjects` and `receiveProjectsSuccess` actions on request success', () => {
-          mock.onGet(/(.*)/).replyOnce(200, mockProjects);
+          mock.onGet(/(.*)/).replyOnce(HTTP_STATUS_OK, mockProjects);
 
           return testAction(
             actions.fetchProjects,

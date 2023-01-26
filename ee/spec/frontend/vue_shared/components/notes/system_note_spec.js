@@ -3,7 +3,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_SERVICE_UNAVAILABLE } from '~/lib/utils/http_status';
+import { HTTP_STATUS_OK, HTTP_STATUS_SERVICE_UNAVAILABLE } from '~/lib/utils/http_status';
 import createStore from '~/notes/stores';
 import IssueSystemNote from '~/vue_shared/components/notes/system_note.vue';
 
@@ -15,10 +15,10 @@ describe('system note component', () => {
   const diffData = '<span class="idiff">Description</span><span class="idiff addition">Diff</span>';
 
   function mockFetchDiff() {
-    mock.onGet('/path/to/diff').replyOnce(200, diffData);
+    mock.onGet('/path/to/diff').replyOnce(HTTP_STATUS_OK, diffData);
   }
 
-  function mockDeleteDiff(statusCode = 200) {
+  function mockDeleteDiff(statusCode = HTTP_STATUS_OK) {
     mock.onDelete('/path/to/diff/1').replyOnce(statusCode);
   }
 

@@ -10,6 +10,7 @@ import axios from '~/lib/utils/axios_utils';
 import {
   HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_OK,
 } from '~/lib/utils/http_status';
 import { allowedLicense, deniedLicense } from '../mock_data';
 
@@ -146,7 +147,7 @@ describe('License store actions', () => {
     it('dispatches addPendingLicense and receiveDeleteLicense for successful response', () => {
       endpointMock.replyOnce((req) => {
         expect(req.url).toBe(deleteUrl);
-        return [200, ''];
+        return [HTTP_STATUS_OK, ''];
       });
 
       return actions.deleteLicense(store).then(() => {
@@ -228,7 +229,7 @@ describe('License store actions', () => {
           expect(req.url).toBe(apiUrlManageLicenses);
           expect(approval_status).toBe(newStatus);
           expect(name).toBe(name);
-          return [200, ''];
+          return [HTTP_STATUS_OK, ''];
         });
 
         return actions.setLicenseApproval(store, { license: newLicense, newStatus }).then(() => {
@@ -267,7 +268,7 @@ describe('License store actions', () => {
 
           expect(approval_status).toBe(newStatus);
           expect(name).toBeUndefined();
-          return [200, ''];
+          return [HTTP_STATUS_OK, ''];
         });
 
         return actions
@@ -406,7 +407,7 @@ describe('License store actions', () => {
 
     it('dispatches requestManagedLicenses and receiveManagedLicensesSuccess for successful response', async () => {
       const payload = [{ name: 'foo', approval_status: LICENSE_APPROVAL_STATUS.DENIED }];
-      endpointMock.replyOnce(() => [200, payload]);
+      endpointMock.replyOnce(() => [HTTP_STATUS_OK, payload]);
 
       await testAction(
         actions.fetchManagedLicenses,
@@ -436,7 +437,7 @@ describe('License store actions', () => {
         approval_rules_left: [{ name: LICENSE_CHECK_NAME }],
       };
 
-      axiosMock.onGet(approvalsApiPath).replyOnce(200, APPROVAL_RULE_RESPONSE);
+      axiosMock.onGet(approvalsApiPath).replyOnce(HTTP_STATUS_OK, APPROVAL_RULE_RESPONSE);
 
       await testAction(
         actions.fetchLicenseCheckApprovalRule,
@@ -458,7 +459,7 @@ describe('License store actions', () => {
         approval_rules_left: [{ name: 'Another Approval Rule' }],
       };
 
-      axiosMock.onGet(approvalsApiPath).replyOnce(200, APPROVAL_RULE_RESPONSE);
+      axiosMock.onGet(approvalsApiPath).replyOnce(HTTP_STATUS_OK, APPROVAL_RULE_RESPONSE);
 
       await testAction(
         actions.fetchLicenseCheckApprovalRule,
@@ -619,7 +620,7 @@ describe('License store actions', () => {
       });
 
       it('should fetch, parse, and dispatch the new licenses on a successful request', async () => {
-        licensesApiMock.replyOnce(() => [200, rawLicenseReport]);
+        licensesApiMock.replyOnce(() => [HTTP_STATUS_OK, rawLicenseReport]);
 
         const parsedLicenses = {
           existingLicenses: [],
@@ -703,7 +704,7 @@ describe('License store actions', () => {
       });
 
       it('should fetch, parse, and dispatch the new licenses on a successful request', async () => {
-        licensesApiMock.replyOnce(() => [200, rawLicenseReport]);
+        licensesApiMock.replyOnce(() => [HTTP_STATUS_OK, rawLicenseReport]);
 
         const parsedLicenses = {
           existingLicenses: [

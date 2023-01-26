@@ -4,7 +4,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { s__ } from '~/locale';
 import { createAlert, VARIANT_SUCCESS } from '~/flash';
-import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
+import { HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { visitUrl } from '~/lib/utils/url_utility';
 import EmailVerification from 'ee/users/identity_verification/components/email_verification.vue';
 import {
@@ -69,7 +69,7 @@ describe('EmailVerification', () => {
 
         axiosMock
           .onPost(PROVIDE.email.verifyPath)
-          .reply(200, { status: 'success', redirect_url: 'root' });
+          .reply(HTTP_STATUS_OK, { status: 'success', redirect_url: 'root' });
 
         await submitForm();
         await axios.waitForAll();
@@ -97,7 +97,9 @@ describe('EmailVerification', () => {
         enterCode(code);
 
         if (submit && codeValid) {
-          axiosMock.onPost(PROVIDE.email.verifyPath).replyOnce(200, { status: 'failure', message });
+          axiosMock
+            .onPost(PROVIDE.email.verifyPath)
+            .replyOnce(HTTP_STATUS_OK, { status: 'failure', message });
         }
 
         if (submit) {
@@ -116,7 +118,7 @@ describe('EmailVerification', () => {
 
         axiosMock
           .onPost(PROVIDE.email.verifyPath)
-          .replyOnce(200, { status: 'failure', message: 'error message' });
+          .replyOnce(HTTP_STATUS_OK, { status: 'failure', message: 'error message' });
 
         await submitForm();
         await axios.waitForAll();
@@ -153,8 +155,8 @@ describe('EmailVerification', () => {
   describe('resending the code', () => {
     it.each`
       scenario                                    | statusCode               | response
-      ${'the code was successfully resend'}       | ${200}                   | ${{ status: 'success' }}
-      ${'there was a problem resending the code'} | ${200}                   | ${{ status: 'failure', message: 'Failure sending the code' }}
+      ${'the code was successfully resend'}       | ${HTTP_STATUS_OK}        | ${{ status: 'success' }}
+      ${'there was a problem resending the code'} | ${HTTP_STATUS_OK}        | ${{ status: 'failure', message: 'Failure sending the code' }}
       ${'when the request failed'}                | ${HTTP_STATUS_NOT_FOUND} | ${null}
     `(`shows a flash message when $scenario`, async ({ statusCode, response }) => {
       enterCode('xxx');
@@ -168,12 +170,12 @@ describe('EmailVerification', () => {
       await axios.waitForAll();
 
       let alertObject;
-      if (statusCode === 200 && response.status === 'success') {
+      if (statusCode === HTTP_STATUS_OK && response.status === 'success') {
         alertObject = {
           message: I18N_EMAIL_RESEND_SUCCESS,
           variant: VARIANT_SUCCESS,
         };
-      } else if (statusCode === 200) {
+      } else if (statusCode === HTTP_STATUS_OK) {
         alertObject = { message: response.message };
       } else {
         alertObject = {

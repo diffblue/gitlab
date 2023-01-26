@@ -43,7 +43,7 @@ describe('dashboard component', () => {
 
   beforeEach(() => {
     mockAxios = new MockAdapter(axios);
-    mockAxios.onGet(mockListEndpoint).replyOnce(200, { projects: mockProjectData(1) });
+    mockAxios.onGet(mockListEndpoint).replyOnce(HTTP_STATUS_OK, { projects: mockProjectData(1) });
     wrapper = mountComponent();
   });
 
@@ -72,8 +72,10 @@ describe('dashboard component', () => {
     describe('when a project is added', () => {
       it('immediately requests the project list again', async () => {
         mockAxios.reset();
-        mockAxios.onGet(mockListEndpoint).replyOnce(200, { projects: mockProjectData(2) });
-        mockAxios.onPost(mockAddEndpoint).replyOnce(200, { added: [1], invalid: [] });
+        mockAxios
+          .onGet(mockListEndpoint)
+          .replyOnce(HTTP_STATUS_OK, { projects: mockProjectData(2) });
+        mockAxios.onPost(mockAddEndpoint).replyOnce(HTTP_STATUS_OK, { added: [1], invalid: [] });
 
         await nextTick();
         wrapper.vm.projectClicked({ id: 1 });
@@ -141,7 +143,7 @@ describe('dashboard component', () => {
       });
 
       it('clears state when adding a valid project', async () => {
-        mockAxios.onPost(mockAddEndpoint).replyOnce(200, { added: [1], invalid: [] });
+        mockAxios.onPost(mockAddEndpoint).replyOnce(HTTP_STATUS_OK, { added: [1], invalid: [] });
 
         await nextTick();
         wrapper.vm.onOk();
@@ -151,7 +153,7 @@ describe('dashboard component', () => {
       });
 
       it('clears state when adding an invalid project', async () => {
-        mockAxios.onPost(mockAddEndpoint).replyOnce(200, { added: [], invalid: [1] });
+        mockAxios.onPost(mockAddEndpoint).replyOnce(HTTP_STATUS_OK, { added: [], invalid: [1] });
 
         await nextTick();
         wrapper.vm.onOk();
