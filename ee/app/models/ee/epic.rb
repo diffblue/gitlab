@@ -22,6 +22,7 @@ module EE
       include SortableTitle
       include EachBatch
       include ::Exportable
+      include Epics::MetadataCacheUpdate
 
       DEFAULT_COLOR = ::Gitlab::Color.of('#1068bf')
       MAX_HIERARCHY_DEPTH = 7
@@ -181,7 +182,8 @@ module EE
       before_save :set_fixed_start_date, if: :start_date_is_fixed?
       before_save :set_fixed_due_date, if: :due_date_is_fixed?
       after_create_commit :usage_ping_record_epic_creation
-      after_commit :update_cached_metadata
+      after_save :set_epic_id_to_update_cache
+      after_destroy :set_epic_id_to_update_cache
 
       def epic_tree_root?
         parent_id.nil?
@@ -682,11 +684,11 @@ module EE
       (previous_changes.keys & attrs).any?
     end
 
-    def update_cached_metadata
-      ::Epics::UpdateCachedMetadataWorker.perform_async([parent_id]) if parent_id && propagate_issue_metadata_change?
+    def set_epic_id_to_update_cache
+      register_epic_id_for_cache_update(parent_id) if parent_id && propagate_issue_metadata_change?
 
       if parent_id_previously_changed? && parent_id_previously_was
-        ::Epics::UpdateCachedMetadataWorker.perform_async([parent_id_previously_was])
+        register_epic_id_for_cache_update(parent_id_previously_was)
       end
     end
 

@@ -17,6 +17,7 @@ module EE
       include WeightEventable
       include IterationEventable
       include HealthStatus
+      include Epics::MetadataCacheUpdate
 
       # widget supporting custom issue types - see https://gitlab.com/gitlab-org/gitlab/-/issues/292035
       include IssueWidgets::ActsLikeRequirement
@@ -146,7 +147,7 @@ module EE
       end
 
       before_destroy :set_old_epic_id
-      after_commit :update_cached_metadata
+      after_save :set_epic_id_to_update_cache
     end
 
     class_methods do
@@ -354,22 +355,14 @@ module EE
     end
 
     def set_old_epic_id
-      @old_epic_id = epic_issue&.epic_id # rubocop: disable Gitlab/ModuleWithInstanceVariables
+      register_epic_id_for_cache_update(epic_issue.epic_id) if epic_issue
     end
 
-    def update_cached_metadata
-      epic_id = epic_id_to_refresh_cache
-      return unless epic_id
-
-      ::Epics::UpdateCachedMetadataWorker.perform_async([epic_id])
-    end
-
-    def epic_id_to_refresh_cache
-      return @old_epic_id if @old_epic_id # rubocop: disable Gitlab/ModuleWithInstanceVariables
+    def set_epic_id_to_update_cache
       return unless weight_previously_changed? || state_id_previously_changed?
       return unless epic_issue
 
-      epic_issue.epic_id
+      register_epic_id_for_cache_update(epic_issue.epic_id)
     end
   end
 end
