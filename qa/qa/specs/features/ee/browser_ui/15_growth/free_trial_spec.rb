@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-# rubocop:disable RSpec/MissingFeatureCategory
+
 module QA
   RSpec.describe 'Growth', :requires_admin, only: { subdomain: :staging }, product_group: :acquisition do
     describe 'SaaS trials' do
@@ -103,4 +103,3 @@ module QA
     end
   end
 end
-# rubocop:enable RSpec/MissingFeatureCategory
