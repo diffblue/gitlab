@@ -48,9 +48,10 @@ RSpec.describe 'admin Geo Nodes', :js, :geo, feature_category: :geo_replication 
     context 'hashed storage warnings' do
       let(:enable_warning) { 'Please enable and migrate to hashed storage' }
       let(:migrate_warning) { 'Please migrate all existing projects' }
-      let(:user_callout_close_button) { '.user-callout .js-close' }
 
       context 'without hashed storage enabled' do
+        let(:alert_close_button) { '[data-testid="enable_hashed_storage_alert"] .js-close' }
+
         before do
           stub_application_setting(hashed_storage_enabled: false)
         end
@@ -59,11 +60,24 @@ RSpec.describe 'admin Geo Nodes', :js, :geo, feature_category: :geo_replication 
           visit admin_geo_nodes_path
 
           expect(page).to have_content enable_warning
-          expect(page).to have_selector user_callout_close_button
+          expect(page).to have_selector alert_close_button
+        end
+
+        it 'warning is dismissed and stays dimissed after refresh' do
+          visit admin_geo_nodes_path
+          find(alert_close_button).click
+          wait_for_requests
+
+          expect(page).not_to have_content enable_warning
+
+          visit current_path
+          expect(page).not_to have_content enable_warning
         end
       end
 
       context 'with hashed storage enabled' do
+        let(:alert_close_button) { '[data-testid="migrate_hashed_storage_alert"] .js-close' }
+
         before do
           stub_application_setting(hashed_storage_enabled: true)
         end
@@ -76,7 +90,7 @@ RSpec.describe 'admin Geo Nodes', :js, :geo, feature_category: :geo_replication 
 
             expect(page).not_to have_content enable_warning
             expect(page).not_to have_content migrate_warning
-            expect(page).not_to have_selector user_callout_close_button
+            expect(page).not_to have_selector alert_close_button
           end
         end
 
@@ -87,7 +101,18 @@ RSpec.describe 'admin Geo Nodes', :js, :geo, feature_category: :geo_replication 
             visit admin_geo_nodes_path
 
             expect(page).to have_content migrate_warning
-            expect(page).to have_selector user_callout_close_button
+            expect(page).to have_selector alert_close_button
+          end
+
+          it 'warning is dismissed and stays dimissed after refresh' do
+            visit admin_geo_nodes_path
+            find(alert_close_button).click
+            wait_for_requests
+
+            expect(page).not_to have_content migrate_warning
+
+            visit current_path
+            expect(page).not_to have_content migrate_warning
           end
         end
       end
