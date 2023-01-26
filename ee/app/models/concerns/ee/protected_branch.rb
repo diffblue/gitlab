@@ -18,7 +18,11 @@ module EE
         return false unless project.code_owner_approval_required_available?
 
         ::Gitlab::SafeRequestStore["project-#{project.id}-branch-#{branch_name}".to_sym] ||=
-          project.protected_branches.requiring_code_owner_approval.matching(branch_name).any?
+          if ::Feature.enabled?(:group_protected_branches)
+            project.all_protected_branches.requiring_code_owner_approval.matching(branch_name).any?
+          else
+            project.protected_branches.requiring_code_owner_approval.matching(branch_name).any?
+          end
       end
     end
 

@@ -31,11 +31,17 @@ module Security
       end
 
       def rule_params(rule, rule_index, action_info)
+        protected_branch_ids = if ::Feature.enabled?(:group_protected_branches)
+                                 project.all_protected_branches.get_ids_by_name(rule[:branches])
+                               else
+                                 project.protected_branches.get_ids_by_name(rule[:branches])
+                               end
+
         {
           skip_authorization: true,
           approvals_required: action_info[:approvals_required],
           name: rule_name(policy[:name], rule_index),
-          protected_branch_ids: project.protected_branches.get_ids_by_name(rule[:branches]),
+          protected_branch_ids: protected_branch_ids,
           applies_to_all_protected_branches: rule[:branches].empty?,
           scanners: rule[:scanners],
           rule_type: :report_approver,

@@ -205,4 +205,57 @@ RSpec.describe ProtectedBranch do
       end
     end
   end
+
+  describe '.branch_requires_code_owner_approval?' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+    let(:branch_name) { "BRANCH_NAME" }
+
+    before do
+      allow(project).to receive(:code_owner_approval_required_available?).and_return(true)
+    end
+
+    subject { described_class.branch_requires_code_owner_approval?(project, branch_name) }
+
+    context 'when there are no match branches' do
+      it 'return false' do
+        expect(subject).to eq(false)
+      end
+    end
+
+    context 'when `code_owner_approval_required_available?` of project is false' do
+      before do
+        allow(project).to receive(:code_owner_approval_required_available?).and_return(false)
+      end
+
+      it 'return false' do
+        expect(subject).to eq(false)
+      end
+    end
+
+    context 'when there are matched branches' do
+      using RSpec::Parameterized::TableSyntax
+
+      where(:feature_available, :object, :code_owner_approval_required, :result) do
+        true   | ref(:project)         | false        | false
+        true   | ref(:project)         | true         | true
+        false  | ref(:project)         | true         | true
+        true   | ref(:group)           | false        | false
+        true   | ref(:group)           | true         | true
+        false  | ref(:group)           | true         | false
+      end
+
+      with_them do
+        before do
+          stub_feature_flags(group_protected_branches: feature_available)
+
+          params = object.is_a?(Project) ? { project: object } : { project: nil, group: object }
+
+          create(:protected_branch, name: branch_name, code_owner_approval_required: code_owner_approval_required, **params)
+        end
+
+        it { expect(subject).to eq(result) }
+      end
+    end
+  end
 end
