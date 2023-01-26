@@ -27796,9 +27796,6 @@ msgstr ""
 msgid "New issue"
 msgstr ""
 
-msgid "New issue in %{project}"
-msgstr ""
-
 msgid "New issue title"
 msgstr ""
 
@@ -38655,9 +38652,6 @@ msgid "Select project"
 msgstr ""
 
 msgid "Select project to create %{type}"
-msgstr ""
-
-msgid "Select project to create issue"
 msgstr ""
 
 msgid "Select projects"
@@ -50404,6 +50398,9 @@ msgid "mergedCommitsAdded| (commits were squashed)"
 msgstr ""
 
 msgid "metric_id must be unique across a project"
+msgstr ""
+
+msgid "milestone"
 msgstr ""
 
 msgid "milestone should belong either to a project or a group."
