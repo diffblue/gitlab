@@ -14,7 +14,7 @@ export const COMMON_JS_SETUP_WITH_NPM = `const { glClientSDK } = require('@gitla
 
 this.glClient = glClientSDK({ '$applicationId', '$host' });`;
 
-export const HTML_SCRIPT_SETUP = `<script src="https://unpkg.com/@gitlab/application-sdk-js/gl-sdk.min.js"></script>
+export const HTML_SCRIPT_SETUP = `<script src="https://unpkg.com/@gitlab/application-sdk-js/dist/gl-sdk.min.js"></script>
 <script>window.glClient = window.glSDK.glClientSDK({
     applicationId: '$applicationId',
     host: '$host',
