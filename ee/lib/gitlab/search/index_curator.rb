@@ -23,8 +23,6 @@ module Gitlab
       def self.curate(settings = {})
         curator = new(settings)
         curator.curate!
-      rescue StandardError => err
-        curator.log_exception(err)
       end
 
       def initialize(settings = {})
@@ -167,10 +165,6 @@ module Gitlab
         return unless errors.present?
 
         raise ArgumentError, "preflight checks failed: #{errors.join(', ')}"
-      end
-
-      def log_exception(error)
-        logger.error(log_labels.merge(search_curation_status: "error", error: error.message))
       end
 
       private
