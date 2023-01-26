@@ -2054,7 +2054,7 @@
 
 .review:rules:review-k8s-resources-count-checks:
   rules:
-    - <<: *if-dot-com-gitlab-org-schedule
+    - <<: *if-dot-com-ee-schedule-default-branch-maintenance
       allow_failure: true
     - <<: *if-dot-com-gitlab-org-merge-request
       changes:
@@ -2063,7 +2063,7 @@
 
 .review:rules:review-gcp-quotas-checks:
   rules:
-    - <<: *if-dot-com-gitlab-org-schedule
+    - <<: *if-dot-com-ee-schedule-default-branch-maintenance
       allow_failure: true
     - <<: *if-dot-com-gitlab-org-merge-request
       changes:
