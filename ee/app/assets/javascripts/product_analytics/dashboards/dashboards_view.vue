@@ -1,7 +1,6 @@
 <script>
 import DashboardsList from './components/analytics_dashboard_list.vue';
 import AnalyticsDashboard from './components/analytics_dashboard.vue';
-import AnalyticsWidgetDesigner from './components/analytics_widget_designer.vue';
 
 export default {
   name: 'ProductAnalyticsDashboardsView',
@@ -15,7 +14,12 @@ export default {
       {
         name: 'widget-designer',
         path: '/widget-designer',
-        component: AnalyticsWidgetDesigner,
+        component: () => import('./components/analytics_widget_designer.vue'),
+      },
+      {
+        name: 'instrumentation-detail',
+        path: '/setup',
+        component: () => import('../onboarding/onboarding_setup.vue'),
       },
       {
         name: 'dashboard-detail',

@@ -6,6 +6,11 @@ export const I18N_DASHBOARD_LIST = {
     'ProductAnalytics|Dashboards are created by editing the projects dashboard files.',
   ),
   learnMore: __('Learn more.'),
+  instrumentationDetails: s__('Product Analytics|Instrumentation details'),
+  sdkHost: s__('Product Analytics|SDK Host'),
+  sdkHostDescription: s__('Product Analytics|The host to send all tracking events to'),
+  sdkAppId: s__('Product Analytics|SDK App ID'),
+  sdkAppIdDescription: s__('Product Analytics|Identifies the sender of tracking events'),
 };
 
 export const EVENTS_TYPES = ['pageViews', 'featureUsages', 'clickEvents', 'events'];

@@ -18,7 +18,14 @@ import {
   JITSU_KEY_CHECK_DELAY,
 } from 'ee/product_analytics/onboarding/constants';
 import { s__ } from '~/locale';
-import { createInstanceResponse, getJitsuKeyResponse } from '../mock_data';
+import {
+  createInstanceResponse,
+  getJitsuKeyResponse,
+  TEST_JITSU_HOST,
+  TEST_JITSU_PROJECT_ID,
+  TEST_PROJECT_FULL_PATH,
+  TEST_PROJECT_ID,
+} from '../mock_data';
 
 Vue.use(VueApollo);
 
@@ -60,10 +67,10 @@ describe('ProductAnalyticsOnboardingView', () => {
       },
       provide: {
         chartEmptyStateIllustrationPath: TEST_HOST,
-        projectFullPath: 'group-1/project-1',
-        projectId: '1',
-        jitsuHost: TEST_HOST,
-        jitsuProjectId: '',
+        projectFullPath: TEST_PROJECT_FULL_PATH,
+        projectId: TEST_PROJECT_ID,
+        jitsuHost: TEST_JITSU_HOST,
+        jitsuProjectId: TEST_JITSU_PROJECT_ID,
       },
     });
   };
@@ -158,7 +165,7 @@ describe('ProductAnalyticsOnboardingView', () => {
       await waitForApolloTimers();
 
       expect(mockGetJitsuKeyHasKeySuccessRetry.mock.calls).toHaveLength(2);
-      expect(findOnboardingSetupView().exists()).toBe(true);
+      expect(findOnboardingSetupView().props('isInitialSetup')).toBe(true);
     });
 
     it('should return the jitsu key if creating an instance is successful', async () => {
@@ -176,7 +183,7 @@ describe('ProductAnalyticsOnboardingView', () => {
       await waitForPromises();
 
       expect(mockGetJitsuKeyHasKeySuccess).toHaveBeenCalledTimes(1);
-      expect(findOnboardingSetupView().exists()).toBe(true);
+      expect(findOnboardingSetupView().props('isInitialSetup')).toBe(true);
     });
 
     it('should show the error if getting the jitsu key throws an error', async () => {
@@ -263,7 +270,7 @@ describe('ProductAnalyticsOnboardingView', () => {
 
       it('hides loading and shows setup view', () => {
         expect(findLoadingIcon().exists()).toBe(false);
-        expect(findOnboardingSetupView().exists()).toBe(true);
+        expect(findOnboardingSetupView().props('isInitialSetup')).toBe(true);
       });
     });
   });
