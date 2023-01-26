@@ -54,6 +54,7 @@ module Vulnerabilities
     scope :with_scanner_external_ids, -> (scanner_external_ids) { joins(:scanner).merge(::Vulnerabilities::Scanner.with_external_id(scanner_external_ids)) }
     scope :with_findings_scanner_and_identifiers, -> { includes(vulnerability: { findings: [:scanner, :identifiers, finding_identifiers: :identifier] }) }
     scope :with_created_issue_links_and_issues, -> { includes(vulnerability: { created_issue_links: :issue }) }
+    scope :with_latest_state_transition, -> { includes(vulnerability: :latest_state_transition) }
     scope :resolved_on_default_branch, -> { where('resolved_on_default_branch IS TRUE') }
 
     scope :as_vulnerabilities, -> do
