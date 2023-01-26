@@ -7,56 +7,6 @@ RSpec.describe EE::Users::CalloutsHelper do
   using RSpec::Parameterized::TableSyntax
   include CalloutsTestHelper
 
-  describe '.render_enable_hashed_storage_warning' do
-    context 'when we should show the enable warning' do
-      it 'renders the enable warning' do
-        expect(helper).to receive(:show_enable_hashed_storage_warning?).and_return(true)
-
-        expect(helper).to receive(:render_flash_user_callout)
-          .with(:warning,
-            /Please enable and migrate to hashed/,
-            described_class::GEO_ENABLE_HASHED_STORAGE)
-
-        helper.render_enable_hashed_storage_warning
-      end
-    end
-
-    context 'when we should not show the enable warning' do
-      it 'does not render the enable warning' do
-        expect(helper).to receive(:show_enable_hashed_storage_warning?).and_return(false)
-
-        expect(helper).not_to receive(:render_flash_user_callout)
-
-        helper.render_enable_hashed_storage_warning
-      end
-    end
-  end
-
-  describe '.render_migrate_hashed_storage_warning' do
-    context 'when we should show the migrate warning' do
-      it 'renders the migrate warning' do
-        expect(helper).to receive(:show_migrate_hashed_storage_warning?).and_return(true)
-
-        expect(helper).to receive(:render_flash_user_callout)
-          .with(:warning,
-            /Please migrate all existing projects/,
-            described_class::GEO_MIGRATE_HASHED_STORAGE)
-
-        helper.render_migrate_hashed_storage_warning
-      end
-    end
-
-    context 'when we should not show the migrate warning' do
-      it 'does not render the migrate warning' do
-        expect(helper).to receive(:show_migrate_hashed_storage_warning?).and_return(false)
-
-        expect(helper).not_to receive(:render_flash_user_callout)
-
-        helper.render_migrate_hashed_storage_warning
-      end
-    end
-  end
-
   describe '.show_enable_hashed_storage_warning?' do
     subject { helper.show_enable_hashed_storage_warning? }
 
