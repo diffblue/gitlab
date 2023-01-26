@@ -32,6 +32,9 @@ module EE
         super
 
         ::Elastic::ProjectTransferWorker.perform_async(project.id, old_namespace.id, new_namespace.id)
+
+        delete_scan_result_policies
+        unassign_policy_project
       end
 
       override :remove_paid_features
@@ -39,6 +42,18 @@ module EE
         revoke_project_access_tokens
         delete_pipeline_subscriptions
         delete_test_cases
+      end
+
+      def unassign_policy_project
+        return unless project.security_orchestration_policy_configuration
+
+        ::Security::Orchestration::UnassignService.new(container: project, current_user: current_user).execute
+      end
+
+      def delete_scan_result_policies
+        project.all_security_orchestration_policy_configurations.each do |configuration|
+          configuration.delete_scan_finding_rules_for_project(project.id)
+        end
       end
 
       def revoke_project_access_tokens
