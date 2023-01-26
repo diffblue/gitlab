@@ -53,7 +53,7 @@ RSpec.describe Slack::BlockKit::AppHomeOpened do
           hash_including(
             {
               type: 'section',
-              text: include({ text: "✅ Connected to GitLab account #{account}" })
+              text: include({ text: "✅ Connected to GitLab account #{account}." })
             }
           )
         )
