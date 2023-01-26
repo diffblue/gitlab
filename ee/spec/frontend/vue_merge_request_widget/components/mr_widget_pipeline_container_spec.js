@@ -3,6 +3,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { mockStore } from 'jest/vue_merge_request_widget/mock_data';
 import MergeTrainPositionIndicator from 'ee/vue_merge_request_widget/components/merge_train_position_indicator.vue';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import MrWidgetPipelineContainer from '~/vue_merge_request_widget/components/mr_widget_pipeline_container.vue';
 import { MT_MERGE_STRATEGY, MWPS_MERGE_STRATEGY } from '~/vue_merge_request_widget/constants';
 
@@ -12,7 +13,7 @@ describe('MrWidgetPipelineContainer', () => {
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    mock.onGet().reply(200, {});
+    mock.onGet().reply(HTTP_STATUS_OK, {});
   });
 
   const factory = (method = shallowMount, mrUpdates = {}, provide = {}) => {

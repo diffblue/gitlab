@@ -10,7 +10,7 @@ import {
   ENTITIES_FETCH_ERROR,
 } from 'ee/admin/application_settings/advanced_search/constants';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { entities, projectsMock } from '../mock_data';
 
 describe('IndexEntitiesSelector', () => {
@@ -44,7 +44,7 @@ describe('IndexEntitiesSelector', () => {
 
   beforeEach(() => {
     mockAxios = new MockAdapter(axios);
-    mockAxios.onGet(apiPath).reply(200, projectsMock);
+    mockAxios.onGet(apiPath).reply(HTTP_STATUS_OK, projectsMock);
   });
 
   afterEach(() => {

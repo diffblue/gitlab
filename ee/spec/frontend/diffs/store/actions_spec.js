@@ -14,6 +14,7 @@ import axios from '~/lib/utils/axios_utils';
 import {
   HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_OK,
 } from '~/lib/utils/http_status';
 import Poll from '~/lib/utils/poll';
 
@@ -52,7 +53,7 @@ describe('EE DiffsStoreActions', () => {
         files: { 'app.js': [{ line: 1, description: 'Unexpected alert.', severity: 'minor' }] },
       };
 
-      mock.onGet(endpointCodequality).reply(200, { data });
+      mock.onGet(endpointCodequality).reply(HTTP_STATUS_OK, { data });
 
       await testAction(
         fetchCodequality,

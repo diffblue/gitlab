@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import extensionsContainer from '~/vue_merge_request_widget/components/extensions/container';
 import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
 import browserPerformanceExtension from 'ee/vue_merge_request_widget/extensions/browser_performance';
@@ -41,8 +42,12 @@ describe('Browser performance extension', () => {
 
   describe('summary', () => {
     it('should render loading text', async () => {
-      mock.onGet(DEFAULT_BROWSER_PERFORMANCE.head_path).reply(200, headBrowserPerformance);
-      mock.onGet(DEFAULT_BROWSER_PERFORMANCE.base_path).reply(200, baseBrowserPerformance);
+      mock
+        .onGet(DEFAULT_BROWSER_PERFORMANCE.head_path)
+        .reply(HTTP_STATUS_OK, headBrowserPerformance);
+      mock
+        .onGet(DEFAULT_BROWSER_PERFORMANCE.base_path)
+        .reply(HTTP_STATUS_OK, baseBrowserPerformance);
 
       registerExtension(browserPerformanceExtension);
 
@@ -52,8 +57,12 @@ describe('Browser performance extension', () => {
     });
 
     it('should render info', async () => {
-      mock.onGet(DEFAULT_BROWSER_PERFORMANCE.head_path).reply(200, headBrowserPerformance);
-      mock.onGet(DEFAULT_BROWSER_PERFORMANCE.base_path).reply(200, baseBrowserPerformance);
+      mock
+        .onGet(DEFAULT_BROWSER_PERFORMANCE.head_path)
+        .reply(HTTP_STATUS_OK, headBrowserPerformance);
+      mock
+        .onGet(DEFAULT_BROWSER_PERFORMANCE.base_path)
+        .reply(HTTP_STATUS_OK, baseBrowserPerformance);
 
       registerExtension(browserPerformanceExtension);
 
@@ -88,8 +97,8 @@ describe('Browser performance extension', () => {
         },
       ];
 
-      mock.onGet(DEFAULT_BROWSER_PERFORMANCE.head_path).reply(200, head);
-      mock.onGet(DEFAULT_BROWSER_PERFORMANCE.base_path).reply(200, base);
+      mock.onGet(DEFAULT_BROWSER_PERFORMANCE.head_path).reply(HTTP_STATUS_OK, head);
+      mock.onGet(DEFAULT_BROWSER_PERFORMANCE.base_path).reply(HTTP_STATUS_OK, base);
 
       registerExtension(browserPerformanceExtension);
 
@@ -124,8 +133,8 @@ describe('Browser performance extension', () => {
         },
       ];
 
-      mock.onGet(DEFAULT_BROWSER_PERFORMANCE.head_path).reply(200, head);
-      mock.onGet(DEFAULT_BROWSER_PERFORMANCE.base_path).reply(200, base);
+      mock.onGet(DEFAULT_BROWSER_PERFORMANCE.head_path).reply(HTTP_STATUS_OK, head);
+      mock.onGet(DEFAULT_BROWSER_PERFORMANCE.base_path).reply(HTTP_STATUS_OK, base);
 
       registerExtension(browserPerformanceExtension);
 
@@ -138,8 +147,12 @@ describe('Browser performance extension', () => {
 
   describe('expanded data', () => {
     beforeEach(async () => {
-      mock.onGet(DEFAULT_BROWSER_PERFORMANCE.head_path).reply(200, headBrowserPerformance);
-      mock.onGet(DEFAULT_BROWSER_PERFORMANCE.base_path).reply(200, baseBrowserPerformance);
+      mock
+        .onGet(DEFAULT_BROWSER_PERFORMANCE.head_path)
+        .reply(HTTP_STATUS_OK, headBrowserPerformance);
+      mock
+        .onGet(DEFAULT_BROWSER_PERFORMANCE.base_path)
+        .reply(HTTP_STATUS_OK, baseBrowserPerformance);
 
       registerExtension(browserPerformanceExtension);
 

@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import extensionsContainer from '~/vue_merge_request_widget/components/extensions/container';
 import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
 import loadPerformanceExtension from 'ee/vue_merge_request_widget/extensions/load_performance';
@@ -41,8 +42,8 @@ describe('Load performance extension', () => {
 
   describe('summary', () => {
     it('should render loading text', async () => {
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(200, headLoadPerformance);
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(200, baseLoadPerformance);
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(HTTP_STATUS_OK, headLoadPerformance);
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(HTTP_STATUS_OK, baseLoadPerformance);
 
       registerExtension(loadPerformanceExtension);
 
@@ -52,8 +53,8 @@ describe('Load performance extension', () => {
     });
 
     it('should render info about all issues', async () => {
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(200, headLoadPerformance);
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(200, baseLoadPerformance);
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(HTTP_STATUS_OK, headLoadPerformance);
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(HTTP_STATUS_OK, baseLoadPerformance);
 
       registerExtension(loadPerformanceExtension);
 
@@ -83,8 +84,8 @@ describe('Load performance extension', () => {
         },
       };
 
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(200, head);
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(200, base);
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(HTTP_STATUS_OK, head);
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(HTTP_STATUS_OK, base);
 
       registerExtension(loadPerformanceExtension);
 
@@ -114,8 +115,8 @@ describe('Load performance extension', () => {
         },
       };
 
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(200, head);
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(200, base);
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(HTTP_STATUS_OK, head);
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(HTTP_STATUS_OK, base);
 
       registerExtension(loadPerformanceExtension);
 
@@ -127,8 +128,8 @@ describe('Load performance extension', () => {
 
   describe('expanded data', () => {
     beforeEach(async () => {
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(200, headLoadPerformance);
-      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(200, baseLoadPerformance);
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(HTTP_STATUS_OK, headLoadPerformance);
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(HTTP_STATUS_OK, baseLoadPerformance);
 
       registerExtension(loadPerformanceExtension);
 
