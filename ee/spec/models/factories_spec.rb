@@ -2,6 +2,10 @@
 
 require 'spec_helper'
 
+# We only test factories in EE as `FactoryBot.factories` include both FOSS and EE factories there.
+# Otherwise, we'd test EE factories even in `rspec` jobs which are supposed to run only FOSS tests.
+# It should be fine since FOSS is a subset of EE anyway, so if this test file passes on EE, it means
+# FOSS factories are valid (and FOSS doesn't **add** anything to EE so we're good).
 # `:saas` is used to test `gitlab_subscription` factory.
 # It's not available on FOSS but also this very factory is not.
 RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
