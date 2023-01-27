@@ -102,7 +102,7 @@ RSpec.describe Issues::UpdateService, feature_category: :team_planning do
         it 'calls UpdateDatesService' do
           expect(Epics::UpdateDatesService).to receive(:new).with([epic]).and_call_original.twice
 
-          update_issue(milestone: milestone)
+          update_issue(milestone_id: milestone.id)
           update_issue(milestone_id: nil)
         end
       end
@@ -446,7 +446,7 @@ RSpec.describe Issues::UpdateService, feature_category: :team_planning do
           let_it_be(:milestone) { create(:milestone, project: project) }
           let_it_be(:assignee_user1) { create(:user) }
 
-          let(:params) { { epic: epic, milestone: milestone, assignee_ids: [assignee_user1.id] } }
+          let(:params) { { epic: epic, milestone_id: milestone.id, assignee_ids: [assignee_user1.id] } }
 
           before do
             project.add_guest(assignee_user1)

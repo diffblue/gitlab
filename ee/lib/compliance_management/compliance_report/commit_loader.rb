@@ -26,8 +26,8 @@ module ComplianceManagement
         merge_requests.find_each.each_with_object(mr_commits) do |mr, result|
           mr.commit_shas.each { |sha| result[sha] << mr }
 
-          result[mr.squash_commit_sha] = mr if mr.squash_commit_sha?
-          result[mr.merge_commit_sha] = mr if mr.merge_commit_sha?
+          result[mr.squash_commit_sha] << mr if mr.squash_commit_sha?
+          result[mr.merge_commit_sha] << mr if mr.merge_commit_sha?
         end
 
         # find all non-MR commits (e.g. a commit pushed directly to the project)

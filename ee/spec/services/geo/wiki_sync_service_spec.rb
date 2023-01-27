@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::WikiSyncService, :geo do
+RSpec.describe Geo::WikiSyncService, :geo, feature_category: :geo_replication do
   include ::EE::GeoHelpers
   include ExclusiveLeaseHelpers
 
@@ -26,7 +26,7 @@ RSpec.describe Geo::WikiSyncService, :geo do
   it_behaves_like 'geo base sync fetch'
   it_behaves_like 'reschedules sync due to race condition instead of waiting for backfill'
 
-  describe '#execute', :aggregate_failures do
+  describe '#execute' do
     before do
       stub_exclusive_lease(lease_key, lease_uuid)
 
@@ -53,13 +53,9 @@ RSpec.describe Geo::WikiSyncService, :geo do
       it 'voids the failure message when it succeeds after an error' do
         allow(repository).to receive(:update_root_ref)
 
-        project_repository_registry = create(:geo_project_registry, project: project, last_wiki_sync_failure: 'error')
-        wiki_repository_registry = create(:geo_project_wiki_repository_registry, project: project, last_sync_failure: 'error')
+        registry = create(:geo_project_registry, project: project, last_wiki_sync_failure: 'error')
 
-        subject.execute
-
-        expect(project_repository_registry.reload.last_wiki_sync_failure).to be_nil
-        expect(wiki_repository_registry.reload.last_sync_failure).to be_nil
+        expect { subject.execute }.to change { registry.reload.last_wiki_sync_failure }.to(nil)
       end
 
       it 'rescues exception when Gitlab::Shell::Error is raised' do
@@ -85,16 +81,12 @@ RSpec.describe Geo::WikiSyncService, :geo do
 
         subject.execute
 
-        expect(Geo::ProjectRegistry.last)
-          .to have_attributes(resync_wiki: true, wiki_retry_count: 1)
-
-        expect(Geo::ProjectWikiRepositoryRegistry.last)
-          .to have_attributes(state: Geo::ProjectWikiRepositoryRegistry.state_value(:failed), retry_count: 1)
+        expect(Geo::ProjectRegistry.last).to have_attributes(resync_wiki: true,
+                                                             wiki_retry_count: 1)
       end
 
       it 'marks sync as successful if no repository found' do
-        project_repository_registry = create(:geo_project_registry, project: project)
-        wiki_repository_registry = create(:geo_project_wiki_repository_registry, project: project)
+        registry = create(:geo_project_registry, project: project)
 
         allow(repository).to receive(:fetch_as_mirror)
                                .with(url_to_repo, forced: true, http_authorization_header: anything)
@@ -102,17 +94,9 @@ RSpec.describe Geo::WikiSyncService, :geo do
 
         subject.execute
 
-        expect(project_repository_registry.reload).to have_attributes(
-          resync_wiki: false,
-          last_wiki_successful_sync_at: be_present,
-          wiki_missing_on_primary: true
-        )
-
-        expect(wiki_repository_registry.reload).to have_attributes(
-          state: Geo::ProjectWikiRepositoryRegistry.state_value(:synced),
-          last_synced_at: be_present,
-          missing_on_primary: true
-        )
+        expect(registry.reload).to have_attributes(resync_wiki: false,
+                                                   last_wiki_successful_sync_at: be_present,
+                                                   wiki_missing_on_primary: true)
       end
 
       it 'marks resync as true after a failure' do
@@ -125,16 +109,13 @@ RSpec.describe Geo::WikiSyncService, :geo do
         subject.execute
 
         expect(Geo::ProjectRegistry.last.resync_wiki).to be true
-        expect(Geo::ProjectWikiRepositoryRegistry.last.state).to eq(Geo::ProjectWikiRepositoryRegistry.state_value(:failed))
       end
     end
 
     context 'wiki repository presumably exists on primary' do
       it 'increases retry count if no wiki repository found' do
+        registry = create(:geo_project_registry, project: project)
         create(:repository_state, :wiki_verified, project: project)
-        create(:geo_project_wiki_repository_state, :checksummed, project: project)
-        project_repository_registry = create(:geo_project_registry, project: project)
-        wiki_repository_registry = create(:geo_project_wiki_repository_registry, project: project)
 
         allow(repository).to receive(:fetch_as_mirror)
           .with(url_to_repo, forced: true, http_authorization_header: anything)
@@ -142,14 +123,9 @@ RSpec.describe Geo::WikiSyncService, :geo do
 
         subject.execute
 
-        expect(project_repository_registry.reload).to have_attributes(
+        expect(registry.reload).to have_attributes(
           resync_wiki: true,
           wiki_retry_count: 1
-        )
-
-        expect(wiki_repository_registry.reload).to have_attributes(
-          state: Geo::ProjectWikiRepositoryRegistry.state_value(:failed),
-          retry_count: 1
         )
       end
     end
@@ -158,26 +134,18 @@ RSpec.describe Geo::WikiSyncService, :geo do
       allow(repository).to receive(:update_root_ref)
 
       create(:repository_state, :wiki_verified, project: project)
-      create(:geo_project_wiki_repository_state, :checksummed, project: project)
-      project_repository_registry = create(:geo_project_registry, project: project, primary_wiki_checksummed: false)
+      registry = create(:geo_project_registry, project: project, primary_wiki_checksummed: false)
 
-      expect { subject.execute }
-        .to change { project_repository_registry.reload.primary_wiki_checksummed }
-        .from(false)
-        .to(true)
+      expect { subject.execute }.to change { registry.reload.primary_wiki_checksummed }.from(false).to(true)
     end
 
     it 'marks primary_wiki_checksummed as false when wiki has not been verified on primary' do
       allow(repository).to receive(:update_root_ref)
 
       create(:repository_state, :wiki_failed, project: project)
-      create(:geo_project_wiki_repository_state, :checksum_failure, project: project)
-      project_repository_registry = create(:geo_project_registry, project: project, primary_wiki_checksummed: true)
+      registry = create(:geo_project_registry, project: project, primary_wiki_checksummed: true)
 
-      expect { subject.execute }
-        .to change { project_repository_registry.reload.primary_wiki_checksummed }
-        .from(true)
-        .to(false)
+      expect { subject.execute }.to change { registry.reload.primary_wiki_checksummed }.from(true).to(false)
     end
 
     context 'tracking database' do
@@ -186,29 +154,22 @@ RSpec.describe Geo::WikiSyncService, :geo do
       end
 
       it 'creates a new registry if does not exists' do
-        expect { subject.execute }
-          .to change(Geo::ProjectRegistry, :count).by(1)
-          .and change(Geo::ProjectWikiRepositoryRegistry, :count).by(1)
+        expect { subject.execute }.to change(Geo::ProjectRegistry, :count).by(1)
       end
 
       it 'does not create a new registry if one exists' do
         create(:geo_project_registry, project: project)
-        create(:geo_project_wiki_repository_registry, project: project)
 
-        expect { subject.execute }
-          .to change(Geo::ProjectRegistry, :count).by(0)
-          .and change(Geo::ProjectWikiRepositoryRegistry, :count).by(0)
+        expect { subject.execute }.not_to change(Geo::ProjectRegistry, :count)
       end
 
       context 'when repository sync succeed' do
-        let(:project_repository_registry) { Geo::ProjectRegistry.find_by(project_id: project.id) }
-        let(:wiki_repository_registry) { Geo::ProjectWikiRepositoryRegistry.find_by(project_id: project.id) }
+        let(:registry) { Geo::ProjectRegistry.find_by(project_id: project.id) }
 
         it 'sets last_wiki_synced_at' do
           subject.execute
 
-          expect(project_repository_registry.last_wiki_synced_at).to be_present
-          expect(wiki_repository_registry.last_synced_at).to be_present
+          expect(registry.last_wiki_synced_at).not_to be_nil
         end
 
         it 'sets last_wiki_successful_sync_at' do
@@ -216,42 +177,40 @@ RSpec.describe Geo::WikiSyncService, :geo do
 
           subject.execute
 
-          expect(project_repository_registry.last_wiki_successful_sync_at).to be_present
-          expect(wiki_repository_registry.last_synced_at).to be_present
+          expect(registry.last_wiki_successful_sync_at).not_to be_nil
         end
 
         it 'resets the wiki_verification_checksum_sha' do
           subject.execute
 
-          expect(project_repository_registry.wiki_verification_checksum_sha).to be_nil
-          expect(wiki_repository_registry.verification_checksum).to be_nil
+          expect(registry.wiki_verification_checksum_sha).to be_nil
         end
 
         it 'resets the last_wiki_verification_failure' do
           subject.execute
 
-          expect(project_repository_registry.last_wiki_verification_failure).to be_nil
-          expect(wiki_repository_registry.verification_failure).to be_nil
+          expect(registry.last_wiki_verification_failure).to be_nil
         end
 
         it 'resets the wiki_checksum_mismatch' do
           subject.execute
 
-          expect(project_repository_registry.wiki_checksum_mismatch).to eq false
-          expect(wiki_repository_registry.verification_checksum_mismatched).to be_nil
+          expect(registry.wiki_checksum_mismatch).to eq false
         end
 
         it 'logs success with timings' do
           allow(repository).to receive(:update_root_ref)
           allow(Gitlab::Geo::Logger).to receive(:info).and_call_original
 
-          expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(:message, :download_time_s)).and_call_original
+          expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(:message, :update_delay_s, :download_time_s)).and_call_original
 
           subject.execute
         end
       end
 
       context 'when wiki sync fail' do
+        let(:registry) { Geo::ProjectRegistry.find_by(project_id: project.id) }
+
         before do
           allow(repository).to receive(:fetch_as_mirror)
             .with(url_to_repo, forced: true, http_authorization_header: anything)
@@ -261,22 +220,10 @@ RSpec.describe Geo::WikiSyncService, :geo do
         it 'sets correct values for registry record' do
           subject.execute
 
-          project_repository_registry = Geo::ProjectRegistry.find_by(project_id: project.id)
-          wiki_repository_registry = Geo::ProjectWikiRepositoryRegistry.find_by(project_id: project.id)
-
-          expect(project_repository_registry)
-            .to have_attributes(
-              last_wiki_synced_at: be_present,
-              last_wiki_successful_sync_at: nil,
-              last_wiki_sync_failure: 'Error syncing wiki repository: shell error'
-            )
-
-          expect(wiki_repository_registry)
-            .to have_attributes(
-              last_synced_at: be_present,
-              state: Geo::ProjectWikiRepositoryRegistry.state_value(:failed),
-              last_sync_failure: 'Error syncing wiki repository: shell error'
-            )
+          expect(registry).to have_attributes(last_wiki_synced_at: be_present,
+                                              last_wiki_successful_sync_at: nil,
+                                              last_wiki_sync_failure: 'Error syncing wiki repository: shell error'
+                                             )
         end
       end
 
@@ -285,7 +232,6 @@ RSpec.describe Geo::WikiSyncService, :geo do
 
         it 'does not raise an error' do
           create(:geo_project_registry, project: project, force_to_redownload_wiki: true)
-          create(:geo_project_wiki_repository_registry, project: project, force_to_redownload: true)
 
           allow(repository).to receive(:update_root_ref)
           expect(repository).to receive(:expire_exists_cache).exactly(3).times.and_call_original
@@ -297,10 +243,10 @@ RSpec.describe Geo::WikiSyncService, :geo do
     end
 
     it_behaves_like 'sync retries use the snapshot RPC' do
-      let(:retry_count) { Geo::WikiSyncService::RETRIES_BEFORE_REDOWNLOAD }
+      let(:retry_count) { Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD }
 
       def registry_with_retry_count(retries)
-        create(:geo_project_wiki_repository_registry, project: project, retry_count: retries)
+        create(:geo_project_registry, project: project, repository_retry_count: retries, wiki_retry_count: retries)
       end
     end
   end
@@ -309,7 +255,7 @@ RSpec.describe Geo::WikiSyncService, :geo do
     context 'with geo_use_clone_on_first_sync flag disabled' do
       before do
         stub_feature_flags(geo_use_clone_on_first_sync: false)
-        allow(subject).to receive(:should_be_redownloaded?).and_return(true)
+        allow(subject).to receive(:redownload?).and_return(true)
       end
 
       it 'creates a new repository and fetches with JWT credentials' do
@@ -333,7 +279,7 @@ RSpec.describe Geo::WikiSyncService, :geo do
     context 'with geo_use_clone_on_first_sync flag enabled' do
       before do
         stub_feature_flags(geo_use_clone_on_first_sync: true)
-        allow(subject).to receive(:should_be_redownloaded?).and_return(true)
+        allow(subject).to receive(:redownload?).and_return(true)
       end
 
       it 'clones a new repository with JWT credentials' do

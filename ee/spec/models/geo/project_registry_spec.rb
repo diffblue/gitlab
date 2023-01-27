@@ -1282,4 +1282,68 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
       end
     end
   end
+
+  describe 'should_be_redownloaded?' do
+    context 'when type is invalid' do
+      it 'raises ArgumentError' do
+        registry = build(:geo_project_registry)
+
+        expect do
+          registry.should_be_redownloaded?(:invalid_type)
+        end.to raise_error(ArgumentError)
+      end
+    end
+
+    context 'when type is repository' do
+      where(:force_to_redownload_repository, :repository_retry_count, :expected) do
+        false | nil | false
+        false | 0   | false
+        false | 1   | false
+        false | 10  | false
+        false | 11  | true
+        false | 12  | false
+        false | 13  | true
+        false | 14  | false
+        false | 101 | true
+        false | 102 | false
+        true  | nil | true
+        true  | 0   | true
+        true  | 11  | true
+      end
+
+      with_them do
+        it "returns the expected boolean" do
+          registry = build(:geo_project_registry, repository_retry_count: repository_retry_count, force_to_redownload_repository: force_to_redownload_repository)
+
+          expect(registry.should_be_redownloaded?(:repository)).to eq(expected)
+        end
+      end
+    end
+
+    context 'when type is wiki' do
+      where(:force_to_redownload_wiki, :wiki_retry_count, :expected) do
+        false | nil | false
+        false | 0   | false
+        false | 1   | false
+        false | 10  | false
+        false | 11  | true
+        false | 12  | false
+        false | 13  | true
+        false | 14  | false
+        false | 101 | true
+        false | 102 | false
+        true  | nil | true
+        true  | 0   | true
+        true  | 11  | true
+      end
+
+      with_them do
+        it "returns the expected boolean" do
+          registry = build(:geo_project_registry, wiki_retry_count: wiki_retry_count, force_to_redownload_wiki: force_to_redownload_wiki)
+
+          expect(registry.should_be_redownloaded?(:wiki)).to eq(expected)
+        end
+      end
+    end
+  end
 end
