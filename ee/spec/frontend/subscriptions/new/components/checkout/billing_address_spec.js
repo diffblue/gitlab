@@ -69,7 +69,7 @@ describe('Billing Address', () => {
     });
 
     it('should display the select prompt', () => {
-      expect(countrySelect().html()).toContain('<option value="">Please select a country</option>');
+      expect(countrySelect().html()).toContain('<option value="">Select a country</option>');
     });
 
     it('should display the countries returned from the server', () => {

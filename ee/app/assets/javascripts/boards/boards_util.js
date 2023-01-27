@@ -104,9 +104,7 @@ export function formatListEpics(listEpics) {
 
   const listData = listEpics.nodes.reduce((map, list) => {
     listItemsCount = list.epicsCount;
-    const sortedEpics = list.epics.edges.map((epicNode) => ({
-      ...epicNode.node,
-    }));
+    const sortedEpics = list.epics.nodes;
 
     return {
       ...map,

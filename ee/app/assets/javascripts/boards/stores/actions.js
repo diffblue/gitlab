@@ -102,7 +102,7 @@ const fetchAndFormatListEpics = (state, { fetchPolicy, ...extraVariables }) => {
       fetchPolicy,
     })
     .then(({ data }) => {
-      const { lists } = data.group.epicBoard;
+      const { lists } = data.group.board;
       return { listItems: formatListEpics(lists), listPageInfo: formatEpicListsPageInfo(lists) };
     });
 };
