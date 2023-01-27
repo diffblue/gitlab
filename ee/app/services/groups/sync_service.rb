@@ -14,13 +14,8 @@
 # This is a generic group sync service, reusable by many IdP-specific
 # implementations. The worker (caller) is responsible for providing the
 # specific group links, which this service then iterates over
-# and adds/removes users from respective groups.
-#
-# When `manage_group_ids` is present, users will only be removed from these
-# groups if they should no longer be a member. When not present, users are
-# removed from all groups where they should no longer be a member. This is
-# useful when it's desired to only manage groups with group links and
-# allow other groups to manage members manually.
+# and adds/removes users from respective groups. Users will only be
+# removed from groups matching `manage_group_ids`.
 #
 # See `GroupSamlGroupSyncWorker` for an example.
 #
@@ -109,7 +104,7 @@ module Groups
     end
 
     def manage_group?(group_id)
-      params[:manage_group_ids].blank? || params[:manage_group_ids].include?(group_id)
+      params[:manage_group_ids].include?(group_id)
     end
 
     def existing_member_by_group(group)

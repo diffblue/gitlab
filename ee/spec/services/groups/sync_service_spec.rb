@@ -121,7 +121,7 @@ RSpec.describe Groups::SyncService, feature_category: :authentication_and_author
         end
       end
 
-      context 'but should no longer be a member' do
+      context 'when a group has no group links' do
         shared_examples 'removes the member' do
           before do
             group2.add_member(user, ::Gitlab::Access::DEVELOPER)
@@ -142,41 +142,39 @@ RSpec.describe Groups::SyncService, feature_category: :authentication_and_author
           end
         end
 
+        shared_examples 'retains the member' do
+          before do
+            group2.add_member(user, ::Gitlab::Access::REPORTER)
+          end
+
+          it 'does not change the group member count' do
+            expect { sync }.not_to change { group2.members.count }
+          end
+
+          it 'retains the correct access level' do
+            sync
+
+            expect(group2.members.find_by(user_id: user.id).access_level)
+              .to eq(::Gitlab::Access::REPORTER)
+          end
+        end
+
         context 'when manage_group_ids is present' do
           let_it_be(:manage_group_ids) { [group2.id] }
 
-          include_examples 'removes the member'
+          it_behaves_like 'removes the member'
         end
 
-        context 'when manage_group_ids is empty' do
+        context 'in a group that is not managed' do
+          let_it_be(:manage_group_ids) { [top_level_group.id, group1.id] }
+
+          it_behaves_like 'retains the member'
+        end
+
+        context 'when no groups are managed' do
           let_it_be(:manage_group_ids) { [] }
 
-          include_examples 'removes the member'
-        end
-
-        context 'when manage_groups_ids is nil' do
-          let_it_be(:manage_group_ids) { nil }
-
-          include_examples 'removes the member'
-        end
-      end
-
-      context 'in a group that is not managed' do
-        let_it_be(:manage_group_ids) { [top_level_group.id, group1.id] }
-
-        before do
-          group2.add_member(user, ::Gitlab::Access::REPORTER)
-        end
-
-        it 'does not change the group member count' do
-          expect { sync }.not_to change { group2.members.count }
-        end
-
-        it 'retains the correct access level' do
-          sync
-
-          expect(group2.members.find_by(user_id: user.id).access_level)
-            .to eq(::Gitlab::Access::REPORTER)
+          it_behaves_like 'retains the member'
         end
       end
     end
