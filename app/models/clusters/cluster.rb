@@ -286,10 +286,6 @@ module Clusters
       !!application_knative&.available?
     end
 
-    def integration_elastic_stack_available?
-      !!integration_elastic_stack&.available?
-    end
-
     def integration_prometheus_available?
       !!integration_prometheus&.available?
     end
