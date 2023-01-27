@@ -1,7 +1,12 @@
 <script>
 import { GlFormGroup, GlFormInput, GlFormSelect } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
-import { STEPS } from 'ee/subscriptions/constants';
+import {
+  STEPS,
+  COUNTRIES_WITH_STATES_REQUIRED,
+  COUNTRY_SELECT_PROMPT,
+  STATE_SELECT_PROMPT,
+} from 'ee/subscriptions/constants';
 import updateStateMutation from 'ee/subscriptions/graphql/mutations/update_state.mutation.graphql';
 import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.graphql';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
@@ -93,8 +98,15 @@ export default {
         this.updateState({ customer: { zipCode } });
       },
     },
+    isStateRequired() {
+      return COUNTRIES_WITH_STATES_REQUIRED.includes(this.customer.country);
+    },
+    isStateValid() {
+      return this.isStateRequired ? !isEmpty(this.customer.state) : true;
+    },
     isValid() {
       return (
+        this.isStateValid &&
         !isEmpty(this.customer.country) &&
         !isEmpty(this.customer.address1) &&
         !isEmpty(this.customer.city) &&
@@ -104,7 +116,7 @@ export default {
     countryOptionsWithDefault() {
       return [
         {
-          name: this.$options.i18n.countrySelectPrompt,
+          name: COUNTRY_SELECT_PROMPT,
           id: null,
         },
         ...this.countries,
@@ -113,7 +125,7 @@ export default {
     stateOptionsWithDefault() {
       return [
         {
-          name: this.$options.i18n.stateSelectPrompt,
+          name: STATE_SELECT_PROMPT,
           id: null,
         },
         ...this.states,
@@ -145,11 +157,9 @@ export default {
     stepTitle: s__('Checkout|Billing address'),
     nextStepButtonText: s__('Checkout|Continue to payment'),
     countryLabel: s__('Checkout|Country'),
-    countrySelectPrompt: s__('Checkout|Please select a country'),
     streetAddressLabel: s__('Checkout|Street address'),
     cityLabel: s__('Checkout|City'),
     stateLabel: s__('Checkout|State'),
-    stateSelectPrompt: s__('Checkout|Please select a state'),
     zipCodeLabel: s__('Checkout|Zip code'),
   },
   stepId: STEPS[1].id,

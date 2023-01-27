@@ -34,3 +34,8 @@ export const TRACK_SUCCESS_MESSAGE = 'Success';
 /* eslint-enable @gitlab/require-i18n-strings */
 
 export const QSR_RECONCILIATION_PATH = 'subscriptions/quarterly_reconciliation.html';
+
+export const COUNTRIES_WITH_STATES_REQUIRED = Object.freeze(['US', 'CA']);
+
+export const COUNTRY_SELECT_PROMPT = s__('Checkout|Select a country');
+export const STATE_SELECT_PROMPT = s__('Checkout|Select a state');

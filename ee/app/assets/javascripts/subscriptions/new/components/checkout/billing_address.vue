@@ -2,13 +2,16 @@
 import { GlFormGroup, GlFormInput, GlFormSelect } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { mapState, mapActions } from 'vuex';
-import { STEP_BILLING_ADDRESS } from 'ee/subscriptions/constants';
+import {
+  STEP_BILLING_ADDRESS,
+  COUNTRIES_WITH_STATES_REQUIRED,
+  COUNTRY_SELECT_PROMPT,
+  STATE_SELECT_PROMPT,
+} from 'ee/subscriptions/constants';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { s__ } from '~/locale';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
 import Tracking from '~/tracking';
-
-const COUNTRIES_WITH_STATES_REQUIRED = ['US', 'CA'];
 
 export default {
   components: {
@@ -98,7 +101,7 @@ export default {
     countryOptionsWithDefault() {
       return [
         {
-          text: this.$options.i18n.countrySelectPrompt,
+          text: COUNTRY_SELECT_PROMPT,
           value: null,
         },
         ...this.countryOptions,
@@ -107,7 +110,7 @@ export default {
     stateOptionsWithDefault() {
       return [
         {
-          text: this.$options.i18n.stateSelectPrompt,
+          text: STATE_SELECT_PROMPT,
           value: null,
         },
         ...this.stateOptions,
@@ -148,11 +151,9 @@ export default {
     stepTitle: s__('Checkout|Billing address'),
     nextStepButtonText: s__('Checkout|Continue to payment'),
     countryLabel: s__('Checkout|Country'),
-    countrySelectPrompt: s__('Checkout|Please select a country'),
     streetAddressLabel: s__('Checkout|Street address'),
     cityLabel: s__('Checkout|City'),
     stateLabel: s__('Checkout|State'),
-    stateSelectPrompt: s__('Checkout|Please select a state'),
     zipCodeLabel: s__('Checkout|Zip code'),
   },
   stepId: STEP_BILLING_ADDRESS,
