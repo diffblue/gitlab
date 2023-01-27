@@ -2245,6 +2245,14 @@ RSpec.describe Project, feature_category: :projects do
     end
   end
 
+  describe '#use_zoekt?', feature_category: :global_search do
+    it 'delegates to ::Zoekt::IndexedNamespace' do
+      expect(::Zoekt::IndexedNamespace).to receive(:enabled_for_project?).with(project).and_return(true)
+
+      expect(project.use_zoekt?).to eq(true)
+    end
+  end
+
   describe '#lfs_http_url_to_repo' do
     let(:project) { create(:project) }
     let(:project_path) { "#{Gitlab::Routing.url_helpers.project_path(project)}.git" }

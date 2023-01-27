@@ -13,6 +13,7 @@ module EE
 
     prepended do
       include Elastic::RepositoriesSearch
+      include ::Zoekt::SearchableRepository
 
       delegate :checksum, :find_remote_root_ref, to: :raw_repository
     end

@@ -38,7 +38,7 @@ RSpec.describe Git::BranchPushService do
       end
     end
 
-    context 'ElasticSearch indexing', :elastic, :clean_gitlab_redis_shared_state do
+    context 'ElasticSearch indexing', :elastic, :clean_gitlab_redis_shared_state, feature_category: :global_search do
       before do
         stub_ee_application_setting(elasticsearch_indexing?: true)
       end
@@ -103,6 +103,52 @@ RSpec.describe Git::BranchPushService do
 
             subject.execute
           end
+        end
+      end
+    end
+
+    context 'with Zoekt indexing', feature_category: :global_search do
+      let(:use_zoekt) { true }
+
+      before do
+        allow(project).to receive(:use_zoekt?).and_return(use_zoekt)
+      end
+
+      it 'triggers async_update_zoekt_index' do
+        expect(project.repository).to receive(:async_update_zoekt_index)
+
+        subject.execute
+      end
+
+      context 'when pushing to a non-default branch' do
+        let(:ref) { 'refs/heads/other' }
+
+        it 'does not trigger async_update_zoekt_index' do
+          expect(project.repository).not_to receive(:async_update_zoekt_index)
+
+          subject.execute
+        end
+      end
+
+      context 'when index_code_with_zoekt is disabled' do
+        before do
+          stub_feature_flags(index_code_with_zoekt: false)
+        end
+
+        it 'does not trigger async_update_zoekt_index' do
+          expect(project.repository).not_to receive(:async_update_zoekt_index)
+
+          subject.execute
+        end
+      end
+
+      context 'when zoekt is not enabled for the project' do
+        let(:use_zoekt) { false }
+
+        it 'does not trigger async_update_zoekt_index' do
+          expect(project.repository).not_to receive(:async_update_zoekt_index)
+
+          subject.execute
         end
       end
     end

@@ -62,6 +62,91 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
     end
   end
 
+  context 'when searching with Zoekt' do
+    let(:service) { described_class.new(user, group, search: 'foobar', scope: scope, basic_search: basic_search, page: page) }
+    let(:use_zoekt) { true }
+    let(:scope) { 'blobs' }
+    let(:basic_search) { nil }
+    let(:page) { nil }
+
+    before do
+      allow(group).to receive(:use_zoekt?).and_return(use_zoekt)
+    end
+
+    it 'returns a Gitlab::Zoekt::SearchResults' do
+      expect(service.use_zoekt?).to eq(true)
+      expect(service.zoekt_searchable_scope).to eq(group)
+      expect(service.execute).to be_kind_of(::Gitlab::Zoekt::SearchResults)
+    end
+
+    context 'when group does not have Zoekt enabled' do
+      let(:use_zoekt) { false }
+
+      it 'does not search with Zoekt' do
+        expect(service.use_zoekt?).to eq(false)
+        expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+    end
+
+    context 'when scope is not blobs' do
+      let(:scope) { 'issues' }
+
+      it 'does not search with Zoekt' do
+        expect(service.use_zoekt?).to eq(false)
+        expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+    end
+
+    context 'when basic_search is requested' do
+      let(:basic_search) { true }
+
+      it 'does not search with Zoekt' do
+        expect(service.use_zoekt?).to eq(false)
+        expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+    end
+
+    context 'when search_code_with_zoekt is disabled' do
+      before do
+        stub_feature_flags(search_code_with_zoekt: false)
+      end
+
+      it 'does not search with Zoekt' do
+        expect(service.use_zoekt?).to eq(false)
+        expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+    end
+
+    context 'when requesting the first page' do
+      let(:page) { 1 }
+
+      it 'searches with Zoekt' do
+        expect(service.use_zoekt?).to eq(true)
+        expect(service.execute).to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+    end
+
+    context 'when requesting a page other than the first' do
+      let(:page) { 2 }
+
+      it 'does not search with Zoekt' do
+        expect(service.use_zoekt?).to eq(false)
+        expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+    end
+
+    context 'when zoekt_code_search licensed feature is disabled' do
+      before do
+        stub_licensed_features(zoekt_code_search: false)
+      end
+
+      it 'does not search with Zoekt' do
+        expect(service.use_zoekt?).to eq(false)
+        expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+    end
+  end
+
   context 'visibility', :elastic_delete_by_query, :sidekiq_inline do
     include_context 'ProjectPolicyTable context'
 
