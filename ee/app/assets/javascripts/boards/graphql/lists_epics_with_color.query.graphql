@@ -11,39 +11,37 @@ query epicBoardListEpicsWithColor(
 ) {
   group(fullPath: $fullPath) {
     id
-    epicBoard(id: $boardId) {
+    board: epicBoard(id: $boardId) {
       id
       lists(id: $id) {
         nodes {
           id
           epics(first: $first, after: $after, filters: $filters) {
-            edges {
-              node {
-                ...EpicNode
-                relativePosition
-                referencePath: reference(full: true)
-                confidential
-                subscribed
-                blocked
-                blockedByCount
-                labels {
-                  nodes {
-                    ...Label
-                  }
+            nodes {
+              ...EpicNode
+              relativePosition
+              referencePath: reference(full: true)
+              confidential
+              subscribed
+              blocked
+              blockedByCount
+              labels {
+                nodes {
+                  ...Label
                 }
-                hasIssues
-                descendantCounts {
-                  closedEpics
-                  closedIssues
-                  openedEpics
-                  openedIssues
-                }
-                descendantWeightSum {
-                  closedIssues
-                  openedIssues
-                }
-                color
               }
+              hasIssues
+              descendantCounts {
+                closedEpics
+                closedIssues
+                openedEpics
+                openedIssues
+              }
+              descendantWeightSum {
+                closedIssues
+                openedIssues
+              }
+              color
             }
             pageInfo {
               endCursor

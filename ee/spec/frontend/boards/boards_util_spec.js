@@ -48,14 +48,12 @@ describe('formatListEpics', () => {
           id: 'gid://gitlab/Boards::EpicList/3',
           epicsCount: 1,
           epics: {
-            edges: [
+            nodes: [
               {
-                node: {
-                  title: 'epic title',
-                  id: epicId,
-                  labels: {
-                    nodes: [mockLabel],
-                  },
+                title: 'epic title',
+                id: epicId,
+                labels: {
+                  nodes: [mockLabel],
                 },
               },
             ],

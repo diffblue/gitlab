@@ -2,6 +2,7 @@
 import { issuableTypes, FilterFields as FilterFieldsCE } from '~/boards/constants';
 import destroyBoardListMutation from '~/boards/graphql/board_list_destroy.mutation.graphql';
 import updateBoardListMutation from '~/boards/graphql/board_list_update.mutation.graphql';
+import listIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 
 import { s__ } from '~/locale';
 
@@ -9,6 +10,8 @@ import boardListsQuery from './graphql/board_lists.query.graphql';
 import destroyEpicBoardListMutation from './graphql/epic_board_list_destroy.mutation.graphql';
 import updateEpicBoardListMutation from './graphql/epic_board_list_update.mutation.graphql';
 import epicBoardListsQuery from './graphql/epic_board_lists.query.graphql';
+import listEpicsQuery from './graphql/lists_epics.query.graphql';
+import listEpicsWithColorQuery from './graphql/lists_epics_with_color.query.graphql';
 
 export * from '~/boards/constants';
 
@@ -165,6 +168,15 @@ export const deleteListQueries = {
   },
   [issuableTypes.epic]: {
     mutation: destroyEpicBoardListMutation,
+  },
+};
+
+export const listIssuablesQueries = {
+  [issuableTypes.issue]: {
+    query: listIssuesQuery,
+  },
+  [issuableTypes.epic]: {
+    query: gon?.features?.epicColorHighlight ? listEpicsWithColorQuery : listEpicsQuery,
   },
 };
 
