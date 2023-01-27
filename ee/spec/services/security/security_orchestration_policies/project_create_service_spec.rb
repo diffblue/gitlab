@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService do
   describe '#execute' do
     let_it_be_with_refind(:project) { create(:project) }
+    let_it_be(:group) { create(:group) }
 
     let_it_be(:owner) { create(:user) }
     let_it_be(:maintainer) { create(:user) }
@@ -35,7 +36,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService do
     end
 
     context 'when security_orchestration_policies_configuration does not exist for namespace' do
-      let(:group) { create(:group) }
       let(:container) { group }
 
       before do
@@ -79,13 +79,26 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService do
     end
 
     context 'when project creation fails' do
-      let(:current_user) { create(:user) }
+      let(:error_message) { "Path can't be blank" }
+
+      let(:invalid_project) do
+        instance_double(::Project,
+                        saved?: false,
+                        errors: instance_double(ActiveModel::Errors,
+                                                   full_messages: [error_message]))
+      end
+
+      before do
+        allow_next_instance_of(::Projects::CreateService) do |service|
+          allow(service).to receive(:execute).and_return(invalid_project)
+        end
+      end
 
       it 'returns error' do
         response = service.execute
 
         expect(response[:status]).to eq(:error)
-        expect(response[:message]).to eq('Namespace is not valid')
+        expect(response[:message]).to eq(error_message)
       end
     end
 
@@ -97,6 +110,22 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService do
 
         expect(response[:status]).to eq(:error)
         expect(response[:message]).to eq('Security Policy project already exists.')
+      end
+    end
+
+    context 'when user does not have permission to create project in container' do
+      let(:container) { group }
+
+      before do
+        group.add_owner(owner)
+        group.update_attribute(:project_creation_level, Gitlab::Access::NO_ACCESS)
+      end
+
+      it 'returns error' do
+        response = service.execute
+
+        expect(response[:status]).to be(:error)
+        expect(response[:message]).to eq('User does not have permission to create a Security Policy project.')
       end
     end
   end
