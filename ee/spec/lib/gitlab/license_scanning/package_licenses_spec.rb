@@ -36,15 +36,6 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :lice
       it { is_expected.to be_empty }
     end
 
-    context 'when the number of components to fetch exceeds the maximum allowed amount' do
-      let_it_be(:components_to_fetch) { Array.new(described_class::MAX_RECORDS_TO_FETCH + 1) }
-
-      it 'raises an ArgumentError exception' do
-        expect { fetch }.to raise_error ArgumentError, "Number of components (1001) is larger " \
-                                                       "than the maximum allowed (1000)"
-      end
-    end
-
     context 'when components to fetch are not empty' do
       it 'returns only the items that matched the fetched components' do
         expect(fetch).to match_array([
@@ -55,6 +46,29 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :lice
           have_attributes(name: "cliui", purl_type: "npm", version: "2.1.0", licenses: ["OLDAP-2.3"]),
           have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0", licenses: ["OLDAP-2.6"])
         ])
+      end
+
+      context 'and we change the batch size' do
+        before do
+          stub_const("Gitlab::LicenseScanning::PackageLicenses::BATCH_SIZE", 1)
+        end
+
+        it 'fetches in batches of BATCH_SIZE' do
+          control = ActiveRecord::QueryRecorder.new { fetch }
+
+          expect(control.count).to be(components_to_fetch.count)
+        end
+
+        it 'still returns only the items that matched the fetched components' do
+          expect(fetch).to match_array([
+            have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0",
+                            licenses: match_array(["OLDAP-2.1", "OLDAP-2.2"])),
+            have_attributes(name: "camelcase", purl_type: "npm", version: "1.2.1", licenses: ["OLDAP-2.1"]),
+            have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0", licenses: ["OLDAP-2.2"]),
+            have_attributes(name: "cliui", purl_type: "npm", version: "2.1.0", licenses: ["OLDAP-2.3"]),
+            have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0", licenses: ["OLDAP-2.6"])
+          ])
+        end
       end
     end
 
