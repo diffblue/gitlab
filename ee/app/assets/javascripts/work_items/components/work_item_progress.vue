@@ -1,5 +1,6 @@
 <script>
 import { GlForm, GlFormGroup, GlFormInput, GlTooltipDirective } from '@gitlab/ui';
+import { isNumber } from 'lodash';
 import * as Sentry from '@sentry/browser';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { __ } from '~/locale';
@@ -91,6 +92,9 @@ export default {
         label: 'item_progress',
         property: `type_${this.workItemType}`,
       };
+    },
+    showPercent() {
+      return !this.isEditing && isNumber(this.localProgress);
     },
     isOkrsEnabled() {
       return this.hasOkrsFeature && this.glFeatures.okrsMvc;
@@ -194,7 +198,7 @@ export default {
         @focus="handleFocus"
       />
       <span
-        v-if="!isEditing"
+        v-if="showPercent"
         class="gl-mx-4 gl-my-3 gl-absolute gl-top-0 gl-bg-white gl-border gl-border-white gl-line-height-normal"
         data-testid="progress-displayed-value"
       >
