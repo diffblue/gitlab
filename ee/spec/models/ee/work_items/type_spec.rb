@@ -20,7 +20,8 @@ RSpec.describe WorkItems::Type do
         ::WorkItems::Widgets::Milestone,
         ::WorkItems::Widgets::Notes,
         ::WorkItems::Widgets::Progress,
-        ::WorkItems::Widgets::RequirementLegacy
+        ::WorkItems::Widgets::RequirementLegacy,
+        ::WorkItems::Widgets::TestReports
       )
     end
   end
