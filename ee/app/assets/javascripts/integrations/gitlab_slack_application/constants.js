@@ -10,6 +10,6 @@ export const i18n = {
   noProjects: __('No projects available.'),
   noProjectsDescription: __('Make sure you have the correct permissions to link your project.'),
   learnMore: __('Learn more'),
-  signInLabel: s__('JiraService|Sign in to GitLab.com to get started.'),
+  signInLabel: s__('JiraService|Sign in to GitLab to get started.'),
   signInButtonText: __('Sign in to GitLab'),
 };

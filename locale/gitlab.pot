@@ -23925,10 +23925,10 @@ msgstr ""
 msgid "JiraService|Set a custom final state by using transition IDs. %{linkStart}Learn about transition IDs%{linkEnd}"
 msgstr ""
 
-msgid "JiraService|Sign in to GitLab to link namespaces."
+msgid "JiraService|Sign in to GitLab to get started."
 msgstr ""
 
-msgid "JiraService|Sign in to GitLab.com to get started."
+msgid "JiraService|Sign in to GitLab to link namespaces."
 msgstr ""
 
 msgid "JiraService|This feature requires a Premium plan."
