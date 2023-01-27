@@ -233,4 +233,8 @@ export default {
   [mutationTypes.SET_SELECTED_GROUP]: (state, group) => {
     state.selectedGroup = group;
   },
+
+  [mutationTypes.UPDATE_FULL_BOARD_ISSUES_COUNT]: (state, { listId, count }) => {
+    Vue.set(state.fullBoardIssuesCount, listId, count);
+  },
 };

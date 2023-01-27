@@ -24,4 +24,5 @@ export default () => ({
     isLoadingMore: false,
     pageInfo: {},
   },
+  fullBoardIssuesCount: {},
 });

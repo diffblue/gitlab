@@ -14,11 +14,13 @@ describe('IssuesLaneList', () => {
 
   const createComponent = ({
     listType = ListType.backlog,
+    listProps = {},
     collapsed = false,
     isUnassignedIssuesLane = false,
   } = {}) => {
     const listMock = {
       ...mockList,
+      ...listProps,
       listType,
       collapsed,
     };
@@ -157,6 +159,37 @@ describe('IssuesLaneList', () => {
         await nextTick();
 
         expect(wrapper.element.scrollIntoView).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('max issue count warning', () => {
+    beforeEach(() => {
+      const defaultStore = createStore();
+      store = {
+        ...defaultStore,
+        state: {
+          ...defaultStore.state,
+        },
+      };
+    });
+
+    describe('when issue count exceeds max issue count', () => {
+      it('sets background to bg-danger-100', async () => {
+        store.state.fullBoardIssuesCount = { [mockList.id]: 4 };
+        createComponent({ listProps: { maxIssueCount: 3 } });
+        const block = wrapper.find('.bg-danger-100');
+        expect(block.exists()).toBe(true);
+        expect(block.attributes('class')).toContain('gl-rounded-base');
+      });
+    });
+
+    describe('when list issue count does NOT exceed list max issue count', () => {
+      it('does not sets background to bg-danger-100', () => {
+        store.state.fullBoardIssuesCount = { [mockList.id]: 2 };
+        createComponent({ listProps: { maxIssueCount: 3 } });
+
+        expect(wrapper.find('.bg-danger-100').exists()).toBe(false);
       });
     });
   });

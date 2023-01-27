@@ -45,7 +45,14 @@ export default {
     };
   },
   computed: {
-    ...mapState(['activeId', 'filterParams', 'canAdminEpic', 'listsFlags', 'highlightedLists']),
+    ...mapState([
+      'activeId',
+      'filterParams',
+      'canAdminEpic',
+      'listsFlags',
+      'highlightedLists',
+      'fullBoardIssuesCount',
+    ]),
     treeRootWrapper() {
       return this.canAdminList && (this.canAdminEpic || this.isUnassignedIssuesLane)
         ? Draggable
@@ -72,6 +79,12 @@ export default {
     },
     highlighted() {
       return this.highlightedLists.includes(this.list.id);
+    },
+    boardItemsSizeExceedsMax() {
+      return (
+        this.list.maxIssueCount > 0 &&
+        this.fullBoardIssuesCount[this.list.id] > this.list.maxIssueCount
+      );
     },
   },
   watch: {
@@ -176,7 +189,10 @@ export default {
         v-if="!list.collapsed"
         v-bind="treeRootOptions"
         class="board-cell gl-p-2 gl-m-0 gl-h-full gl-list-style-none"
-        :class="{ 'board-column-highlighted': highlighted }"
+        :class="{
+          'board-column-highlighted': highlighted,
+          'bg-danger-100 gl-rounded-base': boardItemsSizeExceedsMax,
+        }"
         data-testid="tree-root-wrapper"
         @start="handleDragOnStart"
         @end="handleDragOnEnd"
