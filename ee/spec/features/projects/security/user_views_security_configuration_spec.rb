@@ -19,7 +19,7 @@ RSpec.describe 'User sees Security Configuration table', :js, feature_category: 
     before do
       stub_licensed_features(security_dashboard: true, sast: true, sast_iac: true, dast: true,
                              dependency_scanning: true, container_scanning: true, coverage_fuzzing: true,
-                             cluster_image_scanning: true, api_fuzzing: true, security_configuration_in_ui: true)
+                             api_fuzzing: true, security_configuration_in_ui: true)
     end
 
     context 'with no SAST report' do
@@ -132,18 +132,6 @@ RSpec.describe 'User sees Security Configuration table', :js, feature_category: 
       end
     end
 
-    context 'with no Cluster Image scanning report' do
-      it 'shows Cluster Image scanning is disabled' do
-        visit_configuration_page
-
-        within_cluster_image_card do
-          expect(page).to have_text('Cluster Image Scanning')
-          expect(page).to have_text('Not enabled')
-          expect(page).to have_link('Configuration guide')
-        end
-      end
-    end
-
     context 'with no Secret Detection report' do
       it 'shows Secret Detection is disabled' do
         visit_configuration_page
@@ -215,26 +203,20 @@ RSpec.describe 'User sees Security Configuration table', :js, feature_category: 
     end
   end
 
-  def within_cluster_image_card
+  def within_secret_detection_card
     within '[data-testid="security-testing-card"]:nth-of-type(6)' do
       yield
     end
   end
 
-  def within_secret_detection_card
+  def within_api_fuzzing_card
     within '[data-testid="security-testing-card"]:nth-of-type(7)' do
       yield
     end
   end
 
-  def within_api_fuzzing_card
-    within '[data-testid="security-testing-card"]:nth-of-type(8)' do
-      yield
-    end
-  end
-
   def within_coverage_fuzzing_card
-    within '[data-testid="security-testing-card"]:nth-of-type(9)' do
+    within '[data-testid="security-testing-card"]:nth-of-type(8)' do
       yield
     end
   end
