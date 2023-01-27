@@ -135,6 +135,20 @@ RSpec.describe API::Analytics::ProductAnalytics, feature_category: :product_anal
     end
   end
 
+  shared_examples 'no resource access token is generated' do
+    it 'does not generate any project access tokens' do
+      expect(::ResourceAccessTokens::CreateService).not_to receive(:new)
+      request_load(false)
+    end
+  end
+
+  shared_examples 'a resource access token is generated' do
+    it 'generates a project access tokens' do
+      expect(::ResourceAccessTokens::CreateService).to receive(:new).once
+      request_load(false)
+    end
+  end
+
   describe 'POST projects/:id/product_analytics/request/load' do
     before do
       stub_cube_proxy_setup
@@ -159,6 +173,13 @@ RSpec.describe API::Analytics::ProductAnalytics, feature_category: :product_anal
       end
 
       it_behaves_like 'does basics of a cube query', is_dry_run: false
+      it_behaves_like 'no resource access token is generated'
+    end
+
+    context 'when requesting a project with a resource access token' do
+      it_behaves_like 'a resource access token is generated' do
+        let(:query) { { query: { measures: ['Jitsu.count'] }, 'queryType': 'multi', include_token: true } }
+      end
     end
   end
 
