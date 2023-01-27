@@ -1095,6 +1095,15 @@
       when: on_failure
       allow_failure: true
 
+.notify:rules:create-issues-for-failing-tests:
+  rules:
+    # Don't report child pipeline failures
+    - if: '$CI_PIPELINE_SOURCE == "parent_pipeline"'
+      when: never
+    - if: '$CREATE_ISSUES_FOR_FAILING_TESTS == "true"'
+      when: on_failure
+      allow_failure: true
+
 ###############
 # Pages rules #
 ###############
