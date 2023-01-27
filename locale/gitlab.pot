@@ -20819,9 +20819,6 @@ msgstr ""
 msgid "IDE"
 msgstr ""
 
-msgid "IDE|Back"
-msgstr ""
-
 msgid "IDE|Commit"
 msgstr ""
 
@@ -20831,19 +20828,7 @@ msgstr ""
 msgid "IDE|Edit"
 msgstr ""
 
-msgid "IDE|Get started with Live Preview"
-msgstr ""
-
 msgid "IDE|Go to project"
-msgstr ""
-
-msgid "IDE|Live Preview"
-msgstr ""
-
-msgid "IDE|Preview your web application using Web IDE client-side evaluation."
-msgstr ""
-
-msgid "IDE|Refresh preview"
 msgstr ""
 
 msgid "IDE|Review"
@@ -25258,9 +25243,6 @@ msgstr ""
 msgid "List your Bitbucket Server repositories"
 msgstr ""
 
-msgid "Live preview"
-msgstr ""
-
 msgid "Load more"
 msgstr ""
 
@@ -25502,9 +25484,6 @@ msgid "Makes this %{type} confidential."
 msgstr ""
 
 msgid "Manage %{workspace} labels"
-msgstr ""
-
-msgid "Manage Web IDE features."
 msgstr ""
 
 msgid "Manage access"
@@ -31938,9 +31917,6 @@ msgid "Prevent users from performing write operations while GitLab maintenance i
 msgstr ""
 
 msgid "Preview"
-msgstr ""
-
-msgid "Preview JavaScript projects in the Web IDE with CodeSandbox Live Preview. %{link_start}Learn more.%{link_end} "
 msgstr ""
 
 msgid "Preview Markdown"
