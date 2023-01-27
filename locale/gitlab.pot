@@ -8765,6 +8765,9 @@ msgstr ""
 msgid "CiVariable|Create wildcard"
 msgstr ""
 
+msgid "CiVariable|Define a CI/CD variable in the UI"
+msgstr ""
+
 msgid "CiVariable|New environment"
 msgstr ""
 
