@@ -63,7 +63,7 @@ describe('Billing Address', () => {
   describe('validations', () => {
     const isStepValid = () => wrapper.findComponent(Step).props('isValid');
     const customerData = {
-      country: 'US',
+      country: 'NL',
       address1: 'address line 1',
       address2: 'address line 2',
       city: 'city',
@@ -80,7 +80,7 @@ describe('Billing Address', () => {
     });
 
     it('is invalid when country is undefined', async () => {
-      createComponent({ customer: { country: null } });
+      createComponent({ customer: { ...customerData, country: null } });
 
       await waitForPromises();
 
@@ -88,7 +88,7 @@ describe('Billing Address', () => {
     });
 
     it('is invalid when streetAddressLine1 is undefined', async () => {
-      createComponent({ customer: { address1: null } });
+      createComponent({ customer: { ...customerData, address1: null } });
 
       await waitForPromises();
 
@@ -96,7 +96,7 @@ describe('Billing Address', () => {
     });
 
     it('is invalid when city is undefined', async () => {
-      createComponent({ customer: { city: null } });
+      createComponent({ customer: { ...customerData, city: null } });
 
       await waitForPromises();
 
@@ -104,11 +104,35 @@ describe('Billing Address', () => {
     });
 
     it('is invalid when zipCode is undefined', async () => {
-      createComponent({ customer: { zipCode: null } });
+      createComponent({ customer: { ...customerData, zipCode: null } });
 
       await waitForPromises();
 
       expect(isStepValid()).toBe(false);
+    });
+
+    it('is invalid when state is undefined for countries that require state', async () => {
+      createComponent({ customer: { ...customerData, country: 'US' } });
+
+      await waitForPromises();
+
+      expect(isStepValid()).toBe(false);
+    });
+
+    it(`is valid when state is undefined for countries that don't require state`, async () => {
+      createComponent({ customer: { ...customerData, country: 'NL' } });
+
+      await waitForPromises();
+
+      expect(isStepValid()).toBe(true);
+    });
+
+    it(`is valid when state exists for countries that require state`, async () => {
+      createComponent({ customer: { ...customerData, country: 'US', state: 'CA' } });
+
+      await waitForPromises();
+
+      expect(isStepValid()).toBe(true);
     });
   });
 
