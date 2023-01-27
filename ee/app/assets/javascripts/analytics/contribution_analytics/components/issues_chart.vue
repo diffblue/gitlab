@@ -1,7 +1,7 @@
 <script>
-import { sortBy } from 'lodash';
 import { GlSprintf } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
+import { formatChartData } from '../utils';
 import ColumnChart from './column_chart.vue';
 
 export default {
@@ -10,6 +10,7 @@ export default {
     ColumnChart,
     GlSprintf,
   },
+  inject: ['labels', 'issuesClosed', 'totalIssuesCreatedCount', 'totalIssuesClosedCount'],
   i18n: {
     header: s__('ContributionAnalytics|Issues'),
     xAxisTitle: __('User'),
@@ -17,27 +18,12 @@ export default {
     emptyDescription: s__('ContributionAnalytics|No issues for the selected time period.'),
     description: s__('ContributionAnalytics|%{created} created, %{closed} closed.'),
   },
-  props: {
-    issues: {
-      type: Array,
-      required: true,
-    },
-  },
   computed: {
-    createdCount() {
-      return this.issues.reduce((total, { created }) => total + created, 0);
-    },
-    closedCount() {
-      return this.issues.reduce((total, { closed }) => total + closed, 0);
-    },
-    sortedIssues() {
-      return sortBy(this.issues, ({ closed }) => closed).reverse();
-    },
     chartData() {
-      return this.sortedIssues.map(({ user, closed }) => [user, closed]);
+      return formatChartData(this.issuesClosed.data, this.labels);
     },
     description() {
-      if (this.closedCount === 0 && this.createdCount === 0) {
+      if (this.totalIssuesClosedCount === 0 && this.totalIssuesCreatedCount === 0) {
         return this.$options.i18n.emptyDescription;
       }
       return this.$options.i18n.description;
@@ -49,16 +35,14 @@ export default {
   <div>
     <div data-qa-selector="issue_content">
       <h3>{{ $options.i18n.header }}</h3>
-      <div data-testid="description">
-        <gl-sprintf :message="description">
-          <template #created>
-            <strong>{{ createdCount }}</strong>
-          </template>
-          <template #closed>
-            <strong>{{ closedCount }}</strong>
-          </template>
-        </gl-sprintf>
-      </div>
+      <gl-sprintf :message="description">
+        <template #created>
+          <strong>{{ totalIssuesCreatedCount }}</strong>
+        </template>
+        <template #closed>
+          <strong>{{ totalIssuesClosedCount }}</strong>
+        </template>
+      </gl-sprintf>
     </div>
 
     <div class="row">

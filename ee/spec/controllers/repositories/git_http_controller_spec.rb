@@ -8,6 +8,7 @@ RSpec.describe Repositories::GitHttpController, feature_category: :source_code_m
 
     let_it_be(:group) { create(:group, :wiki_repo) }
     let_it_be(:user) { create(:user) }
+    let_it_be(:project) { nil }
 
     before_all do
       group.add_owner(user)
