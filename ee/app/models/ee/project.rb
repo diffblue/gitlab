@@ -47,7 +47,7 @@ module EE
       belongs_to :deleting_user, foreign_key: 'marked_for_deletion_by_user_id', class_name: 'User'
 
       has_one :repository_state, class_name: 'ProjectRepositoryState', inverse_of: :project
-      has_one :wiki_repository_state, class_name: 'Geo::ProjectWikiRepositoryState', inverse_of: :project, autosave: false
+      has_one :wiki_repository, class_name: 'Projects::WikiRepository', inverse_of: :project
       has_one :project_registry, class_name: 'Geo::ProjectRegistry', inverse_of: :project
       has_one :push_rule, ->(project) { project&.feature_available?(:push_rules) ? all : none }, inverse_of: :project
       has_one :index_status

@@ -6,10 +6,14 @@ module Geo
     include ::Geo::VerifiableRegistry
     extend ::Gitlab::Utils::Override
 
-    MODEL_CLASS = ::Project
-    MODEL_FOREIGN_KEY = :project_id
+    MODEL_CLASS = ::Projects::WikiRepository
+    MODEL_FOREIGN_KEY = :project_wiki_repository_id
 
-    belongs_to :project, class_name: 'Project'
+    belongs_to :project_wiki_repository, class_name: 'Projects::WikiRepository'
+
+    validates :project_wiki_repository, presence: true, uniqueness: true
+
+    delegate :project, :wiki_repository_state, to: :project_wiki_repository, allow_nil: true
 
     private
 
@@ -19,7 +23,7 @@ module Geo
     end
 
     def primary_wiki_repository_checksum
-      project.wiki_repository_state&.verification_checksum || project.repository_state&.wiki_verification_checksum
+      wiki_repository_state&.verification_checksum
     end
   end
 end
