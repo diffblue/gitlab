@@ -31,16 +31,21 @@ module API
           "#{Gitlab::CurrentSettings.cube_api_base_url}/cubejs-api/v1/" + endpoint
         end
 
+        def gitlab_token
+          return unless params[:include_token]
+
+          ::ResourceAccessTokens::CreateService.new(
+            current_user,
+            project,
+            { expires_at: 1.day.from_now }).execute.payload[:access_token]&.token
+        end
+
         def cube_security_headers
           payload = {
             iat: Time.now.utc.to_i,
             exp: Time.now.utc.to_i + 180,
             appId: "gitlab_project_#{params[:project_id]}",
-            gitlabToken: ::ResourceAccessTokens::CreateService.new(
-              current_user,
-              project,
-              { expires_at: 1.day.from_now })
-                .execute.payload[:access_token]&.token,
+            gitlabToken: gitlab_token,
             iss: ::Settings.gitlab.host
           }
 

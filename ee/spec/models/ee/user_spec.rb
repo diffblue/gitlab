@@ -513,7 +513,7 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
             groups = user.available_subgroups_with_custom_project_templates(group_1.id)
 
             expect(groups.size).to eq(1)
-            expect(groups.first.name).to eq('subgroup-1')
+            expect(groups.take.name).to eq('subgroup-1')
           end
         end
 
