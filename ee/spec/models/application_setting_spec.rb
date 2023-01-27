@@ -349,6 +349,22 @@ RSpec.describe ApplicationSetting do
     end
   end
 
+  describe 'search curation settings after .create_from_defaults', feature_category: :global_search do
+    it { expect(setting.search_max_shard_size_gb).to eq(1) }
+    it { expect(setting.search_max_docs_denominator).to eq(100) }
+    it { expect(setting.search_min_docs_before_rollover).to eq(50) }
+
+    context 'in production environments' do
+      before do
+        stub_rails_env "production"
+      end
+
+      it { expect(setting.search_max_shard_size_gb).to eq(50) }
+      it { expect(setting.search_max_docs_denominator).to eq(5_000_000) }
+      it { expect(setting.search_min_docs_before_rollover).to eq(100_000) }
+    end
+  end
+
   describe '#should_check_namespace_plan?', feature_category: :subgroups do
     before do
       stub_application_setting(check_namespace_plan: check_namespace_plan_column)
@@ -362,6 +378,7 @@ RSpec.describe ApplicationSetting do
       # https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/18461#note_69322821).
       allow(Rails).to receive_message_chain(:env, :development?).and_return(false)
       allow(Rails).to receive_message_chain(:env, :test?).and_return(false)
+      allow(Rails).to receive_message_chain(:env, :production?).and_return(false)
     end
 
     subject { setting.should_check_namespace_plan? }

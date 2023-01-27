@@ -253,6 +253,15 @@ module EE
           cube_api_key: nil
         )
       end
+
+      override :non_production_defaults
+      def non_production_defaults
+        super.merge(
+          search_max_shard_size_gb: 1,
+          search_max_docs_denominator: 100,
+          search_min_docs_before_rollover: 50
+        )
+      end
     end
 
     def elasticsearch_namespace_ids
