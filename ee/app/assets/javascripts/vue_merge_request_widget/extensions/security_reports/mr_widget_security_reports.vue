@@ -200,10 +200,14 @@ export default {
 
         return axios
           .get(path)
-          .then(({ data }) => ({
+          .then(({ data, headers = {}, status }) => ({
+            headers,
+            status,
             data: { ...props, ...data, numberOfNewFindings: data.added?.length || 0 },
           }))
-          .catch(() => ({
+          .catch(({ headers = {}, status = 500 }) => ({
+            headers,
+            status,
             data: { ...props, error: true },
           }));
       });
