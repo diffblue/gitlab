@@ -111,6 +111,7 @@ module EE
     strong_memoize_attr :arkose_labs_verify_response
 
     def record_arkose_data(user)
+      return unless user&.persisted?
       return unless ::Arkose::Settings.enabled_for_signup?
       return unless arkose_labs_verify_response
 
