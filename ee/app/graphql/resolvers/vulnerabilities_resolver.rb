@@ -70,7 +70,6 @@ module Resolvers
       vulnerabilities(args)
         .with_findings_scanner_and_identifiers
         .with_created_issue_links_and_issues
-        .with_latest_state_transition
     end
 
     def unconditional_includes
