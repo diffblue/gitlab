@@ -94,8 +94,8 @@ module QA
                   .within(max_attempts: 5, sleep_interval: 2, reload_page: page)
 
           # Remove the enforcement by starting a free Ultimate Trial
-          Page::Trials::New.perform(&:visit)
-          Flow::Trial.register_for_trial(skip_select: true)
+          Gitlab::Page::Trials::New.perform(&:visit)
+          Flow::Trial.register_for_trial
           private_group.add_member(user_7)
           private_group.visit!
 
@@ -118,8 +118,8 @@ module QA
             .to eventually_have_content(notifications(private_group, :limit_reached_enforcement_msg))
                   .within(max_attempts: 5, sleep_interval: 2, reload_page: page)
 
-          Page::Trials::New.perform(&:visit)
-          Flow::Trial.register_for_trial(skip_select: true)
+          Gitlab::Page::Trials::New.perform(&:visit)
+          Flow::Trial.register_for_trial
           private_group.visit!
 
           expect(page).not_to have_content(notifications(private_group, :limit_reached_enforcement_msg))
