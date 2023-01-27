@@ -423,6 +423,10 @@ module EE
       ::Gitlab::CurrentSettings.elasticsearch_indexes_namespace?(self)
     end
 
+    def use_zoekt?
+      ::Zoekt::IndexedNamespace.enabled_for_namespace?(self)
+    end
+
     def invalidate_elasticsearch_indexes_cache!
       ::Gitlab::CurrentSettings.invalidate_elasticsearch_indexes_cache_for_namespace!(self.id)
     end

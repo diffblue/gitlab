@@ -5,12 +5,14 @@ module EE
     module ProjectService
       extend ::Gitlab::Utils::Override
       include ::Search::Elasticsearchable
+      include ::Search::ZoektSearchable
 
       SCOPES_THAT_SUPPORT_BRANCHES = %w(wiki_blobs commits blobs).freeze
 
       override :execute
       def execute
         return super if project.respond_to?(:archived?) && project.archived?
+        return zoekt_search_results if use_zoekt? && use_default_branch?
         return super unless use_elasticsearch? && use_default_branch?
 
         search = params[:search]
@@ -53,8 +55,19 @@ module EE
         project.root_ref?(repository_ref)
       end
 
+      override :elasticsearchable_scope
       def elasticsearchable_scope
         project
+      end
+
+      override :zoekt_searchable_scope
+      def zoekt_searchable_scope
+        project
+      end
+
+      override :zoekt_projects
+      def zoekt_projects
+        @zoekt_projects ||= Array(project).map(&:id)
       end
     end
   end

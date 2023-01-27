@@ -4,9 +4,15 @@ module EE
   module Search
     module GroupService
       extend ::Gitlab::Utils::Override
+      include ::Search::ZoektSearchable
 
       override :elasticsearchable_scope
       def elasticsearchable_scope
+        group
+      end
+
+      override :zoekt_searchable_scope
+      def zoekt_searchable_scope
         group
       end
 
@@ -20,8 +26,14 @@ module EE
         @elastic_projects ||= projects.pluck_primary_key
       end
 
+      override :zoekt_projects
+      def zoekt_projects
+        @zoekt_projects ||= projects.pluck_primary_key
+      end
+
       override :execute
       def execute
+        return zoekt_search_results if use_zoekt?
         return super unless use_elasticsearch?
 
         ::Gitlab::Elastic::GroupSearchResults.new(

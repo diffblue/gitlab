@@ -1587,3 +1587,12 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: zoekt_indexer
+  :worker_name: Zoekt::IndexerWorker
+  :feature_category: :global_search
+  :has_external_dependencies: false
+  :urgency: :throttled
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []

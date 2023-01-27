@@ -38,6 +38,7 @@ module GitlabSubscriptions
       runner_jobs_statistics
       seat_link
       usage_quotas
+      zoekt_code_search
     ].freeze
 
     STARTER_FEATURES = %i[
@@ -74,6 +75,7 @@ module GitlabSubscriptions
       usage_quotas
       visual_review_app
       wip_limits
+      zoekt_code_search
     ].freeze
 
     PREMIUM_FEATURES = %i[
