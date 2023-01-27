@@ -2,6 +2,7 @@ import * as GroupsApi from 'ee/api/groups_api';
 import Api from 'ee/api';
 import { createAlert, VARIANT_SUCCESS } from '~/flash';
 import { s__ } from '~/locale';
+import Tracking from '~/tracking';
 import * as types from './mutation_types';
 
 export const fetchBillableMembersList = ({ commit, dispatch, state }) => {
@@ -114,6 +115,11 @@ export const setCurrentPage = ({ commit, dispatch }, page) => {
 
 export const setSortOption = ({ commit, dispatch }, sortOption) => {
   commit(types.SET_SORT_OPTION, sortOption);
+
+  Tracking.event('usage_quota_seats', 'click', {
+    label: 'billable_members_table_sort_selection',
+    property: sortOption,
+  });
 
   dispatch('fetchBillableMembersList');
 };
