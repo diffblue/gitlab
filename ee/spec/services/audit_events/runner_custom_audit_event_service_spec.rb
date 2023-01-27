@@ -22,21 +22,21 @@ RSpec.describe AuditEvents::RunnerCustomAuditEventService do
 
     it 'logs the event to file' do
       expect(service).to receive(:file_logger).and_return(logger)
-      expect(logger).to receive(:info).with(author_id: user.id,
-                                            author_name: user.name,
-                                            entity_id: entity.id,
-                                            entity_type: entity_type,
-                                            custom_message: custom_message,
-                                            target_details: target_details,
-                                            target_id: target_id,
-                                            target_type: target_type,
-                                            created_at: anything)
+      expect(logger).to receive(:info).with({ author_id: user.id,
+                                              author_name: user.name,
+                                              entity_id: entity.id,
+                                              entity_type: entity_type,
+                                              custom_message: custom_message,
+                                              target_details: target_details,
+                                              target_id: target_id,
+                                              target_type: target_type,
+                                              created_at: anything })
 
       expect { service.security_event }.to change(AuditEvent, :count).by(1)
 
       security_event = AuditEvent.last
 
-      expect(security_event.details).to eq(
+      expect(security_event.details).to eq({
         author_name: user.name,
         custom_message: custom_message,
         entity_id: entity.id,
@@ -44,7 +44,7 @@ RSpec.describe AuditEvents::RunnerCustomAuditEventService do
         target_details: target_details,
         target_id: target_id,
         target_type: target_type
-      )
+      })
 
       expect(security_event.author_id).to eq(user.id)
       expect(security_event.entity_id).to eq(entity.id)
