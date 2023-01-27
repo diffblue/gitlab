@@ -30,7 +30,7 @@ module EE
         include UsageStatistics
         include FromUnion
 
-        has_many :security_scans, class_name: 'Security::Scan'
+        has_many :security_scans, class_name: 'Security::Scan', foreign_key: :build_id
 
         has_one :dast_site_profiles_build, class_name: 'Dast::SiteProfilesBuild', foreign_key: :ci_build_id
         has_one :dast_site_profile, class_name: 'DastSiteProfile', through: :dast_site_profiles_build, disable_joins: true
