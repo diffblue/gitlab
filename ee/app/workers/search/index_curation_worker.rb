@@ -39,10 +39,10 @@ module Search
           logger.info("Rollover: #{rolled_over_index[:from]} => #{rolled_over_index[:to]}")
         end
       end
-    rescue StandardError => e
-      logger.error("#{self.class.name}: #{e.class} #{e.message}")
     rescue Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError
       # We're scheduled on a cronjob, so nothing to do here
+    rescue StandardError => e
+      logger.error("#{self.class.name}: #{e.class} #{e.message}")
     end
 
     private

@@ -79,6 +79,12 @@ RSpec.describe Search::IndexCurationWorker, feature_category: :global_search do
       subject.perform
     end
 
+    it 'does not log anything when Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError is raised' do
+      allow(curator).to receive(:curate).and_raise Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError.new('kaboom')
+      expect(logger).not_to receive(:error)
+      subject.perform
+    end
+
     context 'when feature flag `search_index_curation` is disabled' do
       before do
         stub_feature_flags(search_index_curation: false)
