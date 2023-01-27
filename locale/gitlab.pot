@@ -47906,9 +47906,6 @@ msgstr ""
 msgid "WorkItem|Closed"
 msgstr ""
 
-msgid "WorkItem|Collapse tasks"
-msgstr ""
-
 msgid "WorkItem|Create %{workItemType}"
 msgstr ""
 
@@ -47931,9 +47928,6 @@ msgid "WorkItem|Due date"
 msgstr ""
 
 msgid "WorkItem|Existing task"
-msgstr ""
-
-msgid "WorkItem|Expand tasks"
 msgstr ""
 
 msgid "WorkItem|Health status"
