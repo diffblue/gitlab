@@ -124,6 +124,14 @@ RSpec.describe Namespace do
     end
   end
 
+  describe '#use_zoekt?', feature_category: :global_search do
+    it 'delegates to ::Zoekt::IndexedNamespace' do
+      expect(::Zoekt::IndexedNamespace).to receive(:enabled_for_namespace?).with(namespace).and_return(true)
+
+      expect(namespace.use_zoekt?).to eq(true)
+    end
+  end
+
   describe '#invalidate_elasticsearch_indexes_cache!' do
     let(:namespace) { create :namespace }
 

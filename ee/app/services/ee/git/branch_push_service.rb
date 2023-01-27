@@ -8,6 +8,7 @@ module EE
       override :execute
       def execute
         enqueue_elasticsearch_indexing
+        enqueue_zoekt_indexing
         enqueue_update_external_pull_requests
 
         super
@@ -19,6 +20,14 @@ module EE
         return unless should_index_commits?
 
         project.repository.index_commits_and_blobs
+      end
+
+      def enqueue_zoekt_indexing
+        return false unless ::Feature.enabled?(:index_code_with_zoekt)
+        return false unless default_branch?
+        return false unless project.use_zoekt?
+
+        project.repository.async_update_zoekt_index
       end
 
       def enqueue_update_external_pull_requests

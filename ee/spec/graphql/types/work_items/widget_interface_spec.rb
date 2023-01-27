@@ -14,6 +14,7 @@ RSpec.describe ::Types::WorkItems::WidgetInterface do
       WorkItems::Widgets::HealthStatus       | Types::WorkItems::Widgets::HealthStatusType
       WorkItems::Widgets::Progress           | Types::WorkItems::Widgets::ProgressType
       WorkItems::Widgets::RequirementLegacy  | Types::WorkItems::Widgets::RequirementLegacyType
+      WorkItems::Widgets::TestReports        | Types::WorkItems::Widgets::TestReportsType
     end
 
     with_them do

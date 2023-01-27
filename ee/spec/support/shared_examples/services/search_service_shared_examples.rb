@@ -51,6 +51,7 @@ RSpec.shared_examples 'EE search service shared examples' do |normal_results, el
       expect(Gitlab::CurrentSettings)
         .to receive(:search_using_elasticsearch?)
         .with(scope: scope)
+        .at_least(:once)
         .and_return(true)
 
       is_expected.to be_a(elasticsearch_results)
@@ -60,6 +61,7 @@ RSpec.shared_examples 'EE search service shared examples' do |normal_results, el
       expect(Gitlab::CurrentSettings)
         .to receive(:search_using_elasticsearch?)
         .with(scope: scope)
+        .at_least(:once)
         .and_return(false)
 
       is_expected.to be_a(normal_results)

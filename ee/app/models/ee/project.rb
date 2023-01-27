@@ -828,6 +828,10 @@ module EE
       ElasticCommitIndexerWorker.perform_async(id, true) if use_elasticsearch? && !forked?
     end
 
+    def use_zoekt?
+      ::Zoekt::IndexedNamespace.enabled_for_project?(self)
+    end
+
     def elastic_namespace_ancestry
       namespace.elastic_namespace_ancestry + "p#{id}-"
     end

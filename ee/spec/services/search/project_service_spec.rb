@@ -43,6 +43,53 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
     end
   end
 
+  context 'when searching with Zoekt' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:project) { create(:project, namespace: user.namespace) }
+
+    let(:service) { described_class.new(user, project, search: 'foobar', scope: scope, basic_search: basic_search) }
+    let(:use_zoekt) { true }
+    let(:scope) { 'blobs' }
+    let(:basic_search) { nil }
+
+    before do
+      allow(project).to receive(:use_zoekt?).and_return(use_zoekt)
+    end
+
+    it 'searches with Zoekt' do
+      expect(service.use_zoekt?).to eq(true)
+      expect(service.zoekt_searchable_scope).to eq(project)
+      expect(service.execute).to be_kind_of(::Gitlab::Zoekt::SearchResults)
+    end
+
+    context 'when project does not have Zoekt enabled' do
+      let(:use_zoekt) { false }
+
+      it 'does not search with Zoekt' do
+        expect(service.use_zoekt?).to eq(false)
+        expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+    end
+
+    context 'when scope is not blobs' do
+      let(:scope) { 'issues' }
+
+      it 'does not search with Zoekt' do
+        expect(service.use_zoekt?).to eq(false)
+        expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+    end
+
+    context 'when basic_search is requested' do
+      let(:basic_search) { true }
+
+      it 'does not search with Zoekt' do
+        expect(service.use_zoekt?).to eq(false)
+        expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+    end
+  end
+
   context 'when a multiple projects provided' do
     it_behaves_like 'EE search service shared examples', ::Gitlab::ProjectSearchResults, ::Gitlab::Elastic::SearchResults do
       let_it_be(:group) { create(:group) }
