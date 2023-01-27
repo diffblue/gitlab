@@ -27,7 +27,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataForDurationChart do
       merge_request1.metrics.update!(merged_at: merge_time)
       merge_request2.metrics.update!(merged_at: merge_time)
 
-      average = averages.first
+      average = averages.take
       expect(average.date).to eq(merge_time.utc.to_date)
       expect(average.average_duration_in_seconds.to_i).to eq(7.5.minutes)
     end
