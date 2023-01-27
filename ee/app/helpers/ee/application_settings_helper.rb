@@ -67,7 +67,6 @@ module EE
         :jitsu_project_xid,
         :jitsu_administrator_email,
         :jitsu_administrator_password,
-        :clickhouse_connection_string,
         :product_analytics_clickhouse_connection_string,
         :cube_api_base_url,
         :cube_api_key,

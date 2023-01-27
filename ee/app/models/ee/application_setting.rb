@@ -245,7 +245,6 @@ module EE
           product_analytics_enabled: false,
           jitsu_host: nil,
           jitsu_project_xid: nil,
-          clickhouse_connection_string: nil,
           product_analytics_clickhouse_connection_string: nil,
           jitsu_administrator_email: nil,
           jitsu_administrator_password: nil,
