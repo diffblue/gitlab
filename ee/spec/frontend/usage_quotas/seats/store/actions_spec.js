@@ -10,10 +10,12 @@ import {
 } from 'ee_jest/usage_quotas/seats/mock_data';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert, VARIANT_SUCCESS } from '~/flash';
+import Tracking from '~/tracking';
 
 jest.mock('ee/api/groups_api');
 jest.mock('ee/api');
 jest.mock('~/flash');
+jest.mock('~/tracking');
 
 describe('Usage Quotas Seats actions', () => {
   let state;
@@ -392,6 +394,29 @@ describe('Usage Quotas Seats actions', () => {
 
       expect(createAlert).toHaveBeenCalledWith({
         message: 'An error occurred while getting a billable member details.',
+      });
+    });
+  });
+
+  describe('setSortOptions', () => {
+    const sortOption = 'recent_sign_in';
+
+    it('sends snowplow tracking event', async () => {
+      await testAction({
+        action: actions.setSortOption,
+        payload: sortOption,
+        state,
+        expectedMutations: [{ type: types.SET_SORT_OPTION, payload: sortOption }],
+        expectedActions: [
+          {
+            type: 'fetchBillableMembersList',
+          },
+        ],
+      });
+
+      expect(Tracking.event).toHaveBeenCalledWith('usage_quota_seats', 'click', {
+        label: 'billable_members_table_sort_selection',
+        property: 'recent_sign_in',
       });
     });
   });
