@@ -36,7 +36,7 @@ RSpec.describe "User tests hooks", :js, feature_category: :integrations do
         stub_full_request(hook.url, method: :post).to_raise(SocketError.new("Failed to open"))
 
         click_button('Test')
-        click_link('Push events')
+        click_button('Push events')
       end
 
       it { expect(page).to have_selector('[data-testid="alert-danger"]', text: "Hook execution failed: Failed to open") }
@@ -59,6 +59,6 @@ RSpec.describe "User tests hooks", :js, feature_category: :integrations do
     stub_full_request(hook.url, method: :post).to_return(status: 200)
 
     click_button('Test')
-    click_link('Push events')
+    click_button('Push events')
   end
 end

@@ -7,10 +7,10 @@ RSpec.describe HooksHelper do
   let(:group_hook) { create(:group_hook, group: group) }
   let(:trigger) { 'push_events' }
 
-  describe '#link_to_test_hook' do
+  describe '#test_hook_path' do
     it 'returns group namespaced link' do
-      expect(helper.link_to_test_hook(group_hook, trigger))
-        .to include("href=\"#{test_group_hook_path(group, group_hook, trigger: trigger)}\"")
+      expect(helper.test_hook_path(group_hook, trigger))
+        .to eq(test_group_hook_path(group, group_hook, trigger: trigger))
     end
   end
 
