@@ -1,49 +1,60 @@
 <script>
-import { GlTable, GlLink } from '@gitlab/ui';
+import { GlLoadingIcon } from '@gitlab/ui';
 import { TABLE_COLUMNS } from '../constants';
+
+import GroupMembers from '../group_members';
+import TableBody from './table_body.vue';
+import TableHeader from './table_header.vue';
 
 export default {
   columns: TABLE_COLUMNS,
   components: {
-    GlTable,
-    GlLink,
+    TableHeader,
+    TableBody,
+    GlLoadingIcon,
   },
-  props: {
-    contributions: {
-      type: Array,
-      required: true,
+  inject: ['memberContributionsPath'],
+  data() {
+    return { groupMembers: new GroupMembers(this.memberContributionsPath) };
+  },
+  computed: {
+    isLoading() {
+      return this.groupMembers.isLoading;
+    },
+    members() {
+      return this.groupMembers.members;
+    },
+    sortOrders() {
+      return this.groupMembers.sortOrders;
     },
   },
-  data() {
-    return {
-      sortBy: TABLE_COLUMNS[0].key,
-      sortDesc: false,
-    };
+  mounted() {
+    this.groupMembers.fetchContributedMembers();
+  },
+  methods: {
+    handleColumnClick(columnName) {
+      this.groupMembers.sortMembers(columnName);
+    },
   },
 };
 </script>
 
 <template>
-  <div>
-    <h3>{{ s__('ContributionAnalytics|Contributions per group member') }}</h3>
-    <gl-table
-      :items="contributions"
-      :fields="$options.columns"
-      :sort-by.sync="sortBy"
-      :sort-desc.sync="sortDesc"
-      stacked="lg"
-    >
-      <template
-        #cell(user)="{
-          item: {
-            user: { name, webUrl },
-          },
-        }"
-      >
-        <gl-link :href="webUrl">
-          <b>{{ name }}</b>
-        </gl-link>
-      </template>
-    </gl-table>
+  <div class="group-member-contributions-container">
+    <h3>{{ __('Contributions per group member') }}</h3>
+    <gl-loading-icon
+      v-if="isLoading"
+      :label="__('Loading contribution stats for group members')"
+      size="lg"
+      class="loading-animation prepend-top-20 append-bottom-20"
+    />
+    <table v-else class="table gl-sortable">
+      <table-header
+        :columns="$options.columns"
+        :sort-orders="sortOrders"
+        @onColumnClick="handleColumnClick"
+      />
+      <table-body :rows="members" />
+    </table>
   </div>
 </template>

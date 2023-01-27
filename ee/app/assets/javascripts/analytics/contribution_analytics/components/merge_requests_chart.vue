@@ -1,7 +1,7 @@
 <script>
-import { sortBy } from 'lodash';
 import { GlSprintf } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
+import { formatChartData } from '../utils';
 import ColumnChart from './column_chart.vue';
 
 export default {
@@ -10,6 +10,13 @@ export default {
     ColumnChart,
     GlSprintf,
   },
+  inject: [
+    'labels',
+    'mergeRequestsCreated',
+    'totalMergeRequestsClosedCount',
+    'totalMergeRequestsCreatedCount',
+    'totalMergeRequestsMergedCount',
+  ],
   i18n: {
     header: s__('ContributionAnalytics|Merge requests'),
     xAxisTitle: __('User'),
@@ -19,30 +26,16 @@ export default {
       'ContributionAnalytics|%{created} created, %{merged} merged, %{closed} closed.',
     ),
   },
-  props: {
-    mergeRequests: {
-      type: Array,
-      required: true,
-    },
-  },
   computed: {
-    createdCount() {
-      return this.mergeRequests.reduce((total, { created }) => total + created, 0);
-    },
-    mergedCount() {
-      return this.mergeRequests.reduce((total, { merged }) => total + merged, 0);
-    },
-    closedCount() {
-      return this.mergeRequests.reduce((total, { closed }) => total + closed, 0);
-    },
-    sortedMergeRequests() {
-      return sortBy(this.mergeRequests, ({ created }) => created).reverse();
-    },
     chartData() {
-      return this.sortedMergeRequests.map(({ user, created }) => [user, created]);
+      return formatChartData(this.mergeRequestsCreated.data, this.labels);
     },
     description() {
-      if (!this.closedCount && !this.createdCount && !this.mergedCount) {
+      if (
+        !this.totalMergeRequestsClosedCount &&
+        !this.totalMergeRequestsCreatedCount &&
+        !this.totalMergeRequestsMergedCount
+      ) {
         return this.$options.i18n.emptyDescription;
       }
       return this.$options.i18n.description;
@@ -54,19 +47,17 @@ export default {
   <div>
     <div data-qa-selector="merge_request_content">
       <h3>{{ $options.i18n.header }}</h3>
-      <div data-testid="description">
-        <gl-sprintf :message="description">
-          <template #created>
-            <strong>{{ createdCount }}</strong>
-          </template>
-          <template #merged>
-            <strong>{{ mergedCount }}</strong>
-          </template>
-          <template #closed>
-            <strong>{{ closedCount }}</strong>
-          </template>
-        </gl-sprintf>
-      </div>
+      <gl-sprintf :message="description">
+        <template #created>
+          <strong>{{ totalMergeRequestsCreatedCount }}</strong>
+        </template>
+        <template #merged>
+          <strong>{{ totalMergeRequestsMergedCount }}</strong>
+        </template>
+        <template #closed>
+          <strong>{{ totalMergeRequestsClosedCount }}</strong>
+        </template>
+      </gl-sprintf>
     </div>
 
     <div class="row">
