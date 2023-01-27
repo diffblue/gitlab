@@ -54,7 +54,7 @@ module Slack
       def section_introduction
         section(
           format(
-            s_("Slack|GitLab for Slack now supports channel-based notifications." \
+            s_("Slack|GitLab for Slack now supports channel-based notifications. " \
                "Let your team know when new issues are created or new CI/CD jobs are run." \
                "%{startMarkup}Learn more%{endMarkup}."),
               startMarkup: " <https://docs.gitlab.com/ee/integration/slash_commands.html|",
@@ -76,7 +76,7 @@ module Slack
         section(
           format(
             s_("Slack|To start using notifications, " \
-              " %{startMarkup}enable the Slack integration%{endMarkup} in your project settings."),
+              "%{startMarkup}enable the GitLab for Slack app integration%{endMarkup} in your project settings."),
               startMarkup: "<https://docs.gitlab.com/ee/user/project/integrations/gitlab_slack_application.html#configuration|",
               endMarkup: ">"
           )
@@ -123,7 +123,7 @@ module Slack
 
         section(
           format(
-            s_("Slack|%{emoji}Connected to GitLab account %{account}"),
+            s_("Slack|%{emoji}Connected to GitLab account %{account}."),
             emoji: '✅ ',
             account: "<#{Gitlab::UrlBuilder.build(user)}|#{user.to_reference}>"
           )
