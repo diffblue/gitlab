@@ -21,6 +21,7 @@ jest.mock('~/vue_shared/plugins/global_toast');
 describe('MR Widget Security Reports', () => {
   let wrapper;
   let mockAxios;
+  let emitSpy;
 
   const securityConfigurationPath = '/help/user/application_security/index.md';
   const sourceProjectFullPath = 'namespace/project';
@@ -76,6 +77,27 @@ describe('MR Widget Security Reports', () => {
         MrWidgetRow,
       },
     });
+
+    emitSpy = jest.spyOn(wrapper.vm.$root, '$emit');
+  };
+
+  const createComponentAndExpandWidget = async ({ mockDataFn, mockDataProps, mrProps = {} }) => {
+    mockDataFn(mockDataProps);
+    createComponent({
+      mountFn: mountExtended,
+      propsData: {
+        mr: mrProps,
+      },
+    });
+
+    await waitForPromises();
+
+    // Click on the toggle button to expand data
+    wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+    await nextTick();
+
+    // Second next tick is for the dynamic scroller
+    await nextTick();
   };
 
   const findWidget = () => wrapper.findComponent(Widget);
@@ -161,6 +183,16 @@ describe('MR Widget Security Reports', () => {
       });
     };
 
+    const createComponentWithData = async () => {
+      mockWithData();
+
+      createComponent({
+        mountFn: mountExtended,
+      });
+
+      await waitForPromises();
+    };
+
     it('should make a call only for enabled reports', async () => {
       mockWithData();
 
@@ -182,32 +214,12 @@ describe('MR Widget Security Reports', () => {
     });
 
     it('should display the dismissed badge', async () => {
-      mockWithData();
-
-      createComponent({
-        mountFn: mountExtended,
-      });
-
-      await waitForPromises();
-
-      // Click on the toggle button to expand data
-      wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-      await nextTick();
-
-      // Second next tick is for the dynamic scroller
-      await nextTick();
-
+      await createComponentAndExpandWidget({ mockDataFn: mockWithData });
       expect(findDismissedBadge().text()).toBe('Dismissed');
     });
 
     it('should mount the widget component', async () => {
-      mockWithData();
-
-      createComponent({
-        mountFn: mountExtended,
-      });
-
-      await waitForPromises();
+      await createComponentWithData();
 
       expect(findWidget().props()).toMatchObject({
         statusIconName: 'warning',
@@ -220,13 +232,8 @@ describe('MR Widget Security Reports', () => {
     });
 
     it('computes the total number of new potential vulnerabilities correctly', async () => {
-      mockWithData();
+      await createComponentWithData();
 
-      createComponent({
-        mountFn: mountExtended,
-      });
-
-      await waitForPromises();
       expect(findSummaryText().props()).toMatchObject({ totalNewVulnerabilities: 4 });
       expect(findSummaryHighlights().props()).toMatchObject({
         highlights: { critical: 1, high: 1, other: 2 },
@@ -246,20 +253,7 @@ describe('MR Widget Security Reports', () => {
     });
 
     it('displays detailed data when expanded', async () => {
-      mockWithData();
-
-      createComponent({
-        mountFn: mountExtended,
-      });
-
-      await waitForPromises();
-
-      // Click on the toggle button to expand data
-      wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-      await nextTick();
-
-      // Second next tick is for the dynamic scroller
-      await nextTick();
+      await createComponentAndExpandWidget({ mockDataFn: mockWithData });
 
       expect(wrapper.findByText(/Weak password/).exists()).toBe(true);
       expect(wrapper.findByText(/Password leak/).exists()).toBe(true);
@@ -269,20 +263,7 @@ describe('MR Widget Security Reports', () => {
     });
 
     it('passes correct items to the dynamic scroller', async () => {
-      mockWithData();
-
-      createComponent({
-        mountFn: mountExtended,
-      });
-
-      await waitForPromises();
-
-      // Click on the toggle button to expand data
-      wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-      await nextTick();
-
-      // Second next tick is for the dynamic scroller
-      await nextTick();
+      await createComponentAndExpandWidget({ mockDataFn: mockWithData });
 
       expect(findDynamicScroller().props('items')).toEqual([
         {
@@ -321,19 +302,7 @@ describe('MR Widget Security Reports', () => {
     };
 
     it('displays an error message for the individual level report', async () => {
-      mockWithData();
-      createComponent({
-        mountFn: mountExtended,
-      });
-
-      await waitForPromises();
-
-      // Click on the toggle button to expand data
-      wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-      await nextTick();
-
-      // Second next tick is for the dynamic scroller
-      await nextTick();
+      await createComponentAndExpandWidget({ mockDataFn: mockWithData });
 
       expect(wrapper.findByText('SAST: Loading resulted in an error').exists()).toBe(true);
     });
@@ -360,20 +329,7 @@ describe('MR Widget Security Reports', () => {
     `(
       'shows the correct help popover for $reportType',
       async ({ reportType, reportTitle, helpPath }) => {
-        mockWithData();
-
-        createComponent({
-          mountFn: mountExtended,
-        });
-
-        await waitForPromises();
-
-        // Click on the toggle button to expand data
-        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-        await nextTick();
-
-        // Second next tick is for the dynamic scroller
-        await nextTick();
+        await createComponentAndExpandWidget({ mockDataFn: mockWithData });
 
         expect(findWidgetRow(reportType).props('helpPopover')).toMatchObject({
           options: { title: reportTitle },
@@ -392,42 +348,29 @@ describe('MR Widget Security Reports', () => {
       });
     };
 
-    it('does not display the modal until the finding is clicked', async () => {
-      mockWithData();
-
-      createComponent({
-        mountFn: mountExtended,
+    const createComponentExpandWidgetAndOpenModal = async ({
+      mockDataProps = {},
+      mrProps,
+    } = {}) => {
+      await createComponentAndExpandWidget({
+        mockDataFn: mockWithData,
+        mockDataProps,
+        mrProps,
       });
 
-      await waitForPromises();
+      // Click on the vulnerability name
+      wrapper.findAllByText('Password leak').at(0).trigger('click');
+      await nextTick();
+    };
 
-      // Click on the toggle button to expand data
-      wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-      await nextTick();
-      // Second next tick is for the dynamic scroller
-      await nextTick();
+    it('does not display the modal until the finding is clicked', async () => {
+      await createComponentAndExpandWidget({ mockDataFn: mockWithData });
 
       expect(findModal().exists()).toBe(false);
     });
 
     it('renders the modal when the finding is clicked', async () => {
-      mockWithData();
-
-      createComponent({
-        mountFn: mountExtended,
-      });
-
-      await waitForPromises();
-
-      // Click on the toggle button to expand data
-      wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-      await nextTick();
-      // Second next tick is for the dynamic scroller
-      await nextTick();
-
-      // Click on the vulnerability name
-      wrapper.findAllByText('Password leak').at(0).trigger('click');
-      await nextTick();
+      await createComponentExpandWidgetAndOpenModal();
 
       const modal = findModal();
 
@@ -448,86 +391,37 @@ describe('MR Widget Security Reports', () => {
 
     describe('issue creation', () => {
       it('can create issue when createVulnerabilityFeedbackIssuePath is provided', async () => {
-        mockWithData();
-
-        createComponent({
-          mountFn: mountExtended,
-          propsData: {
-            mr: {
-              createVulnerabilityFeedbackIssuePath,
-            },
+        await createComponentExpandWidgetAndOpenModal({
+          mrProps: {
+            createVulnerabilityFeedbackIssuePath,
           },
         });
-
-        await waitForPromises();
-
-        // Click on the toggle button to expand data
-        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-        await nextTick();
-        // Second next tick is for the dynamic scroller
-        await nextTick();
-
-        // Click on the vulnerability name
-        wrapper.findAllByText('Password leak').at(0).trigger('click');
-        await nextTick();
 
         expect(findModal().props('canCreateIssue')).toBe(true);
       });
 
       it('can create issue when user can create a jira issue', async () => {
-        mockWithData({
-          create_jira_issue_url: 'create/jira/issue/url',
+        await createComponentExpandWidgetAndOpenModal({
+          mockDataProps: {
+            create_jira_issue_url: 'create/jira/issue/url',
+          },
         });
-
-        createComponent({
-          mountFn: mountExtended,
-        });
-
-        await waitForPromises();
-
-        // Click on the toggle button to expand data
-        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-        await nextTick();
-        // Second next tick is for the dynamic scroller
-        await nextTick();
-
-        // Click on the vulnerability name
-        wrapper.findAllByText('Password leak').at(0).trigger('click');
-        await nextTick();
 
         expect(findModal().props('canCreateIssue')).toBe(true);
       });
 
       it('handles issue creation - success', async () => {
-        mockWithData();
-
-        const spy = jest.spyOn(urlUtils, 'visitUrl');
+        await createComponentExpandWidgetAndOpenModal({
+          mrProps: {
+            createVulnerabilityFeedbackIssuePath,
+          },
+        });
 
         mockAxios.onPost(createVulnerabilityFeedbackIssuePath).replyOnce(HTTP_STATUS_OK, {
           issue_url: '/my/issue/url',
         });
 
-        createComponent({
-          mountFn: mountExtended,
-          propsData: {
-            mr: {
-              createVulnerabilityFeedbackIssuePath,
-            },
-          },
-        });
-
-        await waitForPromises();
-
-        // Click on the toggle button to expand data
-        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-        await nextTick();
-
-        // Second next tick is for the dynamic scroller
-        await nextTick();
-
-        // Click on the vulnerability name
-        wrapper.findAllByText('Password leak').at(0).trigger('click');
-        await nextTick();
+        const spy = jest.spyOn(urlUtils, 'visitUrl');
 
         findModal().vm.$emit('createNewIssue');
 
@@ -537,31 +431,13 @@ describe('MR Widget Security Reports', () => {
       });
 
       it('handles issue creation - error', async () => {
-        mockWithData();
-
         mockAxios.onPost(createVulnerabilityFeedbackIssuePath).replyOnce(HTTP_STATUS_BAD_REQUEST);
 
-        createComponent({
-          mountFn: mountExtended,
-          propsData: {
-            mr: {
-              createVulnerabilityFeedbackIssuePath,
-            },
+        await createComponentExpandWidgetAndOpenModal({
+          mrProps: {
+            createVulnerabilityFeedbackIssuePath,
           },
         });
-
-        await waitForPromises();
-
-        // Click on the toggle button to expand data
-        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-        await nextTick();
-
-        // Second next tick is for the dynamic scroller
-        await nextTick();
-
-        // Click on the vulnerability name
-        wrapper.findAllByText('Password leak').at(0).trigger('click');
-        await nextTick();
 
         findModal().vm.$emit('createNewIssue');
 
@@ -575,60 +451,23 @@ describe('MR Widget Security Reports', () => {
 
     describe('dismissing finding', () => {
       it('can dismiss finding when createVulnerabilityFeedbackDismissalPath is provided', async () => {
-        mockWithData();
-
-        createComponent({
-          mountFn: mountExtended,
-          propsData: {
-            mr: {
-              createVulnerabilityFeedbackDismissalPath,
-            },
+        await createComponentExpandWidgetAndOpenModal({
+          mrProps: {
+            createVulnerabilityFeedbackDismissalPath,
           },
         });
-
-        await waitForPromises();
-
-        // Click on the toggle button to expand data
-        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-        await nextTick();
-        // Second one is for the dynamic scroller
-        await nextTick();
-
-        // Click on the vulnerability name
-        wrapper.findAllByText('Password leak').at(0).trigger('click');
-        await nextTick();
 
         expect(findModal().props('canDismissVulnerability')).toBe(true);
       });
 
       it('handles dismissing finding - success', async () => {
-        mockWithData();
-
         mockAxios.onPost(createVulnerabilityFeedbackDismissalPath).replyOnce(HTTP_STATUS_OK);
 
-        createComponent({
-          mountFn: mountExtended,
-          propsData: {
-            mr: {
-              createVulnerabilityFeedbackDismissalPath,
-            },
+        await createComponentExpandWidgetAndOpenModal({
+          mrProps: {
+            createVulnerabilityFeedbackDismissalPath,
           },
         });
-
-        const emitSpy = jest.spyOn(wrapper.vm.$root, '$emit');
-
-        await waitForPromises();
-
-        // Click on the toggle button to expand data
-        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-        await nextTick();
-
-        // Second one is for the dynamic scroller
-        await nextTick();
-
-        // Click on the vulnerability name
-        wrapper.findAllByText('Password leak').at(0).trigger('click');
-        await nextTick();
 
         findModal().vm.$emit('dismissVulnerability');
 
@@ -639,33 +478,15 @@ describe('MR Widget Security Reports', () => {
       });
 
       it('handles issue creation - error', async () => {
-        mockWithData();
-
         mockAxios
           .onPost(createVulnerabilityFeedbackDismissalPath)
           .replyOnce(HTTP_STATUS_BAD_REQUEST);
 
-        createComponent({
-          mountFn: mountExtended,
-          propsData: {
-            mr: {
-              createVulnerabilityFeedbackDismissalPath,
-            },
+        await createComponentExpandWidgetAndOpenModal({
+          mrProps: {
+            createVulnerabilityFeedbackDismissalPath,
           },
         });
-
-        await waitForPromises();
-
-        // Click on the toggle button to expand data
-        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-        await nextTick();
-
-        // Second one is for the dynamic scroller
-        await nextTick();
-
-        // Click on the vulnerability name
-        wrapper.findAllByText('Password leak').at(0).trigger('click');
-        await nextTick();
 
         findModal().vm.$emit('dismissVulnerability');
 
@@ -678,37 +499,33 @@ describe('MR Widget Security Reports', () => {
     });
 
     describe('dismissal comment', () => {
+      let dismissalFeedback;
+
+      beforeEach(async () => {
+        dismissalFeedback = {
+          author: {},
+          project_id: 20,
+          id: 15,
+        };
+
+        await createComponentExpandWidgetAndOpenModal({
+          mockDataProps: {
+            state: 'dismissed',
+            dismissal_feedback: dismissalFeedback,
+          },
+          mrProps: {
+            createVulnerabilityFeedbackDismissalPath,
+          },
+        });
+      });
+
       it.each`
         event                                  | booleanValue
         ${'openDismissalCommentBox'}           | ${true}
         ${'closeDismissalCommentBox'}          | ${false}
         ${'editVulnerabilityDismissalComment'} | ${true}
       `('handles opening dismissal comment for event $event', async ({ event, booleanValue }) => {
-        mockWithData();
-
         mockAxios.onPost(createVulnerabilityFeedbackDismissalPath).replyOnce(HTTP_STATUS_OK);
-
-        createComponent({
-          mountFn: mountExtended,
-          propsData: {
-            mr: {
-              createVulnerabilityFeedbackDismissalPath,
-            },
-          },
-        });
-
-        await waitForPromises();
-
-        // Click on the toggle button to expand data
-        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-        await nextTick();
-
-        // Second one is for the dynamic scroller
-        await nextTick();
-
-        // Click on the vulnerability name
-        wrapper.findAllByText('Password leak').at(0).trigger('click');
-        await nextTick();
 
         expect(findModal().props('modal').isCommentingOnDismissal).toBeUndefined();
 
@@ -720,48 +537,11 @@ describe('MR Widget Security Reports', () => {
       });
 
       it('edits the dismissal comment - success', async () => {
-        const dismissalFeedback = {
-          author: {},
-          project_id: 20,
-          id: 15,
-        };
-
-        mockWithData({
-          state: 'dismissed',
-          dismissal_feedback: dismissalFeedback,
-        });
-
         mockAxios
-          .onPatch(`${createVulnerabilityFeedbackDismissalPath}/15`)
+          .onPatch(`${createVulnerabilityFeedbackDismissalPath}/${dismissalFeedback.id}`)
           .replyOnce(HTTP_STATUS_OK, dismissalFeedback);
 
-        createComponent({
-          mountFn: mountExtended,
-          propsData: {
-            mr: {
-              createVulnerabilityFeedbackDismissalPath,
-            },
-          },
-        });
-
-        await waitForPromises();
-
-        const emitSpy = jest.spyOn(wrapper.vm.$root, '$emit');
-
-        // Click on the toggle button to expand data
-        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-        await nextTick();
-
-        // Second one is for the dynamic scroller
-        await nextTick();
-
-        // Click on the vulnerability name
-        wrapper.findAllByText('Password leak').at(0).trigger('click');
-        await nextTick();
-
-        const comment = 'Edited comment';
-
-        findModal().vm.$emit('addDismissalComment', comment);
+        findModal().vm.$emit('addDismissalComment', 'Edited comment');
 
         await waitForPromises();
 
@@ -770,46 +550,11 @@ describe('MR Widget Security Reports', () => {
       });
 
       it('edits the dismissal comment - error', async () => {
-        const dismissalFeedback = {
-          author: {},
-          project_id: 20,
-          id: 15,
-        };
-
-        mockWithData({
-          state: 'dismissed',
-          dismissal_feedback: dismissalFeedback,
-        });
-
         mockAxios
-          .onPatch(`${createVulnerabilityFeedbackDismissalPath}/15`)
+          .onPatch(`${createVulnerabilityFeedbackDismissalPath}/${dismissalFeedback.id}`)
           .replyOnce(HTTP_STATUS_BAD_REQUEST);
 
-        createComponent({
-          mountFn: mountExtended,
-          propsData: {
-            mr: {
-              createVulnerabilityFeedbackDismissalPath,
-            },
-          },
-        });
-
-        await waitForPromises();
-
-        // Click on the toggle button to expand data
-        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-        await nextTick();
-
-        // Second one is for the dynamic scroller
-        await nextTick();
-
-        // Click on the vulnerability name
-        wrapper.findAllByText('Password leak').at(0).trigger('click');
-        await nextTick();
-
-        const comment = 'Edited comment';
-
-        findModal().vm.$emit('addDismissalComment', comment);
+        findModal().vm.$emit('addDismissalComment', 'Edited comment');
 
         await waitForPromises();
 
@@ -818,15 +563,10 @@ describe('MR Widget Security Reports', () => {
       });
 
       it('deletes the dismissal comment - success', async () => {
-        const dismissalFeedback = {
-          author: {},
-          project_id: 20,
-          id: 15,
-          comment_details: {
-            comment: 'Test',
-            comment_author: { id: 15 },
-            comment_timestamp: '2023-01-24T12:46:03.896Z',
-          },
+        dismissalFeedback.comment_details = {
+          comment: 'Test',
+          comment_author: { id: 15 },
+          comment_timestamp: '2023-01-24T12:46:03.896Z',
         };
 
         mockWithData({
@@ -848,8 +588,6 @@ describe('MR Widget Security Reports', () => {
         });
 
         await waitForPromises();
-
-        const emitSpy = jest.spyOn(wrapper.vm.$root, '$emit');
 
         // Click on the toggle button to expand data
         wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
@@ -881,15 +619,10 @@ describe('MR Widget Security Reports', () => {
       });
 
       it('deletes the dismissal comment - error', async () => {
-        const dismissalFeedback = {
-          author: {},
-          project_id: 20,
-          id: 15,
-          comment_details: {
-            comment: 'Test',
-            comment_author: { id: 15 },
-            comment_timestamp: '2023-01-24T12:46:03.896Z',
-          },
+        dismissalFeedback.comment_details = {
+          comment: 'Test',
+          comment_author: { id: 15 },
+          comment_timestamp: '2023-01-24T12:46:03.896Z',
         };
 
         mockWithData({
@@ -945,40 +678,23 @@ describe('MR Widget Security Reports', () => {
     describe('undo dismissing finding', () => {
       const feedbackDismissalPath = '/-/vulnerability/feedback';
 
-      it('handles undoing dismissing a finding - success', async () => {
-        mockWithData({
-          state: 'dismissed',
-          dismissal_feedback: {
-            destroy_vulnerability_feedback_dismissal_path: feedbackDismissalPath,
-            author: {}, // This is required to because `modal.vue` file needs this object. Passing undefined causes the tests to fail.
-          },
-        });
-
-        mockAxios.onDelete(feedbackDismissalPath).replyOnce(HTTP_STATUS_OK);
-
-        createComponent({
-          mountFn: mountExtended,
-          propsData: {
-            mr: {
-              createVulnerabilityFeedbackDismissalPath,
+      beforeEach(async () => {
+        await createComponentExpandWidgetAndOpenModal({
+          mockDataProps: {
+            state: 'dismissed',
+            dismissal_feedback: {
+              destroy_vulnerability_feedback_dismissal_path: feedbackDismissalPath,
+              author: {}, // This is required to because `modal.vue` file needs this object. Passing undefined causes the tests to fail.
             },
           },
+          mrProps: {
+            createVulnerabilityFeedbackDismissalPath,
+          },
         });
+      });
 
-        const emitSpy = jest.spyOn(wrapper.vm.$root, '$emit');
-
-        await waitForPromises();
-
-        // Click on the toggle button to expand data
-        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-        await nextTick();
-
-        // Second one is for the dynamic scroller
-        await nextTick();
-
-        // Click on the vulnerability name
-        wrapper.findAllByText('Password leak').at(0).trigger('click');
-        await nextTick();
+      it('handles undoing dismissing a finding - success', async () => {
+        mockAxios.onDelete(feedbackDismissalPath).replyOnce(HTTP_STATUS_OK);
 
         findModal().vm.$emit('revertDismissVulnerability');
 
@@ -988,37 +704,7 @@ describe('MR Widget Security Reports', () => {
       });
 
       it('handles undoing dismissing a finding - error', async () => {
-        mockWithData({
-          state: 'dismissed',
-          dismissal_feedback: {
-            destroy_vulnerability_feedback_dismissal_path: feedbackDismissalPath,
-            author: {}, // This is required to because `modal.vue` file needs this object. Passing undefined causes the tests to fail.
-          },
-        });
-
         mockAxios.onDelete(feedbackDismissalPath).replyOnce(HTTP_STATUS_BAD_REQUEST);
-
-        createComponent({
-          mountFn: mountExtended,
-          propsData: {
-            mr: {
-              createVulnerabilityFeedbackDismissalPath,
-            },
-          },
-        });
-
-        await waitForPromises();
-
-        // Click on the toggle button to expand data
-        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-        await nextTick();
-
-        // Second one is for the dynamic scroller
-        await nextTick();
-
-        // Click on the vulnerability name
-        wrapper.findAllByText('Password leak').at(0).trigger('click');
-        await nextTick();
 
         findModal().vm.$emit('revertDismissVulnerability');
 
