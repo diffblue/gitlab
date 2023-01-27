@@ -4,7 +4,7 @@ module EE
   module QuickActions
     module TargetService
       def execute(type, type_iid)
-        return epic(type_iid) if type.casecmp('epic') == 0
+        return epic(type_iid) if type&.casecmp('epic') == 0
 
         super
       end
