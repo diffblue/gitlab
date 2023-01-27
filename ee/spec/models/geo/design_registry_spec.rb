@@ -265,4 +265,30 @@ RSpec.describe Geo::DesignRegistry, :geo, feature_category: :geo_replication do
       end
     end
   end
+
+  describe '#should_be_redownloaded?' do
+    where(:force_to_redownload, :retry_count, :expected) do
+      false | nil | false
+      false | 0   | false
+      false | 1   | false
+      false | 10  | false
+      false | 11  | true
+      false | 12  | false
+      false | 13  | true
+      false | 14  | false
+      false | 101 | true
+      false | 102 | false
+      true  | nil | true
+      true  | 0   | true
+      true  | 11  | true
+    end
+
+    with_them do
+      it "returns the expected boolean" do
+        registry = build(:geo_design_registry, retry_count: retry_count, force_to_redownload: force_to_redownload)
+
+        expect(registry.should_be_redownloaded?).to eq(expected)
+      end
+    end
+  end
 end

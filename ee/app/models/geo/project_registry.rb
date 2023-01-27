@@ -424,6 +424,19 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
     Gitlab::Redis::SharedState.with { |redis| redis.set(fetches_since_gc_redis_key, value) }
   end
 
+  # Check if we should re-download *type*
+  #
+  # @param [String] type must be one of the values in TYPES
+  # @see REGISTRY_TYPES
+  def should_be_redownloaded?(type)
+    ensure_valid_type!(type)
+    return true if public_send("force_to_redownload_#{type}") # rubocop:disable GitlabSecurity/PublicSend
+
+    retries = retry_count(type)
+
+    retries > RETRIES_BEFORE_REDOWNLOAD && retries.odd?
+  end
+
   def verification_retry_count(type)
     public_send("#{type}_verification_retry_count").to_i # rubocop:disable GitlabSecurity/PublicSend
   end

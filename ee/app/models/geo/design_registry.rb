@@ -116,4 +116,10 @@ class Geo::DesignRegistry < Geo::BaseRegistry
 
     num_rows > 0
   end
+
+  def should_be_redownloaded?
+    return true if force_to_redownload
+
+    retry_count.present? && retry_count > RETRIES_BEFORE_REDOWNLOAD && retry_count.odd?
+  end
 end
