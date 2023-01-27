@@ -36,6 +36,28 @@ RSpec.describe ::ComplianceManagement::ComplianceReport::CommitLoader, feature_c
       stub_const("#{described_class}::COMMIT_BATCH_SIZE", 2)
     end
 
+    context 'when an MR exists' do
+      subject(:loaded_commit_shas) { [] }
+
+      let(:mr_sha) { create_commit(project1, "merge commit") }
+      let(:mr_params) do
+        {
+          source_project: project1,
+          target_project: project1,
+          merge_commit_sha: mr_sha
+        }
+      end
+
+      before do
+        create_commit(project1, "commit")
+        create(:merge_request_with_diffs, :with_merged_metrics, **mr_params)
+
+        loader.find_each { |r| loaded_commit_shas << r.merge_commit }
+      end
+
+      it { expect(loaded_commit_shas.uniq).to match_array [mr_sha] }
+    end
+
     context 'when a project has more than the max commits' do
       let(:expected_size) { described_class::COMMITS_PER_PROJECT }
       let(:commits) do
