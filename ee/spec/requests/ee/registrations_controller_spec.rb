@@ -66,6 +66,19 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :authe
           create_user
         end
       end
+
+      context 'when user is not persisted' do
+        before do
+          create(:user, email: user_attrs[:email])
+        end
+
+        it "does not record the user's data from Arkose Labs" do
+          expect(Arkose::RecordUserDataService).not_to receive(:new)
+
+          # try to create a user with duplicate email
+          create_user
+        end
+      end
     end
 
     context 'when arkose labs session token verification is skipped' do
