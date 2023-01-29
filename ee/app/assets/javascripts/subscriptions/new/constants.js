@@ -23,3 +23,7 @@ export const TRACKING_EVENTS = {
   dismiss: { action: CLICK_BUTTON_ACTION, label: 'dismiss' },
   modalRendered: { action: MODAL_RENDERED_ACTION, label: 'modal_rendered' },
 };
+
+export const CHARGE_PROCESSING_TYPE = 'Charge';
+
+export const VALIDATION_ERROR_CODE = 'VALIDATION_ERROR';

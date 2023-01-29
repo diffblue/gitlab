@@ -114,6 +114,10 @@ export const updateZipCode = ({ commit }, zipCode) => {
   commit(types.UPDATE_ZIP_CODE, zipCode);
 };
 
+export const updateHasValidPriceDetails = ({ commit }, hasValidPriceDetails) => {
+  commit(types.UPDATE_HAS_VALID_PRICE_DETAILS, hasValidPriceDetails);
+};
+
 export const startLoadingZuoraScript = ({ commit }) =>
   commit(types.UPDATE_IS_LOADING_PAYMENT_METHOD, true);
 
