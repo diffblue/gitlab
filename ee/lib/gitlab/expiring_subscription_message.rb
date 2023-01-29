@@ -205,3 +205,5 @@ module Gitlab
     end
   end
 end
+
+Gitlab::ExpiringSubscriptionMessage.prepend_mod
