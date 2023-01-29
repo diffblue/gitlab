@@ -72,4 +72,8 @@ export default {
   [types.UPDATE_IS_CONFIRMING_ORDER](state, isConfirmingOrder) {
     state.isConfirmingOrder = isConfirmingOrder;
   },
+
+  [types.UPDATE_HAS_VALID_PRICE_DETAILS](state, hasValidPriceDetails) {
+    state.hasValidPriceDetails = hasValidPriceDetails;
+  },
 };

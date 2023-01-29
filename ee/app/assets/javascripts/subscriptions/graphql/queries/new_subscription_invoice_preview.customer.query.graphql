@@ -1,0 +1,13 @@
+query GetInvoicePreview($planId: ID!, $quantity: Int!, $promoCode: String) {
+  invoicePreview(planId: $planId, quantity: $quantity, promoCode: $promoCode) {
+    invoice {
+      amountWithoutTax
+    }
+    invoiceItem {
+      chargeAmount
+      processingType
+      serviceEndDate
+      serviceStartDate
+    }
+  }
+}

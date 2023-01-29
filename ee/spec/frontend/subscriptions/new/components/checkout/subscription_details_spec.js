@@ -553,6 +553,7 @@ describe('Subscription Details', () => {
         await createComponent({ store, billableMembersCountMock });
         store.commit(types.UPDATE_ORGANIZATION_NAME, 'Organization name');
         store.commit(types.UPDATE_NUMBER_OF_USERS, 14);
+        store.commit(types.UPDATE_HAS_VALID_PRICE_DETAILS, true);
         await nextTick();
       });
 
@@ -562,6 +563,13 @@ describe('Subscription Details', () => {
 
       it('should be invalid when no plan is selected', async () => {
         store.commit(types.UPDATE_SELECTED_PLAN, null);
+
+        await nextTick();
+        expect(isStepValid()).toBe(false);
+      });
+
+      it('should be invalid when price details are invalid', async () => {
+        store.commit(types.UPDATE_HAS_VALID_PRICE_DETAILS, false);
 
         await nextTick();
         expect(isStepValid()).toBe(false);
@@ -601,6 +609,7 @@ describe('Subscription Details', () => {
             groupData: JSON.stringify([{ id: 111, name: 'Just me group', users: 1 }]),
           }),
         );
+        store.commit(types.UPDATE_HAS_VALID_PRICE_DETAILS, true);
         return createComponent({ apolloProvider: mockApollo, store });
       });
 
@@ -635,6 +644,7 @@ describe('Subscription Details', () => {
         );
         await createComponent({ apolloProvider: mockApollo, store });
         store.commit(types.UPDATE_SELECTED_GROUP, secondGroup.id);
+        store.commit(types.UPDATE_HAS_VALID_PRICE_DETAILS, true);
         await nextTick();
       });
 
@@ -681,6 +691,7 @@ describe('Subscription Details', () => {
       store.commit(types.UPDATE_SELECTED_PLAN, 'firstPlanId');
       store.commit(types.UPDATE_ORGANIZATION_NAME, 'My Organization');
       store.commit(types.UPDATE_NUMBER_OF_USERS, 25);
+      store.commit(types.UPDATE_HAS_VALID_PRICE_DETAILS, true);
       return createComponent({ store });
     });
 
