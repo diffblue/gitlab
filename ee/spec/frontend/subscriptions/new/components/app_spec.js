@@ -1,4 +1,5 @@
 import { nextTick } from 'vue';
+import { GlAlert } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import Component from 'ee/subscriptions/new/components/app.vue';
 import OrderSummary from 'ee/subscriptions/new/components/order_summary.vue';
@@ -27,9 +28,9 @@ describe('App component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
+  const findModalComponent = () => wrapper.findComponent(Modal);
+  const findOrderSummaryComponent = () => wrapper.findComponent(OrderSummary);
+  const findAlertComponent = () => wrapper.findComponent(GlAlert);
 
   describe('cart_abandonment_modal experiment', () => {
     describe('control', () => {
@@ -43,7 +44,7 @@ describe('App component', () => {
       });
 
       it('renders the modal', () => {
-        expect(wrapper.findComponent(Modal).exists()).toBe(false);
+        expect(findModalComponent().exists()).toBe(false);
       });
     });
 
@@ -58,7 +59,7 @@ describe('App component', () => {
       });
 
       it('renders the modal', () => {
-        expect(wrapper.findComponent(Modal).exists()).toBe(true);
+        expect(findModalComponent().exists()).toBe(true);
       });
     });
   });
@@ -73,7 +74,23 @@ describe('App component', () => {
     });
 
     it('renders order summary', () => {
-      expect(wrapper.findComponent(OrderSummary).exists()).toBe(true);
+      expect(findOrderSummaryComponent().exists()).toBe(true);
+    });
+
+    it('renders alert message when present', async () => {
+      const errorMessage = `Hello! I'm Error.`;
+
+      findOrderSummaryComponent().vm.$emit('error', errorMessage);
+      await nextTick();
+
+      expect(findAlertComponent().text()).toBe(errorMessage);
+    });
+
+    it('does not render alert message when not present', async () => {
+      findOrderSummaryComponent().vm.$emit('error', null);
+      await nextTick();
+
+      expect(findAlertComponent().exists()).toBe(false);
     });
   });
 

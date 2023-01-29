@@ -34,6 +34,7 @@ describe('ee/subscriptions/new/store/mutation', () => {
     ${types.UPDATE_CITY}                      | ${'city'}                             | ${'city'}
     ${types.UPDATE_COUNTRY_STATE}             | ${'countryState'}                     | ${'countryState'}
     ${types.UPDATE_ZIP_CODE}                  | ${'zipCode'}                          | ${'zipCode'}
+    ${types.UPDATE_HAS_VALID_PRICE_DETAILS}   | ${true}                               | ${'hasValidPriceDetails'}
     ${types.UPDATE_PAYMENT_FORM_PARAMS}       | ${{ token: 'x' }}                     | ${'paymentFormParams'}
     ${types.UPDATE_PAYMENT_METHOD_ID}         | ${'paymentMethodId'}                  | ${'paymentMethodId'}
     ${types.UPDATE_CREDIT_CARD_DETAILS}       | ${{ type: 'x' }}                      | ${'creditCardDetails'}

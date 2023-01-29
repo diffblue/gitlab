@@ -98,3 +98,57 @@ export const stateData = {
   stepList: STEPS,
   activeStep: STEPS[0],
 };
+
+export const mockInvoicePreviewBronze = {
+  data: {
+    invoicePreview: {
+      invoice: {
+        amountWithoutTax: 48,
+      },
+      invoiceItem: [
+        {
+          chargeAmount: 48,
+          processingType: 'Charge',
+          serviceEndDate: '2020-12-05',
+          serviceStartDate: '2019-12-05',
+        },
+      ],
+    },
+  },
+};
+
+export const mockInvoicePreviewUltimate = {
+  data: {
+    invoicePreview: {
+      invoice: {
+        amountWithoutTax: 1188,
+      },
+      invoiceItem: [
+        {
+          chargeAmount: 1188,
+          processingType: 'Charge',
+          serviceEndDate: '2020-12-05',
+          serviceStartDate: '2019-12-05',
+        },
+      ],
+    },
+  },
+};
+
+export const mockInvoicePreviewUltimateWithMultipleUsers = {
+  data: {
+    invoicePreview: {
+      invoice: {
+        amountWithoutTax: 3564,
+      },
+      invoiceItem: [
+        {
+          chargeAmount: 3564,
+          processingType: 'Charge',
+          serviceEndDate: '2020-12-05',
+          serviceStartDate: '2019-12-05',
+        },
+      ],
+    },
+  },
+};
