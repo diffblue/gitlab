@@ -1,3 +1,5 @@
+#import "../fragments/vulnerability_detail.fragment.graphql"
+
 query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findingUuid: String!) {
   project(fullPath: $projectFullPath) {
     id
@@ -62,60 +64,15 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
           url
         }
         details {
-          ... on VulnerabilityDetailUrl {
-            type: __typename
-            name
-            href
-          }
-          ... on VulnerabilityDetailDiff {
-            type: __typename
-            name
-            before
-            after
-          }
-          ... on VulnerabilityDetailCode {
-            type: __typename
-            name
-            value
-          }
-          ... on VulnerabilityDetailFileLocation {
-            type: __typename
-            name
-            fileName
-            lineStart
-            lineEnd
-          }
-          ... on VulnerabilityDetailModuleLocation {
-            type: __typename
-            name
-            moduleName
-            offset
-          }
-          ... on VulnerabilityDetailCommit {
-            type: __typename
-            name
-            value
-          }
-          ... on VulnerabilityDetailText {
-            type: __typename
-            name
-            value
-          }
-          ... on VulnerabilityDetailMarkdown {
-            type: __typename
-            name
-            value
-          }
-          ... on VulnerabilityDetailBoolean {
-            type: __typename
-            name
-            value
-          }
-          ... on VulnerabilityDetailInt {
-            type: __typename
-            name
-            value
-          }
+          ...FileLocation
+          ...Url
+          ...Diff
+          ...Code
+          ...Commit
+          ...List
+          ...Int
+          ...Boolean
+          ...ModuleLocation
         }
       }
     }
