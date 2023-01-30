@@ -4,8 +4,8 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { stubExperiments } from 'helpers/experimentation_helper';
 import { mockTracking, triggerEvent, unmockTracking } from 'helpers/tracking_helper';
 import eventHub from '~/invite_members/event_hub';
-import LearnGitlabSectionLink from '~/pages/projects/learn_gitlab/components/learn_gitlab_section_link.vue';
-import { ACTION_LABELS } from '~/pages/projects/learn_gitlab/constants';
+import LearnGitlabSectionLink from 'ee/pages/projects/learn_gitlab/components/learn_gitlab_section_link.vue';
+import { ACTION_LABELS } from 'ee/pages/projects/learn_gitlab/constants';
 
 const defaultAction = 'gitWrite';
 const defaultProps = {

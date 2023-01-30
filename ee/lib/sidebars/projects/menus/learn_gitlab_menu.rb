@@ -28,14 +28,12 @@ module Sidebars
 
         override :pill_count
         def pill_count
-          strong_memoize(:pill_count) do
-            percentage = Onboarding::Completion.new(
-              context.project.namespace,
-              context.current_user
-            ).percentage
+          percentage = Onboarding::Completion.new(
+            context.project.namespace,
+            context.current_user
+          ).percentage
 
-            "#{percentage}%"
-          end
+          "#{percentage}%"
         end
 
         override :extra_nav_link_html_options

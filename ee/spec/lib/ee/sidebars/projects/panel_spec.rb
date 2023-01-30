@@ -37,6 +37,12 @@ RSpec.describe Sidebars::Projects::Panel do
     end
   end
 
+  context 'with learn gitlab menu' do
+    it 'contains the menu' do
+      expect(contains_menu?(Sidebars::Projects::Menus::LearnGitlabMenu)).to be(true)
+    end
+  end
+
   def contains_menu?(menu)
     panel.instance_variable_get(:@menus).any? { |i| i.is_a?(menu) }
   end

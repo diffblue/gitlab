@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import LearnGitlabSectionCard from '~/pages/projects/learn_gitlab/components/learn_gitlab_section_card.vue';
+import LearnGitlabSectionCard from 'ee/pages/projects/learn_gitlab/components/learn_gitlab_section_card.vue';
 import { testActions } from './mock_data';
 
 const defaultSection = 'workspace';

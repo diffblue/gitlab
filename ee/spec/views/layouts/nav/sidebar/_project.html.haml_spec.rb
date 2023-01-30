@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'layouts/nav/sidebar/_project' do
+RSpec.describe 'layouts/nav/sidebar/_project', feature_category: :navigation do
   let_it_be_with_refind(:project) { create(:project, :repository) }
   let_it_be(:user) { project.first_owner }
 
@@ -11,6 +11,22 @@ RSpec.describe 'layouts/nav/sidebar/_project' do
     assign(:repository, project.repository)
 
     allow(view).to receive(:current_ref).and_return('master')
+  end
+
+  describe 'Learn GitLab' do
+    it 'has a link to the learn GitLab' do
+      allow(view).to receive(:current_user).and_return(user)
+      allow_next_instance_of(Onboarding::LearnGitlab, user) do |instance|
+        allow(instance).to receive(:onboarding_and_available?).with(project.namespace).and_return(true)
+      end
+      allow_next_instance_of(Onboarding::Completion) do |onboarding|
+        expect(onboarding).to receive(:percentage).and_return(20)
+      end
+
+      render
+
+      expect(rendered).to have_link('Learn GitLab', href: project_learn_gitlab_path(project))
+    end
   end
 
   describe 'Repository' do

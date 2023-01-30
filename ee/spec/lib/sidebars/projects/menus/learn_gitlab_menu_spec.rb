@@ -2,10 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Sidebars::Projects::Menus::LearnGitlabMenu do
-  let_it_be(:project) { build(:project) }
-  let_it_be(:learn_gitlab_enabled) { true }
-
+RSpec.describe Sidebars::Projects::Menus::LearnGitlabMenu, feature_category: :onboarding do
+  let(:project) { build(:project) }
+  let(:learn_gitlab_enabled) { true }
   let(:context) do
     Sidebars::Projects::Context.new(
       current_user: nil,
@@ -21,7 +20,7 @@ RSpec.describe Sidebars::Projects::Menus::LearnGitlabMenu do
   end
 
   describe '#nav_link_html_options' do
-    let_it_be(:data_tracking) do
+    let(:data_tracking) do
       {
         class: 'home',
         data: {
@@ -36,13 +35,13 @@ RSpec.describe Sidebars::Projects::Menus::LearnGitlabMenu do
   end
 
   describe '#render?' do
-    context 'when learn gitlab experiment is enabled' do
+    context 'when learn gitlab is enabled' do
       it 'returns true' do
         expect(subject.render?).to eq true
       end
     end
 
-    context 'when learn gitlab experiment is disabled' do
+    context 'when learn gitlab is disabled' do
       let(:learn_gitlab_enabled) { false }
 
       it 'returns false' do
@@ -52,13 +51,13 @@ RSpec.describe Sidebars::Projects::Menus::LearnGitlabMenu do
   end
 
   describe '#has_pill?' do
-    context 'when learn gitlab experiment is enabled' do
+    context 'when learn gitlab is enabled' do
       it 'returns true' do
         expect(subject.has_pill?).to eq true
       end
     end
 
-    context 'when learn gitlab experiment is disabled' do
+    context 'when learn gitlab is disabled' do
       let(:learn_gitlab_enabled) { false }
 
       it 'returns false' do
