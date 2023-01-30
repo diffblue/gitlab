@@ -41,9 +41,14 @@ module QA
         Page::Group::Menu.perform(&:click_contribution_analytics_item)
       end
 
-      it 'tests contributions', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347765' do
+      it(
+        'tests contributions',
+        :aggregate_failures,
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347765'
+      ) do
         EE::Page::Group::ContributionAnalytics.perform do |contribution_analytics|
-          expect(contribution_analytics).to have_push_element('3 pushes by 1 contributor.')
+          expect(contribution_analytics).to have_push_element('3 pushes')
+          expect(contribution_analytics).to have_push_element('1 contributor')
           expect(contribution_analytics).to have_mr_element('1 created, 1 merged, 0 closed.')
           expect(contribution_analytics).to have_issue_element('1 created, 1 closed.')
         end
