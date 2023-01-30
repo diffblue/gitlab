@@ -8,7 +8,8 @@ module EE
     def project_sidebar_context_data(project, user, current_ref, **args)
       super.merge({
         show_promotions: show_promotions?(user),
-        show_discover_project_security: show_discover_project_security?(project)
+        show_discover_project_security: show_discover_project_security?(project),
+        learn_gitlab_enabled: Onboarding::LearnGitlab.new(user).onboarding_and_available?(project.namespace)
       })
     end
 

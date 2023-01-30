@@ -5,16 +5,23 @@ require 'spec_helper'
 RSpec.describe Projects::LearnGitlabController, feature_category: :onboarding do
   describe 'GET #index' do
     let_it_be(:user) { create(:user) }
-    let_it_be(:project) { create(:project, namespace: create(:group)) }
+    let_it_be(:learn_gitlab_project) do
+      create(:project, name: Onboarding::LearnGitlab::PROJECT_NAME).tap do |record|
+        record.add_maintainer(user)
+      end
+    end
 
-    let(:learn_gitlab_enabled) { true }
+    let_it_be(:project) { create(:project, namespace: create(:group)) }
+    let_it_be(:board) { create(:board, project: learn_gitlab_project, name: Onboarding::LearnGitlab::BOARD_NAME) }
+
     let(:params) { { namespace_id: project.namespace.to_param, project_id: project } }
 
     subject(:action) { get :index, params: params }
 
-    before do
+    before_all do
       project.namespace.add_owner(user)
-      allow(controller.helpers).to receive(:learn_gitlab_enabled?).and_return(learn_gitlab_enabled)
+      create(:label, project: learn_gitlab_project, name: Onboarding::LearnGitlab::LABEL_NAME)
+      create(:onboarding_progress, namespace: project.namespace)
     end
 
     context 'for unauthenticated user' do
@@ -29,7 +36,9 @@ RSpec.describe Projects::LearnGitlabController, feature_category: :onboarding do
       it { is_expected.to render_template(:index) }
 
       context 'when learn_gitlab is not available' do
-        let(:learn_gitlab_enabled) { false }
+        before do
+          board.update!(name: 'bogus')
+        end
 
         it { is_expected.to have_gitlab_http_status(:not_found) }
       end

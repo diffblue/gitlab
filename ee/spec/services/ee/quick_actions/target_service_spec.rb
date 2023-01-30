@@ -34,5 +34,15 @@ RSpec.describe QuickActions::TargetService do
         expect(target.group).to eq(group)
       end
     end
+
+    context 'for nil type' do
+      let(:type) { nil }
+
+      it 'does not raise error' do
+        epic = create(:epic, group: group)
+
+        expect { service.execute(type, epic.iid) }.not_to raise_error
+      end
+    end
   end
 end
