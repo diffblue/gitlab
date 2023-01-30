@@ -29802,7 +29802,7 @@ CREATE INDEX index_gitlab_subscription_histories_on_gitlab_subscription_id ON gi
 
 CREATE INDEX index_gitlab_subscriptions_on_end_date_and_namespace_id ON gitlab_subscriptions USING btree (end_date, namespace_id);
 
-CREATE INDEX index_gitlab_subscriptions_on_hosted_plan_id ON gitlab_subscriptions USING btree (hosted_plan_id);
+CREATE INDEX index_gitlab_subscriptions_on_hosted_plan_id_and_trial ON gitlab_subscriptions USING btree (hosted_plan_id, trial);
 
 CREATE INDEX index_gitlab_subscriptions_on_max_seats_used_changed_at ON gitlab_subscriptions USING btree (max_seats_used_changed_at, namespace_id);
 
