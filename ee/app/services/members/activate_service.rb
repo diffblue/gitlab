@@ -73,7 +73,7 @@ module Members
     def update_user_project_access
       affected_user_ids = affected_members.map(&:user_id).compact.uniq
 
-      UserProjectAccessChangedService.new(affected_user_ids).execute(blocking: false)
+      UserProjectAccessChangedService.new(affected_user_ids).execute
     end
 
     def log_event

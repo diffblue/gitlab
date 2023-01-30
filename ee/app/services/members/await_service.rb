@@ -32,7 +32,7 @@ module Members
       # rubocop: enable CodeReuse/ActiveRecord
 
       if affected_memberships > 0
-        UserProjectAccessChangedService.new(user.id).execute(blocking: false)
+        UserProjectAccessChangedService.new(user.id).execute
 
         log_audit_event
         ServiceResponse.success
