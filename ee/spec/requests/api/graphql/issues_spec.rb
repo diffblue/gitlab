@@ -50,6 +50,40 @@ RSpec.describe 'getting an issue list at root level', feature_category: :team_pl
     end
   end
 
+  context 'when fetching issues from multiple projects' do
+    context 'when ip_restrictions feature is enabled' do
+      before do
+        stub_licensed_features(group_ip_restriction: true)
+      end
+
+      context 'when check_namespace_plan setting is enabled' do
+        before do
+          stub_application_setting(check_namespace_plan: true)
+        end
+
+        it 'avoids N+1 queries', :use_sql_query_cache do
+          post_query # warm-up
+
+          control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+            post_graphql(query, current_user: current_user)
+          end
+          expect_graphql_errors_to_be_empty
+
+          new_private_project = create(:project, :private).tap { |project| project.add_developer(current_user) }
+          create(:issue, project: new_private_project)
+
+          root_group = create(:group, :private).tap { |group| group.add_maintainer(current_user) }
+          create(:issue, project: create(:project, :private, group: root_group))
+          child_group = create(:group, :private, parent: root_group)
+          create(:issue, project: create(:project, :private, group: child_group))
+
+          expect { post_graphql(query, current_user: current_user) }.not_to exceed_all_query_limit(control)
+          expect_graphql_errors_to_be_empty
+        end
+      end
+    end
+  end
+
   def execute_query
     post_query
   end
