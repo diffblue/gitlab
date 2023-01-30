@@ -3,136 +3,130 @@
 require 'spec_helper'
 
 RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, feature_category: :global_search do
-  using RSpec::Parameterized::TableSyntax
-
   let_it_be(:user) { create(:user) }
 
   let(:project) { create(:project, :repository, :wiki_repo, namespace: user.namespace) }
 
-  where(search_page_vertical_nav_enabled: [true, false])
-  with_them do
+  before do
+    stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+  end
+
+  describe 'searching' do
     before do
-      stub_feature_flags(search_page_vertical_nav: search_page_vertical_nav_enabled)
-      stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+      project.add_maintainer(user)
+      sign_in(user)
+
+      visit project_path(project)
     end
 
-    describe 'searching' do
-      before do
-        project.add_maintainer(user)
-        sign_in(user)
+    it 'finds issues' do
+      create(:issue, project: project, title: 'Test searching for an issue')
+      ensure_elasticsearch_index!
 
-        visit project_path(project)
-      end
+      submit_search('Test')
+      select_search_scope('Issues')
 
-      it 'finds issues' do
-        create(:issue, project: project, title: 'Test searching for an issue')
-        ensure_elasticsearch_index!
+      expect(page).to have_selector('.results', text: 'Test searching for an issue')
+    end
 
-        submit_search('Test')
-        select_search_scope('Issues')
+    it 'finds merge requests' do
+      create(:merge_request, source_project: project, target_project: project, title: 'Test searching for an MR')
+      ensure_elasticsearch_index!
 
-        expect(page).to have_selector('.results', text: 'Test searching for an issue')
-      end
+      submit_search('Test')
+      select_search_scope('Merge requests')
 
-      it 'finds merge requests' do
-        create(:merge_request, source_project: project, target_project: project, title: 'Test searching for an MR')
-        ensure_elasticsearch_index!
+      expect(page).to have_selector('.results', text: 'Test searching for an MR')
+    end
 
-        submit_search('Test')
-        select_search_scope('Merge requests')
+    it 'finds milestones' do
+      create(:milestone, project: project, title: 'Test searching for a milestone')
+      ensure_elasticsearch_index!
 
-        expect(page).to have_selector('.results', text: 'Test searching for an MR')
-      end
+      submit_search('Test')
+      select_search_scope('Milestones')
 
-      it 'finds milestones' do
-        create(:milestone, project: project, title: 'Test searching for a milestone')
-        ensure_elasticsearch_index!
+      expect(page).to have_selector('.results', text: 'Test searching for a milestone')
+    end
 
-        submit_search('Test')
-        select_search_scope('Milestones')
+    it 'finds wiki pages', :sidekiq_inline do
+      project.wiki.create_page('test.md', 'Test searching for a wiki page')
+      project.wiki.index_wiki_blobs
+      ensure_elasticsearch_index!
 
-        expect(page).to have_selector('.results', text: 'Test searching for a milestone')
-      end
+      submit_search('Test')
+      select_search_scope('Wiki')
 
-      it 'finds wiki pages', :sidekiq_inline do
-        project.wiki.create_page('test.md', 'Test searching for a wiki page')
-        project.wiki.index_wiki_blobs
-        ensure_elasticsearch_index!
+      expect(page).to have_selector('.results', text: 'Test searching for a wiki page')
+    end
 
-        submit_search('Test')
-        select_search_scope('Wiki')
+    it 'finds notes' do
+      create(:note, project: project, note: 'Test searching for a comment')
+      ensure_elasticsearch_index!
 
-        expect(page).to have_selector('.results', text: 'Test searching for a wiki page')
-      end
+      submit_search('Test')
+      select_search_scope('Comments')
 
-      it 'finds notes' do
-        create(:note, project: project, note: 'Test searching for a comment')
-        ensure_elasticsearch_index!
+      expect(page).to have_selector('.results', text: 'Test searching for a comment')
+    end
 
-        submit_search('Test')
-        select_search_scope('Comments')
+    it 'finds commits', :sidekiq_inline do
+      project.repository.index_commits_and_blobs
+      ensure_elasticsearch_index!
 
-        expect(page).to have_selector('.results', text: 'Test searching for a comment')
-      end
+      submit_search('initial')
+      select_search_scope('Commits')
 
-      it 'finds commits', :sidekiq_inline do
-        project.repository.index_commits_and_blobs
-        ensure_elasticsearch_index!
+      expect(page).to have_selector('.results', text: 'Initial commit')
+    end
 
-        submit_search('initial')
-        select_search_scope('Commits')
+    it 'finds blobs', :sidekiq_inline do
+      project.repository.index_commits_and_blobs
+      ensure_elasticsearch_index!
 
-        expect(page).to have_selector('.results', text: 'Initial commit')
-      end
+      submit_search('def')
+      select_search_scope('Code')
 
-      it 'finds blobs', :sidekiq_inline do
-        project.repository.index_commits_and_blobs
-        ensure_elasticsearch_index!
+      expect(page).to have_selector('.results', text: 'def username_regex')
+      expect(page).to have_button('Copy file path')
+    end
+  end
 
-        submit_search('def')
-        select_search_scope('Code')
+  describe 'displays Advanced Search status' do
+    before do
+      sign_in(user)
 
-        expect(page).to have_selector('.results', text: 'def username_regex')
-        expect(page).to have_button('Copy file path')
+      visit search_path(project_id: project.id, repository_ref: repository_ref)
+    end
+
+    context "when `repository_ref` isn't the default branch" do
+      let(:repository_ref) { Gitlab::Git::BLANK_SHA }
+
+      it 'displays that advanced search is disabled' do
+        expect(page).to have_selector('[data-testid="es-status-marker"][data-enabled="false"]')
+        expect(page).to have_link('Learn more.', href: help_page_path('user/search/advanced_search', anchor: 'use-the-advanced-search-syntax'))
       end
     end
 
-    describe 'displays Advanced Search status' do
-      before do
-        sign_in(user)
+    context "when `repository_ref` is unset" do
+      let(:repository_ref) { "" }
 
-        visit search_path(project_id: project.id, repository_ref: repository_ref)
+      it 'displays that advanced search is enabled' do
+        expect(page).to have_selector('[data-testid="es-status-marker"][data-enabled="true"]')
       end
+    end
 
-      context "when `repository_ref` isn't the default branch" do
-        let(:repository_ref) { Gitlab::Git::BLANK_SHA }
+    context "when `repository_ref` is the default branch" do
+      let(:repository_ref) { project.default_branch }
 
-        it 'displays that advanced search is disabled' do
-          expect(page).to have_selector('[data-testid="es-status-marker"][data-enabled="false"]')
-          expect(page).to have_link('Learn more.', href: help_page_path('user/search/advanced_search', anchor: 'use-the-advanced-search-syntax'))
-        end
-      end
-
-      context "when `repository_ref` is unset" do
-        let(:repository_ref) { "" }
-
-        it 'displays that advanced search is enabled' do
-          expect(page).to have_selector('[data-testid="es-status-marker"][data-enabled="true"]')
-        end
-      end
-
-      context "when `repository_ref` is the default branch" do
-        let(:repository_ref) { project.default_branch }
-
-        it 'displays that advanced search is enabled' do
-          expect(page).to have_selector('[data-testid="es-status-marker"][data-enabled="true"]')
-        end
+      it 'displays that advanced search is enabled' do
+        expect(page).to have_selector('[data-testid="es-status-marker"][data-enabled="true"]')
       end
     end
   end
 end
 
-RSpec.describe 'Project elastic search redactions' do
+RSpec.describe 'Project elastic search redactions', feature_category: :global_search do
   it_behaves_like 'a redacted search results page' do
     let(:search_path) { project_path(public_restricted_project) }
   end
