@@ -23,10 +23,6 @@ describe('BranchPath component', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('rendering', () => {
     it('renders the header', () => {
       expect(findSectionHeader().text()).toBe('Path');
