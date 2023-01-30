@@ -31,6 +31,7 @@ RSpec.describe Ci::Build, feature_category: :continuous_integration do
   it { is_expected.to have_many(:pages_deployments).with_foreign_key(:ci_build_id) }
 
   it { is_expected.to have_one(:deployment) }
+  it { is_expected.to have_one(:runner_machine).through(:metadata) }
   it { is_expected.to have_one(:runner_session).with_foreign_key(:build_id) }
   it { is_expected.to have_one(:trace_metadata).with_foreign_key(:build_id) }
   it { is_expected.to have_one(:runtime_metadata).with_foreign_key(:build_id) }
@@ -2045,6 +2046,16 @@ RSpec.describe Ci::Build, feature_category: :continuous_integration do
         it { is_expected.to be_falsey }
       end
     end
+  end
+
+  describe '#runner_machine' do
+    let_it_be(:runner) { create(:ci_runner) }
+    let_it_be(:runner_machine) { create(:ci_runner_machine, runner: runner) }
+    let_it_be(:build) { create(:ci_build, runner_machine: runner_machine) }
+
+    subject(:build_runner_machine) { described_class.find(build.id).runner_machine }
+
+    it { is_expected.to eq(runner_machine) }
   end
 
   describe '#tag_list' do
