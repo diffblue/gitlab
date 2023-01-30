@@ -480,6 +480,16 @@ entry.
 - [Do not use _test when not necessary](gitlab-org/gitlab@1bde73aba2bd1d7f9e833c7325cffa0c90d1c106) ([merge request](gitlab-org/gitlab!107373))
 - [Add config/redis.yml unified config file](gitlab-org/gitlab@ace8301236eecc07a511975b57f80e21ec7be3c2) ([merge request](gitlab-org/gitlab!106854))
 
+## 15.7.6 (2023-01-30)
+
+### Security (5 changes)
+
+- [Remove parameter validation for registry notification request [15.7]](gitlab-org/security/gitlab@ca091312787e3a01f39551357095409fcf6fc840) ([merge request](gitlab-org/security/gitlab!3029))
+- [Add size validation for Chart.yaml during file extraction](gitlab-org/security/gitlab@d43bf6a5b147350668e538bd981af5f9400e6fca) ([merge request](gitlab-org/security/gitlab!3019))
+- [Prevent default branches from storing paths](gitlab-org/security/gitlab@9f18aa40711e334b172d208255a4b396b89c50a9) ([merge request](gitlab-org/security/gitlab!3012))
+- [Validate Issuable description max length on update](gitlab-org/security/gitlab@9c2799bef06ada7d48b682fa4fe403ec00e74c4a) ([merge request](gitlab-org/security/gitlab!3003))
+- [Security fix dynamic child pipeline zip extraction](gitlab-org/security/gitlab@cada7e3290da854f437538cdc1680c3f5284278e) ([merge request](gitlab-org/security/gitlab!2980))
+
 ## 15.7.5 (2023-01-12)
 
 No changes.
