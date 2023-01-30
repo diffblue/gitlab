@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByInsufficientUsers do
+RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByInsufficientUsers,
+feature_category: :compliance_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:merge_request) { create(:merge_request, state: :merged, merge_user: user) }
 
@@ -34,6 +35,9 @@ RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByInsufficientU
 
         expect(violations.map(&:violating_user)).to contain_exactly(user)
         expect(violations.map(&:severity_level)).to contain_exactly('high')
+        expect(violations.map(&:target_project_id)).to contain_exactly(merge_request.target_project_id)
+        expect(violations.map(&:title)).to contain_exactly(merge_request.title)
+        expect(violations.map(&:target_branch)).to contain_exactly(merge_request.target_branch)
       end
 
       context 'when the merge requests merge user is within metrics' do
