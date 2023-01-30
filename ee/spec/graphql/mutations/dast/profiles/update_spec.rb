@@ -199,6 +199,32 @@ RSpec.describe Mutations::Dast::Profiles::Update, :dynamic_analysis,
             expect(updated_dast_profile.tags).to match_array(old_tags)
           end
         end
+
+        context 'when the tagList is an empty list' do
+          let(:new_tag_list) { [] }
+
+          it 'deletes the tag_list' do
+            subject
+
+            updated_dast_profile = dast_profile.reload
+
+            expect(updated_dast_profile.tags).to be_empty
+          end
+        end
+
+        context 'when the tagList attribute is not present' do
+          before do
+            params.delete(:tag_list)
+          end
+
+          it 'does not update the tag_list' do
+            subject
+
+            updated_dast_profile = dast_profile.reload
+
+            expect(updated_dast_profile.tags).to match_array(old_tags)
+          end
+        end
       end
     end
   end

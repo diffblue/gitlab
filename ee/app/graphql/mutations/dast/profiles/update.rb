@@ -79,14 +79,14 @@ module Mutations
             dast_scanner_profile_id: dast_scanner_profile_id&.model_id,
             dast_profile_schedule: args[:dast_profile_schedule],
             run_after_update: run_after_update
-          }.compact
+          }
 
           params[:tag_list] = args[:tag_list] if Feature.enabled?(:on_demand_scans_runner_tags, dast_profile.project)
 
           response = ::AppSec::Dast::Profiles::UpdateService.new(
             project: dast_profile.project,
             current_user: current_user,
-            params: params
+            params: params.compact
           ).execute
 
           { errors: response.errors, **response.payload }
