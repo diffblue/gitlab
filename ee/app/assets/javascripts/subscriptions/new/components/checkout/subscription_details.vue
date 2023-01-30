@@ -83,7 +83,6 @@ export default {
       'isSetupForCompany',
       'organizationName',
       'numberOfUsers',
-      'hasValidPriceDetails',
     ]),
     ...mapGetters([
       'selectedPlanText',
@@ -173,7 +172,6 @@ export default {
     },
     isValid() {
       return (
-        this.hasValidPriceDetails &&
         this.hasSelectedPlan &&
         this.hasAtLeastOneUser &&
         this.isSelectedUsersEqualOrGreaterThanGroupUsers &&

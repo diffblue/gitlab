@@ -17,8 +17,6 @@ exports[`App component cart_abandonment_modal experiment candidate matches the s
   
   </gl-modal-stub>
    
-  <!---->
-   
   <div>
     <checkout-stub />
      
@@ -39,8 +37,6 @@ exports[`App component cart_abandonment_modal experiment candidate matches the s
 
 exports[`App component cart_abandonment_modal experiment control matches the snapshot 1`] = `
 <div>
-  <!---->
-   
   <!---->
    
   <div>
