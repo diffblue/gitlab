@@ -39,6 +39,12 @@ module Elastic
         # ES6 is now single-type per index, so we implement our own typing
         data['type'] = 'project'
 
+        if ::Elastic::DataMigrationService.migration_has_finished?(:add_schema_version_to_main_index_mapping)
+          # Schema version. The format is Date.today.strftime('%y_%m')
+          # Please update if you're changing the schema of the document
+          data['schema_version'] = 23_01
+        end
+
         # Somehow projects are being created and sent for indexing without an associated project_feature
         # https://gitlab.com/gitlab-org/gitlab/-/issues/232654
         # When this happens, log the errors to help with debugging, and raise the error to prevent indexing bad data

@@ -101,6 +101,7 @@ module Elastic
           }
         # ES6 requires a single type per index, so we implement our own "type"
         indexes :type, type: :keyword
+        indexes :schema_version, type: :short
 
         indexes :iid, type: :integer
 
