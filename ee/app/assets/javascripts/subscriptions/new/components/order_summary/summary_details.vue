@@ -1,5 +1,6 @@
 <script>
-import { GlLink, GlSprintf, GlLoadingIcon } from '@gitlab/ui';
+import { GlLink, GlSprintf } from '@gitlab/ui';
+import { mapState, mapGetters } from 'vuex';
 import { s__ } from '~/locale';
 import Tracking from '~/tracking';
 import formattingMixins from '../../formatting_mixins';
@@ -8,72 +9,24 @@ export default {
   components: {
     GlLink,
     GlSprintf,
-    GlLoadingIcon,
   },
   mixins: [formattingMixins, Tracking.mixin()],
-  props: {
-    vat: {
-      type: Number,
-      required: true,
-    },
-    totalExVat: {
-      type: Number,
-      required: true,
-    },
-    selectedPlanText: {
-      type: String,
-      required: true,
-    },
-    selectedPlanPrice: {
-      type: Number,
-      required: true,
-    },
-    totalAmount: {
-      type: Number,
-      required: true,
-    },
-    numberOfUsers: {
-      type: Number,
-      required: true,
-    },
-    usersPresent: {
-      type: Boolean,
-      required: true,
-    },
-    taxRate: {
-      type: Number,
-      required: false,
-      default: null,
-    },
-    startDate: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    endDate: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    loading: {
-      type: Boolean,
-      required: true,
-    },
-    hasError: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-  },
   computed: {
+    ...mapState(['startDate', 'taxRate', 'numberOfUsers']),
+    ...mapGetters([
+      'selectedPlanText',
+      'selectedPlanPrice',
+      'endDate',
+      'totalExVat',
+      'vat',
+      'totalAmount',
+      'usersPresent',
+    ]),
     taxAmount() {
-      return this.taxRate ? this.formatAmount(this.vat, this.showPrices) : '–';
+      return this.taxRate ? this.formatAmount(this.vat, this.usersPresent) : '–';
     },
     taxLine() {
       return `${this.$options.i18n.tax} ${this.$options.i18n.taxNote}`;
-    },
-    showPrices() {
-      return this.usersPresent && !this.hasError;
     },
   },
   i18n: {
@@ -91,28 +44,24 @@ export default {
 <template>
   <div>
     <div class="gl-display-flex gl-justify-content-space-between gl-font-weight-bold gl-mb-3">
-      <div data-testid="selected-plan" data-qa-selector="selected_plan">
+      <div class="js-selected-plan" data-qa-selector="selected_plan">
         {{ sprintf($options.i18n.selectedPlanText, { selectedPlanText }) }}
-        <span
-          v-if="usersPresent"
-          data-testid="number-of-users"
-          data-qa-selector="number_of_users"
-          >{{ sprintf($options.i18n.numberOfUsers, { numberOfUsers }) }}</span
-        >
+        <span v-if="usersPresent" class="js-number-of-users" data-qa-selector="number_of_users">{{
+          sprintf($options.i18n.numberOfUsers, { numberOfUsers })
+        }}</span>
       </div>
-      <gl-loading-icon v-if="loading" inline class="gl-my-auto gl-ml-3" />
-      <div v-else class="gl-ml-3" data-testid="amount" data-qa-selector="total">
-        {{ formatAmount(totalExVat, showPrices) }}
+      <div class="js-amount" data-qa-selector="total">
+        {{ formatAmount(totalExVat, usersPresent) }}
       </div>
     </div>
-    <div v-if="!loading" class="gl-text-gray-500" data-testid="per-user">
+    <div class="gl-text-gray-500 js-per-user">
       {{
         sprintf($options.i18n.pricePerUserPerYear, {
           selectedPlanPrice: selectedPlanPrice.toLocaleString(),
         })
       }}
     </div>
-    <div v-if="!loading" class="gl-text-gray-500" data-testid="dates">
+    <div class="gl-text-gray-500 js-dates">
       {{
         sprintf($options.i18n.dates, {
           startDate: formatDate(startDate),
@@ -125,8 +74,7 @@ export default {
       <div class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-my-5"></div>
       <div class="gl-display-flex gl-justify-content-space-between gl-text-gray-500 gl-mb-2">
         <div>{{ $options.i18n.subtotal }}</div>
-        <gl-loading-icon v-if="loading" inline class="gl-my-auto" />
-        <div v-else data-testid="total-ex-vat">{{ formatAmount(totalExVat, showPrices) }}</div>
+        <div class="js-total-ex-vat">{{ formatAmount(totalExVat, usersPresent) }}</div>
       </div>
       <div class="gl-display-flex gl-justify-content-space-between gl-text-gray-500">
         <div data-testid="tax-info-line">
@@ -143,16 +91,14 @@ export default {
             </template>
           </gl-sprintf>
         </div>
-        <gl-loading-icon v-if="loading" inline class="gl-my-auto" />
-        <div v-else data-testid="vat">{{ taxAmount }}</div>
+        <div class="js-vat">{{ taxAmount }}</div>
       </div>
     </div>
     <div class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-my-5"></div>
     <div class="gl-display-flex gl-justify-content-space-between gl-font-lg gl-font-weight-bold">
       <div>{{ $options.i18n.total }}</div>
-      <gl-loading-icon v-if="loading" inline class="gl-my-auto" />
-      <div v-else data-testid="total-amount" data-qa-selector="total_amount">
-        {{ formatAmount(totalAmount, showPrices) }}
+      <div class="js-total-amount" data-qa-selector="total_amount">
+        {{ formatAmount(totalAmount, usersPresent) }}
       </div>
     </div>
   </div>

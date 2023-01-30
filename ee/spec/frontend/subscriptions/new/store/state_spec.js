@@ -184,10 +184,6 @@ describe('projectsSelector default state', () => {
     expect(state.zipCode).toBeNull();
   });
 
-  it('sets the hasValidPriceDetails to false', () => {
-    expect(state.hasValidPriceDetails).toBe(false);
-  });
-
   it('sets the countryOptions to an empty array', () => {
     expect(state.countryOptions).toEqual([]);
   });
