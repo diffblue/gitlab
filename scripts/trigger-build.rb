@@ -9,10 +9,6 @@ module Trigger
     %w[gitlab gitlab-ee].include?(ENV['CI_PROJECT_NAME'])
   end
 
-  def self.security?
-    %r{\Agitlab-org/security(\z|/)}.match?(ENV['CI_PROJECT_NAMESPACE'])
-  end
-
   def self.non_empty_variable_value(variable)
     variable_value = ENV[variable]
 
@@ -431,8 +427,6 @@ end
 
 if $PROGRAM_NAME == __FILE__
   case ARGV[0]
-  when 'cng'
-    Trigger::CNG.new.invoke!.wait!
   when 'gitlab-com-database-testing'
     Trigger::DatabaseTesting.new.invoke!
   when 'docs'
@@ -450,7 +444,6 @@ if $PROGRAM_NAME == __FILE__
   else
     puts "Please provide a valid option:
     omnibus - Triggers a pipeline that builds the omnibus-gitlab package
-    cng - Triggers a pipeline that builds images used by the GitLab helm chart
     gitlab-com-database-testing - Triggers a pipeline that tests database changes on GitLab.com data"
   end
 end
