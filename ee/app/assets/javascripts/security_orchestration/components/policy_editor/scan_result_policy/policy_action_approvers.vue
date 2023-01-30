@@ -120,7 +120,7 @@ export default {
 <template>
   <div class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-gap-3">
     <gl-form class="gl-display-flex gl-align-items-center" @submit.prevent>
-      <div class="gl-display-flex gl-align-items-center gl-justify-content-end gl-w-28">
+      <div class="gl-display-flex gl-align-items-center gl-justify-content-end gl-w-30">
         <gl-sprintf :message="actionText">
           <template #require="{ content }">
             <strong>{{ content }}</strong>
