@@ -96,15 +96,9 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
           }
         }
         details {
-          ...FileLocation
-          ...Url
-          ...Diff
-          ...Code
-          ...Commit
+          ...NonNestedReportTypes
           ...List
-          ...Int
-          ...Boolean
-          ...ModuleLocation
+          ...Table
         }
       }
     }
