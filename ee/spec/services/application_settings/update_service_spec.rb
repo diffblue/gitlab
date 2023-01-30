@@ -50,6 +50,23 @@ RSpec.describe ApplicationSettings::UpdateService do
             expect(helper).to receive(:create_standalone_indices).with(options: { skip_if_exists: true })
             expect(helper).to receive(:migrations_index_exists?).and_return(false)
             expect(helper).to receive(:create_migrations_index)
+            expect(::Elastic::DataMigrationService).to receive(:mark_all_as_completed!)
+
+            service.execute
+          end
+        end
+
+        context 'when migrations index exists' do
+          before do
+            allow(helper).to receive(:create_empty_index).with(options: { skip_if_exists: true })
+            allow(helper).to receive(:create_standalone_indices).with(options: { skip_if_exists: true })
+
+            allow(helper).to receive(:migrations_index_exists?).and_return(true)
+          end
+
+          it 'does not create the migration index or mark migrations as complete' do
+            expect(helper).not_to receive(:create_migrations_index)
+            expect(::Elastic::DataMigrationService).not_to receive(:mark_all_as_completed!)
 
             service.execute
           end

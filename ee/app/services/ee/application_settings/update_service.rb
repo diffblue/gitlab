@@ -96,7 +96,11 @@ module EE
 
         elasticsearch_helper.create_empty_index(options: { skip_if_exists: true })
         elasticsearch_helper.create_standalone_indices(options: { skip_if_exists: true })
-        elasticsearch_helper.create_migrations_index unless elasticsearch_helper.migrations_index_exists?
+
+        unless elasticsearch_helper.migrations_index_exists?
+          elasticsearch_helper.create_migrations_index
+          ::Elastic::DataMigrationService.mark_all_as_completed!
+        end
       rescue Faraday::Error => e
         log_error(e)
       end
