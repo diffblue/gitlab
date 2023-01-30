@@ -124,7 +124,7 @@ module Gitlab
         # an empty array.
         raise "Not possible to search no projects" if options[:project_ids] == []
 
-        body[:RepoIds] = options[:project_ids] unless options[:project_ids] == :any
+        body[:RepoIDs] = options[:project_ids] unless options[:project_ids] == :any
 
         base_url = ::Zoekt::Shard.first.search_base_url
 

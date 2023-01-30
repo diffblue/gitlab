@@ -12,7 +12,6 @@ module Projects
       before_action do
         push_frontend_feature_flag(:scan_result_role_action, project)
         push_frontend_feature_flag(:license_scanning_policies, project)
-        push_frontend_feature_flag(:scan_execution_tags, project)
       end
 
       feature_category :security_policy_management
