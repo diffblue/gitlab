@@ -20965,7 +20965,7 @@ CREATE TABLE protected_environment_deploy_access_levels (
     id integer NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
-    access_level integer DEFAULT 40,
+    access_level integer,
     protected_environment_id integer NOT NULL,
     user_id integer,
     group_id integer,
