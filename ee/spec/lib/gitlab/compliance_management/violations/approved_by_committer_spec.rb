@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByCommitter do
+RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByCommitter,
+feature_category: :compliance_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:user2) { create(:user) }
   let_it_be(:user3) { create(:user) }
@@ -36,9 +37,14 @@ RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByCommitter do
         expect { execute }.to change { merge_request.compliance_violations.count }.by(2)
 
         violations = merge_request.compliance_violations.where(reason: described_class::REASON)
+        target_project_id = merge_request.target_project_id
+        target_branch = merge_request.target_branch
 
         expect(violations.map(&:violating_user)).to contain_exactly(user, user2)
         expect(violations.map(&:severity_level)).to contain_exactly('high', 'high')
+        expect(violations.map(&:target_project_id)).to contain_exactly(target_project_id, target_project_id)
+        expect(violations.map(&:title)).to contain_exactly(merge_request.title, merge_request.title)
+        expect(violations.map(&:target_branch)).to contain_exactly(target_branch, target_branch)
       end
 
       context 'when called more than once with the same violations' do
