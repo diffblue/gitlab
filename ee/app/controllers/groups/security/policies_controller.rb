@@ -9,7 +9,6 @@ module Groups
 
       before_action do
         push_frontend_feature_flag(:scan_result_role_action, group)
-        push_frontend_feature_flag(:scan_execution_tags, group)
         push_frontend_feature_flag(:license_scanning_policies, group)
       end
 

@@ -10,30 +10,18 @@ import {
 } from 'ee/security_orchestration/components/policy_editor/constants';
 import {
   DAST_HUMANIZED_TEMPLATE,
-  DAST_HUMANIZED_TEMPLATE_WITH_TAGS,
   SCANNER_HUMANIZED_TEMPLATE,
-  SCANNER_HUMANIZED_TEMPLATE_WITH_TAGS,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
 
 describe('PolicyActionBuilder', () => {
   let wrapper;
 
-  const factory = ({
-    mountFn = mountExtended,
-    props = {},
-    scanExecutionTags = false,
-    stubs = {},
-  } = {}) => {
+  const factory = ({ mountFn = mountExtended, props = {}, stubs = {} } = {}) => {
     wrapper = mountFn(PolicyActionBuilder, {
       propsData: {
         initAction: buildScannerAction({ scanner: 'dast' }),
         actionIndex: 0,
         ...props,
-      },
-      provide: {
-        glFeatures: {
-          scanExecutionTags,
-        },
       },
       stubs: { GlDropdownItem: true, ...stubs },
     });
@@ -104,6 +92,21 @@ describe('PolicyActionBuilder', () => {
     expect(wrapper.emitted('changed')).toStrictEqual([[buildScannerAction({ scanner: 'sast' })]]);
   });
 
+  it('emits the "changed" event when action tags are changed', async () => {
+    factory();
+    await nextTick();
+
+    expect(wrapper.emitted('changed')).toBe(undefined);
+
+    const branches = 'main,branch1,branch2';
+    findTagsInput().vm.$emit('input', branches);
+    await nextTick();
+
+    expect(wrapper.emitted('changed')).toStrictEqual([
+      [{ ...buildScannerAction({ scanner: 'dast' }), tags: branches.split(',') }],
+    ]);
+  });
+
   it('emits the "removed" event when an action is changed', async () => {
     factory();
     await nextTick();
@@ -114,45 +117,5 @@ describe('PolicyActionBuilder', () => {
     await nextTick();
 
     expect(wrapper.emitted('remove')).toStrictEqual([[undefined]]);
-  });
-
-  describe('with `scanExecutionTags` feature flag', () => {
-    it('renders correctly the message with DAST as the default scanner', async () => {
-      factory({
-        mountFn: shallowMountExtended,
-        scanExecutionTags: true,
-        stubs: { GlDropdown: true },
-      });
-      await nextTick();
-
-      expect(findSprintf().attributes('message')).toBe(DAST_HUMANIZED_TEMPLATE_WITH_TAGS);
-    });
-
-    it('renders correctly the message with non-DAST scanner action', async () => {
-      factory({
-        mountFn: shallowMountExtended,
-        props: { initAction: buildScannerAction({ scanner: 'sast' }) },
-        scanExecutionTags: true,
-        stubs: { GlDropdown: true },
-      });
-      await nextTick();
-
-      expect(findSprintf().attributes('message')).toBe(SCANNER_HUMANIZED_TEMPLATE_WITH_TAGS);
-    });
-
-    it('emits the "changed" event when action tags are changed', async () => {
-      factory({ scanExecutionTags: true });
-      await nextTick();
-
-      expect(wrapper.emitted('changed')).toBe(undefined);
-
-      const branches = 'main,branch1,branch2';
-      findTagsInput().vm.$emit('input', branches);
-      await nextTick();
-
-      expect(wrapper.emitted('changed')).toStrictEqual([
-        [{ ...buildScannerAction({ scanner: 'dast' }), tags: branches.split(',') }],
-      ]);
-    });
   });
 });

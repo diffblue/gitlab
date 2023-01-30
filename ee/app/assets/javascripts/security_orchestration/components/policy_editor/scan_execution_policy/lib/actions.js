@@ -1,16 +1,7 @@
 import { SCANNER_DAST } from '../constants';
 
-export function buildScannerAction({
-  scanner,
-  siteProfile = '',
-  scannerProfile = '',
-  includeTags = false,
-}) {
-  const action = { scan: scanner };
-
-  if (includeTags) {
-    action.tags = [];
-  }
+export function buildScannerAction({ scanner, siteProfile = '', scannerProfile = '' }) {
+  const action = { scan: scanner, tags: [] };
 
   if (scanner === SCANNER_DAST) {
     action.site_profile = siteProfile;
