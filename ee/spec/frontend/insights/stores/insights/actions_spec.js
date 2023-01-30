@@ -7,7 +7,7 @@ import testAction from 'helpers/vuex_action_helper';
 
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 const ERROR_MESSAGE = 'TEST_ERROR_MESSAGE';
 
@@ -97,7 +97,7 @@ describe('Insights store actions', () => {
 
     describe('success calls', () => {
       beforeEach(() => {
-        mock.onGet(TEST_HOST).reply(200, configData);
+        mock.onGet(TEST_HOST).reply(HTTP_STATUS_OK, configData);
       });
 
       it('calls requestConfig and receiveConfigSuccess', () => {
@@ -129,7 +129,7 @@ describe('Insights store actions', () => {
 
     describe('success calls with null data', () => {
       beforeEach(() => {
-        mock.onGet(TEST_HOST).reply(200, null);
+        mock.onGet(TEST_HOST).reply(HTTP_STATUS_OK, null);
       });
 
       it('calls receiveConfigError upon null config data returned', () => {
@@ -216,7 +216,7 @@ describe('Insights store actions', () => {
 
     describe('successful request', () => {
       beforeEach(() => {
-        mock.onPost(`${TEST_HOST}/query`, chart).reply(200, chartData);
+        mock.onPost(`${TEST_HOST}/query`, chart).reply(HTTP_STATUS_OK, chartData);
       });
 
       it('calls receiveChartDataSuccess with chart data', () => {

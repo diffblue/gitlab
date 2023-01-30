@@ -15,6 +15,7 @@ import createStore from 'ee/analytics/cycle_analytics/store';
 import * as getters from 'ee/analytics/cycle_analytics/store/getters';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert, VARIANT_INFO } from '~/flash';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { groupLabels, groupLabelNames as selectedLabelNames } from '../../mock_data';
 
 const findSubjectFilters = (ctx) => ctx.findComponent(GlSegmentedControl);
@@ -28,7 +29,8 @@ const selectLabelAtIndex = (ctx, index) => {
   return waitForPromises();
 };
 
-const mockGroupLabelsRequest = () => new MockAdapter(axios).onGet().reply(200, groupLabels);
+const mockGroupLabelsRequest = () =>
+  new MockAdapter(axios).onGet().reply(HTTP_STATUS_OK, groupLabels);
 
 let store = null;
 Vue.use(Vuex);

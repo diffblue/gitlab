@@ -6,6 +6,7 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { createAlert } from '~/flash';
 import ScimToken from 'ee/saml_sso/components/scim_token.vue';
 import InputCopyToggleVisibility from '~/vue_shared/components/form/input_copy_toggle_visibility.vue';
@@ -154,7 +155,7 @@ describe('ScimToken', () => {
     describe(`when \`${ScimToken.i18n.generateTokenButtonText}\` button is clicked`, () => {
       describe('when API request is successful', () => {
         beforeEach(async () => {
-          axiosMock.onPost(defaultProvide.generateTokenPath).reply(200, mockApiResponse);
+          axiosMock.onPost(defaultProvide.generateTokenPath).reply(HTTP_STATUS_OK, mockApiResponse);
 
           await findGenerateTokenButton().trigger('click');
         });
@@ -225,7 +226,7 @@ describe('ScimToken', () => {
     describe('when `reset it` button is clicked', () => {
       describe('when API request is successful', () => {
         beforeEach(async () => {
-          axiosMock.onPost(defaultProvide.generateTokenPath).reply(200, mockApiResponse);
+          axiosMock.onPost(defaultProvide.generateTokenPath).reply(HTTP_STATUS_OK, mockApiResponse);
 
           resetAndConfirm();
         });
