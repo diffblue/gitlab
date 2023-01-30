@@ -42,7 +42,7 @@ RSpec.describe Members::AwaitService, :saas do
 
       it 'calls UserProjectAccessChangedService' do
         expect_next_instance_of(UserProjectAccessChangedService, user.id) do |service|
-          expect(service).to receive(:execute).with(blocking: false)
+          expect(service).to receive(:execute)
         end
 
         execute

@@ -23,7 +23,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::MembershipUpdater do
   end
 
   it 'adds the member with the specified `default_membership_role`' do
-    expect(group).to receive(:add_member).with(user, Gitlab::Access::DEVELOPER, blocking_refresh: false).and_call_original
+    expect(group).to receive(:add_member).with(user, Gitlab::Access::DEVELOPER).and_call_original
 
     update_membership
 

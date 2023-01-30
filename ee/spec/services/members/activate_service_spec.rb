@@ -21,7 +21,7 @@ RSpec.describe Members::ActivateService do
 
     it 'calls UserProjectAccessChangedService' do
       expect_next_instance_of(UserProjectAccessChangedService, match_array(members.map(&:user_id).uniq)) do |service|
-        expect(service).to receive(:execute).with(blocking: false)
+        expect(service).to receive(:execute)
       end
 
       execute
