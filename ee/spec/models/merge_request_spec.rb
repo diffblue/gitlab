@@ -1331,4 +1331,31 @@ RSpec.describe MergeRequest do
       end
     end
   end
+
+  context 'after_update hooks' do
+    describe 'sync_merge_request_compliance_violation' do
+      let_it_be(:merge_request) do
+        create(:merge_request, source_project: project, target_project: project, state: :merged, title: 'old MR title')
+      end
+
+      let_it_be(:compliance_violation) do
+        create(:compliance_violation, :approved_by_committer, severity_level: :low, merge_request: merge_request, title: 'old MR title')
+      end
+
+      it "calls sync_merge_request_compliance_violation when the MR title is updated" do
+        expect(merge_request.compliance_violations.pluck(:title)).to contain_exactly('old MR title')
+        expect(merge_request).to receive(:sync_merge_request_compliance_violation).and_call_original
+
+        merge_request.update_attribute(:title, "new MR title")
+
+        expect(merge_request.compliance_violations.pluck(:title)).to contain_exactly('new MR title')
+      end
+
+      it "does not call sync_merge_request_compliance_violation when the MR title is not updated" do
+        expect(merge_request).not_to receive(:sync_merge_request_compliance_violation)
+
+        merge_request.update_attribute(:milestone, Milestone.last)
+      end
+    end
+  end
 end

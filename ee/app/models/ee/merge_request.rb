@@ -83,6 +83,12 @@ module EE
         joins(:approval_rules).merge(ApprovalMergeRequestRule.scan_finding)
       end
 
+      after_update :sync_merge_request_compliance_violation, if: :saved_change_to_title?
+
+      def sync_merge_request_compliance_violation
+        compliance_violations.update_all(title: title)
+      end
+
       def merge_requests_author_approval?
         !!target_project&.merge_requests_author_approval?
       end

@@ -2,8 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group elastic search', :js, :elastic, :sidekiq_inline, feature_category: :global_search do
-  let(:user) { create(:user) }
+RSpec.describe 'Group elastic search', :js, :elastic, :sidekiq_inline, :disable_rate_limiter,
+feature_category: :global_search do
+  let_it_be(:user) { create(:user) }
+
   let(:group) { create(:group) }
   let(:project) { create(:project, :repository, :wiki_repo, namespace: group) }
 
@@ -16,92 +18,87 @@ RSpec.describe 'Group elastic search', :js, :elastic, :sidekiq_inline, feature_c
     end
   end
 
-  where(search_page_vertical_nav_enabled: [true, false])
+  before do
+    stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
 
-  with_them do
+    project.add_maintainer(user)
+    group.add_owner(user)
+
+    sign_in(user)
+
+    visit(search_path)
+
+    wait_for_requests
+
+    choose_group(group)
+  end
+
+  describe 'issue search' do
     before do
-      stub_feature_flags(search_page_vertical_nav: search_page_vertical_nav_enabled)
-      stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+      create(:issue, project: project, title: 'chosen issue title')
 
-      project.add_maintainer(user)
-      group.add_owner(user)
-
-      sign_in(user)
-
-      visit(search_path)
-
-      wait_for_requests
-
-      choose_group(group)
+      ensure_elasticsearch_index!
     end
 
-    describe 'issue search' do
-      before do
-        create(:issue, project: project, title: 'chosen issue title')
+    it 'finds the issue' do
+      submit_search('chosen')
+      select_search_scope('Issues')
 
-        ensure_elasticsearch_index!
-      end
+      expect(page).to have_content('chosen issue title')
+    end
+  end
 
-      it 'finds the issue' do
-        submit_search('chosen')
-        select_search_scope('Issues')
+  describe 'blob search' do
+    before do
+      project.repository.index_commits_and_blobs
 
-        expect(page).to have_content('chosen issue title')
-      end
+      ensure_elasticsearch_index!
     end
 
-    describe 'blob search' do
-      before do
-        project.repository.index_commits_and_blobs
+    it 'finds files' do
+      submit_search('def')
+      select_search_scope('Code')
 
-        ensure_elasticsearch_index!
-      end
+      expect(page).to have_selector('.file-content .code')
+      expect(page).to have_button('Copy file path')
+    end
+  end
 
-      it 'finds files' do
-        submit_search('def')
-        select_search_scope('Code')
+  describe 'wiki search' do
+    let(:wiki) { ProjectWiki.new(project, user) }
 
-        expect(page).to have_selector('.file-content .code')
-        expect(page).to have_button('Copy file path')
-      end
+    before do
+      wiki.create_page('test.md', '# term')
+      wiki.index_wiki_blobs
+
+      ensure_elasticsearch_index!
     end
 
-    describe 'wiki search' do
-      let(:wiki) { ProjectWiki.new(project, user) }
+    it 'finds wiki pages' do
+      submit_search('term')
+      select_search_scope('Wiki')
 
-      before do
-        wiki.create_page('test.md', '# term')
-        wiki.index_wiki_blobs
+      expect(page).to have_selector('.search-result-row .description', text: 'term')
+      expect(page).to have_link('test')
+    end
+  end
 
-        ensure_elasticsearch_index!
-      end
-
-      it 'finds wiki pages' do
-        submit_search('term')
-        select_search_scope('Wiki')
-
-        expect(page).to have_selector('.search-result-row .description', text: 'term')
-        expect(page).to have_link('test')
-      end
+  describe 'commit search' do
+    before do
+      project.repository.index_commits_and_blobs
+      ensure_elasticsearch_index!
     end
 
-    describe 'commit search' do
-      before do
-        project.repository.index_commits_and_blobs
-        ensure_elasticsearch_index!
-      end
+    it 'finds commits' do
+      submit_search('add')
+      select_search_scope('Commits')
 
-      it 'finds commits' do
-        submit_search('add')
-        select_search_scope('Commits')
-
-        expect(page).to have_selector('.commit-list > .commit')
-      end
+      expect(page).to have_selector('.commit-list > .commit')
     end
   end
 end
 
-RSpec.describe 'Group elastic search redactions' do
+RSpec.describe 'Group elastic search redactions', feature_category: :global_search do
   it_behaves_like 'a redacted search results page' do
     let(:search_path) { group_path(public_group) }
   end

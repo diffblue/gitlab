@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByMergeRequestAuthor do
+RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByMergeRequestAuthor,
+feature_category: :compliance_management do
   let_it_be(:author) { create(:user) }
   let_it_be(:merge_request) { create(:merge_request, state: :merged, author: author) }
 
@@ -17,6 +18,9 @@ RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByMergeRequestA
 
         expect(violations.map(&:violating_user)).to contain_exactly(author)
         expect(violations.map(&:severity_level)).to contain_exactly('high')
+        expect(violations.map(&:target_project_id)).to contain_exactly(merge_request.target_project_id)
+        expect(violations.map(&:title)).to contain_exactly(merge_request.title)
+        expect(violations.map(&:target_branch)).to contain_exactly(merge_request.target_branch)
       end
     end
 

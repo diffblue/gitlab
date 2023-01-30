@@ -20,7 +20,11 @@ module Gitlab
             @merge_request.compliance_violations.create(
               violating_user: @merge_request.metrics&.merged_by || @merge_request.merge_user,
               reason: REASON,
-              severity_level: SEVERITY_LEVEL
+              severity_level: SEVERITY_LEVEL,
+              merged_at: @merge_request.merged_at,
+              target_project_id: @merge_request.target_project_id,
+              title: @merge_request.title,
+              target_branch: @merge_request.target_branch
             )
           end
         end
