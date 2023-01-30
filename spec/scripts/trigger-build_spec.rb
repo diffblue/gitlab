@@ -16,7 +16,7 @@ RSpec.describe Trigger, feature_category: :tooling do
       'CI_COMMIT_SHA' => 'ci_commit_sha',
       'CI_MERGE_REQUEST_PROJECT_ID' => 'ci_merge_request_project_id',
       'CI_MERGE_REQUEST_IID' => 'ci_merge_request_iid',
-      'GITLAB_BOT_MULTI_PROJECT_PIPELINE_POLLING_TOKEN' => 'bot-token',
+      'PROJECT_TOKEN_FOR_CI_SCRIPTS_API_USAGE' => 'bot-token',
       'CI_JOB_TOKEN' => 'job-token',
       'GITLAB_USER_NAME' => 'gitlab_user_name',
       'GITLAB_USER_LOGIN' => 'gitlab_user_login',
@@ -26,7 +26,7 @@ RSpec.describe Trigger, feature_category: :tooling do
   end
 
   let(:com_api_endpoint) { 'https://gitlab.com/api/v4' }
-  let(:com_api_token) { env['GITLAB_BOT_MULTI_PROJECT_PIPELINE_POLLING_TOKEN'] }
+  let(:com_api_token) { env['PROJECT_TOKEN_FOR_CI_SCRIPTS_API_USAGE'] }
   let(:com_gitlab_client) { double('com_gitlab_client') }
 
   let(:downstream_gitlab_client_endpoint) { com_api_endpoint }
