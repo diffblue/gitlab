@@ -179,6 +179,8 @@ module Ci
       run_after_commit { build.execute_hooks }
     end
 
+    after_commit :track_ci_secrets_management_id_tokens_usage, on: :create, if: :id_tokens?
+
     class << self
       # This is needed for url_for to work,
       # as the controller is JobsController
@@ -1280,6 +1282,10 @@ module Ci
           .build_completed_report_type_counter(report_type)
           .increment(status: status)
       end
+    end
+
+    def track_ci_secrets_management_id_tokens_usage
+      ::Gitlab::UsageDataCounters::HLLRedisCounter.track_event('i_ci_secrets_management_id_tokens_build_created', values: user_id)
     end
   end
 end
