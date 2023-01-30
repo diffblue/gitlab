@@ -43,6 +43,16 @@ feature_category: :vulnerability_management do
 
   subject { service.execute }
 
+  # Modification of this class may carry unintended risk for self-managed users by breaking unapplied
+  # Background Migrations.
+  # Please consult https://gitlab.com/gitlab-org/gitlab/-/issues/389600 for further information.
+  it 'matches an expected checksum' do
+    code_file_path = Rails.root.join("ee/app/services/vulnerabilities/find_or_create_from_security_finding_service.rb")
+    code_definition = File.read(code_file_path)
+    expected_checksum = "607625f9434aca06e505da03296dd93cb34543908f77e51c37af5618c58d8222"
+    expect(Digest::SHA256.hexdigest(code_definition)).to eq(expected_checksum)
+  end
+
   context 'when there is an existing vulnerability for the security finding' do
     let_it_be(:security_finding) { create(:security_finding) }
 
