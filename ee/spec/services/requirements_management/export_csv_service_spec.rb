@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe RequirementsManagement::ExportCsvService do
+RSpec.describe RequirementsManagement::ExportCsvService, feature_category: :importers do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create_default(:group) }
   let_it_be(:project) { create_default(:project, :public) }

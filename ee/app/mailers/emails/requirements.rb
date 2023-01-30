@@ -15,7 +15,7 @@ module Emails
     def requirements_csv_email(user, project, csv_data, export_status)
       @project = project
       @count, @written_count, @truncated = export_status.fetch_values(:rows_expected, :rows_written, :truncated)
-      @size_limit = ActiveSupport::NumberHelper.number_to_human_size(Issuable::ExportCsv::BaseService::TARGET_FILESIZE)
+      @size_limit = ActiveSupport::NumberHelper.number_to_human_size(ExportCsv::BaseService::TARGET_FILESIZE)
 
       filename = "#{project.full_path.parameterize}_requirements_#{Date.current.iso8601}.csv"
       attachments[filename] = { content: csv_data, mime_type: 'text/csv' }

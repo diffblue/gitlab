@@ -9,7 +9,7 @@ module EE
       attr_accessor :user, :cached_redacted_epics
 
       override :initialize
-      def initialize(issuables_relation, project, user = nil)
+      def initialize(relation, resource_parent, user = nil)
         super
 
         @cached_redacted_epics = {}
@@ -58,7 +58,7 @@ module EE
 
       def epics_available?
         strong_memoize(:epics_available) do
-          project.group&.feature_available?(:epics)
+          resource_parent.group&.feature_available?(:epics)
         end
       end
     end
