@@ -114,25 +114,6 @@ RSpec.describe Trigger, feature_category: :tooling do
 
           subject.invoke!
         end
-
-        context 'with downstream_job_name: "foo"' do
-          let(:downstream_job) { Struct.new(:id, :name).new(42, 'foo') }
-          let(:paginated_resources) { Struct.new(:auto_paginate).new([downstream_job]) }
-
-          before do
-            stub_env('CI_COMMIT_REF_NAME', "#{ref}-ee")
-          end
-
-          it 'fetches the downstream job' do
-            expect_run_trigger_with_params
-            expect(downstream_gitlab_client).to receive(:pipeline_jobs)
-              .with(downstream_project_path, stubbed_pipeline.id).and_return(paginated_resources)
-            expect(Trigger::Job).to receive(:new)
-              .with(downstream_project_path, downstream_job.id, downstream_gitlab_client)
-
-            subject.invoke!(downstream_job_name: 'foo')
-          end
-        end
       end
     end
 

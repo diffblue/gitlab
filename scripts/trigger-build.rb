@@ -33,7 +33,7 @@ module Trigger
       ENV['GITLAB_BOT_MULTI_PROJECT_PIPELINE_POLLING_TOKEN']
     end
 
-    def invoke!(downstream_job_name: nil)
+    def invoke!
       pipeline_variables = variables
 
       puts "Triggering downstream pipeline on #{downstream_project_path}"
@@ -48,18 +48,7 @@ module Trigger
       puts "Triggered downstream pipeline: #{pipeline.web_url}\n"
       puts "Waiting for downstream pipeline status"
 
-      downstream_job =
-        if downstream_job_name
-          downstream_client.pipeline_jobs(downstream_project_path, pipeline.id).auto_paginate.find do |potential_job|
-            potential_job.name == downstream_job_name
-          end
-        end
-
-      if downstream_job
-        Trigger::Job.new(downstream_project_path, downstream_job.id, downstream_client)
-      else
-        Trigger::Pipeline.new(downstream_project_path, pipeline.id, downstream_client)
-      end
+      Trigger::Pipeline.new(downstream_project_path, pipeline.id, downstream_client)
     end
 
     def variables
@@ -321,7 +310,7 @@ module Trigger
   class DatabaseTesting < Base
     IDENTIFIABLE_NOTE_TAG = 'gitlab-org/database-team/gitlab-com-database-testing:identifiable-note'
 
-    def invoke!(downstream_job_name: nil)
+    def invoke!
       pipeline = super
       project_path = variables['TOP_UPSTREAM_SOURCE_PROJECT']
       merge_request_id = variables['TOP_UPSTREAM_MERGE_REQUEST_IID']
@@ -438,8 +427,6 @@ module Trigger
 
     attr_reader :project, :gitlab_client, :start_time
   end
-
-  Job = Class.new(Pipeline)
 end
 
 if $PROGRAM_NAME == __FILE__
