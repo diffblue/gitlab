@@ -44,6 +44,16 @@ RSpec.describe Vulnerabilities::CreateService, feature_category: :vulnerability_
     end
   end
 
+  # Modification of this class may carry unintended risk for self-managed users by breaking unapplied
+  # Background Migrations.
+  # Please consult https://gitlab.com/gitlab-org/gitlab/-/issues/389600 for further information.
+  it 'matches an expected checksum' do
+    code_file_path = Rails.root.join("ee/app/services/vulnerabilities/create_service.rb")
+    code_definition = File.read(code_file_path)
+    expected_checksum = "dc796744c211cda953789a1133c0688f4fbde6aef5a32f6f27844c679cf0e3f0"
+    expect(Digest::SHA256.hexdigest(code_definition)).to eq(expected_checksum)
+  end
+
   context 'with an authorized user with proper permissions' do
     before do
       project.add_developer(user)
