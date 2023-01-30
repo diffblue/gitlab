@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'registrations/welcome/continuous_onboarding_getting_started' do
+RSpec.describe 'registrations/welcome/continuous_onboarding_getting_started', feature_category: :onboarding do
   describe 'project import state' do
     let_it_be(:project) { create(:project) }
 

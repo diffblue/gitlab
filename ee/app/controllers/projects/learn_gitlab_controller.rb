@@ -15,7 +15,7 @@ module Projects
     private
 
     def verify_learn_gitlab_available!
-      access_denied! unless helpers.learn_gitlab_enabled?(project)
+      access_denied! unless Onboarding::LearnGitlab.new(current_user).onboarding_and_available?(project.namespace)
     end
 
     def enable_invite_for_help_continuous_onboarding_experiment

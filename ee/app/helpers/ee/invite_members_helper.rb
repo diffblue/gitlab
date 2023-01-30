@@ -56,5 +56,15 @@ module EE
 
       { users_filter: 'saml_provider_id', filter_id: root_group.saml_provider.id }
     end
+
+    private
+
+    override :show_invite_members_for_task?
+    def show_invite_members_for_task?(source)
+      invite_for_help_continuous_onboarding = source.is_a?(Project) &&
+        experiment(:invite_for_help_continuous_onboarding, namespace: source.namespace).assigned.name == 'candidate'
+
+      super || invite_for_help_continuous_onboarding
+    end
   end
 end

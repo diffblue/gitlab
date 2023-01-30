@@ -14,8 +14,6 @@ module Registrations
 
     private
 
-    LEARN_GITLAB_ULTIMATE_TEMPLATE = 'learn_gitlab_ultimate.tar.gz'
-
     def new_group?
       !existing_group_id
     end
@@ -76,7 +74,7 @@ module Registrations
     end
 
     def learn_gitlab_template_path
-      Rails.root.join('vendor', 'project_templates', LEARN_GITLAB_ULTIMATE_TEMPLATE)
+      Rails.root.join('vendor', 'project_templates', Onboarding::LearnGitlab::TEMPLATE_NAME)
     end
 
     def learn_gitlab_project_name

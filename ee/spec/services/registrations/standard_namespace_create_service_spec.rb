@@ -173,8 +173,8 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
 
     context 'with learn gitlab project', :sidekiq_inline do
       where(:trial, :project_name, :template) do
-        'false' | 'Learn GitLab'                  | described_class::LEARN_GITLAB_ULTIMATE_TEMPLATE
-        'true'  | 'Learn GitLab - Ultimate trial' | described_class::LEARN_GITLAB_ULTIMATE_TEMPLATE
+        'false' | 'Learn GitLab'                  | Onboarding::LearnGitlab::TEMPLATE_NAME
+        'true'  | 'Learn GitLab - Ultimate trial' | Onboarding::LearnGitlab::TEMPLATE_NAME
       end
 
       with_them do

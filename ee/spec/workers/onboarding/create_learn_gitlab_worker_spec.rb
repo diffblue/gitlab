@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Onboarding::CreateLearnGitlabWorker, type: :worker do
+RSpec.describe Onboarding::CreateLearnGitlabWorker, type: :worker, feature_category: :onboarding do
   include AfterNextHelpers
 
   let_it_be(:namespace) { create(:namespace) }
@@ -43,6 +43,23 @@ RSpec.describe Onboarding::CreateLearnGitlabWorker, type: :worker do
         }
 
         expect(logger).to receive(:error).with(a_hash_including(log_parameters))
+
+        perform
+      end
+    end
+
+    context 'when learn gitlab project already exists' do
+      let(:logger) { described_class.new.send(:logger) }
+      let(:project_name) { Onboarding::LearnGitlab::PROJECT_NAME }
+
+      before do
+        create(:project, name: project_name, namespace: namespace)
+      end
+
+      it 'invokes Projects::GitlabProjectsImportService' do
+        expect(File).not_to receive(:open).with(template_path)
+        expect_next(::Projects::GitlabProjectsImportService).not_to receive(:execute)
+        expect(logger).not_to receive(:error)
 
         perform
       end

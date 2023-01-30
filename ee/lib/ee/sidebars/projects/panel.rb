@@ -10,8 +10,14 @@ module EE
         def configure_menus
           super
 
-          insert_menu_before(::Sidebars::Projects::Menus::ProjectInformationMenu,
-                             ::Sidebars::Projects::Menus::TrialWidgetMenu.new(context))
+          insert_menu_before(
+            ::Sidebars::Projects::Menus::ProjectInformationMenu,
+            ::Sidebars::Projects::Menus::TrialWidgetMenu.new(context)
+          )
+          insert_menu_after(
+            ::Sidebars::Projects::Menus::ProjectInformationMenu,
+            ::Sidebars::Projects::Menus::LearnGitlabMenu.new(context)
+          )
 
           if ::Sidebars::Projects::Menus::IssuesMenu.new(context).show_jira_menu_items?
             remove_menu(::Sidebars::Projects::Menus::ExternalIssueTrackerMenu)
