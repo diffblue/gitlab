@@ -26,6 +26,7 @@ function initJobs() {
         return createElement(CANCEL_JOBS_MODAL_ID, {
           props: {
             url: cancelJobsButton.dataset.url,
+            modalId: CANCEL_JOBS_MODAL_ID,
           },
         });
       },
