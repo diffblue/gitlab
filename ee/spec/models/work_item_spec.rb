@@ -3,6 +3,46 @@
 require 'spec_helper'
 
 RSpec.describe WorkItem do
+  describe '#supported_quick_action_commands' do
+    subject { work_item.supported_quick_action_commands }
+
+    before do
+      stub_licensed_features(issuable_health_status: true, issue_weights: true)
+    end
+
+    context 'when work item supports the health status widget' do
+      let(:work_item) { build(:work_item, :objective) }
+
+      it 'returns health status related quick action commands' do
+        is_expected.to include(:health_status, :clear_health_status)
+      end
+    end
+
+    context 'when work item does not the health status widget' do
+      let(:work_item) { build(:work_item, :task) }
+
+      it 'omits assignee related quick action commands' do
+        is_expected.not_to include(:health_status, :clear_health_status)
+      end
+    end
+
+    context 'when work item supports the weight widget' do
+      let(:work_item) { build(:work_item, :task) }
+
+      it 'returns labels related quick action commands' do
+        is_expected.to include(:weight, :clear_weight)
+      end
+    end
+
+    context 'when work item does not support the weight widget' do
+      let(:work_item) { build(:work_item, :objective) }
+
+      it 'omits labels related quick action commands' do
+        is_expected.not_to include(:weight, :clear_weight)
+      end
+    end
+  end
+
   describe '#widgets' do
     subject { build(:work_item).widgets }
 
