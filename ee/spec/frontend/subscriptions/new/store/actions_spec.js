@@ -312,18 +312,6 @@ describe('Subscriptions Actions', () => {
     });
   });
 
-  describe('updateHasValidPriceDetails', () => {
-    it('updates hasValidPriceDetails to the provided value', async () => {
-      await testAction(
-        actions.updateHasValidPriceDetails,
-        true,
-        {},
-        [{ type: 'UPDATE_HAS_VALID_PRICE_DETAILS', payload: true }],
-        [],
-      );
-    });
-  });
-
   describe('startLoadingZuoraScript', () => {
     it('updates isLoadingPaymentMethod to true', async () => {
       await testAction(

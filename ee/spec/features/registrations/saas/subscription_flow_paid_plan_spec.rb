@@ -4,13 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Subscription flow for paid plan', :js, :saas, :saas_registration,
 feature_category: :onboarding do
-  include SubscriptionPortalHelpers
-
   it 'registers the user and sends them back to subscription checkout' do
-    stub_signing_key
-
-    stub_invoice_preview
-
     registers_from_subscription
 
     expect_to_see_account_confirmation_page
