@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Edit group settings', :js, feature_category: :authentication_and_authorization do
   include LdapHelpers
+  include ListboxHelpers
 
   let(:user) { create(:user) }
   let(:group) { create(:group, path: 'foo') }
@@ -35,8 +36,7 @@ RSpec.describe 'Edit group settings', :js, feature_category: :authentication_and
         page.within('form#new_ldap_group_link') do
           choose('sync_method_group')
 
-          find('.gl-dropdown-toggle').click
-          find('.gl-dropdown-item', text: 'my-group-cn').click
+          select_from_listbox('my-group-cn', from: 'Select a LDAP group')
           select 'Developer', from: 'ldap_group_link_group_access'
 
           click_button 'Add synchronization'

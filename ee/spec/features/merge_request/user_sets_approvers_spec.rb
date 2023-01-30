@@ -28,8 +28,8 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
       open_modal(text: 'Add approval rule')
       click_button 'Search users or groups'
 
-      expect(find('.gl-dropdown-contents')).not_to have_content(author.name)
-      expect(find('.gl-dropdown-contents')).to have_content(user.name)
+      expect_no_listbox_item(author.name)
+      expect_listbox_item(user.name)
     end
   end
 
@@ -50,8 +50,8 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
       open_modal(text: 'Add approval rule')
       click_button 'Search users or groups'
 
-      expect(find('.gl-dropdown-contents')).to have_content(other_user.name)
-      expect(find('.gl-dropdown-contents')).not_to have_content(non_member.name)
+      expect_listbox_item(other_user.name)
+      expect_no_listbox_item(non_member.name)
     end
   end
 
