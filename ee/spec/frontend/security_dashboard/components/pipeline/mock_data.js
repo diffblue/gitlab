@@ -414,6 +414,11 @@ export const vulnerabilityDetails = {
     name: 'Integer value',
     value: 'true',
   },
+  list: {
+    type: 'VulnerabilityDetailList',
+    name: 'List',
+    items: [],
+  },
 };
 
 export const pipelineSecurityReportFinding = {
