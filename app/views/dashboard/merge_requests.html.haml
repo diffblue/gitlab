@@ -13,7 +13,7 @@
       = render 'shared/new_project_item_select', path: 'merge_requests/new', label: _("merge request"), with_feature_enabled: 'merge_requests', type: :merge_requests
 
 .top-area
-  = render 'shared/issuable/nav', type: :merge_requests, display_count: !@no_filters_set
+  = render 'shared/issuable/nav', type: :merge_requests, display_count: !(@no_filters_set || @search_timeout_occurred)
 
 = render 'shared/issuable/search_bar', type: :merge_requests, disable_target_branch: true
 
