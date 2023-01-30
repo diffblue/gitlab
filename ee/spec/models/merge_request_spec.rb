@@ -52,7 +52,7 @@ RSpec.describe MergeRequest do
             rule.update!(approval_project_rule: source_rule)
           end
 
-          context 'and rule is not overridden' do
+          context 'and rule is not modified_from_project_rule' do
             before do
               rule.update!(
                 name: source_rule.name,
@@ -85,12 +85,30 @@ RSpec.describe MergeRequest do
             end
           end
 
-          context 'and rule is overridden' do
+          context 'and rule is modified_from_project_rule' do
             before do
               rule.update!(name: 'Overridden Rule')
             end
 
             it_behaves_like 'with applicable rules to specified branch'
+          end
+
+          context 'and rule is overridden but not modified_from_project_rule' do
+            before do
+              source_rule.update!(name: 'Overridden Rule')
+            end
+
+            it_behaves_like 'with applicable rules to specified branch'
+
+            context 'and protected branches exist but branch does not match anything' do
+              before do
+                source_rule.update!(protected_branches: protected_branches)
+              end
+
+              let(:protected_branches) { [create(:protected_branch, name: branch.reverse)] }
+
+              it { is_expected.to be_empty }
+            end
           end
         end
       end
