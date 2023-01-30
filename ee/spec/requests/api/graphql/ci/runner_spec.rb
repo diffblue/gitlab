@@ -65,8 +65,8 @@ RSpec.describe 'Query.runner(id)', feature_category: :runner_fleet do
         it_behaves_like('runner details fetch operation returning expected upgradeStatus')
       end
 
-      context 'with RunnerUpgradeCheck returning :not_available' do
-        let(:upgrade_status) { :not_available }
+      context 'with RunnerUpgradeCheck returning :unavailable' do
+        let(:upgrade_status) { :unavailable }
         let(:expected_upgrade_status) { 'NOT_AVAILABLE' }
 
         it_behaves_like('runner details fetch operation returning expected upgradeStatus')
@@ -104,8 +104,8 @@ RSpec.describe 'Query.runner(id)', feature_category: :runner_fleet do
         ultimate_group.add_reporter(user)
       end
 
-      context 'with RunnerUpgradeCheck returning :not_available' do
-        let(:upgrade_status) { :not_available }
+      context 'with RunnerUpgradeCheck returning :unavailable' do
+        let(:upgrade_status) { :unavailable }
         let(:expected_upgrade_status) { 'NOT_AVAILABLE' }
 
         it_behaves_like('runner details fetch operation returning expected upgradeStatus')
