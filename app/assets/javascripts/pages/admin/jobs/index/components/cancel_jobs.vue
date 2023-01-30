@@ -29,7 +29,7 @@ export default {
     <gl-button
       v-gl-modal="$options.modalId"
       v-gl-tooltip="$options.buttonTooltip"
-      :variant="'danger'"
+      variant="danger"
       >{{ $options.buttonText }}</gl-button
     >
     <cancel-jobs-modal :modal-id="$options.modalId" :url="url" @confirm="$emit('confirm')" />
