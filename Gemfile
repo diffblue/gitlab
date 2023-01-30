@@ -15,7 +15,7 @@ gem 'bundler-checksum', '~> 0.1.0', path: 'vendor/gems/bundler-checksum', requir
 # https://gitlab.com/gitlab-org/gitlab/-/issues/375713
 gem 'rails', '~> 6.1.7.1'
 
-gem 'bootsnap', '~> 1.15.0', require: false
+gem 'bootsnap', '~> 1.16.0', require: false
 
 # Pin openssl to match the version bundled with our supported Rubies.
 # See https://stdgems.org/openssl/#gem-version.
