@@ -3,6 +3,7 @@ import * as actions from 'ee/issues_analytics/stores/modules/issue_analytics/act
 import { TEST_HOST } from 'helpers/test_constants';
 import testAction from 'helpers/vuex_action_helper';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 describe('Issue analytics store actions', () => {
   describe('setFilters', () => {
@@ -34,7 +35,7 @@ describe('Issue analytics store actions', () => {
       commit = jest.fn().mockName('commit');
       mock = new MockAdapter(axios);
 
-      mock.onGet().reply(200, chartData);
+      mock.onGet().reply(HTTP_STATUS_OK, chartData);
     });
 
     afterEach(() => {

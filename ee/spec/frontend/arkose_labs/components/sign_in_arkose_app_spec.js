@@ -4,7 +4,11 @@ import { loadHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import SignInArkoseApp from 'ee/arkose_labs/components/sign_in_arkose_app.vue';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
+import {
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_OK,
+} from '~/lib/utils/http_status';
 import { logError } from '~/lib/logger';
 import waitForPromises from 'helpers/wait_for_promises';
 import { initArkoseLabsScript } from 'ee/arkose_labs/init_arkose_labs_script';
@@ -140,7 +144,7 @@ describe('SignInArkoseApp', () => {
 
     describe('if the challenge is not needed', () => {
       beforeEach(async () => {
-        axiosMock.onPost().reply(200, { result: false });
+        axiosMock.onPost().reply(HTTP_STATUS_OK, { result: false });
         initArkoseLabs(MOCK_USERNAME);
         await waitForPromises();
       });
@@ -161,7 +165,7 @@ describe('SignInArkoseApp', () => {
 
       describe('if the challenge becomes needed', () => {
         beforeEach(async () => {
-          axiosMock.onPost().reply(200, { result: true });
+          axiosMock.onPost().reply(HTTP_STATUS_OK, { result: true });
           setUsername(`malicious-${MOCK_USERNAME}`);
           await waitForPromises();
         });
@@ -175,7 +179,7 @@ describe('SignInArkoseApp', () => {
     // See https://gitlab.com/gitlab-com/www-gitlab-com/-/issues/13927
     describe('when username input loses focus (blur) and the form is submitted in quick succession', () => {
       it('waits for all checks to determine if challenge needs to be shown to finish before submitting the form', async () => {
-        axiosMock.onPost().reply(200, { result: true });
+        axiosMock.onPost().reply(HTTP_STATUS_OK, { result: true });
 
         initArkoseLabs();
 
@@ -220,7 +224,7 @@ describe('SignInArkoseApp', () => {
       beforeEach(() => {
         initArkoseLabs();
         jest.spyOn(findSignInForm(), 'submit');
-        axiosMock.onPost().reply(200, { result: false });
+        axiosMock.onPost().reply(HTTP_STATUS_OK, { result: false });
         findUsernameInput().value = `noblur-${MOCK_USERNAME}`;
       });
 
@@ -242,7 +246,7 @@ describe('SignInArkoseApp', () => {
 
       describe('when the challenge becomes needed', () => {
         beforeEach(() => {
-          axiosMock.onPost().reply(200, { result: true });
+          axiosMock.onPost().reply(HTTP_STATUS_OK, { result: true });
           submitForm();
           return waitForPromises();
         });
@@ -261,7 +265,7 @@ describe('SignInArkoseApp', () => {
 
     describe('if the challenge is needed', () => {
       beforeEach(async () => {
-        axiosMock.onPost().reply(200, { result: true });
+        axiosMock.onPost().reply(HTTP_STATUS_OK, { result: true });
         initArkoseLabs(MOCK_USERNAME);
         await waitForPromises();
       });
@@ -356,7 +360,7 @@ describe('SignInArkoseApp', () => {
       initArkoseLabsScript.mockImplementation(() => {
         throw new Error();
       });
-      axiosMock.onPost().reply(200, { result: true });
+      axiosMock.onPost().reply(HTTP_STATUS_OK, { result: true });
       initArkoseLabs(MOCK_USERNAME);
       await waitForPromises();
 

@@ -4,6 +4,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import BurnupQueryIteration from 'shared_queries/burndown_chart/burnup.iteration.query.graphql';
 import BurnupQueryMilestone from 'shared_queries/burndown_chart/burnup.milestone.query.graphql';
 import BurnCharts from 'ee/burndown_chart/components/burn_charts.vue';
@@ -213,7 +214,7 @@ describe('burndown_chart', () => {
     it('calls fetchLegacyBurndownEvents, but only once', () => {
       createComponent({ props: { showNewOldBurndownToggle: true } });
       jest.spyOn(wrapper.vm, 'fetchLegacyBurndownEvents');
-      mock.onGet(defaultProps.burndownEventsPath).reply(200, []);
+      mock.onGet(defaultProps.burndownEventsPath).reply(HTTP_STATUS_OK, []);
 
       findOldBurndownChartButton().vm.$emit('click');
 

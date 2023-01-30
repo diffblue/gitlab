@@ -177,7 +177,7 @@ describe('Status checks extension', () => {
       it('should show a loading state when clicked', async () => {
         jest
           .spyOn(StatusCheckRetryApi, 'mrStatusCheckRetry')
-          .mockResolvedValue({ response: { status: 200, data: {} } });
+          .mockResolvedValue({ response: { status: HTTP_STATUS_OK, data: {} } });
 
         const actionButton = getAndClickRetryActionButton();
         await nextTick();
@@ -189,8 +189,8 @@ describe('Status checks extension', () => {
       it('should refetch the status checks when retry was successful', async () => {
         jest
           .spyOn(StatusCheckRetryApi, 'mrStatusCheckRetry')
-          .mockResolvedValue({ response: { status: 200, data: {} } });
-        mock.onGet(getChecksEndpoint).reply(200, pendingChecks);
+          .mockResolvedValue({ response: { status: HTTP_STATUS_OK, data: {} } });
+        mock.onGet(getChecksEndpoint).reply(HTTP_STATUS_OK, pendingChecks);
         const getSpy = jest.spyOn(axios, 'get');
 
         getAndClickRetryActionButton();

@@ -8,7 +8,7 @@ import { mountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 jest.mock('~/flash');
 
@@ -70,7 +70,7 @@ describe('ee/issues/components/related_feature_flags.vue', () => {
     });
 
     it('displays nothing if there are no feature flags loaded', async () => {
-      mock.onGet(ENDPOINT).reply(200, []);
+      mock.onGet(ENDPOINT).reply(HTTP_STATUS_OK, []);
       createWrapper();
       await waitForPromises();
       await nextTick();
@@ -94,7 +94,7 @@ describe('ee/issues/components/related_feature_flags.vue', () => {
 
     describe('with loaded feature flags', () => {
       beforeEach(async () => {
-        mock.onGet(ENDPOINT).reply(200, MOCK_DATA);
+        mock.onGet(ENDPOINT).reply(HTTP_STATUS_OK, MOCK_DATA);
         createWrapper();
         await waitForPromises();
         await nextTick();

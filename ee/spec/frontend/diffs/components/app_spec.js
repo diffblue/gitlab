@@ -8,6 +8,7 @@ import createDiffsStore from 'jest/diffs/create_diffs_store';
 import { TEST_HOST } from 'spec/test_constants';
 import App from '~/diffs/components/app.vue';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 const TEST_ENDPOINT = `${TEST_HOST}/diff/endpoint`;
 
@@ -48,7 +49,7 @@ describe('diffs/components/app', () => {
     stubPerformanceWebAPI();
 
     mock = new MockAdapter(axios);
-    mock.onGet(TEST_ENDPOINT).reply(200, {});
+    mock.onGet(TEST_ENDPOINT).reply(HTTP_STATUS_OK, {});
   });
 
   afterEach(() => {

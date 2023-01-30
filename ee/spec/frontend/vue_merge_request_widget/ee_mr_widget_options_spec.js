@@ -41,7 +41,7 @@ import { securityReportMergeRequestDownloadPathsQueryResponse } from 'jest/vue_s
 
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { SUCCESS } from '~/vue_merge_request_widget/components/deployment/constants';
 
 // Force Jest to transpile and cache
@@ -87,8 +87,10 @@ describe('ee merge request widget options', () => {
 
     mock = new MockAdapter(axios);
 
-    mock.onGet(mockData.merge_request_widget_path).reply(() => [200, gl.mrWidgetData]);
-    mock.onGet(mockData.merge_request_cached_widget_path).reply(() => [200, gl.mrWidgetData]);
+    mock.onGet(mockData.merge_request_widget_path).reply(() => [HTTP_STATUS_OK, gl.mrWidgetData]);
+    mock
+      .onGet(mockData.merge_request_cached_widget_path)
+      .reply(() => [HTTP_STATUS_OK, gl.mrWidgetData]);
   });
 
   afterEach(() => {
@@ -130,8 +132,8 @@ describe('ee merge request widget options', () => {
     describe('when it is loading', () => {
       beforeEach(() => {
         mock = new MockAdapter(axios, { delayResponse: 1 });
-        mock.onGet(SAST_DIFF_ENDPOINT).reply(200, sastDiffSuccessMock);
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
+        mock.onGet(SAST_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, sastDiffSuccessMock);
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_OK, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
         wrapper.vm.loading = false;
@@ -146,8 +148,8 @@ describe('ee merge request widget options', () => {
 
     describe('with successful request', () => {
       beforeEach(() => {
-        mock.onGet(SAST_DIFF_ENDPOINT).reply(200, sastDiffSuccessMock);
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
+        mock.onGet(SAST_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, sastDiffSuccessMock);
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_OK, []);
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
         return axios.waitForAll();
       });
@@ -165,8 +167,8 @@ describe('ee merge request widget options', () => {
 
     describe('with empty successful request', () => {
       beforeEach(() => {
-        mock.onGet(SAST_DIFF_ENDPOINT).reply(200, { added: [], existing: [] });
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
+        mock.onGet(SAST_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, { added: [], existing: [] });
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_OK, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
         return axios.waitForAll();
@@ -217,8 +219,10 @@ describe('ee merge request widget options', () => {
     describe('when it is loading', () => {
       beforeEach(() => {
         mock = new MockAdapter(axios, { delayResponse: 1 });
-        mock.onGet(DEPENDENCY_SCANNING_ENDPOINT).reply(200, dependencyScanningDiffSuccessMock);
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
+        mock
+          .onGet(DEPENDENCY_SCANNING_ENDPOINT)
+          .reply(HTTP_STATUS_OK, dependencyScanningDiffSuccessMock);
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_OK, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
       });
@@ -232,8 +236,10 @@ describe('ee merge request widget options', () => {
 
     describe('with successful request', () => {
       beforeEach(() => {
-        mock.onGet(DEPENDENCY_SCANNING_ENDPOINT).reply(200, dependencyScanningDiffSuccessMock);
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
+        mock
+          .onGet(DEPENDENCY_SCANNING_ENDPOINT)
+          .reply(HTTP_STATUS_OK, dependencyScanningDiffSuccessMock);
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_OK, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
         return axios.waitForAll();
@@ -254,12 +260,12 @@ describe('ee merge request widget options', () => {
 
     describe('with full report and no added or fixed issues', () => {
       beforeEach(() => {
-        mock.onGet(DEPENDENCY_SCANNING_ENDPOINT).reply(200, {
+        mock.onGet(DEPENDENCY_SCANNING_ENDPOINT).reply(HTTP_STATUS_OK, {
           added: [],
           fixed: [],
           existing: [{ title: 'Mock finding' }],
         });
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_OK, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
         return axios.waitForAll();
@@ -278,8 +284,10 @@ describe('ee merge request widget options', () => {
 
     describe('with empty successful request', () => {
       beforeEach(() => {
-        mock.onGet(DEPENDENCY_SCANNING_ENDPOINT).reply(200, { added: [], fixed: [], existing: [] });
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
+        mock
+          .onGet(DEPENDENCY_SCANNING_ENDPOINT)
+          .reply(HTTP_STATUS_OK, { added: [], fixed: [], existing: [] });
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_OK, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
         return axios.waitForAll();
@@ -329,8 +337,10 @@ describe('ee merge request widget options', () => {
     describe('when it is loading', () => {
       beforeEach(() => {
         mock = new MockAdapter(axios, { delayResponse: 1 });
-        mock.onGet(CONTAINER_SCANNING_ENDPOINT).reply(200, containerScanningDiffSuccessMock);
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
+        mock
+          .onGet(CONTAINER_SCANNING_ENDPOINT)
+          .reply(HTTP_STATUS_OK, containerScanningDiffSuccessMock);
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_OK, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
       });
@@ -344,8 +354,10 @@ describe('ee merge request widget options', () => {
 
     describe('with successful request', () => {
       beforeEach(() => {
-        mock.onGet(CONTAINER_SCANNING_ENDPOINT).reply(200, containerScanningDiffSuccessMock);
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
+        mock
+          .onGet(CONTAINER_SCANNING_ENDPOINT)
+          .reply(HTTP_STATUS_OK, containerScanningDiffSuccessMock);
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_OK, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
         return axios.waitForAll();
@@ -398,8 +410,8 @@ describe('ee merge request widget options', () => {
     describe('when it is loading', () => {
       beforeEach(() => {
         mock = new MockAdapter(axios, { delayResponse: 1 });
-        mock.onGet(DAST_ENDPOINT).reply(200, dastDiffSuccessMock);
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
+        mock.onGet(DAST_ENDPOINT).reply(HTTP_STATUS_OK, dastDiffSuccessMock);
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_OK, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
       });
@@ -413,8 +425,8 @@ describe('ee merge request widget options', () => {
 
     describe('with successful request', () => {
       beforeEach(() => {
-        mock.onGet(DAST_ENDPOINT).reply(200, dastDiffSuccessMock);
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
+        mock.onGet(DAST_ENDPOINT).reply(HTTP_STATUS_OK, dastDiffSuccessMock);
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_OK, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
         return axios.waitForAll();
@@ -474,8 +486,8 @@ describe('ee merge request widget options', () => {
 
     describe('when it is loading', () => {
       it('should render loading indicator', () => {
-        mock.onGet(COVERAGE_FUZZING_ENDPOINT).reply(200, coverageFuzzingDiffSuccessMock);
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
+        mock.onGet(COVERAGE_FUZZING_ENDPOINT).reply(HTTP_STATUS_OK, coverageFuzzingDiffSuccessMock);
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_OK, []);
         createComponentWithFeatureFlag();
 
         expect(findExtendedSecurityWidget().find(COVERAGE_FUZZING_SELECTOR).text()).toContain(
@@ -486,8 +498,8 @@ describe('ee merge request widget options', () => {
 
     describe('with successful request', () => {
       beforeEach(() => {
-        mock.onGet(COVERAGE_FUZZING_ENDPOINT).reply(200, coverageFuzzingDiffSuccessMock);
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
+        mock.onGet(COVERAGE_FUZZING_ENDPOINT).reply(HTTP_STATUS_OK, coverageFuzzingDiffSuccessMock);
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_OK, []);
         createComponentWithFeatureFlag();
         return axios.waitForAll();
       });
@@ -541,8 +553,8 @@ describe('ee merge request widget options', () => {
 
     describe('when it is loading', () => {
       it('should render loading indicator', () => {
-        mock.onGet(SECRET_DETECTION_ENDPOINT).reply(200, secretDetectionDiffSuccessMock);
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
+        mock.onGet(SECRET_DETECTION_ENDPOINT).reply(HTTP_STATUS_OK, secretDetectionDiffSuccessMock);
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_OK, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
 
@@ -554,8 +566,8 @@ describe('ee merge request widget options', () => {
 
     describe('with successful request', () => {
       beforeEach(() => {
-        mock.onGet(SECRET_DETECTION_ENDPOINT).reply(200, secretDetectionDiffSuccessMock);
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
+        mock.onGet(SECRET_DETECTION_ENDPOINT).reply(HTTP_STATUS_OK, secretDetectionDiffSuccessMock);
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_OK, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
         return axios.waitForAll();
@@ -608,8 +620,8 @@ describe('ee merge request widget options', () => {
 
     describe('when it is loading', () => {
       it('should render loading indicator', async () => {
-        mock.onGet(API_FUZZING_ENDPOINT).reply(200, apiFuzzingDiffSuccessMock);
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
+        mock.onGet(API_FUZZING_ENDPOINT).reply(HTTP_STATUS_OK, apiFuzzingDiffSuccessMock);
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_OK, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
 
@@ -623,8 +635,8 @@ describe('ee merge request widget options', () => {
 
     describe('with successful request', () => {
       beforeEach(() => {
-        mock.onGet(API_FUZZING_ENDPOINT).reply(200, apiFuzzingDiffSuccessMock);
-        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
+        mock.onGet(API_FUZZING_ENDPOINT).reply(HTTP_STATUS_OK, apiFuzzingDiffSuccessMock);
+        mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(HTTP_STATUS_OK, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
         return axios.waitForAll();
