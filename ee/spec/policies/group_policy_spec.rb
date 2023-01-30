@@ -1720,7 +1720,7 @@ RSpec.describe GroupPolicy do
         let(:current_user) { owner }
 
         it { is_expected.not_to be_allowed(:create_resource_access_tokens) }
-        it { is_expected.not_to be_allowed(:admin_setting_to_allow_project_access_token_creation) }
+        it { is_expected.not_to be_allowed(:admin_setting_to_allow_resource_access_token_creation) }
         it { is_expected.to be_allowed(:read_resource_access_tokens) }
         it { is_expected.to be_allowed(:destroy_resource_access_tokens) }
       end
@@ -1757,6 +1757,10 @@ RSpec.describe GroupPolicy do
             context 'cannot create resource access tokens' do
               it { is_expected.not_to be_allowed(:create_resource_access_tokens) }
             end
+
+            context 'can render admin settings for resource access token' do
+              it { is_expected.to be_allowed(:admin_setting_to_allow_resource_access_token_creation) }
+            end
           end
         end
 
@@ -1768,8 +1772,8 @@ RSpec.describe GroupPolicy do
           it { is_expected.to be_allowed(:destroy_resource_access_tokens) }
         end
 
-        context 'admin settings allow project acess token is not allowed' do
-          it { is_expected.not_to be_allowed(:admin_setting_to_allow_project_access_token_creation) }
+        context 'admin settings `allow resource access token` is allowed' do
+          it { is_expected.to be_allowed(:admin_setting_to_allow_resource_access_token_creation) }
         end
       end
 
