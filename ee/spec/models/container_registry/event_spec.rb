@@ -76,6 +76,14 @@ RSpec.describe ContainerRegistry::Event do
         with_them do
           it_behaves_like params[:example_name]
         end
+
+        context 'without media type' do
+          let(:action) { 'push' }
+          let(:repository_path) { 'group/test/container_repository' }
+          let(:target) { super().without('mediaType') }
+
+          it_behaves_like 'not creating a geo event'
+        end
       end
     end
   end
