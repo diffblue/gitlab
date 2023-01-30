@@ -72,6 +72,8 @@ describe('DevopsAdoptionOverviewTable', () => {
 
   describe('table fields', () => {
     describe('enabled namespace name', () => {
+      const groupLink = `/groups/${devopsAdoptionNamespaceData.nodes[0].namespace.fullPath}/-/analytics/devops_adoption`;
+
       it('displays the correct name', () => {
         createComponent();
 
@@ -86,9 +88,26 @@ describe('DevopsAdoptionOverviewTable', () => {
         const link = findColSubComponent(TABLE_TEST_IDS_NAMESPACE, GlLink);
 
         expect(link.exists()).toBe(true);
-        expect(link.attributes('href')).toBe(
-          `/groups/${devopsAdoptionNamespaceData.nodes[0].namespace.fullPath}/-/analytics/devops_adoption`,
-        );
+        expect(link.attributes('href')).toBe(groupLink);
+      });
+
+      describe('with a relative URL', () => {
+        beforeEach(() => {
+          gon.relative_url_root = '/fake';
+        });
+
+        afterEach(() => {
+          gon.relative_url_root = '';
+        });
+
+        it('includes a link to the group DevOps page', () => {
+          createComponent();
+
+          const link = findColSubComponent(TABLE_TEST_IDS_NAMESPACE, GlLink);
+
+          expect(link.exists()).toBe(true);
+          expect(link.attributes('href')).toBe(`/fake${groupLink}`);
+        });
       });
 
       describe('"This group" badge', () => {
