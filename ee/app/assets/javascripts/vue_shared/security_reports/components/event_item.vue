@@ -62,17 +62,17 @@ export default {
 </script>
 
 <template>
-  <div :id="noteId" class="d-flex align-items-center">
+  <div :id="noteId" class="gl-display-flex gl-align-items-center">
     <div class="circle-icon-container gl-flex-shrink-0 gl-align-self-start" :class="iconClass">
       <gl-icon :size="16" :name="iconName" />
     </div>
-    <div class="ml-3 flex-grow-1" data-qa-selector="event_item_content">
+    <div class="gl-ml-5 gl-flex-grow-1" data-qa-selector="event_item_content">
       <note-header
         :note-id="id"
         :author="author"
         :created-at="createdAt"
         :show-spinner="false"
-        class="pb-0"
+        class="gl-pb-0 gl-pl-0"
       >
         <slot name="header-message">&middot;</slot>
       </note-header>

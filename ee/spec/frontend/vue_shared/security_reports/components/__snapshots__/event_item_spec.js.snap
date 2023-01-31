@@ -2,7 +2,7 @@
 
 exports[`Event Item with action buttons renders the action buttons 1`] = `
 <div
-  class="d-flex align-items-center"
+  class="gl-display-flex gl-align-items-center"
 >
   <div
     class="circle-icon-container gl-flex-shrink-0 gl-align-self-start ci-status-icon-success"
@@ -20,11 +20,11 @@ exports[`Event Item with action buttons renders the action buttons 1`] = `
   </div>
    
   <div
-    class="ml-3 flex-grow-1"
+    class="gl-ml-5 gl-flex-grow-1"
     data-qa-selector="event_item_content"
   >
     <div
-      class="note-header-info pb-0"
+      class="note-header-info gl-pb-0 gl-pl-0"
     >
       <!---->
        
