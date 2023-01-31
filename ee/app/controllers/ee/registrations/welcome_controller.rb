@@ -7,28 +7,14 @@ module EE
       extend ::Gitlab::Utils::Override
       include ::Gitlab::Utils::StrongMemoize
 
-      TRIAL_ONBOARDING_BOARD_NAME = 'GitLab onboarding'
-
       prepended do
         include OneTrustCSP
         include GoogleAnalyticsCSP
         include Onboarding::SetRedirect
 
-        before_action :authorized_for_trial_onboarding!, only: [:trial_getting_started, :trial_onboarding_board]
-
-        before_action only: [:trial_getting_started, :continuous_onboarding_getting_started, :show] do
+        before_action only: [:continuous_onboarding_getting_started, :show] do
           push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
         end
-      end
-
-      def trial_getting_started
-        render locals: { learn_gitlab_project: learn_gitlab_project }
-      end
-
-      def trial_onboarding_board
-        board = learn_gitlab_project.boards.find_by_name(TRIAL_ONBOARDING_BOARD_NAME)
-        path = board ? project_board_path(learn_gitlab_project, board) : project_boards_path(learn_gitlab_project)
-        redirect_to path
       end
 
       def continuous_onboarding_getting_started
@@ -74,15 +60,6 @@ module EE
           !helpers.in_trial_flow? &&
           helpers.signup_onboarding_enabled?
       end
-
-      def authorized_for_trial_onboarding!
-        access_denied! unless can?(current_user, :owner_access, learn_gitlab_project)
-      end
-
-      def learn_gitlab_project
-        ::Project.find(params[:learn_gitlab_project_id])
-      end
-      strong_memoize_attr :learn_gitlab_project
 
       def passed_through_params
         update_params.slice(:role, :registration_objective)

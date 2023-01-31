@@ -26,15 +26,6 @@ RSpec.describe EE::RegistrationsHelper do
       allow(helper).to receive(:current_user).and_return(build(:user))
     end
 
-    context 'with `learn_gitlab_project_id` parameter present' do
-      let(:params) { { learn_gitlab_project_id: 1 } }
-
-      it 'return expected data' do
-        expect(helper.registration_verification_data)
-          .to eq(next_step_url: helper.trial_getting_started_users_sign_up_welcome_path(params))
-      end
-    end
-
     context 'with `project_id` parameter present' do
       let(:params) { { project_id: 1 } }
 
