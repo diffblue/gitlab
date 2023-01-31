@@ -21,23 +21,6 @@ RSpec.describe EE::WelcomeHelper do
     end
   end
 
-  describe '#in_trial_flow?' do
-    where(:user_return_to_path, :expected_result) do
-      '/-/trials/new?glm_content=free-trial&glm_source=about.gitlab.com' | true
-      '/users/sign_up/company/new?trial=true'                            | true
-      '/foo'                                                             | false
-      nil                                                                | false
-    end
-
-    with_them do
-      it 'returns the expected_result' do
-        allow(helper).to receive(:session).and_return('user_return_to' => user_return_to_path)
-
-        expect(helper.in_trial_flow?).to eq(expected_result)
-      end
-    end
-  end
-
   describe '#in_oauth_flow?' do
     where(:user_return_to_path, :expected_result) do
       '/oauth/authorize?client_id=x&redirect_uri=y&response_type=code&state=z' | true
@@ -57,12 +40,12 @@ RSpec.describe EE::WelcomeHelper do
   describe '#setup_for_company_label_text' do
     before do
       allow(helper).to receive(:in_subscription_flow?).and_return(in_subscription_flow)
-      allow(helper).to receive(:in_trial_flow?).and_return(in_trial_flow)
+      allow(helper).to receive(:trial_selected?).and_return(trial_selected)
     end
 
     subject { helper.setup_for_company_label_text }
 
-    where(:in_subscription_flow, :in_trial_flow, :text) do
+    where(:in_subscription_flow, :trial_selected, :text) do
       true | true | 'Who will be using this GitLab subscription?'
       true | false | 'Who will be using this GitLab subscription?'
       false | true | 'Who will be using this GitLab trial?'
@@ -78,13 +61,13 @@ RSpec.describe EE::WelcomeHelper do
     let(:in_subscription_flow) { false }
     let(:user_has_memberships) { false }
     let(:in_oauth_flow) { false }
-    let(:in_trial_flow) { false }
+    let(:trial_selected) { false }
 
     before do
       allow(helper).to receive(:in_subscription_flow?).and_return(in_subscription_flow)
       allow(helper).to receive(:user_has_memberships?).and_return(user_has_memberships)
       allow(helper).to receive(:in_oauth_flow?).and_return(in_oauth_flow)
-      allow(helper).to receive(:in_trial_flow?).and_return(in_trial_flow)
+      allow(helper).to receive(:trial_selected?).and_return(trial_selected)
     end
   end
 
@@ -105,7 +88,7 @@ RSpec.describe EE::WelcomeHelper do
     context 'when in the subscription flow, regardless of all other flows' do
       let(:in_subscription_flow) { true }
 
-      where(:user_has_memberships, :in_oauth_flow, :in_trial_flow) do
+      where(:user_has_memberships, :in_oauth_flow, :trial_selected) do
         true  | false | false
         false | true  | false
         false | false | true
@@ -124,7 +107,7 @@ RSpec.describe EE::WelcomeHelper do
 
     context 'when not in the subscription flow' do
       context 'and in the invitation, oauth, or trial flow' do
-        where(:user_has_memberships, :in_oauth_flow, :in_trial_flow) do
+        where(:user_has_memberships, :in_oauth_flow, :trial_selected) do
           true  | false | false
           false | true  | false
           false | false | true
@@ -162,24 +145,20 @@ RSpec.describe EE::WelcomeHelper do
 
     subject { helper.welcome_submit_button_text }
 
-    context 'when in the subscription or trial flow' do
-      where(:in_subscription_flow, :in_trial_flow) do
-        true  | false
-        false | true
+    context 'when in the subscription flow and signup onboarding is toggled' do
+      where(:in_subscription_flow, :signup_onboarding_enabled, :button_text) do
+        true  | true  | 'Continue'
+        true  | false | 'Continue'
+        false | true  | 'Continue'
+        false | false | 'Get started!'
       end
 
       with_them do
-        context 'and regardless of signup onboarding' do
-          where(signup_onboarding_enabled: [true, false])
-
-          with_them do
-            it { is_expected.to eq('Continue') }
-          end
-        end
+        it { is_expected.to eq(button_text) }
       end
     end
 
-    context 'when not in the subscription or trial flow' do
+    context 'when not in the subscription flow' do
       context 'and in the invitation or oauth flow' do
         where(:user_has_memberships, :in_oauth_flow) do
           true  | false

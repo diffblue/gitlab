@@ -32,7 +32,7 @@ module EE
       private
 
       def redirect_to_company_form?
-        update_params[:setup_for_company] == 'true'
+        update_params[:setup_for_company] == 'true' || helpers.trial_selected?
       end
 
       override :update_params
@@ -57,14 +57,17 @@ module EE
         !helpers.in_subscription_flow? &&
           !helpers.user_has_memberships? &&
           !helpers.in_oauth_flow? &&
-          !helpers.in_trial_flow? &&
           helpers.signup_onboarding_enabled?
       end
 
       def passed_through_params
-        update_params.slice(:role, :registration_objective)
+        pass_through = update_params.slice(:role, :registration_objective)
                      .merge(params.permit(:jobs_to_be_done_other))
                      .merge(glm_tracking_params)
+
+        pass_through[:trial] = params[:trial] if ::Gitlab.com?
+
+        pass_through
       end
 
       override :signup_onboarding_path
@@ -83,20 +86,6 @@ module EE
         end
       end
 
-      override :path_for_signed_in_user
-      def path_for_signed_in_user(user)
-        return users_almost_there_path(email: user.email) if requires_confirmation?(user)
-
-        stored_url = stored_location_for(user)
-
-        return members_activity_path(user.members) unless stored_url.present?
-        return stored_url unless stored_url.include?(new_users_sign_up_company_path)
-
-        redirect_uri = ::Gitlab::Utils.add_url_parameters(stored_url, passed_through_params)
-        save_onboarding_step_url(redirect_uri)
-        redirect_uri
-      end
-
       override :track_event
       def track_event(action, label = tracking_label)
         ::Gitlab::Tracking.event(
@@ -108,7 +97,7 @@ module EE
       end
 
       def tracking_label
-        return 'trial_registration' if helpers.in_trial_flow?
+        return 'trial_registration' if helpers.trial_selected?
         return 'invite_registration' if helpers.user_has_memberships?
 
         'free_registration'

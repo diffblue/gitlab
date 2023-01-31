@@ -1,5 +1,5 @@
 - return unless Gitlab.com?
-- return if in_trial_flow?
+- return if trial_selected?
 - return if user_has_memberships?
 
 .row

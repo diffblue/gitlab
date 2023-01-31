@@ -8,7 +8,9 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
   let_it_be(:project) { create(:project) }
 
   describe '#show' do
-    subject(:get_show) { get :show }
+    let(:show_params) { {} }
+
+    subject(:get_show) { get :show, params: show_params }
 
     before do
       sign_in(user)
@@ -43,9 +45,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
     end
 
     context 'when in trial flow' do
-      before do
-        allow(controller.helpers).to receive(:in_trial_flow?).and_return(true)
-      end
+      let(:show_params) { { trial: 'true' } }
 
       it 'tracks render event' do
         get_show
@@ -111,11 +111,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
         )
       end
 
-      context 'when in trial flow' do
-        before do
-          allow(controller.helpers).to receive(:in_trial_flow?).and_return(true)
-        end
-
+      context 'when in trial onboarding flow' do
         it 'tracks render event' do
           get :continuous_onboarding_getting_started, params: { project_id: project.id, trial_onboarding_flow: true }
 
@@ -154,9 +150,9 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
     let(:setup_for_company) { 'false' }
     let(:email_opted_in) { '0' }
     let(:joining_project) { 'false' }
-
-    subject(:patch_update) do
-      patch :update, params: {
+    let(:extra_params) { {} }
+    let(:update_params) do
+      {
         user: {
           role: 'software_developer',
           setup_for_company: setup_for_company,
@@ -167,8 +163,10 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
         jobs_to_be_done_other: '_jobs_to_be_done_other_',
         glm_source: 'some_source',
         glm_content: 'some_content'
-      }
+      }.merge(extra_params)
     end
+
+    subject(:patch_update) { patch :update, params: update_params }
 
     context 'without a signed in user' do
       it { is_expected.to redirect_to new_user_registration_path }
@@ -189,9 +187,18 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
 
               expect(controller.current_user).to be_email_opted_in
             end
+
+            it 'does not set the rest of the email_opted_in fields' do
+              subject
+
+              expect(controller.current_user)
+                .to have_attributes(email_opted_in_ip: nil, email_opted_in_source: '', email_opted_in_at: nil)
+            end
           end
 
           context 'when the user opted out' do
+            let(:setup_for_company) { 'true' }
+
             it 'sets the email_opted_in field' do
               subject
 
@@ -351,6 +358,30 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
               expect(user.user_detail.onboarding_step_url).to eq(path)
               expect(response).to redirect_to path
             end
+
+            context 'when trial is true', :saas do
+              let(:extra_params) { { trial: 'true' } }
+              let(:expected_params) do
+                {
+                  registration_objective: 'code_storage',
+                  role: 'software_developer',
+                  jobs_to_be_done_other: '_jobs_to_be_done_other_',
+                  glm_source: 'some_source',
+                  glm_content: 'some_content',
+                  trial: 'true'
+                }
+              end
+
+              specify do
+                patch_update
+                user.reload
+                path = new_users_sign_up_company_path(expected_params)
+
+                expect(user.onboarding_in_progress).to be_truthy
+                expect(user.user_detail.onboarding_step_url).to eq(path)
+                expect(response).to redirect_to path
+              end
+            end
           end
 
           context 'when in subscription flow' do
@@ -381,9 +412,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
           end
 
           context 'when in trial flow' do
-            before do
-              allow(controller.helpers).to receive(:in_trial_flow?).and_return(true)
-            end
+            let(:extra_params) { { trial: 'true' } }
 
             it { is_expected.not_to redirect_to new_users_sign_up_groups_project_path }
 
