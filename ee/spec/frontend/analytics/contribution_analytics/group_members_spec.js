@@ -3,6 +3,7 @@ import { TABLE_COLUMNS } from 'ee/analytics/contribution_analytics/constants';
 import GroupMembers from 'ee/analytics/contribution_analytics/group_members';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import waitForPromises from 'helpers/wait_for_promises';
 
 import { MOCK_MEMBERS, CONTRIBUTIONS_PATH } from './mock_data';
@@ -72,7 +73,7 @@ describe('GroupMembers', () => {
     });
 
     it('calls service.getContributedMembers and sets response to the store on success', async () => {
-      mock.onGet(CONTRIBUTIONS_PATH).reply(200, MOCK_MEMBERS);
+      mock.onGet(CONTRIBUTIONS_PATH).reply(HTTP_STATUS_OK, MOCK_MEMBERS);
       jest.spyOn(store, 'setColumns').mockImplementation(() => {});
       jest.spyOn(store, 'setMembers').mockImplementation(() => {});
 
