@@ -14,10 +14,21 @@ export default {
       default: null,
       required: false,
     },
+    mergeRequest: {
+      type: Object,
+      default: null,
+      required: false,
+    },
   },
   computed: {
     solutionText() {
       return this.solution || this.remediation?.summary;
+    },
+    showCreateMergeRequestMessage() {
+      return !this.hasMr && this.remediation?.diff?.length > 0;
+    },
+    hasMr() {
+      return Boolean(this.mergeRequest?.id);
     },
   },
 };
@@ -33,6 +44,15 @@ export default {
         </div>
         <span class="flex-shrink-1 gl-pl-0" data-testid="solution-text">{{ solutionText }}</span>
       </div>
+    </template>
+    <template v-if="showCreateMergeRequestMessage" #footer>
+      <em class="gl-text-gray-500" data-testid="merge-request-solution">
+        {{
+          s__(
+            'ciReport|Create a merge request to implement this solution, or download and apply the patch manually.',
+          )
+        }}
+      </em>
     </template>
   </gl-card>
 </template>

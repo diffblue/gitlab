@@ -31,6 +31,11 @@ module EE
             null: true,
             description: 'Code Quality degradations reported on the pipeline.'
 
+          field :code_quality_report_summary,
+            ::Types::Ci::CodeQualityReportSummaryType,
+            null: true,
+            description: 'Code Quality report summary for a pipeline.'
+
           field :dast_profile,
             ::Types::Dast::ProfileType,
             null: true,
@@ -38,6 +43,10 @@ module EE
 
           def code_quality_reports
             pipeline.codequality_reports.sort_degradations!.values.presence
+          end
+
+          def code_quality_report_summary
+            pipeline.codequality_reports.code_quality_report_summary
           end
 
           def dast_profile

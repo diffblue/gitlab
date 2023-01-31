@@ -431,8 +431,12 @@ export const pipelineSecurityReportFinding = {
   solution: 'Some solution',
   reportType: 'reportType',
   falsePositive: false,
+  mergeRequest: {
+    id: '1',
+  },
   remediations: [
     {
+      diff: 'SGVsbG8gR2l0TGFi',
       summary: 'Upgrade libcurl to 7.79.1-2.amzn2.0.1',
     },
   ],
