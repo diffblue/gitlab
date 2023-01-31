@@ -1,6 +1,5 @@
 import { REPORT_STATUS } from 'ee/dependencies/store/modules/list/constants';
 import * as getters from 'ee/dependencies/store/modules/list/getters';
-import { TEST_HOST } from 'helpers/test_constants';
 import { getDateInPast } from '~/lib/utils/datetime_utility';
 
 describe('Dependencies getters', () => {
@@ -24,13 +23,6 @@ describe('Dependencies getters', () => {
           },
         }),
       ).toBe(outcome);
-    });
-  });
-
-  describe('downloadEndpoint', () => {
-    it('should return download endpoint', () => {
-      const endpoint = `${TEST_HOST}/dependencies`;
-      expect(getters.downloadEndpoint({ endpoint })).toBe(endpoint);
     });
   });
 

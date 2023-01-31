@@ -41,17 +41,11 @@ export default {
       sortOrder(state) {
         return state[this.namespace].sortOrder;
       },
-      downloadEndpoint(state, getters) {
-        return getters[`${this.namespace}/downloadEndpoint`];
-      },
       buttonIcon() {
         return this.fetchingInProgress ? '' : 'export';
       },
       fetchingInProgress(state) {
         return state[this.namespace].fetchingInProgress;
-      },
-      dependencyListExporterEnabled() {
-        return this.glFeatures.dependencyListExporter;
       },
     }),
     sortFieldName() {
@@ -98,7 +92,6 @@ export default {
       </gl-sorting-item>
     </gl-sorting>
     <gl-button
-      v-if="dependencyListExporterEnabled"
       v-gl-tooltip.hover
       :title="$options.i18n.exportAsJson"
       class="gl-ml-3"
@@ -106,18 +99,6 @@ export default {
       data-testid="export"
       :loading="fetchingInProgress"
       @click="fetchExport"
-    >
-      {{ __('Export') }}
-    </gl-button>
-    <gl-button
-      v-else
-      v-gl-tooltip
-      :href="downloadEndpoint"
-      download="dependencies.json"
-      :title="s__('Dependencies|Export as JSON')"
-      class="gl-ml-3"
-      icon="export"
-      data-testid="export"
     >
       {{ __('Export') }}
     </gl-button>

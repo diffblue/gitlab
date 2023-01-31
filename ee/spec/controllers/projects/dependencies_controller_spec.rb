@@ -60,21 +60,7 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
           context 'without pagination params' do
             let(:user) { developer }
 
-            context 'with dependency_list_exporter feature flag disabled' do
-              before do
-                stub_feature_flags(dependency_list_exporter: false)
-                get :index, params: params, format: :json
-              end
-
-              it 'returns a hash with dependencies not paginated' do
-                expect(json_response).to be_a(Hash)
-                expect(json_response['dependencies'].length).to eq(21)
-              end
-            end
-
-            context 'with dependency_list_exporter feature flag enabled' do
-              include_examples 'paginated list'
-            end
+            include_examples 'paginated list'
 
             it 'returns status ok' do
               expect(json_response['report']['status']).to eq('ok')
@@ -170,18 +156,7 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
               let(:user) { developer }
               let(:params) { { namespace_id: project.namespace, project_id: project, page: 1 } }
 
-              context 'with dependency_list_exporter feature flag enabled' do
-                include_examples 'paginated list'
-              end
-
-              context 'with dependency_list_exporter feature flag disabled' do
-                before do
-                  stub_feature_flags(dependency_list_exporter: false)
-                  get :index, params: params, format: :json
-                end
-
-                include_examples 'paginated list'
-              end
+              include_examples 'paginated list'
             end
           end
         end
