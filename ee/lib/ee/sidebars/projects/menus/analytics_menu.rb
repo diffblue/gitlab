@@ -6,11 +6,13 @@ module EE
       module Menus
         module AnalyticsMenu
           extend ::Gitlab::Utils::Override
+          include ::Gitlab::Utils::StrongMemoize
 
           override :configure_menu_items
           def configure_menu_items
             return false unless can?(context.current_user, :read_analytics, context.project)
 
+            add_item(dashboards_analytics_menu_item)
             add_item(cycle_analytics_menu_item)
             add_item(ci_cd_analytics_menu_item)
             add_item(code_review_analytics_menu_item)
@@ -81,6 +83,23 @@ module EE
               item_id: :merge_requests
             )
           end
+
+          def dashboards_analytics_menu_item
+            unless ::Feature.enabled?(:combined_analytics_dashboards, context.project) &&
+                context.project.licensed_feature_available?(:product_analytics) &&
+                can?(context.current_user, :read_product_analytics, context.project)
+              return ::Sidebars::NilMenuItem.new(item_id: :dashboards_analytics)
+            end
+
+            ::Sidebars::MenuItem.new(
+              title: _('Dashboards'),
+              link: project_product_analytics_dashboards_path(context.project),
+              container_html_options: { class: 'shortcuts-project-dashboards-analytics' },
+              active_routes: { controller: :product_analytics },
+              item_id: :dashboards_analytics
+            )
+          end
+          strong_memoize_attr :dashboards_analytics_menu_item
         end
       end
     end

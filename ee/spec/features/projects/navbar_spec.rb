@@ -17,6 +17,7 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
 
     stub_config(registry: { enabled: false })
     stub_feature_flags(harbor_registry_integration: false)
+    stub_feature_flags(combined_analytics_dashboards: false)
     insert_package_nav(_('Deployments'))
     insert_infrastructure_registry_nav
     insert_infrastructure_google_cloud_nav
@@ -125,6 +126,23 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
       stub_feature_flags(harbor_registry_integration: true)
 
       insert_harbor_registry_nav(_('Infrastructure Registry'))
+
+      visit project_path(project)
+    end
+
+    it_behaves_like 'verified navigation bar'
+  end
+
+  context 'when analytics dashboards is available' do
+    before do
+      stub_feature_flags(combined_analytics_dashboards: true)
+      stub_licensed_features(product_analytics: true)
+
+      insert_before_sub_nav_item(
+        _('Value stream'),
+        within: _('Analytics'),
+        new_sub_nav_item_name: _('Dashboards')
+      )
 
       visit project_path(project)
     end

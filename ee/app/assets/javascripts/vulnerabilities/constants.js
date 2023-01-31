@@ -24,6 +24,15 @@ export const VULNERABILITY_STATE_OBJECTS = {
     description: s__('VulnerabilityManagement|An unverified non-confirmed finding'),
     mutation: vulnerabilityStateMutations.revert,
   },
+  confirmed: {
+    action: 'confirm',
+    state: 'confirmed',
+    buttonText: VULNERABILITY_STATES.confirmed,
+    dropdownText: __('Confirm'),
+    dropdownDescription: s__('VulnerabilityManagement|A true-positive and will fix'),
+    description: s__('VulnerabilityManagement|A verified true-positive vulnerability'),
+    mutation: vulnerabilityStateMutations.confirm,
+  },
   dismissed: {
     action: 'dismiss',
     state: 'dismissed',
@@ -34,15 +43,6 @@ export const VULNERABILITY_STATE_OBJECTS = {
     payload: {
       comment: falsePositiveMessage,
     },
-  },
-  confirmed: {
-    action: 'confirm',
-    state: 'confirmed',
-    buttonText: VULNERABILITY_STATES.confirmed,
-    dropdownText: __('Confirm'),
-    dropdownDescription: s__('VulnerabilityManagement|A true-positive and will fix'),
-    description: s__('VulnerabilityManagement|A verified true-positive vulnerability'),
-    mutation: vulnerabilityStateMutations.confirm,
   },
   resolved: {
     action: 'resolve',
