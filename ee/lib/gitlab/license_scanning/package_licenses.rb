@@ -11,9 +11,9 @@ module Gitlab
 
       def fetch
         search_fields = [
-          PackageMetadata::Package.arel_table[:purl_type],
-          PackageMetadata::Package.arel_table[:name],
-          PackageMetadata::PackageVersion.arel_table[:version]
+          ::PackageMetadata::Package.arel_table[:purl_type],
+          ::PackageMetadata::Package.arel_table[:name],
+          ::PackageMetadata::PackageVersion.arel_table[:version]
         ]
 
         components.each_slice(BATCH_SIZE).flat_map do |components_batch|
@@ -24,7 +24,7 @@ module Gitlab
             Arel::Nodes::Grouping.new(component_tuple)
           end
 
-          records = PackageMetadata::Package
+          records = ::PackageMetadata::Package
                       .joins(package_versions: :licenses)
                       .where(
                         Arel::Nodes::In.new(
