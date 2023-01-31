@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Sidebars::Projects::Menus::AnalyticsMenu do
+RSpec.describe Sidebars::Projects::Menus::AnalyticsMenu, feature_category: :navigation do
+  using RSpec::Parameterized::TableSyntax
+
   let_it_be_with_refind(:project) { create(:project, :repository) }
 
   let(:user) { project.first_owner }
@@ -95,6 +97,58 @@ RSpec.describe Sidebars::Projects::Menus::AnalyticsMenu do
         before do
           project.merge_requests_enabled = false
           project.save!
+        end
+
+        specify { is_expected.to be_nil }
+      end
+    end
+
+    describe 'Dashboards' do
+      let(:item_id) { :dashboards_analytics }
+
+      before do
+        stub_feature_flags(combined_analytics_dashboards: true)
+        stub_licensed_features(product_analytics: true)
+      end
+
+      specify { is_expected.not_to be_nil }
+
+      context 'with different user access levels' do
+        where(:access_level, :has_menu_item) do
+          nil         | false
+          :reporter   | true
+          :developer  | true
+          :maintainer | true
+        end
+
+        with_them do
+          let(:user) { create(:user) }
+
+          before do
+            project.add_member(user, access_level)
+          end
+
+          describe "when the user is not allowed to view the menu item", if: !params[:has_menu_item] do
+            specify { is_expected.to be_nil }
+          end
+
+          describe "when the user is allowed to view the menu item", if: params[:has_menu_item] do
+            specify { is_expected.not_to be_nil }
+          end
+        end
+      end
+
+      describe 'when the license does not support the feature' do
+        before do
+          stub_licensed_features(product_analytics: false)
+        end
+
+        specify { is_expected.to be_nil }
+      end
+
+      describe 'when the dashboards analytics feature is disabled' do
+        before do
+          stub_feature_flags(combined_analytics_dashboards: false)
         end
 
         specify { is_expected.to be_nil }
