@@ -18,8 +18,7 @@ module EE
         def after_successful_save
           super
 
-          log_audit_event
-          project_stream_audit_event
+          send_audit_event
         end
 
         def allowed_to_be_shared_with?
@@ -39,22 +38,18 @@ module EE
           _('This group cannot be invited to a project inside a group with enforced SSO')
         end
 
-        def log_audit_event
-          ::AuditEventService.new(
-            current_user,
-            link.group,
-            action: :create
-          ).for_project_group_link(link).security_event
-        end
-
-        def project_stream_audit_event
+        def send_audit_event
           audit_context = {
-            name: 'project_group_link_create',
-            stream_only: true,
+            name: 'project_group_link_created',
             author: current_user,
-            scope: project,
-            target: link.group,
-            message: "Added project group link"
+            scope: link.group,
+            target: project,
+            target_details: project.full_path,
+            message: 'Added project group link',
+            additional_details: {
+              add: 'project_access',
+              as: link.human_access
+            }
           }
 
           ::Gitlab::Audit::Auditor.audit(audit_context)

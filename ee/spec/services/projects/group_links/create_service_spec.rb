@@ -32,6 +32,8 @@ RSpec.describe Projects::GroupLinks::CreateService, '#execute' do
              add: 'project_access',
              as: 'Developer',
              author_name: user.name,
+             author_class: 'User',
+             custom_message: 'Added project group link',
              target_id: project.id,
              target_type: 'Project',
              target_details: project.full_path
@@ -42,12 +44,16 @@ RSpec.describe Projects::GroupLinks::CreateService, '#execute' do
 
     it 'sends the audit streaming event' do
       audit_context = {
-        name: 'project_group_link_create',
-        stream_only: true,
+        name: 'project_group_link_created',
         author: user,
-        scope: project,
-        target: group,
-        message: "Added project group link"
+        scope: group,
+        target: project,
+        target_details: project.full_path,
+        message: 'Added project group link',
+        additional_details: {
+          add: 'project_access',
+          as: 'Developer'
+        }
       }
       expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
 
