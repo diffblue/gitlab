@@ -1,6 +1,6 @@
 import createGqClient from '~/lib/graphql';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { TYPE_GROUP, TYPE_USER } from '~/graphql_shared/constants';
+import { TYPENAME_GROUP, TYPE_USER } from '~/graphql_shared/constants';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from './components/constants';
 import { GROUP_TYPE, USER_TYPE } from './constants';
 
@@ -38,7 +38,7 @@ export const decomposeApproversV2 = (existingApprovers) => {
         approverKeys.includes(GROUP_TYPE_UNIQ_KEY_V2)
       ) {
         type = GROUP_TYPE;
-        value = convertToGraphQLId(TYPE_GROUP, approver.id);
+        value = convertToGraphQLId(TYPENAME_GROUP, approver.id);
       }
 
       acc[type].push({

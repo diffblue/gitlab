@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { TYPE_GROUP, TYPE_USER } from '~/graphql_shared/constants';
+import { TYPENAME_GROUP, TYPE_USER } from '~/graphql_shared/constants';
 import { GROUP_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
 import {
@@ -51,7 +51,7 @@ describe('decomposeApproversV2', () => {
           {
             ...groupApprover,
             type: GROUP_TYPE,
-            value: convertToGraphQLId(TYPE_GROUP, groupApprover.id),
+            value: convertToGraphQLId(TYPENAME_GROUP, groupApprover.id),
           },
         ],
         [USER_TYPE]: [
@@ -81,7 +81,7 @@ describe('decomposeApproversV2', () => {
         {
           ...groupApprover,
           type: GROUP_TYPE,
-          value: convertToGraphQLId(TYPE_GROUP, groupApprover.id),
+          value: convertToGraphQLId(TYPENAME_GROUP, groupApprover.id),
         },
       ],
       [USER_TYPE]: [],
@@ -101,7 +101,7 @@ describe('decomposeApproversV2', () => {
         {
           ...camelCaseGroupApprover,
           type: GROUP_TYPE,
-          value: convertToGraphQLId(TYPE_GROUP, groupApprover.id),
+          value: convertToGraphQLId(TYPENAME_GROUP, groupApprover.id),
         },
       ],
       [USER_TYPE]: [],

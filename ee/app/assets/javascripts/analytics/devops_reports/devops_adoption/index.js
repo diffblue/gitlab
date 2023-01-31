@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { TYPE_GROUP } from '~/graphql_shared/constants';
+import { TYPENAME_GROUP } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import DevopsAdoptionApp from './components/devops_adoption_app.vue';
 import { createApolloProvider } from './graphql';
@@ -25,7 +25,7 @@ export default () => {
     provide: {
       emptyStateSvgPath,
       isGroup,
-      groupGid: isGroup ? convertToGraphQLId(TYPE_GROUP, groupId) : null,
+      groupGid: isGroup ? convertToGraphQLId(TYPENAME_GROUP, groupId) : null,
       devopsScoreMetrics: isGroup ? null : JSON.parse(devopsScoreMetrics),
       noDataImagePath,
       devopsScoreIntroImagePath,

@@ -2,7 +2,7 @@
 import { GlLink, GlIcon, GlButton, GlLoadingIcon, GlTooltipDirective } from '@gitlab/ui';
 import { produce } from 'immer';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { TYPE_ISSUE } from '~/graphql_shared/constants';
+import { TYPENAME_ISSUE } from '~/graphql_shared/constants';
 import { createAlert } from '~/flash';
 import { __, sprintf } from '~/locale';
 import { resourceLinksI18n } from '../constants';
@@ -56,7 +56,7 @@ export default {
       query: getIssuableResourceLinks,
       variables() {
         return {
-          incidentId: convertToGraphQLId(TYPE_ISSUE, this.issuableId),
+          incidentId: convertToGraphQLId(TYPENAME_ISSUE, this.issuableId),
         };
       },
       update(data) {
@@ -142,7 +142,7 @@ export default {
       }
 
       const variables = {
-        incidentId: convertToGraphQLId(TYPE_ISSUE, this.issuableId),
+        incidentId: convertToGraphQLId(TYPENAME_ISSUE, this.issuableId),
       };
 
       const sourceData = store.readQuery({
@@ -170,7 +170,7 @@ export default {
           variables: {
             input: {
               ...resourceLink,
-              id: convertToGraphQLId(TYPE_ISSUE, this.issuableId),
+              id: convertToGraphQLId(TYPENAME_ISSUE, this.issuableId),
               linkType: identifyLinkType(resourceLink.link),
             },
           },

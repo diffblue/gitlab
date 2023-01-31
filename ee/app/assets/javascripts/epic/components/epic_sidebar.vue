@@ -3,7 +3,7 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 
 import SidebarAncestorsWidget from 'ee_component/sidebar/components/ancestors_tree/sidebar_ancestors_widget.vue';
 
-import { TYPE_EPIC } from '~/graphql_shared/constants';
+import { TYPENAME_EPIC } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { IssuableType } from '~/issues/constants';
 import notesEventHub from '~/notes/event_hub';
@@ -57,7 +57,7 @@ export default {
       return IssuableType.Epic;
     },
     fullEpicId() {
-      return convertToGraphQLId(TYPE_EPIC, this.epicId);
+      return convertToGraphQLId(TYPENAME_EPIC, this.epicId);
     },
   },
   mounted() {

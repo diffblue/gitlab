@@ -10,7 +10,7 @@ import {
 } from '@gitlab/ui';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import BurnCharts from 'ee/burndown_chart/components/burn_charts.vue';
-import { TYPE_ITERATION } from '~/graphql_shared/constants';
+import { TYPENAME_ITERATION } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { s__, __ } from '~/locale';
@@ -45,7 +45,7 @@ export default {
       variables() {
         return {
           fullPath: this.fullPath,
-          id: convertToGraphQLId(TYPE_ITERATION, this.iterationId),
+          id: convertToGraphQLId(TYPENAME_ITERATION, this.iterationId),
           isGroup: this.namespaceType === Namespace.Group,
         };
       },

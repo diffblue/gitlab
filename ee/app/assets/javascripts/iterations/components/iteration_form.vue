@@ -2,7 +2,7 @@
 import { GlAlert, GlButton, GlDatepicker, GlForm, GlFormGroup, GlFormInput } from '@gitlab/ui';
 import { createAlert } from '~/flash';
 import { dayAfter, formatDate, parsePikadayDate } from '~/lib/utils/datetime_utility';
-import { TYPE_ITERATION, TYPE_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
+import { TYPENAME_ITERATION, TYPE_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __, s__ } from '~/locale';
 import MarkdownField from '~/vue_shared/components/markdown/field.vue';
@@ -51,7 +51,7 @@ export default {
       variables() {
         return {
           fullPath: this.fullPath,
-          id: convertToGraphQLId(TYPE_ITERATION, this.iterationId),
+          id: convertToGraphQLId(TYPENAME_ITERATION, this.iterationId),
           isGroup: true,
         };
       },
