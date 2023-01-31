@@ -10178,6 +10178,9 @@ msgstr ""
 msgid "Compare GitLab editions"
 msgstr ""
 
+msgid "Compare GitLab plans"
+msgstr ""
+
 msgid "Compare Revisions"
 msgstr ""
 
@@ -18731,6 +18734,9 @@ msgid "GitLab account request rejected"
 msgstr ""
 
 msgid "GitLab commit"
+msgstr ""
+
+msgid "GitLab documentation"
 msgstr ""
 
 msgid "GitLab events trigger webhooks. Use the request details of a webhook to help troubleshoot problems. %{link_start}How do I troubleshoot?%{link_end}"
@@ -34425,6 +34431,9 @@ msgid "Provide Feedback"
 msgstr ""
 
 msgid "Provide a number our sales team can use to call you."
+msgstr ""
+
+msgid "Provide feedback"
 msgstr ""
 
 msgid "Provider"
