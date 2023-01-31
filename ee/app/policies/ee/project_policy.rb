@@ -30,7 +30,8 @@ module EE
 
       with_scope :global
       condition(:locked_approvers_rules) do
-        License.feature_available?(:admin_merge_request_approvers_rules) &&
+        !@user.can_admin_all_resources? &&
+          License.feature_available?(:admin_merge_request_approvers_rules) &&
           ::Gitlab::CurrentSettings.disable_overriding_approvers_per_merge_request
       end
 
