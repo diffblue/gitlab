@@ -53,4 +53,12 @@ describe('getGroupAdoptionPath', () => {
   `('returns the correct value based on the group full path', ({ fullPath, expected }) => {
     expect(getGroupAdoptionPath(fullPath)).toBe(expected);
   });
+
+  it('with a relative URL returns the correct path', () => {
+    gon.relative_url_root = '/fake';
+
+    expect(getGroupAdoptionPath('gitlab-org')).toBe(
+      '/fake/groups/gitlab-org/-/analytics/devops_adoption',
+    );
+  });
 });

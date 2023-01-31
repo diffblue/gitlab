@@ -1,4 +1,5 @@
 import { sprintf } from '~/locale';
+import { joinPaths } from '~/lib/utils/url_utility';
 import { GROUP_DEVOPS_PATH } from '../constants';
 
 /**
@@ -50,5 +51,6 @@ export const getAdoptedCountsByCols = (snapshots, cols) => {
  * @return { String } the path for the group level DevOps Adoption feature
  */
 export const getGroupAdoptionPath = (fullPath) => {
-  return fullPath ? sprintf(GROUP_DEVOPS_PATH, { fullPath }) : null;
+  const prefix = gon.relative_url_root || '';
+  return fullPath ? joinPaths(prefix, sprintf(GROUP_DEVOPS_PATH, { fullPath })) : null;
 };
