@@ -7,6 +7,7 @@ module API
         expose :id, documentation: { type: 'integer', example: 1 }
         expose :label, using: Entities::LabelBasic
         expose :position, documentation: { type: 'integer', example: 1 }
+        expose :list_type, documentation: { type: 'string', example: 'backlog' }
       end
     end
   end

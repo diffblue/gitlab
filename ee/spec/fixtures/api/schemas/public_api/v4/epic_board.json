@@ -40,19 +40,32 @@
         "required": [
           "id",
           "label",
-          "position"
+          "position",
+          "list_type"
         ],
         "properties": {
           "id": {
             "type": "integer"
           },
           "label": {
-            "$ref": "../../../../../../../spec/fixtures/api/schemas/public_api/v4/label_basic.json"
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "../../../../../../../spec/fixtures/api/schemas/public_api/v4/label_basic.json"
+              }
+            ]
           },
           "position": {
             "type": [
               "integer",
               "null"
+            ]
+          },
+          "list_type": {
+            "type": [
+              "string"
             ]
           }
         },
