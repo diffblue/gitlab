@@ -513,7 +513,7 @@ class License < ApplicationRecord
       message << "but you need one for #{expected_trueup_qty} #{"user".pluralize(expected_trueup_qty)}."
       message << "Please contact sales at https://about.gitlab.com/sales/"
 
-      self.errors.add(:base, message.join(' '))
+      self.errors.add(:base, :check_trueup, message: message.join(' '))
     end
   end
 
@@ -524,10 +524,10 @@ class License < ApplicationRecord
   def check_restricted_user_count
     return unless restricted_user_count && restricted_user_count_with_threshold < daily_billable_users_count
 
-    add_limit_error(user_count: daily_billable_users_count)
+    add_limit_error(type: :check_restricted_user_count, user_count: daily_billable_users_count)
   end
 
-  def add_limit_error(user_count:, current_period: true)
+  def add_limit_error(user_count:, current_period: true, type: :invalid)
     overage_count = overage(user_count)
 
     message =  [current_period ? "This GitLab installation currently has" : "During the year before this license started, this GitLab installation had"]
@@ -537,7 +537,7 @@ class License < ApplicationRecord
     message << "Please add a license for at least"
     message << "#{number_with_delimiter(user_count)} #{"user".pluralize(user_count)} or contact sales at https://about.gitlab.com/sales/"
 
-    self.errors.add(:base, message.join(' '))
+    self.errors.add(:base, type, message: message.join(' '))
   end
 
   def not_expired
