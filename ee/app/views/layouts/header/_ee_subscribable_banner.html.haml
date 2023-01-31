@@ -1,12 +1,14 @@
 - subscribable = gitlab_subscription_or_license
 - message = gitlab_subscription_message_or_license_message
+- subject = gitlab_subscription_subject_or_license_subject
 
 - if message.present? && subscribable.present?
   .js-gitlab-ee-license-banner.hidden{ class: [container_class, @content_class, 'gl-pt-5!'] }
     = render Pajamas::AlertComponent.new(variant: :danger,
-      title: message,
+      title: subject,
       alert_options: { data: { license_expiry: subscribable.expires_at, defer_links: "true" }}) do |c|
       = c.body do
+        = message
         - if subscribable.block_changes?
           = link_to_button_style(path: renew_subscription_path, track_property: 'renew')
         - elsif subscribable.expired?

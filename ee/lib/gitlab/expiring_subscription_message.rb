@@ -5,6 +5,7 @@ module Gitlab
     GRACE_PERIOD_EXTENSION_DAYS = 30.days
 
     include Gitlab::Utils::StrongMemoize
+    include Gitlab::Routing
     include ActionView::Helpers::TextHelper
 
     attr_reader :subscribable, :signed_in, :is_admin, :namespace, :force_notification
@@ -23,10 +24,15 @@ module Gitlab
       return unless notifiable?
 
       message = []
-      message << license_message_subject if license_message_subject.present?
       message << expiration_blocking_message if expiration_blocking_message.present?
 
       message.join(' ').html_safe
+    end
+
+    def subject
+      return unless notifiable?
+
+      license_message_subject&.html_safe
     end
 
     private
@@ -48,7 +54,11 @@ module Gitlab
     end
 
     def expiring_subject
-      _('Your subscription will expire on %{expires_on}') % { expires_on: subscribable.expires_at.strftime("%Y-%m-%d") }
+      _('Your %{plan_name} subscription will expire on %{expires_on}') %
+        {
+          expires_on: subscribable.expires_at.strftime("%Y-%m-%d"),
+          plan_name: plan_name
+        }
     end
 
     def expiration_blocking_message
@@ -92,10 +102,12 @@ module Gitlab
     def expiring_message
       return namespace_expiring_message if namespace
 
-      _('Your %{strong}%{plan_name}%{strong_close} subscription expires on %{strong}%{expires_on}%{strong_close}. If you do not renew, you will lose access to your paid features on %{strong}%{downgrades_on}%{strong_close}. After that date, you can\'t create issues or merge requests, or use many other features.') %
+      _("If you don't renew by %{strong}%{downgrades_on}%{strong_close} your instance will become read-only, and you won't be able to create issues or merge requests. You will also lose access to your paid features and support entitlement. %{learn_more_link}") %
         {
           expires_on: subscribable.expires_at.strftime("%Y-%m-%d"),
           downgrades_on: subscribable.block_changes_at.strftime("%Y-%m-%d"),
+          learn_more_url: help_page_path('subscriptions/self_managed/index', anchor: 'renew-your-subscription'), target: '_blank', rel: 'noopener noreferrer',
+          learn_more_link: '<a href="%{learn_more_url}">How do I renew my subscription?</a>',
           plan_name: plan_name,
           strong: strong,
           strong_close: strong_close
@@ -113,13 +125,23 @@ module Gitlab
     end
 
     def expiring_features_message
+      _("If you do not renew by %{strong}%{downgrades_on}%{strong_close}, you can't use merge approvals, %{end_message}") %
+        {
+          downgrades_on: subscribable.block_changes_at.strftime("%Y-%m-%d"),
+          end_message: end_message,
+          strong: strong,
+          strong_close: strong_close
+        }
+    end
+
+    def end_message
       case plan_name
       when 'Gold', 'Ultimate'
-        _("After it expires, you can't use merge approvals, epics, or many security features.")
+        "epics, security risk mitigation, or any other paid features."
       when 'Premium', 'Silver'
-        _("After it expires, you can't use merge approvals, epics, or many other features.")
+        "epics, or any other paid features."
       else
-        _("After it expires, you can't use merge approvals, code quality, or many other features.")
+        "code quality, or any other paid features."
       end
     end
 

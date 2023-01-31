@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Expiring Subscription Message', :js, :freeze_time, feature_category: :subscription_management do
   shared_examples 'no expiration notification' do
     it 'loads the page without any subscription expiration notifications' do
-      expect(page).not_to have_content('Your subscription expired!')
+      expect(page).not_to have_content('Your Ultimate subscription expired!')
       expect(page).not_to have_content('Your subscription will expire')
     end
   end
@@ -43,7 +43,7 @@ RSpec.describe 'Expiring Subscription Message', :js, :freeze_time, feature_categ
         let(:expires_at) { Date.current + 15.days }
 
         it 'notifies the admin of a soon expiring subscription' do
-          expect(page).to have_content("Your subscription will expire on #{expires_at.strftime("%Y-%m-%d")}")
+          expect(page).to have_content("Your Ultimate subscription will expire on #{expires_at.strftime("%Y-%m-%d")}")
         end
       end
 
@@ -145,7 +145,7 @@ RSpec.describe 'Expiring Subscription Message', :js, :freeze_time, feature_categ
         let(:end_date) { Date.current + 14.days }
 
         it 'notifies the group owner of a soon expiring subscription' do
-          expect(page).to have_content("Your subscription will expire on #{end_date.strftime("%Y-%m-%d")}")
+          expect(page).to have_content("Your Ultimate subscription will expire on #{end_date.strftime("%Y-%m-%d")}")
         end
       end
 
