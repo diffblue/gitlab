@@ -12,7 +12,7 @@ import { trimText } from 'helpers/text_helper';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import { waitForMutation, mountExtended } from 'helpers/vue_test_utils_helper';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { mrStates } from '~/issuable/popover/constants';
 import GroupedIssuesList from '~/ci/reports/components/grouped_issues_list.vue';
 import ReportSection from '~/ci/reports/components/report_section.vue';
@@ -120,7 +120,7 @@ describe('Grouped security reports app', () => {
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    mock.onGet('vulnerability_feedback_path.json').reply(200, []);
+    mock.onGet('vulnerability_feedback_path.json').reply(HTTP_STATUS_OK, []);
   });
 
   afterEach(() => {
@@ -212,14 +212,14 @@ describe('Grouped security reports app', () => {
 
     describe('while loading', () => {
       it('renders loading summary text + spinner', () => {
-        mock.onGet(PIPELINE_JOBS_ENDPOINT).reply(200, {});
-        mock.onGet(CONTAINER_SCANNING_DIFF_ENDPOINT).reply(200, {});
-        mock.onGet(DEPENDENCY_SCANNING_DIFF_ENDPOINT).reply(200, {});
-        mock.onGet(DAST_DIFF_ENDPOINT).reply(200, {});
-        mock.onGet(SAST_DIFF_ENDPOINT).reply(200, {});
-        mock.onGet(SECRET_DETECTION_DIFF_ENDPOINT).reply(200, {});
-        mock.onGet(COVERAGE_FUZZING_DIFF_ENDPOINT).reply(200, {});
-        mock.onGet(API_FUZZING_DIFF_ENDPOINT).reply(200, {});
+        mock.onGet(PIPELINE_JOBS_ENDPOINT).reply(HTTP_STATUS_OK, {});
+        mock.onGet(CONTAINER_SCANNING_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, {});
+        mock.onGet(DEPENDENCY_SCANNING_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, {});
+        mock.onGet(DAST_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, {});
+        mock.onGet(SAST_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, {});
+        mock.onGet(SECRET_DETECTION_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, {});
+        mock.onGet(COVERAGE_FUZZING_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, {});
+        mock.onGet(API_FUZZING_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, {});
 
         createWrapper(allReportProps);
 
@@ -241,13 +241,13 @@ describe('Grouped security reports app', () => {
     describe('with empty reports', () => {
       beforeEach(() => {
         const emptyResponse = { ...dastDiffSuccessMock, fixed: [], added: [] };
-        mock.onGet(CONTAINER_SCANNING_DIFF_ENDPOINT).reply(200, emptyResponse);
-        mock.onGet(DEPENDENCY_SCANNING_DIFF_ENDPOINT).reply(200, emptyResponse);
-        mock.onGet(DAST_DIFF_ENDPOINT).reply(200, emptyResponse);
-        mock.onGet(SAST_DIFF_ENDPOINT).reply(200, emptyResponse);
-        mock.onGet(SECRET_DETECTION_DIFF_ENDPOINT).reply(200, emptyResponse);
-        mock.onGet(COVERAGE_FUZZING_DIFF_ENDPOINT).reply(200, emptyResponse);
-        mock.onGet(API_FUZZING_DIFF_ENDPOINT).reply(200, emptyResponse);
+        mock.onGet(CONTAINER_SCANNING_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, emptyResponse);
+        mock.onGet(DEPENDENCY_SCANNING_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, emptyResponse);
+        mock.onGet(DAST_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, emptyResponse);
+        mock.onGet(SAST_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, emptyResponse);
+        mock.onGet(SECRET_DETECTION_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, emptyResponse);
+        mock.onGet(COVERAGE_FUZZING_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, emptyResponse);
+        mock.onGet(API_FUZZING_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, emptyResponse);
 
         createWrapper(allReportProps);
 
@@ -301,13 +301,21 @@ describe('Grouped security reports app', () => {
       const { category } = trackMrSecurityReportDetails;
 
       beforeEach(() => {
-        mock.onGet(CONTAINER_SCANNING_DIFF_ENDPOINT).reply(200, containerScanningDiffSuccessMock);
-        mock.onGet(DEPENDENCY_SCANNING_DIFF_ENDPOINT).reply(200, dependencyScanningDiffSuccessMock);
-        mock.onGet(DAST_DIFF_ENDPOINT).reply(200, dastDiffSuccessMock);
-        mock.onGet(SAST_DIFF_ENDPOINT).reply(200, sastDiffSuccessMock);
-        mock.onGet(SECRET_DETECTION_DIFF_ENDPOINT).reply(200, secretDetectionDiffSuccessMock);
-        mock.onGet(COVERAGE_FUZZING_DIFF_ENDPOINT).reply(200, coverageFuzzingDiffSuccessMock);
-        mock.onGet(API_FUZZING_DIFF_ENDPOINT).reply(200, apiFuzzingDiffSuccessMock);
+        mock
+          .onGet(CONTAINER_SCANNING_DIFF_ENDPOINT)
+          .reply(HTTP_STATUS_OK, containerScanningDiffSuccessMock);
+        mock
+          .onGet(DEPENDENCY_SCANNING_DIFF_ENDPOINT)
+          .reply(HTTP_STATUS_OK, dependencyScanningDiffSuccessMock);
+        mock.onGet(DAST_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, dastDiffSuccessMock);
+        mock.onGet(SAST_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, sastDiffSuccessMock);
+        mock
+          .onGet(SECRET_DETECTION_DIFF_ENDPOINT)
+          .reply(HTTP_STATUS_OK, secretDetectionDiffSuccessMock);
+        mock
+          .onGet(COVERAGE_FUZZING_DIFF_ENDPOINT)
+          .reply(HTTP_STATUS_OK, coverageFuzzingDiffSuccessMock);
+        mock.onGet(API_FUZZING_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, apiFuzzingDiffSuccessMock);
 
         createWrapper(allReportProps);
         trackingSpy = mockTracking(category, wrapper.element, jest.spyOn);
@@ -487,7 +495,7 @@ describe('Grouped security reports app', () => {
 
   describe('api fuzzing reports', () => {
     beforeEach(() => {
-      mock.onGet(API_FUZZING_DIFF_ENDPOINT).reply(200, apiFuzzingDiffSuccessMock);
+      mock.onGet(API_FUZZING_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, apiFuzzingDiffSuccessMock);
 
       createWrapper({
         ...props,
@@ -515,7 +523,9 @@ describe('Grouped security reports app', () => {
 
   describe('container scanning reports', () => {
     beforeEach(() => {
-      mock.onGet(CONTAINER_SCANNING_DIFF_ENDPOINT).reply(200, containerScanningDiffSuccessMock);
+      mock
+        .onGet(CONTAINER_SCANNING_DIFF_ENDPOINT)
+        .reply(HTTP_STATUS_OK, containerScanningDiffSuccessMock);
 
       createWrapper({
         ...props,
@@ -542,7 +552,9 @@ describe('Grouped security reports app', () => {
 
   describe('dependency scanning reports', () => {
     beforeEach(() => {
-      mock.onGet(DEPENDENCY_SCANNING_DIFF_ENDPOINT).reply(200, dependencyScanningDiffSuccessMock);
+      mock
+        .onGet(DEPENDENCY_SCANNING_DIFF_ENDPOINT)
+        .reply(HTTP_STATUS_OK, dependencyScanningDiffSuccessMock);
 
       createWrapper({
         ...props,
@@ -569,7 +581,7 @@ describe('Grouped security reports app', () => {
 
   describe('dast reports', () => {
     beforeEach(() => {
-      mock.onGet(DAST_DIFF_ENDPOINT).reply(200, {
+      mock.onGet(DAST_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, {
         ...dastDiffSuccessMock,
         base_report_out_of_date: true,
       });
@@ -609,7 +621,7 @@ describe('Grouped security reports app', () => {
     });
 
     it('does not show scanned resources info if there is 0 scanned URL', () => {
-      mock.onGet(DAST_DIFF_ENDPOINT).reply(200, {
+      mock.onGet(DAST_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, {
         ...dastDiffSuccessMock,
         base_report_out_of_date: true,
       });
@@ -641,7 +653,7 @@ describe('Grouped security reports app', () => {
     });
 
     it('show download option when scanned resources are not available', () => {
-      mock.onGet(DAST_DIFF_ENDPOINT).reply(200, {
+      mock.onGet(DAST_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, {
         ...dastDiffSuccessMock,
         base_report_out_of_date: true,
       });
@@ -674,7 +686,9 @@ describe('Grouped security reports app', () => {
 
   describe('secret Detection reports', () => {
     const initSecretDetection = (isEnabled = true) => {
-      mock.onGet(SECRET_DETECTION_DIFF_ENDPOINT).reply(200, secretDetectionDiffSuccessMock);
+      mock
+        .onGet(SECRET_DETECTION_DIFF_ENDPOINT)
+        .reply(HTTP_STATUS_OK, secretDetectionDiffSuccessMock);
 
       createWrapper({
         ...props,
@@ -724,7 +738,7 @@ describe('Grouped security reports app', () => {
 
   describe('sast reports', () => {
     beforeEach(() => {
-      mock.onGet(SAST_DIFF_ENDPOINT).reply(200, { ...sastDiffSuccessMock });
+      mock.onGet(SAST_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, { ...sastDiffSuccessMock });
 
       createWrapper({
         ...props,
@@ -749,9 +763,10 @@ describe('Grouped security reports app', () => {
 
   describe('Out of date report', () => {
     const createComponent = ({ baseReportOutOfDate = false, ...extraProp }) => {
-      mock
-        .onGet(SAST_DIFF_ENDPOINT)
-        .reply(200, { ...sastDiffSuccessMock, base_report_out_of_date: baseReportOutOfDate });
+      mock.onGet(SAST_DIFF_ENDPOINT).reply(HTTP_STATUS_OK, {
+        ...sastDiffSuccessMock,
+        base_report_out_of_date: baseReportOutOfDate,
+      });
 
       createWrapper({
         ...props,
