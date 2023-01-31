@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe License do
+RSpec.describe License, feature_category: :sm_provisioning do
   using RSpec::Parameterized::TableSyntax
 
   subject(:license) { build(:license, data: gl_license.export) }
@@ -78,6 +78,7 @@ RSpec.describe License do
           set_restrictions(restricted_user_count: 10, trueup_quantity: 8, reconciliation_completed: false)
 
           expect(license).not_to be_valid
+          expect(license.errors.added?(:base, :check_trueup)).to eq(true)
           expect(license.errors.full_messages.to_sentence)
             .to include 'You have applied a True-up for 8 users but you need one for 10 users'
         end
@@ -88,12 +89,13 @@ RSpec.describe License do
           set_restrictions(restricted_user_count: 10, trueup_quantity: 8)
 
           expect(license).not_to be_valid
+          expect(license.errors.added?(:base, :check_trueup)).to eq(true)
           expect(license.errors.full_messages.to_sentence)
             .to include 'You have applied a True-up for 8 users but you need one for 10 users'
         end
       end
 
-      context 'when quantity with threshold is more than the required quantity' do
+      context 'when trueup quantity with threshold is more than the required quantity' do
         before do
           set_restrictions(restricted_user_count: 10, trueup_quantity: 10)
         end
@@ -105,14 +107,19 @@ RSpec.describe License do
             create_list(:user, 12)
           end
 
-          it { is_expected.not_to be_valid }
+          it 'is not valid' do
+            expect(license).not_to be_valid
+            expect(license.errors.added?(:base, :check_restricted_user_count)).to eq(true)
+          end
         end
       end
 
-      context 'when quantity with threshold is equal to the required quantity' do
+      context 'when trueup quantity with threshold is equal to the required quantity' do
         before do
-          set_restrictions(restricted_user_count: 10, trueup_quantity: 11)
+          set_restrictions(restricted_user_count: 10, trueup_quantity: 10)
         end
+
+        let(:active_user_count) { described_class.current.daily_billable_users_count + 11 }
 
         it { is_expected.to be_valid }
 
@@ -121,16 +128,22 @@ RSpec.describe License do
             create_list(:user, 12)
           end
 
-          it { is_expected.not_to be_valid }
+          it 'is not valid' do
+            expect(license).not_to be_valid
+            expect(license.errors.added?(:base, :check_restricted_user_count)).to eq(true)
+          end
         end
       end
 
-      context 'when quantity with threshold is less than the required quantity' do
+      context 'when trueup quantity with threshold is less than the required quantity' do
         before do
           set_restrictions(restricted_user_count: 10, trueup_quantity: 8)
         end
 
-        it { is_expected.not_to be_valid }
+        it 'is not valid' do
+          expect(license).not_to be_valid
+          expect(license.errors.added?(:base, :check_trueup)).to eq(true)
+        end
       end
 
       context 'when previous user count is not present' do
@@ -149,7 +162,10 @@ RSpec.describe License do
             create_list(:user, 2)
           end
 
-          it { is_expected.not_to be_valid }
+          it 'is not valid' do
+            expect(license).not_to be_valid
+            expect(license.errors.added?(:base, :check_trueup)).to eq(true)
+          end
         end
       end
 
