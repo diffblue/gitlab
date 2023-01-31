@@ -32,7 +32,7 @@ module Gitlab
         private
 
         def violation?
-          @merge_request.approvers.count < MINIMUM_NUMBER_OF_APPROVERS
+          @merge_request.approved_by_users.count < MINIMUM_NUMBER_OF_APPROVERS
         end
       end
     end
