@@ -12,6 +12,10 @@ module Types
                required: false,
                description: 'Negated epic arguments.'
 
+      argument :or, Types::Epics::UnionedEpicFilterInputType,
+               required: false,
+               description: 'List of arguments with inclusive OR.'
+
       argument :search, GraphQL::Types::String,
                required: false,
                description: 'Search query for epic title or description.'
