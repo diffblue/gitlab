@@ -9,9 +9,12 @@ module EE
     module SecureFile
       extend ActiveSupport::Concern
 
+      EE_SEARCHABLE_ATTRIBUTES = %i[name].freeze
+
       prepended do
         include ::Geo::ReplicableModel
         include ::Geo::VerifiableModel
+        include ::Gitlab::SQL::Pattern
         include Artifactable
 
         delegate(*::Geo::VerificationState::VERIFICATION_METHODS, to: :ci_secure_file_state)
@@ -51,6 +54,17 @@ module EE
 
       class_methods do
         extend ::Gitlab::Utils::Override
+
+        # Search for a list of ci_secure_files based on the query given in `query`.
+        #
+        # @param [String] query term that will search over secure_file :name attribute
+        #
+        # @return [ActiveRecord::Relation<Ci::SecureFile>] a collection of secure files
+        def search(query)
+          return all if query.empty?
+
+          fuzzy_search(query, EE_SEARCHABLE_ATTRIBUTES)
+        end
 
         override :verification_state_table_class
         def verification_state_table_class
