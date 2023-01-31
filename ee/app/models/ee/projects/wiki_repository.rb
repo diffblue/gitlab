@@ -7,7 +7,8 @@ module EE
 
       prepended do
         has_one :wiki_repository_state,
-                class_name: 'Geo::ProjectWikiRepositoryState',
+                class_name: 'Geo::WikiRepositoryState',
+                foreign_key: :project_wiki_repository_id,
                 inverse_of: :project_wiki_repository,
                 autosave: false
       end

@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :geo_project_wiki_repository_registry, class: 'Geo::ProjectWikiRepositoryRegistry' do
-    project
+    project_wiki_repository
     state { Geo::ProjectWikiRepositoryRegistry.state_value(:pending) }
 
     trait :synced do

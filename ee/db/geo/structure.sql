@@ -447,7 +447,7 @@ ALTER SEQUENCE project_registry_id_seq OWNED BY project_registry.id;
 
 CREATE TABLE project_wiki_repository_registry (
     id bigint NOT NULL,
-    project_id bigint NOT NULL,
+    project_id bigint,
     created_at timestamp with time zone NOT NULL,
     last_synced_at timestamp with time zone,
     retry_at timestamp with time zone,
@@ -465,6 +465,7 @@ CREATE TABLE project_wiki_repository_registry (
     verification_checksum_mismatched bytea,
     verification_failure text,
     last_sync_failure text,
+    project_wiki_repository_id bigint,
     CONSTRAINT check_038a3a8139 CHECK ((char_length(verification_failure) <= 255)),
     CONSTRAINT check_33007d5eb2 CHECK ((char_length(last_sync_failure) <= 255))
 );
@@ -599,6 +600,9 @@ ALTER TABLE ONLY terraform_state_version_registry ALTER COLUMN id SET DEFAULT ne
 ALTER TABLE ONLY ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
 
+ALTER TABLE project_wiki_repository_registry
+    ADD CONSTRAINT check_4112c47225 CHECK ((project_wiki_repository_id IS NOT NULL)) NOT VALID;
+
 ALTER TABLE ONLY ci_secure_file_registry
     ADD CONSTRAINT ci_secure_file_registry_pkey PRIMARY KEY (id);
 
@@ -702,6 +706,8 @@ CREATE INDEX idx_project_registry_on_wiki_failure_partial ON project_registry US
 CREATE INDEX idx_project_registry_pending_repositories_partial ON project_registry USING btree (repository_retry_count) WHERE ((repository_retry_count IS NULL) AND (last_repository_successful_sync_at IS NOT NULL) AND ((resync_repository = true) OR ((repository_verification_checksum_sha IS NULL) AND (last_repository_verification_failure IS NULL))));
 
 CREATE INDEX idx_project_registry_synced_repositories_partial ON project_registry USING btree (last_repository_successful_sync_at) WHERE ((resync_repository = false) AND (repository_retry_count IS NULL) AND (repository_verification_checksum_sha IS NOT NULL));
+
+CREATE UNIQUE INDEX idx_project_wiki_repository_registry_project_wiki_repository_id ON project_wiki_repository_registry USING btree (project_wiki_repository_id);
 
 CREATE INDEX idx_repository_checksum_mismatch ON project_registry USING btree (project_id) WHERE (repository_checksum_mismatch = true);
 
