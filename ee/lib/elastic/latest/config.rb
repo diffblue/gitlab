@@ -46,6 +46,9 @@ module Elastic
               whitespace_reverse: {
                 tokenizer: 'whitespace',
                 filter: %w(lowercase asciifolding reverse)
+              },
+              email_analyzer: {
+                tokenizer: 'email_tokenizer'
               }
             },
             filter: {
@@ -64,6 +67,9 @@ module Elastic
               path_tokenizer: {
                 type: 'path_hierarchy',
                 reverse: true
+              },
+              email_tokenizer: {
+                type: 'uax_url_email'
               }
             },
             normalizer: {
