@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe RequirementsManagement::ImportCsvService do
+RSpec.describe RequirementsManagement::ImportCsvService, feature_category: :requirements_management do
   let_it_be_with_refind(:project) { create(:project) }
   let_it_be(:user) { create(:user) }
 
