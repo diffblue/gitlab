@@ -68,24 +68,6 @@ module EE
       self
     end
 
-    # Builds the @details attribute for project group link
-    #
-    # This expects [String] :action of :destroy, :create, :update to be
-    #   specified in @details attribute
-    #
-    # @param [ProjectGroupLink] group_link object being audited
-    #
-    # @return [AuditEventService]
-    def for_project_group_link(group_link)
-      @details = custom_project_link_group_attributes(group_link)
-                 .merge(author_name: @author.name,
-                        target_id: group_link.project.id,
-                        target_type: 'Project',
-                        target_details: group_link.project.full_path)
-
-      self
-    end
-
     # Builds the @details attribute for a failed login
     #
     # @return [AuditEventService]
@@ -310,23 +292,6 @@ module EE
       end
     end
 
-    def custom_project_link_group_attributes(group_link)
-      case @details[:action]
-      when :destroy
-        { remove: 'project_access' }
-      when :create
-        {
-          add: 'project_access',
-          as: group_link.human_access
-        }
-      when :update
-        {
-          change: 'access_level',
-          from: @details[:old_access_level],
-          to: group_link.human_access
-        }
-      end
-    end
     # rubocop:enable Gitlab/ModuleWithInstanceVariables
   end
 end

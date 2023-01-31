@@ -347,22 +347,6 @@ RSpec.describe AuditEventService, :request_store do
     end
   end
 
-  describe '#for_project_group_link' do
-    let_it_be(:current_user) { create(:user) }
-    let_it_be(:project) { create(:project) }
-    let_it_be(:group) { create(:group) }
-    let_it_be(:link) { create(:project_group_link, group: group, project: project) }
-
-    let(:options) { { action: :create } }
-
-    subject(:event) { described_class.new(current_user, project, options).for_project_group_link(link).security_event }
-
-    it 'sets the target_type attribute' do
-      expect(event.details[:target_type]).to eq('Project')
-      expect(event.target_type).to eq('Project')
-    end
-  end
-
   describe '#for_user' do
     let(:current_user) { create(:user) }
     let(:user) { create(:user) }

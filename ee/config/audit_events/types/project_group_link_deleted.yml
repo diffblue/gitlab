@@ -1,0 +1,9 @@
+---
+name: project_group_link_deleted
+description: Event triggered when a project group link is deleted
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/374114
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/108918
+feature_category: compliance_management
+milestone: '15.9'
+saved_to_database: true
+streamed: true
