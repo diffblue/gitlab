@@ -8,7 +8,7 @@ module Gitlab
 
       DEFAULT_PER_PAGE = Gitlab::SearchResults::DEFAULT_PER_PAGE
 
-      attr_reader :current_user, :query, :public_and_internal_projects, :order_by, :sort, :filters
+      attr_reader :current_user, :query, :public_and_internal_projects, :order_by, :sort, :filters, :error
 
       # Limit search results by passed projects
       # It allows us to search only for projects user has access to
@@ -66,6 +66,10 @@ module Gitlab
         nil
       end
 
+      def failed?
+        error.present?
+      end
+
       private
 
       def base_options
@@ -102,8 +106,7 @@ module Gitlab
       end
 
       def search_as_found_blob(query, repositories, page:, per_page:, options:, preload_method:)
-        zoekt_search_and_wrap(query,
-                              page: page,
+        zoekt_search_and_wrap(query, page: page,
                               per_page: per_page,
                               options: options,
                               preload_method: preload_method) do |result, project|
@@ -144,6 +147,13 @@ module Gitlab
           num: per_page,
           options: options
         )
+
+        if search_result[:Error]
+          @blobs_count = 0
+          @error = search_result[:Error]
+          return Kaminari.paginate_array([])
+        end
+
         total_count = search_result[:Result][:MatchCount]
 
         response = (search_result[:Result][:Files] || []).flat_map do |r|

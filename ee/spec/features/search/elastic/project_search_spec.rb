@@ -124,6 +124,30 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
       end
     end
   end
+
+  describe 'renders error when zoekt search fails' do
+    let(:query) { 'test' }
+    let(:results) { Gitlab::Zoekt::SearchResults.new(user, query) }
+
+    before do
+      sign_in(user)
+
+      allow_next_instance_of(SearchService) do |service|
+        allow(service).to receive(:search_results).and_return(results)
+        allow(results).to receive(:zoekt_search).and_return({ Error: 'failed to parse query' })
+      end
+
+      visit search_path(search: query, project_id: project.id)
+    end
+
+    it 'renders error information' do
+      expect(page).to have_content('A search query problem has occurred')
+    end
+
+    it 'sets tab count to 0' do
+      expect(page.find('[data-testid="search-filter"] .active')).to have_text('0')
+    end
+  end
 end
 
 RSpec.describe 'Project elastic search redactions', feature_category: :global_search do
