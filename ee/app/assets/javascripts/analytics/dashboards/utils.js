@@ -2,7 +2,7 @@ import { isNumeric } from '~/lib/utils/number_utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { fetchMetricsData } from '~/analytics/shared/utils';
 import { METRICS_REQUESTS } from '~/analytics/cycle_analytics/constants';
-import { DORA_METRICS } from './constants';
+import { TABLE_METRICS } from './constants';
 
 export const percentChange = ({ current, previous }) =>
   previous > 0 && current > 0 ? (current - previous) / previous : 0;
@@ -20,7 +20,7 @@ export const percentChange = ({ current, previous }) =>
  */
 export const extractDoraMetrics = (metrics = []) =>
   metrics
-    .filter(({ identifier }) => Object.keys(DORA_METRICS).includes(identifier))
+    .filter(({ identifier }) => Object.keys(TABLE_METRICS).includes(identifier))
     .reduce((acc, curr) => {
       return {
         ...acc,
@@ -62,7 +62,7 @@ export const hasDoraMetricValues = (timePeriods) =>
     // timePeriod may contain more attributes than just the DORA metrics,
     // so filter out non-metrics before making a list of the raw values
     const metricValues = Object.entries(timePeriod)
-      .filter(([k]) => Object.keys(DORA_METRICS).includes(k))
+      .filter(([k]) => Object.keys(TABLE_METRICS).includes(k))
       .map(([, v]) => v.value);
 
     return metricValues.some((value) => isNumeric(value) && Number(value) > 0);
@@ -76,7 +76,7 @@ export const hasDoraMetricValues = (timePeriods) =>
  * @returns {Array} array comparing each DORA metric between the different time periods
  */
 export const generateDoraTimePeriodComparisonTable = (timePeriods) => {
-  const doraMetrics = Object.entries(DORA_METRICS);
+  const doraMetrics = Object.entries(TABLE_METRICS);
   return doraMetrics.map(([identifier, { label, formatValue, invertTrendColor }]) => {
     const data = { invertTrendColor, metric: { identifier, value: label } };
     timePeriods.forEach((timePeriod, index) => {
@@ -109,7 +109,7 @@ export const generateDoraTimePeriodComparisonTable = (timePeriods) => {
  * @returns {Object} object containing a timeseries of values for each metric
  */
 export const generateSparklineCharts = (timePeriods) =>
-  Object.entries(DORA_METRICS).reduce(
+  Object.entries(TABLE_METRICS).reduce(
     (acc, [identifier, { chartUnits }]) =>
       Object.assign(acc, {
         [identifier]: {

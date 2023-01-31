@@ -4,12 +4,8 @@ import { GlSparklineChart } from '@gitlab/ui/dist/charts';
 import { s__, __ } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import MetricPopover from '~/analytics/shared/components/metric_popover.vue';
-import {
-  DASHBOARD_TABLE_FIELDS,
-  METRIC_TOOLTIPS,
-  CHART_GRADIENT,
-  CHART_GRADIENT_INVERTED,
-} from '../constants';
+import { METRIC_TOOLTIPS } from '~/analytics/shared/constants';
+import { DASHBOARD_TABLE_FIELDS, CHART_GRADIENT, CHART_GRADIENT_INVERTED } from '../constants';
 import TrendIndicator from './trend_indicator.vue';
 
 export default {

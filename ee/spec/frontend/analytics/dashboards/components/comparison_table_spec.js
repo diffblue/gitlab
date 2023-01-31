@@ -1,9 +1,6 @@
 import { mountExtended } from 'helpers/vue_test_utils_helper';
-import {
-  METRIC_TOOLTIPS,
-  CHART_GRADIENT,
-  CHART_GRADIENT_INVERTED,
-} from 'ee/analytics/dashboards/constants';
+import { METRIC_TOOLTIPS } from '~/analytics/shared/constants';
+import { CHART_GRADIENT, CHART_GRADIENT_INVERTED } from 'ee/analytics/dashboards/constants';
 import ComparisonTable from 'ee/analytics/dashboards/components/comparison_table.vue';
 import { mockComparativeTableData } from '../mock_data';
 
