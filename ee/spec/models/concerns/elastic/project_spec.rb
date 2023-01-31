@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state do
+RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_category: :global_search do
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
   end
@@ -216,35 +216,45 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state do
                          'project:match:search_terms')
   end
 
-  it "returns json with all needed elements" do
-    project = create :project
+  describe '.as_indexed_json' do
+    [true, false].each do |migration_finished|
+      context "when add_schema_version_to_main_index_mapping is #{migration_finished ? '' : 'not '}finished" do
+        before do
+          set_elasticsearch_migration_to :add_schema_version_to_main_index_mapping, including: migration_finished
+        end
 
-    expected_hash = project.attributes.extract!(
-      'id',
-      'name',
-      'path',
-      'description',
-      'namespace_id',
-      'created_at',
-      'archived',
-      'updated_at',
-      'visibility_level',
-      'last_activity_at'
-    ).merge({ 'join_field' => project.es_type, 'type' => project.es_type })
+        it 'returns json with all needed elements' do
+          project = create :project
 
-    expected_hash.merge!(
-      project.project_feature.attributes.extract!(
-        'issues_access_level',
-        'merge_requests_access_level',
-        'snippets_access_level',
-        'wiki_access_level',
-        'repository_access_level'
-      )
-    )
+          expected_hash = project.attributes.extract!(
+            'id',
+            'name',
+            'path',
+            'description',
+            'namespace_id',
+            'created_at',
+            'archived',
+            'updated_at',
+            'visibility_level',
+            'last_activity_at'
+          ).merge({ 'join_field' => project.es_type, 'type' => project.es_type })
 
-    expected_hash['name_with_namespace'] = project.full_name
-    expected_hash['path_with_namespace'] = project.full_path
+          expected_hash.merge!(
+            project.project_feature.attributes.extract!(
+              'issues_access_level',
+              'merge_requests_access_level',
+              'snippets_access_level',
+              'wiki_access_level',
+              'repository_access_level'
+            )
+          )
 
-    expect(project.__elasticsearch__.as_indexed_json).to eq(expected_hash)
+          expected_hash['name_with_namespace'] = project.full_name
+          expected_hash['path_with_namespace'] = project.full_path
+          expected_hash['schema_version'] = 2301 if migration_finished
+          expect(project.__elasticsearch__.as_indexed_json).to eq(expected_hash)
+        end
+      end
+    end
   end
 end
