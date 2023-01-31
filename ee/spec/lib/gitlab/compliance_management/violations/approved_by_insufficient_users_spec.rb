@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByInsufficientUsers,
 feature_category: :compliance_management do
   let_it_be(:user) { create(:user) }
+  let_it_be(:user2) { create(:user) }
   let_it_be(:merge_request) { create(:merge_request, state: :merged, merge_user: user) }
 
   subject(:violation) { described_class.new(merge_request) }
@@ -14,8 +15,8 @@ feature_category: :compliance_management do
 
     context 'when merge request is approved by sufficient number of users' do
       before do
-        merge_request.approver_users << create(:user)
-        merge_request.approver_users << create(:user)
+        create(:approval, merge_request: merge_request, user: user)
+        create(:approval, merge_request: merge_request, user: user2)
       end
 
       it 'does not create a ComplianceViolation' do
@@ -25,7 +26,7 @@ feature_category: :compliance_management do
 
     context 'when merge request is approved by insufficient number of users' do
       before do
-        merge_request.approver_users << create(:user)
+        create(:approval, merge_request: merge_request, user: user)
       end
 
       it 'creates a ComplianceViolation', :aggregate_failures do
