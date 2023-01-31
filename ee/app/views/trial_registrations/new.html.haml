@@ -20,7 +20,7 @@
     .signup-page
       = render 'devise/shared/signup_box',
         borderless: true,
-        url: trial_registrations_path,
+        url: trial_registrations_path(glm_tracking_params),
         button_text: _('Continue'),
         show_omniauth_providers: social_signin_enabled?,
         omniauth_providers_placement: :top

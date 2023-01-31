@@ -8,11 +8,11 @@ module EE
       redirect_path == new_subscriptions_path
     end
 
-    def in_trial_flow?
-      [new_trial_path, new_users_sign_up_company_path].include?(redirect_path)
-    end
-
     def in_trial_onboarding_flow?
+      # This only comes from the submission of the company form.
+      # It is then passed around to creating group/project
+      # and then back to welcome controller for the
+      # continuous getting started action.
       params[:trial_onboarding_flow] == 'true'
     end
 
@@ -23,16 +23,20 @@ module EE
     def setup_for_company_label_text
       if in_subscription_flow?
         _('Who will be using this GitLab subscription?')
-      elsif in_trial_flow?
+      elsif trial_selected?
         _('Who will be using this GitLab trial?')
       else
         _('Who will be using GitLab?')
       end
     end
 
+    def trial_selected?
+      params[:trial] == 'true'
+    end
+
     def show_signup_flow_progress_bar?
       return true if in_subscription_flow?
-      return false if user_has_memberships? || in_oauth_flow? || in_trial_flow?
+      return false if user_has_memberships? || in_oauth_flow? || trial_selected?
 
       signup_onboarding_enabled?
     end
@@ -41,7 +45,7 @@ module EE
       continue = _('Continue')
       get_started = _('Get started!')
 
-      return continue if in_subscription_flow? || in_trial_flow?
+      return continue if in_subscription_flow?
       return get_started if user_has_memberships? || in_oauth_flow?
 
       signup_onboarding_enabled? ? continue : get_started

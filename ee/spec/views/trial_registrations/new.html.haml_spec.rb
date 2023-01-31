@@ -8,6 +8,7 @@ RSpec.describe 'trial_registrations/new.html.haml' do
   before do
     allow(view).to receive(:resource).and_return(resource)
     allow(view).to receive(:resource_name).and_return(:user)
+    allow(view).to receive(:glm_tracking_params).and_return({})
   end
 
   subject { render && rendered }

@@ -1,5 +1,7 @@
 - return unless Gitlab.com?
 
+= hidden_field_tag :trial, params[:trial]
+
 - if user_has_memberships?
   = f.hidden_field :setup_for_company, value: true
 - else

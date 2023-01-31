@@ -26,8 +26,6 @@ RSpec.describe 'registrations/welcome/show', :saas do
     where(:redirect_path, :signup_onboarding_enabled, :show_progress_bar, :flow, :continue?, :show_joining_question) do
       '/-/subscriptions/new'    | false | true  | :subscription | true  | true
       '/-/subscriptions/new'    | true  | true  | :subscription | true  | true
-      '/-/trials/new'           | false | false | :trial        | true  | false
-      '/-/trials/new'           | true  | false | :trial        | true  | false
       '/oauth/authorize/abc123' | false | false | nil           | false | true
       '/oauth/authorize/abc123' | true  | false | nil           | false | true
       nil                       | false | false | nil           | false | true
