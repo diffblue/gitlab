@@ -29,15 +29,4 @@ RSpec.describe 'OneTrust in the sign up flow', feature_category: :system_access 
 
     it_behaves_like 'one trust settings'
   end
-
-  context 'when user visits /users/sign_up/welcome/trial_getting_started' do
-    let_it_be(:project) { create(:project, group: group) }
-
-    before do
-      project.group.add_owner(user)
-      visit trial_getting_started_users_sign_up_welcome_path(learn_gitlab_project_id: project.id)
-    end
-
-    it_behaves_like 'one trust settings'
-  end
 end
