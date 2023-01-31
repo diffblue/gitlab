@@ -45027,6 +45027,9 @@ msgstr ""
 msgid "Unauthenticated web rate limit period in seconds"
 msgstr ""
 
+msgid "Unavailable"
+msgstr ""
+
 msgid "Unban"
 msgstr ""
 
