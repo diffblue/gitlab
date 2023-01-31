@@ -1,11 +1,15 @@
-= bootstrap_form_for @saml_response_check.tap(&:valid?), url: '#', html: { class: 'gl-show-field-errors' } do |f|
+= gitlab_ui_form_for @saml_response_check.tap(&:valid?), url: '#', html: { class: 'gl-show-field-errors', role: 'form' } do |f|
   - if f.object.valid?
     = render Pajamas::AlertComponent.new(variant: :success) do |c|
       = c.body do
         = s_('GroupSAML|Valid SAML Response')
-  = f.errors_on :xml_response, hide_attribute_name: true
-  = f.text_field :name_id, disabled: true, label: s_('GroupSAML|NameID'), label_class: 'label-bold', input_group_class: 'gl-field-error-anchor'
-  = f.text_field :name_id_format, disabled: true, label: s_('GroupSAML|NameID Format'), label_class: 'label-bold', input_group_class: 'gl-field-error-anchor'
+  = form_errors(@saml_response_check)
+  .form-group
+    = f.label :name_id, s_('GroupSAML|NameID'), class: 'label-bold required'
+    = f.text_field :name_id, disabled: true, class: 'form-control'
+  .form-group
+    = f.label :name_id_format, s_('GroupSAML|NameID Format'), class: 'label-bold required'
+    = f.text_field :name_id_format, disabled: true, class: 'form-control'
 .file-holder
   - indented_xml = Nokogiri.XML(@saml_response_check.xml).to_xml
   .js-file-title.file-title
