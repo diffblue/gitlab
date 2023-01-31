@@ -277,6 +277,7 @@ class Packages::Package < ApplicationRecord
     project.packages
            .preload_pipelines
            .including_tags
+           .displayable
            .with_name(name)
            .where.not(version: version)
            .with_package_type(package_type)
