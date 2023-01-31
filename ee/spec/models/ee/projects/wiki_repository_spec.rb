@@ -7,7 +7,7 @@ RSpec.describe Projects::WikiRepository do
     it {
       is_expected
         .to have_one(:wiki_repository_state)
-        .class_name('Geo::ProjectWikiRepositoryState')
+        .class_name('Geo::WikiRepositoryState')
         .inverse_of(:project_wiki_repository)
         .autosave(false)
     }
