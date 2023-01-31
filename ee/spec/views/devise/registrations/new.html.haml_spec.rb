@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'devise/registrations/new' do
+RSpec.describe 'devise/registrations/new', feature_category: :authentication_and_authorization do
+  let(:feature_enabled) { true }
   let(:arkose_labs_api_key) { "api-key" }
   let(:arkose_labs_domain) { "domain" }
 
@@ -11,6 +12,7 @@ RSpec.describe 'devise/registrations/new' do
   before do
     stub_devise
 
+    allow(::Arkose::Settings).to receive(:enabled_for_signup?).and_return(feature_enabled)
     allow(::Arkose::Settings).to receive(:arkose_public_api_key).and_return(arkose_labs_api_key)
     allow(::Arkose::Settings).to receive(:arkose_labs_domain).and_return(arkose_labs_domain)
   end
@@ -23,10 +25,8 @@ RSpec.describe 'devise/registrations/new' do
     expect(rendered).to have_selector("[data-domain='#{arkose_labs_domain}']")
   end
 
-  context 'when the :arkose_labs_signup_challenge feature flag is disabled' do
-    before do
-      stub_feature_flags(arkose_labs_signup_challenge: false)
-    end
+  context 'when the feature is disabled' do
+    let(:feature_enabled) { false }
 
     it 'does not render challenge container', :aggregate_failures do
       subject
