@@ -15,7 +15,11 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
         solution
         reportType
         falsePositive
+        mergeRequest {
+          id
+        }
         remediations {
+          diff
           summary
         }
         scanner {
