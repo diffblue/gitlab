@@ -1,5 +1,5 @@
 import { GlLink } from '@gitlab/ui';
-import BranchDetails from 'ee/compliance_dashboard/components/shared/branch_details.vue';
+import BranchDetails from 'ee/compliance_dashboard/components/violations_report/shared/branch_details.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 
 describe('BranchDetails component', () => {

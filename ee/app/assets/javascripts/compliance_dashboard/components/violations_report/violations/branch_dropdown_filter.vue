@@ -1,7 +1,7 @@
 <script>
 import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { __ } from '~/locale';
-import { BRANCH_FILTER_OPTIONS } from '../../constants';
+import { BRANCH_FILTER_OPTIONS } from '../../../constants';
 
 export default {
   components: {

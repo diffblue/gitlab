@@ -1,7 +1,7 @@
 import { GlAvatarLabeled, GlAvatarLink } from '@gitlab/ui';
-import MergedBy from 'ee/compliance_dashboard/components/drawer_sections/merged_by.vue';
-import DrawerSectionHeader from 'ee/compliance_dashboard/components/shared/drawer_section_header.vue';
-import DrawerSectionSubHeader from 'ee/compliance_dashboard/components/shared/drawer_section_sub_header.vue';
+import MergedBy from 'ee/compliance_dashboard/components/violations_report/drawer_sections/merged_by.vue';
+import DrawerSectionHeader from 'ee/compliance_dashboard/components/violations_report/shared/drawer_section_header.vue';
+import DrawerSectionSubHeader from 'ee/compliance_dashboard/components/violations_report/shared/drawer_section_sub_header.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { createUser } from '../../mock_data';
 

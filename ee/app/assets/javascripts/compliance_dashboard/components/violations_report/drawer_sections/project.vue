@@ -2,7 +2,7 @@
 import { GlAvatarLabeled, GlAvatarLink, GlLabel } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { __ } from '~/locale';
-import { DRAWER_AVATAR_SIZE } from '../../constants';
+import { DRAWER_AVATAR_SIZE } from '../../../constants';
 import DrawerSectionHeader from '../shared/drawer_section_header.vue';
 
 export default {

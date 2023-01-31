@@ -1,6 +1,6 @@
 <script>
 import { GlAvatarsInline } from '@gitlab/ui';
-import { DRAWER_AVATAR_SIZE, DRAWER_MAXIMUM_AVATARS } from '../../constants';
+import { DRAWER_AVATAR_SIZE, DRAWER_MAXIMUM_AVATARS } from '../../../constants';
 import DrawerSectionSubHeader from './drawer_section_sub_header.vue';
 import UserAvatar from './user_avatar.vue';
 

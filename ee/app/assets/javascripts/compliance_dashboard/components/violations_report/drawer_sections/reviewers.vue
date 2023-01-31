@@ -1,6 +1,6 @@
 <script>
 import { __, n__ } from '~/locale';
-import { DRAWER_AVATAR_SIZE, DRAWER_MAXIMUM_AVATARS } from '../../constants';
+import { DRAWER_AVATAR_SIZE, DRAWER_MAXIMUM_AVATARS } from '../../../constants';
 import DrawerAvatarsList from '../shared/drawer_avatars_list.vue';
 import DrawerSectionHeader from '../shared/drawer_section_header.vue';
 

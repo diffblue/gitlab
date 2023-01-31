@@ -2,7 +2,7 @@
 import { GlDrawer } from '@gitlab/ui';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
-import { COMPLIANCE_DRAWER_CONTAINER_CLASS } from '../constants';
+import { COMPLIANCE_DRAWER_CONTAINER_CLASS } from '../../constants';
 import BranchPath from './drawer_sections/branch_path.vue';
 import Committers from './drawer_sections/committers.vue';
 import MergedBy from './drawer_sections/merged_by.vue';

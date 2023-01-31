@@ -1,6 +1,6 @@
 <script>
 import { GlAvatar, GlAvatarLink } from '@gitlab/ui';
-import { DRAWER_AVATAR_SIZE } from '../../constants';
+import { DRAWER_AVATAR_SIZE } from '../../../constants';
 
 export default {
   components: {

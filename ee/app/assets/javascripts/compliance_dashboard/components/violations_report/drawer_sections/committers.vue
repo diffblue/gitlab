@@ -2,7 +2,7 @@
 import { __, n__ } from '~/locale';
 import DrawerAvatarsList from '../shared/drawer_avatars_list.vue';
 import DrawerSectionHeader from '../shared/drawer_section_header.vue';
-import { DRAWER_MAXIMUM_AVATARS } from '../../constants';
+import { DRAWER_MAXIMUM_AVATARS } from '../../../constants';
 
 export default {
   components: {

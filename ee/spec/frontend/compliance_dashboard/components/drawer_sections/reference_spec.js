@@ -1,7 +1,7 @@
 import { GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Reference from 'ee/compliance_dashboard/components/drawer_sections/reference.vue';
-import DrawerSectionHeader from 'ee/compliance_dashboard/components/shared/drawer_section_header.vue';
+import Reference from 'ee/compliance_dashboard/components/violations_report/drawer_sections/reference.vue';
+import DrawerSectionHeader from 'ee/compliance_dashboard/components/violations_report/shared/drawer_section_header.vue';
 
 describe('Reference component', () => {
   let wrapper;

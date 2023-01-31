@@ -1,5 +1,5 @@
 import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
-import BranchDropdownFilter from 'ee/compliance_dashboard/components/violations/branch_dropdown_filter.vue';
+import BranchDropdownFilter from 'ee/compliance_dashboard/components/violations_report/violations/branch_dropdown_filter.vue';
 import { BRANCH_FILTER_OPTIONS } from 'ee/compliance_dashboard/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 

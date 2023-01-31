@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
-import ViolationReason from 'ee/compliance_dashboard/components/violations/reason.vue';
-import UserAvatar from 'ee/compliance_dashboard/components/shared/user_avatar.vue';
+import ViolationReason from 'ee/compliance_dashboard/components/violations_report/violations/reason.vue';
+import UserAvatar from 'ee/compliance_dashboard/components/violations_report/shared/user_avatar.vue';
 import { MERGE_REQUEST_VIOLATION_MESSAGES } from 'ee/compliance_dashboard/constants';
 import { mapViolations } from 'ee/compliance_dashboard/graphql/mappers';
 import { createComplianceViolation } from '../../mock_data';
