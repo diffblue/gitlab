@@ -22,6 +22,7 @@ module QA
 
             view 'ee/app/assets/javascripts/security_dashboard/components/shared/vulnerability_report/vulnerability_report_header.vue' do
               element :export_vulnerabilities_button
+              element :vulnerability_report_header
             end
 
             def has_vulnerability?(description:)
@@ -62,6 +63,12 @@ module QA
 
             def export_vulnerabilities_to_csv
               click_element(:export_vulnerabilities_button)
+            end
+
+            def wait_for_vuln_report_to_load
+              wait_until(max_duration: 10, sleep_interval: 2, message: "Vulnerability report not loaded yet") do
+                has_element?(:vulnerability_report_header)
+              end
             end
           end
         end
