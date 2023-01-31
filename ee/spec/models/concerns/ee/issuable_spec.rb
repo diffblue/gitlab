@@ -14,7 +14,6 @@ RSpec.describe EE::Issuable do
       it { is_expected.to validate_presence_of(:author) }
       it { is_expected.to validate_presence_of(:title) }
       it { is_expected.to validate_length_of(:title).is_at_most(::Issuable::TITLE_LENGTH_MAX) }
-      it { is_expected.to validate_length_of(:description).is_at_most(::Issuable::DESCRIPTION_LENGTH_MAX).on(:create) }
 
       it_behaves_like 'validates description length with custom validation' do
         before do
