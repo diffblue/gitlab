@@ -23,7 +23,8 @@ RSpec.describe 'Edit group settings', :js, feature_category: :authentication_and
       visit group_ldap_group_links_path(group)
     end
 
-    it 'the user is allow to change the membership lock' do
+    it 'the user is allow to change the membership lock',
+      quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/389951' do
       check('Allow owners to manually add users outside of LDAP')
 
       click_on('Save')
