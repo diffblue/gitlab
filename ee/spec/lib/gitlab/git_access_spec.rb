@@ -890,7 +890,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :authentication_and_authoriz
         end
 
         it 'raises an error' do
-          expect { push_changes(changes[:any]) }.to raise_error(Gitlab::GitAccess::ForbiddenError, /Your subscription will expire/)
+          expect { push_changes(changes[:any]) }.to raise_error(Gitlab::GitAccess::ForbiddenError, /If you don't renew by/)
         end
       end
 

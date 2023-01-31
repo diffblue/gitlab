@@ -10,6 +10,7 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage, :saas do
 
     subject(:message) { strip_tags(raw_message) }
 
+    let(:subject) { strip_tags(raw_subject) }
     let(:subscribable) { double(:license) }
     let(:namespace) { nil }
     let(:force_notification) { false }
@@ -21,6 +22,16 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage, :saas do
         namespace: namespace,
         force_notification: force_notification
       ).message
+    end
+
+    let(:raw_subject) do
+      described_class.new(
+        subscribable: subscribable,
+        signed_in: true,
+        is_admin: true,
+        namespace: namespace,
+        force_notification: force_notification
+      ).subject
     end
 
     let(:today) { Time.utc(2020, 3, 7, 10) }
@@ -93,12 +104,12 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage, :saas do
                     let(:plan_name) { ::Plan::PREMIUM }
 
                     it "shows the expiring message" do
-                      expect(message).to include('Your subscription expired! No worries, you can still use all the Premium features for now. You have 0 days to renew your subscription.')
+                      expect(message).to include('No worries, you can still use all the Premium features for now. You have 0 days to renew your subscription.')
                     end
                   end
 
                   it 'has a nice subject' do
-                    expect(message).to include('Your subscription expired!')
+                    expect(subject).to include('Your subscription expired!')
                   end
 
                   context 'no namespace' do
@@ -126,7 +137,7 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage, :saas do
                       let(:auto_renew) { true }
 
                       it 'has a nice subject' do
-                        expect(message).to include('Something went wrong with your automatic subscription renewal')
+                        expect(subject).to include('Something went wrong with your automatic subscription renewal')
                       end
 
                       it 'has an expiration blocking message' do
@@ -163,7 +174,7 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage, :saas do
                   it 'has a nice subject' do
                     allow(subscribable).to receive(:will_block_changes?).and_return(false)
 
-                    expect(message).to include('Your subscription expired!')
+                    expect(subject).to include('Your subscription expired!')
                   end
 
                   it 'has an expiration blocking message' do
@@ -184,12 +195,12 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage, :saas do
               end
 
               it 'has a nice subject' do
-                expect(message).to include("Your subscription will expire on #{expired_date.strftime("%Y-%m-%d")}")
+                expect(subject).to include("Your #{plan_name.capitalize} subscription will expire on #{expired_date.strftime("%Y-%m-%d")}")
               end
 
               context 'without namespace' do
                 it 'has an expiration blocking message' do
-                  expect(message).to include("Your #{plan_name.capitalize} subscription expires on #{expired_date.strftime("%Y-%m-%d")}. If you do not renew, you will lose access to your paid features on #{block_changes_date.strftime("%Y-%m-%d")}. After that date, you can\'t create issues or merge requests, or use many other features.")
+                  expect(message).to include("If you don\'t renew by #{block_changes_date.strftime("%Y-%m-%d")} your instance will become read-only, and you won't be able to create issues or merge requests. You will also lose access to your paid features and support entitlement. How do I renew my subscription?")
                 end
               end
 
@@ -240,7 +251,7 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage, :saas do
                   it 'has plan specific messaging' do
                     allow(subscribable).to receive(:plan).and_return(plan)
 
-                    expect(message).to include("Your #{plan.capitalize} subscription for No Limit Records will expire on 2020-03-09. After it expires, you can't use merge approvals, epics, or many security features.")
+                    expect(message).to include("Your #{plan.capitalize} subscription for No Limit Records will expire on 2020-03-09. If you do not renew by 2020-03-23, you can't use merge approvals, epics, security risk mitigation, or any other paid features.")
                   end
                 end
 
@@ -250,14 +261,14 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage, :saas do
                   it 'has plan specific messaging' do
                     allow(subscribable).to receive(:plan).and_return('premium')
 
-                    expect(message).to include("Your Premium subscription for No Limit Records will expire on 2020-03-09. After it expires, you can't use merge approvals, epics, or many other features.")
+                    expect(message).to include("Your Premium subscription for No Limit Records will expire on 2020-03-09. If you do not renew by 2020-03-23, you can't use merge approvals, epics, or any other paid features.")
                   end
                 end
 
                 it 'has bronze plan specific messaging' do
                   allow(subscribable).to receive(:plan).and_return('bronze')
 
-                  expect(message).to include("Your Bronze subscription for No Limit Records will expire on 2020-03-09. After it expires, you can't use merge approvals, code quality, or many other features.")
+                  expect(message).to include("Your Bronze subscription for No Limit Records will expire on 2020-03-09. If you do not renew by 2020-03-23, you can't use merge approvals, code quality, or any other paid features.")
                 end
 
                 context 'is auto_renew nil' do

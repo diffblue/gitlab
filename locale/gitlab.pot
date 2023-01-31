@@ -3649,15 +3649,6 @@ msgstr ""
 msgid "After a successful password update, you will be redirected to the login page where you can log in with your new password."
 msgstr ""
 
-msgid "After it expires, you can't use merge approvals, code quality, or many other features."
-msgstr ""
-
-msgid "After it expires, you can't use merge approvals, epics, or many other features."
-msgstr ""
-
-msgid "After it expires, you can't use merge approvals, epics, or many security features."
-msgstr ""
-
 msgid "After the Apple App Store Connect integration is activated, the following protected variables will be created for CI/CD use."
 msgstr ""
 
@@ -21099,6 +21090,12 @@ msgid "If you did not recently try to sign in, you should immediately %{password
 msgstr ""
 
 msgid "If you did not recently try to sign in, you should immediately change your password: %{password_link}."
+msgstr ""
+
+msgid "If you do not renew by %{strong}%{downgrades_on}%{strong_close}, you can't use merge approvals, %{end_message}"
+msgstr ""
+
+msgid "If you don't renew by %{strong}%{downgrades_on}%{strong_close} your instance will become read-only, and you won't be able to create issues or merge requests. You will also lose access to your paid features and support entitlement. %{learn_more_link}"
 msgstr ""
 
 msgid "If you get a lot of false alarms from repository checks, you can clear all repository check information from the database."
@@ -48851,13 +48848,13 @@ msgstr ""
 msgid "Your %{group} membership will now expire in %{days}."
 msgstr ""
 
+msgid "Your %{plan_name} subscription will expire on %{expires_on}"
+msgstr ""
+
 msgid "Your %{spammable_entity_type} has been recognized as spam and has been discarded."
 msgstr ""
 
 msgid "Your %{spammable_entity_type} has been recognized as spam. Please, change the content or solve the reCAPTCHA to proceed."
-msgstr ""
-
-msgid "Your %{strong}%{plan_name}%{strong_close} subscription expires on %{strong}%{expires_on}%{strong_close}. If you do not renew, you will lose access to your paid features on %{strong}%{downgrades_on}%{strong_close}. After that date, you can't create issues or merge requests, or use many other features."
 msgstr ""
 
 msgid "Your %{strong}%{plan_name}%{strong_close} subscription for %{strong}%{namespace_name}%{strong_close} will expire on %{strong}%{expires_on}%{strong_close}."
@@ -49160,9 +49157,6 @@ msgid "Your subscription has %{remaining_seat_count} out of %{total_seat_count} 
 msgid_plural "Your subscription has %{remaining_seat_count} out of %{total_seat_count} seats remaining."
 msgstr[0] ""
 msgstr[1] ""
-
-msgid "Your subscription will expire on %{expires_on}"
-msgstr ""
 
 msgid "Your top-level group %{namespace_name} has reached the %{free_limit} user limit"
 msgstr ""
