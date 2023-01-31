@@ -21,8 +21,8 @@ module Elastic
         indexes :id, type: :integer
 
         indexes :username, type: :text, fields: { raw: { type: :keyword } }
-        indexes :email, type: :text
-        indexes :public_email, type: :text
+        indexes :email, type: :text, analyzer: :email_analyzer
+        indexes :public_email, type: :text, analyzer: :email_analyzer
         indexes :name, type: :text
 
         indexes :state, type: :keyword

@@ -24,13 +24,18 @@ RSpec.describe Projects::GroupLinks::UpdateService do
   context 'audit events' do
     it 'sends the audit streaming event' do
       audit_context = {
-        name: 'project_group_link_update',
-        stream_only: true,
+        name: 'project_group_link_updated',
         author: user,
         scope: project,
         target: group,
         message: "Changed project group link profile group_access from Developer to Guest \
-profile expires_at from nil to #{expiry_date}"
+profile expires_at from nil to #{expiry_date}",
+        additional_details: {
+          change: {
+            access_level: { from: 'Developer', to: 'Guest' },
+            invite_expiry: { from: 'nil', to: expiry_date }
+          }
+        }
       }
       expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
 
@@ -44,12 +49,16 @@ profile expires_at from nil to #{expiry_date}"
 
       it 'sends the audit streaming event' do
         audit_context = {
-          name: 'project_group_link_update',
-          stream_only: true,
+          name: 'project_group_link_updated',
           author: user,
           scope: project,
           target: group,
-          message: "Changed project group link profile expires_at from nil to #{expiry_date}"
+          message: "Changed project group link profile expires_at from nil to #{expiry_date}",
+          additional_details: {
+            change: {
+              invite_expiry: { from: 'nil', to: expiry_date }
+            }
+          }
         }
         expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
 
@@ -80,12 +89,16 @@ profile expires_at from nil to #{expiry_date}"
 
       it 'sends the audit streaming event' do
         audit_context = {
-          name: 'project_group_link_update',
-          stream_only: true,
+          name: 'project_group_link_updated',
           author: user,
           scope: project,
           target: group,
-          message: "Changed project group link profile group_access from Developer to Guest"
+          message: "Changed project group link profile group_access from Developer to Guest",
+          additional_details: {
+            change: {
+              access_level: { from: 'Developer', to: 'Guest' }
+            }
+          }
         }
         expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
 
