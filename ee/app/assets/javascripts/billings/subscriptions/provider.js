@@ -1,16 +1,10 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import createClient from '~/lib/graphql';
+import { createCustomersDotClient } from 'ee/lib/customers_dot_graphql';
 
 Vue.use(VueApollo);
 
-const customersDotClient = createClient(
-  {},
-  {
-    path: '/-/customers_dot/proxy/graphql',
-    useGet: true,
-  },
-);
+const customersDotClient = createCustomersDotClient();
 
 const apolloProvider = new VueApollo({
   defaultClient: customersDotClient,
