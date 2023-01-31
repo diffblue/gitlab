@@ -130,6 +130,22 @@ Quote
 Quote
 >>>
 
+Blockquote inside an unordered list
+
+- Item one
+
+  >>>
+  Bar
+  >>>
+
+Blockquote inside an ordered list
+
+1. Item one
+
+   >>>
+   Bar
+   >>>
+
 Requires a leading blank line
 >>>
 Not a quote
