@@ -1,7 +1,7 @@
 import { GlFormInput, GlForm, GlFormGroup } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 
-import MergeCommitsExportButton from 'ee/compliance_dashboard/components/shared/merge_commits_export_button.vue';
+import MergeCommitsExportButton from 'ee/compliance_dashboard/components/violations_report/shared/merge_commits_export_button.vue';
 import { INPUT_DEBOUNCE, CUSTODY_REPORT_PARAMETER } from 'ee/compliance_dashboard/constants';
 
 const CSV_EXPORT_PATH = '/merge_commit_reports';

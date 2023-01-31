@@ -1,5 +1,5 @@
-import Reviewers from 'ee/compliance_dashboard/components/drawer_sections/reviewers.vue';
-import DrawerSectionHeader from 'ee/compliance_dashboard/components/shared/drawer_section_header.vue';
+import Reviewers from 'ee/compliance_dashboard/components/violations_report/drawer_sections/reviewers.vue';
+import DrawerSectionHeader from 'ee/compliance_dashboard/components/violations_report/shared/drawer_section_header.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { createApprovers } from '../../mock_data';
 

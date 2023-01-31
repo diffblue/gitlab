@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
-import BranchPath from 'ee/compliance_dashboard/components/drawer_sections/branch_path.vue';
-import BranchDetails from 'ee/compliance_dashboard/components/shared/branch_details.vue';
-import DrawerSectionHeader from 'ee/compliance_dashboard/components/shared/drawer_section_header.vue';
+import BranchPath from 'ee/compliance_dashboard/components/violations_report/drawer_sections/branch_path.vue';
+import BranchDetails from 'ee/compliance_dashboard/components/violations_report/shared/branch_details.vue';
+import DrawerSectionHeader from 'ee/compliance_dashboard/components/violations_report/shared/drawer_section_header.vue';
 
 describe('BranchPath component', () => {
   let wrapper;

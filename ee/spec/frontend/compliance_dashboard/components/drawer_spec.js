@@ -1,11 +1,11 @@
 import { GlDrawer } from '@gitlab/ui';
-import MergeRequestDrawer from 'ee/compliance_dashboard/components/drawer.vue';
-import BranchPath from 'ee/compliance_dashboard/components/drawer_sections/branch_path.vue';
-import Committers from 'ee/compliance_dashboard/components/drawer_sections/committers.vue';
-import MergedBy from 'ee/compliance_dashboard/components/drawer_sections/merged_by.vue';
-import Project from 'ee/compliance_dashboard/components/drawer_sections/project.vue';
-import Reference from 'ee/compliance_dashboard/components/drawer_sections/reference.vue';
-import Reviewers from 'ee/compliance_dashboard/components/drawer_sections/reviewers.vue';
+import MergeRequestDrawer from 'ee/compliance_dashboard/components/violations_report/drawer.vue';
+import BranchPath from 'ee/compliance_dashboard/components/violations_report/drawer_sections/branch_path.vue';
+import Committers from 'ee/compliance_dashboard/components/violations_report/drawer_sections/committers.vue';
+import MergedBy from 'ee/compliance_dashboard/components/violations_report/drawer_sections/merged_by.vue';
+import Project from 'ee/compliance_dashboard/components/violations_report/drawer_sections/project.vue';
+import Reference from 'ee/compliance_dashboard/components/violations_report/drawer_sections/reference.vue';
+import Reviewers from 'ee/compliance_dashboard/components/violations_report/drawer_sections/reviewers.vue';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';

@@ -1,5 +1,5 @@
 <script>
-import { MERGE_REQUEST_VIOLATION_MESSAGES } from '../../constants';
+import { MERGE_REQUEST_VIOLATION_MESSAGES } from '../../../constants';
 import UserAvatar from '../shared/user_avatar.vue';
 
 export default {

@@ -2,7 +2,7 @@ import VueApollo from 'vue-apollo';
 import Vue from 'vue';
 import { GlDaterangePicker } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import ViolationFilter from 'ee/compliance_dashboard/components/violations/filter.vue';
+import ViolationFilter from 'ee/compliance_dashboard/components/violations_report/violations/filter.vue';
 import {
   convertProjectIdsToGraphQl,
   buildDefaultFilterParams,

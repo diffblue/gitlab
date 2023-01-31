@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
-import ComplianceReport from './components/report.vue';
+import ComplianceReport from './components/violations_report/report.vue';
+import ReportsApp from './components/reports_app.vue';
 import { buildDefaultFilterParams } from './utils';
 
 export default () => {
@@ -17,11 +18,13 @@ export default () => {
 
   const defaultFilterParams = buildDefaultFilterParams(window.location.search);
 
+  const component = gon.features.complianceFrameworksReport ? ReportsApp : ComplianceReport;
+
   return new Vue({
     el,
     apolloProvider,
     render: (createElement) =>
-      createElement(ComplianceReport, {
+      createElement(component, {
         props: {
           mergeCommitsCsvExportPath,
           groupPath,

@@ -1,7 +1,7 @@
 <script>
 import { GlAvatarLabeled, GlAvatarLink } from '@gitlab/ui';
 import { __ } from '~/locale';
-import { DRAWER_AVATAR_SIZE } from '../../constants';
+import { DRAWER_AVATAR_SIZE } from '../../../constants';
 import DrawerSectionHeader from '../shared/drawer_section_header.vue';
 import DrawerSectionSubHeader from '../shared/drawer_section_sub_header.vue';
 

@@ -1,8 +1,8 @@
 import { GlAvatarsInline } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
-import DrawerAvatarsList from 'ee/compliance_dashboard/components/shared/drawer_avatars_list.vue';
-import UserAvatar from 'ee/compliance_dashboard/components/shared//user_avatar.vue';
-import DrawerSectionSubHeader from 'ee/compliance_dashboard/components/shared/drawer_section_sub_header.vue';
+import DrawerAvatarsList from 'ee/compliance_dashboard/components/violations_report/shared/drawer_avatars_list.vue';
+import UserAvatar from 'ee/compliance_dashboard/components/violations_report/shared/user_avatar.vue';
+import DrawerSectionSubHeader from 'ee/compliance_dashboard/components/violations_report/shared/drawer_section_sub_header.vue';
 import { createApprovers } from '../../mock_data';
 
 describe('DrawerAvatarsList component', () => {

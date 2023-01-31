@@ -13,7 +13,7 @@ import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import { isValidSha1Hash } from '~/lib/utils/text_utility';
 import { __ } from '~/locale';
-import { INPUT_DEBOUNCE, CUSTODY_REPORT_PARAMETER } from '../../constants';
+import { INPUT_DEBOUNCE, CUSTODY_REPORT_PARAMETER } from '../../../constants';
 
 export default {
   components: {

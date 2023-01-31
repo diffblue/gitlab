@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 
-import DrawerSectionSubHeader from 'ee/compliance_dashboard/components/shared/drawer_section_sub_header.vue';
+import DrawerSectionSubHeader from 'ee/compliance_dashboard/components/violations_report/shared/drawer_section_sub_header.vue';
 
 describe('DrawerSectionSubHeader component', () => {
   let wrapper;
