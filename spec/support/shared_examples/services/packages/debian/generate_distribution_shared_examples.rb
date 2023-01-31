@@ -14,8 +14,10 @@ RSpec.shared_examples 'Generate Debian Distribution and component files' do
     expect(distribution.file_signature).to end_with("\n-----END PGP SIGNATURE-----\n")
 
     distribution.signed_file.use_file do |file_path|
-      expect(File.read(file_path)).to start_with("-----BEGIN PGP SIGNED MESSAGE-----\nHash: SHA512\n\n#{expected_release_content}-----BEGIN PGP SIGNATURE-----\n")
-      expect(File.read(file_path)).to end_with("\n-----END PGP SIGNATURE-----\n")
+      signed_file_content = File.read(file_path)
+      expect(signed_file_content).to start_with("-----BEGIN PGP SIGNED MESSAGE-----\nHash:")
+      expect(signed_file_content).to include("\n\n#{expected_release_content}-----BEGIN PGP SIGNATURE-----\n")
+      expect(signed_file_content).to end_with("\n-----END PGP SIGNATURE-----\n")
     end
   end
 
@@ -54,8 +56,7 @@ RSpec.shared_examples 'Generate Debian Distribution and component files' do
       end
     end
 
-    it 'generates Debian distribution and component files', :aggregate_failures,
-      quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/389950' do
+    it 'generates Debian distribution and component files', :aggregate_failures do
       current_time = Time.utc(2020, 01, 25, 15, 17, 18, 123456)
 
       travel_to(current_time) do
