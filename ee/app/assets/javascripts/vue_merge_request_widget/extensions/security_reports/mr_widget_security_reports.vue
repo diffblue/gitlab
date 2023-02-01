@@ -365,13 +365,21 @@ export default {
       this.$set(this.modalData, 'isCommentingOnDismissal', false);
     },
 
-    editDismissalComment(comment) {
+    addDismissalComment(comment) {
       const { vulnerability: finding } = this.modalData;
       const dismissalFeedback = finding.dismissal_feedback;
       const url = `${this.mr.createVulnerabilityFeedbackDismissalPath}/${dismissalFeedback.id}`;
-      const toastMsg = sprintf(s__("SecurityReports|Comment edited on '%{vulnerabilityName}'"), {
-        vulnerabilityName: finding.name,
-      });
+
+      const isEditingDismissalContent =
+        dismissalFeedback.comment_details && dismissalFeedback.comment_details.comment;
+
+      const toastMsg = isEditingDismissalContent
+        ? sprintf(s__("SecurityReports|Comment edited on '%{vulnerabilityName}'"), {
+            vulnerabilityName: finding.name,
+          })
+        : sprintf(s__("SecurityReports|Comment added to '%{vulnerabilityName}'"), {
+            vulnerabilityName: finding.name,
+          });
 
       // This will cause the spinner to be displayed
       this.isDismissingFinding = true;
@@ -475,7 +483,7 @@ export default {
         :is-creating-issue="isCreatingIssue"
         :can-create-issue="canCreateIssue"
         :can-dismiss-vulnerability="canDismissFinding"
-        @addDismissalComment="editDismissalComment"
+        @addDismissalComment="addDismissalComment"
         @closeDismissalCommentBox="closeDismissalCommentBox"
         @openDismissalCommentBox="openDismissalCommentBox"
         @editVulnerabilityDismissalComment="openDismissalCommentBox"

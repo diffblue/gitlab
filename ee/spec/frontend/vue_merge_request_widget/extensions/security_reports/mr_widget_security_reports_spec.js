@@ -536,7 +536,7 @@ describe('MR Widget Security Reports', () => {
         expect(findModal().props('modal').isCommentingOnDismissal).toBe(booleanValue);
       });
 
-      it('edits the dismissal comment - success', async () => {
+      it('adds the dismissal comment - success', async () => {
         mockAxios
           .onPatch(`${createVulnerabilityFeedbackDismissalPath}/${dismissalFeedback.id}`)
           .replyOnce(HTTP_STATUS_OK, dismissalFeedback);
@@ -545,11 +545,35 @@ describe('MR Widget Security Reports', () => {
 
         await waitForPromises();
 
+        expect(toast).toHaveBeenCalledWith("Comment added to 'Password leak'");
+        expect(emitSpy).toHaveBeenCalledWith(BV_HIDE_MODAL, 'modal-mrwidget-security-issue');
+      });
+
+      it('edits the dismissal comment - success', async () => {
+        mockAxios
+          .onPatch(`${createVulnerabilityFeedbackDismissalPath}/${dismissalFeedback.id}`)
+          .reply(HTTP_STATUS_OK, {
+            ...dismissalFeedback,
+            comment_details: {
+              comment: 'Added comment',
+              comment_author: { id: 15 },
+              comment_timestamp: '2023-01-24T12:46:03.896Z',
+            },
+          });
+
+        // first add a comment
+        findModal().vm.$emit('addDismissalComment', 'Added comment');
+        await waitForPromises();
+
+        // then edit
+        findModal().vm.$emit('addDismissalComment', 'Edited comment');
+        await waitForPromises();
+
         expect(toast).toHaveBeenCalledWith("Comment edited on 'Password leak'");
         expect(emitSpy).toHaveBeenCalledWith(BV_HIDE_MODAL, 'modal-mrwidget-security-issue');
       });
 
-      it('edits the dismissal comment - error', async () => {
+      it('adds the dismissal comment - error', async () => {
         mockAxios
           .onPatch(`${createVulnerabilityFeedbackDismissalPath}/${dismissalFeedback.id}`)
           .replyOnce(HTTP_STATUS_BAD_REQUEST);
