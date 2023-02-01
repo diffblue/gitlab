@@ -4,8 +4,8 @@ module Audit
   class Details
     ACTIONS = %i[add remove failed_login change updated_ref custom_message].freeze
 
-    def self.humanize(*args)
-      new(*args).humanize
+    def self.humanize(...)
+      new(...).humanize
     end
 
     def initialize(details)

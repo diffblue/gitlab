@@ -303,8 +303,8 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
       end
     end
 
-    def click_without_sidekiq(*args)
-      Sidekiq::Testing.fake! { click_on(*args) }
+    def click_without_sidekiq(...)
+      Sidekiq::Testing.fake! { click_on(...) }
     end
   end
 end

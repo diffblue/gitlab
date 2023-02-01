@@ -58,9 +58,9 @@ module EE
             )
           end
 
-          def self.safe_find_or_create_by(*args)
+          def self.safe_find_or_create_by(...)
             safe_ensure_unique(retries: 1) do
-              find_or_create_by(*args)
+              find_or_create_by(...)
             end
           end
 

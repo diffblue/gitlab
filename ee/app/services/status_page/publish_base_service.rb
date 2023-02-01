@@ -9,11 +9,11 @@ module StatusPage
       @project = project
     end
 
-    def execute(*args)
+    def execute(...)
       return error_feature_not_available unless feature_available?
       return error_no_storage_client unless storage_client
 
-      process(*args)
+      process(...)
     end
 
     private

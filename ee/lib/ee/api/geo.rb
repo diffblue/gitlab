@@ -24,8 +24,8 @@ module EE
           # Check if a Geo request is legit or fail the flow
           #
           # @param [Hash] attributes to be matched against JWT
-          def authorize_geo_transfer!(**attributes)
-            unauthorized! unless geo_jwt_decoder.valid_attributes?(**attributes)
+          def authorize_geo_transfer!(...)
+            unauthorized! unless geo_jwt_decoder.valid_attributes?(...)
           end
 
           override :geo_proxy_response

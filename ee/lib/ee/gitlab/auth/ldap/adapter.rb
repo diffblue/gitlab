@@ -30,8 +30,8 @@ module EE
             end
           end
 
-          def group(*args)
-            groups(*args).first
+          def group(...)
+            groups(...).first
           end
 
           def group_members_in_range(dn, range_start)
