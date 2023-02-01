@@ -55,6 +55,7 @@ describe('Saved tab', () => {
   const findDeleteModal = () => wrapper.findComponent({ ref: 'delete-scan-modal' });
   const findPreScanVerificationConfigurator = () =>
     wrapper.findComponent(PreScanVerificationConfigurator);
+  const findActions = () => wrapper.findByTestId('saved-scanners-actions');
 
   // Helpers
   const createMockApolloProvider = () => {
@@ -96,6 +97,7 @@ describe('Saved tab', () => {
             itemsCount,
           },
           provide: {
+            canEditOnDemandScans: true,
             projectPath,
             projectOnDemandScanCountsEtag: PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK,
             ...glFeatures,
@@ -368,5 +370,30 @@ describe('Saved tab', () => {
         },
       );
     });
+  });
+
+  describe('user auditor role', () => {
+    it.each`
+      canEditOnDemandScans | expectedResult
+      ${true}              | ${true}
+      ${false}             | ${false}
+    `(
+      'should hide action buttons for auditor user',
+      async ({ canEditOnDemandScans, expectedResult }) => {
+        createFullComponent(
+          {
+            stubs: {
+              GlTable: false,
+            },
+          },
+          {
+            canEditOnDemandScans,
+          },
+        );
+        await waitForPromises();
+
+        expect(findActions().exists()).toBe(expectedResult);
+      },
+    );
   });
 });

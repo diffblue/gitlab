@@ -1,5 +1,5 @@
 import { GlForm, GlFormInput } from '@gitlab/ui';
-import { shallowMount, mount, createLocalVue } from '@vue/test-utils';
+import { createLocalVue } from '@vue/test-utils';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
 import { nextTick } from 'vue';
@@ -16,6 +16,7 @@ import dastScannerProfilesQuery from 'ee/security_configuration/dast_profiles/gr
 import dastSiteProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql';
 import createApolloProvider from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
+import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import { redirectTo } from '~/lib/utils/url_utility';
 import RefSelector from '~/ref/components/ref_selector.vue';
 import PreScanVerificationConfigurator from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_configurator.vue';
@@ -69,16 +70,16 @@ describe('OnDemandScansForm', () => {
   });
 
   const findForm = () => wrapper.findComponent(GlForm);
-  const findByTestId = (testId) => wrapper.find(`[data-testid="${testId}"]`);
-  const findHelpPageLink = () => findByTestId('help-page-link');
-  const findNameInput = () => findByTestId('dast-scan-name-input');
-  const findBranchInput = () => findByTestId('dast-scan-branch-input');
-  const findDescriptionInput = () => findByTestId('dast-scan-description-input');
-  const findAlert = () => findByTestId('on-demand-scan-error');
-  const findProfilesConflictAlert = () => findByTestId('on-demand-scans-profiles-conflict-alert');
-  const findSubmitButton = () => findByTestId('on-demand-scan-submit-button');
-  const findSaveButton = () => findByTestId('on-demand-scan-save-button');
-  const findCancelButton = () => findByTestId('on-demand-scan-cancel-button');
+  const findHelpPageLink = () => wrapper.findByTestId('help-page-link');
+  const findNameInput = () => wrapper.findByTestId('dast-scan-name-input');
+  const findBranchInput = () => wrapper.findByTestId('dast-scan-branch-input');
+  const findDescriptionInput = () => wrapper.findByTestId('dast-scan-description-input');
+  const findAlert = () => wrapper.findByTestId('on-demand-scan-error');
+  const findProfilesConflictAlert = () =>
+    wrapper.findByTestId('on-demand-scans-profiles-conflict-alert');
+  const findSubmitButton = () => wrapper.findByTestId('on-demand-scan-submit-button');
+  const findSaveButton = () => wrapper.findByTestId('on-demand-scan-save-button');
+  const findCancelButton = () => wrapper.findByTestId('on-demand-scan-cancel-button');
   const findDastProfilesConfigurator = () => wrapper.findComponent(DastProfilesConfigurator);
   const findPreScanVerificationConfigurator = () =>
     wrapper.findComponent(PreScanVerificationConfigurator);
@@ -127,7 +128,7 @@ describe('OnDemandScansForm', () => {
     ]);
   };
 
-  const createComponentFactory = (mountFn = shallowMount) => (
+  const createComponentFactory = (mountFn = shallowMountExtended) => (
     options = {},
     withHandlers,
     glFeatures = {},
@@ -190,13 +191,8 @@ describe('OnDemandScansForm', () => {
     );
     return wrapper;
   };
-  const createComponent = createComponentFactory(mount);
+  const createComponent = createComponentFactory(mountExtended);
   const createShallowComponent = createComponentFactory();
-
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
 
   it('should have correct component rendered', () => {
     createShallowComponent();

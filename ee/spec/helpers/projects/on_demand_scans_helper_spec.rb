@@ -24,6 +24,7 @@ RSpec.describe Projects::OnDemandScansHelper do
       create_list(:ci_pipeline, 4, :running, project: project, ref: 'master', source: :ondemand_dast_scan)
       allow(helper).to receive(:graphql_etag_project_on_demand_scan_counts_path).and_return(graphql_etag_project_on_demand_scan_counts_path)
       project.add_developer(current_user)
+      stub_licensed_features(security_on_demand_scans: true)
     end
 
     it 'returns proper data' do
@@ -31,6 +32,7 @@ RSpec.describe Projects::OnDemandScansHelper do
         'project-path' => "foo/bar",
         'new-dast-scan-path' => "/#{project.full_path}/-/on_demand_scans/new",
         'empty-state-svg-path' => match_asset_path('/assets/illustrations/empty-state/ondemand-scan-empty.svg'),
+        'can-edit-on-demand-scans' => "true",
         'project-on-demand-scan-counts-etag' => graphql_etag_project_on_demand_scan_counts_path,
         'on-demand-scan-counts' => {
           all: 12,

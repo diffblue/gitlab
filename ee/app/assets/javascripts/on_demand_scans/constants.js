@@ -6,6 +6,10 @@ export const HELP_PAGE_PATH = helpPagePath('user/application_security/dast/index
   anchor: 'on-demand-scans',
 });
 
+export const HELP_PAGE_AUDITOR_ROLE_PATH = helpPagePath('ee/administration/auditor_users.html', {
+  anchor: 'auditor-users',
+});
+
 export const HELP_PAGE_RUNNER_TAGS_PATH = helpPagePath('ee/ci/runners/configure_runners', {
   anchor: 'use-tags-to-control-which-jobs-a-runner-can-run',
 });

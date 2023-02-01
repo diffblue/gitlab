@@ -42,6 +42,7 @@ describe('OnDemandScans', () => {
   const findNewScanLink = () => wrapper.findByTestId('new-scan-link');
   const findHelpPageLink = () => wrapper.findByTestId('help-page-link');
   const findTabs = () => wrapper.findByTestId('on-demand-scans-tabs');
+  const findAuditorActionsAlert = () => wrapper.findByTestId('on-demand-scan-auditor-message');
   const findAllTab = () => wrapper.findComponent(AllTab);
   const findRunningTab = () => wrapper.findComponent(RunningTab);
   const findFinishedTab = () => wrapper.findComponent(FinishedTab);
@@ -63,7 +64,7 @@ describe('OnDemandScans', () => {
     expect(findSavedTab().exists()).toBe(true);
   };
 
-  const createComponent = (options = {}) => {
+  const createComponent = (options = {}, canEditOnDemandScans = true) => {
     wrapper = shallowMountExtended(
       OnDemandScans,
       merge(
@@ -71,6 +72,7 @@ describe('OnDemandScans', () => {
           apolloProvider: createMockApolloProvider(),
           router,
           provide: {
+            canEditOnDemandScans,
             newDastScanPath,
             projectPath,
             projectOnDemandScanCountsEtag,
@@ -178,5 +180,20 @@ describe('OnDemandScans', () => {
       expect(findTabs().props('value')).toBe(0);
       expect(router.currentRoute.path).toBe('/all');
     });
+  });
+
+  describe('user with auditor role', () => {
+    it.each`
+      canEditOnDemandScans | infoMessageVisible
+      ${false}             | ${true}
+      ${true}              | ${false}
+    `(
+      'should hide action buttons for auditor user',
+      ({ canEditOnDemandScans, infoMessageVisible }) => {
+        createComponent({}, canEditOnDemandScans);
+
+        expect(findAuditorActionsAlert().exists()).toBe(infoMessageVisible);
+      },
+    );
   });
 });

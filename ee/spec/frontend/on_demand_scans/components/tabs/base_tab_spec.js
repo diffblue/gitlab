@@ -68,7 +68,10 @@ describe('BaseTab', () => {
     return nextTick();
   };
 
-  const createComponentFactory = (mountFn = shallowMountExtended) => (options = {}) => {
+  const createComponentFactory = (mountFn = shallowMountExtended) => (
+    options = {},
+    canEditOnDemandScans = true,
+  ) => {
     router = createRouter();
     wrapper = mountFn(
       BaseTab,
@@ -84,6 +87,7 @@ describe('BaseTab', () => {
             fields: BASE_TABS_TABLE_FIELDS,
           },
           provide: {
+            canEditOnDemandScans,
             projectPath,
             projectOnDemandScanCountsEtag: PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK,
           },
@@ -113,12 +117,6 @@ describe('BaseTab', () => {
 
   beforeEach(() => {
     requestHandler = jest.fn().mockResolvedValue(allPipelinesWithPipelinesMock);
-  });
-
-  afterEach(() => {
-    wrapper.destroy();
-    router = null;
-    requestHandler = null;
   });
 
   describe('when the app loads', () => {
@@ -472,5 +470,28 @@ describe('BaseTab', () => {
 
       expect(wrapper.text()).not.toContain(errorMessage);
     });
+  });
+
+  describe('user auditor role', () => {
+    it.each`
+      canEditOnDemandScans | expectedResult
+      ${true}              | ${true}
+      ${false}             | ${false}
+    `(
+      'should hide action buttons for auditor user',
+      async ({ canEditOnDemandScans, expectedResult }) => {
+        createFullComponent(
+          {
+            stubs: {
+              GlTable: false,
+            },
+          },
+          canEditOnDemandScans,
+        );
+        await waitForPromises();
+
+        expect(findActions().exists()).toBe(expectedResult);
+      },
+    );
   });
 });

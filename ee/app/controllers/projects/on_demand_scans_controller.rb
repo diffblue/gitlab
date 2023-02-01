@@ -6,7 +6,8 @@ module Projects
     include API::Helpers::GraphqlHelpers
 
     before_action :authorize_read_on_demand_dast_scan!, only: :index
-    before_action :authorize_create_on_demand_dast_scan!, only: [:new, :edit]
+    before_action :authorize_create_on_demand_dast_scan!, only: [:new]
+    before_action :authorize_edit_on_demand_dast_scan!, only: [:edit]
     before_action do
       push_frontend_feature_flag(:dast_pre_scan_verification, @project)
       push_frontend_feature_flag(:dast_site_validation_drawer, @project)
