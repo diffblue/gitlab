@@ -36,7 +36,11 @@ RSpec.describe ::Mutations::Boards::EpicBoards::EpicMoveList do
   context 'arguments' do
     subject { described_class }
 
-    it { is_expected.to have_graphql_arguments(:boardId, :epicId, :fromListId, :toListId, :moveBeforeId, :moveAfterId) }
+    it 'has the correct arguments' do
+      expect(subject).to have_graphql_arguments(
+        :boardId, :epicId, :fromListId, :toListId, :moveBeforeId, :moveAfterId, :positionInList
+      )
+    end
   end
 
   describe '#resolve' do

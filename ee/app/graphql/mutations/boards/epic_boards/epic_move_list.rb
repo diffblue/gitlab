@@ -32,15 +32,36 @@ module Mutations
                  required: false,
                  description: 'ID of epic that should be placed after the current epic.'
 
+        argument :position_in_list, GraphQL::Types::Int,
+                 required: false,
+                 description: "Position of epics within the board list. Positions start at 0. " \
+                              "Use #{::Boards::Epics::MoveService::LIST_END_POSITION} to move to the end of the list."
+
         field :epic,
             Types::EpicType,
             null: true,
             description: 'Epic after mutation.'
 
         def ready?(**args)
-          if args.slice(:from_list_id, :move_after_id, :move_before_id).empty?
+          move_list_keys = [:from_list_id, :move_after_id, :move_before_id, :position_in_list]
+
+          if args.slice(*move_list_keys).empty?
+            camelized_keys = move_list_keys.map { |k| k.to_s.camelize(:lower) }.join(', ')
+
             raise Gitlab::Graphql::Errors::ArgumentError,
-                  'One of the parameters fromListId, afterId, beforeId is required together with the toListId parameter.'
+                  "At least one of the following parameters is required: #{camelized_keys}."
+          end
+
+          if args[:position_in_list].present?
+            if args[:move_before_id].present? || args[:move_after_id].present?
+              raise Gitlab::Graphql::Errors::ArgumentError,
+                'positionInList is mutually exclusive with any of moveBeforeId or moveAfterId'
+            end
+
+            if args[:position_in_list] != ::Boards::Epics::MoveService::LIST_END_POSITION && args[:position_in_list] < 0
+              raise Gitlab::Graphql::Errors::ArgumentError,
+                    "positionInList must be >= 0 or #{::Boards::Epics::MoveService::LIST_END_POSITION}"
+            end
           end
 
           super
@@ -75,7 +96,8 @@ module Mutations
             from_list_id: args[:from_list_id]&.model_id,
             to_list_id: args[:to_list_id]&.model_id,
             move_after_id: args[:move_after_id]&.model_id,
-            move_before_id: args[:move_before_id]&.model_id
+            move_before_id: args[:move_before_id]&.model_id,
+            position_in_list: args[:position_in_list]
           }
         end
       end
