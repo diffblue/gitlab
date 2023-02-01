@@ -2,9 +2,10 @@
 
 module Geo
   class ContainerRepositoryReplicator < Gitlab::Geo::Replicator
+    include ::Geo::VerifiableReplicator
     include Gitlab::Geo::LogHelpers
-    extend ::Gitlab::Utils::Override
 
+    extend ::Gitlab::Utils::Override
     extend ActiveSupport::Concern
 
     event :created
@@ -16,7 +17,7 @@ module Geo
 
       override :verification_feature_flag_enabled?
       def verification_feature_flag_enabled?
-        false
+        true
       end
 
       def model
@@ -81,6 +82,21 @@ module Geo
         model_record_id,
         event_data[:path]
       ).execute
+    end
+
+    # Returns a checksum of the tag list
+    #
+    # @return [String] SHA256 hash of the repository tag list
+    def calculate_checksum
+      model_record.tag_list_digest
+    end
+
+    def checksummable?
+      true
+    end
+
+    def immutable?
+      false
     end
   end
 end

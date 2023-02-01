@@ -153,43 +153,53 @@ RSpec.shared_examples 'a verifiable replicator' do
         allow(described_class).to receive(:verification_enabled?).and_return(true)
       end
 
-      it 'enqueues VerificationBatchWorker' do
-        expect(::Geo::VerificationBatchWorker).to receive(:perform_with_capacity).with(described_class.replicable_name)
+      shared_examples 'enqueues verification workers' do
+        it 'enqueues VerificationBatchWorker' do
+          expect(::Geo::VerificationBatchWorker).to receive(:perform_with_capacity).with(described_class.replicable_name)
 
-        described_class.trigger_background_verification
-      end
+          described_class.trigger_background_verification
+        end
 
-      it 'enqueues VerificationTimeoutWorker' do
-        expect(::Geo::VerificationTimeoutWorker).to receive(:perform_async).with(described_class.replicable_name)
+        it 'enqueues VerificationTimeoutWorker' do
+          expect(::Geo::VerificationTimeoutWorker).to receive(:perform_async).with(described_class.replicable_name)
 
-        described_class.trigger_background_verification
-      end
-
-      it 'enqueues VerificationStateBackfillWorker' do
-        expect(described_class.model).to receive(:separate_verification_state_table?).and_return(true)
-        expect(::Geo::VerificationStateBackfillWorker).to receive(:perform_async).with(described_class.replicable_name)
-
-        described_class.trigger_background_verification
+          described_class.trigger_background_verification
+        end
       end
 
       context 'for a Geo secondary' do
-        it 'does not enqueue ReverificationBatchWorker' do
-          stub_secondary_node
+        before do
+          stub_current_geo_node(secondary)
+        end
 
+        it 'does not enqueue ReverificationBatchWorker' do
           expect(::Geo::ReverificationBatchWorker).not_to receive(:perform_with_capacity)
 
           described_class.trigger_background_verification
         end
+
+        include_examples 'enqueues verification workers'
       end
 
       context 'for a Geo primary' do
-        it 'enqueues ReverificationBatchWorker' do
-          stub_primary_node
+        before do
+          stub_current_geo_node(primary)
+        end
 
+        it 'enqueues ReverificationBatchWorker' do
           expect(::Geo::ReverificationBatchWorker).to receive(:perform_with_capacity).with(described_class.replicable_name)
 
           described_class.trigger_background_verification
         end
+
+        it 'enqueues VerificationStateBackfillWorker' do
+          expect(described_class.model).to receive(:separate_verification_state_table?).and_return(true)
+          expect(::Geo::VerificationStateBackfillWorker).to receive(:perform_async).with(described_class.replicable_name)
+
+          described_class.trigger_background_verification
+        end
+
+        include_examples 'enqueues verification workers'
       end
     end
 
@@ -476,7 +486,7 @@ RSpec.shared_examples 'a verifiable replicator' do
 
     context 'on a Geo secondary' do
       before do
-        stub_secondary_node
+        stub_current_geo_node(secondary)
       end
 
       it 'returns registry' do
@@ -511,7 +521,7 @@ RSpec.shared_examples 'a verifiable replicator' do
 
     context 'on a Geo secondary' do
       before do
-        stub_secondary_node
+        stub_current_geo_node(secondary)
       end
 
       it 'does not create an event' do
@@ -540,7 +550,7 @@ RSpec.shared_examples 'a verifiable replicator' do
 
       context 'on a Geo secondary' do
         before do
-          stub_secondary_node
+          stub_current_geo_node(secondary)
         end
 
         context 'with a persisted registry' do
@@ -611,7 +621,7 @@ RSpec.shared_examples 'a verifiable replicator' do
 
     context 'on a primary' do
       before do
-        stub_primary_node
+        stub_current_geo_node(primary)
       end
 
       describe 'background backfill' do
@@ -638,7 +648,7 @@ RSpec.shared_examples 'a verifiable replicator' do
         # Set the primary checksum
         replicator.verify
 
-        stub_secondary_node
+        stub_current_geo_node(secondary)
       end
 
       describe 'background backfill' do

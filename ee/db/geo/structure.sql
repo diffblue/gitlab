@@ -44,7 +44,18 @@ CREATE TABLE container_repository_registry (
     last_sync_failure character varying,
     retry_at timestamp without time zone,
     last_synced_at timestamp without time zone,
-    created_at timestamp without time zone NOT NULL
+    created_at timestamp without time zone NOT NULL,
+    state_for_type_change integer,
+    verified_at timestamp with time zone,
+    verification_started_at timestamp with time zone,
+    verification_retry_at timestamp with time zone,
+    verification_state smallint DEFAULT 0 NOT NULL,
+    verification_retry_count smallint DEFAULT 0 NOT NULL,
+    verification_checksum bytea,
+    verification_checksum_mismatched bytea,
+    checksum_mismatch boolean DEFAULT false NOT NULL,
+    verification_failure text,
+    CONSTRAINT check_9b8292bb64 CHECK ((char_length(verification_failure) <= 255))
 );
 
 CREATE SEQUENCE container_repository_registry_id_seq
@@ -668,6 +679,12 @@ CREATE INDEX ci_secure_file_registry_failed_verification ON ci_secure_file_regis
 CREATE INDEX ci_secure_file_registry_needs_verification ON ci_secure_file_registry USING btree (verification_state) WHERE ((state = 2) AND (verification_state = ANY (ARRAY[0, 3])));
 
 CREATE INDEX ci_secure_file_registry_pending_verification ON ci_secure_file_registry USING btree (verified_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 0));
+
+CREATE INDEX container_repository_registry_failed_verification ON container_repository_registry USING btree (verification_retry_at NULLS FIRST) WHERE (verification_state = 3);
+
+CREATE INDEX container_repository_registry_needs_verification ON container_repository_registry USING btree (verification_state) WHERE (verification_state = ANY (ARRAY[0, 3]));
+
+CREATE INDEX container_repository_registry_pending_verification ON container_repository_registry USING btree (verified_at NULLS FIRST) WHERE (verification_state = 0);
 
 CREATE INDEX dependency_proxy_blob_registry_failed_verification ON dependency_proxy_blob_registry USING btree (verification_retry_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 3));
 

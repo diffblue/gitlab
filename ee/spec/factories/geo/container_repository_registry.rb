@@ -26,5 +26,11 @@ FactoryBot.define do
     trait :with_repository_id do
       sequence(:container_repository_id)
     end
+
+    trait :verification_succeeded do
+      verification_checksum { 'e079a831cab27bcda7d81cd9b48296d0c3dd92ef' }
+      verification_state { Geo::ContainerRepositoryRegistry.verification_state_value(:verification_succeeded) }
+      verified_at { 5.days.ago }
+    end
   end
 end

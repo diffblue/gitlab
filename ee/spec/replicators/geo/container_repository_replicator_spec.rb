@@ -3,16 +3,16 @@
 require 'spec_helper'
 
 RSpec.describe Geo::ContainerRepositoryReplicator, :geo, feature_category: :geo_replication do
-  let(:model_record) { create(:container_repository) }
+  let(:model_record) { build(:container_repository) }
+
+  let_it_be(:primary) { create(:geo_node, :primary) }
+  let_it_be(:secondary) { create(:geo_node) }
 
   subject(:replicator) { model_record.replicator }
 
   # Based on shared example 'a repository replicator'
   context 'for base replicator functionality' do
     include EE::GeoHelpers
-
-    let_it_be(:primary) { create(:geo_node, :primary) }
-    let_it_be(:secondary) { create(:geo_node) }
 
     before do
       stub_current_geo_node(primary)
@@ -27,6 +27,8 @@ RSpec.describe Geo::ContainerRepositoryReplicator, :geo, feature_category: :geo_
 
     describe '#handle_after_update' do
       it 'creates a Geo::Event' do
+        model_record.save!
+
         expect do
           replicator.handle_after_update
         end.to change(::Geo::Event, :count).by(1)
@@ -145,6 +147,27 @@ RSpec.describe Geo::ContainerRepositoryReplicator, :geo, feature_category: :geo_
 
       it 'is a Class' do
         expect(invoke_model).to be_a(Class)
+      end
+    end
+  end
+
+  include_examples 'a verifiable replicator' do
+    let(:api_url) { 'http://registry.gitlab' }
+    let(:repository_url) { "#{api_url}/v2/#{model_record.path}" }
+    let(:tags) { { 'latest' => 'sha256:1111' } }
+
+    before do
+      stub_container_registry_config(enabled: true, api_url: api_url)
+
+      stub_request(:get, "#{repository_url}/tags/list?n=#{::ContainerRegistry::Client::DEFAULT_TAGS_PAGE_SIZE}")
+        .to_return(
+          status: 200,
+          body: Gitlab::Json.dump(tags: tags.keys),
+          headers: { 'Content-Type' => 'application/json' })
+
+      tags.each do |tag, digest|
+        stub_request(:head, "#{repository_url}/manifests/#{tag}")
+          .to_return(status: 200, body: "", headers: { DependencyProxy::Manifest::DIGEST_HEADER => digest })
       end
     end
   end
