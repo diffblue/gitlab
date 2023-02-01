@@ -9604,37 +9604,6 @@ are defined. We will continue to add any additional ones found in the
 There is currently only this single top-level heading, but the
 examples may be split into multiple top-level headings in the future.
 
-## Footnotes
-
-See
-[the footnotes section of the user-facing documentation for GitLab Flavored Markdown](https://docs.gitlab.com/ee/user/markdown.html#footnotes).
-
-```````````````````````````````` example gitlab
-footnote reference tag [^fortytwo]
-
-[^fortytwo]: footnote text
-.
-<p>
-footnote reference tag
-<sup>
-<a href="#fn-fortytwo-42" id="fnref-fortytwo-42" data-footnote-ref>
-1
-</a>
-</sup>
-</p>
-<section data-footnotes>
-<ol>
-<li id="fn-fortytwo-42">
-<p>
-footnote text
-<a href="#fnref-fortytwo-42" data-footnote-backref>
-</a>
-</p>
-</li>
-</ol>
-</section>
-````````````````````````````````
-
 ## Task list items
 
 See
@@ -10623,5 +10592,36 @@ Attributes must immediately follow the image markdown.
 ![](https://gitlab.com/logo.png) {width="100" height="100"}
 .
 <p><img src="https://gitlab.com/logo.png"> {width="100" height="100"}</p>
+````````````````````````````````
+
+## Footnotes
+
+See
+[the footnotes section of the user-facing documentation for GitLab Flavored Markdown](https://docs.gitlab.com/ee/user/markdown.html#footnotes).
+
+```````````````````````````````` example gitlab
+footnote reference tag [^fortytwo]
+
+[^fortytwo]: footnote text
+.
+<p>
+footnote reference tag
+<sup>
+<a href="#fn-fortytwo-42" id="fnref-fortytwo-42" data-footnote-ref>
+1
+</a>
+</sup>
+</p>
+<section data-footnotes>
+<ol>
+<li id="fn-fortytwo-42">
+<p>
+footnote text
+<a href="#fnref-fortytwo-42" data-footnote-backref>
+</a>
+</p>
+</li>
+</ol>
+</section>
 ````````````````````````````````
 
