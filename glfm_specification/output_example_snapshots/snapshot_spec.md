@@ -9597,9 +9597,8 @@ Multiple     spaces
 
 # GitLab Official Specification Markdown
 
-Currently, only some of the GitLab-specific markdown features are
-listed in this section. We may eventually add all
-GitLab-specific features currently listed as supported in the
+Note: This specification is a work in progress. Only some of the official GLFM extensions
+are defined. We will continue to add any additional ones found in the
 [user-facing documentation for GitLab Flavored Markdown](https://docs.gitlab.com/ee/user/markdown.html).
 
 There is currently only this single top-level heading, but the

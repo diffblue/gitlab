@@ -1,6 +1,15 @@
+---
+title: GitLab Flavored Markdown (GLFM) Spec
+version: alpha
+...
+
 # Introduction
 
-TODO: Write a GitLab-specific version of the GitHub Flavored Markdown intro section.
+GitLab Flavored Markdown (GLFM) extends the [CommonMark specification](https://spec.commonmark.org/current/) and is considered a strict superset of CommonMark. It also incorporates the extensions defined by the [GitHub Flavored Markdown specification](https://github.github.com/gfm/).
+
+This specification will define the various offical extensions that comprise GLFM. These extensions are GitLab independent - they do not require a GitLab server for parsing or interaction.  The intent is to provide a specification that can be implemented in standard markdown editors. This includes many of the features listed in [user-facing documentation for GitLab Flavored Markdown](https://docs.gitlab.com/ee/user/markdown.html).
+
+The CommonMark and GitHub specifications will not be duplicated here.
 
 NOTE: The example numbering in this document does not start at "1", because this official specification
 only contains a subset of all the examples which are supported by GitLab Flavored Markdown. See
@@ -15,9 +24,8 @@ for a complete list of all examples, which are a superset of examples from:
 <!-- BEGIN TESTS -->
 # GitLab Official Specification Markdown
 
-Currently, only some of the GitLab-specific markdown features are
-listed in this section. We may eventually add all
-GitLab-specific features currently listed as supported in the
+Note: This specification is a work in progress. Only some of the official GLFM extensions
+are defined. We will continue to add any additional ones found in the
 [user-facing documentation for GitLab Flavored Markdown](https://docs.gitlab.com/ee/user/markdown.html).
 
 There is currently only this single top-level heading, but the
