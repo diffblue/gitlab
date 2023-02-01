@@ -50,6 +50,7 @@ const fetchGroupEpics = (
 
     if (transformedFilterParams?.epicIid) {
       variables.iid = transformedFilterParams.epicIid.split('::&').pop();
+      variables.topLevelHierarchyOnly = false;
     }
   }
 

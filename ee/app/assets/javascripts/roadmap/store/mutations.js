@@ -7,6 +7,7 @@ const resetEpics = (state) => {
   state.epics = [];
   state.childrenFlags = {};
   state.epicIds = [];
+  state.childrenEpics = {};
 };
 
 export default {
