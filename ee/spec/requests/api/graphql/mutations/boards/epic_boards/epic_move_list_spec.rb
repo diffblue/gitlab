@@ -59,8 +59,45 @@ RSpec.describe 'Reposition and move epic between board lists', feature_category:
         it 'raises an error' do
           subject
 
-          message = 'One of the parameters fromListId, afterId, beforeId is required together with the toListId parameter.'
+          message = 'At least one of the following parameters is required: fromListId, moveAfterId, moveBeforeId, positionInList.'
           expect(graphql_errors).to include(a_hash_including('message' => message))
+        end
+      end
+
+      context 'when positionInList param is invalid' do
+        let(:base_params) { { to_list_id: global_id_of(backlog), position_in_list: 1 } }
+
+        context 'when move_before_id is also given' do
+          let(:move_params) { base_params.merge({ move_before_id: global_id_of(epic) }) }
+
+          it 'raises an error' do
+            subject
+
+            message = 'positionInList is mutually exclusive with any of moveBeforeId or moveAfterId'
+            expect(graphql_errors).to include(a_hash_including('message' => message))
+          end
+        end
+
+        context 'when move_after_id is also given' do
+          let(:move_params) { base_params.merge({ move_after_id: global_id_of(epic) }) }
+
+          it 'raises an error' do
+            subject
+
+            message = 'positionInList is mutually exclusive with any of moveBeforeId or moveAfterId'
+            expect(graphql_errors).to include(a_hash_including('message' => message))
+          end
+        end
+
+        context 'when position_in_list is invalid' do
+          let(:move_params) { base_params.merge({ position_in_list: -5 }) }
+
+          it 'raises an error' do
+            subject
+
+            message = "positionInList must be >= 0 or #{Boards::Epics::MoveService::LIST_END_POSITION}"
+            expect(graphql_errors).to include(a_hash_including('message' => message))
+          end
         end
       end
 
@@ -125,6 +162,42 @@ RSpec.describe 'Reposition and move epic between board lists', feature_category:
             subject
 
             expect(position(epic)).to be < position(epic3)
+          end
+        end
+
+        context 'when position_in_list param is present' do
+          before do
+            create(:epic_board_position, epic_board: board, epic: epic2, relative_position: 1000)
+            create(:epic_board_position, epic_board: board, epic: epic3, relative_position: 2000)
+          end
+
+          let(:move_params) do
+            {
+              position_in_list: position_in_list,
+              to_list_id: global_id_of(backlog)
+            }
+          end
+
+          context 'when moving an epic to the beginning of the list' do
+            let(:position_in_list) { 0 }
+
+            it 'repositions the epic' do
+              subject
+
+              expect(position(epic)).to be < position(epic2)
+              expect(position(epic)).to be < position(epic3)
+            end
+          end
+
+          context 'when moving an epic to the bottom of the list' do
+            let(:position_in_list) { -1 }
+
+            it 'repositions the epic' do
+              subject
+
+              expect(position(epic)).to be > position(epic2)
+              expect(position(epic)).to be > position(epic3)
+            end
           end
         end
       end

@@ -15,6 +15,10 @@ module Boards
         @board ||= parent.epic_boards.find(params[:board_id])
       end
 
+      def moving_to_list_items_relation
+        Boards::Epics::ListService.new(board.resource_parent, current_user, board_id: board.id, id: moving_to_list.id).execute
+      end
+
       override :board_label_ids
       def board_label_ids
         ::Label.ids_on_epic_board(board.id)

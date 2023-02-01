@@ -178,6 +178,44 @@ RSpec.describe Boards::Epics::MoveService do
               expect(epic_relative_position(epic)).to be < epic_relative_position(epic3)
             end
           end
+
+          context 'when only position_in_list is present' do
+            before do
+              params[:position_in_list] = position_in_list
+            end
+
+            context 'when moving to a specific position' do
+              let(:position_in_list) { 4 }
+
+              it 'moves the epic' do
+                subject
+
+                expect(epic_relative_position(epic)).to be > epic_relative_position(epic3)
+                expect(epic_relative_position(epic)).to be > epic_relative_position(epic2)
+                expect(epic_relative_position(epic)).to be > epic_relative_position(epic1)
+              end
+            end
+
+            context 'when moving to the beginning' do
+              let(:position_in_list) { 0 }
+
+              it 'moves the epic' do
+                subject
+
+                expect(epic_relative_position(epic)).to be < epic_relative_position(epic3)
+              end
+            end
+
+            context 'when moving to the bottom' do
+              let(:position_in_list) { -1 }
+
+              it 'moves the epic' do
+                subject
+
+                expect(epic_relative_position(epic)).to be > epic_relative_position(epic1)
+              end
+            end
+          end
         end
 
         context 'in current list' do
