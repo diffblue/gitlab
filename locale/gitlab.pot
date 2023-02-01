@@ -17557,6 +17557,9 @@ msgstr ""
 msgid "Find file"
 msgstr ""
 
+msgid "FindFile|Switch branch/tag"
+msgstr ""
+
 msgid "Fingerprint (MD5)"
 msgstr ""
 
