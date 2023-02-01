@@ -1,13 +1,19 @@
 <script>
-import { GlButton, GlLink, GlSprintf, GlScrollableTabs } from '@gitlab/ui';
+import { GlButton, GlLink, GlSprintf, GlScrollableTabs, GlAlert } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import { VARIANT_WARNING } from '~/flash';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
 import {
   getQueryHeaders,
   toggleQueryPollingByVisibility,
 } from '~/pipelines/components/graph/utils';
 import onDemandScanCounts from '../graphql/on_demand_scan_counts.query.graphql';
-import { HELP_PAGE_PATH, PIPELINE_TABS_KEYS, PIPELINES_COUNT_POLL_INTERVAL } from '../constants';
+import {
+  HELP_PAGE_PATH,
+  PIPELINE_TABS_KEYS,
+  PIPELINES_COUNT_POLL_INTERVAL,
+  HELP_PAGE_AUDITOR_ROLE_PATH,
+} from '../constants';
 import AllTab from './tabs/all.vue';
 import RunningTab from './tabs/running.vue';
 import FinishedTab from './tabs/finished.vue';
@@ -17,7 +23,10 @@ import EmptyState from './empty_state.vue';
 
 export default {
   HELP_PAGE_PATH,
+  helpPageAuditorRolePath: HELP_PAGE_AUDITOR_ROLE_PATH,
+  VARIANT_WARNING,
   components: {
+    GlAlert,
     GlButton,
     GlLink,
     GlSprintf,
@@ -29,7 +38,12 @@ export default {
     ScheduledTab,
     EmptyState,
   },
-  inject: ['newDastScanPath', 'projectPath', 'projectOnDemandScanCountsEtag'],
+  inject: [
+    'canEditOnDemandScans',
+    'newDastScanPath',
+    'projectPath',
+    'projectOnDemandScanCountsEtag',
+  ],
   apollo: {
     liveOnDemandScanCounts: {
       query: onDemandScanCounts,
@@ -61,6 +75,7 @@ export default {
   data() {
     return {
       activeTabIndex: 0,
+      showAuditorMessageAlert: !this.canEditOnDemandScans,
     };
   },
   computed: {
@@ -129,11 +144,19 @@ export default {
       PIPELINES_COUNT_POLL_INTERVAL,
     );
   },
+  methods: {
+    hideAuditorMessageAlert() {
+      this.showAuditorMessageAlert = false;
+    },
+  },
   i18n: {
     title: s__('OnDemandScans|On-demand scans'),
     newScanButtonLabel: s__('OnDemandScans|New scan'),
     description: s__(
       'OnDemandScans|On-demand scans run outside of DevOps cycle and find vulnerabilities in your projects. %{learnMoreLinkStart}Learn more%{learnMoreLinkEnd}.',
+    ),
+    scanAuditorActionMessage: s__(
+      'OnDemandScans|You cannot perform any action on this page because you only have %{linkStart}auditor-level access%{linkEnd} and are not a member of the project.',
     ),
   },
 };
@@ -141,11 +164,33 @@ export default {
 
 <template>
   <configuration-page-layout v-if="hasData" no-border>
+    <template #alert>
+      <gl-alert
+        v-if="showAuditorMessageAlert"
+        class="gl-mt-5"
+        data-testid="on-demand-scan-auditor-message"
+        :variant="$options.VARIANT_WARNING"
+        @dismiss="hideAuditorMessageAlert"
+      >
+        <gl-sprintf :message="$options.i18n.scanAuditorActionMessage">
+          <template #link="{ content }">
+            <gl-link :href="$options.helpPageAuditorRolePath" target="_blank">{{
+              content
+            }}</gl-link>
+          </template>
+        </gl-sprintf>
+      </gl-alert>
+    </template>
     <template #heading>
       {{ $options.i18n.title }}
     </template>
     <template #actions>
-      <gl-button variant="confirm" :href="newDastScanPath" data-testid="new-scan-link">
+      <gl-button
+        v-if="canEditOnDemandScans"
+        variant="confirm"
+        :href="newDastScanPath"
+        data-testid="new-scan-link"
+      >
         {{ $options.i18n.newScanButtonLabel }}
       </gl-button>
     </template>

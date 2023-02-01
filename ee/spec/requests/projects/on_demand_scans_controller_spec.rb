@@ -77,6 +77,23 @@ RSpec.describe Projects::OnDemandScansController, type: :request,
   end
 
   describe 'GET #new' do
+    context 'user has auditor role' do
+      let(:user) { create(:user, :auditor) }
+      let(:path) { new_project_on_demand_scan_path(project) }
+
+      before do
+        project.add_developer(user)
+
+        login_as(user)
+      end
+
+      it 'sees a 404 error' do
+        get path
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
     it_behaves_like 'on-demand scans page' do
       let(:path) { new_project_on_demand_scan_path(project) }
     end
@@ -137,6 +154,17 @@ RSpec.describe Projects::OnDemandScansController, type: :request,
 
       context 'dast_profile does not exist in the database' do
         let(:dast_profile_id) { 0 }
+
+        it 'sees a 404 error' do
+          get edit_path
+
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
+      end
+
+      context 'user has auditor role' do
+        let(:user) { create(:user, :auditor) }
+        let_it_be(:project) { create(:project, :repository) }
 
         it 'sees a 404 error' do
           get edit_path

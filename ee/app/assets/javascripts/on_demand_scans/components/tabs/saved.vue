@@ -36,7 +36,7 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   mixins: [handlesErrors, glFeatureFlagMixin()],
-  inject: ['projectPath'],
+  inject: ['canEditOnDemandScans', 'projectPath'],
   maxItemsCount: MAX_DAST_PROFILES_COUNT,
   tableFields: SAVED_TAB_TABLE_FIELDS,
   deleteScanModalId: `delete-scan-modal`,
@@ -173,7 +173,7 @@ export default {
     </template>
 
     <template #cell(actions)="{ item }">
-      <div class="gl-text-right">
+      <div v-if="canEditOnDemandScans" data-testid="saved-scanners-actions" class="gl-text-right">
         <gl-button
           size="small"
           data-testid="dast-scan-run-button"

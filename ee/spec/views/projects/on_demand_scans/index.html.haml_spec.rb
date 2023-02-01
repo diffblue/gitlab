@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe "projects/on_demand_scans/index", type: :view do
   before do
     @project = create(:project)
+    @current_user = create(:user)
     render
   end
 

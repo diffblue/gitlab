@@ -54,7 +54,7 @@ export default {
     EmptyState,
   },
   mixins: [handlesErrors],
-  inject: ['projectPath', 'projectOnDemandScanCountsEtag'],
+  inject: ['canEditOnDemandScans', 'projectPath', 'projectOnDemandScanCountsEtag'],
   props: {
     isActive: {
       type: Boolean,
@@ -298,6 +298,7 @@ export default {
 
         <template #cell(actions)="{ item }">
           <actions
+            v-if="canEditOnDemandScans"
             :key="item.id"
             :scan="item"
             @action="resetActionError"

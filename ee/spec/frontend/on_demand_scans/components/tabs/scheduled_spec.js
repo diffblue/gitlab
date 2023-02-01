@@ -56,6 +56,7 @@ describe('Scheduled tab', () => {
             itemsCount,
           },
           provide: {
+            canEditOnDemandScans: false,
             projectPath,
             projectOnDemandScanCountsEtag: PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK,
             timezones: mockTimezones,
