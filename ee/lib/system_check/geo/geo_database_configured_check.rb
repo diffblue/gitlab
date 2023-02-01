@@ -8,7 +8,10 @@ module SystemCheck
 
       DATABASE_DOCS = 'doc/gitlab-geo/database.md'
       TROUBLESHOOTING_DOCS = 'doc/gitlab-geo/troubleshooting.md'
-      WRONG_CONFIGURATION_MESSAGE = 'Check if you enabled the `geo_secondary_role` or `geo_postgresql` in the gitlab.rb config file.'
+      WRONG_CONFIGURATION_MESSAGE = <<~MSG
+        Rails does not appear to have the configuration necessary to connect to the Geo tracking database.
+        If the tracking database is running on a node other than this one, then you may need to add configuration.
+      MSG
       UNHEALTHY_CONNECTION_MESSAGE = 'Check the tracking database configuration as the connection could not be established'
       NO_TABLES_MESSAGE = 'Run the tracking database migrations: gitlab-rake db:migrate:geo'
       REUSING_EXISTING_DATABASE_MESSAGE = 'If you are reusing an existing tracking database, make sure you have reset it.'
