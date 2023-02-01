@@ -4,7 +4,9 @@ import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import { mockTracking } from 'helpers/tracking_helper';
 import { ERROR_UNEXPECTED, QSR_RECONCILIATION_PATH, STEPS } from 'ee/subscriptions/constants';
-import Component from 'ee/subscriptions/new/components/checkout/subscription_details.vue';
+import Component, {
+  Event,
+} from 'ee/subscriptions/new/components/checkout/subscription_details.vue';
 import { NEW_GROUP } from 'ee/subscriptions/new/constants';
 import createStore from 'ee/subscriptions/new/store';
 import * as types from 'ee/subscriptions/new/store/mutation_types';
@@ -13,7 +15,6 @@ import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import getBillableMembersCountQuery from 'ee/subscriptions/graphql/queries/billable_members_count.query.graphql';
 import waitForPromises from 'helpers/wait_for_promises';
-import { logError } from '~/lib/logger';
 
 jest.mock('~/lib/logger');
 
@@ -71,7 +72,6 @@ describe('Subscription Details', () => {
   const companyLink = () => wrapper.findComponent({ ref: 'company-link' });
   const findQsrOverageMessage = () => wrapper.findByTestId('qsr-overage-message');
   const findNumberOfUsersFormGroup = () => wrapper.findByTestId('number-of-users-field');
-  const findErrorAlert = () => wrapper.findByTestId('error-message');
 
   afterEach(() => {
     wrapper.destroy();
@@ -716,38 +716,40 @@ describe('Subscription Details', () => {
 
   describe('when errored', () => {
     const errorMessage = 'Oopsie, something went wrong';
+    const mockError = new Error(errorMessage);
 
     beforeEach(() => {
-      const mockError = new Error(errorMessage);
       const billableMembersCountMock = jest.fn().mockRejectedValue(mockError);
       const store = createStore(createDefaultInitialStoreData());
       store.commit(types.UPDATE_SELECTED_GROUP, secondGroup.id);
       return createComponent({ store, billableMembersCountMock });
     });
 
-    it('should show an alert with the error message', () => {
-      expect(findErrorAlert().exists()).toBe(true);
-    });
-
-    it('shows the correct error message', () => {
-      expect(findErrorAlert().text()).toContain(ERROR_UNEXPECTED);
-    });
-
-    it('invokes the error logger', () => {
-      expect(logError).toHaveBeenCalledWith(new Error(errorMessage));
-    });
-
-    it('should not show the error alert when dismissed', async () => {
-      findErrorAlert().vm.$emit('dismiss');
-
-      await nextTick();
-
-      expect(findErrorAlert().exists()).toBe(false);
+    it('emits an error with a message', () => {
+      expect(wrapper.emitted(Event.ERROR)).toEqual([
+        [{ message: ERROR_UNEXPECTED, error: mockError }],
+      ]);
     });
 
     it('should not show the number of users label description when in error', async () => {
-      findErrorAlert().vm.$emit('dismiss');
+      await nextTick();
 
+      expect(findNumberOfUsersFormGroup().props().labelDescription).toBe(null);
+    });
+  });
+
+  describe('when resetting the error', () => {
+    beforeEach(() => {
+      const billableMembersCountMock = jest.fn().mockResolvedValue({});
+      const store = createStore(createDefaultInitialStoreData());
+      return createComponent({ store, billableMembersCountMock });
+    });
+
+    it('emits an error reset event', () => {
+      expect(wrapper.emitted(Event.ERROR_RESET)).toBeUndefined();
+    });
+
+    it('should not show the number of users label description when in error', async () => {
       await nextTick();
 
       expect(findNumberOfUsersFormGroup().props().labelDescription).toBe(null);
