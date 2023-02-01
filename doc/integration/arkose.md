@@ -104,6 +104,27 @@ You can find the usage of the allowlist telltale in our [Arkose::VerifyResponse]
 To help Arkose improve their protection service, we created a daily background job to send them the list of blocked users by us.
 This job is performed by the `Arkose::BlockedUsersReportWorker` class.
 
+## Test your integration
+
+In staging and development environments only, you can suppress a challenge, or force one to appear.
+You can use this feature if you want to receive a specific risk band.
+
+To force a challenge, change your browser [user agent string](https://developer.chrome.com/docs/devtools/device-mode/override-user-agent/). You can find the appropriate string in [1Password](https://start.1password.com/open/i?a=LKATQYUATRBRDHRRABEBH4RJ5Y&v=6gq44ckmq23vqk5poqunurdgay&i=5v3ushqmfgifpwyqohop5gv5xe&h=gitlab.1password.com).
+
+Alternatively, to request specific behaviors, modify the `setConfig` to include a `data.id` property:
+
+- `'ML_defence'` - Force a challenge to appear.
+- `'customer_request'` - Suppress a challenge. If you suppress a challenge, ArkoseLabs considers your session safe.
+
+For example, this `setConfig` suppresses a challenge:
+
+```javascript
+      arkoseObject.setConfig({
+        data: { id: 'customer_request' },
+        ...
+      });
+```
+
 ## Additional resources
 
 <!-- markdownlint-disable MD044 -->
