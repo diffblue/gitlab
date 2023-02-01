@@ -280,6 +280,11 @@ export default {
     return this.deploymentApproval({ id, deploymentId, approve: false, comment });
   },
 
+  protectedEnvironments(id) {
+    const url = Api.buildUrl(this.protectedEnvironmentsPath).replace(':id', encodeURIComponent(id));
+    return axios.get(url);
+  },
+
   createProtectedEnvironment(id, protectedEnvironment) {
     const url = Api.buildUrl(this.protectedEnvironmentsPath).replace(':id', encodeURIComponent(id));
     return axios.post(url, protectedEnvironment);

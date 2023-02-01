@@ -34316,6 +34316,9 @@ msgstr ""
 msgid "ProtectedEnvironments|Approval rules"
 msgstr ""
 
+msgid "ProtectedEnvironments|List of protected environments (%{protectedEnvironmentsCount})"
+msgstr ""
+
 msgid "ProtectedEnvironments|Number of approvals must be between 1 and 5"
 msgstr ""
 

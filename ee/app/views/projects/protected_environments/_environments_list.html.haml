@@ -1,19 +1,23 @@
-.protected-branches-list.js-protected-environments-list
-  - unless @protected_environments.empty?
-    .flash-container
-    %table.table.table-bordered
-      %colgroup
-        %col{ width: '30%' }
-        %col
-        %col
-        - if can_admin_project
-          %col{ width: '10%' }
-      %thead
-        %tr
-          %th= s_('ProtectedEnvironment|Protected Environment (%{protected_environments_count})') % { protected_environments_count: limited_counter_with_delimiter(@protected_environments) }
-          %th= s_('ProtectedEnvironment|Allowed to deploy')
-          %th= s_('ProtectedEnvironment|Required approvals')
+- if Feature.enabled?(:multiple_environment_approval_rules_fe, @project)
+  .settings-content
+    #js-edit-protected-environment-list{ data: { project_id: @project.id } }
+- else
+  .protected-branches-list.js-protected-environments-list
+    - unless @protected_environments.empty?
+      .flash-container
+      %table.table.table-bordered
+        %colgroup
+          %col{ width: '30%' }
+          %col
+          %col
           - if can_admin_project
-            %th
-      %tbody
-        = render partial: 'projects/protected_environments/protected_environment', collection: @protected_environments, locals: { can_admin_project: can_admin_project }
+            %col{ width: '10%' }
+        %thead
+          %tr
+            %th= s_('ProtectedEnvironment|Protected Environment (%{protected_environments_count})') % { protected_environments_count: limited_counter_with_delimiter(@protected_environments) }
+            %th= s_('ProtectedEnvironment|Allowed to deploy')
+            %th= s_('ProtectedEnvironment|Required approvals')
+            - if can_admin_project
+              %th
+        %tbody
+          = render partial: 'projects/protected_environments/protected_environment', collection: @protected_environments, locals: { can_admin_project: can_admin_project }

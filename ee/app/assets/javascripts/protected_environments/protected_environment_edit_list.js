@@ -1,7 +1,10 @@
 import * as Sentry from '@sentry/browser';
 import Vue from 'vue';
+import Vuex from 'vuex';
 import { GlToast } from '@gitlab/ui';
+import { createStore } from './store/edit';
 import ProtectedEnvironmentEdit from './protected_environment_edit.vue';
+import EditProtectedEnvironmentList from './edit_protected_environments_list.vue';
 
 Vue.use(GlToast);
 
@@ -48,4 +51,28 @@ export const initProtectedEnvironmentEditList = () => {
       });
     });
   }
+};
+
+export const initEditMultipleEnvironmentApprovalRules = () => {
+  Vue.use(Vuex);
+
+  const el = document.getElementById('js-edit-protected-environment-list');
+
+  if (!el) {
+    return null;
+  }
+
+  const { projectId } = el.dataset;
+  return new Vue({
+    el,
+    store: createStore({
+      ...el.dataset,
+    }),
+    provide: {
+      projectId,
+    },
+    render(createElement) {
+      return createElement(EditProtectedEnvironmentList);
+    },
+  });
 };
