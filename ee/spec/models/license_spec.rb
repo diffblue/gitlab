@@ -65,9 +65,20 @@ RSpec.describe License, feature_category: :sm_provisioning do
         create(:historical_data, recorded_at: date, active_user_count: active_user_count)
       end
 
+      shared_examples 'invalid if active users with threshold exceeds restricted user count' do
+        before do
+          create_list(:user, 12)
+        end
+
+        it 'is not valid' do
+          expect(license).not_to be_valid
+          expect(license.errors.added?(:base, :check_restricted_user_count)).to eq(true)
+        end
+      end
+
       context 'when reconciliation_completed is true on the license' do
         before do
-          set_restrictions(restricted_user_count: 10, trueup_quantity: 8, reconciliation_completed: true)
+          set_restrictions(restricted_user_count: 10, trueup_quantity: 8, reconciliation_completed: true, previous_user_count: 0)
         end
 
         it { is_expected.to be_valid }
@@ -75,7 +86,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
       context 'when reconciliation_completed is false on the license' do
         it 'adds errors for invalid true up figures' do
-          set_restrictions(restricted_user_count: 10, trueup_quantity: 8, reconciliation_completed: false)
+          set_restrictions(restricted_user_count: 10, trueup_quantity: 8, reconciliation_completed: false, previous_user_count: 0)
 
           expect(license).not_to be_valid
           expect(license.errors.added?(:base, :check_trueup)).to eq(true)
@@ -86,7 +97,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
       context 'when reconciliation_completed is not present on the license' do
         it 'adds errors for invalid true up figures' do
-          set_restrictions(restricted_user_count: 10, trueup_quantity: 8)
+          set_restrictions(restricted_user_count: 10, trueup_quantity: 8, previous_user_count: 0)
 
           expect(license).not_to be_valid
           expect(license.errors.added?(:base, :check_trueup)).to eq(true)
@@ -97,47 +108,29 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
       context 'when trueup quantity with threshold is more than the required quantity' do
         before do
-          set_restrictions(restricted_user_count: 10, trueup_quantity: 10)
+          set_restrictions(restricted_user_count: 10, trueup_quantity: 10, previous_user_count: 0)
         end
 
         it { is_expected.to be_valid }
 
-        context 'but active users with threshold exceeds restricted user count' do
-          before do
-            create_list(:user, 12)
-          end
-
-          it 'is not valid' do
-            expect(license).not_to be_valid
-            expect(license.errors.added?(:base, :check_restricted_user_count)).to eq(true)
-          end
-        end
+        it_behaves_like 'invalid if active users with threshold exceeds restricted user count'
       end
 
       context 'when trueup quantity with threshold is equal to the required quantity' do
         before do
-          set_restrictions(restricted_user_count: 10, trueup_quantity: 10)
+          set_restrictions(restricted_user_count: 10, trueup_quantity: 10, previous_user_count: 0)
         end
 
         let(:active_user_count) { described_class.current.daily_billable_users_count + 11 }
 
         it { is_expected.to be_valid }
 
-        context 'but active users with threshold exceeds restricted user count' do
-          before do
-            create_list(:user, 12)
-          end
-
-          it 'is not valid' do
-            expect(license).not_to be_valid
-            expect(license.errors.added?(:base, :check_restricted_user_count)).to eq(true)
-          end
-        end
+        it_behaves_like 'invalid if active users with threshold exceeds restricted user count'
       end
 
       context 'when trueup quantity with threshold is less than the required quantity' do
         before do
-          set_restrictions(restricted_user_count: 10, trueup_quantity: 8)
+          set_restrictions(restricted_user_count: 10, trueup_quantity: 8, previous_user_count: 0)
         end
 
         it 'is not valid' do
@@ -148,25 +141,12 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
       context 'when previous user count is not present' do
         before do
-          set_restrictions(restricted_user_count: 5, trueup_quantity: 7)
+          set_restrictions(restricted_user_count: 10, trueup_quantity: 10)
         end
 
-        it 'uses current active user count to calculate the expected true-up' do
-          create_list(:user, 3)
+        it { is_expected.to be_valid }
 
-          expect(license).to be_valid
-        end
-
-        context 'with wrong true-up quantity' do
-          before do
-            create_list(:user, 2)
-          end
-
-          it 'is not valid' do
-            expect(license).not_to be_valid
-            expect(license.errors.added?(:base, :check_trueup)).to eq(true)
-          end
-        end
+        it_behaves_like 'invalid if active users with threshold exceeds restricted user count'
       end
 
       context 'when previous user count is present' do

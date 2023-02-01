@@ -498,13 +498,14 @@ class License < ApplicationRecord
   end
 
   def check_trueup
+    unless previous_user_count
+      check_restricted_user_count
+      return
+    end
+
     trueup_qty = restrictions[:trueup_quantity]
     max_historical = historical_max(from: trueup_from, to: trueup_to)
-    expected_trueup_qty = if previous_user_count
-                            max_historical - previous_user_count
-                          else
-                            max_historical - daily_billable_users_count
-                          end
+    expected_trueup_qty = max_historical - previous_user_count
 
     if trueup_quantity_with_threshold >= expected_trueup_qty
       check_restricted_user_count
