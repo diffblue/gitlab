@@ -51,6 +51,9 @@ describe('MR Widget Security Reports', () => {
       propsData: {
         ...propsData,
         mr: {
+          pipeline: {
+            path: '/path/to/pipeline',
+          },
           enabledReports: {
             sast: true,
             dast: true,
@@ -211,6 +214,18 @@ describe('MR Widget Security Reports', () => {
       await waitForPromises();
 
       expect(mockAxios.history.get).toHaveLength(2);
+    });
+
+    it('should display the full report button', async () => {
+      await createComponent();
+
+      expect(findWidget().props('actionButtons')).toEqual([
+        {
+          href: '/path/to/pipeline/security',
+          text: 'Full report',
+          fullReport: true,
+        },
+      ]);
     });
 
     it('should display the dismissed badge', async () => {

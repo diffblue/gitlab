@@ -13,6 +13,9 @@ describe('MR Widget App', () => {
         mr: {
           securityConfigurationPath: '/help/user/application_security/index.md',
           sourceProjectFullPath: 'namespace/project',
+          pipeline: {
+            path: '/path/to/pipeline',
+          },
           ...mr,
         },
       },
