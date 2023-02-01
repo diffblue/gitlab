@@ -100,7 +100,6 @@ RSpec.describe 'Namespace (JavaScript fixtures)', type: :controller do
             current_user: user,
             variables: {
               fullPath: namespace.full_path,
-              withExcessStorageData: true,
               first: 10
             }
           )

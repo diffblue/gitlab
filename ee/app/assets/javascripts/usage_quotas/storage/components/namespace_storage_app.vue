@@ -26,7 +26,15 @@ export default {
     ContainerRegistryUsage,
     SearchAndSortBar,
   },
-  inject: ['namespaceId', 'namespacePath', 'helpLinks', 'defaultPerPage'],
+  inject: [
+    'namespaceId',
+    'namespacePath',
+    'helpLinks',
+    'defaultPerPage',
+    'storageLimitEnforced',
+    'canShowInlineAlert',
+    'userNamespace',
+  ],
   provide: {
     containerRegistryPopoverContent: namespaceContainerRegistryPopoverContent,
   },
@@ -37,7 +45,6 @@ export default {
         return {
           fullPath: this.namespacePath,
           searchTerm: this.searchTerm,
-          withExcessStorageData: this.isAdditionalStorageFlagEnabled,
           first: this.defaultPerPage,
         };
       },
@@ -63,28 +70,6 @@ export default {
       error(error) {
         captureException({ error, component: this.$options.name });
       },
-    },
-  },
-  props: {
-    storageLimitEnforced: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    isAdditionalStorageFlagEnabled: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    canShowInlineAlert: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    isPersonalNamespace: {
-      type: Boolean,
-      required: false,
-      default: false,
     },
   },
   i18n: {
@@ -162,7 +147,6 @@ export default {
       this.$apollo.queries.namespace.fetchMore({
         variables: {
           fullPath: this.namespacePath,
-          withExcessStorageData: this.isAdditionalStorageFlagEnabled,
           ...vars,
         },
         updateQuery(previousResult, { fetchMoreResult }) {
@@ -209,7 +193,7 @@ export default {
     </div>
 
     <dependency-proxy-usage
-      v-if="!isPersonalNamespace"
+      v-if="!userNamespace"
       :dependency-proxy-total-size="dependencyProxyTotalSize"
       :loading="isDependencyProxyStorageQueryLoading"
     />

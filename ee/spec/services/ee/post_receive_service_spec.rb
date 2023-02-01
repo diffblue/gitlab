@@ -103,105 +103,97 @@ RSpec.describe PostReceiveService, :geo do
     end
   end
 
-  describe 'storage size limit alerts' do
-    using RSpec::Parameterized::TableSyntax
-
+  describe 'storage size limit alerts', feature_category: :subscription_cost_management do
     let(:storage_notification_payload) { {} }
     let(:alert_level) { :none }
 
-    where(additional_repo_storage_by_namespace_enabled: [false, true])
+    before do
+      stub_ee_application_setting(should_check_namespace_plan: true)
+      stub_ee_application_setting(enforce_namespace_storage_limit: true)
+      stub_ee_application_setting(automatic_purchased_storage_allocation: true)
 
-    with_them do
-      before do
-        stub_ee_application_setting(should_check_namespace_plan: true)
-        stub_ee_application_setting(enforce_namespace_storage_limit: true)
-        stub_ee_application_setting(automatic_purchased_storage_allocation: true)
-        allow(project.namespace).to receive(:additional_repo_storage_by_namespace_enabled?)
-          .and_return(additional_repo_storage_by_namespace_enabled)
+      allow(user).to receive(:can?).with(:maintainer_access, project.namespace.root_ancestor).and_return(true)
+      allow_next_instance_of(EE::Namespace::Storage::Notification, project.namespace, user) do |notification|
+        allow(notification).to receive(:payload).and_return(storage_notification_payload)
+        allow(notification).to receive(:alert_level).and_return(alert_level)
+      end
+    end
 
-        allow(user).to receive(:can?).with(:maintainer_access, project.namespace.root_ancestor).and_return(true)
-        allow_next_instance_of(EE::Namespace::Storage::Notification, project.namespace, user) do |notification|
-          allow(notification).to receive(:payload).and_return(storage_notification_payload)
-          allow(notification).to receive(:alert_level).and_return(alert_level)
+    context 'when there is no payload' do
+      it 'adds no alert' do
+        expect(subject).to be_empty
+      end
+    end
+
+    context 'when there is payload' do
+      context 'for namespace enforcement' do
+        let(:alert_level) { :info }
+
+        let(:storage_notification_payload) do
+          {
+            enforcement_type: :namespace,
+            alert_level: alert_level,
+            usage_message: "Usage",
+            explanation_message: {
+              main: {
+                text: "Explanation",
+                link: {
+                  text: "Learn more.",
+                  href: "/usage_quotas"
+                }
+              },
+              footer: {
+                text: "Footer",
+                link: {
+                  text: "Learn even more.",
+                  href: "/usage_quotas#more"
+                }
+              }
+            },
+            root_namespace: project.namespace.root_ancestor
+          }
+        end
+
+        it 'adds an alert' do
+          response = subject
+
+          expect(response).to be_present
+          expect(response).to include({
+            'type' => 'alert',
+            'message' => "##### INFO #####\nUsage\nExplanation\nFooter"
+          })
         end
       end
 
-      context 'when there is no payload' do
-        it 'adds no alert' do
-          expect(subject).to be_empty
-        end
-      end
+      context 'for repository enforcement' do
+        let(:alert_level) { :error }
 
-      context 'when there is payload' do
-        context 'for namespace enforcement' do
-          let(:alert_level) { :info }
-
-          let(:storage_notification_payload) do
-            {
-              enforcement_type: :namespace,
-              alert_level: alert_level,
-              usage_message: "Usage",
-              explanation_message: {
-                main: {
-                  text: "Explanation",
-                  link: {
-                    text: "Learn more.",
-                    href: "/usage_quotas"
-                  }
-                },
-                footer: {
-                  text: "Footer",
-                  link: {
-                    text: "Learn even more.",
-                    href: "/usage_quotas#more"
-                  }
+        let(:storage_notification_payload) do
+          {
+            enforcement_type: :repository,
+            alert_level: alert_level,
+            usage_message: "Usage",
+            explanation_message: {
+              main: {
+                text: "Explanation",
+                link: {
+                  text: "Learn more.",
+                  href: "/usage_quotas"
                 }
-              },
-              root_namespace: project.namespace.root_ancestor
-            }
-          end
-
-          it 'adds an alert' do
-            response = subject
-
-            expect(response).to be_present
-            expect(response).to include({
-              'type' => 'alert',
-              'message' => "##### INFO #####\nUsage\nExplanation\nFooter"
-            })
-          end
+              }
+            },
+            root_namespace: project.namespace.root_ancestor
+          }
         end
 
-        context 'for repository enforcement' do
-          let(:alert_level) { :error }
+        it 'adds an alert' do
+          response = subject
 
-          let(:storage_notification_payload) do
-            {
-              enforcement_type: :repository,
-              alert_level: alert_level,
-              usage_message: "Usage",
-              explanation_message: {
-                main: {
-                  text: "Explanation",
-                  link: {
-                    text: "Learn more.",
-                    href: "/usage_quotas"
-                  }
-                }
-              },
-              root_namespace: project.namespace.root_ancestor
-            }
-          end
-
-          it 'adds an alert' do
-            response = subject
-
-            expect(response).to be_present
-            expect(response).to include({
-              'type' => 'alert',
-              'message' => "##### ERROR #####\nUsage\nExplanation"
-            })
-          end
+          expect(response).to be_present
+          expect(response).to include({
+            'type' => 'alert',
+            'message' => "##### ERROR #####\nUsage\nExplanation"
+          })
         end
       end
     end

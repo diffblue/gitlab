@@ -56,29 +56,21 @@ module EE
       )
     end
 
+    override :storage_usage_app_data
     def storage_usage_app_data(namespace)
-      data = {
-        namespace_id: namespace.id,
-        namespace_path: namespace.full_path,
-        purchase_storage_url: nil,
-        buy_addon_target_attr: nil,
-        default_per_page: page_size,
-        additional_repo_storage_by_namespace: current_user.namespace.additional_repo_storage_by_namespace_enabled?.to_s,
-        is_personal_namespace: true
-      }
+      return super unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
 
-      if purchase_storage_link_enabled?(namespace)
-        data.merge!({
-          purchase_storage_url: purchase_storage_url,
-          buy_addon_target_attr: buy_addon_target_attr(namespace)
-        })
-      end
-
-      data
+      super.merge({
+        purchase_storage_url: buy_storage_path(namespace),
+        buy_addon_target_attr: buy_addon_target_attr(namespace),
+        storage_limit_enforced: ::EE::Gitlab::Namespaces::Storage::Enforcement.enforce_limit?(namespace).to_s,
+        can_show_inline_alert: project_storage_limit_enforced?(namespace).to_s
+      })
     end
 
-    def purchase_storage_link_enabled?(namespace)
-      namespace.additional_repo_storage_by_namespace_enabled?
+    def project_storage_limit_enforced?(namespace)
+      namespace.root_storage_size.enforce_limit? &&
+        namespace.root_storage_size.enforcement_type == :project_repository_limit
     end
 
     def purchase_storage_url

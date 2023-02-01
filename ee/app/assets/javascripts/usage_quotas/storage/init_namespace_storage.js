@@ -17,13 +17,12 @@ export default () => {
   const {
     namespaceId,
     namespacePath,
+    userNamespace,
+    defaultPerPage,
     purchaseStorageUrl,
     buyAddonTargetAttr,
-    defaultPerPage,
     storageLimitEnforced,
     canShowInlineAlert,
-    additionalRepoStorageByNamespace,
-    isPersonalNamespace,
   } = el.dataset;
 
   const apolloProvider = new VueApollo({
@@ -37,20 +36,16 @@ export default () => {
     provide: {
       namespaceId,
       namespacePath,
+      userNamespace: parseBoolean(userNamespace),
+      defaultPerPage: Number(defaultPerPage),
       purchaseStorageUrl,
       buyAddonTargetAttr,
+      storageLimitEnforced: parseBoolean(storageLimitEnforced),
+      canShowInlineAlert: parseBoolean(canShowInlineAlert),
       helpLinks,
-      defaultPerPage: Number(defaultPerPage),
     },
     render(createElement) {
-      return createElement(NamespaceStorageApp, {
-        props: {
-          storageLimitEnforced: parseBoolean(storageLimitEnforced),
-          canShowInlineAlert: parseBoolean(canShowInlineAlert),
-          isAdditionalStorageFlagEnabled: parseBoolean(additionalRepoStorageByNamespace),
-          isPersonalNamespace,
-        },
-      });
+      return createElement(NamespaceStorageApp);
     },
   });
 };

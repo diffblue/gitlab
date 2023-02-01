@@ -440,11 +440,6 @@ module EE
       update(temporary_storage_increase_ends_on: TEMPORARY_STORAGE_INCREASE_DAYS.days.from_now)
     end
 
-    def additional_repo_storage_by_namespace_enabled?
-      !::Feature.enabled?(:namespace_storage_limit, self) &&
-        ::Gitlab::CurrentSettings.automatic_purchased_storage_allocation?
-    end
-
     def root_storage_size
       if ::EE::Gitlab::Namespaces::Storage::Enforcement.enforce_limit?(root_ancestor)
         ::Namespaces::Storage::RootSize.new(root_ancestor)
