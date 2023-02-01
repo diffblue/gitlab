@@ -26,6 +26,28 @@ the `Sign in` button. The challenge needs to be completed to proceed with the si
 attempt. If Arkose Protect trusts the user, the challenge runs in transparent mode, meaning that the
 user doesn't need to take any additional action and can sign in as usual.
 
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant G as GitLab
+    participant A as Arkose Labs
+    U->>G: User loads form <br />(POST /api/:version/users/captcha_check)
+    G->>A: Sends device fingerprint and telemetry
+    A->>U: Returns Session token and decision on if to challenge
+    opt Requires Challenge
+        U->>U: User interacts with Challenge iframe
+    end
+    U->>G: Submits form with Arkose Labs token
+    G ->> A: Sends token to be verified
+    A ->> G: Returns verification response
+    Note over G: records `UserCustomAttribute::risk_band`
+    alt session_details.solved == true
+        G ->> U: Proceed
+    else session_details.solved == false
+        G ->> U: Do not proceed
+    end
+```
+
 ## How do we treat malicious sign-in attempts?
 
 Users are not denied access if Arkose Protect considers they are malicious. However,
