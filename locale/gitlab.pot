@@ -49304,6 +49304,9 @@ msgstr[1] ""
 msgid "access:"
 msgstr ""
 
+msgid "add at least one file to the repository"
+msgstr ""
+
 msgid "added %{emails}"
 msgstr ""
 
