@@ -24,7 +24,7 @@ module EE
     end
 
     def user_default_dashboard?(user)
-      controller_action_to_child_dashboards.any? { |dashboard| dashboard == user.dashboard }
+      controller_action_to_child_dashboards.any?(user.dashboard)
     end
 
     def has_start_trial?

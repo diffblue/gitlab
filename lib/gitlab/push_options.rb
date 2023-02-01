@@ -83,7 +83,7 @@ module Gitlab
     end
 
     def option_multi_value?(namespace, key)
-      MULTI_VALUE_OPTIONS.any? { |arr| arr == [namespace, key] }
+      MULTI_VALUE_OPTIONS.any?([namespace, key])
     end
 
     def parse_option(option)

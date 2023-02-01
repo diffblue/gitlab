@@ -91,7 +91,7 @@ module ComplianceManagement
       def locked?(instance_value, group_value, project_value)
         _, *inherited = [project_value, group_value, instance_value].compact
 
-        inherited.any? { |value| value == false }
+        inherited.any?(false)
       end
 
       def require_password_locked?(group_value, default)

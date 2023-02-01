@@ -54,7 +54,7 @@ module Elastic
       private
 
       def in_forbidden_state?(user)
-        User::FORBIDDEN_SEARCH_STATES.any? { |state| user.state == state }
+        User::FORBIDDEN_SEARCH_STATES.any?(user.state)
       end
     end
   end
