@@ -19,6 +19,7 @@ export const i18n = {
   loading: s__('ciReport|Security scanning is loading'),
   loadingError: s__('ciReport|%{scanner}: Loading resulted in an error'),
   error: s__('ciReport|Security reports failed loading results'),
+  fullReport: s__('ciReport|Full report'),
   helpPopoverTitle: s__('ciReport|Security scan results'),
   helpPopoverContent: s__(
     'ciReport|New vulnerabilities are vulnerabilities that the security scan detects in the merge request that are different to existing vulnerabilities in the default branch.',

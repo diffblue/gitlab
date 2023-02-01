@@ -167,6 +167,16 @@ export default {
     canDismissFinding() {
       return Boolean(this.mr.createVulnerabilityFeedbackDismissalPath);
     },
+
+    actionButtons() {
+      return [
+        {
+          href: `${this.mr.pipeline.path}/security`,
+          text: this.$options.i18n.fullReport,
+          fullReport: true,
+        },
+      ];
+    },
   },
   methods: {
     handleIsLoading(value) {
@@ -463,6 +473,7 @@ export default {
     :widget-name="$options.name"
     :is-collapsible="isCollapsible"
     :help-popover="$options.widgetHelpPopover"
+    :action-buttons="actionButtons"
     multi-polling
     @is-loading="handleIsLoading"
   >
