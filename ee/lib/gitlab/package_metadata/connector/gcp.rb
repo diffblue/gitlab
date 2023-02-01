@@ -30,7 +30,6 @@ require 'google/cloud/storage'
 #
 # To reduce the amount of data transferred the connector allows the
 # caller to ask for gcp files after <sequence_id> and <chunk_id>.
-require 'byebug'
 module Gitlab
   module PackageMetadata
     module Connector
