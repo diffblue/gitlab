@@ -17,7 +17,7 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
 
   def search_for_label(label)
     page.within('.vue-filtered-search-bar-container .gl-search-box-by-click') do
-      page.find('input.gl-filtered-search-term-input').click
+      page.find('[data-testid="filtered-search-term-input"]').click
       click_link 'Label'
       page.first('.gl-filtered-search-suggestion-list .gl-filtered-search-suggestion').click # Select `=` operator
       wait_for_requests
@@ -251,6 +251,18 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
         page.within('.content-wrapper .content .epics-filters') do
           expect(page).to have_css('.vue-filtered-search-bar-container')
         end
+      end
+
+      it 'filters by child epic', :aggregate_failures do
+        page.find('[data-testid="filtered-search-term-input"]').click
+        click_link 'Epic'
+        click_link sub_epic.title
+        click_button 'Search'
+
+        wait_for_requests
+
+        expect(page).to have_content(sub_epic.title)
+        expect(page).not_to have_content(epic_with_bug.title)
       end
 
       it 'renders roadmap view' do
