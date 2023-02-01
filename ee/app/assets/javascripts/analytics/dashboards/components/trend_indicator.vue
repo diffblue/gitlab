@@ -1,6 +1,7 @@
 <script>
 import { GlIcon } from '@gitlab/ui';
-import { percent } from '~/lib/utils/unit_format';
+import { formatMetric } from '../utils';
+import { UNITS } from '../constants';
 
 export default {
   name: 'TrendIndicator',
@@ -32,7 +33,7 @@ export default {
       return this.trendingUp ? 'trend-up' : 'trend-down';
     },
     formattedChange() {
-      return percent(Math.abs(this.change), 1);
+      return formatMetric(Math.abs(this.change * 100), UNITS.PERCENT);
     },
   },
 };

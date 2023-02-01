@@ -89,7 +89,7 @@ export const MOCK_CHART_TIME_PERIODS = [5, 4, 3, 2, 1, 0].map((monthsAgo) => ({
   start: nMonthsBefore(THIS_MONTH.end, monthsAgo + 1),
 }));
 
-export const mockMonthToDate = mockMetrics([5.1, 4, 8, 0, 2, 4, 6, 8]);
+export const mockMonthToDate = mockMetrics([0.5, 0.05, 0.005, 0, 2, 4, 6, 8]);
 export const mockMonthToDateTimePeriod = { ...THIS_MONTH, ...mockMonthToDate };
 export const mockMonthToDateApiResponse = Object.values(mockMonthToDate);
 
@@ -137,8 +137,8 @@ export const mockComparativeTableData = [
     },
     invertTrendColor: true,
     thisMonth: {
-      value: '5.1 d',
-      change: 0.4166666666666665,
+      value: '0.50 d',
+      change: -0.8611111111111112,
     },
     lastMonth: {
       value: '3.6 d',
@@ -156,8 +156,8 @@ export const mockComparativeTableData = [
     },
     invertTrendColor: true,
     thisMonth: {
-      value: '4.0 d',
-      change: -0.8,
+      value: '0.050 d',
+      change: -0.9974999999999999,
     },
     lastMonth: {
       value: '20.0 d',
@@ -175,15 +175,15 @@ export const mockComparativeTableData = [
     },
     invertTrendColor: true,
     thisMonth: {
-      value: '8.00%',
-      change: 1,
+      value: '0.0050%',
+      change: -0.99875,
     },
     lastMonth: {
-      value: '4.00%',
+      value: '4.0%',
       change: -0.5,
     },
     twoMonthsAgo: {
-      value: '8.00%',
+      value: '8.0%',
       change: 0,
     },
   },

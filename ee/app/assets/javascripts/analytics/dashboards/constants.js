@@ -1,5 +1,4 @@
 import { s__, __ } from '~/locale';
-import { days, percentHundred } from '~/lib/utils/unit_format';
 import { thWidthPercent } from '~/lib/utils/table_utility';
 import {
   getStartOfDay,
@@ -10,58 +9,50 @@ import {
 } from '~/lib/utils/datetime_utility';
 import { KEY_METRICS, DORA_METRICS } from '~/analytics/shared/constants';
 
-const UNITS = {
-  PER_DAY: {
-    chartUnits: __('/day'),
-    formatValue: (value) => days(value, 1, { unitSeparator: '/' }),
-  },
-  DAYS: {
-    chartUnits: __('days'),
-    formatValue: (value) => days(value, 1, { unitSeparator: ' ' }),
-  },
-  PERCENT: {
-    chartUnits: '%',
-    formatValue: (value) => percentHundred(value, 2),
-  },
+export const UNITS = {
+  COUNT: 'COUNT',
+  DAYS: 'DAYS',
+  PER_DAY: 'PER_DAY',
+  PERCENT: 'PERCENT',
 };
 
 export const TABLE_METRICS = {
   [DORA_METRICS.DEPLOYMENT_FREQUENCY]: {
     label: s__('DORA4Metrics|Deployment Frequency'),
-    ...UNITS.PER_DAY,
+    units: UNITS.PER_DAY,
   },
   [DORA_METRICS.LEAD_TIME_FOR_CHANGES]: {
     label: s__('DORA4Metrics|Lead Time for Changes'),
     invertTrendColor: true,
-    ...UNITS.DAYS,
+    units: UNITS.DAYS,
   },
   [DORA_METRICS.TIME_TO_RESTORE_SERVICE]: {
     label: s__('DORA4Metrics|Time to Restore Service'),
     invertTrendColor: true,
-    ...UNITS.DAYS,
+    units: UNITS.DAYS,
   },
   [DORA_METRICS.CHANGE_FAILURE_RATE]: {
     label: s__('DORA4Metrics|Change Failure Rate'),
     invertTrendColor: true,
-    ...UNITS.PERCENT,
+    units: UNITS.PERCENT,
   },
   [KEY_METRICS.LEAD_TIME]: {
     label: s__('DORA4Metrics|Lead time'),
     invertTrendColor: true,
-    ...UNITS.DAYS,
+    units: UNITS.DAYS,
   },
   [KEY_METRICS.CYCLE_TIME]: {
     label: s__('DORA4Metrics|Cycle time'),
     invertTrendColor: true,
-    ...UNITS.DAYS,
+    units: UNITS.DAYS,
   },
   [KEY_METRICS.ISSUES]: {
     label: s__('DORA4Metrics|New issues'),
-    formatValue: (value) => value,
+    units: UNITS.COUNT,
   },
   [KEY_METRICS.DEPLOYS]: {
     label: s__('DORA4Metrics|Deploys'),
-    formatValue: (value) => value,
+    units: UNITS.COUNT,
   },
 };
 
@@ -142,3 +133,10 @@ export const DASHBOARD_TABLE_FIELDS = [
     tdClass: 'gl-py-2! gl-pointer-events-none',
   },
 ];
+
+export const CHART_TOOLTIP_UNITS = {
+  [UNITS.COUNT]: undefined,
+  [UNITS.DAYS]: __('days'),
+  [UNITS.PER_DAY]: __('/day'),
+  [UNITS.PERCENT]: '%',
+};

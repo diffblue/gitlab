@@ -1,5 +1,7 @@
+import { UNITS } from 'ee/analytics/dashboards/constants';
 import {
   percentChange,
+  formatMetric,
   extractDoraMetrics,
   hasDoraMetricValues,
   generateDoraTimePeriodComparisonTable,
@@ -40,6 +42,29 @@ describe('Analytics Dashboards utils', () => {
       ${0}    | ${5}     | ${0}
     `('calculates the percentage change given 2 numbers', ({ current, previous, result }) => {
       expect(percentChange({ current, previous })).toBe(result);
+    });
+  });
+
+  describe.each([
+    { units: UNITS.PER_DAY, suffix: '/d' },
+    { units: UNITS.DAYS, suffix: ' d' },
+    { units: UNITS.PERCENT, suffix: '%' },
+  ])('formatMetric(*, $units)', ({ units, suffix }) => {
+    it.each`
+      value      | result
+      ${0}       | ${'0.0'}
+      ${10}      | ${'10.0'}
+      ${-10}     | ${'-10.0'}
+      ${1}       | ${'1.0'}
+      ${-1}      | ${'-1.0'}
+      ${0.1}     | ${'0.10'}
+      ${-0.99}   | ${'-0.99'}
+      ${0.099}   | ${'0.099'}
+      ${-0.01}   | ${'-0.010'}
+      ${0.0099}  | ${'0.0099'}
+      ${-0.0001} | ${'-0.0001'}
+    `('returns $result for a metric with the value $value', ({ value, result }) => {
+      expect(formatMetric(value, units)).toBe(`${result}${suffix}`);
     });
   });
 
