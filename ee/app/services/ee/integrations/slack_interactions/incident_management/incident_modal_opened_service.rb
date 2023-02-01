@@ -25,14 +25,20 @@ module EE
           end
 
           def self.cache_write(view_id, project_id)
-            cache_key = "slack:incident_modal_opened:#{view_id}"
+            Rails.cache.write(cache_build_key(view_id), project_id, expires_in: CACHE_EXPIRES_IN)
+          end
 
-            Rails.cache.write(cache_key, project_id, expires_in: CACHE_EXPIRES_IN)
+          def self.cache_read(view_id)
+            Rails.cache.read(cache_build_key(view_id))
           end
 
           private
 
           attr_reader :slack_installation, :current_user, :team_id, :response_url, :trigger_id
+
+          def self.cache_build_key(view_id)
+            "slack:incident_modal_opened:#{view_id}"
+          end
 
           def user_projects
             current_user.projects_where_can_admin_issues.limit(MAX_PROJECTS)

@@ -99,7 +99,8 @@ module Integrations
           strong_memoize_attr :new_project
 
           def old_project
-            old_project_id = Rails.cache.read(['slack:incident_modal_opened', view[:id]].join(':'))
+            old_project_id = EE::Integrations::SlackInteractions::IncidentManagement::IncidentModalOpenedService
+              .cache_read(view[:id])
 
             Project.find(old_project_id) if old_project_id
           end

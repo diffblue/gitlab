@@ -23,6 +23,7 @@ RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModa
     let(:zoom_link) { '' }
     let(:severity) { {} }
     let(:status) { '' }
+    let(:assignee_id) { nil }
     let(:confidential_selected_options) { [] }
     let(:confidential) { { selected_options: confidential_selected_options } }
     let(:title) { 'Incident title' }
@@ -73,6 +74,11 @@ RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModa
                 status: {
                   selected_option: {
                     value: status
+                  }
+                },
+                assignee: {
+                  selected_option: {
+                    value: assignee_id
                   }
                 }
               }
@@ -181,6 +187,26 @@ RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModa
           incident = execute_service[:incident]
 
           expect(incident.escalation_status).to be_resolved
+        end
+      end
+
+      context 'with assignee id' do
+        let(:assignee_id) { user.id.to_s }
+
+        it 'assigns the incident to user' do
+          incident = execute_service[:incident]
+
+          expect(incident.assignees).to contain_exactly(user)
+        end
+
+        context 'when user is not a member of the project' do
+          let(:assignee_id) { create(:user).id.to_s }
+
+          it 'does not assign the user' do
+            incident = execute_service[:incident]
+
+            expect(incident.assignees).to be_empty
+          end
         end
       end
 

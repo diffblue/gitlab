@@ -5540,6 +5540,9 @@ msgid_plural "%d Assignees"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Assignee (optional)"
+msgstr ""
+
 msgid "Assignee has no permissions"
 msgstr ""
 
