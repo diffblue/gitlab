@@ -13,6 +13,7 @@ module Boards
 
     scope :order_by_name_asc, -> { order(arel_table[:name].lower.asc).order(id: :asc) }
     scope :for_groups, ->(ids) { where(group_id: ids) }
+    scope :with_api_entity_associations, -> { preload(:epic_lists, :labels) }
 
     def lists
       epic_lists
