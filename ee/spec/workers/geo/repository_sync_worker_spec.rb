@@ -64,10 +64,6 @@ RSpec.describe Geo::RepositorySyncWorker, :geo, :clean_gitlab_redis_cache do
       # hide the 'broken' storage for this spec
       stub_storage_settings({})
 
-      expect_next_instance_of(Gitlab::GitalyClient::ServerService) do |service|
-        expect(service).to receive(:readiness_check).and_return({ success: true })
-      end
-
       expect(repository_worker).to receive(:perform_async).with(project_in_synced_group.repository.storage)
       expect(design_worker).to receive(:perform_async).with(project_in_synced_group.repository.storage)
       expect(repository_worker).not_to receive(:perform_async).with('unknown')

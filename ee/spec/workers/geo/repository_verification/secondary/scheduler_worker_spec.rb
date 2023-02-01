@@ -38,10 +38,6 @@ RSpec.describe Geo::RepositoryVerification::Secondary::SchedulerWorker, :clean_g
       # hide the 'broken' storage for this spec
       stub_storage_settings({})
 
-      expect_next_instance_of(Gitlab::GitalyClient::ServerService) do |service|
-        expect(service).to receive(:readiness_check).and_return({ success: true })
-      end
-
       expect(Geo::RepositoryVerification::Secondary::ShardWorker).to receive(:perform_async).with(healthy_shard)
       expect(Geo::RepositoryVerification::Secondary::ShardWorker).not_to receive(:perform_async).with('unknown')
 
