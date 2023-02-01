@@ -1984,16 +1984,6 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
         expect(user.read_code_for?(project)).to be true
       end
     end
-
-    context 'when user based feature flag is disabled' do
-      before do
-        stub_feature_flags(customizable_roles_per_user: false)
-      end
-
-      it 'does not return anything' do
-        expect(user.read_code_for?(project)).to be_nil
-      end
-    end
   end
 
   describe '#can_group_owner_disable_two_factor?' do
