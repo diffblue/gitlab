@@ -22,7 +22,7 @@ module EE
       end
 
       def media_type_manifest?
-        event.dig('target', 'mediaType') =~ /manifest/
+        event.dig('target', 'mediaType')&.include?('manifest')
       end
 
       def find_container_repository!

@@ -51,7 +51,7 @@ module Gitlab
         end
 
         def common_name
-          subject.split('/').find { |part| part =~ /CN=/ }&.remove('CN=')&.strip
+          subject.split('/').find { |part| part.include?('CN=') }&.remove('CN=')&.strip
         end
 
         def email
@@ -59,7 +59,7 @@ module Gitlab
             if san_enabled?
               san_extension.email_identity
             else
-              subject.split('/').find { |part| part =~ /emailAddress=/ }&.remove('emailAddress=')&.strip
+              subject.split('/').find { |part| part.include?('emailAddress=') }&.remove('emailAddress=')&.strip
             end
           end
         end
