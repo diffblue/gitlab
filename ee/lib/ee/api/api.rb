@@ -60,6 +60,7 @@ module EE
         mount ::API::CaptchaCheck
         mount ::API::Integrations::Slack::Events
         mount ::API::Integrations::Slack::Interactions
+        mount ::API::Integrations::Slack::Options
         mount ::API::Ml::AiAssist
         mount ::API::DependencyListExports
 

@@ -169,6 +169,17 @@ module Slack
           }
         end
 
+        def assignee_selection
+          {
+            "type": "external_select",
+            "action_id": "assignee",
+            "placeholder": {
+              "type": "plain_text",
+              "text": s_("Assignee (optional)")
+            }
+          }
+        end
+
         def confidential_block
           {
             "type": "actions",
@@ -207,7 +218,8 @@ module Slack
             "type": "actions",
             "block_id": "status_and_assignee_selector",
             "elements": [
-              status_selection
+              status_selection,
+              assignee_selection
             ]
           }
         end

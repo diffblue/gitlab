@@ -14,9 +14,8 @@ module Integrations
           @values = params.dig(:view, :state, :values)
           @team_id = params.dig(:team, :id)
           @user_id = params.dig(:user, :id)
+          @additional_message = ''
         end
-
-        attr_accessor :params, :values, :team_id, :user_id
 
         def execute
           create_response = Issues::CreateService.new(
@@ -57,6 +56,8 @@ module Integrations
 
         private
 
+        attr_accessor :params, :values, :team_id, :user_id, :additional_message
+
         def incident_params
           {
             "title": values.dig(:title_input, :title, :value),
@@ -64,7 +65,8 @@ module Integrations
             "confidential": confidential?,
             "description": description,
             "escalation_status": { status: status },
-            "issue_type": "incident"
+            "issue_type": "incident",
+            "assignee_ids": [assignee]
           }
         end
 
@@ -84,7 +86,8 @@ module Integrations
         end
 
         def incident_link_text(incident)
-          "#{_('New incident has been created')}: <#{issue_url(incident)}|#{incident.to_reference} - #{incident.title}>"
+          "#{_('New incident has been created')}: " \
+            "<#{issue_url(incident)}|#{incident.to_reference} - #{incident.title}>. #{@additional_message}"
         end
 
         def project
@@ -123,6 +126,25 @@ module Integrations
 
         def status
           values.dig(:status_and_assignee_selector, :status, :selected_option, :value)
+        end
+
+        def assignee
+          assignee_id = values.dig(:status_and_assignee_selector, :assignee, :selected_option, :value)
+
+          return unless assignee_id
+
+          user = User.find_by_id(assignee_id)
+          member = project.member(user)
+
+          unless member
+            @additional_message =
+              "However, " \
+              "#{user.name} was not assigned to the incident as they are not a member in #{project.name}."
+
+            return
+          end
+
+          member.user_id
         end
       end
     end
