@@ -38,11 +38,51 @@ module QA
         end
       end
 
+      context 'when hook fails' do
+        let(:fail_mock) do
+          <<~YAML
+            - request:
+                method: POST
+                path: /default
+              response:
+                status: 500
+                headers:
+                  Content-Type: text/plain
+                body: 'webhook failed'
+          YAML
+        end
+
+        let(:hook_trigger_times) { 6 }
+
+        it 'group hooks do not auto-disable',
+           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/389594' do
+          setup_group_webhook(fail_mock, issues: true) do |webhook, smocker|
+            project = Resource::Project.fabricate_via_api! do |project|
+              project.group = webhook.group
+            end
+
+            hook_trigger_times.times do
+              Resource::Issue.fabricate_via_api! do |issue_init|
+                issue_init.project = project
+              end
+            end
+
+            expect { history(smocker).size }.to eventually_eq(hook_trigger_times)
+                                                  .within(max_duration: 30, sleep_interval: 2),
+              -> { "Should have #{hook_trigger_times} events, got: #{event_logs(smocker)}" }
+
+            webhook.reload!
+
+            expect(webhook.alert_status).to eql('executable')
+          end
+        end
+      end
+
       private
 
-      def setup_group_webhook(**event_args)
+      def setup_group_webhook(mock = Vendor::Smocker::SmockerApi::DEFAULT_MOCK, **event_args)
         Service::DockerRun::Smocker.init(wait: 10) do |smocker|
-          smocker.register(session: session)
+          smocker.register(mock, session: session)
 
           webhook = EE::Resource::GroupWebHook.fabricate_via_api! do |hook|
             hook.url = smocker.url

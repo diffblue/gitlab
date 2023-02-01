@@ -23,6 +23,10 @@ module QA
 
         attr_accessor :url, :enable_ssl, :id, :token
 
+        attribute :id
+        attribute :alert_status
+        attribute :disabled_until
+
         attribute :group do
           QA::Resource::Group.fabricate_via_api! do |resource|
             resource.name = "group-with-webhooks-#{SecureRandom.hex(4)}"
@@ -40,6 +44,16 @@ module QA
           @enable_ssl = false
           @url = nil
           @push_events_branch_filter = []
+          @alert_status = nil
+          @disabled_until = nil
+        end
+
+        def fabricate_via_api!
+          resource_web_url = super
+
+          @id = api_response[:id]
+
+          resource_web_url
         end
 
         def add_push_event_branch_filter(branch)
@@ -51,11 +65,11 @@ module QA
         end
 
         def api_get_path
-          "/groups/#{group.id}/hooks"
+          "#{api_post_path}/#{id}"
         end
 
         def api_post_path
-          api_get_path
+          "/groups/#{group.id}/hooks"
         end
 
         def api_post_body
