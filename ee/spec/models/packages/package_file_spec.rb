@@ -149,4 +149,50 @@ RSpec.describe Packages::PackageFile, type: :model do
       end
     end
   end
+
+  describe '.search' do
+    let_it_be(:package_file1) { create(:package_file) }
+    let_it_be(:package_file2) { create(:package_file) }
+
+    context 'when search query is empty' do
+      it 'returns all records' do
+        result = described_class.search('')
+
+        expect(result).to contain_exactly(package_file1, package_file2)
+      end
+    end
+
+    context 'when search query is not empty' do
+      context 'without matches' do
+        it 'filters all package files' do
+          result = described_class.search('something_that_does_not_exist')
+
+          expect(result).to be_empty
+        end
+      end
+
+      context 'with matches' do
+        context 'with matches by attributes' do
+          where(:searchable_attributes) { described_class::EE_SEARCHABLE_ATTRIBUTES }
+
+          before do
+            # Use update_column to bypass attribute validations like regex formatting, checksum, etc.
+            package_file1.update_column(searchable_attributes, 'any_keyword')
+          end
+
+          with_them do
+            it 'returns filtered package_files limited to 500 records' do
+              expect_any_instance_of(described_class) do |instance|
+                expect(instance).to receive(:limit).and_return(500)
+              end
+
+              result = described_class.search('any_keyword')
+
+              expect(result).to contain_exactly(package_file1)
+            end
+          end
+        end
+      end
+    end
+  end
 end
