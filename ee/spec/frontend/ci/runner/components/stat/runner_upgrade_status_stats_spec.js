@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { GlPopover } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import RunnerUpgradeStatusStats from 'ee_component/ci/runner/components/stat/runner_upgrade_status_stats.vue';
 import RunnerSingleStat from '~/ci/runner/components/stat/runner_single_stat.vue';
@@ -9,6 +10,8 @@ describe('RunnerStats', () => {
   let wrapper;
 
   const findRunnerSingleStatAt = (i) => wrapper.findAllComponents(RunnerSingleStat).at(i);
+  const findPopoverByTarget = (target) =>
+    wrapper.findAllComponents(GlPopover).filter((w) => w.attributes('target') === target);
 
   const createComponent = ({ props = {}, glFeatures = {}, mountFn = shallowMount } = {}) => {
     wrapper = mountFn(RunnerUpgradeStatusStats, {
@@ -23,10 +26,6 @@ describe('RunnerStats', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe.each`
     glFeatures
     ${{ runnerUpgradeManagement: true }}
@@ -34,39 +33,49 @@ describe('RunnerStats', () => {
   `('With licensed feature $glFeatures', ({ glFeatures }) => {
     const statOptions = [
       {
+        index: 0,
         title: s__('Runners|Upgrade available'),
         variant: 'info',
         variables: { upgradeStatus: UPGRADE_STATUS_AVAILABLE },
       },
       {
+        index: 1,
         title: s__('Runners|Upgrade recommended'),
         variant: 'warning',
         variables: { upgradeStatus: UPGRADE_STATUS_RECOMMENDED },
       },
     ];
 
-    it('Renders upgrade stats with correct scope and attributes', () => {
-      createComponent({
-        glFeatures,
-      });
-
-      statOptions.forEach(({ title, variant, variables }, i) => {
-        const stat = findRunnerSingleStatAt(i);
-
-        expect(stat.attributes()).toMatchObject({
-          metaicon: 'upgrade',
-          title,
-          variant,
-        });
-        expect(stat.props()).toEqual({
-          scope: INSTANCE_TYPE,
-          skip: false,
-          variables,
+    describe('Renders upgrade stats', () => {
+      beforeEach(() => {
+        createComponent({
+          glFeatures,
         });
       });
+
+      it.each(statOptions)(
+        'Passes attributes and popover details to "$title" stat',
+        ({ index, title, variant, variables }) => {
+          const stat = findRunnerSingleStatAt(index);
+
+          expect(stat.props()).toEqual({
+            scope: INSTANCE_TYPE,
+            skip: false,
+            variables,
+          });
+          expect(stat.attributes()).toMatchObject({
+            'meta-icon': 'upgrade',
+            title,
+            variant,
+          });
+
+          const id = stat.attributes('id');
+          expect(findPopoverByTarget(id).exists()).toBe(true);
+        },
+      );
     });
 
-    it('Passes filter variables with a status filter', () => {
+    it.each(statOptions)('Passes filters vars to "$title" stat', ({ index, variables }) => {
       createComponent({
         props: {
           variables: { paused: true },
@@ -74,11 +83,9 @@ describe('RunnerStats', () => {
         glFeatures,
       });
 
-      statOptions.forEach(({ variables }, i) => {
-        expect(findRunnerSingleStatAt(i).props('variables')).toEqual({
-          paused: true,
-          ...variables,
-        });
+      expect(findRunnerSingleStatAt(index).props('variables')).toEqual({
+        paused: true,
+        ...variables,
       });
     });
 
