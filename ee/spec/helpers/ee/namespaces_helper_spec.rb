@@ -250,68 +250,26 @@ RSpec.describe EE::NamespacesHelper do
     it { is_expected.to eq(EE::SUBSCRIPTIONS_MORE_STORAGE_URL) }
   end
 
-  describe '#purchase_storage_link_enabled?', feature_category: :subscription_cost_management do
-    subject { helper.purchase_storage_link_enabled?(namespace) }
-
-    let_it_be(:namespace) { build(:namespace) }
-
-    where(:additional_repo_storage_by_namespace_enabled, :result) do
-      false | false
-      true  | true
-    end
-
-    with_them do
-      before do
-        allow(namespace).to receive(:additional_repo_storage_by_namespace_enabled?)
-          .and_return(additional_repo_storage_by_namespace_enabled)
-      end
-
-      it { is_expected.to eq(result) }
-    end
-  end
-
   describe '#storage_usage_app_data', feature_category: :subscription_cost_management do
     let_it_be(:namespace) { create(:namespace) }
     let_it_be(:admin) { create(:user, namespace: namespace) }
 
     before do
       allow(helper).to receive(:current_user).and_return(admin)
+      stub_ee_application_setting(should_check_namespace_plan: true)
     end
 
-    context 'when purchase_storage_link_enabled? is true' do
-      before do
-        allow(namespace).to receive(:additional_repo_storage_by_namespace_enabled?).and_return(true)
-      end
-
-      it 'returns a hash with storage data' do
-        expect(helper.storage_usage_app_data(namespace)).to eql({
-          additional_repo_storage_by_namespace: "true",
-          buy_addon_target_attr: "_blank",
-          purchase_storage_url: Gitlab::SubscriptionPortal.subscriptions_more_storage_url,
-          default_per_page: 20,
-          namespace_id: namespace.id,
-          namespace_path: namespace.full_path,
-          is_personal_namespace: true
-        })
-      end
-    end
-
-    context 'when purchase_storage_link_enabled? is false' do
-      before do
-        allow(namespace).to receive(:additional_repo_storage_by_namespace_enabled?).and_return(false)
-      end
-
-      it 'returns a hash with storage data' do
-        expect(helper.storage_usage_app_data(namespace)).to eql({
-          additional_repo_storage_by_namespace: "false",
-          buy_addon_target_attr: nil,
-          purchase_storage_url: nil,
-          default_per_page: 20,
-          namespace_id: namespace.id,
-          namespace_path: namespace.full_path,
-          is_personal_namespace: true
-        })
-      end
+    it 'returns a hash with storage data' do
+      expect(helper.storage_usage_app_data(namespace)).to eql({
+        namespace_id: namespace.id,
+        namespace_path: namespace.full_path,
+        user_namespace: namespace.user_namespace?.to_s,
+        default_per_page: Kaminari.config.default_per_page,
+        purchase_storage_url: EE::SUBSCRIPTIONS_MORE_STORAGE_URL,
+        buy_addon_target_attr: '_blank',
+        storage_limit_enforced: 'false',
+        can_show_inline_alert: 'false'
+      })
     end
   end
 end

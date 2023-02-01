@@ -9,9 +9,12 @@ export const projects =
 export const defaultNamespaceProvideValues = {
   namespaceId: '42',
   namespacePath: 'h5bp',
+  userNamespace: false,
   defaultPerPage: 20,
   purchaseStorageUrl: '',
   buyAddonTargetAttr: '_blank',
+  storageLimitEnforced: false,
+  canShowInlineAlert: false,
   helpLinks: projectHelpLinks,
 };
 

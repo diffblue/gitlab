@@ -69,24 +69,14 @@ describe('NamespaceStorageApp', () => {
 
   const createComponent = ({
     provide = {},
-    storageLimitEnforced = false,
-    canShowInlineAlert = false,
-    additionalRepoStorageByNamespace = false,
     dependencyProxyTotalSize = '',
     mockApollo = {},
-    isPersonalNamespace = false,
   } = {}) => {
     wrapper = mountExtended(NamespaceStorageApp, {
       apolloProvider: mockApollo,
       provide: {
         ...defaultNamespaceProvideValues,
         ...provide,
-      },
-      propsData: {
-        storageLimitEnforced,
-        canShowInlineAlert,
-        isAdditionalStorageFlagEnabled: additionalRepoStorageByNamespace,
-        isPersonalNamespace,
       },
       data() {
         return {
@@ -118,9 +108,8 @@ describe('NamespaceStorageApp', () => {
     it('shows the dependency proxy usage component', async () => {
       createComponent({
         mockApollo,
-        additionalRepoStorageByNamespace: true,
         dependencyProxyTotalSize: '512 bytes',
-        isPersonalNamespace: false,
+        provide: { userNamespace: false },
       });
       await waitForPromises();
 
@@ -130,9 +119,8 @@ describe('NamespaceStorageApp', () => {
     it('does not display the dependency proxy for personal namespaces', () => {
       createComponent({
         mockApollo,
-        additionalRepoStorageByNamespace: true,
         dependencyProxyTotalSize: '512 bytes',
-        isPersonalNamespace: true,
+        provide: { userNamespace: true },
       });
 
       expect(findDependencyProxy().exists()).toBe(false);
@@ -144,7 +132,6 @@ describe('NamespaceStorageApp', () => {
       mockApollo = createMockApolloProvider();
       createComponent({
         mockApollo,
-        additionalRepoStorageByNamespace: true,
         dependencyProxyTotalSize: '512 bytes',
       });
       await waitForPromises();
@@ -165,7 +152,6 @@ describe('NamespaceStorageApp', () => {
       mockApollo = createMockApolloProvider();
       createComponent({
         mockApollo,
-        additionalRepoStorageByNamespace: true,
       });
       searchAndSortBar = findSearchAndSortBar();
     });
@@ -272,8 +258,7 @@ describe('NamespaceStorageApp', () => {
       mockApollo = createMockApolloProvider();
 
       createComponent({
-        additionalRepoStorageByNamespace: true,
-        storageLimitEnforced: true,
+        provide: { storageLimitEnforced: true },
         mockApollo,
       });
       await waitForPromises();
@@ -312,8 +297,7 @@ describe('NamespaceStorageApp', () => {
           }
 
           createComponent({
-            additionalRepoStorageByNamespace: true,
-            storageLimitEnforced: true,
+            provide: { storageLimitEnforced: true },
             mockApollo,
           });
 
@@ -337,8 +321,7 @@ describe('NamespaceStorageApp', () => {
         // creating failed mock provider will make namespace = {}
         mockApollo = createFailedMockApolloProvider();
         createComponent({
-          additionalRepoStorageByNamespace: true,
-          storageLimitEnforced: true,
+          provide: { storageLimitEnforced: true },
           mockApollo,
         });
 
@@ -354,8 +337,8 @@ describe('NamespaceStorageApp', () => {
 
       createComponent({
         mockApollo,
-        canShowInlineAlert: true,
-        additionalRepoStorageByNamespace: true,
+
+        provide: { canShowInlineAlert: true },
       });
       await waitForPromises();
 
