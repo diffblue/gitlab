@@ -138,6 +138,12 @@ Blockquote inside an unordered list
   Bar
   >>>
 
+  - Sub item
+
+    >>>
+    Foo
+    >>>
+
 Blockquote inside an ordered list
 
 1. Item one
@@ -145,6 +151,12 @@ Blockquote inside an ordered list
    >>>
    Bar
    >>>
+
+   1. Sub item
+
+      >>>
+      Foo
+      >>>
 
 Requires a leading blank line
 >>>
