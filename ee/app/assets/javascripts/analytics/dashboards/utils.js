@@ -1,8 +1,51 @@
 import { isNumeric } from '~/lib/utils/number_utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
+import { days, percentHundred } from '~/lib/utils/unit_format';
 import { fetchMetricsData } from '~/analytics/shared/utils';
 import { METRICS_REQUESTS } from '~/analytics/cycle_analytics/constants';
-import { TABLE_METRICS } from './constants';
+import { TABLE_METRICS, UNITS, CHART_TOOLTIP_UNITS } from './constants';
+
+/**
+ * Returns the number of fractional digits that should be shown
+ * in the table, based on the value of the given metric.
+ *
+ * @param {Number} value - the metric value
+ * @returns {Number} The number of fractional digits to render
+ */
+const fractionDigits = (value) => {
+  const absVal = Math.abs(value);
+  if (absVal === 0) {
+    return 1;
+  } else if (absVal < 0.01) {
+    return 4;
+  } else if (absVal < 0.1) {
+    return 3;
+  } else if (absVal < 1) {
+    return 2;
+  }
+
+  return 1;
+};
+
+/**
+ * Formats the metric value based on the units provided.
+ *
+ * @param {Number} value - the metric value
+ * @param {String} units - PER_DAY, DAYS or PERCENT
+ * @returns {String} The formatted metric
+ */
+export const formatMetric = (value, units) => {
+  switch (units) {
+    case UNITS.PER_DAY:
+      return days(value, fractionDigits(value), { unitSeparator: '/' });
+    case UNITS.DAYS:
+      return days(value, fractionDigits(value), { unitSeparator: ' ' });
+    case UNITS.PERCENT:
+      return percentHundred(value, fractionDigits(value));
+    default:
+      return value;
+  }
+};
 
 export const percentChange = ({ current, previous }) =>
   previous > 0 && current > 0 ? (current - previous) / previous : 0;
@@ -77,7 +120,7 @@ export const hasDoraMetricValues = (timePeriods) =>
  */
 export const generateDoraTimePeriodComparisonTable = (timePeriods) => {
   const doraMetrics = Object.entries(TABLE_METRICS);
-  return doraMetrics.map(([identifier, { label, formatValue, invertTrendColor }]) => {
+  return doraMetrics.map(([identifier, { label, units, invertTrendColor }]) => {
     const data = { invertTrendColor, metric: { identifier, value: label } };
     timePeriods.forEach((timePeriod, index) => {
       // The last timePeriod is not rendered, we just use it
@@ -90,7 +133,7 @@ export const generateDoraTimePeriodComparisonTable = (timePeriods) => {
       const hasPreviousValue = previous && previous.value !== '-';
 
       data[timePeriod.key] = {
-        value: hasCurrentValue ? formatValue(current.value) : '-',
+        value: hasCurrentValue ? formatMetric(current.value, units) : '-',
         change: percentChange({
           current: hasCurrentValue ? current.value : 0,
           previous: hasPreviousValue ? previous.value : 0,
@@ -110,10 +153,10 @@ export const generateDoraTimePeriodComparisonTable = (timePeriods) => {
  */
 export const generateSparklineCharts = (timePeriods) =>
   Object.entries(TABLE_METRICS).reduce(
-    (acc, [identifier, { chartUnits }]) =>
+    (acc, [identifier, { units }]) =>
       Object.assign(acc, {
         [identifier]: {
-          tooltipLabel: chartUnits,
+          tooltipLabel: CHART_TOOLTIP_UNITS[units],
           data: timePeriods.map((timePeriod) => [
             `${formatDate(timePeriod.start, 'mmm d')} - ${formatDate(timePeriod.end, 'mmm d')}`,
             timePeriod[identifier].value,
