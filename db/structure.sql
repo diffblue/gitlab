@@ -342,6 +342,15 @@ BEGIN
 END;
 $$;
 
+CREATE FUNCTION trigger_dca935e3a712() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW."note_id_convert_to_bigint" := NEW."note_id";
+  RETURN NEW;
+END;
+$$;
+
 CREATE FUNCTION trigger_ee7956d805e6() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -22623,7 +22632,8 @@ CREATE TABLE todos (
     note_id integer,
     commit_id character varying,
     group_id integer,
-    resolved_by_action smallint
+    resolved_by_action smallint,
+    note_id_convert_to_bigint bigint
 );
 
 CREATE SEQUENCE todos_id_seq
@@ -33688,6 +33698,8 @@ CREATE TRIGGER trigger_c2051020aa8b BEFORE INSERT OR UPDATE ON issue_user_mentio
 CREATE TRIGGER trigger_c5a5f48f12b0 BEFORE INSERT OR UPDATE ON epic_user_mentions FOR EACH ROW EXECUTE FUNCTION trigger_c5a5f48f12b0();
 
 CREATE TRIGGER trigger_c7107f30d69d BEFORE INSERT OR UPDATE ON merge_request_metrics FOR EACH ROW EXECUTE FUNCTION trigger_c7107f30d69d();
+
+CREATE TRIGGER trigger_dca935e3a712 BEFORE INSERT OR UPDATE ON todos FOR EACH ROW EXECUTE FUNCTION trigger_dca935e3a712();
 
 CREATE TRIGGER trigger_delete_project_namespace_on_project_delete AFTER DELETE ON projects FOR EACH ROW WHEN ((old.project_namespace_id IS NOT NULL)) EXECUTE FUNCTION delete_associated_project_namespace();
 
