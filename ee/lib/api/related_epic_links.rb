@@ -26,6 +26,7 @@ module API
     before do
       authenticate_non_get!
       authorize_related_epics_feature!
+      authorize_epics_feature!
     end
 
     params do
@@ -33,9 +34,58 @@ module API
         type: String,
         desc: 'ID or URL-encoded path of the group',
         documentation: { example: '1' }
-      requires :epic_iid, type: Integer, desc: 'The internal ID of a group epic', documentation: { example: 1 }
     end
     resource :groups, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
+      params do
+        optional :updated_before,
+                 type: DateTime,
+                 desc: 'Return related epic links updated before the specified time',
+                 documentation: { type: 'dateTime', example: '2016-01-19T09:05:50.355Z' }
+        optional :updated_after,
+                 type: DateTime,
+                 desc: 'Return related epic links updated after the specified time',
+                 documentation: { type: 'dateTime', example: '2016-01-19T09:05:50.355Z' }
+        optional :created_before,
+                 type: DateTime,
+                 desc: 'Return related epic links created before the specified time',
+                 documentation: { type: 'dateTime', example: '2016-01-19T09:05:50.355Z' }
+        optional :created_after,
+                 type: DateTime,
+                 desc: 'Return related epic links created after the specified time',
+                 documentation: { type: 'dateTime', example: '2016-01-19T09:05:50.355Z' }
+        use :pagination
+      end
+      desc 'Get related epics within the group and hierarchy' do
+        success Entities::RelatedEpic
+        failure [
+          { code: 401, message: 'Unauthorized' },
+          { code: 403, message: 'Forbidden' }
+        ]
+        is_array true
+      end
+      get ':id/related_epic_links' do
+        accessible_epics = EpicsFinder.new(current_user, group_id: user_group.id).execute
+        related_epic_links = Epic::RelatedEpicLink.for_source_or_target(accessible_epics)
+
+        related_epic_links = related_epic_links.updated_before(params[:updated_before]) if params[:updated_before]
+        related_epic_links = related_epic_links.updated_after(params[:updated_after]) if params[:updated_after]
+        related_epic_links = related_epic_links.created_before(params[:created_before]) if params[:created_before]
+        related_epic_links = related_epic_links.created_after(params[:created_after]) if params[:created_after]
+
+        related_epic_links = paginate(related_epic_links).with_api_entity_associations
+
+        # EpicLinks can link to other Epics the user has no access to.
+        # For these epics we need to check permissions.
+        related_epic_links = related_epic_links.select do |related_epic_link|
+          related_epic_link.source.readable_by?(current_user) && related_epic_link.target.readable_by?(current_user)
+        end
+
+        source_and_target_epics = related_epic_links.reduce(Set.new) { |acc, link| acc << link.source << link.target }
+
+        epics_metadata = Gitlab::IssuableMetadata.new(current_user, source_and_target_epics).data
+        present related_epic_links, issuable_metadata: epics_metadata, with: Entities::RelatedEpicLink
+      end
+
       desc 'Get related epics' do
         success Entities::RelatedEpic
         failure [
@@ -44,6 +94,11 @@ module API
         ]
         is_array true
       end
+
+      params do
+        requires :epic_iid, type: Integer, desc: 'The internal ID of a group epic', documentation: { example: 1 }
+      end
+
       get ':id/epics/:epic_iid/related_epics' do
         authorize_can_read!
 
