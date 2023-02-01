@@ -86,6 +86,7 @@ export default {
           with_shared: true,
           shared_visible_only: false,
           shared_min_access_level: DEVELOPER_ACCESS_LEVEL,
+          order_by: 'id',
         });
       }
 
@@ -96,6 +97,7 @@ export default {
       return Api.groups(term, {
         skip_groups: this.skipGroupIds,
         all_available: includeAll,
+        order_by: 'id',
       });
     },
     fetchProjectUsers(term) {
