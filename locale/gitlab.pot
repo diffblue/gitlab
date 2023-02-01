@@ -35106,6 +35106,9 @@ msgstr ""
 msgid "Release|More information"
 msgstr ""
 
+msgid "Release|Release %{createdRelease} has been successfully created."
+msgstr ""
+
 msgid "Release|Releases are based on Git tags and mark specific points in a project's development history. They can contain information about the type of changes and can also deliver binaries, like compiled versions of your software."
 msgstr ""
 
