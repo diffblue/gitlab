@@ -1,8 +1,0 @@
----
-name: highlight_paid_features_during_active_trial
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/58834
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/273627
-milestone: '13.11'
-type: experiment
-group: group::acquisition
-default_enabled: false
