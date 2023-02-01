@@ -91,6 +91,7 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
           resource :merge_request_analytics, only: :show
 
           scope module: :cycle_analytics, as: 'cycle_analytics', path: 'value_stream_analytics' do
+            resources :value_streams
             get '/value_streams/:value_stream_id/stages/:id/average_duration_chart' => 'stages#average_duration_chart', as: 'average_duration_chart'
             get '/time_summary' => 'summary#time_summary'
           end

@@ -61,7 +61,7 @@ module Analytics
         end
 
         def authorize!
-          unless can?(current_user, :read_group_cycle_analytics, namespace)
+          unless ::Gitlab::Analytics::CycleAnalytics.allowed?(current_user, namespace)
             ServiceResponse.error(message: 'Forbidden', http_status: :forbidden, payload: { errors: nil })
           end
         end

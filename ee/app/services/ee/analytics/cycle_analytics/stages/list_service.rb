@@ -21,12 +21,7 @@ module EE
           end
 
           def allowed?
-            case parent
-            when Group
-              can?(current_user, :read_group_cycle_analytics, parent)
-            else
-              super
-            end
+            ::Gitlab::Analytics::CycleAnalytics.allowed?(current_user, parent)
           end
         end
       end
