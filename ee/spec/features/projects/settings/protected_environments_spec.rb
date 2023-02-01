@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Protected Environments', feature_category: :environment_management do
   include Spec::Support::Helpers::ModalHelpers
+  include ListboxHelpers
 
   let(:group) { create(:group) }
   let(:project) { create(:project, :repository, group: group) }
@@ -186,9 +187,7 @@ RSpec.describe 'Protected Environments', feature_category: :environment_manageme
     click_button s_('ProtectedEnvironment|Select an environment')
     fill_in 'Search', with: environment_name
     wait_for_requests
-    within '.gl-dropdown-contents' do
-      find('.gl-dropdown-item', text: environment_name).click
-    end
+    select_listbox_item(environment_name)
   end
 
   def set_allowed_to_deploy(option)
@@ -217,11 +216,7 @@ RSpec.describe 'Protected Environments', feature_category: :environment_manageme
 
   def set_required_approvals(number)
     within('#create-approval-count') do
-      click_button '0'
-    end
-
-    within '.gl-dropdown-contents' do
-      find('.gl-dropdown-item', text: number.to_s).click
+      select_from_listbox(number.to_s, from: '0')
     end
   end
 
