@@ -2,15 +2,14 @@
 import {
   GlAlert,
   GlFormGroup,
-  GlFormSelect,
   GlFormInput,
-  GlSprintf,
+  GlFormSelect,
   GlLink,
   GlLoadingIcon,
+  GlSprintf,
 } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
-import { mapState, mapGetters, mapActions } from 'vuex';
-import { logError } from '~/lib/logger';
+import { mapActions, mapGetters, mapState } from 'vuex';
 import {
   ERROR_UNEXPECTED,
   QSR_RECONCILIATION_PATH,
@@ -18,11 +17,16 @@ import {
 } from 'ee/subscriptions/constants';
 import { NEW_GROUP } from 'ee/subscriptions/new/constants';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
-import { sprintf, s__, __ } from '~/locale';
+import { __, s__, sprintf } from '~/locale';
 import autoFocusOnShow from '~/vue_shared/directives/autofocusonshow';
 import Tracking from '~/tracking';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import getBillableMembersCountQuery from 'ee/subscriptions/graphql/queries/billable_members_count.query.graphql';
+
+export const Event = Object.freeze({
+  ERROR: 'error',
+  ERROR_RESET: 'error-reset',
+});
 
 export default {
   components: {
@@ -68,9 +72,8 @@ export default {
   data() {
     return {
       billableData: { minimumSeats: 1, enforceFreeUserCap: false },
-      errorMessage: '',
       isLoading: 0,
-      showError: false,
+      hasError: false,
     };
   },
   computed: {
@@ -93,9 +96,6 @@ export default {
       'selectedGroupName',
       'isSelectedGroupPresent',
     ]),
-    hasError() {
-      return Boolean(this.errorMessage);
-    },
     selectedPlanModel: {
       get() {
         return this.selectedPlan;
@@ -227,17 +227,13 @@ export default {
       'updateNumberOfUsers',
       'updateOrganizationName',
     ]),
-    hideError() {
-      this.showError = false;
-    },
     handleError(error) {
-      logError(error);
-      this.errorMessage = ERROR_UNEXPECTED;
-      this.showError = true;
+      this.hasError = true;
+      this.$emit(Event.ERROR, { message: ERROR_UNEXPECTED, error });
     },
     resetError() {
-      this.errorMessage = '';
-      this.showError = false;
+      this.$emit(Event.ERROR_RESET);
+      this.hasError = false;
     },
     trackStepTransition() {
       this.track('click_button', {
@@ -313,14 +309,6 @@ export default {
     @stepEdit="trackStepEdit"
   >
     <template #body>
-      <gl-alert
-        v-if="hasError && showError"
-        data-testid="error-message"
-        class="gl-mb-5"
-        variant="danger"
-        @dismiss="hideError"
-        >{{ errorMessage }}
-      </gl-alert>
       <gl-form-group :label="$options.i18n.selectedPlanLabel" label-size="sm" class="mb-3">
         <gl-form-select
           v-model="selectedPlanModel"

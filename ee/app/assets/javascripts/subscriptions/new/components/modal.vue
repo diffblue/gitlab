@@ -4,12 +4,12 @@ import { GlButton, GlModal } from '@gitlab/ui';
 import Tracking from '~/tracking';
 
 import {
+  MODAL_BODY,
+  MODAL_CHAT_SALES_BTN,
+  MODAL_CLOSE_BTN,
+  MODAL_START_TRIAL_BTN,
   MODAL_TIMEOUT,
   MODAL_TITLE,
-  MODAL_CLOSE_BTN,
-  MODAL_CHAT_SALES_BTN,
-  MODAL_START_TRIAL_BTN,
-  MODAL_BODY,
   TRACKING_EVENTS,
 } from '../constants';
 

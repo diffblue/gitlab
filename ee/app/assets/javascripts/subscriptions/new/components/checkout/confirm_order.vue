@@ -1,10 +1,8 @@
 <script>
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
-import { mapState, mapActions } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import { STEPS } from 'ee/subscriptions/constants';
-import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import activeStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/active_step.query.graphql';
-import { createAlert } from '~/flash';
 import { s__ } from '~/locale';
 
 export default {
@@ -22,7 +20,7 @@ export default {
       query: activeStepQuery,
       update: ({ activeStep }) => activeStep?.id === STEPS[3].id,
       error: (error) => {
-        createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+        this.$emit('error', { error });
       },
     },
   },
