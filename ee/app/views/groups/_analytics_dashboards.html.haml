@@ -18,10 +18,11 @@
       = form.fields_for :analytics_dashboards_pointer_attributes, pointer do |pointer_form|
         = pointer_form.hidden_field :id
         .js-vue-project-select{ data: { label: s_('GroupSettings|Select the project containing Analytics Dashboards configuration files'),
-          input_name: 'group[analytics_dashboards_pointer_attributes][project_id]',
-          input_id: 'group_analytics_dashboards_pointer_attributes_project_id',
+          input_name: 'group[analytics_dashboards_pointer_attributes][target_project_id]',
+          input_id: 'group_analytics_dashboards_pointer_attributes_target_project_id',
           group_id: @group.id,
           order_by: 'last_activity_at',
           include_subgroups: true.to_s,
-          selected: pointer.project_id } }
+          clearable: true.to_s,
+          selected: pointer.target_project_id } }
       = form.submit _('Save changes'), pajamas_button: true

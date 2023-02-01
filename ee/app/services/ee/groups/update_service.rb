@@ -88,14 +88,14 @@ module EE
 
       def prepare_params!
         destroy_association_if_project_is_empty(:insight)
-        destroy_association_if_project_is_empty(:analytics_dashboards_pointer)
+        destroy_association_if_project_is_empty(:analytics_dashboards_pointer, project_key: :target_project_id)
       end
 
-      def destroy_association_if_project_is_empty(association_name)
+      def destroy_association_if_project_is_empty(association_name, project_key: :project_id)
         attributes_path = :"#{association_name}_attributes"
-        if params.dig(attributes_path, :project_id) == ''
+        if params.dig(attributes_path, project_key) == ''
           params[attributes_path][:_destroy] = true
-          params[attributes_path].delete(:project_id)
+          params[attributes_path].delete(project_key)
         end
       end
 

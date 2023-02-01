@@ -69,6 +69,9 @@ RSpec.describe Project, feature_category: :projects do
 
     it { is_expected.to have_many(:sbom_occurrences).class_name('Sbom::Occurrence') }
 
+    it { is_expected.to have_one(:analytics_dashboards_pointer) }
+    it { is_expected.to have_one(:analytics_dashboards_configuration_project) }
+
     include_examples 'ci_cd_settings delegation' do
       let(:attributes_with_prefix) do
         {

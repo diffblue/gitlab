@@ -371,8 +371,8 @@ RSpec.describe Groups::UpdateService, '#execute' do
     end
   end
 
-  context 'updating analytics_dashboards_pointer_attributes.project_id param' do
-    let(:attrs) { { analytics_dashboards_pointer_attributes: { project_id: private_project.id } } }
+  context 'updating analytics_dashboards_pointer_attributes.target_project_id param' do
+    let(:attrs) { { analytics_dashboards_pointer_attributes: { target_project_id: private_project.id } } }
     let(:private_project) do
       create(:project, :private).tap do |project|
         project.add_maintainer(user)
@@ -382,12 +382,15 @@ RSpec.describe Groups::UpdateService, '#execute' do
     it 'updates the Analytics Dashboards pointer project' do
       update_group(group, user, attrs)
 
-      expect(group.analytics_dashboards_pointer.project).to eq(private_project)
+      expect(group.analytics_dashboards_pointer.target_project).to eq(private_project)
     end
 
     context 'when pointer project is empty' do
-      let(:existing_pointer) { create(:analytics_dashboards_pointer, namespace: group, project: private_project) }
-      let(:attrs) { { analytics_dashboards_pointer_attributes: { id: existing_pointer.id, project_id: '' } } }
+      let(:existing_pointer) do
+        create(:analytics_dashboards_pointer, namespace: group, target_project: private_project)
+      end
+
+      let(:attrs) { { analytics_dashboards_pointer_attributes: { id: existing_pointer.id, target_project_id: '' } } }
 
       it 'removes pointer project' do
         update_group(group, user, attrs)
