@@ -109,7 +109,7 @@ module Security
     end
 
     def remediations_proxy
-      @remediations_proxy ||= RemediationsProxy.new(job_artifact.file)
+      @remediations_proxy ||= RemediationsProxy.new(job_artifact&.file)
     end
 
     private

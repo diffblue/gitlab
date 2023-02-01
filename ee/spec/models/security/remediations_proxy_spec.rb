@@ -20,36 +20,44 @@ RSpec.describe Security::RemediationsProxy, feature_category: :vulnerability_man
            .map(&:deep_symbolize_keys)
     end
 
-    before do
-      allow(file).to receive(:multi_read).and_call_original
+    context 'when the file exists' do
+      before do
+        allow(file).to receive(:multi_read).and_call_original
+      end
+
+      it 'returns remediations by given byte offsets' do
+        expect(data_fragments).to eq(
+          [
+            {
+              diff: 'dG90YWxseSBsZWdpdCBkaWZm',
+              summary: 'this remediates CVE-2137',
+              fixes: [{ cve: 'CVE-2137' }]
+            },
+            {
+              diff: 'dG90YWxseSBsZWdpdCBkaWZm',
+              summary: 'this remediates CVE-2138',
+              fixes: [{ cve: 'CVE-2138' }]
+            },
+            {
+              diff: 'dG90YWxseSBsZWdpdCBkaWZm',
+              summary: 'this remediates CVE-2138',
+              fixes: [{ cve: 'CVE-2138' }]
+            }
+          ]
+        )
+      end
+
+      it 'delegates the call to GitlabUploader#multi_read with unique offsets' do
+        data_fragments
+
+        expect(file).to have_received(:multi_read).once.with([remediation_1_byte_offsets, remediation_2_byte_offsets])
+      end
     end
 
-    it 'returns remediations by given byte offsets' do
-      expect(data_fragments).to eq(
-        [
-          {
-            diff: 'dG90YWxseSBsZWdpdCBkaWZm',
-            summary: 'this remediates CVE-2137',
-            fixes: [{ cve: 'CVE-2137' }]
-          },
-          {
-            diff: 'dG90YWxseSBsZWdpdCBkaWZm',
-            summary: 'this remediates CVE-2138',
-            fixes: [{ cve: 'CVE-2138' }]
-          },
-          {
-            diff: 'dG90YWxseSBsZWdpdCBkaWZm',
-            summary: 'this remediates CVE-2138',
-            fixes: [{ cve: 'CVE-2138' }]
-          }
-        ]
-      )
-    end
+    context 'when the file is nil' do
+      let(:file) { nil }
 
-    it 'delegates the call to GitlabUploader#multi_read with unique offsets' do
-      data_fragments
-
-      expect(file).to have_received(:multi_read).once.with([remediation_1_byte_offsets, remediation_2_byte_offsets])
+      it { is_expected.to be_empty }
     end
   end
 end

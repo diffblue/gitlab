@@ -9,6 +9,8 @@ module Security
     end
 
     def by_byte_offsets(byte_offsets)
+      return [] unless file
+
       byte_offsets.map do |offsets|
         batch_load(offsets)
       end
