@@ -159,24 +159,19 @@ RSpec.describe 'Protected Environments', feature_category: :environment_manageme
       it 'allows creating explicit protected environments', :js do
         within('[data-testid="new-protected-environment"]') do
           set_protected_environment('staging')
-          set_allowed_to_approve('Developers + Maintainers')
           set_allowed_to_deploy('Developers + Maintainers')
 
           wait_for_requests
 
-          set_required_approvals_for('Developers + Maintainers', 1)
           click_on('Protect')
         end
 
         wait_for_requests
 
-        within('.protected-branches-list') do
+        within('[data-testid="protected-environments-list"]') do
           expect(page).to have_content('staging')
 
-          within('tr', text: 'staging') do
-            expect(page).to have_content('Developers + Maintainers')
-            expect(page).to have_content('1')
-          end
+          expect(page).to have_button 'staging'
         end
       end
     end
