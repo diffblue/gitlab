@@ -159,7 +159,7 @@ module Gitlab
       def preflight_checks!
         errors = []
 
-        errors << "migration is pending" if helper.pending_migrations?
+        errors << "migration is pending" if pending_migrations?
         errors << "indexing is paused" if helper.indexing_paused?
 
         return unless errors.present?
@@ -168,6 +168,10 @@ module Gitlab
       end
 
       private
+
+      def pending_migrations?
+        Feature.enabled?(:elastic_migration_worker, type: :ops) && helper.pending_migrations?
+      end
 
       def validate_settings!(settings)
         raise ArgumentError, 'max_docs_denominator must be greater than 0' if settings[:max_docs_denominator] <= 0

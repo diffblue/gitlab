@@ -410,15 +410,21 @@ RSpec.describe Gitlab::Search::IndexCurator, feature_category: :global_search do
       allow(curator).to receive(:helper).and_return stubbed_helper
     end
 
-    where(:pending_migrations, :indexing_paused, :should_fail) do
-      true  | false | true
-      false | true  | true
-      true  | true  | true
-      false | false | false
+    where(:migrations_disabled, :pending_migrations, :indexing_paused, :should_fail) do
+      false | true  | false | true
+      false | false | true  | true
+      false | true  | true  | true
+      false | false | false | false
+      true  | true  | false | false
+      true  | false | true  | true
+      true  | true  | true  | true
+      true  | false | false | false
     end
 
     with_them do
       it 'raises an ArgumentError if checks fail' do
+        stub_feature_flags(elastic_migration_worker: false) if migrations_disabled
+
         allow(stubbed_helper).to receive(:pending_migrations?).and_return(pending_migrations)
         allow(stubbed_helper).to receive(:indexing_paused?).and_return(indexing_paused)
 
