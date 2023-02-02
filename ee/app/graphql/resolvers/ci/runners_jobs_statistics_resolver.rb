@@ -3,6 +3,8 @@
 module Resolvers
   module Ci
     class RunnersJobsStatisticsResolver < BaseResolver
+      include Gitlab::Utils::UsageData
+
       type Types::Ci::JobsStatisticsType, null: true
       description <<~MD
         Jobs statistics for jobs executed by a collection of runners. Available only to admins.
@@ -13,6 +15,8 @@ module Resolvers
 
       def resolve(lookahead:)
         return unless Ability.allowed?(current_user, :read_jobs_statistics)
+
+        track_usage_event(:g_runner_fleet_read_jobs_statistics, current_user.id)
 
         calculate_statistics(lookahead)
       end
