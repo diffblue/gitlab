@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::Latest::UserInstanceProxy do
+RSpec.describe Elastic::Latest::UserInstanceProxy, feature_category: :global_search do
   let_it_be_with_reload(:user) { create(:user, :admin, :public_email) }
 
   subject { described_class.new(user) }
@@ -25,11 +25,9 @@ RSpec.describe Elastic::Latest::UserInstanceProxy do
         organization: user.organization,
         timezone: user.timezone,
         in_forbidden_state: false,
-        two_factor_enabled: false,
         status: nil,
         status_emoji: nil,
         busy: false,
-        has_projects: false,
         namespace_ancestry_ids: [],
         type: 'user'
       )
@@ -50,14 +48,6 @@ RSpec.describe Elastic::Latest::UserInstanceProxy do
       end
     end
 
-    context 'when 2FA is enabled' do
-      let_it_be(:user) { create(:user, :two_factor) }
-
-      it 'sets two_factor_enabled to true' do
-        expect(result[:two_factor_enabled]).to eq(true)
-      end
-    end
-
     context 'when user is blocked' do
       let_it_be(:user) { create(:user, :blocked) }
 
@@ -72,10 +62,6 @@ RSpec.describe Elastic::Latest::UserInstanceProxy do
       before do
         project.add_developer(user)
         project.project_feature.update_attribute(:issues_access_level, ProjectFeature::DISABLED)
-      end
-
-      it 'sets has_projects to true' do
-        expect(result[:has_projects]).to eq(true)
       end
 
       it 'sets the correct namespace_ancestry_ids' do

@@ -376,6 +376,20 @@ feature_category: :global_search do
 
         expect { described_class.new.execute }.not_to exceed_all_query_limit(control)
       end
+
+      it 'does not have N+1 queries for users' do
+        users = create_list(:user, 2)
+
+        described_class.track!(*users)
+
+        control = ActiveRecord::QueryRecorder.new(skip_cached: false) { described_class.new.execute }
+
+        users += create_list(:user, 3)
+
+        described_class.track!(*users)
+
+        expect { described_class.new.execute }.not_to exceed_all_query_limit(control)
+      end
     end
 
     def expect_processing(*refs, failures: [])

@@ -262,7 +262,7 @@ module EE
     end
 
     def search_membership_ancestry
-      members.includes(:source).flat_map do |member|
+      members.flat_map do |member|
         member.source&.elastic_namespace_ancestry
       end
     end
