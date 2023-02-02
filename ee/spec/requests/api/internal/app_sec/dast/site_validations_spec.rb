@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe API::Internal::AppSec::Dast::SiteValidations, feature_category: :dynamic_application_security_testing do
   include AfterNextHelpers
+  include Ci::JobTokenScopeHelpers
 
   let_it_be(:project) { create(:project) }
   let_it_be(:developer) { create(:user, developer_projects: [project]) }
@@ -69,10 +70,7 @@ RSpec.describe API::Internal::AppSec::Dast::SiteValidations, feature_category: :
         let_it_be(:job) { create(:ci_build, :running, user: developer) }
 
         before do
-          create(:ci_job_token_project_scope_link,
-                 source_project: job.project,
-                 target_project: project,
-                 added_by: developer)
+          make_project_fully_accessible(job.project, project)
         end
 
         it 'returns 400', :aggregate_failures do
