@@ -46004,6 +46004,9 @@ msgstr ""
 msgid "UserProfile|Activity"
 msgstr ""
 
+msgid "UserProfile|An error occurred loading the profile. Please refresh the page to try again."
+msgstr ""
+
 msgid "UserProfile|Blocked user"
 msgstr ""
 
