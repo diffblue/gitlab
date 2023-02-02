@@ -135,7 +135,8 @@ Blockquote inside an unordered list
 - Item one
 
   >>>
-  Bar
+  Foo and
+  bar
   >>>
 
   - Sub item
