@@ -24024,6 +24024,12 @@ msgstr ""
 msgid "Job was retried"
 msgstr ""
 
+msgid "JobAssistant|Add job"
+msgstr ""
+
+msgid "JobAssistant|Job assistant"
+msgstr ""
+
 msgid "Jobs"
 msgstr ""
 
