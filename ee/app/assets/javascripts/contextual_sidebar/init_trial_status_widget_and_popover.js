@@ -39,11 +39,9 @@ export const initTrialStatusPopover = () => {
 
   const {
     containerId,
-    daysRemaining, // for tracking purposes
-    groupName,
+    daysRemaining,
     planName,
     plansHref,
-    purchaseHref,
     targetId,
     trialEndDate,
     namespaceId,
@@ -58,11 +56,9 @@ export const initTrialStatusPopover = () => {
     el,
     provide: {
       containerId,
-      daysRemaining, // for tracking purposes
-      groupName,
+      daysRemaining,
       planName,
       plansHref,
-      purchaseHref,
       targetId,
       trialEndDate: new Date(trialEndDate),
       user: {

@@ -7,8 +7,6 @@ import { POPOVER } from 'ee/contextual_sidebar/components/constants';
 import TrialStatusPopover from 'ee/contextual_sidebar/components/trial_status_popover.vue';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import { stubExperiments } from 'helpers/experimentation_helper';
-import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
 import { __ } from '~/locale';
 
 Vue.config.ignoredElements = ['gl-emoji'];
@@ -32,10 +30,8 @@ describe('TrialStatusPopover component', () => {
         provide: {
           containerId: undefined,
           daysRemaining: defaultDaysRemaining,
-          groupName: 'Some Test Group',
           planName: 'Ultimate',
           plansHref: 'billing/path-for/group',
-          purchaseHref: 'transactions/new',
           targetId: 'target-element-identifier',
           trialEndDate: new Date('2021-02-21'),
           user: {
@@ -85,6 +81,12 @@ describe('TrialStatusPopover component', () => {
     });
   });
 
+  it('tracks when the contact sales button is clicked', () => {
+    wrapper.findByTestId('contact-sales-btn').trigger('click');
+
+    expectTracking(trackingEvents.contactSalesBtnClick);
+  });
+
   it('tracks when the compare button is clicked', () => {
     wrapper.findByTestId('compare-btn').vm.$emit('click');
 
@@ -97,7 +99,6 @@ describe('TrialStatusPopover component', () => {
     const popoverText = wrapper.text();
 
     expect(popoverText).toContain('We hope you’re enjoying the features of GitLab Ultimate.');
-    expect(popoverText).toMatch(/Upgrade Some Test Group to Ultimate(?! Trial)/);
   });
 
   describe('correct date in different timezone', () => {
@@ -115,41 +116,6 @@ describe('TrialStatusPopover component', () => {
       const popoverText = wrapper.text();
 
       expect(popoverText).toContain('February 21');
-    });
-  });
-
-  describe('group_contact_sales experiment', () => {
-    describe('control', () => {
-      beforeEach(() => {
-        stubExperiments({ group_contact_sales: 'control' });
-        wrapper = createComponent({ stubs: { GitlabExperiment } });
-      });
-
-      it('matches the snapshot', () => {
-        expect(wrapper.element).toMatchSnapshot();
-      });
-
-      it('renders the upgrade button', () => {
-        expect(wrapper.findByTestId('upgrade-btn').exists()).toBe(true);
-      });
-    });
-
-    describe('candidate', () => {
-      beforeEach(() => {
-        stubExperiments({ group_contact_sales: 'candidate' });
-        wrapper = createComponent({ stubs: { GitlabExperiment } });
-        trackingSpy = mockTracking(undefined, undefined, jest.spyOn);
-      });
-
-      it('matches the snapshot', () => {
-        expect(wrapper.element).toMatchSnapshot();
-      });
-
-      it('tracks when the contact sales button is clicked', () => {
-        wrapper.findByTestId('contact-sales-btn').trigger('click');
-
-        expectTracking({ ...trackingEvents.contactSalesBtnClick, context: expect.any(Object) });
-      });
     });
   });
 
@@ -179,7 +145,7 @@ describe('TrialStatusPopover component', () => {
       it('dispatches tracking event', () => {
         findGlPopover().vm.$emit('shown');
 
-        expectTracking({ ...trackingEvents.popoverShown, context: expect.any(Object) });
+        expectTracking(trackingEvents.popoverShown);
       });
     });
   });

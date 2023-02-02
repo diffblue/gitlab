@@ -4,7 +4,6 @@ const CLICK_BUTTON_ACTION = 'click_button';
 const RESIZE_EVENT_DEBOUNCE_MS = 150;
 
 export const RESIZE_EVENT = 'resize';
-export const EXPERIMENT_KEY = 'group_contact_sales';
 
 export const WIDGET = {
   i18n: {
@@ -25,7 +24,6 @@ export const POPOVER = {
       features of GitLab %{planName}. To keep those features after your trial
       ends, you’ll need to buy a subscription. (You can also choose GitLab
       Premium if it meets your needs.)`),
-    upgradeButtonTitle: s__('Trials|Upgrade %{groupName} to %{planName}'),
   },
   trackingEvents: {
     popoverShown: { action: 'popover_shown', label: 'trial_status_popover' },

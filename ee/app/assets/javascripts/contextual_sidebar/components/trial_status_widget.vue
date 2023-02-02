@@ -3,10 +3,10 @@ import { GlLink, GlProgressBar } from '@gitlab/ui';
 import { removeTrialSuffix } from 'ee/billings/billings_util';
 import { sprintf } from '~/locale';
 import Tracking from '~/tracking';
-import { EXPERIMENT_KEY, WIDGET } from './constants';
+import { WIDGET } from './constants';
 
 const { i18n, trackingEvents } = WIDGET;
-const trackingMixin = Tracking.mixin({ experiment: EXPERIMENT_KEY });
+const trackingMixin = Tracking.mixin();
 
 export default {
   components: {

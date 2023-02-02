@@ -44671,9 +44671,6 @@ msgstr ""
 msgid "Trials|Day %{daysUsed}/%{duration}"
 msgstr ""
 
-msgid "Trials|Upgrade %{groupName} to %{planName}"
-msgstr ""
-
 msgid "Trials|You can apply your trial to a new group or an existing group."
 msgstr ""
 

@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe TrialStatusWidgetHelper, :saas, feature_category: :experimentation_conversion do
-  include TrialStatusWidgetTestHelper
-
   describe 'data attributes for mounting Vue components', :freeze_time do
     let(:trial_length) { 30 } # days
     let(:trial_days_remaining) { 18 }
@@ -41,6 +39,7 @@ RSpec.describe TrialStatusWidgetHelper, :saas, feature_category: :experimentatio
 
     describe '#trial_status_popover_data_attrs' do
       let_it_be(:user) { create(:user) }
+
       let(:expected_attrs) do
         shared_expected_attrs.merge(days_remaining: trial_days_remaining)
       end
@@ -54,35 +53,16 @@ RSpec.describe TrialStatusWidgetHelper, :saas, feature_category: :experimentatio
       it 'returns the needed data attributes for mounting the popover Vue component' do
         expect(data_attrs).to match(
           expected_attrs.merge(
-            group_name: group.name,
-            purchase_href: purchase_href(group),
+            namespace_id: group.id,
+            user_name: user.username,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            company_name: user.organization,
+            glm_content: 'trial-status-show-group',
             target_id: expected_attrs[:container_id],
             trial_end_date: trial_end_date
           )
         )
-      end
-
-      context 'when group_contact_sales is enabled' do
-        before do
-          stub_experiments(group_contact_sales: :candidate)
-        end
-
-        it 'returns the needed data attributes for mounting the popover Vue component' do
-          expect(data_attrs).to match(
-            expected_attrs.merge(
-              namespace_id: group.id,
-              user_name: user.username,
-              first_name: user.first_name,
-              last_name: user.last_name,
-              company_name: user.organization,
-              glm_content: 'trial-status-show-group',
-              group_name: group.name,
-              purchase_href: purchase_href(group),
-              target_id: expected_attrs[:container_id],
-              trial_end_date: trial_end_date
-            )
-          )
-        end
       end
     end
 
