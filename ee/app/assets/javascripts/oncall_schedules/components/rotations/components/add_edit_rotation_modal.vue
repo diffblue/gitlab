@@ -52,6 +52,7 @@ export const formEmptyState = {
 const validiationInitialState = {
   name: true,
   participants: true,
+  rotationLength: true,
   startsAt: true,
   endsAt: true,
 };
@@ -291,6 +292,8 @@ export default {
         this.validationState.name = isNameFieldValid(this.form.name);
       } else if (key === 'participants') {
         this.validationState.participants = this.form.participants.length > 0;
+      } else if (key === 'rotationLength.length') {
+        this.validationState.rotationLength = this.form.rotationLength.length > 0;
       } else if (key === 'startsAt.date' || key === 'startsAt.time') {
         this.validationState.startsAt = Boolean(this.form.startsAt.date);
         this.validationState.endsAt = this.isEndDateValid;
