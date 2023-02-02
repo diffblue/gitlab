@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_management do
+  let_it_be(:occurrence) { build(:sbom_occurrence) }
+
   describe 'associations' do
     it { is_expected.to belong_to(:component).required }
     it { is_expected.to belong_to(:component_version) }
@@ -24,5 +26,90 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     it { is_expected.to validate_presence_of(:commit_sha) }
     it { is_expected.to validate_presence_of(:uuid) }
     it { is_expected.to validate_uniqueness_of(:uuid).case_insensitive }
+  end
+
+  describe '#name' do
+    let(:component) { build(:sbom_component, name: 'rails') }
+    let(:occurrence) { build(:sbom_occurrence, component: component) }
+
+    it 'delegates name to component' do
+      expect(occurrence.name).to eq('rails')
+    end
+  end
+
+  describe '#version' do
+    let(:component_version) { build(:sbom_component_version, version: '6.1.6.1') }
+    let(:occurrence) { build(:sbom_occurrence, component_version: component_version) }
+
+    it 'delegates version to component_version' do
+      expect(occurrence.version).to eq('6.1.6.1')
+    end
+
+    context 'when component_version is nil' do
+      let(:occurrence) { build(:sbom_occurrence, component_version: nil) }
+
+      it 'returns nil' do
+        expect(occurrence.version).to be_nil
+      end
+    end
+  end
+
+  describe 'source delegation' do
+    let(:source_attributes) do
+      {
+        'category' => 'development',
+        'input_file' => { 'path' => 'package-lock.json' },
+        'source_file' => { 'path' => 'package.json' },
+        'package_manager' => { 'name' => 'npm' },
+        'language' => { 'name' => 'JavaScript' }
+      }
+    end
+
+    let(:source) { build(:sbom_source, source: source_attributes) }
+    let(:occurrence) { build(:sbom_occurrence, source: source) }
+
+    describe '#packager' do
+      subject(:packager) { occurrence.packager }
+
+      it 'delegates packager to source' do
+        expect(packager).to eq('npm')
+      end
+
+      context 'when source is nil' do
+        let(:occurrence) { build(:sbom_occurrence, source: nil) }
+
+        it { is_expected.to be_nil }
+      end
+    end
+
+    describe '#location' do
+      subject(:location) { occurrence.location }
+
+      it 'returns expected location data' do
+        expect(location).to eq(
+          {
+            blob_path: "/#{occurrence.project.full_path}/-/blob/#{occurrence.commit_sha}/#{source.input_file_path}",
+            path: source.input_file_path,
+            top_level: false,
+            ancestors: nil
+          }
+        )
+      end
+
+      context 'when source is nil' do
+        let(:occurrence) { build(:sbom_occurrence, source: nil) }
+
+        it 'returns nil values' do
+          expect(location).to eq(
+            {
+              blob_path: nil,
+              path: nil,
+              top_level: false,
+              ancestors: nil
+            }
+          )
+        end
+      end
+    end
   end
 end
