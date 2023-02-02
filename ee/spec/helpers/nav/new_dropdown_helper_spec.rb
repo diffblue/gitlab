@@ -24,7 +24,11 @@ RSpec.describe Nav::NewDropdownHelper do
               id: 'create_epic',
               title: 'New epic',
               href: "/groups/#{group.path}/-/epics/new",
-              data: { track_action: 'click_link_new_epic', track_label: 'plus_menu_dropdown' }
+              data: {
+                track_action: 'click_link_new_epic',
+                track_label: 'plus_menu_dropdown',
+                track_property: 'navigation_top'
+              }
             )
           ]
         })
