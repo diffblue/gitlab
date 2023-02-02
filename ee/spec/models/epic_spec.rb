@@ -1387,44 +1387,26 @@ RSpec.describe Epic, feature_category: :portfolio_management do
     end
   end
 
-  describe '#exportable_association?' do
+  it_behaves_like 'resource with exportable associations' do
     let_it_be(:other_group) { create(:group, :private) }
     let_it_be(:cross_group_parent) { create(:epic, group: other_group) }
-    let_it_be_with_reload(:epic) { create(:epic, group: group, parent: cross_group_parent) }
+    let_it_be_with_reload(:resource) { create(:epic, group: group, parent: cross_group_parent) }
+    let_it_be(:child_epic) { create(:epic, group: group, parent: resource) }
 
-    let(:key) { :parent }
-
-    subject { epic.exportable_association?(key, current_user: user) }
-
-    it { is_expected.to be_falsey }
-
-    context 'when user can read epic' do
-      before do
-        group.add_developer(user)
-        stub_licensed_features(epics: true)
-      end
-
-      it { is_expected.to be_falsey }
-
-      context "when user can read epic's parent" do
-        before do
-          other_group.add_developer(user)
-        end
-
-        it { is_expected.to be_truthy }
-
-        context 'for an unknown key' do
-          let(:key) { :labels }
-
-          it { is_expected.to be_falsey }
-        end
-
-        context 'for an unauthenticated user' do
-          let(:user) { nil }
-
-          it { is_expected.to be_falsey }
-        end
-      end
+    let_it_be(:readable_note) do
+      note = create(:system_note, noteable: resource, note: "added epic #{child_epic.to_reference} as child epic")
+      create(:system_note_metadata, note: note, action: 'relate_epic')
+      note
     end
+
+    let_it_be(:restricted_note) do
+      text = "added epic #{cross_group_parent.to_reference(full: true)} as parent epic"
+      note = create(:system_note, noteable: resource, note: text)
+      create(:system_note_metadata, note: note, action: 'relate_epic')
+      note
+    end
+
+    let(:single_association) { :parent }
+    let(:stubbed_features) { { epics: true } }
   end
 end

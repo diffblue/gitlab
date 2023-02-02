@@ -21,6 +21,7 @@ module EE
       include Todoable
       include SortableTitle
       include EachBatch
+      include ::Exportable
 
       DEFAULT_COLOR = ::Gitlab::Color.of('#1068bf')
       MAX_HIERARCHY_DEPTH = 7
@@ -700,10 +701,8 @@ module EE
       true
     end
 
-    def exportable_association?(key, current_user: nil)
-      return false unless key == :parent
-
-      parent.present? && current_user&.can?(:read_epic, parent)
+    def exportable_restricted_associations
+      super + [:notes]
     end
 
     private

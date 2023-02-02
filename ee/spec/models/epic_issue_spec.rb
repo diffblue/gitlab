@@ -138,4 +138,39 @@ RSpec.describe EpicIssue, feature_category: :portfolio_management do
       end
     end
   end
+
+  describe '#exportable_record?' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:private_group) { create(:group, :private) }
+    let_it_be(:private_epic) { create(:epic, group: private_group) }
+    let_it_be(:epic_issue) { create(:epic_issue, epic: private_epic, issue: issue) }
+
+    subject { epic_issue.exportable_record?(current_user) }
+
+    before do
+      stub_licensed_features(epics: true)
+    end
+
+    context 'when user is nil' do
+      let(:current_user) { nil }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when user cannot read epic' do
+      let(:current_user) { user }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when user can read epic' do
+      let(:current_user) { user }
+
+      before do
+        private_group.add_reporter(user)
+      end
+
+      it { is_expected.to be_truthy }
+    end
+  end
 end

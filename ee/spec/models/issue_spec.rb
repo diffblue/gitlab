@@ -1361,46 +1361,31 @@ RSpec.describe Issue, feature_category: :team_planning do
     end
   end
 
-  describe '#exportable_association?' do
+  it_behaves_like 'resource with exportable associations' do
     let_it_be(:user) { create(:user) }
     let_it_be(:group) { create(:group, :private) }
+    let_it_be(:other_group) { create(:group, :private) }
     let_it_be(:project) { create(:project, group: group) }
-    let_it_be_with_reload(:issue) { create(:issue, project: project) }
+    let_it_be_with_reload(:resource) { create(:issue, project: project) }
     let_it_be(:epic) { create(:epic, group: group) }
-    let_it_be(:epic_issue) { create(:epic_issue, issue: issue, epic: epic) }
+    let_it_be(:cross_group_epic) { create(:epic, group: other_group) }
+    let_it_be(:epic_issue) { create(:epic_issue, issue: resource, epic: cross_group_epic) }
 
-    let(:key) { :epic_issue }
-
-    subject { issue.exportable_association?(key, current_user: user) }
-
-    it { is_expected.to be_falsey }
-
-    context 'when epics are available' do
-      before do
-        stub_licensed_features(epics: true)
-      end
-
-      it { is_expected.to be_falsey }
-
-      context 'when user can read epic' do
-        before do
-          group.add_developer(user)
-        end
-
-        it { is_expected.to be_truthy }
-
-        context 'for an unknown key' do
-          let(:key) { :labels }
-
-          it { is_expected.to be_falsey }
-        end
-
-        context 'for an unauthenticated user' do
-          let(:user) { nil }
-
-          it { is_expected.to be_falsey }
-        end
-      end
+    let_it_be(:readable_note) do
+      text = "added epic #{epic.to_reference}"
+      note = create(:system_note, noteable: resource, project: project, note: text)
+      create(:system_note_metadata, note: note, action: 'relate')
+      note
     end
+
+    let_it_be(:restricted_note) do
+      text = "added epic #{cross_group_epic.to_reference(full: true)}"
+      note = create(:system_note, noteable: resource, project: project, note: text)
+      create(:system_note_metadata, note: note, action: 'relate')
+      note
+    end
+
+    let(:single_association) { :epic_issue }
+    let(:stubbed_features) { { epics: true } }
   end
 end

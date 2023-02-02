@@ -8,7 +8,7 @@ RSpec.describe Gitlab::ImportExport::Group::TreeSaver do
     let_it_be(:group) { create(:group) }
     let_it_be(:label) { create(:group_label) }
     let_it_be(:parent_epic) { create(:epic, group: group) }
-    let_it_be(:epic) { create(:epic, group: group, parent: parent_epic) }
+    let_it_be(:epic, reload: true) { create(:epic, group: group, parent: parent_epic) }
     let_it_be(:epic_event) { create(:event, :created, target: epic, group: group, author: user) }
     let_it_be(:epic_label_link) { create(:label_link, label: label, target: epic) }
     let_it_be(:epic_push_event) { create(:event, :pushed, target: epic, group: group, author: user) }
@@ -122,14 +122,24 @@ RSpec.describe Gitlab::ImportExport::Group::TreeSaver do
         expect(event['state']).to eq('closed')
       end
 
-      context 'when epic parent is not readable' do
-        before do
-          epic.update!(parent: create(:epic, group: create(:group, :private)))
-        end
+      context 'with inaccessible resources' do
+        let_it_be(:external_parent) { create(:epic, group: create(:group, :private)) }
 
-        it 'filters out inaccessible epic object' do
+        it 'filters out inaccessible epic parent' do
+          epic.update!(parent: external_parent)
+
           expect_successful_save(group_tree_saver)
           expect(epic_json['parent']).to be_nil
+        end
+
+        it 'filters out inaccessible epic notes' do
+          note_text = "added epic #{external_parent.to_reference(full: true)} as parent epic"
+          note2 = create(:system_note, noteable: epic, note: note_text)
+          create(:system_note_metadata, note: note2, action: 'relate_epic')
+
+          expect_successful_save(group_tree_saver)
+          expect(epic_json['notes'].count).to eq(1)
+          expect(epic_json['notes'].first['note']).to eq(note.note)
         end
       end
     end
