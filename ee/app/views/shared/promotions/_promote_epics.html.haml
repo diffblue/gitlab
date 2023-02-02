@@ -20,7 +20,7 @@
         %div
           %p
             = s_('Promotions|Epics let you manage your portfolio of projects more efficiently and with less effort by tracking groups of issues that share a theme, across projects and milestones.')
-            = link_to _('Read more'), 'https://docs.gitlab.com/ee/user/group/epics/', class: 'btn-link', target: '_blank', rel: 'noopener noreferrer'
+            = link_to _('Read more'), help_page_url('user/group/epics/index'), class: 'btn-link', target: '_blank', rel: 'noopener noreferrer'
           .gl-flex-wrap
             = render 'shared/promotions/promotion_link_project', short_form: true, location: :epics
             = link_to s_("Promotions|Don't show me this again"), '#', class: 'gl-button btn js-close js-close-callout gl-mt-2'
