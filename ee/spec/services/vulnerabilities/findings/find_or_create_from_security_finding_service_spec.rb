@@ -18,7 +18,7 @@ feature_category: :vulnerability_management do
 
   let_it_be(:build_sast) { create(:ci_build, :success, name: 'sast', pipeline: pipeline) }
   let_it_be(:artifact_sast) do
-    create(:ee_ci_job_artifact, :sast_with_signatures_and_vulnerability_flags,
+    create(:ee_ci_job_artifact, :sast_with_signatures_and_vulnerability_flags_with_duplicate_identifiers,
            job: build_sast)
   end
 
