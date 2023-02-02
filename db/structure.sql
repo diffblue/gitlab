@@ -333,6 +333,15 @@ BEGIN
 END;
 $$;
 
+CREATE FUNCTION trigger_ee7956d805e6() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW."note_id_convert_to_bigint" := NEW."note_id";
+  RETURN NEW;
+END;
+$$;
+
 CREATE FUNCTION unset_has_issues_on_vulnerability_reads() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -22372,7 +22381,8 @@ CREATE TABLE suggestions (
     to_content text NOT NULL,
     lines_above integer DEFAULT 0 NOT NULL,
     lines_below integer DEFAULT 0 NOT NULL,
-    outdated boolean DEFAULT false NOT NULL
+    outdated boolean DEFAULT false NOT NULL,
+    note_id_convert_to_bigint bigint DEFAULT 0 NOT NULL
 );
 
 CREATE SEQUENCE suggestions_id_seq
@@ -33627,6 +33637,8 @@ CREATE TRIGGER trigger_c5a5f48f12b0 BEFORE INSERT OR UPDATE ON epic_user_mention
 CREATE TRIGGER trigger_c7107f30d69d BEFORE INSERT OR UPDATE ON merge_request_metrics FOR EACH ROW EXECUTE FUNCTION trigger_c7107f30d69d();
 
 CREATE TRIGGER trigger_delete_project_namespace_on_project_delete AFTER DELETE ON projects FOR EACH ROW WHEN ((old.project_namespace_id IS NOT NULL)) EXECUTE FUNCTION delete_associated_project_namespace();
+
+CREATE TRIGGER trigger_ee7956d805e6 BEFORE INSERT OR UPDATE ON suggestions FOR EACH ROW EXECUTE FUNCTION trigger_ee7956d805e6();
 
 CREATE TRIGGER trigger_has_external_issue_tracker_on_delete AFTER DELETE ON integrations FOR EACH ROW WHEN ((((old.category)::text = 'issue_tracker'::text) AND (old.active = true) AND (old.project_id IS NOT NULL))) EXECUTE FUNCTION set_has_external_issue_tracker();
 
