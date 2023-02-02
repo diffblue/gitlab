@@ -18,7 +18,9 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
     issuabletype="issue"
   />
    
-  <boardsidebartitle-stub />
+  <boardsidebartitle-stub
+    data-testid="sidebar-title"
+  />
    
   <sidebarassigneeswidget-stub
     editable="true"
@@ -602,7 +604,9 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
     issuabletype="issue"
   />
    
-  <boardsidebartitle-stub />
+  <boardsidebartitle-stub
+    data-testid="sidebar-title"
+  />
    
   <sidebarassigneeswidget-stub
     editable="true"
