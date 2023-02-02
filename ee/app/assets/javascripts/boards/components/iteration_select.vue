@@ -12,7 +12,7 @@ import { mapActions } from 'vuex';
 import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query.graphql';
 import { getIterationPeriod } from 'ee/iterations/utils';
 import { n__, s__, __, sprintf } from '~/locale';
-import { TYPE_ITERATION } from '~/graphql_shared/constants';
+import { TYPENAME_ITERATION } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
@@ -54,7 +54,7 @@ export default {
       selected: this.board.iteration?.id
         ? {
             ...this.board.iteration,
-            id: convertToGraphQLId(TYPE_ITERATION, getIdFromGraphQLId(this.board.iteration.id)),
+            id: convertToGraphQLId(TYPENAME_ITERATION, getIdFromGraphQLId(this.board.iteration.id)),
             iterationCadenceId: this.board.iterationCadence?.id,
             cadenceTitle: this.board.iterationCadence?.title,
           }

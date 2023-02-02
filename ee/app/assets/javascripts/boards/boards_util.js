@@ -4,10 +4,10 @@ import {
 } from '~/boards/boards_util';
 import { boardQuery } from '~/boards/constants';
 import {
-  TYPE_EPIC_BOARD,
-  TYPE_ITERATION,
+  TYPENAME_EPIC_BOARD,
+  TYPENAME_ITERATION,
   TYPE_ITERATIONS_CADENCE,
-  TYPE_EPIC,
+  TYPENAME_EPIC,
   TYPE_MILESTONE,
   TYPE_USER,
 } from '~/graphql_shared/constants';
@@ -43,7 +43,7 @@ export function getMilestone({ milestone }) {
 }
 
 export function fullEpicId(epicId) {
-  return convertToGraphQLId(TYPE_EPIC, epicId);
+  return convertToGraphQLId(TYPENAME_EPIC, epicId);
 }
 
 export function fullMilestoneId(milestoneId) {
@@ -63,7 +63,7 @@ function fullIterationId(id) {
     return 'UPCOMING';
   }
 
-  return convertToGraphQLId(TYPE_ITERATION, id);
+  return convertToGraphQLId(TYPENAME_ITERATION, id);
 }
 
 function fullIterationCadenceId(id) {
@@ -79,7 +79,7 @@ export function fullUserId(userId) {
 }
 
 export function fullEpicBoardId(epicBoardId) {
-  return convertToGraphQLId(TYPE_EPIC_BOARD, epicBoardId);
+  return convertToGraphQLId(TYPENAME_EPIC_BOARD, epicBoardId);
 }
 
 export function calculateSwimlanesBufferSize(listTopCoordinate) {

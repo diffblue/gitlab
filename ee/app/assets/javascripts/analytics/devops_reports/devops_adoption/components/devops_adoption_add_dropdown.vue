@@ -7,7 +7,7 @@ import {
   GlTooltipDirective,
 } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import { TYPE_GROUP } from '~/graphql_shared/constants';
+import { TYPENAME_GROUP } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import {
   DEBOUNCE_DELAY,
@@ -113,7 +113,7 @@ export default {
         .mutate({
           mutation: bulkEnableDevopsAdoptionNamespacesMutation,
           variables: {
-            namespaceIds: [convertToGraphQLId(TYPE_GROUP, id)],
+            namespaceIds: [convertToGraphQLId(TYPENAME_GROUP, id)],
             displayNamespaceId: this.groupGid,
           },
           update: (store, { data }) => {

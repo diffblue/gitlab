@@ -2,7 +2,7 @@
 import { GlAlert, GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { sprintf } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime_utility';
-import { TYPE_GROUP } from '~/graphql_shared/constants';
+import { TYPENAME_GROUP } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { pushEECproductAddToCartEvent } from '~/google_tag_manager';
 import getCiMinutesUsageProfile from '../graphql/queries/ci_minutes.query.graphql';
@@ -58,7 +58,7 @@ export default {
       },
       variables() {
         return {
-          namespaceId: convertToGraphQLId(TYPE_GROUP, this.namespaceId),
+          namespaceId: convertToGraphQLId(TYPENAME_GROUP, this.namespaceId),
           first: this.pageSize,
         };
       },
@@ -117,7 +117,7 @@ export default {
     fetchMoreProjects(variables) {
       this.$apollo.queries.ciMinutesUsage.fetchMore({
         variables: {
-          namespaceId: convertToGraphQLId(TYPE_GROUP, this.namespaceId),
+          namespaceId: convertToGraphQLId(TYPENAME_GROUP, this.namespaceId),
           ...variables,
         },
         updateQuery(previousResult, { fetchMoreResult }) {

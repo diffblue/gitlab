@@ -6,7 +6,7 @@ import destroyNoteMutation from 'ee/security_dashboard/graphql/mutations/note_de
 import updateNoteMutation from 'ee/security_dashboard/graphql/mutations/note_update.mutation.graphql';
 import EventItem from 'ee/vue_shared/security_reports/components/event_item.vue';
 import { createAlert } from '~/flash';
-import { TYPE_NOTE, TYPE_DISCUSSION, TYPE_VULNERABILITY } from '~/graphql_shared/constants';
+import { TYPE_NOTE, TYPENAME_DISCUSSION, TYPE_VULNERABILITY } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { __, s__ } from '~/locale';
 import HistoryCommentEditor from './history_comment_editor.vue';
@@ -82,7 +82,7 @@ export default {
         mutation: createNoteMutation,
         variables: {
           noteableId: convertToGraphQLId(TYPE_VULNERABILITY, this.vulnerabilityId),
-          discussionId: convertToGraphQLId(TYPE_DISCUSSION, this.discussionId),
+          discussionId: convertToGraphQLId(TYPENAME_DISCUSSION, this.discussionId),
           body,
         },
       });
