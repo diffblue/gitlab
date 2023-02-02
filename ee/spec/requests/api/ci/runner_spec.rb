@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe API::Ci::Runner, feature_category: :runner do
+  include Ci::JobTokenScopeHelpers
+
   let_it_be_with_reload(:project) { create(:project, :repository) }
 
   let_it_be(:user) { create(:user) }
@@ -127,10 +129,10 @@ RSpec.describe API::Ci::Runner, feature_category: :runner do
     end
 
     describe 'GET api/v4/jobs/:id/artifacts' do
-      let_it_be(:job) { create(:ci_build, :success, ref: ref, pipeline: pipeline, user: user) }
+      let_it_be(:job) { create(:ci_build, :success, ref: ref, pipeline: pipeline, user: user, project: project) }
 
       before_all do
-        create(:ci_job_artifact, :archive, job: job)
+        create(:ci_job_artifact, :archive, job: job, project: project)
       end
 
       shared_examples 'successful artifact download' do
@@ -176,6 +178,7 @@ RSpec.describe API::Ci::Runner, feature_category: :runner do
         before_all do
           downstream_project.add_developer(user)
           downstream_project.add_developer(downstream_project_dev)
+          make_project_fully_accessible(downstream_project, project)
         end
 
         before do
