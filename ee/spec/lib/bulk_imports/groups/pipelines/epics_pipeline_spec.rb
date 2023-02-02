@@ -13,7 +13,7 @@ RSpec.describe BulkImports::Groups::Pipelines::EpicsPipeline do
       group: group,
       bulk_import: bulk_import,
       source_full_path: 'source/full/path',
-      destination_name: 'My Destination Group',
+      destination_slug: 'My-Destination-Group',
       destination_namespace: group.full_path
     )
   end

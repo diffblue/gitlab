@@ -14,7 +14,7 @@ RSpec.describe BulkImports::Common::Pipelines::WikiPipeline do
         :group_entity,
         bulk_import: bulk_import,
         source_full_path: 'source/full/path',
-        destination_name: 'My Destination Wiki',
+        destination_slug: 'My-Destination-Wiki',
         destination_namespace: parent.full_path,
         group: parent
       )
