@@ -1,13 +1,13 @@
-- users_over_license_link = link_to("users over license", "https://docs.gitlab.com/ee/subscriptions/#users-over-license")
-- self_managed_subscriptions_doc_link = link_to("self-managed subscriptions", "https://docs.gitlab.com/ee/subscriptions/self_managed/index.html")
-- subscriptions_doc_link = link_to("our documentation", "https://docs.gitlab.com/ee/subscriptions")
+- users_over_subscription_link = link_to("users over subscription", help_page_url('subscriptions/self_managed/index', anchor: 'users-over-subscription'))
+- self_managed_subscriptions_doc_link = link_to("self-managed subscriptions", help_page_url('subscriptions/self_managed/index'))
+- subscriptions_doc_link = link_to("our documentation", help_page_url('subscriptions/index'))
 
 %p
   = _("Dear Administrator,")
 %p
   = html_escape(_("We would like to inform you that your subscription GitLab Enterprise Edition %{plan_name} is nearing its user limit. You have %{active_user_count} active users, which is almost at the user limit of %{maximum_user_count}.")) % { plan_name: @license.plan.titleize, active_user_count: @license.daily_billable_users_count, maximum_user_count: @license.restricted_user_count }
 %p
-  = html_escape(_("If the number of active users exceeds the user limit, you will be charged for the number of %{users_over_license_link} at your next license reconciliation.")) % { users_over_license_link: users_over_license_link }
+  = html_escape(_("If the number of active users exceeds the user limit, you will be charged for the number of %{users_over_license_link} at your next license reconciliation.")) % { users_over_license_link: users_over_subscription_link }
 
 %p
   = html_escape(_("For more information on how the number of active users is calculated, see the %{self_managed_subscriptions_doc_link} documentation.")) % { self_managed_subscriptions_doc_link: self_managed_subscriptions_doc_link }
