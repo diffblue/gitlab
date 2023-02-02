@@ -2,13 +2,15 @@
 
 require 'spec_helper'
 
-RSpec.describe Mutations::Dast::Profiles::Run do
+RSpec.describe Mutations::Dast::Profiles::Run, :dynamic_analysis,
+                                               feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
 
   let_it_be_with_refind(:project) { create(:project, :repository) }
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:dast_profile) { create(:dast_profile, project: project, branch_name: project.default_branch) }
+  let_it_be(:branch_name) { project.default_branch }
+  let_it_be(:dast_profile) { create(:dast_profile, project: project, branch_name: branch_name) }
 
   let(:dast_profile_id) { dast_profile.to_global_id }
 
@@ -54,7 +56,7 @@ RSpec.describe Mutations::Dast::Profiles::Run do
         end
 
         it_behaves_like 'it checks branch permissions before creating a DAST on-demand scan pipeline' do
-          let(:branch_name) { dast_profile.branch_name }
+          let(:dast_profile) { create(:dast_profile, project: project, branch_name: branch_name) }
         end
 
         it_behaves_like 'it delegates scan creation to another service' do
