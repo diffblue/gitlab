@@ -97,6 +97,12 @@ module Elastic
         end
       end
 
+      # rubocop: disable CodeReuse/ActiveRecord
+      def preload_indexing_data(relation)
+        relation.includes(:status, :user_preference, :user_detail, members: :source)
+      end
+      # rubocop: enable CodeReuse/ActiveRecord
+
       private
 
       def namespace_ids(ids, separator = '-')

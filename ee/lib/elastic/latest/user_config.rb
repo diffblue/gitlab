@@ -33,10 +33,8 @@ module Elastic
         indexes :status_emoji, type: :keyword
         indexes :busy, type: :boolean
 
-        indexes :two_factor_enabled, type: :boolean
         indexes :external, type: :boolean
         indexes :in_forbidden_state, type: :boolean
-        indexes :has_projects, type: :boolean
 
         indexes :created_at, type: :date
         indexes :updated_at, type: :date

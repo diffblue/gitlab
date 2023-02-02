@@ -28,12 +28,10 @@ module Elastic
           data[attr.to_s] = safely_read_attribute_for_elasticsearch(attr)
         end
 
-        data['two_factor_enabled'] = target.two_factor_enabled?
         data['in_forbidden_state'] = in_forbidden_state?(target)
         data['status'] = target.status&.message
         data['status_emoji'] = target.status&.emoji
         data['busy'] = target.status&.busy? || false
-        data['has_projects'] = target.projects.any?
         data['namespace_ancestry_ids'] = target.search_membership_ancestry
 
         # Schema version. The format is Date.today.strftime('%y_%m')
