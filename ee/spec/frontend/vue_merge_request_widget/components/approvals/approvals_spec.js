@@ -93,6 +93,8 @@ describe('EE MRWidget approvals', () => {
       isOpen: true,
       state: 'open',
       approvalsWidgetType: 'full',
+      targetProjectFullPath: 'gitlab-org/gitlab',
+      iid: '1',
     };
 
     jest.spyOn(eventHub, '$emit').mockImplementation(() => {});
@@ -475,15 +477,14 @@ describe('EE MRWidget approvals', () => {
     });
 
     it('is rendered with props', () => {
-      const expected = testApprovals();
       const summary = findSummary();
 
       expect(findOptionalSummary().exists()).toBe(false);
       expect(summary.exists()).toBe(true);
       expect(summary.props()).toMatchObject({
-        approvalsLeft: expected.approvals_left,
-        rulesLeft: expected.approval_rules_left,
-        approvers: testApprovedBy(),
+        projectPath: 'gitlab-org/gitlab',
+        iid: '1',
+        updatedCount: 0,
       });
     });
   });

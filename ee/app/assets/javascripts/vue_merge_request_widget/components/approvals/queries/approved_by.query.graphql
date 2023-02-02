@@ -1,0 +1,27 @@
+query approvedByEE($projectPath: ID!, $iid: String!) {
+  project(fullPath: $projectPath) {
+    id
+    mergeRequest(iid: $iid) {
+      id
+      approved
+      approvalsLeft
+      approvalState {
+        rules {
+          id
+          approved
+          approvalsRequired
+          name
+          type
+        }
+      }
+      approvedBy {
+        nodes {
+          id
+          name
+          avatarUrl
+          webUrl
+        }
+      }
+    }
+  }
+}
