@@ -234,6 +234,15 @@ BEGIN
 END;
 $$;
 
+CREATE FUNCTION trigger_c7107f30d69d() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW."id_convert_to_bigint" := NEW."id";
+  RETURN NEW;
+END;
+$$;
+
 CREATE FUNCTION unset_has_issues_on_vulnerability_reads() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -17791,6 +17800,7 @@ CREATE TABLE merge_request_metrics (
     added_lines integer,
     removed_lines integer,
     target_project_id integer,
+    id_convert_to_bigint bigint DEFAULT 0 NOT NULL,
     CONSTRAINT check_e03d0900bf CHECK ((target_project_id IS NOT NULL))
 );
 
@@ -33425,6 +33435,8 @@ CREATE TRIGGER nullify_merge_request_metrics_build_data_on_update BEFORE UPDATE 
 CREATE TRIGGER projects_loose_fk_trigger AFTER DELETE ON projects REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
 
 CREATE TRIGGER trigger_1a857e8db6cd BEFORE INSERT OR UPDATE ON vulnerability_occurrences FOR EACH ROW EXECUTE FUNCTION trigger_1a857e8db6cd();
+
+CREATE TRIGGER trigger_c7107f30d69d BEFORE INSERT OR UPDATE ON merge_request_metrics FOR EACH ROW EXECUTE FUNCTION trigger_c7107f30d69d();
 
 CREATE TRIGGER trigger_delete_project_namespace_on_project_delete AFTER DELETE ON projects FOR EACH ROW WHEN ((old.project_namespace_id IS NOT NULL)) EXECUTE FUNCTION delete_associated_project_namespace();
 
