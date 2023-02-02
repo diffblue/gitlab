@@ -5,6 +5,8 @@ import DastSiteValidationModal from 'ee/security_configuration/dast_site_validat
 import {
   DAST_SITE_VALIDATION_STATUS,
   DAST_SITE_VALIDATION_MODAL_ID,
+  DAST_SITE_VALIDATION_POLLING_INTERVAL,
+  DAST_SITE_VALIDATION_ALLOWED_TIMELINE_IN_MINUTES,
 } from 'ee/security_configuration/dast_site_validation/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
@@ -14,8 +16,14 @@ import {
 } from 'ee/security_configuration/dast_profiles/dast_site_profiles/constants';
 import { SITE_TYPE } from 'ee/on_demand_scans/constants';
 import { s__ } from '~/locale';
+import dastSiteValidationsQuery from 'ee/security_configuration/dast_site_validation/graphql/dast_site_validations.query.graphql';
+import { fetchPolicies } from '~/lib/graphql';
+import { updateSiteProfilesStatuses } from 'ee/security_configuration/dast_profiles/graphql/cache_utils';
+import { getTimeDifferenceMinutes } from 'ee/security_configuration/utils';
 import DastProfileSummaryCard from './dast_profile_summary_card.vue';
 import SummaryCell from './summary_cell.vue';
+
+const { NONE, PENDING, INPROGRESS, FAILED, PASSED } = DAST_SITE_VALIDATION_STATUS;
 
 export default {
   SITE_TYPE,
@@ -27,6 +35,34 @@ export default {
     DastSiteValidationBadge,
     GlButton,
     DastSiteValidationModal,
+  },
+  apollo: {
+    validations: {
+      query: dastSiteValidationsQuery,
+      fetchPolicy: fetchPolicies.NO_CACHE,
+      manual: true,
+      variables() {
+        return {
+          fullPath: this.projectPath,
+          urls: this.urlsPendingValidation,
+        };
+      },
+      pollInterval: DAST_SITE_VALIDATION_POLLING_INTERVAL,
+      skip() {
+        return !this.glFeatures.dastSiteValidationDrawer || !this.urlsPendingValidation.length;
+      },
+      result({
+        data: {
+          project: {
+            validations: { nodes = [] },
+          },
+        },
+      }) {
+        nodes.forEach(({ normalizedTargetUrl, status, validationStartedAt }) => {
+          this.updateSiteProfilesStatuses(normalizedTargetUrl, status, validationStartedAt);
+        });
+      },
+    },
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -86,7 +122,7 @@ export default {
       return this.profile.targetType === TARGET_TYPES.API.value;
     },
     isProfileValidated() {
-      return this.profile.validationStatus === DAST_SITE_VALIDATION_STATUS.PASSED
+      return this.profile.validationStatus === PASSED
         ? s__('DastProfiles|Validated')
         : s__('DastProfiles|Not Validated');
     },
@@ -95,6 +131,12 @@ export default {
     },
     hasScanMethod() {
       return Boolean(this.selectedScanMethod);
+    },
+    urlsPendingValidation() {
+      if (this.isPendingValidation(this.profile.validationStatus)) {
+        return [this.profile.normalizedTargetUrl];
+      }
+      return [];
     },
   },
   methods: {
@@ -105,7 +147,6 @@ export default {
       });
     },
     showValidatebutton(status) {
-      const { NONE, FAILED } = DAST_SITE_VALIDATION_STATUS;
       return this.glFeatures.dastSiteValidationDrawer && [NONE, FAILED].includes(status);
     },
     validateButtonLabel(status) {
@@ -113,8 +154,33 @@ export default {
         ? s__('DastProfiles|Validate')
         : s__('DastProfiles|Retry');
     },
+    updateSiteProfilesStatuses(normalizedTargetUrl, validationStatus, validationStartedAt) {
+      const actualStatus = this.getValidationStatus({ validationStatus, validationStartedAt });
+
+      updateSiteProfilesStatuses({
+        fullPath: this.projectPath,
+        normalizedTargetUrl,
+        status: actualStatus,
+        store: this.$apollo.getClient(),
+      });
+    },
+    getValidationStatus({ validationStatus, validationStartedAt }) {
+      if (this.isPendingValidation(validationStatus)) {
+        const timeDiff = getTimeDifferenceMinutes(validationStartedAt);
+
+        if (timeDiff > DAST_SITE_VALIDATION_ALLOWED_TIMELINE_IN_MINUTES) {
+          return FAILED;
+        }
+      }
+
+      return validationStatus;
+    },
+    isPendingValidation(status) {
+      return [PENDING, INPROGRESS].includes(status);
+    },
   },
   EXCLUDED_URLS_SEPARATOR,
+  DAST_SITE_VALIDATION_STATUS,
 };
 </script>
 
@@ -151,6 +217,7 @@ export default {
           :title="i18n.validateProfileTooltip"
           class="gl-ml-2"
           variant="link"
+          data-testid="validation-button"
           @click="validateUrl(profile.targetUrl)"
           >{{ validateButtonLabel(profile.validationStatus) }}</gl-button
         >
@@ -160,6 +227,13 @@ export default {
           :full-path="projectPath"
           :target-url="validateTargetUrl"
           @hidden="validateTargetUrl = null"
+          @primary="
+            updateSiteProfilesStatuses(
+              profile.normalizedTargetUrl,
+              $options.DAST_SITE_VALIDATION_STATUS.PENDING,
+              profile.validationStartedAt,
+            )
+          "
         />
       </summary-cell>
       <summary-cell
