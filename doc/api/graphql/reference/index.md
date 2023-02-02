@@ -14421,6 +14421,22 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="groupprojectswithissuesenabled"></a>`withIssuesEnabled` | [`Boolean`](#boolean) | Return only projects with issues enabled. |
 | <a id="groupprojectswithmergerequestsenabled"></a>`withMergeRequestsEnabled` | [`Boolean`](#boolean) | Return only projects with merge requests enabled. |
 
+##### `Group.releases`
+
+Releases belonging to projects in the group.
+
+Returns [`ReleaseConnection`](#releaseconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="groupreleasessort"></a>`sort` | [`GroupReleaseSort`](#groupreleasesort) | Sort group releases by given criteria. |
+
 ##### `Group.runners`
 
 Find runners visible to the current user.
@@ -18504,7 +18520,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="projectreleasessort"></a>`sort` | [`ReleaseSort`](#releasesort) | Sort releases by this criteria. |
+| <a id="projectreleasessort"></a>`sort` | [`ReleaseSort`](#releasesort) | Sort releases by given criteria. |
 
 ##### `Project.requirement`
 
@@ -22383,6 +22399,15 @@ User permission on groups.
 | ----- | ----------- |
 | <a id="grouppermissioncreate_projects"></a>`CREATE_PROJECTS` | Groups where the user can create projects. |
 | <a id="grouppermissiontransfer_projects"></a>`TRANSFER_PROJECTS` | Groups where the user can transfer projects to. |
+
+### `GroupReleaseSort`
+
+Values for sorting releases belonging to a group.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="groupreleasesortreleased_at_asc"></a>`RELEASED_AT_ASC` | Released at by ascending order. |
+| <a id="groupreleasesortreleased_at_desc"></a>`RELEASED_AT_DESC` | Released at by descending order. |
 
 ### `HealthStatus`
 
