@@ -33,6 +33,7 @@ export const i18n = {
     },
     rotationLength: {
       title: s__('OnCallSchedules|Rotation length'),
+      error: s__('OnCallSchedules|Rotation length must be a positive number'),
       description: s__(
         'OnCallSchedules|Please note, rotations with shifts that are less than four hours are currently not supported in the weekly view.',
       ),
@@ -161,6 +162,8 @@ export default {
         :description="$options.i18n.fields.rotationLength.description"
         label-size="sm"
         label-for="rotation-length"
+        :invalid-feedback="$options.i18n.fields.rotationLength.error"
+        :state="validationState.rotationLength"
       >
         <div class="gl-display-flex">
           <gl-form-input

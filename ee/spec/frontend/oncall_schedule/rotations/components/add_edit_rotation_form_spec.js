@@ -69,10 +69,11 @@ describe('AddEditRotationForm', () => {
     });
 
     it.each`
-      index | type              | validationState | value
-      ${0}  | ${'name'}         | ${true}         | ${'true'}
-      ${1}  | ${'participants'} | ${false}        | ${undefined}
-      ${3}  | ${'startsAt'}     | ${false}        | ${undefined}
+      index | type                | validationState | value
+      ${0}  | ${'name'}           | ${true}         | ${'true'}
+      ${1}  | ${'participants'}   | ${false}        | ${undefined}
+      ${2}  | ${'rotationLength'} | ${false}        | ${undefined}
+      ${3}  | ${'startsAt'}       | ${false}        | ${undefined}
     `(
       'form validation for $type returns $value when passed validate state of $validationState',
       ({ index, value }) => {
