@@ -664,7 +664,7 @@ RSpec.describe API::Projects, feature_category: :projects do
         post api('/projects', user), params: mirror_params
 
         expect(response).to have_gitlab_http_status(:created)
-        expect(Project.first).to have_attributes(
+        expect(Project.find(json_response['id'])).to have_attributes(
           mirror: true,
           import_url: import_url,
           mirror_user_id: user.id,
@@ -679,7 +679,7 @@ RSpec.describe API::Projects, feature_category: :projects do
           .to change { Project.count }.by(1)
 
         expect(response).to have_gitlab_http_status(:created)
-        expect(Project.first).to have_attributes(
+        expect(Project.find(json_response['id'])).to have_attributes(
           mirror: false,
           import_url: import_url,
           mirror_user_id: nil,
@@ -696,7 +696,7 @@ RSpec.describe API::Projects, feature_category: :projects do
           post api('/projects', user), params: mirror_params
 
           expect(response).to have_gitlab_http_status(:created)
-          expect(Project.first.mirror?).to be false
+          expect(Project.find(json_response['id']).mirror?).to be false
         end
 
         it 'creates project with mirror settings' do
@@ -705,7 +705,7 @@ RSpec.describe API::Projects, feature_category: :projects do
           post api('/projects', admin), params: mirror_params
 
           expect(response).to have_gitlab_http_status(:created)
-          expect(Project.first).to have_attributes(
+          expect(Project.find(json_response['id'])).to have_attributes(
             mirror: true,
             import_url: import_url,
             mirror_user_id: admin.id,
