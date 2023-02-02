@@ -7,7 +7,7 @@ module Vulnerabilities
     self.table_name = 'vulnerability_state_transitions'
 
     belongs_to :author, class_name: 'User', inverse_of: :vulnerability_state_transitions
-    belongs_to :vulnerability
+    belongs_to :vulnerability, class_name: 'Vulnerability', inverse_of: :state_transitions
     validates :comment, length: { maximum: 50_000 }
     validates :vulnerability_id, :from_state, :to_state, presence: true
     validate :to_state_and_from_state_differ

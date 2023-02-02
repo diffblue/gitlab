@@ -72,6 +72,22 @@ FactoryBot.define do
       end
     end
 
+    trait :with_state_transition do
+      transient do
+        from_state { ::Enums::Vulnerability.vulnerability_states[:detected] }
+        to_state { ::Enums::Vulnerability.vulnerability_states[:confirmed] }
+      end
+
+      after(:create) do |vulnerability, evaluator|
+        create(
+          :vulnerability_state_transitions,
+          vulnerability: vulnerability,
+          from_state: evaluator.from_state,
+          to_state: evaluator.to_state
+        )
+      end
+    end
+
     trait :with_notes do
       transient do
         notes_count { 3 }
