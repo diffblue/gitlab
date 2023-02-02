@@ -6,6 +6,10 @@ module EE
     extend ActiveSupport::Concern
 
     prepended do
+      expose :multiple_approval_rules_available do |merge_request|
+        merge_request.target_project.multiple_approval_rules_available?
+      end
+
       expose :browser_performance, if: -> (mr, _) { head_pipeline_downloadable_path_for_report_type(:browser_performance) } do
         expose :degradation_threshold do |merge_request|
           merge_request.head_pipeline&.present(current_user: current_user)

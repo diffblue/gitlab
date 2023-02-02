@@ -27,12 +27,12 @@ function mapApprovalRule(rule, settings) {
   return rule;
 }
 
-function getApprovalRuleNamesLeft(data) {
-  if (!data.multiple_approval_rules_available) {
+export function getApprovalRuleNamesLeft(multipleApprovalRulesAvailable, rules) {
+  if (!multipleApprovalRulesAvailable) {
     return [];
   }
 
-  const rulesLeft = groupBy(data.approval_rules_left, (x) => x.rule_type);
+  const rulesLeft = groupBy(rules, (x) => x.rule_type || x.type?.toLowerCase());
 
   const anyApprover = rulesLeft[RULE_TYPE_ANY_APPROVER] ? [__('eligible users')] : [];
 
@@ -62,6 +62,9 @@ export function mapApprovalRulesResponse(rules, settings) {
 export function mapApprovalsResponse(data) {
   return {
     ...data,
-    approvalRuleNamesLeft: getApprovalRuleNamesLeft(data),
+    approvalRuleNamesLeft: getApprovalRuleNamesLeft(
+      data.multiple_approval_rules_available,
+      data.approval_rules_left,
+    ),
   };
 }
