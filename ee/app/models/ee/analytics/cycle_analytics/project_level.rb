@@ -6,7 +6,7 @@ module EE
       module ProjectLevel
         def time_summary
           @time_summary ||= begin
-            stage = ::Analytics::CycleAnalytics::ProjectStage.new(project: project)
+            stage = ::Analytics::CycleAnalytics::Stage.new(namespace: project.project_namespace)
 
             ::Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary
               .new(stage, options: options)

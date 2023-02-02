@@ -13,10 +13,10 @@ module Gitlab
             helpers = Gitlab::Routing.url_helpers
 
             dashboard_link =
-              if @stage.parent.is_a?(::Group)
-                helpers.group_analytics_ci_cd_analytics_path(@stage.parent, tab: 'lead-time')
+              if @stage.namespace.is_a?(::Group)
+                helpers.group_analytics_ci_cd_analytics_path(@stage.namespace, tab: 'lead-time')
               else
-                helpers.charts_project_pipelines_path(@stage.parent, chart: 'lead-time')
+                helpers.charts_project_pipelines_path(@stage.namespace.project, chart: 'lead-time')
               end
 
             [

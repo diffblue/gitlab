@@ -4,8 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Analytics::CycleAnalytics::StagePresenter do
   let(:default_stage_params) { Gitlab::Analytics::CycleAnalytics::DefaultStages.params_for_issue_stage }
-  let(:default_stage) { Analytics::CycleAnalytics::ProjectStage.new(default_stage_params) }
-  let(:custom_stage) { Analytics::CycleAnalytics::ProjectStage.new(name: 'Hello') }
+  let(:default_stage) { Analytics::CycleAnalytics::Stage.new(default_stage_params) }
+  let(:custom_stage) { Analytics::CycleAnalytics::Stage.new(name: 'Hello') }
 
   describe '#title' do
     it 'returns the pre-defined title for the default stage' do

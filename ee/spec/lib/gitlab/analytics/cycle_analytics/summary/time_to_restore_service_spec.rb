@@ -68,8 +68,10 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::TimeToRestoreService 
       )
     end
 
-    context 'for project stage' do
-      let(:stage) { build(:cycle_analytics_project_stage) }
+    context 'for a stage with project' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:project) { create(:project, group: group).reload }
+      let(:stage) { build(:cycle_analytics_stage, project: project) }
 
       it 'displays documentation link and project dashboard link' do
         helpers = Gitlab::Routing.url_helpers
@@ -78,7 +80,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::TimeToRestoreService 
           [
             {
               "name" => _('Time to Restore Service'),
-              "url" => helpers.charts_project_pipelines_path(stage.parent, chart: 'time-to-restore-service'),
+              "url" => helpers.charts_project_pipelines_path(project, chart: 'time-to-restore-service'),
               "label" => s_('ValueStreamAnalytics|Dashboard')
             },
             {

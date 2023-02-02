@@ -34,8 +34,9 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::LeadTime do
       )
     end
 
-    context 'for project stage' do
-      let(:stage) { build(:cycle_analytics_project_stage) }
+    context 'for stage with project' do
+      let_it_be(:project) { create(:project) }
+      let(:stage) { build(:cycle_analytics_stage, project: project) }
 
       it 'returns project dashboard link' do
         helpers = Gitlab::Routing.url_helpers
@@ -43,7 +44,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::LeadTime do
         expect(subject).to match_array(
           [
             { "name" => _('Lead Time'),
-              "url" => helpers.project_analytics_issues_analytics_path(stage.parent),
+              "url" => helpers.project_analytics_issues_analytics_path(project),
               "label" => s_('ValueStreamAnalytics|Dashboard') },
             { "name" => _('Lead Time'),
               "url" => helpers.help_page_path('user/analytics/index', anchor: 'definitions'),

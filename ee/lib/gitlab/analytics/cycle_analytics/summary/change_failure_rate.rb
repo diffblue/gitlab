@@ -29,10 +29,10 @@ module Gitlab
             helpers = Gitlab::Routing.url_helpers
 
             dashboard_link =
-              if @stage.parent.is_a?(::Group)
-                helpers.group_analytics_ci_cd_analytics_path(@stage.parent, tab: 'change-failure-rate')
+              if @stage.namespace.is_a?(::Group)
+                helpers.group_analytics_ci_cd_analytics_path(@stage.namespace, tab: 'change-failure-rate')
               else
-                helpers.charts_project_pipelines_path(@stage.parent, chart: 'change-failure-rate')
+                helpers.charts_project_pipelines_path(@stage.namespace.project, chart: 'change-failure-rate')
               end
 
             [

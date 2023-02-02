@@ -11,7 +11,6 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DistinctStageLoader do
   let_it_be(:stage_triplicate) { create(:cycle_analytics_stage, namespace: group, **common_stage_params) }
 
   let_it_be(:project) { create(:project, group: group) }
-  let_it_be(:project_stage) { create(:cycle_analytics_project_stage, project: project, **common_stage_params) }
 
   subject(:distinct_stages) { described_class.new(group: group).stages }
 
