@@ -33,6 +33,20 @@ export default {
   i18n: {
     header: __('Path'),
   },
+  computed: {
+    sourceBranchOpts() {
+      return {
+        name: this.sourceBranch,
+        uri: this.sourceBranchUri,
+      };
+    },
+    targeBranchOpts() {
+      return {
+        name: this.targetBranch,
+        uri: this.targetBranchUri,
+      };
+    },
+  },
 };
 </script>
 <template>
@@ -40,14 +54,8 @@ export default {
     <drawer-section-header>{{ $options.i18n.header }}</drawer-section-header>
     <branch-details
       class="gl-justify-content-start gl-text-gray-500"
-      :source-branch="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
-        name: sourceBranch,
-        uri: sourceBranchUri,
-      } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
-      :target-branch="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
-        name: targetBranch,
-        uri: targetBranchUri,
-      } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
+      :source-branch="sourceBranchOpts"
+      :target-branch="targeBranchOpts"
     />
   </div>
 </template>
