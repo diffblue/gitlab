@@ -9,7 +9,7 @@ import createStore from 'ee/analytics/cycle_analytics/store';
 import * as getters from 'ee/analytics/cycle_analytics/store/getters';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/flash';
-import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
+import { HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { groupLabels } from '../mock_data';
 
 jest.mock('~/flash');
@@ -23,7 +23,7 @@ const findCheckedItem = (wrapper) =>
     .filter((d) => d.attributes('active'))
     .at(0);
 
-const mockGroupLabelsRequest = (status = 200) =>
+const mockGroupLabelsRequest = (status = HTTP_STATUS_OK) =>
   new MockAdapter(axios).onGet().reply(status, groupLabels);
 
 describe('Value Stream Analytics LabelsSelector', () => {
