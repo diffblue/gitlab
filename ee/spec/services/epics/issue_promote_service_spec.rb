@@ -65,6 +65,18 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures do
           subject.execute(issue)
         end
 
+        context 'when the issue belongs to an epic' do
+          let_it_be(:epic_issue) { create(:epic_issue, issue: issue) }
+
+          it 'schedules update of cached metadata for the epic' do
+            # first it's scheduled from the newly created epic
+            # then it's scheduled from the original issue (because it changes state to closed)
+            expect(::Epics::UpdateCachedMetadataWorker).to receive(:perform_async).with([epic_issue.epic_id]).twice
+
+            subject.execute(issue)
+          end
+        end
+
         context 'when promoting issue', :snowplow do
           let_it_be(:issue_mentionable_note) { create(:note, noteable: issue, author: user, project: project, note: "note with mention #{user.to_reference}") }
           let_it_be(:issue_note) { create(:note, noteable: issue, author: user, project: project, note: "note without mention") }

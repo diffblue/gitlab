@@ -4,6 +4,7 @@ class EpicIssue < ApplicationRecord
   include EpicTreeSorting
   include EachBatch
   include AfterCommitQueue
+  include Epics::MetadataCacheUpdate
 
   validates :epic, :issue, presence: true
   validates :issue, uniqueness: true
@@ -17,7 +18,8 @@ class EpicIssue < ApplicationRecord
   scope :in_epic, ->(epic_id) { where(epic_id: epic_id) }
 
   validate :validate_confidential_epic
-  after_commit :update_cached_metadata
+  after_destroy :set_epic_id_to_update_cache
+  after_save :set_epic_id_to_update_cache
 
   def epic_tree_root?
     false
@@ -45,11 +47,9 @@ class EpicIssue < ApplicationRecord
     end
   end
 
-  def update_cached_metadata
-    ::Epics::UpdateCachedMetadataWorker.perform_async([epic_id])
+  def set_epic_id_to_update_cache
+    register_epic_id_for_cache_update(epic_id)
 
-    if epic_id_previously_changed? && epic_id_previously_was
-      ::Epics::UpdateCachedMetadataWorker.perform_async([epic_id_previously_was])
-    end
+    register_epic_id_for_cache_update(epic_id_previously_was) if epic_id_previously_changed? && epic_id_previously_was
   end
 end
