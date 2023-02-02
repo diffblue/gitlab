@@ -4,7 +4,7 @@ import * as Sentry from '@sentry/browser';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { queryToObject } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
-import { TYPE_SCANNER_PROFILE, TYPE_SITE_PROFILE } from '~/graphql_shared/constants';
+import { TYPENAME_SCANNER_PROFILE, TYPENAME_SITE_PROFILE } from '~/graphql_shared/constants';
 import DastProfilesDrawer from 'ee/security_configuration/dast_profiles/dast_profiles_drawer/dast_profiles_drawer.vue';
 import ScannerProfileSelector from 'ee/security_configuration/dast_profiles/dast_profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from 'ee/security_configuration/dast_profiles/dast_profile_selector/site_profile_selector.vue';
@@ -196,10 +196,10 @@ export default {
   created() {
     const params = queryToObject(window.location.search, { legacySpacesDecode: true });
     this.selectedSiteProfileId = params.site_profile_id
-      ? convertToGraphQLId(TYPE_SITE_PROFILE, params.site_profile_id)
+      ? convertToGraphQLId(TYPENAME_SITE_PROFILE, params.site_profile_id)
       : this.selectedSiteProfileId;
     this.selectedScannerProfileId = params.scanner_profile_id
-      ? convertToGraphQLId(TYPE_SCANNER_PROFILE, params.scanner_profile_id)
+      ? convertToGraphQLId(TYPENAME_SCANNER_PROFILE, params.scanner_profile_id)
       : this.selectedScannerProfileId;
   },
   methods: {
