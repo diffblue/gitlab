@@ -163,7 +163,7 @@ You can also choose to hide or show archived projects.
 
 You can filter projects by the programming language they use. To do this:
 
-1. On the top bar, select **Main menu > Projects**.
+1. On the top bar, select **Main menu > Projects > View all projects**.
 1. From the **Language** dropdown list, select the language you want to filter projects by.
 
 A list of projects that use the selected language is displayed.
