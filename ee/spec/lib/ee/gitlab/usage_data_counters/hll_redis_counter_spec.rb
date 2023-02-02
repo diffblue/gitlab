@@ -73,7 +73,8 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
         'epic_boards_usage',
         'epics_usage',
         'network_policies',
-        'growth'
+        'growth',
+        'runner'
       )
     end
   end
