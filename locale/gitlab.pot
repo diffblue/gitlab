@@ -19056,6 +19056,9 @@ msgstr ""
 msgid "GlobalSearch|%{count} default results provided. Use the up and down arrow keys to navigate search results list."
 msgstr ""
 
+msgid "GlobalSearch|Aggregations load error."
+msgstr ""
+
 msgid "GlobalSearch|Close"
 msgstr ""
 
@@ -19123,6 +19126,12 @@ msgid "GlobalSearch|Search results are loading"
 msgstr ""
 
 msgid "GlobalSearch|Settings"
+msgstr ""
+
+msgid "GlobalSearch|Show more"
+msgstr ""
+
+msgid "GlobalSearch|Showing top %{maxItems}"
 msgstr ""
 
 msgid "GlobalSearch|Syntax options"
