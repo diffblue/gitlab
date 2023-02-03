@@ -24,12 +24,7 @@ module QA
       let(:gitlab_address_with_port) { "#{uri.scheme}://#{uri.host}:#{uri.port}" }
 
       it 'replicates to the secondary site',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348012',
-         quarantine: {
-           only: { subdomain: 'staging-ref' },
-           type: :test_environment,
-           issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/374550'
-         } do
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348012' do
         pom_xml = {
           file_path: 'pom.xml',
           content: <<~XML

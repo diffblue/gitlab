@@ -9,12 +9,7 @@ module QA
       let(:file_content) { "### Geo snippet heading\n\n[Example link](https://example.com/)" }
 
       it 'replicates to the Geo secondary site',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348073',
-         quarantine: {
-           only: { subdomain: 'staging-ref' },
-           type: :test_environment,
-           issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/374550'
-         } do
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348073' do
         snippet = nil
 
         QA::Flow::Login.while_signed_in(address: :geo_primary) do

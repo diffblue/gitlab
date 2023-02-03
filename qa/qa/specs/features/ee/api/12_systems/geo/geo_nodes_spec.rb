@@ -90,7 +90,7 @@ module QA
       # go to the primary and create a personal_access_token, which will be used
       # for accessing both the primary and secondary
       def get_personal_access_token
-        api_client = Runtime::API::Client.new(:geo_primary)
+        api_client = Runtime::API::Client.as_admin
         @personal_access_token = api_client.personal_access_token
       end
     end
