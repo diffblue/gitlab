@@ -833,6 +833,9 @@ module EE
     end
 
     def use_zoekt?
+      # Only use Zoekt for public repositories since right now Zoekt does not support permissions
+      return false unless self.public? && self.repository_access_level > ::ProjectFeature::PRIVATE
+
       ::Zoekt::IndexedNamespace.enabled_for_project?(self)
     end
 

@@ -5,10 +5,12 @@ require 'spec_helper'
 RSpec.describe ::Zoekt::SearchableRepository, :zoekt, feature_category: :global_search do
   let_it_be(:user) { create(:user) }
 
-  let_it_be(:project) { create(:project, :repository) }
+  let_it_be(:project) { create(:project, :public, :repository) }
   let_it_be(:unindexed_project) { create(:project, :repository) }
   let(:repository) { project.repository }
   let(:unindexed_repository) { unindexed_project.repository }
+  let_it_be(:private_project) { create(:project, :repository) }
+  let(:private_repository) { private_project.repository }
 
   before do
     zoekt_ensure_project_indexed!(project)
@@ -21,6 +23,10 @@ RSpec.describe ::Zoekt::SearchableRepository, :zoekt, feature_category: :global_
 
     it 'is false for unindexed projects' do
       expect(unindexed_repository.use_zoekt?).to eq(false)
+    end
+
+    it 'is false for private projects' do
+      expect(private_repository.use_zoekt?).to eq(false)
     end
   end
 
