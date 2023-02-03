@@ -79,8 +79,8 @@ module Elastic
         end
       end
 
-      def each_queued_items_by_shard(redis)
-        SHARDS.each do |shard_number|
+      def each_queued_items_by_shard(redis, shards: SHARDS)
+        (shards & SHARDS).each do |shard_number|
           set_key = redis_set_key(shard_number)
           specs = redis.zrangebyscore(set_key, '-inf', '+inf', limit: [0, SHARD_LIMIT], with_scores: true)
 
@@ -122,19 +122,19 @@ module Elastic
       end
     end
 
-    def execute
-      self.class.with_redis { |redis| execute_with_redis(redis) }
+    def execute(shards: SHARDS)
+      self.class.with_redis { |redis| execute_with_redis(redis, shards: shards) }
     end
 
     private
 
-    def execute_with_redis(redis) # rubocop:disable Metrics/AbcSize
+    def execute_with_redis(redis, shards:) # rubocop:disable Metrics/AbcSize
       start_time = Time.current
 
       specs_buffer = []
       scores = {}
 
-      self.class.each_queued_items_by_shard(redis) do |shard_number, specs|
+      self.class.each_queued_items_by_shard(redis, shards: shards) do |shard_number, specs|
         next if specs.empty?
 
         set_key = self.class.redis_set_key(shard_number)
