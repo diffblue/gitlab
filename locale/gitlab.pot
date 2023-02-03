@@ -29050,6 +29050,9 @@ msgstr ""
 msgid "OnDemandScans|%{profileType} profile library"
 msgstr ""
 
+msgid "OnDemandScans|%{textStart}Tags specify which runners process this scan. Runners must have every tag selected.%{textEnd} %{linkStart}What are runner tags?%{linkEnd}"
+msgstr ""
+
 msgid "OnDemandScans|Add a schedule to run this scan at a specified date and time or on a recurring basis. Scheduled scans are automatically saved to scan library."
 msgstr ""
 
@@ -29089,7 +29092,7 @@ msgstr ""
 msgid "OnDemandScans|Delete profile"
 msgstr ""
 
-msgid "OnDemandScans|Description (optional)"
+msgid "OnDemandScans|Description"
 msgstr ""
 
 msgid "OnDemandScans|Discard changes"
@@ -29158,13 +29161,16 @@ msgstr ""
 msgid "OnDemandScans|On-demand scans run outside the DevOps cycle and find vulnerabilities in your projects. %{learnMoreLinkStart}Learn more%{learnMoreLinkEnd}"
 msgstr ""
 
+msgid "OnDemandScans|Only project owners and maintainers can select runner tags."
+msgstr ""
+
 msgid "OnDemandScans|Repeats"
 msgstr ""
 
 msgid "OnDemandScans|Run scan"
 msgstr ""
 
-msgid "OnDemandScans|Runner tags (optional)"
+msgid "OnDemandScans|Runner tags"
 msgstr ""
 
 msgid "OnDemandScans|Save and run scan"
@@ -29225,9 +29231,6 @@ msgid "OnDemandScans|Timezone"
 msgstr ""
 
 msgid "OnDemandScans|Unable to fetch runner tags. Try reloading the page."
-msgstr ""
-
-msgid "OnDemandScans|Use runner tags to select specific runners for this security scan. %{linkStart}What are runner tags?%{linkEnd}"
 msgstr ""
 
 msgid "OnDemandScans|Verify configuration"

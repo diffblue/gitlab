@@ -14,7 +14,7 @@ export default {
     runnerEmptyStateText: s__('OnDemandScans|No matching results'),
     runnerSearchHeader: s__('OnDemandScans|Select runner tags'),
     runnerTagsLabel: s__(
-      'OnDemandScans|Use runner tags to select specific runners for this security scan. %{linkStart}What are runner tags?%{linkEnd}',
+      'OnDemandScans|%{textStart}Tags specify which runners process this scan. Runners must have every tag selected.%{textEnd} %{linkStart}What are runner tags?%{linkEnd}',
     ),
   },
   name: 'RunnerTags',
@@ -24,6 +24,11 @@ export default {
     GlSprintf,
   },
   props: {
+    canEditRunnerTags: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
     projectPath: {
       type: String,
       required: true,
@@ -46,6 +51,9 @@ export default {
     isListEmpty() {
       return this.filteredUnselectedItems.length === 0;
     },
+    isRunnerTagsDisabled() {
+      return !this.canEditRunnerTags;
+    },
     filteredUnselectedItems() {
       return this.tags
         .filter((tag) => tag.includes(this.search))
@@ -65,6 +73,14 @@ export default {
   methods: {
     async fetchRunners() {
       try {
+        /**
+         * Avoid request if runner tags dropdown is disabled
+         * in case disabled class is removed manually
+         */
+        if (this.isRunnerTagsDisabled) {
+          return;
+        }
+
         if (this.isListEmpty) {
           this.isLoading = true;
           const { data } = await this.$apollo.query({
@@ -111,7 +127,10 @@ export default {
 
 <template>
   <div>
-    <gl-sprintf :message="$options.i18n.runnerTagsLabel" class="form-text text-gl-muted gl-mb-5">
+    <gl-sprintf :message="$options.i18n.runnerTagsLabel" class="form-text gl-mb-5">
+      <template #text="{ content }">
+        <p class="gl-m-0 gl-text-secondary">{{ content }}</p>
+      </template>
       <template #link="{ content }">
         <gl-link :href="$options.HELP_PAGE_RUNNER_TAGS_PATH" target="_blank">{{ content }}</gl-link>
       </template>
@@ -121,13 +140,15 @@ export default {
       class="gl-mt-3"
       :block="true"
       :items="filteredUnselectedItems"
+      :disabled="isRunnerTagsDisabled"
       :loading="isLoading"
       :header-text="$options.i18n.runnerSearchHeader"
       :multiple="true"
       :no-results-text="$options.i18n.runnerEmptyStateText"
       :searchable="true"
+      :searching="isLoading"
       :selected="selected"
-      toggle-class="gl-w-full"
+      toggle-class="gl-w-full gl-mb-1!"
       :toggle-text="text"
       @hidden="hideDropdown"
       @search="debouncedSearchKeyUpdate"
