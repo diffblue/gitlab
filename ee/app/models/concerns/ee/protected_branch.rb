@@ -44,5 +44,10 @@ module EE
 
       project.licensed_feature_available?(:unprotection_restrictions)
     end
+
+    def inherited?
+      !namespace_id.nil?
+    end
+    alias_method :inherited, :inherited?
   end
 end

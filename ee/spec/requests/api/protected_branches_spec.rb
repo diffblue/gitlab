@@ -21,6 +21,7 @@ RSpec.describe API::ProtectedBranches, feature_category: :source_code_management
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response['unprotect_access_levels']).to eq([])
+        expect(json_response).to include('inherited')
       end
 
       context 'with per user/group access levels' do
