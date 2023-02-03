@@ -61,8 +61,7 @@ module Types
     field :due_date, Types::TimeType, null: true,
                                       description: 'Due date of the issue.'
     field :hidden, GraphQL::Types::Boolean, null: true,
-                                            description: 'Indicates the issue is hidden because the author has been banned.',
-                                            method: :hidden?
+                                            description: 'Indicates the issue is hidden because the author has been banned.'
     field :merge_requests_count, GraphQL::Types::Int, null: false,
                                                       description: 'Number of merge requests that close the issue on merge.',
                                                       resolver: Resolvers::MergeRequestsCountResolver
@@ -187,10 +186,6 @@ module Types
 
     def create_note_email
       object.creatable_note_email_address(context[:current_user])
-    end
-
-    def hidden?
-      object.hidden?
     end
 
     def escalation_status
