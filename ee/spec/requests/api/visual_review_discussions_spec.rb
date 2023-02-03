@@ -190,6 +190,78 @@ RSpec.describe API::VisualReviewDiscussions, feature_category: :review_apps do
     it_behaves_like 'accepting request with authentication'
   end
 
+  context 'when merge request discussion is locked and project is public' do
+    let_it_be(:project) { create(:project, :public, :repository) }
+    let(:project_id) { project.id }
+    let(:note_params) { { body: 'hi!', created_at: 2.weeks.ago } }
+    let!(:merge_request) do
+      create(:merge_request_with_diffs, source_project: project, target_project: project, discussion_locked: true)
+    end
+
+    let(:request) do
+      post api("/projects/#{project_id}/merge_requests/#{merge_request.iid}/visual_review_discussions"), params: note_params, headers: headers
+    end
+
+    context 'without authentication' do
+      let(:headers) { {} }
+
+      it 'rejects note creation' do
+        expect { request }.not_to change(merge_request.notes, :count)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context 'with visual review bot authentication' do
+      let(:token) { create(:personal_access_token, user: User.visual_review_bot) }
+      let(:headers) { { 'Private-Token' => token.token } }
+
+      it 'rejects note creation' do
+        expect { request }.not_to change(merge_request.notes, :count)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+  end
+
+  context 'when project is archived' do
+    let_it_be(:project) { create(:project, :public, :repository) }
+    let(:project_id) { project.id }
+    let(:note_params) { { body: 'hi!', created_at: 2.weeks.ago } }
+    let!(:merge_request) do
+      create(:merge_request_with_diffs, source_project: project, target_project: project)
+    end
+
+    let(:request) do
+      post api("/projects/#{project_id}/merge_requests/#{merge_request.iid}/visual_review_discussions"), params: note_params, headers: headers
+    end
+
+    before do
+      ::Projects::UpdateService.new(project, project.users.first, archived: true).execute
+    end
+
+    context 'without authentication' do
+      let(:headers) { {} }
+
+      it 'rejects note creation' do
+        expect { request }.not_to change(merge_request.notes, :count)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context 'with visual review bot authentication' do
+      let(:token) { create(:personal_access_token, user: User.visual_review_bot) }
+      let(:headers) { { 'Private-Token' => token.token } }
+
+      it 'rejects note creation' do
+        expect { request }.not_to change(merge_request.notes, :count)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+  end
+
   context 'when project is private' do
     let!(:project) { create(:project, :private, :repository) }
 

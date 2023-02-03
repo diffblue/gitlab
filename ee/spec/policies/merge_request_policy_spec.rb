@@ -327,4 +327,56 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
       it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
     end
   end
+
+  describe 'create_visual_review_note rules' do
+    let(:non_member) { build(:user) }
+    let(:unauthenticated) { nil }
+
+    using RSpec::Parameterized::TableSyntax
+
+    context 'when the merge request is within the same project' do
+      where(:role, :merge_request_discussion_locked?, :project_archived?, :allowed) do
+        :guest      | true | false | false
+        :developer  | true | false | false
+        :maintainer | true | false | false
+        :reporter   | true | false | false
+        :admin      | true | false | false
+        :non_member | true | false | false
+
+        :guest      | false | false | true
+        :developer  | false | false | true
+        :maintainer | false | false | true
+        :reporter   | false | false | true
+        :admin      | false | false | true
+
+        :guest      | true | true | false
+        :developer  | true | true | false
+        :maintainer | true | true | false
+        :reporter   | true | true | false
+        :admin      | true | true | false
+        :non_member | true | true | false
+
+        :guest      | false | true | false
+        :developer  | false | true | false
+        :maintainer | false | true | false
+        :reporter   | false | true | false
+        :admin      | false | true | false
+      end
+
+      with_them do
+        let(:policy) { :create_visual_review_note }
+        let(:user) { public_send(role) }
+        let(:merge_request) { build(:merge_request, source_project: project, target_project: project) }
+
+        subject(:policy) { policy_for(user) }
+
+        before do
+          merge_request.update_attribute(:discussion_locked, true) if merge_request_discussion_locked?
+          ::Projects::UpdateService.new(project, user, archived: true).execute if project_archived?
+        end
+
+        it { expect(policy.allowed?(:create_visual_review_note)).to be(allowed) }
+      end
+    end
+  end
 end

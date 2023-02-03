@@ -17,6 +17,8 @@ module EE
       end
 
       condition(:read_only, scope: :subject) { read_only? }
+      condition(:merge_request_discussion_locked) { @subject.discussion_locked? }
+      condition(:merge_request_project_archived) { @subject.project.archived? }
 
       condition(:merge_request_group_approver, score: 140) do
         project = @subject.target_project
@@ -56,6 +58,14 @@ module EE
 
       rule { read_only }.policy do
         prevent :update_merge_request
+      end
+
+      rule { merge_request_discussion_locked | merge_request_project_archived }.policy do
+        prevent :create_visual_review_note
+      end
+
+      rule { ~merge_request_discussion_locked & ~merge_request_project_archived }.policy do
+        enable :create_visual_review_note
       end
 
       rule { approval_rules_licence_enabled }.enable :create_merge_request_approval_rules
