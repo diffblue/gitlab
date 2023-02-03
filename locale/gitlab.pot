@@ -8044,6 +8044,9 @@ msgstr ""
 msgid "CascadingSettings|cannot be nil when locking the attribute"
 msgstr ""
 
+msgid "Cause identified"
+msgstr ""
+
 msgid "Certain user content will be moved to a system-wide \"Ghost User\" in order to maintain content for posterity. For further information, please refer to the %{link_start}user account deletion documentation.%{link_end}"
 msgstr ""
 
@@ -21186,6 +21189,12 @@ msgid "ImageViewerDimensions|W"
 msgstr ""
 
 msgid "Images with incorrect dimensions are not resized automatically, and may result in unexpected behavior."
+msgstr ""
+
+msgid "Impact detected"
+msgstr ""
+
+msgid "Impact mitigated"
 msgstr ""
 
 msgid "Impersonate"
@@ -36041,6 +36050,9 @@ msgid "Response"
 msgstr ""
 
 msgid "Response didn't include `service_desk_address`"
+msgstr ""
+
+msgid "Response initiated"
 msgstr ""
 
 msgid "Response metrics (AWS ELB)"
