@@ -1,6 +1,6 @@
 import { GlAlert, GlLoadingIcon, GlBadge } from '@gitlab/ui';
 import MockAdapter from 'axios-mock-adapter';
-import { IssuableStatus } from '~/issues/constants';
+import { STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
 import ZentaoIssuesShow from 'ee/integrations/zentao/issues_show/components/zentao_issues_show_root.vue';
 
 import waitForPromises from 'helpers/wait_for_promises';
@@ -108,9 +108,9 @@ describe('ZentaoIssuesShow', () => {
   });
 
   describe.each`
-    state                    | statusIcon              | badgeText
-    ${IssuableStatus.Open}   | ${'issue-open-m'}       | ${'Open'}
-    ${IssuableStatus.Closed} | ${'mobile-issue-close'} | ${'Closed'}
+    state            | statusIcon              | badgeText
+    ${STATUS_OPEN}   | ${'issue-open-m'}       | ${'Open'}
+    ${STATUS_CLOSED} | ${'mobile-issue-close'} | ${'Closed'}
   `('when issue state is `$state`', ({ state, statusIcon, badgeText }) => {
     beforeEach(async () => {
       mockAxios
