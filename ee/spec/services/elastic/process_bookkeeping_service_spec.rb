@@ -142,6 +142,21 @@ feature_category: :global_search do
 
         expect { described_class.new.execute }.to change(described_class, :queue_size).by(-4)
       end
+
+      context 'limited to one shard' do
+        let(:shard_number) { 1 }
+
+        it 'only processes specified shard' do
+          described_class.track!(*fake_refs)
+
+          expect(described_class.queue_size).to eq(fake_refs.size)
+          allow_processing(*fake_refs)
+
+          refs_in_shard = described_class.queued_items[shard_number]
+          expect { described_class.new.execute(shards: [shard_number]) }.to change(described_class, :queue_size)
+                                                                        .by(-refs_in_shard.count)
+        end
+      end
     end
 
     it 'submits a batch of documents' do

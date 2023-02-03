@@ -1,0 +1,8 @@
+---
+name: parallel_bulk_cron_worker
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/110936
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/390361
+milestone: '15.9'
+type: development
+group: group::global search
+default_enabled: false
