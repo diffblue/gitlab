@@ -136,7 +136,7 @@ module EE
 
           if root_namespace.additional_purchased_storage_size == 0
             s_("NamespaceStorageSize|You have reached the free storage limit of %{free_size_limit} " \
-               "on one or more projects.") % params
+               "on one or more projects") % params
           else
             ns_("NamespaceStorageSize|%{namespace_name} contains %{locked_project_count} locked project",
                 "NamespaceStorageSize|%{namespace_name} contains %{locked_project_count} locked projects",

@@ -9,7 +9,8 @@ RSpec.describe EE::Gitlab::NamespaceStorageSizeErrorMessage, :saas do
   let_it_be(:root_storage_statistics) { create(:namespace_root_storage_statistics, namespace: namespace) }
 
   let(:size_checker) { Namespaces::Storage::RootSize.new(namespace) }
-  let(:error_message) { described_class.new(size_checker) }
+  let(:message_params) { { namespace_name: namespace.name } }
+  let(:error_message) { described_class.new(checker: size_checker, message_params: message_params) }
 
   before do
     set_storage_size_limit(namespace, megabytes: 10)
@@ -18,9 +19,10 @@ RSpec.describe EE::Gitlab::NamespaceStorageSizeErrorMessage, :saas do
 
   describe '#commit_error' do
     it 'returns the expected message' do
-      expect(error_message.commit_error).to eq(
-        described_class.storage_limit_reached_error_msg
-      )
+      expected_message = "Your action has been rejected because the namespace storage limit has been reached. " \
+      "For more information, visit #{Rails.application.routes.url_helpers.help_page_url('user/usage_quotas')}."
+
+      expect(error_message.commit_error).to eq(expected_message)
     end
   end
 
@@ -36,10 +38,24 @@ RSpec.describe EE::Gitlab::NamespaceStorageSizeErrorMessage, :saas do
   end
 
   describe '#push_error' do
+    let(:usage_quotas_guide) do
+      ::Gitlab::Routing.url_helpers.help_page_url('user/usage_quotas', anchor: 'manage-your-storage-usage')
+    end
+
+    let(:read_only_namespaces_guide) do
+      ::Gitlab::Routing.url_helpers.help_page_url('user/read_only_namespaces', anchor: 'restricted-actions')
+    end
+
     it 'returns the expected message' do
-      expect(error_message.push_error).to eq(
-        described_class.storage_limit_reached_error_msg
-      )
+      expected_message = "##### ERROR ##### You have used 120% of the storage quota for " \
+        "#{namespace.name} (12 MB of 10 MB). #{namespace.name} is now read-only. " \
+        "Projects under this namespace are locked and actions will be restricted. " \
+        "To manage storage, or purchase additional storage, " \
+        "see #{usage_quotas_guide}. " \
+        "To learn more about restricted actions, " \
+        "see #{read_only_namespaces_guide}"
+
+      expect(error_message.push_error).to eq(expected_message)
     end
   end
 

@@ -56,6 +56,7 @@ RSpec.describe 'Git LFS API and storage', feature_category: :source_code_managem
     describe 'upload' do
       let(:project) { create(:project, :public) }
       let(:namespace) { project.namespace }
+      let(:size_checker) { Namespaces::Storage::RootSize.new(namespace) }
       let(:body) do
         {
           'operation' => 'upload',
@@ -122,9 +123,7 @@ RSpec.describe 'Git LFS API and storage', feature_category: :source_code_managem
             batch_request
 
             expect(response).to have_gitlab_http_status(:not_acceptable)
-            expect(json_response['message']).to eql(
-              EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
-            )
+            expect(json_response['message']).to eql(size_checker.error_message.push_error)
           end
         end
 
@@ -141,9 +140,7 @@ RSpec.describe 'Git LFS API and storage', feature_category: :source_code_managem
             batch_request
 
             expect(response).to have_gitlab_http_status(:not_acceptable)
-            expect(json_response['message']).to eql(
-              EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
-            )
+            expect(json_response['message']).to eql(size_checker.error_message.push_error)
           end
         end
       end
@@ -203,9 +200,7 @@ RSpec.describe 'Git LFS API and storage', feature_category: :source_code_managem
                 batch_request
 
                 expect(response).to have_gitlab_http_status(:not_acceptable)
-                expect(json_response['message']).to eql(
-                  EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
-                )
+                expect(json_response['message']).to eql(size_checker.error_message.push_error)
               end
             end
           end
