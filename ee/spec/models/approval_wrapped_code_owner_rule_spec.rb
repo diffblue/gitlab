@@ -10,19 +10,22 @@ RSpec.describe ApprovalWrappedCodeOwnerRule do
   subject { described_class.new(merge_request, rule) }
 
   describe '#approvals_required' do
-    where(:feature_enabled, :optional_section, :approver_count, :expected_required_approvals) do
-      true  | false | 0 | 0
-      true  | false | 2 | 1
-      true  | true  | 2 | 0
-      false | false | 2 | 0
-      false | false | 0 | 0
+    where(:feature_enabled, :optional_section, :approver_count, :approvals_required, :expected_required_approvals) do
+      true  | false | 0 | 0 | 0
+      true  | false | 2 | 0 | 1
+      true  | true  | 2 | 0 | 0
+      true  | false | 0 | 2 | 0
+      true  | false | 2 | 2 | 2
+      false | false | 2 | 0 | 0
+      false | false | 0 | 0 | 0
     end
 
     with_them do
       let(:rule) do
         create(:code_owner_rule,
                 merge_request: merge_request,
-                users: create_list(:user, approver_count))
+                users: create_list(:user, approver_count),
+                approvals_required: approvals_required)
       end
 
       let(:branch) { subject.project.repository.branches.find { |b| b.name == merge_request.target_branch } }

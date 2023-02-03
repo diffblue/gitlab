@@ -2,13 +2,14 @@
 
 # A common state computation interface to wrap around code owner rule
 class ApprovalWrappedCodeOwnerRule < ApprovalWrappedRule
-  REQUIRED_APPROVALS_PER_CODE_OWNER_RULE = 1
+  MIN_CODE_OWNER_APPROVALS = 1
 
   def approvals_required
     strong_memoize(:code_owner_approvals_required) do
-      next 0 unless branch_requires_code_owner_approval?
+      next 0 unless branch_requires_code_owner_approval? && approvers.any?
+      next MIN_CODE_OWNER_APPROVALS if approval_rule.approvals_required < MIN_CODE_OWNER_APPROVALS
 
-      approvers.any? ? REQUIRED_APPROVALS_PER_CODE_OWNER_RULE : 0
+      approval_rule.approvals_required
     end
   end
 

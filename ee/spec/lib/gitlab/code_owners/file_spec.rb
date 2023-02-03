@@ -132,6 +132,35 @@ RSpec.describe Gitlab::CodeOwners::File, feature_category: :source_code_manageme
 
         it_behaves_like "creates expected parsed sectional results"
       end
+
+      context 'when CODEOWNERS file contains approvals_required' do
+        let(:file_content) do
+          <<~CONTENT
+          [Required][2]
+          *_spec.rb @gl-test
+
+          [Another required]
+          *_spec.rb @gl-test
+
+          ^[Optional][2]
+          *_spec.rb @gl-test
+
+          [Required with non-numbers][q]
+          *_spec.rb @gl-test
+
+          ^[Optional with non-numbers][.]
+          *_spec.rb @gl-test
+          CONTENT
+        end
+
+        it 'parses the approvals_required' do
+          expect(file.parsed_data['Required']['/**/*_spec.rb'].approvals_required).to eq(2)
+          expect(file.parsed_data['Another required']['/**/*_spec.rb'].approvals_required).to eq(0)
+          expect(file.parsed_data['Optional']['/**/*_spec.rb'].approvals_required).to eq(2)
+          expect(file.parsed_data['Required with non-numbers']['/**/*_spec.rb'].approvals_required).to eq(0)
+          expect(file.parsed_data['Optional with non-numbers']['/**/*_spec.rb'].approvals_required).to eq(0)
+        end
+      end
     end
   end
 

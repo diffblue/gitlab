@@ -26,6 +26,7 @@ module MergeRequests
 
         rule.users = entry.users
         rule.groups = entry.groups
+        rule.approvals_required = entry.approvals_required
 
         rule.save
       end

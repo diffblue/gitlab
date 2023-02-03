@@ -156,21 +156,43 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
     let(:entry) { Gitlab::CodeOwners::Entry.new("*.js", "@user") }
 
     context "when there is an existing rule" do
-      let!(:existing_code_owner_rule) do
-        create(:code_owner_rule, name: '*.rb', merge_request: merge_request)
+      context "when the entry does not have the approvals_required field" do
+        let!(:existing_code_owner_rule) do
+          create(:code_owner_rule, name: '*.rb', merge_request: merge_request)
+        end
+
+        let(:entry) { Gitlab::CodeOwners::Entry.new("*.rb", "@user") }
+
+        it 'finds the existing rule' do
+          expect(rule).to eq(existing_code_owner_rule)
+        end
+
+        context "when the existing rule matches name but not section" do
+          let(:entry) { Gitlab::CodeOwners::Entry.new("*.rb", "@user", "example_section") }
+
+          it "creates a new rule" do
+            expect(rule).not_to eq(existing_code_owner_rule)
+          end
+        end
       end
 
-      let(:entry) { Gitlab::CodeOwners::Entry.new("*.rb", "@user") }
+      context "when the entry has the approvals_required field" do
+        let!(:existing_code_owner_rule) do
+          create(:code_owner_rule, name: '*.rb', merge_request: merge_request, approvals_required: 2)
+        end
 
-      it 'finds the existing rule' do
-        expect(rule).to eq(existing_code_owner_rule)
-      end
+        let(:entry) { Gitlab::CodeOwners::Entry.new("*.rb", "@user", "codeowners", false, 2) }
 
-      context "when the existing rule matches name but not section" do
-        let(:entry) { Gitlab::CodeOwners::Entry.new("*.rb", "@user", "example_section") }
+        it 'finds the existing rule' do
+          expect(rule).to eq(existing_code_owner_rule)
+        end
 
-        it "creates a new rule" do
-          expect(rule).not_to eq(existing_code_owner_rule)
+        context "when the existing rule matches name but not section" do
+          let(:entry) { Gitlab::CodeOwners::Entry.new("*.rb", "@user", "example_section", false, 2) }
+
+          it "creates a new rule" do
+            expect(rule).not_to eq(existing_code_owner_rule)
+          end
         end
       end
     end

@@ -7,15 +7,15 @@ module Gitlab
 
       DEFAULT_SECTION = "codeowners"
 
-      Data = Struct.new(:pattern, :owner_line, :section, :optional)
+      Data = Struct.new(:pattern, :owner_line, :section, :optional, :approvals_required)
 
       attr_reader :data
       protected :data
 
-      delegate :pattern, :hash, :owner_line, :section, to: :data
+      delegate :pattern, :hash, :owner_line, :section, :approvals_required, to: :data
 
-      def initialize(pattern, owner_line, section = DEFAULT_SECTION, optional = false)
-        @data = Data.new(pattern, owner_line, section, optional)
+      def initialize(pattern, owner_line, section = DEFAULT_SECTION, optional = false, approvals_required = 0)
+        @data = Data.new(pattern, owner_line, section, optional, approvals_required)
       end
 
       def all_users
