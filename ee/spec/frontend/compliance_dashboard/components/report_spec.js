@@ -14,7 +14,7 @@ import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_ba
 import { mapViolations } from 'ee/compliance_dashboard/graphql/mappers';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import UrlSync from '~/vue_shared/components/url_sync.vue';
+import UrlSync, { URL_SET_PARAMS_STRATEGY } from '~/vue_shared/components/url_sync.vue';
 import { stubComponent } from 'helpers/stub_component';
 import { sortObjectToString } from '~/lib/utils/table_utility';
 import { parseViolationsQueryFilter } from 'ee/compliance_dashboard/utils';
@@ -138,6 +138,10 @@ describe('ComplianceReport component', () => {
         groupPath,
         defaultQuery: defaultFilterParams,
       });
+    });
+
+    it('syncs the URL query with "set" strategy', async () => {
+      expect(findUrlSync().props('urlParamsUpdateStrategy')).toBe(URL_SET_PARAMS_STRATEGY);
     });
   });
 

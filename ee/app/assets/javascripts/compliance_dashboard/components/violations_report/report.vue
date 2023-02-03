@@ -306,6 +306,6 @@ export default {
       :z-index="$options.DRAWER_Z_INDEX"
       @close="closeDrawer"
     />
-    <url-sync :query="urlQuery" />
+    <url-sync :query="urlQuery" url-params-update-strategy="set" />
   </section>
 </template>
