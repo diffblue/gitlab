@@ -4,16 +4,30 @@ module EE
   module SnippetRepository
     extend ActiveSupport::Concern
 
+    EE_SEARCHABLE_ATTRIBUTES = %i[disk_path].freeze
+
     prepended do
       include ::Geo::ReplicableModel
       include ::Geo::VerifiableModel
       include ::Geo::VerificationStateDefinition
       include FromUnion
+      include ::Gitlab::SQL::Pattern
 
       with_replicator ::Geo::SnippetRepositoryReplicator
     end
 
     class_methods do
+      # Search for a list of snippet_repositories based on the query given in `query`.
+      #
+      # @param [String] query term that will search over snippet_repositories :disk_path attribute
+      #
+      # @return [ActiveRecord::Relation<SnippetRepository>] a collection of snippet repositories
+      def search(query)
+        return all if query.empty?
+
+        fuzzy_search(query, EE_SEARCHABLE_ATTRIBUTES)
+      end
+
       # @param primary_key_in [Range, SnippetRepository] arg to pass to primary_key_in scope
       # @return [ActiveRecord::Relation<SnippetRepository>] everything that should be synced to this node, restricted by primary key
       def replicables_for_current_secondary(primary_key_in)
