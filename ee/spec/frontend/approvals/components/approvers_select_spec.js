@@ -108,6 +108,7 @@ describe('Approvers Selector', () => {
         expect(Api.groups).toHaveBeenCalledWith('', {
           skip_groups: [],
           all_available: false,
+          order_by: 'id',
         });
         expect(Api.projectUsers).toHaveBeenCalledWith(TEST_PROJECT_ID, '', {
           skip_users: [],
@@ -132,6 +133,7 @@ describe('Approvers Selector', () => {
           with_shared: true,
           shared_visible_only: false,
           shared_min_access_level: 30,
+          order_by: 'id',
         });
       });
 
@@ -169,6 +171,7 @@ describe('Approvers Selector', () => {
         expect(Api.groups).toHaveBeenCalledWith(searchString, {
           skip_groups: [],
           all_available: true,
+          order_by: 'id',
         });
         expect(Api.projectUsers).toHaveBeenCalledWith(TEST_PROJECT_ID, searchString, {
           skip_users: [],
@@ -196,6 +199,7 @@ describe('Approvers Selector', () => {
             expect(Api.groups).toHaveBeenCalledWith(TERM, {
               skip_groups: [],
               all_available: true,
+              order_by: 'id',
             });
           });
 
@@ -222,6 +226,7 @@ describe('Approvers Selector', () => {
           expect(Api.groups).toHaveBeenCalledWith('', {
             skip_groups: skipGroupIds,
             all_available: false,
+            order_by: 'id',
           });
         });
 
