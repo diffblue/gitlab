@@ -5,12 +5,7 @@ module QA
     describe 'GitLab wiki HTTP push' do
       context 'when wiki commit' do
         it 'is replicated to the secondary node',
-           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348051',
-           quarantine: {
-             only: { subdomain: 'staging-ref' },
-             type: :test_environment,
-             issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/374550'
-           } do
+           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348051' do
           wiki_content = 'This tests replication of wikis via HTTP'
           push_content = 'This is from the Geo wiki push!'
           project = nil

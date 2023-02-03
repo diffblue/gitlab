@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Systems', :orchestrated, :geo, product_group: :geo, quarantine: {
-    only: { subdomain: 'staging-ref' },
-    type: :test_environment,
-    issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/374550'
-  } do
+  RSpec.describe 'Systems', :orchestrated, :geo, product_group: :geo do
     describe 'GitLab SSH push to secondary' do
       let(:file_content_primary) { 'This is a Geo project! Commit from primary.' }
       let(:file_content_secondary) { 'This is a Geo project! Commit from secondary.' }
