@@ -1,3 +1,4 @@
+import { GlAvatar } from '@gitlab/ui';
 import MockAdapter from 'axios-mock-adapter';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
@@ -59,6 +60,15 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
     mock
       .onGet('/api/v4/projects/8/protected_environments/')
       .reply(HTTP_STATUS_OK, DEFAULT_ENVIRONMENTS);
+    mock
+      .onGet('/api/v4/groups/1/members/all')
+      .reply(HTTP_STATUS_OK, [{ name: 'root', avatar_url: '/avatar.png' }]);
+    mock
+      .onGet('/api/v4/users/1')
+      .reply(HTTP_STATUS_OK, { name: 'root', avatar_url: '/avatar.png' });
+    mock
+      .onGet('/api/v4/projects/8/members')
+      .reply(HTTP_STATUS_OK, [{ name: 'root', access_level: '40', avatar_url: '/avatar.png' }]);
   });
 
   afterEach(() => {
@@ -88,5 +98,25 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
     await createComponent();
 
     expect(wrapper.findByRole('heading', { name: 'staging' }).exists()).toBe(true);
+  });
+
+  it('shows member avatars in each row', async () => {
+    await createComponent();
+
+    const avatars = wrapper.findAllComponents(GlAvatar).wrappers;
+
+    expect(avatars).toHaveLength(3);
+    avatars.forEach((avatar) => expect(avatar.props('src')).toBe('/avatar.png'));
+  });
+
+  it('shows the description of the rule', async () => {
+    const [{ deploy_access_levels: deployAccessLevels }] = DEFAULT_ENVIRONMENTS;
+    await createComponent();
+
+    const descriptions = wrapper.findAllByTestId('rule-description').wrappers;
+
+    descriptions.forEach((description, i) => {
+      expect(description.text()).toBe(deployAccessLevels[i].access_level_description);
+    });
   });
 });

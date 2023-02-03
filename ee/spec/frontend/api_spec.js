@@ -402,4 +402,17 @@ describe('Api', () => {
       });
     });
   });
+
+  describe('protectedEnvironments', () => {
+    it('fetches all protected environments', () => {
+      const response = [{ name: 'staging ' }];
+      const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/projects/1/protected_environments/`;
+      mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
+
+      return Api.protectedEnvironments(1).then(({ data, config }) => {
+        expect(data).toEqual(response);
+        expect(config.url).toEqual(expectedUrl);
+      });
+    });
+  });
 });

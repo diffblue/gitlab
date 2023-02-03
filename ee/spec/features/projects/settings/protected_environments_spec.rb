@@ -171,7 +171,11 @@ RSpec.describe 'Protected Environments', feature_category: :environment_manageme
         within('[data-testid="protected-environments-list"]') do
           expect(page).to have_content('staging')
 
-          expect(page).to have_button 'staging'
+          click_button 'staging'
+
+          within('[data-testid="protected-environment-staging-deployers"]') do
+            expect(page).to have_content('Developers + Maintainers')
+          end
         end
       end
     end

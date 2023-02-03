@@ -34343,6 +34343,9 @@ msgstr ""
 msgid "ProtectedEnvironments|Set which groups, access levels or users that are allowed to deploy to this environment"
 msgstr ""
 
+msgid "ProtectedEnvironments|Users"
+msgstr ""
+
 msgid "ProtectedEnvironment|%{environment_name} will be writable for developers. Are you sure?"
 msgstr ""
 
