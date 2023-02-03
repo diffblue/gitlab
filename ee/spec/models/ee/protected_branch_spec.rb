@@ -258,4 +258,22 @@ RSpec.describe ProtectedBranch do
       end
     end
   end
+
+  describe '#inherited?' do
+    context 'when the `namespace_id` is nil' do
+      before do
+        subject.assign_attributes(namespace_id: nil)
+      end
+
+      it { is_expected.not_to be_inherited }
+    end
+
+    context 'when the `namespace_id` is present' do
+      before do
+        subject.assign_attributes(namespace_id: 123)
+      end
+
+      it { is_expected.to be_inherited }
+    end
+  end
 end
