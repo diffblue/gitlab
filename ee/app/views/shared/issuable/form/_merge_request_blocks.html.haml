@@ -12,7 +12,7 @@
   .col-12
     .gl-mb-2
       = _("List the merge requests that must be merged before this one.")
-      = link_to "Learn more.", Rails.application.routes.url_helpers.help_page_url('user/project/merge_requests/dependencies.html', anchor: 'complex-merge-order-dependencies-are-unsupported')
+      = link_to "Learn more.", url_helpers.help_page_url('user/project/merge_requests/dependencies.md', anchor: 'complex-merge-order-dependencies-are-unsupported')
   .col-12
     = text_field_tag 'blocking_merge_request_refs', nil,
                      class: 'form-control',
