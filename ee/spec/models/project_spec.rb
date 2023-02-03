@@ -3327,7 +3327,7 @@ RSpec.describe Project, feature_category: :projects do
   end
 
   describe '#visible_approval_rules' do
-    let(:scan_finding_rule) { create(:approval_project_rule, project: project, report_type: :scan_finding) }
+    let(:scan_finding_rule) { create(:approval_project_rule, :scan_finding, project: project) }
 
     subject { project.visible_approval_rules }
 

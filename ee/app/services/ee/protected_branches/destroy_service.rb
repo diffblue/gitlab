@@ -16,6 +16,18 @@ module EE
           log_audit_event(protected_branch_service, :remove) if protected_branch_service
         end
       end
+
+      def after_execute(*)
+        sync_scan_finding_approval_rules
+      end
+
+      def sync_scan_finding_approval_rules
+        return unless project_or_group.licensed_feature_available?(:security_orchestration_policies)
+
+        project_or_group.all_security_orchestration_policy_configurations.each do |configuration|
+          Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService.new(configuration).execute
+        end
+      end
     end
   end
 end

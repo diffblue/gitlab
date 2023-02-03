@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ApprovalProjectRule do
+RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
   subject(:rule) { create(:approval_project_rule) }
 
   describe 'validations' do
@@ -308,6 +308,12 @@ RSpec.describe ApprovalProjectRule do
       it 'is invalid when name not unique within rule type and project' do
         is_expected.to validate_uniqueness_of(:name).scoped_to([:project_id, :rule_type])
       end
+
+      context 'is valid when protected branches are empty and is applied to all protected branches' do
+        subject { build(:approval_project_rule, :code_coverage, protected_branches: [], applies_to_all_protected_branches: false) }
+
+        it { is_expected.to be_valid }
+      end
     end
 
     context 'for scan_finding report type' do
@@ -315,6 +321,36 @@ RSpec.describe ApprovalProjectRule do
 
       it 'is invalid when name not unique within scan result policy, rule type and project' do
         is_expected.to validate_uniqueness_of(:name).scoped_to([:project_id, :rule_type, :security_orchestration_policy_configuration_id, :orchestration_policy_idx])
+      end
+
+      context 'when no protected branches are selected and is not applied to all protected branches' do
+        subject { build(:approval_project_rule, :scan_finding, protected_branches: [], applies_to_all_protected_branches: false) }
+
+        it { is_expected.not_to be_valid }
+      end
+
+      context 'when protected branches are present and is not applied to all protected branches' do
+        let_it_be(:project) { create(:project) }
+        let_it_be(:protected_branch) { create(:protected_branch, name: 'main', project: project) }
+
+        subject { build(:approval_project_rule, :scan_finding, protected_branches: [protected_branch], applies_to_all_protected_branches: false, project: project) }
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when protected branches are present and is applied to all protected branches' do
+        let_it_be(:project) { create(:project) }
+        let_it_be(:protected_branch) { create(:protected_branch, name: 'main', project: project) }
+
+        subject { build(:approval_project_rule, :scan_finding, protected_branches: [protected_branch], applies_to_all_protected_branches: true, project: project) }
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when protected branches are not selected and is applied to all protected branches' do
+        subject { build(:approval_project_rule, :scan_finding, protected_branches: [], applies_to_all_protected_branches: true) }
+
+        it { is_expected.to be_valid }
       end
     end
   end
