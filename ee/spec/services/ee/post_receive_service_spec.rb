@@ -104,96 +104,64 @@ RSpec.describe PostReceiveService, :geo do
   end
 
   describe 'storage size limit alerts', feature_category: :subscription_cost_management do
-    let(:storage_notification_payload) { {} }
-    let(:alert_level) { :none }
-
-    before do
-      stub_ee_application_setting(should_check_namespace_plan: true)
-      stub_ee_application_setting(enforce_namespace_storage_limit: true)
-      stub_ee_application_setting(automatic_purchased_storage_allocation: true)
-
-      allow(user).to receive(:can?).with(:maintainer_access, project.namespace.root_ancestor).and_return(true)
-      allow_next_instance_of(EE::Namespace::Storage::Notification, project.namespace, user) do |notification|
-        allow(notification).to receive(:payload).and_return(storage_notification_payload)
-        allow(notification).to receive(:alert_level).and_return(alert_level)
+    context 'when there is no alert' do
+      before do
+        allow_next_instance_of(Namespaces::Storage::CliNotification, project.namespace, user) do |notification|
+          allow(notification).to receive(:show?).and_return(false)
+        end
       end
-    end
 
-    context 'when there is no payload' do
-      it 'adds no alert' do
+      it 'returns no messages' do
         expect(subject).to be_empty
       end
     end
 
-    context 'when there is payload' do
-      context 'for namespace enforcement' do
-        let(:alert_level) { :info }
+    context 'when there is an alert' do
+      before do
+        stub_ee_application_setting(automatic_purchased_storage_allocation: true)
+        stub_ee_application_setting(should_check_namespace_plan: true)
+      end
 
-        let(:storage_notification_payload) do
-          {
-            enforcement_type: :namespace,
-            alert_level: alert_level,
-            usage_message: "Usage",
-            explanation_message: {
-              main: {
-                text: "Explanation",
-                link: {
-                  text: "Learn more.",
-                  href: "/usage_quotas"
-                }
-              },
-              footer: {
-                text: "Footer",
-                link: {
-                  text: "Learn even more.",
-                  href: "/usage_quotas#more"
-                }
-              }
-            },
-            root_namespace: project.namespace.root_ancestor
-          }
-        end
+      context 'when repository size limit enforcement' do
+        let(:user) { project.namespace.owner }
+        let(:contains_locked_projects) { true }
 
-        it 'adds an alert' do
-          response = subject
+        include RepositoryStorageHelpers
 
-          expect(response).to be_present
-          expect(response).to include({
-            'type' => 'alert',
-            'message' => "##### INFO #####\nUsage\nExplanation\nFooter"
-          })
+        it 'returns error message' do
+          stub_over_repository_limit(project.namespace, contains_locked_projects)
+
+          expect(subject).to match_array([{ "message" => "##### ERROR #####\nYou have reached the free storage limit of 10 Bytes " \
+                                                         "on one or more projects.\nPlease purchase additional storage to unlock " \
+                                                         "your projects over the free 10 Bytes project limit. " \
+                                                         "You can't push to your repository, create pipelines, " \
+                                                         "create issues or add comments. To reduce storage capacity, " \
+                                                         "delete unused repositories, artifacts, wikis, issues, and pipelines.", "type" => "alert" }])
         end
       end
 
-      context 'for repository enforcement' do
-        let(:alert_level) { :error }
+      context 'when namespace size limit enforcement' do
+        let_it_be(:group) { create(:group) }
+        let_it_be(:project) { create(:project, namespace: group) }
 
-        let(:storage_notification_payload) do
-          {
-            enforcement_type: :repository,
-            alert_level: alert_level,
-            usage_message: "Usage",
-            explanation_message: {
-              main: {
-                text: "Explanation",
-                link: {
-                  text: "Learn more.",
-                  href: "/usage_quotas"
-                }
-              }
-            },
-            root_namespace: project.namespace.root_ancestor
-          }
+        before do
+          group.add_owner(user)
+          stub_ee_application_setting(automatic_purchased_storage_allocation: true)
+          stub_ee_application_setting(should_check_namespace_plan: true)
+          stub_ee_application_setting(enforce_namespace_storage_limit: true)
+          allow_next_instance_of(Namespaces::Storage::RootSize) do |root_storage_size|
+            allow(root_storage_size).to receive(:current_size).and_return(11.5)
+            allow(root_storage_size).to receive(:limit).and_return(12)
+          end
         end
 
-        it 'adds an alert' do
-          response = subject
-
-          expect(response).to be_present
-          expect(response).to include({
-            'type' => 'alert',
-            'message' => "##### ERROR #####\nUsage\nExplanation"
-          })
+        it 'returns warning message' do
+          expect(subject).to match_array([{ "message" => "##### WARNING #####\nYou have used 96% of the storage quota for #{group.name} " \
+                                                         "(11 Bytes of 12 Bytes).\nIf #{group.name} exceeds the storage quota, " \
+                                                         "all projects in the namespace will be locked and actions will be restricted. " \
+                                                         "To manage storage, or purchase additional storage, " \
+                                                         "see http://localhost/help/user/usage_quotas#manage-your-storage-usage. " \
+                                                         "To learn more about restricted actions, see http://localhost/help/user/read_only_namespaces#restricted-actions", "type" => "alert" }])
         end
       end
     end
