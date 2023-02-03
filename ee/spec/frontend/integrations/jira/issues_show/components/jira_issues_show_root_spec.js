@@ -5,7 +5,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
 import JiraIssuesShow from 'ee/integrations/jira/issues_show/components/jira_issues_show_root.vue';
 import JiraIssueSidebar from 'ee/integrations/jira/issues_show/components/sidebar/jira_issues_sidebar_root.vue';
-import { IssuableStatus } from '~/issues/constants';
+import { STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import IssuableHeader from '~/vue_shared/issuable/show/components/issuable_header.vue';
 import IssuableShow from '~/vue_shared/issuable/show/components/issuable_show_root.vue';
@@ -89,9 +89,9 @@ describe('JiraIssuesShow', () => {
   });
 
   describe.each`
-    state                    | statusIcon              | badgeText
-    ${IssuableStatus.Open}   | ${'issue-open-m'}       | ${'Open'}
-    ${IssuableStatus.Closed} | ${'mobile-issue-close'} | ${'Closed'}
+    state            | statusIcon              | badgeText
+    ${STATUS_OPEN}   | ${'issue-open-m'}       | ${'Open'}
+    ${STATUS_CLOSED} | ${'mobile-issue-close'} | ${'Closed'}
   `('when issue state is `$state`', ({ state, statusIcon, badgeText }) => {
     beforeEach(async () => {
       mockAxios
