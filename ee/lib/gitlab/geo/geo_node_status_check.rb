@@ -59,7 +59,7 @@ module Gitlab
           replication_and_verification_checks_status +
           conditional_replication_and_verification_checks_status
 
-        checks_status.compact.all? { |percentage| percentage == 100 }
+        checks_status.compact.all?(100)
       end
 
       private

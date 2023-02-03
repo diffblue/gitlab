@@ -44,6 +44,6 @@ RSpec.describe Sidebars::Projects::Panel do
   end
 
   def contains_menu?(menu)
-    panel.instance_variable_get(:@menus).any? { |i| i.is_a?(menu) }
+    panel.instance_variable_get(:@menus).any?(menu)
   end
 end
