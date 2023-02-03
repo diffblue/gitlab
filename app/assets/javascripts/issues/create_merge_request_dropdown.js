@@ -11,6 +11,10 @@ import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { __, sprintf } from '~/locale';
 import { mergeUrlParams } from '~/lib/utils/url_utility';
+import {
+  findInvalidBranchNameCharacters,
+  humanizeBranchValidationErrors,
+} from '~/lib/utils/text_utility';
 import api from '~/api';
 
 // Todo: Remove this when fixing issue in input_setter plugin
@@ -25,8 +29,6 @@ const VALIDATION_TYPE_INVALID_CHARS = 'invalid_chars';
 const INPUT_TARGET_BRANCH = 'branch';
 const INPUT_TARGET_REF = 'ref';
 
-const INVALID_CHARS_PATTERN = /(\s|~|\^|:|\?|\*|\[|\\|\.\.|@\{|\/{2,})/g;
-
 function createEndpoint(projectPath, endpoint) {
   if (canCreateConfidentialMergeRequest()) {
     return endpoint.replace(
@@ -39,21 +41,11 @@ function createEndpoint(projectPath, endpoint) {
 }
 
 function getValidationError(target, inputValue, validationType) {
-  const invalidChars = inputValue.value.match(INVALID_CHARS_PATTERN);
+  const invalidChars = findInvalidBranchNameCharacters(inputValue.value);
   let text;
+
   if (invalidChars && validationType === VALIDATION_TYPE_INVALID_CHARS) {
-    if (invalidChars.includes(' ')) {
-      const excludeSpaces = invalidChars.filter((v) => v !== ' ');
-      if (excludeSpaces.length) {
-        text = sprintf(__("Can't contain spaces, %{chars}"), {
-          chars: excludeSpaces.join(', '),
-        });
-      } else {
-        text = sprintf(__("Can't contain spaces"));
-      }
-    } else {
-      text = sprintf(__("Can't contain %{chars}"), { chars: invalidChars.join(',') });
-    }
+    text = humanizeBranchValidationErrors(invalidChars);
   }
 
   if (validationType === VALIDATION_TYPE_BRANCH_UNAVAILABLE) {
@@ -65,11 +57,6 @@ function getValidationError(target, inputValue, validationType) {
 
   return text;
 }
-
-function containsInvalidCharacters(branchName) {
-  return INVALID_CHARS_PATTERN.test(branchName);
-}
-
 export default class CreateMergeRequestDropdown {
   constructor(wrapperEl) {
     this.wrapperEl = wrapperEl;
@@ -593,7 +580,8 @@ export default class CreateMergeRequestDropdown {
   }
 
   updateTargetBranchInput(ref, result) {
-    const isInvalidString = containsInvalidCharacters(ref);
+    const branchNameErrors = findInvalidBranchNameCharacters(ref);
+    const isInvalidString = branchNameErrors.length;
 
     if (ref !== result && !isInvalidString) {
       // If a found branch equals exact the same text a user typed,
