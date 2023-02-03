@@ -20,8 +20,9 @@ export default {
     <gl-form-group
       data-testid="runner-field-maintenance-note"
       :label="s__('Runners|Maintenance note')"
+      :label-description="s__('Runners|Only administrators can view this.')"
       :description="
-        s__('Runners|Add notes, like who owns the runner or what it should be used for.')
+        s__('Runners|Add notes such as the runner owner or what it should be used for.')
       "
     >
       <gl-form-textarea :no-resize="false" v-bind="$attrs" v-on="$listeners" />
