@@ -74,6 +74,7 @@ FactoryBot.define do
       sequence(:name) { |n| "Scan finding #{n}" }
       rule_type { :report_approver }
       report_type { :scan_finding }
+      applies_to_all_protected_branches { true }
     end
   end
 end

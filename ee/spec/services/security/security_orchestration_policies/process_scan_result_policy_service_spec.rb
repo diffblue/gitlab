@@ -15,6 +15,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
 
     before do
       group.add_maintainer(approver)
+      create(:protected_branch, name: 'master', project: project)
+      allow(project).to receive(:multiple_approval_rules_available?).and_return(true)
       allow(policy_configuration).to receive(:policy_last_updated_by).and_return(approver)
     end
 

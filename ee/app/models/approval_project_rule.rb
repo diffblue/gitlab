@@ -41,6 +41,7 @@ class ApprovalProjectRule < ApplicationRecord
   validates :vulnerabilities_allowed, numericality: { only_integer: true }
   validates :severity_levels, inclusion: { in: ::Enums::Vulnerability.severity_levels.keys }
   validates :vulnerability_states, inclusion: { in: APPROVAL_VULNERABILITY_STATES.keys }
+  validates :protected_branches, presence: true, if: -> { scan_finding? && !applies_to_all_protected_branches? }
 
   def applies_to_branch?(branch)
     return true if protected_branches.empty?

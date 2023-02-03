@@ -48,6 +48,10 @@ FactoryBot.define do
       new(name, description, enabled, actions, rules).to_h
     end
 
+    transient do
+      branches { ['master'] }
+    end
+
     sequence(:name) { |n| "test-policy-#{n}" }
     description { 'This policy considers only container scanning and critical severities' }
     enabled { true }
@@ -55,7 +59,7 @@ FactoryBot.define do
       [
         {
           type: 'scan_finding',
-          branches: %w[master],
+          branches: branches,
           scanners: %w[container_scanning],
           vulnerabilities_allowed: 0,
           severity_levels: %w[critical],
@@ -71,7 +75,7 @@ FactoryBot.define do
         [
           {
             type: 'license_finding',
-            branches: %w[master],
+            branches: branches,
             match_on_inclusion: true,
             license_types: %w[BSD MIT],
             license_states: %w[newly_detected detected]

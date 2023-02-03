@@ -519,7 +519,7 @@ RSpec.describe Projects::CreateService, '#execute' do
       end
 
       context 'when group has security_orchestration_policy_configuration' do
-        let(:policy) { build(:scan_result_policy) }
+        let(:policy) { build(:scan_result_policy, branches: []) }
         let_it_be(:group_configuration, reload: true) do
           create(:security_orchestration_policy_configuration, project: nil, namespace: group)
         end
@@ -541,7 +541,7 @@ RSpec.describe Projects::CreateService, '#execute' do
         it 'invokes ProcessScanResultPolicyWorker', :sidekiq_inline do
           expect(::Security::ProcessScanResultPolicyWorker).to receive(:perform_async).twice.and_call_original
 
-          project = create_project(user, { name: "GitLab", namespace_id: sub_group.id })
+          project = create_project(user, name: "GitLab", namespace_id: sub_group.id)
 
           expect(project.approval_rules.count).to eq(2)
           expect(project.approval_rules.map(&:security_orchestration_policy_configuration_id)).to match_array([
