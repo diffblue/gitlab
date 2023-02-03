@@ -28,8 +28,9 @@ RSpec.describe Gitlab::UsageDataMetrics, feature_category: :service_ping do
         expect(subject).to include(:license_subscription_id)
       end
 
-      it 'includes counts keys' do
+      it 'includes counts keys', :aggregate_failures do
         expect(subject[:counts]).to include(:saml_group_links)
+        expect(subject[:counts]).to include(:users_with_custom_roles)
       end
 
       describe 'Redis_HLL_counters' do
