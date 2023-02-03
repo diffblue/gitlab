@@ -355,6 +355,7 @@ export default {
         .then(() => {
           this.modalData.vulnerability.state = 'detected';
           this.modalData.vulnerability.isDismissed = false;
+          this.modalData.vulnerability.dismissal_feedback = null;
           this.hideModal();
         })
         .catch(() => {

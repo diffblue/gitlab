@@ -740,6 +740,9 @@ describe('MR Widget Security Reports', () => {
         await waitForPromises();
 
         expect(emitSpy).toHaveBeenCalledWith(BV_HIDE_MODAL, 'modal-mrwidget-security-issue');
+
+        // The dismissal_feedback object should be set back to `null`.
+        expect(findModal().props('modal').vulnerability.dismissal_feedback).toBe(null);
       });
 
       it('handles undoing dismissing a finding - error', async () => {
