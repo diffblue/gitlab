@@ -6,7 +6,7 @@ module Types
       graphql_name 'TestReport'
       description 'Represents a requirement test report'
 
-      authorize :read_requirement
+      authorize :read_work_item
 
       field :id, GraphQL::Types::ID, null: false, description: 'ID of the test report.'
 

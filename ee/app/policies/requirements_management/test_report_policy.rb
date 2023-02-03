@@ -2,6 +2,6 @@
 
 module RequirementsManagement
   class TestReportPolicy < BasePolicy
-    delegate { @subject.requirement }
+    delegate { @subject.requirement_issue }
   end
 end

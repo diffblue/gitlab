@@ -395,12 +395,8 @@ RSpec.describe 'getting a work item list for a project', feature_category: :team
         requirement_work_item_2 = create(:work_item, :requirement, project: project)
         create(:test_report, requirement_issue: requirement_work_item_2)
 
-        # TODO - There are 2 extra queries needed to perform :read_requirement
-        # authorization at TestReportType. We should remove or replace that check because the same
-        # is already performed on the parent object on all endpoints that uses this type.
-        # This should be resolved with https://gitlab.com/gitlab-org/gitlab/-/issues/389081.
         expect { post_graphql(query, current_user: current_user) }
-          .not_to exceed_all_query_limit(control).with_threshold(2)
+          .not_to exceed_all_query_limit(control)
       end
     end
   end
