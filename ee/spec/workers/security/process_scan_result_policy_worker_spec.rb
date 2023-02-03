@@ -96,6 +96,7 @@ RSpec.describe Security::ProcessScanResultPolicyWorker do
 
       context 'when lease is not obtained' do
         before do
+          stub_const('Security::ProcessScanResultPolicyWorker::LEASE_RETRY_BASE', 0)
           Gitlab::ExclusiveLease.new(lease_key, timeout: described_class::LEASE_TTL).try_obtain
         end
 
@@ -105,6 +106,24 @@ RSpec.describe Security::ProcessScanResultPolicyWorker do
           end
 
           expect { subject }.to raise_error(Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError)
+        end
+      end
+
+      describe "#lease_sleep_sec" do
+        let(:retry_count) { Gitlab::ExclusiveLeaseHelpers::SleepingLock::DEFAULT_ATTEMPTS }
+
+        subject do
+          (0..retry_count).to_a.map do |attempt|
+            worker.lease_sleep_sec(attempt).round(2)
+          end
+        end
+
+        it "uses exponential backoff" do
+          expect(subject).to eq [0.1, 0.13, 0.17, 0.22, 0.29, 0.37, 0.48, 0.63, 0.82, 1.06, 1.38]
+        end
+
+        it "retries for at least 5 seconds" do
+          expect(subject.sum).to be > 5
         end
       end
     end
