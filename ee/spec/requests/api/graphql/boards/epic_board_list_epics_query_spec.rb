@@ -2,18 +2,20 @@
 
 require 'spec_helper'
 
-RSpec.describe 'get list of epics for an epic  board list', feature_category: :portfolio_management do
+RSpec.describe 'get list of epics for an epic board list', feature_category: :portfolio_management do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
   let_it_be(:group) { create(:group, :private) }
   let_it_be(:development) { create(:group_label, group: group, name: 'Development') }
   let_it_be(:staging) { create(:group_label, group: group, name: 'Staging') }
+  let_it_be(:extra_label1) { create(:group_label, group: group, name: 'Extra label1') }
+  let_it_be(:extra_label2) { create(:group_label, group: group, name: 'Extra label2') }
   let_it_be(:board) { create(:epic_board, group: group) }
   let_it_be(:list) { create(:epic_list, epic_board: board, label: development) }
 
-  let_it_be(:epic1) { create(:labeled_epic, group: group, labels: [development]) }
-  let_it_be(:epic2) { create(:labeled_epic, group: group, labels: [development]) }
+  let_it_be(:epic1) { create(:labeled_epic, group: group, labels: [development, extra_label1]) }
+  let_it_be(:epic2) { create(:labeled_epic, group: group, labels: [development, extra_label2]) }
   let_it_be(:epic3) { create(:labeled_epic, group: group, labels: [development, staging], author: current_user) }
   let_it_be(:epic4) { create(:labeled_epic, group: group) }
 
@@ -74,6 +76,45 @@ RSpec.describe 'get list of epics for an epic  board list', feature_category: :p
 
         boards = graphql_data_at(*data_path, :nodes)
         expect(boards).to contain_exactly(a_graphql_entity_for(epic1), a_graphql_entity_for(epic2))
+      end
+    end
+
+    context 'when using OR label filter' do
+      let(:filter_params) { { filters: { or: { label_name: [extra_label1.title, extra_label2.title] } } } }
+
+      it 'finds only epics matching at least one of the labels' do
+        post_graphql(pagination_query(filter_params), current_user: current_user)
+
+        boards = graphql_data_at(*data_path, :nodes)
+        expect(boards).to contain_exactly(a_graphql_entity_for(epic1), a_graphql_entity_for(epic2))
+      end
+
+      context 'when queried label names are empty' do
+        let(:filter_params) { { filters: { or: { label_name: [] } } } }
+
+        it 'returns all items' do
+          post_graphql(pagination_query(filter_params), current_user: current_user)
+
+          boards = graphql_data_at(*data_path, :nodes)
+          expect(boards).to contain_exactly(
+            a_graphql_entity_for(epic1), a_graphql_entity_for(epic2),
+            a_graphql_entity_for(epic3))
+        end
+      end
+
+      context 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(or_issuable_queries: false)
+        end
+
+        it 'does not add any filter' do
+          post_graphql(pagination_query(filter_params), current_user: current_user)
+
+          boards = graphql_data_at(*data_path, :nodes)
+          expect(boards).to contain_exactly(
+            a_graphql_entity_for(epic1), a_graphql_entity_for(epic2),
+            a_graphql_entity_for(epic3))
+        end
       end
     end
   end
