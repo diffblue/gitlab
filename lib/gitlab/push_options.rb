@@ -46,8 +46,8 @@ module Gitlab
       @options = parse_options(options)
     end
 
-    def get(*args)
-      options.dig(*args)
+    def get(...)
+      options.dig(...)
     end
 
     # Allow #to_json serialization
