@@ -987,6 +987,16 @@ msgstr[1] ""
 msgid "%{retryButtonStart}Try again%{retryButtonEnd} or %{newFileButtonStart}attach a new file%{newFileButtonEnd}."
 msgstr ""
 
+msgid "%{reviewer_names} was added as a reviewer."
+msgid_plural "%{reviewer_names} were added as reviewers."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%{reviewer_names} was removed from reviewers."
+msgid_plural "%{reviewer_names} were removed from reviewers."
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%{rotation} has been recalculated with the remaining participants. Please review the new setup for %{rotation_link}. It is recommended that you reach out to the current on-call responder to ensure continuity of on-call coverage."
 msgstr ""
 
@@ -8123,9 +8133,6 @@ msgid "Change your password"
 msgstr ""
 
 msgid "Change your password or recover your current one"
-msgstr ""
-
-msgid "ChangeReviewer|%{added_reviewers_text}%{removed_reviewers_text}"
 msgstr ""
 
 msgid "ChangeReviewer|All reviewers were removed."
