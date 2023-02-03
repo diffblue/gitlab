@@ -219,11 +219,12 @@ RSpec.describe Geo::ContainerRepositoryRegistry, :geo, feature_category: :geo_re
 end
 
 RSpec.describe Geo::ContainerRepositoryRegistry, :geo, type: :model do
-  let_it_be(:registry) { create(:geo_container_repository_registry) }
+  let(:registry) { create(:geo_container_repository_registry) }
 
   specify 'factory is valid' do
     expect(registry).to be_valid
   end
 
   include_examples 'a Geo framework registry'
+  include_examples 'a Geo searchable registry'
 end
