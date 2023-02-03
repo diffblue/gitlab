@@ -29674,9 +29674,6 @@ msgstr ""
 msgid "Package already exists"
 msgstr ""
 
-msgid "Package and registry settings"
-msgstr ""
-
 msgid "Package deleted successfully"
 msgstr ""
 
@@ -30163,6 +30160,9 @@ msgid "Packages"
 msgstr ""
 
 msgid "Packages and registries"
+msgstr ""
+
+msgid "Packages and registries settings"
 msgstr ""
 
 msgid "Page not found"
