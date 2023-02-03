@@ -34,12 +34,13 @@ RSpec.describe Notes::CreateVisualReviewService, feature_category: :review_apps 
   end
 
   context 'when project is archived' do
+    let(:archived_project) { create(:project, :public, :repository, :archived) }
     let!(:merge_request) do
-      create(:merge_request_with_diffs, source_project: project, target_project: project)
+      create(:merge_request_with_diffs, source_project: archived_project, target_project: archived_project)
     end
 
     before do
-      ::Projects::UpdateService.new(project, current_user, archived: true).execute
+      archived_project.add_developer(current_user)
     end
 
     it 'does not create a note' do
