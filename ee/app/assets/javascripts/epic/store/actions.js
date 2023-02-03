@@ -1,12 +1,13 @@
 import epicDetailsQuery from 'shared_queries/epic/epic_details.query.graphql';
 import { createAlert } from '~/flash';
 import { EVENT_ISSUABLE_VUE_APP_CHANGE } from '~/issuable/constants';
+import { STATUS_CLOSED } from '~/issues/constants';
 
 import axios from '~/lib/utils/axios_utils';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { __ } from '~/locale';
 
-import { statusType, statusEvent } from '../constants';
+import { statusEvent } from '../constants';
 import epicUtils from '../utils/epic_utils';
 
 import * as types from './mutation_types';
@@ -76,7 +77,7 @@ export const toggleEpicStatus = ({ state, dispatch }, isEpicOpen) => {
     .put(`${state.endpoint}.json?${encodeURI(queryParam)}`)
     .then(({ data }) => {
       dispatch('requestEpicStatusChangeSuccess', data);
-      dispatch('triggerIssuableEvent', { isEpicOpen: data.state === statusType.close });
+      dispatch('triggerIssuableEvent', { isEpicOpen: data.state === STATUS_CLOSED });
     })
     .catch(() => {
       dispatch('requestEpicStatusChangeFailure');
