@@ -232,7 +232,7 @@ RSpec.describe 'Epics through GroupQuery', feature_category: :portfolio_manageme
         end
       end
 
-      context 'using OR' do
+      context 'using OR label filter' do
         let_it_be(:label1) { create(:group_label, group: group) }
         let_it_be(:label2) { create(:group_label, group: group) }
         let_it_be(:label_epic1) { create(:labeled_epic, group: group, labels: [label1]) }
@@ -266,6 +266,43 @@ RSpec.describe 'Epics through GroupQuery', feature_category: :portfolio_manageme
             post_graphql(query(params), current_user: user)
 
             expect_array_response([label_epic2.to_global_id.to_s, label_epic1.to_global_id.to_s,
+                                   epic2.to_global_id.to_s, epic.to_global_id.to_s])
+          end
+        end
+      end
+
+      context 'using OR author filter' do
+        let_it_be(:epic3) { create(:epic, group: group) }
+        let_it_be(:epic4) { create(:epic, group: group) }
+
+        let(:params) { { or: { author_username: [epic3.author.username, epic4.author.username] } } }
+
+        it 'returns items that have at least one of the given author names' do
+          post_graphql(query(params), current_user: user)
+
+          expect_array_response([epic4.to_global_id.to_s, epic3.to_global_id.to_s])
+        end
+
+        context 'when queried label names are empty' do
+          let(:params) { { or: { label_name: [] } } }
+
+          it 'returns all items' do
+            post_graphql(query(params), current_user: user)
+
+            expect_array_response([epic4.to_global_id.to_s, epic3.to_global_id.to_s,
+                                   epic2.to_global_id.to_s, epic.to_global_id.to_s])
+          end
+        end
+
+        context 'when feature flag is disabled' do
+          before do
+            stub_feature_flags(or_issuable_queries: false)
+          end
+
+          it 'does not add any filter' do
+            post_graphql(query(params), current_user: user)
+
+            expect_array_response([epic4.to_global_id.to_s, epic3.to_global_id.to_s,
                                    epic2.to_global_id.to_s, epic.to_global_id.to_s])
           end
         end

@@ -117,5 +117,44 @@ RSpec.describe 'get list of epics for an epic board list', feature_category: :po
         end
       end
     end
+
+    context 'when using OR author filter' do
+      let(:filter_params) { { filters: { or: { author_username: [epic1.author.username, epic2.author.username] } } } }
+
+      it 'finds only epics matching at least one of the labels' do
+        post_graphql(pagination_query(filter_params), current_user: current_user)
+
+        boards = graphql_data_at(*data_path, :nodes)
+        expect(boards).to contain_exactly(a_graphql_entity_for(epic1), a_graphql_entity_for(epic2))
+      end
+
+      context 'when queried label names are empty' do
+        let(:filter_params) { { filters: { or: { author_username: [] } } } }
+
+        it 'returns all items' do
+          post_graphql(pagination_query(filter_params), current_user: current_user)
+
+          boards = graphql_data_at(*data_path, :nodes)
+          expect(boards).to contain_exactly(
+            a_graphql_entity_for(epic1), a_graphql_entity_for(epic2),
+            a_graphql_entity_for(epic3))
+        end
+      end
+
+      context 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(or_issuable_queries: false)
+        end
+
+        it 'does not add any filter' do
+          post_graphql(pagination_query(filter_params), current_user: current_user)
+
+          boards = graphql_data_at(*data_path, :nodes)
+          expect(boards).to contain_exactly(
+            a_graphql_entity_for(epic1), a_graphql_entity_for(epic2),
+            a_graphql_entity_for(epic3))
+        end
+      end
+    end
   end
 end
