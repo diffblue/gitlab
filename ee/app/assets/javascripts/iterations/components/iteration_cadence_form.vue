@@ -10,7 +10,7 @@ import {
   GlFormSelect,
   GlFormTextarea,
 } from '@gitlab/ui';
-import { TYPE_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
+import { TYPENAME_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { s__, __, sprintf } from '~/locale';
 import { getDayName } from '~/lib/utils/datetime_utility';
@@ -155,7 +155,7 @@ export default {
     },
     variables() {
       const id = this.isEdit
-        ? convertToGraphQLId(TYPE_ITERATIONS_CADENCE, this.cadenceId)
+        ? convertToGraphQLId(TYPENAME_ITERATIONS_CADENCE, this.cadenceId)
         : undefined;
       const groupPath = this.isEdit ? undefined : this.fullPath;
 
@@ -189,7 +189,7 @@ export default {
       variables() {
         return {
           fullPath: this.fullPath,
-          id: convertToGraphQLId(TYPE_ITERATIONS_CADENCE, this.cadenceId),
+          id: convertToGraphQLId(TYPENAME_ITERATIONS_CADENCE, this.cadenceId),
         };
       },
       result({ data: { group, errors }, error }) {
@@ -235,7 +235,7 @@ export default {
       variables() {
         return {
           fullPath: this.fullPath,
-          iterationCadenceId: convertToGraphQLId(TYPE_ITERATIONS_CADENCE, this.cadenceId),
+          iterationCadenceId: convertToGraphQLId(TYPENAME_ITERATIONS_CADENCE, this.cadenceId),
           firstPageSize: 1,
           state: iterationStates.all,
         };

@@ -4,7 +4,7 @@
 /* eslint-disable @gitlab/no-runtime-template-compiler */
 import { fullLabelId } from '~/boards/boards_util';
 import BoardFormFoss from '~/boards/components/board_form.vue';
-import { TYPE_USER } from '~/graphql_shared/constants';
+import { TYPENAME_USER } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 
 import createEpicBoardMutation from '../graphql/epic_board_create.mutation.graphql';
@@ -22,7 +22,7 @@ export default {
       return {
         weight: this.board.weight,
         assigneeId: this.board.assignee?.id
-          ? convertToGraphQLId(TYPE_USER, this.board.assignee.id)
+          ? convertToGraphQLId(TYPENAME_USER, this.board.assignee.id)
           : null,
         milestoneId: this.board.milestone?.id || null,
         iterationId: this.board.iteration?.id || null,

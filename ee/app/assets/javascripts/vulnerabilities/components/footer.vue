@@ -7,7 +7,7 @@ import MergeRequestNote from 'ee/vue_shared/security_reports/components/merge_re
 import SolutionCard from 'ee/vue_shared/security_reports/components/solution_card.vue';
 import { VULNERABILITY_STATE_OBJECTS } from 'ee/vulnerabilities/constants';
 import { createAlert } from '~/flash';
-import { TYPE_VULNERABILITY } from '~/graphql_shared/constants';
+import { TYPENAME_VULNERABILITY } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -56,7 +56,7 @@ export default {
     discussions: {
       query: vulnerabilityDiscussionsQuery,
       variables() {
-        return { id: convertToGraphQLId(TYPE_VULNERABILITY, this.vulnerability.id) };
+        return { id: convertToGraphQLId(TYPENAME_VULNERABILITY, this.vulnerability.id) };
       },
       update: ({ vulnerability }) => {
         return (

@@ -6,7 +6,11 @@ import destroyNoteMutation from 'ee/security_dashboard/graphql/mutations/note_de
 import updateNoteMutation from 'ee/security_dashboard/graphql/mutations/note_update.mutation.graphql';
 import EventItem from 'ee/vue_shared/security_reports/components/event_item.vue';
 import { createAlert } from '~/flash';
-import { TYPE_NOTE, TYPENAME_DISCUSSION, TYPE_VULNERABILITY } from '~/graphql_shared/constants';
+import {
+  TYPENAME_NOTE,
+  TYPENAME_DISCUSSION,
+  TYPENAME_VULNERABILITY,
+} from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { __, s__ } from '~/locale';
 import HistoryCommentEditor from './history_comment_editor.vue';
@@ -81,7 +85,7 @@ export default {
       const { data } = await this.$apollo.mutate({
         mutation: createNoteMutation,
         variables: {
-          noteableId: convertToGraphQLId(TYPE_VULNERABILITY, this.vulnerabilityId),
+          noteableId: convertToGraphQLId(TYPENAME_VULNERABILITY, this.vulnerabilityId),
           discussionId: convertToGraphQLId(TYPENAME_DISCUSSION, this.discussionId),
           body,
         },
@@ -97,7 +101,7 @@ export default {
       const { data } = await this.$apollo.mutate({
         mutation: updateNoteMutation,
         variables: {
-          id: convertToGraphQLId(TYPE_NOTE, this.comment.id),
+          id: convertToGraphQLId(TYPENAME_NOTE, this.comment.id),
           body,
         },
       });
@@ -140,7 +144,7 @@ export default {
         const { data } = await this.$apollo.mutate({
           mutation: destroyNoteMutation,
           variables: {
-            id: convertToGraphQLId(TYPE_NOTE, this.comment.id),
+            id: convertToGraphQLId(TYPENAME_NOTE, this.comment.id),
           },
         });
 

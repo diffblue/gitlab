@@ -1,7 +1,7 @@
 import { omitBy, isEmpty } from 'lodash';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { n__, s__ } from '~/locale';
-import { TYPE_USER } from '~/graphql_shared/constants';
+import { TYPENAME_USER } from '~/graphql_shared/constants';
 import { GROUP_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
 
 export const APPROVER_TYPE_DICT = {
@@ -49,7 +49,7 @@ export function groupApprovers(existingApprovers) {
       return {
         ...approver,
         type: USER_TYPE,
-        value: convertToGraphQLId(TYPE_USER, approver.id),
+        value: convertToGraphQLId(TYPENAME_USER, approver.id),
       };
     }
     return approver;

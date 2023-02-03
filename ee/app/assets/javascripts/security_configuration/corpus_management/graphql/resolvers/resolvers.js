@@ -2,7 +2,7 @@ import produce from 'immer';
 import { publishPackage } from '~/api/packages_api';
 import axios from '~/lib/utils/axios_utils';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { TYPE_PACKAGES_PACKAGE } from '~/graphql_shared/constants';
+import { TYPENAME_PACKAGES_PACKAGE } from '~/graphql_shared/constants';
 import getUploadState from '../queries/get_upload_state.query.graphql';
 import updateProgress from '../mutations/update_progress.mutation.graphql';
 import uploadComplete from '../mutations/upload_complete.mutation.graphql';
@@ -47,7 +47,7 @@ export default {
         variables: {
           input: {
             fullPath: projectPath,
-            packageId: convertToGraphQLId(TYPE_PACKAGES_PACKAGE, packageId),
+            packageId: convertToGraphQLId(TYPENAME_PACKAGES_PACKAGE, packageId),
           },
         },
       });

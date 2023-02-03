@@ -5,7 +5,7 @@ import SplitButton from 'ee/vue_shared/security_reports/components/split_button.
 import StatusBadge from 'ee/vue_shared/security_reports/components/status_badge.vue';
 import { createAlert } from '~/flash';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { TYPE_VULNERABILITY } from '~/graphql_shared/constants';
+import { TYPENAME_VULNERABILITY } from '~/graphql_shared/constants';
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import download from '~/lib/utils/downloader';
@@ -131,7 +131,7 @@ export default {
         const { data } = await this.$apollo.mutate({
           mutation: vulnerabilityStateMutations[action],
           variables: {
-            id: convertToGraphQLId(TYPE_VULNERABILITY, this.vulnerability.id),
+            id: convertToGraphQLId(TYPENAME_VULNERABILITY, this.vulnerability.id),
             ...payload,
           },
         });

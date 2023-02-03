@@ -6,10 +6,10 @@ import { boardQuery } from '~/boards/constants';
 import {
   TYPENAME_EPIC_BOARD,
   TYPENAME_ITERATION,
-  TYPE_ITERATIONS_CADENCE,
+  TYPENAME_ITERATIONS_CADENCE,
   TYPENAME_EPIC,
-  TYPE_MILESTONE,
-  TYPE_USER,
+  TYPENAME_MILESTONE,
+  TYPENAME_USER,
 } from '~/graphql_shared/constants';
 import { getIdFromGraphQLId, convertToGraphQLId } from '~/graphql_shared/utils';
 import { objectToQuery, queryToObject } from '~/lib/utils/url_utility';
@@ -47,7 +47,7 @@ export function fullEpicId(epicId) {
 }
 
 export function fullMilestoneId(milestoneId) {
-  return convertToGraphQLId(TYPE_MILESTONE, milestoneId);
+  return convertToGraphQLId(TYPENAME_MILESTONE, milestoneId);
 }
 
 function fullIterationId(id) {
@@ -71,11 +71,11 @@ function fullIterationCadenceId(id) {
     return null;
   }
 
-  return convertToGraphQLId(TYPE_ITERATIONS_CADENCE, getIdFromGraphQLId(id));
+  return convertToGraphQLId(TYPENAME_ITERATIONS_CADENCE, getIdFromGraphQLId(id));
 }
 
 export function fullUserId(userId) {
-  return convertToGraphQLId(TYPE_USER, userId);
+  return convertToGraphQLId(TYPENAME_USER, userId);
 }
 
 export function fullEpicBoardId(epicBoardId) {

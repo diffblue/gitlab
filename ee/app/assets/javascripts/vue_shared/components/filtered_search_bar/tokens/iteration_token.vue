@@ -2,7 +2,7 @@
 import { GlDropdownDivider, GlDropdownSectionHeader, GlFilteredSearchSuggestion } from '@gitlab/ui';
 import { groupByIterationCadences, getIterationPeriod } from 'ee/iterations/utils';
 import { createAlert } from '~/flash';
-import { TYPE_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
+import { TYPENAME_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
 import { OPERATOR_IS } from '~/vue_shared/components/filtered_search_bar/constants';
@@ -55,7 +55,7 @@ export default {
         const iteration = iterations.find(
           (i) =>
             i?.iterationCadence?.id ===
-            convertToGraphQLId(TYPE_ITERATIONS_CADENCE, iterationCadenceId),
+            convertToGraphQLId(TYPENAME_ITERATIONS_CADENCE, iterationCadenceId),
         );
         return iteration?.iterationCadence;
       }
@@ -106,7 +106,7 @@ export default {
       return input.split('&')[0];
     },
     iterationTokenText(iterationOrCadence, inputValue) {
-      if (iterationOrCadence?.id?.includes(TYPE_ITERATIONS_CADENCE)) {
+      if (iterationOrCadence?.id?.includes(TYPENAME_ITERATIONS_CADENCE)) {
         return `${this.getIterationOption(inputValue)}::${iterationOrCadence.title}`;
       }
       const cadenceTitle = iterationOrCadence.iterationCadence.title;

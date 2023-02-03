@@ -10,7 +10,7 @@ import HistoryCommentEditor from 'ee/vulnerabilities/components/history_comment_
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/flash';
-import { TYPENAME_DISCUSSION, TYPE_VULNERABILITY } from '~/graphql_shared/constants';
+import { TYPENAME_DISCUSSION, TYPENAME_VULNERABILITY } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { generateNote } from './mock_data';
 
@@ -23,7 +23,7 @@ const DESTROY_NOTE = 'destroyNote';
 
 const TEST_VULNERABILITY_ID = '15';
 const TEST_DISCUSSION_ID = '24';
-const TEST_VULNERABILITY_GID = convertToGraphQLId(TYPE_VULNERABILITY, TEST_VULNERABILITY_ID);
+const TEST_VULNERABILITY_GID = convertToGraphQLId(TYPENAME_VULNERABILITY, TEST_VULNERABILITY_ID);
 const TEST_DISCUSSION_GID = convertToGraphQLId(TYPENAME_DISCUSSION, TEST_DISCUSSION_ID);
 
 describe('History Comment', () => {
