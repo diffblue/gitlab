@@ -70,10 +70,13 @@ export default {
     dastConfigurationDescription: s__(
       "OnDemandScans|DAST scans for vulnerabilities in your project's running application, website, or API.  For details of all configuration options, see the %{linkStart}GitLab DAST documentation%{linkEnd}.",
     ),
-    runnerTagsLabel: s__('OnDemandScans|Runner tags (optional)'),
+    runnerTagsLabel: s__('OnDemandScans|Runner tags'),
+    runnerTagsDescription: s__(
+      'OnDemandScans|Only project owners and maintainers can select runner tags.',
+    ),
     scanConfigurationNameLabel: s__('OnDemandScans|Scan name'),
     scanConfigurationNamePlaceholder: s__('OnDemandScans|My daily scan'),
-    scanConfigurationDescriptionLabel: s__('OnDemandScans|Description (optional)'),
+    scanConfigurationDescriptionLabel: s__('OnDemandScans|Description'),
     scanConfigurationDescriptionPlaceholder: s__(
       `OnDemandScans|For example: Tests the login page for SQL injections`,
     ),
@@ -130,6 +133,7 @@ export default {
   },
   mixins: [glFeatureFlagMixin()],
   inject: [
+    'canEditRunnerTags',
     'projectPath',
     'onDemandScansPath',
     'siteProfilesLibraryPath',
@@ -219,6 +223,9 @@ export default {
     },
     isFormInvalid() {
       return this.someFieldEmpty || this.hasProfilesConflict;
+    },
+    runnerTagsDescription() {
+      return this.canEditRunnerTags ? '' : this.$options.i18n.runnerTagsDescription;
     },
     isSubmitButtonDisabled() {
       const {
@@ -367,7 +374,11 @@ export default {
             />
           </gl-form-group>
 
-          <gl-form-group class="gl-mb-6" :label="$options.i18n.scanConfigurationDescriptionLabel">
+          <gl-form-group
+            class="gl-mb-6"
+            optional
+            :label="$options.i18n.scanConfigurationDescriptionLabel"
+          >
             <gl-form-textarea
               v-model="form.fields.description.value"
               data-testid="dast-scan-description-input"
@@ -408,10 +419,14 @@ export default {
           <gl-form-group
             v-if="glFeatures.onDemandScansRunnerTags"
             class="gl-mt-6 gl-mb-3"
+            data-testid="on-demand-scan-runner-tags"
+            optional
             :label="$options.i18n.runnerTagsLabel"
+            :description="runnerTagsDescription"
           >
             <runner-tags
               v-model="selectedTags"
+              :can-edit-runner-tags="canEditRunnerTags"
               :project-path="projectPath"
               @error="showGeneralErrors"
             />

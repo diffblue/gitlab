@@ -47,13 +47,17 @@ RSpec.describe Projects::OnDemandScansHelper do
   end
 
   describe '#on_demand_scans_form_data' do
+    let_it_be(:user) { create(:user) }
+
     before do
       allow(helper).to receive(:timezone_data).with(format: :full).and_return(timezones)
       allow(project).to receive(:default_branch).and_return("default-branch")
+      allow(helper).to receive(:current_user).and_return(user)
     end
 
     it 'returns proper data' do
       expect(helper.on_demand_scans_form_data(project)).to match(
+        'can_edit_runner_tags' => "false",
         'default-branch' => "default-branch",
         'project-path' => "foo/bar",
         'on-demand-scans-path' => "/#{project.full_path}/-/on_demand_scans#saved",

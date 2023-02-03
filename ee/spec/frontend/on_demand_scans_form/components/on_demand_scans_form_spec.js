@@ -79,6 +79,7 @@ describe('OnDemandScansForm', () => {
     wrapper.findByTestId('on-demand-scans-profiles-conflict-alert');
   const findSubmitButton = () => wrapper.findByTestId('on-demand-scan-submit-button');
   const findSaveButton = () => wrapper.findByTestId('on-demand-scan-save-button');
+  const findRunnerTagsFormGroup = () => wrapper.findByTestId('on-demand-scan-runner-tags');
   const findCancelButton = () => wrapper.findByTestId('on-demand-scan-cancel-button');
   const findDastProfilesConfigurator = () => wrapper.findComponent(DastProfilesConfigurator);
   const findPreScanVerificationConfigurator = () =>
@@ -159,6 +160,7 @@ describe('OnDemandScansForm', () => {
           },
           mocks: defaultMocks,
           provide: {
+            canEditRunnerTags: true,
             projectPath,
             onDemandScansPath,
             scannerProfilesLibraryPath,
@@ -542,6 +544,28 @@ describe('OnDemandScansForm', () => {
 
       expect(findDastProfilesConfigurator().props('open')).toBe(true);
       expect(findPreScanVerificationConfigurator().props('open')).toBe(false);
+    });
+  });
+
+  describe('editing rights for regular users', () => {
+    it('should be disabled for non-administrative users', () => {
+      createComponent(
+        {
+          provide: {
+            canEditRunnerTags: false,
+          },
+        },
+        false,
+        {
+          glFeatures: {
+            onDemandScansRunnerTags: true,
+          },
+        },
+      );
+
+      expect(findRunnerTagsFormGroup().text()).toContain(
+        'Only project owners and maintainers can select runner tags',
+      );
     });
   });
 });

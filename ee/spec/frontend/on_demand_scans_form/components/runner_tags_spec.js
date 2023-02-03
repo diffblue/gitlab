@@ -177,4 +177,18 @@ describe('RunnersTag', () => {
       expect(findDropdownItems().at(1).props('isSelected')).toBe(true);
     });
   });
+
+  describe('editing rights for regular users', () => {
+    it.each`
+      canEditRunnerTags | expectedResult
+      ${false}          | ${true}
+      ${true}           | ${false}
+    `(
+      'should be disabled for non-administrative users',
+      ({ canEditRunnerTags, expectedResult }) => {
+        createComponent({ canEditRunnerTags });
+        expect(findDropdown().props('disabled')).toBe(expectedResult);
+      },
+    );
+  });
 });
