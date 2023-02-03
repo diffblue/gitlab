@@ -141,15 +141,14 @@ describe('Security Dashboard component', () => {
 
   describe('issue modal', () => {
     it.each`
-      givenState                                                                                   | expectedProps
-      ${{ modal: { vulnerability: 'foo' } }}                                                       | ${{ modal: { vulnerability: 'foo' }, canCreateIssue: false, canCreateMergeRequest: false, canDismissVulnerability: false, isCreatingIssue: false, isDismissingVulnerability: false, isCreatingMergeRequest: false }}
-      ${{ modal: { vulnerability: { create_vulnerability_feedback_issue_path: 'foo' } } }}         | ${expect.objectContaining({ canCreateIssue: true })}
-      ${{ modal: { vulnerability: { create_jira_issue_url: 'foo' } } }}                            | ${expect.objectContaining({ canCreateIssue: true })}
-      ${{ modal: { vulnerability: { create_vulnerability_feedback_merge_request_path: 'foo' } } }} | ${expect.objectContaining({ canCreateMergeRequest: true })}
-      ${{ modal: { vulnerability: { create_vulnerability_feedback_dismissal_path: 'foo' } } }}     | ${expect.objectContaining({ canDismissVulnerability: true })}
-      ${{ isCreatingIssue: true }}                                                                 | ${expect.objectContaining({ isCreatingIssue: true })}
-      ${{ isDismissingVulnerability: true }}                                                       | ${expect.objectContaining({ isDismissingVulnerability: true })}
-      ${{ isCreatingMergeRequest: true }}                                                          | ${expect.objectContaining({ isCreatingMergeRequest: true })}
+      givenState                                                                               | expectedProps
+      ${{ modal: { vulnerability: 'foo' } }}                                                   | ${{ modal: { vulnerability: 'foo' }, canCreateIssue: false, canDismissVulnerability: false, isCreatingIssue: false, isDismissingVulnerability: false, isCreatingMergeRequest: false }}
+      ${{ modal: { vulnerability: { create_vulnerability_feedback_issue_path: 'foo' } } }}     | ${expect.objectContaining({ canCreateIssue: true })}
+      ${{ modal: { vulnerability: { create_jira_issue_url: 'foo' } } }}                        | ${expect.objectContaining({ canCreateIssue: true })}
+      ${{ modal: { vulnerability: { create_vulnerability_feedback_dismissal_path: 'foo' } } }} | ${expect.objectContaining({ canDismissVulnerability: true })}
+      ${{ isCreatingIssue: true }}                                                             | ${expect.objectContaining({ isCreatingIssue: true })}
+      ${{ isDismissingVulnerability: true }}                                                   | ${expect.objectContaining({ isDismissingVulnerability: true })}
+      ${{ isCreatingMergeRequest: true }}                                                      | ${expect.objectContaining({ isCreatingMergeRequest: true })}
     `(
       'passes right props to issue modal with state $givenState',
       async ({ givenState, expectedProps }) => {

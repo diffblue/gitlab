@@ -306,7 +306,6 @@ export default {
       'coverageFuzzingStatusIcon',
       'isBaseSecurityReportOutOfDate',
       'canCreateIssue',
-      'canCreateMergeRequest',
       'canDismissVulnerability',
     ]),
     ...mapGetters(MODULE_SAST, ['groupedSastText', 'sastStatusIcon']),
@@ -816,7 +815,6 @@ export default {
         <issue-modal
           :modal="modal"
           :can-create-issue="canCreateIssue"
-          :can-create-merge-request="canCreateMergeRequest"
           :can-dismiss-vulnerability="canDismissVulnerability"
           :is-creating-issue="isCreatingIssue"
           :is-dismissing-vulnerability="isDismissingVulnerability"
