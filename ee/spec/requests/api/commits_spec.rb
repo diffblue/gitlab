@@ -7,7 +7,7 @@ RSpec.describe API::Commits, feature_category: :source_code_management do
 
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :repository, creator: user, path: "my.project") }
-
+  let(:size_checker) { Namespaces::Storage::RootSize.new(namespace) }
   let(:project_id) { project.id }
 
   before do
@@ -188,9 +188,7 @@ RSpec.describe API::Commits, feature_category: :source_code_management do
         post api(route, user), params: { branch: branch }
 
         expect(response).to have_gitlab_http_status(:bad_request)
-        expect(json_response['message']).to eq(
-          EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
-        )
+        expect(json_response['message']).to eq(size_checker.error_message.commit_error)
       end
     end
   end
@@ -243,9 +241,7 @@ RSpec.describe API::Commits, feature_category: :source_code_management do
         post api(route, user), params: { branch: branch }
 
         expect(response).to have_gitlab_http_status(:bad_request)
-        expect(json_response['message']).to eq(
-          EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
-        )
+        expect(json_response['message']).to eq(size_checker.error_message.commit_error)
       end
     end
   end

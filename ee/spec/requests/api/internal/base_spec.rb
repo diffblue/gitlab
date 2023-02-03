@@ -345,6 +345,8 @@ RSpec.describe API::Internal::Base do
         end
 
         context 'requests with changes' do
+          let(:size_checker) { Namespaces::Storage::RootSize.new(group) }
+
           it 'rejects git push when the size limit has been exceeded' do
             set_used_storage(group, megabytes: 6)
 
@@ -352,9 +354,7 @@ RSpec.describe API::Internal::Base do
 
             expect(response).to have_gitlab_http_status(:unauthorized)
             expect(json_response["status"]).to eq(false)
-            expect(json_response["message"]).to eq(
-              EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
-            )
+            expect(json_response["message"]).to eq(size_checker.error_message.push_error)
           end
 
           it 'rejects git push when the push size would exceed the limit' do

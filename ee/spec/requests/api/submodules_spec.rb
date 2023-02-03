@@ -29,6 +29,8 @@ RSpec.describe API::Submodules, feature_category: :source_code_management do
 
   describe "PUT /projects/:id/repository/submodule/:submodule" do
     context 'with an exceeded namespace storage limit', :saas do
+      let(:size_checker) { Namespaces::Storage::RootSize.new(group) }
+
       before do
         create(:gitlab_subscription, :ultimate, namespace: group)
         create(:namespace_root_storage_statistics, namespace: group)
@@ -41,9 +43,7 @@ RSpec.describe API::Submodules, feature_category: :source_code_management do
         put api(route(submodule), user), params: params
 
         expect(response).to have_gitlab_http_status(:bad_request)
-        expect(json_response['message']).to eq(
-          EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
-        )
+        expect(json_response['message']).to eq(size_checker.error_message.commit_error)
       end
     end
   end

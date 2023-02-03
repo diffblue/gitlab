@@ -13,6 +13,7 @@ RSpec.describe Gitlab::GitAccessProject do
     let(:namespace) { project.namespace }
     let(:sha_with_2_mb_file) { 'bf12d2567099e26f59692896f73ac819bae45b00' }
     let(:sha_with_smallest_changes) { 'b9238ee5bf1d7359dd3b8c89fd76c1c7f8b75aba' }
+    let(:size_checker) { Namespaces::Storage::RootSize.new(namespace) }
 
     before do
       project.add_developer(user)
@@ -28,7 +29,7 @@ RSpec.describe Gitlab::GitAccessProject do
           push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_smallest_changes} refs/heads/master")
         end.to raise_error(
           described_class::ForbiddenError,
-          EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
+          size_checker.error_message.push_error
         )
       end
 

@@ -57,7 +57,10 @@ module Namespaces
       alias_method :enabled?, :enforce_limit?
 
       def error_message
-        @error_message_object ||= ::EE::Gitlab::NamespaceStorageSizeErrorMessage.new(self)
+        message_params = { namespace_name: root_namespace.name }
+
+        @error_message_object ||=
+          ::EE::Gitlab::NamespaceStorageSizeErrorMessage.new(checker: self, message_params: message_params)
       end
 
       def exceeded_size(change_size = 0)

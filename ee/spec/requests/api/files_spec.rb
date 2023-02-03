@@ -9,6 +9,7 @@ RSpec.describe API::Files, feature_category: :source_code_management do
   let(:user) { create(:user) }
   let(:project) { create(:project, :repository, group: group) }
   let(:file_path) { "files%2Fruby%2Fpopen%2Erb" }
+  let(:size_checker) { Namespaces::Storage::RootSize.new(group) }
 
   before do
     project.add_developer(user)
@@ -41,9 +42,7 @@ RSpec.describe API::Files, feature_category: :source_code_management do
         post api(route(file_path), user), params: params
 
         expect(response).to have_gitlab_http_status(:bad_request)
-        expect(json_response['message']).to eq(
-          EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
-        )
+        expect(json_response['message']).to eq(size_checker.error_message.commit_error)
       end
     end
   end
@@ -70,9 +69,7 @@ RSpec.describe API::Files, feature_category: :source_code_management do
         put api(route(file_path), user), params: params
 
         expect(response).to have_gitlab_http_status(:bad_request)
-        expect(json_response['message']).to eq(
-          EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
-        )
+        expect(json_response['message']).to eq(size_checker.error_message.commit_error)
       end
     end
   end
@@ -98,9 +95,7 @@ RSpec.describe API::Files, feature_category: :source_code_management do
         delete api(route(file_path), user), params: params
 
         expect(response).to have_gitlab_http_status(:bad_request)
-        expect(json_response['message']).to eq(
-          EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
-        )
+        expect(json_response['message']).to eq(size_checker.error_message.commit_error)
       end
     end
   end

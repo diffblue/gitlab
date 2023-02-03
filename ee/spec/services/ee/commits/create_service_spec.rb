@@ -40,6 +40,8 @@ RSpec.describe Commits::CreateService do
     end
 
     context 'when the namespace storage limit has been exceeded', :saas do
+      let(:size_checker) { Namespaces::Storage::RootSize.new(group) }
+
       before do
         create(:gitlab_subscription, :ultimate, namespace: group)
         create(:namespace_root_storage_statistics, namespace: group)
@@ -55,9 +57,7 @@ RSpec.describe Commits::CreateService do
         result = service.execute
 
         expect(result[:status]).to be(:error)
-        expect(result[:message]).to eq(
-          EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
-        )
+        expect(result[:message]).to eq(size_checker.error_message.commit_error)
       end
 
       context 'with a subgroup project' do
@@ -71,9 +71,7 @@ RSpec.describe Commits::CreateService do
           result = service.execute
 
           expect(result[:status]).to be(:error)
-          expect(result[:message]).to eq(
-            EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
-          )
+          expect(result[:message]).to eq(size_checker.error_message.commit_error)
         end
       end
     end

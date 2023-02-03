@@ -7,12 +7,17 @@ module EE
 
       delegate :current_size, :limit, :exceeded_size, to: :@checker
 
-      def initialize(checker)
+      def initialize(checker:, message_params: {})
         @checker = checker
+        @message_params = message_params
       end
 
       def commit_error
-        push_error
+        _(
+          "Your action has been rejected because the namespace storage limit has been reached. " \
+          "For more information, visit %{doc_url}.") % {
+            doc_url: help_page_url('user/usage_quotas')
+          }
       end
 
       def merge_error
@@ -27,8 +32,21 @@ module EE
         }
       end
 
-      def push_error(change_size = 0)
-        self.class.storage_limit_reached_error_msg
+      def push_error(_change_size = 0)
+        params = {
+          namespace_name: message_params[:namespace_name],
+          manage_storage_url: help_page_url('user/usage_quotas', 'manage-your-storage-usage'),
+          restricted_actions_url: help_page_url('user/read_only_namespaces', 'restricted-actions'),
+          current_size: formatted(current_size),
+          size_limit: formatted(limit),
+          usage_percentage: usage_percentage
+        }
+
+        _("##### ERROR ##### You have used %{usage_percentage} of the storage quota for %{namespace_name} " \
+           "(%{current_size} of %{size_limit}). %{namespace_name} is now read-only. " \
+           "Projects under this namespace are locked and actions will be restricted. " \
+           "To manage storage, or purchase additional storage, see %{manage_storage_url}. " \
+           "To learn more about restricted actions, see %{restricted_actions_url}") % params
       end
 
       def new_changes_error
@@ -43,19 +61,16 @@ module EE
         "Please contact your GitLab administrator for more information."
       end
 
-      def self.storage_limit_reached_error_msg
-        _(
-          "Your action has been rejected because the namespace storage limit has been reached. " \
-          "For more information, visit %{doc_url}." % {
-            doc_url: Rails.application.routes.url_helpers.help_page_url('user/usage_quotas')
-          }
-        )
-      end
-
       private
+
+      attr_reader :message_params
 
       def formatted(number)
         number_to_human_size(number, delimiter: ',', precision: 2)
+      end
+
+      def usage_percentage
+        number_to_percentage(@checker.usage_ratio * 100, precision: 0)
       end
 
       def link_to(text, url, options)
@@ -64,6 +79,10 @@ module EE
 
       def help_page_path(path)
         ::Gitlab::Routing.url_helpers.help_page_path(path)
+      end
+
+      def help_page_url(path, anchor = nil)
+        ::Gitlab::Routing.url_helpers.help_page_url(path, anchor: anchor)
       end
     end
   end

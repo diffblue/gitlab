@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe EE::Namespace::Storage::Notification, feature_category: :subscription_cost_management do
   include NamespaceStorageHelpers
+  include RepositoryStorageHelpers
 
   let_it_be(:group, refind: true) { create(:group) }
   let_it_be(:owner) { create(:user) }
@@ -88,17 +89,7 @@ RSpec.describe EE::Namespace::Storage::Notification, feature_category: :subscrip
 
     context 'with repository usage' do
       before do
-        stub_feature_flags(namespace_storage_limit: false)
-        stub_ee_application_setting(automatic_purchased_storage_allocation: true)
-        allow(group.root_ancestor).to receive(:contains_locked_projects?).and_return(contains_locked_projects)
-        allow(group.root_ancestor).to receive(:repository_size_excess_project_count).and_return(5)
-        allow(group.root_ancestor).to receive(:actual_size_limit).and_return(10)
-        allow_next_instance_of(Namespaces::Storage::RootExcessSize) do |root_storage_size|
-          allow(root_storage_size).to receive(:above_size_limit?).and_return(true)
-          allow(root_storage_size).to receive(:usage_ratio).and_return(5.5).at_least(:once)
-          allow(root_storage_size).to receive(:current_size).and_return(55)
-          allow(root_storage_size).to receive(:limit).and_return(10)
-        end
+        stub_over_repository_limit(group, contains_locked_projects)
       end
 
       it 'includes a usage_quotas help link' do
@@ -113,7 +104,7 @@ RSpec.describe EE::Namespace::Storage::Notification, feature_category: :subscrip
       context 'when additional_purchased_storage_size is 0' do
         it 'returns proper usage_message' do
           expect(subject[:usage_message]).to eq "You have reached the free storage limit of " \
-                                                "10 Bytes on one or more projects."
+                                                "10 Bytes on one or more projects"
         end
 
         it 'returns proper explanation_message' do
