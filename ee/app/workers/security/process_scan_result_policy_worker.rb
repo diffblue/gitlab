@@ -5,8 +5,10 @@ module Security
     include ApplicationWorker
     include Gitlab::ExclusiveLeaseHelpers
 
-    LEASE_TTL = 5.minutes
     LEASE_NAMESPACE = "process_scan_result_policy_worker"
+    LEASE_TTL = 5.minutes
+    LEASE_RETRY_BASE = 0.1
+    LEASE_RETRY_MULTIPLIER = 1.3
 
     data_consistency :always
 
@@ -24,7 +26,7 @@ module Security
 
       return unless project && configuration
 
-      in_lock(self.class.lease_key(project, configuration), ttl: LEASE_TTL) do
+      in_lock(self.class.lease_key(project, configuration), ttl: LEASE_TTL, sleep_sec: method(:lease_sleep_sec)) do
         configuration.transaction do
           configuration.delete_scan_finding_rules_for_project(project_id)
 
@@ -45,6 +47,10 @@ module Security
           .new(project: project)
           .execute
       end
+    end
+
+    def lease_sleep_sec(attempts)
+      LEASE_RETRY_BASE * (LEASE_RETRY_MULTIPLIER**attempts)
     end
   end
 end
