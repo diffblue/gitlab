@@ -405,6 +405,30 @@ feature_category: :global_search do
 
         expect { described_class.new.execute }.not_to exceed_all_query_limit(control)
       end
+
+      context 'when the user is a member of a project in a namespace with a parent group' do
+        let_it_be(:parent_group) { create(:group) }
+        let_it_be(:group) { create(:group, parent: parent_group) }
+        let_it_be(:project) { create(:project, group: group) }
+
+        it 'does not have N+1 queries for users' do
+          users = create_list(:user, 2)
+          users.each { |user| project.add_developer(user) }
+
+          described_class.track!(*users)
+
+          control = ActiveRecord::QueryRecorder.new(skip_cached: false) { described_class.new.execute }
+
+          new_users = create_list(:user, 3)
+          new_users.each { |user| project.add_developer(user) }
+
+          users += new_users
+
+          described_class.track!(*users)
+
+          expect { described_class.new.execute }.not_to exceed_all_query_limit(control)
+        end
+      end
     end
 
     def expect_processing(*refs, failures: [])
