@@ -829,4 +829,8 @@ export default {
       value: input.color.color,
     });
   },
+
+  setFullBoardIssuesCount: ({ commit }, { listId, count }) => {
+    commit(types.UPDATE_FULL_BOARD_ISSUES_COUNT, { listId, count });
+  },
 };

@@ -21,6 +21,7 @@ let state = {
     isLoadingMore: false,
     pageInfo: {},
   },
+  fullBoardIssuesCount: {},
 };
 
 describe('SET_SHOW_LABELS', () => {
@@ -354,5 +355,15 @@ describe('SET_SELECTED_GROUP', () => {
     mutations[types.SET_SELECTED_GROUP](state, mockSubGroups[0]);
 
     expect(state.selectedGroup).toEqual(mockSubGroups[0]);
+  });
+});
+
+describe('UPDATE_FULL_BOARD_ISSUES_COUNT', () => {
+  const listId = 'gid://gitlab/List/1';
+  const count = 20;
+  it('Should set fullBoardIssuesCount to state', () => {
+    mutations[types.UPDATE_FULL_BOARD_ISSUES_COUNT](state, { listId, count });
+
+    expect(state.fullBoardIssuesCount[listId]).toEqual(count);
   });
 });

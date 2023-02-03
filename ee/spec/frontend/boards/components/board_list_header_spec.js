@@ -38,9 +38,7 @@ describe('Board List Header Component', () => {
   let wrapper;
   let fakeApollo;
 
-  beforeEach(() => {
-    store = new Vuex.Store({ state: { activeId: inactiveId } });
-  });
+  const setFullBoardIssuesCountSpy = jest.fn();
 
   afterEach(() => {
     wrapper.destroy();
@@ -84,9 +82,11 @@ describe('Board List Header Component', () => {
 
     store = new Vuex.Store({
       state,
+      actions: {
+        setFullBoardIssuesCount: setFullBoardIssuesCountSpy,
+        setActiveId: jest.fn(),
+      },
     });
-
-    jest.spyOn(store, 'dispatch').mockImplementation();
 
     wrapper = shallowMount(BoardListHeader, {
       apolloProvider: fakeApollo,
@@ -205,6 +205,28 @@ describe('Board List Header Component', () => {
       createComponent({ isSwimlanesHeader: true, collapsed: true });
 
       expect(wrapper.find('.board-header-collapsed-info-icon').exists()).toBe(true);
+    });
+  });
+
+  describe('setFullBoardIssuesCount action', () => {
+    const listId = boardListQueryResponse().data.boardList.id;
+    const count = boardListQueryResponse().data.boardList.issuesCount;
+
+    it('calls setFullBoardIssuesCount when isEpicBoard is false', async () => {
+      createComponent({ isEpicBoard: false });
+      await waitForPromises();
+
+      expect(setFullBoardIssuesCountSpy).toHaveBeenCalledWith(expect.any(Object), {
+        listId,
+        count,
+      });
+    });
+
+    it('does not call setFullBoardIssuesCount when isEpicBoard is true', async () => {
+      createComponent({ isEpicBoard: true });
+      await waitForPromises();
+
+      expect(setFullBoardIssuesCountSpy).not.toHaveBeenCalled();
     });
   });
 

@@ -2,6 +2,7 @@
 // This is a false violation of @gitlab/no-runtime-template-compiler, since it
 // extends a valid Vue single file component.
 /* eslint-disable @gitlab/no-runtime-template-compiler */
+import { mapActions } from 'vuex';
 import BoardListHeaderFoss from '~/boards/components/board_list_header.vue';
 import { n__, __, sprintf } from '~/locale';
 import listQuery from 'ee_else_ce/boards/graphql/board_lists_deferred.query.graphql';
@@ -87,6 +88,19 @@ export default {
 
       return !this.isLoading;
     },
+  },
+  watch: {
+    boardList: {
+      handler() {
+        this.setFullBoardIssuesCount({
+          listId: this.boardList?.id,
+          count: this.boardList?.issuesCount ?? 0,
+        });
+      },
+    },
+  },
+  methods: {
+    ...mapActions(['setFullBoardIssuesCount']),
   },
 };
 </script>

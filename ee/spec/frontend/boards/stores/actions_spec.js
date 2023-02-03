@@ -1723,3 +1723,21 @@ describe('setActiveEpicColor', () => {
     );
   });
 });
+
+describe('setFullBoardIssuesCount', () => {
+  const payload = { listId: 'gid://gitlab/List/1', count: 2 };
+  it('should commit mutation UPDATE_FULL_BOARD_ISSUES_COUNT', async () => {
+    await testAction(
+      actions.setFullBoardIssuesCount,
+      payload,
+      {},
+      [
+        {
+          type: types.UPDATE_FULL_BOARD_ISSUES_COUNT,
+          payload,
+        },
+      ],
+      [],
+    );
+  });
+});
