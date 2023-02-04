@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'OKR', :js, feature_category: :product_planning do
+RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, namespace: group) }

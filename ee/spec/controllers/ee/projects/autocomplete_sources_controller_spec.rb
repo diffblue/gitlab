@@ -47,7 +47,7 @@ RSpec.describe Projects::AutocompleteSourcesController do
     end
   end
 
-  describe '#iterations', :freeze_time, feature_category: :project_management do
+  describe '#iterations', :freeze_time, feature_category: :team_planning do
     let_it_be(:cadence) { create(:iterations_cadence, group: group) }
     let_it_be(:open_iteration) { create(:iteration, iterations_cadence: cadence) }
     let_it_be(:closed_iteration) { create(:iteration, :closed, iterations_cadence: cadence) }

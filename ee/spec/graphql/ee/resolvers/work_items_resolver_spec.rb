@@ -17,7 +17,7 @@ RSpec.describe Resolvers::WorkItemsResolver do
     let_it_be(:work_item2) { create(:work_item, :failed_status, project: project) }
     let_it_be(:work_item3) { create(:work_item, :requirement, project: project) }
 
-    context 'with status widget arguments', feature_category: :requirements do
+    context 'with status widget arguments', feature_category: :requirements_management do
       it 'filters work items by status' do
         expect(resolve_items(status_widget: { status: 'passed' })).to contain_exactly(work_item1)
         expect(resolve_items(status_widget: { status: 'failed' })).to contain_exactly(work_item2)
@@ -36,7 +36,7 @@ RSpec.describe Resolvers::WorkItemsResolver do
       end
     end
 
-    context 'with legacy requirement widget arguments', feature_category: :requirements do
+    context 'with legacy requirement widget arguments', feature_category: :requirements_management do
       let_it_be(:work_item_from_other_project) do
         create(:work_item, :requirement, project: create(:project), iid: work_item1.iid)
       end

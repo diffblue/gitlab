@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_category: :threat_insights do
+RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_category: :vulnerability_management do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project) }

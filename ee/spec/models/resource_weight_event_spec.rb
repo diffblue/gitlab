@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ResourceWeightEvent, feature_category: :team_planing, type: :model do
+RSpec.describe ResourceWeightEvent, feature_category: :team_planning, type: :model do
   let_it_be(:user1) { create(:user) }
   let_it_be(:user2) { create(:user) }
 

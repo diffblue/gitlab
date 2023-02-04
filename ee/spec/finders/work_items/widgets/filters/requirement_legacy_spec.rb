@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe WorkItems::Widgets::Filters::RequirementLegacy, feature_category: :requirements do
+RSpec.describe WorkItems::Widgets::Filters::RequirementLegacy, feature_category: :requirements_management do
   describe '.filter' do
     let_it_be(:project) { create(:project) }
     let_it_be(:work_item) { create(:work_item, :requirement, project: project, iid: 35) }
