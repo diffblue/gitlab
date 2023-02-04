@@ -39,7 +39,7 @@ export default {
   ],
   licenseStates: {
     newly_detected: s__('ScanResultPolicy|Newly Detected'),
-    pre_existing: s__('ScanResultPolicy|Pre-existing'),
+    detected: s__('ScanResultPolicy|Pre-existing'),
   },
   data() {
     return { searchTerm: '' };
