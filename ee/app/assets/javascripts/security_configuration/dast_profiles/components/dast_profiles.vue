@@ -1,5 +1,5 @@
 <script>
-import { GlDropdown, GlDropdownItem, GlTab, GlTabs } from '@gitlab/ui';
+import { GlDisclosureDropdown, GlTab, GlTabs } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { getLocationHash } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
@@ -9,8 +9,7 @@ import DastFailedSiteValidations from './dast_failed_site_validations.vue';
 
 export default {
   components: {
-    GlDropdown,
-    GlDropdownItem,
+    GlDisclosureDropdown,
     GlTab,
     GlTabs,
     DastFailedSiteValidations,
@@ -39,6 +38,17 @@ export default {
       return getProfileSettings({
         createNewProfilePaths,
       });
+    },
+    newProfileDisclosureItems() {
+      return Object.values(this.profileSettings).map(
+        ({ i18n, createNewProfilePath, profileType }) => ({
+          text: i18n.createNewLinkText,
+          href: createNewProfilePath,
+          extraAttrs: {
+            key: profileType,
+          },
+        }),
+      );
     },
     tabIndex: {
       get() {
@@ -214,20 +224,13 @@ export default {
         <h2 class="my-0">
           {{ $options.i18n.heading }}
         </h2>
-        <gl-dropdown
-          :text="$options.i18n.newProfileDropdownLabel"
-          variant="confirm"
-          right
+        <gl-disclosure-dropdown
           class="gl-ml-auto"
-        >
-          <gl-dropdown-item
-            v-for="{ i18n, createNewProfilePath, profileType } in profileSettings"
-            :key="profileType"
-            :href="createNewProfilePath"
-          >
-            {{ i18n.createNewLinkText }}
-          </gl-dropdown-item>
-        </gl-dropdown>
+          placement="right"
+          variant="confirm"
+          :toggle-text="$options.i18n.newProfileDropdownLabel"
+          :items="newProfileDisclosureItems"
+        />
       </div>
       <p>
         {{ $options.i18n.subHeading }}
