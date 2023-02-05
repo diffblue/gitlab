@@ -37,15 +37,15 @@ RSpec.describe "User creates a merge request", :js, feature_category: :code_revi
 
     wait_for_requests
 
-    find('.gl-dropdown-item', text: 'fix', match: :first).click
+    find('.gl-new-dropdown-item-text-wrapper', text: 'fix', match: :first).click
 
     find(".js-target-branch").click
 
-    find('.gl-listbox-search-input').set('fix')
+    find('.gl-listbox-search-input').set('feature')
 
     wait_for_requests
 
-    find('.gl-dropdown-item', text: 'feature', match: :first).click
+    find('.gl-new-dropdown-item-text-wrapper', text: 'feature', match: :first).click
 
     click_button("Compare branches")
 
