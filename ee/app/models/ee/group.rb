@@ -149,6 +149,10 @@ module EE
 
       scope :user_is_member, -> (user) { id_in(user.authorized_groups(with_minimal_access: false)) }
 
+      scope :with_trial_started_on, ->(date) do
+        left_joins(:gitlab_subscription).where(gitlab_subscriptions: { trial: true, trial_starts_on: date })
+      end
+
       state_machine :ldap_sync_status, namespace: :ldap_sync, initial: :ready do
         state :ready
         state :started

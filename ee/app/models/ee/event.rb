@@ -11,6 +11,7 @@ module EE
       scope :totals_by_author, -> { group(:author_id).count }
       scope :totals_by_author_target_type_action, -> { group(:author_id, :target_type, :action).count }
       scope :epics, -> { where(target_type: 'Epic') }
+      scope :for_projects_after, ->(projects, date) { where(project: projects, created_at: date..) }
     end
 
     EPIC_ACTIONS = [:created, :closed, :reopened].freeze

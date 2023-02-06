@@ -87,6 +87,10 @@ module EE
         def confirmation_instructions_email
           ::Notify.confirmation_instructions_email(user.email, token: '123456').message
         end
+
+        def abandoned_trial_notification
+          ::Notify.abandoned_trial_notification(user.id).message
+        end
       end
 
       private

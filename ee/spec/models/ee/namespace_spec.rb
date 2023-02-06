@@ -298,24 +298,6 @@ RSpec.describe Namespace do
       end
     end
 
-    describe '.in_active_trial', :saas do
-      let_it_be(:namespaces) do
-        [
-          create(:namespace),
-          create(:namespace_with_plan),
-          create(:namespace_with_plan, trial_ends_on: Date.tomorrow)
-        ]
-      end
-
-      it 'is consistent to trial_active? method' do
-        namespaces.each do |ns|
-          consistent = described_class.in_active_trial.include?(ns) == !!ns.trial_active?
-
-          expect(consistent).to be true
-        end
-      end
-    end
-
     describe '.not_in_active_trial', :saas do
       let_it_be(:namespaces) do
         [

@@ -84,6 +84,22 @@ RSpec.describe Event do
       end
     end
 
+    context 'scopes' do
+      describe '.for_projects_after' do
+        let_it_be(:project1) { create(:project) }
+        let_it_be(:project2) { create(:project) }
+        let_it_be(:project3) { create(:project) }
+        let_it_be(:event1) { create(:event, project: project1) }
+        let_it_be(:event2) { create(:event, project: project2, created_at: 2.days.ago) }
+        let_it_be(:event3) { create(:event, project: project3) }
+
+        it 'returns events for specified projects created after selected time' do
+          expect(described_class.for_projects_after([project1, project2], 1.day.ago))
+            .to match_array([event1])
+        end
+      end
+    end
+
     context 'vulnerability event' do
       let(:authorized_users) { [author, member] }
       let(:unauthorized_users) { [non_member, reporter, guest, admin] }
