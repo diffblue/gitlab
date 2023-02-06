@@ -4,11 +4,10 @@ import { GlBreakpointInstance as bp } from '@gitlab/ui/dist/utils';
 import { debounce } from 'lodash';
 import { removeTrialSuffix } from 'ee/billings/billings_util';
 import { shouldHandRaiseLeadButtonMount } from 'ee/hand_raise_leads/hand_raise_lead';
-import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { n__, sprintf } from '~/locale';
 import Tracking from '~/tracking';
-import { POPOVER, RESIZE_EVENT, EXPERIMENT_KEY } from './constants';
+import { POPOVER, RESIZE_EVENT } from './constants';
 
 const {
   i18n,
@@ -17,23 +16,20 @@ const {
   resizeEventDebounceMS,
   disabledBreakpoints,
 } = POPOVER;
-const trackingMixin = Tracking.mixin({ experiment: EXPERIMENT_KEY });
+const trackingMixin = Tracking.mixin();
 
 export default {
   components: {
     GlButton,
     GlPopover,
     GlSprintf,
-    GitlabExperiment,
   },
   mixins: [trackingMixin],
   inject: {
     containerId: {},
-    daysRemaining: {}, // for tracking purposes
-    groupName: {},
+    daysRemaining: {},
     planName: {},
     plansHref: {},
-    purchaseHref: {},
     targetId: {},
     trialEndDate: {},
     user: {},
@@ -57,12 +53,6 @@ export default {
     },
     planNameWithoutTrial() {
       return removeTrialSuffix(this.planName);
-    },
-    upgradeButtonTitle() {
-      return sprintf(this.$options.i18n.upgradeButtonTitle, {
-        groupName: this.groupName,
-        planName: removeTrialSuffix(this.planName),
-      });
     },
     popoverTitle() {
       const i18nPopoverTitle = n__(
@@ -126,36 +116,18 @@ export default {
     </gl-sprintf>
 
     <div class="gl-mt-5">
-      <gitlab-experiment name="group_contact_sales">
-        <template #control>
-          <gl-button
-            data-testid="upgrade-btn"
-            category="primary"
-            variant="confirm"
-            size="small"
-            class="gl-mb-0"
-            block
-            :href="purchaseHref"
-          >
-            <span class="gl-font-sm">{{ upgradeButtonTitle }}</span>
-          </gl-button>
-        </template>
-
-        <template #candidate>
-          <div data-testid="contact-sales-btn" @click="trackPageAction('contactSalesBtnClick')">
-            <div
-              class="js-hand-raise-lead-button"
-              :data-button-attributes="JSON.stringify($options.handRaiseLeadAttributes)"
-              :data-namespace-id="user.namespaceId"
-              :data-user-name="user.userName"
-              :data-first-name="user.firstName"
-              :data-last-name="user.lastName"
-              :data-company-name="user.companyName"
-              :data-glm-content="user.glmContent"
-            ></div>
-          </div>
-        </template>
-      </gitlab-experiment>
+      <div data-testid="contact-sales-btn" @click="trackPageAction('contactSalesBtnClick')">
+        <div
+          class="js-hand-raise-lead-button"
+          :data-button-attributes="JSON.stringify($options.handRaiseLeadAttributes)"
+          :data-namespace-id="user.namespaceId"
+          :data-user-name="user.userName"
+          :data-first-name="user.firstName"
+          :data-last-name="user.lastName"
+          :data-company-name="user.companyName"
+          :data-glm-content="user.glmContent"
+        ></div>
+      </div>
 
       <gl-button
         :href="plansHref"

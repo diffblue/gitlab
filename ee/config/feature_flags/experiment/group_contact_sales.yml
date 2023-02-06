@@ -1,8 +1,0 @@
----
-name: group_contact_sales
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/77327
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/348346
-milestone: '14.8'
-type: experiment
-group: group::acquisition
-default_enabled: false
