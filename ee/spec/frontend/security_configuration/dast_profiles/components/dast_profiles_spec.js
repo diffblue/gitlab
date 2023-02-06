@@ -1,4 +1,4 @@
-import { GlDropdown, GlTabs } from '@gitlab/ui';
+import { GlDisclosureDropdown, GlTabs } from '@gitlab/ui';
 import { within } from '@testing-library/dom';
 import { mount, shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
@@ -64,19 +64,13 @@ describe('EE - DastProfiles', () => {
 
   const withinComponent = () => within(wrapper.element);
   const getProfilesComponent = (profileType) => wrapper.find(`[data-testid="${profileType}List"]`);
-  const getDropdownComponent = () => wrapper.findComponent(GlDropdown);
-  const getSiteProfilesDropdownItem = (text) =>
-    within(getDropdownComponent().element).queryByText(text);
+  const getDisclosureComponent = () => wrapper.findComponent(GlDisclosureDropdown);
   const getTabsComponent = () => wrapper.findComponent(GlTabs);
   const getTab = ({ tabName, selected }) =>
     withinComponent().getByRole('tab', {
       name: tabName,
       selected,
     });
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   describe('failed validations', () => {
     it('renders the failed site validations summary', () => {
@@ -98,17 +92,28 @@ describe('EE - DastProfiles', () => {
     it('has a "New" dropdown menu', () => {
       createComponent();
 
-      expect(getDropdownComponent().props('text')).toBe('New');
+      expect(getDisclosureComponent().props('toggleText')).toBe('New');
     });
 
-    it.each`
-      itemName             | href
-      ${'Site profile'}    | ${TEST_NEW_DAST_SITE_PROFILE_PATH}
-      ${'Scanner profile'} | ${TEST_NEW_DAST_SCANNER_PROFILE_PATH}
-    `('shows a "$itemName" dropdown item that links to $href', ({ itemName, href }) => {
+    it('has a dropdown item that links to form', () => {
       createComponent();
 
-      expect(getSiteProfilesDropdownItem(itemName).getAttribute('href')).toBe(href);
+      expect(getDisclosureComponent().props('items')).toMatchObject([
+        {
+          text: 'Site profile',
+          href: TEST_NEW_DAST_SITE_PROFILE_PATH,
+          extraAttrs: {
+            key: 'siteProfiles',
+          },
+        },
+        {
+          text: 'Scanner profile',
+          href: TEST_NEW_DAST_SCANNER_PROFILE_PATH,
+          extraAttrs: {
+            key: 'scannerProfiles',
+          },
+        },
+      ]);
     });
   });
 
