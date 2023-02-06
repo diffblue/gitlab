@@ -15,7 +15,12 @@ import { TEST_HOST } from 'helpers/test_constants';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
 import download from '~/lib/utils/downloader';
-import { HTTP_STATUS_CREATED, HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
+import {
+  HTTP_STATUS_CREATED,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_OK,
+} from '~/lib/utils/http_status';
 
 import mockDependenciesResponse from './data/mock_dependencies.json';
 
@@ -199,7 +204,7 @@ describe('Dependencies actions', () => {
 
           mock
             .onGet(state.endpoint, { params: paramsDefault })
-            .replyOnce(200, mockDependenciesResponse, headers);
+            .replyOnce(HTTP_STATUS_OK, mockDependenciesResponse, headers);
         });
 
         it('uses default sorting params from state', () =>
@@ -231,7 +236,7 @@ describe('Dependencies actions', () => {
         beforeEach(() => {
           mock
             .onGet(state.endpoint, { params: paramsGiven })
-            .replyOnce(200, dependenciesPackagerDescending, headers);
+            .replyOnce(HTTP_STATUS_OK, dependenciesPackagerDescending, headers);
         });
 
         it('overrides default params', () =>
@@ -255,8 +260,8 @@ describe('Dependencies actions', () => {
 
     describe.each`
       responseType             | responseDetails
-      ${'an invalid response'} | ${[200, { foo: 'bar' }]}
-      ${'a response error'}    | ${[500]}
+      ${'an invalid response'} | ${[HTTP_STATUS_OK, { foo: 'bar' }]}
+      ${'a response error'}    | ${[HTTP_STATUS_INTERNAL_SERVER_ERROR]}
     `('given $responseType', ({ responseDetails }) => {
       beforeEach(() => {
         mock.onGet(state.endpoint).replyOnce(...responseDetails);
@@ -337,7 +342,7 @@ describe('Dependencies actions', () => {
 
     describe('on success with status other than created (201)', () => {
       beforeEach(() => {
-        mock.onPost(state.exportEndpoint).replyOnce(200, mockResponseExportEndpoint);
+        mock.onPost(state.exportEndpoint).replyOnce(HTTP_STATUS_OK, mockResponseExportEndpoint);
       });
 
       it('does not dispatch downloadExport', () =>
@@ -402,7 +407,9 @@ describe('Dependencies actions', () => {
 
     describe('on success', () => {
       beforeEach(() => {
-        mock.onGet(mockResponseExportEndpoint.self).replyOnce(200, mockResponseExportEndpoint);
+        mock
+          .onGet(mockResponseExportEndpoint.self)
+          .replyOnce(HTTP_STATUS_OK, mockResponseExportEndpoint);
       });
 
       it('sets SET_FETCHING_IN_PROGRESS and calls download', () =>

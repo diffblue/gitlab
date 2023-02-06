@@ -6,7 +6,11 @@ import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
 
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
+import {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_OK,
+} from '~/lib/utils/http_status';
 import mockData from './data/mock_data.json';
 
 describe('projects actions', () => {
@@ -39,7 +43,7 @@ describe('projects actions', () => {
             (param) => config.params[param] === expectedParams[param],
           );
 
-          return hasExpectedParams ? [200, data] : [400];
+          return hasExpectedParams ? [HTTP_STATUS_OK, data] : [HTTP_STATUS_BAD_REQUEST];
         });
       });
 
@@ -64,9 +68,9 @@ describe('projects actions', () => {
       beforeEach(() => {
         mock
           .onGet(state.projectsEndpoint, { page: '1' })
-          .replyOnce(200, [1], { 'x-next-page': '2' });
+          .replyOnce(HTTP_STATUS_OK, [1], { 'x-next-page': '2' });
 
-        mock.onGet(state.projectsEndpoint, { page: '2' }).replyOnce(200, [2]);
+        mock.onGet(state.projectsEndpoint, { page: '2' }).replyOnce(HTTP_STATUS_OK, [2]);
       });
 
       it('should dispatch the request and success actions', async () => {

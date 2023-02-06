@@ -5,6 +5,7 @@ import createState from 'ee/geo_node_form/store/state';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { MOCK_SYNC_NAMESPACES, MOCK_NODE, MOCK_ERROR_MESSAGE, MOCK_NODES_PATH } from '../mock_data';
 
@@ -55,13 +56,13 @@ describe('GeoNodeForm Store Actions', () => {
   });
 
   describe.each`
-    action                         | axiosMock                                                                | data                          | type         | actionCalls
-    ${actions.fetchSyncNamespaces} | ${{ method: 'onGet', code: 200, res: MOCK_SYNC_NAMESPACES }}             | ${null}                       | ${'success'} | ${[{ type: 'requestSyncNamespaces' }, { type: 'receiveSyncNamespacesSuccess', payload: MOCK_SYNC_NAMESPACES }]}
-    ${actions.fetchSyncNamespaces} | ${{ method: 'onGet', code: 500, res: null }}                             | ${null}                       | ${'error'}   | ${[{ type: 'requestSyncNamespaces' }, { type: 'receiveSyncNamespacesError' }]}
-    ${actions.saveGeoNode}         | ${{ method: 'onPost', code: 200, res: { ...MOCK_NODE, id: null } }}      | ${{ ...MOCK_NODE, id: null }} | ${'success'} | ${[{ type: 'requestSaveGeoNode' }, { type: 'receiveSaveGeoNodeSuccess' }]}
-    ${actions.saveGeoNode}         | ${{ method: 'onPost', code: 500, res: { message: MOCK_ERROR_MESSAGE } }} | ${{ ...MOCK_NODE, id: null }} | ${'error'}   | ${[{ type: 'requestSaveGeoNode' }, { type: 'receiveSaveGeoNodeError', payload: { message: MOCK_ERROR_MESSAGE } }]}
-    ${actions.saveGeoNode}         | ${{ method: 'onPut', code: 200, res: MOCK_NODE }}                        | ${MOCK_NODE}                  | ${'success'} | ${[{ type: 'requestSaveGeoNode' }, { type: 'receiveSaveGeoNodeSuccess' }]}
-    ${actions.saveGeoNode}         | ${{ method: 'onPut', code: 500, res: { message: MOCK_ERROR_MESSAGE } }}  | ${MOCK_NODE}                  | ${'error'}   | ${[{ type: 'requestSaveGeoNode' }, { type: 'receiveSaveGeoNodeError', payload: { message: MOCK_ERROR_MESSAGE } }]}
+    action                         | axiosMock                                                                                              | data                          | type         | actionCalls
+    ${actions.fetchSyncNamespaces} | ${{ method: 'onGet', code: HTTP_STATUS_OK, res: MOCK_SYNC_NAMESPACES }}                                | ${null}                       | ${'success'} | ${[{ type: 'requestSyncNamespaces' }, { type: 'receiveSyncNamespacesSuccess', payload: MOCK_SYNC_NAMESPACES }]}
+    ${actions.fetchSyncNamespaces} | ${{ method: 'onGet', code: HTTP_STATUS_INTERNAL_SERVER_ERROR, res: null }}                             | ${null}                       | ${'error'}   | ${[{ type: 'requestSyncNamespaces' }, { type: 'receiveSyncNamespacesError' }]}
+    ${actions.saveGeoNode}         | ${{ method: 'onPost', code: HTTP_STATUS_OK, res: { ...MOCK_NODE, id: null } }}                         | ${{ ...MOCK_NODE, id: null }} | ${'success'} | ${[{ type: 'requestSaveGeoNode' }, { type: 'receiveSaveGeoNodeSuccess' }]}
+    ${actions.saveGeoNode}         | ${{ method: 'onPost', code: HTTP_STATUS_INTERNAL_SERVER_ERROR, res: { message: MOCK_ERROR_MESSAGE } }} | ${{ ...MOCK_NODE, id: null }} | ${'error'}   | ${[{ type: 'requestSaveGeoNode' }, { type: 'receiveSaveGeoNodeError', payload: { message: MOCK_ERROR_MESSAGE } }]}
+    ${actions.saveGeoNode}         | ${{ method: 'onPut', code: HTTP_STATUS_OK, res: MOCK_NODE }}                                           | ${MOCK_NODE}                  | ${'success'} | ${[{ type: 'requestSaveGeoNode' }, { type: 'receiveSaveGeoNodeSuccess' }]}
+    ${actions.saveGeoNode}         | ${{ method: 'onPut', code: HTTP_STATUS_INTERNAL_SERVER_ERROR, res: { message: MOCK_ERROR_MESSAGE } }}  | ${MOCK_NODE}                  | ${'error'}   | ${[{ type: 'requestSaveGeoNode' }, { type: 'receiveSaveGeoNodeError', payload: { message: MOCK_ERROR_MESSAGE } }]}
   `(`axios calls`, ({ action, axiosMock, data, type, actionCalls }) => {
     describe(action.name, () => {
       describe(`on ${type}`, () => {
