@@ -17,12 +17,10 @@ module Sbom
     delegate :version, to: :component_version, allow_nil: true
     delegate :packager, to: :source, allow_nil: true
 
-    scope :with_preloads, -> { preload(:component, :component_version, :source) }
-
     def location
       {
         blob_path: input_file_blob_path,
-        path: source.input_file_path,
+        path: source&.input_file_path,
         top_level: false,
         ancestors: nil
       }
@@ -31,7 +29,7 @@ module Sbom
     private
 
     def input_file_blob_path
-      return unless source.input_file_path.present?
+      return unless source&.input_file_path.present?
 
       Gitlab::Routing.url_helpers.project_blob_path(project, File.join(commit_sha, source.input_file_path))
     end

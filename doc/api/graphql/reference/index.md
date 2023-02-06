@@ -7591,6 +7591,29 @@ The edge type for [`DastSiteValidation`](#dastsitevalidation).
 | <a id="dastsitevalidationedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="dastsitevalidationedgenode"></a>`node` | [`DastSiteValidation`](#dastsitevalidation) | The item at the end of the edge. |
 
+#### `DependencyConnection`
+
+The connection type for [`Dependency`](#dependency).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="dependencyconnectionedges"></a>`edges` | [`[DependencyEdge]`](#dependencyedge) | A list of edges. |
+| <a id="dependencyconnectionnodes"></a>`nodes` | [`[Dependency]`](#dependency) | A list of nodes. |
+| <a id="dependencyconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `DependencyEdge`
+
+The edge type for [`Dependency`](#dependency).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="dependencyedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="dependencyedgenode"></a>`node` | [`Dependency`](#dependency) | The item at the end of the edge. |
+
 #### `DependencyProxyBlobConnection`
 
 The connection type for [`DependencyProxyBlob`](#dependencyproxyblob).
@@ -12273,6 +12296,19 @@ The response from the AdminSidekiqQueuesDeleteJobs mutation.
 | <a id="deletednoteid"></a>`id` | [`NoteID!`](#noteid) | ID of the deleted note. |
 | <a id="deletednotelastdiscussionnote"></a>`lastDiscussionNote` | [`Boolean`](#boolean) | Whether deleted note is the last note in the discussion. |
 
+### `Dependency`
+
+A software dependency used by a project.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="dependencylocation"></a>`location` | [`Location`](#location) | Information about where the dependency is located. |
+| <a id="dependencyname"></a>`name` | [`String!`](#string) | Name of the dependency. |
+| <a id="dependencypackager"></a>`packager` | [`String`](#string) | Description of the tool used to manage the dependency. |
+| <a id="dependencyversion"></a>`version` | [`String`](#string) | Version of the dependency. |
+
 ### `DependencyProxyBlob`
 
 Dependency proxy blob.
@@ -15361,6 +15397,15 @@ Represents an entry from the Cloud License history.
 | <a id="licensehistoryentrytype"></a>`type` | [`String!`](#string) | Type of the license. |
 | <a id="licensehistoryentryusersinlicensecount"></a>`usersInLicenseCount` | [`Int`](#int) | Number of paid users in the license. |
 
+### `Location`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="locationblobpath"></a>`blobPath` | [`String`](#string) | HTTP URI path to view the input file in GitLab. |
+| <a id="locationpath"></a>`path` | [`String`](#string) | Path, relative to the root of the respository, of the filewhich was analyzed to detect the dependency. |
+
 ### `MavenMetadata`
 
 Maven metadata.
@@ -17641,6 +17686,7 @@ Represents a product analytics dashboard visualization.
 | <a id="projectcreatedat"></a>`createdAt` | [`Time`](#time) | Timestamp of the project creation. |
 | <a id="projectdastscannerprofiles"></a>`dastScannerProfiles` | [`DastScannerProfileConnection`](#dastscannerprofileconnection) | DAST scanner profiles associated with the project. (see [Connections](#connections)) |
 | <a id="projectdastsiteprofiles"></a>`dastSiteProfiles` | [`DastSiteProfileConnection`](#dastsiteprofileconnection) | DAST Site Profiles associated with the project. (see [Connections](#connections)) |
+| <a id="projectdependencies"></a>`dependencies` **{warning-solid}** | [`DependencyConnection`](#dependencyconnection) | **Introduced** in 15.9. This feature is in Alpha. It can be changed or removed at any time. Software dependencies used by the project. |
 | <a id="projectdescription"></a>`description` | [`String`](#string) | Short description of the project. |
 | <a id="projectdescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | GitLab Flavored Markdown rendering of `description`. |
 | <a id="projectdora"></a>`dora` | [`Dora`](#dora) | Project's DORA metrics. |

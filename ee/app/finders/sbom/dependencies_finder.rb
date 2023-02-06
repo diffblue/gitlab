@@ -12,7 +12,6 @@ module Sbom
 
     def execute
       project.sbom_occurrences
-        .with_preloads
         .page(page)
         .per(per_page)
     end

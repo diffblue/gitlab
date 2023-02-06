@@ -22,7 +22,7 @@ RSpec.describe GitlabSchema.types['Project'] do
       security_dashboard_path iterations iteration_cadences repository_size_excess actual_repository_size_limit
       code_coverage_summary api_fuzzing_ci_configuration corpuses path_locks incident_management_escalation_policies
       incident_management_escalation_policy scan_execution_policies network_policies security_training_urls
-      vulnerability_images only_allow_merge_if_all_status_checks_passed
+      vulnerability_images only_allow_merge_if_all_status_checks_passed dependencies
     ]
 
     expect(described_class).to include_graphql_fields(*expected_fields)
