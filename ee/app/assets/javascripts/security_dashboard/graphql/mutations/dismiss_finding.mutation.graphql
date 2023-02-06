@@ -1,0 +1,5 @@
+mutation dismissFinding($uuid: String!, $comment: String) {
+  securityFindingDismiss(input: { uuid: $uuid, comment: $comment }) {
+    errors
+  }
+}

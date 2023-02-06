@@ -38537,6 +38537,9 @@ msgstr ""
 msgid "SecurityReports|There was an error deleting the comment."
 msgstr ""
 
+msgid "SecurityReports|There was an error dismissing the finding. Please try again."
+msgstr ""
+
 msgid "SecurityReports|There was an error dismissing the vulnerabilities."
 msgstr ""
 
