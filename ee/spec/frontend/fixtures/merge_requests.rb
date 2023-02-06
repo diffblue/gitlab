@@ -103,11 +103,14 @@ RSpec.describe Projects::MergeRequestsController, '(JavaScript fixtures in EE co
         stub_licensed_features(multiple_approval_rules: true)
 
         merge_request.approval_rules <<
-          create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 1)
+          create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 1,
+            users: [create(:user)])
         merge_request.approval_rules <<
-          create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 1)
+          create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 1,
+            users: [create(:user)])
         merge_request.approval_rules <<
-          create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 1)
+          create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 1,
+            users: [create(:user)])
 
         query = get_graphql_query_as_string("#{base_input_path}#{query_name}", ee: true)
 
