@@ -22543,19 +22543,16 @@ msgstr ""
 msgid "Integration Settings"
 msgstr ""
 
-msgid "IntegrationEvents|A comment is added on a confidential issue"
+msgid "IntegrationEvents|A comment is added"
 msgstr ""
 
-msgid "IntegrationEvents|A comment is added on an issue"
-msgstr ""
-
-msgid "IntegrationEvents|A confidential issue is created, updated, or closed"
+msgid "IntegrationEvents|A confidential issue is created, closed, or reopened"
 msgstr ""
 
 msgid "IntegrationEvents|A deployment is started or finished"
 msgstr ""
 
-msgid "IntegrationEvents|A merge request is created, updated, or merged"
+msgid "IntegrationEvents|A merge request is created, merged, closed, or reopened"
 msgstr ""
 
 msgid "IntegrationEvents|A new, unique alert is recorded"
@@ -22570,16 +22567,19 @@ msgstr ""
 msgid "IntegrationEvents|A push is made to the repository"
 msgstr ""
 
-msgid "IntegrationEvents|A tag is pushed to the repository"
+msgid "IntegrationEvents|A tag is pushed to the repository or removed"
 msgstr ""
 
 msgid "IntegrationEvents|A wiki page is created or updated"
 msgstr ""
 
-msgid "IntegrationEvents|An incident is created"
+msgid "IntegrationEvents|An incident is created, closed, or reopened"
 msgstr ""
 
-msgid "IntegrationEvents|An issue is created, updated, or closed"
+msgid "IntegrationEvents|An internal note or comment on a confidential issue is added"
+msgstr ""
+
+msgid "IntegrationEvents|An issue is created, closed, or reopened"
 msgstr ""
 
 msgid "Integrations"
