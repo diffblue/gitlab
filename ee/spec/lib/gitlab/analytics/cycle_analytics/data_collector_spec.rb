@@ -508,34 +508,6 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
     end
   end
 
-  context 'when `Analytics::CycleAnalytics::ProjectStage` is given' do
-    let(:aggregated_data_collector_enabled) { false }
-
-    it_behaves_like 'test various start and end event combinations' do
-      let_it_be(:project) { create(:project, :repository, group: create(:group)) }
-      let_it_be(:label) { create(:group_label, group: project.group) }
-      let_it_be(:other_label) { create(:group_label, group: project.group) }
-
-      let(:start_event_label) { nil }
-      let(:end_event_label) { nil }
-
-      let(:stage) do
-        Analytics::CycleAnalytics::ProjectStage.new(
-          name: 'My Stage',
-          project: project,
-          start_event_identifier: start_event_identifier,
-          end_event_identifier: end_event_identifier,
-          start_event_label: start_event_label,
-          end_event_label: end_event_label
-        )
-      end
-
-      before_all do
-        project.add_member(user, Gitlab::Access::DEVELOPER)
-      end
-    end
-  end
-
   context 'when `Analytics::CycleAnalytics::Stage` is given' do
     let(:aggregated_data_collector_enabled) { true }
 

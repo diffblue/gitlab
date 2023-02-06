@@ -3,7 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::ChangeFailureRate do
-  let(:stage) { build(:cycle_analytics_stage) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, group: group) }
+  let_it_be(:stage) { build(:cycle_analytics_stage, project: project) }
   let(:user) { build(:user) }
 
   let(:options) do
@@ -46,6 +48,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::ChangeFailureRate do
   end
 
   describe '#links' do
+    let(:stage) { build(:cycle_analytics_stage, namespace: group) }
+
     subject { described_class.new(stage: stage, current_user: user, options: options).links }
 
     it 'displays documentation link and group dashboard link' do
@@ -55,7 +59,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::ChangeFailureRate do
         [
           {
             "name" => _('Change Failure Rate'),
-            "url" => helpers.group_analytics_ci_cd_analytics_path(stage.parent, tab: 'change-failure-rate'),
+            "url" => helpers.group_analytics_ci_cd_analytics_path(group, tab: 'change-failure-rate'),
             "label" => s_('ValueStreamAnalytics|Dashboard')
           },
           {
@@ -68,8 +72,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::ChangeFailureRate do
       )
     end
 
-    context 'when the stage parent is a project' do
-      let(:stage) { build(:cycle_analytics_project_stage) }
+    context 'when the stage parent is a project namespace' do
+      let(:stage) { build(:cycle_analytics_stage, project: project) }
 
       it 'displays documentation link and group dashboard link' do
         helpers = Gitlab::Routing.url_helpers
@@ -78,7 +82,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::ChangeFailureRate do
           [
             {
               "name" => _('Change Failure Rate'),
-              "url" => helpers.charts_project_pipelines_path(stage.parent, chart: 'change-failure-rate'),
+              "url" => helpers.charts_project_pipelines_path(project, chart: 'change-failure-rate'),
               "label" => s_('ValueStreamAnalytics|Dashboard')
             },
             {

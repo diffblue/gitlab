@@ -21,10 +21,10 @@ module Gitlab
             helpers = Gitlab::Routing.url_helpers
 
             dashboard_link =
-              if @stage.parent.is_a?(::Group)
-                helpers.group_issues_analytics_path(@stage.parent)
+              if @stage.namespace.is_a?(::Group)
+                helpers.group_issues_analytics_path(@stage.namespace)
               else
-                helpers.project_analytics_issues_analytics_path(@stage.parent)
+                helpers.project_analytics_issues_analytics_path(@stage.namespace.project)
               end
 
             [

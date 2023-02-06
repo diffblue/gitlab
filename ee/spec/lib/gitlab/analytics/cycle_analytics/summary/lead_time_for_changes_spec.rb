@@ -66,8 +66,10 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::LeadTimeForChanges do
       )
     end
 
-    context 'for project stage' do
-      let(:stage) { build(:cycle_analytics_project_stage) }
+    context 'for a stage' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:project) { create(:project, group: group) }
+      let(:stage) { build(:cycle_analytics_stage, project: project) }
 
       it 'returns project dashboard link' do
         helpers = Gitlab::Routing.url_helpers
@@ -76,7 +78,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::LeadTimeForChanges do
           [
             {
               "name" => _('Lead Time for Changes'),
-              "url" => helpers.charts_project_pipelines_path(stage.parent, chart: 'lead-time'),
+              "url" => helpers.charts_project_pipelines_path(stage.namespace.project, chart: 'lead-time'),
               "label" => s_('ValueStreamAnalytics|Dashboard')
             },
             { "name" => _('Lead Time for Changes'),

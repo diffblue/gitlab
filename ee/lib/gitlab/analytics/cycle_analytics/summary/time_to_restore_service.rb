@@ -11,13 +11,13 @@ module Gitlab
 
           def links
             helpers = Gitlab::Routing.url_helpers
-            parent = @stage.parent
+            namespace = @stage.namespace
 
             dashboard_link =
-              if parent.is_a?(::Group)
-                helpers.group_analytics_ci_cd_analytics_path(parent, tab: 'time-to-restore-service')
+              if namespace.is_a?(::Group)
+                helpers.group_analytics_ci_cd_analytics_path(namespace, tab: 'time-to-restore-service')
               else
-                helpers.charts_project_pipelines_path(parent, chart: 'time-to-restore-service')
+                helpers.charts_project_pipelines_path(namespace.project, chart: 'time-to-restore-service')
               end
 
             [
