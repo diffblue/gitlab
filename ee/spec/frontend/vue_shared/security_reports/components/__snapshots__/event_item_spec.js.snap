@@ -29,7 +29,7 @@ exports[`Event Item with action buttons renders the action buttons 1`] = `
       <!---->
        
       <a
-        class="author-name-link js-user-link"
+        class="author-name-link js-user-link gl-overflow-hidden gl-overflow-wrap-break"
         data-username="gitlab"
       >
         <span
