@@ -13,5 +13,10 @@ module EE
     def todo_author_display?(todo)
       super && !todo.merge_train_removed?
     end
+
+    override :show_todo_state?
+    def show_todo_state?(todo)
+      super || (todo.target.is_a?(Epic) && todo.target.state == 'closed')
+    end
   end
 end
