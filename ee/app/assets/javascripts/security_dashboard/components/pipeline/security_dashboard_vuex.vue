@@ -57,10 +57,6 @@ export default {
 
       return Boolean(gitLabIssuePath || jiraIssueUrl);
     },
-    canCreateMergeRequest() {
-      const path = this.vulnerability.create_vulnerability_feedback_merge_request_path;
-      return Boolean(path);
-    },
     canDismissVulnerability() {
       const path = this.vulnerability.create_vulnerability_feedback_dismissal_path;
       return Boolean(path);
@@ -120,7 +116,6 @@ export default {
       <issue-modal
         :modal="modal"
         :can-create-issue="canCreateIssue"
-        :can-create-merge-request="canCreateMergeRequest"
         :can-dismiss-vulnerability="canDismissVulnerability"
         :is-creating-issue="isCreatingIssue"
         :is-dismissing-vulnerability="isDismissingVulnerability"

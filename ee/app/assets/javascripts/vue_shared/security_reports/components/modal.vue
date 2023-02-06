@@ -35,11 +35,6 @@ export default {
       required: false,
       default: false,
     },
-    canCreateMergeRequest: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
     canDismissVulnerability: {
       type: Boolean,
       required: false,
