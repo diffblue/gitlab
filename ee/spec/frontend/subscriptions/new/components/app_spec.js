@@ -6,12 +6,20 @@ import Checkout from 'ee/subscriptions/new/components/checkout.vue';
 import Modal from 'ee/subscriptions/new/components/modal.vue';
 import { stubExperiments } from 'helpers/experimentation_helper';
 import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
+import { createAlert } from '~/flash';
+import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
+import { PurchaseEvent } from 'ee/subscriptions/new/constants';
+
+jest.mock('~/flash');
 
 describe('App component', () => {
   let wrapper;
 
+  const findConfirmOrderDesktop = () => wrapper.findByTestId('confirm-order-desktop');
+  const findConfirmOrderMobile = () => wrapper.findByTestId('confirm-order-mobile');
+
   const createComponent = () => {
-    return shallowMountExtended(Component, {
+    wrapper = shallowMountExtended(Component, {
       stubs: {
         Modal,
         GitlabExperiment,
@@ -27,15 +35,11 @@ describe('App component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('cart_abandonment_modal experiment', () => {
     describe('control', () => {
       beforeEach(() => {
         stubExperiments({ cart_abandonment_modal: 'control' });
-        wrapper = createComponent();
+        createComponent();
       });
 
       it('matches the snapshot', () => {
@@ -50,7 +54,7 @@ describe('App component', () => {
     describe('candidate', () => {
       beforeEach(() => {
         stubExperiments({ cart_abandonment_modal: 'candidate' });
-        wrapper = createComponent();
+        createComponent();
       });
 
       it('matches the snapshot', () => {
@@ -65,7 +69,7 @@ describe('App component', () => {
 
   describe('step order app', () => {
     beforeEach(() => {
-      wrapper = createComponent();
+      createComponent();
     });
 
     it('renders checkout', () => {
@@ -79,17 +83,47 @@ describe('App component', () => {
 
   describe('confirm order CTA', () => {
     it(`should show confirm order CTA`, async () => {
-      wrapper = createComponent();
+      createComponent();
+
       await nextTick();
 
-      expect(wrapper.findByTestId('confirm-order-desktop').classes()).toEqual([
+      expect(findConfirmOrderDesktop().classes()).toEqual([
         'gl-display-none',
         'gl-lg-display-block!',
       ]);
-      expect(wrapper.findByTestId('confirm-order-mobile').classes()).toEqual([
+
+      expect(findConfirmOrderMobile().classes()).toEqual([
         'gl-display-block',
         'gl-lg-display-none!',
       ]);
+    });
+  });
+
+  describe('when the children component emit events', () => {
+    const error = new Error('Yikes!');
+
+    beforeEach(() => {
+      createComponent();
+    });
+
+    it('creates an alert from confirm order desktop', () => {
+      findConfirmOrderDesktop().vm.$emit(PurchaseEvent.ERROR, { error });
+
+      expect(createAlert).toHaveBeenCalledWith({
+        message: GENERAL_ERROR_MESSAGE,
+        captureError: true,
+        error,
+      });
+    });
+
+    it('creates an alert from confirm order mobile', () => {
+      findConfirmOrderMobile().vm.$emit(PurchaseEvent.ERROR, { error });
+
+      expect(createAlert).toHaveBeenCalledWith({
+        message: GENERAL_ERROR_MESSAGE,
+        captureError: true,
+        error,
+      });
     });
   });
 });

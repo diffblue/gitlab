@@ -2,9 +2,11 @@
 import StepOrderApp from 'ee/vue_shared/purchase_flow/components/step_order_app.vue';
 import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
 import Checkout from 'jh_else_ee/subscriptions/new/components/checkout.vue';
+import ConfirmOrder from 'ee/subscriptions/new/components/checkout/confirm_order.vue';
 import OrderSummary from 'jh_else_ee/subscriptions/new/components/order_summary.vue';
 import Modal from 'ee/subscriptions/new/components/modal.vue';
-import ConfirmOrder from './checkout/confirm_order.vue';
+import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
+import { createAlert } from '~/flash';
 
 export default {
   components: {
@@ -14,6 +16,11 @@ export default {
     Checkout,
     OrderSummary,
     ConfirmOrder,
+  },
+  methods: {
+    showError({ error, message = GENERAL_ERROR_MESSAGE }) {
+      createAlert({ message, error, captureError: true });
+    },
   },
 };
 </script>
@@ -31,6 +38,7 @@ export default {
         <confirm-order
           class="gl-display-none gl-lg-display-block!"
           data-testid="confirm-order-desktop"
+          @error="showError"
         />
       </template>
       <template #order-summary>
@@ -38,6 +46,7 @@ export default {
         <confirm-order
           class="gl-display-block gl-lg-display-none!"
           data-testid="confirm-order-mobile"
+          @error="showError"
         />
       </template>
     </step-order-app>
