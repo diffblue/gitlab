@@ -54,6 +54,11 @@ describe('Split Button', () => {
     expect(findDropdown().attributes().disabled).toBe('true');
   });
 
+  it('renders a loading icon when loading prop is true', () => {
+    createComponent({ buttons: buttons.slice(0).map((b) => ({ ...b, loading: true })) });
+    expect(findDropdown().attributes().loading).toBe('true');
+  });
+
   it('emits correct action on dropdown click', () => {
     createComponent({
       buttons: buttons.slice(0),

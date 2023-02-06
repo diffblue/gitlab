@@ -48,6 +48,7 @@ export default {
     variant="success"
     :text="selectedButton.name"
     :href="selectedButton.href"
+    :loading="selectedButton.loading"
     split
     @click="handleClick"
   >
