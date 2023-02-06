@@ -5,6 +5,7 @@ import { externalIssuesResolverFactory } from 'ee/external_issues_list/graphql/r
 import { DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
 import { i18n } from '~/issues/list/constants';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { mockExternalIssues } from '../mock_data';
 
 const DEFAULT_ISSUES_FETCH_PATH = '/test/issues/fetch';
@@ -123,7 +124,7 @@ describe('ee/external_issues_list/graphql/resolvers', () => {
 
   describe('with successful api request', () => {
     beforeEach(() => {
-      issuesApiSpy.mockReturnValue([200, mockExternalIssues, TEST_PAGE_HEADERS]);
+      issuesApiSpy.mockReturnValue([HTTP_STATUS_OK, mockExternalIssues, TEST_PAGE_HEADERS]);
     });
 
     it('sends expected params', async () => {
