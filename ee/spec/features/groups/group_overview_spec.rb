@@ -6,10 +6,12 @@ RSpec.describe 'Group information', :js, :aggregate_failures, feature_category: 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
+  let(:role) { :owner }
+
   subject(:visit_page) { visit group_path(group) }
 
   before do
-    group.add_owner(user)
+    group.add_member(user, role)
     sign_in(user)
   end
 

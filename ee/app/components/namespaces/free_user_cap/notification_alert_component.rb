@@ -6,7 +6,6 @@ module Namespaces
       private
 
       NOTIFICATION_USER_OVER_LIMIT_FREE_PLAN_ALERT = 'preview_user_over_limit_free_plan_alert'
-      READ_ONLY_NAMESPACES_URL = 'https://docs.gitlab.com/ee/user/read_only_namespaces.html'
 
       def breached_cap_limit?
         Shared.over_notification_limit?(namespace)
@@ -51,7 +50,7 @@ module Namespaces
       end
 
       def read_only_namespaces_link_start
-        "<a href='#{READ_ONLY_NAMESPACES_URL}' target='_blank' rel='noopener noreferrer'>".html_safe
+        "<a href='#{help_page_path('user/read_only_namespaces')}' target='_blank' rel='noopener noreferrer'>".html_safe
       end
     end
   end
