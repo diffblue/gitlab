@@ -74,6 +74,7 @@ module Projects
 
     def action_urls(project)
       urls = action_issue_urls(project).merge(
+        pipeline_created: project_pipelines_path(project),
         issue_created: project_issues_path(project),
         git_write: project_path(project),
         merge_request_created: project_merge_requests_path(project),

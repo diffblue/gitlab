@@ -73,7 +73,7 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
       let(:base_paths) do
         {
           trial_started: a_hash_including(url: %r{/learn_gitlab/-/issues/2\z}),
-          pipeline_created: a_hash_including(url: %r{/learn_gitlab/-/issues/7\z}),
+          pipeline_created: a_hash_including(url: %r{/learn_gitlab/-/pipelines\z}),
           code_owners_enabled: a_hash_including(url: %r{/learn_gitlab/-/issues/10\z}),
           required_mr_approvals_enabled: a_hash_including(url: %r{/learn_gitlab/-/issues/11\z}),
           issue_created: a_hash_including(url: %r{/learn_gitlab/-/issues\z}),

@@ -54,7 +54,7 @@ RSpec.describe 'Uncompleted learn gitlab link', :feature, :js, feature_category:
       expect_correct_candidate_link(issue_link, project_issues_path(project))
       expect_correct_candidate_link(find_link('Create a repository'), project_path(project))
       expect_correct_candidate_link(find_link('Invite your colleagues'), URI(project_members_url(project)).path)
-      expect_correct_candidate_link(find_link("Set up your first project's CI/CD"), project_issues_path(project, 7))
+      expect_correct_candidate_link(find_link("Set up your first project's CI/CD"), project_pipelines_path(project))
       expect_correct_candidate_link(find_link('Start a free trial of GitLab Ultimate'), project_issues_path(project, 2))
       expect_correct_candidate_link(find_link('Add code owners'), project_issues_path(project, 10))
       expect_correct_candidate_link(find_link('Enable require merge approvals'), project_issues_path(project, 11))
