@@ -140,7 +140,7 @@ module QA
         # @return [Hash]
         def base_license_info
           @base_license_info ||= {
-            test_license_mode: ENV['QA_TEST_LICENSE_MODE'] || false,
+            test_license_mode: ENV['GITLAB_LICENSE_MODE'] == 'test',
             license_key_length: license_length,
             last_five_characters: license.to_s.strip[-5..]
           }
