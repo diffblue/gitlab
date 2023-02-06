@@ -106,7 +106,7 @@ including the major methods:
 
 ## ClickHouse
 
-- [Introduction](clickhouse/introduction.md)
+- [Introduction](clickhouse/index.md)
 - [Optimizing query execution](clickhouse/optimization.md)
 - [Rebuild GitLab features using ClickHouse 1: Activity data](clickhouse/gitlab_activity_data.md)
 
