@@ -7,215 +7,92 @@ RSpec.describe 'Query.vulnerabilities.details', feature_category: :vulnerability
 
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user, security_dashboard_projects: [project]) }
+  let_it_be(:all_field_types_for_query) do
+    <<~FIELD_TYPES
+      ... on VulnerabilityDetailBoolean {
+        description
+        fieldName
+        name
+        value
+      }
+      ... on VulnerabilityDetailCode {
+        fieldName
+        lang
+        name
+        value
+      }
+      ... on VulnerabilityDetailCommit {
+        description
+        fieldName
+        name
+        value
+      }
+      ... on VulnerabilityDetailDiff {
+        after
+        before
+        description
+        fieldName
+        name
+      }
+      ... on VulnerabilityDetailFileLocation {
+        description
+        fieldName
+        fileName
+        lineEnd
+        lineStart
+        name
+      }
+      ... on VulnerabilityDetailInt {
+        description
+        fieldName
+        name
+        value
+      }
+      ... on VulnerabilityDetailMarkdown {
+        description
+        fieldName
+        name
+        value
+      }
+      ... on VulnerabilityDetailModuleLocation {
+        description
+        fieldName
+        moduleName
+        name
+        offset
+      }
+      ... on VulnerabilityDetailText {
+        description
+        fieldName
+        name
+        value
+      }
+      ... on VulnerabilityDetailUrl {
+        description
+        fieldName
+        href
+        name
+        text
+      }
+    FIELD_TYPES
+  end
 
   let_it_be(:fields) do
     <<~QUERY
       details {
         __typename
-        ... on VulnerabilityDetailBoolean {
-          description
-          fieldName
-          name
-          value
-        }
-        ... on VulnerabilityDetailCode {
-          fieldName
-          lang
-          name
-          value
-        }
-        ... on VulnerabilityDetailCommit {
-          description
-          fieldName
-          name
-          value
-        }
-        ... on VulnerabilityDetailDiff {
-          after
-          before
-          description
-          fieldName
-          name
-        }
-        ... on VulnerabilityDetailFileLocation {
-          description
-          fieldName
-          fileName
-          lineEnd
-          lineStart
-          name
-        }
-        ... on VulnerabilityDetailInt {
-          description
-          fieldName
-          name
-          value
-        }
-        ... on VulnerabilityDetailMarkdown {
-          description
-          fieldName
-          name
-          value
-        }
-        ... on VulnerabilityDetailModuleLocation {
-          description
-          fieldName
-          moduleName
-          name
-          offset
-        }
-        ... on VulnerabilityDetailText {
-          description
-          fieldName
-          name
-          value
-        }
-        ... on VulnerabilityDetailUrl {
-          description
-          fieldName
-          href
-          name
-          text
-        }
+        #{all_field_types_for_query}
         ... on VulnerabilityDetailTable {
           description
           fieldName
           name
           headers {
             __typename
-            ... on VulnerabilityDetailBoolean {
-              description
-              fieldName
-              name
-              value
-            }
-            ... on VulnerabilityDetailCode {
-              fieldName
-              lang
-              name
-              value
-            }
-            ... on VulnerabilityDetailCommit {
-              description
-              fieldName
-              name
-              value
-            }
-            ... on VulnerabilityDetailDiff {
-              after
-              before
-              description
-              fieldName
-              name
-            }
-            ... on VulnerabilityDetailFileLocation {
-              description
-              fieldName
-              fileName
-              lineEnd
-              lineStart
-              name
-            }
-            ... on VulnerabilityDetailInt {
-              description
-              fieldName
-              name
-              value
-            }
-            ... on VulnerabilityDetailMarkdown {
-              description
-              fieldName
-              name
-              value
-            }
-            ... on VulnerabilityDetailModuleLocation {
-              description
-              fieldName
-              moduleName
-              name
-              offset
-            }
-            ... on VulnerabilityDetailText {
-              description
-              fieldName
-              name
-              value
-            }
-            ... on VulnerabilityDetailUrl {
-              description
-              fieldName
-              href
-              name
-              text
-            }
+            #{all_field_types_for_query}
           }
           rows {
             __typename
-            ... on VulnerabilityDetailBoolean {
-              description
-              fieldName
-              name
-              value
-            }
-            ... on VulnerabilityDetailCode {
-              fieldName
-              lang
-              name
-              value
-            }
-            ... on VulnerabilityDetailCommit {
-              description
-              fieldName
-              name
-              value
-            }
-            ... on VulnerabilityDetailDiff {
-              after
-              before
-              description
-              fieldName
-              name
-            }
-            ... on VulnerabilityDetailFileLocation {
-              description
-              fieldName
-              fileName
-              lineEnd
-              lineStart
-              name
-            }
-            ... on VulnerabilityDetailInt {
-              description
-              fieldName
-              name
-              value
-            }
-            ... on VulnerabilityDetailMarkdown {
-              description
-              fieldName
-              name
-              value
-            }
-            ... on VulnerabilityDetailModuleLocation {
-              description
-              fieldName
-              moduleName
-              name
-              offset
-            }
-            ... on VulnerabilityDetailText {
-              description
-              fieldName
-              name
-              value
-            }
-            ... on VulnerabilityDetailUrl {
-              description
-              fieldName
-              href
-              name
-              text
-            }
+            #{all_field_types_for_query}
           }
         }
         ... on VulnerabilityDetailList {
@@ -223,71 +100,7 @@ RSpec.describe 'Query.vulnerabilities.details', feature_category: :vulnerability
           fieldName
           items {
             __typename
-            ... on VulnerabilityDetailBoolean {
-              description
-              fieldName
-              name
-              value
-            }
-            ... on VulnerabilityDetailCode {
-              fieldName
-              lang
-              name
-              value
-            }
-            ... on VulnerabilityDetailCommit {
-              description
-              fieldName
-              name
-              value
-            }
-            ... on VulnerabilityDetailDiff {
-              after
-              before
-              description
-              fieldName
-              name
-            }
-            ... on VulnerabilityDetailFileLocation {
-              description
-              fieldName
-              fileName
-              lineEnd
-              lineStart
-              name
-            }
-            ... on VulnerabilityDetailInt {
-              description
-              fieldName
-              name
-              value
-            }
-            ... on VulnerabilityDetailMarkdown {
-              description
-              fieldName
-              name
-              value
-            }
-            ... on VulnerabilityDetailModuleLocation {
-              description
-              fieldName
-              moduleName
-              name
-              offset
-            }
-            ... on VulnerabilityDetailText {
-              description
-              fieldName
-              name
-              value
-            }
-            ... on VulnerabilityDetailUrl {
-              description
-              fieldName
-              href
-              name
-              text
-            }
+            #{all_field_types_for_query}
           }
           name
         }
@@ -442,7 +255,29 @@ RSpec.describe 'Query.vulnerabilities.details', feature_category: :vulnerability
         "description" => nil,
         "fieldName" => "table_data",
         "name" => "Registers",
-        "headers" => [],
+        "headers" => [
+          {
+            "__typename" => "VulnerabilityDetailText",
+            "description" => nil,
+            "fieldName" => nil,
+            "name" => nil,
+            "value" => "Register"
+          },
+          {
+            "__typename" => "VulnerabilityDetailText",
+            "description" => nil,
+            "fieldName" => nil,
+            "name" => nil,
+            "value" => "Value"
+          },
+          {
+            "__typename" => "VulnerabilityDetailText",
+            "description" => nil,
+            "fieldName" => nil,
+            "name" => nil,
+            "value" => "Note"
+          }
+        ],
         "rows" => [
           {
             "__typename" => "VulnerabilityDetailInt",
