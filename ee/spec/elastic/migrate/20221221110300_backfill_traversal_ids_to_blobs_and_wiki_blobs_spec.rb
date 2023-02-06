@@ -124,6 +124,33 @@ feature_category: :global_search do
     end
   end
 
+  describe 'when Elasticsearch gives 404', :elastic_clean do
+    context 'when Elasticsearch responds with NotFoundException' do
+      let(:client) { instance_double('Elasticsearch::Transport::Client') }
+      let(:update_by_query_response) { { 'failures' => ['failed'] } }
+
+      before do
+        allow(client).to receive(:update_by_query).and_return(update_by_query_response)
+
+        allow(migration).to receive(:projects_with_missing_traversal_ids).and_return(projects.map(&:id))
+        allow(migration).to receive(:completed?).and_return(false)
+        allow(migration).to receive(:client).and_return(client)
+      end
+
+      context 'when a task_status throws a NotFound Exception' do
+        it 'removes entry from projects_in_progress in migration_state' do
+          migration_state = projects.map { |p| { task_id: 'oTUltX4IQMOUUVeiohTt8A:124', project_id: p.id } }
+          migration.set_migration_state(projects_in_progress: migration_state)
+          expect(migration).to receive(:set_migration_state).with(projects_in_progress: []).twice
+
+          expect { migration.migrate }.not_to raise_error
+
+          expect(migration.migration_state[:projects_in_progress]).to match_array(migration_state)
+        end
+      end
+    end
+  end
+
   describe 'integration test', :elastic_clean do
     before do
       set_elasticsearch_migration_to(old_version_without_traversal_ids, including: false)

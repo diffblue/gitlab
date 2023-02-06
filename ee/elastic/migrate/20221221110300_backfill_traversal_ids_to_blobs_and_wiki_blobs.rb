@@ -5,7 +5,7 @@ class BackfillTraversalIdsToBlobsAndWikiBlobs < Elastic::Migration
 
   ELASTIC_TIMEOUT = '5m'
   BLOB_AND_WIKI_BLOB = %w[blob wiki_blob].freeze
-  MAX_PROJECTS_TO_PROCESS = 100
+  MAX_PROJECTS_TO_PROCESS = 50
 
   batch_size 100_000
   batched!
@@ -15,26 +15,7 @@ class BackfillTraversalIdsToBlobsAndWikiBlobs < Elastic::Migration
   def migrate
     projects_in_progress = migration_state[:projects_in_progress] || []
     if projects_in_progress.present?
-      failed_or_completed_projects = []
-
-      projects_in_progress.each do |item|
-        project_id = item[:project_id]
-        task_id = item[:task_id]
-
-        task_status = helper.task_status(task_id: task_id)
-        if task_status['failures'].present?
-          log_warn "Failed to update project #{project_id} with_task_id: #{task_id} - #{task_status['failures']}"
-          failed_or_completed_projects << item
-        end
-
-        if task_status['completed'].present?
-          log "Updating traversal_ids in main index is completed for project #{project_id} with task_id: #{task_id}"
-          failed_or_completed_projects << item
-        else
-          log "Updating traversal_ids in main index is in progress for project #{project_id} with task_id: #{task_id}"
-        end
-      end
-
+      failed_or_completed_projects = process_projects_in_progress(projects_in_progress)
       projects_in_progress -= failed_or_completed_projects
       set_migration_state(projects_in_progress: projects_in_progress)
     end
@@ -79,6 +60,34 @@ class BackfillTraversalIdsToBlobsAndWikiBlobs < Elastic::Migration
   end
 
   private
+
+  def process_projects_in_progress(projects)
+    failed_or_completed_projects = []
+    projects.each do |item|
+      project_id = item[:project_id]
+      task_id = item[:task_id]
+      begin
+        task_status = helper.task_status(task_id: task_id)
+      rescue ::Elasticsearch::Transport::Transport::Errors::NotFound
+        log_warn "Failed to fetch task status for project #{project_id} with_task_id: #{task_id}"
+        failed_or_completed_projects << item
+        next
+      end
+
+      if task_status['failures'].present? || task_status['error'].present?
+        log_warn "Failed to update project #{project_id} with_task_id: #{task_id} - #{task_status['failures']}"
+        failed_or_completed_projects << item
+      end
+
+      if task_status['completed'].present?
+        log "Updating traversal_ids in main index is completed for project #{project_id} with task_id: #{task_id}"
+        failed_or_completed_projects << item
+      else
+        log "Updating traversal_ids in main index is in progress for project #{project_id} with task_id: #{task_id}"
+      end
+    end
+    failed_or_completed_projects
+  end
 
   def update_by_query(project)
     log "Launching update query for project #{project.id}"
