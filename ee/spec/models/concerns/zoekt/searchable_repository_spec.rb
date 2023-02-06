@@ -9,7 +9,7 @@ RSpec.describe ::Zoekt::SearchableRepository, :zoekt, feature_category: :global_
   let_it_be(:unindexed_project) { create(:project, :repository) }
   let(:repository) { project.repository }
   let(:unindexed_repository) { unindexed_project.repository }
-  let_it_be(:private_project) { create(:project, :repository) }
+  let_it_be(:private_project) { create(:project, :repository, namespace: project.namespace) }
   let(:private_repository) { private_project.repository }
 
   before do
