@@ -116,4 +116,21 @@ RSpec.describe AuditEvents::ExportCsvService, feature_category: :audit_events do
       expect { csv.headers }.not_to raise_error
     end
   end
+
+  context 'with preloads' do
+    let(:params) { super().tap { |params| params.delete(:author_id) } }
+
+    it 'preloads fields to avoid N+1 queries' do
+      described_class.new(params).csv_data.to_a # warm-up
+      control = ActiveRecord::QueryRecorder.new { described_class.new(params).csv_data.to_a }
+
+      create(:project_audit_event,
+        entity_id: 678,
+        entity_type: 'Project',
+        author_id: create(:user).id,
+        created_at: Time.zone.parse('2020-02-20T12:00:00Z'))
+
+      expect { described_class.new(params).csv_data.to_a }.not_to exceed_query_limit(control)
+    end
+  end
 end
