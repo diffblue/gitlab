@@ -5,6 +5,7 @@ import state from 'ee/geo_settings/store/state';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { MOCK_BASIC_SETTINGS_DATA, MOCK_APPLICATION_SETTINGS_FETCH_RESPONSE } from '../mock_data';
 
 jest.mock('~/flash');
@@ -40,11 +41,11 @@ describe('GeoSettings Store Actions', () => {
   });
 
   describe.each`
-    action                       | axiosMock                                                                        | type         | mutationCalls                                                                                                                            | callback
-    ${actions.fetchGeoSettings}  | ${{ method: 'onGet', code: 200, res: MOCK_APPLICATION_SETTINGS_FETCH_RESPONSE }} | ${'success'} | ${[{ type: types.REQUEST_GEO_SETTINGS }, { type: types.RECEIVE_GEO_SETTINGS_SUCCESS, payload: MOCK_BASIC_SETTINGS_DATA }]}               | ${noCallback}
-    ${actions.fetchGeoSettings}  | ${{ method: 'onGet', code: 500, res: null }}                                     | ${'error'}   | ${[{ type: types.REQUEST_GEO_SETTINGS }, { type: types.RECEIVE_GEO_SETTINGS_ERROR }]}                                                    | ${flashCallback}
-    ${actions.updateGeoSettings} | ${{ method: 'onPut', code: 200, res: MOCK_APPLICATION_SETTINGS_FETCH_RESPONSE }} | ${'success'} | ${[{ type: types.REQUEST_UPDATE_GEO_SETTINGS }, { type: types.RECEIVE_UPDATE_GEO_SETTINGS_SUCCESS, payload: MOCK_BASIC_SETTINGS_DATA }]} | ${noCallback}
-    ${actions.updateGeoSettings} | ${{ method: 'onPut', code: 500, res: null }}                                     | ${'error'}   | ${[{ type: types.REQUEST_UPDATE_GEO_SETTINGS }, { type: types.RECEIVE_UPDATE_GEO_SETTINGS_ERROR }]}                                      | ${flashCallback}
+    action                       | axiosMock                                                                                   | type         | mutationCalls                                                                                                                            | callback
+    ${actions.fetchGeoSettings}  | ${{ method: 'onGet', code: HTTP_STATUS_OK, res: MOCK_APPLICATION_SETTINGS_FETCH_RESPONSE }} | ${'success'} | ${[{ type: types.REQUEST_GEO_SETTINGS }, { type: types.RECEIVE_GEO_SETTINGS_SUCCESS, payload: MOCK_BASIC_SETTINGS_DATA }]}               | ${noCallback}
+    ${actions.fetchGeoSettings}  | ${{ method: 'onGet', code: HTTP_STATUS_INTERNAL_SERVER_ERROR, res: null }}                  | ${'error'}   | ${[{ type: types.REQUEST_GEO_SETTINGS }, { type: types.RECEIVE_GEO_SETTINGS_ERROR }]}                                                    | ${flashCallback}
+    ${actions.updateGeoSettings} | ${{ method: 'onPut', code: HTTP_STATUS_OK, res: MOCK_APPLICATION_SETTINGS_FETCH_RESPONSE }} | ${'success'} | ${[{ type: types.REQUEST_UPDATE_GEO_SETTINGS }, { type: types.RECEIVE_UPDATE_GEO_SETTINGS_SUCCESS, payload: MOCK_BASIC_SETTINGS_DATA }]} | ${noCallback}
+    ${actions.updateGeoSettings} | ${{ method: 'onPut', code: HTTP_STATUS_INTERNAL_SERVER_ERROR, res: null }}                  | ${'error'}   | ${[{ type: types.REQUEST_UPDATE_GEO_SETTINGS }, { type: types.RECEIVE_UPDATE_GEO_SETTINGS_ERROR }]}                                      | ${flashCallback}
   `(`axios calls`, ({ action, axiosMock, type, mutationCalls, callback }) => {
     describe(action.name, () => {
       describe(`on ${type}`, () => {
