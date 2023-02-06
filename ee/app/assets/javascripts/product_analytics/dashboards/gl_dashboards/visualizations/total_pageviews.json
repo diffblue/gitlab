@@ -5,8 +5,8 @@
   "data": {
     "type": "cube_analytics",
     "query": {
-      "measures": ["Jitsu.pageViewsCount"],
-      "filters": [{ "operator": "equals", "values": ["pageview"], "member": "Jitsu.eventType" }],
+      "measures": ["TrackedEvents.pageViewsCount"],
+      "filters": [{ "operator": "equals", "values": ["pageview"], "member": "TrackedEvents.eventType" }],
       "limit": 100,
       "timezone": "UTC",
       "dimensions": [],

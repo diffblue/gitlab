@@ -42,7 +42,7 @@ export const WIDGET_DISPLAY_TYPE_ITEMS = [
 export const MEASURE_COLOR = '#00b140';
 export const DIMENSION_COLOR = '#c3e6cd';
 
-export const EVENTS_DB_TABLE_NAME = 'Jitsu';
+export const EVENTS_DB_TABLE_NAME = 'TrackedEvents';
 
 export const ANALYTICS_FIELD_CATEGORIES = [
   {

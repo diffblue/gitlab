@@ -5,8 +5,8 @@
   "data": {
     "type": "cube_analytics",
     "query": {
-      "measures": ["Jitsu.uniqueUsersCount"],
-      "timeDimensions": [{ "dimension": "Jitsu.utcTime", "granularity": "day" }],
+      "measures": ["TrackedEvents.uniqueUsersCount"],
+      "timeDimensions": [{ "dimension": "TrackedEvents.utcTime", "granularity": "day" }],
       "limit": 100,
       "timezone": "UTC",
       "filters": [],

@@ -5,8 +5,13 @@
   "data": {
     "type": "cube_analytics",
     "query": {
-      "measures": ["Jitsu.uniqueUsersCount"],
-      "dimensions": ["Jitsu.parsedUaUaFamily", "Jitsu.parsedUaUaVersion"],
+      "measures": [
+        "TrackedEvents.uniqueUsersCount"
+      ],
+      "dimensions": [
+        "TrackedEvents.parsedUaUaFamily",
+        "TrackedEvents.parsedUaUaVersion"
+      ],
       "limit": 100,
       "timezone": "UTC",
       "filters": [],

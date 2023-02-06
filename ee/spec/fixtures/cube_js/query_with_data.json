@@ -4,7 +4,7 @@
     {
       "query": {
         "measures": [
-          "Jitsu.count"
+          "TrackedEvents.count"
         ],
         "timezone": "UTC",
         "order": [],
@@ -15,7 +15,7 @@
       },
       "data": [
         {
-          "Jitsu.count": "335"
+          "TrackedEvents.count": "335"
         }
       ],
       "lastRefreshTime": "2022-11-25T15:37:31.835Z",
@@ -32,16 +32,16 @@
         "sortedTimeDimensions": [],
         "timeDimensions": [],
         "measures": [
-          "Jitsu.count"
+          "TrackedEvents.count"
         ],
         "leafMeasureAdditive": true,
         "leafMeasures": [
-          "Jitsu.count"
+          "TrackedEvents.count"
         ],
         "measureToLeafMeasures": {
-          "Jitsu.count": [
+          "TrackedEvents.count": [
             {
-              "measure": "Jitsu.count",
+              "measure": "TrackedEvents.count",
               "additive": true,
               "type": "count"
             }
@@ -113,25 +113,25 @@
       "requestId": "7c3d84eb-3217-4365-ba03-31019313b8ce-span-1",
       "annotation": {
         "measures": {
-          "Jitsu.count": {
-            "title": "Jitsu Count",
+          "TrackedEvents.count": {
+            "title": "TrackedEvents Count",
             "shortTitle": "Count",
             "type": "number",
             "drillMembers": [
-              "Jitsu.eventnCtxEventId",
-              "Jitsu.idsAjsAnonymousId",
-              "Jitsu.pageTitle",
-              "Jitsu.userAnonymousId",
-              "Jitsu.userHashedAnonymousId"
+              "TrackedEvents.eventnCtxEventId",
+              "TrackedEvents.idsAjsAnonymousId",
+              "TrackedEvents.pageTitle",
+              "TrackedEvents.userAnonymousId",
+              "TrackedEvents.userHashedAnonymousId"
             ],
             "drillMembersGrouped": {
               "measures": [],
               "dimensions": [
-                "Jitsu.eventnCtxEventId",
-                "Jitsu.idsAjsAnonymousId",
-                "Jitsu.pageTitle",
-                "Jitsu.userAnonymousId",
-                "Jitsu.userHashedAnonymousId"
+                "TrackedEvents.eventnCtxEventId",
+                "TrackedEvents.idsAjsAnonymousId",
+                "TrackedEvents.pageTitle",
+                "TrackedEvents.userAnonymousId",
+                "TrackedEvents.userHashedAnonymousId"
               ]
             }
           }
@@ -150,7 +150,7 @@
   ],
   "pivotQuery": {
     "measures": [
-      "Jitsu.count"
+      "TrackedEvents.count"
     ],
     "timezone": "UTC",
     "order": [],
