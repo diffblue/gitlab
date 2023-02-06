@@ -11,12 +11,14 @@ import {
   TOKEN_TITLE_LABEL,
   TOKEN_TITLE_MILESTONE,
   TOKEN_TITLE_MY_REACTION,
+  TOKEN_TITLE_GROUP,
   TOKEN_TYPE_AUTHOR,
   TOKEN_TYPE_CONFIDENTIAL,
   TOKEN_TYPE_EPIC,
   TOKEN_TYPE_LABEL,
   TOKEN_TYPE_MILESTONE,
   TOKEN_TYPE_MY_REACTION,
+  TOKEN_TYPE_GROUP,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 
 import UserToken from '~/vue_shared/components/filtered_search_bar/tokens/user_token.vue';
@@ -25,6 +27,7 @@ import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label
 import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
 import { TOKEN_TITLE_EPIC } from 'ee/vue_shared/components/filtered_search_bar/constants';
 import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
+import GroupToken from 'ee/vue_shared/components/filtered_search_bar/tokens/group_token.vue';
 
 export const mockScrollBarSize = 15;
 
@@ -908,4 +911,14 @@ export const mockReactionEmojiTokenConfig = {
   token: EmojiToken,
   operators: OPERATORS_IS_NOT,
   fetchEmojis: expect.any(Function),
+};
+
+export const mockGroupTokenConfig = {
+  type: TOKEN_TYPE_GROUP,
+  icon: 'group',
+  title: TOKEN_TITLE_GROUP,
+  unique: true,
+  token: GroupToken,
+  operators: OPERATORS_IS,
+  fullPath: 'gitlab-org',
 };

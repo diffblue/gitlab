@@ -3,22 +3,15 @@
 require 'spec_helper'
 
 RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
-  let(:group) { create(:group, :public) }
+  include FilteredSearchHelpers
+
+  let(:group) { create(:group, :public, name: 'group') }
   let(:user) { create(:user) }
   let(:user_dev) { create(:user) }
   let!(:bug_label) { create(:group_label, group: group, title: 'Bug') }
   let!(:docs_label) { create(:group_label, group: group, title: 'Documentation') }
   let!(:enhancement_label) { create(:group_label, group: group, title: 'Enhancement') }
   let!(:critical_label) { create(:group_label, group: group, title: 'Critical') }
-
-  def select_token(token, operator, value)
-    find_field('Search').click
-    click_link token
-    first('a', text: operator).click
-    page.within('.gl-filtered-search-suggestion-list') do
-      click_link value
-    end
-  end
 
   before do
     stub_licensed_features(epics: true)
@@ -92,8 +85,7 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
         it_behaves_like 'filtered search bar', available_tokens, available_sort_options
 
         it 'filters epics list based on labels with "=" operator' do
-          select_token('Label', '=', docs_label.title)
-          find('.gl-search-box-by-click-search-button').click
+          select_tokens 'Label', '=', docs_label.title, submit: true
 
           wait_for_requests
 
@@ -103,15 +95,39 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
         end
 
         it 'filters epics list based on labels with "!=" operator', :aggregate_failures do
-          select_token('Label', '=', docs_label.title)
-          select_token('Label', '!=', enhancement_label.title)
-          find('.gl-search-box-by-click-search-button').click
+          select_tokens 'Label', '=', docs_label.title
+          select_tokens 'Label', '!=', enhancement_label.title, submit: true
 
           wait_for_requests
 
           page.within('.issuable-list-container .issuable-list') do
             expect(page).to have_selector('li.issue', count: 1)
             expect(page.find('li.issue .issuable-info')).not_to have_selector('.gl-label', text: enhancement_label.title)
+          end
+        end
+
+        context 'with subgroup epics' do
+          let(:subgroup) { create(:group, :public, parent: group, name: 'subgroup') }
+          let!(:subgroup_epic) { create(:epic, group: subgroup) }
+          let!(:subgroup_epic2) { create(:epic, group: subgroup) }
+
+          before do
+            visit group_epics_path(group)
+            wait_for_requests
+          end
+
+          it 'filters by group', :aggregate_failures do
+            expect(page).to have_selector('li.issue', count: 6)
+
+            select_tokens 'Group', group.name, submit: true
+
+            expect(page).to have_selector('li.issue', count: 4)
+
+            click_button 'Clear'
+
+            select_tokens 'Group', subgroup.name, submit: true
+
+            expect(page).to have_selector('li.issue', count: 2)
           end
         end
 
