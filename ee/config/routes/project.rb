@@ -40,7 +40,7 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
 
         resources :subscriptions, only: [:create, :destroy]
 
-        get :learn_gitlab, action: :index, controller: 'learn_gitlab'
+        resource :learn_gitlab, only: :show, controller: :learn_gitlab, param: :project_id
 
         resources :protected_environments, only: [:create, :update, :destroy], constraints: { id: /\d+/ } do
           collection do

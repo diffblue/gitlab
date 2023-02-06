@@ -11,16 +11,6 @@ module EE
       options.to_a.shuffle.append(other).map { |option| option.reverse }
     end
 
-    def registration_verification_data
-      url = if params[:project_id].present?
-              continuous_onboarding_getting_started_users_sign_up_welcome_path(params.slice(:project_id).permit!)
-            else
-              root_path
-            end
-
-      { next_step_url: url }
-    end
-
     def credit_card_verification_data
       {
         completed: current_user.credit_card_validation.present?.to_s,

@@ -8,9 +8,9 @@ module Projects
     before_action :enable_video_tutorials_continuous_onboarding_experiment
 
     feature_category :user_profile
-    urgency :low, [:index]
+    urgency :low, [:show]
 
-    def index; end
+    def show; end
 
     private
 
