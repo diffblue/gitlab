@@ -12,11 +12,10 @@ RSpec.describe 'User sees experimental lmarketing header', feature_category: :on
       expect(page).not_to have_text "About GitLab"
       expect(page).not_to have_text "Pricing"
       expect(page).not_to have_text "Talk to an expert"
-      expect(page).not_to have_text "Sign up now"
-      expect(page).not_to have_text "Login"
       expect(page).not_to have_text "Get a free trial"
       expect(page).not_to have_text "Sign up"
-      expect(page).to have_text "Sign in / Register"
+      expect(page).to have_text "Register"
+      expect(page).to have_text "Sign in"
     end
 
     context 'when SaaS', :saas do
@@ -26,8 +25,8 @@ RSpec.describe 'User sees experimental lmarketing header', feature_category: :on
         expect(page).to have_text "About GitLab"
         expect(page).to have_text "Pricing"
         expect(page).to have_text "Talk to an expert"
-        expect(page).to have_text "Sign up now"
-        expect(page).to have_text "Login"
+        expect(page).to have_text "Register"
+        expect(page).to have_text "Sign in"
       end
     end
   end
@@ -41,6 +40,8 @@ RSpec.describe 'User sees experimental lmarketing header', feature_category: :on
       expect(page).not_to have_text "About GitLab"
       expect(page).not_to have_text "Pricing"
       expect(page).not_to have_text "Talk to an expert"
+      expect(page).not_to have_text "Register"
+      expect(page).not_to have_text "Sign in"
     end
   end
 end
