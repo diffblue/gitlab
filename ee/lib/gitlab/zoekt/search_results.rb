@@ -138,6 +138,10 @@ module Gitlab
           allow_local_requests: true
         )
 
+        unless response.success?
+          logger.error(message: "Zoekt search failed", status: response.code, response: response.body)
+        end
+
         ::Gitlab::Json.parse(response.body, symbolize_names: true)
       end
 
@@ -197,6 +201,10 @@ module Gitlab
         items.compact!
 
         [items, total_count]
+      end
+
+      def logger
+        @logger ||= ::Zoekt::Logger.build
       end
     end
   end
