@@ -216,6 +216,24 @@ RSpec.describe Group, feature_category: :subgroups do
         end
       end
     end
+
+    describe '.with_trial_started_on', :saas do
+      let(:ten_days_ago) { 10.days.ago }
+
+      it 'returns correct group' do
+        create(:group)
+
+        create(:gitlab_subscription, :active_trial,
+               namespace: create(:group),
+               trial_starts_on: 1.day.ago)
+
+        create(:gitlab_subscription, :active_trial,
+               namespace: group,
+               trial_starts_on: ten_days_ago)
+
+        expect(described_class.with_trial_started_on(ten_days_ago)).to match_array([group])
+      end
+    end
   end
 
   describe 'validations' do

@@ -29874,6 +29874,8 @@ CREATE INDEX index_gitlab_subscriptions_on_max_seats_used_changed_at ON gitlab_s
 
 CREATE UNIQUE INDEX index_gitlab_subscriptions_on_namespace_id ON gitlab_subscriptions USING btree (namespace_id);
 
+CREATE INDEX index_gitlab_subscriptions_on_trial_and_trial_starts_on ON gitlab_subscriptions USING btree (trial, trial_starts_on);
+
 CREATE UNIQUE INDEX index_gpg_key_subkeys_on_fingerprint ON gpg_key_subkeys USING btree (fingerprint);
 
 CREATE INDEX index_gpg_key_subkeys_on_gpg_key_id ON gpg_key_subkeys USING btree (gpg_key_id);

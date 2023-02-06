@@ -45,11 +45,6 @@ module EE
       scope :include_gitlab_subscription_with_hosted_plan, -> { includes(gitlab_subscription: :hosted_plan) }
       scope :join_gitlab_subscription, -> { joins("LEFT OUTER JOIN gitlab_subscriptions ON gitlab_subscriptions.namespace_id=namespaces.id") }
 
-      scope :in_active_trial, -> do
-        left_joins(gitlab_subscription: :hosted_plan)
-          .where(gitlab_subscriptions: { trial: true, trial_ends_on: Date.today.. })
-      end
-
       scope :not_in_active_trial, -> do
         left_joins(gitlab_subscription: :hosted_plan)
           .where(gitlab_subscriptions: { trial: [nil, false] })

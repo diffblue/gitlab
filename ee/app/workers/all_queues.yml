@@ -156,6 +156,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: cronjob:emails_abandoned_trial_emails_cron
+  :worker_name: Emails::AbandonedTrialEmailsCronWorker
+  :feature_category: :onboarding
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: false
+  :tags: []
 - :name: cronjob:geo_container_repository_sync_dispatch
   :worker_name: Geo::ContainerRepositorySyncDispatchWorker
   :feature_category: :geo_replication
