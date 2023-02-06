@@ -1104,6 +1104,11 @@ msgid_plural "%{strong_start}%{count} members%{strong_end} must approve to merge
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%{strong_start}%{count}%{strong_end} Environment"
+msgid_plural "%{strong_start}%{count}%{strong_end} Environments"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%{strong_start}%{errors}%{strong_end} %{prefix} finding"
 msgid_plural "%{strong_start}%{errors}%{strong_end} %{prefix} findings"
 msgstr[0] ""
