@@ -422,7 +422,17 @@ feature_category: :global_search do
     end
 
     it 'outputs indexing and search settings' do
-      expect { subject }.to output(/Indexing enabled:\syes\s+Search enabled:\s+yes/).to_stdout
+      expected_regex = Regexp.new([
+        'Indexing enabled:\\s+yes\\s+',
+        'Search enabled:\\s+yes\\s+',
+        'Pause indexing:\\s+no\\s+',
+        'Indexing restrictions enabled:\\s+no\\s+'
+      ].join(''))
+      expect { subject }.to output(expected_regex).to_stdout
+    end
+
+    it 'outputs file size limit' do
+      expect { subject }.to output(/File size limit:\s+\d+ KiB/).to_stdout
     end
 
     it 'outputs queue sizes' do
