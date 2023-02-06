@@ -5,10 +5,10 @@ module Gitlab
     module GlobalSearchIndexingSlis
       CODE_DOCUMENT_TYPES = %w[Code Wiki].freeze
 
-      # The following target was gathered on 2022-12-10
+      # The following target was gathered on 2023-02-06
       # from https://log.gprd.gitlab.net/app/lens#/edit/d7f1fae0-69cf-11ed-85ed-e7557b0a598c (internal only)
       # Non-Code indexing bytes/second should be above this value
-      INDEXED_BYTES_PER_SECOND_TARGET = 100_000
+      INDEXED_BYTES_PER_SECOND_TARGET = 50_000
 
       # The following targets are the 99.95th percentile of indexing
       # gathered on 20-10-2022
