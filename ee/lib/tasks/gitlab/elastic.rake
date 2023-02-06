@@ -264,17 +264,18 @@ namespace :gitlab do
 
       puts ""
       puts "Advanced Search".color(:yellow)
-      puts "Server version:\t\t#{helper.server_info[:version] || "unknown".color(:red)}"
-      puts "Server distribution:\t#{helper.server_info[:distribution] || "unknown".color(:red)}"
-      puts "Indexing enabled:\t#{setting.elasticsearch_indexing ? "yes".color(:green) : "no"}"
-      puts "Search enabled:\t\t#{setting.elasticsearch_search? ? "yes".color(:green) : "no"}"
-      puts "Pause indexing:\t\t#{setting.elasticsearch_pause_indexing? ? "yes".color(:yellow) : "no"}"
-      puts "File size limit:\t#{setting.elasticsearch_indexed_file_size_limit_kb} KiB"
+      puts "Server version:\t\t\t#{helper.server_info[:version] || "unknown".color(:red)}"
+      puts "Server distribution:\t\t#{helper.server_info[:distribution] || "unknown".color(:red)}"
+      puts "Indexing enabled:\t\t#{setting.elasticsearch_indexing? ? "yes".color(:green) : "no"}"
+      puts "Search enabled:\t\t\t#{setting.elasticsearch_search? ? "yes".color(:green) : "no"}"
+      puts "Pause indexing:\t\t\t#{setting.elasticsearch_pause_indexing? ? "yes".color(:yellow) : "no"}"
+      puts "Indexing restrictions enabled:\t#{setting.elasticsearch_limit_indexing? ? "yes".color(:yellow) : "no"}"
+      puts "File size limit:\t\t#{setting.elasticsearch_indexed_file_size_limit_kb} KiB"
 
       puts ""
       puts "Indexing Queues".color(:yellow)
-      puts "Initial queue:\t\t#{::Elastic::ProcessInitialBookkeepingService.queue_size}"
-      puts "Incremental queue:\t#{::Elastic::ProcessBookkeepingService.queue_size}"
+      puts "Initial queue:\t\t\t#{::Elastic::ProcessInitialBookkeepingService.queue_size}"
+      puts "Incremental queue:\t\t#{::Elastic::ProcessBookkeepingService.queue_size}"
 
       check_handler do
         pending_migrations = ::Elastic::DataMigrationService.pending_migrations
