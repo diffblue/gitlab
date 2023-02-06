@@ -67,10 +67,11 @@ RSpec.describe 'Project show page', :feature, feature_category: :projects do
     subject(:visit_page) { visit project_path(project) }
 
     context 'with group namespace' do
+      let(:role) { :owner }
       let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
 
       before do
-        group.add_owner(user)
+        group.add_member(user, role)
         sign_in(user)
       end
 

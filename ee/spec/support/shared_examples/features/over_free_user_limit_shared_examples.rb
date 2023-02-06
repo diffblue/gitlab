@@ -20,6 +20,8 @@ RSpec.shared_examples_for 'over the free user limit alert' do
   end
 
   context 'when over limit for notification' do
+    let(:non_owner_text) { 'ask your top-level group Owner to' }
+
     before do
       stub_feature_flags(free_user_cap: true)
       stub_feature_flags(preview_free_user_cap: true)
@@ -41,6 +43,7 @@ RSpec.shared_examples_for 'over the free user limit alert' do
 
       expect(page).to have_content('is over the')
       expect(page).to have_content('user limit')
+      expect(page).not_to have_content(non_owner_text)
 
       page.within('[data-testid="user-over-limit-free-plan-alert"]') do
         expect(page).to have_link('Manage members')
@@ -63,6 +66,33 @@ RSpec.shared_examples_for 'over the free user limit alert' do
         visit_page
 
         expect(page).to have_content(group.name)
+        expect(page).not_to have_content('is over the')
+        expect(page).not_to have_content('user limit')
+      end
+    end
+
+    context 'when user is not an owner' do
+      let(:role) { :developer }
+
+      it 'performs dismiss cycle', :js do
+        visit_page
+
+        expect(page).not_to have_content('is over the')
+        expect(page).not_to have_content('user limit')
+
+        group.add_developer(new_user)
+
+        page.refresh
+
+        expect(page).to have_content('is over the')
+        expect(page).to have_content('user limit')
+        expect(page).to have_content(non_owner_text)
+
+        find(dismiss_button).click
+        wait_for_requests
+
+        page.refresh
+
         expect(page).not_to have_content('is over the')
         expect(page).not_to have_content('user limit')
       end

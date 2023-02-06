@@ -83,13 +83,14 @@ RSpec.describe 'Groups > Members > List members', feature_category: :subgroups d
   end
 
   context 'when over free user limit', :saas do
+    let(:role) { :owner }
     let_it_be(:user) { create(:user) }
     let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
 
     subject(:visit_page) { visit group_group_members_path(group) }
 
     before do
-      group.add_owner(user)
+      group.add_member(user, role)
       sign_in(user)
     end
 

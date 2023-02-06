@@ -188,12 +188,13 @@ RSpec.describe 'Project > Members > Invite group and members', feature_category:
     subject(:visit_page) { visit project_project_members_path(project) }
 
     context 'with group namespace' do
+      let(:role) { :owner }
       let_it_be(:user) { create(:user) }
       let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
       let_it_be(:project) { create(:project, :private, group: group) }
 
       before do
-        group.add_owner(user)
+        group.add_member(user, role)
         sign_in(user)
       end
 
