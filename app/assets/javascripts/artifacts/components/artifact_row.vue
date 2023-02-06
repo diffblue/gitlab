@@ -1,5 +1,5 @@
 <script>
-import { GlButtonGroup, GlButton, GlBadge, GlFriendlyWrap } from '@gitlab/ui';
+import { GlButtonGroup, GlButton, GlBadge, GlFriendlyWrap, GlFormCheckbox } from '@gitlab/ui';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { I18N_EXPIRED, I18N_DOWNLOAD, I18N_DELETE } from '../constants';
 
@@ -10,11 +10,16 @@ export default {
     GlButton,
     GlBadge,
     GlFriendlyWrap,
+    GlFormCheckbox,
   },
   inject: ['canDestroyArtifacts'],
   props: {
     artifact: {
       type: Object,
+      required: true,
+    },
+    isSelected: {
+      type: Boolean,
       required: true,
     },
     isLastRow: {
@@ -33,6 +38,13 @@ export default {
       return numberToHumanSize(this.artifact.size);
     },
   },
+  methods: {
+    handleInput(checked) {
+      if (checked === this.isSelected) return;
+
+      this.$emit('selectArtifact', this.artifact, checked);
+    },
+  },
   i18n: {
     expired: I18N_EXPIRED,
     download: I18N_DOWNLOAD,
@@ -46,6 +58,9 @@ export default {
     :class="{ 'gl-border-b-solid gl-border-b-1 gl-border-gray-100': !isLastRow }"
   >
     <div class="gl-display-inline-flex gl-align-items-center gl-w-full">
+      <span v-if="canDestroyArtifacts" class="gl-pl-5">
+        <gl-form-checkbox :checked="isSelected" @input="handleInput" />
+      </span>
       <span
         class="gl-w-half gl-pl-8 gl-display-flex gl-align-items-center"
         data-testid="job-artifact-row-name"

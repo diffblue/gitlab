@@ -8,6 +8,7 @@ import {
   GlBadge,
   GlIcon,
   GlPagination,
+  GlFormCheckbox,
 } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
@@ -34,6 +35,8 @@ import {
   JOBS_PER_PAGE,
   INITIAL_LAST_PAGE_SIZE,
 } from '../constants';
+import JobCheckbox from './job_checkbox.vue';
+import ArtifactsBulkDelete from './artifacts_bulk_delete.vue';
 import ArtifactsTableRowDetails from './artifacts_table_row_details.vue';
 import FeedbackBanner from './feedback_banner.vue';
 
@@ -56,8 +59,11 @@ export default {
     GlBadge,
     GlIcon,
     GlPagination,
+    GlFormCheckbox,
     CiIcon,
     TimeAgo,
+    JobCheckbox,
+    ArtifactsBulkDelete,
     ArtifactsTableRowDetails,
     FeedbackBanner,
   },
@@ -94,6 +100,7 @@ export default {
       jobArtifacts: [],
       pageInfo: {},
       expandedJobs: [],
+      selectedArtifacts: [],
       pagination: INITIAL_PAGINATION_STATE,
     };
   },
@@ -117,6 +124,18 @@ export default {
     },
     nextPage() {
       return Number(this.pageInfo.hasNextPage);
+    },
+    fields() {
+      return [
+        this.canDestroyArtifacts && {
+          key: 'checkbox',
+          label: '',
+        },
+        ...this.$options.fields,
+      ];
+    },
+    anyArtifactsSelected() {
+      return Boolean(this.selectedArtifacts.length);
     },
   },
   methods: {
@@ -157,6 +176,16 @@ export default {
       } else {
         this.expandedJobs.splice(this.expandedJobs.indexOf(id), 1);
       }
+    },
+    selectArtifact(artifactNode, checked) {
+      if (checked) {
+        this.selectedArtifacts.push(artifactNode.id);
+      } else {
+        this.selectedArtifacts.splice(this.selectedArtifacts.indexOf(artifactNode.id), 1);
+      }
+    },
+    clearSelectedArtifacts() {
+      this.selectedArtifacts = [];
     },
     downloadPath(job) {
       return job.archive?.downloadPath;
@@ -217,15 +246,40 @@ export default {
 <template>
   <div>
     <feedback-banner />
+    <artifacts-bulk-delete
+      v-if="anyArtifactsSelected"
+      :selected-artifacts="selectedArtifacts"
+      @clearSelectedArtifacts="clearSelectedArtifacts"
+    />
     <gl-table
       :items="jobArtifacts"
-      :fields="$options.fields"
+      :fields="fields"
       :busy="$apollo.queries.jobArtifacts.loading"
       stacked="sm"
       details-td-class="gl-bg-gray-10! gl-p-0! gl-overflow-auto"
     >
       <template #table-busy>
         <gl-loading-icon size="lg" />
+      </template>
+      <template v-if="canDestroyArtifacts" #head(checkbox)>
+        <gl-form-checkbox
+          :disabled="!anyArtifactsSelected"
+          :checked="anyArtifactsSelected"
+          :indeterminate="anyArtifactsSelected"
+          @change="clearSelectedArtifacts"
+        />
+      </template>
+      <template v-if="canDestroyArtifacts" #cell(checkbox)="{ item: { hasArtifacts, artifacts } }">
+        <job-checkbox
+          :has-artifacts="hasArtifacts"
+          :selected-artifacts="
+            artifacts.nodes.filter((node) => selectedArtifacts.includes(node.id))
+          "
+          :unselected-artifacts="
+            artifacts.nodes.filter((node) => !selectedArtifacts.includes(node.id))
+          "
+          @selectArtifact="selectArtifact"
+        />
       </template>
       <template
         #cell(artifacts)="{ item: { id, artifacts, hasArtifacts }, toggleDetails, detailsShowing }"
@@ -323,8 +377,10 @@ export default {
       <template #row-details="{ item: { artifacts } }">
         <artifacts-table-row-details
           :artifacts="artifacts"
+          :selected-artifacts="selectedArtifacts"
           :query-variables="queryVariables"
           @refetch="refetchArtifacts"
+          @selectArtifact="selectArtifact"
         />
       </template>
     </gl-table>
