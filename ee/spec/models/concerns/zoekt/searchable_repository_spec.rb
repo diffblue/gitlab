@@ -39,9 +39,16 @@ RSpec.describe ::Zoekt::SearchableRepository, :zoekt, feature_category: :global_
 
       expect(search_for('somenewsearchablefile.txt')).to be_empty
 
-      repository.update_zoekt_index!
+      response = repository.update_zoekt_index!
+      expect(response['Success']).to be_truthy
 
       expect(search_for('somenewsearchablefile.txt')).to match_array(['somenewsearchablefile.txt'])
+    end
+
+    it 'raises an exception when indexing errors out' do
+      allow(::Gitlab::HTTP).to receive(:post).and_return({ 'Error' => 'command failed: exit status 128' })
+
+      expect { repository.update_zoekt_index! }.to raise_error(RuntimeError, 'command failed: exit status 128')
     end
   end
 
