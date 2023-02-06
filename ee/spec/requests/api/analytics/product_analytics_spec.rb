@@ -9,7 +9,7 @@ RSpec.describe API::Analytics::ProductAnalytics, feature_category: :product_anal
   let(:cube_api_load_url) { "http://cube.dev/cubejs-api/v1/load" }
   let(:cube_api_dry_run_url) { "http://cube.dev/cubejs-api/v1/dry-run" }
   let(:cube_api_meta_url) { "http://cube.dev/cubejs-api/v1/meta" }
-  let(:query) { { query: { measures: ['Jitsu.count'] }, 'queryType': 'multi' } }
+  let(:query) { { query: { measures: ['TrackedEvents.count'] }, 'queryType': 'multi' } }
 
   let(:request_meta) { post api("/projects/#{project.id}/product_analytics/request/meta", current_user) }
 
@@ -92,13 +92,13 @@ RSpec.describe API::Analytics::ProductAnalytics, feature_category: :product_anal
       end
 
       context 'when a query param is unsupported' do
-        let(:query) { { query: { measures: ['Jitsu.count'] }, 'queryType': 'multi', 'badParam': 1 } }
+        let(:query) { { query: { measures: ['TrackedEvents.count'] }, 'queryType': 'multi', 'badParam': 1 } }
 
         it 'ignores the unsupported param' do
           request_load(is_dry_run)
 
           expect(WebMock).to have_requested(:post, is_dry_run ? cube_api_dry_run_url : cube_api_load_url).with(
-            body: { query: { measures: ['Jitsu.count'] }, 'queryType': 'multi' }
+            body: { query: { measures: ['TrackedEvents.count'] }, 'queryType': 'multi' }
           )
 
           expect(response).to have_gitlab_http_status(:ok)
@@ -178,7 +178,7 @@ RSpec.describe API::Analytics::ProductAnalytics, feature_category: :product_anal
 
     context 'when requesting a project with a resource access token' do
       it_behaves_like 'a resource access token is generated' do
-        let(:query) { { query: { measures: ['Jitsu.count'] }, 'queryType': 'multi', include_token: true } }
+        let(:query) { { query: { measures: ['TrackedEvents.count'] }, 'queryType': 'multi', include_token: true } }
       end
     end
   end

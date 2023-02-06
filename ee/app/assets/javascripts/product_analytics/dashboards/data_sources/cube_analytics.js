@@ -5,7 +5,7 @@ import csrf from '~/lib/utils/csrf';
 // This can be any value because the cube proxy adds the real API token.
 const CUBE_API_TOKEN = '1';
 const PRODUCT_ANALYTICS_CUBE_PROXY = '/api/v4/projects/:id/product_analytics/request';
-const DEFAULT_JITSU_COUNT_KEY = 'Jitsu.count';
+const DEFAULT_COUNT_KEY = 'TrackedEvents.count';
 
 const convertToLineChartFormat = (resultSet) => {
   const seriesNames = resultSet.seriesNames();
@@ -40,7 +40,7 @@ const convertToSingleValue = (resultSet, query) => {
     return null;
   }
 
-  return row[measure ?? DEFAULT_JITSU_COUNT_KEY] ?? Object.values(row)[0];
+  return row[measure ?? DEFAULT_COUNT_KEY] ?? Object.values(row)[0];
 };
 
 const VISUALIZATION_PARSERS = {
@@ -73,9 +73,9 @@ export const NO_DATABASE_ERROR_MESSAGE = '404 Clickhouse Database Not Found';
 
 export const hasAnalyticsData = async (projectId) => {
   try {
-    const data = await createCubeJsApi(projectId).load({ measures: [DEFAULT_JITSU_COUNT_KEY] });
+    const data = await createCubeJsApi(projectId).load({ measures: [DEFAULT_COUNT_KEY] });
 
-    return data.rawData()[0][DEFAULT_JITSU_COUNT_KEY] > 0;
+    return data.rawData()[0][DEFAULT_COUNT_KEY] > 0;
   } catch (error) {
     const errorMessage = error?.response?.message;
 

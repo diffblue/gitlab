@@ -5,7 +5,7 @@
   "data": {
     "type": "cube_analytics",
     "query": {
-      "measures": ["Jitsu.uniqueUsersCount"],
+      "measures": ["TrackedEvents.uniqueUsersCount"],
       "limit": 100,
       "timezone": "UTC",
       "filters": [],

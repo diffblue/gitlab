@@ -36,8 +36,8 @@ describe('Cube Analytics Data Source', () => {
   });
   const projectId = 'TEST_ID';
   const visualizationType = 'LineChart';
-  const query = { measures: ['Jitsu.count'] };
-  const queryOverrides = { measures: ['Jitsu.userLanguage'] };
+  const query = { measures: ['TrackedEvents.count'] };
+  const queryOverrides = { measures: ['TrackedEvents.userLanguage'] };
 
   describe('fetch', () => {
     beforeEach(() => {
@@ -59,7 +59,7 @@ describe('Cube Analytics Data Source', () => {
             ['2022-11-09T00:00:00.000', 55],
             ['2022-11-10T00:00:00.000', 14],
           ],
-          name: 'pageview, Jitsu Count',
+          name: 'pageview, TrackedEvents Count',
         });
       });
 
@@ -80,7 +80,7 @@ describe('Cube Analytics Data Source', () => {
       });
 
       it('returns the expected data format for single stats with custom measure', async () => {
-        const override = { measures: ['Jitsu.url'] };
+        const override = { measures: ['TrackedEvents.url'] };
         const result = await fetch({
           projectId,
           visualizationType: 'SingleStat',

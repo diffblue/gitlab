@@ -5,9 +5,9 @@
   "data": {
     "type": "cube_analytics",
     "query": {
-      "measures": ["Jitsu.pageViewsCount"],
-      "timeDimensions": [{ "dimension": "Jitsu.utcTime", "granularity": "day" }],
-      "filters": [{ "operator": "equals", "values": ["pageview"], "member": "Jitsu.eventType" }],
+      "measures": ["TrackedEvents.pageViewsCount"],
+      "timeDimensions": [{ "dimension": "TrackedEvents.utcTime", "granularity": "day" }],
+      "filters": [{ "operator": "equals", "values": ["pageview"], "member": "TrackedEvents.eventType" }],
       "limit": 100,
       "timezone": "UTC",
       "dimensions": []

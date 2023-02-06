@@ -6,7 +6,7 @@
     "type": "cube_analytics",
     "query": {
       "measures": ["Sessions.count"],
-      "dimensions": ["Jitsu.parsedUaUaFamily", "Jitsu.parsedUaUaVersion"],
+      "dimensions": ["TrackedEvents.parsedUaUaFamily", "TrackedEvents.parsedUaUaVersion"],
       "limit": 100,
       "timezone": "UTC",
       "filters": [],
