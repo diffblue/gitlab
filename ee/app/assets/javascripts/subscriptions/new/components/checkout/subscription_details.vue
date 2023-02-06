@@ -15,18 +15,13 @@ import {
   QSR_RECONCILIATION_PATH,
   STEP_SUBSCRIPTION_DETAILS,
 } from 'ee/subscriptions/constants';
-import { NEW_GROUP } from 'ee/subscriptions/new/constants';
+import { PurchaseEvent, NEW_GROUP } from 'ee/subscriptions/new/constants';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { __, s__, sprintf } from '~/locale';
 import autoFocusOnShow from '~/vue_shared/directives/autofocusonshow';
 import Tracking from '~/tracking';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import getBillableMembersCountQuery from 'ee/subscriptions/graphql/queries/billable_members_count.query.graphql';
-
-export const Event = Object.freeze({
-  ERROR: 'error',
-  ERROR_RESET: 'error-reset',
-});
 
 export default {
   components: {
@@ -229,10 +224,10 @@ export default {
     ]),
     handleError(error) {
       this.hasError = true;
-      this.$emit(Event.ERROR, { message: ERROR_UNEXPECTED, error });
+      this.$emit(PurchaseEvent.ERROR, { message: ERROR_UNEXPECTED, error });
     },
     resetError() {
-      this.$emit(Event.ERROR_RESET);
+      this.$emit(PurchaseEvent.ERROR_RESET);
       this.hasError = false;
     },
     trackStepTransition() {

@@ -4,10 +4,8 @@ import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import { mockTracking } from 'helpers/tracking_helper';
 import { ERROR_UNEXPECTED, QSR_RECONCILIATION_PATH, STEPS } from 'ee/subscriptions/constants';
-import Component, {
-  Event,
-} from 'ee/subscriptions/new/components/checkout/subscription_details.vue';
-import { NEW_GROUP } from 'ee/subscriptions/new/constants';
+import Component from 'ee/subscriptions/new/components/checkout/subscription_details.vue';
+import { PurchaseEvent, NEW_GROUP } from 'ee/subscriptions/new/constants';
 import createStore from 'ee/subscriptions/new/store';
 import * as types from 'ee/subscriptions/new/store/mutation_types';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
@@ -726,7 +724,7 @@ describe('Subscription Details', () => {
     });
 
     it('emits an error with a message', () => {
-      expect(wrapper.emitted(Event.ERROR)).toEqual([
+      expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([
         [{ message: ERROR_UNEXPECTED, error: mockError }],
       ]);
     });
@@ -746,7 +744,7 @@ describe('Subscription Details', () => {
     });
 
     it('emits an error reset event', () => {
-      expect(wrapper.emitted(Event.ERROR_RESET)).toBeUndefined();
+      expect(wrapper.emitted(PurchaseEvent.ERROR_RESET)).toBeUndefined();
     });
 
     it('should not show the number of users label description when in error', async () => {

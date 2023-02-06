@@ -4,12 +4,9 @@ import Vuex from 'vuex';
 import Checkout from 'ee/subscriptions/new/components/checkout.vue';
 import createStore from 'ee/subscriptions/new/store';
 import { mockTracking } from 'helpers/tracking_helper';
-import ConfirmOrder from 'ee/subscriptions/new/components/checkout/confirm_order.vue';
-import SubscriptionDetails, {
-  Event,
-} from 'ee/subscriptions/new/components/checkout/subscription_details.vue';
+import SubscriptionDetails from 'ee/subscriptions/new/components/checkout/subscription_details.vue';
 import { createAlert } from '~/flash';
-import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
+import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 
 const mockCreateAlert = {
   dismiss: jest.fn(),
@@ -24,7 +21,6 @@ describe('Checkout', () => {
   let trackingSpy;
   let wrapper;
 
-  const findConfirmOrder = () => wrapper.findComponent(ConfirmOrder);
   const findSubscriptionDetails = () => wrapper.findComponent(SubscriptionDetails);
 
   const createComponent = () => {
@@ -49,31 +45,31 @@ describe('Checkout', () => {
   describe('when the children component emit events', () => {
     const error = new Error('Yikes!');
 
-    it('creates an alert from subscription details error', () => {
-      findSubscriptionDetails().vm.$emit(Event.ERROR, { message: 'A message', error });
+    describe('when the alert is not created yet', () => {
+      it('dismisses the subscription details alert', () => {
+        findSubscriptionDetails().vm.$emit(PurchaseEvent.ERROR_RESET);
 
-      expect(createAlert).toHaveBeenCalledWith({
-        message: 'A message',
-        captureError: true,
-        error,
+        expect(mockCreateAlert.dismiss.mock.calls).toHaveLength(0);
       });
     });
 
-    it('dismisses the subscription details alert', () => {
-      findSubscriptionDetails().vm.$emit(Event.ERROR, { message: 'A message', error });
+    describe('when the alert is present', () => {
+      beforeEach(() => {
+        findSubscriptionDetails().vm.$emit(PurchaseEvent.ERROR, { message: 'A message', error });
+      });
 
-      findSubscriptionDetails().vm.$emit(Event.ERROR_RESET);
+      it('creates an alert from subscription details error', () => {
+        expect(createAlert).toHaveBeenCalledWith({
+          message: 'A message',
+          captureError: true,
+          error,
+        });
+      });
 
-      expect(mockCreateAlert.dismiss.mock.calls).toHaveLength(1);
-    });
+      it('dismisses the subscription details alert', () => {
+        findSubscriptionDetails().vm.$emit(PurchaseEvent.ERROR_RESET);
 
-    it('creates an alert from confirm order error', () => {
-      findConfirmOrder().vm.$emit('error', { error });
-
-      expect(createAlert).toHaveBeenCalledWith({
-        message: GENERAL_ERROR_MESSAGE,
-        captureError: true,
-        error,
+        expect(mockCreateAlert.dismiss.mock.calls).toHaveLength(1);
       });
     });
   });

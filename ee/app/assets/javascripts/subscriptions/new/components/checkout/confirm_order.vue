@@ -2,6 +2,7 @@
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { STEPS } from 'ee/subscriptions/constants';
+import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 import activeStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/active_step.query.graphql';
 import { s__ } from '~/locale';
 
@@ -20,7 +21,7 @@ export default {
       query: activeStepQuery,
       update: ({ activeStep }) => activeStep?.id === STEPS[3].id,
       error: (error) => {
-        this.$emit('error', { error });
+        this.$emit(PurchaseEvent.ERROR, { error });
       },
     },
   },
