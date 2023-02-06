@@ -20,6 +20,7 @@ import {
   mockConfidentialTokenConfig,
   mockEpicTokenConfig,
   mockReactionEmojiTokenConfig,
+  mockGroupTokenConfig,
 } from 'ee_jest/roadmap/mock_data';
 
 import { TEST_HOST } from 'helpers/test_constants';
@@ -171,11 +172,12 @@ describe('RoadmapFilters', () => {
         expect(filteredSearchBar.props('recentSearchesStorageKey')).toBe('epics');
       });
 
-      it('includes `Author`, `Milestone`, `Confidential`, `Epic` and `Label` tokens when user is not logged in', () => {
+      it('includes `Author`, `Milestone`, `Confidential`, `Epic`, `Group`, and `Label` tokens when user is not logged in', () => {
         expect(filteredSearchBar.props('tokens')).toEqual([
           mockAuthorTokenConfig,
           mockConfidentialTokenConfig,
           mockEpicTokenConfig,
+          mockGroupTokenConfig,
           mockLabelTokenConfig,
           mockMilestoneTokenConfig,
         ]);
@@ -274,7 +276,7 @@ describe('RoadmapFilters', () => {
           gon.current_user_avatar_url = 'avatar/url';
         });
 
-        it('includes `Author`, `Milestone`, `Confidential`, `Label` and `My-Reaction` tokens', () => {
+        it('includes `Author`, `Milestone`, `Confidential`, `Epic`, `Group`, `Label` and `My-Reaction` tokens', () => {
           expect(filteredSearchBar.props('tokens')).toEqual([
             {
               ...mockAuthorTokenConfig,
@@ -289,6 +291,7 @@ describe('RoadmapFilters', () => {
             },
             mockConfidentialTokenConfig,
             mockEpicTokenConfig,
+            mockGroupTokenConfig,
             mockLabelTokenConfig,
             mockMilestoneTokenConfig,
             mockReactionEmojiTokenConfig,

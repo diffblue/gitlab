@@ -12,12 +12,14 @@ import {
   OPERATORS_IS_NOT,
   TOKEN_TITLE_AUTHOR,
   TOKEN_TITLE_CONFIDENTIAL,
+  TOKEN_TITLE_GROUP,
   TOKEN_TITLE_LABEL,
   TOKEN_TITLE_MILESTONE,
   TOKEN_TITLE_MY_REACTION,
   TOKEN_TYPE_AUTHOR,
   TOKEN_TYPE_CONFIDENTIAL,
   TOKEN_TYPE_EPIC,
+  TOKEN_TYPE_GROUP,
   TOKEN_TYPE_LABEL,
   TOKEN_TYPE_MILESTONE,
   TOKEN_TYPE_MY_REACTION,
@@ -29,6 +31,7 @@ import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label
 import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
 import { TOKEN_TITLE_EPIC } from 'ee/vue_shared/components/filtered_search_bar/constants';
 import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
+import GroupToken from 'ee/vue_shared/components/filtered_search_bar/tokens/group_token.vue';
 
 export default {
   inject: ['groupFullPath', 'groupMilestonesPath'],
@@ -43,6 +46,7 @@ export default {
         confidential,
         myReactionEmoji,
         epicIid,
+        groupPath,
         'not[authorUsername]': notAuthorUsername,
         'not[myReactionEmoji]': notMyReactionEmoji,
         'not[labelName]': notLabelName,
@@ -63,6 +67,7 @@ export default {
         confidential,
         my_reaction_emoji: myReactionEmoji,
         epic_iid: epicIid,
+        group_path: groupPath,
         search,
         'not[author_username]': notAuthorUsername,
         'not[my_reaction_emoji]': notMyReactionEmoji,
@@ -163,6 +168,15 @@ export default {
             { icon: 'eye', value: false, title: __('No') },
           ],
         },
+        {
+          type: TOKEN_TYPE_GROUP,
+          icon: 'group',
+          title: TOKEN_TITLE_GROUP,
+          unique: true,
+          token: GroupToken,
+          operators: OPERATORS_IS,
+          fullPath: this.groupFullPath,
+        },
       ];
 
       if (supportsEpic) {
@@ -217,6 +231,7 @@ export default {
         myReactionEmoji,
         search,
         epicIid,
+        groupPath,
         'not[authorUsername]': notAuthorUsername,
         'not[myReactionEmoji]': notMyReactionEmoji,
         'not[labelName]': notLabelName,
@@ -295,6 +310,13 @@ export default {
         });
       }
 
+      if (groupPath) {
+        filteredSearchValue.push({
+          type: TOKEN_TYPE_GROUP,
+          value: { data: groupPath },
+        });
+      }
+
       if (search) {
         filteredSearchValue.push(search);
       }
@@ -337,6 +359,9 @@ export default {
           }
           case TOKEN_TYPE_EPIC:
             filterParams.epicIid = filter.value.data;
+            break;
+          case TOKEN_TYPE_GROUP:
+            filterParams.groupPath = filter.value.data;
             break;
           case TOKEN_TYPE_SEARCH_WITHIN:
             filterParams.in = filter.value.data;

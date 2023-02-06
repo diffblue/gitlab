@@ -52,6 +52,10 @@ const fetchGroupEpics = (
       variables.iid = transformedFilterParams.epicIid.split('::&').pop();
       variables.topLevelHierarchyOnly = false;
     }
+    if (transformedFilterParams?.groupPath) {
+      variables.fullPath = transformedFilterParams.groupPath;
+      variables.includeDescendantGroups = false;
+    }
   }
 
   return epicUtils.gqClient

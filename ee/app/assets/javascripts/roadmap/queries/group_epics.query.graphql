@@ -17,6 +17,7 @@ query roadmapGroupEpics(
   $not: NegatedEpicFilterInput
   $endCursor: String = ""
   $topLevelHierarchyOnly: Boolean = false
+  $includeDescendantGroups: Boolean = true
 ) {
   group(fullPath: $fullPath) {
     id
@@ -36,6 +37,7 @@ query roadmapGroupEpics(
       not: $not
       after: $endCursor
       topLevelHierarchyOnly: $topLevelHierarchyOnly
+      includeDescendantGroups: $includeDescendantGroups
     ) {
       edges {
         node {

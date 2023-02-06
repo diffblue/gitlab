@@ -81,6 +81,11 @@ export default {
           Object.assign(queryVariables, {
             ...transformedFilterParams,
           });
+
+          if (transformedFilterParams.groupPath) {
+            queryVariables.groupPath = transformedFilterParams.groupPath;
+            queryVariables.includeDescendantGroups = false;
+          }
         }
 
         return queryVariables;

@@ -18,6 +18,7 @@ query groupEpics(
   $prevPageCursor: String = ""
   $nextPageCursor: String = ""
   $isSignedIn: Boolean = false
+  $includeDescendantGroups: Boolean = true
 ) {
   group(fullPath: $groupPath) {
     id
@@ -35,6 +36,7 @@ query groupEpics(
       last: $lastPageSize
       after: $nextPageCursor
       before: $prevPageCursor
+      includeDescendantGroups: $includeDescendantGroups
     ) {
       nodes {
         id
