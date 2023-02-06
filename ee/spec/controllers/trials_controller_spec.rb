@@ -112,11 +112,10 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
                                                gitlab_com_trial: true,
                                                sync_to_gl: true)
             }
-            service_instance = instance_double(GitlabSubscriptions::Trials::ApplyTrialService)
-            allow(GitlabSubscriptions::Trials::ApplyTrialService).to receive(:new).with(apply_trial_params)
-                                                                                  .and_return(service_instance)
 
-            expect(service_instance).to receive(:execute).and_return(ServiceResponse.success)
+            expect_next_instance_of(GitlabSubscriptions::Trials::ApplyTrialService, apply_trial_params) do |instance|
+              expect(instance).to receive(:execute).and_return(ServiceResponse.success)
+            end
 
             post_create_lead
           end
@@ -427,11 +426,9 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
                                                             ).merge(gl_com_params)
       }
 
-      service_instance = instance_double(GitlabSubscriptions::Trials::ApplyTrialService)
-      allow(GitlabSubscriptions::Trials::ApplyTrialService).to receive(:new).with(**apply_trial_params)
-                                                                            .and_return(service_instance)
-
-      expect(service_instance).to receive(:execute).and_return(ServiceResponse.success)
+      expect_next_instance_of(GitlabSubscriptions::Trials::ApplyTrialService, apply_trial_params) do |instance|
+        expect(instance).to receive(:execute).and_return(ServiceResponse.success)
+      end
 
       post :apply, params: post_params
     end
