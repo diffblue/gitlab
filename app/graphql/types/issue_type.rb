@@ -61,7 +61,7 @@ module Types
     field :due_date, Types::TimeType, null: true,
                                       description: 'Due date of the issue.'
     field :hidden, GraphQL::Types::Boolean, null: true,
-                                            description: 'Indicates the issue is hidden because the author has been banned.'
+                                            description: 'Indicates the issue is hidden because the author has been banned.', method: :hidden?
     field :merge_requests_count, GraphQL::Types::Int, null: false,
                                                       description: 'Number of merge requests that close the issue on merge.',
                                                       resolver: Resolvers::MergeRequestsCountResolver
