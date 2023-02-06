@@ -86,12 +86,12 @@ RSpec.describe(
     end
 
     let!(:scanner) { create_scanner(project) }
+    let!(:finding) { create_finding(project, scanner) }
 
     subject { described_class.new(**migration_attrs).perform }
 
     context "when a Finding has no Vulnerability" do
       before do
-        finding = create_finding(project, scanner)
         create_feedback(
           project,
           user,
@@ -125,7 +125,8 @@ RSpec.describe(
             params = {
               class: "MigrateVulnerabilitiesFeedbackToVulnerabilitiesStateTransition",
               errors: "Title can't be blank",
-              message: "Failed to create Vulnerability"
+              message: "Failed to create Vulnerability",
+              vulnerability_finding_id: finding.id
             }
             expect(logger).to receive(:error).once.with(params)
           end
@@ -170,8 +171,8 @@ RSpec.describe(
         create(:ee_ci_job_artifact, :sast_with_signatures_and_vulnerability_flags, job_id: ci_build.id)
         # rubocop:enable RSpec/FactoriesInMigrationSpecs
         security_scan = create_security_scan(ci_build, sast_scan_type, project_id: project.id)
-        create_security_finding(security_scan, scanner, uuid: known_uuid)
-        create_feedback(
+        @security_finding = create_security_finding(security_scan, scanner, uuid: known_uuid)
+        @feedback = create_feedback(
           project,
           user,
           sast_category,
@@ -182,7 +183,7 @@ RSpec.describe(
         )
       end
 
-      context "when creating any associated record fails" do
+      context "when creating any associated record fails" do # rubocop:disable RSpec/MultipleMemoizedHelpers
         let(:error_response) { instance_double(ServiceResponse, message: "an error", error?: true) }
 
         before do
@@ -195,18 +196,22 @@ RSpec.describe(
           expect { subject }.to change { vulnerabilities.count }.by(0)
         end
 
+        # rubocop:disable RSpec/InstanceVariable
         it "logs an error" do
           expect_next_instance_of(::Gitlab::BackgroundMigration::Logger) do |logger|
             params = {
               message: "Failed to create Vulnerability from Security::Finding",
               class: "MigrateVulnerabilitiesFeedbackToVulnerabilitiesStateTransition",
-              error: "an error"
+              error: "an error",
+              security_finding_uuid: @security_finding.uuid,
+              vulnerability_feedback_id: @feedback.id
             }
             expect(logger).to receive(:error).once.with(params)
           end
 
           subject
         end
+        # rubocop:enable RSpec/InstanceVariable
       end
 
       it 'creates a Vulnerability from the Security::Finding' do
@@ -287,12 +292,25 @@ RSpec.describe(
       end
     end
 
+    # rubocop:disable RSpec/MultipleMemoizedHelpers
     context "when a Vulnerability is dismissed with a comment" do
       let(:comment) { "This is a test comment" }
+      let(:vulnerability) { create_vulnerability(project, user) }
+      let(:finding) { create_finding(project, scanner, vulnerability_id: vulnerability.id) }
+      let(:feedback) do
+        create_feedback(
+          project,
+          user,
+          finding.report_type,
+          feedback_types[:dismissal],
+          finding.project_fingerprint,
+          finding.uuid,
+          comment: comment,
+          comment_author_id: user.id
+        )
+      end
 
       before do
-        vulnerability = create_vulnerability(project, user)
-        finding = create_finding(project, scanner, vulnerability_id: vulnerability.id)
         create_feedback(
           project,
           user,
@@ -318,43 +336,29 @@ RSpec.describe(
       end
 
       it_behaves_like 'a migration updating migrated_to_state_transition column'
-    end
 
-    context "when a Vulnerability is dismissed with too long comment" do
-      let(:comment) { "<body>#{'a' * comment_max_length * 2}</body>" }
+      context "when a Vulnerability is dismissed with too long comment" do
+        let(:comment) { "<body>#{'a' * comment_max_length * 2}</body>" }
 
-      before do
-        vulnerability = create_vulnerability(project, user)
-        finding = create_finding(project, scanner, vulnerability_id: vulnerability.id)
-        create_feedback(
-          project,
-          user,
-          finding.report_type,
-          feedback_types[:dismissal],
-          finding.project_fingerprint,
-          finding.uuid,
-          comment: comment,
-          comment_author_id: user.id
-        )
+        it "retains strips HTML tags and truncates the comment" do
+          subject
+
+          state_transition = vulnerability_state_transitions.last
+          expect(vulnerability_state_transitions.count).to eq(1)
+          expect(state_transition.from_state).to eq(vulnerability_states[:detected])
+          expect(state_transition.to_state).to eq(vulnerability_states[:dismissed])
+          expect(state_transition.comment.length).to eq(comment_max_length)
+          expect(state_transition.author_id).to eq(vulnerability_feedback.last.author_id)
+          expect(state_transition.vulnerability_id).to eq(vulnerabilities.last.id)
+        end
+
+        it_behaves_like 'a migration updating migrated_to_state_transition column'
       end
-
-      it "retains strips HTML tags and truncates the comment" do
-        subject
-
-        state_transition = vulnerability_state_transitions.last
-        expect(vulnerability_state_transitions.count).to eq(1)
-        expect(state_transition.from_state).to eq(vulnerability_states[:detected])
-        expect(state_transition.to_state).to eq(vulnerability_states[:dismissed])
-        expect(state_transition.comment.length).to eq(comment_max_length)
-        expect(state_transition.author_id).to eq(vulnerability_feedback.last.author_id)
-        expect(state_transition.vulnerability_id).to eq(vulnerabilities.last.id)
-      end
-
-      it_behaves_like 'a migration updating migrated_to_state_transition column'
     end
+    # rubocop:enable RSpec/MultipleMemoizedHelpers
 
     context "when a Vulnerability is dismissed with a dismissal reason" do
-      let(:dismissal_reason) { 3 } # used_in_tests
+      dismissal_reason = 3 # used_in_test
 
       before do
         vulnerability = create_vulnerability(project, user)

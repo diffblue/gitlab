@@ -165,7 +165,8 @@ module EE
               if vulnerability.errors.any?
                 log_error(
                   message: "Failed to create Vulnerability",
-                  errors: vulnerability.errors.full_messages.join("; ")
+                  errors: vulnerability.errors.full_messages.join("; "),
+                  vulnerability_finding_id: finding.id
                 )
                 raise ActiveRecord::Rollback
               end
@@ -197,7 +198,12 @@ module EE
               ).execute
 
               if response.error?
-                log_error(message: "Failed to create Vulnerability from Security::Finding", error: response.message)
+                log_error(
+                  message: "Failed to create Vulnerability from Security::Finding",
+                  error: response.message,
+                  vulnerability_feedback_id: feedback.id,
+                  security_finding_uuid: params[:security_finding_uuid]
+                )
                 raise ActiveRecord::Rollback
               end
 
