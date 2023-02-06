@@ -27,12 +27,16 @@ module Zoekt
 
         payload = { CloneUrl: repository_url, RepoId: project.id }
 
-        ::Gitlab::HTTP.post(
+        response = ::Gitlab::HTTP.post(
           URI.join(zoekt_index_base_url, '/index'),
           headers: { "Content-Type" => "application/json" },
           body: payload.to_json,
           allow_local_requests: true
         )
+
+        raise response['Error'] if response['Error']
+
+        response
       end
 
       def async_update_zoekt_index
