@@ -28,7 +28,7 @@ module Gitlab
 
         def stages
           [
-            *group_stages,
+            *persisted_stages,
             add_stage_event_hash_id(in_memory_lead_time_stage),
             add_stage_event_hash_id(in_memory_cycle_time_stage)
           ].uniq(&:stage_event_hash_id)
@@ -38,8 +38,8 @@ module Gitlab
 
         attr_reader :group
 
-        def group_stages
-          @group_stages ||= ::Analytics::CycleAnalytics::Stage.distinct_stages_within_hierarchy(group)
+        def persisted_stages
+          @persisted_stages ||= ::Analytics::CycleAnalytics::Stage.distinct_stages_within_hierarchy(group)
         end
 
         def in_memory_lead_time_stage
