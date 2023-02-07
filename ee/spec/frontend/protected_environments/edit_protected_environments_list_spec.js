@@ -1,4 +1,4 @@
-import { GlAvatar } from '@gitlab/ui';
+import { GlAvatar, GlButton } from '@gitlab/ui';
 import MockAdapter from 'axios-mock-adapter';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
@@ -9,13 +9,14 @@ import axios from '~/lib/utils/axios_utils';
 import { sprintf, s__ } from '~/locale';
 import { createStore } from 'ee/protected_environments/store/edit';
 import EditProtectedEnvironmentsList from 'ee/protected_environments/edit_protected_environments_list.vue';
+import { MAINTAINER_ACCESS_LEVEL, DEVELOPER_ACCESS_LEVEL } from './constants';
 
 const DEFAULT_ENVIRONMENTS = [
   {
     name: 'staging',
     deploy_access_levels: [
       {
-        access_level: 30,
+        access_level: DEVELOPER_ACCESS_LEVEL,
         access_level_description: 'Deployers + Maintainers',
         group_id: null,
         user_id: null,
@@ -53,6 +54,9 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
     await nextTick();
   };
 
+  const findDeleteButton = () =>
+    wrapper.findByTitle(s__('ProtectedEnvironments|Delete deployment rule'));
+
   beforeEach(() => {
     mock = new MockAdapter(axios);
     originalGon = window.gon;
@@ -66,9 +70,13 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
     mock
       .onGet('/api/v4/users/1')
       .reply(HTTP_STATUS_OK, { name: 'root', avatar_url: '/avatar.png' });
-    mock
-      .onGet('/api/v4/projects/8/members')
-      .reply(HTTP_STATUS_OK, [{ name: 'root', access_level: '40', avatar_url: '/avatar.png' }]);
+    mock.onGet('/api/v4/projects/8/members').reply(HTTP_STATUS_OK, [
+      {
+        name: 'root',
+        access_level: MAINTAINER_ACCESS_LEVEL.toString(),
+        avatar_url: '/avatar.png',
+      },
+    ]);
   });
 
   afterEach(() => {
@@ -117,6 +125,57 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
 
     descriptions.forEach((description, i) => {
       expect(description.text()).toBe(deployAccessLevels[i].access_level_description);
+    });
+  });
+
+  describe('delete rule', () => {
+    it('sends the deleted rule with _destroy set', async () => {
+      const [environment] = DEFAULT_ENVIRONMENTS;
+
+      await createComponent();
+
+      wrapper.findComponent(GlButton).vm.$emit('click');
+
+      const button = findDeleteButton();
+
+      mock.onPut().reply(HTTP_STATUS_OK);
+
+      const destroyedRule = {
+        access_level: DEVELOPER_ACCESS_LEVEL,
+        access_level_description: 'Deployers + Maintainers',
+        _destroy: true,
+      };
+
+      button.trigger('click');
+
+      await waitForPromises();
+
+      expect(mock.history.put.length).toBe(1);
+
+      const [{ data }] = mock.history.put;
+      expect(JSON.parse(data)).toMatchObject({
+        ...environment,
+        deploy_access_levels: [destroyedRule],
+      });
+    });
+
+    it('hides the button if there is only one rule', async () => {
+      const [environment] = DEFAULT_ENVIRONMENTS;
+      const [rule] = environment.deploy_access_levels;
+      mock.onGet('/api/v4/projects/8/protected_environments/').reply(HTTP_STATUS_OK, [
+        {
+          ...environment,
+          deploy_access_levels: [rule],
+        },
+      ]);
+
+      await createComponent();
+
+      wrapper.findComponent(GlButton).vm.$emit('click');
+
+      const button = findDeleteButton();
+
+      expect(button.exists()).toBe(false);
     });
   });
 });

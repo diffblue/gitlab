@@ -72,4 +72,40 @@ describe('ee/protected_environments/store/edit/mutations', () => {
       expect(mockedState.loading).toBe(false);
     });
   });
+
+  describe(types.REQUEST_UPDATE_PROTECTED_ENVIRONMENT, () => {
+    it('sets loading to true', () => {
+      mutations[types.REQUEST_UPDATE_PROTECTED_ENVIRONMENT](mockedState);
+
+      expect(mockedState.loading).toBe(true);
+    });
+  });
+
+  describe(types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_SUCCESS, () => {
+    const environment = { name: 'staging' };
+    const updatedEnvironment = { ...environment, deploy_access_levels: [] };
+
+    beforeEach(() => {
+      mockedState.protectedEnvironments = [environment];
+      mutations[types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_SUCCESS](
+        mockedState,
+        updatedEnvironment,
+      );
+    });
+
+    it('sets loading to false', () => {
+      expect(mockedState.loading).toBe(false);
+    });
+
+    it('updates the saved environment', () => {
+      expect(mockedState.protectedEnvironments).toEqual([updatedEnvironment]);
+    });
+  });
+
+  describe(types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_ERROR, () => {
+    it('sets loading to false', () => {
+      mutations[types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_ERROR](mockedState);
+      expect(mockedState.loading).toBe(false);
+    });
+  });
 });

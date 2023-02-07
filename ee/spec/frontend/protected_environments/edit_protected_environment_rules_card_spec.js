@@ -1,8 +1,9 @@
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import EditProtectedEnvironmentRulesCard from 'ee/protected_environments/edit_protected_environment_rules_card.vue';
+import { DEVELOPER_ACCESS_LEVEL } from './constants';
 
 const DEFAULT_ENVIRONMENT = {
-  deploy_access_levels: [{ access_level: 30 }, { group_id: 1 }, { user_id: 1 }],
+  deploy_access_levels: [{ access_level: DEVELOPER_ACCESS_LEVEL }, { group_id: 1 }, { user_id: 1 }],
 };
 
 const generateText = (rule) => {
