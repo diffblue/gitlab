@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Projects::LearnGitlabController, feature_category: :onboarding do
-  describe 'GET #index' do
+  describe 'GET #show' do
     let_it_be(:user) { create(:user) }
     let_it_be(:learn_gitlab_project) do
       create(:project, name: Onboarding::LearnGitlab::PROJECT_NAME).tap do |record|
@@ -16,7 +16,7 @@ RSpec.describe Projects::LearnGitlabController, feature_category: :onboarding do
 
     let(:params) { { namespace_id: project.namespace.to_param, project_id: project } }
 
-    subject(:action) { get :index, params: params }
+    subject(:action) { get :show, params: params }
 
     before_all do
       project.namespace.add_owner(user)
@@ -33,7 +33,7 @@ RSpec.describe Projects::LearnGitlabController, feature_category: :onboarding do
         sign_in(user)
       end
 
-      it { is_expected.to render_template(:index) }
+      it { is_expected.to render_template(:show) }
 
       context 'when learn_gitlab is not available' do
         before do
