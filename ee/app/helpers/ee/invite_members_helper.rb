@@ -21,8 +21,27 @@ module EE
       free_user_cap = ::Namespaces::FreeUserCap::Enforcement.new(source.root_ancestor)
       notification_free_user_cap = ::Namespaces::FreeUserCap::Notification.new(source.root_ancestor)
 
-      return dataset unless free_user_cap.enforce_cap? || notification_free_user_cap.enforce_cap?
+      if source.root_ancestor.trial_active? && free_user_cap.qualified_namespace?
+        dataset[:active_trial_dataset] = ::Gitlab::Json.dump(active_trial_dataset(source))
+      end
 
+      if free_user_cap.enforce_cap? || notification_free_user_cap.enforce_cap?
+        dataset[:users_limit_dataset] = ::Gitlab::Json.dump(
+          users_limit_dataset(source, free_user_cap, notification_free_user_cap)
+        )
+      end
+
+      dataset
+    end
+
+    def active_trial_dataset(source)
+      {
+        purchase_path: group_billings_path(source.root_ancestor),
+        free_users_limit: ::Namespaces::FreeUserCap.dashboard_limit
+      }
+    end
+
+    def users_limit_dataset(source, free_user_cap, notification_free_user_cap)
       alert_variant =
         if free_user_cap.enforce_cap?
           if free_user_cap.reached_limit?
@@ -34,18 +53,14 @@ module EE
           ::Namespaces::FreeUserCap::NOTIFICATION_LIMIT_VARIANT
         end
 
-      dataset.merge(
-        users_limit_dataset: ::Gitlab::Json.dump(
-          {
-            alert_variant: alert_variant,
-            new_trial_registration_path: new_trial_path,
-            members_path: group_usage_quotas_path(source.root_ancestor),
-            purchase_path: group_billings_path(source.root_ancestor),
-            remaining_seats: free_user_cap.remaining_seats,
-            free_users_limit: ::Namespaces::FreeUserCap.dashboard_limit
-          }
-        )
-      )
+      {
+        alert_variant: alert_variant,
+        new_trial_registration_path: new_trial_path,
+        members_path: group_usage_quotas_path(source.root_ancestor),
+        purchase_path: group_billings_path(source.root_ancestor),
+        remaining_seats: free_user_cap.remaining_seats,
+        free_users_limit: ::Namespaces::FreeUserCap.dashboard_limit
+      }
     end
 
     override :users_filter_data

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe EE::InviteMembersHelper do
+RSpec.describe EE::InviteMembersHelper, feature_category: :onboarding do
   include Devise::Test::ControllerHelpers
 
   describe '#common_invite_group_modal_data' do
@@ -193,10 +193,45 @@ RSpec.describe EE::InviteMembersHelper do
         end
       end
     end
+
+    context 'when a namespace has an active trial' do
+      let_it_be(:namespace) { create(:group, :private) }
+
+      let(:active_trial_dataset) do
+        Gitlab::Json.parse(helper.common_invite_modal_dataset(namespace)[:active_trial_dataset])
+      end
+
+      let(:expected_dataset) do
+        {
+          'free_users_limit' => ::Namespaces::FreeUserCap.dashboard_limit,
+          'purchase_path' => group_billings_path(namespace.root_ancestor)
+        }
+      end
+
+      before do
+        create(:gitlab_subscription, :active_trial, namespace: namespace)
+      end
+
+      it 'includes correct active trial alert data' do
+        expect(active_trial_dataset).to eq(expected_dataset)
+      end
+    end
+
+    context 'when namespace does not have an active trial' do
+      let_it_be(:namespace) { create(:group, :private) }
+
+      before do
+        create(:gitlab_subscription, :expired_trial, namespace: namespace)
+      end
+
+      it 'does not include users limit notification data' do
+        expect(helper.common_invite_modal_dataset(namespace)).not_to have_key(:active_trial_dataset)
+      end
+    end
   end
 
   describe '#users_filter_data' do
-    let_it_be(:group) { create(:group) }
+    let_it_be(:group) { create(:group, :private) }
     let_it_be(:saml_provider) { create(:saml_provider, group: group) }
 
     let!(:group2) { create(:group) }

@@ -454,4 +454,32 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
       end
     end
   end
+
+  context 'with an active trial', :saas do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:group) { create(:group, :private, name: 'active-trial-group') }
+
+    before do
+      create(:gitlab_subscription, :active_trial, namespace: group)
+
+      stub_ee_application_setting(dashboard_limit_enabled: true)
+
+      group.add_owner(user)
+
+      sign_in(user)
+    end
+
+    it 'shows the active trial unlimited members alert' do
+      visit group_group_members_path(group)
+
+      click_on _('Invite members')
+
+      page.within invite_modal_selector do
+        expect(page).to have_content 'Add unlimited members with your trial'
+        expect(page).to have_content 'During your trial, you can invite as many members to active-trial-group'
+        expect(page).to have_link(text: 'upgrade to a paid plan', href: group_billings_path(group.root_ancestor))
+        expect(page).to have_content 'Cancel'
+      end
+    end
+  end
 end

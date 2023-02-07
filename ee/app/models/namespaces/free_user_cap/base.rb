@@ -22,6 +22,13 @@ module Namespaces
         full_user_counts(cache: cache)[:user_ids]
       end
 
+      def qualified_namespace?
+        return false unless ::Gitlab::CurrentSettings.dashboard_limit_enabled?
+        return false unless root_namespace.group_namespace?
+
+        !root_namespace.public?
+      end
+
       private
 
       attr_reader :root_namespace
@@ -37,9 +44,7 @@ module Namespaces
       end
 
       def enforceable_subscription?
-        return false unless ::Gitlab::CurrentSettings.dashboard_limit_enabled?
-        return false unless root_namespace.group_namespace?
-        return false if root_namespace.public?
+        return false unless qualified_namespace?
         return false if above_size_limit?
 
         root_namespace.has_free_or_no_subscription?
