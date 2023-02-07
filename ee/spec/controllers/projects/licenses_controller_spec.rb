@@ -11,6 +11,7 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
     let(:get_licenses) { get :index, params: params, format: :json }
 
     before do
+      stub_feature_flags(license_scanning_sbom_scanner: false)
       sign_in(user)
     end
 

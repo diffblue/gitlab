@@ -47,11 +47,17 @@ RSpec.describe API::Dependencies, feature_category: :dependency_management do
         expect(vulnerability['url']).to end_with(path)
       end
 
-      it 'include license information to response' do
-        license = json_response.find { |dep| dep['name'] == 'nokogiri' }['licenses'][0]
+      context 'when the license_scanning_sbom_scanner feature flag is false' do
+        before_all do
+          stub_feature_flags(license_scanning_sbom_scanner: false)
+        end
 
-        expect(license['name']).to eq('MIT')
-        expect(license['url']).to eq('http://opensource.org/licenses/mit-license')
+        it 'include license information to response' do
+          license = json_response.find { |dep| dep['name'] == 'nokogiri' }['licenses'][0]
+
+          expect(license['name']).to eq('MIT')
+          expect(license['url']).to eq('http://opensource.org/licenses/mit-license')
+        end
       end
 
       context 'with nil package_manager' do

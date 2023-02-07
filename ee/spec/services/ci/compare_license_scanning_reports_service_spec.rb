@@ -37,10 +37,16 @@ RSpec.describe Ci::CompareLicenseScanningReportsService do
       let!(:base_pipeline) { nil }
       let!(:head_pipeline) { create(:ee_ci_pipeline, :with_license_scanning_report, project: project) }
 
-      it 'reports new licenses' do
-        expect(subject[:status]).to eq(:parsed)
-        expect(subject[:data]['new_licenses'].count).to eq(4)
-        expect(subject[:data]['new_licenses']).to include(a_hash_including('name' => 'MIT'))
+      context 'when the license_scanning_sbom_scanner feature flag is false' do
+        before do
+          stub_feature_flags(license_scanning_sbom_scanner: false)
+        end
+
+        it 'reports new licenses' do
+          expect(subject[:status]).to eq(:parsed)
+          expect(subject[:data]['new_licenses'].count).to eq(4)
+          expect(subject[:data]['new_licenses']).to include(a_hash_including('name' => 'MIT'))
+        end
       end
     end
 
@@ -58,9 +64,15 @@ RSpec.describe Ci::CompareLicenseScanningReportsService do
         project.add_developer(contributor)
       end
 
-      it 'reports new licenses' do
-        expect(subject[:status]).to eq(:parsed)
-        expect(subject[:data]['new_licenses'].count).to be > 1
+      context 'when the license_scanning_sbom_scanner feature flag is false' do
+        before do
+          stub_feature_flags(license_scanning_sbom_scanner: false)
+        end
+
+        it 'reports new licenses' do
+          expect(subject[:status]).to eq(:parsed)
+          expect(subject[:data]['new_licenses'].count).to be > 1
+        end
       end
     end
 
@@ -72,19 +84,25 @@ RSpec.describe Ci::CompareLicenseScanningReportsService do
         expect(subject[:status]).to eq(:parsed)
       end
 
-      it 'reports new licenses' do
-        expect(subject[:data]['new_licenses'].count).to eq(1)
-        expect(subject[:data]['new_licenses']).to include(a_hash_including('name' => 'WTFPL'))
-      end
+      context 'when the license_scanning_sbom_scanner feature flag is false' do
+        before do
+          stub_feature_flags(license_scanning_sbom_scanner: false)
+        end
 
-      it 'reports existing licenses' do
-        expect(subject[:data]['existing_licenses'].count).to eq(1)
-        expect(subject[:data]['existing_licenses']).to include(a_hash_including('name' => 'MIT'))
-      end
+        it 'reports new licenses' do
+          expect(subject[:data]['new_licenses'].count).to eq(1)
+          expect(subject[:data]['new_licenses']).to include(a_hash_including('name' => 'WTFPL'))
+        end
 
-      it 'reports removed licenses' do
-        expect(subject[:data]['removed_licenses'].count).to eq(3)
-        expect(subject[:data]['removed_licenses']).to include(a_hash_including('name' => 'New BSD'))
+        it 'reports existing licenses' do
+          expect(subject[:data]['existing_licenses'].count).to eq(1)
+          expect(subject[:data]['existing_licenses']).to include(a_hash_including('name' => 'MIT'))
+        end
+
+        it 'reports removed licenses' do
+          expect(subject[:data]['removed_licenses'].count).to eq(3)
+          expect(subject[:data]['removed_licenses']).to include(a_hash_including('name' => 'New BSD'))
+        end
       end
     end
 

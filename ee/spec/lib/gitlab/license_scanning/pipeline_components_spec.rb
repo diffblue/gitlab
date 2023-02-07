@@ -10,17 +10,24 @@ RSpec.describe Gitlab::LicenseScanning::PipelineComponents, feature_category: :l
     context 'when the pipeline has an sbom report' do
       let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
 
-      it 'returns a list with the expected size' do
-        expected_number_of_components = pipeline.sbom_reports.reports.sum { |report| report.components.length }
-        expect(pipeline_components.fetch.count).to eql(expected_number_of_components)
-      end
+      context 'and some of the sbom components do not have purl values' do
+        it 'returns a list with the expected size' do
+          expected_number_of_components = pipeline.sbom_reports.reports.sum do |report|
+            report.components.length - report.components.count { |component| component.purl.blank? }
+          end
 
-      it 'returns a list containing the expected elements' do
-        expect(pipeline_components.fetch).to include(
-          { name: "github.com/astaxie/beego", purl_type: "golang", version: "v1.10.0" },
-          { name: "istanbul-lib-report", purl_type: "npm", version: "1.1.3" },
-          { name: "yargs-parser", purl_type: "npm", version: "9.0.2" }
-        )
+          expect(pipeline_components.fetch.count).to eql(expected_number_of_components)
+        end
+
+        it 'returns a list containing the expected elements' do
+          expect(pipeline_components.fetch).to include(
+            { name: "github.com/astaxie/beego", purl_type: "golang", version: "v1.10.0" },
+            { name: "istanbul-lib-report", purl_type: "npm", version: "1.1.3" },
+            { name: "yargs-parser", purl_type: "npm", version: "9.0.2" },
+            { name: "org.codehaus.plexus/plexus-utils", purl_type: "maven", version: "3.0.22" },
+            { name: "org.apache.commons/commons-lang3", purl_type: "maven", version: "3.4" }
+          )
+        end
       end
     end
 

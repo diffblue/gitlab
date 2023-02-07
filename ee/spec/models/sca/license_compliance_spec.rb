@@ -11,6 +11,7 @@ RSpec.describe SCA::LicenseCompliance do
   let(:other_license) { create(:software_license, name: "SOFTWARE-LICENSE", spdx_identifier: "Other-Id") }
 
   before do
+    stub_feature_flags(license_scanning_sbom_scanner: false)
     stub_licensed_features(license_scanning: true)
   end
 

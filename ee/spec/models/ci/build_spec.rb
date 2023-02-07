@@ -620,9 +620,11 @@ RSpec.describe Ci::Build, :saas do
         subject
 
         aggregate_failures do
-          expect(sbom_reports_list.reports.count).to eq(2)
-          expect(sbom_reports_list.reports.first.components.count).to eq(15)
-          expect(sbom_reports_list.reports.last.components.count).to eq(352)
+          expect(sbom_reports_list.reports.count).to eq(4)
+          expect(sbom_reports_list.reports[0].components.count).to eq(352)
+          expect(sbom_reports_list.reports[1].components.count).to eq(15)
+          expect(sbom_reports_list.reports[2].components.count).to eq(28)
+          expect(sbom_reports_list.reports[3].components.count).to eq(47)
         end
       end
     end

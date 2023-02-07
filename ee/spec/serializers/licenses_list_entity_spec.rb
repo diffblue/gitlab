@@ -7,6 +7,7 @@ RSpec.describe LicensesListEntity do
   let(:license_compliance) { project.license_compliance }
 
   before do
+    stub_feature_flags(license_scanning_sbom_scanner: false)
     stub_licensed_features(license_scanning: true)
   end
 

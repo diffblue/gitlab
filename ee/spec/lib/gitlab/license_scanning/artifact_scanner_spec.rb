@@ -28,7 +28,7 @@ RSpec.describe ::Gitlab::LicenseScanning::ArtifactScanner, feature_category: :li
     end
   end
 
-  describe "#latest_pipeline" do
+  describe ".latest_pipeline" do
     it "returns a pipeline" do
       expect(described_class.latest_pipeline(project, project.default_branch)).to eq(pipeline)
     end

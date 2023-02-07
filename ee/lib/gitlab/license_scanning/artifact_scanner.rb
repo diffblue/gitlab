@@ -22,12 +22,6 @@ module Gitlab
 
         pipeline.complete_and_has_reports?(::Ci::JobArtifact.of_report_type(:license_scanning))
       end
-
-      private
-
-      def empty_report
-        ::Gitlab::Ci::Reports::LicenseScanning::Report.new
-      end
     end
   end
 end

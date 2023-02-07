@@ -11,6 +11,7 @@ RSpec.describe 'EE > Projects > Licenses > Maintainer views policies', :js, feat
   end
 
   before do
+    stub_feature_flags(license_scanning_sbom_scanner: false)
     stub_licensed_features(license_scanning: true)
 
     sign_in(maintainer)

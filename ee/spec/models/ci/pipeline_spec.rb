@@ -251,7 +251,7 @@ RSpec.describe Ci::Pipeline do
     end
   end
 
-  describe '#license_scanning_reports' do
+  describe '#license_scanning_report' do
     subject { pipeline.license_scanning_report }
 
     before do
@@ -263,8 +263,7 @@ RSpec.describe Ci::Pipeline do
       let!(:build_2) { create(:ee_ci_build, :success, :license_scanning_feature_branch, pipeline: pipeline, project: project) }
 
       it 'returns a license scanning report with collected data' do
-        expect(subject.licenses.count).to eq(5)
-        expect(subject.licenses.map(&:name)).to include('WTFPL', 'MIT')
+        expect(subject.licenses.map(&:name)).to match_array(['WTFPL', 'MIT', 'New BSD', 'Apache 2.0', 'unknown'])
       end
 
       context 'when builds are retried' do
@@ -298,12 +297,18 @@ RSpec.describe Ci::Pipeline do
       let_it_be(:build1) { create(:ee_ci_build, :success, :dependency_scanning, pipeline: pipeline, project: project) }
       let_it_be(:build2) { create(:ee_ci_build, :success, :license_scanning, pipeline: pipeline, project: project) }
 
-      it 'returns a dependency list report with collected data' do
-        mini_portile2 = subject.dependencies.find { |x| x[:name] == 'mini_portile2' }
+      context 'when the license_scanning_sbom_scanner feature flag is false' do
+        before do
+          stub_feature_flags(license_scanning_sbom_scanner: false)
+        end
 
-        expect(subject.dependencies.count).to eq(21)
-        expect(mini_portile2[:name]).not_to be_empty
-        expect(mini_portile2[:licenses]).not_to be_empty
+        it 'returns a dependency list report with collected data' do
+          mini_portile2 = subject.dependencies.find { |x| x[:name] == 'mini_portile2' }
+
+          expect(subject.dependencies.count).to eq(21)
+          expect(mini_portile2[:name]).not_to be_empty
+          expect(mini_portile2[:licenses]).not_to be_empty
+        end
       end
 
       context 'when builds are retried' do
@@ -377,7 +382,7 @@ RSpec.describe Ci::Pipeline do
       it 'returns a list of sbom reports belonging to the artifact' do
         create(:ee_ci_build, :success, :cyclonedx, pipeline: pipeline, project: project)
 
-        expect(subject.reports.count).to eq(2)
+        expect(subject.reports.count).to eq(4)
       end
     end
 
@@ -386,7 +391,7 @@ RSpec.describe Ci::Pipeline do
         create(:ee_ci_build, :success, :cyclonedx, pipeline: pipeline, project: project)
         create(:ee_ci_build, :success, :cyclonedx, pipeline: pipeline, project: project)
 
-        expect(subject.reports.count).to eq(4)
+        expect(subject.reports.count).to eq(8)
       end
     end
 

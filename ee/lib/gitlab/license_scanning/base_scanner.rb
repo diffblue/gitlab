@@ -25,6 +25,12 @@ module Gitlab
       def results_available?
         raise "Must implement method in child class"
       end
+
+      private
+
+      def empty_report
+        ::Gitlab::Ci::Reports::LicenseScanning::Report.new
+      end
     end
   end
 end

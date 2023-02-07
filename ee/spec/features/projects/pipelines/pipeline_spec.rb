@@ -180,10 +180,16 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
         visit licenses_project_pipeline_path(project, pipeline)
       end
 
-      it 'shows license tab pane as active' do
-        expect(page).to have_content('Licenses')
-        expect(page).to have_selector('[data-testid="license-tab"]')
-        expect(find('[data-testid="license-tab"]')).to have_content('4')
+      context 'when the license_scanning_sbom_scanner feature flag is false' do
+        before_all do
+          stub_feature_flags(license_scanning_sbom_scanner: false)
+        end
+
+        it 'shows license tab pane as active' do
+          expect(page).to have_content('Licenses')
+          expect(page).to have_selector('[data-testid="license-tab"]')
+          expect(find('[data-testid="license-tab"]')).to have_content('4')
+        end
       end
 
       it 'shows security report section', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/375026' do
