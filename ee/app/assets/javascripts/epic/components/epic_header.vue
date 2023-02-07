@@ -19,8 +19,7 @@ import UserAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link
 import ConfidentialityBadge from '~/vue_shared/components/confidentiality_badge.vue';
 import DeleteIssueModal from '~/issues/show/components/delete_issue_modal.vue';
 
-import { IssuableType, WorkspaceType } from '~/issues/constants';
-import { statusType } from '../constants';
+import { IssuableType, STATUS_CLOSED, STATUS_OPEN, WorkspaceType } from '~/issues/constants';
 import epicUtils from '../utils/epic_utils';
 
 export default {
@@ -90,7 +89,7 @@ export default {
     epicUtils.bindDocumentEvent(EVENT_ISSUABLE_VUE_APP_CHANGE, (e, isClosed) => {
       const isEpicOpen = e.detail ? !e.detail.isClosed : !isClosed;
       this.requestEpicStatusChangeSuccess({
-        state: isEpicOpen ? statusType.open : statusType.close,
+        state: isEpicOpen ? STATUS_OPEN : STATUS_CLOSED,
       });
     });
   },

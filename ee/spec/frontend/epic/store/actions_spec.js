@@ -1,6 +1,5 @@
 import MockAdapter from 'axios-mock-adapter';
 
-import { statusType } from 'ee/epic/constants';
 import * as actions from 'ee/epic/store/actions';
 import defaultState from 'ee/epic/store/state';
 import epicUtils from 'ee/epic/utils/epic_utils';
@@ -8,6 +7,7 @@ import epicUtils from 'ee/epic/utils/epic_utils';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/flash';
 import { EVENT_ISSUABLE_VUE_APP_CHANGE } from '~/issuable/constants';
+import { STATUS_CLOSED } from '~/issues/constants';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
@@ -170,9 +170,9 @@ describe('Epic Store Actions', () => {
     it('should set epic state type', async () => {
       await testAction(
         actions.requestEpicStatusChangeSuccess,
-        { state: statusType.close },
+        { state: STATUS_CLOSED },
         state,
-        [{ type: 'REQUEST_EPIC_STATUS_CHANGE_SUCCESS', payload: { state: statusType.close } }],
+        [{ type: 'REQUEST_EPIC_STATUS_CHANGE_SUCCESS', payload: { state: STATUS_CLOSED } }],
         [],
       );
     });
@@ -231,7 +231,7 @@ describe('Epic Store Actions', () => {
     describe('success', () => {
       it('dispatches requestEpicStatusChange and requestEpicStatusChangeSuccess when request is complete', async () => {
         mock.onPut(/(.*)/).replyOnce(HTTP_STATUS_OK, {
-          state: statusType.close,
+          state: STATUS_CLOSED,
         });
 
         await testAction(
@@ -245,7 +245,7 @@ describe('Epic Store Actions', () => {
             },
             {
               type: 'requestEpicStatusChangeSuccess',
-              payload: { state: statusType.close },
+              payload: { state: STATUS_CLOSED },
             },
             {
               type: 'triggerIssuableEvent',

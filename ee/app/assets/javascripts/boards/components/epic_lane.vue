@@ -1,10 +1,10 @@
 <script>
 import { GlButton, GlIcon, GlLink, GlLoadingIcon, GlPopover, GlTooltipDirective } from '@gitlab/ui';
 import { mapActions, mapGetters, mapState } from 'vuex';
+import { STATUS_OPEN } from '~/issues/constants';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { __, n__, sprintf } from '~/locale';
 import timeagoMixin from '~/vue_shared/mixins/timeago';
-import { statusType } from 'ee/epic/constants';
 import IssuesLaneList from './issues_lane_list.vue';
 
 export default {
@@ -48,7 +48,7 @@ export default {
     ...mapState(['epicsFlags', 'filterParams']),
     ...mapGetters(['getIssuesByEpic']),
     isOpen() {
-      return this.epic.state === statusType.open;
+      return this.epic.state === STATUS_OPEN;
     },
     chevronTooltip() {
       return this.isCollapsed ? __('Expand') : __('Collapse');

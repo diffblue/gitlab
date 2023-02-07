@@ -3,8 +3,8 @@ import { shallowMount } from '@vue/test-utils';
 
 import { nextTick } from 'vue';
 import EpicHeader from 'ee/epic/components/epic_header.vue';
+import { STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
 import DeleteIssueModal from '~/issues/show/components/delete_issue_modal.vue';
-import { statusType } from 'ee/epic/constants';
 import createStore from 'ee/epic/store';
 import waitForPromises from 'helpers/wait_for_promises';
 import TimeagoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
@@ -48,13 +48,13 @@ describe('EpicHeaderComponent', () => {
   describe('computed', () => {
     describe('statusIcon', () => {
       it('returns string `issue-open-m` when `isEpicOpen` is true', () => {
-        store.state.state = statusType.open;
+        store.state.state = STATUS_OPEN;
 
         expect(findStatusIcon().props('name')).toBe('epic');
       });
 
       it('returns string `mobile-issue-close` when `isEpicOpen` is false', async () => {
-        store.state.state = statusType.close;
+        store.state.state = STATUS_CLOSED;
 
         await nextTick();
         expect(findStatusIcon().props('name')).toBe('epic-closed');
@@ -63,13 +63,13 @@ describe('EpicHeaderComponent', () => {
 
     describe('statusText', () => {
       it('returns string `Open` when `isEpicOpen` is true', () => {
-        store.state.state = statusType.open;
+        store.state.state = STATUS_OPEN;
 
         expect(findStatusText().text()).toBe('Open');
       });
 
       it('returns string `Closed` when `isEpicOpen` is false', async () => {
-        store.state.state = statusType.close;
+        store.state.state = STATUS_CLOSED;
 
         await nextTick();
         expect(findStatusText().text()).toBe('Closed');
@@ -78,13 +78,13 @@ describe('EpicHeaderComponent', () => {
 
     describe('actionButtonClass', () => {
       it('returns `btn-close` when `isEpicOpen` is true', () => {
-        store.state.state = statusType.open;
+        store.state.state = STATUS_OPEN;
 
         expect(findToggleStatusButton().classes()).toContain('btn-close');
       });
 
       it('returns `btn-open` when `isEpicOpen` is false', async () => {
-        store.state.state = statusType.close;
+        store.state.state = STATUS_CLOSED;
 
         await nextTick();
         expect(findToggleStatusButton().classes()).toContain('btn-open');
@@ -93,13 +93,13 @@ describe('EpicHeaderComponent', () => {
 
     describe('actionButtonText', () => {
       it('returns string `Close epic` when `isEpicOpen` is true', () => {
-        store.state.state = statusType.open;
+        store.state.state = STATUS_OPEN;
 
         expect(findToggleStatusButton().text()).toBe('Close epic');
       });
 
       it('returns string `Reopen epic` when `isEpicOpen` is false', async () => {
-        store.state.state = statusType.close;
+        store.state.state = STATUS_CLOSED;
 
         await nextTick();
         expect(findToggleStatusButton().text()).toBe('Reopen epic');

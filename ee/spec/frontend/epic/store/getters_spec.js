@@ -1,11 +1,11 @@
-import { statusType } from 'ee/epic/constants';
 import * as getters from 'ee/epic/store/getters';
+import { STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
 
 describe('Epic Store Getters', () => {
   describe('isEpicOpen', () => {
     it('returns `true` when Epic `state` is `opened`', () => {
       const epicState = {
-        state: statusType.open,
+        state: STATUS_OPEN,
       };
 
       expect(getters.isEpicOpen(epicState)).toBe(true);
@@ -13,7 +13,7 @@ describe('Epic Store Getters', () => {
 
     it('returns `false` when Epic `state` is `closed`', () => {
       const epicState = {
-        state: statusType.closed,
+        state: STATUS_CLOSED,
       };
 
       expect(getters.isEpicOpen(epicState)).toBe(false);
