@@ -8,9 +8,16 @@ module QA
           project.name = Runtime::Env.auto_devops_project_name || 'project-with-secure'
           project.description = 'Project with Secure'
         end
+        # disable the license_scanning_sbom_scanner feature flag because we don't yet have
+        # any license data seeded in the db.
+        # TODO: enable this feature flag and add a test in live environments when license data
+        # is available in staging/production. See https://gitlab.com/gitlab-org/gitlab/-/issues/389906
+        @license_scanning_sbom_scanner_enabled = Runtime::Feature.enabled?(:license_scanning_sbom_scanner)
+        Runtime::Feature.disable(:license_scanning_sbom_scanner)
       end
 
       after(:all) do
+        Runtime::Feature.enable(:license_scanning_sbom_scanner) if @license_scanning_sbom_scanner_enabled
         @project&.remove_via_api! if @project
       end
 

@@ -264,7 +264,13 @@ RSpec.describe MergeRequest do
             synchronous_reactive_cache(merge_request)
           end
 
-          it { is_expected.to be_truthy }
+          context 'when the license_scanning_sbom_scanner feature flag is false' do
+            before do
+              stub_feature_flags(license_scanning_sbom_scanner: false)
+            end
+
+            it { is_expected.to be_truthy }
+          end
 
           context 'with disabled licensed feature' do
             before do
@@ -282,7 +288,13 @@ RSpec.describe MergeRequest do
                 allow_any_instance_of(ApprovalWrappedRule).to receive(:approved?).and_return(false)
               end
 
-              it { is_expected.to be_truthy }
+              context 'when the license_scanning_sbom_scanner feature flag is false' do
+                before do
+                  stub_feature_flags(license_scanning_sbom_scanner: false)
+                end
+
+                it { is_expected.to be_truthy }
+              end
             end
 
             context 'when rule is approved' do
@@ -708,6 +720,7 @@ RSpec.describe MergeRequest do
     end
 
     before do
+      stub_feature_flags(license_scanning_sbom_scanner: false)
       merge_request.update!(head_pipeline_id: head_pipeline.id)
     end
 
@@ -733,7 +746,7 @@ RSpec.describe MergeRequest do
 
         it 'returns status and data' do
           expect_any_instance_of(Ci::CompareLicenseScanningReportsService)
-              .to receive(:execute).with(base_pipeline, head_pipeline).and_call_original
+            .to receive(:execute).with(base_pipeline, head_pipeline).and_call_original
 
           subject
         end
@@ -744,7 +757,7 @@ RSpec.describe MergeRequest do
 
           it 'returns key with license information' do
             expect_any_instance_of(Ci::CompareLicenseScanningReportsService)
-                .to receive(:execute).with(base_pipeline, head_pipeline).and_call_original
+              .to receive(:execute).with(base_pipeline, head_pipeline).and_call_original
 
             expect(subject[:key].last).to include("software_license_policies/query-")
           end
@@ -753,7 +766,7 @@ RSpec.describe MergeRequest do
         context 'when cached results is not latest' do
           before do
             allow_any_instance_of(Ci::CompareLicenseScanningReportsService)
-                .to receive(:latest?).and_return(false)
+              .to receive(:latest?).and_return(false)
           end
 
           it 'raises and InvalidateReactiveCache error' do

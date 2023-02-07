@@ -35,21 +35,27 @@ RSpec.describe Ci::CompareLicenseScanningReportsCollapsedService do
           end
         end
 
-        it 'exposes report with numbers of licenses by type' do
-          expect(subject[:status]).to eq(:parsed)
-          expect(subject[:data]['new_licenses']).to eq(1)
-          expect(subject[:data]['existing_licenses']).to eq(1)
-          expect(subject[:data]['removed_licenses']).to eq(3)
-          expect(subject[:data]['approval_required']).to eq(false)
-          expect(subject[:data]['has_denied_licenses']).to eq(true)
-        end
+        context 'when the license_scanning_sbom_scanner feature flag is false' do
+          before do
+            stub_feature_flags(license_scanning_sbom_scanner: false)
+          end
 
-        context 'when license_check enabled' do
-          let_it_be(:license_check) { create(:report_approver_rule, :license_scanning, merge_request: merge_request) }
-
-          it 'exposes approval as required' do
-            expect(subject[:data]['approval_required']).to eq(true)
+          it 'exposes report with numbers of licenses by type' do
+            expect(subject[:status]).to eq(:parsed)
+            expect(subject[:data]['new_licenses']).to eq(1)
+            expect(subject[:data]['existing_licenses']).to eq(1)
+            expect(subject[:data]['removed_licenses']).to eq(3)
+            expect(subject[:data]['approval_required']).to eq(false)
             expect(subject[:data]['has_denied_licenses']).to eq(true)
+          end
+
+          context 'when license_check enabled' do
+            let_it_be(:license_check) { create(:report_approver_rule, :license_scanning, merge_request: merge_request) }
+
+            it 'exposes approval as required' do
+              expect(subject[:data]['approval_required']).to eq(true)
+              expect(subject[:data]['has_denied_licenses']).to eq(true)
+            end
           end
         end
       end

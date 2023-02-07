@@ -32,7 +32,14 @@ RSpec.describe RefreshLicenseComplianceChecksWorker do
             subject.perform(project.id)
           end
 
-          specify { expect(open_merge_request_approval_rule.reload.approvals_required).to eql(project_approval_rule.approvals_required) }
+          context 'when the license_scanning_sbom_scanner feature flag is false' do
+            before_all do
+              stub_feature_flags(license_scanning_sbom_scanner: false)
+            end
+
+            specify { expect(open_merge_request_approval_rule.reload.approvals_required).to eql(project_approval_rule.approvals_required) }
+          end
+
           specify { expect(closed_merge_request_approval_rule.reload.approvals_required).to be_zero }
         end
 
@@ -46,7 +53,14 @@ RSpec.describe RefreshLicenseComplianceChecksWorker do
             subject.perform(project.id)
           end
 
-          specify { expect(open_merge_request_approval_rule.reload.approvals_required).to be_zero }
+          context 'when the license_scanning_sbom_scanner feature flag is false' do
+            before_all do
+              stub_feature_flags(license_scanning_sbom_scanner: false)
+            end
+
+            specify { expect(open_merge_request_approval_rule.reload.approvals_required).to be_zero }
+          end
+
           specify { expect(closed_merge_request_approval_rule.reload.approvals_required).to be_zero }
         end
       end

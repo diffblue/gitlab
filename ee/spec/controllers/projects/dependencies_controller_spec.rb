@@ -197,10 +197,16 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
             get :index, params: params, format: :json
           end
 
-          it 'include license information to response' do
-            nokogiri = json_response['dependencies'].find { |dep| dep['name'] == 'nokogiri' }
+          context 'when the license_scanning_sbom_scanner feature flag is false' do
+            before_all do
+              stub_feature_flags(license_scanning_sbom_scanner: false)
+            end
 
-            expect(nokogiri['licenses']).not_to be_empty
+            it 'include license information to response' do
+              nokogiri = json_response['dependencies'].find { |dep| dep['name'] == 'nokogiri' }
+
+              expect(nokogiri['licenses']).not_to be_empty
+            end
           end
         end
 

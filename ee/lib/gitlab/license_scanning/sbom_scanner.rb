@@ -2,25 +2,37 @@
 
 module Gitlab
   module LicenseScanning
-    # TODO: This class will be responsible for handling license scanning use
-    # cases. It differentiates from ArtifactScanner based on its data source
-    # i.e. it uses Sbom::Component objects instead of license scanning reports.
-    # See https://gitlab.com/gitlab-org/gitlab/-/issues/384932 for more information.
     class SbomScanner < ::Gitlab::LicenseScanning::BaseScanner
       def self.latest_pipeline(project, ref)
-        raise "Not implemented"
+        project.latest_pipeline_with_reports_for_ref(ref, ::Ci::JobArtifact.of_report_type(:sbom))
       end
 
       def report
-        raise "Not implemented"
+        return empty_report if pipeline.blank?
+
+        components = PipelineComponents.new(pipeline: pipeline).fetch
+        package_licenses = PackageLicenses.new(components: components).fetch
+
+        ::Gitlab::Ci::Reports::LicenseScanning::Report.new.tap do |license_scanning_report|
+          package_licenses.each do |package_license|
+            package_license.licenses.each do |license_string|
+              license = license_scanning_report.add_license(id: license_string, name: license_string)
+              license.add_dependency(name: package_license.name, version: package_license.version)
+            end
+          end
+        end
       end
 
       def has_data?
-        raise "Not implemented"
+        return false if pipeline.blank?
+
+        pipeline.has_reports?(::Ci::JobArtifact.of_report_type(:sbom))
       end
 
       def results_available?
-        raise "Not implemented"
+        return false if pipeline.blank?
+
+        pipeline.complete_and_has_reports?(::Ci::JobArtifact.of_report_type(:sbom))
       end
     end
   end

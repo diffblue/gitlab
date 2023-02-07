@@ -935,6 +935,7 @@ RSpec.describe Projects::MergeRequestsController do
     subject { get :license_scanning_reports, params: params, format: :json }
 
     before do
+      stub_feature_flags(license_scanning_sbom_scanner: false)
       stub_licensed_features(license_scanning: true)
       allow_next_found_instance_of(::MergeRequest) do |merge_request|
         allow(merge_request).to receive(:compare_reports)
@@ -967,6 +968,7 @@ RSpec.describe Projects::MergeRequestsController do
     subject { get :license_scanning_reports_collapsed, params: params, format: :json }
 
     before do
+      stub_feature_flags(license_scanning_sbom_scanner: false)
       stub_licensed_features(license_scanning: true)
 
       allow_next_found_instance_of(::MergeRequest) do |merge_request|
