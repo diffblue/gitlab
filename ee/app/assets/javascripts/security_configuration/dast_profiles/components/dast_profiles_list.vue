@@ -6,25 +6,26 @@ import {
   GlSkeletonLoader,
   GlTable,
   GlTooltipDirective,
-  GlDropdown,
-  GlDropdownItem,
-  GlIcon,
+  GlDisclosureDropdown,
+  GlDisclosureDropdownItem,
 } from '@gitlab/ui';
 import { uniqueId } from 'lodash';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { visitUrl } from '~/lib/utils/url_utility';
-import { s__ } from '~/locale';
+import { s__, __ } from '~/locale';
+import { DAST_EDIT_ACTION, DAST_DELETE_ACTION } from '../constants';
 
 export default {
+  DAST_EDIT_ACTION,
+  DAST_DELETE_ACTION,
   components: {
     GlAlert,
     GlButton,
     GlModal,
     GlSkeletonLoader,
     GlTable,
-    GlDropdown,
-    GlDropdownItem,
-    GlIcon,
+    GlDisclosureDropdown,
+    GlDisclosureDropdownItem,
   },
   directives: {
     SafeHtml,
@@ -139,6 +140,33 @@ export default {
     navigateToProfile({ editPath }) {
       return visitUrl(editPath);
     },
+    cssDeleteActionClasses(item) {
+      return `gl-text-red-500! ${
+        this.isPolicyProfile(item) ? 'gl-cursor-default! gl-button disabled' : ''
+      }`;
+    },
+    actionDisclosureItemsConfig(item) {
+      return {
+        [DAST_EDIT_ACTION]: {
+          text: __('Edit'),
+          href: item.editPath,
+          extraAttrs: {
+            'data-testid': 'dast-edit-action',
+            title: s__('DastProfiles|Edit profile'),
+          },
+        },
+        [DAST_DELETE_ACTION]: {
+          text: __('Delete'),
+          action: () => this.prepareProfileDeletion(item.id),
+          extraAttrs: {
+            class: this.cssDeleteActionClasses(item),
+            disabled: this.isPolicyProfile(item),
+            ariaDisabled: this.isPolicyProfile(item),
+            title: this.deleteTitle(item),
+          },
+        },
+      };
+    },
   },
 };
 </script>
@@ -190,54 +218,33 @@ export default {
           <div class="gl-text-right">
             <slot name="actions" :profile="item"></slot>
 
-            <gl-dropdown
+            <gl-disclosure-dropdown
               v-gl-tooltip
               class="gl-display-none gl-md-display-inline-flex!"
-              toggle-class="gl-border-0! gl-shadow-none! gl-pl-2!"
-              no-caret
-              right
-              category="tertiary"
-              size="small"
+              toggle-class="gl-border-0! gl-shadow-none!"
+              text-sr-only
+              :toggle-text="__('More actions')"
               :title="__('More actions')"
+              no-caret
+              category="tertiary"
+              icon="ellipsis_v"
+              placement="right"
+              size="small"
             >
-              <template #button-content>
-                <gl-icon name="ellipsis_v" class="gl-mr-0!" />
-                <span class="gl-sr-only">{{ __('Actions') }}</span>
-              </template>
-
-              <gl-dropdown-item
+              <gl-disclosure-dropdown-item
                 v-if="item.editPath"
-                :href="item.editPath"
-                :title="s__('DastProfiles|Edit profile')"
-              >
-                {{ __('Edit') }}
-              </gl-dropdown-item>
-
-              <gl-dropdown-item
+                :item="actionDisclosureItemsConfig(item)[$options.DAST_EDIT_ACTION]"
+              />
+              <gl-disclosure-dropdown-item
                 v-gl-tooltip="{
                   boundary: 'viewport',
                   placement: 'bottom',
                   disabled: !isPolicyProfile(item),
                 }"
-                boundary="viewport"
-                :class="{
-                  'gl-cursor-default': isPolicyProfile(item),
-                }"
-                :disabled="isPolicyProfile(item)"
-                :aria-disabled="isPolicyProfile(item)"
-                variant="danger"
-                :title="deleteTitle(item)"
-                @click="prepareProfileDeletion(item.id)"
-              >
-                <span
-                  :class="{
-                    'gl-text-gray-200!': isPolicyProfile(item),
-                  }"
-                >
-                  {{ __('Delete') }}
-                </span>
-              </gl-dropdown-item>
-            </gl-dropdown>
+                :item="actionDisclosureItemsConfig(item)[$options.DAST_DELETE_ACTION]"
+              />
+            </gl-disclosure-dropdown>
+
             <gl-button
               v-if="item.editPath"
               :href="item.editPath"

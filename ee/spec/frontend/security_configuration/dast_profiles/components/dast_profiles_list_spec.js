@@ -137,7 +137,8 @@ describe('EE - DastProfilesList', () => {
         expect(targetUrlCell.innerText).toContain(profile.targetUrl);
         expect(within(actionsCell).queryByTestId('dast-profile-delete-button')).not.toBe(null);
 
-        const editLink = within(actionsCell).getByRole('link', { name: /edit/i });
+        const editLink = within(actionsCell).queryByTestId('dast-edit-action');
+
         expect(editLink).not.toBe(null);
         expect(editLink.getAttribute('href')).toBe(profile.editPath);
       });
