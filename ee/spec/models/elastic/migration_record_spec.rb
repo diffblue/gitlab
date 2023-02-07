@@ -14,6 +14,12 @@ RSpec.describe Elastic::MigrationRecord, :elastic_clean do
       expect { record.save!(completed: true) }.to raise_error(/index is not found/)
     end
 
+    it 'sets the migration name' do
+      record.save!(completed: false)
+
+      expect(record.load_from_index.dig('_source', 'name')).to eq(record.name)
+    end
+
     it 'sets the started_at' do
       record.save!(completed: false)
 
