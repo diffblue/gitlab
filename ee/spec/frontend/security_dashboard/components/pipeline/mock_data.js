@@ -444,6 +444,8 @@ export const pipelineSecurityReportFinding = {
     id: '1',
     name: 'project name',
     webUrl: 'project fullName',
+    fullPath: 'project fullPath',
+    nameWithNamespace: 'Secure Ex / Security Reports',
   },
   scanner: {
     id: '1',
@@ -461,6 +463,9 @@ export const pipelineSecurityReportFinding = {
     file: 'location file',
     image: 'location image',
     operatingSystem: 'location operatingSystem',
+  },
+  issueLinks: {
+    nodes: [],
   },
   request: {
     url: 'http://example.com/requestUrl',
