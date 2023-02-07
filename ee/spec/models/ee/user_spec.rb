@@ -2276,16 +2276,18 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
     expect(described_class).to include_module(IdentityVerifiable)
   end
 
-  it 'includes Elastic::ApplicationVersionedSearch' do
+  it 'includes Elastic::ApplicationVersionedSearch', feature_category: :global_search do
     expect(described_class).to include_module(Elastic::ApplicationVersionedSearch)
   end
 
-  describe 'Elastic::ApplicationVersionedSearch' do
+  describe 'Elastic::ApplicationVersionedSearch', :elastic, feature_category: :global_search do
     let_it_be_with_reload(:user) { create(:user) }
     let_it_be(:group) { create(:group) }
 
     before do
-      allow(Gitlab::CurrentSettings).to(receive(:elasticsearch_indexing?)).and_return(true)
+      stub_ee_application_setting(elasticsearch_indexing: true)
+      set_elasticsearch_migration_to(:create_user_index, including: true)
+      stub_feature_flags(advanced_user_search: true)
     end
 
     context 'on create' do
@@ -2322,6 +2324,12 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
           user.update!(user_type: 'automation_bot')
         end
       end
+
+      it 'invokes maintain_elasticsearch_update callback' do
+        expect(user).to receive(:maintain_elasticsearch_update).once
+
+        user.update!(name: 'New Name')
+      end
     end
 
     context 'when a membership is created' do
@@ -2355,43 +2363,48 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
     end
   end
 
-  context 'when elasticsearch_indexing is true' do
-    let_it_be(:user) { create(:user) }
-
-    before do
-      allow(Gitlab::CurrentSettings).to receive(:elasticsearch_indexing?).and_return(true)
-    end
-
-    it 'invokes maintain_elasticsearch_update callback' do
-      expect(user).to receive(:maintain_elasticsearch_update).once
-
-      user.update!(name: 'New Name')
-    end
-  end
-
-  it 'overrides .use_separate_indices? to true' do
+  it 'overrides .use_separate_indices? to true', feature_category: :global_search do
     expect(described_class.use_separate_indices?).to eq(true)
   end
 
-  [true, false].each do |matcher|
-    describe '#use_elasticsearch?' do
-      before do
-        allow(Gitlab::CurrentSettings).to receive(:elasticsearch_search?).and_return(matcher)
-      end
+  describe '#use_elasticsearch?', feature_category: :global_search do
+    [true, false].each do |matcher|
+      describe '#use_elasticsearch?' do
+        before do
+          stub_ee_application_setting(elasticsearch_search: matcher)
+        end
 
-      it 'is equal to elasticsearch_search setting' do
-        expect(subject.use_elasticsearch?).to eq(matcher)
+        it 'is equal to elasticsearch_search setting' do
+          expect(subject.use_elasticsearch?).to eq(matcher)
+        end
       end
     end
+  end
 
-    describe '#maintaining_elasticsearch?' do
+  describe '#maintaining_elasticsearch?', :elastic, feature_category: :global_search do
+    using RSpec::Parameterized::TableSyntax
+
+    subject { user.maintaining_elasticsearch? }
+
+    where(:elasticsearch_indexing, :migration_finished, :feature_enabled, :expected_result) do
+      true | true | true  | true
+      true | true | false | false
+      true | false | false | false
+      false | false | false | false
+      true | false | true | false
+      false | true | true | false
+      true | false | true | false
+      false | true | false | false
+    end
+
+    with_them do
       before do
-        allow(Gitlab::CurrentSettings).to receive(:elasticsearch_indexing?).and_return(matcher)
+        stub_ee_application_setting(elasticsearch_indexing: elasticsearch_indexing)
+        set_elasticsearch_migration_to(:create_user_index, including: migration_finished)
+        stub_feature_flags(advanced_user_index: feature_enabled)
       end
 
-      it 'is equal to elasticsearch_indexing setting' do
-        expect(subject.maintaining_elasticsearch?).to eq(matcher)
-      end
+      it { is_expected.to eq(expected_result) }
     end
   end
 end
