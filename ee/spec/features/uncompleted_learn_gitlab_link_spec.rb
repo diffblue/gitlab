@@ -9,12 +9,6 @@ RSpec.describe 'Uncompleted learn gitlab link', :feature, :js, feature_category:
   let_it_be(:namespace) { create(:group).tap { |g| g.add_owner(user) } }
   let_it_be(:project) { create(:project, namespace: namespace) }
 
-  before do
-    allow_next_instance_of(Onboarding::LearnGitlab) do |learn_gitlab|
-      allow(learn_gitlab).to receive(:onboarding_and_available?).and_return(true)
-    end
-  end
-
   context 'with completed links' do
     before do
       yesterday = Date.yesterday

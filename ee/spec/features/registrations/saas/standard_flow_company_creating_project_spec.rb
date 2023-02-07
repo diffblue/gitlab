@@ -40,7 +40,7 @@ feature_category: :onboarding do
   end
 
   context 'when not opting into a trial' do
-    it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
+    it 'registers the user and creates a group and project reaching onboarding' do
       user_signs_up
 
       expect_to_see_account_confirmation_page

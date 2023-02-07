@@ -20,10 +20,6 @@ module Projects
       }
     end
 
-    def learn_gitlab_onboarding_available?(namespace)
-      Onboarding::LearnGitlab.new(current_user).onboarding_and_available?(namespace)
-    end
-
     private
 
     def onboarding_actions_data(project)

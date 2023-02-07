@@ -148,12 +148,6 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
         )
         expect_no_snowplow_event(category: described_class.name, action: 'create_project')
       end
-
-      it 'does not attempt to create learn gitlab project' do
-        expect(::Onboarding::CreateLearnGitlabWorker).not_to receive(:perform_async)
-
-        expect(execute).to be_error
-      end
     end
 
     context 'when a group already exists and projects needs to be created' do
@@ -180,27 +174,6 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
           namespace: an_instance_of(Group),
           user: user
         )
-      end
-    end
-
-    context 'with learn gitlab project', :sidekiq_inline do
-      where(:trial, :project_name, :template) do
-        'false' | 'Learn GitLab'                  | Onboarding::LearnGitlab::TEMPLATE_NAME
-        'true'  | 'Learn GitLab - Ultimate trial' | Onboarding::LearnGitlab::TEMPLATE_NAME
-      end
-
-      with_them do
-        let(:path) { Rails.root.join('vendor', 'project_templates', template) }
-        let(:group_params) { { id: group.id } }
-        let(:extra_params) { { trial_onboarding_flow: trial } }
-
-        specify do
-          expect(::Onboarding::CreateLearnGitlabWorker).to receive(:perform_async)
-                                                             .with(path, project_name, group.id, user.id)
-                                                             .and_call_original
-
-          expect { expect(execute).to be_success }.to change { Project.count }.by(2)
-        end
       end
     end
 

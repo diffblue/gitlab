@@ -25276,9 +25276,6 @@ msgstr ""
 msgid "LearnGitlab|Contact your administrator to start a free Ultimate trial."
 msgstr ""
 
-msgid "LearnGitlab|Creating your onboarding experience..."
-msgstr ""
-
 msgid "LearnGitlab|Ok, let's go"
 msgstr ""
 

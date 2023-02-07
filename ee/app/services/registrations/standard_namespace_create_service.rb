@@ -58,30 +58,9 @@ module Registrations
       if project.persisted?
         Gitlab::Tracking.event(self.class.name, 'create_project', namespace: project.namespace, user: user)
 
-        create_learn_gitlab_project
-
         ServiceResponse.success(payload: { project: project })
       else
         ServiceResponse.error(message: 'Project failed to be created', payload: { group: group, project: project })
-      end
-    end
-
-    def create_learn_gitlab_project
-      ::Onboarding::CreateLearnGitlabWorker.perform_async(learn_gitlab_template_path,
-                                                          learn_gitlab_project_name,
-                                                          project.namespace_id,
-                                                          user.id)
-    end
-
-    def learn_gitlab_template_path
-      Rails.root.join('vendor', 'project_templates', Onboarding::LearnGitlab::TEMPLATE_NAME)
-    end
-
-    def learn_gitlab_project_name
-      if in_trial_onboarding_flow?
-        Onboarding::LearnGitlab::PROJECT_NAME_ULTIMATE_TRIAL
-      else
-        Onboarding::LearnGitlab::PROJECT_NAME
       end
     end
   end

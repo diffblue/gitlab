@@ -13,27 +13,8 @@ module Onboarding
     deduplicate :until_executed
     idempotent!
 
-    def perform(template_path, project_name, parent_project_namespace_id, user_id)
-      user = User.find(user_id)
-
-      return if Onboarding::LearnGitlab.new(user).project.present?
-
-      File.open(template_path) do |archive|
-        ::Projects::GitlabProjectsImportService.new(
-          user,
-          namespace_id: parent_project_namespace_id,
-          file: archive,
-          name: project_name
-        ).execute
-      end
-
-    rescue ActiveRecord::RecordNotFound => error
-      logger.error(
-        worker: self.class.name,
-        namespace_id: parent_project_namespace_id,
-        user_id: user_id,
-        message: error.message
-      )
+    def perform(_template_path, _project_name, _parent_project_namespace_id, _user_id)
+      # no-op https://docs.gitlab.com/ee/development/sidekiq/compatibility_across_updates.html#removing-worker-classes
     end
   end
 end

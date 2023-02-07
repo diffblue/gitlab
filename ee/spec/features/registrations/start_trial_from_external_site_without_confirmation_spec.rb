@@ -52,6 +52,6 @@ RSpec.describe 'Start trial from external site without confirmation', :saas, :js
     click_button 'Create project'
 
     expect(page).to have_content('Get started with GitLab')
-    expect(page).to have_content('Creating your onboarding experience...')
+    expect(page).to have_content("Ok, let's go")
   end
 end
