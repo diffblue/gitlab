@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IssuableExportCsvWorker do
+RSpec.describe IssuableExportCsvWorker, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, creator: user) }
 
@@ -97,7 +97,7 @@ RSpec.describe IssuableExportCsvWorker do
       it 'raises an exception with expected message' do
         expect { subject }.to raise_error(
           ArgumentError,
-          'Type parameter must be :issue, :merge_request, or :requirements, it was test'
+          'Type parameter must be :issue, :merge_request, :work_item or :requirement, it was test'
         )
       end
     end
