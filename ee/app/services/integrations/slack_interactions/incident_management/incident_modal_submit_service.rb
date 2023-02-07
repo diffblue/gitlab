@@ -70,6 +70,10 @@ module Integrations
           }
         end
 
+        def strip_markup(string)
+          SlackMarkdownSanitizer.sanitize(string)
+        end
+
         def send_to_slack(text)
           response_url = params.dig(:view, :private_metadata)
 
@@ -87,7 +91,8 @@ module Integrations
 
         def incident_link_text(incident)
           "#{_('New incident has been created')}: " \
-            "<#{issue_url(incident)}|#{incident.to_reference} - #{incident.title}>. #{@additional_message}"
+            "<#{issue_url(incident)}|#{incident.to_reference} " \
+            "- #{strip_markup(incident.title)}>. #{@additional_message}"
         end
 
         def project
