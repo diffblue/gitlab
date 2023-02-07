@@ -84,4 +84,12 @@ RSpec.describe EE::API::Helpers::MembersHelpers do
       end
     end
   end
+
+  describe '.member_access_levels' do
+    it 'return all access levels including minimal access' do
+      expect(API::Helpers::MembersHelpers.member_access_levels).to eq(
+        ::Gitlab::Access.all_values + [::Gitlab::Access::MINIMAL_ACCESS]
+      )
+    end
+  end
 end

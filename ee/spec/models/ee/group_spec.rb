@@ -2199,6 +2199,27 @@ RSpec.describe Group, feature_category: :subgroups do
     it { is_expected.to match([user.email]) }
   end
 
+  describe "#access_level_roles" do
+    let(:group) { create(:group) }
+
+    before do
+      stub_licensed_features(minimal_access_role: true)
+    end
+
+    it "returns the correct roles" do
+      expect(group.access_level_roles).to eq(
+        {
+          "Minimal Access" => 5,
+          "Guest" => 10,
+          "Reporter" => 20,
+          "Developer" => 30,
+          "Maintainer" => 40,
+          "Owner" => 50
+        }
+      )
+    end
+  end
+
   describe 'Releases Stats' do
     context 'when there are no releases' do
       describe '#releases_count' do
