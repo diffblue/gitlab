@@ -4,11 +4,6 @@ namespace :gitlab do
   namespace :elastic do
     desc "GitLab | Elasticsearch | Index everything at once"
     task index: :environment do
-      # UPDATE_INDEX=true can cause some projects not to be indexed properly if someone were to push a commit to the
-      # project before the rake task could get to it, so we set it to `nil` here to avoid that. It doesn't make sense
-      # to use this configuration during a full re-index anyways.
-      ENV['UPDATE_INDEX'] = nil
-
       if Gitlab::CurrentSettings.elasticsearch_pause_indexing
         puts "WARNING: `elasticsearch_pause_indexing` is enabled. Disable this setting by running `rake gitlab:elastic:resume_indexing` to complete indexing.".color(:yellow)
       end
@@ -336,10 +331,6 @@ namespace :gitlab do
 
     def project_id_batches(&blk)
       relation = Project.all
-
-      unless ENV['UPDATE_INDEX']
-        relation = relation.includes(:index_status).where(index_statuses: { id: nil }).references(:index_statuses)
-      end
 
       if ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
         relation.merge!(::Gitlab::CurrentSettings.elasticsearch_limited_projects)
