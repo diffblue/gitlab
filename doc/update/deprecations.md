@@ -140,6 +140,21 @@ The option will no longer appear as a group setting. Self-managed users will sti
 The option to delete projects immediately by default was deprecated to prevent users from accidentally taking this action and permanently losing projects.
 
 </div>
+
+<div class="deprecation removal-160 breaking-change">
+
+### Support for Praefect custom metrics endpoint configuration
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+Support for using the `prometheus_exclude_database_from_default_metrics` configuration value is deprecated because using it is non-performant. Instead, all metrics
+that scrape the Praefect database will be exported to the `/db_metrics` endpoint. This may require updating your metrics collection targets.
+
+</div>
 </div>
 
 <div class="announcement-milestone">
