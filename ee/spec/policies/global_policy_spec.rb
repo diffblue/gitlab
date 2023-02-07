@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GlobalPolicy, feature_category: :security_policies do
+RSpec.describe GlobalPolicy, feature_category: :shared do
   include ExternalAuthorizationServiceHelpers
 
   let_it_be(:admin) { create(:admin) }

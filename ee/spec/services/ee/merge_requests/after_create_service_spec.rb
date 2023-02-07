@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequests::AfterCreateService, feature_category: :code_review do
+RSpec.describe MergeRequests::AfterCreateService, feature_category: :code_review_workflow do
   let_it_be(:merge_request) { create(:merge_request) }
   let_it_be(:project) { merge_request.target_project }
 

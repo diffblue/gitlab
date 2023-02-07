@@ -232,7 +232,7 @@ RSpec.describe ApplicationHelper do
     end
   end
 
-  describe '#autocomplete_data_sources', feature_category: :project_management do
+  describe '#autocomplete_data_sources', feature_category: :team_planning do
     def expect_autocomplete_data_sources(object, noteable_type, source_keys)
       sources = helper.autocomplete_data_sources(object, noteable_type)
       expect(sources.keys).to match_array(source_keys)

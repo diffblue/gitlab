@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe WorkItems::Widgets::RequirementLegacy, feature_category: :requuirements_management do
+RSpec.describe WorkItems::Widgets::RequirementLegacy, feature_category: :requirements_management do
   let_it_be_with_reload(:work_item) { create(:work_item, :requirement, description: 'A description') }
 
   describe '.type' do
