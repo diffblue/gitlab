@@ -1,0 +1,9 @@
+---
+name: group_saml_provider_update
+description: Event triggered when a group SAML provider is updated
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/373964
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/111227
+feature_category: compliance_management
+milestone: '15.9'
+saved_to_database: true
+streamed: true
