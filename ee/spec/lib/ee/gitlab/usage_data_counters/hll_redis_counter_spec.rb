@@ -19,8 +19,8 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
 
   let(:known_events) do
     [
-      { name: context_event, category: 'other', expiry: 6, aggregation: 'weekly' },
-      { name: other_context_event, category: 'other', expiry: 6, aggregation: 'weekly' }
+      { name: context_event, category: 'other', aggregation: 'weekly' },
+      { name: other_context_event, category: 'other', aggregation: 'weekly' }
     ].map(&:with_indifferent_access)
   end
 
