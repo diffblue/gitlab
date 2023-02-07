@@ -134,6 +134,30 @@ module Types
           null: true,
           description: 'Remediations of the security report finding.'
 
+    field :dismissed_at,
+          type: Types::TimeType,
+          null: true,
+          extras: [:lookahead],
+          description: 'Time of the dismissal of the security report finding.'
+
+    field :dismissed_by,
+          type: ::Types::UserType,
+          null: true,
+          extras: [:lookahead],
+          description: 'User who dismissed the security report finding.'
+
+    field :dismissal_reason,
+          type: Types::Vulnerabilities::DismissalReasonEnum,
+          null: true,
+          extras: [:lookahead],
+          description: 'Reason for the dismissal of the security report finding.'
+
+    field :state_comment,
+          type: GraphQL::Types::String,
+          null: true,
+          extras: [:lookahead],
+          description: 'Comment for the state of the security report finding.'
+
     markdown_field :description_html, null: true
 
     def vulnerability
@@ -160,6 +184,42 @@ module Types
           loader.call(feedback.finding_uuid, feedback.merge_request)
         end
       end
+    end
+
+    def dismissed_at(lookahead:)
+      dismissal_feedback(lookahead: lookahead) { |feedback| feedback&.created_at }
+    end
+
+    def dismissed_by(lookahead:)
+      dismissal_feedback(lookahead: lookahead) { |feedback| feedback&.author }
+    end
+
+    def dismissal_reason(lookahead:)
+      dismissal_feedback(lookahead: lookahead) { |feedback| feedback&.dismissal_reason }
+    end
+
+    def state_comment(lookahead:)
+      dismissal_feedback(lookahead: lookahead) { |feedback| feedback&.comment }
+    end
+
+    def dismissal_feedback(lookahead:, &block)
+      key = {
+        preload_author: lookahead.selects?(:dismissed_by)
+      }
+
+      subject = BatchLoader::GraphQL.for(object.uuid).batch(key: key) do |uuids, loader, batch|
+        feedbacks = ::Vulnerabilities::Feedback.by_finding_uuid(uuids)
+        feedbacks = feedbacks.preload_author if batch[:key][:preload_author]
+        feedbacks = feedbacks.with_feedback_type('dismissal')
+
+        feedbacks.each do |feedback|
+          loader.call(feedback.finding_uuid, feedback)
+        end
+      end
+
+      return subject unless block
+
+      ::Gitlab::Graphql::Lazy.with_value(subject, &block)
     end
 
     def location
