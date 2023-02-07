@@ -26,7 +26,7 @@ module QA
             expect(subscription.company).to include(company)
             expect(subscription.plan).to eq(plan[:name].capitalize)
             expect(subscription.users_in_subscription).to eq(user_count.to_s)
-            expect(subscription).to have_subscription_record(plan, user_count, LICENSE_TYPE[:legacy_license])
+            expect(subscription).to have_subscription_record(plan, user_count, LICENSE_TYPE[:offline_cloud])
           end
         end
       end
