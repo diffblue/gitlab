@@ -99,6 +99,7 @@ describe('EEInviteModalBase', () => {
   const findInitialModalContent = () => wrapper.findByTestId('invite-modal-initial-content');
   const findOverageModalContent = () => wrapper.findByTestId('invite-modal-overage-content');
   const findModalTitle = () => findModal().props('title');
+  const findActiveTrialUnlimitedMembersAlert = () => wrapper.findByTestId('alert-trial-info');
 
   const emitEventFromModal = (eventName) => () =>
     findModal().vm.$emit(eventName, { preventDefault: jest.fn() });
@@ -306,6 +307,30 @@ describe('EEInviteModalBase', () => {
       // shows initial modal again
       expect(findModal().props('title')).toBe(propsDataCE.modalTitle);
       expect(findCEBase().props('invalidFeedbackMessage')).toBe('invalid message');
+    });
+  });
+
+  describe('rendering the active trial unlimited users alert', () => {
+    it('shows the alert when a trial is active', async () => {
+      const activeTrialDataset = { freeUsersLimit: '5' };
+
+      createComponent({ props: { activeTrialDataset, fullPath: 'project' } });
+      clickInviteButton();
+      await nextTick();
+      await waitForPromises();
+
+      expect(findActiveTrialUnlimitedMembersAlert().exists()).toBe(true);
+    });
+
+    it('does not show the alert when a trial is not active', async () => {
+      const activeTrialDataset = {};
+
+      createComponent({ props: { activeTrialDataset, fullPath: 'project' } });
+      clickInviteButton();
+      await nextTick();
+      await waitForPromises();
+
+      expect(findActiveTrialUnlimitedMembersAlert().exists()).toBe(false);
     });
   });
 });

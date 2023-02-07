@@ -25,3 +25,9 @@ export const overageModalInfoWarning = (quantity, groupName) =>
       quantity,
     },
   );
+export const TRIAL_ACTIVE_UNLIMITED_USERS_ALERT_TITLE = s__(
+  'InviteMembersModal|Add unlimited members with your trial',
+);
+export const TRIAL_ACTIVE_UNLIMITED_USERS_ALERT_BODY = s__(
+  "InviteMembersModal|During your trial, you can invite as many members to %{groupName} as you like. When the trial ends, you'll have a maximum of %{dashboardLimit} members on the Free tier. To get more members, %{linkStart}upgrade to a paid plan%{linkEnd}.",
+);
