@@ -33,6 +33,7 @@ module AuditEvents
         'ID' => 'id',
         'Author ID' => 'author_id',
         'Author Name' => 'author_name',
+        'Author Email' => -> (event) { event.author.try(:email) },
         'Entity ID' => 'entity_id',
         'Entity Type' => 'entity_type',
         'Entity Path' => 'entity_path',
