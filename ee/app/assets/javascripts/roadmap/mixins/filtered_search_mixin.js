@@ -10,6 +10,8 @@ import {
   OPERATOR_NOT,
   OPERATOR_IS,
   OPERATORS_IS_NOT,
+  OPERATORS_IS_NOT_OR,
+  OPERATOR_OR,
   TOKEN_TITLE_AUTHOR,
   TOKEN_TITLE_CONFIDENTIAL,
   TOKEN_TITLE_GROUP,
@@ -29,13 +31,18 @@ import UserToken from '~/vue_shared/components/filtered_search_bar/tokens/user_t
 import EmojiToken from '~/vue_shared/components/filtered_search_bar/tokens/emoji_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { TOKEN_TITLE_EPIC } from 'ee/vue_shared/components/filtered_search_bar/constants';
 import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
 import GroupToken from 'ee/vue_shared/components/filtered_search_bar/tokens/group_token.vue';
 
 export default {
+  mixins: [glFeatureFlagMixin()],
   inject: ['groupFullPath', 'groupMilestonesPath'],
   computed: {
+    hasOrFeature() {
+      return this.glFeatures.orIssuableQueries;
+    },
     urlParams() {
       const {
         in: searchWithin,
@@ -50,6 +57,7 @@ export default {
         'not[authorUsername]': notAuthorUsername,
         'not[myReactionEmoji]': notMyReactionEmoji,
         'not[labelName]': notLabelName,
+        'or[labelName]': orLabelName,
       } = this.filterParams || {};
 
       return {
@@ -72,6 +80,7 @@ export default {
         'not[author_username]': notAuthorUsername,
         'not[my_reaction_emoji]': notMyReactionEmoji,
         'not[label_name][]': notLabelName,
+        'or[label_name][]': orLabelName,
         progress: this.progressTracking,
         show_progress: this.isProgressTrackingActive,
         show_milestones: this.isShowingMilestones,
@@ -115,7 +124,7 @@ export default {
           unique: false,
           symbol: '~',
           token: LabelToken,
-          operators: OPERATORS_IS_NOT,
+          operators: this.hasOrFeature ? OPERATORS_IS_NOT_OR : OPERATORS_IS_NOT,
           recentSuggestionsStorageKey: `${this.groupFullPath}-epics-recent-tokens-label_name`,
           fetchLabels: (search = '') => {
             const params = {
@@ -235,6 +244,7 @@ export default {
         'not[authorUsername]': notAuthorUsername,
         'not[myReactionEmoji]': notMyReactionEmoji,
         'not[labelName]': notLabelName,
+        'or[labelName]': orLabelName,
       } = this.filterParams || {};
       const filteredSearchValue = [];
 
@@ -272,6 +282,14 @@ export default {
           ...notLabelName.map((label) => ({
             type: TOKEN_TYPE_LABEL,
             value: { data: label, operator: OPERATOR_NOT },
+          })),
+        );
+      }
+      if (orLabelName?.length && this.hasOrFeature) {
+        filteredSearchValue.push(
+          ...orLabelName.map((label) => ({
+            type: TOKEN_TYPE_LABEL,
+            value: { data: label, operator: OPERATOR_OR },
           })),
         );
       }
@@ -327,6 +345,7 @@ export default {
       const filterParams = {};
       const labels = [];
       const notLabels = [];
+      const orLabels = [];
       const plainText = [];
 
       filters.forEach((filter) => {
@@ -340,6 +359,8 @@ export default {
           case TOKEN_TYPE_LABEL:
             if (filter.value.operator === OPERATOR_NOT) {
               notLabels.push(filter.value.data);
+            } else if (filter.value.operator === OPERATOR_OR) {
+              orLabels.push(filter.value.data);
             } else {
               labels.push(filter.value.data);
             }
@@ -380,6 +401,9 @@ export default {
 
       if (notLabels.length) {
         filterParams[`not[labelName]`] = notLabels;
+      }
+      if (orLabels.length) {
+        filterParams[`or[labelName]`] = orLabels;
       }
 
       if (plainText.length) {

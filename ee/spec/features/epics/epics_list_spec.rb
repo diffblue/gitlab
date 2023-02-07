@@ -106,6 +106,17 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
           end
         end
 
+        it 'filters epics list based on labels with "||" operator', :aggregate_failures do
+          select_tokens 'Label', '||', docs_label.title
+          select_tokens 'Label', '||', enhancement_label.title, submit: true
+
+          wait_for_requests
+
+          page.within('.issuable-list-container .issuable-list') do
+            expect(page).to have_selector('li.issue', count: 3)
+          end
+        end
+
         context 'with subgroup epics' do
           let(:subgroup) { create(:group, :public, parent: group, name: 'subgroup') }
           let!(:subgroup_epic) { create(:epic, group: subgroup) }
