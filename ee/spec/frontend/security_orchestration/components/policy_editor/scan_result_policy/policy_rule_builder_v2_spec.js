@@ -29,7 +29,7 @@ describe('PolicyRuleBuilder V2', () => {
     branches: [PROTECTED_BRANCHES_MOCK[0].name],
     match_on_inclusion: true,
     license_types: [],
-    license_states: ['newly_detected', 'pre_existing'],
+    license_states: ['newly_detected', 'detected'],
   };
 
   const factory = (propsData = {}, provide = {}) => {
