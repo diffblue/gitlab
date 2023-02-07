@@ -7,8 +7,11 @@ module Types
 
       argument :label_name, [GraphQL::Types::String],
                required: false,
-               description: 'Filters epics that have at least one of the given labels. ' \
-                            'Ignored unless `or_issuable_queries` flag is enabled.'
+               description: 'Filters epics that have at least one of the given labels.'
+
+      argument :author_username, [GraphQL::Types::String],
+               required: false,
+               description: 'Filters epics that are authored by one of the given users.'
     end
   end
 end
