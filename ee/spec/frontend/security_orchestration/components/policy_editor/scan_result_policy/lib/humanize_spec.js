@@ -75,7 +75,7 @@ describe('humanizeRules', () => {
 
   it('returns a single rule as a human-readable string for all scanners', () => {
     expect(humanizeRules([ALL_SCANNERS_RULE])).toStrictEqual([
-      'Any scanner finds info or critical vulnerabilities in an open merge request targeting the master or main branches.',
+      'Any security scanner finds info or critical vulnerabilities in an open merge request targeting the master or main branches.',
     ]);
   });
 });
