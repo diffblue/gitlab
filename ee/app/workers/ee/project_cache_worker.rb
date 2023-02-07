@@ -6,9 +6,9 @@ module EE
   # This module is intended to encapsulate EE-specific methods
   # and be **prepended** in the `ProjectCacheWorker` class.
   module ProjectCacheWorker
-    def perform(*args)
+    def perform(...)
       if ::Gitlab::Geo.secondary?
-        perform_geo_secondary(*args)
+        perform_geo_secondary(...)
       else
         super
       end

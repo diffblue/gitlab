@@ -103,8 +103,8 @@ RSpec.describe Gitlab::StatusPage::Storage::S3MultipartUpload, :aws_s3 do
 
   private
 
-  def stub_responses(*args)
-    s3_client.stub_responses(*args)
+  def stub_responses(...)
+    s3_client.stub_responses(...)
   end
 
   def error_message(error_class, **args)
