@@ -1721,11 +1721,11 @@ The feature flag `PUSH_RULES_SUPERSEDE_CODE_OWNERS` is being removed in GitLab 1
 
 </div>
 
-<div class="deprecation removal-150 breaking-change">
+<div class="deprecation removal-160 breaking-change">
 
 ### Deprecate legacy Gitaly configuration methods
 
-Planned removal: GitLab <span class="removal-milestone">15.0</span> <span class="removal-date"></span>
+Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
 
 WARNING:
 This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
