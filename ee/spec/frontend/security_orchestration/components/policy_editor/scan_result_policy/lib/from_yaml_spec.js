@@ -3,7 +3,7 @@ import { unsupportedManifest } from 'ee_jest/security_orchestration/mocks/mock_d
 
 const validManifest = `type: scan_result_policy
 name: critical vulnerability CS approvals
-description: critical severity level only for container scanning
+description: critical severity level only for container scanning AND detected licenses
 enabled: true
 rules:
   - type: scan_finding
@@ -14,6 +14,15 @@ rules:
     severity_levels:
       - critical
     vulnerability_states:
+      - newly_detected
+  - type: license_finding
+    branches: []
+    match_on_inclusion: true
+    license_types:
+      - MIT License
+      - Academic Free License v2.0
+    license_states:
+      - detected
       - newly_detected
 actions:
   - type: require_approval
@@ -103,7 +112,7 @@ describe('fromYaml', () => {
           user_approvers: ['o.lecia.conner'],
         },
       ],
-      description: 'critical severity level only for container scanning',
+      description: 'critical severity level only for container scanning AND detected licenses',
       enabled: true,
       name: 'critical vulnerability CS approvals',
       rules: [
@@ -114,6 +123,13 @@ describe('fromYaml', () => {
           type: 'scan_finding',
           vulnerabilities_allowed: 1,
           vulnerability_states: ['newly_detected'],
+        },
+        {
+          branches: [],
+          type: 'license_finding',
+          license_types: ['MIT License', 'Academic Free License v2.0'],
+          match_on_inclusion: true,
+          license_states: ['detected', 'newly_detected'],
         },
       ],
       type: 'scan_result_policy',

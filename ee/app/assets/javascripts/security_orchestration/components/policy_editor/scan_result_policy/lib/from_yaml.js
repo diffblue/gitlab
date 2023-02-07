@@ -11,9 +11,12 @@ export const fromYaml = (manifest) => {
   const rulesKeys = [
     'type',
     'branches',
+    'license_states',
+    'license_types',
+    'match_on_inclusion',
     'scanners',
-    'vulnerabilities_allowed',
     'severity_levels',
+    'vulnerabilities_allowed',
     'vulnerability_states',
   ];
   const actionsKeys = [
