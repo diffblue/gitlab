@@ -1,6 +1,8 @@
 import {
   humanizeRules,
   humanizeInvalidBranchesError,
+  LICENSE_FINDING,
+  SCAN_FINDING,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib';
 import { NO_RULE_MESSAGE } from 'ee/security_orchestration/components/policy_editor/constants';
 
@@ -12,46 +14,67 @@ jest.mock('~/locale', () => ({
   __: jest.requireActual('~/locale').__,
 }));
 
-const mockRules = [
-  {
-    type: 'scan_finding',
+const singleValuedSecurityScannerRule = {
+  rule: {
+    type: SCAN_FINDING,
     branches: ['main'],
     scanners: ['sast'],
     vulnerabilities_allowed: 1,
     severity_levels: ['critical'],
     vulnerability_states: ['newly_detected'],
   },
-  {
-    type: 'scan_finding',
-    branches: ['master', 'main'],
+  humanized:
+    'Sast scanner finds a critical vulnerability in an open merge request targeting the main branch.',
+};
+
+const multipleValuedSecurityScannerRule = {
+  rule: {
+    type: SCAN_FINDING,
+    branches: ['staging', 'main'],
     scanners: ['dast', 'sast'],
     vulnerabilities_allowed: 2,
     severity_levels: ['info', 'critical'],
     vulnerability_states: ['resolved'],
   },
-];
-
-const ALL_SCANNERS_RULE = {
-  type: 'scan_finding',
-  branches: ['master', 'main'],
-  scanners: [],
-  vulnerabilities_allowed: 2,
-  severity_levels: ['info', 'critical'],
-  vulnerability_states: ['resolved'],
+  humanized:
+    'Dast or Sast scanners find info or critical vulnerabilities in an open merge request targeting the staging or main branches.',
 };
 
-const mockRulesHumanized = [
-  'Sast scanner finds a critical vulnerability in an open merge request targeting the main branch.',
-  'Dast or Sast scanners find info or critical vulnerabilities in an open merge request targeting the master or main branches.',
-];
+const allValuedSecurityScannerRule = {
+  rule: {
+    type: SCAN_FINDING,
+    branches: [],
+    scanners: [],
+    vulnerabilities_allowed: 2,
+    severity_levels: ['info', 'critical'],
+    vulnerability_states: ['resolved'],
+  },
+  humanized:
+    'Any security scanner finds info or critical vulnerabilities in an open merge request targeting all protected branches.',
+};
 
-const mockRulesEmptyBranch = {
-  type: 'scan_finding',
-  branches: [],
-  scanners: ['sast'],
-  vulnerabilities_allowed: 1,
-  severity_levels: ['critical'],
-  vulnerability_states: ['newly_detected'],
+const singleValuedLicenseScanRule = {
+  rule: {
+    type: LICENSE_FINDING,
+    branches: ['main'],
+    match_on_inclusion: true,
+    license_types: ['MIT License'],
+    license_states: ['detected'],
+  },
+  humanized:
+    'License scanner finds any license matching MIT License that is pre-existing and is in an open merge request targeting the main branch.',
+};
+
+const multipleValuedLicenseScanRule = {
+  rule: {
+    type: LICENSE_FINDING,
+    branches: ['staging', 'main'],
+    match_on_inclusion: false,
+    license_types: ['CMU License', 'CNRI Jython License', 'CNRI Python License'],
+    license_states: ['detected', 'newly_detected'],
+  },
+  humanized:
+    'License scanner finds any license except CMU License, CNRI Jython License and CNRI Python License in an open merge request targeting the staging or main branches.',
 };
 
 describe('humanizeRules', () => {
@@ -59,24 +82,47 @@ describe('humanizeRules', () => {
     expect(humanizeRules([])).toStrictEqual([NO_RULE_MESSAGE]);
   });
 
-  it('returns a single rule as a human-readable string for user approvers only', () => {
-    expect(humanizeRules([mockRules[0]])).toStrictEqual([mockRulesHumanized[0]]);
-  });
+  describe('security scanner rules', () => {
+    it('returns a single rule as a human-readable string for user approvers only', () => {
+      expect(humanizeRules([singleValuedSecurityScannerRule.rule])).toStrictEqual([
+        singleValuedSecurityScannerRule.humanized,
+      ]);
+    });
 
-  it('returns multiple rules with different number of branches as human-readable strings', () => {
-    expect(humanizeRules(mockRules)).toStrictEqual(mockRulesHumanized);
-  });
+    it('returns multiple rules with different number of branches/scanners as human-readable strings', () => {
+      expect(
+        humanizeRules([
+          singleValuedSecurityScannerRule.rule,
+          multipleValuedSecurityScannerRule.rule,
+        ]),
+      ).toStrictEqual([
+        singleValuedSecurityScannerRule.humanized,
+        multipleValuedSecurityScannerRule.humanized,
+      ]);
+    });
 
-  it('returns a single rule as a human-readable string for all protected branches', () => {
-    expect(humanizeRules([mockRulesEmptyBranch])).toStrictEqual([
-      'Sast scanner finds a critical vulnerability in an open merge request targeting all protected branches.',
-    ]);
-  });
+    it('returns a single rule as a human-readable string for all scanners and all protected branches', () => {
+      expect(humanizeRules([allValuedSecurityScannerRule.rule])).toStrictEqual([
+        allValuedSecurityScannerRule.humanized,
+      ]);
+    });
 
-  it('returns a single rule as a human-readable string for all scanners', () => {
-    expect(humanizeRules([ALL_SCANNERS_RULE])).toStrictEqual([
-      'Any security scanner finds info or critical vulnerabilities in an open merge request targeting the master or main branches.',
-    ]);
+    describe('license scanner rules', () => {
+      it('returns a single rule as a human-readable string for user approvers only', () => {
+        expect(humanizeRules([singleValuedLicenseScanRule.rule])).toStrictEqual([
+          singleValuedLicenseScanRule.humanized,
+        ]);
+      });
+
+      it('returns multiple rules with different number of branches/scanners as human-readable strings', () => {
+        expect(
+          humanizeRules([singleValuedLicenseScanRule.rule, multipleValuedLicenseScanRule.rule]),
+        ).toStrictEqual([
+          singleValuedLicenseScanRule.humanized,
+          multipleValuedLicenseScanRule.humanized,
+        ]);
+      });
+    });
   });
 });
 

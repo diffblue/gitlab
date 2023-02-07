@@ -1,9 +1,17 @@
+import { s__ } from '~/locale';
 import { REPORT_TYPES_DEFAULT } from 'ee/security_dashboard/store/constants';
 
 const REPORT_TYPES_KEYS = Object.keys(REPORT_TYPES_DEFAULT);
 
 export const SCAN_FINDING = 'scan_finding';
 export const LICENSE_FINDING = 'license_finding';
+export const MATCHING = s__('ScanResultPolicy|matching');
+export const EXCEPT = s__('ScanResultPolicy|except');
+
+export const LICENSE_STATES = {
+  newly_detected: s__('ScanResultPolicy|Newly Detected'),
+  detected: s__('ScanResultPolicy|Pre-existing'),
+};
 
 /*
   Construct a new rule object.
@@ -49,7 +57,7 @@ export function invalidScanners(rules) {
   );
 }
 
-/* 
+/*
   Returns the config for a particular rule type
 */
 export const getDefaultRule = (scanType) => {
