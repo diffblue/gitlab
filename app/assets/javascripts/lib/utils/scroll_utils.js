@@ -7,14 +7,11 @@ export const canScroll = () => $(document).height() > $(window).height();
  *  @returns {Boolean}
  */
 export const isScrolledToBottom = () => {
-  const $document = $(document);
+  // Use clientHeight to account for any horizontal scrollbar.
+  const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
 
-  const currentPosition = $document.scrollTop();
-  const scrollHeight = $document.height();
-
-  const windowHeight = $(window).height();
-
-  return scrollHeight - currentPosition === windowHeight;
+  // scrollTop can be a float, so round up to next integer.
+  return Math.ceil(scrollTop + clientHeight) >= scrollHeight;
 };
 
 /**
