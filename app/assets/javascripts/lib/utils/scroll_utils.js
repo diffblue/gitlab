@@ -28,8 +28,3 @@ export const scrollDown = () => {
 export const scrollUp = () => {
   $(document).scrollTop(0);
 };
-
-export const toggleDisableButton = ($button, disable) => {
-  if (disable && $button.prop('disabled')) return;
-  $button.prop('disabled', disable);
-};
