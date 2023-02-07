@@ -40,6 +40,14 @@ export const transformFetchEpicFilterParams = (filterParams) => {
         newParams.not = newParams.not || {};
         newParams.not[key] = filterParams[param];
       }
+    } else if (param.startsWith('or')) {
+      // Get the param name like `authorUsername` from `not[authorUsername]`
+      const key = param.match(/or\[(.+)\]/)[1];
+
+      if (key) {
+        newParams.or = newParams.or || {};
+        newParams.or[key] = filterParams[param];
+      }
     } else {
       newParams[param] = filterParams[param];
     }

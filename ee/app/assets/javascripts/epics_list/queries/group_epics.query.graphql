@@ -11,6 +11,7 @@ query groupEpics(
   $myReactionEmoji: String
   $confidential: Boolean
   $not: NegatedEpicFilterInput
+  $or: UnionedEpicFilterInput
   $search: String = ""
   $sortBy: EpicSort
   $firstPageSize: Int
@@ -30,6 +31,7 @@ query groupEpics(
       myReactionEmoji: $myReactionEmoji
       confidential: $confidential
       not: $not
+      or: $or
       search: $search
       sort: $sortBy
       first: $firstPageSize
@@ -76,6 +78,7 @@ query groupEpics(
       myReactionEmoji: $myReactionEmoji
       confidential: $confidential
       not: $not
+      or: $or
       search: $search
       sort: $sortBy
     ) {
@@ -89,6 +92,7 @@ query groupEpics(
       myReactionEmoji: $myReactionEmoji
       confidential: $confidential
       not: $not
+      or: $or
       search: $search
       sort: $sortBy
     ) {
@@ -102,6 +106,7 @@ query groupEpics(
       myReactionEmoji: $myReactionEmoji
       confidential: $confidential
       not: $not
+      or: $or
       search: $search
       sort: $sortBy
     ) {
