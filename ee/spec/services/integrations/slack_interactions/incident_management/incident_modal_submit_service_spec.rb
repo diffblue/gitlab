@@ -4,6 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModalSubmitService,
   feature_category: :incident_management do
+  include Gitlab::Routing
+
   describe '#execute' do
     let_it_be(:slack_installation) { create(:slack_integration) }
     let_it_be(:project) { create(:project) }
@@ -127,6 +129,36 @@ RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModa
         project.add_developer(user)
         stub_request(:post, api_url)
           .to_return(body: api_response, headers: { 'Content-Type' => 'application/json' })
+      end
+
+      context 'with markup string in title' do
+        let(:title) { '<a href="url">incident title</a>' }
+        let(:incident) { create(:incident, title: title, project: project) }
+
+        before do
+          allow_next_instance_of(Issues::CreateService) do |service|
+            allow(service).to receive(:execute).and_return(
+              ServiceResponse.success(payload: { issue: incident, error: [] })
+            )
+          end
+        end
+
+        it 'strips the markup and saves sends the title' do
+          expect(Gitlab::HTTP).to receive(:post)
+            .with(
+              api_url,
+              body: Gitlab::Json.dump(
+                {
+                  'replace_original': 'true',
+                  'text': "New incident has been created: " \
+                          "<#{issue_url(incident)}|#{incident.to_reference} - a href=\"url\"incident title/a>. "
+                }
+              ),
+              headers: { 'Content-Type' => 'application/json' }
+            ).and_return(api_response)
+
+          execute_service
+        end
       end
 
       context 'with non-optional params' do
