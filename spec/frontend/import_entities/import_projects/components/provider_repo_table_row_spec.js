@@ -1,4 +1,4 @@
-import { GlBadge, GlButton, GlDropdown } from '@gitlab/ui';
+import { GlBadge, GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
@@ -31,11 +31,15 @@ describe('ProviderRepoTableRow', () => {
     return store;
   }
 
-  const findImportButton = () => {
-    const buttons = wrapper.findAllComponents(GlButton).filter((node) => node.text() === 'Import');
+  const findButton = (text) => {
+    const buttons = wrapper.findAllComponents(GlButton).filter((node) => node.text() === text);
 
     return buttons.length ? buttons.at(0) : buttons;
   };
+
+  const findImportButton = () => findButton('Import');
+  const findReimportButton = () => findButton('Re-import');
+  const findGroupDropdown = () => wrapper.findComponent(ImportGroupDropdown);
 
   const findCancelButton = () => {
     const buttons = wrapper
@@ -201,11 +205,36 @@ describe('ProviderRepoTableRow', () => {
     });
 
     it('does not renders a namespace select', () => {
-      expect(wrapper.findComponent(GlDropdown).exists()).toBe(false);
+      expect(findGroupDropdown().exists()).toBe(false);
     });
 
     it('does not render import button', () => {
       expect(findImportButton().exists()).toBe(false);
+    });
+
+    it('renders re-import button', () => {
+      expect(findReimportButton().exists()).toBe(true);
+    });
+
+    it('renders namespace select after clicking re-import', async () => {
+      findReimportButton().vm.$emit('click');
+
+      await nextTick();
+
+      expect(findGroupDropdown().exists()).toBe(true);
+    });
+
+    it('imports repo when clicking re-import button', async () => {
+      findReimportButton().vm.$emit('click');
+
+      await nextTick();
+
+      findReimportButton().vm.$emit('click');
+
+      expect(fetchImport).toHaveBeenCalledWith(expect.anything(), {
+        repoId: repo.importSource.id,
+        optionalStages: {},
+      });
     });
 
     it('passes stats to import status component', () => {

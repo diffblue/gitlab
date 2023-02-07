@@ -7,7 +7,8 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # Import multiple repositories by uploading a manifest file **(FREE)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/28811) in GitLab 11.2.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/28811) in GitLab 11.2.
+> - Ability to re-import projects [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/23905) in GitLab 15.9.
 
 GitLab allows you to import all the required Git repositories
 based on a manifest file like the one used by the
@@ -62,3 +63,4 @@ To start the import:
 1. Check the list and select **Import all repositories** to start the import.
 
    ![Manifest status](img/manifest_status_v13_3.png)
+1. Optionally you can re-import project by clicking **Re-import**, specifying new name and clicking **Re-import** again. This will create new copy of source project.

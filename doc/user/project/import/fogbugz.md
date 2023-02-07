@@ -7,6 +7,8 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # Import your project from FogBugz to GitLab **(FREE)**
 
+> Ability to re-import projects [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/23905) in GitLab 15.9.
+
 Using the importer, you can import your FogBugz project to GitLab.com
 or to your self-managed GitLab instance.
 
@@ -34,3 +36,4 @@ To import your project from FogBugz:
 1. After the import finishes, select the link to go to the project
    dashboard. Follow the directions to push your existing repository.
    ![Finished](img/fogbugz_import_finished.png)
+1. Optionally you can re-import project by clicking **Re-import**, specifying new name and clicking **Re-import** again. This will create new copy of source project.

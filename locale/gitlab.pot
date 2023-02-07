@@ -21524,6 +21524,9 @@ msgstr ""
 msgid "ImportProjects|Importing the project failed: %{reason}"
 msgstr ""
 
+msgid "ImportProjects|Re-import creates a new project. It does not sync with the existing project."
+msgstr ""
+
 msgid "ImportProjects|Requesting namespaces failed"
 msgstr ""
 

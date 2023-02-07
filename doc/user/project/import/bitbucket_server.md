@@ -24,6 +24,8 @@ created as private in GitLab as well.
 
 ## Import your Bitbucket repositories
 
+> Ability to re-import projects [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/23905) in GitLab 15.9.
+
 Prerequisites:
 
 - An administrator must enable **Bitbucket Server** in  **Admin > Settings > General > Visibility and access controls > Import sources**.
@@ -40,6 +42,7 @@ To import your Bitbucket repositories:
 1. Log in to Bitbucket and grant GitLab access to your Bitbucket account.
 1. Select the projects to import, or import all projects. You can filter projects by name and select
    the namespace for which to import each project.
+1. Optionally you can re-import project by clicking **Re-import**, specifying new name and clicking **Re-import** again. This will create new copy of source project.
 
 ### Items that are not imported
 

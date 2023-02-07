@@ -8,14 +8,14 @@ describe('import_projects store mutations', () => {
 
   const SOURCE_PROJECT = {
     id: 1,
-    full_name: 'full/name',
-    sanitized_name: 'name',
-    provider_link: 'https://demo.link/full/name',
+    fullName: 'full/name',
+    sanitizedName: 'name',
+    providerLink: 'https://demo.link/full/name',
   };
   const IMPORTED_PROJECT = {
     name: 'demo',
     importSource: 'something',
-    providerLink: 'custom-link',
+    providerLink: 'https://demo.link/full/name',
     importStatus: 'status',
     fullName: 'fullName',
   };
@@ -64,21 +64,15 @@ describe('import_projects store mutations', () => {
       describe('for imported projects', () => {
         const response = {
           importedProjects: [IMPORTED_PROJECT],
-          providerRepos: [],
+          providerRepos: [SOURCE_PROJECT],
         };
 
-        it('recreates importSource from response', () => {
+        it('adds importedProject to relevant provider repo', () => {
           state = getInitialState();
 
           mutations[types.RECEIVE_REPOS_SUCCESS](state, response);
 
-          expect(state.repositories[0].importSource).toStrictEqual(
-            expect.objectContaining({
-              fullName: IMPORTED_PROJECT.importSource,
-              sanitizedName: IMPORTED_PROJECT.name,
-              providerLink: IMPORTED_PROJECT.providerLink,
-            }),
-          );
+          expect(state.repositories[0].importedProject).toStrictEqual(IMPORTED_PROJECT);
         });
 
         it('passes project to importProject', () => {
