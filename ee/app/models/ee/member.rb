@@ -59,21 +59,24 @@ module EE
       end
     end
 
+    override :maintaining_elasticsearch?
     def maintaining_elasticsearch?
-      ::Gitlab::CurrentSettings.elasticsearch_indexing?
+      ::Gitlab::CurrentSettings.elasticsearch_indexing? &&
+        ::Feature.enabled?(:advanced_user_index, type: :ops) &&
+        ::Elastic::DataMigrationService.migration_has_finished?(:create_user_index)
     end
 
-    # override
+    override :maintain_elasticsearch_create
     def maintain_elasticsearch_create
       return unless user
 
       ::Elastic::ProcessBookkeepingService.track!(user)
     end
 
-    # override
-    def maintain_elasticsearch_update; end
+    override :maintain_elasticsearch_update
+    def maintain_elasticsearch_update(updated_attributes: previous_changes.keys); end
 
-    # override
+    override :maintain_elasticsearch_destroy
     def maintain_elasticsearch_destroy
       return unless user
 

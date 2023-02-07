@@ -247,8 +247,11 @@ module EE
       ::Gitlab::CurrentSettings.elasticsearch_search?
     end
 
+    override :maintaining_elasticsearch?
     def maintaining_elasticsearch?
-      ::Gitlab::CurrentSettings.elasticsearch_indexing?
+      ::Gitlab::CurrentSettings.elasticsearch_indexing? &&
+        ::Feature.enabled?(:advanced_user_index, type: :ops) &&
+        ::Elastic::DataMigrationService.migration_has_finished?(:create_user_index)
     end
 
     # override
