@@ -56,22 +56,11 @@ module EE
     def storage_size_limit_alert
       return unless repository&.repo_type&.project?
 
-      storage_notification = EE::Namespace::Storage::Notification.new(project.namespace, user)
+      storage_notification = ::Namespaces::Storage::CliNotification.new(project.namespace, user)
+
       return unless storage_notification.show?
 
-      payload = storage_notification.payload
-
-      alert_level = "##### #{payload[:alert_level].to_s.upcase} #####"
-
-      output = [
-        alert_level,
-        payload[:usage_message],
-        payload[:explanation_message][:main][:text]
-      ]
-
-      output.push(payload[:explanation_message][:footer][:text]) if payload[:enforcement_type] == :namespace
-
-      output.join("\n")
+      storage_notification.payload
     end
   end
 end
