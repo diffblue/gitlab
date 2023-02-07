@@ -244,13 +244,13 @@ export default {
         </section>
         <section
           v-if="shouldShowRuleEditor"
-          class="gl-md-w-50p gl-md-max-w-30p gl-px-5 gl-pb-5 gl-bg-gray-10 gl-ml-11 gl-align-self-start"
+          class="gl-px-5 gl-pb-5 gl-bg-gray-10 gl-w-full gl-lg-w-30p gl-lg-ml-10 gl-align-self-start"
           data-testid="rule-editor-preview"
         >
           <h5>{{ $options.i18n.yamlPreview }}</h5>
           <pre
             data-testid="yaml-preview"
-            class="gl-bg-gray-10 gl-border-none gl-p-0"
+            class="gl-border-none gl-p-0"
             :class="{ 'gl-opacity-5': hasParsingError }"
             >{{ policyYaml || yamlEditorValue }}</pre
           >
@@ -258,13 +258,20 @@ export default {
       </div>
     </div>
     <slot name="bottom"></slot>
-    <div class="gl-display-flex gl-flex-direction-column gl-align-items-center gl-lg-display-block">
+    <div
+      class="gl-display-flex gl-flex-direction-column gl-align-items-baseline"
+      :class="{
+        'gl-md-display-block': !shouldShowRuntimeMessage,
+        'gl-lg-display-block': shouldShowRuntimeMessage,
+      }"
+    >
       <span
         v-gl-tooltip.hover.focus="{ disabled: disableTooltip }"
         class="gl-pt-2 gl-mr-3"
         :title="saveTooltipText"
         data-testid="save-policy-tooltip"
-        ><gl-button
+      >
+        <gl-button
           type="submit"
           variant="confirm"
           data-testid="save-policy"
@@ -273,22 +280,41 @@ export default {
           @click="savePolicy"
         >
           {{ saveButtonText }}
-        </gl-button></span
-      ><gl-button
+        </gl-button>
+      </span>
+      <gl-button
         v-if="isEditing"
         v-gl-modal="'delete-modal'"
-        class="gl-mt-5 gl-lg-mt-0 gl-mr-3"
+        class="gl-mt-5 gl-mr-3"
+        :class="{
+          'gl-md-mt-0': !shouldShowRuntimeMessage,
+          'gl-lg-mt-0': shouldShowRuntimeMessage,
+        }"
         category="secondary"
         variant="danger"
         data-testid="delete-policy"
         :loading="isRemovingPolicy"
-        >{{ s__('SecurityOrchestration|Delete policy') }}</gl-button
-      ><gl-button class="gl-mt-5 gl-lg-mt-0" category="secondary" :href="policiesPath">
+      >
+        {{ s__('SecurityOrchestration|Delete policy') }}
+      </gl-button>
+      <gl-button
+        class="gl-mt-5"
+        :class="{
+          'gl-md-mt-0': !shouldShowRuntimeMessage,
+          'gl-lg-mt-0': shouldShowRuntimeMessage,
+        }"
+        category="secondary"
+        :href="policiesPath"
+      >
         {{ __('Cancel') }}
       </gl-button>
       <span
         v-if="shouldShowRuntimeMessage"
-        class="gl-ml-11 gl-mt-5 gl-lg-mt-0"
+        class="gl-mt-5 gl-lg-ml-10"
+        :class="{
+          'gl-md-mt-0': !shouldShowRuntimeMessage,
+          'gl-lg-mt-0': shouldShowRuntimeMessage,
+        }"
         data-testid="scan-result-policy-run-time-info"
       >
         <gl-icon v-gl-tooltip="$options.i18n.POLICY_RUN_TIME_TOOLTIP" name="information-o" />
