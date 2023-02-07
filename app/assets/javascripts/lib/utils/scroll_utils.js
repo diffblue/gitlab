@@ -29,19 +29,6 @@ export const scrollUp = () => {
   $(document).scrollTop(0);
 };
 
-/**
- * Checks if scroll position is in the middle of the page
- * @returns {Boolean}
- */
-export const isScrolledToMiddle = () => {
-  const $document = $(document);
-  const currentPosition = $document.scrollTop();
-  const scrollHeight = $document.height();
-  const windowHeight = $(window).height();
-
-  return currentPosition > 0 && scrollHeight - currentPosition !== windowHeight;
-};
-
 export const toggleDisableButton = ($button, disable) => {
   if (disable && $button.prop('disabled')) return;
   $button.prop('disabled', disable);
