@@ -7604,6 +7604,9 @@ msgstr ""
 msgid "BulkImport|must be a group"
 msgstr ""
 
+msgid "Bulkmport|Over six imports in one minute were attempted. Wait at least one minute and try again."
+msgstr ""
+
 msgid "Bullet list"
 msgstr ""
 
