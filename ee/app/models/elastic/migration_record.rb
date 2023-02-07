@@ -16,7 +16,7 @@ module Elastic
     def save!(completed:)
       raise 'Migrations index is not found' unless helper.index_exists?(index_name: index_name)
 
-      data = { completed: completed, state: load_state }.merge(timestamps(completed: completed))
+      data = { completed: completed, state: load_state, name: name }.merge(timestamps(completed: completed))
 
       client.index index: index_name, type: '_doc', id: version, body: data
     end
