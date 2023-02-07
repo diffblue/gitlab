@@ -50,6 +50,7 @@ RSpec.describe 'Query.project(fullPath).pipeline(iid).codeQualityReports', featu
           expect(degradation['path']).not_to be_nil
           expect(degradation['line']).not_to be_nil
           expect(degradation['webUrl']).not_to be_nil
+          expect(degradation['engineName']).not_to be_nil
         end
       end
 

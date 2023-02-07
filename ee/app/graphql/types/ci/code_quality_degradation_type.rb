@@ -35,6 +35,10 @@ module Types
         null: true,
         description: 'URL to the file along with line number.'
 
+      field :engine_name, GraphQL::Types::String,
+        null: false,
+        description: 'Code Quality plugin that reported the finding.'
+
       def path
         degradation.dig(:location, :path)
       end
