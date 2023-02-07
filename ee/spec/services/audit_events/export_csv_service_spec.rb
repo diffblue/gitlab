@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AuditEvents::ExportCsvService do
+RSpec.describe AuditEvents::ExportCsvService, feature_category: :audit_events do
   let_it_be(:author) { create(:user, name: "Ru'by McRüb\"Face") }
   let_it_be(:audit_event) do
     create(:project_audit_event,
@@ -35,7 +35,7 @@ RSpec.describe AuditEvents::ExportCsvService do
 
   it 'includes the appropriate headers' do
     expect(csv.headers).to eq([
-                                'ID', 'Author ID', 'Author Name',
+                                'ID', 'Author ID', 'Author Name', 'Author Email',
                                 'Entity ID', 'Entity Type', 'Entity Path',
                                 'Target ID', 'Target Type', 'Target Details',
                                 'Action', 'IP Address', 'Created At (UTC)'
@@ -53,6 +53,10 @@ RSpec.describe AuditEvents::ExportCsvService do
 
     specify 'Author Name' do
       expect(csv[0]['Author Name']).to eq("Ru'by McRüb\"Face")
+    end
+
+    specify 'Author Email' do
+      expect(csv[0]['Author Email']).to eq(author.email)
     end
 
     specify 'Entity ID' do
@@ -89,6 +93,27 @@ RSpec.describe AuditEvents::ExportCsvService do
 
     specify 'Created At (UTC)' do
       expect(csv[0]['Created At (UTC)']).to eq('2020-02-20T12:00:00Z')
+    end
+  end
+
+  context 'when the author user has been deleted' do
+    subject(:csv) { CSV.parse(export_csv_service.csv_data.to_a.join, headers: true) }
+
+    let(:params) { super().tap { |params| params.delete(:author_id) } }
+
+    before do
+      user = create(:user, name: "foo")
+      create(:project_audit_event,
+        entity_id: 678,
+        entity_type: 'Project',
+        author_id: user.id,
+        created_at: Time.zone.parse('2020-02-20T12:00:00Z'))
+
+      user.delete
+    end
+
+    it "returns CSV without error" do
+      expect { csv.headers }.not_to raise_error
     end
   end
 end
