@@ -36,6 +36,7 @@ export default {
   protectedEnvironmentsPath: '/api/:version/projects/:id/protected_environments/',
   mrStatusCheckRetryPath:
     '/api/:version/projects/:id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id/retry',
+  protectedEnvironmentPath: '/api/:version/projects/:id/protected_environments/:name',
 
   userSubscription(namespaceId) {
     const url = Api.buildUrl(this.subscriptionPath).replace(':id', encodeURIComponent(namespaceId));
@@ -288,5 +289,13 @@ export default {
   createProtectedEnvironment(id, protectedEnvironment) {
     const url = Api.buildUrl(this.protectedEnvironmentsPath).replace(':id', encodeURIComponent(id));
     return axios.post(url, protectedEnvironment);
+  },
+
+  updateProtectedEnvironment(id, protectedEnvironment) {
+    const url = Api.buildUrl(this.protectedEnvironmentPath)
+      .replace(':id', encodeURIComponent(id))
+      .replace(':name', encodeURIComponent(protectedEnvironment.name));
+
+    return axios.put(url, protectedEnvironment);
   },
 };

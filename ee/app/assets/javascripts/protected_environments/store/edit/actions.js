@@ -62,3 +62,28 @@ export const fetchMembers = ({ state, commit }, rule) => {
       commit(types.RECEIVE_MEMBERS_ERROR, error);
     });
 };
+
+export const deleteRule = ({ dispatch }, { environment, rule }) => {
+  const deletedRuleEntries = [
+    ['_destroy', true],
+    ...Object.entries(rule).filter(([, value]) => value),
+  ];
+  const updatedEnvironment = {
+    name: environment.name,
+    deploy_access_levels: [Object.fromEntries(deletedRuleEntries)],
+  };
+
+  dispatch('updateEnvironment', updatedEnvironment);
+};
+
+export const updateEnvironment = ({ state, commit }, environment) => {
+  commit(types.REQUEST_UPDATE_PROTECTED_ENVIRONMENT);
+
+  return Api.updateProtectedEnvironment(state.projectId, environment)
+    .then(({ data }) => {
+      commit(types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_SUCCESS, data);
+    })
+    .catch((error) => {
+      commit(types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_ERROR, error);
+    });
+};

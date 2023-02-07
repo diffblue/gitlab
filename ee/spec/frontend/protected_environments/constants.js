@@ -1,0 +1,2 @@
+export const MAINTAINER_ACCESS_LEVEL = 40;
+export const DEVELOPER_ACCESS_LEVEL = 30;

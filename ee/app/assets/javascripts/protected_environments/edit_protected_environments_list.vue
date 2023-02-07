@@ -3,6 +3,7 @@ import {
   GlAccordion,
   GlAccordionItem,
   GlAvatar,
+  GlButton,
   GlSprintf,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
@@ -15,6 +16,7 @@ export default {
     GlAccordion,
     GlAccordionItem,
     GlAvatar,
+    GlButton,
     GlSprintf,
     EditProtectedEnvironmentRulesCard,
   },
@@ -28,9 +30,12 @@ export default {
     this.fetchProtectedEnvironments();
   },
   methods: {
-    ...mapActions(['fetchProtectedEnvironments']),
+    ...mapActions(['fetchProtectedEnvironments', 'deleteRule']),
     filterRules(env) {
       return env.deploy_access_levels.filter(({ _destroy: destroy = false }) => !destroy);
+    },
+    canDeleteRules(env) {
+      return env.deploy_access_levels.length > 1;
     },
   },
   i18n: {
@@ -39,6 +44,7 @@ export default {
     ),
     deployersHeader: s__('ProtectedEnvironments|Allowed to deploy'),
     usersHeader: s__('ProtectedEnvironments|Users'),
+    deleteButtonTitle: s__('ProtectedEnvironments|Delete deployment rule'),
   },
 };
 </script>
@@ -78,6 +84,18 @@ export default {
               :title="user.name"
               :size="24"
               class="gl-mr-2"
+            />
+
+            <gl-button
+              v-if="canDeleteRules(environment)"
+              category="secondary"
+              variant="danger"
+              icon="remove"
+              :loading="loading"
+              :title="$options.i18n.deleteButtonTitle"
+              :aria-label="$options.i18n.deleteButtonTitle"
+              class="gl-ml-auto"
+              @click="deleteRule({ environment, rule })"
             />
           </template>
         </edit-protected-environment-rules-card>

@@ -24,4 +24,16 @@ export const mutations = {
   [types.RECEIVE_MEMBER_SUCCESS](state, { rule, users }) {
     Vue.set(state.usersForRules, rule.id, users);
   },
+  [types.REQUEST_UPDATE_PROTECTED_ENVIRONMENT](state) {
+    state.loading = true;
+  },
+  [types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_SUCCESS](state, environment) {
+    const index = state.protectedEnvironments.findIndex((env) => env.name === environment.name);
+    Vue.set(state.protectedEnvironments, index, environment);
+
+    state.loading = false;
+  },
+  [types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_ERROR](state) {
+    state.loading = false;
+  },
 };

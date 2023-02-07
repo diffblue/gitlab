@@ -415,4 +415,17 @@ describe('Api', () => {
       });
     });
   });
+
+  describe('updateProtectedEnvironment', () => {
+    it('puts changes to a protected environment', () => {
+      const response = { name: 'staging' };
+      const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/projects/1/protected_environments/staging`;
+      mock.onPut(expectedUrl, response).reply(HTTP_STATUS_OK, response);
+
+      return Api.updateProtectedEnvironment(1, response).then(({ data, config }) => {
+        expect(data).toEqual(response);
+        expect(config.url).toBe(expectedUrl);
+      });
+    });
+  });
 });
