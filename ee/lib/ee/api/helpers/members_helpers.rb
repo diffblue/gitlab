@@ -26,6 +26,15 @@ module EE
           end
         end
 
+        class_methods do
+          extend ::Gitlab::Utils::Override
+
+          override :member_access_levels
+          def member_access_levels
+            super + [::Gitlab::Access::MINIMAL_ACCESS]
+          end
+        end
+
         # rubocop: disable CodeReuse/ActiveRecord
         override :retrieve_members
         def retrieve_members(source, params:, deep: false)

@@ -159,6 +159,37 @@ RSpec.describe API::Invitations, 'EE Invitations', feature_category: :user_profi
         end
       end
     end
+
+    context 'with minimal access level' do
+      before do
+        stub_licensed_features(minimal_access_role: true)
+      end
+
+      context 'when group has no parent' do
+        it 'return success' do
+          post api(url, admin),
+               params: { email: invite_email,
+                         access_level: Member::MINIMAL_ACCESS }
+
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response['status']).to eq("success")
+        end
+      end
+
+      context 'when group has parent' do
+        let(:parent_group) { create(:group) }
+        let(:group) { create(:group, parent: parent_group) }
+
+        it 'return error' do
+          post api(url, admin),
+               params: { email: invite_email,
+                         access_level: Member::MINIMAL_ACCESS }
+
+          expect(json_response['status']).to eq 'error'
+          expect(json_response['message'][invite_email]).to include('Access level is not included in the list')
+        end
+      end
+    end
   end
 
   describe 'POST /projects/:id/invitations' do
