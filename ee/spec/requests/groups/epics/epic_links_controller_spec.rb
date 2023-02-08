@@ -193,6 +193,33 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
         it 'updates a parent for the referenced epic' do
           expect { subject }.to change { epic1.reload.parent }.from(nil).to(parent_epic)
         end
+
+        context 'with hierarchy depth validations' do
+          before do
+            stub_const("EE::Epic::MAX_HIERARCHY_DEPTH", 3)
+          end
+
+          let_it_be(:level_1) { create(:epic, group: group) }
+          let_it_be(:level_2) { create(:epic, parent: level_1, group: group) }
+          let_it_be(:level_3) { create(:epic, parent: level_2, group: group) }
+
+          context 'when it does not exceed the max hierarchy depth' do
+            let_it_be(:parent_epic) { level_2 }
+
+            it 'sets the parent' do
+              expect { subject }.to change { epic1.reload.parent }.from(nil).to(parent_epic)
+            end
+          end
+
+          context 'when it exceeds the max hierarchy depth' do
+            let_it_be(:parent_epic) { level_3 }
+
+            it 'does not set the parent and returns an error' do
+              expect { subject }.not_to change { epic1.reload.parent }
+              expect(json_response["message"]).to include("One or more epics would exceed the maximum depth (3)")
+            end
+          end
+        end
       end
 
       context 'when user does not have permissions to create requested association' do

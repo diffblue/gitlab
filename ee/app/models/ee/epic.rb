@@ -756,7 +756,8 @@ module EE
     end
 
     def level_depth_exceeded?(parent_epic)
-      hierarchy.max_descendants_depth.to_i + parent_epic.base_and_ancestors.count >= MAX_HIERARCHY_DEPTH
+      # The epic's depth (minimum 1, for the epic itself) + the depth of its parent
+      (hierarchy.max_descendants_depth || 1) + parent_epic.ancestors.count >= MAX_HIERARCHY_DEPTH
     end
   end
 end
