@@ -5,22 +5,22 @@ import { GlButton } from '@gitlab/ui';
 import { __ } from '~/locale';
 
 import { createCubeJsApi } from '../data_sources/cube_analytics';
-import { WIDGET_DISPLAY_TYPES } from '../constants';
+import { PANEL_DISPLAY_TYPES } from '../constants';
 
-import MeasureSelector from './widget_designer/analytics_cube_query_measure_selector.vue';
-import DimensionSelector from './widget_designer/analytics_cube_query_dimension_selector.vue';
-import WidgetPreview from './widget_designer/analytics_widget_preview.vue';
-import VisualizationInspector from './widget_designer/analytics_visualization_inspector.vue';
+import MeasureSelector from './panel_designer/analytics_cube_query_measure_selector.vue';
+import DimensionSelector from './panel_designer/analytics_cube_query_dimension_selector.vue';
+import PanelPreview from './panel_designer/analytics_panel_preview.vue';
+import VisualizationInspector from './panel_designer/analytics_visualization_inspector.vue';
 
 export default {
-  name: 'AnalyticsWidgetDesigner',
+  name: 'AnalyticsPanelDesigner',
   components: {
     QueryBuilder,
     GlButton,
     MeasureSelector,
     DimensionSelector,
     VisualizationInspector,
-    WidgetPreview,
+    PanelPreview,
   },
   data() {
     const query = {
@@ -34,14 +34,14 @@ export default {
         measureType: '',
         measureSubType: '',
       },
-      widgetOptions: {},
+      panelOptions: {},
       defaultTitle: '',
-      selectedDisplayType: WIDGET_DISPLAY_TYPES.DATA,
+      selectedDisplayType: PANEL_DISPLAY_TYPES.DATA,
       selectedVisualizationType: '',
     };
   },
   computed: {
-    resultWidget() {
+    resultPanel() {
       const newCubeQuery = this.$refs.builder.$children[0].resultSet.query();
 
       // Weird behaviour as the API says its malformed if we send it again
@@ -57,7 +57,7 @@ export default {
           type: 'cube_analytics',
           query: newCubeQuery,
         },
-        options: this.widgetOptions,
+        options: this.panelOptions,
       };
     },
   },
@@ -81,11 +81,11 @@ export default {
       this.selectedDisplayType = newType;
     },
     selectVisualizationType(newType) {
-      this.selectDisplayType(WIDGET_DISPLAY_TYPES.WIDGET);
+      this.selectDisplayType(PANEL_DISPLAY_TYPES.PANEL);
       this.selectedVisualizationType = newType;
 
       if (this.selectedVisualizationType === 'LineChart') {
-        this.widgetOptions = {
+        this.panelOptions = {
           xAxis: {
             name: __('Time'),
             type: 'time',
@@ -95,11 +95,11 @@ export default {
           },
         };
       } else {
-        this.widgetOptions = {};
+        this.panelOptions = {};
       }
     },
     addToDashboard() {
-      this.selectDisplayType(WIDGET_DISPLAY_TYPES.CODE);
+      this.selectDisplayType(PANEL_DISPLAY_TYPES.CODE);
     },
   },
 };
@@ -113,10 +113,10 @@ export default {
           v-model="defaultTitle"
           dir="auto"
           type="text"
-          :placeholder="s__('ProductAnalytics|New Analytics Widget Title')"
+          :placeholder="s__('ProductAnalytics|New Analytics Panel Title')"
           :aria-label="__('Title')"
           class="form-control gl-border-gray-200"
-          data-testid="widget-title-tba"
+          data-testid="panel-title-tba"
         />
       </div>
       <div class="gl-ml-2">
@@ -156,7 +156,7 @@ export default {
               :filters="filters"
               :set-filters="setFilters"
               :add-filters="addFilters"
-              data-testid="widget-measure-selector"
+              data-testid="panel-measure-selector"
               @measureSelected="measureUpdated"
             />
 
@@ -170,7 +170,7 @@ export default {
               :time-dimensions="timeDimensions"
               :set-time-dimensions="setTimeDimensions"
               :remove-time-dimension="removeTimeDimensions"
-              data-testid="widget-dimension-selector"
+              data-testid="panel-dimension-selector"
             />
           </div>
         </template>
@@ -179,13 +179,13 @@ export default {
           <div
             class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-bg-gray-10 gl-overflow-auto gl-border-l gl-border-r"
           >
-            <widget-preview
+            <panel-preview
               :selected-visualization-type="selectedVisualizationType"
               :display-type="selectedDisplayType"
               :is-query-present="isQueryPresent ? isQueryPresent : false"
               :loading="loading"
               :result-set="resultSet ? resultSet : null"
-              :result-widget="resultSet && isQueryPresent ? resultWidget : null"
+              :result-panel="resultSet && isQueryPresent ? resultPanel : null"
               @selectedDisplayType="selectDisplayType"
             />
           </div>

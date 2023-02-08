@@ -12,9 +12,9 @@ export default {
         component: DashboardsList,
       },
       {
-        name: 'widget-designer',
-        path: '/widget-designer',
-        component: () => import('./components/analytics_widget_designer.vue'),
+        name: 'panel-designer',
+        path: '/panel-designer',
+        component: () => import('./components/analytics_panel_designer.vue'),
       },
       {
         name: 'instrumentation-detail',

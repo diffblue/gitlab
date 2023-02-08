@@ -1,7 +1,7 @@
 import { nextTick } from 'vue';
 import { GlLabel, GlDropdownItem } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import AnalyticsDimensionSelector from 'ee/product_analytics/dashboards/components/widget_designer/analytics_cube_query_dimension_selector.vue';
+import AnalyticsDimensionSelector from 'ee/product_analytics/dashboards/components/panel_designer/analytics_cube_query_dimension_selector.vue';
 import { EVENTS_DB_TABLE_NAME } from 'ee/product_analytics/dashboards/constants';
 
 describe('AnalyticsQueryDimensionSelector', () => {

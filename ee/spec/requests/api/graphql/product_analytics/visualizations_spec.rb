@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.project(id).dashboards.widgets(id).visualization', feature_category: :product_analytics do
+RSpec.describe 'Query.project(id).dashboards.panels(id).visualization', feature_category: :product_analytics do
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }
@@ -17,7 +17,7 @@ RSpec.describe 'Query.project(id).dashboards.widgets(id).visualization', feature
             nodes {
               title
               description
-              widgets {
+              panels {
                 nodes {
                   title
                   gridAttributes
@@ -46,14 +46,14 @@ RSpec.describe 'Query.project(id).dashboards.widgets(id).visualization', feature
       get_graphql(query, current_user: user)
 
       expect(
-        graphql_data_at(:project, :product_analytics_dashboards, :nodes, 0, :widgets, :nodes, 0, :visualization, :type)
+        graphql_data_at(:project, :product_analytics_dashboards, :nodes, 0, :panels, :nodes, 0, :visualization, :type)
       ).to eq('LineChart')
     end
 
     context 'when the visualization does not exist' do
       before do
-        allow_next_instance_of(ProductAnalytics::Widget) do |widget|
-          allow(widget).to receive(:visualization).and_return(nil)
+        allow_next_instance_of(ProductAnalytics::Panel) do |panel|
+          allow(panel).to receive(:visualization).and_return(nil)
         end
       end
 

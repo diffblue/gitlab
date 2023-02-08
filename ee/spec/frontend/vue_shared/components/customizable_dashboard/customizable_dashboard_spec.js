@@ -3,7 +3,7 @@ import * as Sentry from '@sentry/browser';
 import { RouterLinkStub } from '@vue/test-utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
-import WidgetsBase from 'ee/vue_shared/components/customizable_dashboard/widgets_base.vue';
+import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
 import {
   GRIDSTACK_MARGIN,
   GRIDSTACK_CSS_HANDLE,
@@ -49,8 +49,8 @@ describe('CustomizableDashboard', () => {
     });
   };
 
-  const findGridStackWidgets = () => wrapper.findAllByTestId('grid-stack-widget');
-  const findWidgets = () => wrapper.findAllComponents(WidgetsBase);
+  const findGridStackPanels = () => wrapper.findAllByTestId('grid-stack-panel');
+  const findPanels = () => wrapper.findAllComponents(PanelsBase);
   const findEditButton = () => wrapper.findByTestId('dashboard-edit-btn');
   const findCancelEditButton = () => wrapper.findByTestId('dashboard-cancel-edit-btn');
   const findCodeButton = () => wrapper.findByTestId('dashboard-code-btn');
@@ -86,24 +86,24 @@ describe('CustomizableDashboard', () => {
     });
 
     it.each(
-      dashboard.widgets.map((widget, index) => [
-        widget.id,
-        widget.title,
-        widget.visualization,
-        widget.gridAttributes,
-        widget.queryOverrides,
+      dashboard.panels.map((panel, index) => [
+        panel.id,
+        panel.title,
+        panel.visualization,
+        panel.gridAttributes,
+        panel.queryOverrides,
         index,
       ]),
     )(
-      'should render the widget for %s',
+      'should render the panel for %s',
       (id, title, visualization, gridAttributes, queryOverrides, index) => {
-        expect(findWidgets().at(index).props()).toMatchObject({
+        expect(findPanels().at(index).props()).toMatchObject({
           title,
           visualization,
           queryOverrides,
         });
 
-        expect(findGridStackWidgets().at(index).attributes()).toMatchObject({
+        expect(findGridStackPanels().at(index).attributes()).toMatchObject({
           'gs-id': `${id}`,
           'gs-h': `${gridAttributes.height}`,
           'gs-w': `${gridAttributes.width}`,
@@ -111,13 +111,13 @@ describe('CustomizableDashboard', () => {
       },
     );
 
-    it('calls createAlert when a widget emits an error', () => {
+    it('calls createAlert when a panel emits an error', () => {
       const error = new Error('foo');
 
-      findWidgets().at(0).vm.$emit('error', error);
+      findPanels().at(0).vm.$emit('error', error);
 
       expect(createAlert).toHaveBeenCalledWith({
-        message: `An error occured while loading the ${dashboard.widgets[0].title} widget.`,
+        message: `An error occured while loading the ${dashboard.panels[0].title} panel.`,
         captureError: true,
         error,
       });
@@ -142,11 +142,11 @@ describe('CustomizableDashboard', () => {
       expect(findCodeButton().exists()).toBe(true);
     });
 
-    it('updates widgets when their values change', async () => {
-      await wrapper.vm.updateWidgetWithGridStackItem({ id: 1, x: 10, y: 20, w: 30, h: 40 });
+    it('updates panels when their values change', async () => {
+      await wrapper.vm.updatePanelWithGridStackItem({ id: 1, x: 10, y: 20, w: 30, h: 40 });
 
-      expect(findGridStackWidgets().at(0).attributes()).toMatchObject({
-        id: 'widget-1',
+      expect(findGridStackPanels().at(0).attributes()).toMatchObject({
+        id: 'panel-1',
         'gs-h': '40',
         'gs-w': '30',
         'gs-x': '10',

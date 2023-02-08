@@ -15,7 +15,7 @@ const Template = (args, { argTypes }) => ({
 export const Default = Template.bind({});
 Default.args = {
   editable: false,
-  widgets: [
+  panels: [
     {
       component: 'CubeLineChart',
       title: s__('ProductAnalytics|Audience'),

@@ -47,20 +47,20 @@ RSpec.describe ProductAnalytics::Dashboard do
     end
   end
 
-  describe '#widgets' do
-    subject { described_class.for_project(project).first.widgets }
+  describe '#panels' do
+    subject { described_class.for_project(project).first.panels }
 
     it { is_expected.to be_a(Array) }
 
-    it 'is expected to contain two widgets' do
+    it 'is expected to contain two panels' do
       expect(subject.size).to eq(2)
     end
 
-    it 'is expected to contain a widget with the correct title' do
+    it 'is expected to contain a panel with the correct title' do
       expect(subject.first.title).to eq('Overall Conversion Rate')
     end
 
-    it 'is expected to contain a widget with the correct grid attributes' do
+    it 'is expected to contain a panel with the correct grid attributes' do
       expect(subject.first.grid_attributes).to eq({ 'xPos' => 1, 'yPos' => 4, 'width' => 12, 'height' => 2 })
     end
   end
@@ -68,7 +68,7 @@ RSpec.describe ProductAnalytics::Dashboard do
   describe '#==' do
     let(:dashboard_1) { described_class.for_project(project).first }
     let(:dashboard_2) do
-      described_class.new(title: 'a', description: 'b', schema_version: '1', widgets: [], project: nil, slug: 'test2')
+      described_class.new(title: 'a', description: 'b', schema_version: '1', panels: [], project: nil, slug: 'test2')
     end
 
     subject { dashboard_1 == dashboard_2 }

@@ -24,7 +24,7 @@ const cubeLineChart = {
 
 export const dashboard = {
   title: 'Analytics Overview',
-  widgets: [
+  panels: [
     {
       id: 1,
       title: __('Test A'),

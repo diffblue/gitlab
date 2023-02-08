@@ -1,7 +1,7 @@
 import { nextTick } from 'vue';
 import { GlLabel } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import AnalyticsMeasureSelector from 'ee/product_analytics/dashboards/components/widget_designer/analytics_cube_query_measure_selector.vue';
+import AnalyticsMeasureSelector from 'ee/product_analytics/dashboards/components/panel_designer/analytics_cube_query_measure_selector.vue';
 import { EVENTS_DB_TABLE_NAME } from 'ee/product_analytics/dashboards/constants';
 
 describe('AnalyticsQueryMeasureSelector', () => {

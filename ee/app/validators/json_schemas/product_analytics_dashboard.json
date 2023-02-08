@@ -15,10 +15,10 @@
         "description": {
           "type": "string"
         },
-        "widgets": {
+        "panels": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Widget"
+            "$ref": "#/definitions/Panel"
           }
         }
       },
@@ -26,11 +26,11 @@
         "description",
         "title",
         "version",
-        "widgets"
+        "panels"
       ],
       "title": "ProductAnalyticsDashboard"
     },
-    "Widget": {
+    "Panel": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -53,7 +53,7 @@
         "title",
         "visualization"
       ],
-      "title": "Widget"
+      "title": "Panel"
     },
     "GridAttributes": {
       "type": "object",

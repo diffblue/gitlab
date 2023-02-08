@@ -51,16 +51,16 @@ export default {
     // TODO: Remove in https://gitlab.com/gitlab-org/gitlab/-/issues/382551
     async importVisualization(visualization) {
       const module = await VISUALIZATION_JSONS[visualization]();
-      // Convert module to an object because widget_base.vue expects an object property.
+      // Convert module to an object because panel_base.vue expects an object property.
       return { ...module };
     },
     async importDashboardDependencies(dashboard) {
       return {
         ...dashboard,
-        widgets: await Promise.all(
-          dashboard.widgets.map(async (widget) => ({
-            ...widget,
-            visualization: await this.importVisualization(widget.visualization),
+        panels: await Promise.all(
+          dashboard.panels.map(async (panel) => ({
+            ...panel,
+            visualization: await this.importVisualization(panel.visualization),
           })),
         ),
       };

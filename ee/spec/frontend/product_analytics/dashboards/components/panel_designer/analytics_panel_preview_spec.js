@@ -1,19 +1,19 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import AnalyticsWidgetPreview from 'ee/product_analytics/dashboards/components/widget_designer/analytics_widget_preview.vue';
+import AnalyticsPanelPreview from 'ee/product_analytics/dashboards/components/panel_designer/analytics_panel_preview.vue';
 
-import { WIDGET_DISPLAY_TYPES } from 'ee/product_analytics/dashboards/constants';
+import { PANEL_DISPLAY_TYPES } from 'ee/product_analytics/dashboards/constants';
 
-describe('AnalyticsWidgetPreview', () => {
+describe('AnalyticsPanelPreview', () => {
   let wrapper;
 
   const findDataButton = () => wrapper.findByTestId('select-data-button');
-  const findWidgetButton = () => wrapper.findByTestId('select-widget-button');
+  const findPanelButton = () => wrapper.findByTestId('select-panel-button');
   const findCodeButton = () => wrapper.findByTestId('select-code-button');
 
   const selectDisplayType = jest.fn();
 
   const createWrapper = (props = {}) => {
-    wrapper = shallowMountExtended(AnalyticsWidgetPreview, {
+    wrapper = shallowMountExtended(AnalyticsPanelPreview, {
       propsData: {
         selectedVisualizationType: '',
         displayType: '',
@@ -21,7 +21,7 @@ describe('AnalyticsWidgetPreview', () => {
         isQueryPresent: false,
         loading: false,
         resultSet: { tablePivot: () => {} },
-        resultWidget: {},
+        resultPanel: {},
         ...props,
       },
     });
@@ -56,23 +56,23 @@ describe('AnalyticsWidgetPreview', () => {
 
     it('should render overview buttons', () => {
       expect(findDataButton().exists()).toBe(true);
-      expect(findWidgetButton().exists()).toBe(true);
+      expect(findPanelButton().exists()).toBe(true);
       expect(findCodeButton().exists()).toBe(true);
     });
 
     it('should be able to select data section', () => {
       findDataButton().vm.$emit('click');
-      expect(wrapper.emitted('selectedDisplayType')).toEqual([[WIDGET_DISPLAY_TYPES.DATA]]);
+      expect(wrapper.emitted('selectedDisplayType')).toEqual([[PANEL_DISPLAY_TYPES.DATA]]);
     });
 
-    it('should be able to select widget section', () => {
-      findWidgetButton().vm.$emit('click');
-      expect(wrapper.emitted('selectedDisplayType')).toEqual([[WIDGET_DISPLAY_TYPES.WIDGET]]);
+    it('should be able to select panel section', () => {
+      findPanelButton().vm.$emit('click');
+      expect(wrapper.emitted('selectedDisplayType')).toEqual([[PANEL_DISPLAY_TYPES.PANEL]]);
     });
 
     it('should be able to select code section', () => {
       findCodeButton().vm.$emit('click');
-      expect(wrapper.emitted('selectedDisplayType')).toEqual([[WIDGET_DISPLAY_TYPES.CODE]]);
+      expect(wrapper.emitted('selectedDisplayType')).toEqual([[PANEL_DISPLAY_TYPES.CODE]]);
     });
   });
 
@@ -80,7 +80,7 @@ describe('AnalyticsWidgetPreview', () => {
     beforeEach(() => {
       createWrapper({
         isQueryPresent: true,
-        displayType: WIDGET_DISPLAY_TYPES.DATA,
+        displayType: PANEL_DISPLAY_TYPES.DATA,
       });
     });
 
@@ -89,17 +89,17 @@ describe('AnalyticsWidgetPreview', () => {
     });
   });
 
-  describe('resultSet and widget is selected', () => {
+  describe('resultSet and panel is selected', () => {
     beforeEach(() => {
       createWrapper({
         isQueryPresent: true,
-        displayType: WIDGET_DISPLAY_TYPES.WIDGET,
+        displayType: PANEL_DISPLAY_TYPES.PANEL,
         selectedVisualizationType: 'LineChart',
       });
     });
 
-    it('should render widget', () => {
-      expect(wrapper.findByTestId('preview-widget').exists()).toBe(true);
+    it('should render panel', () => {
+      expect(wrapper.findByTestId('preview-panel').exists()).toBe(true);
     });
   });
 
@@ -107,7 +107,7 @@ describe('AnalyticsWidgetPreview', () => {
     beforeEach(() => {
       createWrapper({
         isQueryPresent: true,
-        displayType: WIDGET_DISPLAY_TYPES.CODE,
+        displayType: PANEL_DISPLAY_TYPES.CODE,
       });
     });
 

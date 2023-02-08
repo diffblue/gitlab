@@ -1,5 +1,5 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import AnalyticsVisualizatiuonInspector from 'ee/product_analytics/dashboards/components/widget_designer/analytics_visualization_inspector.vue';
+import AnalyticsVisualizatiuonInspector from 'ee/product_analytics/dashboards/components/panel_designer/analytics_visualization_inspector.vue';
 
 describe('AnalyticsVisualizationInspector', () => {
   let wrapper;

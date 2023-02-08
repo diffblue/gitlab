@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
 module ProductAnalytics
-  class Widget
+  class Panel
     attr_reader :title, :grid_attributes, :visualization, :project
 
-    def self.from_data(widget_yaml, project)
-      widget_yaml.map do |widget|
+    def self.from_data(panel_yaml, project)
+      panel_yaml.map do |panel|
         new(
-          title: widget['title'],
+          title: panel['title'],
           project: project,
-          grid_attributes: widget['gridAttributes'],
-          visualization: widget['visualization']
+          grid_attributes: panel['gridAttributes'],
+          visualization: panel['visualization']
         )
       end
     end

@@ -1,15 +1,15 @@
 import { s__ } from '~/locale';
-import WidgetsBase from './widgets_base.vue';
+import PanelsBase from './panels_base.vue';
 
 export default {
-  component: WidgetsBase,
-  title: 'ee/vue_shared/components/widgets_base',
+  component: PanelsBase,
+  title: 'ee/vue_shared/components/panels_base',
 };
 
 const Template = (args, { argTypes }) => ({
-  components: { WidgetsBase },
+  components: { PanelsBase },
   props: Object.keys(argTypes),
-  template: '<widgets-base v-bind="$props" />',
+  template: '<panels-base v-bind="$props" />',
 });
 
 export const Default = Template.bind({});
