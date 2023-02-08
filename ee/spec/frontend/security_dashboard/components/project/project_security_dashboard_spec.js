@@ -65,6 +65,10 @@ describe('Project Security Dashboard component', () => {
       expect(findLineChart().props('data')).toMatchSnapshot();
     });
 
+    it('should display the chart with responsive attribute', () => {
+      expect(findLineChart().attributes('responsive')).toBeDefined();
+    });
+
     it('should not display the loading icon', () => {
       expect(findLoadingIcon().exists()).toBe(false);
     });
