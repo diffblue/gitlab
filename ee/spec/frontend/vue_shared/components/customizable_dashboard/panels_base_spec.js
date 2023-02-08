@@ -1,7 +1,7 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import LineChart from 'ee/product_analytics/dashboards/components/visualizations/line_chart.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import WidgetsBase from 'ee/vue_shared/components/customizable_dashboard/widgets_base.vue';
+import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
 import dataSources from 'ee/product_analytics/dashboards/data_sources';
 import waitForPromises from 'helpers/wait_for_promises';
 import { dashboard } from './mock_data';
@@ -12,18 +12,18 @@ jest.mock('ee/product_analytics/dashboards/data_sources', () => ({
   }),
 }));
 
-describe('WidgetsBase', () => {
-  const widgetConfig = dashboard.widgets[0];
+describe('PanelsBase', () => {
+  const panelConfig = dashboard.panels[0];
 
   let wrapper;
 
   const createWrapper = (props = {}) => {
-    wrapper = shallowMountExtended(WidgetsBase, {
+    wrapper = shallowMountExtended(PanelsBase, {
       provide: { projectId: '1' },
       propsData: {
-        title: widgetConfig.title,
-        visualization: widgetConfig.visualization,
-        queryOverrides: widgetConfig.queryOverrides,
+        title: panelConfig.title,
+        visualization: panelConfig.visualization,
+        queryOverrides: panelConfig.queryOverrides,
         ...props,
       },
     });
@@ -31,7 +31,7 @@ describe('WidgetsBase', () => {
 
   const findVisualization = () => wrapper.findComponent(LineChart);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
-  const findWidgetTitle = () => wrapper.findByTestId('widget-title');
+  const findPanelTitle = () => wrapper.findByTestId('panel-title');
 
   afterEach(() => {
     wrapper.destroy();
@@ -43,7 +43,7 @@ describe('WidgetsBase', () => {
     });
 
     it('should render title', () => {
-      expect(findWidgetTitle().text()).toBe(widgetConfig.title);
+      expect(findPanelTitle().text()).toBe(panelConfig.title);
     });
 
     it('should call the data source', () => {
@@ -83,7 +83,7 @@ describe('WidgetsBase', () => {
     it('should render the visualization with the fetched data', () => {
       expect(findVisualization().props()).toMatchObject({
         data: mockData,
-        options: widgetConfig.visualization.options,
+        options: panelConfig.visualization.options,
       });
     });
   });

@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe ProductAnalytics::Widget do
+RSpec.describe ProductAnalytics::Panel, feature_category: :product_analytics do
   let_it_be(:project) { create(:project, :with_product_analytics_dashboard) }
 
-  subject { project.product_analytics_dashboard('dashboard_example_1').widgets.first.visualization }
+  subject { project.product_analytics_dashboard('dashboard_example_1').panels.first.visualization }
 
   before do
     stub_licensed_features(product_analytics: true)

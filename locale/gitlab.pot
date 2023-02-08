@@ -32231,7 +32231,7 @@ msgstr ""
 msgid "ProductAnalytics|All pages"
 msgstr ""
 
-msgid "ProductAnalytics|An error occured while loading the %{widgetTitle} widget."
+msgid "ProductAnalytics|An error occured while loading the %{panelTitle} panel."
 msgstr ""
 
 msgid "ProductAnalytics|An error occurred while fetching data. Refresh the page to try again."
@@ -32330,7 +32330,7 @@ msgstr ""
 msgid "ProductAnalytics|Measuring"
 msgstr ""
 
-msgid "ProductAnalytics|New Analytics Widget Title"
+msgid "ProductAnalytics|New Analytics Panel Title"
 msgstr ""
 
 msgid "ProductAnalytics|OS"
@@ -32355,6 +32355,9 @@ msgid "ProductAnalytics|Page Views"
 msgstr ""
 
 msgid "ProductAnalytics|Pages"
+msgstr ""
+
+msgid "ProductAnalytics|Panel"
 msgstr ""
 
 msgid "ProductAnalytics|Product analytics dashboards"
@@ -32391,9 +32394,6 @@ msgid "ProductAnalytics|Visualization Type"
 msgstr ""
 
 msgid "ProductAnalytics|What do you want to measure?"
-msgstr ""
-
-msgid "ProductAnalytics|Widget"
 msgstr ""
 
 msgid "Productivity"

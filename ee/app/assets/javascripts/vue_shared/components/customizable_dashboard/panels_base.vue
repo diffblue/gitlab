@@ -3,7 +3,7 @@ import { GlLoadingIcon } from '@gitlab/ui';
 import dataSources from 'ee/product_analytics/dashboards/data_sources';
 
 export default {
-  name: 'AnalyticsDashboardWidget',
+  name: 'AnalyticsDashboardPanel',
   components: {
     GlLoadingIcon,
     LineChart: () =>
@@ -74,7 +74,7 @@ export default {
   <div
     class="grid-stack-item-content gl-shadow gl-rounded-base gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
   >
-    <strong v-if="title" class="gl-mb-2" data-testid="widget-title">{{ title }}</strong>
+    <strong v-if="title" class="gl-mb-2" data-testid="panel-title">{{ title }}</strong>
     <div class="gl-overflow-y-auto gl-h-full" :class="{ 'gl--flex-center': loading }">
       <gl-loading-icon v-if="loading" size="lg" />
       <component

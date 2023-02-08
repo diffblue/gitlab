@@ -15,25 +15,25 @@ export const I18N_DASHBOARD_LIST = {
 
 export const EVENTS_TYPES = ['pageViews', 'featureUsages', 'clickEvents', 'events'];
 
-export const WIDGET_DISPLAY_TYPES = {
+export const PANEL_DISPLAY_TYPES = {
   DATA: 'data',
-  WIDGET: 'widget',
+  PANEL: 'panel',
   CODE: 'code',
 };
 
-export const WIDGET_DISPLAY_TYPE_ITEMS = [
+export const PANEL_DISPLAY_TYPE_ITEMS = [
   {
-    type: WIDGET_DISPLAY_TYPES.DATA,
+    type: PANEL_DISPLAY_TYPES.DATA,
     icon: 'table',
     title: s__('ProductAnalytics|Data'),
   },
   {
-    type: WIDGET_DISPLAY_TYPES.WIDGET,
+    type: PANEL_DISPLAY_TYPES.PANEL,
     icon: 'chart',
-    title: s__('ProductAnalytics|Widget'),
+    title: s__('ProductAnalytics|Panel'),
   },
   {
-    type: WIDGET_DISPLAY_TYPES.CODE,
+    type: PANEL_DISPLAY_TYPES.CODE,
     icon: 'code',
     title: s__('ProductAnalytics|Code'),
   },

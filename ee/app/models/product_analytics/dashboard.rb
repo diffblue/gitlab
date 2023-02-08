@@ -2,7 +2,7 @@
 
 module ProductAnalytics
   class Dashboard
-    attr_reader :title, :description, :schema_version, :widgets, :project, :slug, :path
+    attr_reader :title, :description, :schema_version, :panels, :project, :slug, :path
 
     DASHBOARD_ROOT_LOCATION = '.gitlab/product_analytics/dashboards'
 
@@ -22,16 +22,16 @@ module ProductAnalytics
           slug: tree.name,
           description: config['description'],
           schema_version: config['version'],
-          widgets: ProductAnalytics::Widget.from_data(config['widgets'], project)
+          panels: ProductAnalytics::Panel.from_data(config['panels'], project)
         )
       end
     end
 
-    def initialize(title:, description:, schema_version:, widgets:, project:, slug:)
+    def initialize(title:, description:, schema_version:, panels:, project:, slug:)
       @title = title
       @description = description
       @schema_version = schema_version
-      @widgets = widgets
+      @panels = panels
       @project = project
       @slug = slug
     end

@@ -5,14 +5,14 @@ import { GlButton } from '@gitlab/ui';
 import { loadCSSFile } from '~/lib/utils/css_utils';
 import { createAlert } from '~/flash';
 import { s__, sprintf } from '~/locale';
-import WidgetsBase from './widgets_base.vue';
+import PanelsBase from './panels_base.vue';
 import { GRIDSTACK_MARGIN, GRIDSTACK_CSS_HANDLE } from './constants';
 
 export default {
   name: 'CustomizableDashboard',
   components: {
     GlButton,
-    WidgetsBase,
+    PanelsBase,
   },
   props: {
     initialDashboard: {
@@ -88,18 +88,18 @@ export default {
 
         this.grid.on('change', (event, items) => {
           items.forEach((item) => {
-            this.updateWidgetWithGridStackItem(item);
+            this.updatePanelWithGridStackItem(item);
           });
         });
         this.grid.on('added', (event, items) => {
           items.forEach((item) => {
-            this.updateWidgetWithGridStackItem(item);
+            this.updatePanelWithGridStackItem(item);
           });
         });
       }
     },
-    getGridAttribute(widget, attribute) {
-      const { gridAttributes = {} } = widget;
+    getGridAttribute(panel, attribute) {
+      const { gridAttributes = {} } = panel;
 
       return gridAttributes[attribute];
     },
@@ -135,25 +135,23 @@ export default {
         this.grid.destroy();
       }
     },
-    updateWidgetWithGridStackItem(item) {
-      const updatedWidget = this.dashboard.widgets.find(
-        (element) => element.id === Number(item.id),
-      );
-      if (updatedWidget) {
-        updatedWidget.gridAttributes = this.convertToGridAttributes(item);
+    updatePanelWithGridStackItem(item) {
+      const updatedPanel = this.dashboard.panels.find((element) => element.id === Number(item.id));
+      if (updatedPanel) {
+        updatedPanel.gridAttributes = this.convertToGridAttributes(item);
       }
-      const selectedDefaultWidget = this.dashboard.default.widgets.find(
+      const selectedDefaultPanel = this.dashboard.default.panels.find(
         (element) => element.id === Number(item.id),
       );
-      if (selectedDefaultWidget) {
-        selectedDefaultWidget.gridAttributes = this.convertToGridAttributes(item);
+      if (selectedDefaultPanel) {
+        selectedDefaultPanel.gridAttributes = this.convertToGridAttributes(item);
       }
     },
-    handleWidgetError(widgetTitle, error) {
+    handlePanelError(panelTitle, error) {
       createAlert({
         message: sprintf(
-          s__('ProductAnalytics|An error occured while loading the %{widgetTitle} widget.'),
-          { widgetTitle },
+          s__('ProductAnalytics|An error occured while loading the %{panelTitle} panel.'),
+          { panelTitle },
         ),
         error,
         captureError: true,
@@ -202,26 +200,26 @@ export default {
       <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-py-6">
         <div v-if="!showCode" class="grid-stack">
           <div
-            v-for="(widget, index) in dashboard.widgets"
-            :id="'widget-' + widget.id"
+            v-for="(panel, index) in dashboard.panels"
+            :id="'panel-' + panel.id"
             :key="index"
-            :gs-id="widget.id"
-            :gs-x="getGridAttribute(widget, 'xPos')"
-            :gs-y="getGridAttribute(widget, 'yPos')"
-            :gs-h="getGridAttribute(widget, 'height')"
-            :gs-w="getGridAttribute(widget, 'width')"
-            :gs-min-h="getGridAttribute(widget, 'minHeight')"
-            :gs-min-w="getGridAttribute(widget, 'minWidth')"
-            :gs-max-h="getGridAttribute(widget, 'maxHeight')"
-            :gs-max-w="getGridAttribute(widget, 'maxWidth')"
+            :gs-id="panel.id"
+            :gs-x="getGridAttribute(panel, 'xPos')"
+            :gs-y="getGridAttribute(panel, 'yPos')"
+            :gs-h="getGridAttribute(panel, 'height')"
+            :gs-w="getGridAttribute(panel, 'width')"
+            :gs-min-h="getGridAttribute(panel, 'minHeight')"
+            :gs-min-w="getGridAttribute(panel, 'minWidth')"
+            :gs-max-h="getGridAttribute(panel, 'maxHeight')"
+            :gs-max-w="getGridAttribute(panel, 'maxWidth')"
             class="grid-stack-item"
-            data-testid="grid-stack-widget"
+            data-testid="grid-stack-panel"
           >
-            <widgets-base
-              :title="widget.title"
-              :visualization="widget.visualization"
-              :query-overrides="widget.queryOverrides"
-              @error="handleWidgetError(widget.title, $event)"
+            <panels-base
+              :title="panel.title"
+              :visualization="panel.visualization"
+              :query-overrides="panel.queryOverrides"
+              @error="handlePanelError(panel.title, $event)"
             />
           </div>
         </div>

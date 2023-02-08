@@ -5,7 +5,7 @@ import ProductAnalyticsDashboardsView from 'ee/product_analytics/dashboards/dash
 import ProductAnalyticsOnboardingSetup from 'ee/product_analytics/onboarding/onboarding_setup.vue';
 import DashboardsList from 'ee/product_analytics/dashboards/components/analytics_dashboard_list.vue';
 import AnalyticsDashboard from 'ee/product_analytics/dashboards/components/analytics_dashboard.vue';
-import AnalyticsWidgetDesigner from 'ee/product_analytics/dashboards/components/analytics_widget_designer.vue';
+import AnalyticsPanelDesigner from 'ee/product_analytics/dashboards/components/analytics_panel_designer.vue';
 import createAnalyticsRouter from 'ee/product_analytics/router';
 
 describe('ProductAnalyticsDashboardsView', () => {
@@ -36,7 +36,7 @@ describe('ProductAnalyticsDashboardsView', () => {
       it.each`
         path                   | component
         ${'/'}                 | ${DashboardsList}
-        ${'/widget-designer'}  | ${AnalyticsWidgetDesigner}
+        ${'/panel-designer'}   | ${AnalyticsPanelDesigner}
         ${'/setup'}            | ${ProductAnalyticsOnboardingSetup}
         ${'/test-dashboard-1'} | ${AnalyticsDashboard}
         ${'/test-dashboard-2'} | ${AnalyticsDashboard}

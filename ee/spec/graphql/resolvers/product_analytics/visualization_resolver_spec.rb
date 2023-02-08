@@ -8,7 +8,7 @@ RSpec.describe Resolvers::ProductAnalytics::VisualizationResolver do
   describe '#resolve' do
     subject do
       resolve(
-        described_class, obj: project.product_analytics_dashboards.first.widgets.first, ctx: { current_user: user }
+        described_class, obj: project.product_analytics_dashboards.first.panels.first, ctx: { current_user: user }
       )
     end
 
@@ -25,8 +25,8 @@ RSpec.describe Resolvers::ProductAnalytics::VisualizationResolver do
 
     context 'when the visualization does not exist' do
       before do
-        allow_next_instance_of(ProductAnalytics::Widget) do |widget|
-          allow(widget).to receive(:visualization).and_return(nil)
+        allow_next_instance_of(ProductAnalytics::Panel) do |panel|
+          allow(panel).to receive(:visualization).and_return(nil)
         end
       end
 

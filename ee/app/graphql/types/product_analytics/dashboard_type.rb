@@ -17,10 +17,10 @@ module Types
             null: true,
             description: 'Description of the dashboard.'
 
-      field :widgets,
-            type: Types::ProductAnalytics::WidgetType.connection_type,
+      field :panels,
+            type: Types::ProductAnalytics::PanelType.connection_type,
             null: false,
-            description: 'Widgets shown on the dashboard.'
+            description: 'Panels shown on the dashboard.'
     end
   end
 end

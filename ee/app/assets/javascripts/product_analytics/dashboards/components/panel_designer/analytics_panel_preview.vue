@@ -1,23 +1,23 @@
 <script>
 import { GlButton, GlButtonGroup, GlLoadingIcon } from '@gitlab/ui';
+import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
 import { createAlert } from '~/flash';
 import { s__, sprintf } from '~/locale';
 
-import WidgetsBase from 'ee/vue_shared/components/customizable_dashboard/widgets_base.vue';
 import DataTable from 'ee/product_analytics/dashboards/components/visualizations/data_table.vue';
 
-import { WIDGET_DISPLAY_TYPES, WIDGET_DISPLAY_TYPE_ITEMS } from '../../constants';
+import { PANEL_DISPLAY_TYPES, PANEL_DISPLAY_TYPE_ITEMS } from '../../constants';
 
 export default {
-  name: 'AnalyticsWidgetPreview',
+  name: 'AnalyticsPanelPreview',
 
-  WIDGET_DISPLAY_TYPES,
-  WIDGET_DISPLAY_TYPE_ITEMS,
+  PANEL_DISPLAY_TYPES,
+  PANEL_DISPLAY_TYPE_ITEMS,
   components: {
     GlButton,
     GlButtonGroup,
     GlLoadingIcon,
-    WidgetsBase,
+    PanelsBase,
     DataTable,
   },
   props: {
@@ -42,18 +42,18 @@ export default {
       required: false,
       default: null,
     },
-    resultWidget: {
+    resultPanel: {
       type: Object,
       required: false,
       default: null,
     },
   },
   methods: {
-    handleWidgetError(widgetTitle, error) {
+    handlePanelError(panelTitle, error) {
       createAlert({
         message: sprintf(
-          s__('ProductAnalytics|An error occured while loading the %{widgetTitle} widget.'),
-          { widgetTitle },
+          s__('ProductAnalytics|An error occured while loading the %{panelTitle} panel.'),
+          { panelTitle },
         ),
         error,
         captureError: true,
@@ -86,7 +86,7 @@ export default {
           <div class="col-6">
             <gl-button-group>
               <gl-button
-                v-for="buttonDisplayType in $options.WIDGET_DISPLAY_TYPE_ITEMS"
+                v-for="buttonDisplayType in $options.PANEL_DISPLAY_TYPE_ITEMS"
                 :key="buttonDisplayType.type"
                 :selected="displayType === buttonDisplayType.type"
                 :icon="buttonDisplayType.icon"
@@ -99,9 +99,9 @@ export default {
         </div>
       </div>
       <div
-        v-if="displayType === $options.WIDGET_DISPLAY_TYPES.DATA"
+        v-if="displayType === $options.PANEL_DISPLAY_TYPES.DATA"
         class="grid-stack-item gl-m-5"
-        data-testid="grid-stack-widget"
+        data-testid="grid-stack-panel"
       >
         <div
           class="grid-stack-item-content gl-shadow gl-rounded-base gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
@@ -112,23 +112,23 @@ export default {
             <data-table
               :data="resultSet.tablePivot()"
               data-testid="preview-datatable"
-              @error="(error) => handleWidgetError('TITLE', error)"
+              @error="(error) => handlePanelError('TITLE', error)"
             />
           </div>
         </div>
       </div>
 
       <div
-        v-if="displayType === $options.WIDGET_DISPLAY_TYPES.WIDGET"
+        v-if="displayType === $options.PANEL_DISPLAY_TYPES.PANEL"
         class="grid-stack-item gl-m-5"
-        data-testid="grid-stack-widget"
+        data-testid="grid-stack-panel"
       >
-        <widgets-base
+        <panels-base
           v-if="selectedVisualizationType"
-          :title="resultWidget.title"
-          :visualization="resultWidget"
-          data-testid="preview-widget"
-          @error="(error) => handleWidgetError('TITLE', error)"
+          :title="resultPanel.title"
+          :visualization="resultPanel"
+          data-testid="preview-panel"
+          @error="(error) => handlePanelError('TITLE', error)"
         />
         <div v-else class="col-12 gl-mt-4">
           <div class="text-content text-center gl-text-gray-400">
@@ -139,11 +139,11 @@ export default {
         </div>
       </div>
 
-      <div v-if="displayType === $options.WIDGET_DISPLAY_TYPES.CODE" class="gl-m-4">
+      <div v-if="displayType === $options.PANEL_DISPLAY_TYPES.CODE" class="gl-m-4">
         <pre
           class="code highlight gl-display-flex gl-bg-white"
           data-testid="preview-code"
-        ><code>{{ resultWidget }}</code></pre>
+        ><code>{{ resultPanel }}</code></pre>
       </div>
     </div>
   </div>

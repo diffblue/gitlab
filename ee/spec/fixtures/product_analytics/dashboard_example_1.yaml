@@ -2,7 +2,7 @@
 version: '1'
 title: Dashboard Example 1
 description: North Star Metrics across all departments for the last 3 quarters.
-widgets:
+panels:
   - title: Overall Conversion Rate
     gridAttributes:
       yPos: 4
