@@ -20,6 +20,9 @@ export const policyScannerProfiles =
 
 export const scannerProfiles = scannerProfilesFixtures.data.project.scannerProfiles.nodes;
 
+export const activeScannerProfile = scannerProfiles.find(({ scanType }) => scanType === 'ACTIVE');
+export const passiveScannerProfile = scannerProfiles.find(({ scanType }) => scanType === 'PASSIVE');
+
 export const failedSiteValidations =
   dastFailedSiteValidationsFixtures.data.project.validations.nodes;
 

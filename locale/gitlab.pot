@@ -12766,9 +12766,6 @@ msgstr ""
 msgid "DastProfiles|Manage profiles"
 msgstr ""
 
-msgid "DastProfiles|Manage site profiles"
-msgstr ""
-
 msgid "DastProfiles|Minimum = 0 (no timeout enabled), Maximum = 2880 minutes"
 msgstr ""
 
