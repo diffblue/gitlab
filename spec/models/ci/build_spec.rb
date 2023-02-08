@@ -2235,19 +2235,6 @@ RSpec.describe Ci::Build, feature_category: :continuous_integration, factory_def
     end
   end
 
-  describe '#artifacts_file_for_type' do
-    let(:build) { create(:ci_build, :artifacts, pipeline: pipeline) }
-    let(:file_type) { :archive }
-
-    subject { build.artifacts_file_for_type(file_type) }
-
-    it 'queries artifacts for type' do
-      expect(build).to receive_message_chain(:job_artifacts, :find_by).with(file_type: [Ci::JobArtifact.file_types[file_type]])
-
-      subject
-    end
-  end
-
   describe '#merge_request' do
     let_it_be(:merge_request) { create(:merge_request, source_project: project) }
 
