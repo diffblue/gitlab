@@ -9534,6 +9534,7 @@ The connection type for [`SavedReply`](#savedreply).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="savedreplyconnectioncount"></a>`count` | [`Int!`](#int) | Total count of collection. |
 | <a id="savedreplyconnectionedges"></a>`edges` | [`[SavedReplyEdge]`](#savedreplyedge) | A list of edges. |
 | <a id="savedreplyconnectionnodes"></a>`nodes` | [`[SavedReply]`](#savedreply) | A list of nodes. |
 | <a id="savedreplyconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
