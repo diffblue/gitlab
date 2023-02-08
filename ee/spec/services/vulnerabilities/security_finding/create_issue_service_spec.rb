@@ -9,7 +9,7 @@ feature_category: :vulnerability_management do
     project.add_developer(user)
   end
 
-  let_it_be(:project) { create(:project) }
+  let_it_be(:project) { create(:project, :repository) }
   let_it_be(:pipeline) { create(:ci_pipeline, :success) }
 
   let_it_be(:build_sast) { create(:ci_build, :success, name: 'sast', pipeline: pipeline) }
@@ -52,7 +52,7 @@ feature_category: :vulnerability_management do
 
   context 'when user does not have permission to create issue' do
     before do
-      allow_next_instance_of(Issues::CreateFromVulnerabilityDataService) do |instance|
+      allow_next_instance_of(Issues::CreateFromVulnerabilityService) do |instance|
         allow(instance).to receive(:can?).with(user, :create_issue, project).and_return(false)
       end
     end
@@ -137,7 +137,7 @@ feature_category: :vulnerability_management do
     let(:error_response) { ServiceResponse.error(message: error_message) }
 
     before do
-      allow_next_instance_of(Issues::CreateFromVulnerabilityDataService) do |instance|
+      allow_next_instance_of(Issues::CreateFromVulnerabilityService) do |instance|
         allow(instance).to receive(:execute).and_return(error_response)
       end
     end
