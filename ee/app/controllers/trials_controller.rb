@@ -232,3 +232,5 @@ class TrialsController < ApplicationController
     end
   end
 end
+
+TrialsController.prepend_mod
