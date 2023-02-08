@@ -68,7 +68,6 @@ RSpec.describe 'SAST.gitlab-ci.yml', feature_category: :continuous_integration d
             'Apex'                 | { 'app.cls' => '' }                             | {}                                         | %w(pmd-apex-sast)
             'C'                    | { 'app.c' => '' }                               | {}                                         | %w(flawfinder-sast)
             'C++'                  | { 'app.cpp' => '' }                             | {}                                         | %w(flawfinder-sast)
-            'C#'                   | { 'app.csproj' => '' }                          | {}                                         | %w(security-code-scan-sast)
             'C#'                   | { 'app.cs' => '' }                              | {}                                         | %w(semgrep-sast)
             'Elixir'               | { 'mix.exs' => '' }                             | {}                                         | %w(sobelow-sast)
             'Elixir, nested'       | { 'a/b/mix.exs' => '' }                         | {}                                         | %w(sobelow-sast)
@@ -93,7 +92,6 @@ RSpec.describe 'SAST.gitlab-ci.yml', feature_category: :continuous_integration d
             'Scala'                | { 'app.sc' => '' }                              | {}                                         | %w(semgrep-sast)
             'Typescript'           | { 'app.ts' => '' }                              | {}                                         | %w(semgrep-sast)
             'Typescript JSX'       | { 'app.tsx' => '' }                             | {}                                         | %w(semgrep-sast)
-            'Visual Basic'         | { 'app.vbproj' => '' }                          | {}                                         | %w(security-code-scan-sast)
           end
 
           with_them do
@@ -106,30 +104,6 @@ RSpec.describe 'SAST.gitlab-ci.yml', feature_category: :continuous_integration d
             it 'creates a pipeline with the expected jobs' do
               expect(build_names).to include(*include_build_names)
             end
-          end
-        end
-      end
-
-      context 'when setting image tag dynamically' do
-        using RSpec::Parameterized::TableSyntax
-
-        where(:case_name, :files, :gitlab_version, :image_tag) do
-          'security-code-scan-sast' | { 'app.csproj' => '' } | 14 | '3'
-          'security-code-scan-sast' | { 'app.csproj' => '' } | 15 | '3'
-        end
-
-        with_them do
-          before do
-            allow(Gitlab::VersionInfo).to receive(:parse).and_return(
-              Gitlab::VersionInfo.new(gitlab_version)
-            )
-          end
-
-          it 'creates a build with the expected tag' do
-            expect(build_names).to include(case_name)
-
-            image_tags = pipeline.builds.map { |build| build.variables["SAST_ANALYZER_IMAGE_TAG"].value }
-            expect(image_tags).to match_array([image_tag])
           end
         end
       end
