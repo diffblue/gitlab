@@ -6036,6 +6036,12 @@ msgstr ""
 msgid "Automatically update this project's branches and tags from the upstream repository."
 msgstr ""
 
+msgid "Automation"
+msgstr ""
+
+msgid "Automation|Automation App"
+msgstr ""
+
 msgid "Autosave|Note"
 msgstr ""
 

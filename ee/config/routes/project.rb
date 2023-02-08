@@ -32,6 +32,8 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
           end
         end
 
+        resources :automations, only: [:index]
+
         namespace :settings do
           resource :slack, only: [:destroy, :edit, :update] do
             get :slack_auth
