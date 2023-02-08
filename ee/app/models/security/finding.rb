@@ -118,6 +118,9 @@ module Security
     scope :with_scanner, -> { includes(:scanner) }
     scope :with_feedbacks, -> { includes(:feedbacks) }
     scope :with_vulnerability, -> { includes(:vulnerability) }
+    scope :with_state_transitions, -> { with_vulnerability.includes(:state_transitions) }
+    scope :with_issue_links, -> { with_vulnerability.includes(:issue_links) }
+    scope :with_merge_request_links, -> { with_vulnerability.includes(:merge_request_links) }
     scope :deduplicated, -> { where(deduplicated: true) }
     scope :grouped_by_scan_type, -> { joins(:scan).group('security_scans.scan_type') }
 
