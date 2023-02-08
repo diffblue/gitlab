@@ -8,10 +8,6 @@ RSpec.describe RegistrationsController, feature_category: :authentication_and_au
     let_it_be(:new_user_email) { 'new@user.com' }
     let_it_be(:user_params) { { user: base_user_params.merge(email: new_user_email) } }
 
-    before do
-      stub_feature_flags(arkose_labs_signup_challenge: false)
-    end
-
     subject { post :create, params: user_params }
 
     shared_examples 'blocked user by default' do

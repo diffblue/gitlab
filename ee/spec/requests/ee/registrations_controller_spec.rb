@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe RegistrationsController, type: :request, feature_category: :authentication_and_authorization do
   before do
+    allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_return(false)
     allow(::Arkose::Settings).to receive(:enabled_for_signup?).and_return(true)
   end
 

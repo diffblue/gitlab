@@ -48,6 +48,14 @@ class TrialRegistrationsController < RegistrationsController
   def resource
     @resource ||= Users::AuthorizedBuildService.new(current_user, sign_up_params).execute
   end
+
+  override :arkose_labs_enabled?
+  def arkose_labs_enabled?
+    # TrialRegistrationsController inherits from RegistrationsController but
+    # ArkoseLabs integration is only enabled for users that register through
+    # /users/sign_up for now.
+    false
+  end
 end
 
 TrialRegistrationsController.prepend_mod
