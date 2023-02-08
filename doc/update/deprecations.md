@@ -190,6 +190,20 @@ This change means the following metrics will become unavailable on `/metrics`:
 This may require updating your metrics collection targets to also scrape `/db_metrics`.
 
 </div>
+
+<div class="deprecation removal-170 breaking-change">
+
+### The GitLab legacy requirement IID is deprecated in favor of work item IID
+
+Planned removal: GitLab <span class="removal-milestone">17.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+We will be transitioning to a new IID as a result of moving requirements to a [work item type](https://docs.gitlab.com/ee/development/work_items.html#work-items-and-work-item-types). Users should begin using the new IID as support for the legacy IID and existing formatting will end in GitLab 17.0. The legacy requirement IID remains available until its removal in GitLab 17.0.
+
+</div>
 </div>
 
 <div class="announcement-milestone">
