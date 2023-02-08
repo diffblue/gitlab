@@ -6,12 +6,12 @@ module AuditEvents
       self.table_name = 'audit_events_streaming_headers'
 
       validates :key,
-                presence: true,
-                length: { maximum: 255 },
-                uniqueness: { scope: :external_audit_event_destination_id }
+        presence: true,
+        length: { maximum: 255 },
+        uniqueness: { scope: :external_audit_event_destination_id }
       validates :value, presence: true, length: { maximum: 255 }
 
-      belongs_to :external_audit_event_destination, foreign_key: 'external_audit_event_destination_id'
+      belongs_to :external_audit_event_destination
 
       def to_hash
         { key => value }

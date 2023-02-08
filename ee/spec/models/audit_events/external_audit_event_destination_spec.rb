@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AuditEvents::ExternalAuditEventDestination do
+RSpec.describe AuditEvents::ExternalAuditEventDestination, feature_category: :audit_events do
   subject(:destination) { build(:external_audit_event_destination) }
 
   let_it_be(:group) { create(:group) }
@@ -61,10 +61,10 @@ RSpec.describe AuditEvents::ExternalAuditEventDestination do
   describe '#headers_hash' do
     subject { destination.headers_hash }
 
-    context "destination has 2 headers" do
+    context "when destination has 2 headers" do
       before do
         create(:audit_events_streaming_header, external_audit_event_destination: destination, key: 'X-GitLab-Hello')
-        create(:audit_events_streaming_header, external_audit_event_destination: destination, key: 'X-GitLab-World' )
+        create(:audit_events_streaming_header, external_audit_event_destination: destination, key: 'X-GitLab-World')
       end
 
       it do
@@ -74,18 +74,18 @@ RSpec.describe AuditEvents::ExternalAuditEventDestination do
       end
     end
 
-    it 'must have a unique destination_url' do
+    it 'must have a unique destination_url', :aggregate_failures do
       create(:external_audit_event_destination, destination_url: 'https://example.com/1', group: group)
       dup = build(:external_audit_event_destination, destination_url: 'https://example.com/1', group: group)
-      dup.save # rubocop:disable Rails/SaveBang
 
+      expect(dup).to be_invalid
       expect(dup.errors.full_messages).to include('Destination url has already been taken')
     end
 
-    it 'must not have any parents' do
+    it 'must not have any parents', :aggregate_failures do
       destination = build(:external_audit_event_destination, group: create(:group, :nested))
-      destination.save # rubocop:disable Rails/SaveBang
 
+      expect(destination).to be_invalid
       expect(destination.errors.full_messages).to include('Group must not be a subgroup')
     end
   end
