@@ -1,4 +1,5 @@
 import Vue, { nextTick } from 'vue';
+import { GlDrawer } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import { merge, cloneDeep } from 'lodash';
 import dastProfilesMock from 'test_fixtures/graphql/on_demand_scans/graphql/dast_profiles.query.graphql.json';
@@ -52,10 +53,14 @@ describe('Saved tab', () => {
   const findFirstRow = () => wrapper.find('tbody > tr');
   const findCellAt = (index) => findFirstRow().findAll('td').at(index);
   const findRunScanButton = () => wrapper.findByTestId('dast-scan-run-button');
+  const findDeleteButton = (layout) => wrapper.findByTestId(`delete-scan-button-${layout}`);
+  const findEditButton = (layout) => wrapper.findByTestId(`edit-scan-button-${layout}`);
+  const findVerifyButton = (layout) => wrapper.findByTestId(`verify-scan-button-${layout}`);
   const findDeleteModal = () => wrapper.findComponent({ ref: 'delete-scan-modal' });
   const findPreScanVerificationConfigurator = () =>
     wrapper.findComponent(PreScanVerificationConfigurator);
   const findActions = () => wrapper.findByTestId('saved-scanners-actions');
+  const findPreScanVerificationDrawer = () => wrapper.findComponent(GlDrawer);
 
   // Helpers
   const createMockApolloProvider = () => {
@@ -123,7 +128,6 @@ describe('Saved tab', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     router = null;
     requestHandlers = null;
   });
@@ -177,19 +181,14 @@ describe('Saved tab', () => {
   });
 
   describe('edit button', () => {
-    beforeEach(() => {
-      createComponent({
-        stubs: {
-          GlTable: GlTableMock,
-        },
-      });
+    beforeEach(async () => {
+      createFullComponent();
+      await waitForPromises();
     });
 
     it.each(['desktop', 'mobile'])('renders the %s edit button', (layout) => {
-      const editButton = wrapper.findByTestId(`edit-scan-button-${layout}`);
-
-      expect(editButton.exists()).toBe(true);
-      expect(editButton.attributes('href')).toBe(firstProfile.editPath);
+      expect(findEditButton(layout).exists()).toBe(true);
+      expect(findEditButton(layout).attributes('href')).toBe(firstProfile.editPath);
     });
   });
 
@@ -271,24 +270,50 @@ describe('Saved tab', () => {
     });
   });
 
+  describe('verify button', () => {
+    describe.each(['desktop', 'mobile'])('%s layout', (layout) => {
+      let verifyButton;
+
+      beforeEach(async () => {
+        createFullComponent(
+          {},
+          {
+            glFeatures: {
+              dastPreScanVerification: true,
+            },
+          },
+        );
+        await waitForPromises();
+
+        verifyButton = findVerifyButton(layout);
+      });
+
+      afterEach(() => {
+        verifyButton = null;
+      });
+
+      it('renders the button', () => {
+        expect(verifyButton.exists()).toBe(true);
+      });
+
+      it('should open verification drawer', async () => {
+        expect(findPreScanVerificationDrawer().props('open')).toBe(false);
+        await verifyButton.trigger('click');
+
+        expect(findPreScanVerificationDrawer().props('open')).toBe(true);
+      });
+    });
+  });
+
   describe('delete button', () => {
     describe.each(['desktop', 'mobile'])('%s layout', (layout) => {
       let deleteButton;
 
-      beforeEach(() => {
-        createComponent({
-          stubs: {
-            GlTable: GlTableMock,
-            GlModal: {
-              template: '<div />',
-              methods: {
-                show: () => {},
-              },
-            },
-          },
-        });
+      beforeEach(async () => {
+        createFullComponent();
+        await waitForPromises();
 
-        deleteButton = wrapper.findByTestId(`delete-scan-button-${layout}`);
+        deleteButton = findDeleteButton(layout);
       });
 
       afterEach(() => {
@@ -300,14 +325,14 @@ describe('Saved tab', () => {
       });
 
       it('clicking on the button opens the delete modal', () => {
-        jest.spyOn(wrapper.vm.$refs['delete-scan-modal'], 'show');
-        deleteButton.vm.$emit('click');
+        const spy = jest.spyOn(wrapper.vm.$refs['delete-scan-modal'], 'show');
+        deleteButton.trigger('click');
 
-        expect(wrapper.vm.$refs['delete-scan-modal'].show).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalled();
       });
 
-      it('confirming the deletion in the modal triggers the delete mutation with the profile ID', async () => {
-        deleteButton.vm.$emit('click');
+      it('confirming the deletion in the modal triggers the delete mutation with the profile ID', () => {
+        deleteButton.trigger('click');
         findDeleteModal().vm.$emit('ok');
 
         expect(requestHandlers.dastProfileDeleteMutation).toHaveBeenCalledWith({

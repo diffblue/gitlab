@@ -32,7 +32,7 @@ describe('PreScanVerificationSidebar', () => {
   });
 
   it('should render drawer with proper z index', () => {
-    expect(findDrawer().props('zIndex')).toBe(10);
+    expect(findDrawer().props('zIndex')).toBe(1001);
   });
 
   it('should close drawer', () => {
