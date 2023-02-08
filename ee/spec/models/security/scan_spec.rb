@@ -405,13 +405,23 @@ RSpec.describe Security::Scan, feature_category: :vulnerability_management do
 
     subject { scan.remediations_proxy }
 
-    before do
-      allow_next_found_instance_of(Ci::JobArtifact) do |artifact|
-        allow(artifact).to receive(:file).and_return(mock_file)
+    context 'when the artifact exists' do
+      before do
+        allow_next_found_instance_of(Ci::JobArtifact) do |artifact|
+          allow(artifact).to receive(:file).and_return(mock_file)
+        end
       end
+
+      it { is_expected.to be_an_instance_of(Security::RemediationsProxy).and have_attributes(file: mock_file) }
     end
 
-    it { is_expected.to be_an_instance_of(Security::RemediationsProxy).and have_attributes(file: mock_file) }
+    context 'when the artifact is removed' do
+      before do
+        scan.build.job_artifacts.delete_all
+      end
+
+      it { is_expected.to be_an_instance_of(Security::RemediationsProxy).and have_attributes(file: nil) }
+    end
   end
 
   it_behaves_like 'having unique enum values'
