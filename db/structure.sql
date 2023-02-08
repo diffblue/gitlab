@@ -234,6 +234,15 @@ BEGIN
 END;
 $$;
 
+CREATE FUNCTION trigger_3207b8d0d6f3() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW."id_convert_to_bigint" := NEW."id";
+  RETURN NEW;
+END;
+$$;
+
 CREATE FUNCTION trigger_7f4fcd5aa322() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -253,15 +262,6 @@ END;
 $$;
 
 CREATE FUNCTION trigger_c7107f30d69d() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  NEW."id_convert_to_bigint" := NEW."id";
-  RETURN NEW;
-END;
-$$;
-
-CREATE FUNCTION trigger_3207b8d0d6f3() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -33517,11 +33517,11 @@ CREATE TRIGGER projects_loose_fk_trigger AFTER DELETE ON projects REFERENCING OL
 
 CREATE TRIGGER trigger_1a857e8db6cd BEFORE INSERT OR UPDATE ON vulnerability_occurrences FOR EACH ROW EXECUTE FUNCTION trigger_1a857e8db6cd();
 
+CREATE TRIGGER trigger_3207b8d0d6f3 BEFORE INSERT OR UPDATE ON ci_build_needs FOR EACH ROW EXECUTE FUNCTION trigger_3207b8d0d6f3();
+
 CREATE TRIGGER trigger_7f4fcd5aa322 BEFORE INSERT OR UPDATE ON sent_notifications FOR EACH ROW EXECUTE FUNCTION trigger_7f4fcd5aa322();
 
 CREATE TRIGGER trigger_c5a5f48f12b0 BEFORE INSERT OR UPDATE ON epic_user_mentions FOR EACH ROW EXECUTE FUNCTION trigger_c5a5f48f12b0();
-
-CREATE TRIGGER trigger_3207b8d0d6f3 BEFORE INSERT OR UPDATE ON ci_build_needs FOR EACH ROW EXECUTE FUNCTION trigger_3207b8d0d6f3();
 
 CREATE TRIGGER trigger_c7107f30d69d BEFORE INSERT OR UPDATE ON merge_request_metrics FOR EACH ROW EXECUTE FUNCTION trigger_c7107f30d69d();
 
