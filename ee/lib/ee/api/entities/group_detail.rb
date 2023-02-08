@@ -26,6 +26,7 @@ module EE
           expose :unique_project_download_limit, if: unique_project_download_limit_enabled
           expose :unique_project_download_limit_interval_in_seconds, if: unique_project_download_limit_enabled
           expose :unique_project_download_limit_allowlist, if: unique_project_download_limit_enabled
+          expose :unique_project_download_limit_alertlist, if: unique_project_download_limit_enabled
           expose :auto_ban_user_on_excessive_projects_download, if: unique_project_download_limit_enabled
 
           private
@@ -40,6 +41,10 @@ module EE
 
           def unique_project_download_limit_allowlist
             settings&.unique_project_download_limit_allowlist
+          end
+
+          def unique_project_download_limit_alertlist
+            settings&.unique_project_download_limit_alertlist
           end
 
           def auto_ban_user_on_excessive_projects_download

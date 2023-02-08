@@ -60,6 +60,7 @@ module EE
             optional :max_number_of_repository_downloads, type: Integer, desc: 'Maximum number of unique repositories a user can download in the specified time period before they are banned'
             optional :max_number_of_repository_downloads_within_time_period, type: Integer, desc: 'Reporting time period (in seconds)'
             optional :git_rate_limit_users_allowlist, type: Array[String], coerce_with: ::API::Validations::Types::CommaSeparatedToArray.coerce, desc: 'List of usernames excluded from Git anti-abuse rate limits'
+            optional :git_rate_limit_users_alertlist, type: Array[Integer], desc: 'List of user ids who will be emailed when Git abuse rate limit is exceeded'
             optional :auto_ban_user_on_excessive_projects_download, type: Grape::API::Boolean, desc: 'Ban users from the application when they exceed maximum number of unique projects download in the specified time period'
           end
         end

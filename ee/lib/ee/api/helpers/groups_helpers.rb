@@ -32,6 +32,9 @@ module EE
               type: Array[String],
               coerce_with: ::API::Validations::Types::CommaSeparatedToArray.coerce,
               desc: 'List of usernames excluded from the unique project download limit'
+            optional :unique_project_download_limit_alertlist,
+              type: Array[Integer],
+              desc: 'List of user ids who will be emailed when Git abuse rate limit is exceeded'
             optional :auto_ban_user_on_excessive_projects_download,
               type: Grape::API::Boolean,
               desc: 'Ban users from the group when they exceed maximum number of unique projects download in the specified time period'

@@ -298,7 +298,7 @@ RSpec.describe API::Settings, 'EE Settings', feature_category: :not_owned do
     it_behaves_like 'settings for licensed features'
   end
 
-  context 'git abuse rate limit settings' do
+  context 'git abuse rate limit settings', feature_category: :insider_threat do
     let(:user) { create(:user) }
 
     before do
@@ -310,6 +310,7 @@ RSpec.describe API::Settings, 'EE Settings', feature_category: :not_owned do
         max_number_of_repository_downloads: 5,
         max_number_of_repository_downloads_within_time_period: 60,
         git_rate_limit_users_allowlist: [user.username],
+        git_rate_limit_users_alertlist: [user.id],
         auto_ban_user_on_excessive_projects_download: true
       }
     end

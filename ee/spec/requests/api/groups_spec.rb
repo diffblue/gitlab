@@ -368,14 +368,16 @@ RSpec.describe API::Groups, feature_category: :subgroups do
       end
     end
 
-    describe 'unique_project_download* attributes' do
+    describe 'unique_project_download* attributes', feature_category: :insider_threat do
       context 'when authenticated as group owner' do
         let(:allowed_username) { create(:user).username }
+        let(:alerted_user_id) { create(:user).id }
         let(:params) do
           {
             unique_project_download_limit: 1,
             unique_project_download_limit_interval_in_seconds: 2,
             unique_project_download_limit_allowlist: [allowed_username],
+            unique_project_download_limit_alertlist: [alerted_user_id],
             auto_ban_user_on_excessive_projects_download: true
           }
         end
@@ -400,6 +402,7 @@ RSpec.describe API::Groups, feature_category: :subgroups do
             expect(settings.unique_project_download_limit).to eq 1
             expect(settings.unique_project_download_limit_interval_in_seconds).to eq 2
             expect(settings.unique_project_download_limit_allowlist).to contain_exactly(allowed_username)
+            expect(settings.unique_project_download_limit_alertlist).to contain_exactly(alerted_user_id)
             expect(settings.auto_ban_user_on_excessive_projects_download).to eq true
           end
         end
@@ -420,6 +423,7 @@ RSpec.describe API::Groups, feature_category: :subgroups do
             expect(settings.unique_project_download_limit).to eq 0
             expect(settings.unique_project_download_limit_interval_in_seconds).to eq 0
             expect(settings.unique_project_download_limit_allowlist).to be_empty
+            expect(settings.unique_project_download_limit_alertlist).to be_empty
             expect(settings.auto_ban_user_on_excessive_projects_download).to eq false
           end
         end

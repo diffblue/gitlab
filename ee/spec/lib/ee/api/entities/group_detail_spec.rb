@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe API::Entities::GroupDetail do
-  describe 'unique_project_download_limit attributes' do
+  describe 'unique_project_download_limit attributes', feature_category: :insider_threat do
     let_it_be(:group) { create(:group) }
     let_it_be(:user) { create(:user) }
 
@@ -18,6 +18,7 @@ RSpec.describe API::Entities::GroupDetail do
         unique_project_download_limit: 1,
         unique_project_download_limit_interval_in_seconds: 2,
         unique_project_download_limit_allowlist: [user.username],
+        unique_project_download_limit_alertlist: [user.id],
         auto_ban_user_on_excessive_projects_download: true
       )
     end
@@ -28,6 +29,7 @@ RSpec.describe API::Entities::GroupDetail do
       expect(subject[:unique_project_download_limit]).to eq 1
       expect(subject[:unique_project_download_limit_interval_in_seconds]).to eq 2
       expect(subject[:unique_project_download_limit_allowlist]).to contain_exactly(user.username)
+      expect(subject[:unique_project_download_limit_alertlist]).to contain_exactly(user.id)
       expect(subject[:auto_ban_user_on_excessive_projects_download]).to eq true
     end
 
@@ -37,6 +39,7 @@ RSpec.describe API::Entities::GroupDetail do
           :unique_project_download_limit,
           :unique_project_download_limit_interval,
           :unique_project_download_limit_allowlist,
+          :unique_project_download_limit_alertlist,
           :auto_ban_user_on_excessive_projects_download
         )
       end
