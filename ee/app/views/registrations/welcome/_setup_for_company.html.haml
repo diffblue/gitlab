@@ -9,7 +9,7 @@
     .form-group.col-sm-12
       = f.label :setup_for_company, setup_for_company_label_text, class: 'label-bold'
       .gl-display-flex.gl-flex-direction-column.gl-lg-flex-direction-row
-        .gl-flex-grow-1
-          = f.gitlab_ui_radio_component :setup_for_company, true, _('My company or team'), radio_options: { required: true, class: "js-setup-for-company", data: { qa_selector: 'setup_for_company_radio' } }
+        .gl-flex-grow-1{ data: { qa_selector: 'setup_for_company_radio' } }
+          = f.gitlab_ui_radio_component :setup_for_company, true, _('My company or team'), radio_options: { required: true, class: "js-setup-for-company" }
         .gl-flex-grow-1
           = f.gitlab_ui_radio_component :setup_for_company, false, _('Just me'), radio_options: { required: true, class: "js-setup-for-me" }
