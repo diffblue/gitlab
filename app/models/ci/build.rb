@@ -1288,6 +1288,19 @@ module Ci
 
     def track_ci_secrets_management_id_tokens_usage
       ::Gitlab::UsageDataCounters::HLLRedisCounter.track_event('i_ci_secrets_management_id_tokens_build_created', values: user_id)
+
+      Gitlab::Tracking.event(
+        self.class.to_s,
+        'create_id_tokens',
+        namespace: namespace,
+        user: user,
+        label: 'redis_hll_counters.ci_secrets_management.i_ci_secrets_management_id_tokens_build_created_monthly',
+        ultimate_namespace_id: namespace.root_ancestor.id,
+        context: [Gitlab::Tracking::ServicePingContext.new(
+          data_source: :redis_hll,
+          event: 'i_ci_secrets_management_id_tokens_build_created'
+        ).to_context]
+      )
     end
   end
 end
