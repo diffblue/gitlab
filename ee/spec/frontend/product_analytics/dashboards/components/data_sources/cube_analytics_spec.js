@@ -141,8 +141,8 @@ describe('Cube Analytics Data Source', () => {
                 member: expectedDimension,
                 operator: 'inDateRange',
                 values: [
-                  pikadayToString(mockFilters.dateRange.startDate),
-                  pikadayToString(mockFilters.dateRange.endDate),
+                  pikadayToString(mockFilters.startDate),
+                  pikadayToString(mockFilters.endDate),
                 ],
               },
             ],

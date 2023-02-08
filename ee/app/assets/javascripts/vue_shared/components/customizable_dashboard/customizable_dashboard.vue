@@ -5,8 +5,10 @@ import { GlButton } from '@gitlab/ui';
 import { loadCSSFile } from '~/lib/utils/css_utils';
 import { createAlert } from '~/flash';
 import { s__, sprintf } from '~/locale';
+import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
 import PanelsBase from './panels_base.vue';
 import { GRIDSTACK_MARGIN, GRIDSTACK_CSS_HANDLE } from './constants';
+import { filtersToQueryParams } from './utils';
 
 export default {
   name: 'CustomizableDashboard',
@@ -14,6 +16,7 @@ export default {
     DateRangeFilter: () => import('./filters/date_range_filter.vue'),
     GlButton,
     PanelsBase,
+    UrlSync,
   },
   props: {
     initialDashboard: {
@@ -40,6 +43,11 @@ export default {
       required: false,
       default: () => {},
     },
+    syncUrlFilters: {
+      type: Boolean,
+      required: false,
+      default: () => {},
+    },
   },
   data() {
     return {
@@ -49,7 +57,7 @@ export default {
       mounted: true,
       editing: false,
       showCode: false,
-      filters: { dateRange: {}, ...this.defaultFilters },
+      filters: this.defaultFilters,
     };
   },
   computed: {
@@ -61,6 +69,9 @@ export default {
     },
     showFilters() {
       return this.showDateRangeFilter;
+    },
+    queryParams() {
+      return filtersToQueryParams(this.filters);
     },
   },
   watch: {
@@ -172,13 +183,16 @@ export default {
         captureError: true,
       });
     },
-    setDateRangeFilter({ startDate, endDate }) {
+    setDateRangeFilter({ dateRangeOption, startDate, endDate }) {
       this.filters = {
         ...this.filters,
-        dateRange: { startDate, endDate },
+        dateRangeOption,
+        startDate,
+        endDate,
       };
     },
   },
+  HISTORY_REPLACE_UPDATE_METHOD,
 };
 </script>
 
@@ -225,11 +239,17 @@ export default {
       >
         <date-range-filter
           v-if="showDateRangeFilter"
-          :start-date="filters.dateRange.startDate"
-          :end-date="filters.dateRange.endDate"
+          :default-option="filters.dateRangeOption"
+          :start-date="filters.startDate"
+          :end-date="filters.endDate"
           @change="setDateRangeFilter"
         />
       </section>
+      <url-sync
+        v-if="syncUrlFilters"
+        :query="queryParams"
+        :history-update-method="$options.HISTORY_REPLACE_UPDATE_METHOD"
+      />
       <div class="grid-stack-container gl-display-flex">
         <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-py-6">
           <div v-if="!showCode" class="grid-stack">

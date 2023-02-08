@@ -317,8 +317,6 @@ export const mockMetaData = {
 };
 
 export const mockFilters = {
-  dateRange: {
-    startDate: new Date('2015-01-01'),
-    endDate: new Date('2016-01-01'),
-  },
+  startDate: new Date('2015-01-01'),
+  endDate: new Date('2016-01-01'),
 };

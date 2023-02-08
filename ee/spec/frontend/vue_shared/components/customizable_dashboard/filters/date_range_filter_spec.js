@@ -8,6 +8,7 @@ import {
   MAX_DATE_RANGE,
   DATE_RANGE_FILTER_I18N,
 } from 'ee/vue_shared/components/customizable_dashboard/filters/constants';
+import { dateRangeOptionToFilter } from 'ee/vue_shared/components/customizable_dashboard/utils';
 
 describe('DateRangeFilter', () => {
   let wrapper;
@@ -55,9 +56,21 @@ describe('DateRangeFilter', () => {
     it('emits the selected date range when a dropdown item with a date range is clicked', () => {
       findDropdownItems().at(dateRangeOptionIndex).vm.$emit('click');
 
-      const { startDate, endDate } = DATE_RANGE_OPTIONS[dateRangeOptionIndex];
+      expect(wrapper.emitted('change')).toStrictEqual([
+        [dateRangeOptionToFilter(DATE_RANGE_OPTIONS[dateRangeOptionIndex])],
+      ]);
+    });
+  });
 
-      expect(wrapper.emitted('change')).toStrictEqual([[{ startDate, endDate }]]);
+  describe('with a default option', () => {
+    const customOption = DATE_RANGE_OPTIONS[customRangeOptionIndex];
+
+    beforeEach(() => {
+      createWrapper({ defaultOption: customOption.key });
+    });
+
+    it('selects the provided default option', () => {
+      expect(findDropdown().props().text).toBe(customOption.text);
     });
   });
 

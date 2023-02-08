@@ -1,10 +1,7 @@
 <script>
 import { GlLoadingIcon } from '@gitlab/ui';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
-import {
-  DATE_RANGE_OPTIONS,
-  DEFAULT_SELECTED_OPTION_INDEX,
-} from 'ee/vue_shared/components/customizable_dashboard/filters/constants';
+import { buildDefaultDashboardFilters } from 'ee/vue_shared/components/customizable_dashboard/utils';
 
 // TODO: Replace the hardcoded values with API calls in https://gitlab.com/gitlab-org/gitlab/-/issues/382551
 const VISUALIZATION_JSONS = {
@@ -39,14 +36,9 @@ export default {
     CustomizableDashboard,
   },
   data() {
-    // Get the default date range
-    const { startDate, endDate } = DATE_RANGE_OPTIONS[DEFAULT_SELECTED_OPTION_INDEX];
-
     return {
       dashboard: null,
-      defaultFilters: {
-        dateRange: { startDate, endDate },
-      },
+      defaultFilters: buildDefaultDashboardFilters(window.location.search),
     };
   },
   async created() {
@@ -88,6 +80,7 @@ export default {
         :available-visualizations="availableVisualizations"
         :default-filters="defaultFilters"
         show-date-range-filter
+        sync-url-filters
       />
     </template>
     <gl-loading-icon v-else size="lg" class="gl-my-7" />

@@ -7,8 +7,9 @@ import csrf from '~/lib/utils/csrf';
 const CUBE_API_TOKEN = '1';
 const PRODUCT_ANALYTICS_CUBE_PROXY = '/api/v4/projects/:id/product_analytics/request';
 const DEFAULT_COUNT_KEY = 'TrackedEvents.count';
+
 // Filter measurement types must be lowercase
-const FILTER_DIMENSIONS = {
+const DATE_RANGE_FILTER_DIMENSIONS = {
   sessions: 'Sessions.startAt',
   trackedevents: 'TrackedEvents.utcTime',
 };
@@ -49,16 +50,19 @@ const convertToSingleValue = (resultSet, query) => {
   return row[measure ?? DEFAULT_COUNT_KEY] ?? Object.values(row)[0];
 };
 
-const filterByDateRange = (query, queryOverrides, dateRange) => {
+const buildDateRangeFilter = (query, queryOverrides, { startDate, endDate }) => {
+  if (!startDate && !endDate) return {};
+
   const measurement = query.measures[0].split('.')[0].toLowerCase();
+
   return {
     filters: [
       ...(query.filters ?? []),
       ...(queryOverrides.filters ?? []),
       {
-        member: FILTER_DIMENSIONS[measurement],
+        member: DATE_RANGE_FILTER_DIMENSIONS[measurement],
         operator: 'inDateRange',
-        values: [pikadayToString(dateRange.startDate), pikadayToString(dateRange.endDate)],
+        values: [pikadayToString(startDate), pikadayToString(endDate)],
       },
     ],
   };
@@ -67,7 +71,7 @@ const filterByDateRange = (query, queryOverrides, dateRange) => {
 const buildCubeQuery = (query, queryOverrides, filters) => ({
   ...query,
   ...queryOverrides,
-  ...(filters.dateRange && filterByDateRange(query, queryOverrides, filters.dateRange)),
+  ...buildDateRangeFilter(query, queryOverrides, filters),
 });
 
 const VISUALIZATION_PARSERS = {

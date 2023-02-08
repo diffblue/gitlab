@@ -1,5 +1,6 @@
 <script>
 import { GlDaterangePicker, GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { dateRangeOptionToFilter, getDateRangeOption } from '../utils';
 import {
   TODAY,
   MAX_DATE_RANGE,
@@ -16,6 +17,11 @@ export default {
     GlDropdownItem,
   },
   props: {
+    defaultOption: {
+      type: String,
+      required: false,
+      default: DATE_RANGE_OPTIONS[DEFAULT_SELECTED_OPTION_INDEX].key,
+    },
     startDate: {
       type: Date,
       required: false,
@@ -29,7 +35,7 @@ export default {
   },
   data() {
     return {
-      selectedOption: DATE_RANGE_OPTIONS[DEFAULT_SELECTED_OPTION_INDEX],
+      selectedOption: getDateRangeOption(this.defaultOption),
     };
   },
   computed: {
@@ -38,7 +44,14 @@ export default {
         return { startDate: this.startDate, endDate: this.endDate };
       },
       set({ startDate, endDate }) {
-        this.$emit('change', { startDate, endDate });
+        this.$emit(
+          'change',
+          dateRangeOptionToFilter({
+            ...this.selectedOption,
+            startDate,
+            endDate,
+          }),
+        );
       },
     },
   },
