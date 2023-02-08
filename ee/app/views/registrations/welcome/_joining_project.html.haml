@@ -7,7 +7,7 @@
     = label_tag :joining_project, _('What would you like to do?'), class: 'label-bold'
     .form-check.gl-mb-2
       = radio_button_tag :joining_project, false, false, required: true, class: 'form-check-input'
-      = label_tag :joining_project_false, class: 'form-check-label normal', data: { qa_selector: 'joining_project_false_radio'} do
+      = label_tag :joining_project_false, class: 'form-check-label normal', data: { qa_selector: 'create_a_new_project_radio'} do
         = _('Create a new project')
         .form-text.gl-text-gray-600
           = _('Store your files, plan your work, collaborate on code, and more.')
