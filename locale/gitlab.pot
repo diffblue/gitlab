@@ -23925,7 +23925,7 @@ msgstr ""
 msgid "JiraService|Automatically transitions Jira issues to the \"Done\" category. %{linkStart}Learn more%{linkEnd}"
 msgstr ""
 
-msgid "JiraService|Base URL of the Jira instance."
+msgid "JiraService|Base URL of the Jira instance"
 msgstr ""
 
 msgid "JiraService|Change GitLab version"
@@ -23979,7 +23979,7 @@ msgstr ""
 msgid "JiraService|IDs must be a list of numbers that can be split with , or ;"
 msgstr ""
 
-msgid "JiraService|If different from Web URL."
+msgid "JiraService|If different from the Web URL"
 msgstr ""
 
 msgid "JiraService|In order to complete the set up, you’ll need to complete a few steps in GitLab."
@@ -24012,6 +24012,9 @@ msgstr ""
 msgid "JiraService|Open Jira"
 msgstr ""
 
+msgid "JiraService|Password for the server version or an API token for the cloud version"
+msgstr ""
+
 msgid "JiraService|Password or API token"
 msgstr ""
 
@@ -24042,16 +24045,13 @@ msgstr ""
 msgid "JiraService|Use Jira as this project's issue tracker."
 msgstr ""
 
-msgid "JiraService|Use a password for server version and an API token for cloud version."
-msgstr ""
-
-msgid "JiraService|Use a username for server version and an email for cloud version."
-msgstr ""
-
 msgid "JiraService|Use custom transitions"
 msgstr ""
 
-msgid "JiraService|Username or Email"
+msgid "JiraService|Username for the server version or an email for the cloud version"
+msgstr ""
+
+msgid "JiraService|Username or email"
 msgstr ""
 
 msgid "JiraService|Using Jira for issue tracking?"
