@@ -26,14 +26,6 @@ Throughout this guide you will see references to CE and EE for abbreviation.
 To get an overview of GitLab community membership, including those that would review or merge
 your contributions, visit [the community roles page](community_roles.md).
 
-## Security vulnerability disclosure
-
-Report suspected security vulnerabilities by following the
-[disclosure process on the GitLab.com website](https://about.gitlab.com/security/disclosure/).
-
-WARNING:
-Do **not** create publicly viewable issues for suspected security vulnerabilities.
-
 ## Code of conduct
 
 We want to create a welcoming environment for everyone who is interested in contributing.
@@ -194,7 +186,6 @@ If you are not sure who to mention, the reviewer will do this for you early in t
 
 This [documentation](issue_workflow.md) outlines the current issue workflow:
 
-- [Issue tracker guidelines](issue_workflow.md#issue-tracker-guidelines)
 - [Issue triaging](issue_workflow.md#issue-triaging)
 - [Labels](issue_workflow.md#labels)
 - [Feature proposals](issue_workflow.md#feature-proposals)
