@@ -6,6 +6,7 @@ export const EXCLUDED_URLS_SEPARATOR = ',';
 export const REDACTED_PASSWORD = '••••••••';
 export const REDACTED_REQUEST_HEADERS = '••••••••';
 export const DAST_API_DOC_PATH_BASE = 'user/application_security/dast_api/index';
+export const DAST_PROXY_DOC_PATH_BASE = 'user/application_security/dast/proxy-based';
 
 export const TARGET_TYPES = {
   WEBSITE: { value: 'WEBSITE', text: s__('DastProfiles|Website') },

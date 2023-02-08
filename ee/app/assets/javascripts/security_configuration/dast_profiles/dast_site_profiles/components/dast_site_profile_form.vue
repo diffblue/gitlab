@@ -8,6 +8,8 @@ import {
   GlFormSelect,
   GlLink,
   GlSprintf,
+  GlIcon,
+  GlPopover,
 } from '@gitlab/ui';
 import { initFormField } from 'ee/security_configuration/utils';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -25,6 +27,7 @@ import {
   REDACTED_REQUEST_HEADERS,
   TARGET_TYPES,
   SCAN_METHODS,
+  DAST_PROXY_DOC_PATH_BASE,
 } from '../constants';
 import dastSiteProfileCreateMutation from '../graphql/dast_site_profile_create.mutation.graphql';
 import dastSiteProfileUpdateMutation from '../graphql/dast_site_profile_update.mutation.graphql';
@@ -37,6 +40,9 @@ export default {
   DAST_API_DOC_GRAPHQL_PATH: helpPagePath(DAST_API_DOC_PATH_BASE, {
     anchor: 'graphql-schema',
   }),
+  DAST_PROXY_MASKING_PATH: helpPagePath(DAST_PROXY_DOC_PATH_BASE, {
+    anchor: 'hide-sensitive-information',
+  }),
   dastSiteProfileCreateMutation,
   dastSiteProfileUpdateMutation,
   i18n: {
@@ -47,9 +53,11 @@ export default {
     },
     requestHeaders: {
       label: s__('DastProfiles|Additional request headers (optional)'),
-      description: s__('DastProfiles|Enter headers in a comma-separated list.'),
+      description: s__(
+        'DastProfiles|Enter a comma-separated list of request header names and values. DAST adds header to every request.',
+      ),
       tooltip: s__(
-        'DastProfiles|Request header names and values. Headers are added to every request made by DAST.',
+        'DastProfiles|Headers will appear in vulnerability reports. %{linkStart}Only some headers are automatically masked%{linkEnd}.',
       ),
       // eslint-disable-next-line @gitlab/require-i18n-strings
       placeholder: 'Cache-control: no-cache, User-Agent: DAST/1.0',
@@ -77,6 +85,8 @@ export default {
     GlFormSelect,
     GlLink,
     GlSprintf,
+    GlIcon,
+    GlPopover,
   },
   mixins: [dastProfileFormMixin()],
   data() {
@@ -383,7 +393,26 @@ export default {
         >
           <template #label>
             {{ $options.i18n.requestHeaders.label }}
-            <tooltip-icon :title="$options.i18n.requestHeaders.tooltip" />
+            <gl-icon
+              ref="requestHeadersInfo"
+              name="information-o"
+              class="gl-vertical-align-text-bottom gl-text-gray-400 gl-ml-2"
+            />
+            <gl-popover
+              :target="() => $refs.requestHeadersInfo.$el"
+              placement="top"
+              triggers="focus hover"
+              ><gl-sprintf :message="$options.i18n.requestHeaders.tooltip">
+                <template #link="{ content }">
+                  <gl-link
+                    class="gl-font-sm"
+                    :href="$options.DAST_PROXY_MASKING_PATH"
+                    target="_blank"
+                    >{{ content }}</gl-link
+                  >
+                </template>
+              </gl-sprintf>
+            </gl-popover>
             <gl-form-text class="gl-mt-3">{{
               $options.i18n.requestHeaders.description
             }}</gl-form-text>
