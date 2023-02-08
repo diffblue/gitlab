@@ -17,6 +17,10 @@ export default {
     state.perPage = Number(headers[HEADER_ITEMS_PER_PAGE]);
 
     state.isLoading = false;
+
+    if (state.total) {
+      state.approveAllMembersDisabled = false;
+    }
   },
 
   [types.RECEIVE_PENDING_MEMBERS_ERROR](state) {
@@ -37,6 +41,22 @@ export default {
     });
   },
 
+  [types.SET_APPROVE_ALL_MEMBERS_AS_LOADING](state) {
+    state.approveAllMembersLoading = true;
+  },
+
+  [types.SET_APPROVE_ALL_MEMBERS_AS_NOT_LOADING](state) {
+    state.approveAllMembersLoading = false;
+  },
+
+  [types.SET_APPROVE_ALL_MEMBERS_AS_DISABLED](state) {
+    state.approveAllMembersDisabled = true;
+  },
+
+  [types.SET_APPROVE_ALL_MEMBERS_AS_ENABLED](state) {
+    state.approveAllMembersDisabled = false;
+  },
+
   [types.SET_MEMBER_AS_APPROVED](state, id) {
     state.members = state.members.map((member) => {
       if (member.id === id) {
@@ -46,6 +66,10 @@ export default {
     });
   },
 
+  [types.SET_ALL_MEMBERS_AS_APPROVED](state) {
+    state.members = state.members.map((member) => ({ ...member, approved: true, loading: false }));
+  },
+
   [types.SET_MEMBER_ERROR](state, id) {
     state.members = state.members.map((member) => {
       if (member.id === id) {
@@ -53,6 +77,10 @@ export default {
       }
       return member;
     });
+  },
+
+  [types.SET_ALL_MEMBERS_ERROR](state) {
+    state.members = state.members.map((member) => ({ ...member, loading: false }));
   },
 
   [types.DISMISS_ALERT](state) {
