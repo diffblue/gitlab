@@ -6,6 +6,8 @@ RSpec.describe Vulnerabilities::IssueLink, feature_category: :vulnerability_mana
   describe 'associations and fields' do
     it { is_expected.to belong_to(:vulnerability) }
     it { is_expected.to belong_to(:issue) }
+    it { is_expected.to have_one(:author).through(:issue).class_name("User") }
+
     it { is_expected.to define_enum_for(:link_type).with_values(related: 1, created: 2) }
 
     it 'provides the "related" as default link_type' do

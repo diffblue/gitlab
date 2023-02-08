@@ -7,6 +7,8 @@ module Vulnerabilities
     belongs_to :vulnerability
     belongs_to :issue
 
+    has_one :author, through: :issue, class_name: 'User'
+
     enum link_type: { related: 1, created: 2 } # 'related' is the default value
 
     validates :vulnerability, :issue, presence: true

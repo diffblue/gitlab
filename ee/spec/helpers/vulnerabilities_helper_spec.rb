@@ -44,7 +44,7 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
                     :details)
     end
 
-    let(:desired_serializer_fields) { %i[metadata identifiers name issue_feedback merge_request_feedback project project_fingerprint scanner uuid details dismissal_feedback false_positive] }
+    let(:desired_serializer_fields) { %i[metadata identifiers name issue_feedback merge_request_feedback project project_fingerprint scanner uuid details dismissal_feedback false_positive state_transitions issue_links merge_request_links] }
 
     before do
       vulnerability_serializer_stub = instance_double("VulnerabilitySerializer")
@@ -400,7 +400,10 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
         supporting_messages: kind_of(Array),
         uuid: kind_of(String),
         details: kind_of(Hash),
-        dismissal_feedback: anything
+        dismissal_feedback: anything,
+        state_transitions: kind_of(Array),
+        issue_links: kind_of(Array),
+        merge_request_links: kind_of(Array)
       )
 
       expect(subject[:location]['blob_path']).to match(kind_of(String))
@@ -417,13 +420,41 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
       end
     end
 
-    context 'with existing dismissal feedback' do
-      let_it_be(:feedback) { create(:vulnerability_feedback, :comment, :dismissal, project: project, pipeline: pipeline, finding_uuid: finding.uuid) }
+    context 'when deprecate_vulnerabilities_feedback is disabled' do
+      before do
+        stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+      end
 
-      it 'returns dismissal feedback information', :aggregate_failures do
-        dismissal_feedback = subject[:dismissal_feedback]
-        expect(dismissal_feedback[:dismissal_reason]).to eq(feedback.dismissal_reason)
-        expect(dismissal_feedback[:comment_details][:comment]).to eq(feedback.comment)
+      context 'with existing dismissal feedback' do
+        let_it_be(:feedback) { create(:vulnerability_feedback, :comment, :dismissal, project: project, pipeline: pipeline, finding_uuid: finding.uuid) }
+
+        it 'returns dismissal feedback information', :aggregate_failures do
+          dismissal_feedback = subject[:dismissal_feedback]
+          expect(dismissal_feedback[:dismissal_reason]).to eq(feedback.dismissal_reason)
+          expect(dismissal_feedback[:comment_details][:comment]).to eq(feedback.comment)
+        end
+      end
+    end
+
+    context 'when deprecate_vulnerabilities_feedback is enabled' do
+      context 'with existing vulnerability_state_transition, issue link and merge request link' do
+        let_it_be(:feedback) { create(:vulnerability_feedback, :comment, :dismissal, project: project, pipeline: pipeline, finding_uuid: finding.uuid) }
+        let!(:vulnerability_state_transition) { create(:vulnerability_state_transitions, vulnerability: vulnerability, to_state: :dismissed, comment: "Dismissal Comment", dismissal_reason: "Dismissal Reasons") }
+        let!(:vulnerabilities_issue_link) { create(:vulnerabilities_issue_link, vulnerability: vulnerability) }
+        let!(:vulnerabilities_merge_request_link) { create(:vulnerabilities_merge_request_link, vulnerability: vulnerability) }
+
+        it 'returns finding link associations', :aggregate_failures do
+          expect(subject[:state_transitions].first[:comment]).to eq vulnerability_state_transition.comment
+          expect(subject[:issue_links].first[:issue_iid]).to eq vulnerabilities_issue_link.issue.iid
+          expect(subject[:merge_request_links].first[:merge_request_iid]).to eq vulnerabilities_merge_request_link.merge_request.iid
+        end
+
+        # Deprecated information is still returned when deprecate_vulnerabilities_feedback is enabled but should not be used.
+        it 'returns dismissal feedback information', :aggregate_failures do
+          dismissal_feedback = subject[:dismissal_feedback]
+          expect(dismissal_feedback[:dismissal_reason]).to eq(feedback.dismissal_reason)
+          expect(dismissal_feedback[:comment_details][:comment]).to eq(feedback.comment)
+        end
       end
     end
 

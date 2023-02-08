@@ -38,6 +38,10 @@ module Security
     has_one :build, through: :scan, disable_joins: true
     has_one :vulnerability, through: :vulnerability_read
 
+    has_many :state_transitions, through: :vulnerability
+    has_many :issue_links, through: :vulnerability
+    has_many :merge_request_links, through: :vulnerability
+
     has_many :feedbacks,
              class_name: 'Vulnerabilities::Feedback',
              inverse_of: :security_finding,
