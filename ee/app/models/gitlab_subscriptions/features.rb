@@ -176,6 +176,7 @@ module GitlabSubscriptions
       api_discovery
       api_fuzzing
       auto_rollback
+      no_code_automation
       cluster_image_scanning
       external_status_checks
       container_scanning
