@@ -19818,7 +19818,10 @@ CREATE TABLE postgres_async_indexes (
     name text NOT NULL,
     definition text NOT NULL,
     table_name text NOT NULL,
+    attempts integer DEFAULT 0 NOT NULL,
+    last_error text,
     CONSTRAINT check_083b21157b CHECK ((char_length(definition) <= 2048)),
+    CONSTRAINT check_45dc23c315 CHECK ((char_length(last_error) <= 10000)),
     CONSTRAINT check_b732c6cd1d CHECK ((char_length(name) <= 63)),
     CONSTRAINT check_e64ff4359e CHECK ((char_length(table_name) <= 63))
 );
