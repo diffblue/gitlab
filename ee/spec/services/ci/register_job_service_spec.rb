@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::RegisterJobService, '#execute' do
+RSpec.describe Ci::RegisterJobService, '#execute', feature_category: :continuous_integration do
   include ::Ci::MinutesHelpers
 
   let_it_be_with_refind(:shared_runner) { create(:ci_runner, :instance) }
@@ -14,7 +14,7 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
 
   shared_examples 'namespace minutes quota' do
     context 'shared runners minutes limit' do
-      subject { described_class.new(shared_runner).execute.build }
+      subject { described_class.new(shared_runner, nil).execute.build }
 
       shared_examples 'returns a build' do |runners_minutes_used|
         before do
@@ -179,7 +179,7 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
     context 'secrets' do
       let(:params) { { info: { features: { vault_secrets: true } } } }
 
-      subject(:service) { described_class.new(shared_runner) }
+      subject(:service) { described_class.new(shared_runner, nil) }
 
       before do
         stub_licensed_features(ci_secrets_management: true)
@@ -246,7 +246,7 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
     let(:allowed_plans) { [] }
     let(:plan_check_runner) { create(:ci_runner, :instance, allowed_plans: allowed_plans) }
 
-    subject { described_class.new(plan_check_runner).execute.build }
+    subject { described_class.new(plan_check_runner, nil).execute.build }
 
     context 'when namespace has no plan attached' do
       context 'runner does not define allowed plans' do
@@ -293,7 +293,7 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
       create(:ip_restriction, group: group, range: range)
     end
 
-    subject(:result) { described_class.new(shared_runner).execute.build }
+    subject(:result) { described_class.new(shared_runner, nil).execute.build }
 
     shared_examples 'drops the build' do
       it 'does not pick the build', :aggregate_failures do
