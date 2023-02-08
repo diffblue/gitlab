@@ -42,6 +42,12 @@ RSpec.shared_examples 'a restricted project approval rule API endpoint' do
       end
 
       it_behaves_like 'a user without access'
+
+      context 'when user is an admin' do
+        let(:current_user) { create(:admin) }
+
+        it_behaves_like 'a user with access'
+      end
     end
   end
 end

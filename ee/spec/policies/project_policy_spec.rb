@@ -1588,7 +1588,7 @@ RSpec.describe ProjectPolicy, feature_category: :authentication_and_authorizatio
     end
   end
 
-  shared_examples 'merge request approval settings' do
+  shared_examples 'merge request approval settings' do |admin_override_allowed = false|
     let(:project) { private_project }
 
     using RSpec::Parameterized::TableSyntax
@@ -1605,7 +1605,7 @@ RSpec.describe ProjectPolicy, feature_category: :authentication_and_authorizatio
         :admin      | false | false  | false
         :admin      | false | true   | true
         :admin      | true  | false  | false
-        :admin      | true  | true   | false
+        :admin      | true  | true   | admin_override_allowed
       end
 
       with_them do
@@ -1680,7 +1680,7 @@ RSpec.describe ProjectPolicy, feature_category: :authentication_and_authorizatio
   end
 
   describe ':modify_approvers_rules' do
-    it_behaves_like 'merge request approval settings' do
+    it_behaves_like 'merge request approval settings', true do
       let(:app_setting) { :disable_overriding_approvers_per_merge_request }
       let(:policy) { :modify_approvers_rules }
     end
