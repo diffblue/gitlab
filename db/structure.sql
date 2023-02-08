@@ -30889,7 +30889,7 @@ CREATE UNIQUE INDEX index_personal_access_tokens_on_token_digest ON personal_acc
 
 CREATE INDEX index_personal_access_tokens_on_user_id ON personal_access_tokens USING btree (user_id);
 
-CREATE INDEX index_pipeline_metadata_on_pipeline_id_name_lower_text_pattern ON ci_pipeline_metadata USING btree (pipeline_id, lower(name) text_pattern_ops);
+CREATE INDEX index_pipeline_metadata_on_pipeline_id_name_text_pattern ON ci_pipeline_metadata USING btree (pipeline_id, name text_pattern_ops);
 
 CREATE UNIQUE INDEX index_plan_limits_on_plan_id ON plan_limits USING btree (plan_id);
 
