@@ -3,8 +3,6 @@
 module Vulnerabilities
   module SecurityFinding
     class CreateIssueService < ::BaseProjectService
-      include VulnerabilitiesHelper
-
       attr_reader :error_message
 
       def execute
@@ -42,11 +40,10 @@ module Vulnerabilities
       end
 
       def create_issue(vulnerability)
-        vulnerability_data = vulnerability_data_with_category(vulnerability)
-
-        issue_response = Issues::CreateFromVulnerabilityDataService.new(@project,
-                                                                        @current_user,
-                                                                        vulnerability_data).execute
+        issue_response = Issues::CreateFromVulnerabilityService.new(
+          @project,
+          @current_user,
+          { vulnerability: vulnerability }).execute
 
         if issue_response[:status] == :error
           @error_message = issue_response[:message]
