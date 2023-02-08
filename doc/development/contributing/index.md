@@ -65,13 +65,6 @@ within the MR.
 GitLab values the time spent by contributors on reporting bugs. However, if a bug remains inactive for a very long period,
 it will qualify for auto-closure. Please refer to the [auto-close inactive bugs](https://about.gitlab.com/handbook/engineering/quality/triage-operations/#auto-close-inactive-bugs) section in our handbook to understand the complete workflow.
 
-## Helping others
-
-Help other GitLab users when you can.
-The methods people use to seek help can be found on the [getting help page](https://about.gitlab.com/get-help/).
-
-Sign up for the mailing list, answer GitLab questions on StackOverflow or respond in the IRC channel.
-
 ## How to contribute
 
 If you would like to contribute to GitLab:
@@ -85,26 +78,6 @@ If you would like to contribute to GitLab:
   [best practices](../testing_guide/best_practices.md)
   could speed them up.
 - Consult the [Contribution Flow](#contribution-flow) section to learn the process.
-
-### Communication channels
-
-If you have any questions or need help, visit [Getting Help](https://about.gitlab.com/get-help/) to learn how to
-communicate with the GitLab community. GitLab prefers [asynchronous communication](https://about.gitlab.com/handbook/communication/#internal-communication) over real-time communication.
-
-We do encourage you to connect and hang out with us. GitLab has a Gitter room dedicated for [contributors](https://gitter.im/gitlab/contributors), which is bridged with our
-internal Slack. We actively monitor this channel. There is also a community-run [Discord server](https://discord.com/invite/gitlab) where you can
-find other contributors in the `#contributors` channel.
-
-Thanks for your contribution!
-
-### GitLab Development Kit
-
-The GitLab Development Kit (GDK) helps contributors run a local GitLab instance with all the
-required dependencies. It can be used to test changes to GitLab and related projects before raising
-a Merge Request.
-
-For more information, see the [`gitlab-development-kit`](https://gitlab.com/gitlab-org/gitlab-development-kit)
-project.
 
 ### Contribution flow
 
@@ -221,3 +194,8 @@ For information on how to contribute documentation, see GitLab
 
 If you need a license for contributing to an EE-feature, see
 [relevant information](https://about.gitlab.com/handbook/marketing/community-relations/code-contributor-program/operations/#contributing-to-the-gitlab-enterprise-edition-ee).
+
+## Finding help
+
+- [Get help](https://about.gitlab.com/get-help/).
+- Join the community-run [Discord server](https://discord.com/invite/gitlab) and find other contributors in the `#contribute` channel.
