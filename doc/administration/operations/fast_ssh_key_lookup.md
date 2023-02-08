@@ -61,7 +61,7 @@ Fast lookup can be enabled with the following SSH servers:
 ### `gitlab-sshd`
 
 To set up `gitlab-sshd`, see [the `gitlab-sshd` documentation](gitlab-sshd.md).
-Once `gitlab-sshd` is enabled, GitLab Shell and `gitlab-sshd` will be configured
+After `gitlab-sshd` is enabled, GitLab Shell and `gitlab-sshd` are configured
 to use fast lookup automatically.
 
 ### OpenSSH
