@@ -1,6 +1,7 @@
 <script>
 import { GlSprintf, GlLink } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
+import ProfileConflictAlert from 'ee/on_demand_scans_form/components/profile_selector/profile_conflict_alert.vue';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { queryToObject } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
@@ -9,6 +10,8 @@ import DastProfilesDrawer from 'ee/security_configuration/dast_profiles/dast_pro
 import ScannerProfileSelector from 'ee/security_configuration/dast_profiles/dast_profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from 'ee/security_configuration/dast_profiles/dast_profile_selector/site_profile_selector.vue';
 import dastProfileConfiguratorMixin from 'ee/security_configuration/dast_profiles/dast_profiles_configurator_mixin';
+import { DAST_SITE_VALIDATION_STATUS } from 'ee/security_configuration/dast_site_validation/constants';
+import { SCAN_TYPE } from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/constants';
 import {
   DAST_CONFIGURATION_HELP_PATH,
   SCANNER_TYPE,
@@ -69,6 +72,7 @@ export default {
     ScannerProfileSelector,
     SiteProfileSelector,
     SectionLayout,
+    ProfileConflictAlert,
   },
   apollo: {
     scannerProfiles: createProfilesApolloOptions(
@@ -182,6 +186,21 @@ export default {
     },
     libraryLink() {
       return this.isScannerProfile ? this.scannerProfilesLibraryPath : this.siteProfilesLibraryPath;
+    },
+    areProfilesSelected() {
+      const { selectedScannerProfileId, selectedSiteProfileId } = this;
+      return selectedScannerProfileId && selectedSiteProfileId;
+    },
+    isActiveScannerProfile() {
+      return this.selectedScannerProfile?.scanType === SCAN_TYPE.ACTIVE;
+    },
+    isValidatedSiteProfile() {
+      return this.selectedSiteProfile?.validationStatus === DAST_SITE_VALIDATION_STATUS.PASSED;
+    },
+    hasProfilesConflict() {
+      return (
+        this.areProfilesSelected && this.isActiveScannerProfile && !this.isValidatedSiteProfile
+      );
     },
   },
   watch: {
@@ -336,6 +355,12 @@ export default {
               profileType: $options.SITE_TYPE,
             })
           "
+        />
+
+        <profile-conflict-alert
+          v-if="hasProfilesConflict"
+          class="gl-my-5"
+          data-testid="dast-profiles-conflict-alert"
         />
       </template>
     </section-layout>

@@ -4,6 +4,7 @@ import VueApollo from 'vue-apollo';
 import { createLocalVue, mount, shallowMount } from '@vue/test-utils';
 import siteProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql.basic.json';
 import scannerProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql.basic.json';
+import ProfileConflictAlert from 'ee/on_demand_scans_form/components/profile_selector/profile_conflict_alert.vue';
 import { s__ } from '~/locale';
 import DastProfilesConfigurator from 'ee/security_configuration/dast_profiles/dast_profiles_configurator/dast_profiles_configurator.vue';
 import ScannerProfileSelector from 'ee/security_configuration/dast_profiles/dast_profile_selector/scanner_profile_selector.vue';
@@ -26,6 +27,10 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import {
   siteProfiles,
   scannerProfiles,
+  nonValidatedSiteProfile,
+  validatedSiteProfile,
+  passiveScannerProfile,
+  activeScannerProfile,
 } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
 
 describe('DastProfilesConfigurator', () => {
@@ -68,6 +73,7 @@ describe('DastProfilesConfigurator', () => {
   const findDastProfileDrawer = () => wrapper.findComponent(DastProfilesDrawer);
   const findDastProfilesDrawerList = () => wrapper.findComponent(DastProfilesDrawerList);
   const findDastProfilesDrawerForm = () => wrapper.findComponent(DastProfilesDrawerForm);
+  const findProfilesConflictAlert = () => wrapper.findComponent(ProfileConflictAlert);
 
   const openDrawer = async () => {
     findOpenDrawerButton().vm.$emit('click');
@@ -289,4 +295,31 @@ describe('DastProfilesConfigurator', () => {
       expect(mutateMock).toHaveBeenCalledTimes(3);
     });
   });
+
+  describe.each`
+    description                                  | selectedScannerProfile   | selectedSiteProfile        | hasConflict
+    ${'a passive scan and a non-validated site'} | ${passiveScannerProfile} | ${nonValidatedSiteProfile} | ${false}
+    ${'a passive scan and a validated site'}     | ${passiveScannerProfile} | ${validatedSiteProfile}    | ${false}
+    ${'an active scan and a non-validated site'} | ${activeScannerProfile}  | ${nonValidatedSiteProfile} | ${true}
+    ${'an active scan and a validated site'}     | ${activeScannerProfile}  | ${validatedSiteProfile}    | ${false}
+  `(
+    'profiles conflict banner',
+    ({ description, selectedScannerProfile, selectedSiteProfile, hasConflict }) => {
+      const { profileName: savedScannerProfileName } = selectedScannerProfile;
+      const { profileName: savedSiteProfileName } = selectedSiteProfile;
+
+      beforeEach(async () => {
+        createComponent({ savedSiteProfileName, savedScannerProfileName }, true);
+        await waitForPromises();
+      });
+
+      const testDescription = hasConflict
+        ? `warns about conflicting profiles when user selects ${description}`
+        : `does not report any conflict when user selects ${description}`;
+
+      it(`${testDescription}`, async () => {
+        expect(findProfilesConflictAlert().exists()).toBe(hasConflict);
+      });
+    },
+  );
 });
