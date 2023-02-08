@@ -1,8 +1,8 @@
 <script>
 import {
   GlButton,
-  GlDropdown,
-  GlDropdownItem,
+  GlDisclosureDropdown,
+  GlDisclosureDropdownItem,
   GlIcon,
   GlModal,
   GlTooltipDirective,
@@ -24,8 +24,8 @@ export default {
   query: dastProfilesQuery,
   components: {
     GlButton,
-    GlDropdown,
-    GlDropdownItem,
+    GlDisclosureDropdown,
+    GlDisclosureDropdownItem,
     GlIcon,
     GlModal,
     BaseTab,
@@ -57,6 +57,7 @@ export default {
       'OnDemandScans|Could not delete saved scan. Please refresh the page, or try again later.',
     ),
     verifyConfigurationLabel: s__('OnDemandScans|Verify configuration'),
+    verifyConfigurationLabelSmallScreen: s__('OnDemandScans|Verify'),
   },
   data() {
     return {
@@ -147,6 +148,42 @@ export default {
     openSidebar() {
       this.$refs.verification.openSidebar();
     },
+    actionDisclosureItemsConfig(item) {
+      const actionItems = [
+        {
+          href: item.editPath,
+          text: this.$options.i18n.editButtonLabel,
+          extraAttrs: {
+            'aria-label': this.$options.i18n.editProfile,
+            'data-testid': 'edit-scan-button-desktop',
+          },
+        },
+        {
+          text: this.$options.i18n.deleteButtonLabel,
+          action: () => this.prepareProfileDeletion(item.id),
+          extraAttrs: {
+            'aria-label': this.$options.i18n.deleteProfile,
+            'data-testid': 'delete-scan-button-desktop',
+            class: 'gl-text-red-500!',
+            boundary: 'viewport',
+            variant: 'danger',
+          },
+        },
+      ];
+
+      if (this.glFeatures.dastPreScanVerification) {
+        actionItems.splice(1, 0, {
+          text: this.$options.i18n.verifyConfigurationLabel,
+          action: () => this.openSidebar(),
+          extraAttrs: {
+            'aria-label': this.$options.i18n.verifyConfigurationLabel,
+            'data-testid': 'verify-scan-button-desktop',
+          },
+        });
+      }
+
+      return actionItems;
+    },
   },
 };
 </script>
@@ -173,7 +210,11 @@ export default {
     </template>
 
     <template #cell(actions)="{ item }">
-      <div v-if="canEditOnDemandScans" data-testid="saved-scanners-actions" class="gl-text-right">
+      <div
+        v-if="canEditOnDemandScans"
+        data-testid="saved-scanners-actions"
+        class="gl-md-w-full gl-text-right"
+      >
         <gl-button
           size="small"
           data-testid="dast-scan-run-button"
@@ -185,44 +226,25 @@ export default {
         </gl-button>
 
         <!-- More actions for desktop -->
-        <gl-dropdown
-          v-gl-tooltip
-          :text="$options.i18n.moreActions"
-          :title="$options.i18n.moreActions"
+        <gl-disclosure-dropdown
+          v-gl-tooltip="{ delay: { show: 700, hide: 200 } }"
+          text-sr-only
+          no-caret
+          right
           category="tertiary"
           size="small"
           icon="ellipsis_v"
-          toggle-class="gl-border-0! gl-shadow-none! gl-pl-2! gl-pr-2!"
           class="gl-display-none gl-md-display-inline-flex!"
-          no-caret
-          right
-          text-sr-only
+          toggle-class="gl-border-0! gl-shadow-none!"
+          :toggle-text="$options.i18n.moreActions"
+          :title="$options.i18n.moreActions"
         >
-          <gl-dropdown-item
-            :href="item.editPath"
-            :aria-label="$options.i18n.editProfile"
-            data-testid="edit-scan-button-desktop"
-          >
-            {{ $options.i18n.editButtonLabel }}
-          </gl-dropdown-item>
-
-          <gl-dropdown-item
-            v-if="glFeatures.dastPreScanVerification"
-            :aria-label="$options.i18n.verifyConfigurationLabel"
-            @click="openSidebar"
-          >
-            {{ $options.i18n.verifyConfigurationLabel }}
-          </gl-dropdown-item>
-          <gl-dropdown-item
-            :aria-label="$options.i18n.deleteProfile"
-            boundary="viewport"
-            variant="danger"
-            data-testid="delete-scan-button-desktop"
-            @click="prepareProfileDeletion(item.id)"
-          >
-            {{ $options.i18n.deleteButtonLabel }}
-          </gl-dropdown-item>
-        </gl-dropdown>
+          <gl-disclosure-dropdown-item
+            v-for="disclosureItem in actionDisclosureItemsConfig(item)"
+            :key="disclosureItem.text"
+            :item="disclosureItem"
+          />
+        </gl-disclosure-dropdown>
 
         <!-- More actions for mobile -->
         <gl-button
@@ -235,6 +257,16 @@ export default {
         >
           {{ $options.i18n.editButtonLabel }}
         </gl-button>
+        <gl-button
+          v-if="glFeatures.dastPreScanVerification"
+          :aria-label="$options.i18n.verifyConfigurationLabel"
+          category="tertiary"
+          class="gl-md-display-none"
+          icon="review-checkmark"
+          data-testid="verify-scan-button-mobile"
+          size="small"
+          @click="openSidebar"
+        />
         <gl-button
           category="tertiary"
           icon="remove"

@@ -54,6 +54,7 @@ export default {
     :header-height="getDrawerHeaderHeight"
     :header-sticky="true"
     :open="open"
+    :z-index="1001"
     @close="$emit('close')"
   >
     <template #title>
