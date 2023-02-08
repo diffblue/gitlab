@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Secure', :runner, product_group: :composition_analysis do
+  RSpec.describe 'Secure', :runner, product_group: :composition_analysis, feature_flag: {
+    name: 'license_scanning_sbom_scanner'
+  } do
     describe 'License Compliance' do
       before(:all) do
         @project = Resource::Project.fabricate_via_api! do |project|
