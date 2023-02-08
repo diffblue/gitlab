@@ -1,4 +1,4 @@
-import { mockDataMembers } from 'ee_jest/pending_members/mock_data';
+import { mockDataMembers, mockDataNoMembers } from 'ee_jest/pending_members/mock_data';
 import * as types from 'ee/pending_members/store/mutation_types';
 import mutations from 'ee/pending_members/store/mutations';
 import createState from 'ee/pending_members/store/state';
@@ -37,10 +37,23 @@ describe('Pending members mutations', () => {
       expect(state.total).toBe(3);
       expect(state.page).toBe(1);
       expect(state.perPage).toBe(1);
+
+      expect(state.approveAllMembersDisabled).toBe(false);
     });
 
     it('sets isLoading to false', () => {
       expect(state.isLoading).toBe(false);
+    });
+
+    describe('when there is no members', () => {
+      beforeEach(() => {
+        state = createState();
+        mutations[types.RECEIVE_PENDING_MEMBERS_SUCCESS](state, mockDataNoMembers);
+      });
+
+      it('does not set approveAllMembersDisabled to false if there is no members', () => {
+        expect(state.approveAllMembersDisabled).toBe(true);
+      });
     });
   });
 
@@ -107,12 +120,60 @@ describe('Pending members mutations', () => {
       });
     });
 
+    describe(types.SET_APPROVE_ALL_MEMBERS_AS_LOADING, () => {
+      it('sets approve all members button loading state as true', () => {
+        mutations[types.SET_APPROVE_ALL_MEMBERS_AS_LOADING](state);
+        expect(state.approveAllMembersLoading).toBe(true);
+      });
+    });
+
+    describe(types.SET_APPROVE_ALL_MEMBERS_AS_NOT_LOADING, () => {
+      it('sets approve all members button loading state as false', () => {
+        mutations[types.SET_APPROVE_ALL_MEMBERS_AS_NOT_LOADING](state);
+        expect(state.approveAllMembersLoading).toBe(false);
+      });
+    });
+
+    describe(types.SET_APPROVE_ALL_MEMBERS_AS_DISABLED, () => {
+      it('sets approve all members button disabled state as true', () => {
+        mutations[types.SET_APPROVE_ALL_MEMBERS_AS_DISABLED](state);
+        expect(state.approveAllMembersDisabled).toBe(true);
+      });
+    });
+
+    describe(types.SET_APPROVE_ALL_MEMBERS_AS_ENABLED, () => {
+      it('sets approve all members button disabled state as false', () => {
+        mutations[types.SET_APPROVE_ALL_MEMBERS_AS_ENABLED](state);
+        expect(state.approveAllMembersDisabled).toBe(false);
+      });
+    });
+
     describe(types.SET_MEMBER_AS_APPROVED, () => {
       it('sets member loading state to false and approved state to true', () => {
         mutations[types.SET_MEMBER_AS_APPROVED](state, memberId);
         const member = state.members.find((m) => m.id === memberId);
         expect(member.loading).toBe(false);
         expect(member.approved).toBe(true);
+      });
+    });
+
+    describe(types.SET_ALL_MEMBERS_AS_APPROVED, () => {
+      it('sets all members loading state to false and approved state to true', () => {
+        mutations[types.SET_ALL_MEMBERS_AS_APPROVED](state);
+
+        expect(state.members).toEqual(
+          expect.arrayContaining([expect.objectContaining({ approved: true, loading: false })]),
+        );
+      });
+    });
+
+    describe(types.SET_ALL_MEMBERS_ERROR, () => {
+      it('sets all members loading state to false', () => {
+        mutations[types.SET_ALL_MEMBERS_ERROR](state, memberId);
+
+        expect(state.members).toEqual(
+          expect.arrayContaining([expect.objectContaining({ loading: false })]),
+        );
       });
     });
 

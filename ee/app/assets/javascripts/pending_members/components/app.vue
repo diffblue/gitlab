@@ -14,10 +14,13 @@ import {
 import { sprintf } from '~/locale';
 import { AVATAR_SIZE } from 'ee/usage_quotas/seats/constants';
 import {
+  PENDING_MEMBERS_TITLE,
   AWAITING_MEMBER_SIGNUP_TEXT,
   LABEL_APPROVE,
+  LABEL_APPROVE_ALL,
   LABEL_CONFIRM,
   LABEL_CONFIRM_APPROVE,
+  LABEL_CONFIRM_APPROVE_ALL,
 } from 'ee/pending_members/constants';
 
 export default {
@@ -49,6 +52,8 @@ export default {
       'pendingMembersPagePath',
       'pendingMembersCount',
       'search',
+      'approveAllMembersLoading',
+      'approveAllMembersDisabled',
     ]),
     ...mapGetters(['tableItems']),
     currentPage: {
@@ -64,7 +69,13 @@ export default {
     this.fetchPendingMembersList();
   },
   methods: {
-    ...mapActions(['fetchPendingMembersList', 'setCurrentPage', 'approveMember', 'dismissAlert']),
+    ...mapActions([
+      'fetchPendingMembersList',
+      'setCurrentPage',
+      'approveMember',
+      'approveAllMembers',
+      'dismissAlert',
+    ]),
     avatarLabel(member) {
       if (member.invited) {
         return member.email;
@@ -80,11 +91,36 @@ export default {
   avatarSize: AVATAR_SIZE,
   AWAITING_MEMBER_SIGNUP_TEXT,
   LABEL_APPROVE,
+  LABEL_APPROVE_ALL,
   LABEL_CONFIRM,
+  LABEL_CONFIRM_APPROVE_ALL,
+  PENDING_MEMBERS_TITLE,
 };
 </script>
 <template>
   <div>
+    <div class="gl-display-flex gl-justify-content-space-between">
+      <h1 class="page-title gl-font-size-h-display">{{ $options.PENDING_MEMBERS_TITLE }}</h1>
+      <div class="gl-align-self-center">
+        <gl-button
+          v-gl-modal-directive="`approve-all-confirmation-modal`"
+          :loading="approveAllMembersLoading"
+          :disabled="approveAllMembersDisabled"
+          data-testid="approve-all-button"
+        >
+          {{ $options.LABEL_APPROVE_ALL }}
+        </gl-button>
+        <gl-modal
+          :modal-id="`approve-all-confirmation-modal`"
+          :title="$options.LABEL_CONFIRM"
+          no-fade
+          @primary="approveAllMembers"
+        >
+          <p>{{ $options.LABEL_CONFIRM_APPROVE_ALL }}</p>
+        </gl-modal>
+      </div>
+    </div>
+
     <div v-if="isLoading" class="gl-text-center loading">
       <gl-loading-icon class="mt-5" size="lg" />
     </div>

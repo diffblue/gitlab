@@ -5,6 +5,7 @@ import Vuex from 'vuex';
 import { mockDataMembers, mockInvitedApprovedMember } from 'ee_jest/pending_members/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import PendingMembersApp from 'ee/pending_members/components/app.vue';
+import { PENDING_MEMBERS_TITLE, LABEL_APPROVE_ALL } from 'ee/pending_members/constants';
 
 Vue.use(Vuex);
 
@@ -58,6 +59,15 @@ describe('PendingMembersApp', () => {
 
   afterEach(() => {
     wrapper.destroy();
+  });
+
+  it('renders page title', () => {
+    expect(wrapper.find('h1').text()).toBe(PENDING_MEMBERS_TITLE);
+  });
+
+  it('renders approve all button', () => {
+    const approveAllButton = wrapper.findByTestId('approve-all-button');
+    expect(approveAllButton.text()).toBe(LABEL_APPROVE_ALL);
   });
 
   it('renders pending members', () => {

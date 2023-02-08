@@ -33,6 +33,15 @@ export const mockDataMembers = {
   },
 };
 
+export const mockDataNoMembers = {
+  data: [],
+  headers: {
+    [HEADER_TOTAL_ENTRIES]: '0',
+    [HEADER_PAGE_NUMBER]: '1',
+    [HEADER_ITEMS_PER_PAGE]: '1',
+  },
+};
+
 export const mockInvitedApprovedMember = {
   id: 179,
   email: 'second-invite@gitlab.com',
