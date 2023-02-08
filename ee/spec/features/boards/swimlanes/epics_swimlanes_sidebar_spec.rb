@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'epics swimlanes sidebar', :js, feature_category: :team_planning do
+RSpec.describe 'epics swimlanes sidebar', :js, feature_category: :team_planning,
+  quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/390752' do
   include BoardHelpers
 
   let_it_be(:user) { create(:user) }
