@@ -126,7 +126,14 @@ module EE
       validates :git_rate_limit_users_allowlist,
                 length: { maximum: 100, message: -> (object, data) { _("exceeds maximum length (100 usernames)") } },
                 allow_nil: false,
-                user_existence: true
+                user_existence: true,
+                if: :git_rate_limit_users_allowlist_changed?
+
+      validates :git_rate_limit_users_alertlist,
+                length: { maximum: 100, message: ->(object, data) { _("exceeds maximum length (100 user ids)") } },
+                allow_nil: false,
+                user_id_existence: true,
+                if: :git_rate_limit_users_alertlist_changed?
 
       validates :delayed_project_removal,
                 exclusion: { in: [true], message: -> (object, data) { _("can't be enabled when delayed group deletion is disabled") } },
@@ -241,6 +248,7 @@ module EE
           max_number_of_repository_downloads: 0,
           max_number_of_repository_downloads_within_time_period: 0,
           git_rate_limit_users_allowlist: [],
+          git_rate_limit_users_alertlist: [],
           auto_ban_user_on_excessive_projects_download: false,
           product_analytics_enabled: false,
           jitsu_host: nil,

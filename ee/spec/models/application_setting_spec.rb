@@ -268,7 +268,7 @@ RSpec.describe ApplicationSetting do
       end
     end
 
-    describe 'git abuse rate limit validations' do
+    describe 'git abuse rate limit validations', feature_category: :insider_threat do
       it { is_expected.to validate_numericality_of(:max_number_of_repository_downloads).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(10_000) }
       it { is_expected.to validate_numericality_of(:max_number_of_repository_downloads_within_time_period).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(10.days.to_i) }
 
@@ -287,6 +287,42 @@ RSpec.describe ApplicationSetting do
             expect(subject).not_to be_valid
             expect(subject.errors[:git_rate_limit_users_allowlist]).to include("exceeds maximum length (100 usernames)")
           end
+        end
+
+        context 'when attr is not changed' do
+          before do
+            subject.git_rate_limit_users_allowlist = [non_existing_record_id]
+            subject.save!(validate: false)
+          end
+
+          it { is_expected.to be_valid }
+        end
+      end
+
+      describe 'git_rate_limit_users_alertlist' do
+        let_it_be(:user) { create(:user) }
+
+        it { is_expected.to allow_value([]).for(:git_rate_limit_users_alertlist) }
+        it { is_expected.to allow_value([user.id]).for(:git_rate_limit_users_alertlist) }
+        it { is_expected.not_to allow_value(nil).for(:git_rate_limit_users_alertlist) }
+        it { is_expected.not_to allow_value([non_existing_record_id]).for(:git_rate_limit_users_alertlist) }
+
+        context 'when maximum length is exceeded' do
+          it 'is not valid' do
+            subject.git_rate_limit_users_alertlist = Array.new(101)
+
+            expect(subject).not_to be_valid
+            expect(subject.errors[:git_rate_limit_users_alertlist]).to include('exceeds maximum length (100 user ids)')
+          end
+        end
+
+        context 'when attr is not changed' do
+          before do
+            subject.git_rate_limit_users_alertlist = [non_existing_record_id]
+            subject.save!(validate: false)
+          end
+
+          it { is_expected.to be_valid }
         end
       end
     end

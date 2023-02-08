@@ -16,6 +16,11 @@ module EE
         allow_nil: false,
         user_existence: true,
         if: :unique_project_download_limit_allowlist_changed?
+      validates :unique_project_download_limit_alertlist,
+        length: { maximum: 100, message: ->(object, data) { _("exceeds maximum length (100 user ids)") } },
+        allow_nil: false,
+        user_id_existence: true,
+        if: :unique_project_download_limit_alertlist_changed?
 
       validate :user_cap_allowed, if: -> { enabling_user_cap? }
 
@@ -95,6 +100,7 @@ module EE
         unique_project_download_limit
         unique_project_download_limit_interval_in_seconds
         unique_project_download_limit_allowlist
+        unique_project_download_limit_alertlist
         auto_ban_user_on_excessive_projects_download
         default_compliance_framework_id
         only_allow_merge_if_pipeline_succeeds

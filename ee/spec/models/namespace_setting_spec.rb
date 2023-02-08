@@ -26,7 +26,7 @@ RSpec.describe NamespaceSetting do
         .is_less_than_or_equal_to(10.days.to_i)
     }
 
-    describe 'unique_project_download_limit_allowlist' do
+    describe 'unique_project_download_limit_allowlist', feature_category: :insider_threat do
       let_it_be(:user) { create(:user) }
 
       let(:attr) { :unique_project_download_limit_allowlist }
@@ -42,6 +42,26 @@ RSpec.describe NamespaceSetting do
 
           expect(subject).not_to be_valid
           expect(subject.errors[attr]).to include("exceeds maximum length (100 usernames)")
+        end
+      end
+    end
+
+    describe 'unique_project_download_limit_alertlist', feature_category: :insider_threat do
+      let_it_be(:user) { create(:user) }
+
+      let(:attr) { :unique_project_download_limit_alertlist }
+
+      it { is_expected.to allow_value([]).for(attr) }
+      it { is_expected.to allow_value([user.id]).for(attr) }
+      it { is_expected.not_to allow_value(nil).for(attr) }
+      it { is_expected.not_to allow_value([non_existing_record_id]).for(attr) }
+
+      context 'when maximum length is exceeded' do
+        it 'is not valid' do
+          subject.unique_project_download_limit_alertlist = Array.new(101)
+
+          expect(subject).not_to be_valid
+          expect(subject.errors[attr]).to include('exceeds maximum length (100 user ids)')
         end
       end
     end

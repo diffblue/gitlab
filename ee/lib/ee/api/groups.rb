@@ -56,6 +56,7 @@ module EE
                 unique_project_download_limit
                 unique_project_download_limit_interval_in_seconds
                 unique_project_download_limit_allowlist
+                unique_project_download_limit_alertlist
                 auto_ban_user_on_excessive_projects_download
               ].each do |param|
                 params.delete(param)

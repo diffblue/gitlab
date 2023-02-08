@@ -162,6 +162,7 @@ module EE
         max_number_of_repository_downloads
         max_number_of_repository_downloads_within_time_period
         git_rate_limit_users_allowlist
+        git_rate_limit_users_alertlist
         auto_ban_user_on_excessive_projects_download
       ]
     end
