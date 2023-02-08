@@ -4,6 +4,7 @@ import { sprintf, s__ } from '~/locale';
 import PolicyRuleBranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_branch_selection.vue';
 import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
 import { parseBoolean } from '~/lib/utils/common_utils';
+import { EXCEPT, LICENSE_STATES, MATCHING } from './lib/rules';
 
 export default {
   components: {
@@ -30,17 +31,14 @@ export default {
   matchTypeOptions: [
     {
       value: 'true',
-      text: s__('ScanResultPolicy|matching'),
+      text: MATCHING,
     },
     {
       value: 'false',
-      text: s__('ScanResultPolicy|except'),
+      text: EXCEPT,
     },
   ],
-  licenseStates: {
-    newly_detected: s__('ScanResultPolicy|Newly Detected'),
-    detected: s__('ScanResultPolicy|Pre-existing'),
-  },
+  licenseStates: LICENSE_STATES,
   data() {
     return { searchTerm: '' };
   },

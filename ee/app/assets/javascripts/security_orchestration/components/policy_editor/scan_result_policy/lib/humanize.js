@@ -1,6 +1,7 @@
 import { sprintf, s__ } from '~/locale';
 import { NO_RULE_MESSAGE, INVALID_PROTECTED_BRANCHES } from '../../constants';
 import { convertScannersToTitleCase } from '../../utils';
+import { LICENSE_FINDING, LICENSE_STATES } from './rules';
 
 /**
  * Simple logic for indefinite articles which does not include the exceptions
@@ -105,12 +106,52 @@ const humanizeScanners = (scanners) => {
   });
 };
 
+const humanizeLicenseDetection = (licenseStates) => {
+  const maxNumOfLicenseStates = Object.entries(LICENSE_STATES).length;
+
+  if (licenseStates.length === maxNumOfLicenseStates) {
+    return '';
+  }
+
+  return sprintf(s__('SecurityOrchestration| that is %{licenseState} and is'), {
+    licenseState: LICENSE_STATES[licenseStates[0]].toLowerCase(),
+  });
+};
+
+const humanizeLicenses = (originalLicenses) => {
+  const licenses = [...originalLicenses];
+
+  if (licenses.length === 1) {
+    return licenses[0];
+  }
+
+  const lastLicense = licenses.pop();
+  return sprintf(s__('SecurityOrchestration|%{licenses} and %{lastLicense}'), {
+    licenses: licenses.join(', '),
+    lastLicense,
+  });
+};
+
 /**
  * Create a human-readable version of the rule
  * @param {Object} rule {type: 'scan_finding', branches: ['master'], scanners: ['container_scanning'], vulnerabilities_allowed: 1, severity_levels: ['critical']}
  * @returns {String}
  */
 const humanizeRule = (rule) => {
+  if (rule.type === LICENSE_FINDING) {
+    return sprintf(
+      s__(
+        'SecurityOrchestration|License scanner finds any license %{matching} %{licenses}%{detection} in an open merge request targeting %{branches}.',
+      ),
+      {
+        matching: rule.match_on_inclusion ? 'matching' : 'except',
+        licenses: humanizeLicenses(rule.license_types),
+        detection: humanizeLicenseDetection(rule.license_states),
+        branches: humanizeBranches(rule.branches),
+      },
+    );
+  }
+
   return sprintf(
     s__(
       'SecurityOrchestration|%{scanners} %{severities} in an open merge request targeting %{branches}.',
