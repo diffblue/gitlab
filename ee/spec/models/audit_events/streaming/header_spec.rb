@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AuditEvents::Streaming::Header do
+RSpec.describe AuditEvents::Streaming::Header, feature_category: :audit_events do
   subject(:header) { build(:audit_events_streaming_header, key: 'foo', value: 'bar') }
 
   describe 'Validations' do

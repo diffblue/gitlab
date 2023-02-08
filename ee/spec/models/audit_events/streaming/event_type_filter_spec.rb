@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AuditEvents::Streaming::EventTypeFilter do
+RSpec.describe AuditEvents::Streaming::EventTypeFilter, feature_category: :audit_events do
   subject(:event_type_filter) { build(:audit_events_streaming_event_type_filter) }
 
   describe 'Associations' do
