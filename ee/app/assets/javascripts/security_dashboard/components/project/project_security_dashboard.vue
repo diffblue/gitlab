@@ -156,6 +156,7 @@ export default {
       class="gl-mt-6"
       :data="dataSeries"
       :option="chartOptions"
+      responsive
       :include-legend-avg-max="false"
     />
   </div>
