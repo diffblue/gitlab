@@ -27387,9 +27387,6 @@ msgstr ""
 msgid "Months"
 msgstr ""
 
-msgid "More"
-msgstr ""
-
 msgid "More Details"
 msgstr ""
 
@@ -27412,6 +27409,9 @@ msgid "More information is available|here"
 msgstr ""
 
 msgid "More information."
+msgstr ""
+
+msgid "More options"
 msgstr ""
 
 msgid "More than %{number_commits_distance} commits different with %{default_branch}"
