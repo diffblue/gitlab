@@ -228,6 +228,20 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :authe
             expect(response).to redirect_to(identity_verification_path)
           end
         end
+
+        context 'when user is not persisted' do
+          before do
+            create(:user, email: user_attrs[:email])
+          end
+
+          it 'does not try to send custom confirmation instructions' do
+            expect_next_instance_of(Users::EmailVerification::SendCustomConfirmationInstructionsService) do |service|
+              expect(service).not_to receive(:send_instructions)
+            end
+
+            create_user
+          end
+        end
       end
     end
 
