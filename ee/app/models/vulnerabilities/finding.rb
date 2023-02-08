@@ -26,6 +26,9 @@ module Vulnerabilities
     belongs_to :scanner, class_name: 'Vulnerabilities::Scanner'
     belongs_to :primary_identifier, class_name: 'Vulnerabilities::Identifier', inverse_of: :primary_findings, foreign_key: 'primary_identifier_id'
     belongs_to :vulnerability, class_name: 'Vulnerability', inverse_of: :findings, foreign_key: 'vulnerability_id'
+    has_many :state_transitions, through: :vulnerability
+    has_many :issue_links, through: :vulnerability
+    has_many :merge_request_links, through: :vulnerability
 
     has_many :finding_identifiers, class_name: 'Vulnerabilities::FindingIdentifier', inverse_of: :finding, foreign_key: 'occurrence_id'
     has_many :identifiers, through: :finding_identifiers, class_name: 'Vulnerabilities::Identifier'

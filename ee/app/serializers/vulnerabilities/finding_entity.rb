@@ -25,9 +25,18 @@ class Vulnerabilities::FindingEntity < Grape::Entity
   end
 
   expose :project, using: ::ProjectEntity
+
+  # :deprecate_vulnerability_feedback
+  # These fields should be considered deprecated and their use avoided. However they are provided
+  # in case of rollback
   expose :dismissal_feedback, using: Vulnerabilities::FeedbackEntity
   expose :issue_feedback, using: Vulnerabilities::FeedbackEntity
   expose :merge_request_feedback, using: Vulnerabilities::FeedbackEntity
+  # /:deprecate_vulnerability_feedback
+
+  expose :state_transitions, using: Vulnerabilities::StateTransitionEntity
+  expose :issue_links, using: Vulnerabilities::IssueLinkEntity
+  expose :merge_request_links, using: Vulnerabilities::MergeRequestLinkEntity
 
   expose :metadata, merge: true, if: ->(occurrence, _) { occurrence.raw_metadata } do
     expose :description
