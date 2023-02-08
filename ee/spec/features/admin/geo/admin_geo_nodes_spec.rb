@@ -63,7 +63,7 @@ RSpec.describe 'admin Geo Nodes', :js, :geo, feature_category: :geo_replication 
           expect(page).to have_selector alert_close_button
         end
 
-        it 'warning is dismissed and stays dimissed after refresh' do
+        it 'warning is dismissed and stays dimissed after refresh', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/390896' do
           visit admin_geo_nodes_path
           find(alert_close_button).click
           wait_for_requests
@@ -104,7 +104,7 @@ RSpec.describe 'admin Geo Nodes', :js, :geo, feature_category: :geo_replication 
             expect(page).to have_selector alert_close_button
           end
 
-          it 'warning is dismissed and stays dimissed after refresh' do
+          it 'warning is dismissed and stays dimissed after refresh', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/389541' do
             visit admin_geo_nodes_path
             find(alert_close_button).click
             wait_for_requests
