@@ -3,10 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe TrialRegistrationsController, :saas, feature_category: :purchase do
-  before do
-    stub_feature_flags(arkose_labs_signup_challenge: false)
-  end
-
   describe 'POST create' do
     let(:user_params) do
       build_stubbed(:user)
@@ -98,6 +94,18 @@ RSpec.describe TrialRegistrationsController, :saas, feature_category: :purchase 
             )
           end
         end
+      end
+    end
+
+    context 'when ArkoseLabs is enabled for signup' do
+      before do
+        allow(::Arkose::Settings).to receive(:enabled_for_signup?).and_return(true)
+      end
+
+      it 'skips ArkoseLabs session token verification and creates the user' do
+        post trial_registrations_path, params: { user: user_params }
+
+        expect(User.find_by(email: user_params[:email])).not_to be_nil
       end
     end
   end

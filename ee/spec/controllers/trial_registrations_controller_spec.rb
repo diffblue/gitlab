@@ -9,7 +9,6 @@ RSpec.describe TrialRegistrationsController, feature_category: :authentication_a
 
   before do
     allow(Gitlab).to receive(:com?).and_return(com)
-    stub_feature_flags(arkose_labs_signup_challenge: false)
   end
 
   shared_examples 'a dot-com only feature' do

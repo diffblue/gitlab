@@ -98,7 +98,7 @@ module EE
     end
 
     def verify_arkose_labs_token
-      return true unless ::Arkose::Settings.enabled_for_signup?
+      return true unless arkose_labs_enabled?
       return false unless params[:arkose_labs_token].present?
 
       arkose_labs_verify_response.present?
@@ -112,13 +112,17 @@ module EE
 
     def record_arkose_data(user)
       return unless user&.persisted?
-      return unless ::Arkose::Settings.enabled_for_signup?
+      return unless arkose_labs_enabled?
       return unless arkose_labs_verify_response
 
       Arkose::RecordUserDataService.new(
         response: arkose_labs_verify_response,
         user: user
       ).execute
+    end
+
+    def arkose_labs_enabled?
+      ::Arkose::Settings.enabled_for_signup?
     end
   end
 end
