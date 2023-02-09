@@ -14,12 +14,9 @@ RSpec.describe EE::Namespace::Storage::Notification, feature_category: :subscrip
   let(:alert_level) { :warning }
 
   describe '#show?' do
-    subject { described_class.new(group, user).show? }
+    let(:context) { group }
 
     before do
-      group.add_owner(owner)
-      group.add_maintainer(maintainer)
-      group.add_developer(developer)
       stub_ee_application_setting(should_check_namespace_plan: true)
       stub_ee_application_setting(enforce_namespace_storage_limit: true)
       stub_ee_application_setting(automatic_purchased_storage_allocation: true)
@@ -28,38 +25,49 @@ RSpec.describe EE::Namespace::Storage::Notification, feature_category: :subscrip
       end
     end
 
-    it 'returns true if all conditions are met' do
-      is_expected.to be true
-    end
+    subject { described_class.new(context, user).show? }
 
-    context 'when not SaaS' do
+    context 'for a group' do
       before do
-        stub_ee_application_setting(should_check_namespace_plan: false)
+        group.add_owner(owner)
+        group.add_maintainer(maintainer)
+        group.add_developer(developer)
       end
 
-      it { is_expected.to be false }
-    end
+      it 'returns true if all conditions are met' do
+        is_expected.to be true
+      end
 
-    context 'when the user is not provided' do
-      let(:user) { nil }
+      context 'when the user is not provided' do
+        let(:user) { nil }
 
-      it { is_expected.to be false }
-    end
+        it { is_expected.to be false }
+      end
 
-    context 'when the user does not have at least maintainer access to the group' do
-      let(:user) { developer }
+      context 'when alert level is none' do
+        let(:alert_level) { :none }
 
-      it { is_expected.to be false }
-    end
+        it { is_expected.to be false }
+      end
 
-    context 'when alert level is none' do
-      let(:alert_level) { :none }
+      context 'when not SaaS' do
+        before do
+          stub_ee_application_setting(should_check_namespace_plan: false)
+        end
 
-      it { is_expected.to be false }
+        it { is_expected.to be false }
+      end
+
+      context 'when the user does not have at least maintainer access to the group' do
+        let(:user) { developer }
+
+        it { is_expected.to be false }
+      end
     end
 
     context 'for repository limits' do
       before do
+        group.add_owner(owner)
         stub_feature_flags(namespace_storage_limit: false)
       end
 
@@ -69,6 +77,70 @@ RSpec.describe EE::Namespace::Storage::Notification, feature_category: :subscrip
 
       context 'when the user does not have at least owner access to the group' do
         let(:user) { maintainer }
+
+        before do
+          group.add_maintainer(maintainer)
+        end
+
+        it { is_expected.to be false }
+      end
+    end
+
+    context 'for personal namespace' do
+      let(:context) { user.namespace }
+
+      context 'when not SaaS' do
+        before do
+          stub_ee_application_setting(should_check_namespace_plan: false)
+        end
+
+        it { is_expected.to be false }
+      end
+
+      context 'when the user is the owner of the context' do
+        it { is_expected.to be true }
+      end
+
+      context 'when the user is not the owner of the context' do
+        let(:context) { maintainer.namespace }
+
+        it { is_expected.to be false }
+      end
+
+      context 'for repository limits' do
+        before do
+          stub_feature_flags(namespace_storage_limit: false)
+        end
+
+        it 'when the user is the owner of the context' do
+          is_expected.to be true
+        end
+
+        context 'when the user does not have at least owner access to the context' do
+          let(:context) { maintainer.namespace }
+
+          it { is_expected.to be false }
+        end
+      end
+    end
+
+    context 'for project' do
+      let_it_be(:project) { create(:project) }
+      let(:context) { project }
+
+      before do
+        project.add_maintainer(maintainer)
+        project.add_developer(developer)
+      end
+
+      context 'when the user have at least maintainer access to the project' do
+        let(:user) { maintainer }
+
+        it { is_expected.to be true }
+      end
+
+      context 'when the user does not have at least maintainer access to the project' do
+        let(:user) { developer }
 
         it { is_expected.to be false }
       end
