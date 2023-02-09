@@ -55,12 +55,12 @@ RSpec.describe 'Groups > Billing', :js, :saas, feature_category: :purchase do
         visit group_billings_path(group)
 
         expect(page).to have_content("#{group.name} is currently using the Free Plan")
-        within subscription_table do
-          expect(page).to have_content("start date #{formatted_date(subscription.start_date)}")
-          expect(page).not_to have_link("Manage")
-          expect(page).not_to have_link("Add seats")
-          expect(page).not_to have_link("Renew")
-        end
+        expect(page).to have_text('Not the group')
+        expect(page).to have_link('Check out all groups', href: dashboard_groups_path)
+
+        expect(page).not_to have_link("Manage")
+        expect(page).not_to have_link("Add seats")
+        expect(page).not_to have_link("Renew")
       end
     end
 

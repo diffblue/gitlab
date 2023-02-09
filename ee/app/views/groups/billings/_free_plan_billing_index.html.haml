@@ -2,11 +2,11 @@
 
   - all_groups_link = link_to s_("BillingPlans|Check out all groups"),
                       dashboard_groups_path,
-                      data: { track_action: 'click_button', track_label: 'view_all_groups', track_experiment: :promote_premium_billing_page }
+                      data: { track_action: 'click_button', track_label: 'view_all_groups' }
 
   = html_escape(s_("BillingPlans|Not the group you're looking for? %{all_groups_link}.")) % { all_groups_link: all_groups_link.html_safe }
 
-  .gl-flex-direction-row.gl-display-flex.gl-flex-wrap.gl-justify-content-center.gl-mb-7.gl-ml-7{ data: { track_action: 'render', track_experiment: :promote_premium_billing_page } }
+  .gl-flex-direction-row.gl-display-flex.gl-flex-wrap.gl-justify-content-center.gl-mb-7.gl-ml-7{ data: { track_action: 'render' } }
     = render Billing::PlanComponent.with_collection(plans_data, namespace: namespace)
   .gl-mb-2
     = s_("BillingPlans|All plans have unlimited (private) repositories.")

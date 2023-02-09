@@ -168,7 +168,6 @@ module BillingPlansHelper
                variant: 'link',
                class: "gl-vertical-align-text-bottom"
              }.to_json,
-             track_experiment: :promote_premium_billing_page,
              track_action: 'click_link',
              track_label: 'hand_raise_lead_form')
   end
@@ -178,7 +177,6 @@ module BillingPlansHelper
       track_action: 'click_button',
       track_label: 'upgrade',
       track_property: plan.code,
-      track_experiment: :promote_premium_billing_page,
       qa_selector: "upgrade_to_#{plan.code}"
     }
   end
@@ -187,7 +185,6 @@ module BillingPlansHelper
     {
       track_action: 'click_button',
       track_label: 'start_trial',
-      track_experiment: :promote_premium_billing_page,
       qa_selector: 'start_your_free_trial'
     }
   end

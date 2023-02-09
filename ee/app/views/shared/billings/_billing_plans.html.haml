@@ -1,6 +1,6 @@
 - if show_plans?(namespace)
   - plans = billing_available_plans(plans_data, current_plan)
-  .billing-plans.gl-mt-7{ data: { track_action: 'render', track_label: 'billing', track_experiment: :promote_premium_billing_page, testid: 'billing-plans' } }
+  .billing-plans.gl-mt-7{ data: { track_action: 'render', track_label: 'billing', testid: 'billing-plans' } }
     - plans.each do |plan|
       - next if plan.hide_card
       - is_default_plan = current_plan.nil? && plan.default?

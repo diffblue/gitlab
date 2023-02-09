@@ -17,10 +17,7 @@ module Billing
     delegate :number_to_plan_currency, :plan_purchase_url, to: :helpers
 
     def render?
-      # the data from customersDot may get out of sync, and this will make
-      # sure this area isn't broken and also ensures local customersDot during
-      # development only shows the plans we care about
-      plans_data.key?(plan.code)
+      !plan.deprecated? && !plan.hide_card?
     end
 
     def free?
@@ -36,7 +33,7 @@ module Billing
     end
 
     def header_classes
-      plan.header_classes
+      plan.fetch(:header_classes, 'gl-bg-gray-100 gl-min-h-8')
     end
 
     def header_text
@@ -64,7 +61,7 @@ module Billing
     end
 
     def cta_text
-      plan.cta_text
+      plan.fetch(:cta_text, s_("BillingPlans|Upgrade"))
     end
 
     def cta_url
@@ -76,26 +73,24 @@ module Billing
     end
 
     def cta_classes
-      "gl-mb-5 btn gl-button #{plan.cta_classes}"
+      "gl-mb-5 btn gl-button #{plan.fetch(:cta_classes, 'btn-confirm-secondary')}"
     end
 
     def cta_data
       {
         track_action: 'click_button',
         track_label: 'plan_cta',
-        track_property: plan.code,
-        track_experiment: :promote_premium_billing_page
-      }.merge(plan.cta_data)
+        track_property: plan.code
+      }.merge(plan.fetch(:cta_data, {}))
     end
 
     def features
-      plan.features
+      plan.features || [] # features can be nil
     end
 
     def plans_data
       {
         'free' => {
-          "card_border_classes": "",
           "header_text": s_("BillingPlans|Your current plan"),
           "header_classes": "gl-line-height-normal gl-font-weight-bold gl-py-4 gl-h-8 gl-bg-gray-100",
           "elevator_pitch": s_("BillingPlans|Free forever features for individual users"),
@@ -122,10 +117,7 @@ module Billing
               "title": s_("BillingPlans|5 users per namespace")
             }
           ],
-          "free": true,
           "cta_text": s_("BillingPlans|Learn more"),
-          "cta_classes": " btn-confirm-secondary",
-          "cta_data": {},
           "purchase_link": {
             "href": "https://about.gitlab.com/pricing/gitlab-com/feature-comparison/"
           }
@@ -162,7 +154,6 @@ module Billing
               "title": s_("BillingPlans|Support")
             }
           ],
-          "free": false,
           "cta_text": s_("BillingPlans|Upgrade to Premium"),
           "cta_classes": "btn-purple",
           "cta_data": {
@@ -170,9 +161,6 @@ module Billing
           }
         },
         'ultimate' => {
-          "card_border_classes": "",
-          "header_text": nil,
-          "header_classes": "gl-bg-gray-100 gl-min-h-8",
           "elevator_pitch": s_("BillingPlans|Organization wide security, compliance and planning"),
           "features": [
             {
@@ -200,9 +188,7 @@ module Billing
               "title": s_("BillingPlans|Support")
             }
           ],
-          "free": false,
           "cta_text": s_("BillingPlans|Upgrade to Ultimate"),
-          "cta_classes": "btn-confirm-secondary",
           "cta_data": {
             "qa_selector": "upgrade_to_ultimate"
           }

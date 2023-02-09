@@ -18,8 +18,7 @@ RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component do
 
   shared_examples 'plan tracking' do
     it 'has expected tracking attributes' do
-      css = "[data-track-action='click_button'][data-track-label='plan_cta'][data-track-property='#{plan_name}']" \
-            "[data-track-experiment='promote_premium_billing_page']"
+      css = "[data-track-action='click_button'][data-track-label='plan_cta'][data-track-property='#{plan_name}']"
 
       expect(rendered_component).to have_css(css)
     end

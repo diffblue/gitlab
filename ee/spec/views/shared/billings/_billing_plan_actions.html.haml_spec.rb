@@ -23,7 +23,6 @@ RSpec.describe 'shared/billings/_billing_plan_actions.html.haml', :saas do
     css += "[data-track-action='click_link']"
     css += "[data-track-label='hand_raise_lead_form']"
     css += "[data-track-property='#{plan.code}']"
-    css += "[data-track-experiment='promote_premium_billing_page']"
 
     render
 
