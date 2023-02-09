@@ -42,6 +42,7 @@ module EE
         delegate :service_specification, to: :runner_session, allow_nil: true
 
         scope :license_scan, -> { joins(:job_artifacts).merge(::Ci::JobArtifact.of_report_type(:license_scanning)) }
+        scope :sbom_generation, -> { joins(:job_artifacts).merge(::Ci::JobArtifact.of_report_type(:sbom)) }
         scope :max_build_id_by, -> (build_name, ref, project_path) do
           select("max(#{quoted_table_name}.id) as id")
             .by_name(build_name)

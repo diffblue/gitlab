@@ -124,5 +124,21 @@ FactoryBot.define do
         pipeline.builds << build(:ee_ci_build, :cyclonedx, pipeline: pipeline, project: pipeline.project)
       end
     end
+
+    trait :with_cyclonedx_pypi_only do
+      status { :success }
+
+      after(:build) do |pipeline, evaluator|
+        pipeline.builds << build(:ee_ci_build, :cyclonedx_pypi_only, pipeline: pipeline, project: pipeline.project)
+      end
+    end
+
+    trait :with_corrupted_cyclonedx_report do
+      status { :success }
+
+      after(:build) do |pipeline, evaluator|
+        pipeline.builds << build(:ee_ci_build, :corrupted_cyclonedx, pipeline: pipeline, project: pipeline.project)
+      end
+    end
   end
 end

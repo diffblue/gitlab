@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::CompareLicenseScanningReportsCollapsedService do
+RSpec.describe Ci::CompareLicenseScanningReportsCollapsedService, feature_category: :license_compliance do
   include ProjectForksHelper
 
   let_it_be(:project) { create(:project, :repository) }
@@ -29,15 +29,12 @@ RSpec.describe Ci::CompareLicenseScanningReportsCollapsedService do
       let_it_be(:head_pipeline) { create(:ee_ci_pipeline, :with_license_scanning_feature_branch, project: project) }
 
       context 'with denied licenses' do
-        before do
-          allow_next_instance_of(::SCA::LicensePolicy) do |license|
-            allow(license).to receive(:approval_status).and_return('denied')
-          end
-        end
-
         context 'when the license_scanning_sbom_scanner feature flag is false' do
           before do
             stub_feature_flags(license_scanning_sbom_scanner: false)
+            allow_next_instance_of(::SCA::LicensePolicy) do |license|
+              allow(license).to receive(:approval_status).and_return('denied')
+            end
           end
 
           it 'exposes report with numbers of licenses by type' do
@@ -58,30 +55,78 @@ RSpec.describe Ci::CompareLicenseScanningReportsCollapsedService do
             end
           end
         end
+
+        context 'when the license_scanning_sbom_scanner feature flag is true' do
+          let_it_be(:base_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
+          let_it_be(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_pypi_only, project: project) }
+
+          before do
+            create(:pm_package, name: "nokogiri", purl_type: "gem", version: "1.8.0",
+              spdx_identifiers: ["BSD-3-Clause"])
+            create(:pm_package, name: "django", purl_type: "pypi", version: "1.11.4", spdx_identifiers: ["MIT"])
+            allow_next_instance_of(::SCA::LicensePolicy) do |license|
+              allow(license).to receive(:approval_status).and_return('denied')
+            end
+          end
+
+          it 'exposes report with numbers of licenses by type' do
+            expect(subject[:status]).to eq(:parsed)
+            expect(subject[:data]['new_licenses']).to eq(1)
+            expect(subject[:data]['existing_licenses']).to eq(0)
+            expect(subject[:data]['removed_licenses']).to eq(1)
+            expect(subject[:data]['approval_required']).to eq(false)
+            expect(subject[:data]['has_denied_licenses']).to eq(true)
+          end
+
+          context 'when license_check enabled' do
+            let_it_be(:license_check) { create(:report_approver_rule, :license_scanning, merge_request: merge_request) }
+
+            it 'exposes approval as required' do
+              expect(subject[:data]['approval_required']).to eq(true)
+              expect(subject[:data]['has_denied_licenses']).to eq(true)
+            end
+          end
+        end
       end
 
       context 'without denied licenses' do
-        it 'exposes approval as not required' do
-          expect(subject[:data]['approval_required']).to eq(false)
-          expect(subject[:data]['has_denied_licenses']).to eq(false)
+        context 'when the license_scanning_sbom_scanner feature flag is false' do
+          before do
+            stub_feature_flags(license_scanning_sbom_scanner: false)
+          end
+
+          it 'exposes approval as not required' do
+            expect(subject[:data]['approval_required']).to eq(false)
+            expect(subject[:data]['has_denied_licenses']).to eq(false)
+          end
+        end
+
+        context 'when the license_scanning_sbom_scanner feature flag is true' do
+          let_it_be(:base_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
+          let_it_be(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_pypi_only, project: project) }
+
+          before do
+            create(:pm_package, name: "nokogiri", purl_type: "gem", version: "1.8.0",
+              spdx_identifiers: ["BSD-3-Clause"])
+            create(:pm_package, name: "django", purl_type: "pypi", version: "1.11.4", spdx_identifiers: ["MIT"])
+          end
+
+          it 'exposes approval as not required' do
+            expect(subject[:data]['approval_required']).to eq(false)
+            expect(subject[:data]['has_denied_licenses']).to eq(false)
+          end
         end
       end
     end
 
-    context 'when head pipeline has corrupted license scanning reports' do
-      let_it_be(:base_pipeline) { build(:ee_ci_pipeline, :with_corrupted_license_scanning_report, project: project) }
-      let_it_be(:head_pipeline) { build(:ee_ci_pipeline, :with_corrupted_license_scanning_report, project: project) }
+    context 'when head pipeline has corrupted reports' do
+      context "when license_scanning_sbom_scanner feature flag is false" do
+        let_it_be(:base_pipeline) { build(:ee_ci_pipeline, :with_corrupted_license_scanning_report, project: project) }
+        let_it_be(:head_pipeline) { build(:ee_ci_pipeline, :with_corrupted_license_scanning_report, project: project) }
 
-      it 'exposes empty report' do
-        expect(subject[:status]).to eq(:parsed)
-        expect(subject[:data]['new_licenses']).to eq(0)
-        expect(subject[:data]['existing_licenses']).to eq(0)
-        expect(subject[:data]['removed_licenses']).to eq(0)
-        expect(subject[:data]['approval_required']).to eq(false)
-      end
-
-      context "when the base pipeline is nil" do
-        subject { service.execute(nil, head_pipeline) }
+        before do
+          stub_feature_flags(license_scanning_sbom_scanner: false)
+        end
 
         it 'exposes empty report' do
           expect(subject[:status]).to eq(:parsed)
@@ -89,6 +134,43 @@ RSpec.describe Ci::CompareLicenseScanningReportsCollapsedService do
           expect(subject[:data]['existing_licenses']).to eq(0)
           expect(subject[:data]['removed_licenses']).to eq(0)
           expect(subject[:data]['approval_required']).to eq(false)
+        end
+
+        context "when the base pipeline is nil" do
+          subject { service.execute(nil, head_pipeline) }
+
+          it 'exposes empty report' do
+            expect(subject[:status]).to eq(:parsed)
+            expect(subject[:data]['new_licenses']).to eq(0)
+            expect(subject[:data]['existing_licenses']).to eq(0)
+            expect(subject[:data]['removed_licenses']).to eq(0)
+            expect(subject[:data]['approval_required']).to eq(false)
+          end
+        end
+      end
+
+      context "when license_scanning_sbom_scanner feature flag is true" do
+        let_it_be(:base_pipeline) { build(:ee_ci_pipeline, :with_corrupted_cyclonedx_report, project: project) }
+        let_it_be(:head_pipeline) { build(:ee_ci_pipeline, :with_corrupted_cyclonedx_report, project: project) }
+
+        it 'exposes empty report' do
+          expect(subject[:status]).to eq(:parsed)
+          expect(subject[:data]['new_licenses']).to eq(0)
+          expect(subject[:data]['existing_licenses']).to eq(0)
+          expect(subject[:data]['removed_licenses']).to eq(0)
+          expect(subject[:data]['approval_required']).to eq(false)
+        end
+
+        context "when the base pipeline is nil" do
+          subject { service.execute(nil, head_pipeline) }
+
+          it 'exposes empty report' do
+            expect(subject[:status]).to eq(:parsed)
+            expect(subject[:data]['new_licenses']).to eq(0)
+            expect(subject[:data]['existing_licenses']).to eq(0)
+            expect(subject[:data]['removed_licenses']).to eq(0)
+            expect(subject[:data]['approval_required']).to eq(false)
+          end
         end
       end
     end

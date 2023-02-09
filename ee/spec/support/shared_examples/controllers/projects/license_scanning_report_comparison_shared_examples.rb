@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples 'license scanning report comparison' do
+RSpec.shared_examples 'license scanning report comparison' do |with_report_trait|
   context 'when the report is being parsed' do
     let(:comparison_status) { { status: :parsing } }
 
@@ -66,7 +66,7 @@ RSpec.shared_examples 'license scanning report comparison' do
 
   context "when a user is authorized to read the licenses" do
     let_it_be(:project) { create(:project, :repository, :private) }
-    let_it_be(:merge_request) { create(:ee_merge_request, :with_license_scanning_reports, source_project: project, author: author) }
+    let_it_be(:merge_request) { create(:ee_merge_request, with_report_trait, source_project: project, author: author) }
 
     let(:viewer) { create(:user) }
 

@@ -4,7 +4,7 @@ require "spec_helper"
 
 RSpec.describe ::Gitlab::LicenseScanning::ArtifactScanner, feature_category: :license_compliance do
   let_it_be(:project) { create(:project, :repository) }
-  let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_license_scanning_report, project: project) }
+  let_it_be(:ref) { "license_scanning_example" }
 
   subject(:scanner) { described_class.new(project, pipeline) }
 
@@ -12,8 +12,32 @@ RSpec.describe ::Gitlab::LicenseScanning::ArtifactScanner, feature_category: :li
     stub_licensed_features(license_scanning: true)
   end
 
+  describe ".latest_pipeline" do
+    context "when the pipeline contains a license_scanning report" do
+      let_it_be(:pipeline_with_ref) do
+        create(:ee_ci_pipeline, :with_license_scanning_report, project: project, ref: ref)
+      end
+
+      subject(:latest_pipeline) { described_class.latest_pipeline(project, ref) }
+
+      it "returns the latest pipeline with a report for the specified ref" do
+        expect(latest_pipeline).to eq(pipeline_with_ref)
+      end
+    end
+
+    context 'when the pipeline does not contain a license_scanning report' do
+      let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_metrics_report, project: project) }
+
+      it "returns nil" do
+        expect(described_class.latest_pipeline(project, project.default_branch)).to be_nil
+      end
+    end
+  end
+
   describe "#report" do
     context "when pipeline contains a license scanning report" do
+      let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_license_scanning_report, project: project) }
+
       it "returns a non-empty report" do
         expect(scanner.report.empty?).to be_falsey
       end
@@ -25,12 +49,6 @@ RSpec.describe ::Gitlab::LicenseScanning::ArtifactScanner, feature_category: :li
       it "returns an empty report" do
         expect(scanner.report.empty?).to be_truthy
       end
-    end
-  end
-
-  describe ".latest_pipeline" do
-    it "returns a pipeline" do
-      expect(described_class.latest_pipeline(project, project.default_branch)).to eq(pipeline)
     end
   end
 
@@ -74,6 +92,34 @@ RSpec.describe ::Gitlab::LicenseScanning::ArtifactScanner, feature_category: :li
       let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_license_scanning_report, project: project) }
 
       it { is_expected.to be_truthy }
+    end
+  end
+
+  describe "#latest_build_for_default_branch" do
+    subject(:ci_build) { described_class.new(project, pipeline).latest_build_for_default_branch }
+
+    context "when project has license scanning jobs" do
+      let_it_be(:pipeline) do
+        create(:ee_ci_pipeline, :with_license_scanning_report, project: project, ref: ref)
+      end
+
+      let_it_be(:default_branch_pipeline) do
+        create(:ee_ci_pipeline, :with_license_scanning_report, project: project, ref: project.default_branch)
+      end
+
+      it "returns build for default branch" do
+        expect(ci_build.pipeline).to eql(default_branch_pipeline)
+      end
+    end
+
+    context "when project has no license scanning jobs" do
+      let_it_be(:pipeline) do
+        create(:ee_ci_pipeline, :with_metrics_report, project: project, ref: project.default_branch)
+      end
+
+      it "returns a nil result" do
+        expect(ci_build).to be_nil
+      end
     end
   end
 end

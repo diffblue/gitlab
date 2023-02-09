@@ -8,8 +8,7 @@ module Gitlab
       klass.new(project, pipeline)
     end
 
-    def self.scanner_for_pipeline(pipeline)
-      project = pipeline.project unless pipeline.blank?
+    def self.scanner_for_pipeline(project, pipeline)
       klass = scanner_class(project)
       klass.new(project, pipeline)
     end

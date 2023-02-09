@@ -173,9 +173,10 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
       stub_licensed_features(license_scanning: true)
     end
 
-    context 'with a License Compliance artifact' do
+    context 'with License Compliance and CycloneDX artifacts' do
       before do
         create(:ee_ci_build, :license_scanning, pipeline: pipeline)
+        create(:ee_ci_build, :cyclonedx, pipeline: pipeline)
 
         visit licenses_project_pipeline_path(project, pipeline)
       end
@@ -190,14 +191,37 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
           expect(page).to have_selector('[data-testid="license-tab"]')
           expect(find('[data-testid="license-tab"]')).to have_content('4')
         end
+
+        it 'shows security report section', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/375026' do
+          expect(page).to have_content('Loading License Compliance report')
+        end
       end
 
-      it 'shows security report section', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/375026' do
-        expect(page).to have_content('Loading License Compliance report')
+      context 'when the license_scanning_sbom_scanner feature flag is true' do
+        before do
+          create(:pm_package, name: "activesupport", purl_type: "gem", version: "5.1.4", spdx_identifiers: ["New BSD"])
+          create(:pm_package, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2",
+            spdx_identifiers: ["MIT", "New BSD"])
+          create(:pm_package, name: "org.apache.logging.log4j/log4j-api", purl_type: "maven", version: "2.6.1",
+            spdx_identifiers: ["Apache 2.0"])
+          create(:pm_package, name: "yargs", purl_type: "npm", version: "11.1.0", spdx_identifiers: ["unknown"])
+
+          visit licenses_project_pipeline_path(project, pipeline)
+        end
+
+        it 'shows license tab pane as active' do
+          expect(page).to have_content('Licenses')
+          expect(page).to have_selector('[data-testid="license-tab"]')
+          expect(find('[data-testid="license-tab"]')).to have_content('4')
+        end
+
+        it 'shows security report section', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/375026' do
+          expect(page).to have_content('Loading License Compliance report')
+        end
       end
     end
 
-    context 'without License Compliance artifact' do
+    context 'without License Compliance or CycloneDX artifacts' do
       before do
         visit licenses_project_pipeline_path(project, pipeline)
       end
