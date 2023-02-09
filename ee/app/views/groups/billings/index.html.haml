@@ -17,13 +17,12 @@
 
   - current_plan = subscription_plan_info(@plans_data, @group.actual_plan_name)
 
-  - experiment(:promote_premium_billing_page, namespace: @group, user: current_user) do |e|
-    - e.control do
-      - if current_plan
-        = render 'top_level_billing_plan_header', namespace: @group, current_plan: current_plan
+  - if @group.paid?
+    - if current_plan
+      = render 'top_level_billing_plan_header', namespace: @group, current_plan: current_plan
 
-      = render 'shared/billings/billing_plans', plans_data: @plans_data, namespace: @group, current_plan: current_plan, read_only: read_only
-      - data_attributes = subscription_plan_data_attributes(@group, current_plan, read_only: read_only).merge(extend_reactivate_trial_button_data(@group))
-      #js-billing-plans{ data: data_attributes }
-    - e.candidate do
-      = render 'free_plan_billing_index', plans_data: @plans_data, namespace: @group, current_plan: current_plan
+    = render 'shared/billings/billing_plans', plans_data: @plans_data, namespace: @group, current_plan: current_plan, read_only: read_only
+    - data_attributes = subscription_plan_data_attributes(@group, current_plan, read_only: read_only).merge(extend_reactivate_trial_button_data(@group))
+    #js-billing-plans{ data: data_attributes }
+  - else
+    = render 'free_plan_billing_index', plans_data: @plans_data, namespace: @group, current_plan: current_plan

@@ -6525,6 +6525,9 @@ msgstr ""
 msgid "BillingPlans|Ultimate"
 msgstr ""
 
+msgid "BillingPlans|Upgrade"
+msgstr ""
+
 msgid "BillingPlans|Upgrade to Premium"
 msgstr ""
 

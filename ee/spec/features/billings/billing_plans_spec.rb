@@ -428,22 +428,14 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
       context 'on free' do
         let(:plan) { free_plan }
 
-        it_behaves_like 'used seats rendering for non paid subscriptions'
+        include_context 'hand raise lead form setup'
 
-        context 'with promote_premium_billing_page experiment candidate experience' do
-          include_context 'hand raise lead form setup'
+        it 'submits hand raise lead form' do
+          visit page_path
 
-          before do
-            stub_experiments(promote_premium_billing_page: :candidate)
-          end
+          click_button 'Talk to an expert today'
 
-          it 'submits hand raise lead form' do
-            visit page_path
-
-            click_button 'Talk to an expert today'
-
-            fill_hand_raise_lead_form_and_submit
-          end
+          fill_hand_raise_lead_form_and_submit
         end
       end
 

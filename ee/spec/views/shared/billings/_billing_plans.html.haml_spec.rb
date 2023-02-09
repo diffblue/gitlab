@@ -17,7 +17,6 @@ RSpec.describe 'shared/billings/_billing_plans.html.haml', :saas do
     css = "[data-testid='billing-plans']"
     css += "[data-track-action='render']"
     css += "[data-track-label='billing']"
-    css += "[data-track-experiment='promote_premium_billing_page']"
 
     render
 

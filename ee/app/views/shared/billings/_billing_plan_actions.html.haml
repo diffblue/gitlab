@@ -2,8 +2,7 @@
   .js-hand-raise-lead-button{ data: { **hand_raise_props(namespace, glm_content: 'billing-group'),
                                       track_action: 'click_link',
                                       track_label: 'hand_raise_lead_form',
-                                      track_property: plan.code,
-                                      track_experiment: :promote_premium_billing_page } }
+                                      track_property: plan.code } }
 - if show_upgrade_button
   = link_to upgrade_button_text(plan_offer_type),
     plan_purchase_or_upgrade_url(namespace, plan),
