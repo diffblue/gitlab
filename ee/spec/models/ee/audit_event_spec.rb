@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AuditEvent, type: :model do
+RSpec.describe AuditEvent, type: :model, feature_category: :audit_events do
   describe 'relationships' do
     it { is_expected.to belong_to(:user).with_foreign_key('author_id') }
   end
@@ -361,6 +361,10 @@ RSpec.describe AuditEvent, type: :model do
 
   describe '#formatted_details' do
     subject(:event) { create(:group_audit_event, details: { change: 'membership_lock', from: false, to: true, ip_address: '127.0.0.1' }) }
+
+    it 'includes the author\'s email' do
+      expect(event.formatted_details[:author_email]).to eq(event.author.email)
+    end
 
     it 'converts value of `to` and `from` in `details` to string' do
       expect(event.formatted_details[:to]).to eq('true')
