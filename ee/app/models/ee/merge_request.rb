@@ -192,7 +192,7 @@ module EE
       return false unless actual_head_pipeline
 
       return false unless ::Gitlab::LicenseScanning
-        .scanner_for_pipeline(actual_head_pipeline)
+        .scanner_for_pipeline(project, actual_head_pipeline)
         .results_available?
 
       return false if has_approved_license_check?
@@ -257,7 +257,7 @@ module EE
     end
 
     def compare_license_scanning_reports(current_user)
-      unless ::Gitlab::LicenseScanning.scanner_for_pipeline(actual_head_pipeline).results_available?
+      unless ::Gitlab::LicenseScanning.scanner_for_pipeline(project, actual_head_pipeline).results_available?
         return missing_report_error("license scanning")
       end
 
@@ -265,7 +265,7 @@ module EE
     end
 
     def compare_license_scanning_reports_collapsed(current_user)
-      unless ::Gitlab::LicenseScanning.scanner_for_pipeline(actual_head_pipeline).results_available?
+      unless ::Gitlab::LicenseScanning.scanner_for_pipeline(project, actual_head_pipeline).results_available?
         return missing_report_error("license scanning")
       end
 

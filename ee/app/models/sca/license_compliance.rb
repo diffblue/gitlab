@@ -12,7 +12,7 @@ module SCA
     def initialize(project, pipeline)
       @project = project
       @pipeline = pipeline
-      @scanner = ::Gitlab::LicenseScanning.scanner_for_pipeline(pipeline)
+      @scanner = ::Gitlab::LicenseScanning.scanner_for_pipeline(project, pipeline)
     end
 
     def policies
@@ -35,9 +35,7 @@ module SCA
     def latest_build_for_default_branch
       return if pipeline.blank?
 
-      strong_memoize(:latest_build_for_default_branch) do
-        pipeline.builds.latest.license_scan.last
-      end
+      scanner.latest_build_for_default_branch
     end
 
     def report_for(policy)

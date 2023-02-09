@@ -132,7 +132,7 @@ module EE
           end
 
           if project.feature_available?(:dependency_scanning) && project.feature_available?(:license_scanning)
-            license_scanner = ::Gitlab::LicenseScanning.scanner_for_pipeline(self)
+            license_scanner = ::Gitlab::LicenseScanning.scanner_for_pipeline(project, self)
 
             if license_scanner.has_data?
               dependency_list_parser = ::Gitlab::Ci::Parsers::Security::DependencyList.new(project, sha, self)

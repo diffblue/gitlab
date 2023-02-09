@@ -22,7 +22,6 @@ RSpec.describe API::Dependencies, feature_category: :dependency_management do
       let_it_be(:finding) { create(:vulnerabilities_finding, :detected, :with_dependency_scanning_metadata) }
       let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_dependency_list_report, project: project) }
       let_it_be(:finding_pipeline) { create(:vulnerabilities_finding_pipeline, finding: finding, pipeline: pipeline) }
-      let_it_be(:license_build) { create(:ee_ci_build, :success, :license_scanning, pipeline: pipeline) }
 
       before do
         project.add_developer(user)
@@ -50,6 +49,7 @@ RSpec.describe API::Dependencies, feature_category: :dependency_management do
       context 'when the license_scanning_sbom_scanner feature flag is false' do
         before_all do
           stub_feature_flags(license_scanning_sbom_scanner: false)
+          create(:ee_ci_build, :success, :license_scanning, pipeline: pipeline)
         end
 
         it 'include license information to response' do
@@ -57,6 +57,20 @@ RSpec.describe API::Dependencies, feature_category: :dependency_management do
 
           expect(license['name']).to eq('MIT')
           expect(license['url']).to eq('http://opensource.org/licenses/mit-license')
+        end
+      end
+
+      context 'when the license_scanning_sbom_scanner feature flag is true' do
+        before_all do
+          create(:ee_ci_build, :success, :cyclonedx, pipeline: pipeline)
+          create(:pm_package, name: 'nokogiri', purl_type: 'gem', version: '1.8.0', spdx_identifiers: ['MIT'])
+        end
+
+        it 'include license information to response' do
+          license = json_response.find { |dep| dep['name'] == 'nokogiri' }['licenses'][0]
+
+          expect(license['name']).to eq('MIT')
+          expect(license['url']).to be_empty
         end
       end
 

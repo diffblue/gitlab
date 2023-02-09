@@ -39,4 +39,12 @@ RSpec.describe ::Gitlab::LicenseScanning::BaseScanner, feature_category: :licens
       expect { scanner.results_available? }.to raise_error(RuntimeError, /Must implement method in child class/)
     end
   end
+
+  describe "#latest_build_for_default_branch" do
+    it "raises a not implemented error" do
+      expect do
+        scanner.latest_build_for_default_branch
+      end.to raise_error(RuntimeError, /Must implement method in child class/)
+    end
+  end
 end

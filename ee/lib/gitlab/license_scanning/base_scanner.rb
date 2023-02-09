@@ -26,6 +26,10 @@ module Gitlab
         raise "Must implement method in child class"
       end
 
+      def latest_build_for_default_branch
+        raise "Must implement method in child class"
+      end
+
       private
 
       def empty_report

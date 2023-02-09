@@ -621,10 +621,10 @@ RSpec.describe Ci::Build, :saas do
 
         aggregate_failures do
           expect(sbom_reports_list.reports.count).to eq(4)
-          expect(sbom_reports_list.reports[0].components.count).to eq(352)
+          expect(sbom_reports_list.reports[0].components.count).to eq(46)
           expect(sbom_reports_list.reports[1].components.count).to eq(15)
           expect(sbom_reports_list.reports[2].components.count).to eq(28)
-          expect(sbom_reports_list.reports[3].components.count).to eq(47)
+          expect(sbom_reports_list.reports[3].components.count).to eq(352)
         end
       end
     end
@@ -649,6 +649,15 @@ RSpec.describe Ci::Build, :saas do
       build_with_license_scan = create(:ci_build, job_artifacts: [create(:ci_job_artifact, file_type: :license_scanning, file_format: :raw)])
 
       expect(described_class.license_scan).to contain_exactly(build_with_license_scan)
+    end
+  end
+
+  describe ".sbom_generation" do
+    it 'returns only cyclonedx sbom artifacts' do
+      create(:ci_build, job_artifacts: [create(:ci_job_artifact, :zip)])
+      build_with_cyclonedx_sbom = create(:ci_build, job_artifacts: [create(:ee_ci_job_artifact, :cyclonedx)])
+
+      expect(described_class.sbom_generation).to contain_exactly(build_with_cyclonedx_sbom)
     end
   end
 

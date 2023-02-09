@@ -384,34 +384,69 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
 
   describe "#refresh_required_approvals!" do
     before do
-      stub_feature_flags(license_scanning_sbom_scanner: false)
       stub_licensed_features(license_scanning: true)
     end
 
     context "when the rule is a `#{ApprovalRuleLike::DEFAULT_NAME_FOR_LICENSE_REPORT}` rule" do
-      subject { create(:report_approver_rule, :requires_approval, :license_scanning, merge_request: open_merge_request) }
+      context "when the license_scanning_sbom_scanner feature flag is false" do
+        let(:open_merge_request) { create(:merge_request, :opened, target_project: project, source_project: project) }
+        let!(:project_approval_rule) { create(:approval_project_rule, :requires_approval, :license_scanning, project: project) }
+        let_it_be(:project) { create(:project) }
+        let!(:open_pipeline) { create(:ee_ci_pipeline, :success, :with_license_scanning_report, project: project, merge_requests_as_head_pipeline: [open_merge_request]) }
+        let!(:denied_policy) { create(:software_license_policy, project: project, software_license: license, classification: :denied) }
 
-      let(:open_merge_request) { create(:merge_request, :opened, target_project: project, source_project: project) }
-      let!(:project_approval_rule) { create(:approval_project_rule, :requires_approval, :license_scanning, project: project) }
-      let(:project) { create(:project) }
-      let!(:open_pipeline) { create(:ee_ci_pipeline, :success, :with_license_scanning_report, project: project, merge_requests_as_head_pipeline: [open_merge_request]) }
-      let!(:denied_policy) { create(:software_license_policy, project: project, software_license: license, classification: :denied) }
+        subject { create(:report_approver_rule, :requires_approval, :license_scanning, merge_request: open_merge_request) }
 
-      before do
-        subject.refresh_required_approvals!(project_approval_rule)
+        before do
+          stub_feature_flags(license_scanning_sbom_scanner: false)
+          subject.refresh_required_approvals!(project_approval_rule)
+        end
+
+        context "when the latest license report violates the compliance policy" do
+          let(:license_report) { ::Gitlab::LicenseScanning.scanner_for_pipeline(project, open_pipeline).report }
+          let(:license) { create(:software_license, :mit) }
+
+          specify { expect(subject.approvals_required).to be(project_approval_rule.approvals_required) }
+        end
+
+        context "when the latest license report adheres to the compliance policy" do
+          let(:license) { create(:software_license, name: SecureRandom.uuid) }
+
+          specify { expect(subject.approvals_required).to be_zero }
+        end
       end
 
-      context "when the latest license report violates the compliance policy" do
-        let(:license) { create(:software_license, name: license_report.license_names[0]) }
-        let(:license_report) { open_pipeline.license_scanning_report }
+      context "when the license_scanning_sbom_scanner feature flag is true" do
+        let(:open_merge_request) { create(:merge_request, :opened, target_project: project, source_project: project) }
+        let!(:project_approval_rule) { create(:approval_project_rule, :requires_approval, :license_scanning, project: project) }
+        let_it_be(:project) { create(:project) }
+        let!(:open_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project, merge_requests_as_head_pipeline: [open_merge_request]) }
+        let!(:denied_policy) { create(:software_license_policy, project: project, software_license: license, classification: :denied) }
 
-        specify { expect(subject.approvals_required).to be(project_approval_rule.approvals_required) }
-      end
+        subject { create(:report_approver_rule, :requires_approval, :license_scanning, merge_request: open_merge_request) }
 
-      context "when the latest license report adheres to the compliance policy" do
-        let(:license) { create(:software_license, name: SecureRandom.uuid) }
+        # This efficiently creates the package(s) only once to prevent rolling back
+        # a transaction for every example.
+        before_all do
+          create(:pm_package, name: 'nokogiri', purl_type: 'gem', version: '1.8.0', spdx_identifiers: ['MIT'])
+        end
 
-        specify { expect(subject.approvals_required).to be_zero }
+        before do
+          subject.refresh_required_approvals!(project_approval_rule)
+        end
+
+        context "when the latest license report violates the compliance policy" do
+          let(:license) { create(:software_license, name: license_report.license_names[0]) }
+          let(:license_report) { ::Gitlab::LicenseScanning.scanner_for_pipeline(project, open_pipeline).report }
+
+          specify { expect(subject.approvals_required).to be(project_approval_rule.approvals_required) }
+        end
+
+        context "when the latest license report adheres to the compliance policy" do
+          let(:license) { create(:software_license, name: SecureRandom.uuid) }
+
+          specify { expect(subject.approvals_required).to be_zero }
+        end
       end
     end
   end

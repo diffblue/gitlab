@@ -199,7 +199,7 @@ RSpec.describe MergeRequest do
     end
   end
 
-  describe '#has_denied_policies?' do
+  describe '#has_denied_policies?', feature_category: :license_compliance do
     let(:merge_request) { create(:ee_merge_request, :with_license_scanning_reports, source_project: project) }
     let(:apache) { build(:software_license, :apache_2_0) }
 
@@ -272,6 +272,17 @@ RSpec.describe MergeRequest do
             it { is_expected.to be_truthy }
           end
 
+          context 'when the license_scanning_sbom_scanner feature flag is true' do
+            let(:merge_request) { create(:ee_merge_request, :with_cyclonedx_reports, source_project: project) }
+            let(:denied_policy) { build(:software_license_policy, :denied, software_license: build(:software_license, :apache_2_0)) }
+
+            before do
+              create(:pm_package, name: "nokogiri", purl_type: "gem", version: "1.8.0", spdx_identifiers: ["Apache-2.0"])
+            end
+
+            it { is_expected.to be_truthy }
+          end
+
           context 'with disabled licensed feature' do
             before do
               stub_licensed_features(license_scanning: false)
@@ -295,6 +306,17 @@ RSpec.describe MergeRequest do
 
                 it { is_expected.to be_truthy }
               end
+
+              context 'when the license_scanning_sbom_scanner feature flag is true' do
+                let(:merge_request) { create(:ee_merge_request, :with_cyclonedx_reports, source_project: project) }
+                let(:denied_policy) { build(:software_license_policy, :denied, software_license: build(:software_license, :apache_2_0)) }
+
+                before do
+                  create(:pm_package, name: "nokogiri", purl_type: "gem", version: "1.8.0", spdx_identifiers: ["Apache-2.0"])
+                end
+
+                it { is_expected.to be_truthy }
+              end
             end
 
             context 'when rule is approved' do
@@ -302,7 +324,17 @@ RSpec.describe MergeRequest do
                 allow_any_instance_of(ApprovalWrappedRule).to receive(:approved?).and_return(true)
               end
 
-              it { is_expected.to be_falsey }
+              context 'when the license_scanning_sbom_scanner feature flag is false' do
+                before do
+                  stub_feature_flags(license_scanning_sbom_scanner: false)
+                end
+
+                it { is_expected.to be_falsey }
+              end
+
+              context 'when the license_scanning_sbom_scanner feature flag is true' do
+                it { is_expected.to be_falsey }
+              end
             end
           end
         end

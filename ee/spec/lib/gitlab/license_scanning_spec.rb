@@ -70,7 +70,7 @@ RSpec.describe ::Gitlab::LicenseScanning, feature_category: :license_compliance 
   end
 
   describe "#scanner_for_pipeline" do
-    subject(:scanner) { described_class.scanner_for_pipeline(pipeline) }
+    subject(:scanner) { described_class.scanner_for_pipeline(project, pipeline) }
 
     context('when the license_scanning_sbom_scanner feature flag is false') do
       let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_license_scanning_report, project: project) }
@@ -90,7 +90,7 @@ RSpec.describe ::Gitlab::LicenseScanning, feature_category: :license_compliance 
       end
 
       context "with non-default branch pipeline" do
-        subject(:scanner) { described_class.scanner_for_pipeline(pipeline_2) }
+        subject(:scanner) { described_class.scanner_for_pipeline(project, pipeline_2) }
 
         let_it_be(:pipeline_2) do
           create(:ee_ci_pipeline, :with_license_scanning_report, project: project, ref: "license_scanning_branch")
@@ -120,7 +120,7 @@ RSpec.describe ::Gitlab::LicenseScanning, feature_category: :license_compliance 
       end
 
       context "with non-default branch pipeline" do
-        subject(:scanner) { described_class.scanner_for_pipeline(pipeline_2) }
+        subject(:scanner) { described_class.scanner_for_pipeline(project, pipeline_2) }
 
         let_it_be(:pipeline_2) do
           create(:ee_ci_pipeline, :with_license_scanning_report, project: project, ref: "license_scanning_branch")

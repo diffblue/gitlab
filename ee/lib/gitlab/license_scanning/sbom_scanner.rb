@@ -3,6 +3,8 @@
 module Gitlab
   module LicenseScanning
     class SbomScanner < ::Gitlab::LicenseScanning::BaseScanner
+      include Gitlab::Utils::StrongMemoize
+
       def self.latest_pipeline(project, ref)
         project.latest_pipeline_with_reports_for_ref(ref, ::Ci::JobArtifact.of_report_type(:sbom))
       end
@@ -34,6 +36,15 @@ module Gitlab
 
         pipeline.complete_and_has_reports?(::Ci::JobArtifact.of_report_type(:sbom))
       end
+
+      def latest_build_for_default_branch
+        pipeline = self.class.latest_pipeline(project, project.default_branch)
+
+        return if pipeline.blank?
+
+        pipeline.builds.latest.sbom_generation.last
+      end
+      strong_memoize_attr :latest_build_for_default_branch
     end
   end
 end

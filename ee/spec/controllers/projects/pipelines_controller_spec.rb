@@ -109,6 +109,15 @@ RSpec.describe Projects::PipelinesController do
             expect(response).to render_template :show
           end
         end
+
+        context 'when the license_scanning_sbom_scanner feature flag is true' do
+          let(:pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
+
+          it 'responds with a 200 and shows the template' do
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(response).to render_template :show
+          end
+        end
       end
 
       context 'with feature enabled json' do
@@ -142,6 +151,65 @@ RSpec.describe Projects::PipelinesController do
           it 'will return sorted by name' do
             expect(payload.first['name']).to eq('Apache 2.0')
             expect(payload.last['name']).to eq('unknown')
+          end
+
+          it 'returns a JSON representation of the license data' do
+            expect(payload).to be_present
+
+            payload.each do |item|
+              expect(item['name']).to be_present
+              expect(item['classification']).to have_key('id')
+              expect(item.dig('classification', 'approval_status')).to be_present
+              expect(item.dig('classification', 'name')).to be_present
+              expect(item).to have_key('dependencies')
+              item['dependencies'].each do |dependency|
+                expect(dependency['name']).to be_present
+              end
+              expect(item['count']).to be_present
+              expect(item).to have_key('url')
+            end
+          end
+        end
+
+        context 'when the license_scanning_sbom_scanner feature flag is true' do
+          let_it_be(:project) { create(:project, :repository) }
+          let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
+
+          before do
+            # Seed the database with licenses for some of the components using the deprecated
+            # license scanning artifact as a source.
+            components = Gitlab::LicenseScanning::PipelineComponents.new(pipeline: pipeline).fetch
+            components.each do |c|
+              licenses = []
+              pipeline.license_scanning_report.licenses.each do |license|
+                license.dependencies.each { |dep| licenses << license.name if c.name == dep.name }
+              end
+
+              create(:pm_package, name: c.name, purl_type: c.purl_type, version: c.version, spdx_identifiers: licenses)
+            end
+          end
+
+          it 'will return license scanning report in json format' do
+            expect(payload.size).to eq(3)
+            expect(payload.first.keys).to match_array(%w(name classification dependencies count url))
+          end
+
+          it 'will return mit license allowed status' do
+            payload_mit = payload.find { |l| l['name'] == 'MIT' }
+            expect(payload_mit['count']).to eq(13)
+            expect(payload_mit['url']).to be_empty
+            expect(payload_mit['classification']['approval_status']).to eq('allowed')
+          end
+
+          context 'approval_status' do
+            subject(:status) { payload.find { |l| l['name'] == 'MIT' }.dig('classification', 'approval_status') }
+
+            it { is_expected.to eq('allowed') }
+          end
+
+          it 'will return sorted by name' do
+            expect(payload.first['name']).to eq('Apache 2.0')
+            expect(payload.last['name']).to eq('New BSD')
           end
 
           it 'returns a JSON representation of the license data' do

@@ -194,6 +194,8 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
           before do
             pipeline.builds << license_build
 
+            create(:pm_package, name: "nokogiri", purl_type: "gem", version: "1.8.0", spdx_identifiers: ["BSD"])
+
             get :index, params: params, format: :json
           end
 
@@ -202,10 +204,20 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
               stub_feature_flags(license_scanning_sbom_scanner: false)
             end
 
-            it 'include license information to response' do
+            it 'includes license information in response' do
               nokogiri = json_response['dependencies'].find { |dep| dep['name'] == 'nokogiri' }
 
-              expect(nokogiri['licenses']).not_to be_empty
+              expect(nokogiri['licenses']).to include({ "name" => "MIT", "url" => "http://opensource.org/licenses/mit-license" })
+            end
+          end
+
+          context 'when the license_scanning_sbom_scanner feature flag is true' do
+            let(:pipeline) { create(:ee_ci_pipeline, :with_dependency_list_report, :with_cyclonedx_report, project: project) }
+
+            it 'includes license information in response' do
+              nokogiri = json_response['dependencies'].find { |dep| dep['name'] == 'nokogiri' }
+
+              expect(nokogiri['licenses']).to include({ "name" => "BSD", "url" => "" })
             end
           end
         end
