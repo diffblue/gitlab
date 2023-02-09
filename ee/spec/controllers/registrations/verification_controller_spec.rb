@@ -40,8 +40,7 @@ RSpec.describe Registrations::VerificationController, feature_category: :onboard
           it 'assigns to learn_gitlab onboarding' do
             get_new
 
-            expect(assigns(:next_step_url))
-              .to eq(continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: project.id))
+            expect(assigns(:next_step_url)).to eq(onboarding_project_learn_gitlab_path(project))
           end
 
           context 'when project_id is blank' do

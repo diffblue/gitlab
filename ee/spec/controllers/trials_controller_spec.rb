@@ -134,7 +134,7 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
 
             context 'when there is a stored_location_for(:user) set' do
               let(:stored_location_for) do
-                continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: 311)
+                onboarding_project_learn_gitlab_path(build(:project))
               end
 
               before do

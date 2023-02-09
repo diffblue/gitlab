@@ -40,7 +40,13 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
 
         resources :subscriptions, only: [:create, :destroy]
 
-        resource :learn_gitlab, only: :show, controller: :learn_gitlab, param: :project_id
+        # Deprecated route, remove with https://gitlab.com/gitlab-org/gitlab/-/issues/390715
+        get '/users/sign_up/welcome/continuous_onboarding_getting_started', to: redirect('%{namespace_id}/%{project_id}/-/learn_gitlab/onboarding')
+        resource :learn_gitlab, only: :show, controller: :learn_gitlab, param: :project_id do
+          member do
+            get :onboarding
+          end
+        end
 
         resources :protected_environments, only: [:create, :update, :destroy], constraints: { id: /\d+/ } do
           collection do
