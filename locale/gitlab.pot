@@ -27579,7 +27579,7 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-msgid "Name can contain only letters, digits, emojis, '_', '.', '+', dashes, or spaces"
+msgid "Name can contain only lowercase or uppercase letters, digits, emojis, spaces, dots, underscores, dashes, or pluses."
 msgstr ""
 
 msgid "Name can't be blank"
@@ -27591,7 +27591,7 @@ msgstr ""
 msgid "Name is already taken."
 msgstr ""
 
-msgid "Name must start with a letter, digit, emoji, or '_'"
+msgid "Name must start with a letter, digit, emoji, or underscore."
 msgstr ""
 
 msgid "Name new label"
@@ -34032,6 +34032,9 @@ msgid "ProjectsNew|Initialize repository with a README"
 msgstr ""
 
 msgid "ProjectsNew|Migrate your data from an external source like GitHub, Bitbucket, or another instance of GitLab."
+msgstr ""
+
+msgid "ProjectsNew|Must start with a lowercase or uppercase letter, digit, emoji, or underscore. Can also contain dots, pluses, dashes, or spaces."
 msgstr ""
 
 msgid "ProjectsNew|No import options available"
