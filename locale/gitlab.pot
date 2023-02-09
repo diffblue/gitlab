@@ -13377,6 +13377,9 @@ msgstr ""
 msgid "Delete comment"
 msgstr ""
 
+msgid "Delete comment?"
+msgstr ""
+
 msgid "Delete corpus"
 msgstr ""
 
@@ -40159,6 +40162,9 @@ msgid "Something went wrong trying to change the locked state of this %{issuable
 msgstr ""
 
 msgid "Something went wrong trying to load issue contacts."
+msgstr ""
+
+msgid "Something went wrong when deleting a comment. Please try again"
 msgstr ""
 
 msgid "Something went wrong when reordering designs. Please try again"
