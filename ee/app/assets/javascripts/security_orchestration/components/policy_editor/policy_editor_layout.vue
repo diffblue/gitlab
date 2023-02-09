@@ -30,6 +30,7 @@ export default {
     POLICY_RUN_TIME_MESSAGE,
     POLICY_RUN_TIME_TOOLTIP,
     description: __('Description'),
+    failedValidationText: __('This field is required'),
     name: __('Name'),
     toggleLabel: s__('SecurityOrchestration|Policy status'),
     yamlPreview: s__('SecurityOrchestration|.yaml preview'),
@@ -130,6 +131,7 @@ export default {
   data() {
     return {
       selectedEditorMode: this.defaultEditorMode,
+      showValidation: false,
     };
   },
   computed: {
@@ -137,6 +139,9 @@ export default {
       return sprintf(s__('SecurityOrchestration|Delete policy: %{policy}'), {
         policy: this.policy.name,
       });
+    },
+    hasValidName() {
+      return this.policy.name !== '';
     },
     saveTooltipText() {
       return this.customSaveTooltipText || this.saveButtonText;
@@ -174,6 +179,13 @@ export default {
     savePolicy() {
       this.$emit('save-policy', this.selectedEditorMode);
     },
+    setPolicyProperty(property, value) {
+      if (property === 'name') {
+        this.showValidation = true;
+      }
+
+      this.$emit('set-policy-property', property, value);
+    },
     updateYaml(manifest) {
       this.$emit('update-yaml', manifest);
     },
@@ -199,21 +211,31 @@ export default {
               {{ parsingError }}
             </gl-alert>
 
-            <gl-form-group :label="$options.i18n.name" label-for="policyName">
+            <gl-form-group
+              :label="$options.i18n.name"
+              label-for="policyName"
+              :invalid-feedback="$options.i18n.failedValidationText"
+            >
               <gl-form-input
                 id="policyName"
                 :disabled="hasParsingError"
+                :state="hasValidName || !showValidation"
                 :value="policy.name"
-                @input="$emit('set-policy-property', 'name', $event)"
+                required
+                @input="setPolicyProperty('name', $event)"
               />
             </gl-form-group>
 
-            <gl-form-group :label="$options.i18n.description" label-for="policyDescription">
+            <gl-form-group
+              :label="$options.i18n.description"
+              label-for="policyDescription"
+              optional
+            >
               <gl-form-textarea
                 id="policyDescription"
                 :disabled="hasParsingError"
                 :value="policy.description"
-                @input="$emit('set-policy-property', 'description', $event)"
+                @input="setPolicyProperty('description', $event)"
               />
             </gl-form-group>
 
@@ -226,7 +248,7 @@ export default {
                 :options="$options.STATUS_OPTIONS"
                 :disabled="hasParsingError"
                 :checked="policy.enabled"
-                @change="$emit('set-policy-property', 'enabled', $event)"
+                @change="setPolicyProperty('enabled', $event)"
               />
             </gl-form-group>
 
@@ -276,7 +298,7 @@ export default {
           variant="confirm"
           data-testid="save-policy"
           :loading="isUpdatingPolicy"
-          :disabled="disableUpdate"
+          :disabled="disableUpdate || !hasValidName"
           @click="savePolicy"
         >
           {{ saveButtonText }}

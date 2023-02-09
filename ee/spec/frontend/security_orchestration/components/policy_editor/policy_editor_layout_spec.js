@@ -264,4 +264,38 @@ describe('PolicyEditorLayout component', () => {
       expect(glTooltipDirectiveMock.mock.calls[1][1].value).toBe(POLICY_RUN_TIME_TOOLTIP);
     });
   });
+
+  describe('validation', () => {
+    it('does not invalidate the name input on first load of the page', async () => {
+      factory({ propsData: { policy: { ...mockDastScanExecutionObject, name: '' } } });
+      await nextTick();
+      expect(findNameInput().attributes('state')).toBe('true');
+    });
+
+    it('does not invalidate the name input when populated', async () => {
+      factory();
+      await nextTick();
+      expect(findNameInput().attributes('state')).toBe('true');
+    });
+
+    it('does invalidate the name input when populated and then emptied', async () => {
+      factory({ propsData: { policy: { ...mockDastScanExecutionObject, name: '' } } });
+      await nextTick();
+      findNameInput().vm.$emit('input', '');
+      await nextTick();
+      expect(findNameInput().attributes('state')).toBe(undefined);
+    });
+
+    it('disables save button when name is empty', async () => {
+      factory({ propsData: { policy: { ...mockDastScanExecutionObject, name: '' } } });
+      await nextTick();
+      expect(findSavePolicyButton().props('disabled')).toBe(true);
+    });
+
+    it('enables save button when name is populated', async () => {
+      factory();
+      await nextTick();
+      expect(findSavePolicyButton().props('disabled')).toBe(false);
+    });
+  });
 });
