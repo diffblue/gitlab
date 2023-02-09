@@ -159,6 +159,9 @@ RSpec.describe 'Update a work item' do
             ... on WorkItemWidgetWeight {
               weight
             }
+            ... on WorkItemWidgetDescription {
+              description
+            }
           }
         }
         errors
@@ -201,6 +204,43 @@ RSpec.describe 'Update a work item' do
             end.to change(work_item, :weight).from(2).to(nil)
 
             expect(response).to have_gitlab_http_status(:success)
+          end
+        end
+
+        context 'when using quick action' do
+          let(:input) { { 'descriptionWidget' => { 'description' => "/weight #{new_weight}" } } }
+
+          it_behaves_like 'update work item weight widget'
+
+          context 'when setting weight to null' do
+            let(:input) { { 'descriptionWidget' => { 'description' => "/clear_weight" } } }
+
+            before do
+              work_item.update!(weight: 2)
+            end
+
+            it 'updates the work item' do
+              expect do
+                post_graphql_mutation(mutation, current_user: current_user)
+                work_item.reload
+              end.to change(work_item, :weight).from(2).to(nil)
+
+              expect(response).to have_gitlab_http_status(:success)
+            end
+          end
+
+          context 'when the work item type does not support the weight widget' do
+            let_it_be(:work_item) { create(:work_item, :task, project: project) }
+
+            let(:input) do
+              { 'descriptionWidget' => { 'description' => "Updating weight.\n/weight 1" } }
+            end
+
+            before do
+              stub_const('::WorkItems::Type::WIDGETS_FOR_TYPE', { task: [::WorkItems::Widgets::Description] })
+            end
+
+            it_behaves_like 'work item is not updated'
           end
         end
       end
@@ -389,6 +429,9 @@ RSpec.describe 'Update a work item' do
             ... on WorkItemWidgetHealthStatus {
               healthStatus
             }
+            ... on WorkItemWidgetDescription {
+              description
+            }
           }
         }
         errors
@@ -428,6 +471,52 @@ RSpec.describe 'Update a work item' do
               'type' => 'HEALTH_STATUS'
             }
           )
+        end
+
+        context 'when using quick action' do
+          let(:input) { { 'descriptionWidget' => { 'description' => "/health_status on_track" } } }
+
+          it 'updates work item health status' do
+            expect do
+              post_graphql_mutation(mutation, current_user: current_user)
+              work_item.reload
+            end.to change { work_item.health_status }.from('needs_attention').to('on_track')
+
+            expect(response).to have_gitlab_http_status(:success)
+            expect(mutation_response['workItem']['widgets']).to include(
+              {
+                'healthStatus' => 'onTrack',
+                'type' => 'HEALTH_STATUS'
+              }
+            )
+          end
+
+          context 'when clearing health status' do
+            let(:input) { { 'descriptionWidget' => { 'description' => "/clear_health_status" } } }
+
+            it 'updates the work item' do
+              expect do
+                post_graphql_mutation(mutation, current_user: current_user)
+                work_item.reload
+              end.to change { work_item.health_status }.from('needs_attention').to(nil)
+
+              expect(response).to have_gitlab_http_status(:success)
+            end
+          end
+
+          context 'when the work item type does not support the health status widget' do
+            let_it_be(:work_item) { create(:work_item, :task, project: project) }
+
+            let(:input) do
+              { 'descriptionWidget' => { 'description' => "Updating health status.\n/health_status on_track" } }
+            end
+
+            before do
+              stub_const('::WorkItems::Type::WIDGETS_FOR_TYPE', { task: [::WorkItems::Widgets::Description] })
+            end
+
+            it_behaves_like 'work item is not updated'
+          end
         end
       end
     end
