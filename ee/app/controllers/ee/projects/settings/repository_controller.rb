@@ -40,6 +40,18 @@ module EE
 
           super
         end
+
+        override :fetch_protected_branches
+        def fetch_protected_branches(project)
+          return super unless group_protected_branches_feature_available?
+
+          project.all_protected_branches.sorted_by_namespace_and_name.page(params[:page])
+        end
+
+        def group_protected_branches_feature_available?
+          ::Feature.enabled?(:group_protected_branches) &&
+            ::License.feature_available?(:group_protected_branches)
+        end
       end
     end
   end
