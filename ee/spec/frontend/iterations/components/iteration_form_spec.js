@@ -12,6 +12,7 @@ import createRouter from 'ee/iterations/router';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { TYPENAME_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { dayAfter, formatDate } from '~/lib/utils/datetime_utility';
 import {
@@ -147,7 +148,7 @@ describe('Iteration Form', () => {
             groupPath,
             title,
             description,
-            iterationsCadenceId: convertToGraphQLId('Iterations::Cadence', cadence.id),
+            iterationsCadenceId: convertToGraphQLId(TYPENAME_ITERATIONS_CADENCE, cadence.id),
             startDate,
             dueDate,
           },

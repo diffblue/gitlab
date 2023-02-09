@@ -13,7 +13,7 @@ import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import projectBoardMembersQuery from '~/boards/graphql/project_board_members.query.graphql';
 import actionsCE from '~/boards/stores/actions';
 import * as typesCE from '~/boards/stores/mutation_types';
-import { TYPENAME_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
+import { TYPENAME_ITERATION, TYPENAME_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 
 import { getIdFromGraphQLId, convertToGraphQLId } from '~/graphql_shared/utils';
 import { fetchPolicies } from '~/lib/graphql';
@@ -189,8 +189,7 @@ export default {
     }
 
     if (filters?.iterationId) {
-      // eslint-disable-next-line @gitlab/require-i18n-strings
-      filtersCopy.iterationId = convertToGraphQLId('Iteration', filters.iterationId);
+      filtersCopy.iterationId = convertToGraphQLId(TYPENAME_ITERATION, filters.iterationId);
     }
 
     commit(

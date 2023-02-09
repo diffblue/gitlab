@@ -3,6 +3,7 @@ import { GlDropdown, GlDropdownItem, GlDropdownDivider, GlTruncate } from '@gitl
 import { groupBy, mapKeys, mapValues, union, without, xor, get } from 'lodash';
 import { s__ } from '~/locale';
 import { REPORT_TYPES_WITH_MANUALLY_ADDED } from 'ee/security_dashboard/store/constants';
+import { TYPENAME_VULNERABILITIES_SCANNER } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import FilterItem from './filter_item.vue';
 import QuerystringSync from './querystring_sync.vue';
@@ -10,8 +11,7 @@ import DropdownButtonText from './dropdown_button_text.vue';
 import { ALL_ID } from './constants';
 
 export const VENDOR_GITLAB = 'GitLab';
-export const GRAPHQL_TYPE_SCANNER = 'Vulnerabilities::Scanner';
-export const NULL_SCANNER_ID = convertToGraphQLId(GRAPHQL_TYPE_SCANNER, 'null');
+export const NULL_SCANNER_ID = convertToGraphQLId(TYPENAME_VULNERABILITIES_SCANNER, 'null');
 export const REPORT_TYPES = mapKeys(REPORT_TYPES_WITH_MANUALLY_ADDED, (_, key) =>
   key.toUpperCase(),
 );
@@ -41,7 +41,7 @@ export default {
         const reports = groupBy(vendor, 'report_type');
         // Then get only the scanner IDs for each report and convert them to GraphQL IDs.
         return mapValues(reports, (report) =>
-          report.map(({ id }) => convertToGraphQLId(GRAPHQL_TYPE_SCANNER, id)),
+          report.map(({ id }) => convertToGraphQLId(TYPENAME_VULNERABILITIES_SCANNER, id)),
         );
       });
       // Ensure that there's always a GitLab vendor and that it's always listed first.

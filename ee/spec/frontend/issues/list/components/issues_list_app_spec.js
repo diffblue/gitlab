@@ -7,6 +7,7 @@ import getIssuesCountsQuery from 'ee_else_ce/issues/list/queries/get_issues_coun
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { getIssuesCountsQueryResponse, getIssuesQueryResponse } from 'jest/issues/list/mock_data';
+import { TYPENAME_USER } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 import {
@@ -259,7 +260,7 @@ describe('EE IssuesListApp component', () => {
 
       it('renders all tokens alphabetically', () => {
         const preloadedUsers = [
-          { ...mockCurrentUser, id: convertToGraphQLId('User', mockCurrentUser.id) },
+          { ...mockCurrentUser, id: convertToGraphQLId(TYPENAME_USER, mockCurrentUser.id) },
         ];
 
         expect(findIssuableList().props('searchTokens')).toMatchObject([
