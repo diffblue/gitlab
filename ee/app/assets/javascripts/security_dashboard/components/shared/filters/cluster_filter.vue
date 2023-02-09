@@ -18,7 +18,6 @@ export default {
   },
   apollo: {
     clusterAgents: {
-      loadingKey: 'loading',
       query: getClusterAgentsQuery,
       variables() {
         return {
@@ -40,13 +39,15 @@ export default {
   data: () => ({
     clusterAgents: [],
     selected: [],
-    loading: 0,
   }),
   computed: {
     selectedItemNames() {
       const options = this.clusterAgents?.filter(({ id }) => this.selected.includes(id));
       // Return the text for selected items, or all items if nothing is selected.
       return options.length ? options.map(({ name }) => name) : [this.$options.i18n.allItemsText];
+    },
+    isLoading() {
+      return this.$apollo.queries.clusterAgents.loading;
     },
   },
   watch: {
@@ -81,7 +82,7 @@ export default {
     <label class="gl-mb-2">{{ $options.i18n.label }}</label>
     <gl-dropdown
       :header-text="$options.i18n.label"
-      :loading="Boolean(loading)"
+      :loading="isLoading"
       block
       toggle-class="gl-mb-0"
     >

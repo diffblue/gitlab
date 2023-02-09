@@ -22,7 +22,6 @@ export default {
   directives: { GlTooltip },
   apollo: {
     images: {
-      loadingKey: 'loading',
       query() {
         return this.isAgentDashboard ? agentImagesQuery : projectImagesQuery;
       },
@@ -53,7 +52,6 @@ export default {
   data: () => ({
     images: [],
     selected: [],
-    loading: 0,
   }),
   computed: {
     isAgentDashboard() {
@@ -62,6 +60,9 @@ export default {
     selectedItemNames() {
       // Return the selected items, or all items if nothing is selected.
       return this.selected.length ? this.selected : [this.$options.i18n.allItemsText];
+    },
+    isLoading() {
+      return this.$apollo.queries.images.loading;
     },
   },
   watch: {
@@ -92,7 +93,7 @@ export default {
     <label class="gl-mb-2">{{ $options.i18n.label }}</label>
     <gl-dropdown
       :header-text="$options.i18n.label"
-      :loading="Boolean(loading)"
+      :loading="isLoading"
       block
       toggle-class="gl-mb-0"
     >

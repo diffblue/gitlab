@@ -11,7 +11,6 @@ export default {
   extends: SimpleFilter,
   apollo: {
     clusterAgents: {
-      loadingKey: 'isLoading',
       query: getClusterAgentsQuery,
       variables() {
         return {
@@ -34,7 +33,6 @@ export default {
   inject: ['projectFullPath'],
   data() {
     return {
-      isLoading: 0,
       clusterAgents: [],
     };
   },
@@ -47,6 +45,9 @@ export default {
     options() {
       return this.clusterAgents;
     },
+    isLoading() {
+      return this.$apollo.queries.clusterAgents.loading;
+    },
   },
   watch: {
     options() {
@@ -57,11 +58,7 @@ export default {
 </script>
 
 <template>
-  <filter-body
-    :name="filter.name"
-    :selected-options="selectedOptionsOrAll"
-    :loading="Boolean(isLoading)"
-  >
+  <filter-body :name="filter.name" :selected-options="selectedOptionsOrAll" :loading="isLoading">
     <filter-item
       :is-checked="isNoOptionsSelected"
       :text="filter.allOption.name"
