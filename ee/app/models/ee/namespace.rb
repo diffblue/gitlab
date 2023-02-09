@@ -481,6 +481,12 @@ module EE
       ::Gitlab.com? && root? && licensed_feature_available?(:domain_verification)
     end
 
+    def custom_roles_enabled?
+      root? &&
+        ::Feature.enabled?(:customizable_roles, self) &&
+        licensed_feature_available?(:custom_roles)
+    end
+
     private
 
     def security_orchestration_policies_for_namespaces(namespace_ids)

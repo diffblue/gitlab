@@ -281,49 +281,193 @@ RSpec.describe API::Members, feature_category: :subgroups do
 
     describe 'PUT /groups/:id/members/:user_id' do
       let(:expires_at) { 2.days.from_now.to_date }
+      let(:params) { {} }
+      let(:current_user) { owner }
 
-      context 'when minimal access role is available' do
-        it 'updates the member' do
-          stub_licensed_features(minimal_access_role: true)
-
-          put api("/groups/#{group.id}/members/#{minimal_access_member.user_id}", owner),
-              params: {  expires_at: expires_at, access_level: Member::MINIMAL_ACCESS }
-
-          expect(response).to have_gitlab_http_status(:ok)
-          expect(json_response['id']).to eq(minimal_access_member.user_id)
-          expect(json_response['expires_at']).to eq(expires_at.to_s)
-        end
+      subject(:put_member) do
+        put(
+          api("/#{member.source.class.name.downcase}s/#{member.source_id}/members/#{user_id}", current_user),
+          params: params
+        )
       end
 
-      context 'when minimal access role is not available' do
-        it 'does not update the member' do
-          put api("/groups/#{group.id}/members/#{minimal_access_member.user_id}", owner),
-              params: {  expires_at: expires_at, access_level: Member::MINIMAL_ACCESS }
+      context 'when setting minimal access role' do
+        let(:member) { minimal_access_member }
+        let(:user_id) { minimal_access_member.user_id }
+        let(:params) { { expires_at: expires_at, access_level: Member::MINIMAL_ACCESS } }
 
-          expect(response).to have_gitlab_http_status(:not_found)
+        context 'when minimal access role license is available' do
+          before do
+            stub_licensed_features(minimal_access_role: true)
+          end
+
+          it 'updates the member' do
+            put_member
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response['id']).to eq(minimal_access_member.user_id)
+            expect(json_response['expires_at']).to eq(expires_at.to_s)
+          end
         end
-      end
-    end
 
-    describe 'DELETE /groups/:id/members/:user_id' do
-      context 'when minimal access role is available' do
-        it 'deletes the member' do
-          stub_licensed_features(minimal_access_role: true)
-          expect do
-            delete api("/groups/#{group.id}/members/#{minimal_access_member.user_id}", owner)
-          end.to change { group.all_group_members.count }.by(-1)
+        context 'when minimal access role license is not available' do
+          before do
+            stub_licensed_features(minimal_access_role: false)
+          end
 
-          expect(response).to have_gitlab_http_status(:no_content)
-        end
-      end
-
-      context 'when minimal access role is not available' do
-        it 'does not delete the member' do
-          expect do
-            delete api("/groups/#{group.id}/members/#{minimal_access_member.id}", owner)
+          it 'does not update the member' do
+            put_member
 
             expect(response).to have_gitlab_http_status(:not_found)
-          end.not_to change { group.all_group_members.count }
+          end
+        end
+      end
+
+      context 'when member_role_id param is present' do
+        let_it_be(:member_role) { create(:member_role, :guest, namespace: group) }
+        let_it_be(:member) { create(:group_member, :guest, source: group) }
+
+        let(:user_id) { member.user_id }
+        let(:params) { { member_role_id: member_role.id, access_level: Member::GUEST } }
+
+        shared_examples 'a successful member role update' do
+          it 'updates the member_role' do
+            put_member
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response['id']).to eq(member.user_id)
+            expect(json_response['member_role']['id']).to eq(member_role.id)
+          end
+        end
+
+        context "when custom roles license is enabled" do
+          before do
+            stub_licensed_features(custom_roles: true)
+          end
+
+          context 'when member_role is associated with membership group' do
+            it_behaves_like 'a successful member role update'
+          end
+
+          context 'when member_role is associated with root group of subgroup membership' do
+            let(:subgroup) { create(:group, parent: group) }
+            let(:member) { create(:group_member, :guest, source: subgroup) }
+
+            it_behaves_like 'a successful member role update'
+          end
+
+          context 'when member_role is associated with root group of project membership' do
+            let_it_be(:project) { create(:project, group: subgroup) }
+
+            let(:member) { create(:project_member, :guest, source: project) }
+
+            it_behaves_like 'a successful member role update'
+          end
+
+          context "when member_role has base_access_level that does not match user's access_level" do
+            let(:member_role) { create(:member_role, :developer, namespace: group) }
+            let(:params) { { member_role_id: member_role.id, access_level: Member::GUEST } }
+
+            it 'raises an error' do
+              put_member
+
+              expect(response).to have_gitlab_http_status(:bad_request)
+              expect(json_response['message']['member_role_id']).to contain_exactly(
+                "role's base access level does not match the access level of the membership"
+              )
+            end
+          end
+
+          context 'when member_role is not associated with root group of member source' do
+            let_it_be(:member_role) { create(:member_role, :guest, namespace: create(:group)) }
+
+            it 'raises an error' do
+              put_member
+
+              expect(response).to have_gitlab_http_status(:bad_request)
+              expect(json_response['message']['member_role']).to contain_exactly('not found')
+            end
+          end
+
+          context "when invalid member_role_id" do
+            let(:params) { { member_role_id: non_existing_record_id, access_level: Member::GUEST } }
+
+            it "returns 400" do
+              put_member
+
+              expect(response).to have_gitlab_http_status(:bad_request)
+              expect(json_response['message']['member_role']).to contain_exactly('not found')
+            end
+          end
+
+          context 'when member_role_id is nil' do
+            let(:params) { { member_role_id: nil, access_level: Member::REPORTER } }
+
+            it 'unsets the member_role_id attribute for the member' do
+              member.update!(member_role: member_role)
+
+              put_member
+
+              expect(response).to have_gitlab_http_status(:ok)
+              expect(json_response['id']).to eq(member.user_id)
+              expect(json_response['member_role']).to eq(nil)
+              expect(json_response['access_level']).to eq(Member::REPORTER)
+            end
+          end
+        end
+
+        context "when customizable_roles feature flag is disabled" do
+          before do
+            stub_licensed_features(custom_roles: true)
+            stub_feature_flags(customizable_roles: false)
+          end
+
+          it "ignores the member_role_id param" do
+            put_member
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response['id']).to eq(member.user_id)
+            expect(json_response['access_level']).to eq(Member::GUEST)
+            expect(json_response['member_role']).to eq(nil)
+          end
+        end
+
+        context "when custom roles license is disabled" do
+          before do
+            stub_licensed_features(custom_roles: false)
+          end
+
+          it "ignores the member_role_id param" do
+            put_member
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response['id']).to eq(member.user_id)
+            expect(json_response['access_level']).to eq(Member::GUEST)
+            expect(json_response['member_role']).to eq(nil)
+          end
+        end
+      end
+
+      describe 'DELETE /groups/:id/members/:user_id' do
+        context 'when minimal access role is available' do
+          it 'deletes the member' do
+            stub_licensed_features(minimal_access_role: true)
+            expect do
+              delete api("/groups/#{group.id}/members/#{minimal_access_member.user_id}", owner)
+            end.to change { group.all_group_members.count }.by(-1)
+
+            expect(response).to have_gitlab_http_status(:no_content)
+          end
+        end
+
+        context 'when minimal access role is not available' do
+          it 'does not delete the member' do
+            expect do
+              delete api("/groups/#{group.id}/members/#{minimal_access_member.id}", owner)
+
+              expect(response).to have_gitlab_http_status(:not_found)
+            end.not_to change { group.all_group_members.count }
+          end
         end
       end
     end

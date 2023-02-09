@@ -13,6 +13,20 @@ module EE
 
       private
 
+      def update_member(member, permission)
+        if params.key?(:member_role_id)
+          root = member.source.root_ancestor
+          params.delete(:member_role_id) unless root.custom_roles_enabled?
+
+          if params[:member_role_id] && !root.member_roles.find_by_id(params[:member_role_id])
+            member.errors.add(:member_role, "not found")
+            params.delete(:member_role_id)
+          end
+        end
+
+        super
+      end
+
       def log_audit_event(action:, old_access_level:, old_expiry:, member:)
         ::AuditEventService.new(
           current_user,
