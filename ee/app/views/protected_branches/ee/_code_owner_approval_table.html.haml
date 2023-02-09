@@ -4,4 +4,5 @@
       label: s_("ProtectedBranch|Toggle code owner approval"),
       is_checked: protected_branch.code_owner_approval_required,
       label_position: :hidden,
-      data: { qa_selector: 'code_owner_toggle_button', qa_branch_name: protected_branch.name })
+      is_disabled: !can_update,
+      data: { qa_selector: 'code_owner_toggle_button', qa_branch_name: protected_branch.name, testid: 'protected-branch-code-owner-toggle' })

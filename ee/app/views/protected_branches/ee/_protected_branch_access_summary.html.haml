@@ -1,13 +1,15 @@
-- can_unprotect = can?(current_user, :update_protected_branch, protected_branch)
+- cannot_unprotect = !local_assigns[:can_update]
 
 %td
-  = render partial: 'projects/settings/ee/access_level_dropdown', locals: { protected_branch: protected_branch, access_levels: protected_branch.merge_access_levels, level_frequencies: access_level_frequencies(protected_branch.merge_access_levels), input_basic_name: 'merge_access_levels', disabled: !can_unprotect, toggle_class: 'js-allowed-to-merge' }
+  = render partial: 'projects/settings/ee/access_level_dropdown', locals: { protected_branch: protected_branch, access_levels: protected_branch.merge_access_levels, level_frequencies: access_level_frequencies(protected_branch.merge_access_levels), input_basic_name: 'merge_access_levels', disabled: cannot_unprotect, toggle_class: 'js-allowed-to-merge', testid: "protected-branch-allowed-to-merge" }
 
 %td
-  = render partial: 'projects/settings/ee/access_level_dropdown', locals: { protected_branch: protected_branch, access_levels: protected_branch.push_access_levels, level_frequencies: access_level_frequencies(protected_branch.push_access_levels), input_basic_name: 'push_access_levels', disabled: !can_unprotect, toggle_class: 'js-allowed-to-push' }
+  = render partial: 'projects/settings/ee/access_level_dropdown', locals: { protected_branch: protected_branch, access_levels: protected_branch.push_access_levels, level_frequencies: access_level_frequencies(protected_branch.push_access_levels), input_basic_name: 'push_access_levels', disabled: cannot_unprotect, toggle_class: 'js-allowed-to-push', testid: 'protected-branch-allowed-to-push' }
 
 %td
   = render Pajamas::ToggleComponent.new(classes: 'js-force-push-toggle',
+    data: { testid: 'protected-branch-force-push-toggle' },
     label: s_("ProtectedBranch|Toggle allowed to force push"),
     is_checked: protected_branch.allow_force_push,
+    is_disabled: cannot_unprotect,
     label_position: :hidden)

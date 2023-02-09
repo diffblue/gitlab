@@ -1,4 +1,7 @@
 - can_unprotect = can?(current_user, :destroy_protected_branch, protected_branch)
 
-= render layout: 'protected_branches/shared/protected_branch', locals: { protected_branch: protected_branch, disabled: !can_unprotect, protected_branch_entity: protected_branch_entity } do
-  = render partial: 'protected_branches/ee/protected_branch_access_summary', locals: { protected_branch: protected_branch }
+- is_inherited = protected_branch_entity.is_a?(Project) && protected_branch.group_level?
+- can_update = !is_inherited && can?(current_user, :update_protected_branch, protected_branch)
+
+= render layout: 'protected_branches/shared/protected_branch', locals: { protected_branch: protected_branch, disabled: !can_unprotect, can_update: can_update, is_inherited: is_inherited, protected_branch_entity: protected_branch_entity } do
+  = render partial: 'protected_branches/ee/protected_branch_access_summary', locals: { protected_branch: protected_branch, can_update: can_update }

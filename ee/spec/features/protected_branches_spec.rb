@@ -5,10 +5,13 @@ require 'spec_helper'
 RSpec.describe 'Protected Branches', :js, feature_category: :source_code_management do
   include ProtectedBranchHelpers
 
-  let(:project) { create(:project, :repository) }
-  let(:user) { project.first_owner }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:group) { create(:group) }
+
+  let_it_be_with_refind(:project) { create(:project, :repository, namespace: group) }
 
   before do
+    project.add_owner(user)
     sign_in(user)
   end
 
@@ -195,6 +198,54 @@ RSpec.describe 'Protected Branches', :js, feature_category: :source_code_managem
 
     include_examples 'Deploy keys with protected branches' do
       let(:all_dropdown_sections) { ['Roles', 'Users', 'Deploy Keys'] }
+    end
+  end
+
+  describe 'inherited protected branches' do
+    let!(:project_protected_branch) { create(:protected_branch, project: project) }
+    let!(:group_protected_branch) { create(:protected_branch, project: nil, group: group) }
+
+    let(:visit_page) { project_settings_repository_path(project) }
+    let(:group_level_tr) { find('[data-testid="protected-branch"][data-test-type="group-level"]') }
+    let(:project_level_tr) { find('[data-testid="protected-branch"][data-test-type="project-level"]') }
+    let(:allowed_to_merge_input) { item_tr.find('[data-testid="protected-branch-allowed-to-merge"]') }
+    let(:allowed_to_push_input) { item_tr.find('[data-testid="protected-branch-allowed-to-push"]') }
+    let(:force_push_toggle) { item_tr.find('[data-testid="protected-branch-force-push-toggle"]') }
+    let(:code_owner_toggle) { item_tr.find('[data-testid="protected-branch-code-owner-toggle"]') }
+    let(:action_td) { item_tr.find('[data-testid="protected-branch-action"]') }
+
+    before do
+      stub_feature_flags(group_protected_branches: true)
+      stub_licensed_features(
+        group_protected_branches: true,
+        code_owner_approval_required: true
+      )
+
+      visit visit_page
+    end
+
+    context 'when project-level item' do
+      let(:item_tr) { project_level_tr }
+
+      it 'all form field are editable', :aggregate_failures do
+        expect(allowed_to_merge_input).not_to be_disabled
+        expect(allowed_to_push_input).not_to be_disabled
+        expect(force_push_toggle).not_to have_css('.is-disabled')
+        expect(code_owner_toggle).not_to have_css('.is-disabled')
+        expect(action_td).to have_css('a.btn', text: 'Unprotect')
+      end
+    end
+
+    context 'when group-level item' do
+      let(:item_tr) { group_level_tr }
+
+      it 'all form field editable are not editable', :aggregate_failures do
+        expect(allowed_to_merge_input).to be_disabled
+        expect(allowed_to_push_input).to be_disabled
+        expect(force_push_toggle).to have_css('.is-disabled')
+        expect(code_owner_toggle).to have_css('.is-disabled')
+        expect(action_td).not_to have_css('a.btn', text: 'Unprotect')
+      end
     end
   end
 end
