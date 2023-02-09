@@ -14,7 +14,7 @@ module Elastic
 
     feature_category :global_search
     idempotent!
-    urgency :throttled
+    urgency :low
 
     def perform
       return false unless preflight_check_successful?

@@ -142,7 +142,7 @@
   :worker_name: Elastic::MigrationWorker
   :feature_category: :global_search
   :has_external_dependencies: false
-  :urgency: :throttled
+  :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
