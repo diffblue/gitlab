@@ -26,6 +26,19 @@ module EE
             .merge(object_storage_scope(node))
         end
 
+        # Search for a list of terraform_state_versions based on the query given in `query`.
+        #
+        # @param [String] query term that will search over :file attribute
+        #
+        # @return [ActiveRecord::Relation<Terraform::StateVersion>] a collection of terraform state versions
+        def search(query)
+          return all if query.empty?
+
+          # The current file format for terraform state versions
+          # uses the following structure: <version or uuid>.tfstate
+          where(sanitize_sql_for_conditions({ file: "#{query}.tfstate" })).limit(1000)
+        end
+
         private
 
         def object_storage_scope(node)

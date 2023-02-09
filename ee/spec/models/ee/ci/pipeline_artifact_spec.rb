@@ -87,23 +87,29 @@ RSpec.describe Ci::PipelineArtifact do
       create(:project, name: 'project_2_name', path: 'project_2_path', description: 'project_desc_2')
     end
 
+    let_it_be(:project3) do
+      create(:project, name: 'another_name', path: 'another_path', description: 'another_description')
+    end
+
     let_it_be(:pipeline1) { create(:ci_pipeline, project: project1) }
     let_it_be(:pipeline2) { create(:ci_pipeline, project: project2) }
+    let_it_be(:pipeline3) { create(:ci_pipeline, project: project3) }
 
     let_it_be(:pipeline_artifact1) { create(:ci_pipeline_artifact, pipeline: pipeline1) }
     let_it_be(:pipeline_artifact2) { create(:ci_pipeline_artifact, pipeline: pipeline2) }
+    let_it_be(:pipeline_artifact3) { create(:ci_pipeline_artifact, pipeline: pipeline3) }
 
     context 'when search query is empty' do
       it 'returns all records' do
         result = described_class.search('')
 
-        expect(result).to contain_exactly(pipeline_artifact1, pipeline_artifact2)
+        expect(result).to contain_exactly(pipeline_artifact1, pipeline_artifact2, pipeline_artifact3)
       end
     end
 
     context 'when search query is not empty' do
       context 'without matches' do
-        it 'filters all job artifacts' do
+        it 'filters all pipeline artifacts' do
           result = described_class.search('something_that_does_not_exist')
 
           expect(result).to be_empty
