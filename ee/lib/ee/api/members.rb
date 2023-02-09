@@ -139,30 +139,6 @@ module EE
                     shared_project_user_ids: result[:shared_project_user_ids]
           end
 
-          desc 'Changes the member role of a member in the group'
-
-          params do
-            requires 'member_role_id', type: Integer, desc: 'The ID of the member role to associate with the user'
-          end
-
-          patch ":id/members/:user_id/member_role", feature_category: :authentication_and_authorization do
-            not_found! unless user_group.custom_roles_enabled?
-            authorize_admin_group
-            not_found!('Group') unless user_group
-            member_role = user_group.member_roles.find_by_id(params[:member_role_id])
-            not_found!('Member Role') unless member_role
-
-            member = user_group.members.find_by_user_id(params[:user_id])
-            not_found!('Member') unless member
-
-            member.member_role = member_role
-
-            render_api_error!(member.errors.full_messages.to_sentence, 400) unless member.valid?
-
-            member.save!
-            present member, with: ::API::Entities::Member
-          end
-
           desc 'Changes the state of the memberships of a user in the group'
           params do
             requires :user_id, type: Integer, desc: 'The user ID of the user'
