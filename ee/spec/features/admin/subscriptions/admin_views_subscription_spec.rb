@@ -127,7 +127,8 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
         end
       end
 
-      it 'displays an error when the activation fails' do
+      it 'displays an error when the activation fails',
+        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/390580' do
         stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL).to_return(status: 422, body: '', headers: {})
 
         within_modal do
@@ -137,7 +138,7 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
         end
       end
 
-      it 'displays a connectivity error' do
+      it 'displays a connectivity error', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/391244' do
         stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL)
           .to_return(status: 500, body: '', headers: {})
 
