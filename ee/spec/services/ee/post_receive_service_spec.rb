@@ -141,11 +141,7 @@ RSpec.describe PostReceiveService, :geo do
       end
 
       context 'when namespace size limit enforcement' do
-        let_it_be(:group) { create(:group) }
-        let_it_be(:project) { create(:project, namespace: group) }
-
         before do
-          group.add_owner(user)
           stub_ee_application_setting(automatic_purchased_storage_allocation: true)
           stub_ee_application_setting(should_check_namespace_plan: true)
           stub_ee_application_setting(enforce_namespace_storage_limit: true)
@@ -155,13 +151,35 @@ RSpec.describe PostReceiveService, :geo do
           end
         end
 
-        it 'returns warning message' do
-          expect(subject).to match_array([{ "message" => "##### WARNING #####\nYou have used 96% of the storage quota for #{group.name} " \
-                                                         "(11 Bytes of 12 Bytes).\nIf #{group.name} exceeds the storage quota, " \
-                                                         "all projects in the namespace will be locked and actions will be restricted. " \
-                                                         "To manage storage, or purchase additional storage, " \
-                                                         "see http://localhost/help/user/usage_quotas#manage-your-storage-usage. " \
-                                                         "To learn more about restricted actions, see http://localhost/help/user/read_only_namespaces#restricted-actions", "type" => "alert" }])
+        context 'with a personal namespace' do
+          let_it_be(:project) { create(:project, namespace: user.namespace) }
+
+          it 'returns warning message' do
+            expect(subject).to match_array([{ "message" => "##### WARNING #####\nYou have used 96% of the storage quota for #{project.namespace.name} " \
+                                                           "(11 Bytes of 12 Bytes).\nIf #{project.namespace.name} exceeds the storage quota, " \
+                                                           "all projects in the namespace will be locked and actions will be restricted. " \
+                                                           "To manage storage, or purchase additional storage, " \
+                                                           "see http://localhost/help/user/usage_quotas#manage-your-storage-usage. " \
+                                                           "To learn more about restricted actions, see http://localhost/help/user/read_only_namespaces#restricted-actions", "type" => "alert" }])
+          end
+        end
+
+        context 'with a group namespace' do
+          let_it_be(:group) { create(:group) }
+          let_it_be(:project) { create(:project, namespace: group) }
+
+          before do
+            group.add_owner(user)
+          end
+
+          it 'returns warning message' do
+            expect(subject).to match_array([{ "message" => "##### WARNING #####\nYou have used 96% of the storage quota for #{group.name} " \
+                                                           "(11 Bytes of 12 Bytes).\nIf #{group.name} exceeds the storage quota, " \
+                                                           "all projects in the namespace will be locked and actions will be restricted. " \
+                                                           "To manage storage, or purchase additional storage, " \
+                                                           "see http://localhost/help/user/usage_quotas#manage-your-storage-usage. " \
+                                                           "To learn more about restricted actions, see http://localhost/help/user/read_only_namespaces#restricted-actions", "type" => "alert" }])
+          end
         end
       end
     end
