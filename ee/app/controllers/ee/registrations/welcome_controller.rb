@@ -5,28 +5,11 @@ module EE
     module WelcomeController
       extend ActiveSupport::Concern
       extend ::Gitlab::Utils::Override
-      include ::Gitlab::Utils::StrongMemoize
 
       prepended do
         include OneTrustCSP
         include GoogleAnalyticsCSP
         include Onboarding::SetRedirect
-
-        before_action only: [:continuous_onboarding_getting_started, :show] do
-          push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
-        end
-      end
-
-      def continuous_onboarding_getting_started
-        project = ::Project.find(params[:project_id])
-        return access_denied! unless can?(current_user, :owner_access, project)
-
-        cookies[:confetti_post_signup] = true
-
-        label = helpers.in_trial_onboarding_flow? ? 'trial_registration' : 'free_registration'
-        track_event('render', label)
-
-        render locals: { project: project, track_label: label }
       end
 
       private

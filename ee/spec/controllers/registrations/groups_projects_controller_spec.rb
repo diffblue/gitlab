@@ -268,7 +268,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
       context 'when redirecting' do
         let_it_be(:project) { create(:project) }
 
-        let(:success_path) { continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: project.id) }
+        let(:success_path) { onboarding_project_learn_gitlab_path(project) }
 
         before do
           allow_next_instance_of(::Projects::CreateService) do |service|
@@ -280,13 +280,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
 
         context 'when trial_onboarding_flow' do
           let(:extra_params) { { trial_onboarding_flow: true } }
-
-          let(:success_path) do
-            continuous_onboarding_getting_started_users_sign_up_welcome_path(
-              project_id: project.id,
-              trial_onboarding_flow: true
-            )
-          end
+          let(:success_path) { onboarding_project_learn_gitlab_path(project, trial_onboarding_flow: true) }
 
           it { is_expected.to redirect_to(success_path) }
         end

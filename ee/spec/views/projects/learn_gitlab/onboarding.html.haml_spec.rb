@@ -2,14 +2,15 @@
 
 require 'spec_helper'
 
-RSpec.describe 'registrations/welcome/continuous_onboarding_getting_started', feature_category: :onboarding do
+RSpec.describe 'projects/learn_gitlab/onboarding', feature_category: :onboarding do
   describe 'project import state' do
-    let_it_be(:project) { create(:project) }
+    let(:project) { build(:project) }
 
     subject { rendered }
 
     before do
-      allow(view).to receive(:project).and_return(project)
+      assign(:project, project)
+      assign(:track_label, 'free_registration')
       allow(view).to receive(:track_label).and_return('free_registration')
       allow(view).to receive(:learn_gitlab_onboarding_available?).and_return(project_available)
 
@@ -17,7 +18,7 @@ RSpec.describe 'registrations/welcome/continuous_onboarding_getting_started', fe
     end
 
     context 'when onboarding project is ready' do
-      let_it_be(:project_available) { true }
+      let(:project_available) { true }
 
       it { is_expected.to have_content("Ok, let's go") }
       it { is_expected.not_to have_content('Creating your onboarding experience...') }
@@ -30,7 +31,7 @@ RSpec.describe 'registrations/welcome/continuous_onboarding_getting_started', fe
     end
 
     context 'when onboarding project is not yet ready' do
-      let_it_be(:project_available) { false }
+      let(:project_available) { false }
 
       it { is_expected.not_to have_content("Ok, let's go") }
       it { is_expected.to have_content('Creating your onboarding experience...') }

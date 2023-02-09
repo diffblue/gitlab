@@ -40,7 +40,7 @@ module Registrations
       if result.success?
         track_event('successfully_submitted_form')
         finish_onboarding
-        redirect_successful_namespace_creation(result.payload[:project].id)
+        redirect_successful_namespace_creation(result.payload[:project])
       else
         @group = result.payload[:group]
         @project = result.payload[:project]
@@ -81,9 +81,8 @@ module Registrations
       access_denied! unless can?(current_user, :create_group)
     end
 
-    def redirect_successful_namespace_creation(project_id)
-      redirect_path = continuous_onboarding_getting_started_users_sign_up_welcome_path(
-        project_id: project_id,
+    def redirect_successful_namespace_creation(project)
+      redirect_path = onboarding_project_learn_gitlab_path(project,
         trial_onboarding_flow: params[:trial_onboarding_flow]
       )
 
@@ -91,7 +90,7 @@ module Registrations
         e.control { redirect_to redirect_path }
         e.candidate do
           store_location_for(:user, redirect_path)
-          redirect_to new_users_sign_up_verification_path(project_id: project_id)
+          redirect_to new_users_sign_up_verification_path(project_id: project.id)
         end
       end
     end

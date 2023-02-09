@@ -19,9 +19,7 @@ module Registrations
 
     def set_next_step_url
       @next_step_url = if params[:project_id].present?
-                         continuous_onboarding_getting_started_users_sign_up_welcome_path(
-                           params.slice(:project_id).permit!
-                         )
+                         onboarding_project_learn_gitlab_path(::Project.find_by_id(params[:project_id]))
                        else
                          root_path
                        end
