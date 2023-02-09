@@ -27564,6 +27564,9 @@ msgstr ""
 msgid "My company or team"
 msgstr ""
 
+msgid "My saved replies (%{count})"
+msgstr ""
+
 msgid "My topic"
 msgstr ""
 
@@ -37337,6 +37340,12 @@ msgid "Save password"
 msgstr ""
 
 msgid "Save pipeline schedule"
+msgstr ""
+
+msgid "Saved Replies"
+msgstr ""
+
+msgid "Saved replies can be used when creating comments inside issues, merge requests, and epics."
 msgstr ""
 
 msgid "Saving"
