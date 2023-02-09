@@ -45,6 +45,10 @@ module Elastic
           data['schema_version'] = 23_01
         end
 
+        if ::Elastic::DataMigrationService.migration_has_finished?(:add_traversal_ids_to_original_index_mapping)
+          data['traversal_ids'] = target.elastic_namespace_ancestry
+        end
+
         # Somehow projects are being created and sent for indexing without an associated project_feature
         # https://gitlab.com/gitlab-org/gitlab/-/issues/232654
         # When this happens, log the errors to help with debugging, and raise the error to prevent indexing bad data

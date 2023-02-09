@@ -56,6 +56,13 @@ module Elastic
             exists: {
               field: field_name
             }
+          },
+          must: {
+            term: {
+              type: {
+                value: self.class::DOCUMENT_TYPE.es_type
+              }
+            }
           }
         }
       }
@@ -77,7 +84,9 @@ module Elastic
       document_references = hits.map! do |hit|
         id = hit.dig('_source', 'id')
         es_id = hit['_id']
-        es_parent = "project_#{hit.dig('_source', 'project_id')}"
+
+        # es_parent attribute is used for routing but is nil for some records, e.g., projects, users
+        es_parent = hit['_routing']
 
         Gitlab::Elastic::DocumentReference.new(self.class::DOCUMENT_TYPE, id, es_id, es_parent)
       end
