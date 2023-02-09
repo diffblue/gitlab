@@ -58,6 +58,10 @@ module Resolvers
           label: [:label]
         }
       end
+
+      def resource_parent
+        epic_board.resource_parent
+      end
     end
   end
 end
