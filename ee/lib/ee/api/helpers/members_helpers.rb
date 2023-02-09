@@ -24,6 +24,10 @@ module EE
           params :optional_state_filter_ee do
             optional :state, type: String, desc: 'Filter results by member state', values: %w(awaiting active)
           end
+
+          params :optional_put_params_ee do
+            optional :member_role_id, type: Integer, desc: 'The ID of the Member Role to be updated'
+          end
         end
 
         class_methods do
