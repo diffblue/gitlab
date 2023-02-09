@@ -191,7 +191,7 @@ export default {
         class="board-cell gl-p-2 gl-m-0 gl-h-full gl-list-style-none"
         :class="{
           'board-column-highlighted': highlighted,
-          'bg-danger-100 gl-rounded-base': boardItemsSizeExceedsMax,
+          'gl-bg-red-100 gl-rounded-base': boardItemsSizeExceedsMax,
         }"
         data-testid="tree-root-wrapper"
         @start="handleDragOnStart"

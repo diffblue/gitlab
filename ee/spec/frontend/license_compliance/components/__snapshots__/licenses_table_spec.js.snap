@@ -2,7 +2,7 @@
 
 exports[`LicensesTable component given a list of licenses (loaded) renders the table headers 1`] = `
 <div
-  class="gl-responsive-table-row table-row-header text-2 bg-secondary-50 px-2"
+  class="gl-responsive-table-row table-row-header text-2 gl-bg-gray-50 px-2"
   role="row"
 >
   <div
@@ -26,7 +26,7 @@ exports[`LicensesTable component given a list of licenses (loaded) renders the t
 
 exports[`LicensesTable component given a list of licenses (loading) renders the table headers 1`] = `
 <div
-  class="gl-responsive-table-row table-row-header text-2 bg-secondary-50 px-2"
+  class="gl-responsive-table-row table-row-header text-2 gl-bg-gray-50 px-2"
   role="row"
 >
   <div
@@ -50,7 +50,7 @@ exports[`LicensesTable component given a list of licenses (loading) renders the 
 
 exports[`LicensesTable component given an empty list of licenses renders the table headers 1`] = `
 <div
-  class="gl-responsive-table-row table-row-header text-2 bg-secondary-50 px-2"
+  class="gl-responsive-table-row table-row-header text-2 gl-bg-gray-50 px-2"
   role="row"
 >
   <div
