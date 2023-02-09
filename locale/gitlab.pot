@@ -47749,6 +47749,54 @@ msgstr ""
 msgid "VulnerabilityDismissalReasons|Used in tests"
 msgstr ""
 
+msgid "VulnerabilityExport|Activity"
+msgstr ""
+
+msgid "VulnerabilityExport|Additional Info"
+msgstr ""
+
+msgid "VulnerabilityExport|CVE"
+msgstr ""
+
+msgid "VulnerabilityExport|CWE"
+msgstr ""
+
+msgid "VulnerabilityExport|Comments"
+msgstr ""
+
+msgid "VulnerabilityExport|Details"
+msgstr ""
+
+msgid "VulnerabilityExport|Detected At"
+msgstr ""
+
+msgid "VulnerabilityExport|Group Name"
+msgstr ""
+
+msgid "VulnerabilityExport|Location"
+msgstr ""
+
+msgid "VulnerabilityExport|Other Identifiers"
+msgstr ""
+
+msgid "VulnerabilityExport|Project Name"
+msgstr ""
+
+msgid "VulnerabilityExport|Scanner Name"
+msgstr ""
+
+msgid "VulnerabilityExport|Severity"
+msgstr ""
+
+msgid "VulnerabilityExport|Status"
+msgstr ""
+
+msgid "VulnerabilityExport|Tool"
+msgstr ""
+
+msgid "VulnerabilityExport|Vulnerability"
+msgstr ""
+
 msgid "VulnerabilityManagement|%{statusStart}Confirmed%{statusEnd} %{timeago} by %{user}"
 msgstr ""
 
