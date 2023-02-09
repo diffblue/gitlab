@@ -3712,7 +3712,7 @@ msgstr ""
 msgid "Airflow|Either the Airflow instance does not contain DAGs or has yet to be configured"
 msgstr ""
 
-msgid "Airflow|GitLab Airflow integration is in the Incubating Phase."
+msgid "Airflow|GitLab Airflow integration"
 msgstr ""
 
 msgid "Airflow|Is active"
@@ -17519,9 +17519,6 @@ msgid "Feb"
 msgstr ""
 
 msgid "February"
-msgstr ""
-
-msgid "Feedback"
 msgstr ""
 
 msgid "Feedback and Updates"
