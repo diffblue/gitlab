@@ -85,18 +85,20 @@ RSpec.describe 'get list of epic boards', feature_category: :portfolio_managemen
       end
 
       it 'returns the correct metadata values' do
-        label = create(:group_label, group: group)
+        label1 = create(:group_label, group: group)
+        label2 = create(:group_label, group: group)
         # Epics in backlog, the list which is returned first. The first epic
         # should be ignored because it doesn't have the label by which we are
         # filtering.
         create(:labeled_epic, group: group)
-        create(:labeled_epic, group: group, labels: [label], confidential: true)
-        epic_with_issue = create(:labeled_epic, group: group, labels: [label])
+        create(:labeled_epic, group: group, labels: [label1], confidential: true)
+        create(:labeled_epic, group: group, labels: [label2], confidential: true)
+        epic_with_issue = create(:labeled_epic, group: group, labels: [label1])
 
         create(:issue, project: project, epic: epic_with_issue, weight: 3)
         create(:issue, project: project, epic: epic_with_issue, weight: 4)
 
-        params = { epicFilters: { labelName: label.title, confidential: false } }
+        params = { epicFilters: { or: { labelName: [label1.title, label2.title] }, confidential: false } }
         post_graphql(pagination_query(params), current_user: current_user)
 
         expect(list_nodes).to match [
