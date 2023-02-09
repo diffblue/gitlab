@@ -217,43 +217,55 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_cate
   end
 
   describe '.as_indexed_json' do
-    [true, false].each do |migration_finished|
-      context "when add_schema_version_to_main_index_mapping is #{migration_finished ? '' : 'not '}finished" do
-        before do
-          set_elasticsearch_migration_to :add_schema_version_to_main_index_mapping, including: migration_finished
-        end
+    let_it_be(:project) { create(:project) }
 
-        it 'returns json with all needed elements' do
-          project = create :project
+    it 'returns json with all needed elements' do
+      expected_hash = project.attributes.extract!(
+        'id',
+        'name',
+        'path',
+        'description',
+        'namespace_id',
+        'created_at',
+        'archived',
+        'updated_at',
+        'visibility_level',
+        'last_activity_at'
+      ).merge({
+        'join_field' => project.es_type,
+        'type' => project.es_type,
+        'schema_version' => 2301,
+        'traversal_ids' => project.elastic_namespace_ancestry,
+        'name_with_namespace' => project.full_name,
+        'path_with_namespace' => project.full_path
+      })
 
-          expected_hash = project.attributes.extract!(
-            'id',
-            'name',
-            'path',
-            'description',
-            'namespace_id',
-            'created_at',
-            'archived',
-            'updated_at',
-            'visibility_level',
-            'last_activity_at'
-          ).merge({ 'join_field' => project.es_type, 'type' => project.es_type })
+      expected_hash.merge!(
+        project.project_feature.attributes.extract!(
+          'issues_access_level',
+          'merge_requests_access_level',
+          'snippets_access_level',
+          'wiki_access_level',
+          'repository_access_level'
+        )
+      )
 
-          expected_hash.merge!(
-            project.project_feature.attributes.extract!(
-              'issues_access_level',
-              'merge_requests_access_level',
-              'snippets_access_level',
-              'wiki_access_level',
-              'repository_access_level'
-            )
-          )
+      expect(project.__elasticsearch__.as_indexed_json).to eq(expected_hash)
+    end
 
-          expected_hash['name_with_namespace'] = project.full_name
-          expected_hash['path_with_namespace'] = project.full_path
-          expected_hash['schema_version'] = 2301 if migration_finished
-          expect(project.__elasticsearch__.as_indexed_json).to eq(expected_hash)
-        end
+    context 'when add_schema_version_to_main_index_mapping migration is not finished' do
+      it 'does not include schema_version' do
+        set_elasticsearch_migration_to :add_schema_version_to_main_index_mapping, including: false
+
+        expect(project.__elasticsearch__.as_indexed_json).not_to include(:schema_version)
+      end
+    end
+
+    context 'when backfill_traversal_ids_for_projects migration is not finished' do
+      it 'does not include traversal_ids' do
+        set_elasticsearch_migration_to :backfill_traversal_ids_for_projects, including: false
+
+        expect(project.__elasticsearch__.as_indexed_json).not_to include(:traversal_ids)
       end
     end
   end
