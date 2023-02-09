@@ -504,13 +504,18 @@ export const pipelineSecurityReportFinding = {
   details: Object.values(vulnerabilityDetails),
 };
 
-export const getPipelineSecurityReportFindingResponse = (withoutFindingData = false) => ({
+export const getPipelineSecurityReportFindingResponse = ({
+  overrides = {},
+  withoutFindingData = false,
+} = {}) => ({
   data: {
     project: {
       id: '1',
       pipeline: {
         id: '1',
-        securityReportFinding: withoutFindingData ? null : pipelineSecurityReportFinding,
+        securityReportFinding: withoutFindingData
+          ? null
+          : { ...pipelineSecurityReportFinding, ...overrides },
       },
     },
   },

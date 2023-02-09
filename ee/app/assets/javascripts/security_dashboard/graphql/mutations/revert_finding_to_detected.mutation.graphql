@@ -1,0 +1,5 @@
+mutation revertFindingToDetected($uuid: String!) {
+  securityFindingRevertToDetected(input: { uuid: $uuid }) {
+    errors
+  }
+}
