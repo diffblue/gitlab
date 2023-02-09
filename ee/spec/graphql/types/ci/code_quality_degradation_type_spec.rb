@@ -10,7 +10,8 @@ RSpec.describe GitlabSchema.types['CodeQualityDegradation'] do
       :severity,
       :web_url,
       :path,
-      :line
+      :line,
+      :engine_name
     )
   end
 end
