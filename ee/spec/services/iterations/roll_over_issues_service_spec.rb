@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Iterations::RollOverIssuesService do
+RSpec.describe Iterations::RollOverIssuesService, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:closed_iteration1) { create(:closed_iteration, group: group) }
@@ -62,6 +62,12 @@ RSpec.describe Iterations::RollOverIssuesService do
         end
 
         it { is_expected.to be_error }
+
+        it 'does not triggers note created subscription' do
+          expect(GraphqlTriggers).not_to receive(:work_item_note_created)
+
+          subject
+        end
       end
     end
 
@@ -87,6 +93,15 @@ RSpec.describe Iterations::RollOverIssuesService do
 
           expect(current_iteration.reload.issues).to match_array(open_issues)
           expect(closed_iteration1.reload.issues).to match_array(closed_issues)
+        end
+
+        it 'triggers note created subscription' do
+          # since we have one open issue it gets 2 events:
+          # 1. for the removed closed iteration
+          # 2. for the new current iteration
+          expect(GraphqlTriggers).to receive(:work_item_note_created).twice
+
+          subject
         end
       end
     end

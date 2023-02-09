@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ResourceEvents::ChangeWeightService do
+RSpec.describe ResourceEvents::ChangeWeightService, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
 
   let(:issue) { create(:issue, weight: 3) }
@@ -49,6 +49,12 @@ RSpec.describe ResourceEvents::ChangeWeightService do
 
       record = ResourceWeightEvent.last
       expect_event_record(record, weight: 5, created_at: created_at_time)
+    end
+
+    it 'triggers note created subscription' do
+      expect(GraphqlTriggers).to receive(:work_item_note_created).twice
+
+      subject
     end
   end
 

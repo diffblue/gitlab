@@ -10,14 +10,18 @@ module ResourceEvents
     end
 
     def execute
-      ::ApplicationRecord.legacy_bulk_insert(ResourceWeightEvent.table_name, resource_weight_changes) # rubocop:disable Gitlab/BulkInsert
+      ids = ::ApplicationRecord.legacy_bulk_insert( # rubocop:disable Gitlab/BulkInsert
+        ResourceWeightEvent.table_name, resource_weight_changes, return_ids: true
+      )
+      ResourceWeightEvent.id_in(ids).with_work_item.each(&:trigger_note_subscription_create)
+
       resource.expire_note_etag_cache
 
       if resource.is_a?(WorkItem)
         Gitlab::UsageDataCounters::WorkItemActivityUniqueCounter.track_work_item_weight_changed_action(author: user)
       else
-        Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_weight_changed_action(author: user,
-                                                                                                project: resource.project)
+        tracking_data = { author: user, project: resource.project }
+        Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_weight_changed_action(**tracking_data)
       end
     end
 
