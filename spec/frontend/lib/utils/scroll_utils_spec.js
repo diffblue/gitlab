@@ -1,30 +1,11 @@
 import { isScrolledToBottom } from '~/lib/utils/scroll_utils';
 
 describe('isScrolledToBottom', () => {
-  const setDocumentElementProperties = ({ scrollTop, clientHeight, scrollHeight }) => {
-    Object.defineProperties(Element.prototype, {
-      scrollTop: {
-        get() {
-          return scrollTop;
-        },
-      },
-      clientHeight: {
-        get() {
-          return clientHeight;
-        },
-      },
-      scrollHeight: {
-        get() {
-          return scrollHeight;
-        },
-      },
+  const setScrollGetters = (getters) => {
+    Object.entries(getters).forEach(([name, value]) => {
+      jest.spyOn(Element.prototype, name, 'get').mockReturnValue(value);
     });
   };
-
-  afterEach(() => {
-    // Approximately reset to jsdom's default behaviour.
-    setDocumentElementProperties({ scrollTop: 0, clientHeight: 0, scrollHeight: 0 });
-  });
 
   it.each`
     context                                                           | scrollTop | scrollHeight | result
@@ -33,7 +14,7 @@ describe('isScrolledToBottom', () => {
     ${'returns true when scrolled to bottom with subpixel precision'} | ${999.25} | ${2000}      | ${true}
     ${'returns true when cannot scroll'}                              | ${0}      | ${500}       | ${true}
   `('$context', ({ scrollTop, scrollHeight, result }) => {
-    setDocumentElementProperties({ scrollTop, clientHeight: 1000, scrollHeight });
+    setScrollGetters({ scrollTop, clientHeight: 1000, scrollHeight });
 
     expect(isScrolledToBottom()).toBe(result);
   });
