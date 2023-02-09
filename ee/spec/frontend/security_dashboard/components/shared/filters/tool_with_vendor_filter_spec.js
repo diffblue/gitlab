@@ -5,11 +5,11 @@ import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_i
 import ToolWithVendorFilter, {
   VENDOR_GITLAB,
   REPORT_TYPES,
-  GRAPHQL_TYPE_SCANNER,
   NULL_SCANNER_ID,
 } from 'ee/security_dashboard/components/shared/filters/tool_with_vendor_filter.vue';
 import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
 import { ALL_ID } from 'ee/security_dashboard/components/shared/filters/constants';
+import { TYPENAME_VULNERABILITIES_SCANNER } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import DropdownButtonText from 'ee/security_dashboard/components/shared/filters/dropdown_button_text.vue';
 
@@ -215,7 +215,9 @@ describe('Tool With Vendor Filter component', () => {
   describe('filter-changed event', () => {
     it('emits expected event data for selected items', async () => {
       const scanners = [...GITLAB_SCANNERS, ...CUSTOM_SCANNERS];
-      const ids = scanners.map(({ id }) => convertToGraphQLId(GRAPHQL_TYPE_SCANNER, id)).sort();
+      const ids = scanners
+        .map(({ id }) => convertToGraphQLId(TYPENAME_VULNERABILITIES_SCANNER, id))
+        .sort();
 
       createWrapper({ scanners });
       clickDropdownItem(VENDOR_GITLAB);
