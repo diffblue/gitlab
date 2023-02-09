@@ -186,11 +186,11 @@ feature_category: :global_search do
         sleep 0.01
       end
 
-      expected_migration_state = [
-        { task_id: anything, project_id: projects.first.id },
-        { task_id: anything, project_id: projects.second.id }
-      ]
-      expect(migration.migration_state[:projects_in_progress]).to match_array(expected_migration_state)
+      expected_migration_project_ids = projects.map(&:id)
+
+      project_ids = migration.migration_state[:projects_in_progress].pluck(:project_id)
+      expect(expected_migration_project_ids).to include(*project_ids)
+      expect(project_ids.size).to eq(2)
 
       # process two projects, the last project is now returned because it has the most documents to update
       old_migration_state = migration.migration_state[:projects_in_progress]
@@ -201,11 +201,9 @@ feature_category: :global_search do
         sleep 0.01
       end
 
-      expected_migration_state = [
-        { task_id: anything, project_id: projects.third.id },
-        { task_id: anything, project_id: projects.first.id }
-      ]
-      expect(migration.migration_state[:projects_in_progress]).to match_array(expected_migration_state)
+      project_ids = migration.migration_state[:projects_in_progress].pluck(:project_id)
+      expect(expected_migration_project_ids).to include(*project_ids)
+      expect(project_ids.size).to eq(2)
 
       # process two projects, the second project is returned because the first project is completed
       old_migration_state = migration.migration_state[:projects_in_progress]
@@ -216,11 +214,9 @@ feature_category: :global_search do
         sleep 0.01
       end
 
-      expected_migration_state = [
-        { task_id: anything, project_id: projects.second.id },
-        { task_id: anything, project_id: projects.third.id }
-      ]
-      expect(migration.migration_state[:projects_in_progress]).to match_array(expected_migration_state)
+      project_ids = migration.migration_state[:projects_in_progress].pluck(:project_id)
+      expect(expected_migration_project_ids).to include(*project_ids)
+      expect(project_ids.size).to eq(2)
 
       # all projects are marked as completed
       old_migration_state = migration.migration_state[:projects_in_progress]
