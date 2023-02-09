@@ -2,6 +2,8 @@
 
 class Epic::RelatedEpicLink < ApplicationRecord
   include IssuableLink
+  include CreatedAtFilterable
+  include UpdatedAtFilterable
 
   self.table_name = 'related_epic_links'
 
@@ -11,6 +13,13 @@ class Epic::RelatedEpicLink < ApplicationRecord
   belongs_to :target, class_name: 'Epic'
 
   validate :validate_max_epic_relations, on: :create
+
+  scope :with_api_entity_associations, -> do
+    preload(
+      source: [:author, :labels, { group: [:saml_provider, :route] }],
+      target: [:author, :labels, { group: [:saml_provider, :route] }]
+    )
+  end
 
   class << self
     extend ::Gitlab::Utils::Override

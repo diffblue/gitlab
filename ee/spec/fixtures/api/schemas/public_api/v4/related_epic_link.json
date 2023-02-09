@@ -1,22 +1,46 @@
 {
   "type": "object",
-  "properties" : {
-     "source_epic": {
-       "allOf": [
-          { "$ref": "epic.json" }
-        ]
-     },
-     "target_epic": {
-       "allOf": [
-          { "$ref": "epic.json" }
-        ]
-     },
-     "link_type": {
-       "type": "string",
-       "enum": ["relates_to", "blocks", "is_blocked_by"]
-     },
-     "link_created_at": { "type": "string" },
-     "link_updated_at": { "type": "string" }
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "source_epic": {
+      "allOf": [
+        {
+          "$ref": "epic.json"
+        }
+      ]
+    },
+    "target_epic": {
+      "allOf": [
+        {
+          "$ref": "epic.json"
+        }
+      ]
+    },
+    "link_type": {
+      "type": "string",
+      "enum": [
+        "relates_to",
+        "blocks",
+        "is_blocked_by"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
   },
-  "required" : [ "source_epic", "target_epic", "link_type" ]
+  "required": [
+    "id",
+    "source_epic",
+    "target_epic",
+    "link_type",
+    "created_at",
+    "updated_at"
+  ]
 }
