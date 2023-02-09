@@ -14,7 +14,6 @@ export default {
   extends: SimpleFilter,
   apollo: {
     images: {
-      loadingKey: 'isLoading',
       query() {
         return this.isAgentDashboard ? agentImagesQuery : projectImagesQuery;
       },
@@ -51,7 +50,6 @@ export default {
   },
   data() {
     return {
-      isLoading: 0,
       images: [],
     };
   },
@@ -67,6 +65,9 @@ export default {
     options() {
       return this.images;
     },
+    isLoading() {
+      return this.$apollo.queries.images.loading;
+    },
   },
   watch: {
     options() {
@@ -77,11 +78,7 @@ export default {
 </script>
 
 <template>
-  <filter-body
-    :name="filter.name"
-    :selected-options="selectedOptionsOrAll"
-    :loading="Boolean(isLoading)"
-  >
+  <filter-body :name="filter.name" :selected-options="selectedOptionsOrAll" :loading="isLoading">
     <filter-item
       :is-checked="isNoOptionsSelected"
       :text="filter.allOption.name"

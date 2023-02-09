@@ -36,7 +36,6 @@ export default {
   inject: ['dashboardType', 'fullPath'],
   apollo: {
     vulnerabilityScanners: {
-      loadingKey: 'isLoading',
       query() {
         return this.query;
       },
@@ -65,7 +64,6 @@ export default {
   },
   data() {
     return {
-      isLoading: 0,
       vulnerabilityScanners: [],
     };
   },
@@ -82,6 +80,9 @@ export default {
 
       return { fullPath: this[fullPath] };
     },
+    isLoading() {
+      return this.$apollo.queries.vulnerabilityScanners.loading;
+    },
   },
   i18n: {
     disabledTooltip: s__('SecurityReports|Not available'),
@@ -90,11 +91,7 @@ export default {
 </script>
 
 <template>
-  <filter-body
-    :name="filter.name"
-    :selected-options="selectedOptionsOrAll"
-    :loading="Boolean(isLoading)"
-  >
+  <filter-body :name="filter.name" :selected-options="selectedOptionsOrAll" :loading="isLoading">
     <filter-item
       :is-checked="isNoOptionsSelected"
       :text="filter.allOption.name"
