@@ -20,8 +20,18 @@ module Iterations
 
         ApplicationRecord.transaction do
           issues.update_all(sprint_id: to_iteration.id, updated_at: rolled_over_at)
-          ApplicationRecord.legacy_bulk_insert(ResourceIterationEvent.table_name, remove_iteration_events) # rubocop:disable Gitlab/BulkInsert
-          ApplicationRecord.legacy_bulk_insert(ResourceIterationEvent.table_name, add_iteration_events) # rubocop:disable Gitlab/BulkInsert
+
+          # rubocop:disable Gitlab/BulkInsert
+          removed_ids = ApplicationRecord.legacy_bulk_insert(
+            ResourceIterationEvent.table_name, remove_iteration_events, return_ids: true
+          )
+          added_ids = ApplicationRecord.legacy_bulk_insert(
+            ResourceIterationEvent.table_name, add_iteration_events, return_ids: true
+          )
+          # rubocop:enable Gitlab/BulkInsert
+
+          ResourceIterationEvent.id_in(removed_ids).with_work_item.each(&:trigger_note_subscription_create)
+          ResourceIterationEvent.id_in(added_ids).with_work_item.each(&:trigger_note_subscription_create)
         end
       end
 
