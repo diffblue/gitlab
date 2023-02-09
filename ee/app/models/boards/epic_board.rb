@@ -8,12 +8,14 @@ module Boards
     has_many :epic_board_recent_visits, foreign_key: :epic_board_id, inverse_of: :epic_board
     has_many :epic_lists, -> { ordered }, foreign_key: :epic_board_id, inverse_of: :epic_board
     has_many :labels, through: :epic_board_labels
+    has_many :destroyable_lists, -> { destroyable.ordered }, foreign_key: :epic_board_id,
+      class_name: 'EpicList', inverse_of: :epic_board
 
     validates :name, length: { maximum: 255 }, presence: true
 
     scope :order_by_name_asc, -> { order(arel_table[:name].lower.asc).order(id: :asc) }
     scope :for_groups, ->(ids) { where(group_id: ids) }
-    scope :with_api_entity_associations, -> { preload(:epic_lists, :labels) }
+    scope :with_api_entity_associations, -> { preload(:labels, epic_lists: :label) }
 
     def lists
       epic_lists

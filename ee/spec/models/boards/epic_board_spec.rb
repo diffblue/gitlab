@@ -9,6 +9,11 @@ RSpec.describe Boards::EpicBoard do
     it { is_expected.to have_many(:epic_board_positions).inverse_of(:epic_board) }
     it { is_expected.to have_many(:epic_board_recent_visits).inverse_of(:epic_board) }
     it { is_expected.to have_many(:epic_lists).order(list_type: :asc, position: :asc).inverse_of(:epic_board) }
+
+    it do
+      is_expected.to have_many(:destroyable_lists).class_name('EpicList')
+        .order(list_type: :asc, position: :asc).inverse_of(:epic_board)
+    end
   end
 
   describe 'validations' do

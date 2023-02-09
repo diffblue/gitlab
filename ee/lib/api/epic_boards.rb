@@ -16,11 +16,15 @@ module API
 
     helpers do
       def epic_board
-        epic_boards.find(declared_params[:board_id])
+        epic_boards.find(params[:board_id])
       end
 
       def epic_boards
         ::Boards::EpicBoardsFinder.new(user_group).execute.with_api_entity_associations
+      end
+
+      def epic_lists
+        epic_board.destroyable_lists.preload_associated_models
       end
     end
 
@@ -64,6 +68,48 @@ module API
           authorize!(:read_epic_board, user_group)
 
           present epic_board, with: Entities::EpicBoard
+        end
+      end
+
+      params do
+        requires :board_id, type: Integer, desc: 'The ID of an epic board', documentation: { example: 1 }
+      end
+      segment ':id/epic_boards/:board_id' do
+        desc 'Get the lists of a group epic board' do
+          detail 'Does not include backlog and closed lists. This feature was introduced in 15.9'
+          success Entities::EpicBoards::List
+          is_array true
+          failure [
+            { code: 401, message: 'Unauthorized' },
+            { code: 403, message: 'Forbidden' },
+            { code: 404, message: 'Not found' }
+          ]
+        end
+        params do
+          use :pagination
+        end
+        get '/lists' do
+          authorize!(:read_epic_board, epic_board)
+
+          present paginate(epic_lists), with: Entities::EpicBoards::ListDetails
+        end
+
+        desc 'Get a list of a group epic board' do
+          detail 'This feature was introduced in 15.9'
+          success Entities::EpicBoards::List
+          failure [
+            { code: 401, message: 'Unauthorized' },
+            { code: 403, message: 'Forbidden' },
+            { code: 404, message: 'Not found' }
+          ]
+        end
+        params do
+          requires :list_id, type: Integer, desc: 'The ID of a list', documentation: { example: 1 }
+        end
+        get '/lists/:list_id' do
+          authorize!(:read_epic_board, epic_board)
+
+          present epic_lists.find(params[:list_id]), with: Entities::EpicBoards::ListDetails
         end
       end
     end

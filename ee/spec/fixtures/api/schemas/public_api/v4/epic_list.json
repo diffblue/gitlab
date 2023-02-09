@@ -1,0 +1,34 @@
+{
+  "type": "object",
+  "required": [
+    "id",
+    "label",
+    "position",
+    "list_type",
+    "collapsed"
+  ],
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "label": {
+      "$ref": "../../../../../../../spec/fixtures/api/schemas/public_api/v4/label_basic.json"
+    },
+    "position": {
+      "type": [
+        "integer"
+      ]
+    },
+    "list_type": {
+      "type": [
+        "string"
+      ]
+    },
+    "collapsed": {
+      "type": [
+        "boolean"
+      ]
+    }
+  },
+  "additionalProperties": false
+}
