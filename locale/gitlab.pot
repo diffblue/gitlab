@@ -13356,9 +13356,6 @@ msgstr ""
 msgid "Delete Key"
 msgstr ""
 
-msgid "Delete Selected"
-msgstr ""
-
 msgid "Delete Value Stream"
 msgstr ""
 
@@ -13432,6 +13429,9 @@ msgid "Delete release %{release}?"
 msgstr ""
 
 msgid "Delete row"
+msgstr ""
+
+msgid "Delete selected"
 msgstr ""
 
 msgid "Delete self-monitoring project"
