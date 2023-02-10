@@ -21,6 +21,7 @@ module EE
       scope :with_verification_state, ->(state) { joins(:upload_state).where(upload_states: { verification_state: verification_state_value(state) }) }
       scope :checksummed, -> { joins(:upload_state).where.not(upload_states: { verification_checksum: nil }) }
       scope :not_checksummed, -> { joins(:upload_state).where(upload_states: { verification_checksum: nil }) }
+      scope :by_checksum, ->(value) { where(checksum: value) }
 
       scope :available_verifiables, -> { joins(:upload_state) }
 
@@ -54,14 +55,15 @@ module EE
           .merge(object_storage_scope(node))
       end
 
-      # Searches for a list of uploads based on the query given in `query`.
+      # Search for a list of uploads based on the query given in `query`.
       #
-      # On PostgreSQL this method uses "ILIKE" to perform a case-insensitive
-      # search.
+      # @param [String] query term that will search over upload :checksum attribute
       #
-      # query - The search query as a String.
+      # @return [ActiveRecord::Relation<Upload>] a collection of uploads
       def search(query)
-        fuzzy_search(query, [:path])
+        return all if query.empty?
+
+        by_checksum(query)
       end
 
       private

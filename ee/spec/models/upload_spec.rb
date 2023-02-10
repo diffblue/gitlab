@@ -93,6 +93,40 @@ RSpec.describe Upload do
     end
   end
 
+  describe '.search' do
+    let_it_be(:upload1) { create(:upload, checksum: '85418cc881d37d83c7e681bc43f63731bf0849e06dc59fa8fa2dcf5448a47b8e') }
+    let_it_be(:upload2) { create(:upload, checksum: '27988b9096bf85f1a274a458a4ea8c3de143f84bb35ad6f2e4de1df165fa81a3') }
+    let_it_be(:upload3) { create(:upload, checksum: '077c81a37eeb5eff42c30ea6f5141dd6bf768787788773aa94022002f4ccdbe5') }
+
+    context 'when search query is empty' do
+      it 'returns all records' do
+        result = described_class.search('')
+
+        expect(result).to contain_exactly(upload1, upload2, upload3)
+      end
+    end
+
+    context 'when search query is not empty' do
+      context 'without matches' do
+        it 'filters all records' do
+          result = described_class.search('something_that_does_not_exist')
+
+          expect(result).to be_empty
+        end
+      end
+
+      context 'with matches by attributes' do
+        context 'for checksum attribute' do
+          it do
+            result = described_class.search('077c81a37eeb5eff42c30ea6f5141dd6bf768787788773aa94022002f4ccdbe5')
+
+            expect(result).to contain_exactly(upload3)
+          end
+        end
+      end
+    end
+  end
+
   describe '#destroy' do
     subject { create(:upload, :namespace_upload, checksum: '8710d2c16809c79fee211a9693b64038a8aae99561bc86ce98a9b46b45677fe4') }
 
