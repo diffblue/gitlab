@@ -3,4 +3,5 @@ export const state = ({ projectId }) => ({
   loading: false,
   protectedEnvironments: [],
   usersForRules: {},
+  newDeployAccessLevelsForEnvironment: {},
 });

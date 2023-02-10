@@ -76,6 +76,25 @@ export const deleteRule = ({ dispatch }, { environment, rule }) => {
   dispatch('updateEnvironment', updatedEnvironment);
 };
 
+export const setRule = ({ commit }, { environment, newRules }) =>
+  commit(types.SET_RULE, { environment, rules: newRules });
+
+export const saveRule = ({ dispatch, state }, environment) => {
+  const newDeployAccessLevels = state.newDeployAccessLevelsForEnvironment[environment.name].filter(
+    ({ user_id: newUserId, group_id: newGroupId, access_level: newAccessLevel }) =>
+      !environment.deploy_access_levels.some(
+        ({ user_id: userId, group_id: groupId, access_level: accessLevel }) =>
+          (userId !== null && newUserId === userId) ||
+          (groupId !== null && newGroupId === groupId) ||
+          (accessLevel !== null && newAccessLevel === accessLevel),
+      ),
+  );
+  return dispatch('updateEnvironment', {
+    ...environment,
+    deploy_access_levels: newDeployAccessLevels,
+  });
+};
+
 export const updateEnvironment = ({ state, commit }, environment) => {
   commit(types.REQUEST_UPDATE_PROTECTED_ENVIRONMENT);
 

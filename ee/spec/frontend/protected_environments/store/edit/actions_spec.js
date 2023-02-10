@@ -5,6 +5,8 @@ import {
   fetchAllMembers,
   fetchMembers,
   deleteRule,
+  setRule,
+  saveRule,
   updateEnvironment,
 } from 'ee/protected_environments/store/edit/actions';
 import * as types from 'ee/protected_environments/store/edit/mutation_types';
@@ -220,6 +222,46 @@ describe('ee/protected_environments/store/edit/actions', () => {
           { type: types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_ERROR, payload: expect.any(Error) },
         ],
         [],
+      );
+    });
+  });
+
+  describe('setRule', () => {
+    it('commits the new rule to the environment', () => {
+      const environment = { name: 'staging' };
+      const newRules = [{ group_id: 5 }];
+
+      return testAction(setRule, { environment, newRules }, mockedState, [
+        { type: types.SET_RULE, payload: { environment, rules: newRules } },
+      ]);
+    });
+  });
+
+  describe('saveRule', () => {
+    it('sends only new rules to update the environment', () => {
+      const environment = {
+        name: 'staging',
+        deploy_access_levels: [{ group_id: 5, user_id: null, access_level: null }],
+      };
+      mockedState.newDeployAccessLevelsForEnvironment[environment.name] = [
+        { group_id: 5 },
+        { user_id: 1 },
+      ];
+
+      return testAction(
+        saveRule,
+        environment,
+        mockedState,
+        [],
+        [
+          {
+            type: 'updateEnvironment',
+            payload: {
+              ...environment,
+              deploy_access_levels: [{ user_id: 1 }],
+            },
+          },
+        ],
       );
     });
   });
