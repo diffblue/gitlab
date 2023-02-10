@@ -17,8 +17,6 @@ module API
       post ':id/dependency_list_exports' do
         authorize! :read_dependencies, user_project
 
-        not_found!('DependencyListExport') unless Feature.enabled?(:dependency_list_exporter, user_project)
-
         dependency_list_export = ::Dependencies::CreateExportService.new(user_project, current_user).execute
 
         present dependency_list_export, with: EE::API::Entities::DependencyListExport
@@ -31,8 +29,6 @@ module API
       desc 'Get a dependency list export'
       get ':id/dependency_list_exports/:export_id' do
         authorize! :read_dependencies, user_project
-
-        not_found!('DependencyListExport') unless Feature.enabled?(:dependency_list_exporter, user_project)
 
         dependency_list_export = ::Dependencies::FetchExportService
         .new(params[:export_id].to_i).execute
@@ -48,8 +44,6 @@ module API
       desc 'Download a dependency list export'
       get ':id/dependency_list_exports/:export_id/download' do
         authorize! :read_dependencies, user_project
-
-        not_found!('DependencyListExport') unless Feature.enabled?(:dependency_list_exporter, user_project)
 
         dependency_list_export = ::Dependencies::FetchExportService
         .new(params[:export_id].to_i).execute

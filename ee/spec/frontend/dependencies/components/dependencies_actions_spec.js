@@ -66,43 +66,25 @@ describe('DependenciesActions component', () => {
     expect(store.dispatch).toHaveBeenCalledWith(`${namespace}/toggleSortOrder`);
   });
 
-  it('has a button to export the dependency list', () => {
-    expect(findExportButton().attributes()).toEqual(
-      expect.objectContaining({
-        href: store.getters[`${namespace}/downloadEndpoint`],
-        download: expect.any(String),
-      }),
-    );
+  it('has a button to perform an async export of the dependency list', () => {
+    expect(findExportButton().attributes('icon')).toBe('export');
+
+    findExportButton().vm.$emit('click');
+
+    expect(store.dispatch).toHaveBeenCalledWith(`${namespace}/fetchExport`);
   });
 
-  describe('with dependencyListExporter feature flag enabled', () => {
-    beforeEach(() => {
-      factory({
-        propsData: { namespace },
-        featureFlags: { dependencyListExporter: true },
-      });
+  describe('with fetching in progress', () => {
+    beforeEach(async () => {
+      store.state[namespace].fetchingInProgress = true;
+      await nextTick;
     });
 
-    it('has a button to perform an async export of the dependency list', () => {
-      expect(findExportButton().attributes('icon')).toBe('export');
+    it('sets the icon to match the loading icon', () => {
+      const exportButton = findExportButton();
 
-      findExportButton().vm.$emit('click');
-
-      expect(store.dispatch).toHaveBeenCalledWith(`${namespace}/fetchExport`);
-    });
-
-    describe('with fetching in progress', () => {
-      beforeEach(async () => {
-        store.state[namespace].fetchingInProgress = true;
-        await nextTick;
-      });
-
-      it('sets the icon to match the loading icon', () => {
-        const exportButton = findExportButton();
-
-        expect(exportButton.attributes('icon')).toBe('');
-        expect(exportButton.attributes('loading')).toBe('true');
-      });
+      expect(exportButton.attributes('icon')).toBe('');
+      expect(exportButton.attributes('loading')).toBe('true');
     });
   });
 });
