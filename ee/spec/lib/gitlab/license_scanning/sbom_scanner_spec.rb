@@ -62,8 +62,10 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :licens
 
         before_all do
           components.each do |component|
-            create(:pm_package, name: component.name, purl_type: component.purl_type, version: component.version,
-              spdx_identifiers: ["OLDAP-2.1", "BSD"])
+            create(:pm_package_version_license, :with_all_relations, name: component.name,
+              purl_type: component.purl_type, version: component.version, license_name: "OLDAP-2.1")
+            create(:pm_package_version_license, :with_all_relations, name: component.name,
+              purl_type: component.purl_type, version: component.version, license_name: "BSD")
           end
         end
 

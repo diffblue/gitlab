@@ -169,7 +169,8 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
           before do
             pipeline.builds << license_build
 
-            create(:pm_package, name: "nokogiri", purl_type: "gem", version: "1.8.0", spdx_identifiers: ["BSD"])
+            create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem",
+              version: "1.8.0", license_name: "BSD")
 
             get :index, params: params, format: :json
           end

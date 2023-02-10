@@ -61,9 +61,11 @@ RSpec.describe Ci::CompareLicenseScanningReportsCollapsedService, feature_catego
           let_it_be(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_pypi_only, project: project) }
 
           before do
-            create(:pm_package, name: "nokogiri", purl_type: "gem", version: "1.8.0",
-              spdx_identifiers: ["BSD-3-Clause"])
-            create(:pm_package, name: "django", purl_type: "pypi", version: "1.11.4", spdx_identifiers: ["MIT"])
+            create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem",
+              version: "1.8.0", license_name: "BSD-3-Clause")
+            create(:pm_package_version_license, :with_all_relations, name: "django", purl_type: "pypi",
+              version: "1.11.4", license_name: "MIT")
+
             allow_next_instance_of(::SCA::LicensePolicy) do |license|
               allow(license).to receive(:approval_status).and_return('denied')
             end
@@ -106,9 +108,10 @@ RSpec.describe Ci::CompareLicenseScanningReportsCollapsedService, feature_catego
           let_it_be(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_pypi_only, project: project) }
 
           before do
-            create(:pm_package, name: "nokogiri", purl_type: "gem", version: "1.8.0",
-              spdx_identifiers: ["BSD-3-Clause"])
-            create(:pm_package, name: "django", purl_type: "pypi", version: "1.11.4", spdx_identifiers: ["MIT"])
+            create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem",
+              version: "1.8.0", license_name: "BSD-3-Clause")
+            create(:pm_package_version_license, :with_all_relations, name: "django", purl_type: "pypi",
+              version: "1.11.4", license_name: "MIT")
           end
 
           it 'exposes approval as not required' do

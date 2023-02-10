@@ -428,7 +428,7 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
         # This efficiently creates the package(s) only once to prevent rolling back
         # a transaction for every example.
         before_all do
-          create(:pm_package, name: 'nokogiri', purl_type: 'gem', version: '1.8.0', spdx_identifiers: ['MIT'])
+          create(:pm_package_version_license, :with_all_relations, name: 'nokogiri', purl_type: 'gem', version: '1.8.0', license_name: 'MIT')
         end
 
         before do

@@ -3,14 +3,13 @@
 require 'spec_helper'
 
 RSpec.describe 'EE > Projects > Licenses > Maintainer views policies', :js, feature_category: :projects do
-  let!(:packages) do
+  let!(:package_version_licenses) do
     [
-      create(:pm_package, name: "activesupport", purl_type: "gem", version: "5.1.4", spdx_identifiers: ["MIT"]),
-      create(:pm_package, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2",
-        spdx_identifiers: ["MIT", "BSD-3-Clause"]),
-      create(:pm_package, name: "org.apache.logging.log4j/log4j-api", purl_type: "maven", version: "2.6.1",
-        spdx_identifiers: ["BSD-3-Clause"]),
-      create(:pm_package, name: "yargs", purl_type: "npm", version: "11.1.0", spdx_identifiers: ["unknown"])
+      create(:pm_package_version_license, :with_all_relations, name: "activesupport", purl_type: "gem", version: "5.1.4", license_name: "MIT"),
+      create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "MIT"),
+      create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause"),
+      create(:pm_package_version_license, :with_all_relations, name: "org.apache.logging.log4j/log4j-api", purl_type: "maven", version: "2.6.1", license_name: "BSD-3-Clause"),
+      create(:pm_package_version_license, :with_all_relations, name: "yargs", purl_type: "npm", version: "11.1.0", license_name: "unknown")
     ]
   end
 
@@ -116,8 +115,8 @@ RSpec.describe 'EE > Projects > Licenses > Maintainer views policies', :js, feat
   end
 
   def sbom_packages_for(spdx_id)
-    packages.find_all { |package| package.package_versions.first.licenses.map(&:spdx_identifier).include?(spdx_id) }
-      .map { |package| "#{package.name} (#{package.package_versions.first.version})" }
+    package_version_licenses.find_all { |obj| obj.license.spdx_identifier.include?(spdx_id) }
+      .map { |obj| "#{obj.package_version.package.name} (#{obj.package_version.version})" }
   end
 
   def dependencies_for(spdx_id)
