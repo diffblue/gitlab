@@ -26,8 +26,16 @@ RSpec.describe GroupSaml::SamlGroupLinks::DestroyService do
         before do
           stub_licensed_features(group_saml: true, saml_group_sync: true)
         end
+
         it "create a new saml_group_link entry against the group" do
-          expect(::Gitlab::Audit::Auditor).to receive(:audit).once.and_call_original
+          audit_context = {
+            name: 'saml_group_links_removed',
+            author: current_user,
+            scope: group,
+            target: group,
+            message: audit_event_message
+          }
+          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context).once.and_call_original
 
           response = service.execute
 

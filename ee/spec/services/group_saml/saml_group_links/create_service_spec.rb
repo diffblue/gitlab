@@ -32,7 +32,14 @@ RSpec.describe GroupSaml::SamlGroupLinks::CreateService do
           let_it_be(:saml_provider) { create(:saml_provider, group: group, enabled: true) }
 
           it "create a new saml_group_link entry against the group" do
-            expect(::Gitlab::Audit::Auditor).to receive(:audit).once.and_call_original
+            audit_context = {
+              name: 'saml_group_links_created',
+              author: current_user,
+              scope: group,
+              target: group,
+              message: audit_event_message
+            }
+            expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context).once.and_call_original
 
             response = service.execute
 
