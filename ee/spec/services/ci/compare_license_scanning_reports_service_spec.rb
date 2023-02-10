@@ -54,8 +54,7 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :lice
         let!(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
 
         before do
-          create(:pm_package, name: "nokogiri", purl_type: "gem", version: "1.8.0",
-            spdx_identifiers: ["BSD"])
+          create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "BSD")
         end
 
         it 'reports new licenses' do
@@ -101,8 +100,7 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :lice
         let(:forked_project) { fork_project(project, contributor, namespace: contributor.namespace) }
 
         before do
-          create(:pm_package, name: "nokogiri", purl_type: "gem", version: "1.8.0",
-            spdx_identifiers: ["BSD"])
+          create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "BSD")
         end
 
         it 'reports new licenses' do
@@ -146,10 +144,10 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :lice
         let!(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_pypi_only, project: project) }
 
         before do
-          create(:pm_package, name: "nokogiri", purl_type: "gem", version: "1.8.0",
-            spdx_identifiers: %w[BSD MIT])
-          create(:pm_package, name: "django", purl_type: "pypi", version: "1.11.4",
-            spdx_identifiers: %w[BSD Apache-2.0])
+          create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "BSD")
+          create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "MIT")
+          create(:pm_package_version_license, :with_all_relations, name: "django", purl_type: "pypi", version: "1.11.4", license_name: "BSD")
+          create(:pm_package_version_license, :with_all_relations, name: "django", purl_type: "pypi", version: "1.11.4", license_name: "Apache-2.0")
         end
 
         it 'reports status as parsed' do

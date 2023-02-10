@@ -64,7 +64,7 @@ RSpec.describe RefreshLicenseComplianceChecksWorker do
 
           context 'when the license_scanning_sbom_scanner feature flag is true' do
             before_all do
-              create(:pm_package, name: "activesupport", purl_type: "gem", version: "5.1.4", spdx_identifiers: ["MIT"])
+              create(:pm_package_version_license, :with_all_relations, name: "activesupport", purl_type: "gem", version: "5.1.4", license_name: "MIT")
             end
 
             specify { expect(open_merge_request_approval_rule.approvals_required).to eql(approvals_required) }
@@ -90,7 +90,7 @@ RSpec.describe RefreshLicenseComplianceChecksWorker do
 
           context 'when the license_scanning_sbom_scanner feature flag is true' do
             before_all do
-              create(:pm_package, name: "activesupport", purl_type: "gem", version: "5.1.4", spdx_identifiers: ["MIT"])
+              create(:pm_package_version_license, :with_all_relations, name: "activesupport", purl_type: "gem", version: "5.1.4", license_name: "MIT")
             end
 
             specify { expect(open_merge_request_approval_rule.approvals_required).to be_zero }

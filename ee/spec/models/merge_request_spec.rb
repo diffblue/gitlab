@@ -277,7 +277,8 @@ RSpec.describe MergeRequest do
             let(:denied_policy) { build(:software_license_policy, :denied, software_license: build(:software_license, :apache_2_0)) }
 
             before do
-              create(:pm_package, name: "nokogiri", purl_type: "gem", version: "1.8.0", spdx_identifiers: ["Apache-2.0"])
+              create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem",
+                version: "1.8.0", license_name: "Apache-2.0")
             end
 
             it { is_expected.to be_truthy }
@@ -312,7 +313,8 @@ RSpec.describe MergeRequest do
                 let(:denied_policy) { build(:software_license_policy, :denied, software_license: build(:software_license, :apache_2_0)) }
 
                 before do
-                  create(:pm_package, name: "nokogiri", purl_type: "gem", version: "1.8.0", spdx_identifiers: ["Apache-2.0"])
+                  create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem",
+                    version: "1.8.0", license_name: "Apache-2.0")
                 end
 
                 it { is_expected.to be_truthy }

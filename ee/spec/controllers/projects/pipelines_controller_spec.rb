@@ -185,7 +185,9 @@ RSpec.describe Projects::PipelinesController do
                 license.dependencies.each { |dep| licenses << license.name if c.name == dep.name }
               end
 
-              create(:pm_package, name: c.name, purl_type: c.purl_type, version: c.version, spdx_identifiers: licenses)
+              licenses.each do |license_name|
+                create(:pm_package_version_license, :with_all_relations, name: c.name, purl_type: c.purl_type, version: c.version, license_name: license_name)
+              end
             end
           end
 

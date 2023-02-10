@@ -199,12 +199,16 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
 
       context 'when the license_scanning_sbom_scanner feature flag is true' do
         before do
-          create(:pm_package, name: "activesupport", purl_type: "gem", version: "5.1.4", spdx_identifiers: ["New BSD"])
-          create(:pm_package, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2",
-            spdx_identifiers: ["MIT", "New BSD"])
-          create(:pm_package, name: "org.apache.logging.log4j/log4j-api", purl_type: "maven", version: "2.6.1",
-            spdx_identifiers: ["Apache 2.0"])
-          create(:pm_package, name: "yargs", purl_type: "npm", version: "11.1.0", spdx_identifiers: ["unknown"])
+          create(:pm_package_version_license, :with_all_relations, name: "activesupport", purl_type: "gem",
+            version: "5.1.4", license_name: "MIT")
+          create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus",
+            purl_type: "golang", version: "v1.4.2", license_name: "MIT")
+          create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus",
+            purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause")
+          create(:pm_package_version_license, :with_all_relations, name: "org.apache.logging.log4j/log4j-api",
+            purl_type: "maven", version: "2.6.1", license_name: "BSD-3-Clause")
+          create(:pm_package_version_license, :with_all_relations, name: "yargs", purl_type: "npm", version: "11.1.0",
+            license_name: "unknown")
 
           visit licenses_project_pipeline_path(project, pipeline)
         end
