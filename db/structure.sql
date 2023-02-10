@@ -261,6 +261,15 @@ BEGIN
 END;
 $$;
 
+CREATE FUNCTION trigger_775287b6d67a() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW."diff_note_id_convert_to_bigint" := NEW."diff_note_id";
+  RETURN NEW;
+END;
+$$;
+
 CREATE FUNCTION trigger_7f4fcd5aa322() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -18513,7 +18522,8 @@ CREATE TABLE note_diff_files (
     a_mode character varying NOT NULL,
     b_mode character varying NOT NULL,
     new_path text NOT NULL,
-    old_path text NOT NULL
+    old_path text NOT NULL,
+    diff_note_id_convert_to_bigint bigint DEFAULT 0 NOT NULL
 );
 
 CREATE SEQUENCE note_diff_files_id_seq
@@ -33552,6 +33562,8 @@ CREATE TRIGGER trigger_1a857e8db6cd BEFORE INSERT OR UPDATE ON vulnerability_occ
 CREATE TRIGGER trigger_3207b8d0d6f3 BEFORE INSERT OR UPDATE ON ci_build_needs FOR EACH ROW EXECUTE FUNCTION trigger_3207b8d0d6f3();
 
 CREATE TRIGGER trigger_3dc62927cae8 BEFORE INSERT OR UPDATE ON design_user_mentions FOR EACH ROW EXECUTE FUNCTION trigger_3dc62927cae8();
+
+CREATE TRIGGER trigger_775287b6d67a BEFORE INSERT OR UPDATE ON note_diff_files FOR EACH ROW EXECUTE FUNCTION trigger_775287b6d67a();
 
 CREATE TRIGGER trigger_7f4fcd5aa322 BEFORE INSERT OR UPDATE ON sent_notifications FOR EACH ROW EXECUTE FUNCTION trigger_7f4fcd5aa322();
 
