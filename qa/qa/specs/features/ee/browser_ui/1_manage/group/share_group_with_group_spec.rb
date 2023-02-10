@@ -37,7 +37,7 @@ module QA
         Page::Group::Members.perform do |members|
           members.invite_group(source_group_with_members.path)
 
-          expect(members).to have_existing_group_share(source_group_with_members.path)
+          expect(members).to have_group(source_group_with_members.path)
         end
 
         Page::Main::Menu.perform(&:sign_out)
