@@ -505,6 +505,40 @@ RSpec.describe Issue, feature_category: :team_planning do
         end
       end
     end
+
+    context 'on issue reopen' do
+      context 'when incident was reopened' do
+        let!(:issue) { create(:incident, :closed, project: production_env.project) }
+
+        it 'schedules Dora::DailyMetrics::RefreshWorker' do
+          expect(::Dora::DailyMetrics::RefreshWorker)
+            .to receive(:perform_async).with(production_env.id, issue.closed_at.to_date.to_s)
+
+          issue.reopen!
+          issue.save!
+        end
+      end
+
+      context 'when there is no production env' do
+        let!(:issue) { create(:incident, :closed) }
+
+        it 'does not schedule Dora::DailyMetrics::RefreshWorker' do
+          expect(::Dora::DailyMetrics::RefreshWorker).not_to receive(:perform_async)
+
+          issue.reopen!
+        end
+      end
+
+      context 'when issue is not an incident' do
+        let!(:issue) { create(:issue, :closed, project: production_env.project) }
+
+        it 'does not schedule Dora::DailyMetrics::RefreshWorker' do
+          expect(::Dora::DailyMetrics::RefreshWorker).not_to receive(:perform_async)
+
+          issue.reopen!
+        end
+      end
+    end
   end
 
   it_behaves_like 'an editable mentionable with EE-specific mentions' do
