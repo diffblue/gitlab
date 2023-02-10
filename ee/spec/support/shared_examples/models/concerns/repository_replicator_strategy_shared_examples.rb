@@ -104,6 +104,19 @@ RSpec.shared_examples 'a repository replicator' do
         replicator.consume(:updated)
       end
     end
+
+    context 'when a sync is currently running' do
+      it 'moves registry state to pending' do
+        replicator.registry.start!
+
+        # sync no-op, as if the lease is already taken
+        allow(replicator).to receive(:sync_repository)
+
+        expect do
+          replicator.consume(:updated)
+        end.to change { replicator.registry.reload.pending? }.from(false).to(true)
+      end
+    end
   end
 
   describe 'deleted event consumption' do
@@ -151,6 +164,12 @@ RSpec.shared_examples 'a repository replicator' do
 
     it 'is a Class' do
       expect(invoke_model).to be_a(Class)
+    end
+  end
+
+  describe '#mutable?' do
+    it 'is true' do
+      expect(replicator.mutable?).to eq(true)
     end
   end
 end
