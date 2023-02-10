@@ -6,7 +6,7 @@ class ProjectImportScheduleWorker
   data_consistency :delayed
 
   idempotent!
-  deduplicate :until_executing, ttl: 5.minutes
+  deduplicate :until_executed, ttl: 5.minutes, if_deduplicated: :reschedule_once
 
   feature_category :source_code_management
   sidekiq_options retry: 1
