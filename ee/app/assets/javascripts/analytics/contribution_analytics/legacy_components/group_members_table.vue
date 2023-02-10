@@ -1,13 +1,13 @@
 <script>
 import { GlLoadingIcon } from '@gitlab/ui';
-import { TABLE_COLUMNS } from '../constants';
+import { LEGACY_TABLE_COLUMNS } from '../constants';
 
 import GroupMembers from '../group_members';
 import TableBody from './table_body.vue';
 import TableHeader from './table_header.vue';
 
 export default {
-  columns: TABLE_COLUMNS,
+  columns: LEGACY_TABLE_COLUMNS,
   components: {
     TableHeader,
     TableBody,

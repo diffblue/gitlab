@@ -1,8 +1,20 @@
 import Vue from 'vue';
-import ContributionAnalyticsApp from './components/app.vue';
+import VueApollo from 'vue-apollo';
+import createDefaultClient from '~/lib/graphql';
+import LegacyApp from './legacy_components/app.vue';
+import App from './components/app.vue';
+
+Vue.use(VueApollo);
+
+const apolloProvider = new VueApollo({
+  defaultClient: createDefaultClient(),
+});
 
 export default (el) => {
   const {
+    fullPath,
+    startDate,
+    endDate,
     analyticsData,
     totalPushCount,
     totalCommitCount,
@@ -24,6 +36,7 @@ export default (el) => {
 
   return new Vue({
     el,
+    apolloProvider,
     provide: {
       memberContributionsPath,
       labels,
@@ -43,7 +56,10 @@ export default (el) => {
       totalIssuesClosedCount: Number(totalIssuesClosedCount),
     },
     render(createElement) {
-      return createElement(ContributionAnalyticsApp);
+      const app = gon.features.contributionAnalyticsGraphql ? App : LegacyApp;
+      return createElement(app, {
+        props: { fullPath, startDate, endDate },
+      });
     },
   });
 };
