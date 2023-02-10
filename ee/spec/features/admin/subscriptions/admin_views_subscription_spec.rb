@@ -121,7 +121,8 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
         end
       end
 
-      it 'shows the activation modal' do
+      it 'shows the activation modal',
+        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/391275' do
         within_modal do
           expect(page).to have_content('Activate subscription')
         end
