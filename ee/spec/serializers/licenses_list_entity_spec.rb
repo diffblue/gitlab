@@ -26,7 +26,8 @@ RSpec.describe LicensesListEntity do
     let!(:pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
 
     before do
-      create(:pm_package, name: "activesupport", purl_type: "gem", version: "5.1.4", spdx_identifiers: ["New BSD"])
+      create(:pm_package_version_license, :with_all_relations, name: "activesupport", purl_type: "gem",
+        version: "5.1.4", license_name: "New BSD")
     end
 
     it_behaves_like 'report list' do

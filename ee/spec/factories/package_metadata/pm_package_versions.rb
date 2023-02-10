@@ -6,16 +6,14 @@ FactoryBot.define do
     sequence(:version) { |n| "v0.0.#{n}" }
 
     transient do
-      spdx_identifiers { [] }
+      name { 'package-1' }
+      purl_type { 'npm' }
     end
 
-    after(:create) do |package_version, evaluator|
-      evaluator.spdx_identifiers.each do |spdx_identifier|
-        # rubocop:disable RSpec/FactoryBot/StrategyInCallback
-        create(:pm_package_version_license, package_version: package_version,
-               license: create(:pm_license, spdx_identifier: spdx_identifier))
-        # rubocop:enable RSpec/FactoryBot/StrategyInCallback
-      end
+    trait :with_package do
+      package { association(:pm_package, name: name, purl_type: purl_type) }
     end
+
+    initialize_with { PackageMetadata::PackageVersion.find_or_initialize_by(package: package, version: version) }
   end
 end

@@ -14,15 +14,26 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :lice
   end
 
   before_all do
-    create(:pm_package, name: "beego", purl_type: "golang", version: "v1.10.0",
-           spdx_identifiers: ["OLDAP-2.1", "OLDAP-2.2"])
-    create(:pm_package, name: "camelcase", purl_type: "npm", version: "1.2.1", spdx_identifiers: ["OLDAP-2.1"])
-    create(:pm_package, name: "camelcase", purl_type: "npm", version: "4.1.0", spdx_identifiers: ["OLDAP-2.2"])
-    create(:pm_package, name: "cliui", purl_type: "npm", version: "2.1.0", spdx_identifiers: ["OLDAP-2.3"])
-    create(:pm_package, name: "cliui", purl_type: "golang", version: "2.1.0", spdx_identifiers: ["OLDAP-2.6"])
-    create(:pm_package, name: "jst", purl_type: "npm", version: "3.0.2", spdx_identifiers: ["OLDAP-2.4", "OLDAP-2.5"])
-    create(:pm_package, name: "jsbn", purl_type: "npm", version: "0.1.1", spdx_identifiers: ["OLDAP-2.4"])
-    create(:pm_package, name: "jsdom", purl_type: "npm", version: "11.12.0", spdx_identifiers: ["OLDAP-2.5"])
+    create(:pm_package_version_license, :with_all_relations, name: "beego", purl_type: "golang", version: "v1.10.0",
+license_name: "OLDAP-2.1")
+    create(:pm_package_version_license, :with_all_relations, name: "beego", purl_type: "golang", version: "v1.10.0",
+license_name: "OLDAP-2.2")
+    create(:pm_package_version_license, :with_all_relations, name: "camelcase", purl_type: "npm", version: "1.2.1",
+license_name: "OLDAP-2.1")
+    create(:pm_package_version_license, :with_all_relations, name: "camelcase", purl_type: "npm", version: "4.1.0",
+license_name: "OLDAP-2.2")
+    create(:pm_package_version_license, :with_all_relations, name: "cliui", purl_type: "npm", version: "2.1.0",
+license_name: "OLDAP-2.3")
+    create(:pm_package_version_license, :with_all_relations, name: "cliui", purl_type: "golang", version: "2.1.0",
+license_name: "OLDAP-2.6")
+    create(:pm_package_version_license, :with_all_relations, name: "jst", purl_type: "npm", version: "3.0.2",
+license_name: "OLDAP-2.4")
+    create(:pm_package_version_license, :with_all_relations, name: "jst", purl_type: "npm", version: "3.0.2",
+license_name: "OLDAP-2.5")
+    create(:pm_package_version_license, :with_all_relations, name: "jsbn", purl_type: "npm", version: "0.1.1",
+license_name: "OLDAP-2.4")
+    create(:pm_package_version_license, :with_all_relations, name: "jsdom", purl_type: "npm", version: "11.12.0",
+license_name: "OLDAP-2.5")
   end
 
   subject(:fetch) do

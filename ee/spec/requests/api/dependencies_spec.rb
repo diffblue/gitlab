@@ -63,7 +63,8 @@ RSpec.describe API::Dependencies, feature_category: :dependency_management do
       context 'when the license_scanning_sbom_scanner feature flag is true' do
         before_all do
           create(:ee_ci_build, :success, :cyclonedx, pipeline: pipeline)
-          create(:pm_package, name: 'nokogiri', purl_type: 'gem', version: '1.8.0', spdx_identifiers: ['MIT'])
+          create(:pm_package_version_license, :with_all_relations, name: 'nokogiri', purl_type: 'gem',
+            version: '1.8.0', license_name: 'MIT')
         end
 
         it 'include license information to response' do
