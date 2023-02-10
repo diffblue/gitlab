@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ProjectImportScheduleWorker do
+RSpec.describe ProjectImportScheduleWorker, feature_category: :source_code_management do
   let!(:project) { create(:project, :public) }
 
   describe '#perform' do

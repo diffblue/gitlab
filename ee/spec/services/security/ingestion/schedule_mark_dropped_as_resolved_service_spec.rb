@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService do
+RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService,
+  feature_category: :static_application_security_testing do
   let_it_be(:user) { create(:user) }
   let_it_be(:pipeline) { create(:ci_pipeline, user: user) }
 
@@ -51,7 +52,7 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService do
       dismissed_finding.update!(vulnerability_id: vuln.id)
     end
 
-    # To be dismissed (same scan_type)
+    # To be resolved (same scan_type)
     dropped_finding1 = create(
       :vulnerabilities_finding,
       project_id: pipeline.project_id, primary_identifier_id: dropped_ident.id, identifiers: [dropped_ident])
@@ -62,7 +63,7 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService do
       dropped_finding1.update!(vulnerability_id: vuln.id)
     end
 
-    # To be dismissed (same scan_type)
+    # To be resolved (same scan_type)
     dropped_finding2 = create(
       :vulnerabilities_finding,
       project_id: pipeline.project_id, primary_identifier_id: dropped_ident.id, identifiers: [dropped_ident])
@@ -78,6 +79,7 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService do
 
   context 'when flag is enabled' do
     before do
+      stub_const("#{described_class.name}::BATCH_SIZE", 1)
       stub_feature_flags(sec_mark_dropped_findings_as_resolved_scheduler: true)
     end
 
