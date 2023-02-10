@@ -28,8 +28,7 @@ module MergeRequests
       end
 
       def only_allow_merge_if_all_status_checks_passed_enabled?(project)
-        ::Feature.enabled?(:only_allow_merge_if_all_status_checks_passed, project) &&
-          project.licensed_feature_available?(:external_status_checks) &&
+        project.licensed_feature_available?(:external_status_checks) &&
           project.only_allow_merge_if_all_status_checks_passed
       end
 

@@ -44,20 +44,15 @@ RSpec.describe MergeRequests::Mergeability::CheckExternalStatusChecksPassedServi
   describe '#only_allow_merge_if_all_status_checks_passed_enabled?' do
     let(:result) { subject.send(:only_allow_merge_if_all_status_checks_passed_enabled?, merge_request.project) }
 
-    where(:feature_enabled, :license, :column_value, :return_value) do
-      false | false | false | false
-      true  | false | false | false
-      false | true  | false | false
-      false | false | true  | false
-      true  | true  | false | false
-      false | true  | true  | false
-      true  | false | true  | false
-      true  | true  | true  | true
+    where(:license, :column_value, :return_value) do
+      false | false | false
+      true  | false | false
+      false | true  | false
+      true  | true  | true
     end
 
     with_them do
       before do
-        stub_feature_flags(only_allow_merge_if_all_status_checks_passed: feature_enabled)
         stub_licensed_features(external_status_checks: license)
         allow(merge_request.project).to receive(:only_allow_merge_if_all_status_checks_passed).and_return(column_value)
       end
