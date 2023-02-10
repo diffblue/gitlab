@@ -42,6 +42,21 @@ RSpec.describe API::ManagedLicenses, feature_category: :security_policy_manageme
       end
     end
 
+    context 'with policies from license_finding rules' do
+      let_it_be(:license_finding_policy) do
+        create(:software_license_policy, project: project, scan_result_policy_read: create(:scan_result_policy_read))
+      end
+
+      it 'returns policies not belonging to license_finding rules' do
+        get api("/projects/#{project.id}/managed_licenses", dev_user)
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(response).to match_response_schema('managed_licenses', dir: 'ee')
+        expect(json_response).to be_a(Array)
+        expect(json_response.second).to be_nil
+      end
+    end
+
     context 'with authorized user without read permissions' do
       it 'returns project managed licenses to users with read permissions' do
         get api("/projects/#{project.id}/managed_licenses", reporter_user)
@@ -130,6 +145,18 @@ RSpec.describe API::ManagedLicenses, feature_category: :security_policy_manageme
         get api("/projects/#{project.id}/managed_licenses/#{software_license_policy.id}")
 
         expect(response).to have_gitlab_http_status(:unauthorized)
+      end
+    end
+
+    context 'policy from license_finding rules' do
+      let_it_be(:software_license_policy) do
+        create(:software_license_policy, project: project, scan_result_policy_read: create(:scan_result_policy_read))
+      end
+
+      it 'responds with 404 Not Found' do
+        get api("/projects/#{project.id}/managed_licenses/#{software_license_policy.id}", dev_user)
+
+        expect(response).to have_gitlab_http_status(:not_found)
       end
     end
   end
@@ -261,6 +288,18 @@ RSpec.describe API::ManagedLicenses, feature_category: :security_policy_manageme
         expect(response).to have_gitlab_http_status(:unauthorized)
       end
     end
+
+    context 'policy from license_finding rules' do
+      let_it_be(:software_license_policy) do
+        create(:software_license_policy, project: project, scan_result_policy_read: create(:scan_result_policy_read))
+      end
+
+      it 'responds with 404 Not Found' do
+        patch api("/projects/#{project.id}/managed_licenses/#{software_license_policy.id}", maintainer_user)
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
   end
 
   describe 'DELETE /projects/:id/managed_licenses/:managed_license_id' do
@@ -309,6 +348,20 @@ RSpec.describe API::ManagedLicenses, feature_category: :security_policy_manageme
           delete api("/projects/#{project.id}/managed_licenses/#{software_license_policy.id}")
 
           expect(response).to have_gitlab_http_status(:unauthorized)
+        end.not_to change { project.software_license_policies.count }
+      end
+    end
+
+    context 'policy from license_finding rules' do
+      let_it_be(:software_license_policy) do
+        create(:software_license_policy, project: project, scan_result_policy_read: create(:scan_result_policy_read))
+      end
+
+      it 'does not delete managed license' do
+        expect do
+          delete api("/projects/#{project.id}/managed_licenses/#{software_license_policy.id}", maintainer_user)
+
+          expect(response).to have_gitlab_http_status(:not_found)
         end.not_to change { project.software_license_policies.count }
       end
     end

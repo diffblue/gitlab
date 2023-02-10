@@ -35,7 +35,13 @@ class SoftwareLicensePoliciesFinder
   private
 
   def init_collection
-    SoftwareLicensePolicy.with_license.including_license.for_project(@project)
+    policies = SoftwareLicensePolicy.with_license.including_license
+    policies = policies.without_scan_result_policy_read if ignore_license_finding?
+    policies.for_project(@project)
+  end
+
+  def ignore_license_finding?
+    @params.fetch(:ignore_license_finding, true)
   end
 
   def license_id
