@@ -3,7 +3,6 @@
 module Geo
   class ProjectWikiRepositoryState < ApplicationRecord
     include ::Geo::VerificationStateDefinition
-    include EachBatch
 
     self.primary_key = :project_id
 

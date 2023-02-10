@@ -2,7 +2,6 @@
 
 module Geo
   class DependencyProxyBlobState < ApplicationRecord
-    include EachBatch
     include ::Geo::VerificationStateDefinition
 
     self.primary_key = :dependency_proxy_blob_id
