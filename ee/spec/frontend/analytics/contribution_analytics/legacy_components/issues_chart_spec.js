@@ -1,6 +1,6 @@
 import { GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import IssuesChart from 'ee/analytics/contribution_analytics/components/issues_chart.vue';
+import IssuesChart from 'ee/analytics/contribution_analytics/legacy_components/issues_chart.vue';
 import { MOCK_ANALYTICS } from '../mock_data';
 
 describe('Contribution Analytics Issues Chart', () => {

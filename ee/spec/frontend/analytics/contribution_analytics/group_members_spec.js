@@ -1,5 +1,5 @@
 import MockAdapter from 'axios-mock-adapter';
-import { TABLE_COLUMNS } from 'ee/analytics/contribution_analytics/constants';
+import { LEGACY_TABLE_COLUMNS } from 'ee/analytics/contribution_analytics/constants';
 import GroupMembers from 'ee/analytics/contribution_analytics/group_members';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
@@ -23,11 +23,11 @@ describe('GroupMembers', () => {
 
   describe('setColumns', () => {
     beforeEach(() => {
-      store.setColumns(TABLE_COLUMNS);
+      store.setColumns(LEGACY_TABLE_COLUMNS);
     });
 
     it('sets columns to store state', () => {
-      expect(store.state.columns).toBe(TABLE_COLUMNS);
+      expect(store.state.columns).toBe(LEGACY_TABLE_COLUMNS);
     });
 
     it('initializes sortOrders on store state', () => {
@@ -47,7 +47,7 @@ describe('GroupMembers', () => {
 
   describe('sortMembers', () => {
     it('sorts members list based on provided column name', () => {
-      store.setColumns(TABLE_COLUMNS);
+      store.setColumns(LEGACY_TABLE_COLUMNS);
       store.setMembers(MOCK_MEMBERS);
 
       let [firstMember] = store.state.members;

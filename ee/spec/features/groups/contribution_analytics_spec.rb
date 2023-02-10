@@ -7,7 +7,7 @@ RSpec.describe 'Groups > Contribution Analytics', :js, feature_category: :value_
   let(:group) { create(:group) }
   let(:empty_project) { create(:project, namespace: group) }
 
-  def visit_contribution_analtyics
+  def visit_contribution_analytics
     visit group_path(group)
 
     within('.nav-sidebar') do
@@ -24,9 +24,26 @@ RSpec.describe 'Groups > Contribution Analytics', :js, feature_category: :value_
     sign_in(user)
   end
 
+  describe 'visit Contribution Analytics page for group with contribution_analytics_graphql enabled' do
+    before do
+      visit_contribution_analytics
+    end
+
+    it 'displays Contribution Analytics' do
+      expect(page).to have_content "Contribution analytics for issues, merge requests and push"
+    end
+
+    it 'does not display text indicating pushes, merge requests and issues' do
+      expect(page).not_to have_content "No pushes for the selected time period."
+      expect(page).not_to have_content "No merge requests for the selected time period."
+      expect(page).not_to have_content "No issues for the selected time period."
+    end
+  end
+
   describe 'visit Contribution Analytics page for group' do
     before do
-      visit_contribution_analtyics
+      stub_feature_flags(contribution_analytics_graphql: false)
+      visit_contribution_analytics
     end
 
     it 'displays Contribution Analytics' do

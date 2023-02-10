@@ -1,15 +1,15 @@
 import { GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import PushesChart from 'ee/analytics/contribution_analytics/components/pushes_chart.vue';
+import MergeRequestsChart from 'ee/analytics/contribution_analytics/legacy_components/merge_requests_chart.vue';
 import { MOCK_ANALYTICS } from '../mock_data';
 
-describe('Contribution Analytics Pushes Chart', () => {
+describe('Contribution Analytics Merge Requests Chart', () => {
   let wrapper;
 
   const findDescription = () => wrapper.findComponent(GlSprintf).attributes('message');
 
   const createWrapper = ({ provide = {} } = {}) => {
-    wrapper = shallowMount(PushesChart, {
+    wrapper = shallowMount(MergeRequestsChart, {
       provide: {
         ...MOCK_ANALYTICS,
         ...provide,
@@ -20,9 +20,9 @@ describe('Contribution Analytics Pushes Chart', () => {
   it('renders the empty description when there is no table data', () => {
     createWrapper({
       provide: {
-        totalCommitCount: 0,
-        totalPushAuthorCount: 0,
-        totalPushCount: 0,
+        totalMergeRequestsClosedCount: 0,
+        totalMergeRequestsCreatedCount: 0,
+        totalMergeRequestsMergedCount: 0,
       },
     });
 

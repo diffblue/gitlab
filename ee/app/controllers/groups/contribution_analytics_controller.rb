@@ -18,6 +18,7 @@ class Groups::ContributionAnalyticsController < Groups::ApplicationController
   urgency :low
 
   def show
+    push_frontend_feature_flag(:contribution_analytics_graphql, @group)
     @start_date = data_collector.from
 
     respond_to do |format|
