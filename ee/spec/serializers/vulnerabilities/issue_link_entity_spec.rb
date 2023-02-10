@@ -13,42 +13,66 @@ RSpec.describe Vulnerabilities::IssueLinkEntity, feature_category: :vulnerabilit
   let(:issue_link) { build_stubbed(:vulnerabilities_issue_link, issue: issue) }
 
   let(:opts) { {} }
-  let(:request) { double(:request) } # rubocop: disable RSpec/VerifiedDoubles
 
   let(:entity) do
     described_class.represent(issue_link, opts)
   end
 
   describe '#as_json' do
-    subject { entity.as_json }
+    subject(:serialized_issue_link) { entity.as_json }
 
     shared_examples 'required fields' do
       it 'are present' do
-        expect(subject).to include(:issue_iid)
-        expect(subject).to include(:author)
-        expect(subject).to include(:created_at)
-        expect(subject).to include(:author)
-        expect(subject).to include(:link_type)
+        expect(serialized_issue_link).to include(:issue_iid)
+        expect(serialized_issue_link).to include(:author)
+        expect(serialized_issue_link).to include(:created_at)
+        expect(serialized_issue_link).to include(:author)
+        expect(serialized_issue_link).to include(:link_type)
       end
     end
 
-    context "when user can read issue" do
+    context 'when the request is not nil' do
       let(:opts) { { request: request } }
 
-      before do
-        project.add_developer(user)
-        allow(request).to receive(:current_user).and_return(user)
+      context 'when the user is available' do
+        let(:request) { EntityRequest.new(current_user: user) }
+
+        it_behaves_like 'required fields'
+
+        context 'when the user can not read issue' do
+          it 'does not contain issue_url' do
+            expect(serialized_issue_link).not_to include(:issue_url)
+          end
+        end
+
+        context 'when the user can read issue' do
+          before do
+            project.add_developer(user)
+          end
+
+          it 'contains issue_url' do
+            expect(serialized_issue_link).to include(:issue_url)
+          end
+        end
       end
 
-      it 'contains issue_url' do
-        expect(subject).to include(:issue_url)
-      end
+      context 'when the user is not available' do
+        let(:request) { EntityRequest.new({}) }
 
-      it_behaves_like 'required fields'
+        it_behaves_like 'required fields'
+
+        it 'does not contain issue_url' do
+          expect(serialized_issue_link).not_to include(:issue_url)
+        end
+      end
     end
 
-    context "when user cannot read issue" do
+    context 'when the request is nil' do
       it_behaves_like 'required fields'
+
+      it 'does not contain issue_url' do
+        expect(serialized_issue_link).not_to include(:issue_url)
+      end
     end
   end
 end

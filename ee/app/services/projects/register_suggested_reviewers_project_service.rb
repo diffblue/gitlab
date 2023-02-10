@@ -12,8 +12,10 @@ module Projects
 
       token_response = create_access_token
       if token_response.error?
-        return ServiceResponse.error(message: 'Failed to create access token',
-                                     reason: :token_creation_failed)
+        return ServiceResponse.error(
+          message: 'Failed to create access token',
+          reason: :token_creation_failed
+        )
       end
 
       access_token = token_response.payload[:access_token].token

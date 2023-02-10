@@ -76,7 +76,7 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client, feature_category: 
 
       it 'raises a configuration error' do
         expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ConfigurationError,
-                                          'Variable SUGGESTED_REVIEWERS_SECRET is missing')
+          'Variable SUGGESTED_REVIEWERS_SECRET is missing')
       end
     end
 

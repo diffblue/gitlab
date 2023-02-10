@@ -33,8 +33,8 @@ module QA
       after do
         Page::MergeRequest::Show.perform do |mr|
           Support::Retrier.retry_until(max_duration: 30,
-                                       sleep_interval: 5,
-                                       message: 'There should be no reviewers assigned') do
+            sleep_interval: 5,
+            message: 'There should be no reviewers assigned') do
             mr.unassign_reviewers
             mr.has_no_reviewers?
           end

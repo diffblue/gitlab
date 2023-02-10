@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequests::CaptureSuggestedReviewersAcceptedWorker do
+RSpec.describe MergeRequests::CaptureSuggestedReviewersAcceptedWorker, feature_category: :workflow_automation do
   let_it_be(:reviewers) { create_list(:user, 3) }
   let_it_be(:merge_request) { create(:merge_request) }
   let_it_be(:project) { merge_request.project }

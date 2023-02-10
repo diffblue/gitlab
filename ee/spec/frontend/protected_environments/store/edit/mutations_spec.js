@@ -31,6 +31,12 @@ describe('ee/protected_environments/store/edit/mutations', () => {
     it('saves the environments', () => {
       expect(mockedState.protectedEnvironments).toEqual(environments);
     });
+
+    it('sets entries to save new rules', () => {
+      expect(mockedState.newDeployAccessLevelsForEnvironment).toEqual({
+        staging: [],
+      });
+    });
   });
 
   describe(types.RECEIVE_PROTECTED_ENVIRONMENTS_ERROR, () => {
@@ -100,12 +106,29 @@ describe('ee/protected_environments/store/edit/mutations', () => {
     it('updates the saved environment', () => {
       expect(mockedState.protectedEnvironments).toEqual([updatedEnvironment]);
     });
+
+    it('clears the new rules', () => {
+      expect(mockedState.newDeployAccessLevelsForEnvironment).toEqual({
+        staging: [],
+      });
+    });
   });
 
   describe(types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_ERROR, () => {
     it('sets loading to false', () => {
       mutations[types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_ERROR](mockedState);
       expect(mockedState.loading).toBe(false);
+    });
+  });
+
+  describe(types.SET_RULE, () => {
+    it('saves the new rules to put to an environment', () => {
+      const environment = { name: 'staging' };
+      const rules = [{ user_id: 5 }];
+
+      mutations[types.SET_RULE](mockedState, { environment, rules });
+
+      expect(mockedState.newDeployAccessLevelsForEnvironment[environment.name]).toEqual(rules);
     });
   });
 });
