@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-# rubocop:disable RSpec/MissingFeatureCategory
+
 module QA
   RSpec.describe 'Create', only: { subdomain: "staging-ref" } do
     describe 'Slack app integration', :slack, product_group: :integrations do
@@ -173,4 +173,3 @@ module QA
     end
   end
 end
-# rubocop:enable RSpec/MissingFeatureCategory
