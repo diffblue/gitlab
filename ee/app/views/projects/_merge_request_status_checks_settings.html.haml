@@ -3,10 +3,7 @@
   %p.text-secondary
     - link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('user/project/merge_requests/status_checks') }
 
-    - if Feature.enabled?(:only_allow_merge_if_all_status_checks_passed, @project)
-      = s_('StatusCheck|Check for a status response in merge requests. %{link_start}Learn more%{link_end}.').html_safe % { link_start: link_start, link_end: '</a>'.html_safe }
-    - else
-      = s_('StatusCheck|Check for a status response in merge requests. Failures do not block merges. %{link_start}Learn more%{link_end}.').html_safe % { link_start: link_start, link_end: '</a>'.html_safe }
+    = s_('StatusCheck|Check for a status response in merge requests. %{link_start}Learn more%{link_end}.').html_safe % { link_start: link_start, link_end: '</a>'.html_safe }
 
   #js-status-checks-settings{ status_checks_app_data(@project) }
     = gl_loading_icon(size: 'md')
