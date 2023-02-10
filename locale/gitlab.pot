@@ -45473,6 +45473,15 @@ msgstr ""
 msgid "Update your project name, topics, description, and avatar."
 msgstr ""
 
+msgid "UpdateProject|Are you sure you want to prune unreachable objects?"
+msgstr ""
+
+msgid "UpdateProject|Are you sure you want to prune?"
+msgstr ""
+
+msgid "UpdateProject|Cancel"
+msgstr ""
+
 msgid "UpdateProject|Cannot rename project because it contains container registry tags!"
 msgstr ""
 
@@ -45482,10 +45491,22 @@ msgstr ""
 msgid "UpdateProject|Could not set the default branch. Do you have a branch named 'HEAD' in your repository? (%{linkStart}How do I fix this?%{linkEnd})"
 msgstr ""
 
+msgid "UpdateProject|Learn more."
+msgstr ""
+
 msgid "UpdateProject|New visibility level not allowed!"
 msgstr ""
 
 msgid "UpdateProject|Project could not be updated!"
+msgstr ""
+
+msgid "UpdateProject|Prune"
+msgstr ""
+
+msgid "UpdateProject|Prune unreachable objects"
+msgstr ""
+
+msgid "UpdateProject|Pruning unreachable objects can lead to repository corruption."
 msgstr ""
 
 msgid "UpdateRepositoryStorage|Failed to verify %{type} repository checksum from %{old} to %{new}"
