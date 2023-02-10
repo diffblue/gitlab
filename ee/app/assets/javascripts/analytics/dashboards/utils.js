@@ -6,6 +6,24 @@ import { METRICS_REQUESTS } from '~/analytics/cycle_analytics/constants';
 import { TABLE_METRICS, UNITS, CHART_TOOLTIP_UNITS } from './constants';
 
 /**
+ * Checks if a string representation of a value contains an
+ * insignificant trailing zero.
+ *
+ * @param {String} strValue - string representation of the value
+ * @returns {Boolean}
+ */
+export const hasTrailingDecimalZero = (strValue) => /\.\d+[0][^\d]/g.test(strValue);
+
+const patterns = [
+  { pattern: '0%', replacement: '%' },
+  { pattern: '0/', replacement: '/' },
+  { pattern: '0 ', replacement: ' ' },
+];
+
+const trimZeros = (value) =>
+  patterns.reduce((acc, pattern) => acc.replace(pattern.pattern, pattern.replacement), value);
+
+/**
  * Returns the number of fractional digits that should be shown
  * in the table, based on the value of the given metric.
  *
@@ -35,16 +53,21 @@ const fractionDigits = (value) => {
  * @returns {String} The formatted metric
  */
 export const formatMetric = (value, units) => {
+  let formatted = '';
   switch (units) {
     case UNITS.PER_DAY:
-      return days(value, fractionDigits(value), { unitSeparator: '/' });
+      formatted = days(value, fractionDigits(value), { unitSeparator: '/' });
+      break;
     case UNITS.DAYS:
-      return days(value, fractionDigits(value), { unitSeparator: ' ' });
+      formatted = days(value, fractionDigits(value), { unitSeparator: ' ' });
+      break;
     case UNITS.PERCENT:
-      return percentHundred(value, fractionDigits(value));
+      formatted = percentHundred(value, fractionDigits(value));
+      break;
     default:
-      return value;
+      formatted = value;
   }
+  return hasTrailingDecimalZero(formatted) ? trimZeros(formatted) : formatted;
 };
 
 export const percentChange = ({ current, previous }) =>

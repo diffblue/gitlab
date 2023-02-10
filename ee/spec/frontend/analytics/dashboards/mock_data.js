@@ -137,7 +137,7 @@ export const mockComparativeTableData = [
     },
     invertTrendColor: true,
     thisMonth: {
-      value: '0.50 d',
+      value: '0.5 d',
       change: -0.8611111111111112,
     },
     lastMonth: {
@@ -156,7 +156,7 @@ export const mockComparativeTableData = [
     },
     invertTrendColor: true,
     thisMonth: {
-      value: '0.050 d',
+      value: '0.05 d',
       change: -0.9974999999999999,
     },
     lastMonth: {
@@ -175,7 +175,7 @@ export const mockComparativeTableData = [
     },
     invertTrendColor: true,
     thisMonth: {
-      value: '0.0050%',
+      value: '0.005%',
       change: -0.99875,
     },
     lastMonth: {

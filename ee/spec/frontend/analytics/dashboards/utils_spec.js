@@ -7,6 +7,7 @@ import {
   generateDoraTimePeriodComparisonTable,
   generateSparklineCharts,
   mergeSparklineCharts,
+  hasTrailingDecimalZero,
 } from 'ee/analytics/dashboards/utils';
 import {
   DEPLOYMENT_FREQUENCY_METRIC_TYPE,
@@ -57,14 +58,27 @@ describe('Analytics Dashboards utils', () => {
       ${-10}     | ${'-10.0'}
       ${1}       | ${'1.0'}
       ${-1}      | ${'-1.0'}
-      ${0.1}     | ${'0.10'}
+      ${0.1}     | ${'0.1'}
       ${-0.99}   | ${'-0.99'}
       ${0.099}   | ${'0.099'}
-      ${-0.01}   | ${'-0.010'}
+      ${-0.01}   | ${'-0.01'}
       ${0.0099}  | ${'0.0099'}
       ${-0.0001} | ${'-0.0001'}
     `('returns $result for a metric with the value $value', ({ value, result }) => {
       expect(formatMetric(value, units)).toBe(`${result}${suffix}`);
+    });
+  });
+
+  describe('hasTrailingDecimalZero', () => {
+    it.each`
+      value         | result
+      ${'-10.0/d'}  | ${false}
+      ${'0.099/d'}  | ${false}
+      ${'0.0099%'}  | ${false}
+      ${'0.10%'}    | ${true}
+      ${'-0.010 d'} | ${true}
+    `('returns $result for value $value', ({ value, result }) => {
+      expect(hasTrailingDecimalZero(value)).toBe(result);
     });
   });
 
