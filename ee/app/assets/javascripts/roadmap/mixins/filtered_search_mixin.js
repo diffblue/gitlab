@@ -58,6 +58,7 @@ export default {
         'not[myReactionEmoji]': notMyReactionEmoji,
         'not[labelName]': notLabelName,
         'or[labelName]': orLabelName,
+        'or[authorUsername]': orAuthorUsername,
       } = this.filterParams || {};
 
       return {
@@ -81,6 +82,7 @@ export default {
         'not[my_reaction_emoji]': notMyReactionEmoji,
         'not[label_name][]': notLabelName,
         'or[label_name][]': orLabelName,
+        'or[author_username]': orAuthorUsername,
         progress: this.progressTracking,
         show_progress: this.isProgressTrackingActive,
         show_milestones: this.isShowingMilestones,
@@ -108,10 +110,10 @@ export default {
           type: TOKEN_TYPE_AUTHOR,
           icon: 'user',
           title: TOKEN_TITLE_AUTHOR,
-          unique: true,
+          unique: !this.hasOrFeature,
           symbol: '@',
           token: UserToken,
-          operators: OPERATORS_IS_NOT,
+          operators: this.hasOrFeature ? OPERATORS_IS_NOT_OR : OPERATORS_IS_NOT,
           recentSuggestionsStorageKey: `${this.groupFullPath}-epics-recent-tokens-author_username`,
           fetchUsers: Api.users.bind(Api),
           defaultUsers: [],
@@ -245,6 +247,7 @@ export default {
         'not[myReactionEmoji]': notMyReactionEmoji,
         'not[labelName]': notLabelName,
         'or[labelName]': orLabelName,
+        'or[authorUsername]': orAuthorUsername,
       } = this.filterParams || {};
       const filteredSearchValue = [];
 
@@ -266,6 +269,13 @@ export default {
         filteredSearchValue.push({
           type: TOKEN_TYPE_AUTHOR,
           value: { data: notAuthorUsername, operator: OPERATOR_NOT },
+        });
+      }
+
+      if (orAuthorUsername?.length && this.hasOrFeature) {
+        filteredSearchValue.push({
+          type: TOKEN_TYPE_AUTHOR,
+          value: { data: orAuthorUsername, operator: OPERATOR_OR },
         });
       }
 
@@ -344,6 +354,7 @@ export default {
     getFilterParams(filters = []) {
       const filterParams = {};
       const labels = [];
+      const orAuthors = [];
       const notLabels = [];
       const orLabels = [];
       const plainText = [];
@@ -351,9 +362,13 @@ export default {
       filters.forEach((filter) => {
         switch (filter.type) {
           case TOKEN_TYPE_AUTHOR: {
-            const key =
-              filter.value.operator === OPERATOR_NOT ? 'not[authorUsername]' : 'authorUsername';
-            filterParams[key] = filter.value.data;
+            if (filter.value.operator === OPERATOR_NOT) {
+              filterParams['not[authorUsername]'] = filter.value.data;
+            } else if (filter.value.operator === OPERATOR_OR) {
+              orAuthors.push(filter.value.data);
+            } else {
+              filterParams.authorUsername = filter.value.data;
+            }
             break;
           }
           case TOKEN_TYPE_LABEL:
@@ -394,6 +409,10 @@ export default {
             break;
         }
       });
+
+      if (orAuthors.length) {
+        filterParams[`or[authorUsername]`] = orAuthors;
+      }
 
       if (labels.length) {
         filterParams.labelName = labels;

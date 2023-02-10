@@ -9,5 +9,3 @@ export const isJobFailed = (state) => state.reportInfo.status === REPORT_STATUS.
 export const isIncomplete = (state) => state.reportInfo.status === REPORT_STATUS.incomplete;
 export const hasNoDependencies = (state) =>
   state.reportInfo.status === REPORT_STATUS.noDependencies;
-
-export const downloadEndpoint = ({ endpoint }) => endpoint;
