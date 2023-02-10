@@ -9,12 +9,14 @@ module API
     feature_category :authentication_and_authorization
 
     params do
-      requires :id, type: String, desc: 'The ID of a group'
+      requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the group'
     end
 
     resource :groups do
       desc 'Get Member Roles for a group' do
         success EE::API::Entities::MemberRole
+        is_array true
+        tags ["group_member_roles"]
       end
 
       get ":id/member_roles" do
@@ -25,6 +27,10 @@ module API
 
       desc 'Create Member Role for a group' do
         success EE::API::Entities::MemberRole
+        failure [
+          code: 400
+        ]
+        tags ["group_member_roles"]
       end
 
       params do
@@ -32,7 +38,8 @@ module API
           'base_access_level',
           type: Integer,
           values: Gitlab::Access.all_values,
-          desc: 'Base Access Level for the configured role'
+          desc: 'Base Access Level for the configured role',
+          documentation: { example: 40 }
         )
         optional 'read_code', type: Boolean, desc: 'Permission to read code'
       end
@@ -50,14 +57,21 @@ module API
       end
 
       desc 'Delete Member Role for a group' do
-        success EE::API::Entities::MemberRole
+        success [
+          code: 204
+        ]
+        failure [
+          code: 404, message: 'Linked Member Role not found'
+        ]
+        tags ["group_member_roles"]
       end
 
       params do
         requires(
           'member_role_id',
           type: Integer,
-          desc: 'The ID of the Member Role to be deleted'
+          desc: 'The ID of the Member Role to be deleted',
+          documentation: { example: 2 }
         )
       end
 
