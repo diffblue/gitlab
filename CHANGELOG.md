@@ -480,6 +480,10 @@ entry.
 - [Do not use _test when not necessary](gitlab-org/gitlab@1bde73aba2bd1d7f9e833c7325cffa0c90d1c106) ([merge request](gitlab-org/gitlab!107373))
 - [Add config/redis.yml unified config file](gitlab-org/gitlab@ace8301236eecc07a511975b57f80e21ec7be3c2) ([merge request](gitlab-org/gitlab!106854))
 
+## 15.7.7 (2023-02-10)
+
+No changes.
+
 ## 15.7.6 (2023-01-30)
 
 ### Security (5 changes)
