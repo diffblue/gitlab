@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequests::CaptureSuggestedReviewersAcceptedService do
+RSpec.describe MergeRequests::CaptureSuggestedReviewersAcceptedService, feature_category: :workflow_automation do
   let_it_be(:merge_request) { create(:merge_request) }
   let_it_be(:project) { merge_request.project }
   let_it_be(:user) { merge_request.author }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::RegisterSuggestedReviewersProjectService, :saas do
+RSpec.describe Projects::RegisterSuggestedReviewersProjectService, :saas, feature_category: :workflow_automation do
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user) }
 
