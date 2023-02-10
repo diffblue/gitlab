@@ -19,9 +19,6 @@ module RequirementsManagement
     scope :with_build, -> { where.not(build_id: nil) }
     scope :for_user_build, ->(user_id, build_id) { where(author_id: user_id, build_id: build_id) }
 
-    # We need this only to perform permission checks on policy
-    delegate :requirement, to: :requirement_issue, allow_nil: true
-
     class << self
       # Until old requirement iids are deprecated in favor of work items
       # we keep parsing two kinds of reports to toggle requirements status:
