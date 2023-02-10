@@ -1344,6 +1344,10 @@ No changes.
 - [Propagate RemoteIP to Gitaly via Workhorse](gitlab-org/gitlab@71da945c85931bac0263c193902dc1b54e2e62da) ([merge request](gitlab-org/gitlab!103635))
 - [Documentation to reflect 100MB upload limit](gitlab-org/gitlab@33063bb26ab7699802ecb2b325cc8619d6fe7b86) ([merge request](gitlab-org/gitlab!103978))
 
+## 15.6.8 (2023-02-10)
+
+No changes.
+
 ## 15.6.7 (2023-01-30)
 
 ### Fixed (2 changes)
