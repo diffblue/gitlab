@@ -2,45 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['Query'] do
-  specify do
-    foss_expected_fields = [
-      :board_list,
-      :ci_application_settings,
-      :ci_config,
-      :ci_variables,
-      :container_repository,
-      :current_user,
-      :design_management,
-      :echo,
-      :gitpod_enabled,
-      :group,
-      :issue,
-      :issues,
-      :jobs,
-      :merge_request,
-      :metadata,
-      :milestone,
-      :namespace,
-      :package,
-      :project,
-      :projects,
-      :query_complexity,
-      :runner,
-      :runner_platforms,
-      :runner_setup,
-      :runners,
-      :snippets,
-      :timelogs,
-      :todo,
-      :topics,
-      :usage_trends_measurements,
-      :user,
-      :users,
-      :work_item
-    ]
+RSpec.describe GitlabSchema.types['Query'], feature_category: :shared do
+  include_context 'with FOSS query type fields'
 
-    ee_expected_fields = [
+  specify do
+    expected_ee_fields = [
       :ci_minutes_usage,
       :current_license,
       :devops_adoption_enabled_namespaces,
@@ -55,7 +21,7 @@ RSpec.describe GitlabSchema.types['Query'] do
       :vulnerability
     ]
 
-    all_expected_fields = foss_expected_fields + ee_expected_fields
+    all_expected_fields = expected_foss_fields + expected_ee_fields
 
     expect(described_class).to have_graphql_fields(*all_expected_fields)
   end

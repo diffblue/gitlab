@@ -19,7 +19,7 @@ module EE
       def iteration_change_events
         return [] unless resource.respond_to?(:resource_iteration_events)
 
-        events = resource.resource_iteration_events.includes(user: :status) # rubocop: disable CodeReuse/ActiveRecord
+        events = resource.resource_iteration_events.includes(:iteration, user: :status) # rubocop: disable CodeReuse/ActiveRecord
         apply_common_filters(events)
       end
 
