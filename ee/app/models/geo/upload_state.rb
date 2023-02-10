@@ -3,7 +3,6 @@
 module Geo
   class UploadState < ApplicationRecord
     include ::Geo::VerificationStateDefinition
-    include EachBatch
 
     self.primary_key = :upload_id
 

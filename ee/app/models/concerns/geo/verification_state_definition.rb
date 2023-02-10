@@ -4,6 +4,7 @@ module Geo
   module VerificationStateDefinition
     extend ActiveSupport::Concern
     include Delay
+    include EachBatch
 
     included do
       state_machine :verification_state, initial: :verification_pending do

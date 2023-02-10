@@ -3,7 +3,6 @@
 module Geo
   class WikiRepositoryState < ApplicationRecord
     include ::Geo::VerificationStateDefinition
-    include EachBatch
 
     belongs_to :project_wiki_repository,
                class_name: 'Projects::WikiRepository',

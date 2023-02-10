@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 module Geo
   class CiSecureFileState < Ci::ApplicationRecord
-    include EachBatch
     include ::Geo::VerificationStateDefinition
 
     self.primary_key = :ci_secure_file_id
