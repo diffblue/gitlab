@@ -1,12 +1,12 @@
 import { mount } from '@vue/test-utils';
 import { GlIcon } from '@gitlab/ui';
 
-import TableHeaderComponent from 'ee/analytics/contribution_analytics/components/table_header.vue';
-import { TABLE_COLUMNS } from 'ee/analytics/contribution_analytics/constants';
+import TableHeaderComponent from 'ee/analytics/contribution_analytics/legacy_components/table_header.vue';
+import { LEGACY_TABLE_COLUMNS } from 'ee/analytics/contribution_analytics/constants';
 
 import { MOCK_SORT_ORDERS } from '../mock_data';
 
-const createComponent = (columns = TABLE_COLUMNS, sortOrders = MOCK_SORT_ORDERS) =>
+const createComponent = (columns = LEGACY_TABLE_COLUMNS, sortOrders = MOCK_SORT_ORDERS) =>
   mount(TableHeaderComponent, { propsData: { columns, sortOrders } });
 
 describe('TableHeaderComponent', () => {

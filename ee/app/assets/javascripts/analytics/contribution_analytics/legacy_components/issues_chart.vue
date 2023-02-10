@@ -2,7 +2,7 @@
 import { GlSprintf } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import { formatChartData } from '../utils';
-import ColumnChart from './column_chart.vue';
+import ColumnChart from '../components/column_chart.vue';
 
 export default {
   name: 'IssuesChart',

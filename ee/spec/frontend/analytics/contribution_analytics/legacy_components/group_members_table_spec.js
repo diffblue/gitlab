@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 
 import GroupMembers from 'ee/analytics/contribution_analytics/group_members';
-import GroupMembersTable from 'ee/analytics/contribution_analytics/components/group_members_table.vue';
+import GroupMembersTable from 'ee/analytics/contribution_analytics/legacy_components/group_members_table.vue';
 import { CONTRIBUTIONS_PATH } from '../mock_data';
 
 describe('GroupMembersTable', () => {

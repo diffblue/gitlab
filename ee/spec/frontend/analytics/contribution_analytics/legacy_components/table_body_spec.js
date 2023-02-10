@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 
-import TableBodyComponent from 'ee/analytics/contribution_analytics/components/table_body.vue';
+import TableBodyComponent from 'ee/analytics/contribution_analytics/legacy_components/table_body.vue';
 import GroupMembers from 'ee/analytics/contribution_analytics/group_members';
 
 import { MOCK_MEMBERS } from '../mock_data';
