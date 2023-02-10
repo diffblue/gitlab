@@ -146,7 +146,7 @@ RSpec.describe 'Project', :js, feature_category: :projects do
         expect(page).not_to have_text storage_banner_text
       end
 
-      it 'does not display the banner if user has previously closed unless threshold has changed' do
+      it 'does not display the banner if user has previously closed unless threshold has changed', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/390917' do
         visit project_path(project)
         have_text storage_banner_text
         find('.js-storage-enforcement-banner [data-testid="close-icon"]').click
