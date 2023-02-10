@@ -8,6 +8,9 @@ export const mutations = {
   [types.RECEIVE_PROTECTED_ENVIRONMENTS_SUCCESS](state, environments) {
     state.loading = false;
     state.protectedEnvironments = environments;
+    state.newDeployAccessLevelsForEnvironment = Object.fromEntries(
+      environments.map(({ name }) => [name, []]),
+    );
   },
   [types.RECEIVE_PROTECTED_ENVIRONMENTS_ERROR](state) {
     state.loading = false;
@@ -30,10 +33,14 @@ export const mutations = {
   [types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_SUCCESS](state, environment) {
     const index = state.protectedEnvironments.findIndex((env) => env.name === environment.name);
     Vue.set(state.protectedEnvironments, index, environment);
+    Vue.set(state.newDeployAccessLevelsForEnvironment, environment.name, []);
 
     state.loading = false;
   },
   [types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_ERROR](state) {
     state.loading = false;
+  },
+  [types.SET_RULE](state, { environment, rules }) {
+    state.newDeployAccessLevelsForEnvironment[environment.name] = rules;
   },
 };

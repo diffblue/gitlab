@@ -70,6 +70,7 @@ export const initEditMultipleEnvironmentApprovalRules = () => {
     }),
     provide: {
       projectId,
+      accessLevelsData: gon?.deploy_access_levels?.roles ?? [],
     },
     render(createElement) {
       return createElement(EditProtectedEnvironmentList);

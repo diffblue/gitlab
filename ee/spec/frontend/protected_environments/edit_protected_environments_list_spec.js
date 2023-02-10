@@ -7,7 +7,10 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
 import { sprintf, s__ } from '~/locale';
+import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
 import { createStore } from 'ee/protected_environments/store/edit';
+import AddRuleModal from 'ee/protected_environments/add_rule_modal.vue';
+import EditProtectedEnvironmentRulesCard from 'ee/protected_environments/edit_protected_environment_rules_card.vue';
 import EditProtectedEnvironmentsList from 'ee/protected_environments/edit_protected_environments_list.vue';
 import { MAINTAINER_ACCESS_LEVEL, DEVELOPER_ACCESS_LEVEL } from './constants';
 
@@ -34,6 +37,18 @@ const DEFAULT_ENVIRONMENTS = [
 ];
 
 const DEFAULT_PROJECT_ID = '8';
+const DEFAULT_ACCESS_LEVELS_DATA = [
+  {
+    id: 40,
+    text: 'Maintainers',
+    before_divider: true,
+  },
+  {
+    id: 30,
+    text: 'Developers + Maintainers',
+    before_divider: true,
+  },
+];
 
 Vue.use(Vuex);
 
@@ -48,6 +63,9 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
 
     wrapper = mountExtended(EditProtectedEnvironmentsList, {
       store,
+      provide: {
+        accessLevelsData: DEFAULT_ACCESS_LEVELS_DATA,
+      },
     });
 
     await waitForPromises();
@@ -125,6 +143,47 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
 
     descriptions.forEach((description, i) => {
       expect(description.text()).toBe(deployAccessLevels[i].access_level_description);
+    });
+  });
+
+  describe('add rule', () => {
+    let environment;
+    let dropdown;
+    let modal;
+
+    beforeEach(async () => {
+      [environment] = DEFAULT_ENVIRONMENTS;
+
+      await createComponent();
+
+      wrapper.findComponent(EditProtectedEnvironmentRulesCard).vm.$emit('addRule', environment);
+
+      await nextTick();
+
+      dropdown = wrapper.findComponent(AccessDropdown);
+      modal = wrapper.findComponent(AddRuleModal);
+    });
+
+    it('puts the access level dropdown into the modal form', () => {
+      expect(dropdown.exists()).toBe(true);
+    });
+
+    it('sends new rules to be added', async () => {
+      mock.onPut().reply(HTTP_STATUS_OK);
+
+      const rule = [{ user_id: 5 }];
+      dropdown.vm.$emit('hidden', rule);
+
+      await nextTick();
+
+      modal.vm.$emit('saveRule');
+
+      await waitForPromises();
+
+      expect(mock.history.put.length).toBe(1);
+
+      const [{ data }] = mock.history.put;
+      expect(JSON.parse(data)).toMatchObject({ ...environment, deploy_access_levels: rule });
     });
   });
 
