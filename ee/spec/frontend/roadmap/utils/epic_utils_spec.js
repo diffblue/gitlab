@@ -82,12 +82,14 @@ describe('transformFetchEpicFilterParams', () => {
   it('should return congregated `or[]` params in a single key', () => {
     const filterParams = {
       'or[labelName]': ['foo', 'bar'],
+      'or[authorUsername]': ['boo', 'baa'],
       authorUsername: 'baz',
     };
 
     expect(epicUtils.transformFetchEpicFilterParams(filterParams)).toEqual({
       or: {
         labelName: ['foo', 'bar'],
+        authorUsername: ['boo', 'baa'],
       },
       authorUsername: 'baz',
     });

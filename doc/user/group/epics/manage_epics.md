@@ -264,7 +264,7 @@ To filter:
 
 ### Filter with the OR operator
 
-> OR filtering for labels was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/382969) in GitLab 15.9 [with a flag](../../../administration/feature_flags.md) named `or_issuable_queries`. Disabled by default.
+> OR filtering for labels and authors was [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/382969) in GitLab 15.9 [with a flag](../../../administration/feature_flags.md) named `or_issuable_queries`. Disabled by default.
 
 FLAG:
 On self-managed GitLab, by default this feature is not available.
@@ -273,7 +273,10 @@ On GitLab.com, this feature is not available.
 The feature is not ready for production use.
 
 When this feature is enabled, you can use the OR operator (**is one of: `||`**)
-to [filter the list of epics](#filter-the-list-of-epics) by labels.
+when you [filter the list of epics](#filter-the-list-of-epics) by:
+
+- Authors
+- Labels
 
 `is one of` represents an inclusive OR. For example, if you filter by `Label is one of Deliverable` and
 `Label is one of UX`, GitLab shows epics with either `Deliverable`, `UX`, or both labels.
