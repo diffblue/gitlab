@@ -9,7 +9,7 @@ module Types
         null: true, description: 'HTTP URI path to view the input file in GitLab.'
 
       field :path, GraphQL::Types::String,
-        null: true, description: 'Path, relative to the root of the respository, of the file' \
+        null: true, description: 'Path, relative to the root of the repository, of the file' \
                                  'which was analyzed to detect the dependency.'
     end
   end

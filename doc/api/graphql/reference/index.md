@@ -15404,7 +15404,7 @@ Represents an entry from the Cloud License history.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="locationblobpath"></a>`blobPath` | [`String`](#string) | HTTP URI path to view the input file in GitLab. |
-| <a id="locationpath"></a>`path` | [`String`](#string) | Path, relative to the root of the respository, of the filewhich was analyzed to detect the dependency. |
+| <a id="locationpath"></a>`path` | [`String`](#string) | Path, relative to the root of the repository, of the filewhich was analyzed to detect the dependency. |
 
 ### `MavenMetadata`
 
