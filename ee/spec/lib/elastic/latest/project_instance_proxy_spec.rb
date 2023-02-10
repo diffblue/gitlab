@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::Latest::ProjectInstanceProxy do
-  let(:project) { create(:project) }
+RSpec.describe Elastic::Latest::ProjectInstanceProxy, feature_category: :global_search do
+  let_it_be(:project) { create(:project) }
 
   subject { described_class.new(project) }
 
@@ -30,14 +30,18 @@ RSpec.describe Elastic::Latest::ProjectInstanceProxy do
       end
     end
 
-    it 'raises an error for a project with an empty project_feature' do
-      allow(project).to receive(:project_feature).and_return(nil)
+    context 'when project_feature is null' do
+      before do
+        allow(project).to receive(:project_feature).and_return(nil)
+      end
 
-      expect(Gitlab::ErrorTracking).to receive(:track_and_raise_exception).with(
-        NoMethodError,
-        project_id: project.id,
-        feature: 'issues_access_level').and_call_original
-      expect { subject.as_indexed_json }.to raise_error NoMethodError
+      it 'sets all tracked feature access levels to PRIVATE' do
+        result = subject.as_indexed_json.with_indifferent_access
+
+        Elastic::Latest::ProjectInstanceProxy::TRACKED_FEATURE_SETTINGS.each do |feature|
+          expect(result).to include(feature => ProjectFeature::PRIVATE) # rubocop:disable GitlabSecurity/PublicSend
+        end
+      end
     end
   end
 end
