@@ -49,15 +49,13 @@ module Elastic
           data['traversal_ids'] = target.elastic_namespace_ancestry
         end
 
-        # Somehow projects are being created and sent for indexing without an associated project_feature
-        # https://gitlab.com/gitlab-org/gitlab/-/issues/232654
-        # When this happens, log the errors to help with debugging, and raise the error to prevent indexing bad data
         TRACKED_FEATURE_SETTINGS.each do |feature|
-          data[feature] = target.project_feature.public_send(feature) # rubocop:disable GitlabSecurity/PublicSend
-        rescue NoMethodError => e
-          # Sentry is not receiving the extra fields provided so adding an additional logging statement
-          target.logger.debug(message: e.message, project_id: target.id, feature: feature)
-          Gitlab::ErrorTracking.track_and_raise_exception(e, project_id: target.id, feature: feature)
+          data[feature] = if target.project_feature.present?
+                            target.project_feature.public_send(feature) # rubocop:disable GitlabSecurity/PublicSend
+                          else
+                            logger.warn(message: 'Project is missing ProjectFeature', id: target.id)
+                            ProjectFeature::PRIVATE
+                          end
         end
 
         data
