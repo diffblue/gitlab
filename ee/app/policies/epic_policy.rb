@@ -91,9 +91,4 @@ class EpicPolicy < BasePolicy
   rule { can?(:reporter_access) }.policy do
     enable :mark_note_as_internal
   end
-
-  # This rule replicates permissions in NotePolicy#can_read_internal_note
-  rule { can?(:reporter_access) | admin }.policy do
-    enable :read_internal_note
-  end
 end
