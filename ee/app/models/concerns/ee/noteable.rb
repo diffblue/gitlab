@@ -32,11 +32,15 @@ module EE
       relations = super
 
       if respond_to?(:resource_weight_events)
-        relations << resource_weight_events.select("'resource_weight_events'", "'NULL'", :id, :created_at)
+        relations << resource_weight_events.select(
+          "'resource_weight_events'", :id, :created_at, 'ARRAY_FILL(id, ARRAY[1])'
+        )
       end
 
       if respond_to?(:resource_iteration_events)
-        relations << resource_iteration_events.select("'resource_iteration_events'", "'NULL'", :id, :created_at)
+        relations << resource_iteration_events.select(
+          "'resource_iteration_events'", :id, :created_at, 'ARRAY_FILL(id, ARRAY[1])'
+        )
       end
 
       relations
