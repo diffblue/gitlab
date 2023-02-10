@@ -20,32 +20,57 @@ RSpec.describe Vulnerabilities::MergeRequestLinkEntity, feature_category: :vulne
   end
 
   describe '#as_json' do
-    subject { entity.as_json }
+    subject(:serialized_merge_request_link) { entity.as_json }
 
     shared_examples 'required fields' do
       it 'are present' do
-        expect(subject).to include(:merge_request_iid)
-        expect(subject).to include(:author)
+        expect(serialized_merge_request_link).to include(:merge_request_iid)
+        expect(serialized_merge_request_link).to include(:author)
       end
     end
 
-    context "when user can read merge_request" do
+    context 'when the request is not nil' do
       let(:opts) { { request: request } }
 
-      before do
-        project.add_developer(user)
-        allow(request).to receive(:current_user).and_return(user)
+      context 'when the user is available' do
+        let(:request) { EntityRequest.new(current_user: user) }
+
+        it_behaves_like 'required fields'
+
+        context 'when the user can not read MR' do
+          it 'does not contain merge_request_path' do
+            expect(serialized_merge_request_link).not_to include(:merge_request_path)
+          end
+        end
+
+        context 'when the user can read MR' do
+          before do
+            project.add_developer(user)
+          end
+
+          it 'contains merge_request_path' do
+            expect(serialized_merge_request_link).to include(:merge_request_path)
+          end
+        end
       end
 
-      it 'contains merge_request_path' do
-        expect(subject).to include(:merge_request_path)
-      end
+      context 'when the user is not available' do
+        let(:request) { EntityRequest.new({}) }
 
-      it_behaves_like 'required fields'
+        it_behaves_like 'required fields'
+
+        it 'does not contain merge_request_path' do
+          expect(serialized_merge_request_link).not_to include(:merge_request_path)
+        end
+      end
     end
 
-    context "when user cannot read merge_request" do
+    context 'when the request is nil' do
       it_behaves_like 'required fields'
+
+      it 'does not contain merge_request_path' do
+        expect(serialized_merge_request_link).not_to include(:merge_request_path)
+      end
     end
   end
 end

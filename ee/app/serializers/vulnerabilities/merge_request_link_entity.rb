@@ -19,12 +19,15 @@ module Vulnerabilities
 
     private
 
-    # Security reports serialise findings, which include this entity.
-    # As these reports are created in Sidekiq, request is nil
-    delegate :current_user, to: :request, allow_nil: true
-
     def can_read_merge_request?
       can?(current_user, :read_merge_request, merge_request_link.merge_request)
+    end
+
+    # The request can be either nil or an instance of `EntityRequest`.
+    # If the latter, it may or may not respond to `current_user` so that's
+    # why we need to have the following guard clause.
+    def current_user
+      return request.current_user if request.respond_to?(:current_user)
     end
   end
 end
