@@ -248,7 +248,6 @@ module EE
       stub_const('TestDummyModelState', Class.new(ApplicationRecord))
 
       TestDummyModelState.class_eval do
-        include EachBatch
         include ::Geo::VerificationStateDefinition
 
         self.table_name = '_test_dummy_model_states'

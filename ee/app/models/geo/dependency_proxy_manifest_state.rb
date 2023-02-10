@@ -2,7 +2,6 @@
 
 module Geo
   class DependencyProxyManifestState < ApplicationRecord
-    include EachBatch
     include ::Geo::VerificationStateDefinition
 
     self.primary_key = :dependency_proxy_manifest_id
