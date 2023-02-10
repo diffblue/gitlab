@@ -21,7 +21,7 @@ module EE
       def permitted_attrs(type)
         return super unless type == 'issue'
 
-        super.push(:health_status, :epic_id)
+        super.push(:health_status, :epic_id, :sprint_id)
       end
 
       override :set_update_params
