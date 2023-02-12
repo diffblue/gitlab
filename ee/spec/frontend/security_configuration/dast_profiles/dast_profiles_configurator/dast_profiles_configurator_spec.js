@@ -1,7 +1,8 @@
 import { merge } from 'lodash';
 import { GlLink } from '@gitlab/ui';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { createLocalVue, mount, shallowMount } from '@vue/test-utils';
+import { mount, shallowMount } from '@vue/test-utils';
 import siteProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql.basic.json';
 import scannerProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql.basic.json';
 import ProfileConflictAlert from 'ee/on_demand_scans_form/components/profile_selector/profile_conflict_alert.vue';
@@ -19,7 +20,6 @@ import SectionLoader from '~/vue_shared/security_configuration/components/sectio
 import dastScannerProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql';
 import dastSiteProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql';
 import resolvers from 'ee/vue_shared/security_configuration/graphql/resolvers/resolvers';
-import { DRAWER_VIEW_MODE, SCANNER_TYPE, SITE_TYPE } from 'ee/on_demand_scans/constants';
 import { typePolicies } from 'ee/vue_shared/security_configuration/graphql/provider';
 import waitForPromises from 'helpers/wait_for_promises';
 import createApolloProvider from 'helpers/mock_apollo_helper';
@@ -34,13 +34,12 @@ import {
 } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
 
 describe('DastProfilesConfigurator', () => {
-  let localVue;
   let wrapper;
   let requestHandlers;
   const projectPath = 'projectPath';
 
   const createMockApolloProvider = () => {
-    localVue.use(VueApollo);
+    Vue.use(VueApollo);
 
     requestHandlers = {
       dastScannerProfiles: jest.fn().mockResolvedValue(scannerProfilesFixtures),
@@ -81,8 +80,6 @@ describe('DastProfilesConfigurator', () => {
   };
 
   const createComponentFactory = (mountFn = shallowMount) => (options = {}) => {
-    localVue = createLocalVue();
-
     const apolloProvider = createMockApolloProvider();
 
     wrapper = extendedWrapper(
@@ -104,7 +101,7 @@ describe('DastProfilesConfigurator', () => {
               projectPath,
             },
           },
-          { ...options, localVue, apolloProvider },
+          { ...options, apolloProvider },
           {
             data() {
               return {
@@ -121,11 +118,6 @@ describe('DastProfilesConfigurator', () => {
   };
   const createComponent = createComponentFactory(mount);
   const createShallowComponent = createComponentFactory();
-
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
 
   describe('when default state', () => {
     it('renders properly', async () => {
@@ -177,21 +169,18 @@ describe('DastProfilesConfigurator', () => {
     );
 
     it.each`
-      findProfileSelector            | expectedPayload
-      ${findScannerProfilesSelector} | ${{ mode: DRAWER_VIEW_MODE.EDITING_MODE, profileType: SCANNER_TYPE }}
-      ${findSiteProfilesSelector}    | ${{ mode: DRAWER_VIEW_MODE.EDITING_MODE, profileType: SITE_TYPE }}
-    `(
-      'should open drawer with selected profile in edit mode',
-      async ({ findProfileSelector, expectedPayload }) => {
-        const openDrawerSpy = jest.spyOn(wrapper.vm, 'openProfileDrawer');
-        findProfileSelector().vm.$emit('edit');
-        await waitForPromises();
+      findProfileSelector
+      ${findScannerProfilesSelector}
+      ${findSiteProfilesSelector}
+    `('should open drawer with selected profile in edit mode', async ({ findProfileSelector }) => {
+      expect(findDastProfileDrawer().props('open')).toBe(false);
+      findProfileSelector().vm.$emit('edit');
+      await waitForPromises();
 
-        expect(findDastProfileDrawer().exists()).toBe(true);
-        expect(findDastProfilesDrawerForm().exists()).toBe(true);
-        expect(openDrawerSpy).toHaveBeenCalledWith(expectedPayload);
-      },
-    );
+      expect(findDastProfileDrawer().exists()).toBe(true);
+      expect(findDastProfilesDrawerForm().exists()).toBe(true);
+      expect(findDastProfileDrawer().props('open')).toBe(true);
+    });
   });
 
   describe('saved profiles', () => {
@@ -216,7 +205,7 @@ describe('DastProfilesConfigurator', () => {
     const { profileName: savedSiteProfileName } = siteProfiles[0];
 
     beforeEach(async () => {
-      createComponent({ savedSiteProfileName, savedScannerProfileName }, true);
+      createComponent({ savedSiteProfileName, savedScannerProfileName });
       await waitForPromises();
     });
 
@@ -238,7 +227,7 @@ describe('DastProfilesConfigurator', () => {
 
   describe('switching between modes', () => {
     beforeEach(async () => {
-      createComponent({}, true);
+      createComponent();
       await waitForPromises();
     });
 
@@ -272,13 +261,11 @@ describe('DastProfilesConfigurator', () => {
 
   describe('warning modal', () => {
     beforeEach(async () => {
-      createComponent({}, true);
+      createComponent();
       await waitForPromises();
     });
 
     it('should show warning modal when changes are unsaved', async () => {
-      const mutateMock = jest.spyOn(wrapper.vm.$apollo, 'mutate');
-
       findOpenDrawerButton().vm.$emit('click');
       await waitForPromises();
 
@@ -291,8 +278,8 @@ describe('DastProfilesConfigurator', () => {
       findOpenDrawerButton().vm.$emit('click');
       await waitForPromises();
 
-      expect(findModal().attributes('visible')).toEqual(String(true));
-      expect(mutateMock).toHaveBeenCalledTimes(3);
+      expect(findModal().attributes('visible')).toBe(String(true));
+      expect(findModal().attributes('title')).toBe('You have unsaved changes');
     });
   });
 
