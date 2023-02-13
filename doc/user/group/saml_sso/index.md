@@ -262,11 +262,11 @@ See our [example configuration page](example_saml_config.md#azure-active-directo
       ```
 
 1. Set these values:
-   - For **Primary email**: `email`.
-   - For **First name**: `first_name`.
-   - For **Last name**: `last_name`.
-   - For **Name ID format**: `EMAIL`.
-   - For **NameID**: `Basic Information > Primary email`.
+   - For **Primary email**: `email`
+   - For **First name**: `first_name`
+   - For **Last name**: `last_name`
+   - For **Name ID format**: `EMAIL`
+   - For **NameID**: `Basic Information > Primary email`
 
 On the GitLab SAML SSO page, when you select **Verify SAML Configuration**, disregard
 the warning that recommends setting the **NameID** format to `persistent`.
