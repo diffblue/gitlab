@@ -110,6 +110,13 @@ export const mockChartsTimePeriods = MOCK_CHART_TIME_PERIODS.map((timePeriod, i)
   ...mockMetrics(['-', 0, 100 - i, i, i + 1, i * 2, 100 - i * 2, i * i]),
 }));
 
+export const mockSubsetChartsTimePeriods = MOCK_CHART_TIME_PERIODS.slice(4).map(
+  (timePeriod, i) => ({
+    ...timePeriod,
+    ...mockMetrics([i + 1, 100 - i]),
+  }),
+);
+
 export const mockComparativeTableData = [
   {
     metric: {
@@ -264,6 +271,65 @@ export const mockComparativeTableData = [
     },
   },
 ];
+
+export const mockSubsetChartData = {
+  change_failure_rate: {
+    data: [
+      [expect.anything(), 0],
+      [expect.anything(), 0],
+    ],
+    tooltipLabel: '%',
+  },
+  cycle_time: {
+    data: [
+      [expect.anything(), 0],
+      [expect.anything(), 0],
+    ],
+    tooltipLabel: 'days',
+  },
+  deployment_frequency: {
+    data: [
+      [expect.anything(), 0],
+      [expect.anything(), 0],
+    ],
+    tooltipLabel: '/day',
+  },
+  deploys: {
+    data: [
+      [expect.anything(), 0],
+      [expect.anything(), 0],
+    ],
+    tooltipLabel: undefined,
+  },
+  issues: {
+    data: [
+      [expect.anything(), 0],
+      [expect.anything(), 0],
+    ],
+    tooltipLabel: undefined,
+  },
+  lead_time: {
+    data: [
+      [expect.anything(), 0],
+      [expect.anything(), 0],
+    ],
+    tooltipLabel: 'days',
+  },
+  lead_time_for_changes: {
+    data: [
+      [expect.anything(), 1],
+      [expect.anything(), 2],
+    ],
+    tooltipLabel: 'days',
+  },
+  time_to_restore_service: {
+    data: [
+      [expect.anything(), 100],
+      [expect.anything(), 99],
+    ],
+    tooltipLabel: 'days',
+  },
+};
 
 export const mockChartData = {
   lead_time_for_changes: {
