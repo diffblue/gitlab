@@ -1,0 +1,9 @@
+---
+name: release_deleted_audit_event
+description: Event triggered when a release is deleted
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/374111
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/111080
+feature_category: compliance_management
+milestone: '15.9'
+saved_to_database: true
+streamed: true
