@@ -5,13 +5,23 @@
   "data": {
     "type": "cube_analytics",
     "query": {
-      "measures": ["Sessions.count"],
-      "dimensions": ["TrackedEvents.parsedUaUaFamily", "TrackedEvents.parsedUaUaVersion"],
+      "measures": [
+        "Sessions.count"
+      ],
+      "dimensions": [
+        "Sessions.parsedUaUaFamily",
+        "Sessions.parsedUaUaVersion"
+      ],
       "limit": 100,
       "timezone": "UTC",
-      "filters": [],
-      "timeDimensions": []
+      "filters": [
+
+      ],
+      "timeDimensions": [
+
+      ]
     }
   },
-  "options": {}
+  "options": {
+  }
 }

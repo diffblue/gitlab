@@ -5,16 +5,33 @@
   "data": {
     "type": "cube_analytics",
     "query": {
-      "measures": ["Sessions.count"],
-      "timeDimensions": [{ "dimension": "TrackedEvents.utcTime", "granularity": "day" }],
+      "measures": [
+        "Sessions.count"
+      ],
+      "timeDimensions": [
+        {
+          "dimension": "Sessions.startAt",
+          "granularity": "day"
+        }
+      ],
       "limit": 100,
       "timezone": "UTC",
-      "filters": [],
-      "dimensions": []
+      "filters": [
+
+      ],
+      "dimensions": [
+
+      ]
     }
   },
   "options": {
-    "xAxis": { "name": "Time", "type": "time" },
-    "yAxis": { "name": "Counts", "type": "time" }
+    "xAxis": {
+      "name": "Time",
+      "type": "time"
+    },
+    "yAxis": {
+      "name": "Counts",
+      "type": "time"
+    }
   }
 }
