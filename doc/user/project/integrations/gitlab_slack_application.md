@@ -94,7 +94,7 @@ instead:
 
 ## Slack notifications
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/381012) in GitLab 15.7.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/381012) in GitLab 15.9.
 
 With Slack notifications, GitLab can send messages to Slack workspace channels for certain GitLab [events](#events-for-slack-notifications) (for example, when an issue is created).
 
