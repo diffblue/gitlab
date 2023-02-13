@@ -30,5 +30,11 @@ RSpec.describe CountriesController, feature_category: :not_owned do
 
       expect(country_ukraine[0]).to eq('Ukraine (except the Crimea, Donetsk, and Luhansk regions)')
     end
+
+    it "updates `Taiwan, Province of China` to `Taiwan`" do
+      get :index
+
+      expect(json_response.select { |row, _| row == 'Taiwan' }).not_to be_empty
+    end
   end
 end

@@ -40,28 +40,45 @@ module EE
 
           override :log_release_created_audit_event
           def log_release_created_audit_event(release)
-            ::AuditEvents::ReleaseCreatedAuditEventService.new(
-              current_user,
-              user_project,
-              request.ip,
-              release
-            ).security_event
+            message = "Created Release #{release.tag}"
+            if release.milestones.count > 0
+              message += " with #{'Milestone'.pluralize(release.milestones.count)} " +
+                release.milestone_titles
+            end
+
+            audit_context = {
+              name: 'release_created',
+              ip_address: request.ip,
+              author: current_user,
+              target: release,
+              scope: user_project,
+              message: message,
+              target_details: release.name
+            }
+
+            ::Gitlab::Audit::Auditor.audit(audit_context)
           end
 
           override :log_release_updated_audit_event
           def log_release_updated_audit_event
-            ::AuditEvents::ReleaseUpdatedAuditEventService.new(
-              current_user,
-              user_project,
-              request.ip,
-              release
-            ).security_event
+            audit_context = {
+              name: 'release_updated',
+              ip_address: request.ip,
+              author: current_user,
+              target: release,
+              scope: user_project,
+              message: "Updated Release #{release.tag}",
+              target_details: release.name
+            }
+
+            ::Gitlab::Audit::Auditor.audit(audit_context)
           end
 
           override :log_release_deleted_audit_event
           def log_release_deleted_audit_event
             audit_context = {
               name: 'release_deleted_audit_event',
+              ip_address: request.ip,
               author: current_user,
               target: release,
               scope: user_project,
@@ -74,12 +91,19 @@ module EE
 
           override :log_release_milestones_updated_audit_event
           def log_release_milestones_updated_audit_event
-            ::AuditEvents::ReleaseAssociateMilestoneAuditEventService.new(
-              current_user,
-              user_project,
-              request.ip,
-              release
-            ).security_event
+            milestones = release.milestone_titles.presence || '[none]'
+
+            audit_context = {
+              name: 'release_milestones_updated',
+              ip_address: request.ip,
+              author: current_user,
+              target: release,
+              scope: user_project,
+              message: "Milestones associated with release changed to #{milestones}",
+              target_details: release.name
+            }
+
+            ::Gitlab::Audit::Auditor.audit(audit_context)
           end
 
           override :authorize_create_evidence!
