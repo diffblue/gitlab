@@ -140,6 +140,57 @@ RSpec.describe API::MergeRequests, feature_category: :source_code_management do
     end
   end
 
+  describe 'POST /projects/:id/create_ci_config' do
+    subject(:request) { post api("/projects/#{project.id}/create_ci_config", user) }
+
+    context 'when authorized' do
+      before do
+        allow(Ability).to receive(:allowed?).and_call_original
+        allow(Ability).to receive(:allowed?)
+                           .with(user, :create_merge_request_in, project)
+                           .and_return(true)
+      end
+
+      it 'returns success response', :aggregate_failures do
+        expect { request }.to change { MergeRequest.count }.by(1)
+
+        expect(response).to have_gitlab_http_status(:created)
+      end
+
+      context 'when create ci config service returns error' do
+        let_it_be(:error)  { { status: :error, message: "Something went wrong", http_status: 422 } }
+
+        before do
+          allow_next_instance_of(ComplianceManagement::Projects::CreateCiConfigService) do |instance|
+            allow(instance).to receive(:execute).and_return(error)
+          end
+        end
+
+        it 'returns error response', :aggregate_failures do
+          request
+
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+          expect(json_response['message']).to eq(error[:message])
+        end
+      end
+    end
+
+    context 'when unauthorized' do
+      before do
+        allow(Ability).to receive(:allowed?).and_call_original
+        allow(Ability).to receive(:allowed?)
+                            .with(user, :create_merge_request_in, project)
+                            .and_return(false)
+      end
+
+      it 'does not create merge request', :aggregate_failures do
+        expect { request }.not_to change { MergeRequest.count }
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+  end
+
   describe "POST /projects/:id/merge_requests" do
     def create_merge_request(args)
       defaults = {

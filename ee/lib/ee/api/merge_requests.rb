@@ -29,6 +29,21 @@ module EE
             mutually_exclusive :approved_by_ids, :approved_by_usernames
           end
         end
+
+        resource :projects, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
+          desc 'Creates merge request for missing ci config in project'
+          post ':id/create_ci_config', feature_category: :compliance_management do
+            authorize! :create_merge_request_in, user_project
+
+            result = ComplianceManagement::Projects::CreateCiConfigService.new(user_project, current_user).execute
+
+            if result[:status] == :success
+              present result[:merge_request], with: ::API::Entities::MergeRequest, current_user: current_user, project: user_project
+            else
+              render_api_error!(result[:message], result[:http_status])
+            end
+          end
+        end
       end
     end
   end

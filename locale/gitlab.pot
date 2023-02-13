@@ -8735,6 +8735,9 @@ msgstr ""
 msgid "Choose your framework"
 msgstr ""
 
+msgid "Ci config already present"
+msgstr ""
+
 msgid "CiCdAnalytics|Date range: %{range}"
 msgstr ""
 
@@ -33081,6 +33084,9 @@ msgid "Project members"
 msgstr ""
 
 msgid "Project milestone"
+msgstr ""
+
+msgid "Project must have default branch"
 msgstr ""
 
 msgid "Project name"
