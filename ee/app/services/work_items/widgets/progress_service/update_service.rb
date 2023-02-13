@@ -13,8 +13,9 @@ module WorkItems
 
           raise WidgetError, progress.errors.full_messages.join(', ') unless progress.save
 
+          create_notes if progress.saved_change_to_attribute?(:progress)
+
           work_item.touch
-          create_notes
         end
 
         private
