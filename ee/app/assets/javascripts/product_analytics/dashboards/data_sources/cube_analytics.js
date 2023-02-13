@@ -1,11 +1,17 @@
 import { CubejsApi, HttpTransport } from '@cubejs-client/core';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
+import { pikadayToString } from '~/lib/utils/datetime_utility';
 import csrf from '~/lib/utils/csrf';
 
 // This can be any value because the cube proxy adds the real API token.
 const CUBE_API_TOKEN = '1';
 const PRODUCT_ANALYTICS_CUBE_PROXY = '/api/v4/projects/:id/product_analytics/request';
 const DEFAULT_COUNT_KEY = 'TrackedEvents.count';
+// Filter measurement types must be lowercase
+const FILTER_DIMENSIONS = {
+  sessions: 'Sessions.startAt',
+  trackedevents: 'TrackedEvents.utcTime',
+};
 
 const convertToLineChartFormat = (resultSet) => {
   const seriesNames = resultSet.seriesNames();
@@ -37,11 +43,32 @@ const convertToSingleValue = (resultSet, query) => {
   const [row] = resultSet.rawData();
 
   if (!row) {
-    return null;
+    return undefined;
   }
 
   return row[measure ?? DEFAULT_COUNT_KEY] ?? Object.values(row)[0];
 };
+
+const filterByDateRange = (query, queryOverrides, dateRange) => {
+  const measurement = query.measures[0].split('.')[0].toLowerCase();
+  return {
+    filters: [
+      ...(query.filters ?? []),
+      ...(queryOverrides.filters ?? []),
+      {
+        member: FILTER_DIMENSIONS[measurement],
+        operator: 'inDateRange',
+        values: [pikadayToString(dateRange.startDate), pikadayToString(dateRange.endDate)],
+      },
+    ],
+  };
+};
+
+const buildCubeQuery = (query, queryOverrides, filters) => ({
+  ...query,
+  ...queryOverrides,
+  ...(filters.dateRange && filterByDateRange(query, queryOverrides, filters.dateRange)),
+});
 
 const VISUALIZATION_PARSERS = {
   LineChart: convertToLineChartFormat,
@@ -62,8 +89,14 @@ export const createCubeJsApi = (projectId) =>
     }),
   });
 
-export const fetch = async ({ projectId, visualizationType, query, queryOverrides = {} }) => {
-  const userQuery = { ...query, ...queryOverrides };
+export const fetch = async ({
+  projectId,
+  visualizationType,
+  query,
+  queryOverrides = {},
+  filters = {},
+}) => {
+  const userQuery = buildCubeQuery(query, queryOverrides, filters);
   const resultSet = await createCubeJsApi(projectId).load(userQuery);
 
   return VISUALIZATION_PARSERS[visualizationType](resultSet, userQuery);

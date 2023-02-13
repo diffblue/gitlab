@@ -11,6 +11,7 @@ import { GRIDSTACK_MARGIN, GRIDSTACK_CSS_HANDLE } from './constants';
 export default {
   name: 'CustomizableDashboard',
   components: {
+    DateRangeFilter: () => import('./filters/date_range_filter.vue'),
     GlButton,
     PanelsBase,
   },
@@ -29,6 +30,16 @@ export default {
       type: Array,
       required: true,
     },
+    showDateRangeFilter: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    defaultFilters: {
+      type: Object,
+      required: false,
+      default: () => {},
+    },
   },
   data() {
     return {
@@ -38,6 +49,7 @@ export default {
       mounted: true,
       editing: false,
       showCode: false,
+      filters: { dateRange: {}, ...this.defaultFilters },
     };
   },
   computed: {
@@ -46,6 +58,9 @@ export default {
     },
     showCodeVariant() {
       return this.showCode ? 'confirm' : 'default';
+    },
+    showFilters() {
+      return this.showDateRangeFilter;
     },
   },
   watch: {
@@ -157,6 +172,12 @@ export default {
         captureError: true,
       });
     },
+    setDateRangeFilter({ startDate, endDate }) {
+      this.filters = {
+        ...this.filters,
+        dateRange: { startDate, endDate },
+      };
+    },
   },
 };
 </script>
@@ -196,37 +217,52 @@ export default {
         {{ s__('ProductAnalytics|Go back') }}
       </router-link>
     </section>
-    <div class="grid-stack-container gl-display-flex gl-bg-gray-10">
-      <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-py-6">
-        <div v-if="!showCode" class="grid-stack">
-          <div
-            v-for="(panel, index) in dashboard.panels"
-            :id="'panel-' + panel.id"
-            :key="index"
-            :gs-id="panel.id"
-            :gs-x="getGridAttribute(panel, 'xPos')"
-            :gs-y="getGridAttribute(panel, 'yPos')"
-            :gs-h="getGridAttribute(panel, 'height')"
-            :gs-w="getGridAttribute(panel, 'width')"
-            :gs-min-h="getGridAttribute(panel, 'minHeight')"
-            :gs-min-w="getGridAttribute(panel, 'minWidth')"
-            :gs-max-h="getGridAttribute(panel, 'maxHeight')"
-            :gs-max-w="getGridAttribute(panel, 'maxWidth')"
-            class="grid-stack-item"
-            data-testid="grid-stack-panel"
-          >
-            <panels-base
-              :title="panel.title"
-              :visualization="panel.visualization"
-              :query-overrides="panel.queryOverrides"
-              @error="handlePanelError(panel.title, $event)"
-            />
+    <div class="gl-bg-gray-10">
+      <section
+        v-if="showFilters"
+        data-testid="dashboard-filters"
+        class="gl-pt-6 gl-px-3 gl-display-flex"
+      >
+        <date-range-filter
+          v-if="showDateRangeFilter"
+          :start-date="filters.dateRange.startDate"
+          :end-date="filters.dateRange.endDate"
+          @change="setDateRangeFilter"
+        />
+      </section>
+      <div class="grid-stack-container gl-display-flex">
+        <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-py-6">
+          <div v-if="!showCode" class="grid-stack">
+            <div
+              v-for="(panel, index) in dashboard.panels"
+              :id="'panel-' + panel.id"
+              :key="index"
+              :gs-id="panel.id"
+              :gs-x="getGridAttribute(panel, 'xPos')"
+              :gs-y="getGridAttribute(panel, 'yPos')"
+              :gs-h="getGridAttribute(panel, 'height')"
+              :gs-w="getGridAttribute(panel, 'width')"
+              :gs-min-h="getGridAttribute(panel, 'minHeight')"
+              :gs-min-w="getGridAttribute(panel, 'minWidth')"
+              :gs-max-h="getGridAttribute(panel, 'maxHeight')"
+              :gs-max-w="getGridAttribute(panel, 'maxWidth')"
+              class="grid-stack-item"
+              data-testid="grid-stack-panel"
+            >
+              <panels-base
+                :title="panel.title"
+                :visualization="panel.visualization"
+                :query-overrides="panel.queryOverrides"
+                :filters="filters"
+                @error="handlePanelError(panel.title, $event)"
+              />
+            </div>
           </div>
-        </div>
-        <div v-if="showCode" class="gl-m-4">
-          <pre
-            class="code highlight gl-display-flex"
-          ><code data-testid="dashboard-code">{{ dashboard.default }}</code></pre>
+          <div v-if="showCode" class="gl-m-4">
+            <pre
+              class="code highlight gl-display-flex"
+            ><code data-testid="dashboard-code">{{ dashboard.default }}</code></pre>
+          </div>
         </div>
       </div>
     </div>

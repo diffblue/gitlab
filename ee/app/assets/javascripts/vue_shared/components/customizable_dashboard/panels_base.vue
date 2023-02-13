@@ -29,6 +29,11 @@ export default {
       required: false,
       default: () => ({}),
     },
+    filters: {
+      type: Object,
+      required: false,
+      default: () => ({}),
+    },
   },
   data() {
     return {
@@ -43,10 +48,11 @@ export default {
       immediate: true,
     },
     queryOverrides: 'fetchData',
+    filters: 'fetchData',
   },
   methods: {
     async fetchData() {
-      const { projectId, queryOverrides } = this;
+      const { projectId, queryOverrides, filters } = this;
       const { type: dataType, query } = this.visualization.data;
       this.loading = true;
       this.error = null;
@@ -58,6 +64,7 @@ export default {
           query,
           queryOverrides,
           visualizationType: this.visualization.type,
+          filters,
         });
       } catch (error) {
         this.error = error;

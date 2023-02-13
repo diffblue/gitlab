@@ -109,4 +109,25 @@ describe('PanelsBase', () => {
       expect(wrapper.emitted('error')[0]).toStrictEqual([mockError]);
     });
   });
+
+  describe('when provided with filters', () => {
+    const filters = {
+      dateRange: {
+        startDate: new Date('2015-01-01'),
+        endDate: new Date('2016-01-01'),
+      },
+    };
+
+    beforeEach(() => {
+      jest.spyOn(dataSources.cube_analytics(), 'fetch').mockReturnValue(new Promise(() => {}));
+      createWrapper({ filters });
+      return waitForPromises();
+    });
+
+    it('should call fetch on the data source with the filters', () => {
+      expect(dataSources.cube_analytics().fetch).toHaveBeenCalledWith(
+        expect.objectContaining({ filters }),
+      );
+    });
+  });
 });

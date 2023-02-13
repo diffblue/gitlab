@@ -4,7 +4,8 @@ import {
   hasAnalyticsData,
   NO_DATABASE_ERROR_MESSAGE,
 } from 'ee/product_analytics/dashboards/data_sources/cube_analytics';
-import { mockCountResultSet, mockResultSet } from '../mock_data';
+import { pikadayToString } from '~/lib/utils/datetime_utility';
+import { mockCountResultSet, mockResultSet, mockFilters } from '../mock_data';
 
 const mockLoad = jest.fn().mockImplementation(() => mockResultSet);
 
@@ -103,6 +104,52 @@ describe('Cube Analytics Data Source', () => {
         expect(result).toBe('en-US');
       });
     });
+  });
+
+  describe('fetch with filters', () => {
+    const existingFilters = [
+      {
+        operator: 'equals',
+        values: ['pageview'],
+        member: 'TrackedEvents.eventType',
+      },
+    ];
+
+    it.each`
+      type               | queryMeasurement         | expectedDimension
+      ${'TrackedEvents'} | ${'TrackedEvents.count'} | ${'TrackedEvents.utcTime'}
+      ${'Sessions'}      | ${'Sessions.count'}      | ${'Sessions.startAt'}
+    `(
+      'loads the query with date range filters for "$type"',
+      async ({ queryMeasurement, expectedDimension }) => {
+        await fetch({
+          projectId,
+          visualizationType,
+          query: {
+            filters: existingFilters,
+            measures: [queryMeasurement],
+          },
+          queryOverrides: {},
+          filters: mockFilters,
+        });
+
+        expect(mockLoad).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: [
+              ...existingFilters,
+              {
+                member: expectedDimension,
+                operator: 'inDateRange',
+                values: [
+                  pikadayToString(mockFilters.dateRange.startDate),
+                  pikadayToString(mockFilters.dateRange.endDate),
+                ],
+              },
+            ],
+          }),
+        );
+      },
+    );
   });
 
   describe('hasAnalyticsData', () => {

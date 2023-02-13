@@ -4,6 +4,7 @@ import { RouterLinkStub } from '@vue/test-utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
+import DateRangeFilter from 'ee/vue_shared/components/customizable_dashboard/filters/date_range_filter.vue';
 import {
   GRIDSTACK_MARGIN,
   GRIDSTACK_CSS_HANDLE,
@@ -54,6 +55,8 @@ describe('CustomizableDashboard', () => {
   const findEditButton = () => wrapper.findByTestId('dashboard-edit-btn');
   const findCancelEditButton = () => wrapper.findByTestId('dashboard-cancel-edit-btn');
   const findCodeButton = () => wrapper.findByTestId('dashboard-code-btn');
+  const findFilters = () => wrapper.findByTestId('dashboard-filters');
+  const findDateRangeFilter = () => wrapper.findComponent(DateRangeFilter);
 
   describe('when being created an error occurs while loading the CSS', () => {
     beforeEach(() => {
@@ -126,6 +129,10 @@ describe('CustomizableDashboard', () => {
     it('shows Edit Button', () => {
       expect(findEditButton().exists()).toBe(true);
     });
+
+    it('does not show the filters', () => {
+      expect(findFilters().exists()).toBe(false);
+    });
   });
 
   describe('when editing', () => {
@@ -175,6 +182,43 @@ describe('CustomizableDashboard', () => {
 
     it('shows no Edit Button', () => {
       expect(findEditButton().exists()).toBe(false);
+    });
+  });
+
+  describe('when the date range filter is enabled and configured', () => {
+    const defaultFilters = {
+      dateRange: {
+        startDate: new Date('2015-01-01'),
+        endDate: new Date('2015-02-01'),
+      },
+    };
+
+    beforeEach(() => {
+      loadCSSFile.mockResolvedValue();
+
+      createWrapper({ showDateRangeFilter: true, defaultFilters });
+    });
+
+    it('shows the date range filter and passes the default options and filters', () => {
+      expect(findDateRangeFilter().props()).toMatchObject({
+        startDate: defaultFilters.dateRange.startDate,
+        endDate: defaultFilters.dateRange.endDate,
+      });
+    });
+
+    it('sets the panel filters to the default date range', () => {
+      expect(findPanels().at(0).props().filters).toStrictEqual(defaultFilters);
+    });
+
+    it('updates the panel filters when the date range is changed', async () => {
+      const startDate = new Date('2016-01-01');
+      const endDate = new Date('2016-02-01');
+
+      await findDateRangeFilter().vm.$emit('change', { startDate, endDate });
+
+      expect(findPanels().at(0).props().filters).toStrictEqual({
+        dateRange: { startDate, endDate },
+      });
     });
   });
 });
