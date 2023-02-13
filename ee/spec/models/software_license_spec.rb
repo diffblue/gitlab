@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SoftwareLicense do
+RSpec.describe SoftwareLicense, feature_category: :security_policy_management do
   subject { build(:software_license) }
 
   describe 'validations' do
@@ -34,6 +34,17 @@ RSpec.describe SoftwareLicense do
       specify { expect(result).to be_denied }
       specify { expect(result.software_license).to be_persisted }
       specify { expect(result.software_license.name).to eql(license_name) }
+    end
+
+    context 'when scan_result_policy_read is given' do
+      let(:mit_license) { create(:software_license, :mit) }
+      let(:scan_result_policy_read) { create(:scan_result_policy_read) }
+      let(:result) { subject.create_policy_for!(project: project, name: mit_license.name, classification: :allowed, scan_result_policy_read: scan_result_policy_read) }
+
+      specify { expect(result).to be_persisted }
+      specify { expect(result).to be_allowed }
+      specify { expect(result.scan_result_policy_read).to eq(scan_result_policy_read) }
+      specify { expect(result.software_license).to eql(mit_license) }
     end
   end
 

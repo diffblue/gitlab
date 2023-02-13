@@ -156,7 +156,7 @@ class ApprovalMergeRequestRule < ApplicationRecord
     license_report = ::Gitlab::LicenseScanning.scanner_for_project(project, merge_request.source_branch).report
     return if license_report.blank?
 
-    if license_report.violates?(project.software_license_policies)
+    if license_report.violates?(project.software_license_policies.without_scan_result_policy_read)
       update!(approvals_required: project_approval_rule.approvals_required)
     else
       update!(approvals_required: 0)

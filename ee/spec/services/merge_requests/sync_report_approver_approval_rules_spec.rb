@@ -89,6 +89,8 @@ RSpec.describe MergeRequests::SyncReportApproverApprovalRules do
         let!(:previous_rule) { create(:report_approver_rule, :license_scanning, merge_request: merge_request) }
 
         before do
+          create(:approval_merge_request_rule_source, approval_merge_request_rule: previous_rule, approval_project_rule: license_compliance_project_rule)
+
           service.execute
         end
 

@@ -28,10 +28,11 @@ class SoftwareLicense < ApplicationRecord
     pluck(:name)
   end
 
-  def self.create_policy_for!(project:, name:, classification:)
+  def self.create_policy_for!(project:, name:, classification:, scan_result_policy_read: nil)
     project.software_license_policies.create!(
       classification: classification,
-      software_license: safe_find_or_create_by!(name: name)
+      software_license: safe_find_or_create_by!(name: name),
+      scan_result_policy_read: scan_result_policy_read
     )
   end
 

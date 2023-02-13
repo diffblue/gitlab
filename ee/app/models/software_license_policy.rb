@@ -11,6 +11,11 @@ class SoftwareLicensePolicy < ApplicationRecord
 
   belongs_to :project, inverse_of: :software_license_policies
   belongs_to :software_license, -> { readonly }
+  belongs_to :scan_result_policy_read,
+    class_name: 'Security::ScanResultPolicyRead',
+    foreign_key: 'scan_result_policy_id',
+    optional: true
+
   attr_readonly :software_license
 
   enum classification: {
@@ -26,13 +31,16 @@ class SoftwareLicensePolicy < ApplicationRecord
   validates :classification, presence: true
 
   # A license is unique for its project since it can't be approved and denied.
-  validates :software_license, uniqueness: { scope: :project_id }
+  validates :software_license, uniqueness: { scope: [:project_id, :scan_result_policy_id] }
 
   scope :ordered, -> { SoftwareLicensePolicy.includes(:software_license).order("software_licenses.name ASC") }
   scope :for_project, -> (project) { where(project: project) }
+  scope :for_scan_result_policy_read, -> (scan_result_policy_id) { where(scan_result_policy_id: scan_result_policy_id) }
   scope :with_license, -> { joins(:software_license) }
   scope :including_license, -> { includes(:software_license) }
   scope :unreachable_limit, -> { limit(1_000) }
+  scope :with_scan_result_policy_read, -> { where.not(scan_result_policy_id: nil) }
+  scope :without_scan_result_policy_read, -> { where(scan_result_policy_id: nil) }
   scope :count_for_software_license, ->(software_license_id) { where(software_license_id: software_license_id).count }
 
   scope :with_license_by_name, -> (license_name) do
