@@ -13545,7 +13545,6 @@ CREATE TABLE ci_runner_machines (
     id bigint NOT NULL,
     runner_id bigint NOT NULL,
     executor_type smallint,
-    machine_xid text NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     contacted_at timestamp with time zone,
@@ -13555,11 +13554,13 @@ CREATE TABLE ci_runner_machines (
     architecture text,
     ip_address text,
     config jsonb DEFAULT '{}'::jsonb NOT NULL,
+    system_xid text,
     CONSTRAINT check_1537c1f66f CHECK ((char_length(platform) <= 255)),
+    CONSTRAINT check_5253913ae9 CHECK ((char_length(system_xid) <= 64)),
     CONSTRAINT check_6f45a91da7 CHECK ((char_length(version) <= 2048)),
-    CONSTRAINT check_84ed5d8703 CHECK ((char_length(machine_xid) <= 64)),
     CONSTRAINT check_9b521b3105 CHECK ((char_length(architecture) <= 255)),
     CONSTRAINT check_afb8efc1a2 CHECK ((char_length(revision) <= 255)),
+    CONSTRAINT check_b714f452d5 CHECK ((system_xid IS NOT NULL)),
     CONSTRAINT check_f214590856 CHECK ((char_length(ip_address) <= 1024))
 );
 
@@ -29377,7 +29378,7 @@ CREATE INDEX index_ci_runner_machines_on_contacted_at_desc_and_id_desc ON ci_run
 
 CREATE INDEX index_ci_runner_machines_on_created_at_and_id_desc ON ci_runner_machines USING btree (created_at, id DESC);
 
-CREATE UNIQUE INDEX index_ci_runner_machines_on_runner_id_and_machine_xid ON ci_runner_machines USING btree (runner_id, machine_xid);
+CREATE UNIQUE INDEX index_ci_runner_machines_on_runner_id_and_system_xid ON ci_runner_machines USING btree (runner_id, system_xid);
 
 CREATE INDEX index_ci_runner_machines_on_version ON ci_runner_machines USING btree (version);
 
