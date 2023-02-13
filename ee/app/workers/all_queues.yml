@@ -444,6 +444,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: cronjob:package_metadata_sync
+  :worker_name: PackageMetadata::SyncWorker
+  :feature_category: :license_compliance
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:projects_disable_legacy_open_source_license_for_inactive_projects
   :worker_name: Projects::DisableLegacyOpenSourceLicenseForInactiveProjectsWorker
   :feature_category: :projects
