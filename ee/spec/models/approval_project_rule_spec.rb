@@ -289,13 +289,6 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
 
       specify { expect(subject).to be_valid }
 
-      context "with a `License-Check` rule" do
-        subject { license_compliance_rule }
-
-        specify { expect(subject).not_to be_valid }
-        specify { expect { subject.valid? }.to change { subject.errors[:report_type].present? } }
-      end
-
       context "with a `Coverage-Check` rule" do
         subject { coverage_check_rule }
 

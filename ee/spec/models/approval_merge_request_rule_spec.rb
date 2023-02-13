@@ -449,6 +449,25 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
         end
       end
     end
+
+    context "when the rule is license_scanning with scan_result_policy" do
+      subject { create(:report_approver_rule, :requires_approval, :license_scanning, merge_request: open_merge_request, scan_result_policy_read: scan_result_policy_read) }
+
+      let_it_be(:project) { create(:project) }
+      let(:license) { create(:software_license, name: SecureRandom.uuid) }
+      let(:scan_result_policy_read) { create(:scan_result_policy_read) }
+      let(:open_merge_request) { create(:merge_request, :opened, target_project: project, source_project: project) }
+      let!(:project_approval_rule) { create(:approval_project_rule, :requires_approval, :license_scanning, project: project) }
+      let!(:open_pipeline) { create(:ee_ci_pipeline, :success, :with_license_scanning_report, project: project, merge_requests_as_head_pipeline: [open_merge_request]) }
+
+      before do
+        stub_feature_flags(license_scanning_sbom_scanner: false)
+
+        subject.refresh_required_approvals!(project_approval_rule)
+      end
+
+      specify { expect(subject.approvals_required).to be_zero }
+    end
   end
 
   describe '#vulnerability_states_for_branch' do
