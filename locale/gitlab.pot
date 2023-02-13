@@ -33281,9 +33281,6 @@ msgstr ""
 msgid "ProjectQualitySummary|This page helps you understand the code testing trends for your project. Let us know how we can improve it!"
 msgstr ""
 
-msgid "ProjectSelect| or group"
-msgstr ""
-
 msgid "ProjectSelect|No matching results"
 msgstr ""
 
@@ -33294,9 +33291,6 @@ msgid "ProjectSelect|Search projects"
 msgstr ""
 
 msgid "ProjectSelect|Select a project"
-msgstr ""
-
-msgid "ProjectSelect|Something went wrong while fetching projects"
 msgstr ""
 
 msgid "ProjectSelect|There was an error fetching the projects. Please try again."

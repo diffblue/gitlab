@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe 'Admin::AuditLogs', :js, feature_category: :audit_events do
-  include Select2Helper
   include AdminModeHelper
 
   let(:user) { create(:user) }

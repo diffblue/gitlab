@@ -34,13 +34,8 @@ module QA
             def add_and_enter_license(license)
               click_element(:license_add_button)
 
-              if use_select2?
-                expand_select_list
-                search_and_select_exact(license)
-              else
-                # The digit after token-input- can vary, find by prefix
-                find_input_by_prefix_and_set('token-input-', license)
-              end
+              # The digit after token-input- can vary, find by prefix
+              find_input_by_prefix_and_set('token-input-', license)
             end
 
             def approve_license(license)

@@ -144,26 +144,26 @@ export default {
     { state: { boardConfig, boardType, fullPath, filterParams }, dispatch, commit },
     issueInputObj,
   ) => {
-    const { iterationId } = boardConfig;
+    const iterationId = issueInputObj.list.iteration?.id || boardConfig.iterationId;
     let { iterationCadenceId } = boardConfig;
 
-    if (!iterationCadenceId && iterationId === IterationIDs.CURRENT) {
-      const iteration = await gqlClient
-        .query({
-          query: currentIterationQuery,
-          context: {
-            isSingleRequest: true,
-          },
-          variables: {
-            isGroup: boardType === BoardType.group,
-            fullPath,
-          },
-        })
-        .then(({ data }) => {
-          return data[boardType]?.iterations?.nodes?.[0];
-        });
+    const getCurrentIteration = async (bType, fPath) => {
+      const { data = {} } = await gqlClient.query({
+        query: currentIterationQuery,
+        context: {
+          isSingleRequest: true,
+        },
+        variables: {
+          isGroup: bType === BoardType.group,
+          fPath,
+        },
+      });
 
-      iterationCadenceId = iteration.iterationCadence.id;
+      return data[bType]?.iterations?.nodes?.[0]?.iterationCadence?.id;
+    };
+
+    if (!iterationCadenceId && iterationId === IterationIDs.CURRENT) {
+      iterationCadenceId = await getCurrentIteration(boardType, fullPath);
     }
 
     return actionsCE.addListNewIssue(
