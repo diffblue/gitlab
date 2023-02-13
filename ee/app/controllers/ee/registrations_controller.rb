@@ -67,7 +67,7 @@ module EE
 
     override :send_custom_confirmation_instructions
     def send_custom_confirmation_instructions
-      return unless custom_confirmation_enabled?
+      return unless resource.persisted? && custom_confirmation_enabled?
 
       custom_confirmation_instructions_service.send_instructions
       session[:verification_user_id] = resource.id # This is needed to find the user on the identity verification page
