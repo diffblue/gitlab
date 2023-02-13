@@ -28,7 +28,7 @@ RSpec.describe 'Secret-Detection.gitlab-ci.yml', feature_category: :continuous_i
     end
 
     context 'when project has no license' do
-      context 'when SECRET_DETECTION_DISABLED=1' do
+      context 'when SECRET_DETECTION_DISABLED="1"' do
         before do
           create(:ci_variable, project: project, key: 'SECRET_DETECTION_DISABLED', value: '1')
         end
@@ -37,6 +37,28 @@ RSpec.describe 'Secret-Detection.gitlab-ci.yml', feature_category: :continuous_i
           expect(build_names).to be_empty
           expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
             'The rules configuration prevented any jobs from being added to the pipeline.'])
+        end
+      end
+
+      context 'when SECRET_DETECTION_DISABLED="true"' do
+        before do
+          create(:ci_variable, project: project, key: 'SECRET_DETECTION_DISABLED', value: 'true')
+        end
+
+        it 'includes no jobs' do
+          expect(build_names).to be_empty
+          expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
+            'The rules configuration prevented any jobs from being added to the pipeline.'])
+        end
+      end
+
+      context 'when SECRET_DETECTION_DISABLED="false"' do
+        before do
+          create(:ci_variable, project: project, key: 'SECRET_DETECTION_DISABLED', value: 'false')
+        end
+
+        it 'includes jobs' do
+          expect(build_names).not_to be_empty
         end
       end
 
