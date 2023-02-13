@@ -236,6 +236,21 @@ module EE
         return unless ci_secrets_management_available? && secrets?
 
         ::Gitlab::UsageDataCounters::HLLRedisCounter.track_event('i_ci_secrets_management_vault_build_created', values: user_id)
+
+        return unless ::Feature.enabled?(:usage_data_i_ci_secrets_management_vault_build_created)
+
+        ::Gitlab::Tracking.event(
+          self.class.to_s,
+          'create_secrets_vault',
+          namespace: namespace,
+          user: user,
+          label: 'redis_hll_counters.ci_secrets_management.i_ci_secrets_management_vault_build_created_monthly',
+          ultimate_namespace_id: namespace.root_ancestor.id,
+          context: [::Gitlab::Tracking::ServicePingContext.new(
+            data_source: :redis_hll,
+            event: 'i_ci_secrets_management_vault_build_created'
+          ).to_context]
+        )
       end
     end
   end
