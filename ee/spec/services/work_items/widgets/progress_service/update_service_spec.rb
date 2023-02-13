@@ -6,6 +6,7 @@ RSpec.describe WorkItems::Widgets::ProgressService::UpdateService, feature_categ
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be_with_reload(:work_item) { create(:work_item, :objective, project: project, author: user) }
+  let_it_be_with_reload(:progress) { create(:progress, work_item: work_item, progress: 5) }
 
   let(:widget) { work_item.widgets.find { |widget| widget.is_a?(WorkItems::Widgets::Progress) } }
 
@@ -94,6 +95,12 @@ RSpec.describe WorkItems::Widgets::ProgressService::UpdateService, feature_categ
 
         context 'when progress param is not present' do
           let(:params) { {} }
+
+          it_behaves_like 'work item and progress is unchanged'
+        end
+
+        context 'when progress is same as current value' do
+          let(:params) { { progress: 5 } }
 
           it_behaves_like 'work item and progress is unchanged'
         end
