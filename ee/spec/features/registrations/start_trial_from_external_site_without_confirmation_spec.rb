@@ -14,7 +14,7 @@ RSpec.describe 'Start trial from external site without confirmation', :saas, :js
     # The groups_and_projects_controller (on `click_on 'Create project'`) is over
     # the query limit threshold, so we have to adjust it.
     # https://gitlab.com/gitlab-org/gitlab/-/issues/340302
-    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(144)
+    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(146)
 
     stub_request(:post, "#{EE::SUBSCRIPTIONS_URL}/trials")
   end
@@ -28,6 +28,9 @@ RSpec.describe 'Start trial from external site without confirmation', :saas, :js
     fill_in 'new_user_username', with: user.username
     fill_in 'new_user_email', with: user.email
     fill_in 'new_user_password', with: user.password
+
+    wait_for_all_requests
+
     click_button 'Continue'
 
     select 'Software Developer', from: 'user_role'

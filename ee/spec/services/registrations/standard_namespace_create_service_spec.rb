@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failures do
+RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failures, feature_category: :onboarding do
   using RSpec::Parameterized::TableSyntax
 
   describe '#execute' do
@@ -37,8 +37,12 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
     subject(:execute) { described_class.new(user, params).execute }
 
     context 'when group and project can be created' do
-      it 'creates a group and project' do
-        expect { expect(execute).to be_success }.to change(Group, :count).by(1).and change(Project, :count).by(1)
+      it 'creates a group with onboarding and project' do
+        expect do
+          expect(execute).to be_success
+        end
+          .to change { Group.count }
+                .by(1).and change { Project.count }.by(1).and change { Onboarding::Progress.count }.by(1)
       end
 
       it 'passes create_event: true to the Groups::CreateService' do
@@ -68,14 +72,18 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
 
         expect(execute).to be_success
 
-        expect_snowplow_event(category: described_class.name,
-                              action: 'create_group',
-                              namespace: an_instance_of(Group),
-                              user: user)
-        expect_snowplow_event(category: described_class.name,
-                              action: 'create_project',
-                              namespace: an_instance_of(Group),
-                              user: user)
+        expect_snowplow_event(
+          category: described_class.name,
+          action: 'create_group',
+          namespace: an_instance_of(Group),
+          user: user
+        )
+        expect_snowplow_event(
+          category: described_class.name,
+          action: 'create_project',
+          namespace: an_instance_of(Group),
+          user: user
+        )
       end
 
       it 'does not attempt to create a trial' do
@@ -91,7 +99,7 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
       it 'does not create a group' do
         expect do
           expect(execute).to be_error
-        end.not_to change(Group, :count)
+        end.not_to change { Group.count }
         expect(execute.payload[:group].errors).not_to be_blank
       end
 
@@ -125,17 +133,19 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
       it 'does not create a project' do
         expect do
           expect(execute).to be_error
-        end.to change(Group, :count).and change(Project, :count).by(0)
+        end.to change { Group.count }.and change { Onboarding::Progress.count }.and change { Project.count }.by(0)
         expect(execute.payload[:project].errors).not_to be_blank
       end
 
       it 'selectively tracks events for group and project creation' do
         expect(execute).to be_error
 
-        expect_snowplow_event(category: described_class.name,
-                              action: 'create_group',
-                              namespace: an_instance_of(Group),
-                              user: user)
+        expect_snowplow_event(
+          category: described_class.name,
+          action: 'create_group',
+          namespace: an_instance_of(Group),
+          user: user
+        )
         expect_no_snowplow_event(category: described_class.name, action: 'create_project')
       end
 
@@ -152,7 +162,7 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
       it 'creates a project and not another group' do
         expect do
           expect(execute).to be_success
-        end.to change(Group, :count).by(0).and change(Project, :count)
+        end.to change { Group.count }.by(0).and change { Onboarding::Progress.count }.by(0).and change { Project.count }
       end
 
       it 'selectively tracks events group and project creation' do
@@ -164,10 +174,12 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
         expect(execute).to be_success
 
         expect_no_snowplow_event(category: described_class.name, action: 'create_group')
-        expect_snowplow_event(category: described_class.name,
-                              action: 'create_project',
-                              namespace: an_instance_of(Group),
-                              user: user)
+        expect_snowplow_event(
+          category: described_class.name,
+          action: 'create_project',
+          namespace: an_instance_of(Group),
+          user: user
+        )
       end
     end
 
@@ -187,7 +199,7 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
                                                              .with(path, project_name, group.id, user.id)
                                                              .and_call_original
 
-          expect { expect(execute).to be_success }.to change(Project, :count).by(2)
+          expect { expect(execute).to be_success }.to change { Project.count }.by(2)
         end
       end
     end
@@ -231,7 +243,7 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
 
           expect do
             expect(execute).to be_success
-          end.to change(Group, :count).by(0).and change(Project, :count)
+          end.to change { Group.count }.by(0).and change { Project.count }
         end
       end
     end

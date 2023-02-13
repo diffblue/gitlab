@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures do
+RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures, feature_category: :onboarding do
   using RSpec::Parameterized::TableSyntax
 
   describe '#execute' do
@@ -29,7 +29,9 @@ RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures 
 
     context 'when group can be created' do
       it 'creates a group' do
-        expect { expect(execute).to be_success }.to change(Group, :count).by(1)
+        expect do
+          expect(execute).to be_success
+        end.to change { Group.count }.by(1).and change { Onboarding::Progress.count }.by(1)
       end
 
       it 'passes create_event: true to the Groups::CreateService' do
@@ -46,10 +48,12 @@ RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures 
       it 'tracks group creation events' do
         expect(execute).to be_success
 
-        expect_snowplow_event(category: described_class.name,
-                              action: 'create_group_import',
-                              namespace: an_instance_of(Group),
-                              user: user)
+        expect_snowplow_event(
+          category: described_class.name,
+          action: 'create_group_import',
+          namespace: an_instance_of(Group),
+          user: user
+        )
       end
 
       it 'does not attempt to create a trial' do
@@ -65,7 +69,7 @@ RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures 
       it 'does not create a group' do
         expect do
           expect(execute).to be_error
-        end.not_to change(Group, :count)
+        end.to change { Group.count }.by(0).and change { Onboarding::Progress.count }.by(0)
         expect(execute.payload[:group].errors).not_to be_blank
       end
 

@@ -95,4 +95,55 @@ module SaasRegistrationHelpers
   def welcome_form_selector
     '[data-testid="welcome-form"]'
   end
+
+  def fills_in_group_and_project_creation_form
+    # The groups_and_projects_controller (on `click_on 'Create project'`) is over
+    # the query limit threshold, so we have to adjust it.
+    # https://gitlab.com/gitlab-org/gitlab/-/issues/338737
+    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(147)
+
+    fill_in 'group_name', with: 'Test Group'
+    fill_in 'blank_project_name', with: 'Test Project'
+  end
+
+  def fills_in_group_and_project_creation_form_with_trial
+    fills_in_group_and_project_creation_form
+
+    service_instance = instance_double(GitlabSubscriptions::Trials::ApplyTrialService)
+    allow(GitlabSubscriptions::Trials::ApplyTrialService).to receive(:new).and_return(service_instance)
+
+    expect(service_instance).to receive(:execute).and_return(ServiceResponse.success)
+
+    trial_user_information = {
+      namespace_id: anything,
+      gitlab_com_trial: true,
+      sync_to_gl: true
+    }.merge(glm_params)
+
+    expect(GitlabSubscriptions::Trials::ApplyTrialWorker)
+      .to receive(:perform_async).with(
+        user.id,
+        trial_user_information
+      ).and_call_original
+  end
+
+  def company_params(trial: true, glm: true)
+    base_params = ActionController::Parameters.new(
+      company_name: 'Test Company',
+      company_size: '1-99',
+      phone_number: '+1234567890',
+      country: 'US',
+      state: 'FL',
+      website_url: 'https://gitlab.com',
+      trial_onboarding_flow: trial.to_s,
+      # these are the passed through params
+      role: 'software_developer',
+      registration_objective: 'other',
+      jobs_to_be_done_other: 'My reason'
+    ).permit!
+
+    return base_params unless glm
+
+    base_params.merge(glm_params)
+  end
 end

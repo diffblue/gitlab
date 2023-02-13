@@ -94,7 +94,7 @@ feature_category: :onboarding do
   def fill_in_company_form
     expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
       user: user,
-      params: company_params_trial_true
+      params: company_params(glm: false)
     ).and_return(instance_double(GitlabSubscriptions::CreateTrialOrLeadService, execute: ServiceResponse.success))
 
     fill_in 'company_name', with: 'Test Company'
@@ -103,22 +103,6 @@ feature_category: :onboarding do
     select 'Florida', from: 'state'
     fill_in 'phone_number', with: '+1234567890'
     fill_in 'website_url', with: 'https://gitlab.com'
-  end
-
-  def company_params_trial_true
-    ActionController::Parameters.new(
-      company_name: 'Test Company',
-      company_size: '1-99',
-      phone_number: '+1234567890',
-      country: 'US',
-      state: 'FL',
-      website_url: 'https://gitlab.com',
-      trial_onboarding_flow: 'true',
-      # these are the passed through params
-      role: 'software_developer',
-      registration_objective: 'other',
-      jobs_to_be_done_other: 'My reason'
-    ).permit!
   end
 
   def fills_in_import_form
