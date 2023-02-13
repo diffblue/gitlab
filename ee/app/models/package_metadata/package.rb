@@ -2,16 +2,7 @@
 
 module PackageMetadata
   class Package < ApplicationRecord
-    enum purl_type: {
-      composer: 1,
-      conan: 2,
-      gem: 3,
-      golang: 4,
-      maven: 5,
-      npm: 6,
-      nuget: 7,
-      pypi: 8
-    }.freeze
+    enum purl_type: ::Enums::PackageMetadata.purl_types
 
     validates :purl_type, presence: true
     validates :name, presence: true, length: { maximum: 255 }

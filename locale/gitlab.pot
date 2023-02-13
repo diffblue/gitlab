@@ -36897,6 +36897,9 @@ msgstr ""
 msgid "Runners|Never expires"
 msgstr ""
 
+msgid "Runners|New"
+msgstr ""
+
 msgid "Runners|New group runners can be registered"
 msgstr ""
 
@@ -37008,6 +37011,9 @@ msgid "Runners|Runner #%{runner_id}"
 msgstr ""
 
 msgid "Runners|Runner %{name} was deleted"
+msgstr ""
+
+msgid "Runners|Runner %{runnerName} failed to delete"
 msgstr ""
 
 msgid "Runners|Runner Registration"
@@ -37259,15 +37265,6 @@ msgid "Runners|project"
 msgstr ""
 
 msgid "Runners|shared"
-msgstr ""
-
-msgid "Runner|New"
-msgstr ""
-
-msgid "Runner|Owner"
-msgstr ""
-
-msgid "Runner|Runner %{runnerName} failed to delete"
 msgstr ""
 
 msgid "Running"
