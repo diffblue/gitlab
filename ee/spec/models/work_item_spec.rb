@@ -245,6 +245,40 @@ RSpec.describe WorkItem do
     end
   end
 
+  describe '#average_progress_of_children' do
+    let_it_be(:project) { create(:project) }
+    let_it_be_with_reload(:parent_work_item) { create(:work_item, :objective, project: project) }
+    let_it_be_with_reload(:child_work_item1) { create(:work_item, :objective, project: project) }
+    let_it_be_with_reload(:child_work_item2) { create(:work_item, :objective, project: project) }
+    let_it_be_with_reload(:child_work_item3) { create(:work_item, :objective, project: project) }
+    let_it_be_with_reload(:child1_progress) { create(:progress, work_item: child_work_item1, progress: 20) }
+    let_it_be_with_reload(:child2_progress) { create(:progress, work_item: child_work_item2, progress: 30) }
+    let_it_be_with_reload(:child3_progress) { create(:progress, work_item: child_work_item3, progress: 30) }
+
+    context 'when workitem has zero children' do
+      it 'returns 0 as average' do
+        expect(parent_work_item.average_progress_of_children).to eq(0)
+      end
+    end
+
+    context 'when work item has children' do
+      before_all do
+        create(:parent_link, work_item: child_work_item1, work_item_parent: parent_work_item)
+        create(:parent_link, work_item: child_work_item2, work_item_parent: parent_work_item)
+      end
+
+      it 'returns the average of children progress' do
+        expect(parent_work_item.average_progress_of_children).to eq(25)
+      end
+
+      it 'rounds the average to lower number' do
+        create(:parent_link, work_item: child_work_item3, work_item_parent: parent_work_item)
+
+        expect(parent_work_item.average_progress_of_children).to eq(26)
+      end
+    end
+  end
+
   it_behaves_like 'a collection filtered by test reports state', feature_category: :requirements_management do
     let_it_be(:requirement1) { create(:work_item, :requirement) }
     let_it_be(:requirement2) { create(:work_item, :requirement) }

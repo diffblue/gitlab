@@ -41,9 +41,14 @@ RSpec.describe WorkItems::Progress do
       it "doesn't create system note" do
         expect { subject }.to not_change(parent_work_item.notes, :count)
       end
+
+      it 'does not schedule progress update for parent' do
+        expect(::WorkItems::UpdateParentObjectivesProgressWorker).not_to receive(:perform_async)
+        subject
+      end
     end
 
-    shared_examples 'parent progress is updated' do |new_value|
+    shared_examples 'parent progress is updated Synchronously' do |new_value|
       it 'updates parent progress value' do
         expect { subject }.to change { parent_work_item_progress }.to(new_value)
       end
@@ -54,6 +59,11 @@ RSpec.describe WorkItems::Progress do
         work_item_note = parent_work_item.reload.notes.last
 
         expect(work_item_note.note).to eq("changed progress to **#{new_value}**")
+      end
+
+      it 'does not schedule progress update for parent' do
+        expect(::WorkItems::UpdateParentObjectivesProgressWorker).not_to receive(:perform_async)
+        subject
       end
     end
 
@@ -68,43 +78,57 @@ RSpec.describe WorkItems::Progress do
     end
 
     context 'when okr_automatic_rollups feature flag is enabled' do
-      context 'when progress of child doesnt change' do
-        subject { child1_progress.save! }
-
-        it_behaves_like 'parent progress is not changed'
-      end
-
-      context 'when progress of child changes' do
-        context 'when parent progress is not created' do
-          subject { child1_progress.update!(progress: 30) }
-
-          it_behaves_like 'parent progress is updated', 15
+      context 'when okr_automatic_rollups_async fealture flag is disabled' do
+        before do
+          stub_feature_flags(okr_automatic_rollups_async: false)
         end
 
-        context 'when parent progress is created' do
-          before do
-            create(:progress, work_item: parent_work_item, progress: 10)
+        context 'when progress of child doesnt change' do
+          subject { child1_progress.save! }
+
+          it_behaves_like 'parent progress is not changed'
+        end
+
+        context 'when progress of child changes' do
+          context 'when parent progress is not created' do
+            subject { child1_progress.update!(progress: 30) }
+
+            it_behaves_like 'parent progress is updated Synchronously', 15
           end
 
-          subject { child1_progress.update!(progress: 40) }
+          context 'when parent progress is created' do
+            before do
+              create(:progress, work_item: parent_work_item, progress: 10)
+            end
 
-          it_behaves_like 'parent progress is updated', 20
+            subject { child1_progress.update!(progress: 40) }
+
+            it_behaves_like 'parent progress is updated Synchronously', 20
+          end
+        end
+
+        context 'when progress of child 1+ level down changes' do
+          let_it_be_with_reload(:child_work_item3) { create(:work_item, :objective, project: project) }
+          let_it_be_with_reload(:child_work_item4) { create(:work_item, :objective, project: project) }
+          let_it_be_with_reload(:child3_progress) { create(:progress, work_item: child_work_item3, progress: 20) }
+          let_it_be_with_reload(:child4_progress) { create(:progress, work_item: child_work_item4, progress: 20) }
+
+          before_all do
+            create(:parent_link, work_item: child_work_item3, work_item_parent: child_work_item1)
+            create(:parent_link, work_item: child_work_item4, work_item_parent: child_work_item1)
+          end
+          subject { child3_progress.update!(progress: 80) }
+
+          it_behaves_like 'parent progress is updated Synchronously', 25
         end
       end
 
-      context 'when progress of child 1+ level down changes' do
-        let_it_be_with_reload(:child_work_item3) { create(:work_item, :objective, project: project) }
-        let_it_be_with_reload(:child_work_item4) { create(:work_item, :objective, project: project) }
-        let_it_be_with_reload(:child3_progress) { create(:progress, work_item: child_work_item3, progress: 20) }
-        let_it_be_with_reload(:child4_progress) { create(:progress, work_item: child_work_item4, progress: 20) }
+      context 'when okr_automatic_rollups_async feature flag is enabled' do
+        it 'schedules progress update for parent' do
+          expect(::WorkItems::UpdateParentObjectivesProgressWorker).to receive(:perform_async).with(child_work_item1.id)
 
-        before_all do
-          create(:parent_link, work_item: child_work_item3, work_item_parent: child_work_item1)
-          create(:parent_link, work_item: child_work_item4, work_item_parent: child_work_item1)
+          child1_progress.update!(progress: 30)
         end
-        subject { child3_progress.update!(progress: 80) }
-
-        it_behaves_like 'parent progress is updated', 25
       end
     end
   end
