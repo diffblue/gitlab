@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe 'Project settings > [EE] repository', feature_category: :source_code_management do
-  include Select2Helper
-
   let(:user) { create(:user) }
   let(:project) { create(:project_empty_repo) }
 
