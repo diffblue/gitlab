@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequests::ResetApprovalsService do
+RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_review_workflow do
   let_it_be(:current_user) { create(:user) }
 
   let(:service) { described_class.new(project: project, current_user: current_user) }
