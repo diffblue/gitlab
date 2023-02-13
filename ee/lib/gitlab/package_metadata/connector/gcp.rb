@@ -65,7 +65,7 @@ module Gitlab
 
           def initialize(file, file_prefix, purl_type)
             @file = file
-            @sequence, @chunk = file.name.delete_prefix(file_prefix).split('/')
+            @sequence, @chunk = file.name.delete_prefix(file_prefix).delete_suffix('.csv').split('/').map(&:to_i)
             @purl_type = purl_type
           end
 
