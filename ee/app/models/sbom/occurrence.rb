@@ -17,6 +17,8 @@ module Sbom
     delegate :version, to: :component_version, allow_nil: true
     delegate :packager, to: :source, allow_nil: true
 
+    scope :order_by_id, -> { order(id: :asc) }
+
     def location
       {
         blob_path: input_file_blob_path,

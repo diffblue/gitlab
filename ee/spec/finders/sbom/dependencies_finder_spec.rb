@@ -8,15 +8,7 @@ RSpec.describe Sbom::DependenciesFinder, feature_category: :dependency_managemen
 
   subject(:dependencies) { described_class.new(project).execute }
 
-  it 'returns the dependencies associated with the project' do
-    expect(dependencies).to match_array(occurrences)
-  end
-
-  context 'when occurrences exceed default page size' do
-    let_it_be(:occurrences) { create_list(:sbom_occurrence, described_class::DEFAULT_PER_PAGE + 1, project: project) }
-
-    it 'uses pagination by default' do
-      expect(dependencies.size).to eq(described_class::DEFAULT_PER_PAGE)
-    end
+  it 'returns the dependencies associated with the project ordered by id' do
+    expect(dependencies).to eq(occurrences.sort_by(&:id))
   end
 end

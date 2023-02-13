@@ -7,8 +7,8 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project) }
-  let_it_be(:user) { create(:user).tap { |user| project.add_developer(user) } }
-  let_it_be(:variables) { { fullPath: project.full_path } }
+  let_it_be(:current_user) { create(:user).tap { |user| project.add_developer(user) } }
+  let_it_be(:variables) { { full_path: project.full_path } }
   let_it_be(:fields) do
     <<~FIELDS
       name
@@ -21,27 +21,20 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
     FIELDS
   end
 
-  let_it_be(:query) do
-    %(
-      query($fullPath: ID!) {
-        project(fullPath: $fullPath) {
-          dependencies {
-            nodes {
-              #{fields}
-            }
-          }
-        }
-      }
-    )
-  end
+  let_it_be(:query) { pagination_query }
 
   let!(:occurrences) { create_list(:sbom_occurrence, 5, project: project) }
+
+  def pagination_query(params = {})
+    nodes = query_nodes(:dependencies, fields, include_pagination_info: true, args: params)
+    graphql_query_for(:project, variables, nodes)
+  end
 
   before do
     stub_licensed_features(dependency_scanning: true)
   end
 
-  subject { post_graphql(query, current_user: user, variables: variables) }
+  subject { post_graphql(query, current_user: current_user, variables: variables) }
 
   it 'returns the expected dependency data when performing a well-formed query with an authorized user' do
     subject
@@ -62,12 +55,23 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
     expect(actual).to match_array(expected)
   end
 
+  it_behaves_like 'sorted paginated query' do
+    def pagination_results_data(nodes)
+      nodes.pluck('name')
+    end
+
+    let(:data_path) { %i[project dependencies] }
+    let(:sort_argument) { {} }
+    let(:first_param) { 2 }
+    let(:all_records) { occurrences.sort_by(&:id).map(&:name) }
+  end
+
   it 'does not make N+1 queries' do
-    control = ActiveRecord::QueryRecorder.new { post_graphql(query, current_user: user, variables: variables) }
+    control = ActiveRecord::QueryRecorder.new { post_graphql(query, current_user: current_user, variables: variables) }
 
     create(:sbom_occurrence, project: project)
 
-    expect { post_graphql(query, current_user: user, variables: variables) }.not_to exceed_query_limit(control)
+    expect { post_graphql(query, current_user: current_user, variables: variables) }.not_to exceed_query_limit(control)
   end
 
   context 'when dependencies have no source data' do
@@ -117,7 +121,7 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
   end
 
   context 'with an unauthorized user' do
-    let_it_be(:user) { create(:user).tap { |user| project.add_guest(user) } }
+    let_it_be(:current_user) { create(:user).tap { |user| project.add_guest(user) } }
 
     it 'does not return dependency data' do
       subject

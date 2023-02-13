@@ -28,6 +28,15 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     it { is_expected.to validate_uniqueness_of(:uuid).case_insensitive }
   end
 
+  describe '.order_by_id' do
+    let_it_be(:first) { create(:sbom_occurrence) }
+    let_it_be(:second) { create(:sbom_occurrence) }
+
+    it 'returns records sorted by id' do
+      expect(described_class.order_by_id).to eq([first, second])
+    end
+  end
+
   describe '#name' do
     let(:component) { build(:sbom_component, name: 'rails') }
     let(:occurrence) { build(:sbom_occurrence, component: component) }
