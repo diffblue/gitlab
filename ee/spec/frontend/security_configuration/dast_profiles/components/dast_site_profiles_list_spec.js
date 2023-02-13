@@ -1,7 +1,7 @@
-import { within, fireEvent } from '@testing-library/dom';
-import Vue from 'vue';
+import { within } from '@testing-library/dom';
+import Vue, { nextTick } from 'vue';
 import { merge } from 'lodash';
-import { GlButton } from '@gitlab/ui';
+import { GlButton, GlTable } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import ProfilesList from 'ee/security_configuration/dast_profiles/components/dast_profiles_list.vue';
@@ -76,9 +76,21 @@ describe('EE - DastSiteProfileList', () => {
   const findButtons = (f) => wrapper.findAllComponents(GlButton).filter(f);
   const findSetProfileButtons = () =>
     findButtons((b) => b.attributes('data-testid') === 'set-profile-button');
+  const findDastSiteValidationModal = () =>
+    wrapper.findComponent({ ref: DAST_SITE_VALIDATION_MODAL_ID });
+  const findDastSiteValidationRevokeModal = () =>
+    wrapper.findComponent({ ref: DAST_SITE_VALIDATION_REVOKE_MODAL_ID });
+  const getCell = (trIdx, tdIdx) => {
+    return wrapper
+      .findComponent(GlTable)
+      .find('tbody')
+      .findAll('tr')
+      .at(trIdx)
+      .findAll('td')
+      .at(tdIdx);
+  };
 
   afterEach(() => {
-    wrapper.destroy();
     apolloProvider = null;
   });
 
@@ -177,34 +189,35 @@ describe('EE - DastSiteProfileList', () => {
 
     describe('Actions', () => {
       beforeEach(() => {
-        wrapper.vm.showModal = jest.fn();
         jest.clearAllMocks();
       });
 
+      const VALIDATE_BUTTON_COL_INDEX = 3;
+
       it('validate button should open correct modal', async () => {
+        expect(findDastSiteValidationModal().exists()).toBe(false);
         const profile = siteProfiles.find(
           ({ validationStatus }) => validationStatus === DAST_SITE_VALIDATION_STATUS.NONE,
         );
-        const actionsCell = getTableRowForProfile(profile).cells[3];
-        const validateButton = within(actionsCell).queryByRole('button', {
-          name: /validate/i,
-        });
-        await fireEvent.click(validateButton);
 
-        expect(wrapper.vm.showModal).toHaveBeenCalledWith(DAST_SITE_VALIDATION_MODAL_ID);
+        const rowIndex = siteProfiles.indexOf(profile);
+        getCell(rowIndex, VALIDATE_BUTTON_COL_INDEX).findComponent(GlButton).vm.$emit('click');
+        await nextTick();
+
+        expect(findDastSiteValidationModal().exists()).toBe(true);
       });
 
       it('revoke validation button should open correct modal', async () => {
+        expect(findDastSiteValidationRevokeModal().exists()).toBe(false);
         const profile = siteProfiles.find(
           ({ validationStatus }) => validationStatus === DAST_SITE_VALIDATION_STATUS.PASSED,
         );
-        const actionsCell = getTableRowForProfile(profile).cells[3];
-        const validateButton = within(actionsCell).queryByRole('button', {
-          name: /revoke validation/i,
-        });
-        await fireEvent.click(validateButton);
 
-        expect(wrapper.vm.showModal).toHaveBeenCalledWith(DAST_SITE_VALIDATION_REVOKE_MODAL_ID);
+        const rowIndex = siteProfiles.indexOf(profile);
+        getCell(rowIndex, VALIDATE_BUTTON_COL_INDEX).findComponent(GlButton).vm.$emit('click');
+        await nextTick();
+
+        expect(findDastSiteValidationRevokeModal().exists()).toBe(true);
       });
     });
 
