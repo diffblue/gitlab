@@ -363,6 +363,43 @@ export const mockIssue4 = {
   epic: null,
 };
 
+export const mockListWithIteration = {
+  id: 'gid://gitlab/List/1',
+  title: 'Backlog',
+  position: null,
+  listType: 'backlog',
+  collapsed: false,
+  label: null,
+  maxIssueCount: 0,
+  assignee: null,
+  milestone: null,
+  preset: true,
+  iteration: {
+    id: 'gid://gitlab/Iteration/1',
+    title: null,
+    iterationCadence: mockIterationCadence,
+    startDate: '2021-10-05',
+    dueDate: '2021-10-10',
+    __typename: 'Iteration',
+  },
+};
+
+export const mockIssueInListWithIteration = {
+  id: 'gid://gitlab/Issue/438',
+  iid: 29,
+  title: 'Issue 5',
+  referencePath: '#29',
+  dueDate: null,
+  timeEstimate: 0,
+  weight: null,
+  confidential: false,
+  path: '/gitlab-org/gitlab-test/-/issues/28',
+  assignees: mockAssignees,
+  labels,
+  epic: null,
+  list: mockListWithIteration,
+};
+
 export const mockIssues = [mockIssue, mockIssue2];
 
 export const mockGroupIssuesResponse = {
