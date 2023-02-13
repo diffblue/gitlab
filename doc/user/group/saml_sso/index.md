@@ -297,24 +297,25 @@ For NameID, the following settings are recommended; for SCIM, the following sett
 The Okta GitLab application available in the App Catalog only supports [SCIM](scim_setup.md). Support
 for SAML is proposed in issue [216173](https://gitlab.com/gitlab-org/gitlab/-/issues/216173).
 
-### OneLogin setup notes
+### Set up OneLogin
 
-OneLogin supports their own [GitLab (SaaS)](https://onelogin.service-now.com/support?id=kb_article&sys_id=92e4160adbf16cd0ca1c400e0b961923&kb_category=50984e84db738300d5505eea4b961913)
-application.
+OneLogin supports its own [GitLab (SaaS) application](https://onelogin.service-now.com/support?id=kb_article&sys_id=92e4160adbf16cd0ca1c400e0b961923&kb_category=50984e84db738300d5505eea4b961913).
 
-If you decide to use the OneLogin generic [SAML Test Connector (Advanced)](https://onelogin.service-now.com/support?id=kb_article&sys_id=b2c19353dbde7b8024c780c74b9619fb&kb_category=93e869b0db185340d5505eea4b961934),
-we recommend the ["Use the OneLogin SAML Test Connector" documentation](https://onelogin.service-now.com/support?id=kb_article&sys_id=93f95543db109700d5505eea4b96198f) with the following settings:
+1. If you use the OneLogin generic
+   [SAML Test Connector (Advanced)](https://onelogin.service-now.com/support?id=kb_article&sys_id=b2c19353dbde7b8024c780c74b9619fb&kb_category=93e869b0db185340d5505eea4b961934),
+   you should [use the OneLogin SAML Test Connector](https://onelogin.service-now.com/support?id=kb_article&sys_id=93f95543db109700d5505eea4b96198f). The following GitLab settings correspond
+   to the OneLogin fields:
 
-| GitLab Setting                                   | OneLogin Field               |
-| ------------------------------------------------ | ---------------------------- |
-| Identifier                                       | Audience                     |
-| Assertion consumer service URL                   | Recipient                    |
-| Assertion consumer service URL                   | ACS (Consumer) URL           |
-| Assertion consumer service URL (escaped version) | ACS (Consumer) URL Validator |
-| GitLab single sign-on URL                        | Login URL                    |
-| Identity provider single sign-on URL             | SAML 2.0 Endpoint            |
+   | GitLab setting                                   | OneLogin field                   |
+   | ------------------------------------------------ | -------------------------------- |
+   | Identifier                                       | **Audience**                     |
+   | Assertion consumer service URL                   | **Recipient**                    |
+   | Assertion consumer service URL                   | **ACS (Consumer) URL**           |
+   | Assertion consumer service URL (escaped version) | **ACS (Consumer) URL Validator** |
+   | GitLab single sign-on URL                        | **Login URL**                    |
+   | Identity provider single sign-on URL             | **SAML 2.0 Endpoint**            |
 
-Recommended `NameID` value: `OneLogin ID`.
+1. For **NameID**, use `OneLogin ID`.
 
 ### Change the SAML app
 
