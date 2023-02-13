@@ -273,29 +273,29 @@ the warning that recommends setting the **NameID** format to `persistent`.
 
 For details, see the [example configuration page](example_saml_config.md#google-workspace).
 
-### Okta setup notes
-
-Follow the Okta documentation on [setting up a SAML application in Okta](https://developer.okta.com/docs/guides/build-sso-integration/saml2/main/) with the notes below for consideration.
+### Set up Okta
 
 <i class="fa fa-youtube-play youtube" aria-hidden="true"></i>
 For a demo of the Okta SAML setup including SCIM, see [Demo: Okta Group SAML & SCIM setup](https://youtu.be/0ES9HsZq0AQ).
 
-| GitLab Setting                       | Okta Field                                                 |
-| ------------------------------------ | ---------------------------------------------------------- |
-| Identifier                           | Audience URI                                               |
-| Assertion consumer service URL       | Single sign-on URL                                         |
-| GitLab single sign-on URL            | Login page URL (under **Application Login Page** settings) |
-| Identity provider single sign-on URL | Identity Provider Single Sign-On URL                       |
+1. [Set up a SAML application in Okta](https://developer.okta.com/docs/guides/build-sso-integration/saml2/main/).
+   The following GitLab settings correspond to the Okta fields.
 
-Under the Okta **Single sign-on URL** field, check the option **Use this for Recipient URL and Destination URL**.
+   | GitLab setting                       | Okta field                                                 |
+   | ------------------------------------ | ---------------------------------------------------------- |
+   | Identifier                           | **Audience URI**                                               |
+   | Assertion consumer service URL       | **Single sign-on URL**                                         |
+   | GitLab single sign-on URL            | **Login page URL** (under **Application Login Page** settings) |
+   | Identity provider single sign-on URL | **Identity Provider Single Sign-On URL**                       |
 
-For NameID, the following settings are recommended; for SCIM, the following settings are required:
+1. Under the Okta **Single sign-on URL** field, select the **Use this for Recipient URL and Destination URL** checkbox.
 
-- **Application username** (NameID) set to **Custom** `user.getInternalProperty("id")`.
-- **Name ID Format** set to **Persistent**.
+1. Set these values:
+   - For **Application username (NameID)**: **Custom** `user.getInternalProperty("id")`
+   - For **Name ID Format**: `Persistent`
 
 The Okta GitLab application available in the App Catalog only supports [SCIM](scim_setup.md). Support
-for SAML is proposed in issue [216173](https://gitlab.com/gitlab-org/gitlab/-/issues/216173).
+for SAML is proposed in [issue 216173](https://gitlab.com/gitlab-org/gitlab/-/issues/216173).
 
 ### Set up OneLogin
 
