@@ -4,9 +4,11 @@ module EE
   module Emails
     module AdminNotification
       def user_auto_banned_email(
-        admin_id, user_id, max_project_downloads:, within_seconds:, auto_ban_enabled:, group: nil
+        alerted_user_id, user_id, max_project_downloads:, within_seconds:, auto_ban_enabled:, group: nil
       )
-        admin = ::User.find(admin_id)
+        alerted_user = ::User.find_by_id(alerted_user_id)
+        return unless alerted_user.present?
+
         @user = ::User.find(user_id)
         @max_project_downloads = max_project_downloads
         @within_seconds = within_seconds
@@ -23,9 +25,9 @@ module EE
           @banned_page_url = admin_users_url(filter: 'banned')
         end
 
-        ::Gitlab::I18n.with_locale(admin.preferred_language) do
+        ::Gitlab::I18n.with_locale(alerted_user.preferred_language) do
           email_with_layout(
-            to: admin.notification_email_or_default,
+            to: alerted_user.notification_email_or_default,
             subject: subject(_("We've detected unusual activity")))
         end
       end

@@ -196,12 +196,14 @@ module EE
       limit = @application_setting[:max_number_of_repository_downloads].to_i
       interval = @application_setting[:max_number_of_repository_downloads_within_time_period].to_i
       allowlist = @application_setting[:git_rate_limit_users_allowlist].to_a
+      alertlist = @application_setting.git_rate_limit_users_alertlist
       auto_ban_users = @application_setting[:auto_ban_user_on_excessive_projects_download].to_s
 
       {
         max_number_of_repository_downloads: limit,
         max_number_of_repository_downloads_within_time_period: interval,
         git_rate_limit_users_allowlist: allowlist,
+        git_rate_limit_users_alertlist: alertlist,
         auto_ban_user_on_excessive_projects_download: auto_ban_users
       }
     end

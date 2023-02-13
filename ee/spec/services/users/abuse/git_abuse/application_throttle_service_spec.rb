@@ -2,11 +2,12 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::Abuse::GitAbuse::ApplicationThrottleService do
+RSpec.describe Users::Abuse::GitAbuse::ApplicationThrottleService, feature_category: :insider_threat do
   describe '.execute' do
     let_it_be(:limit) { 3 }
     let_it_be(:time_period_in_seconds) { 60 }
     let_it_be(:allowlist) { [] }
+    let_it_be(:alertlist) { [] }
 
     let_it_be_with_reload(:user) { create(:user) }
     let_it_be(:admin) { create(:user, :admin) }
@@ -83,20 +84,40 @@ RSpec.describe Users::Abuse::GitAbuse::ApplicationThrottleService do
         execute
       end
 
-      it 'sends an email to active admins', :mailer do
-        opts = {
-          max_project_downloads: limit,
-          within_seconds: time_period_in_seconds,
-          auto_ban_enabled: true,
-          group: nil
-        }
+      describe 'sending notifications' do
+        shared_examples 'sends an email' do
+          it do
+            opts = {
+              max_project_downloads: limit,
+              within_seconds: time_period_in_seconds,
+              auto_ban_enabled: true,
+              group: nil
+            }
 
-        expect(Notify).to receive(:user_auto_banned_email).with(admin.id, user.id, opts).once.and_return(mail_instance)
-        expect(mail_instance).to receive(:deliver_later)
+            expect(Notify).to receive(:user_auto_banned_email).with(recipient.id, user.id, opts)
+              .once.and_return(mail_instance)
+            expect(mail_instance).to receive(:deliver_later)
 
-        expect(Notify).not_to receive(:user_auto_banned_email).with(inactive_admin.id, user.id, opts)
+            expect(Notify).not_to receive(:user_auto_banned_email).with(inactive_admin.id, user.id, opts)
 
-        execute
+            execute
+          end
+        end
+
+        it_behaves_like 'sends an email' do
+          let(:recipient) { admin }
+        end
+
+        context 'when the alertlist is not empty' do
+          before do
+            allow(Gitlab::CurrentSettings.current_application_settings)
+              .to receive(:git_rate_limit_users_alertlist).and_return([user.id])
+          end
+
+          it_behaves_like 'sends an email' do
+            let(:recipient) { user }
+          end
+        end
       end
 
       context 'when user downloads another project' do

@@ -51,10 +51,6 @@ module Users
           current_user
         end
 
-        def active_admins
-          @active_admins ||= User.admins.active
-        end
-
         def namespace
           nil
         end
@@ -69,6 +65,10 @@ module Users
 
         def allowlist
           @allowlist ||= settings.git_rate_limit_users_allowlist
+        end
+
+        def alertlist
+          @alertlist ||= settings.git_rate_limit_users_alertlist
         end
 
         def auto_ban_users

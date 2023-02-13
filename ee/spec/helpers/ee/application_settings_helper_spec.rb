@@ -97,4 +97,28 @@ RSpec.describe EE::ApplicationSettingsHelper do
 
     it { is_expected.to eq({ deletion_adjourned_period: 1, delayed_group_deletion: 'false', delayed_project_deletion: 'false' }) }
   end
+
+  describe '.git_abuse_rate_limit_data', feature_category: :insider_threat do
+    let_it_be(:application_setting) { build(:application_setting) }
+
+    before do
+      application_setting.max_number_of_repository_downloads = 1
+      application_setting.max_number_of_repository_downloads_within_time_period = 2
+      application_setting.git_rate_limit_users_allowlist = %w[username1 username2]
+      application_setting.git_rate_limit_users_alertlist = [3, 4]
+      application_setting.auto_ban_user_on_excessive_projects_download = true
+
+      helper.instance_variable_set(:@application_setting, application_setting)
+    end
+
+    subject { helper.git_abuse_rate_limit_data }
+
+    it 'returns the expected data' do
+      is_expected.to eq({ max_number_of_repository_downloads: 1,
+                          max_number_of_repository_downloads_within_time_period: 2,
+                          git_rate_limit_users_allowlist: %w[username1 username2],
+                          git_rate_limit_users_alertlist: [3, 4],
+                          auto_ban_user_on_excessive_projects_download: 'true' })
+    end
+  end
 end

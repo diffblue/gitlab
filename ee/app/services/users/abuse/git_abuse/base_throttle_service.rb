@@ -10,7 +10,7 @@ module Users
 
         def initialize(project, user)
           super
-          @admins_alerted = rate_limited?(peek: true)
+          @users_alerted = rate_limited?(peek: true)
         end
 
         def execute
@@ -18,14 +18,14 @@ module Users
 
           log_rate_limit_exceeded
 
-          alert_admins
+          alert_users
 
           success(banned: ban_user!)
         end
 
         private
 
-        attr_reader :admins_alerted
+        attr_reader :users_alerted
 
         def success(banned:)
           ServiceResponse.success(payload: { banned: banned })
@@ -43,12 +43,12 @@ module Users
           )
         end
 
-        def alert_admins
-          return if admins_alerted
+        def alert_users
+          return if users_alerted
 
-          active_admins.each do |admin|
+          alertlist.each do |user_id|
             Notify.user_auto_banned_email(
-              admin.id,
+              user_id,
               current_user.id,
               max_project_downloads: max_project_downloads,
               within_seconds: time_period,
