@@ -45545,6 +45545,9 @@ msgstr ""
 msgid "Unsupported todo type passed. Supported todo types are: %{todo_types}"
 msgstr ""
 
+msgid "Untitled"
+msgstr ""
+
 msgid "Unused"
 msgstr ""
 
@@ -48298,6 +48301,12 @@ msgstr ""
 msgid "WorkItem|Closed"
 msgstr ""
 
+msgid "WorkItem|Convert to task"
+msgstr ""
+
+msgid "WorkItem|Converted to task"
+msgstr ""
+
 msgid "WorkItem|Create %{workItemType}"
 msgstr ""
 
@@ -48443,6 +48452,9 @@ msgid "WorkItem|Task actions"
 msgstr ""
 
 msgid "WorkItem|Task deleted"
+msgstr ""
+
+msgid "WorkItem|Task reverted"
 msgstr ""
 
 msgid "WorkItem|Tasks"
