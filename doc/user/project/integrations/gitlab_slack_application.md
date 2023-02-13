@@ -7,9 +7,9 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 # GitLab for Slack app **(FREE SAAS)**
 
 NOTE:
-The GitLab for Slack app is only configurable for GitLab.com. It does **not**
-work for on-premises installations where you can configure
-[Slack slash commands](slack_slash_commands.md) instead. See
+The GitLab for Slack app is only configurable for GitLab SaaS customers.
+Self-managed GitLab customers should configure
+[Slack slash commands](slack_slash_commands.md) and [Slack notifications](slack.md) instead. See
 [Slack application integration for self-managed instances](https://gitlab.com/groups/gitlab-org/-/epics/1211)
 for our plans to make the app configurable for all GitLab installations.
 
