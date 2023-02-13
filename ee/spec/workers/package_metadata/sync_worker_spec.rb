@@ -4,6 +4,10 @@ require 'spec_helper'
 
 RSpec.describe PackageMetadata::SyncWorker, type: :worker, feature_category: :license_compliance do
   include_examples 'an idempotent worker' do
+    before do
+      allow(PackageMetadata::SyncService).to receive(:execute)
+    end
+
     subject do
       perform_multiple([], worker: described_class.new)
     end

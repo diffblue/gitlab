@@ -14,12 +14,13 @@ RSpec.describe Gitlab::PackageMetadata::Connector::Gcp, feature_category: :licen
   let(:file_list) { instance_double(Google::Cloud::Storage::File::List, all: all_files) }
   let(:all_files) do
     [
-      instance_double(Google::Cloud::Storage::File, name: 'seq0/chunk0'),
-      instance_double(Google::Cloud::Storage::File, name: 'seq0/chunk1'),
-      instance_double(Google::Cloud::Storage::File, name: 'seq1/chunk0'),
-      instance_double(Google::Cloud::Storage::File, name: 'seq1/chunk1'),
-      instance_double(Google::Cloud::Storage::File, name: 'seq1/chunk2'),
-      instance_double(Google::Cloud::Storage::File, name: 'seq2/chunk1')
+
+      instance_double(Google::Cloud::Storage::File, name: '1675352601/00000000.csv'),
+      instance_double(Google::Cloud::Storage::File, name: '1675352601/00000001.csv'),
+      instance_double(Google::Cloud::Storage::File, name: '1675356202/00000000.csv'),
+      instance_double(Google::Cloud::Storage::File, name: '1675356202/00000001.csv'),
+      instance_double(Google::Cloud::Storage::File, name: '1675356202/00000002.csv'),
+      instance_double(Google::Cloud::Storage::File, name: '1675359803/00000000.csv')
     ]
   end
 
@@ -34,7 +35,7 @@ RSpec.describe Gitlab::PackageMetadata::Connector::Gcp, feature_category: :licen
       let(:expected_attributes) do
         expected_files.map do |file|
           seq, chunk = file.name.delete_prefix(file_prefix).split('/')
-          have_attributes(sequence: seq, chunk: chunk)
+          have_attributes(sequence: seq.to_i, chunk: chunk.delete_suffix('.csv').to_i)
         end
       end
 
@@ -57,16 +58,16 @@ RSpec.describe Gitlab::PackageMetadata::Connector::Gcp, feature_category: :licen
 
     context 'when seq/chunk found' do
       context 'and data exists' do
-        let(:seq) { 'seq1' }
-        let(:chunk) { 'chunk1' }
+        let(:seq) { 1675356202 }
+        let(:chunk) { 1 }
         let(:expected_files) { all_files[4..] }
 
         it_behaves_like 'it provides correct data'
       end
 
       context 'and no data exists' do
-        let(:seq) { 'seq2' }
-        let(:chunk) { 'chunk1' }
+        let(:seq) { 1675359803 }
+        let(:chunk) { 0 }
         let(:expected_files) { [] }
 
         it_behaves_like 'it provides correct data'
@@ -75,24 +76,24 @@ RSpec.describe Gitlab::PackageMetadata::Connector::Gcp, feature_category: :licen
 
     context 'when one of the parameters is not found' do
       context 'and it is seq' do
-        let(:seq) { 'seq1' }
-        let(:chunk) { 'chunkXYZ' }
+        let(:seq) { 1675356202 }
+        let(:chunk) { 100 }
         let(:expected_files) { all_files }
 
         it_behaves_like 'it provides correct data'
       end
 
       context 'and it is chunk' do
-        let(:seq) { 'seqABC' }
-        let(:chunk) { 'chunk1' }
+        let(:seq) { 2222222 }
+        let(:chunk) { 0 }
         let(:expected_files) { all_files }
 
         it_behaves_like 'it provides correct data'
       end
 
       context 'and both are not found' do
-        let(:seq) { 'seqABC' }
-        let(:chunk) { 'chunkXYZ' }
+        let(:seq) { 123 }
+        let(:chunk) { 456 }
         let(:expected_files) { all_files }
 
         it_behaves_like 'it provides correct data'
