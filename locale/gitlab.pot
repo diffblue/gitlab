@@ -11600,7 +11600,7 @@ msgstr ""
 msgid "Couldn't find event type filters where audit event type(s): %{missing_filters}"
 msgstr ""
 
-msgid "Country"
+msgid "Country / Region"
 msgstr ""
 
 msgid "Counts"
@@ -31826,7 +31826,7 @@ msgstr ""
 msgid "Please select a Jira project"
 msgstr ""
 
-msgid "Please select a country"
+msgid "Please select a country / region"
 msgstr ""
 
 msgid "Please select a group"
