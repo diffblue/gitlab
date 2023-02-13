@@ -4,6 +4,10 @@ import waitForPromises from 'helpers/wait_for_promises';
 import AnalyticsDashboard from 'ee/product_analytics/dashboards/components/analytics_dashboard.vue';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import { dashboard } from 'ee_jest/vue_shared/components/customizable_dashboard/mock_data';
+import {
+  DATE_RANGE_OPTIONS,
+  DEFAULT_SELECTED_OPTION_INDEX,
+} from 'ee/vue_shared/components/customizable_dashboard/filters/constants';
 
 describe('AnalyticsDashboard', () => {
   let wrapper;
@@ -37,12 +41,18 @@ describe('AnalyticsDashboard', () => {
   };
 
   describe('when mounted', () => {
-    it('should render with mock dashboard', () => {
+    it('should render with mock dashboard with filter properties', () => {
       createWrapper({
         dashboard,
       });
 
-      expect(findDashboard().props().initialDashboard).toStrictEqual(dashboard);
+      const { startDate, endDate } = DATE_RANGE_OPTIONS[DEFAULT_SELECTED_OPTION_INDEX];
+
+      expect(findDashboard().props()).toMatchObject({
+        initialDashboard: dashboard,
+        defaultFilters: { dateRange: { startDate, endDate } },
+        showDateRangeFilter: true,
+      });
     });
 
     it('should render the loading icon while fetching data', async () => {
