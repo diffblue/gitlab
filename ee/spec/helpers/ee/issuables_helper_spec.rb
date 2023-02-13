@@ -30,6 +30,7 @@ RSpec.describe IssuablesHelper, feature_category: :team_planning do
           fullPath: @group.full_path,
           groupPath: @group.path,
           hasIssueWeightsFeature: nil,
+          hasIterationsFeature: nil,
           state: epic.state,
           initialDescriptionHtml: '<p data-sourcepos="1:1-1:9" dir="auto">epic text</p>',
           initialDescriptionText: 'epic text',
@@ -79,6 +80,7 @@ RSpec.describe IssuablesHelper, feature_category: :team_planning do
           canAdmin: true,
           canAdminRelation: true,
           hasIssueWeightsFeature: true,
+          hasIterationsFeature: true,
           publishedIncidentUrl: nil
         }
         expect(helper.issuable_initial_data(issue)).to include(expected_data)
