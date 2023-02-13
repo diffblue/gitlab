@@ -28,7 +28,7 @@ module EE
 
           self.select do |rule|
             next true unless rule.approval_project_rule.present?
-            next true if rule.overridden?
+            next true if rule.modified_from_project_rule
 
             rule.approval_project_rule.applies_to_branch?(branch)
           end
