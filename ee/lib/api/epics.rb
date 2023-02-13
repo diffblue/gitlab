@@ -332,7 +332,7 @@ module API
       delete ':id/(-/)epics/:epic_iid' do
         authorize_can_destroy!
 
-        Issuable::DestroyService.new(project: nil, current_user: current_user).execute(epic)
+        Issuable::DestroyService.new(container: nil, current_user: current_user).execute(epic)
       end
     end
   end
