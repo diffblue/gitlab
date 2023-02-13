@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'groups/settings/reporting/show' do
   let_it_be(:allowlist) { create_list(:user, 2).map(&:username) }
+  let_it_be(:alertlist) { create_list(:user, 2).map(&:id) }
 
   let(:group) { create(:group) }
 
@@ -14,6 +15,7 @@ RSpec.describe 'groups/settings/reporting/show' do
       unique_project_download_limit: 1,
       unique_project_download_limit_interval_in_seconds: 2,
       unique_project_download_limit_allowlist: allowlist,
+      unique_project_download_limit_alertlist: alertlist,
       auto_ban_user_on_excessive_projects_download: true
     )
 
@@ -29,6 +31,7 @@ RSpec.describe 'groups/settings/reporting/show' do
     expect(rendered).to have_selector('[data-max-number-of-repository-downloads="1"]')
     expect(rendered).to have_selector('[data-max-number-of-repository-downloads-within-time-period="2"]')
     expect(rendered).to have_selector("[data-git-rate-limit-users-allowlist='#{allowlist}']")
+    expect(rendered).to have_selector("[data-git-rate-limit-users-alertlist='#{alertlist}']")
     expect(rendered).to have_selector("[data-auto-ban-user-on-excessive-projects-download='true']")
   end
 
@@ -47,6 +50,7 @@ RSpec.describe 'groups/settings/reporting/show' do
       expect(rendered).to have_selector('[data-max-number-of-repository-downloads="0"]')
       expect(rendered).to have_selector('[data-max-number-of-repository-downloads-within-time-period="0"]')
       expect(rendered).to have_selector("[data-git-rate-limit-users-allowlist='[]']")
+      expect(rendered).to have_selector("[data-git-rate-limit-users-alertlist='[]']")
       expect(rendered).to have_selector("[data-auto-ban-user-on-excessive-projects-download='false']")
     end
   end

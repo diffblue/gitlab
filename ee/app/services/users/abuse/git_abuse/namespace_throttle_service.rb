@@ -56,10 +56,6 @@ module Users
           @namespace_settings ||= namespace&.namespace_settings
         end
 
-        def active_admins
-          @active_admins ||= namespace&.owners&.active
-        end
-
         def max_project_downloads
           @max_project_downloads ||= namespace_settings&.unique_project_download_limit
         end
@@ -70,6 +66,10 @@ module Users
 
         def allowlist
           @allowlist ||= namespace_settings&.unique_project_download_limit_allowlist
+        end
+
+        def alertlist
+          @alertlist ||= namespace_settings&.unique_project_download_limit_alertlist
         end
 
         def auto_ban_users

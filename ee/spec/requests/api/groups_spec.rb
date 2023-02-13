@@ -423,7 +423,7 @@ RSpec.describe API::Groups, feature_category: :subgroups do
             expect(settings.unique_project_download_limit).to eq 0
             expect(settings.unique_project_download_limit_interval_in_seconds).to eq 0
             expect(settings.unique_project_download_limit_allowlist).to be_empty
-            expect(settings.unique_project_download_limit_alertlist).to be_empty
+            expect(settings[:unique_project_download_limit_alertlist]).to be_empty
             expect(settings.auto_ban_user_on_excessive_projects_download).to eq false
           end
         end

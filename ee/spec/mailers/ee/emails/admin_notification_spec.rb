@@ -2,12 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe Emails::AdminNotification do
+RSpec.describe Emails::AdminNotification, feature_category: :insider_threat do
   include EmailSpec::Matchers
   include_context 'gitlab email notification'
 
   describe 'user_auto_banned_email' do
-    let_it_be(:admin) { create(:user) }
+    let_it_be(:alerted_user) { create(:user) }
+    let_it_be(:alerted_user_id) { alerted_user.id }
     let_it_be(:user) { create(:user) }
 
     let(:max_project_downloads) { 5 }
@@ -17,7 +18,7 @@ RSpec.describe Emails::AdminNotification do
 
     subject do
       Notify.user_auto_banned_email(
-        admin.id, user.id,
+        alerted_user_id, user.id,
         max_project_downloads: max_project_downloads,
         within_seconds: time_period,
         auto_ban_enabled: auto_ban_enabled,
@@ -31,8 +32,8 @@ RSpec.describe Emails::AdminNotification do
     it_behaves_like 'appearance header and footer enabled'
     it_behaves_like 'appearance header and footer not enabled'
 
-    it 'is sent to the administrator' do
-      is_expected.to deliver_to admin.email
+    it 'is sent to the alerted user' do
+      is_expected.to deliver_to alerted_user.email
     end
 
     it 'has the correct subject' do
@@ -106,6 +107,12 @@ RSpec.describe Emails::AdminNotification do
       it 'includes a link to change the settings' do
         is_expected.to have_body_text group_settings_reporting_url(group)
       end
+    end
+
+    context 'when alerted user does not exist anymore' do
+      let_it_be(:alerted_user_id) { non_existing_record_id }
+
+      it_behaves_like 'no email is sent'
     end
   end
 end

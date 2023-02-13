@@ -66,6 +66,10 @@ module EE
       cascading_with_parent_namespace :allow_merge_on_skipped_pipeline
       cascading_with_parent_namespace :only_allow_merge_if_all_discussions_are_resolved
 
+      def unique_project_download_limit_alertlist
+        self[:unique_project_download_limit_alertlist].presence || active_owner_ids
+      end
+
       private
 
       def enabling_user_cap?
@@ -90,6 +94,12 @@ module EE
 
       def user_cap_enabled?
         new_user_signups_cap.present? && namespace.root?
+      end
+
+      def active_owner_ids
+        return [] unless namespace&.group_namespace?
+
+        namespace.owners.active.pluck_primary_key
       end
     end
 

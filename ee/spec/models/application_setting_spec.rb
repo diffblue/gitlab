@@ -304,7 +304,7 @@ RSpec.describe ApplicationSetting do
 
         it { is_expected.to allow_value([]).for(:git_rate_limit_users_alertlist) }
         it { is_expected.to allow_value([user.id]).for(:git_rate_limit_users_alertlist) }
-        it { is_expected.not_to allow_value(nil).for(:git_rate_limit_users_alertlist) }
+        it { is_expected.to allow_value(nil).for(:git_rate_limit_users_alertlist) }
         it { is_expected.not_to allow_value([non_existing_record_id]).for(:git_rate_limit_users_alertlist) }
 
         context 'when maximum length is exceeded' do
@@ -323,6 +323,27 @@ RSpec.describe ApplicationSetting do
           end
 
           it { is_expected.to be_valid }
+        end
+
+        context 'when empty' do
+          let!(:active_admin) { create(:admin) }
+          let!(:inactive_admin) { create(:admin, :deactivated) }
+
+          it 'returns the user ids of the active admins' do
+            expect(subject.git_rate_limit_users_alertlist).to contain_exactly(active_admin.id)
+          end
+        end
+
+        context 'when not empty' do
+          let(:alerted_user_ids) { [1, 2] }
+
+          before do
+            subject.update_attribute(:git_rate_limit_users_alertlist, alerted_user_ids)
+          end
+
+          it 'returns the set user ids' do
+            expect(subject.git_rate_limit_users_alertlist).to eq(alerted_user_ids)
+          end
         end
       end
     end
