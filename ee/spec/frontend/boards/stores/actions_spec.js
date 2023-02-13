@@ -35,6 +35,9 @@ import {
   mockSubGroups,
   mockGroup0,
   mockIterationCadences,
+  mockIssueInListWithIteration,
+  mockListWithIteration,
+  mockIssue3,
 } from '../mock_data';
 
 Vue.use(Vuex);
@@ -1547,7 +1550,7 @@ describe('setActiveEpicLabels', () => {
 
 describe('addListNewIssue', () => {
   let state;
-  const iterationCadenceId = 'gid://gitlab/Iterations::Cadence/1';
+  let iterationCadenceId = 'gid://gitlab/Iterations::Cadence/1';
   const baseState = {
     boardType: 'group',
     fullPath: 'gitlab-org/gitlab',
@@ -1685,6 +1688,86 @@ describe('addListNewIssue', () => {
           input: formatIssueInput(mockIssue, state.boardConfig),
         },
         update: expect.anything(),
+      });
+    });
+  });
+
+  describe('with listIterationId', () => {
+    describe('list has an iteration', () => {
+      beforeEach(() => {
+        state = {
+          ...baseState,
+          boardConfig: {
+            iterationId: mockListWithIteration.iteration.id,
+          },
+        };
+
+        iterationCadenceId = null;
+      });
+
+      it('adds iterationId from list iteration', async () => {
+        jest.spyOn(gqlClient, 'mutate').mockResolvedValue({
+          data: {
+            createIssue: {
+              errors: [],
+            },
+          },
+        });
+
+        await actions.addListNewIssue(
+          { dispatch: jest.fn(), commit: jest.fn(), state },
+          { issueInput: mockIssueInListWithIteration, list: mockListWithIteration },
+        );
+
+        expect(gqlClient.mutate).toHaveBeenCalledWith({
+          mutation: issueCreateMutation,
+          variables: {
+            input: formatIssueInput(mockIssueInListWithIteration, {
+              ...state.boardConfig,
+              iterationCadenceId,
+            }),
+          },
+          update: expect.anything(),
+        });
+      });
+    });
+
+    describe('neither list nor board has an iteration', () => {
+      beforeEach(() => {
+        state = {
+          ...baseState,
+          boardConfig: {
+            iterationId: undefined,
+          },
+        };
+
+        iterationCadenceId = null;
+      });
+
+      it('not adds any iteration', async () => {
+        jest.spyOn(gqlClient, 'mutate').mockResolvedValue({
+          data: {
+            createIssue: {
+              errors: [],
+            },
+          },
+        });
+
+        await actions.addListNewIssue(
+          { dispatch: jest.fn(), commit: jest.fn(), state },
+          { issueInput: mockIssue3, list: fakeList },
+        );
+
+        expect(gqlClient.mutate).toHaveBeenCalledWith({
+          mutation: issueCreateMutation,
+          variables: {
+            input: formatIssueInput(mockIssue3, {
+              ...state.boardConfig,
+              iterationCadenceId,
+            }),
+          },
+          update: expect.anything(),
+        });
       });
     });
   });
