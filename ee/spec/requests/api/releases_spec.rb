@@ -40,10 +40,12 @@ RSpec.describe API::Releases, feature_category: :release_orchestration do
 
         release = project.releases.last
 
-        expect(subject[:custom_message]).to eq("Created Release #{release.tag}")
-        expect(subject[:target_type]).to eq('Release')
-        expect(subject[:target_id]).to eq(release.id)
-        expect(subject[:target_details]).to eq(release.name)
+        expect(subject).to include({
+          custom_message: "Created Release #{release.tag}",
+          target_type: "Release",
+          target_id: release.id,
+          target_details: release.name
+        })
       end
 
       context 'with milestone' do
@@ -56,10 +58,12 @@ RSpec.describe API::Releases, feature_category: :release_orchestration do
 
           release = project.releases.last
 
-          expect(subject[:custom_message]).to eq("Created Release v0.1 with Milestone v1.0")
-          expect(subject[:target_type]).to eq('Release')
-          expect(subject[:target_id]).to eq(release.id)
-          expect(subject[:target_details]).to eq(release.name)
+          expect(subject).to include({
+            custom_message: "Created Release #{release.tag} with Milestone #{milestone.title}",
+            target_type: "Release",
+            target_id: release.id,
+            target_details: release.name
+          })
         end
       end
     end
@@ -343,7 +347,14 @@ RSpec.describe API::Releases, feature_category: :release_orchestration do
         delete api("/projects/#{project.id}/releases/v0.1", maintainer)
       end.to change { AuditEvent.count }.by(1)
 
-      expect(AuditEvent.last.details[:custom_message]).to eq("Deleted release #{release.tag}")
+      expect(AuditEvent.last.details).to include({
+        author_name: maintainer.name,
+        author_class: "User",
+        target_id: release.id,
+        target_type: "Release",
+        target_details: release.name,
+        custom_message: "Deleted release #{release.tag}"
+      })
     end
   end
 end
