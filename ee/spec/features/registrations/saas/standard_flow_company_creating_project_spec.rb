@@ -64,7 +64,7 @@ feature_category: :onboarding do
       visit root_path
       expect_to_see_company_form
 
-      fill_in_company_form(trial: false)
+      fill_in_company_form(trial: false, glm: false)
       click_on 'Continue'
 
       expect_to_see_group_and_project_creation_form
@@ -107,10 +107,10 @@ feature_category: :onboarding do
     end
   end
 
-  def fill_in_company_form(trial: true)
+  def fill_in_company_form(trial: true, glm: true)
     expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
       user: user,
-      params: company_params(trial: trial)
+      params: company_params(trial: trial, glm: glm)
     ).and_return(instance_double(GitlabSubscriptions::CreateTrialOrLeadService, execute: ServiceResponse.success))
 
     fill_in 'company_name', with: 'Test Company'
@@ -119,36 +119,6 @@ feature_category: :onboarding do
     select 'Florida', from: 'state'
     fill_in 'phone_number', with: '+1234567890'
     fill_in 'website_url', with: 'https://gitlab.com'
-  end
-
-  def company_params(trial: true)
-    base_params = ActionController::Parameters.new(
-      company_name: 'Test Company',
-      company_size: '1-99',
-      phone_number: '+1234567890',
-      country: 'US',
-      state: 'FL',
-      website_url: 'https://gitlab.com',
-      trial_onboarding_flow: trial.to_s,
-      # these are the passed through params
-      role: 'software_developer',
-      registration_objective: 'other',
-      jobs_to_be_done_other: 'My reason'
-    ).permit!
-
-    return base_params unless trial
-
-    base_params.merge(glm_params)
-  end
-
-  def fills_in_group_and_project_creation_form
-    # The groups_and_projects_controller (on `click_on 'Create project'`) is over
-    # the query limit threshold, so we have to adjust it.
-    # https://gitlab.com/gitlab-org/gitlab/-/issues/338737
-    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(145)
-
-    fill_in 'group_name', with: 'Test Group'
-    fill_in 'blank_project_name', with: 'Test Project'
   end
 
   def expect_to_apply_trial

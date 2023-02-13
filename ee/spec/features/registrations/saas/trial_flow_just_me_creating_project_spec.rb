@@ -29,7 +29,7 @@ feature_category: :onboarding do
 
     expect_to_see_group_and_project_creation_form
 
-    fills_in_group_and_project_creation_form
+    fills_in_group_and_project_creation_form_with_trial
     click_on 'Create project'
 
     expect_to_be_in_continuous_onboarding
@@ -82,7 +82,7 @@ feature_category: :onboarding do
   def fill_in_company_form
     expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
       user: user,
-      params: company_params_trial_true
+      params: company_params
     ).and_return(instance_double(GitlabSubscriptions::CreateTrialOrLeadService, execute: ServiceResponse.success))
 
     fill_in 'company_name', with: 'Test Company'
@@ -91,50 +91,5 @@ feature_category: :onboarding do
     select 'Florida', from: 'state'
     fill_in 'phone_number', with: '+1234567890'
     fill_in 'website_url', with: 'https://gitlab.com'
-  end
-
-  def fills_in_group_and_project_creation_form
-    # The groups_and_projects_controller (on `click_on 'Create project'`) is over
-    # the query limit threshold, so we have to adjust it.
-    # https://gitlab.com/gitlab-org/gitlab/-/issues/338737
-    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(145)
-
-    service_instance = instance_double(GitlabSubscriptions::Trials::ApplyTrialService)
-    allow(GitlabSubscriptions::Trials::ApplyTrialService).to receive(:new).and_return(service_instance)
-
-    expect(service_instance).to receive(:execute).and_return(ServiceResponse.success)
-
-    trial_user_information = {
-      namespace_id: anything,
-      gitlab_com_trial: true,
-      sync_to_gl: true
-    }.merge(glm_params)
-
-    expect(GitlabSubscriptions::Trials::ApplyTrialWorker)
-      .to receive(:perform_async).with(
-        user.id,
-        trial_user_information
-      ).and_call_original
-
-    fill_in 'group_name', with: 'Test Group'
-    fill_in 'blank_project_name', with: 'Test Project'
-  end
-
-  def company_params_trial_true
-    ActionController::Parameters.new(
-      {
-        company_name: 'Test Company',
-        company_size: '1-99',
-        phone_number: '+1234567890',
-        country: 'US',
-        state: 'FL',
-        website_url: 'https://gitlab.com',
-        trial_onboarding_flow: 'true',
-        # these are the passed through params
-        role: 'software_developer',
-        registration_objective: 'other',
-        jobs_to_be_done_other: 'My reason'
-      }.merge(glm_params)
-    ).permit!
   end
 end
