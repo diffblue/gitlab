@@ -15,7 +15,7 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures do
                    milestone: milestone, description: description, weight: 3)
   end
 
-  subject { described_class.new(project: issue.project, current_user: user) }
+  subject { described_class.new(container: issue.project, current_user: user) }
 
   let(:epic) { Epic.last }
 

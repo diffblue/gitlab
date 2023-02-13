@@ -23,7 +23,7 @@ module Mutations
         group = get_group_by_path!(group_path)
 
         begin
-          epic = ::Epics::IssuePromoteService.new(project: project, current_user: current_user).execute(issue, group)
+          epic = ::Epics::IssuePromoteService.new(container: project, current_user: current_user).execute(issue, group)
         rescue StandardError => error
           errors << error.message
         end
