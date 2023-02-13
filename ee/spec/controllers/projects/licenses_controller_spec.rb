@@ -135,7 +135,6 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
                 create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "MIT")
                 create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause")
                 create(:pm_package_version_license, :with_all_relations, name: "org.apache.logging.log4j/log4j-api", purl_type: "maven", version: "2.6.1", license_name: "BSD-3-Clause")
-                create(:pm_package_version_license, :with_all_relations, name: "yargs", purl_type: "npm", version: "11.1.0", license_name: "unknown")
 
                 get_licenses
               end
@@ -374,7 +373,6 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
                 create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "MIT")
                 create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause")
                 create(:pm_package_version_license, :with_all_relations, name: "org.apache.logging.log4j/log4j-api", purl_type: "maven", version: "2.6.1", license_name: "BSD-3-Clause")
-                create(:pm_package_version_license, :with_all_relations, name: "yargs", purl_type: "npm", version: "11.1.0", license_name: "unknown")
 
                 get_licenses
               end
