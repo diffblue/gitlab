@@ -35,6 +35,7 @@ describe('MR Widget Security Reports', () => {
   const containerScanningHelp = '/help/user/application_security/container-scanning/index';
   const createVulnerabilityFeedbackIssuePath = '/create/vulnerability/feedback/issue/path';
   const createVulnerabilityFeedbackDismissalPath = '/dismiss/finding/feedback/path';
+  const createVulnerabilityFeedbackMergeRequestPath = '/create/merge/request/path';
 
   const reportEndpoints = {
     sastComparisonPath: '/my/sast/endpoint',
@@ -65,6 +66,7 @@ describe('MR Widget Security Reports', () => {
           },
           ...propsData?.mr,
           ...reportEndpoints,
+          createVulnerabilityFeedbackMergeRequestPath,
           securityConfigurationPath,
           sourceProjectFullPath,
           sastHelp,
@@ -404,6 +406,56 @@ describe('MR Widget Security Reports', () => {
       });
     });
 
+    describe('merge request creation', () => {
+      it('handles merge request creation - success', async () => {
+        const mergeRequestPath = '/merge/request/1';
+
+        mockAxios.onPost(createVulnerabilityFeedbackMergeRequestPath).replyOnce(HTTP_STATUS_OK, {
+          merge_request_path: mergeRequestPath,
+        });
+
+        await createComponentExpandWidgetAndOpenModal({
+          mrProps: {
+            createVulnerabilityFeedbackDismissalPath,
+          },
+        });
+
+        const spy = jest.spyOn(urlUtils, 'visitUrl');
+
+        expect(findModal().props('isCreatingMergeRequest')).toBe(false);
+
+        findModal().vm.$emit('createMergeRequest');
+
+        await nextTick();
+
+        expect(findModal().props('isCreatingMergeRequest')).toBe(true);
+
+        await waitForPromises();
+
+        expect(spy).toHaveBeenCalledWith(mergeRequestPath);
+      });
+
+      it('handles merge request creation - error', async () => {
+        mockAxios
+          .onPost(createVulnerabilityFeedbackMergeRequestPath)
+          .replyOnce(HTTP_STATUS_BAD_REQUEST);
+
+        await createComponentExpandWidgetAndOpenModal({
+          mrProps: {
+            createVulnerabilityFeedbackDismissalPath,
+          },
+        });
+
+        findModal().vm.$emit('createMergeRequest');
+
+        await waitForPromises();
+
+        expect(findModal().props('modal').error).toBe(
+          'There was an error creating the merge request. Please try again.',
+        );
+      });
+    });
+
     describe('issue creation', () => {
       it('can create issue when createVulnerabilityFeedbackIssuePath is provided', async () => {
         await createComponentExpandWidgetAndOpenModal({
@@ -492,7 +544,7 @@ describe('MR Widget Security Reports', () => {
         expect(emitSpy).toHaveBeenCalledWith(BV_HIDE_MODAL, 'modal-mrwidget-security-issue');
       });
 
-      it('handles issue creation - error', async () => {
+      it('handles dismissing finding - error', async () => {
         mockAxios
           .onPost(createVulnerabilityFeedbackDismissalPath)
           .replyOnce(HTTP_STATUS_BAD_REQUEST);

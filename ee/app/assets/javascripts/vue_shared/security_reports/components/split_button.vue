@@ -20,15 +20,17 @@ export default {
   },
   data() {
     return {
-      selectedButton: {},
+      selectedButtonIndex: 0,
     };
   },
-  created() {
-    this.setButton(this.buttons[0]);
+  computed: {
+    selectedButton() {
+      return this.buttons[this.selectedButtonIndex];
+    },
   },
   methods: {
-    setButton(button) {
-      this.selectedButton = button;
+    setButton(index) {
+      this.selectedButtonIndex = index;
     },
     handleClick() {
       if (this.selectedButton.href) {
@@ -53,11 +55,11 @@ export default {
     @click="handleClick"
   >
     <gl-dropdown-item
-      v-for="button in buttons"
+      v-for="(button, index) in buttons"
       :key="button.action"
       :is-checked="selectedButton === button"
       is-check-item
-      @click="setButton(button)"
+      @click="setButton(index)"
     >
       <strong>{{ button.name }}</strong>
       <br />
