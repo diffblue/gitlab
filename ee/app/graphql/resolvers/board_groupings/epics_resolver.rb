@@ -19,7 +19,7 @@ module Resolvers
 
         context.scoped_set!(:board, board)
 
-        issue_params = item_filters(args[:issue_filters])
+        issue_params = item_filters(args[:issue_filters], board.resource_parent)
 
         if empty_issue_params?(issue_params) && Feature.enabled?(:board_grouped_by_epic_performance, group)
           # The service outputs an optimized query in which `ORDER` clause must appear nested inside a CTE.
