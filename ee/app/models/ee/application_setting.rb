@@ -491,6 +491,10 @@ module EE
       super
     end
 
+    def git_rate_limit_users_alertlist
+      self[:git_rate_limit_users_alertlist].presence || ::User.admins.active.pluck_primary_key
+    end
+
     private
 
     def elasticsearch_limited_project_exists?(project)

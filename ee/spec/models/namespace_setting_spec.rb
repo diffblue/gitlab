@@ -53,7 +53,7 @@ RSpec.describe NamespaceSetting do
 
       it { is_expected.to allow_value([]).for(attr) }
       it { is_expected.to allow_value([user.id]).for(attr) }
-      it { is_expected.not_to allow_value(nil).for(attr) }
+      it { is_expected.to allow_value(nil).for(attr) }
       it { is_expected.not_to allow_value([non_existing_record_id]).for(attr) }
 
       context 'when maximum length is exceeded' do
@@ -62,6 +62,32 @@ RSpec.describe NamespaceSetting do
 
           expect(subject).not_to be_valid
           expect(subject.errors[attr]).to include('exceeds maximum length (100 user ids)')
+        end
+
+        context 'when empty' do
+          let(:active_user) { create(:user) }
+          let(:inactive_user) { create(:user, :deactivated) }
+
+          before do
+            group.add_owner(active_user)
+            group.add_owner(inactive_user)
+          end
+
+          it 'returns the user ids of the active group owners' do
+            expect(subject.unique_project_download_limit_alertlist).to contain_exactly(active_user.id)
+          end
+        end
+
+        context 'when not empty' do
+          let(:alerted_user_ids) { [1, 2] }
+
+          before do
+            subject.update_attribute(:unique_project_download_limit_alertlist, alerted_user_ids)
+          end
+
+          it 'returns the set user ids' do
+            expect(subject.unique_project_download_limit_alertlist).to eq(alerted_user_ids)
+          end
         end
       end
     end

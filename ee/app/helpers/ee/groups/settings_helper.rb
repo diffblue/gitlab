@@ -33,6 +33,7 @@ module EE
         limit = settings.unique_project_download_limit
         interval = settings.unique_project_download_limit_interval_in_seconds
         allowlist = settings.unique_project_download_limit_allowlist
+        alertlist = settings.unique_project_download_limit_alertlist
         auto_ban_users = settings.auto_ban_user_on_excessive_projects_download
 
         {
@@ -40,6 +41,7 @@ module EE
           max_number_of_repository_downloads: limit,
           max_number_of_repository_downloads_within_time_period: interval,
           git_rate_limit_users_allowlist: allowlist,
+          git_rate_limit_users_alertlist: alertlist,
           auto_ban_user_on_excessive_projects_download: auto_ban_users.to_s
         }
       end
