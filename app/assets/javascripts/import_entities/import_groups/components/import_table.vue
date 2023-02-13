@@ -365,7 +365,7 @@ export default {
       this.validateImportTarget(newImportTarget);
     },
 
-    async importGroups(importRequests) {
+    async requestGroupsImport(importRequests) {
       const newPendingGroupsIds = importRequests.map((request) => request.sourceGroupId);
       newPendingGroupsIds.forEach((id) => {
         if (!this.pendingGroupsIds.includes(id)) {
@@ -408,7 +408,7 @@ export default {
         });
       } else {
         this.reimportRequests = this.reimportRequests.filter((id) => id !== group.id);
-        this.importGroups([
+        this.requestGroupsImport([
           {
             sourceGroupId: group.id,
             targetNamespace: group.importTarget.targetNamespace.fullPath,
@@ -429,7 +429,7 @@ export default {
           ...extraArgs,
         }));
 
-      this.importGroups(importRequests);
+      this.requestGroupsImport(importRequests);
     },
 
     setPageSize(size) {
