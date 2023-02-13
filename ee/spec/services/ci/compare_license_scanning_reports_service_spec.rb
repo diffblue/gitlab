@@ -59,8 +59,8 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :lice
 
         it 'reports new licenses' do
           expect(subject[:status]).to eq(:parsed)
-          expect(subject[:data]['new_licenses'].count).to eq(1)
-          expect(subject[:data]['new_licenses']).to include(a_hash_including('name' => 'BSD'))
+          expect(subject[:data]['new_licenses']).to match([a_hash_including('name' => 'BSD'),
+            a_hash_including('name' => 'unknown')])
         end
       end
     end
@@ -105,7 +105,7 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :lice
 
         it 'reports new licenses' do
           expect(subject[:status]).to eq(:parsed)
-          expect(subject[:data]['new_licenses'].count).to eq(1)
+          expect(subject[:data]['new_licenses'].count).to eq(2)
         end
       end
     end
@@ -124,18 +124,19 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :lice
         end
 
         it 'reports new licenses' do
-          expect(subject[:data]['new_licenses'].count).to eq(1)
-          expect(subject[:data]['new_licenses']).to include(a_hash_including('name' => 'WTFPL'))
+          expect(subject[:data]['new_licenses']).to match([a_hash_including('name' => 'WTFPL')])
         end
 
         it 'reports existing licenses' do
-          expect(subject[:data]['existing_licenses'].count).to eq(1)
-          expect(subject[:data]['existing_licenses']).to include(a_hash_including('name' => 'MIT'))
+          expect(subject[:data]['existing_licenses']).to match([a_hash_including('name' => 'MIT')])
         end
 
         it 'reports removed licenses' do
-          expect(subject[:data]['removed_licenses'].count).to eq(3)
-          expect(subject[:data]['removed_licenses']).to include(a_hash_including('name' => 'New BSD'))
+          expect(subject[:data]['removed_licenses']).to match([
+            a_hash_including('name' => 'Apache 2.0'),
+            a_hash_including('name' => 'New BSD'),
+            a_hash_including('name' => 'unknown')
+          ])
         end
       end
 
@@ -155,18 +156,17 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :lice
         end
 
         it 'reports new licenses' do
-          expect(subject[:data]['new_licenses'].count).to eq(1)
-          expect(subject[:data]['new_licenses']).to include(a_hash_including('name' => 'Apache-2.0'))
+          expect(subject[:data]['new_licenses']).to match([a_hash_including('name' => 'Apache-2.0')])
         end
 
         it 'reports existing licenses' do
-          expect(subject[:data]['existing_licenses'].count).to eq(1)
-          expect(subject[:data]['existing_licenses']).to include(a_hash_including('name' => 'BSD'))
+          expect(subject[:data]['existing_licenses']).to match(
+            [a_hash_including('name' => 'BSD'), a_hash_including('name' => 'unknown')]
+          )
         end
 
         it 'reports removed licenses' do
-          expect(subject[:data]['removed_licenses'].count).to eq(1)
-          expect(subject[:data]['removed_licenses']).to include(a_hash_including('name' => 'MIT'))
+          expect(subject[:data]['removed_licenses']).to match([a_hash_including('name' => 'MIT')])
         end
       end
     end

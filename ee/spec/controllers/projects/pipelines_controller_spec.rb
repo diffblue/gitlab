@@ -130,12 +130,12 @@ RSpec.describe Projects::PipelinesController do
             stub_feature_flags(license_scanning_sbom_scanner: false)
           end
 
-          it 'will return license scanning report in json format' do
+          it 'returns license scanning report in json format' do
             expect(payload.size).to eq(pipeline.license_scanning_report.licenses.size)
             expect(payload.first.keys).to match_array(%w(name classification dependencies count url))
           end
 
-          it 'will return mit license allowed status' do
+          it 'returns MIT license allowed status' do
             payload_mit = payload.find { |l| l['name'] == 'MIT' }
             expect(payload_mit['count']).to eq(pipeline.license_scanning_report.licenses.find { |x| x.name == 'MIT' }.count)
             expect(payload_mit['url']).to eq('http://opensource.org/licenses/mit-license')
@@ -148,9 +148,13 @@ RSpec.describe Projects::PipelinesController do
             it { is_expected.to eq('allowed') }
           end
 
-          it 'will return sorted by name' do
-            expect(payload.first['name']).to eq('Apache 2.0')
-            expect(payload.last['name']).to eq('unknown')
+          it 'returns the JSON license data sorted by license name' do
+            expect(payload.pluck('name')).to eq([
+              'Apache 2.0',
+              'MIT',
+              'New BSD',
+              'unknown'
+            ])
           end
 
           it 'returns a JSON representation of the license data' do
@@ -191,12 +195,12 @@ RSpec.describe Projects::PipelinesController do
             end
           end
 
-          it 'will return license scanning report in json format' do
-            expect(payload.size).to eq(3)
+          it 'returns license scanning report in json format' do
+            expect(payload.size).to eq(4)
             expect(payload.first.keys).to match_array(%w(name classification dependencies count url))
           end
 
-          it 'will return mit license allowed status' do
+          it 'returns MIT license allowed status' do
             payload_mit = payload.find { |l| l['name'] == 'MIT' }
             expect(payload_mit['count']).to eq(13)
             expect(payload_mit['url']).to be_empty
@@ -209,9 +213,13 @@ RSpec.describe Projects::PipelinesController do
             it { is_expected.to eq('allowed') }
           end
 
-          it 'will return sorted by name' do
-            expect(payload.first['name']).to eq('Apache 2.0')
-            expect(payload.last['name']).to eq('New BSD')
+          it 'returns the JSON license data sorted by license name' do
+            expect(payload.pluck('name')).to eq([
+              'Apache 2.0',
+              'MIT',
+              'New BSD',
+              'unknown'
+            ])
           end
 
           it 'returns a JSON representation of the license data' do

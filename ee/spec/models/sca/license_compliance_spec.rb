@@ -207,7 +207,6 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :license_compliance do
         create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "MIT")
         create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause")
         create(:pm_package_version_license, :with_all_relations, name: "org.apache.logging.log4j/log4j-api", purl_type: "maven", version: "2.6.1", license_name: "BSD-3-Clause")
-        create(:pm_package_version_license, :with_all_relations, name: "yargs", purl_type: "npm", version: "11.1.0", license_name: "unknown")
       end
 
       context "when a pipeline has not been run for this project" do
@@ -480,7 +479,6 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :license_compliance do
         create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "MIT")
         create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause")
         create(:pm_package_version_license, :with_all_relations, name: "org.apache.logging.log4j/log4j-api", purl_type: "maven", version: "2.6.1", license_name: "BSD-3-Clause")
-        create(:pm_package_version_license, :with_all_relations, name: "yargs", purl_type: "npm", version: "11.1.0", license_name: "unknown")
         create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "CUSTOM_DENIED_LICENSE")
       end
 
@@ -704,7 +702,6 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :license_compliance do
         create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "MIT")
         create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause")
         create(:pm_package_version_license, :with_all_relations, name: "org.apache.logging.log4j/log4j-api", purl_type: "maven", version: "2.6.1", license_name: "BSD-3-Clause")
-        create(:pm_package_version_license, :with_all_relations, name: "yargs", purl_type: "npm", version: "11.1.0", license_name: "unknown")
       end
 
       context "when a pipeline has never been completed for the project" do
@@ -826,7 +823,6 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :license_compliance do
         create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "MIT")
         create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause")
         create(:pm_package_version_license, :with_all_relations, name: "org.apache.logging.log4j/log4j-api", purl_type: "maven", version: "2.6.1", license_name: "BSD-3-Clause")
-        create(:pm_package_version_license, :with_all_relations, name: "yargs", purl_type: "npm", version: "11.1.0", license_name: "unknown")
       end
 
       context "when the head pipeline has not run" do
