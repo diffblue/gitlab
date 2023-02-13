@@ -61,7 +61,7 @@ export default {
 
   data() {
     return {
-      isAllowedForReimport: false,
+      isSelectedForReimport: false,
     };
   },
 
@@ -132,14 +132,14 @@ export default {
       });
     },
 
-    importRepo() {
-      if (this.isFinished && !this.isAllowedForReimport) {
-        this.isAllowedForReimport = true;
+    handleImportRepo() {
+      if (this.isFinished && !this.isSelectedForReimport) {
+        this.isSelectedForReimport = true;
         this.$nextTick(() => {
           this.$refs.newNameInput.$el.focus();
         });
       } else {
-        this.isAllowedForReimport = false;
+        this.isSelectedForReimport = false;
 
         this.fetchImport({
           repoId: this.repo.importSource.id,
@@ -185,7 +185,7 @@ export default {
       data-qa-selector="project_path_content"
     >
       <template v-if="repo.importSource.target">{{ repo.importSource.target }}</template>
-      <template v-else-if="isImportNotStarted || isAllowedForReimport">
+      <template v-else-if="isImportNotStarted || isSelectedForReimport">
         <div class="gl-display-flex gl-align-items-stretch gl-w-full">
           <import-group-dropdown #default="{ namespaces }" :text="importTarget.targetNamespace">
             <template v-if="namespaces.length">
@@ -224,7 +224,7 @@ export default {
     <td class="gl-p-4 gl-vertical-align-top" data-qa-selector="import_status_indicator">
       <import-status :status="importStatus" :stats="stats" />
     </td>
-    <td data-testid="actions" class="gl-vertical-align-top gl-pt-4 gl-whitespace-nowrap">
+    <td data-testid="actions" class="gl-vertical-align-top gl-pt-4 gl-white-space-nowrap">
       <gl-tooltip :target="() => $refs.cancelButton.$el">
         <div class="gl-text-left">
           <p class="gl-mb-5 gl-font-weight-bold">{{ s__('ImportProjects|Cancel import') }}</p>
@@ -249,7 +249,7 @@ export default {
         v-if="isImportNotStarted || isFinished"
         type="button"
         data-qa-selector="import_button"
-        @click="importRepo()"
+        @click="handleImportRepo()"
       >
         {{ importButtonText }}
       </gl-button>

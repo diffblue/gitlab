@@ -121,6 +121,10 @@ describe('ProviderRepoTableRow', () => {
         optionalStages: OPTIONAL_STAGES,
       });
     });
+
+    it('does not render re-import button', () => {
+      expect(findReimportButton().exists()).toBe(false);
+    });
   });
 
   describe('when rendering importing project', () => {
@@ -204,7 +208,7 @@ describe('ProviderRepoTableRow', () => {
       );
     });
 
-    it('does not renders a namespace select', () => {
+    it('does not render a namespace select', () => {
       expect(findGroupDropdown().exists()).toBe(false);
     });
 
