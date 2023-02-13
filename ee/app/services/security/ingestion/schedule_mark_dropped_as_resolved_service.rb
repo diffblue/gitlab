@@ -52,7 +52,7 @@ module Security
           )
         end
 
-        dropped_identifiers.uniq
+        dropped_identifiers.uniq.sort
       end
 
       # Returns a list of identifiers not included in scan's primary_identifiers
