@@ -8,7 +8,11 @@ module QA
       include_context 'with github import'
 
       context "when imported via api" do
-        it 'imports repo push rules', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/379494' do
+        it 'imports repo push rules', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/379494',
+          quarantine: {
+            type: :waiting_on,
+            issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/391445'
+          } do
           expect_project_import_finished_successfully
 
           aggregate_failures do
