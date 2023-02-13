@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe RequirementsManagement::ExportCsvService, feature_category: :importers do
+RSpec.describe RequirementsManagement::ExportCsvService, feature_category: :requirements_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create_default(:group) }
   let_it_be(:project) { create_default(:project, :public) }
@@ -120,5 +120,7 @@ RSpec.describe RequirementsManagement::ExportCsvService, feature_category: :impo
         )
       end
     end
+
+    it_behaves_like 'a service that returns invalid fields from selection'
   end
 end

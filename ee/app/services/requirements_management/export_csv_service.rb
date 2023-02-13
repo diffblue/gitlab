@@ -2,12 +2,6 @@
 
 module RequirementsManagement
   class ExportCsvService < ExportCsv::BaseService
-    def initialize(relation, resource_parent, fields = [])
-      super(relation, resource_parent)
-
-      @fields = fields
-    end
-
     def email(user)
       Notify.requirements_csv_email(user, resource_parent, csv_data, csv_builder.status).deliver_now
     end
@@ -19,7 +13,16 @@ module RequirementsManagement
     end
 
     def header_to_value_hash
-      RequirementsManagement::MapExportFieldsService.new(@fields).execute
+      {
+        'Requirement ID' => ->(work_item) { work_item.requirement.iid },
+        'Title' => 'title',
+        'Description' => 'description',
+        'Author' => ->(work_item) { work_item.author&.name },
+        'Author Username' => ->(work_item) { work_item.author&.username },
+        'Created At (UTC)' => ->(work_item) { work_item.created_at.utc },
+        'State' => ->(work_item) { work_item.requirement.last_test_report_state == 'passed' ? 'Satisfied' : '' },
+        'State Updated At (UTC)' => ->(work_item) { work_item.requirement.latest_report&.created_at&.utc }
+      }
     end
   end
 end

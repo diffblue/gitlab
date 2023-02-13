@@ -20,8 +20,8 @@ module Mutations
 
       def ready?(**args)
         if args[:selected_fields].present?
-          invalid_fields =
-            ::RequirementsManagement::MapExportFieldsService.new(args[:selected_fields]).invalid_fields
+          export_service = ::RequirementsManagement::ExportCsvService.new(nil, nil, args[:selected_fields])
+          invalid_fields = export_service.invalid_fields
 
           if invalid_fields.any?
             message = "The following fields are incorrect: #{invalid_fields.join(', ')}."\
