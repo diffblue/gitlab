@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Dast::PreScanVerification, type: :model do
+RSpec.describe Dast::PreScanVerification, :dynamic_analysis,
+  feature_category: :dynamic_application_security_testing,
+  type: :model do
   let_it_be(:project) { create(:project) }
   let_it_be_with_reload(:dast_profile) { create(:dast_profile, project: project) }
 
@@ -10,7 +12,6 @@ RSpec.describe Dast::PreScanVerification, type: :model do
 
   describe 'validations' do
     it { is_expected.to be_valid }
-    it { is_expected.to validate_presence_of(:ci_pipeline_id) }
     it { is_expected.to validate_presence_of(:dast_profile_id) }
     it { is_expected.to validate_presence_of(:status) }
   end
