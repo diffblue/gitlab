@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Dora::AggregateMetricsService do
+RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_management do
   let(:service) { described_class.new(container: container, current_user: user, params: params) }
 
   around do |example|

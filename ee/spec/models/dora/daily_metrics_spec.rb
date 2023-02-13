@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Dora::DailyMetrics, type: :model do
+RSpec.describe Dora::DailyMetrics, type: :model, feature_category: :value_stream_management do
   describe 'associations' do
     it { is_expected.to belong_to(:environment) }
   end
@@ -116,7 +116,7 @@ RSpec.describe Dora::DailyMetrics, type: :model do
   end
 
   describe '.aggregate_for!' do
-    subject { described_class.aggregate_for!(metric, interval) }
+    subject { described_class.aggregate_for!([metric], interval) }
 
     let_it_be(:environment) { create :environment }
 
@@ -140,7 +140,7 @@ RSpec.describe Dora::DailyMetrics, type: :model do
         let(:interval) { described_class::INTERVAL_ALL }
 
         it 'aggregates the rows' do
-          is_expected.to eq(6)
+          is_expected.to eq({ 'date' => nil, metric => 6 })
         end
       end
 
@@ -148,7 +148,7 @@ RSpec.describe Dora::DailyMetrics, type: :model do
         let(:interval) { described_class::INTERVAL_MONTHLY }
 
         it 'aggregates the rows' do
-          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 6 }])
+          is_expected.to eq([{ 'date' => '2021-01-01', metric => 6 }])
         end
       end
 
@@ -156,10 +156,10 @@ RSpec.describe Dora::DailyMetrics, type: :model do
         let(:interval) { described_class::INTERVAL_DAILY }
 
         it 'aggregates the rows' do
-          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 3 },
-                             { 'date' => '2021-01-02', 'value' => 2 },
-                             { 'date' => '2021-01-03', 'value' => 1 },
-                             { 'date' => '2021-01-04', 'value' => nil }])
+          is_expected.to eq([{ 'date' => '2021-01-01', metric => 3 },
+                             { 'date' => '2021-01-02', metric => 2 },
+                             { 'date' => '2021-01-03', metric => 1 },
+                             { 'date' => '2021-01-04', metric => nil }])
         end
       end
 
@@ -186,7 +186,7 @@ RSpec.describe Dora::DailyMetrics, type: :model do
         let(:interval) { described_class::INTERVAL_ALL }
 
         it 'aggregates the rows' do
-          is_expected.to eq(0.5)
+          is_expected.to eq({ 'date' => nil, metric => 0.5 })
         end
       end
 
@@ -194,7 +194,7 @@ RSpec.describe Dora::DailyMetrics, type: :model do
         let(:interval) { described_class::INTERVAL_MONTHLY }
 
         it 'aggregates the rows' do
-          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 0.5 }])
+          is_expected.to eq([{ 'date' => '2021-01-01', metric => 0.5 }])
         end
       end
 
@@ -202,12 +202,12 @@ RSpec.describe Dora::DailyMetrics, type: :model do
         let(:interval) { described_class::INTERVAL_DAILY }
 
         it 'aggregates the rows' do
-          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 0.75 },
-                             { 'date' => '2021-01-02', 'value' => 0.0 },
-                             { 'date' => '2021-01-03', 'value' => nil },
-                             { 'date' => '2021-01-04', 'value' => 1.0 },
-                             { 'date' => '2021-01-05', 'value' => nil },
-                             { 'date' => '2021-01-06', 'value' => 0.0 }])
+          is_expected.to eq([{ 'date' => '2021-01-01', metric => 0.75 },
+                             { 'date' => '2021-01-02', metric => 0.0 },
+                             { 'date' => '2021-01-03', metric => nil },
+                             { 'date' => '2021-01-04', metric => 1.0 },
+                             { 'date' => '2021-01-05', metric => nil },
+                             { 'date' => '2021-01-06', metric => 0.0 }])
         end
       end
 
@@ -219,7 +219,7 @@ RSpec.describe Dora::DailyMetrics, type: :model do
     end
 
     shared_examples 'median metric' do |metric|
-      subject { described_class.aggregate_for!(metric, interval) }
+      subject { described_class.aggregate_for!([metric], interval) }
 
       before_all do
         column_name = :"#{metric}_in_seconds"
@@ -235,7 +235,7 @@ RSpec.describe Dora::DailyMetrics, type: :model do
         let(:interval) { described_class::INTERVAL_ALL }
 
         it 'calculates the median' do
-          is_expected.to eq(70)
+          is_expected.to eq({ 'date' => nil, metric => 70 })
         end
       end
 
@@ -243,7 +243,7 @@ RSpec.describe Dora::DailyMetrics, type: :model do
         let(:interval) { described_class::INTERVAL_MONTHLY }
 
         it 'calculates the median' do
-          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 70 }])
+          is_expected.to eq([{ 'date' => '2021-01-01', metric => 70 }])
         end
       end
 
@@ -251,11 +251,11 @@ RSpec.describe Dora::DailyMetrics, type: :model do
         let(:interval) { described_class::INTERVAL_DAILY }
 
         it 'calculates the median' do
-          is_expected.to eq([{ 'date' => '2021-01-01', 'value' => 100 },
-                             { 'date' => '2021-01-02', 'value' => 80 },
-                             { 'date' => '2021-01-03', 'value' => 60 },
-                             { 'date' => '2021-01-04', 'value' => 50 },
-                             { 'date' => '2021-01-05', 'value' => nil }])
+          is_expected.to eq([{ 'date' => '2021-01-01', metric => 100 },
+                             { 'date' => '2021-01-02', metric => 80 },
+                             { 'date' => '2021-01-03', metric => 60 },
+                             { 'date' => '2021-01-04', metric => 50 },
+                             { 'date' => '2021-01-05', metric => nil }])
         end
       end
 
@@ -279,6 +279,44 @@ RSpec.describe Dora::DailyMetrics, type: :model do
       let(:interval) { described_class::INTERVAL_ALL }
 
       it { expect { subject }.to raise_error(ArgumentError, 'Unknown metric') }
+    end
+
+    context 'with multiple metrics' do
+      before_all do
+        create(:dora_daily_metrics, environment: environment, deployment_frequency: 4, incidents_count: 3, date: '2021-01-01')
+        create(:dora_daily_metrics, environment: environment, deployment_frequency: 2, incidents_count: 0, date: '2021-01-02')
+        create(:dora_daily_metrics, environment: environment, deployment_frequency: 0, incidents_count: 1, date: '2021-01-03')
+        create(:dora_daily_metrics, environment: environment, deployment_frequency: 0, incidents_count: 0, date: '2021-01-04')
+      end
+
+      subject { described_class.aggregate_for!(%w[deployment_frequency change_failure_rate], interval) }
+
+      context 'when interval is all' do
+        let(:interval) { described_class::INTERVAL_ALL }
+
+        it 'aggregates the rows' do
+          is_expected.to eq({ 'date' => nil, 'deployment_frequency' => 6, 'change_failure_rate' => 4.0 / 6 })
+        end
+      end
+
+      context 'when interval is monthly' do
+        let(:interval) { described_class::INTERVAL_MONTHLY }
+
+        it 'aggregates the rows' do
+          is_expected.to eq([{ 'date' => '2021-01-01', 'deployment_frequency' => 6, 'change_failure_rate' => 4.0 / 6 }])
+        end
+      end
+
+      context 'when interval is daily' do
+        let(:interval) { described_class::INTERVAL_DAILY }
+
+        it 'aggregates the rows' do
+          is_expected.to eq([{ 'date' => '2021-01-01', 'deployment_frequency' => 4, 'change_failure_rate' => 3.0 / 4 },
+                             { 'date' => '2021-01-02', 'deployment_frequency' => 2, 'change_failure_rate' => 0 },
+                             { 'date' => '2021-01-03', 'deployment_frequency' => 0, 'change_failure_rate' => 1 },
+                             { 'date' => '2021-01-04', 'deployment_frequency' => 0, 'change_failure_rate' => 0 }])
+        end
+      end
     end
   end
 end
