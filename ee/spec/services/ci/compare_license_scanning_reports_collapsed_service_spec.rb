@@ -74,7 +74,7 @@ RSpec.describe Ci::CompareLicenseScanningReportsCollapsedService, feature_catego
           it 'exposes report with numbers of licenses by type' do
             expect(subject[:status]).to eq(:parsed)
             expect(subject[:data]['new_licenses']).to eq(1)
-            expect(subject[:data]['existing_licenses']).to eq(0)
+            expect(subject[:data]['existing_licenses']).to eq(1)
             expect(subject[:data]['removed_licenses']).to eq(1)
             expect(subject[:data]['approval_required']).to eq(false)
             expect(subject[:data]['has_denied_licenses']).to eq(true)

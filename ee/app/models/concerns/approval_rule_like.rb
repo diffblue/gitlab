@@ -20,6 +20,11 @@ module ApprovalRuleLike
     has_many :group_users, -> { distinct }, through: :groups, source: :users
 
     belongs_to :security_orchestration_policy_configuration, class_name: 'Security::OrchestrationPolicyConfiguration', optional: true
+    belongs_to :scan_result_policy_read,
+      class_name: 'Security::ScanResultPolicyRead',
+      foreign_key: 'scan_result_policy_id',
+      inverse_of: :security_orchestration_policy_configuration,
+      optional: true
 
     enum report_type: {
       vulnerability: 1, # To be removed after all MRs (related to https://gitlab.com/gitlab-org/gitlab/-/issues/356996) get merged
@@ -35,6 +40,9 @@ module ApprovalRuleLike
     scope :with_users, -> { preload(:users, :group_users) }
     scope :regular_or_any_approver, -> { where(rule_type: [:regular, :any_approver]) }
     scope :for_groups, -> (groups) { joins(:groups).where(approval_project_rules_groups: { group_id: groups }) }
+    scope :including_scan_result_policy_read, -> { includes(:scan_result_policy_read) }
+    scope :with_scan_result_policy_read, -> { where.not(scan_result_policy_id: nil) }
+    scope :without_scan_result_policy_read, -> { where(scan_result_policy_id: nil) }
   end
 
   def audit_add

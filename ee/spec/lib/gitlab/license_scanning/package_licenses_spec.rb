@@ -15,25 +15,25 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :lice
 
   before_all do
     create(:pm_package_version_license, :with_all_relations, name: "beego", purl_type: "golang", version: "v1.10.0",
-license_name: "OLDAP-2.1")
+           license_name: "OLDAP-2.1")
     create(:pm_package_version_license, :with_all_relations, name: "beego", purl_type: "golang", version: "v1.10.0",
-license_name: "OLDAP-2.2")
+           license_name: "OLDAP-2.2")
     create(:pm_package_version_license, :with_all_relations, name: "camelcase", purl_type: "npm", version: "1.2.1",
-license_name: "OLDAP-2.1")
+           license_name: "OLDAP-2.1")
     create(:pm_package_version_license, :with_all_relations, name: "camelcase", purl_type: "npm", version: "4.1.0",
-license_name: "OLDAP-2.2")
+           license_name: "OLDAP-2.2")
     create(:pm_package_version_license, :with_all_relations, name: "cliui", purl_type: "npm", version: "2.1.0",
-license_name: "OLDAP-2.3")
+           license_name: "OLDAP-2.3")
     create(:pm_package_version_license, :with_all_relations, name: "cliui", purl_type: "golang", version: "2.1.0",
-license_name: "OLDAP-2.6")
+           license_name: "OLDAP-2.6")
     create(:pm_package_version_license, :with_all_relations, name: "jst", purl_type: "npm", version: "3.0.2",
-license_name: "OLDAP-2.4")
+           license_name: "OLDAP-2.4")
     create(:pm_package_version_license, :with_all_relations, name: "jst", purl_type: "npm", version: "3.0.2",
-license_name: "OLDAP-2.5")
+           license_name: "OLDAP-2.5")
     create(:pm_package_version_license, :with_all_relations, name: "jsbn", purl_type: "npm", version: "0.1.1",
-license_name: "OLDAP-2.4")
+           license_name: "OLDAP-2.4")
     create(:pm_package_version_license, :with_all_relations, name: "jsdom", purl_type: "npm", version: "11.12.0",
-license_name: "OLDAP-2.5")
+           license_name: "OLDAP-2.5")
   end
 
   subject(:fetch) do
@@ -119,28 +119,22 @@ license_name: "OLDAP-2.5")
     end
 
     context 'when no packages match the given criteria' do
-      context 'as the package name does not match' do
-        let_it_be(:components_to_fetch) do
-          [Hashie::Mash.new({ name: "does-not-match", purl_type: "golang", version: "v1.10.0" })]
-        end
+      using RSpec::Parameterized::TableSyntax
 
-        it { is_expected.to be_empty }
+      where(:case_name, :name, :purl_type, :version) do
+        "name does not match"      | "does-not-match" | "golang" | "v1.10.0"
+        "purl_type does not match" | "beego"          | "npm"    | "v1.10.0"
+        "version does not match"   | "beego"          | "golang" | "does-not-match"
       end
 
-      context 'as the package purl_type does not match' do
-        let_it_be(:components_to_fetch) do
-          [Hashie::Mash.new({ name: "beego", purl_type: "npm", version: "v1.10.0" })]
+      with_them do
+        let(:components_to_fetch) { [Hashie::Mash.new({ name: name, purl_type: purl_type, version: version })] }
+
+        it "returns 'unknown' as the license" do
+          expect(fetch).to match_array([
+            have_attributes(name: name, purl_type: purl_type, version: version, licenses: match_array(["unknown"]))
+          ])
         end
-
-        it { is_expected.to be_empty }
-      end
-
-      context 'as the package version does not match' do
-        let_it_be(:components_to_fetch) do
-          [Hashie::Mash.new({ name: "beego", purl_type: "golang", version: "does-not-match" })]
-        end
-
-        it { is_expected.to be_empty }
       end
     end
   end

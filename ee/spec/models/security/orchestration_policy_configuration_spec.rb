@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::OrchestrationPolicyConfiguration do
+RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :security_policy_management do
   let_it_be(:security_policy_management_project) { create(:project, :repository) }
 
   let(:security_orchestration_policy_configuration) do
@@ -710,6 +710,20 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
       it 'does not delete unrelated merge request approval rules' do
         expect { delete_scan_finding_rules_for_project }.to change(ApprovalMergeRequestRule, :count).from(2).to(1)
       end
+    end
+  end
+
+  describe '#delete_scan_result_policy_reads' do
+    subject(:delete_scan_result_policy_reads) { security_orchestration_policy_configuration.delete_scan_result_policy_reads }
+
+    let(:security_orchestration_policy_configuration_id) { security_orchestration_policy_configuration.id }
+
+    before do
+      create(:scan_result_policy_read, security_orchestration_policy_configuration_id: security_orchestration_policy_configuration_id, orchestration_policy_idx: 0)
+    end
+
+    it 'deletes project scan_result_policy_reads' do
+      expect { delete_scan_result_policy_reads }.to change(Security::ScanResultPolicyRead, :count).from(1).to(0)
     end
   end
 

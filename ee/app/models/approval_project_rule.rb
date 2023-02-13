@@ -116,7 +116,7 @@ class ApprovalProjectRule < ApplicationRecord
 
   def report_approver_attributes
     attributes
-      .slice('approvals_required', 'name', 'orchestration_policy_idx', 'scanners', 'severity_levels', 'vulnerability_states', 'vulnerabilities_allowed', 'security_orchestration_policy_configuration_id')
+      .slice('approvals_required', 'name', 'orchestration_policy_idx', 'scanners', 'severity_levels', 'vulnerability_states', 'vulnerabilities_allowed', 'security_orchestration_policy_configuration_id', 'scan_result_policy_id')
       .merge(
         users: users,
         groups: groups,
@@ -127,7 +127,7 @@ class ApprovalProjectRule < ApplicationRecord
   end
 
   def merge_request_report_approver_rule(merge_request)
-    if scan_finding?
+    if scan_finding? || license_scanning?
       merge_request
         .approval_rules
         .report_approver
@@ -144,7 +144,6 @@ class ApprovalProjectRule < ApplicationRecord
 
   def validate_security_report_approver_name
     [
-      [DEFAULT_NAME_FOR_LICENSE_REPORT, 'license_scanning'],
       [DEFAULT_NAME_FOR_COVERAGE, 'code_coverage']
     ].each do |report|
       name_type = { name: report[0], type: report[1] }
