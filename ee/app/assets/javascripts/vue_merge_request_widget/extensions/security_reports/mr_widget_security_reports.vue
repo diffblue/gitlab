@@ -47,6 +47,7 @@ export default {
       isLoading: false,
       isCreatingIssue: false,
       isDismissingFinding: false,
+      isCreatingMergeRequest: false,
       modalData: null,
       vulnerabilities: {
         collapsed: null,
@@ -448,6 +449,36 @@ export default {
         });
     },
 
+    createMergeRequest() {
+      const { vulnerability: finding } = this.modalData;
+
+      finding.target_branch = this.mr.sourceBranch;
+
+      this.isCreatingMergeRequest = true;
+
+      axios
+        .post(this.mr.createVulnerabilityFeedbackMergeRequestPath, {
+          vulnerability_feedback: {
+            feedback_type: 'merge_request',
+            category: finding.report_type,
+            project_fingerprint: finding.project_fingerprint,
+            finding_uuid: finding.uuid,
+            vulnerability_data: { ...finding, category: finding.report_type },
+          },
+        })
+        .then(({ data }) => {
+          visitUrl(data.merge_request_path);
+        })
+        .catch(() => {
+          this.modalData.error = s__(
+            'ciReport|There was an error creating the merge request. Please try again.',
+          );
+        })
+        .finally(() => {
+          this.isCreatingMergeRequest = false;
+        });
+    },
+
     hideModal() {
       this.$root.$emit(BV_HIDE_MODAL, VULNERABILITY_MODAL_ID);
     },
@@ -491,11 +522,12 @@ export default {
         :visible="true"
         :modal="modalData"
         :is-dismissing-vulnerability="isDismissingFinding"
-        :is-creating-merge-request="false"
+        :is-creating-merge-request="isCreatingMergeRequest"
         :is-creating-issue="isCreatingIssue"
         :can-create-issue="canCreateIssue"
         :can-dismiss-vulnerability="canDismissFinding"
         @addDismissalComment="addDismissalComment"
+        @createMergeRequest="createMergeRequest"
         @closeDismissalCommentBox="closeDismissalCommentBox"
         @openDismissalCommentBox="openDismissalCommentBox"
         @editVulnerabilityDismissalComment="openDismissalCommentBox"
