@@ -28,6 +28,20 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
       expect(results.blobs_count).to eq 5
     end
 
+    it 'correctly handles pagination' do
+      per_page = 2
+
+      results = described_class.new(user, 'use.*egex', limit_project_ids)
+      blobs_page1 = results.objects('blobs', page: 1, per_page: per_page)
+      blobs_page2 = results.objects('blobs', page: 2, per_page: per_page)
+      blobs_page3 = results.objects('blobs', page: 3, per_page: per_page)
+
+      expect(blobs_page1.map(&:data).join).to include("def username_regex\n      default_regex")
+      expect(blobs_page2.map(&:data).join).to include("regexp group matches\n  (`$1`, `$2`, etc)")
+      expect(blobs_page3.map(&:data).join).to include("more readable and you\n  can add some useful comments")
+      expect(results.blobs_count).to eq 5
+    end
+
     it 'finds blobs from searched projects only' do
       project_3 = create :project, :repository, :private
       zoekt_ensure_project_indexed!(project_3)

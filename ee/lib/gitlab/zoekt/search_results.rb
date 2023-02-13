@@ -82,14 +82,14 @@ module Gitlab
         }
       end
 
-      def memoize_key(scope, count_only:)
-        count_only ? "#{scope}_results_count".to_sym : scope
+      def memoize_key(scope, page:, per_page:, count_only:)
+        count_only ? "#{scope}_results_count".to_sym : "#{scope}_#{page}_#{per_page}"
       end
 
       def blobs(page: 1, per_page: DEFAULT_PER_PAGE, count_only: false, preload_method: nil)
         return Kaminari.paginate_array([]) if query.blank?
 
-        strong_memoize(memoize_key(:blobs, count_only: count_only)) do
+        strong_memoize(memoize_key(:blobs, page: page, per_page: per_page, count_only: count_only)) do
           search_as_found_blob(
             query,
             Repository,
@@ -148,7 +148,7 @@ module Gitlab
       def zoekt_search_and_wrap(query, page: 1, per_page: 20, options: {}, preload_method: nil, &blk)
         search_result = zoekt_search(
           query,
-          num: per_page,
+          num: (per_page * page),
           options: options
         )
 
@@ -175,7 +175,7 @@ module Gitlab
 
         items, total_count = yield_each_zoekt_search_result(response, preload_method, total_count, &blk)
 
-        offset = 0
+        offset = (page - 1) * per_page
         Kaminari.paginate_array(items, total_count: total_count, limit: per_page, offset: offset)
       end
 
