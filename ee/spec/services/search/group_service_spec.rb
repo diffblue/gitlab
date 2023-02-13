@@ -130,8 +130,8 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
       let(:page) { 2 }
 
       it 'does not search with Zoekt' do
-        expect(service.use_zoekt?).to eq(false)
-        expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+        expect(service.use_zoekt?).to eq(true)
+        expect(service.execute).to be_kind_of(::Gitlab::Zoekt::SearchResults)
       end
     end
 
