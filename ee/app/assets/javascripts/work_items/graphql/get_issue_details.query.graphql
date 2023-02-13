@@ -1,5 +1,3 @@
-#import "ee/sidebar/queries/iteration.fragment.graphql"
-
 query issuableDetailsEE($fullPath: ID!, $iid: String) {
   workspace: project(fullPath: $fullPath) {
     id
@@ -10,7 +8,7 @@ query issuableDetailsEE($fullPath: ID!, $iid: String) {
         id
       }
       iteration {
-        ...IterationFragment
+        id
       }
     }
   }

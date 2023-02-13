@@ -17,6 +17,7 @@ module EE
       data = super.merge(
         canAdmin: can?(current_user, :"admin_#{issuable.to_ability_name}", issuable),
         hasIssueWeightsFeature: issuable.project&.licensed_feature_available?(:issue_weights),
+        hasIterationsFeature: issuable.project&.licensed_feature_available?(:iterations),
         canAdminRelation: can?(current_user, :"admin_#{issuable.to_ability_name}_relation", issuable)
       )
 
