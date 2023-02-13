@@ -42,7 +42,9 @@ To import your Bitbucket repositories:
 1. Log in to Bitbucket and grant GitLab access to your Bitbucket account.
 1. Select the projects to import, or import all projects. You can filter projects by name and select
    the namespace for which to import each project.
-1. Optionally you can re-import project by clicking **Re-import**, specifying new name and clicking **Re-import** again. This will create new copy of source project.
+1. To import a project:
+   - For the first time: Select **Import**.
+   - Again: Select **Re-import**. Specify a new name and select **Re-import** again. Re-importing creates a new copy of the source project.
 
 ### Items that are not imported
 

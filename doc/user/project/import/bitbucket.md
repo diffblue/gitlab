@@ -80,9 +80,9 @@ For user contributions to be mapped, each user must complete the following befor
    You can filter projects by name and select the namespace
    each project is imported for.
 
-   ![Import projects](img/bitbucket_import_select_project_v12_3.png)
-
-1. Optionally you can re-import project by clicking **Re-import**, specifying new name and clicking **Re-import** again. This will create new copy of source project.
+1. To import a project:
+   - For the first time: Select **Import**.
+   - Again: Select **Re-import**. Specify a new name and select **Re-import** again. Re-importing creates a new copy of the source project.
 
 ## Troubleshooting
 

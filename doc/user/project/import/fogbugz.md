@@ -35,5 +35,6 @@ To import your project from FogBugz:
    ![Import Project](img/fogbugz_import_select_project.png)
 1. After the import finishes, select the link to go to the project
    dashboard. Follow the directions to push your existing repository.
-   ![Finished](img/fogbugz_import_finished.png)
-1. Optionally you can re-import project by clicking **Re-import**, specifying new name and clicking **Re-import** again. This will create new copy of source project.
+1. To import a project:
+   - For the first time: Select **Import**.
+   - Again: Select **Re-import**. Specify a new name and select **Re-import** again. Re-importing creates a new copy of the source project.

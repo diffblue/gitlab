@@ -169,7 +169,7 @@ If the import has already started, the imported files are kept.
 
 To open an repository in GitLab URL after it has been imported, select its GitLab path.
 
-Completed imports could be re-imported by clicking **Re-import** and specifying new name. This will create new copy of source project.
+Completed imports can be re-imported by selecting **Re-import** and specifying new name. This creates a new copy of the source project.
 
 ![GitHub importer page](img/import_projects_from_github_importer_v12_3.png)
 

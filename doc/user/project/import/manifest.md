@@ -60,7 +60,6 @@ To start the import:
 1. Select a group you want to import to (you need to create a group first if you don't have one).
 1. Select **List available repositories**. At this point, you are redirected
    to the import status page with projects list based on the manifest file.
-1. Check the list and select **Import all repositories** to start the import.
-
-   ![Manifest status](img/manifest_status_v13_3.png)
-1. Optionally you can re-import project by clicking **Re-import**, specifying new name and clicking **Re-import** again. This will create new copy of source project.
+1. To import:
+   - All projects for the first time: Select **Import all repositories**.
+   - Individual projects again: Select **Re-import**. Specify a new name and select **Re-import** again. Re-importing creates a new copy of the source project.
