@@ -29,6 +29,16 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Config::Content do
     end
   end
 
+  shared_examples 'does include compliance pipeline configuration content' do
+    it do
+      subject.perform!
+
+      expect(pipeline.config_source).to eq 'compliance_source'
+      expect(pipeline.pipeline_config.content).to eq(content_result)
+      expect(command.config_content).to eq(content_result)
+    end
+  end
+
   context 'when project has compliance label defined' do
     let(:project) { create(:project, ci_config_path: ci_config_path) }
     let(:compliance_group) { create(:group, :private, name: "compliance") }
@@ -50,18 +60,18 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Config::Content do
           create(:compliance_framework_project_setting, project: project, compliance_management_framework: framework)
         end
 
-        it 'includes compliance pipeline configuration content' do
-          subject.perform!
-
-          expect(pipeline.config_source).to eq 'compliance_source'
-          expect(pipeline.pipeline_config.content).to eq(content_result)
-          expect(command.config_content).to eq(content_result)
-        end
+        it_behaves_like 'does include compliance pipeline configuration content'
 
         context 'when pipeline is downstream of a bridge' do
           let(:command) { Gitlab::Ci::Pipeline::Chain::Command.new(project: project, content: content, source: source, bridge: create(:ci_bridge)) }
 
-          it_behaves_like 'does not include compliance pipeline configuration content'
+          it_behaves_like 'does include compliance pipeline configuration content'
+
+          context 'when pipeline source is parent pipeline' do
+            let(:source) { :parent_pipeline }
+
+            it_behaves_like 'does not include compliance pipeline configuration content'
+          end
         end
       end
 
