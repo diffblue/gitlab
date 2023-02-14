@@ -1,8 +1,17 @@
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 import { shallowMount } from '@vue/test-utils';
+import approvalRulesResponse from 'test_fixtures/graphql/merge_requests/approvals/approval_rules.json';
+import approvalRulesCodeownersResponse from 'test_fixtures/graphql/merge_requests/approvals/approval_rules_with_code_owner.json';
+import waitForPromises from 'helpers/wait_for_promises';
+import approvalRulesQuery from 'ee/vue_merge_request_widget/components/approvals/queries/approval_rules.query.graphql';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import ApprovalsList from 'ee/vue_merge_request_widget/components/approvals/approvals_list.vue';
 import ApprovedIcon from 'ee/vue_merge_request_widget/components/approvals/approved_icon.vue';
 import UserAvatarList from '~/vue_shared/components/user_avatar/user_avatar_list.vue';
 import NumberOfApprovals from 'ee/vue_merge_request_widget/components/approvals/number_of_approvals.vue';
+
+Vue.use(VueApollo);
 
 const testApprovers = () => Array.from({ length: 11 }, (_, i) => i).map((id) => ({ id }));
 const testRuleApproved = () => ({
@@ -32,38 +41,22 @@ const testRuleOptional = () => ({
   approvers: testApprovers(),
   approved: false,
 });
-const testRuleFallback = () => ({
-  id: 'fallback',
-  name: '',
-  fallback: true,
-  rule_type: 'any_approver',
-  approvals_required: 3,
-  approved_by: [{ id: 1 }, { id: 2 }],
-  commented_by: [{ id: 1 }, { id: 2 }],
-  approvers: [],
-  approved: false,
-});
-const testRuleCodeOwner = () => ({
-  id: '*.js',
-  name: '*.js',
-  fallback: true,
-  approvals_required: 3,
-  approved_by: [{ id: 1 }, { id: 2 }],
-  commented_by: [{ id: 1 }, { id: 2 }],
-  approvers: [],
-  approved: false,
-  rule_type: 'code_owner',
-  section: 'Frontend',
-});
 const testRules = () => [testRuleApproved(), testRuleUnapproved(), testRuleOptional()];
 const testInvalidRules = () => testRules().slice(0, 1);
 
 describe('EE MRWidget approvals list', () => {
   let wrapper;
 
-  const createComponent = (props = {}) => {
+  const createComponent = (response = approvalRulesResponse) => {
     wrapper = shallowMount(ApprovalsList, {
-      propsData: { invalidApproversRules: testInvalidRules(), ...props },
+      propsData: {
+        invalidApproversRules: testInvalidRules(),
+        projectPath: 'gitlab-org/gitlab',
+        iid: '1',
+      },
+      apolloProvider: createMockApollo([
+        [approvalRulesQuery, jest.fn().mockResolvedValue(response)],
+      ]),
     });
   };
 
@@ -77,19 +70,17 @@ describe('EE MRWidget approvals list', () => {
   });
 
   describe('when multiple rules', () => {
-    beforeEach(() => {
-      createComponent({
-        approvalRules: testRules(),
-      });
+    beforeEach(async () => {
+      createComponent();
+
+      await waitForPromises();
     });
 
     it('renders a row for each rule', () => {
-      const expected = testRules();
       const rows = findRows();
-      const names = rows.wrappers.map((row) => findRowElement(row, 'name').text());
+      const expected = approvalRulesResponse.data.project.mergeRequest.approvalState.rules;
 
       expect(rows).toHaveLength(expected.length);
-      expect(names).toEqual(expected.map((x) => x.name));
     });
 
     it('does not render a code owner subtitle', () => {
@@ -97,33 +88,31 @@ describe('EE MRWidget approvals list', () => {
     });
 
     describe('when a code owner rule is included', () => {
-      let rulesWithCodeOwner;
+      beforeEach(async () => {
+        wrapper.destroy();
+        createComponent(approvalRulesCodeownersResponse);
 
-      beforeEach(() => {
-        rulesWithCodeOwner = testRules().concat([testRuleCodeOwner()]);
-        createComponent({
-          approvalRules: rulesWithCodeOwner,
-        });
+        await waitForPromises();
       });
 
       it('renders a code owner subtitle', () => {
-        const rows = findRows();
-
         expect(wrapper.find('.js-section-title').exists()).toBe(true);
-        expect(rows).toHaveLength(rulesWithCodeOwner.length + 1);
       });
     });
   });
 
   describe('when approved rule', () => {
-    const rule = testRuleApproved();
+    let rule;
     let row;
 
-    beforeEach(() => {
-      createComponent({
-        approvalRules: [rule],
-      });
-      row = findRows().at(0);
+    beforeEach(async () => {
+      createComponent();
+
+      await waitForPromises();
+
+      row = findRows().at(1);
+      // eslint-disable-next-line prefer-destructuring
+      rule = approvalRulesResponse.data.project.mergeRequest.approvalState.rules[1];
     });
 
     it('renders approved icon', () => {
@@ -148,7 +137,7 @@ describe('EE MRWidget approvals list', () => {
       expect(approvers.exists()).toBe(true);
       expect(approvers.props()).toEqual(
         expect.objectContaining({
-          items: testApprovers(),
+          items: rule.eligibleApprovers,
         }),
       );
     });
@@ -168,7 +157,7 @@ describe('EE MRWidget approvals list', () => {
       expect(approvers.exists()).toBe(true);
       expect(approvers.props()).toEqual(
         expect.objectContaining({
-          items: rule.approved_by,
+          items: rule.approvedBy.nodes,
           emptyText: '',
         }),
       );
@@ -180,7 +169,7 @@ describe('EE MRWidget approvals list', () => {
 
       expect(commentedBy.props()).toEqual(
         expect.objectContaining({
-          items: rule.commented_by,
+          items: rule.commentedBy.nodes,
           emptyText: '',
         }),
       );
@@ -194,8 +183,8 @@ describe('EE MRWidget approvals list', () => {
       });
 
       it('renders text', () => {
-        const count = rule.approved_by.length;
-        const required = rule.approvals_required;
+        const count = rule.approvedBy.nodes.length;
+        const required = rule.approvalsRequired;
         const { name } = rule;
 
         expect(summary.text()).toContain(`${count} of ${required} approvals from ${name}`);
@@ -207,7 +196,7 @@ describe('EE MRWidget approvals list', () => {
         expect(approvers.exists()).toBe(true);
         expect(approvers.props()).toEqual(
           expect.objectContaining({
-            items: rule.approvers,
+            items: rule.eligibleApprovers,
           }),
         );
       });
@@ -217,7 +206,7 @@ describe('EE MRWidget approvals list', () => {
 
         expect(commentedBy.props()).toEqual(
           expect.objectContaining({
-            items: rule.commented_by,
+            items: rule.commentedBy.nodes,
           }),
         );
       });
@@ -227,7 +216,7 @@ describe('EE MRWidget approvals list', () => {
 
         expect(approvedBy.props()).toEqual(
           expect.objectContaining({
-            items: rule.approved_by,
+            items: rule.approvedBy.nodes,
           }),
         );
       });
@@ -235,13 +224,13 @@ describe('EE MRWidget approvals list', () => {
   });
 
   describe('when unapproved rule', () => {
-    const rule = testRuleUnapproved();
     let row;
 
-    beforeEach(() => {
-      createComponent({
-        approvalRules: [rule],
-      });
+    beforeEach(async () => {
+      createComponent();
+
+      await waitForPromises();
+
       row = findRows().at(0);
     });
 
@@ -258,25 +247,14 @@ describe('EE MRWidget approvals list', () => {
   });
 
   describe('when optional rule', () => {
-    const rule = testRuleOptional();
     let row;
 
-    beforeEach(() => {
-      createComponent({
-        approvalRules: [rule],
-      });
+    beforeEach(async () => {
+      createComponent();
+
+      await waitForPromises();
+
       row = findRows().at(0);
-    });
-
-    it('renders unapproved icon', () => {
-      const icon = findRowIcon(row);
-
-      expect(icon.exists()).toBe(true);
-      expect(icon.props()).toEqual(
-        expect.objectContaining({
-          isApproved: false,
-        }),
-      );
     });
 
     it('renders pending object (instance of NumberOfApprovals)', () => {
@@ -284,78 +262,34 @@ describe('EE MRWidget approvals list', () => {
 
       expect(pendingObject.findComponent(NumberOfApprovals).exists()).toBe(true);
     });
-
-    it('renders optional summary text', () => {
-      const summary = findRowElement(row, 'summary');
-
-      expect(summary.text()).toContain(`${rule.approved_by.length} approvals from ${rule.name}`);
-    });
-  });
-
-  describe('when fallback rule', () => {
-    const rule = testRuleFallback();
-    let row;
-
-    beforeEach(() => {
-      createComponent({
-        approvalRules: [rule],
-      });
-      row = findRows().at(0);
-    });
-
-    it('does not render approvers', () => {
-      expect(findRowElement(row, 'approvers').exists()).toBe(false);
-    });
-
-    it('does not render approvers in summary', () => {
-      const summary = findRowElement(row, 'summary');
-      const lists = summary.findAllComponents(UserAvatarList);
-
-      expect(lists).toHaveLength(2);
-      expect(lists.at(0).props('items')).toEqual(rule.commented_by);
-      expect(lists.at(1).props('items')).toEqual(rule.approved_by);
-    });
   });
 
   describe('when code owner rule', () => {
-    const rule = testRuleCodeOwner();
-    const ruleDefaultCodeOwners = {
-      ...testRuleCodeOwner(),
-      id: 2,
-      section: 'codeowners',
-    };
-    const ruleDocsSection = {
-      ...testRuleCodeOwner(),
-      id: 1,
-      section: 'Docs',
-    };
     let row;
 
-    beforeEach(() => {
-      createComponent({
-        approvalRules: [rule, ruleDefaultCodeOwners, ruleDocsSection],
-      });
-      row = findRows().at(1);
+    beforeEach(async () => {
+      createComponent(approvalRulesCodeownersResponse);
+
+      await waitForPromises();
+
+      row = findRows().at(5);
     });
 
     it('renders the code owner title row', () => {
-      const titleRow = findRows().at(0);
-
-      expect(titleRow.text()).toEqual('Code Owners');
+      expect(findRows().at(4).text()).toEqual('Code Owners');
     });
 
     it('renders the name in a monospace font', () => {
       const codeOwnerRow = findRowElement(row, 'name');
 
       expect(codeOwnerRow.find('.gl-font-monospace').exists()).toEqual(true);
-      expect(codeOwnerRow.text()).toContain(rule.name);
+      expect(codeOwnerRow.text()).toContain('*.js');
     });
 
     it('renders code owner section name', () => {
       const ruleSection = wrapper.findAll('[data-testid="rule-section"]');
 
-      expect(ruleSection.at(0).text()).toEqual(ruleDocsSection.section);
-      expect(ruleSection.at(1).text()).toEqual(rule.section);
+      expect(ruleSection.at(0).text()).toEqual('Frontend');
     });
   });
 });

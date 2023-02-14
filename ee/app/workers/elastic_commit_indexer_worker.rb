@@ -26,9 +26,10 @@ class ElasticCommitIndexerWorker
     @project = Project.find(project_id)
     return true unless @project.use_elasticsearch?
 
+    force = !!options['force']
     search_indexing_duration_s = Benchmark.realtime do
       @ret = in_lock("#{self.class.name}/#{project_id}/#{wiki}", ttl: (Gitlab::Elastic::Indexer::TIMEOUT + 1.minute), retries: 0) do
-        Gitlab::Elastic::Indexer.new(@project, wiki: wiki, force: !!options['force']).run
+        Gitlab::Elastic::Indexer.new(@project, wiki: wiki, force: force).run
       end
     end
 
@@ -45,6 +46,11 @@ class ElasticCommitIndexerWorker
 
       document_type = wiki ? 'Wiki' : 'Code'
       Gitlab::Metrics::GlobalSearchIndexingSlis.record_apdex(elapsed: search_indexing_duration_s, document_type: document_type)
+
+      if force && !wiki && @project.statistics
+        log_extra_metadata_on_done(:commit_count, @project.statistics.commit_count)
+        log_extra_metadata_on_done(:repository_size, @project.statistics.repository_size)
+      end
     end
 
     @ret

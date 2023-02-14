@@ -2,11 +2,12 @@
 
 require 'spec_helper'
 
-RSpec.describe ElasticCommitIndexerWorker do
-  let!(:project) { create(:project, :repository) }
+RSpec.describe ElasticCommitIndexerWorker, feature_category: :global_search do
+  let_it_be(:project) { create(:project, :repository) }
+
   let(:logger_double) { instance_double(Gitlab::Elasticsearch::Logger) }
 
-  subject { described_class.new }
+  subject(:worker) { described_class.new }
 
   describe '#perform' do
     before do
@@ -18,7 +19,7 @@ RSpec.describe ElasticCommitIndexerWorker do
         expect(indexer).to receive(:run)
       end
 
-      subject.perform(project.id, false)
+      worker.perform(project.id, false)
     end
 
     it 'logs timing information' do
@@ -35,7 +36,7 @@ RSpec.describe ElasticCommitIndexerWorker do
         jid: anything
       )
 
-      subject.perform(project.id, false)
+      worker.perform(project.id, false)
     end
 
     it 'records the apdex SLI' do
@@ -48,7 +49,50 @@ RSpec.describe ElasticCommitIndexerWorker do
         document_type: 'Code'
       )
 
-      subject.perform(project.id)
+      worker.perform(project.id)
+    end
+
+    context 'when force is not set' do
+      before do
+        allow_next_instance_of(Gitlab::Elastic::Indexer) do |indexer|
+          allow(indexer).to receive(:run).and_return(true)
+        end
+      end
+
+      it 'does not log extra metadata on done for code' do
+        expect(worker).not_to receive(:log_extra_metadata_on_done)
+
+        worker.perform(project.id, false)
+      end
+
+      it 'does not log extra metadata on done for wiki' do
+        expect(worker).not_to receive(:log_extra_metadata_on_done)
+
+        worker.perform(project.id, true)
+      end
+    end
+
+    context 'when force is set' do
+      let_it_be(:stats) { create(:project_statistics, with_data: true, project: project, commit_count: 10) }
+
+      before do
+        allow_next_instance_of(Gitlab::Elastic::Indexer) do |indexer|
+          allow(indexer).to receive(:run).and_return(true)
+        end
+      end
+
+      it 'logs extra metadata on done when run for code', :aggregate_failures do
+        expect(worker).to receive(:log_extra_metadata_on_done).with(:commit_count, 10)
+        expect(worker).to receive(:log_extra_metadata_on_done).with(:repository_size, 1)
+
+        worker.perform(project.id, false, { 'force' => true })
+      end
+
+      it 'does not log extra metadata on done when run for wiki' do
+        expect(worker).not_to receive(:log_extra_metadata_on_done)
+
+        worker.perform(project.id, true, { 'force' => true })
+      end
     end
 
     context 'when ES is disabled' do
@@ -59,19 +103,19 @@ RSpec.describe ElasticCommitIndexerWorker do
       it 'returns true' do
         expect(Gitlab::Elastic::Indexer).not_to receive(:new)
 
-        expect(subject.perform(project.id)).to be_truthy
+        expect(worker.perform(project.id)).to be_truthy
       end
 
       it 'does not log anything' do
         expect(logger_double).not_to receive(:info)
 
-        subject.perform(project.id)
+        worker.perform(project.id)
       end
 
       it 'does not record the apdex SLI' do
         expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
 
-        subject.perform(project.id)
+        worker.perform(project.id)
       end
     end
 
@@ -81,7 +125,7 @@ RSpec.describe ElasticCommitIndexerWorker do
       expect(indexer).to receive(:run)
       expect(Gitlab::Elastic::Indexer).to receive(:new).with(project, wiki: true, force: false).and_return(indexer)
 
-      subject.perform(project.id, true)
+      worker.perform(project.id, true)
     end
 
     context 'when the indexer is locked' do
@@ -91,7 +135,7 @@ RSpec.describe ElasticCommitIndexerWorker do
 
         expect(Gitlab::Elastic::Indexer).not_to receive(:new)
 
-        subject.perform(project.id)
+        worker.perform(project.id)
       end
 
       it 'does not log anything' do
@@ -100,7 +144,7 @@ RSpec.describe ElasticCommitIndexerWorker do
 
         expect(logger_double).not_to receive(:info)
 
-        subject.perform(project.id)
+        worker.perform(project.id)
       end
 
       it 'does not record the apdex SLI' do
@@ -109,7 +153,16 @@ RSpec.describe ElasticCommitIndexerWorker do
 
         expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
 
-        subject.perform(project.id)
+        worker.perform(project.id)
+      end
+
+      it 'does not log extra metadata' do
+        expect(subject).to receive(:in_lock) # Mock and don't yield
+          .with("ElasticCommitIndexerWorker/#{project.id}/false", ttl: (Gitlab::Elastic::Indexer::TIMEOUT + 1.minute), retries: 0)
+
+        expect(worker).not_to receive(:log_extra_metadata_on_done)
+
+        worker.perform(project.id)
       end
     end
 
@@ -121,7 +174,7 @@ RSpec.describe ElasticCommitIndexerWorker do
 
         expect(logger_double).not_to receive(:info)
 
-        subject.perform(project.id)
+        worker.perform(project.id)
       end
 
       it 'does not record the apdex SLI' do
@@ -131,7 +184,17 @@ RSpec.describe ElasticCommitIndexerWorker do
 
         expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
 
-        subject.perform(project.id)
+        worker.perform(project.id)
+      end
+
+      it 'does not log extra metadata' do
+        expect_next_instance_of(Gitlab::Elastic::Indexer) do |indexer|
+          expect(indexer).to receive(:run).and_return false
+        end
+
+        expect(worker).not_to receive(:log_extra_metadata_on_done)
+
+        worker.perform(project.id)
       end
     end
   end

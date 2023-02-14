@@ -5,7 +5,7 @@ import ApprovalCheckPopover from 'ee/approvals/components/approval_check_popover
 describe('EE Number of approvals', () => {
   let wrapper;
 
-  const rule = { approvals_required: 1, approved_by: [], id: 1, name: 'rule-name' };
+  const rule = { approvalsRequired: 1, approvedBy: { nodes: [] }, id: 1, name: 'rule-name' };
   const invalidApproversRules = [];
 
   const createComponent = (props = {}) => {
@@ -34,7 +34,7 @@ describe('EE Number of approvals', () => {
 
   describe('with approvals required set to zero', () => {
     beforeEach(() => {
-      createComponent({ rule: { rule, approvals_required: 0 } });
+      createComponent({ rule: { rule, approvalsRequired: 0 } });
     });
 
     it('renders optional text', () => {
