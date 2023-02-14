@@ -1,14 +1,26 @@
 <script>
-import { GlDrawer, GlButton, GlFormCheckbox, GlTooltipDirective } from '@gitlab/ui';
+import {
+  GlDrawer,
+  GlButton,
+  GlFormCheckbox,
+  GlTooltipDirective,
+  GlSprintf,
+  GlLink,
+} from '@gitlab/ui';
 import $ from 'jquery';
 import { isEmpty } from 'lodash';
 import IssuableBody from '~/vue_shared/issuable/show/components/issuable_body.vue';
 import { TAB_KEY_CODE } from '~/lib/utils/keycodes';
-import { __, sprintf } from '~/locale';
+import { __ } from '~/locale';
 import ZenMode from '~/zen_mode';
 
 import { renderGFM } from '~/behaviors/markdown/render_gfm';
-import { MAX_TITLE_LENGTH, TestReportStatus } from '../constants';
+import {
+  MAX_TITLE_LENGTH,
+  TestReportStatus,
+  I18N_LEGACY_REFERENCE_DEPRECATION_NOTE_TITLE,
+  I18N_LEGACY_REFERENCE_DEPRECATION_NOTE_DETAIL,
+} from '../constants';
 import RequirementMeta from '../mixins/requirement_meta';
 import RequirementStatusBadge from './requirement_status_badge.vue';
 
@@ -19,15 +31,18 @@ export default {
     disableEdit: 'disable-edit',
     enableEdit: 'enable-edit',
   },
-  titleInvalidMessage: sprintf(__('Requirement title cannot have more than %{limit} characters.'), {
-    limit: MAX_TITLE_LENGTH,
-  }),
+  i18n: {
+    legacyReferenceDeprecationTitle: I18N_LEGACY_REFERENCE_DEPRECATION_NOTE_TITLE,
+    legacyReferenceDeprecationText: I18N_LEGACY_REFERENCE_DEPRECATION_NOTE_DETAIL,
+  },
   components: {
     GlDrawer,
     GlFormCheckbox,
     GlButton,
     RequirementStatusBadge,
     IssuableBody,
+    GlSprintf,
+    GlLink,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -287,6 +302,30 @@ export default {
             {{ __('Cancel') }}
           </gl-button>
         </div>
+      </template>
+      <template #secondary-content>
+        <aside>
+          <h2 class="gl-font-base">
+            <gl-sprintf :message="$options.i18n.legacyReferenceDeprecationTitle">
+              <template #legacyId
+                ><span class="gl-font-weight-normal">{{ legacyReference }}</span></template
+              >
+            </gl-sprintf>
+          </h2>
+          <p class="gl-font-sm gl-line-height-20">
+            <gl-sprintf :message="$options.i18n.legacyReferenceDeprecationText">
+              <template #id>{{ reference }}</template>
+              <template #link="{ content }">
+                <gl-link
+                  class="gl-font-size-inherit"
+                  :href="$options.legacyReferenceDeprecationUrl"
+                  target="_blank"
+                  >{{ content }}</gl-link
+                >
+              </template>
+            </gl-sprintf>
+          </p>
+        </aside>
       </template>
     </issuable-body>
   </gl-drawer>

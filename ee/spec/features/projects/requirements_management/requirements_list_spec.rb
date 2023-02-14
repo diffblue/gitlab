@@ -158,7 +158,8 @@ RSpec.describe 'Requirements list', :js, feature_category: :requirements_managem
 
       it 'shows title, metadata and actions within each requirement item' do
         page.within('.requirements-list li.requirement', match: :first) do
-          expect(page.find('.issuable-reference')).to have_content("REQ-#{requirement1.iid}")
+          expect(page).to have_content("##{requirement1.iid}")
+          expect(page).to have_content("REQ-#{requirement1.requirement_issue.iid}")
           expect(page.find('.issue-title-text')).to have_content(requirement1.title)
           expect(page.find('.issuable-authored')).to have_content('created 5 days ago by')
           expect(page.find('.author')).to have_content(user.name)
@@ -184,7 +185,7 @@ RSpec.describe 'Requirements list', :js, feature_category: :requirements_managem
         end
 
         page.within('.requirement-form-drawer') do
-          expect(page.find('.gl-drawer-header', match: :first)).to have_content("REQ-#{requirement1.iid}")
+          expect(page.find('.gl-drawer-header', match: :first)).to have_content("##{requirement1.iid}")
           expect(page.find('input#issuable-title')['value']).to have_content(requirement1.title)
           expect(page.find('textarea#issuable-description')['value']).to have_content(requirement1.description)
           expect(page.find('input[type="checkbox"]')['checked']).to eq(requirement1.last_test_report_state)
@@ -250,7 +251,8 @@ RSpec.describe 'Requirements list', :js, feature_category: :requirements_managem
 
       it 'shows title, metadata and actions within each requirement item' do
         page.within('.requirements-list li.requirement', match: :first) do
-          expect(page.find('.issuable-reference')).to have_content("REQ-#{requirement_archived.iid}")
+          expect(page).to have_content("##{requirement_archived.iid}")
+          expect(page).to have_content("REQ-#{requirement_archived.requirement_issue.iid}")
           expect(page.find('.issue-title-text')).to have_content(requirement_archived.title)
           expect(page.find('.issuable-authored')).to have_content('created 1 week ago by')
           expect(page.find('.author')).to have_content(user.name)
