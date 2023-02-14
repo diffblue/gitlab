@@ -96,4 +96,18 @@ RSpec.describe 'Groups > Members > List members', feature_category: :subgroups d
 
     it_behaves_like 'over the free user limit alert'
   end
+
+  context 'when user has a custom role', :js do
+    it 'shows that the role is custom' do
+      owner = create(:user)
+      group.add_member(owner, :owner)
+      member_role = create(:member_role, :guest, namespace: group)
+      create(:group_member, :guest, group: group, user: user1, member_role: member_role)
+      sign_in(owner)
+
+      visit group_group_members_path(group)
+
+      expect(find_member_row(user1)).to have_content(format(s_("MemberRole|%{role} - custom"), role: "Guest"))
+    end
+  end
 end
