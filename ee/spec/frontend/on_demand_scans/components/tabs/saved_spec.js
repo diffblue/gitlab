@@ -272,8 +272,6 @@ describe('Saved tab', () => {
 
   describe('verify button', () => {
     describe.each(['desktop', 'mobile'])('%s layout', (layout) => {
-      let verifyButton;
-
       beforeEach(async () => {
         createFullComponent(
           {},
@@ -284,21 +282,15 @@ describe('Saved tab', () => {
           },
         );
         await waitForPromises();
-
-        verifyButton = findVerifyButton(layout);
-      });
-
-      afterEach(() => {
-        verifyButton = null;
       });
 
       it('renders the button', () => {
-        expect(verifyButton.exists()).toBe(true);
+        expect(findVerifyButton(layout).exists()).toBe(true);
       });
 
       it('should open verification drawer', async () => {
         expect(findPreScanVerificationDrawer().props('open')).toBe(false);
-        await verifyButton.trigger('click');
+        await findVerifyButton(layout).trigger('click');
 
         expect(findPreScanVerificationDrawer().props('open')).toBe(true);
       });
@@ -307,32 +299,24 @@ describe('Saved tab', () => {
 
   describe('delete button', () => {
     describe.each(['desktop', 'mobile'])('%s layout', (layout) => {
-      let deleteButton;
-
       beforeEach(async () => {
         createFullComponent();
         await waitForPromises();
-
-        deleteButton = findDeleteButton(layout);
-      });
-
-      afterEach(() => {
-        deleteButton = null;
       });
 
       it('renders the button', () => {
-        expect(deleteButton.exists()).toBe(true);
+        expect(findDeleteButton(layout).exists()).toBe(true);
       });
 
       it('clicking on the button opens the delete modal', () => {
         const spy = jest.spyOn(wrapper.vm.$refs['delete-scan-modal'], 'show');
-        deleteButton.trigger('click');
+        findDeleteButton(layout).trigger('click');
 
         expect(spy).toHaveBeenCalled();
       });
 
       it('confirming the deletion in the modal triggers the delete mutation with the profile ID', () => {
-        deleteButton.trigger('click');
+        findDeleteButton(layout).trigger('click');
         findDeleteModal().vm.$emit('ok');
 
         expect(requestHandlers.dastProfileDeleteMutation).toHaveBeenCalledWith({
