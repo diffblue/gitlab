@@ -1074,6 +1074,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: automation_execute_rule
+  :worker_name: Automation::ExecuteRuleWorker
+  :feature_category: :no_code_automation
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: ci_batch_reset_minutes
   :worker_name: Ci::BatchResetMinutesWorker
   :feature_category: :continuous_integration
