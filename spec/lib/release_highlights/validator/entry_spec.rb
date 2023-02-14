@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ReleaseHighlights::Validator::Entry, type: :model do
+RSpec.describe ReleaseHighlights::Validator::Entry, type: :model, feature_category: :onboarding do
   subject(:entry) { described_class.new(document.root.children.first) }
 
   let(:document) { YAML.parse(File.read(yaml_path)) }
@@ -31,7 +31,7 @@ RSpec.describe ReleaseHighlights::Validator::Entry, type: :model do
       it { is_expected.to validate_presence_of(:stage).with_message("can't be blank (line 3)") }
       it { is_expected.to validate_presence_of(:self_managed).with_message("must be a boolean (line 4)") }
       it { is_expected.to validate_presence_of(:gitlab_com).with_message("must be a boolean (line 5)") }
-      it { is_expected.to validate_presence_of(:image_url).with_message("can't be blank (line 1)").allow_nil }
+      it { is_expected.to allow_value(nil).for(:image_url) }
 
       it {
         is_expected.to validate_presence_of(:available_in)
