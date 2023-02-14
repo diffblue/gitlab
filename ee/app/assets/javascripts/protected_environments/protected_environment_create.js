@@ -7,11 +7,13 @@ export const initProtectedEnvironmentCreate = () => {
     return null;
   }
 
-  const { projectId } = el.dataset;
+  const { projectId, apiLink, docsLink } = el.dataset;
   return new Vue({
     el,
     provide: {
       accessLevelsData: gon?.deploy_access_levels?.roles ?? [],
+      apiLink,
+      docsLink,
     },
     render(h) {
       return h(CreateProtectedEnvironment, {
