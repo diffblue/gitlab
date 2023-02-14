@@ -1,5 +1,5 @@
 import { invert } from 'lodash';
-import { IssuableType } from '~/issues/constants';
+import { IssuableType, TYPE_ISSUE } from '~/issues/constants';
 import { __, s__, sprintf } from '~/locale';
 import {
   IssuableAttributeType as IssuableAttributeTypeFoss,
@@ -116,40 +116,40 @@ export const CVE_ID_REQUEST_SIDEBAR_I18N = {
 };
 
 export const issuableIterationQueries = {
-  [IssuableType.Issue]: {
+  [TYPE_ISSUE]: {
     query: projectIssueIterationQuery,
     mutation: projectIssueIterationMutation,
   },
 };
 
 export const iterationsQueries = {
-  [IssuableType.Issue]: {
+  [TYPE_ISSUE]: {
     query: groupIterationsQuery,
   },
 };
 
 const issuableEpicQueries = {
-  [IssuableType.Issue]: {
+  [TYPE_ISSUE]: {
     query: projectIssueEpicQuery,
     mutation: projectIssueEpicMutation,
   },
 };
 
 const epicsQueries = {
-  [IssuableType.Issue]: {
+  [TYPE_ISSUE]: {
     query: groupEpicsQuery,
   },
 };
 
 const issuableEscalationPolicyQueries = {
-  [IssuableType.Issue]: {
+  [TYPE_ISSUE]: {
     query: issueEscalationPolicyQuery,
     mutation: issueEscalationPolicyMutation,
   },
 };
 
 const escalationPoliciesQueries = {
-  [IssuableType.Issue]: {
+  [TYPE_ISSUE]: {
     query: projectEscalationPoliciesQuery,
   },
 };
@@ -201,14 +201,14 @@ export const ancestorsQueries = {
 };
 
 export const weightQueries = {
-  [IssuableType.Issue]: {
+  [TYPE_ISSUE]: {
     query: issueWeightQuery,
     mutation: updateIssueWeightMutation,
   },
 };
 
 export const healthStatusQueries = {
-  [IssuableType.Issue]: {
+  [TYPE_ISSUE]: {
     mutation: updateStatusMutation,
     query: issueHealthStatusQuery,
   },

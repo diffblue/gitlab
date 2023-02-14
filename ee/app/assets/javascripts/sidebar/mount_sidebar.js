@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { apolloProvider } from '~/graphql_shared/issuable_client';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import { IssuableType } from '~/issues/constants';
+import { TYPE_ISSUE } from '~/issues/constants';
 import createDefaultClient from '~/lib/graphql';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import SidebarDropdown from '~/sidebar/components/sidebar_dropdown.vue';
@@ -46,7 +46,7 @@ const mountSidebarWeightWidget = () => {
         props: {
           fullPath: projectPath,
           iid: issueIid,
-          issuableType: IssuableType.Issue,
+          issuableType: TYPE_ISSUE,
         },
       }),
   });
@@ -161,7 +161,7 @@ function mountSidebarEpicWidget() {
           attrWorkspacePath: groupPath,
           workspacePath: projectPath,
           iid: issueIid,
-          issuableType: IssuableType.Issue,
+          issuableType: TYPE_ISSUE,
           issuableAttribute: IssuableAttributeType.Epic,
         },
       }),
@@ -201,7 +201,7 @@ export function mountEpicDropdown() {
           attrWorkspacePath: el.dataset.groupPath,
           currentAttribute: this.epic,
           issuableAttribute: IssuableAttributeType.Epic,
-          issuableType: IssuableType.Issue,
+          issuableType: TYPE_ISSUE,
         },
         on: {
           change: this.handleChange.bind(this),
@@ -234,7 +234,7 @@ function mountSidebarIterationWidget() {
           attrWorkspacePath: groupPath,
           workspacePath: projectPath,
           iid: issueIid,
-          issuableType: IssuableType.Issue,
+          issuableType: TYPE_ISSUE,
           issuableAttribute: IssuableAttributeType.Iteration,
         },
       }),

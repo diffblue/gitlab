@@ -19,10 +19,17 @@ import UserAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link
 import ConfidentialityBadge from '~/vue_shared/components/confidentiality_badge.vue';
 import DeleteIssueModal from '~/issues/show/components/delete_issue_modal.vue';
 
-import { IssuableType, STATUS_CLOSED, STATUS_OPEN, WorkspaceType } from '~/issues/constants';
+import {
+  IssuableType,
+  STATUS_CLOSED,
+  STATUS_OPEN,
+  TYPE_ISSUE,
+  WorkspaceType,
+} from '~/issues/constants';
 import epicUtils from '../utils/epic_utils';
 
 export default {
+  TYPE_ISSUE,
   WorkspaceType,
   IssuableType,
   deleteModalId: 'delete-modal-id',
@@ -117,7 +124,7 @@ export default {
           v-if="confidential"
           data-testid="confidential-icon"
           :workspace-type="$options.WorkspaceType.project"
-          :issuable-type="$options.IssuableType.Issue"
+          :issuable-type="$options.TYPE_ISSUE"
         />
         {{ __('Created') }}
         <timeago-tooltip :time="created" />

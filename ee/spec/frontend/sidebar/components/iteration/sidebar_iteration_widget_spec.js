@@ -5,7 +5,7 @@ import SidebarIterationWidget from 'ee/sidebar/components/iteration/sidebar_iter
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { IssuableType } from '~/issues/constants';
+import { TYPE_ISSUE } from '~/issues/constants';
 import groupIterationsQuery from 'ee/sidebar/queries/group_iterations.query.graphql';
 import projectIssueIterationQuery from 'ee/sidebar/queries/project_issue_iteration.query.graphql';
 import { IssuableAttributeType, issuableAttributesQueries } from 'ee/sidebar/constants';
@@ -52,7 +52,7 @@ describe('SidebarIterationWidget', () => {
           workspacePath: mockIssue.projectPath,
           attrWorkspacePath: mockIssue.groupPath,
           iid: mockIssue.iid,
-          issuableType: IssuableType.Issue,
+          issuableType: TYPE_ISSUE,
           issuableAttribute: IssuableAttributeType.Iteration,
         },
       }),
