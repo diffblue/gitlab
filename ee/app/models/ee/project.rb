@@ -575,6 +575,17 @@ module EE
       end
     end
 
+    override :execute_hooks
+    def execute_hooks(data, hooks_scope = :push_hooks)
+      super
+
+      run_after_commit_or_now do
+        if ::Feature.enabled?(:no_code_automation_mvc, self) && licensed_feature_available?(:no_code_automation)
+          Automation::DispatchService.new(container: project_namespace).execute(data, hooks_scope)
+        end
+      end
+    end
+
     override :triggered_hooks
     def triggered_hooks(scope, data)
       triggered = super

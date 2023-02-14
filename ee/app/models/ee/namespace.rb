@@ -33,6 +33,8 @@ module EE
 
       has_many :ci_minutes_additional_packs, class_name: "Ci::Minutes::AdditionalPack"
 
+      has_many :automation_rules, class_name: '::Automation::Rule'
+
       has_one :security_orchestration_policy_configuration,
               class_name: 'Security::OrchestrationPolicyConfiguration',
               foreign_key: :namespace_id,

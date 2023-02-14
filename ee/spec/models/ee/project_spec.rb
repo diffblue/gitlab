@@ -1142,6 +1142,49 @@ RSpec.describe Project, feature_category: :projects do
   end
 
   describe "#execute_hooks" do
+    context 'dispatch automation runs' do
+      let(:project) { build(:project) }
+
+      subject(:service) { instance_double('Automation::DispatchService') }
+
+      before do
+        stub_licensed_features(no_code_automation: feature_enabled)
+        stub_feature_flags(no_code_automation_mvc: flag_enabled)
+
+        allow(Automation::DispatchService)
+          .to receive(:new)
+          .with(container: project.project_namespace)
+          .and_return(service)
+
+        allow(service).to receive(:execute)
+
+        project.execute_hooks({ some: 'info' }, :issue_hooks)
+      end
+
+      context 'when both no_code_automation feature and no_code_automation_mvc flag are enabled' do
+        let(:feature_enabled) { true }
+        let(:flag_enabled) { true }
+
+        it 'dispatches hook data to Automation::DispatchService' do
+          expect(service).to have_received(:execute).with({ some: 'info' }, :issue_hooks)
+        end
+      end
+
+      context 'when no_code_automation feature is disabled' do
+        let(:feature_enabled) { false }
+        let(:flag_enabled) { true }
+
+        it { is_expected.not_to have_received(:execute) }
+      end
+
+      context 'when no_code_automation_mvc flag is disabled' do
+        let(:flag_enabled) { false }
+        let(:feature_enabled) { true }
+
+        it { is_expected.not_to have_received(:execute) }
+      end
+    end
+
     context "group hooks" do
       let(:group) { create(:group) }
       let(:project) { create(:project, namespace: group) }
