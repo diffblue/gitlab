@@ -1,7 +1,7 @@
 <script>
 import { GlLink } from '@gitlab/ui';
 import { joinPaths } from '~/lib/utils/url_utility';
-import { IssuableType } from '~/issues/constants';
+import { TYPE_ISSUE } from '~/issues/constants';
 import { IssuableAttributeType } from '../../constants';
 import SidebarDropdownWidget from '../sidebar_dropdown_widget.vue';
 import EscalationPoliciesEmptyState from './escalation_policies_empty_state.vue';
@@ -36,7 +36,7 @@ export default {
     },
   },
   created() {
-    this.issuableType = IssuableType.Issue;
+    this.issuableType = TYPE_ISSUE;
     this.issuableAttribute = IssuableAttributeType.EscalationPolicy;
   },
 };

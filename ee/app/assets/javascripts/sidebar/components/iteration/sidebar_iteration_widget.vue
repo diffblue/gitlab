@@ -8,7 +8,7 @@ import {
 } from '@gitlab/ui';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import { getIterationPeriod, groupByIterationCadences } from 'ee/iterations/utils';
-import { IssuableType } from '~/issues/constants';
+import { TYPE_ISSUE } from '~/issues/constants';
 import { IssuableAttributeType } from '../../constants';
 import SidebarDropdownWidget from '../sidebar_dropdown_widget.vue';
 
@@ -36,7 +36,7 @@ export default {
       type: String,
       required: true,
       validator(value) {
-        return value === IssuableType.Issue;
+        return value === TYPE_ISSUE;
       },
     },
     workspacePath: {

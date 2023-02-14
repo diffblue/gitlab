@@ -595,6 +595,7 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
 
     context 'epic command' do
       let_it_be_with_reload(:epic) { create(:epic, group: group) }
+      let_it_be_with_reload(:private_epic) { create(:epic, group: create(:group, :private)) }
       let(:content) { "/epic #{epic.to_reference(project)}" }
 
       context 'when epics are enabled' do
@@ -615,7 +616,7 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
             let(:issue)        { create(:issue, project: user_project) }
 
             before do
-              user_project.add_developer(user)
+              user_project.add_guest(user)
             end
 
             it 'does not assign an issue to an epic' do
@@ -659,19 +660,27 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
         end
 
         context 'when user has no permissions to read epic' do
-          let(:content) { "/epic #{epic.to_reference(project)}" }
-
-          before do
-            allow(current_user).to receive(:can?).with(:use_quick_actions).and_return(true)
-            allow(current_user).to receive(:can?).with(:admin_issue, issue).and_return(true)
-            allow(current_user).to receive(:can?).with(:read_epic, epic).and_return(false)
-          end
+          let(:content) { "/epic #{private_epic.to_reference(project)}" }
 
           it 'does not assign an issue to an epic' do
             _, updates, message = service.execute(content, issue)
 
             expect(updates).to be_empty
             expect(message).to eq("This epic does not exist or you don't have sufficient permission.")
+          end
+        end
+
+        context 'when user has no access to the issue' do
+          before do
+            allow(current_user).to receive(:can?).and_call_original
+            allow(current_user).to receive(:can?).with(:admin_issue_relation, issue).and_return(false)
+          end
+
+          it 'returns error' do
+            _, updates, message = service.execute(content, issue)
+
+            expect(updates).to be_empty
+            expect(message).to eq('Could not apply epic command.')
           end
         end
       end
@@ -1158,6 +1167,20 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
           _, updates = service.execute(content, incident)
 
           expect(updates).to be_empty
+        end
+      end
+
+      context 'when user has no access to the issue' do
+        before do
+          allow(current_user).to receive(:can?).and_call_original
+          allow(current_user).to receive(:can?).with(:admin_issue_relation, issue).and_return(false)
+        end
+
+        it 'returns error' do
+          _, updates, message = service.execute(content, issue)
+
+          expect(updates).to be_empty
+          expect(message).to eq('Could not apply remove_epic command.')
         end
       end
     end

@@ -2,21 +2,27 @@
 require 'spec_helper'
 
 RSpec.describe Notes::QuickActionsService do
-  let(:group)   { create(:group) }
-  let(:project) { create(:project, group: group) }
-  let(:user) { create(:user) }
-  let(:assignee) { create(:user) }
-  let(:reviewer) { create(:user) }
-  let(:issue) { create(:issue, project: project) }
-  let(:epic) { create(:epic, group: group) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:private_group) { create(:group, :private) }
+  let_it_be(:project) { create(:project, group: group) }
+  let_it_be(:user, reload: true) { create(:user) }
+  let_it_be(:assignee) { create(:user) }
+  let_it_be(:reviewer) { create(:user) }
+  let_it_be(:issue, reload: true) { create(:issue, project: project) }
+  let_it_be(:epic, reload: true) { create(:epic, group: group) }
+  let_it_be(:private_epic) { create(:epic, group: private_group) }
 
   let(:service) { described_class.new(project, user) }
 
-  def execute(note)
-    content, update_params = service.execute(note)
+  def execute(note, include_message: false)
+    content, update_params, message, _ = service.execute(note)
     service.apply_updates(update_params, note)
 
-    content
+    if include_message
+      [content, message]
+    else
+      content
+    end
   end
 
   describe '/epic' do
@@ -24,12 +30,15 @@ RSpec.describe Notes::QuickActionsService do
     let(:note) { create(:note_on_issue, noteable: issue, project: project, note: note_text) }
 
     before do
-      group.add_developer(user)
+      group.add_guest(user)
     end
 
     context 'when epics are not enabled' do
       it 'does not assign the epic' do
-        expect(execute(note)).to be_empty
+        content, message = execute(note, include_message: true)
+
+        expect(content).to be_empty
+        expect(message).to eq('Could not apply epic command.')
         expect(issue.epic).to be_nil
       end
     end
@@ -37,6 +46,33 @@ RSpec.describe Notes::QuickActionsService do
     context 'when epics are enabled' do
       before do
         stub_licensed_features(epics: true)
+      end
+
+      context 'when user have no access to the issue' do
+        before do
+          allow(user).to receive(:can?).and_call_original
+          allow(user).to receive(:can?).with(:admin_issue_relation, issue).and_return(false)
+        end
+
+        it 'does not assign the epic' do
+          content, message  = execute(note, include_message: true)
+
+          expect(content).to be_empty
+          expect(message).to eq('Could not apply epic command.')
+          expect(issue.epic).to be_nil
+        end
+      end
+
+      context 'when user have no access to the epic' do
+        let(:note_text) { "/epic #{private_epic.to_reference(full: true)}" }
+
+        it 'does not assign the epic' do
+          content, message  = execute(note, include_message: true)
+
+          expect(content).to be_empty
+          expect(message).to eq("This epic does not exist or you don't have sufficient permission.")
+          expect(issue.epic).to be_nil
+        end
       end
 
       context 'on an issue' do
@@ -83,12 +119,15 @@ RSpec.describe Notes::QuickActionsService do
 
     before do
       issue.update!(epic: epic)
-      group.add_developer(user)
+      group.add_guest(user)
     end
 
     context 'when epics are not enabled' do
       it 'does not remove the epic' do
-        expect(execute(note)).to be_empty
+        content, message  = execute(note, include_message: true)
+
+        expect(content).to be_empty
+        expect(message).to eq('Could not apply remove_epic command.')
         expect(issue.epic).to eq(epic)
       end
     end
@@ -96,6 +135,37 @@ RSpec.describe Notes::QuickActionsService do
     context 'when epics are enabled' do
       before do
         stub_licensed_features(epics: true)
+      end
+
+      context 'when user have no access to the issue' do
+        before do
+          allow(user).to receive(:can?).and_call_original
+          allow(user).to receive(:can?).with(:admin_issue_relation, issue).and_return(false)
+        end
+
+        it 'does not remove the epic' do
+          result = execute(note, include_message: true)
+
+          expect(result[0]).to be_empty
+          expect(result[1]).to eq('Could not apply remove_epic command.')
+          expect(issue.epic).to eq(epic)
+        end
+      end
+
+      context 'when user have no access to the epic' do
+        let(:note_text) { "/epic #{private_epic.to_reference(full: true)}" }
+
+        before do
+          issue.update!(epic: private_epic)
+        end
+
+        it 'does not remove the epic' do
+          result = execute(note, include_message: true)
+
+          expect(result[0]).to be_empty
+          expect(result[1]).to eq("This epic does not exist or you don't have sufficient permission.")
+          expect(issue.epic).to eq(private_epic)
+        end
       end
 
       context 'on an issue' do
@@ -269,6 +339,7 @@ RSpec.describe Notes::QuickActionsService do
   end
 
   describe '/assign_reviewer' do
+    let(:user) { create(:user) }
     let(:note_text) { %(/assign_reviewer @#{user.username} @#{reviewer.username}\n) }
 
     let(:multiline_assign_reviewer_text) do
@@ -298,6 +369,7 @@ RSpec.describe Notes::QuickActionsService do
   end
 
   describe '/assign' do
+    let(:user) { create(:user) }
     let(:note_text) { %(/assign @#{user.username} @#{assignee.username}\n) }
     let(:multiline_assign_note_text) { %(/assign @#{user.username}\n/assign @#{assignee.username}) }
 
