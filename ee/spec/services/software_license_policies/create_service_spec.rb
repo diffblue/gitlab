@@ -90,6 +90,24 @@ RSpec.describe SoftwareLicensePolicies::CreateService, feature_category: :securi
       it 'does not create a software license policy' do
         expect { subject.execute }.to change { project.software_license_policies.count }.by(0)
       end
+
+      context 'when is_scan_result_policy is set' do
+        before do
+          allow(RefreshLicenseComplianceChecksWorker).to receive(:perform_async)
+        end
+
+        it 'creates software license policy' do
+          result = subject.execute(is_scan_result_policy: true)
+
+          expect(project.software_license_policies.count).to be(1)
+          expect(result[:status]).to be(:success)
+          expect(result[:software_license_policy]).to be_present
+          expect(result[:software_license_policy]).to be_persisted
+          expect(result[:software_license_policy].name).to eq(params[:name])
+          expect(result[:software_license_policy].classification).to eq(params[:approval_status])
+          expect(RefreshLicenseComplianceChecksWorker).not_to have_received(:perform_async)
+        end
+      end
     end
   end
 end

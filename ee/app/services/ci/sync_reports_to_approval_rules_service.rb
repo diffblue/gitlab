@@ -38,13 +38,7 @@ module Ci
     attr_reader :pipeline
 
     def sync_license_scanning_rules
-      project = pipeline.project
-      report = pipeline.license_scanning_report
-      return if report.empty? && !pipeline.complete?
-      return if report.violates?(project.software_license_policies)
-
-      remove_required_approvals_for(ApprovalMergeRequestRule.report_approver.license_scanning,
-                                    pipeline.merge_requests_as_head_pipeline)
+      ::Security::SyncLicenseScanningRulesService.execute(pipeline)
     end
 
     def sync_coverage_rules

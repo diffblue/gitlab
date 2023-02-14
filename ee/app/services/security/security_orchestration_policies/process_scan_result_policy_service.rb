@@ -24,42 +24,100 @@ module Security
         return unless action_info
 
         policy[:rules].first(Security::ScanResultPolicy::LIMIT).each_with_index do |rule, rule_index|
-          next if rule[:type] != Security::ScanResultPolicy::SCAN_FINDING
+          next unless rule_type_allowed?(rule[:type])
 
-          ::ApprovalRules::CreateService.new(project, author, rule_params(rule, rule_index, action_info)).execute
+          if license_scanning_policies_enabled && rule[:type] == Security::ScanResultPolicy::LICENSE_FINDING
+            scan_result_policy_read = create_scan_result_policy(rule)
+            create_software_license_policies(rule, rule_index, scan_result_policy_read)
+          end
+
+          ::ApprovalRules::CreateService
+            .new(project, author, rule_params(rule, rule_index, action_info, scan_result_policy_read))
+            .execute
         end
       end
 
-      def rule_params(rule, rule_index, action_info)
+      def create_software_license_policies(rule, rule_index, scan_result_policy_read)
+        rule[:license_types].each do |license_type|
+          create_params = {
+            name: license_type,
+            approval_status: rule[:match_on_inclusion] ? 'denied' : 'allowed',
+            scan_result_policy_read: scan_result_policy_read
+          }
+
+          ::SoftwareLicensePolicies::CreateService
+            .new(project, author, create_params)
+            .execute(is_scan_result_policy: true)
+        end
+      end
+
+      def create_scan_result_policy(rule)
+        policy_configuration.scan_result_policy_reads.create!(
+          orchestration_policy_idx: policy_index,
+          license_states: rule[:license_states],
+          match_on_inclusion: rule[:match_on_inclusion]
+        )
+      end
+
+      def rule_params(rule, rule_index, action_info, scan_result_policy_read)
         protected_branch_ids = if ::Feature.enabled?(:group_protected_branches)
                                  project.all_protected_branches.get_ids_by_name(rule[:branches])
                                else
                                  project.protected_branches.get_ids_by_name(rule[:branches])
                                end
 
-        {
+        rule_params = {
           skip_authorization: true,
           approvals_required: action_info[:approvals_required],
           name: rule_name(policy[:name], rule_index),
           protected_branch_ids: protected_branch_ids,
           applies_to_all_protected_branches: rule[:branches].empty?,
-          scanners: rule[:scanners],
           rule_type: :report_approver,
-          severity_levels: rule[:severity_levels],
           user_ids: users_ids(action_info[:user_approvers_ids], action_info[:user_approvers]),
-          vulnerabilities_allowed: rule[:vulnerabilities_allowed],
-          report_type: :scan_finding,
+          report_type: report_type(rule[:type]),
           orchestration_policy_idx: policy_index,
-          vulnerability_states: rule[:vulnerability_states],
           group_ids: groups_ids(action_info[:group_approvers_ids], action_info[:group_approvers]),
           security_orchestration_policy_configuration_id: policy_configuration.id
         }
+
+        if rule[:type] == Security::ScanResultPolicy::LICENSE_FINDING
+          rule_params.merge!({
+            severity_levels: [],
+            scan_result_policy_id: scan_result_policy_read&.id
+          })
+        end
+
+        if rule[:type] == Security::ScanResultPolicy::SCAN_FINDING
+          rule_params.merge!({
+            scanners: rule[:scanners],
+            severity_levels: rule[:severity_levels],
+            vulnerabilities_allowed: rule[:vulnerabilities_allowed],
+            vulnerability_states: rule[:vulnerability_states]
+          })
+        end
+
+        rule_params
+      end
+
+      def rule_type_allowed?(rule_type)
+        [
+          Security::ScanResultPolicy::SCAN_FINDING,
+          Security::ScanResultPolicy::LICENSE_FINDING
+        ].include?(rule_type)
+      end
+
+      def report_type(rule_type)
+        rule_type == Security::ScanResultPolicy::LICENSE_FINDING ? :license_scanning : :scan_finding
       end
 
       def rule_name(policy_name, rule_index)
         return policy_name if rule_index == 0
 
         "#{policy_name} #{rule_index + 1}"
+      end
+
+      def license_scanning_policies_enabled
+        @license_scanning_policies_enabled ||= Feature.enabled?(:license_scanning_policies, project)
       end
 
       def users_ids(user_ids, user_names)
