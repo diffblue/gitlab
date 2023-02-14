@@ -1,0 +1,9 @@
+---
+name: add_gpg_key
+description: Event triggered when a GPG Key is created
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/373961
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/111744
+feature_category: compliance_management
+milestone: '15.9'
+saved_to_database: true
+streamed: true
