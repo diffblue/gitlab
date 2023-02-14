@@ -17,7 +17,11 @@ class RefreshLicenseComplianceChecksWorker # rubocop:disable Scalability/Idempot
       .report_approver
       .find_by_name!(ApprovalRuleLike::DEFAULT_NAME_FOR_LICENSE_REPORT)
 
-    approval_rules = project.approval_merge_request_rules.for_checks_that_can_be_refreshed
+    approval_rules = project
+      .approval_merge_request_rules
+      .for_checks_that_can_be_refreshed
+      .without_scan_result_policy_read
+
     approval_rules.find_each do |approval_rule|
       approval_rule.refresh_required_approvals!(project_approval_rule)
     end

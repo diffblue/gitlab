@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe RefreshLicenseComplianceChecksWorker do
+RSpec.describe RefreshLicenseComplianceChecksWorker, feature_category: :security_policy_management do
   subject(:perform) { described_class.new.perform(project_id) }
 
   let_it_be(:project) { create(:project) }
@@ -29,6 +29,14 @@ RSpec.describe RefreshLicenseComplianceChecksWorker do
       end
 
       context "when the `#{ApprovalRuleLike::DEFAULT_NAME_FOR_LICENSE_REPORT}` approval rule is enabled" do
+        let_it_be_with_reload(:mr_rule_with_scan_result_policy) do
+          create(:report_approver_rule, :requires_approval,
+            merge_request: open_merge_request,
+            approvals_required: approvals_required,
+            scan_result_policy_read: create(:scan_result_policy_read)
+          )
+        end
+
         let_it_be_with_reload(:open_merge_request_approval_rule) do
           create(:report_approver_rule, :requires_approval, :license_scanning, merge_request: open_merge_request,
             approvals_required: approvals_required)
@@ -60,6 +68,7 @@ RSpec.describe RefreshLicenseComplianceChecksWorker do
 
             specify { expect(open_merge_request_approval_rule.approvals_required).to eql(approvals_required) }
             specify { expect(closed_merge_request_approval_rule.approvals_required).to be_zero }
+            specify { expect(mr_rule_with_scan_result_policy.approvals_required).to eql(approvals_required) }
           end
 
           context 'when the license_scanning_sbom_scanner feature flag is true' do
@@ -69,6 +78,7 @@ RSpec.describe RefreshLicenseComplianceChecksWorker do
 
             specify { expect(open_merge_request_approval_rule.approvals_required).to eql(approvals_required) }
             specify { expect(closed_merge_request_approval_rule.approvals_required).to be_zero }
+            specify { expect(mr_rule_with_scan_result_policy.approvals_required).to eql(approvals_required) }
           end
         end
 

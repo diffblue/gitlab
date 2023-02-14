@@ -26,10 +26,30 @@ RSpec.describe Gitlab::Ci::Reports::LicenseScanning::Report, feature_category: :
     end
   end
 
+  describe '#dependency_names' do
+    subject { report.dependency_names }
+
+    let(:report) { build(:license_scan_report) }
+
+    context 'when there are multiple dependencies' do
+      before do
+        report.add_license(id: nil, name: 'MIT').add_dependency(name: 'Library1')
+        report.add_license(id: nil, name: 'BSD').add_dependency(name: 'Library1')
+        report.add_license(id: nil, name: 'WTFPL').add_dependency(name: 'Library2')
+      end
+
+      it { is_expected.to match_array(%w[Library1 Library2]) }
+    end
+
+    context 'when there are no dependencies' do
+      it { is_expected.to be_empty }
+    end
+  end
+
   describe '#violates?' do
     subject { report.violates?(project.software_license_policies) }
 
-    let(:project) { create(:project) }
+    let_it_be(:project) { create(:project) }
 
     context "when checking for violations using v1 license scan report" do
       let(:report) { build(:license_scan_report) }
@@ -115,6 +135,58 @@ RSpec.describe Gitlab::Ci::Reports::LicenseScanning::Report, feature_category: :
 
         it { is_expected.to be_falsey }
       end
+    end
+  end
+
+  describe '#violates_for_licenses?' do
+    subject { report.violates_for_licenses?(project.software_license_policies, ids, names) }
+
+    let_it_be(:project) { create(:project) }
+
+    let(:report) { build(:license_scan_report) }
+
+    context "when a denied license with a SPDX identifier is also in the report" do
+      let(:mit_spdx_id) { 'MIT' }
+      let(:mit_license) { build(:software_license, :mit, spdx_identifier: mit_spdx_id) }
+      let(:mit_policy) { build(:software_license_policy, :denied, software_license: mit_license) }
+      let(:ids) { ['MIT'] }
+      let(:names) { ['MIT'] }
+
+      before do
+        report.add_license(id: mit_spdx_id, name: 'MIT License')
+        project.software_license_policies << mit_policy
+      end
+
+      it { is_expected.to be_truthy }
+    end
+
+    context "when a denied license does not have an SPDX identifier because it was provided by an end user" do
+      let(:custom_license) { build(:software_license, name: 'custom', spdx_identifier: nil) }
+      let(:custom_policy) { build(:software_license_policy, :denied, software_license: custom_license) }
+      let(:ids) { ['Custom'] }
+      let(:names) { ['Custom'] }
+
+      before do
+        report.add_license(id: nil, name: 'Custom')
+        project.software_license_policies << custom_policy
+      end
+
+      it { is_expected.to be_truthy }
+    end
+
+    context "when none of the licenses discovered match any of the denied software policies" do
+      let(:apache_license) { build(:software_license, :apache_2_0, spdx_identifier: 'Apache-2.0') }
+      let(:apache_policy) { build(:software_license_policy, :denied, software_license: apache_license) }
+      let(:ids) { ['MIT'] }
+      let(:names) { ['Custom'] }
+
+      before do
+        report.add_license(id: nil, name: 'Custom')
+        report.add_license(id: 'MIT', name: 'MIT License')
+        project.software_license_policies << apache_policy
+      end
+
+      it { is_expected.to be_falsey }
     end
   end
 
