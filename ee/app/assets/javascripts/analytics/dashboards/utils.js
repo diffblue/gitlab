@@ -182,7 +182,7 @@ export const generateSparklineCharts = (timePeriods) =>
           tooltipLabel: CHART_TOOLTIP_UNITS[units],
           data: timePeriods.map((timePeriod) => [
             `${formatDate(timePeriod.start, 'mmm d')} - ${formatDate(timePeriod.end, 'mmm d')}`,
-            timePeriod[identifier].value,
+            timePeriod[identifier]?.value || 0,
           ]),
         },
       }),
