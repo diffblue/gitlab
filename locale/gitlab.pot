@@ -27126,6 +27126,9 @@ msgstr[1] ""
 msgid "Milestone due date"
 msgstr ""
 
+msgid "Milestone id(s) not found: %{milestones}"
+msgstr ""
+
 msgid "Milestone lists not available with your current license"
 msgstr ""
 
