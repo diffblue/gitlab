@@ -175,21 +175,21 @@ describe('IssuesLaneList', () => {
     });
 
     describe('when issue count exceeds max issue count', () => {
-      it('sets background to bg-danger-100', async () => {
+      it('sets background to red-100', async () => {
         store.state.fullBoardIssuesCount = { [mockList.id]: 4 };
         createComponent({ listProps: { maxIssueCount: 3 } });
-        const block = wrapper.find('.bg-danger-100');
+        const block = wrapper.find('.gl-bg-red-100');
         expect(block.exists()).toBe(true);
         expect(block.attributes('class')).toContain('gl-rounded-base');
       });
     });
 
     describe('when list issue count does NOT exceed list max issue count', () => {
-      it('does not sets background to bg-danger-100', () => {
+      it('does not set background to red-100', () => {
         store.state.fullBoardIssuesCount = { [mockList.id]: 2 };
         createComponent({ listProps: { maxIssueCount: 3 } });
 
-        expect(wrapper.find('.bg-danger-100').exists()).toBe(false);
+        expect(wrapper.find('.gl-bg-red-100').exists()).toBe(false);
       });
     });
   });

@@ -30,7 +30,7 @@ export default {
 
 <template>
   <div>
-    <div class="gl-responsive-table-row table-row-header text-2 bg-secondary-50 px-2" role="row">
+    <div class="gl-responsive-table-row table-row-header text-2 gl-bg-gray-50 px-2" role="row">
       <div
         v-for="header in tableHeaders"
         :key="header.label"
