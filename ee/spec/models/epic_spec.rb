@@ -237,6 +237,39 @@ RSpec.describe Epic, feature_category: :portfolio_management do
         end
       end
     end
+
+    describe 'maximum hierarchy depth' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:level_1) { create(:epic, group: group) }
+      let_it_be(:level_2) { create(:epic, parent: level_1, group: group) }
+      let_it_be(:level_3) { create(:epic, parent: level_2, group: group) }
+
+      before do
+        stub_const("EE::#{described_class}::MAX_HIERARCHY_DEPTH", 3)
+      end
+
+      context 'for a new epic' do
+        subject(:create_epic) { build(:epic, group: group, parent: parent) }
+
+        context 'when it below maximum depth' do
+          let(:parent) { level_2 }
+
+          it { is_expected.to be_valid }
+        end
+
+        context 'when goes above maximum depth' do
+          let(:parent) { level_3 }
+          let(:expected_error) { 'This epic cannot be added. One or more epics would exceed the maximum depth (3) from its most distant ancestor.' }
+
+          it 'is invalid' do
+            epic = create_epic
+
+            expect(epic).to be_invalid
+            expect(epic.errors[:parent]).to include(expected_error)
+          end
+        end
+      end
+    end
   end
 
   describe 'modules' do
