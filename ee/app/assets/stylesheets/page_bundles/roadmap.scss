@@ -250,7 +250,6 @@ html.group-epics-roadmap-html {
 .epic-details-cell,
 .epic-timeline-cell {
   float: left;
-  height: $item-height;
   border-bottom: $border-style;
 }
 
@@ -265,7 +264,7 @@ html.group-epics-roadmap-html {
   z-index: 10;
 
   &::after {
-    height: $item-height;
+    height: 100%;
   }
 }
 

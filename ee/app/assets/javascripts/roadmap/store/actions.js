@@ -346,3 +346,5 @@ export const setMilestonesType = ({ commit }, milestonesType) =>
   commit(types.SET_MILESTONES_TYPE, milestonesType);
 
 export const toggleMilestones = ({ commit }) => commit(types.TOGGLE_MILESTONES);
+
+export const toggleLabels = ({ commit }) => commit(types.TOGGLE_LABELS);

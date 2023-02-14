@@ -396,4 +396,18 @@ describe('Roadmap Store Mutations', () => {
       });
     });
   });
+
+  describe('TOGGLE_LABELS', () => {
+    it('Should toggle `isShowingLabels` on state', () => {
+      expect(state).toMatchObject({
+        isShowingLabels: false,
+      });
+
+      mutations[types.TOGGLE_LABELS](state);
+
+      expect(state).toMatchObject({
+        isShowingLabels: true,
+      });
+    });
+  });
 });

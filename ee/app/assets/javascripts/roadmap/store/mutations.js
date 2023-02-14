@@ -157,4 +157,8 @@ export default {
   [types.TOGGLE_MILESTONES](state) {
     state.isShowingMilestones = !state.isShowingMilestones;
   },
+
+  [types.TOGGLE_LABELS](state) {
+    state.isShowingLabels = !state.isShowingLabels;
+  },
 };

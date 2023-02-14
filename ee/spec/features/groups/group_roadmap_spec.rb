@@ -247,6 +247,26 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
         end
       end
 
+      describe 'roadmap labels settings' do
+        it 'does not render labels by default' do
+          page.within('.roadmap-container') do
+            expect(page).not_to have_selector('[data-testid="epic-labels"]')
+          end
+        end
+
+        it 'turns on labels' do
+          open_settings_sidebar
+
+          page.within('[data-testid="roadmap-labels-settings"]') do
+            click_button class: 'gl-toggle'
+          end
+
+          page.within('.roadmap-container') do
+            expect(page).to have_selector('[data-testid="epic-labels"]')
+          end
+        end
+      end
+
       it 'renders the filtered search bar correctly' do
         page.within('.content-wrapper .content .epics-filters') do
           expect(page).to have_css('.vue-filtered-search-bar-container')

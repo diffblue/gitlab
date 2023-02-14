@@ -126,7 +126,10 @@ export default {
 
 <template>
   <div class="epic-item-container">
-    <div :class="{ 'newly-added-epic': epic.newEpic }" class="epics-list-item clearfix">
+    <div
+      :class="{ 'newly-added-epic': epic.newEpic }"
+      class="epics-list-item gl-clearfix gl-display-flex gl-flex-direction-row gl-align-items-stretch"
+    >
       <epic-item-details
         :epic="epic"
         :current-group-id="currentGroupId"
@@ -139,7 +142,7 @@ export default {
       <span
         v-for="(timeframeItem, index) in timeframe"
         :key="index"
-        class="epic-timeline-cell"
+        class="epic-timeline-cell gl-display-flex"
         data-qa-selector="epic_timeline_cell"
       >
         <!--
