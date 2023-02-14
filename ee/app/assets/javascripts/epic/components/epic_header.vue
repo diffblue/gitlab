@@ -20,18 +20,18 @@ import ConfidentialityBadge from '~/vue_shared/components/confidentiality_badge.
 import DeleteIssueModal from '~/issues/show/components/delete_issue_modal.vue';
 
 import {
-  IssuableType,
   STATUS_CLOSED,
   STATUS_OPEN,
+  TYPE_EPIC,
   TYPE_ISSUE,
   WorkspaceType,
 } from '~/issues/constants';
 import epicUtils from '../utils/epic_utils';
 
 export default {
+  TYPE_EPIC,
   TYPE_ISSUE,
   WorkspaceType,
-  IssuableType,
   deleteModalId: 'delete-modal-id',
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -226,7 +226,7 @@ export default {
       </gl-dropdown>
     </div>
     <delete-issue-modal
-      :issue-type="$options.IssuableType.Epic"
+      :issue-type="$options.TYPE_EPIC"
       :modal-id="$options.deleteModalId"
       :title="$options.i18n.deleteButtonText"
     />

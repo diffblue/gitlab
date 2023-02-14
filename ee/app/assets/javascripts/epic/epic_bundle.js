@@ -8,7 +8,7 @@ import { parseIssuableData } from '~/issues/show/utils/parse_data';
 import { defaultClient } from '~/graphql_shared/issuable_client';
 import labelsSelectModule from '~/sidebar/components/labels/labels_select_vue/store';
 import getIssueStateQuery from '~/issues/show/queries/get_issue_state.query.graphql';
-import { IssuableType } from '~/issues/constants';
+import { TYPE_EPIC } from '~/issues/constants';
 
 import EpicApp from './components/epic_app.vue';
 import createStore from './store';
@@ -24,7 +24,7 @@ apolloProvider.clients.defaultClient.cache.writeQuery({
   data: {
     issueState: {
       isDirty: false,
-      issuableType: IssuableType.Epic,
+      issuableType: TYPE_EPIC,
     },
   },
 });
