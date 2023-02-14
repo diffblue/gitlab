@@ -1,7 +1,7 @@
 <script>
 import { GlLoadingIcon, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { mapState, mapActions, mapGetters } from 'vuex';
-
+import { TYPE_ISSUE } from '~/issues/constants';
 import { __, sprintf } from '~/locale';
 import AddItemForm from '~/related_issues/components/add_issuable_form.vue';
 import SlotSwitch from '~/vue_shared/components/slot_switch.vue';
@@ -110,7 +110,7 @@ export default {
       return this.issuableType === issuableTypesMap.EPIC && this.autoCompleteEpics;
     },
     enableIssuesAutoComplete() {
-      return this.issuableType === issuableTypesMap.ISSUE && this.autoCompleteIssues;
+      return this.issuableType === TYPE_ISSUE && this.autoCompleteIssues;
     },
   },
   mounted() {

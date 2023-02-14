@@ -1,7 +1,7 @@
 <script>
 import { GlAlert, GlPopover, GlIcon, GlButton } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
-
+import { TYPE_ISSUE } from '~/issues/constants';
 import { issuableTypesMap } from '~/related_issues/constants';
 import { __ } from '~/locale';
 import { i18n, treeTitle, ParentType } from '../constants';
@@ -66,7 +66,7 @@ export default {
     showAddIssueForm() {
       this.setItemInputValue('');
       this.toggleAddItemForm({
-        issuableType: issuableTypesMap.ISSUE,
+        issuableType: TYPE_ISSUE,
         toggleState: true,
       });
     },
