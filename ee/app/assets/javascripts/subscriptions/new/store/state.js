@@ -66,6 +66,8 @@ export default ({
     creditCardDetails: {},
     isLoadingPaymentMethod: false,
     isConfirmingOrder: false,
+    isInvoicePreviewLoading: false,
+    invoicePreview: null,
     taxRate: TAX_RATE,
     startDate: new Date(Date.now()),
     source,

@@ -312,6 +312,34 @@ describe('Subscriptions Actions', () => {
     });
   });
 
+  describe('updateInvoicePreviewLoading', () => {
+    it('updates isInvoicePreviewLoading to the provided value', async () => {
+      await testAction(
+        actions.updateInvoicePreviewLoading,
+        true,
+        {},
+        [{ type: 'UPDATE_INVOICE_PREVIEW_LOADING', payload: true }],
+        [],
+      );
+    });
+  });
+
+  describe('updateInvoicePreview', () => {
+    it('updates invoicePreview to the provided value', async () => {
+      const invoicePreviewPayload = {
+        invoice: { amountWithoutTax: 10 },
+        invoiceItem: [{ chargeAmount: 10, processingType: constants.CHARGE_PROCESSING_TYPE }],
+      };
+      await testAction(
+        actions.updateInvoicePreview,
+        invoicePreviewPayload,
+        {},
+        [{ type: 'UPDATE_INVOICE_PREVIEW', payload: invoicePreviewPayload }],
+        [],
+      );
+    });
+  });
+
   describe('startLoadingZuoraScript', () => {
     it('updates isLoadingPaymentMethod to true', async () => {
       await testAction(

@@ -28,3 +28,7 @@ export const PurchaseEvent = Object.freeze({
   ERROR: 'error',
   ERROR_RESET: 'error-reset',
 });
+
+export const CHARGE_PROCESSING_TYPE = 'Charge';
+
+export const VALIDATION_ERROR_CODE = 'VALIDATION_ERROR';
