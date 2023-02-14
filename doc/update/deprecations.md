@@ -301,6 +301,20 @@ Review the details carefully before upgrading.
 We will be transitioning to a new IID as a result of moving requirements to a [work item type](https://docs.gitlab.com/ee/development/work_items.html#work-items-and-work-item-types). Users should begin using the new IID as support for the legacy IID and existing formatting will end in GitLab 17.0. The legacy requirement IID remains available until its removal in GitLab 17.0.
 
 </div>
+
+<div class="deprecation removal-160 breaking-change">
+
+### Trigger jobs can mirror downstream pipeline status exactly
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+In some cases, like when a downstream pipeline had the `passed with warnings` status, trigger jobs that were using [`strategy: depend`](https://docs.gitlab.com/ee/ci/yaml/index.html#strategydepend) did not mirror the status of the downstream pipeline exactly. In GitLab 16.0 trigger jobs will show the exact same status as the the downstream pipeline. If your pipeline relied on this behavior, you should update your pipeline to handle the more accurate status.
+
+</div>
 </div>
 
 <div class="announcement-milestone">
