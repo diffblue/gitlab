@@ -49121,6 +49121,9 @@ msgstr ""
 msgid "You must provide a valid current password"
 msgstr ""
 
+msgid "You must provide a valid current password."
+msgstr ""
+
 msgid "You must provide at least one filter argument for this query"
 msgstr ""
 
@@ -49358,6 +49361,9 @@ msgid "Your SSH key was deleted"
 msgstr ""
 
 msgid "Your SSH keys (%{count})"
+msgstr ""
+
+msgid "Your Time-based OTP device was registered!"
 msgstr ""
 
 msgid "Your To-Do List"
