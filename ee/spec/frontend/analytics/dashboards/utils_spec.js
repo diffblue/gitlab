@@ -31,6 +31,8 @@ import {
   mockMonthToDateApiResponse,
   mockChartsTimePeriods,
   mockChartData,
+  mockSubsetChartsTimePeriods,
+  mockSubsetChartData,
 } from './mock_data';
 
 describe('Analytics Dashboards utils', () => {
@@ -120,6 +122,16 @@ describe('Analytics Dashboards utils', () => {
 
     it('returns the chart data for each metric', () => {
       expect(res).toEqual(mockChartData);
+    });
+
+    describe('with metrics keys', () => {
+      beforeEach(() => {
+        res = generateSparklineCharts(mockSubsetChartsTimePeriods);
+      });
+
+      it('returns 0 for each missing metric', () => {
+        expect(res).toEqual(mockSubsetChartData);
+      });
     });
   });
 
