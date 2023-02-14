@@ -289,7 +289,7 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :authentication_an
             end.not_to change { group_with_member_roles.member_roles.count }
 
             expect(response).to have_gitlab_http_status(:not_found)
-            expect(json_response['message']).to eq('Linked Member Role not found')
+            expect(json_response['message']).to eq('Member Role not found')
           end
         end
       end

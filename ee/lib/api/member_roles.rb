@@ -39,7 +39,7 @@ module API
           type: Integer,
           values: Gitlab::Access.all_values,
           desc: 'Base Access Level for the configured role',
-          documentation: { example: 40 }
+          documentation: { example: 10 }
         )
         optional 'read_code', type: Boolean, desc: 'Permission to read code'
       end
@@ -61,7 +61,7 @@ module API
           code: 204
         ]
         failure [
-          code: 404, message: 'Linked Member Role not found'
+          code: 404, message: 'Member Role not found'
         ]
         tags ["group_member_roles"]
       end
@@ -84,7 +84,7 @@ module API
           member_role.destroy
           no_content!
         else
-          render_api_error!('Linked Member Role not found', 404)
+          render_api_error!('Member Role not found', 404)
         end
       end
     end
