@@ -33,6 +33,7 @@ module Types
           type: GraphQL::Types::Boolean,
           method: :approved?,
           null: true,
+          calls_gitaly: true,
           description: 'Indicates if the rule is satisfied.'
 
     field :overridden,

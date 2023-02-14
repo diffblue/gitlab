@@ -19,15 +19,15 @@ export default {
   },
   computed: {
     pendingApprovalsText() {
-      if (!this.rule.approvals_required) {
+      if (!this.rule.approvalsRequired) {
         return __('Optional');
       }
       if (this.hasInvalidRules) {
         return __('Invalid');
       }
       return sprintf(__('%{count} of %{total}'), {
-        count: this.rule.approved_by.length,
-        total: this.rule.approvals_required,
+        count: this.rule.approvedBy.nodes.length,
+        total: this.rule.approvalsRequired,
       });
     },
     hasInvalidRules() {

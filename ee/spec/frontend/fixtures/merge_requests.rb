@@ -135,5 +135,61 @@ RSpec.describe Projects::MergeRequestsController, '(JavaScript fixtures in EE co
         expect_graphql_errors_to_be_empty
       end
     end
+
+    context 'for approval rules' do
+      let_it_be(:user1) { create(:user) }
+      let_it_be(:user2) { create(:user) }
+
+      before do
+        stub_licensed_features(multiple_approval_rules: true)
+
+        create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 2, name: 'Lorem',
+          users: [user1, user2, create(:user)])
+        create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 1, name: 'Ipsum',
+          users: [create(:user)])
+        create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 0, name: 'Dolar',
+          users: [create(:user)])
+        create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 3, users: [user1],
+          rule_type: :any_approver)
+
+        create(:approval, merge_request: merge_request, user: user1)
+        create(:approval, merge_request: merge_request, user: user2)
+        create(:note, noteable: merge_request, project: project, author: user1)
+        create(:note, noteable: merge_request, project: project, author: user2)
+      end
+
+      context 'without code owners' do
+        base_input_path = 'vue_merge_request_widget/components/approvals/queries/'
+        base_output_path = 'graphql/merge_requests/approvals/'
+        query_name = 'approval_rules.query.graphql'
+
+        it "#{base_output_path}approval_rules.json" do
+          query = get_graphql_query_as_string("#{base_input_path}#{query_name}", ee: true)
+
+          post_graphql(query, current_user: user, variables: variables)
+
+          expect_graphql_errors_to_be_empty
+        end
+      end
+
+      context 'with code owners' do
+        base_input_path = 'vue_merge_request_widget/components/approvals/queries/'
+        base_output_path = 'graphql/merge_requests/approvals/'
+        query_name = 'approval_rules.query.graphql'
+
+        before do
+          create(:code_owner_rule, name: '*.js', section: 'Frontend', approvals_required: 3,
+            merge_request: merge_request, users: [user1, user2])
+        end
+
+        it "#{base_output_path}approval_rules_with_code_owner.json" do
+          query = get_graphql_query_as_string("#{base_input_path}#{query_name}", ee: true)
+
+          post_graphql(query, current_user: user, variables: variables)
+
+          expect_graphql_errors_to_be_empty
+        end
+      end
+    end
   end
 end
