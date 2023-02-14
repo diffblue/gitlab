@@ -15,6 +15,7 @@ export const mockTestCase = {
 export const mockProvide = {
   projectFullPath: 'gitlab-org/gitlab-test',
   testCaseNewPath: '/gitlab-org/gitlab-test/-/quality/test_cases/new',
+  testCasesPath: '/root/rails/-/quality/test_cases',
   testCaseId: mockIssuable.iid,
   canEditTestCase: true,
   canMoveTestCase: true,
