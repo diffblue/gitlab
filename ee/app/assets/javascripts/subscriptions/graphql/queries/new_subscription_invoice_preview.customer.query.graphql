@@ -1,0 +1,11 @@
+query GetInvoicePreview($planId: ID!, $quantity: Int!) {
+  invoicePreview(planId: $planId, quantity: $quantity) {
+    invoice {
+      amountWithoutTax
+    }
+    invoiceItem {
+      chargeAmount
+      processingType
+    }
+  }
+}

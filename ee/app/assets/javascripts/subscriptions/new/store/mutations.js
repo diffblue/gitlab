@@ -72,4 +72,12 @@ export default {
   [types.UPDATE_IS_CONFIRMING_ORDER](state, isConfirmingOrder) {
     state.isConfirmingOrder = isConfirmingOrder;
   },
+
+  [types.UPDATE_INVOICE_PREVIEW](state, invoicePreview) {
+    state.invoicePreview = invoicePreview;
+  },
+
+  [types.UPDATE_INVOICE_PREVIEW_LOADING](state, isLoading) {
+    state.isInvoicePreviewLoading = isLoading;
+  },
 };

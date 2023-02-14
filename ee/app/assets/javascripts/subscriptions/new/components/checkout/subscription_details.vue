@@ -90,6 +90,7 @@ export default {
       'isGroupSelected',
       'selectedGroupName',
       'isSelectedGroupPresent',
+      'hasValidPriceDetails',
     ]),
     selectedPlanModel: {
       get() {
@@ -167,6 +168,7 @@ export default {
     },
     isValid() {
       return (
+        this.hasValidPriceDetails &&
         this.hasSelectedPlan &&
         this.hasAtLeastOneUser &&
         this.isSelectedUsersEqualOrGreaterThanGroupUsers &&

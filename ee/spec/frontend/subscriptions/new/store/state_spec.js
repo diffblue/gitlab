@@ -184,6 +184,14 @@ describe('projectsSelector default state', () => {
     expect(state.zipCode).toBeNull();
   });
 
+  it('sets the isInvoicePreviewLoading to false', () => {
+    expect(state.isInvoicePreviewLoading).toBe(false);
+  });
+
+  it('sets the invoicePreview to null', () => {
+    expect(state.invoicePreview).toBe(null);
+  });
+
   it('sets the countryOptions to an empty array', () => {
     expect(state.countryOptions).toEqual([]);
   });

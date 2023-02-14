@@ -13,6 +13,7 @@ import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import getBillableMembersCountQuery from 'ee/subscriptions/graphql/queries/billable_members_count.query.graphql';
 import waitForPromises from 'helpers/wait_for_promises';
+import { mockInvoicePreviewBronze } from 'ee_jest/subscriptions/mock_data';
 
 jest.mock('~/lib/logger');
 
@@ -551,6 +552,7 @@ describe('Subscription Details', () => {
         await createComponent({ store, billableMembersCountMock });
         store.commit(types.UPDATE_ORGANIZATION_NAME, 'Organization name');
         store.commit(types.UPDATE_NUMBER_OF_USERS, 14);
+        store.commit(types.UPDATE_INVOICE_PREVIEW, mockInvoicePreviewBronze.data.invoicePreview);
         await nextTick();
       });
 
@@ -562,6 +564,14 @@ describe('Subscription Details', () => {
         store.commit(types.UPDATE_SELECTED_PLAN, null);
 
         await nextTick();
+        expect(isStepValid()).toBe(false);
+      });
+
+      it('should be invalid when price details are invalid', async () => {
+        store.commit(types.UPDATE_INVOICE_PREVIEW, null);
+
+        await nextTick();
+
         expect(isStepValid()).toBe(false);
       });
 
@@ -599,6 +609,7 @@ describe('Subscription Details', () => {
             groupData: JSON.stringify([{ id: 111, name: 'Just me group', users: 1 }]),
           }),
         );
+        store.commit(types.UPDATE_INVOICE_PREVIEW, mockInvoicePreviewBronze.data.invoicePreview);
         return createComponent({ apolloProvider: mockApollo, store });
       });
 
@@ -633,6 +644,7 @@ describe('Subscription Details', () => {
         );
         await createComponent({ apolloProvider: mockApollo, store });
         store.commit(types.UPDATE_SELECTED_GROUP, secondGroup.id);
+        store.commit(types.UPDATE_INVOICE_PREVIEW, mockInvoicePreviewBronze.data.invoicePreview);
         await nextTick();
       });
 
@@ -679,6 +691,7 @@ describe('Subscription Details', () => {
       store.commit(types.UPDATE_SELECTED_PLAN, 'firstPlanId');
       store.commit(types.UPDATE_ORGANIZATION_NAME, 'My Organization');
       store.commit(types.UPDATE_NUMBER_OF_USERS, 25);
+      store.commit(types.UPDATE_INVOICE_PREVIEW, mockInvoicePreviewBronze.data.invoicePreview);
       return createComponent({ store });
     });
 

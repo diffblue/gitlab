@@ -1,5 +1,5 @@
 <script>
-import { GlLink, GlSprintf } from '@gitlab/ui';
+import { GlLink, GlSprintf, GlLoadingIcon } from '@gitlab/ui';
 import { mapState, mapGetters } from 'vuex';
 import { s__ } from '~/locale';
 import Tracking from '~/tracking';
@@ -9,10 +9,11 @@ export default {
   components: {
     GlLink,
     GlSprintf,
+    GlLoadingIcon,
   },
   mixins: [formattingMixins, Tracking.mixin()],
   computed: {
-    ...mapState(['startDate', 'taxRate', 'numberOfUsers']),
+    ...mapState(['startDate', 'taxRate', 'numberOfUsers', 'isInvoicePreviewLoading']),
     ...mapGetters([
       'selectedPlanText',
       'selectedPlanPrice',
@@ -21,9 +22,10 @@ export default {
       'vat',
       'totalAmount',
       'usersPresent',
+      'hideAmount',
     ]),
     taxAmount() {
-      return this.taxRate ? this.formatAmount(this.vat, this.usersPresent) : '–';
+      return this.taxRate ? this.formatAmount(this.vat, !this.hideAmount) : '–';
     },
     taxLine() {
       return `${this.$options.i18n.tax} ${this.$options.i18n.taxNote}`;
@@ -44,24 +46,28 @@ export default {
 <template>
   <div>
     <div class="gl-display-flex gl-justify-content-space-between gl-font-weight-bold gl-mb-3">
-      <div class="js-selected-plan" data-qa-selector="selected_plan">
+      <div data-testid="selected-plan" data-qa-selector="selected_plan">
         {{ sprintf($options.i18n.selectedPlanText, { selectedPlanText }) }}
-        <span v-if="usersPresent" class="js-number-of-users" data-qa-selector="number_of_users">{{
-          sprintf($options.i18n.numberOfUsers, { numberOfUsers })
-        }}</span>
+        <span
+          v-if="usersPresent"
+          data-testid="number-of-users"
+          data-qa-selector="number_of_users"
+          >{{ sprintf($options.i18n.numberOfUsers, { numberOfUsers }) }}</span
+        >
       </div>
-      <div class="js-amount" data-qa-selector="total">
-        {{ formatAmount(totalExVat, usersPresent) }}
+      <gl-loading-icon v-if="isInvoicePreviewLoading" inline class="gl-my-auto gl-ml-3" />
+      <div v-else class="gl-ml-3" data-testid="amount" data-qa-selector="total">
+        {{ formatAmount(totalExVat, !hideAmount) }}
       </div>
     </div>
-    <div class="gl-text-gray-500 js-per-user">
+    <div v-if="!isInvoicePreviewLoading" class="gl-text-gray-500" data-testid="per-user">
       {{
         sprintf($options.i18n.pricePerUserPerYear, {
           selectedPlanPrice: selectedPlanPrice.toLocaleString(),
         })
       }}
     </div>
-    <div class="gl-text-gray-500 js-dates">
+    <div v-if="!isInvoicePreviewLoading" class="gl-text-gray-500" data-testid="dates">
       {{
         sprintf($options.i18n.dates, {
           startDate: formatDate(startDate),
@@ -74,7 +80,8 @@ export default {
       <div class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-my-5"></div>
       <div class="gl-display-flex gl-justify-content-space-between gl-text-gray-500 gl-mb-2">
         <div>{{ $options.i18n.subtotal }}</div>
-        <div class="js-total-ex-vat">{{ formatAmount(totalExVat, usersPresent) }}</div>
+        <gl-loading-icon v-if="isInvoicePreviewLoading" inline class="gl-my-auto" />
+        <div v-else data-testid="total-ex-vat">{{ formatAmount(totalExVat, !hideAmount) }}</div>
       </div>
       <div class="gl-display-flex gl-justify-content-space-between gl-text-gray-500">
         <div data-testid="tax-info-line">
@@ -91,14 +98,16 @@ export default {
             </template>
           </gl-sprintf>
         </div>
-        <div class="js-vat">{{ taxAmount }}</div>
+        <gl-loading-icon v-if="isInvoicePreviewLoading" inline class="gl-my-auto" />
+        <div v-else data-testid="vat">{{ taxAmount }}</div>
       </div>
     </div>
     <div class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-my-5"></div>
     <div class="gl-display-flex gl-justify-content-space-between gl-font-lg gl-font-weight-bold">
       <div>{{ $options.i18n.total }}</div>
-      <div class="js-total-amount" data-qa-selector="total_amount">
-        {{ formatAmount(totalAmount, usersPresent) }}
+      <gl-loading-icon v-if="isInvoicePreviewLoading" inline class="gl-my-auto" />
+      <div v-else data-testid="total-amount" data-qa-selector="total_amount">
+        {{ formatAmount(totalAmount, !hideAmount) }}
       </div>
     </div>
   </div>

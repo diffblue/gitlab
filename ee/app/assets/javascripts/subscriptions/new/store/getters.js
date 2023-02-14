@@ -1,5 +1,5 @@
 import { s__ } from '~/locale';
-import { NEW_GROUP, ULTIMATE } from '../constants';
+import { NEW_GROUP, ULTIMATE, CHARGE_PROCESSING_TYPE } from '../constants';
 
 export const selectedPlanText = (state, getters) => getters.selectedPlanDetails.text;
 
@@ -37,11 +37,25 @@ export const confirmOrderParams = (state, getters) => ({
 export const endDate = (state) =>
   new Date(state.startDate).setFullYear(state.startDate.getFullYear() + 1);
 
-export const totalExVat = (state, getters) => state.numberOfUsers * getters.selectedPlanPrice;
+export const totalExVat = (state, getters) => {
+  if (getters.hideAmount) {
+    return 0;
+  }
+
+  return getters.chargeItem?.chargeAmount ?? 0;
+};
 
 export const vat = (state, getters) => state.taxRate * getters.totalExVat;
 
-export const totalAmount = (_, getters) => getters.totalExVat + getters.vat;
+export const totalAmount = (state, getters) => {
+  if (getters.hideAmount) {
+    return 0;
+  }
+
+  const amountWithoutTax = state.invoicePreview?.invoice?.amountWithoutTax ?? 0;
+
+  return amountWithoutTax + getters.vat;
+};
 
 export const name = (state, getters) => {
   if (state.isSetupForCompany && state.organizationName) {
@@ -79,3 +93,20 @@ export const selectedGroupName = (state, getters) => {
 
 export const selectedGroupId = (state, getters) =>
   getters.isGroupSelected ? state.selectedGroup : null;
+
+export const hideAmount = (state, getters) => {
+  if (!getters.usersPresent) {
+    return true;
+  }
+
+  if (!gon.features?.useInvoicePreviewApiInSaasPurchase) {
+    return false;
+  }
+
+  return state.isInvoicePreviewLoading || !getters.hasValidPriceDetails;
+};
+
+export const hasValidPriceDetails = (state) => Boolean(state.invoicePreview);
+
+export const chargeItem = (state) =>
+  state.invoicePreview?.invoiceItem?.find((item) => item.processingType === CHARGE_PROCESSING_TYPE);

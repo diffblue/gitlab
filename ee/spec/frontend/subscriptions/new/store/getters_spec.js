@@ -1,5 +1,6 @@
 import * as constants from 'ee/subscriptions/new/constants';
 import * as getters from 'ee/subscriptions/new/store/getters';
+import { mockChargeItem, mockInvoicePreviewBronze } from 'ee_jest/subscriptions/mock_data';
 
 const state = {
   isSetupForCompany: true,
@@ -64,8 +65,28 @@ describe('Subscriptions Getters', () => {
   });
 
   describe('totalExVat', () => {
-    it('returns the number of users times the selected plan price', () => {
-      expect(getters.totalExVat({ numberOfUsers: 5 }, { selectedPlanPrice: 10 })).toBe(50);
+    it('returns the total value excluding vat', () => {
+      expect(
+        getters.totalExVat(
+          { numberOfUsers: 5 },
+          { chargeItem: mockChargeItem, hideAmount: false, selectedPlanPrice: 10 },
+        ),
+      ).toBe(48);
+    });
+
+    it('returns 0 if hideAmount is true', () => {
+      expect(
+        getters.totalExVat(
+          { numberOfUsers: 5 },
+          { chargeItem: mockChargeItem, hideAmount: true, selectedPlanPrice: 10 },
+        ),
+      ).toBe(0);
+    });
+
+    it(`returns 0 if charge item doesn't exist`, () => {
+      expect(
+        getters.totalExVat({ numberOfUsers: 5 }, { hideAmount: false, selectedPlanPrice: 10 }),
+      ).toBe(0);
     });
   });
 
@@ -77,7 +98,82 @@ describe('Subscriptions Getters', () => {
 
   describe('totalAmount', () => {
     it('returns the total ex vat plus the vat', () => {
-      expect(getters.totalAmount({}, { totalExVat: 100, vat: 8 })).toBe(108);
+      expect(
+        getters.totalAmount(
+          { invoicePreview: mockInvoicePreviewBronze.data.invoicePreview },
+          { hideAmount: false, vat: 8 },
+        ),
+      ).toBe(56);
+    });
+
+    it('returns 0 if hideAmount is true', () => {
+      expect(
+        getters.totalExVat(
+          { invoicePreview: mockInvoicePreviewBronze.data.invoicePreview },
+          { hideAmount: false, vat: 8 },
+        ),
+      ).toBe(0);
+    });
+  });
+
+  describe('hideAmount', () => {
+    it('returns true if no users are present', () => {
+      expect(getters.hideAmount({}, { usersPresent: false })).toBe(true);
+    });
+
+    it('returns false if users are present and not using invoice preview api', () => {
+      gon.features = { useInvoicePreviewApiInSaasPurchase: false };
+
+      expect(getters.hideAmount({}, { usersPresent: true })).toBe(false);
+    });
+
+    it('returns true if users are present when using invoice preview api and when loading', () => {
+      gon.features = { useInvoicePreviewApiInSaasPurchase: true };
+
+      expect(getters.hideAmount({ isInvoicePreviewLoading: true }, { usersPresent: true })).toBe(
+        true,
+      );
+    });
+
+    it('returns true if users are present when using invoice preview api and invoice preview is not valid', () => {
+      gon.features = { useInvoicePreviewApiInSaasPurchase: true };
+
+      expect(getters.hideAmount({}, { usersPresent: true, hasValidPriceDetails: false })).toBe(
+        true,
+      );
+    });
+
+    it('returns false if users are present when using invoice preview api and invoice preview is valid', () => {
+      gon.features = { useInvoicePreviewApiInSaasPurchase: true };
+
+      expect(getters.hideAmount({}, { usersPresent: true, hasValidPriceDetails: true })).toBe(
+        false,
+      );
+    });
+  });
+
+  describe('hasValidPriceDetails', () => {
+    it('returns true if invoice preview data exists', () => {
+      expect(
+        getters.hasValidPriceDetails({
+          invoicePreview: mockInvoicePreviewBronze.data.invoicePreview,
+        }),
+      ).toBe(true);
+    });
+
+    it(`returns false if invoice preview data doesn't exist`, () => {
+      expect(getters.hasValidPriceDetails({ invoicePreview: null })).toBe(false);
+    });
+  });
+
+  describe('chargeItem', () => {
+    it('returns charge item when present', () => {
+      const invoicePreview = { invoiceItem: [mockChargeItem] };
+      expect(getters.chargeItem({ invoicePreview })).toBe(mockChargeItem);
+    });
+
+    it(`returns false if invoice preview data doesn't exist`, () => {
+      expect(getters.chargeItem({ invoicePreview: null })).toBe(undefined);
     });
   });
 

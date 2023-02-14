@@ -98,3 +98,51 @@ export const stateData = {
   stepList: STEPS,
   activeStep: STEPS[0],
 };
+
+export const mockChargeItem = {
+  chargeAmount: 48,
+  processingType: 'Charge',
+};
+
+export const mockInvoicePreviewBronze = {
+  data: {
+    invoicePreview: {
+      invoice: {
+        amountWithoutTax: 48,
+      },
+      invoiceItem: [mockChargeItem],
+    },
+  },
+};
+
+export const mockInvoicePreviewUltimate = {
+  data: {
+    invoicePreview: {
+      invoice: {
+        amountWithoutTax: 1188,
+      },
+      invoiceItem: [
+        {
+          chargeAmount: 1188,
+          processingType: 'Charge',
+        },
+      ],
+    },
+  },
+};
+
+export const mockInvoicePreviewUltimateWithMultipleUsers = {
+  data: {
+    invoicePreview: {
+      invoice: {
+        amountWithoutTax: 3564,
+      },
+      invoiceItem: [
+        {
+          chargeAmount: 3564,
+          processingType: 'Charge',
+        },
+      ],
+    },
+  },
+};

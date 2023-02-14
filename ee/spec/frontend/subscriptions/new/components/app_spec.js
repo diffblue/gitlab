@@ -15,6 +15,8 @@ jest.mock('~/flash');
 describe('App component', () => {
   let wrapper;
 
+  const findModalComponent = () => wrapper.findComponent(Modal);
+  const findOrderSummaryComponent = () => wrapper.findComponent(OrderSummary);
   const findConfirmOrderDesktop = () => wrapper.findByTestId('confirm-order-desktop');
   const findConfirmOrderMobile = () => wrapper.findByTestId('confirm-order-mobile');
 
@@ -47,7 +49,7 @@ describe('App component', () => {
       });
 
       it('renders the modal', () => {
-        expect(wrapper.findComponent(Modal).exists()).toBe(false);
+        expect(findModalComponent().exists()).toBe(false);
       });
     });
 
@@ -62,7 +64,7 @@ describe('App component', () => {
       });
 
       it('renders the modal', () => {
-        expect(wrapper.findComponent(Modal).exists()).toBe(true);
+        expect(findModalComponent().exists()).toBe(true);
       });
     });
   });
@@ -77,7 +79,7 @@ describe('App component', () => {
     });
 
     it('renders order summary', () => {
-      expect(wrapper.findComponent(OrderSummary).exists()).toBe(true);
+      expect(findOrderSummaryComponent().exists()).toBe(true);
     });
   });
 

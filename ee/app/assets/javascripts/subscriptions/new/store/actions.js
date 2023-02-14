@@ -114,6 +114,14 @@ export const updateZipCode = ({ commit }, zipCode) => {
   commit(types.UPDATE_ZIP_CODE, zipCode);
 };
 
+export const updateInvoicePreview = ({ commit }, invoicePreview) => {
+  commit(types.UPDATE_INVOICE_PREVIEW, invoicePreview);
+};
+
+export const updateInvoicePreviewLoading = ({ commit }, isLoading) => {
+  commit(types.UPDATE_INVOICE_PREVIEW_LOADING, isLoading);
+};
+
 export const startLoadingZuoraScript = ({ commit }) =>
   commit(types.UPDATE_IS_LOADING_PAYMENT_METHOD, true);
 
