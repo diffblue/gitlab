@@ -39873,9 +39873,6 @@ msgstr ""
 msgid "Sign in"
 msgstr ""
 
-msgid "Sign in / Register"
-msgstr ""
-
 msgid "Sign in as a user with the matching email address, add the email to this account, or sign-up for a new account using the matching email."
 msgstr ""
 
