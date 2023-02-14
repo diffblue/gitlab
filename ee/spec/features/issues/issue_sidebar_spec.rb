@@ -18,7 +18,7 @@ RSpec.describe 'Issue Sidebar', feature_category: :team_planning do
     sign_in(user)
   end
 
-  context 'Assignees', :js do
+  context 'for Assignees', :js do
     let(:user2) { create(:user) }
     let(:issue2) { create(:issue, project: project, author: user2) }
 
@@ -33,7 +33,7 @@ RSpec.describe 'Issue Sidebar', feature_category: :team_planning do
     end
   end
 
-  context 'updating weight', :js do
+  context 'when updating weight', :js do
     before do
       project.add_maintainer(user)
       visit_issue(project, issue)
@@ -105,7 +105,7 @@ RSpec.describe 'Issue Sidebar', feature_category: :team_planning do
     end
   end
 
-  context 'health status', :js do
+  context 'for health status', :js do
     before do
       project.add_developer(user)
     end
@@ -145,11 +145,30 @@ RSpec.describe 'Issue Sidebar', feature_category: :team_planning do
     end
   end
 
-  context 'Iterations', :js do
+  context 'for Iterations', :js do
     context 'when iterations feature available' do
       let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group, active: true) }
-      let_it_be(:iteration) { create(:iteration, iterations_cadence: iteration_cadence, group: group, start_date: 1.day.from_now, due_date: 2.days.from_now) }
-      let_it_be(:iteration2) { create(:iteration, iterations_cadence: iteration_cadence, group: group, start_date: 2.days.ago, due_date: 1.day.ago, state: 'closed', skip_future_date_validation: true) }
+      let_it_be(:iteration) do
+        create(
+          :iteration,
+          iterations_cadence: iteration_cadence,
+          group: group,
+          start_date: 1.day.from_now,
+          due_date: 2.days.from_now
+        )
+      end
+
+      let_it_be(:iteration2) do
+        create(
+          :iteration,
+          iterations_cadence: iteration_cadence,
+          group: group,
+          start_date: 2.days.ago,
+          due_date: 1.day.ago,
+          state: 'closed',
+          skip_future_date_validation: true
+        )
+      end
 
       before do
         stub_licensed_features(iterations: true)
@@ -185,7 +204,9 @@ RSpec.describe 'Issue Sidebar', feature_category: :team_planning do
 
       context 'when searching iteration by its cadence title', :aggregate_failures do
         let_it_be(:plan_cadence) { create(:iterations_cadence, title: 'plan cadence', group: group, active: true) }
-        let_it_be(:plan_iteration) { create(:iteration, :with_due_date, iterations_cadence: plan_cadence, start_date: 1.week.from_now) }
+        let_it_be(:plan_iteration) do
+          create(:iteration, :with_due_date, iterations_cadence: plan_cadence, start_date: 1.week.from_now)
+        end
 
         it "returns the correct iteration" do
           find_and_click_edit_iteration
@@ -246,7 +267,7 @@ RSpec.describe 'Issue Sidebar', feature_category: :team_planning do
     end
   end
 
-  context 'escalation policy', :js do
+  context 'with escalation policy', :js do
     it 'is not available for default issue type' do
       expect(page).not_to have_selector('.block.escalation-policy')
     end

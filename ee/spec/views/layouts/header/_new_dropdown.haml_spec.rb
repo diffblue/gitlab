@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe 'layouts/header/_new_dropdown' do
-  let_it_be(:user) { create(:user) }
+RSpec.describe 'layouts/header/_new_dropdown', feature_category: :navigation do
+  let_it_be(:user) { create(:user) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
 
   before do
     allow(view).to receive(:current_user).and_return(user)
   end
 
-  context 'general menu links' do
+  context 'with general menu links' do
     it "renders a 'New project/repository' link" do
       render
 
@@ -17,8 +17,8 @@ RSpec.describe 'layouts/header/_new_dropdown' do
     end
   end
 
-  context 'group-specific links' do
-    let_it_be(:group) { create(:group) }
+  context 'with group-specific links' do
+    let_it_be(:group) { create(:group) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
 
     before do
       assign(:group, group)

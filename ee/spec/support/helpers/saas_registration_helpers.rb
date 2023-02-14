@@ -55,7 +55,11 @@ module SaasRegistrationHelpers
 
   def expect_to_be_in_learn_gitlab
     expect(page).to have_content('Learn GitLab')
-    expect(page).to have_content('GitLab is better with colleagues!')
+
+    page.within('[data-testid="invite-modal"]') do
+      expect(page).to have_content('GitLab is better with colleagues!')
+      expect(page).to have_content('Congratulations on creating your project')
+    end
   end
 
   def expect_to_be_in_continuous_onboarding

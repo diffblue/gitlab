@@ -2,30 +2,28 @@
 
 require 'spec_helper'
 
-RSpec.describe Nav::TopNavHelper do
+RSpec.describe Nav::TopNavHelper, feature_category: :navigation do
   describe '#top_nav_view_model' do
-    let_it_be(:user) { build_stubbed(:user) }
-
+    let(:user) { build_stubbed(:user) }
     let(:current_user) { user }
     let(:with_environments) { false }
     let(:with_operations) { false }
     let(:with_security) { false }
     let(:with_projects) { false }
-
     let(:with_geo_secondary) { false }
     let(:with_geo_primary_node_configured) { false }
 
-    let(:subject) { helper.top_nav_view_model(project: nil, group: nil) }
+    subject(:view_model) { helper.top_nav_view_model(project: nil, group: nil) }
 
     before do
       stub_application_setting(snowplow_enabled: true)
 
       allow(helper).to receive(:current_user) { current_user }
-      allow(helper).to receive(:header_link?).with(anything) { false }
+      allow(helper).to receive(:header_link?).with(anything).and_return(false)
 
       # Defaulting all `dashboard_nav_link?` calls to false ensures the CE-specific behavior
       # is not tested in this EE spec
-      allow(helper).to receive(:dashboard_nav_link?).with(anything) { false }
+      allow(helper).to receive(:dashboard_nav_link?).with(anything).and_return(false)
       allow(helper).to receive(:dashboard_nav_link?).with(:environments) { with_environments }
       allow(helper).to receive(:dashboard_nav_link?).with(:operations) { with_operations }
       allow(helper).to receive(:dashboard_nav_link?).with(:security) { with_security }
@@ -52,7 +50,7 @@ RSpec.describe Nav::TopNavHelper do
           id: 'environments',
           title: 'Environments'
         )
-        expect(subject[:primary]).to eq([expected_header, expected_primary])
+        expect(view_model[:primary]).to eq([expected_header, expected_primary])
       end
     end
 
@@ -73,7 +71,7 @@ RSpec.describe Nav::TopNavHelper do
           id: 'operations',
           title: 'Operations'
         )
-        expect(subject[:primary]).to eq([expected_header, expected_primary])
+        expect(view_model[:primary]).to eq([expected_header, expected_primary])
       end
     end
 
@@ -94,7 +92,7 @@ RSpec.describe Nav::TopNavHelper do
           id: 'security',
           title: 'Security'
         )
-        expect(subject[:primary]).to eq([expected_header, expected_primary])
+        expect(view_model[:primary]).to eq([expected_header, expected_primary])
       end
     end
 
@@ -119,13 +117,13 @@ RSpec.describe Nav::TopNavHelper do
           id: 'geo',
           title: 'Go to primary site'
         )
-        expect(subject[:secondary]).to eq([expected_secondary])
+        expect(view_model[:secondary]).to eq([expected_secondary])
       end
     end
 
     context 'with projects' do
       let(:with_projects) { true }
-      let(:projects_view) { subject[:views][:projects] }
+      let(:projects_view) { view_model[:views][:projects] }
 
       it 'has expected :primary' do
         expected_header = ::Gitlab::Nav::TopNavMenuHeader.build(
@@ -143,7 +141,7 @@ RSpec.describe Nav::TopNavHelper do
           title: 'Projects',
           view: 'projects'
         )
-        expect(subject[:primary]).to eq([expected_header, expected_primary])
+        expect(view_model[:primary]).to eq([expected_header, expected_primary])
       end
 
       context 'when licensed feature is available' do

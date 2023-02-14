@@ -2,9 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe 'projects/project_members/index', :aggregate_failures do
-  let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :empty_repo, :with_namespace_settings).present(current_user: user) }
+RSpec.describe 'projects/project_members/index', :aggregate_failures, feature_category: :projects do
+  let_it_be(:user) { create(:user) } # rubocop:todo RSpec/FactoryBot/AvoidCreate
+  let_it_be(:project, reload: true) do
+    create(:project, :empty_repo, :with_namespace_settings).present(current_user: user) # rubocop:todo RSpec/FactoryBot/AvoidCreate
+  end
 
   before do
     allow(view).to receive(:project_members_app_data_json).and_return({})
@@ -54,7 +56,7 @@ RSpec.describe 'projects/project_members/index', :aggregate_failures do
     end
 
     context 'when managing members text is present' do
-      let_it_be(:project) { create(:project, group: create(:group)) }
+      let_it_be(:project) { create(:project, group: create(:group)) } # rubocop:todo RSpec/FactoryBot/AvoidCreate
 
       before do
         allow(view).to receive(:can?).with(user, :admin_group_member, project.root_ancestor).and_return(true)
