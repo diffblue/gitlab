@@ -94,7 +94,7 @@ describe('EE MRWidget approvals', () => {
       state: 'open',
       approvalsWidgetType: 'full',
       targetProjectFullPath: 'gitlab-org/gitlab',
-      iid: '1',
+      iid: 1,
     };
 
     jest.spyOn(eventHub, '$emit').mockImplementation(() => {});
@@ -493,7 +493,6 @@ describe('EE MRWidget approvals', () => {
     let footer;
 
     beforeEach(async () => {
-      jest.spyOn(service, 'fetchApprovals').mockResolvedValue(testApprovals());
       createComponent();
 
       await nextTick();
@@ -506,63 +505,7 @@ describe('EE MRWidget approvals', () => {
     it('is rendered with props', () => {
       expect(footer.exists()).toBe(true);
       expect(footer.props()).toMatchObject({
-        value: false,
         suggestedApprovers: mr.approvals.suggested_approvers,
-        approvalRules: mr.approvalRules,
-        isLoadingRules: false,
-      });
-    });
-
-    describe('when opened', () => {
-      describe('and loading', () => {
-        beforeEach(async () => {
-          jest.spyOn(service, 'fetchApprovalSettings').mockReturnValue(new Promise(() => {}));
-          footer.vm.$emit('input', true);
-
-          await nextTick();
-        });
-
-        it('calls service fetch approval rules', () => {
-          expect(service.fetchApprovalSettings).toHaveBeenCalled();
-        });
-
-        it('is loading rules', () => {
-          expect(wrapper.vm.isLoadingRules).toBe(true);
-          expect(footer.props('isLoadingRules')).toBe(true);
-        });
-      });
-
-      describe('and finished loading', () => {
-        beforeEach(async () => {
-          footer.vm.$emit('input', true);
-
-          await nextTick();
-        });
-
-        it('sets approval rules', () => {
-          expect(mr.setApprovalRules).toHaveBeenCalledWith(testApprovalRulesResponse());
-        });
-
-        it('shows footer', () => {
-          expect(footer.props('value')).toBe(true);
-        });
-
-        describe('and closed', () => {
-          beforeEach(async () => {
-            service.fetchApprovalSettings.mockClear();
-            footer.vm.$emit('input', false);
-
-            await nextTick();
-          });
-
-          it('does not call service fetch approval rules', () => {
-            expect(service.fetchApprovalSettings).not.toHaveBeenCalled();
-          });
-
-          it('hides approval rules', () => {
-            expect(footer.props('value')).toBe(false);
-          });
-        });
       });
     });
   });

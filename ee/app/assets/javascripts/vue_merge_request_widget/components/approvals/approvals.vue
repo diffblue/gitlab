@@ -28,7 +28,6 @@ export default {
   data() {
     return {
       isLoadingRules: false,
-      isExpanded: false,
       modalId: 'approvals-auth',
     };
   },
@@ -56,13 +55,6 @@ export default {
     },
     invalidRules() {
       return this.approvals.invalid_approvers_rules || [];
-    },
-  },
-  watch: {
-    isExpanded(val) {
-      if (val) {
-        this.refreshAll();
-      }
     },
   },
   methods: {
@@ -113,13 +105,13 @@ export default {
     <template v-if="!isBasic" #footer>
       <approvals-footer
         v-if="hasFooter"
-        v-model="isExpanded"
         :suggested-approvers="approvals.suggested_approvers"
         :invalid-approvers-rules="invalidRules"
-        :approval-rules="mr.approvalRules"
         :is-loading-rules="isLoadingRules"
         :security-approvals-help-page-path="mr.securityApprovalsHelpPagePath"
         :eligible-approvers-docs-path="mr.eligibleApproversDocsPath"
+        :project-path="mr.targetProjectFullPath"
+        :iid="`${mr.iid}`"
       />
     </template>
   </approvals>

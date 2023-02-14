@@ -1,4 +1,4 @@
-import { GlButton, GlLoadingIcon, GlIcon } from '@gitlab/ui';
+import { GlButton, GlIcon } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import ApprovalsFooter from 'ee/vue_merge_request_widget/components/approvals/approvals_footer.vue';
@@ -19,6 +19,8 @@ describe('EE MRWidget approvals footer', () => {
         suggestedApprovers: testSuggestedApprovers(),
         approvalRules: testApprovalRules(),
         invalidApproversRules: testInvalidApprovalRules(),
+        projectPath: 'gitlab-org/gitlab',
+        iid: '1',
         ...props,
       },
       stubs: {
@@ -30,8 +32,6 @@ describe('EE MRWidget approvals footer', () => {
 
   const findToggle = () => wrapper.findComponent(GlButton);
   const findToggleIcon = () => findToggle().findComponent(GlIcon);
-  const findToggleLoadingIcon = () => findToggle().findComponent(GlLoadingIcon);
-  const findExpandButton = () => wrapper.find('[data-testid="approvers-expand-button"]');
   const findCollapseButton = () => wrapper.find('[data-testid="approvers-collapse-button"]');
   const findList = () => wrapper.findComponent(ApprovalsList);
   const findAvatars = () => wrapper.findComponent(UserAvatarList);
@@ -43,20 +43,20 @@ describe('EE MRWidget approvals footer', () => {
 
   describe('when expanded', () => {
     describe('and has rules', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         createComponent();
+
+        const button = findToggle();
+
+        button.vm.$emit('click');
+
+        await nextTick();
       });
 
       it('renders approvals list', () => {
         const list = findList();
 
         expect(list.exists()).toBe(true);
-        expect(list.props()).toEqual(
-          expect.objectContaining({
-            approvalRules: testApprovalRules(),
-            invalidApproversRules: testInvalidApprovalRules(),
-          }),
-        );
       });
 
       it('does not render user avatar list', () => {
@@ -70,17 +70,6 @@ describe('EE MRWidget approvals footer', () => {
           expect(button.exists()).toBe(true);
           expect(button.attributes('aria-label')).toEqual('Collapse approvers');
         });
-
-        it('renders icon', () => {
-          const icon = findToggleIcon();
-
-          expect(icon.exists()).toBe(true);
-          expect(icon.props()).toEqual(
-            expect.objectContaining({
-              name: 'chevron-down',
-            }),
-          );
-        });
       });
 
       describe('collapse button', () => {
@@ -91,25 +80,13 @@ describe('EE MRWidget approvals footer', () => {
           expect(button.text()).toEqual('Collapse');
         });
 
-        it('when clicked, collapses the view', () => {
+        it('when clicked, collapses the view', async () => {
           findCollapseButton().trigger('click');
 
-          expect(wrapper.vm.isCollapsed).toEqual(false);
+          await nextTick();
+
+          expect(findList().exists()).toBe(false);
         });
-      });
-    });
-
-    describe('and loading', () => {
-      beforeEach(() => {
-        createComponent({ isLoadingRules: true });
-      });
-
-      it('does not render icon in toggle button', () => {
-        expect(findToggleIcon().exists()).toBe(false);
-      });
-
-      it('renders loading in toggle button', () => {
-        expect(findToggleLoadingIcon().exists()).toBe(true);
       });
     });
 
@@ -126,7 +103,7 @@ describe('EE MRWidget approvals footer', () => {
 
   describe('when collapsed', () => {
     beforeEach(() => {
-      createComponent({ value: false });
+      createComponent();
     });
 
     describe('toggle button', () => {
@@ -150,7 +127,8 @@ describe('EE MRWidget approvals footer', () => {
         button.vm.$emit('click');
 
         await nextTick();
-        expect(wrapper.emitted().input).toEqual([[true]]);
+
+        expect(findList().exists()).toBe(true);
       });
     });
 
@@ -173,28 +151,6 @@ describe('EE MRWidget approvals footer', () => {
 
     it('does not render approvals list', () => {
       expect(findList().exists()).toBe(false);
-    });
-
-    describe('expand button', () => {
-      let button;
-
-      beforeEach(() => {
-        button = findExpandButton();
-      });
-
-      it('renders', () => {
-        expect(button.exists()).toBe(true);
-        expect(button.text()).toBe('View eligible approvers');
-      });
-
-      it('expands when clicked', async () => {
-        expect(wrapper.props('value')).toBe(false);
-
-        button.vm.$emit('click');
-
-        await nextTick();
-        expect(wrapper.emitted().input).toEqual([[true]]);
-      });
     });
   });
 });

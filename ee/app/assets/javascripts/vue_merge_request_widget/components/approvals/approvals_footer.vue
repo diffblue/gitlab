@@ -15,20 +15,6 @@ export default {
       type: Array,
       required: true,
     },
-    approvalRules: {
-      type: Array,
-      required: true,
-    },
-    value: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
-    isLoadingRules: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
     securityApprovalsHelpPagePath: {
       type: String,
       required: false,
@@ -43,11 +29,21 @@ export default {
       type: Array,
       required: true,
     },
+    projectPath: {
+      type: String,
+      required: true,
+    },
+    iid: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      isCollapsed: true,
+    };
   },
   computed: {
-    isCollapsed() {
-      return !this.value;
-    },
     ariaLabel() {
       return this.isCollapsed ? __('Expand approvers') : __('Collapse approvers');
     },
@@ -58,12 +54,12 @@ export default {
       return this.suggestedApprovers.slice(0, Math.min(5, this.suggestedApprovers.length));
     },
     shouldShowLoadingSpinner() {
-      return !this.isCollapsed && this.isLoadingRules;
+      return !this.isCollapsed;
     },
   },
   methods: {
     toggle() {
-      this.$emit('input', !this.value);
+      this.isCollapsed = !this.isCollapsed;
     },
   },
 };
@@ -108,12 +104,13 @@ export default {
         >
       </template>
     </div>
-    <div v-if="!isCollapsed && approvalRules.length" class="border-top">
+    <div v-if="!isCollapsed" class="border-top">
       <approvals-list
-        :approval-rules="approvalRules"
         :invalid-approvers-rules="invalidApproversRules"
         :security-approvals-help-page-path="securityApprovalsHelpPagePath"
         :eligible-approvers-docs-path="eligibleApproversDocsPath"
+        :project-path="projectPath"
+        :iid="iid"
       />
     </div>
   </div>
