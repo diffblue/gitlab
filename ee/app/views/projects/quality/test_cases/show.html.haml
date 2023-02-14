@@ -15,6 +15,7 @@
   project_full_path: @project.full_path,
   labels_manage_path: project_labels_path(@project),
   labels_fetch_path: project_labels_path(@project, format: :json),
+  test_cases_path: project_quality_test_cases_path(@project),
   test_case_new_path: new_project_quality_test_case_path(@project),
   sidebar_options: issuable_sidebar_options(@issuable_sidebar).to_json.html_safe,
   test_case_id: @test_case.iid } }

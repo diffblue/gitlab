@@ -1,12 +1,10 @@
 <script>
 import { GlTooltipDirective as GlTooltip, GlButton, GlIcon, GlLoadingIcon } from '@gitlab/ui';
-import Mousetrap from 'mousetrap';
-
-import { keysFor, ISSUABLE_CHANGE_LABEL } from '~/behaviors/shortcuts/keybindings';
 import { s__, __ } from '~/locale';
 import ProjectSelect from '~/sidebar/components/move/issuable_move_dropdown.vue';
-import LabelsSelect from '~/sidebar/components/labels/labels_select_vue/labels_select_root.vue';
-
+import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
+import { IssuableType } from '~/issues/constants';
+import { LabelType } from '~/sidebar/components/labels/labels_select_widget/constants';
 import TestCaseGraphQL from '../mixins/test_case_graphql';
 
 export default {
@@ -14,8 +12,8 @@ export default {
     GlButton,
     GlIcon,
     GlLoadingIcon,
-    LabelsSelect,
     ProjectSelect,
+    LabelsSelectWidget,
   },
   directives: {
     GlTooltip,
@@ -29,6 +27,7 @@ export default {
     'labelsFetchPath',
     'labelsManagePath',
     'projectsFetchPath',
+    'testCasesPath',
   ],
   props: {
     sidebarExpanded: {
@@ -54,6 +53,8 @@ export default {
     return {
       sidebarExpandedOnClick: false,
       testCaseLabelsSelectInProgress: false,
+      LabelType,
+      IssuableType,
     };
   },
   computed: {
@@ -77,10 +78,6 @@ export default {
   },
   mounted() {
     this.sidebarEl = document.querySelector('aside.right-sidebar');
-    Mousetrap.bind(keysFor(ISSUABLE_CHANGE_LABEL), this.handleLabelsCollapsedButtonClick);
-  },
-  beforeDestroy() {
-    Mousetrap.unbind(keysFor(ISSUABLE_CHANGE_LABEL));
   },
   methods: {
     handleTodoButtonClick() {
@@ -93,11 +90,18 @@ export default {
     toggleSidebar() {
       this.$emit('sidebar-toggle');
     },
+    expandSidebar() {
+      this.toggleSidebar();
+      this.sidebarExpandedOnClick = true;
+    },
+    closeSidebar() {
+      this.sidebarExpandedOnClick = false;
+      this.toggleSidebar();
+    },
     expandSidebarAndOpenDropdown(dropdownButtonSelector) {
       // Expand the sidebar if not already expanded.
       if (!this.sidebarExpanded) {
-        this.toggleSidebar();
-        this.sidebarExpandedOnClick = true;
+        this.expandSidebar();
       }
 
       this.$nextTick(() => {
@@ -116,12 +120,15 @@ export default {
     },
     handleSidebarDropdownClose() {
       if (this.sidebarExpandedOnClick) {
-        this.sidebarExpandedOnClick = false;
-        this.toggleSidebar();
+        this.closeSidebar();
       }
     },
     handleLabelsCollapsedButtonClick() {
-      this.expandSidebarAndOpenDropdown('.js-labels-block .js-sidebar-dropdown-toggle');
+      if (!this.sidebarExpanded) {
+        this.expandSidebar();
+      } else if (this.sidebarExpandedOnClick) {
+        this.closeSidebar();
+      }
     },
     handleProjectsCollapsedButtonClick() {
       this.expandSidebarAndOpenDropdown('.js-issuable-move-block .js-sidebar-dropdown-toggle');
@@ -187,22 +194,22 @@ export default {
         </gl-button>
       </div>
     </template>
-    <labels-select
-      :allow-label-edit="canEditTestCase"
-      :allow-label-create="true"
+    <labels-select-widget
+      :iid="String(testCaseId)"
+      :full-path="projectFullPath"
+      :allow-label-remove="canEditTestCase"
       :allow-multiselect="true"
-      :allow-scoped-labels="true"
-      :selected-labels="selectedLabels"
-      :labels-select-in-progress="testCaseLabelsSelectInProgress"
-      :labels-fetch-path="labelsFetchPath"
-      :labels-manage-path="labelsManagePath"
-      variant="sidebar"
+      :issuable-type="IssuableType.TestCase"
+      :attr-workspace-path="projectFullPath"
+      workspace-type="project"
       class="block labels js-labels-block"
-      @updateSelectedLabels="handleUpdateSelectedLabels"
-      @onDropdownClose="handleSidebarDropdownClose"
+      variant="sidebar"
+      :label-create-type="LabelType.project"
+      :labels-filter-base-path="testCasesPath"
       @toggleCollapse="handleLabelsCollapsedButtonClick"
-      >{{ __('None') }}</labels-select
     >
+      {{ __('None') }}
+    </labels-select-widget>
     <project-select
       v-if="canMoveTestCase && !moved"
       :projects-fetch-path="projectsFetchPath"

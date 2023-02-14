@@ -157,8 +157,8 @@ RSpec.describe 'Test Cases', :js, feature_category: :quality_management do
 
             wait_for_requests
 
-            expect(page.find('.js-labels-list .dropdown-content')).to have_selector('li', count: 2)
-            expect(page.find('.js-labels-list .dropdown-footer')).to have_selector('li', count: 2)
+            expect(page.find('.js-labels-list [data-testid="dropdown-content"]')).to have_selector('li', count: 2)
+            expect(page.find('[data-testid="dropdown-footer"]')).to have_selector('li', count: 2)
           end
         end
 
@@ -168,8 +168,8 @@ RSpec.describe 'Test Cases', :js, feature_category: :quality_management do
 
             wait_for_requests
 
-            click_link label_doc.title
-            click_button 'Edit'
+            click_button label_doc.title
+            page.find('.labels-select-wrapper [data-testid="title"]').click
 
             wait_for_requests
 

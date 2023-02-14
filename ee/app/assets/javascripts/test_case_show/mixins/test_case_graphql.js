@@ -70,7 +70,7 @@ export default {
         .mutate({
           mutation: updateTestCase,
           variables: {
-            updateTestCaseInput: {
+            input: {
               projectPath: this.projectFullPath,
               iid: this.testCaseId,
               ...variables,

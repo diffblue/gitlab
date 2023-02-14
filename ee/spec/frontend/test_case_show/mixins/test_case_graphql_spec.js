@@ -76,7 +76,7 @@ describe('TestCaseGraphQL Mixin', () => {
       expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith({
         mutation: updateTestCase,
         variables: {
-          updateTestCaseInput: {
+          input: {
             projectPath: mockProvide.projectFullPath,
             iid: mockProvide.testCaseId,
             title: 'Foo',

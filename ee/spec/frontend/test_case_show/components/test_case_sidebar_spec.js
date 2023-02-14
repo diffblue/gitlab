@@ -1,15 +1,15 @@
 import { GlButton, GlIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Mousetrap from 'mousetrap';
 
 import { nextTick } from 'vue';
 import TestCaseSidebar from 'ee/test_case_show/components/test_case_sidebar.vue';
 import { mockCurrentUserTodo, mockLabels } from 'jest/vue_shared/issuable/list/mock_data';
 import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
-import { keysFor, ISSUABLE_CHANGE_LABEL } from '~/behaviors/shortcuts/keybindings';
 import ProjectSelect from '~/sidebar/components/move/issuable_move_dropdown.vue';
-import LabelsSelect from '~/sidebar/components/labels/labels_select_vue/labels_select_root.vue';
+import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
 
+import { IssuableType } from '~/issues/constants';
+import { LabelType } from '~/sidebar/components/labels/labels_select_widget/constants';
 import { mockProvide, mockTestCase } from '../mock_data';
 
 const createComponent = ({
@@ -39,12 +39,10 @@ const createComponent = ({
   });
 
 describe('TestCaseSidebar', () => {
-  let mousetrapSpy;
   let wrapper;
 
   beforeEach(() => {
     setHTMLFixture('<aside class="right-sidebar"></aside>');
-    mousetrapSpy = jest.spyOn(Mousetrap, 'bind');
     wrapper = createComponent();
   });
 
@@ -102,15 +100,6 @@ describe('TestCaseSidebar', () => {
     });
   });
 
-  describe('mounted', () => {
-    it('binds key-press listener for `l` on Mousetrap', () => {
-      expect(mousetrapSpy).toHaveBeenCalledWith(
-        keysFor(ISSUABLE_CHANGE_LABEL),
-        wrapper.vm.handleLabelsCollapsedButtonClick,
-      );
-    });
-  });
-
   describe('methods', () => {
     describe('handleTodoButtonClick', () => {
       it.each`
@@ -156,7 +145,7 @@ describe('TestCaseSidebar', () => {
     describe('expandSidebarAndOpenDropdown', () => {
       beforeEach(() => {
         setHTMLFixture(`
-          <div class="js-labels-block">
+          <div class="js-issuable-move-block">
             <button class="js-sidebar-dropdown-toggle"></button>
           </div>
         `);
@@ -174,13 +163,15 @@ describe('TestCaseSidebar', () => {
 
         await nextTick();
 
-        wrapper.vm.expandSidebarAndOpenDropdown('.js-labels-block .js-sidebar-dropdown-toggle');
+        wrapper.vm.expandSidebarAndOpenDropdown(
+          '.js-issuable-move-block .js-sidebar-dropdown-toggle',
+        );
 
         expect(wrapper.vm.toggleSidebar).toHaveBeenCalled();
         expect(wrapper.vm.sidebarExpandedOnClick).toBe(true);
       });
 
-      it('dispatches click event on label edit button', async () => {
+      it('dispatches click event on move test case button', async () => {
         const buttonEl = document.querySelector('.js-sidebar-dropdown-toggle');
         jest.spyOn(wrapper.vm, 'toggleSidebar').mockImplementation(jest.fn());
         jest.spyOn(buttonEl, 'dispatchEvent');
@@ -190,7 +181,9 @@ describe('TestCaseSidebar', () => {
 
         await nextTick();
 
-        wrapper.vm.expandSidebarAndOpenDropdown('.js-labels-block .js-sidebar-dropdown-toggle');
+        wrapper.vm.expandSidebarAndOpenDropdown(
+          '.js-issuable-move-block .js-sidebar-dropdown-toggle',
+        );
 
         await nextTick();
 
@@ -296,20 +289,21 @@ describe('TestCaseSidebar', () => {
     });
 
     it('renders label-select', async () => {
-      const { selectedLabels, testCaseLabelsSelectInProgress } = wrapper.vm;
-      const { canEditTestCase, labelsFetchPath, labelsManagePath } = mockProvide;
-      const labelSelectEl = wrapper.findComponent(LabelsSelect);
+      const { testCaseId, canEditTestCase, projectFullPath, testCasesPath } = mockProvide;
+      const labelSelectEl = wrapper.findComponent(LabelsSelectWidget);
 
       expect(labelSelectEl.exists()).toBe(true);
       expect(labelSelectEl.props()).toMatchObject({
-        selectedLabels,
-        labelsFetchPath,
-        labelsManagePath,
-        allowLabelCreate: true,
+        iid: testCaseId,
+        fullPath: projectFullPath,
+        allowLabelRemove: canEditTestCase,
         allowMultiselect: true,
+        issuableType: IssuableType.TestCase,
+        attrWorkspacePath: projectFullPath,
+        workspaceType: 'project',
         variant: 'sidebar',
-        allowLabelEdit: canEditTestCase,
-        labelsSelectInProgress: testCaseLabelsSelectInProgress,
+        labelCreateType: LabelType.project,
+        labelsFilterBasePath: testCasesPath,
       });
       expect(labelSelectEl.text()).toBe('None');
     });
