@@ -9,16 +9,24 @@ RSpec.describe 'Querying an Epic board list', feature_category: :portfolio_manag
   let_it_be(:group) { create(:group, :private) }
   let_it_be(:board) { create(:epic_board, group: group) }
   let_it_be(:label) { create(:group_label, group: group, name: 'Development') }
+  let_it_be(:extra_label1) { create(:group_label, group: group) }
+  let_it_be(:extra_label2) { create(:group_label, group: group) }
   let_it_be(:list) { create(:epic_list, epic_board: board, label: label) }
-  let_it_be(:epic1) { create(:epic, group: group, labels: [label], title: 'Epic1') }
-  let_it_be(:epic2) { create(:epic, group: group, labels: [label], title: 'Epic2') }
+  let_it_be(:epic1) { create(:epic, group: group, labels: [label, extra_label1], title: 'Epic1') }
+  let_it_be(:epic2) { create(:epic, group: group, labels: [label, extra_label2], title: 'Epic2') }
   let_it_be(:epic3) { create(:epic, group: group, labels: [label], title: 'Epic3') }
 
-  let(:filters) { {} }
+  let(:filters) { { or: { labelName: [extra_label1.title, extra_label2.title] } } }
   let(:query) do
     graphql_query_for(
       :epic_board_list,
-      { id: list.to_global_id.to_s, epicFilters: filters }, %w[id]
+      { id: list.to_global_id.to_s, epicFilters: filters },
+      <<~FIELDS
+      id
+      metadata {
+        epicsCount
+      }
+      FIELDS
     )
   end
 
@@ -36,7 +44,10 @@ RSpec.describe 'Querying an Epic board list', feature_category: :portfolio_manag
 
     it_behaves_like 'a working graphql query'
 
-    it { is_expected.to include({ 'id' => list.to_global_id.to_s }) }
+    it 'returns list with number of matching epics', :aggregate_failures do
+      expect(subject).to include({ 'id' => list.to_global_id.to_s })
+      expect(subject['metadata']['epicsCount']).to eq(2)
+    end
   end
 
   context 'when the user does not have access to the list' do

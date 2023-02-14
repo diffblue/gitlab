@@ -23,7 +23,7 @@ module Resolvers
       def resolve(list:, epic_filters: {})
         authorize! list
 
-        context.scoped_set!(:epic_filters, item_filters(epic_filters))
+        context.scoped_set!(:epic_filters, item_filters(epic_filters, list.epic_board.resource_parent))
 
         list
       end
