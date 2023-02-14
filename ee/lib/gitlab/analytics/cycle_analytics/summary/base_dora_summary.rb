@@ -48,7 +48,7 @@ module Gitlab
             params[:group_project_ids] = options[:projects] if options[:projects].present?
 
             Dora::AggregateMetricsService.new(
-              container: stage.parent,
+              container: container,
               current_user: current_user,
               params: params
             ).execute
@@ -60,6 +60,10 @@ module Gitlab
             days = seconds.fdiv(1.day).round(1)
 
             Gitlab::CycleAnalytics::Summary::Value::Numeric.new(days)
+          end
+
+          def container
+            stage.namespace.is_a?(Namespaces::ProjectNamespace) ? stage.namespace.project : stage.namespace
           end
         end
       end

@@ -15,6 +15,23 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::LeadTimeForChanges do
 
   subject(:result) { described_class.new(stage: stage, current_user: user, options: options).value }
 
+  context 'when ProjectNamespace based stage is given' do
+    let(:user)  { create(:user) }
+    let(:group) { create(:group).tap { |g| g.add_developer(user) } }
+    let(:project) { create(:project, group: group) }
+    let(:stage) { build(:cycle_analytics_stage, project: project) }
+
+    subject(:result) { described_class.new(stage: stage, current_user: user, options: options).value }
+
+    before do
+      stub_licensed_features(dora4_analytics: true)
+    end
+
+    it 'returns none value' do
+      expect(result.to_s).to eq('-')
+    end
+  end
+
   context 'when the DORA service returns non-successful status' do
     it 'returns nil' do
       expect_next_instance_of(Dora::AggregateMetricsService) do |service|
