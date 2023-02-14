@@ -426,6 +426,11 @@ msgid_plural "%d unresolved threads"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%d version"
+msgid_plural "%d versions"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%d vulnerability"
 msgid_plural "%d vulnerabilities"
 msgstr[0] ""
