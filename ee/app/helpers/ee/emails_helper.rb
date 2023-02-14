@@ -10,5 +10,12 @@ module EE
 
       super
     end
+
+    override :service_desk_email_additional_text
+    def service_desk_email_additional_text
+      return unless ::Gitlab::CurrentSettings.email_additional_text.present?
+
+      ::Gitlab::CurrentSettings.email_additional_text
+    end
   end
 end
