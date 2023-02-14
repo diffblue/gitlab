@@ -26197,6 +26197,9 @@ msgstr ""
 msgid "MemberInviteEmail|Invitation to join the %{project_or_group} %{project_or_group_name}"
 msgstr ""
 
+msgid "MemberRole|%{role} - custom"
+msgstr ""
+
 msgid "MemberRole|can't be changed"
 msgstr ""
 
