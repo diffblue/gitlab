@@ -13,7 +13,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/flash';
-import { IssuableType } from '~/issues/constants';
+import { TYPE_ISSUE } from '~/issues/constants';
 import { clickEdit, search } from '../helpers';
 
 import {
@@ -70,7 +70,7 @@ describe('SidebarDropdownWidget', () => {
           workspacePath: mockIssue.projectPath,
           attrWorkspacePath: mockIssue.groupPath,
           iid: mockIssue.iid,
-          issuableType: IssuableType.Issue,
+          issuableType: TYPE_ISSUE,
           issuableAttribute: IssuableAttributeType.Epic,
         },
         attachTo: document.body,
