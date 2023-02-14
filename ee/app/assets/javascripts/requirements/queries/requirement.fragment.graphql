@@ -12,6 +12,7 @@ fragment Requirement on Requirement {
   state
   lastTestReportState
   lastTestReportManuallyCreated
+  workItemIid
   testReports(first: 1, sort: CREATED_DESC) {
     nodes {
       id
