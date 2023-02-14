@@ -20,4 +20,27 @@ RSpec.describe EE::EmailsHelper do
       end
     end
   end
+
+  describe '#service_desk_email_additional_text' do
+    subject { helper.service_desk_email_additional_text }
+
+    context 'when additional email text is enabled' do
+      let(:custom_text) { 'this is some additional custom text' }
+
+      before do
+        stub_licensed_features(email_additional_text: true)
+        stub_ee_application_setting(email_additional_text: custom_text)
+      end
+
+      it { expect(subject).to eq(custom_text) }
+    end
+
+    context 'when additional email text is disabled' do
+      before do
+        stub_licensed_features(email_additional_text: false)
+      end
+
+      it { expect(subject).to be_nil }
+    end
+  end
 end
