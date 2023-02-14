@@ -4,6 +4,7 @@ import RoadmapDaterange from './roadmap_daterange.vue';
 import RoadmapEpicsState from './roadmap_epics_state.vue';
 import RoadmapMilestones from './roadmap_milestones.vue';
 import RoadmapProgressTracking from './roadmap_progress_tracking.vue';
+import RoadmapToggleLabels from './roadmap_toggle_labels.vue';
 
 export default {
   components: {
@@ -12,6 +13,7 @@ export default {
     RoadmapMilestones,
     RoadmapEpicsState,
     RoadmapProgressTracking,
+    RoadmapToggleLabels,
   },
   props: {
     isOpen: {
@@ -41,6 +43,7 @@ export default {
       <roadmap-milestones />
       <roadmap-epics-state />
       <roadmap-progress-tracking />
+      <roadmap-toggle-labels />
     </template>
   </gl-drawer>
 </template>

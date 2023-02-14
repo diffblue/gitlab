@@ -242,6 +242,17 @@ export const mockRawEpic = {
     __typename: 'EpicDescendantCount',
   },
   group: mockGroup1,
+  labels: {
+    nodes: [
+      {
+        id: 'gid://gitlab/GroupLabel/12',
+        title: 'Aquanix',
+        color: '#e65431',
+        textColor: '#FFFFFF',
+        __typename: 'Label',
+      },
+    ],
+  },
 };
 
 export const mockRawEpic2 = {

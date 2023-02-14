@@ -7,6 +7,7 @@ export default () => ({
   filterParams: null,
   isShowingMilestones: true,
   milestonesType: '',
+  isShowingLabels: false,
 
   // Data
   epicIid: '',

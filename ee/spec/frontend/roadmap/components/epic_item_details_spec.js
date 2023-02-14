@@ -1,5 +1,7 @@
-import { GlButton, GlIcon } from '@gitlab/ui';
+import { nextTick } from 'vue';
+import { GlButton, GlIcon, GlLabel } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { updateHistory } from '~/lib/utils/url_utility';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import EpicItemDetails from 'ee/roadmap/components/epic_item_details.vue';
 import eventHub from 'ee/roadmap/event_hub';
@@ -10,6 +12,8 @@ import {
   mockFormattedChildEpic2,
   mockFormattedChildEpic1,
 } from 'ee_jest/roadmap/mock_data';
+
+jest.mock('~/lib/utils/url_utility');
 
 describe('EpicItemDetails', () => {
   let wrapper;
@@ -50,6 +54,7 @@ describe('EpicItemDetails', () => {
   const getChildEpicsCount = () => wrapper.findByTestId('child-epics-count');
   const getChildEpicsCountTooltip = () => wrapper.findByTestId('child-epics-count-tooltip');
   const getBlockedIcon = () => wrapper.findByTestId('blocked-icon');
+  const getLabels = () => wrapper.findByTestId('epic-labels');
 
   const getExpandButtonData = () => ({
     icon: wrapper.findComponent(GlIcon).attributes('name'),
@@ -297,6 +302,73 @@ describe('EpicItemDetails', () => {
               expect(getBlockedIcon().exists()).toBe(showsBlocked);
             },
           );
+        });
+      });
+    });
+  });
+
+  describe('epic labels', () => {
+    beforeEach(() => {
+      createWrapper();
+    });
+
+    it('do not display by default', () => {
+      expect(getLabels().exists()).toBe(false);
+    });
+
+    it('display when isShowingLabels setting is set to true', async () => {
+      expect(getLabels().exists()).toBe(false);
+
+      store.dispatch('toggleLabels');
+
+      await nextTick();
+
+      expect(getLabels().exists()).toBe(true);
+    });
+
+    describe('click on label', () => {
+      beforeEach(() => {
+        store.dispatch('toggleLabels');
+        jest.spyOn(store, 'dispatch').mockImplementation(() => Promise.resolve());
+      });
+
+      describe('when selected label is not in the filter', () => {
+        beforeEach(() => {
+          // setWindowLocation('?');
+          wrapper.findComponent(GlLabel).vm.$emit('click', {
+            preventDefault: jest.fn(),
+          });
+        });
+
+        it('calls updateHistory', () => {
+          expect(updateHistory).toHaveBeenCalledTimes(1);
+        });
+
+        it('dispatches setFilterParams and fetchEpics vuex actions', () => {
+          expect(store.dispatch.mock.calls[0]).toEqual(['setFilterParams', {}]);
+          expect(store.dispatch.mock.calls[1]).toEqual(['fetchEpics']);
+        });
+      });
+
+      describe('when selected label is already in the filter', () => {
+        beforeEach(() => {
+          // setWindowLocation('?label_name[]=Aquanix');
+          store.state.filterParams = {
+            labelName: ['Aquanix'],
+          };
+          createWrapper();
+
+          wrapper.findComponent(GlLabel).vm.$emit('click', {
+            preventDefault: jest.fn(),
+          });
+        });
+
+        it('does not call updateHistory', () => {
+          expect(updateHistory).not.toHaveBeenCalled();
+        });
+
+        it('does not dispatch setFilterParams or fetchEpics vuex action', () => {
+          expect(store.dispatch).not.toHaveBeenCalled();
         });
       });
     });

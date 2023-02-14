@@ -43,6 +43,7 @@ export default {
       'progressTracking',
       'isShowingMilestones',
       'milestonesType',
+      'isShowingLabels',
     ]),
   },
   watch: {
@@ -52,7 +53,7 @@ export default {
       handler(params) {
         if (Object.keys(params).length) {
           updateHistory({
-            url: setUrlParams(params, window.location.href, true),
+            url: setUrlParams(params, window.location.href, true, false, true),
             title: document.title,
             replace: true,
           });
@@ -91,6 +92,7 @@ export default {
         :sort-options="$options.availableSortOptions"
         :initial-filter-value="getFilteredSearchValue()"
         :initial-sort-by="sortedBy"
+        sync-filter-and-sort
         recent-searches-storage-key="epics"
         class="gl-flex-grow-1"
         @onFilter="handleFilterEpics"

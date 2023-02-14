@@ -741,4 +741,16 @@ describe('Roadmap Vuex Actions', () => {
       );
     });
   });
+
+  describe('toggleLabels', () => {
+    it('commit TOGGLE_LABELS mutation', () => {
+      return testAction(
+        actions.toggleLabels,
+        undefined,
+        state,
+        [{ type: types.TOGGLE_LABELS }],
+        [],
+      );
+    });
+  });
 });

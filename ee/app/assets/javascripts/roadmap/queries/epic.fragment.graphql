@@ -28,4 +28,12 @@ fragment BaseEpic on Epic {
     fullName
     fullPath
   }
+  labels {
+    nodes {
+      id
+      title
+      color
+      textColor
+    }
+  }
 }
