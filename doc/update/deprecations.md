@@ -245,6 +245,27 @@ We recommend replacing this with an alternative [compliance solution](https://do
 
 </div>
 
+<div class="deprecation removal-170 breaking-change">
+
+### Single database connection is deprecated
+
+Planned removal: GitLab <span class="removal-milestone">17.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+Previously, [GitLab's database](https://docs.gitlab.com/omnibus/settings/database.html)
+configuration had a single `main:` section. This is being deprecated. The new
+configuration has both a `main:` and a `ci:` section.
+
+This deprecation affects users compiling GitLab from source, who will need
+to [add the `ci:` section](https://docs.gitlab.com/ee/install/installation.html#configure-gitlab-db-settings).
+Omnibus, the Helm chart, and Operator will handle this configuration
+automatically from GitLab 16.0 onwards.
+
+</div>
+
 <div class="deprecation removal-160 breaking-change">
 
 ### Support for Praefect custom metrics endpoint configuration
