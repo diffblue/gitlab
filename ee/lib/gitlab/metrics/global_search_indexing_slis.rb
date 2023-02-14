@@ -9,7 +9,7 @@ module Gitlab
       # from https://log.gprd.gitlab.net/app/lens#/edit/d7f1fae0-69cf-11ed-85ed-e7557b0a598c (internal only)
       # Non-Code indexing bytes/second should be above this value
       # Needs to be kept low until https://gitlab.com/gitlab-org/gitlab/-/issues/390599 is implemented
-      INDEXED_BYTES_PER_SECOND_TARGET = 10_000
+      INDEXED_BYTES_PER_SECOND_TARGET = 50_000 / ::Elastic::ProcessBookkeepingService::SHARDS_NUMBER
 
       # The following targets are the 99.95th percentile of indexing
       # gathered on 20-10-2022
