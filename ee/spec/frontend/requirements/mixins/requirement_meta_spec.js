@@ -3,7 +3,6 @@ import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import RequirementItem from 'ee/requirements/components/requirement_item.vue';
 import { FilterState } from 'ee/requirements/constants';
-
 import { mockAuthor, mockTestReport, requirement1 as mockRequirement } from '../mock_data';
 
 const createComponent = (requirement = mockRequirement) =>
@@ -25,12 +24,6 @@ describe('RequirementMeta Mixin', () => {
   });
 
   describe('computed', () => {
-    describe('reference', () => {
-      it('returns string containing `requirement.iid` prefixed with `REQ-`', () => {
-        expect(wrapper.vm.reference).toBe(`REQ-${mockRequirement.iid}`);
-      });
-    });
-
     describe('titleHtml', () => {
       it('returns value of `requirement.titleHtml`', () => {
         expect(wrapper.vm.titleHtml).toBe(mockRequirement.titleHtml);

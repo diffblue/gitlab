@@ -1,4 +1,4 @@
-import { GlDrawer, GlFormCheckbox } from '@gitlab/ui';
+import { GlDrawer, GlFormCheckbox, GlSprintf } from '@gitlab/ui';
 import { getByText } from '@testing-library/dom';
 import { shallowMount } from '@vue/test-utils';
 import $ from 'jquery';
@@ -36,6 +36,7 @@ const createComponent = ({
     },
     stubs: {
       GlDrawer,
+      GlSprintf,
       IssuableBody,
       IssuableEditForm,
       MarkdownField,
@@ -306,7 +307,7 @@ describe('RequirementForm', () => {
 
     it('renders drawer header with `requirement.reference` and test report badge', () => {
       expect(
-        getByText(wrapperWithRequirement.element, `REQ-${mockRequirementsOpen[0].iid}`),
+        getByText(wrapperWithRequirement.element, `#${mockRequirementsOpen[0].workItemIid}`),
       ).not.toBeNull();
       expect(wrapperWithRequirement.findComponent(RequirementStatusBadge).exists()).toBe(true);
       expect(wrapperWithRequirement.findComponent(RequirementStatusBadge).props('testReport')).toBe(
@@ -341,6 +342,13 @@ describe('RequirementForm', () => {
       expect(issuableBody.findComponent(GlFormCheckbox).exists()).toBe(true);
       expect(issuableBody.find('[data-testid="requirement-save"]').exists()).toBe(true);
       expect(issuableBody.find('[data-testid="requirement-cancel"]').exists()).toBe(true);
+    });
+
+    it('renders secondary-content slot contents within issuable-body', () => {
+      const issuableBody = wrapperWithRequirement.findComponent(IssuableBody);
+
+      expect(issuableBody.text()).toContain(`REQ-${mockRequirementsOpen[0].iid}`);
+      expect(issuableBody.text()).toContain(`#${mockRequirementsOpen[0].workItemIid}`);
     });
   });
 });

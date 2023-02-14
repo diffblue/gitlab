@@ -1,4 +1,4 @@
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
 
 export const FilterState = {
   opened: 'OPENED',
@@ -40,6 +40,18 @@ export const TestReportStatusToValue = {
   failed: 'FAILED',
   missing: 'MISSING',
 };
+
+export const I18N_LEGACY_REFERENCE_DEPRECATION_NOTE_TITLE = s__(
+  'Requirement|Legacy requirement ID: %{legacyId}',
+);
+
+export const I18N_LEGACY_REFERENCE_DEPRECATION_NOTE_POPOVER = s__(
+  `Requirement|Legacy requirement IDs are being deprecated. Update your links to reference this item's new ID %{id}. %{linkStart}Learn more%{linkEnd}.`,
+);
+
+export const I18N_LEGACY_REFERENCE_DEPRECATION_NOTE_DETAIL = s__(
+  `Requirement|Requirements have become work items and the legacy requirement IDs are being deprecated. Update your links to reference this item's new ID %{id}. %{linkStart}Learn more%{linkEnd}.`,
+);
 
 export const DEFAULT_PAGE_SIZE = 20;
 

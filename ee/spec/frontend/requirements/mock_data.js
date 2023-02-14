@@ -62,6 +62,7 @@ export const requirement1 = {
   testReports: {
     nodes: [mockTestReport],
   },
+  workItemIid: '1',
 };
 
 export const requirement2 = {
@@ -83,6 +84,7 @@ export const requirement2 = {
   testReports: {
     nodes: [mockTestReport],
   },
+  workItemIid: '2',
 };
 
 export const requirement3 = {
@@ -103,6 +105,7 @@ export const requirement3 = {
   testReports: {
     nodes: [mockTestReport],
   },
+  workItemIid: '3',
 };
 
 export const requirementArchived = {
@@ -123,6 +126,7 @@ export const requirementArchived = {
   testReports: {
     nodes: [mockTestReport],
   },
+  workItemIid: '23',
 };
 
 export const mockRequirementsOpen = [requirement1, requirement2, requirement3];
@@ -252,6 +256,7 @@ const projectRequirementBase = {
   author: {
     ...mockUser,
   },
+  workItemIid: '1',
 };
 
 export const mockProjectRequirementFailed = {

@@ -1,7 +1,7 @@
 import { GlLink, GlButton } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
-
 import { nextTick } from 'vue';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+
 import RequirementItem from 'ee/requirements/components/requirement_item.vue';
 import RequirementStatusBadge from 'ee/requirements/components/requirement_status_badge.vue';
 
@@ -10,10 +10,11 @@ import {
   requirementArchived,
   mockUserPermissions,
   mockTestReport,
+  requirement1 as mockRequirement,
 } from '../mock_data';
 
 const createComponent = (requirement = requirement1) =>
-  shallowMount(RequirementItem, {
+  shallowMountExtended(RequirementItem, {
     propsData: {
       requirement,
     },
@@ -22,6 +23,8 @@ const createComponent = (requirement = requirement1) =>
 describe('RequirementItem', () => {
   let wrapper;
   let wrapperArchived;
+
+  const findLegacyReference = () => wrapper.findByText(`REQ-${mockRequirement.iid}`);
 
   beforeEach(() => {
     wrapper = createComponent();
@@ -87,7 +90,20 @@ describe('RequirementItem', () => {
     });
 
     it('renders element containing requirement reference', () => {
-      expect(wrapper.find('.issuable-reference').text()).toBe(`REQ-${requirement1.iid}`);
+      expect(wrapper.findByText(`#${requirement1.workItemIid}`).exists()).toBe(true);
+    });
+
+    it('renders element containing requirement legacy reference', () => {
+      expect(findLegacyReference().exists()).toBe(true);
+    });
+
+    it('sets legacy reference popover target to string containing `requirement.iid` prefixed with `legacy-reference-`', () => {
+      const legacyReferencePopoverId = `legacy-reference-${mockRequirement.iid}`;
+
+      expect(findLegacyReference().attributes('id')).toBe(legacyReferencePopoverId);
+      expect(wrapper.find('[data-testid="legacy-reference-popover"]').attributes('target')).toBe(
+        legacyReferencePopoverId,
+      );
     });
 
     it('renders element containing requirement title', () => {

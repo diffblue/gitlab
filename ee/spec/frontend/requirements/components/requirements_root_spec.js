@@ -50,10 +50,8 @@ import {
 } from '../mock_data';
 
 jest.mock('ee/requirements/constants', () => ({
+  ...jest.requireActual('ee/requirements/constants'),
   DEFAULT_PAGE_SIZE: 2,
-  FilterState: jest.requireActual('ee/requirements/constants').FilterState,
-  AvailableSortOptions: jest.requireActual('ee/requirements/constants').AvailableSortOptions,
-  TestReportStatus: jest.requireActual('ee/requirements/constants').TestReportStatus,
 }));
 
 jest.mock('~/flash');
