@@ -1,16 +1,19 @@
 <script>
-import { GlButton, GlIcon, GlLoadingIcon, GlTooltip } from '@gitlab/ui';
-import { mapState } from 'vuex';
-import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { GlButton, GlIcon, GlLabel, GlLoadingIcon, GlTooltip } from '@gitlab/ui';
+import { mapActions, mapState } from 'vuex';
+import { getIdFromGraphQLId, getNodesOrDefault } from '~/graphql_shared/utils';
+import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
+import { queryToObject, updateHistory } from '~/lib/utils/url_utility';
 import { __, n__ } from '~/locale';
 import IssuableBlockedIcon from '~/vue_shared/components/issuable_blocked_icon/issuable_blocked_icon.vue';
-import { EPIC_LEVEL_MARGIN } from '../constants';
+import { EPIC_LEVEL_MARGIN, UNSUPPORTED_ROADMAP_PARAMS } from '../constants';
 import eventHub from '../event_hub';
 
 export default {
   components: {
     GlButton,
     GlIcon,
+    GlLabel,
     GlLoadingIcon,
     GlTooltip,
     IssuableBlockedIcon,
@@ -47,7 +50,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(['allowSubEpics']),
+    ...mapState(['allowSubEpics', 'isShowingLabels', 'filterParams']),
     itemId() {
       return this.epic.id;
     },
@@ -100,11 +103,39 @@ export default {
     childMarginClassname() {
       return EPIC_LEVEL_MARGIN[this.childLevel];
     },
+    epicLabels() {
+      return getNodesOrDefault(this.epic.labels);
+    },
+    hasLabels() {
+      return this.epicLabels.length > 0;
+    },
   },
   methods: {
+    ...mapActions(['setFilterParams', 'fetchEpics']),
     toggleIsEpicExpanded() {
       if (!this.isEmptyChildrenWithFilter) {
         eventHub.$emit('toggleIsEpicExpanded', this.epic);
+      }
+    },
+    filterByLabelUrl(label) {
+      const filterPath = window.location.search ? `${window.location.search}&` : '?';
+      const filter = `label_name[]=${encodeURIComponent(label.title)}`;
+      return `${filterPath}${filter}`;
+    },
+    filterByLabel(label) {
+      const alreadySelected = this.filterParams?.labelName?.includes(label.title);
+
+      if (!alreadySelected) {
+        updateHistory({
+          url: this.filterByLabelUrl(label),
+        });
+        this.setFilterParams(
+          convertObjectPropsToCamelCase(
+            queryToObject(window.location.search, { gatherArrays: true }),
+            { dropKeys: UNSUPPORTED_ROADMAP_PARAMS },
+          ),
+        );
+        this.fetchEpics();
       }
     },
   },
@@ -117,7 +148,7 @@ export default {
     data-qa-selector="epic_details_cell"
   >
     <div
-      class="gl-display-flex align-items-start gl-px-3 gl-mb-1"
+      class="gl-display-flex align-items-start gl-p-3 gl-mb-1"
       :class="[epic.isChildEpic ? childMarginClassname : '']"
       data-testid="epic-container"
     >
@@ -175,6 +206,18 @@ export default {
             >&middot;</span
           >
           <span class="epic-timeframe" :title="timeframeString">{{ timeframeString }}</span>
+        </div>
+        <div v-if="hasLabels && isShowingLabels" data-testid="epic-labels" class="gl-mt-2">
+          <gl-label
+            v-for="label in epicLabels"
+            :key="label.id"
+            class="js-no-trigger gl-mt-2 gl-mr-2"
+            :background-color="label.color"
+            :title="label.title"
+            size="sm"
+            :target="filterByLabelUrl(label)"
+            @click.prevent="filterByLabel(label)"
+          />
         </div>
       </div>
       <template v-if="allowSubEpics">

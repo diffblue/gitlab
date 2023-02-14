@@ -178,7 +178,11 @@ export default {
       class="epics-list-item epics-list-item-empty clearfix"
     >
       <span class="epic-details-cell"></span>
-      <span v-for="(timeframeItem, index) in timeframe" :key="index" class="epic-timeline-cell">
+      <span
+        v-for="(timeframeItem, index) in timeframe"
+        :key="index"
+        class="epic-timeline-cell gl-display-flex"
+      >
         <current-day-indicator :preset-type="presetType" :timeframe-item="timeframeItem" />
       </span>
     </div>

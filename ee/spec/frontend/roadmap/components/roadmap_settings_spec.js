@@ -5,6 +5,7 @@ import RoadmapDaterange from 'ee/roadmap/components/roadmap_daterange.vue';
 import RoadmapEpicsState from 'ee/roadmap/components/roadmap_epics_state.vue';
 import RoadmapMilestones from 'ee/roadmap/components/roadmap_milestones.vue';
 import RoadmapProgressTracking from 'ee/roadmap/components/roadmap_progress_tracking.vue';
+import RoadmapToggleLabels from 'ee/roadmap/components/roadmap_toggle_labels.vue';
 
 describe('RoadmapSettings', () => {
   let wrapper;
@@ -20,6 +21,7 @@ describe('RoadmapSettings', () => {
   const findMilestones = () => wrapper.findComponent(RoadmapMilestones);
   const findEpicsSate = () => wrapper.findComponent(RoadmapEpicsState);
   const findProgressTracking = () => wrapper.findComponent(RoadmapProgressTracking);
+  const findToggleLabels = () => wrapper.findComponent(RoadmapToggleLabels);
 
   beforeEach(() => {
     createComponent();
@@ -49,6 +51,10 @@ describe('RoadmapSettings', () => {
 
     it('renders roadmap progress tracking component', () => {
       expect(findProgressTracking().exists()).toBe(true);
+    });
+
+    it('renders roadmap toggle labels', () => {
+      expect(findToggleLabels().exists()).toBe(true);
     });
   });
 });

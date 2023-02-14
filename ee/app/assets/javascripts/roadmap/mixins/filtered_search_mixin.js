@@ -87,6 +87,7 @@ export default {
         show_progress: this.isProgressTrackingActive,
         show_milestones: this.isShowingMilestones,
         milestones_type: this.milestonesType,
+        show_labels: this.isShowingLabels,
       };
     },
   },
