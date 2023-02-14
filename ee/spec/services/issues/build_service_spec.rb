@@ -15,7 +15,7 @@ RSpec.describe Issues::BuildService do
   end
 
   def build_issue(issue_params = {})
-    described_class.new(project: project, current_user: user, params: issue_params).execute
+    described_class.new(container: project, current_user: user, params: issue_params).execute
   end
 
   context 'with an issue template' do
