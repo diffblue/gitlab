@@ -70,7 +70,7 @@ export default () => ({
               isDate: true,
             },
             {
-              id: 'subscriptionEndDate',
+              id: 'trialEndsOn',
               label: s__('SubscriptionTable|Trial end date'),
               value: null,
               isDate: true,
