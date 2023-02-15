@@ -8,7 +8,7 @@ module Gitlab
           strong_memoize(:content) do
             next unless available?
             next unless pipeline_configuration_full_path.present?
-            next if pipeline_source_bridge
+            next if pipeline_source_bridge && pipeline_source == :parent_pipeline
             next if pipeline_source == :security_orchestration_policy
 
             path_file, path_project = pipeline_configuration_full_path.split('@', 2)

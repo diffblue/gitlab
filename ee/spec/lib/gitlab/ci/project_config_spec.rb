@@ -58,7 +58,16 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig do
         context 'when pipeline is downstream of a bridge' do
           let(:bridge) { create(:ci_bridge) }
 
-          it_behaves_like 'does not include compliance pipeline configuration content'
+          it 'does include compliance pipeline configuration' do
+            expect(config.source).to eq(:compliance_source)
+            expect(config.content).to eq(content_result)
+          end
+
+          context 'when pipeline source is parent pipeline' do
+            let(:source) { :parent_pipeline }
+
+            it_behaves_like 'does not include compliance pipeline configuration content'
+          end
         end
       end
 
