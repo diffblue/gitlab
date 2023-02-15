@@ -16,7 +16,7 @@ module Gitlab
       def has_data?
         return false if pipeline.blank?
 
-        pipeline.batch_lookup_report_artifact_for_file_type(:license_scanning).present?
+        pipeline.has_reports?(::Ci::JobArtifact.of_report_type(:license_scanning))
       end
 
       def results_available?

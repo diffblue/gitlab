@@ -282,7 +282,7 @@ RSpec.describe MergeRequest do
             synchronous_reactive_cache(merge_request)
           end
 
-          context 'when the license_scanning_sbom_scanner feature flag is false' do
+          context 'when the license_scanning_sbom_scanner feature flag is disabled' do
             before do
               stub_feature_flags(license_scanning_sbom_scanner: false)
             end
@@ -290,7 +290,7 @@ RSpec.describe MergeRequest do
             it { is_expected.to be_truthy }
           end
 
-          context 'when the license_scanning_sbom_scanner feature flag is true' do
+          context 'when the license_scanning_sbom_scanner feature flag is enabled' do
             let(:merge_request) { create(:ee_merge_request, :with_cyclonedx_reports, source_project: project) }
             let(:denied_policy) { build(:software_license_policy, :denied, software_license: build(:software_license, :apache_2_0)) }
 
@@ -318,7 +318,7 @@ RSpec.describe MergeRequest do
                 allow_any_instance_of(ApprovalWrappedRule).to receive(:approved?).and_return(false)
               end
 
-              context 'when the license_scanning_sbom_scanner feature flag is false' do
+              context 'when the license_scanning_sbom_scanner feature flag is disabled' do
                 before do
                   stub_feature_flags(license_scanning_sbom_scanner: false)
                 end
@@ -326,7 +326,7 @@ RSpec.describe MergeRequest do
                 it { is_expected.to be_truthy }
               end
 
-              context 'when the license_scanning_sbom_scanner feature flag is true' do
+              context 'when the license_scanning_sbom_scanner feature flag is enabled' do
                 let(:merge_request) { create(:ee_merge_request, :with_cyclonedx_reports, source_project: project) }
                 let(:denied_policy) { build(:software_license_policy, :denied, software_license: build(:software_license, :apache_2_0)) }
 
@@ -344,7 +344,7 @@ RSpec.describe MergeRequest do
                 allow_any_instance_of(ApprovalWrappedRule).to receive(:approved?).and_return(true)
               end
 
-              context 'when the license_scanning_sbom_scanner feature flag is false' do
+              context 'when the license_scanning_sbom_scanner feature flag is disabled' do
                 before do
                   stub_feature_flags(license_scanning_sbom_scanner: false)
                 end
@@ -352,7 +352,7 @@ RSpec.describe MergeRequest do
                 it { is_expected.to be_falsey }
               end
 
-              context 'when the license_scanning_sbom_scanner feature flag is true' do
+              context 'when the license_scanning_sbom_scanner feature flag is enabled' do
                 it { is_expected.to be_falsey }
               end
             end
@@ -757,7 +757,7 @@ RSpec.describe MergeRequest do
     end
   end
 
-  describe '#compare_license_scanning_reports' do
+  describe '#compare_license_scanning_reports', feature_category: :license_compliance do
     subject { merge_request.compare_license_scanning_reports(current_user) }
 
     let(:current_user) { project.users.first }
@@ -877,7 +877,7 @@ RSpec.describe MergeRequest do
     end
   end
 
-  describe '#compare_license_scanning_reports_collapsed' do
+  describe '#compare_license_scanning_reports_collapsed', feature_category: :license_compliance do
     subject(:report) { merge_request.compare_license_scanning_reports_collapsed(current_user) }
 
     let(:current_user) { project.users.first }
@@ -901,7 +901,11 @@ RSpec.describe MergeRequest do
       before do
         merge_request.update!(head_pipeline_id: head_pipeline.id)
 
-        allow_next_instance_of(::Gitlab::LicenseScanning::BaseScanner) do |scanner|
+        allow_next_instance_of(::Gitlab::LicenseScanning::ArtifactScanner) do |scanner|
+          allow(scanner).to receive(:results_available?).and_return(true)
+        end
+
+        allow_next_instance_of(::Gitlab::LicenseScanning::SbomScanner) do |scanner|
           allow(scanner).to receive(:results_available?).and_return(true)
         end
       end
