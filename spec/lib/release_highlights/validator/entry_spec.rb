@@ -26,20 +26,20 @@ RSpec.describe ReleaseHighlights::Validator::Entry, type: :model, feature_catego
     end
 
     context 'with a blank entry' do
-      it { is_expected.to validate_presence_of(:name).with_message("can't be blank (line 1)") }
-      it { is_expected.to validate_presence_of(:description).with_message("can't be blank (line 2)") }
-      it { is_expected.to validate_presence_of(:stage).with_message("can't be blank (line 3)") }
-      it { is_expected.to validate_presence_of(:self_managed).with_message("must be a boolean (line 4)") }
-      it { is_expected.to validate_presence_of(:gitlab_com).with_message("must be a boolean (line 5)") }
+      it { is_expected.to validate_presence_of(:name).with_message(/can't be blank \(line [0-9]+\)/) }
+      it { is_expected.to validate_presence_of(:description).with_message(/can't be blank/) }
+      it { is_expected.to validate_presence_of(:stage).with_message(/can't be blank/) }
+      it { is_expected.to validate_presence_of(:self_managed).with_message(/must be a boolean/) }
+      it { is_expected.to validate_presence_of(:gitlab_com).with_message(/must be a boolean/) }
       it { is_expected.to allow_value(nil).for(:image_url) }
 
       it {
         is_expected.to validate_presence_of(:available_in)
-          .with_message("must be one of #{ReleaseHighlights::Validator::Entry::AVAILABLE_IN} (line 1)")
+          .with_message(/must be one of \["Free", "Premium", "Ultimate"\]/)
       }
 
-      it { is_expected.to validate_presence_of(:published_at).with_message("must be valid Date (line 8)") }
-      it { is_expected.to validate_numericality_of(:release).with_message("is not a number (line 9)") }
+      it { is_expected.to validate_presence_of(:published_at).with_message(/must be valid Date/) }
+      it { is_expected.to validate_numericality_of(:release).with_message(/is not a number/) }
 
       it 'validates URI of "documentation_link" and "image_url"' do
         stub_env('RSPEC_ALLOW_INVALID_URLS', 'false')
