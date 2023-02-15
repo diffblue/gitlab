@@ -1,5 +1,5 @@
 import { invert } from 'lodash';
-import { IssuableType, TYPE_ISSUE } from '~/issues/constants';
+import { TYPE_EPIC, TYPE_ISSUE } from '~/issues/constants';
 import { __, s__, sprintf } from '~/locale';
 import {
   IssuableAttributeType as IssuableAttributeTypeFoss,
@@ -195,7 +195,7 @@ export const issuableAttributesQueries = {
 };
 
 export const ancestorsQueries = {
-  [IssuableType.Epic]: {
+  [TYPE_EPIC]: {
     query: epicAncestorsQuery,
   },
 };
@@ -212,7 +212,7 @@ export const healthStatusQueries = {
     mutation: updateStatusMutation,
     query: issueHealthStatusQuery,
   },
-  [IssuableType.Epic]: {
+  [TYPE_EPIC]: {
     mutation: updateStatusMutation,
     query: issueHealthStatusQuery,
   },

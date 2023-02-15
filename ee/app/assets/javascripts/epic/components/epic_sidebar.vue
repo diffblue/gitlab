@@ -5,7 +5,7 @@ import SidebarAncestorsWidget from 'ee_component/sidebar/components/ancestors_tr
 
 import { TYPENAME_EPIC } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { IssuableType } from '~/issues/constants';
+import { TYPE_EPIC } from '~/issues/constants';
 import notesEventHub from '~/notes/event_hub';
 import SidebarConfidentialityWidget from '~/sidebar/components/confidential/sidebar_confidentiality_widget.vue';
 import SidebarDateWidget from '~/sidebar/components/date/sidebar_date_widget.vue';
@@ -54,7 +54,7 @@ export default {
     ]),
     ...mapGetters(['isUserSignedIn']),
     issuableType() {
-      return IssuableType.Epic;
+      return TYPE_EPIC;
     },
     fullEpicId() {
       return convertToGraphQLId(TYPENAME_EPIC, this.epicId);
