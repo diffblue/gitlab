@@ -254,6 +254,26 @@ To be prepared for this change, you should do the following before GitLab 16.0:
 
 </div>
 
+<div class="deprecation removal-160 breaking-change">
+
+### Legacy URLs replaced or removed
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+GitLab 16.0 removes legacy URLs from the GitLab application.
+
+When subgroups were introduced in GitLab 9.0, a `/-/` delimiter was added to URLs to signify the end of a group path. All GitLab URLs now use this delimiter for project, group, and instance level features.
+
+URLs that do not use the `/-/` delimiter are planned for removal in GitLab 16.0. For the full list of these URLs, along with their replacements, see [issue 28848](https://gitlab.com/gitlab-org/gitlab/-/issues/28848#release-notes).
+
+Update any scripts or bookmarks that reference the legacy URLs. GitLab APIs are not affected by this change.
+
+</div>
+
 <div class="deprecation removal-170 breaking-change">
 
 ### Load Performance Testing is deprecated
