@@ -17,7 +17,7 @@ module Mutations
         spam_params = ::Spam::SpamParams.new_from_request(request: context[:request])
 
         result = ::Issues::CreateService.new(
-          project: project,
+          container: project,
           current_user: current_user,
           params: args,
           spam_params: spam_params

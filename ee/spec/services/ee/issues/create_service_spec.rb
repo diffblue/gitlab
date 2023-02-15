@@ -10,7 +10,7 @@ RSpec.describe Issues::CreateService, feature_category: :team_planning do
   let(:base_params) { { title: 'Awesome issue', description: 'please fix', weight: 9 } }
   let(:additional_params) { {} }
   let(:params) { base_params.merge(additional_params) }
-  let(:service) { described_class.new(project: project, current_user: user, params: params, spam_params: nil) }
+  let(:service) { described_class.new(container: project, current_user: user, params: params, spam_params: nil) }
   let(:created_issue) { service.execute[:issue] }
 
   describe '#execute' do
