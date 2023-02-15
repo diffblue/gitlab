@@ -12,6 +12,7 @@ scope :users, module: :users do
     post :verify_phone_verification_code
     get :arkose_labs_challenge
     post :verify_arkose_labs_session
+    get :success
   end
 end
 

@@ -140,7 +140,7 @@ export default {
         name="verification_code"
         :state="form.fields.verificationCode.state"
         trim
-        autocomplete="off"
+        autocomplete="one-time-code"
         data-testid="verification-code-form-input"
         class="gl-number-as-text-input"
         @input="checkVerificationCode"

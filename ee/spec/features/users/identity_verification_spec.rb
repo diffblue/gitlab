@@ -40,7 +40,7 @@ feature_category: :authentication_and_authorization do
       it 'successfully confirms the user and shows the verification successful page' do
         verify_code confirmation_code
 
-        expect(page).to have_current_path(users_successful_verification_path)
+        expect(page).to have_current_path(success_identity_verification_path)
         expect(page).to have_content(s_('IdentityVerification|Verification successful'))
         expect(page).to have_selector(
           "meta[http-equiv='refresh'][content='3; url=#{users_sign_up_welcome_path}']", visible: :hidden
