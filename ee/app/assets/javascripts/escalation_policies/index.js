@@ -1,6 +1,7 @@
 import { defaultDataIdFromObject } from '@apollo/client/core';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { parseBoolean } from '~/lib/utils/common_utils';
 import createDefaultClient from '~/lib/graphql';
 import EscalationPoliciesWrapper from './components/escalation_policies_wrapper.vue';
 
@@ -28,7 +29,12 @@ export default () => {
 
   if (!el) return null;
 
-  const { emptyEscalationPoliciesSvgPath, projectPath = '' } = el.dataset;
+  const {
+    emptyEscalationPoliciesSvgPath,
+    projectPath = '',
+    userCanCreateEscalationPolicy,
+    accessLevelDescriptionPath,
+  } = el.dataset;
 
   return new Vue({
     el,
@@ -36,6 +42,8 @@ export default () => {
     provide: {
       projectPath,
       emptyEscalationPoliciesSvgPath,
+      userCanCreateEscalationPolicy: parseBoolean(userCanCreateEscalationPolicy),
+      accessLevelDescriptionPath,
     },
     render(createElement) {
       return createElement(EscalationPoliciesWrapper);

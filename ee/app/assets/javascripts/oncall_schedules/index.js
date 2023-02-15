@@ -18,6 +18,7 @@ export default () => {
     timezones,
     escalationPoliciesPath,
     userCanCreateSchedule,
+    accessLevelDescriptionPath,
   } = el.dataset;
 
   apolloProvider.clients.defaultClient.cache.writeQuery({
@@ -36,6 +37,7 @@ export default () => {
       timezones: JSON.parse(timezones),
       escalationPoliciesPath,
       userCanCreateSchedule: parseBoolean(userCanCreateSchedule),
+      accessLevelDescriptionPath,
     },
     render(createElement) {
       return createElement(OnCallSchedulesWrapper);

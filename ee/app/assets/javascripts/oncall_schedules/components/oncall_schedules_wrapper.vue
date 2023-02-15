@@ -60,6 +60,7 @@ export default {
     'projectPath',
     'escalationPoliciesPath',
     'userCanCreateSchedule',
+    'accessLevelDescriptionPath',
   ],
   data() {
     return {
@@ -170,7 +171,7 @@ export default {
         </p>
         <gl-sprintf v-else :message="$options.i18n.emptyState.unauthorizedDescription">
           <template #link="{ content }">
-            <gl-link href="project_members?sort=access_level_desc">{{ content }}</gl-link>
+            <gl-link :href="accessLevelDescriptionPath">{{ content }}</gl-link>
           </template>
         </gl-sprintf>
       </template>
