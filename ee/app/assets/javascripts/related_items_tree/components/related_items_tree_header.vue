@@ -1,8 +1,7 @@
 <script>
 import { GlAlert, GlPopover, GlIcon, GlButton } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
-import { TYPE_ISSUE } from '~/issues/constants';
-import { issuableTypesMap } from '~/related_issues/constants';
+import { TYPE_EPIC, TYPE_ISSUE } from '~/issues/constants';
 import { __ } from '~/locale';
 import { i18n, treeTitle, ParentType } from '../constants';
 import EpicHealthStatus from './epic_health_status.vue';
@@ -77,7 +76,7 @@ export default {
     },
     showAddEpicForm() {
       this.toggleAddItemForm({
-        issuableType: issuableTypesMap.EPIC,
+        issuableType: TYPE_EPIC,
         toggleState: true,
       });
     },

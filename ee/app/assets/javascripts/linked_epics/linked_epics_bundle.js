@@ -1,7 +1,8 @@
 import Vue from 'vue';
+import { TYPE_EPIC } from '~/issues/constants';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import RelatedEpicsRoot from '~/related_issues/components/related_issues_root.vue';
-import { PathIdSeparator, issuableTypesMap } from '~/related_issues/constants';
+import { PathIdSeparator } from '~/related_issues/constants';
 
 export default function initRelatedEpics() {
   const relatedEpicsRootEl = document.querySelector('#js-related-epics');
@@ -29,7 +30,7 @@ export default function initRelatedEpics() {
             canAdmin: parseBoolean(canAddRelatedEpics),
             showCategorizedIssues: parseBoolean(showCategorizedEpics),
             pathIdSeparator: PathIdSeparator.Epic,
-            issuableType: issuableTypesMap.EPIC,
+            issuableType: TYPE_EPIC,
             autoCompleteIssues: false,
           },
         }),
