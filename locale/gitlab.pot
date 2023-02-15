@@ -50916,10 +50916,16 @@ msgstr ""
 msgid "manual"
 msgstr ""
 
-msgid "math|Displaying this math block may cause performance issues on this page"
+msgid "math|Displaying this math block may cause performance issues on this page."
 msgstr ""
 
-msgid "math|There was an error rendering this math block"
+msgid "math|There was an error rendering this math block. %{katexMessage}"
+msgstr ""
+
+msgid "math|This math block exceeds %{maxMathChars} characters, and may cause performance issues on this page."
+msgstr ""
+
+msgid "math|Too many expansions. Consider using multiple math blocks."
 msgstr ""
 
 msgid "member"
