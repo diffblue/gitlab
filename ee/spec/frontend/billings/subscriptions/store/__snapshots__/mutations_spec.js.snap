@@ -30,8 +30,8 @@ exports[`EE billings subscription module mutations RECEIVE_SUBSCRIPTION_SUCCESS 
 Array [
   Object {
     "seatsInUse": 1,
-    "subscriptionEndDate": "2019-12-13",
     "subscriptionStartDate": "2018-12-13",
+    "trialEndsOn": "2019-12-13",
   },
 ]
 `;
