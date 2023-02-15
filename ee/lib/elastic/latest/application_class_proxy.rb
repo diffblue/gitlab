@@ -406,7 +406,7 @@ module Elastic
         authorized_ids.intersection(options[:group_ids].to_set).to_a
       end
 
-      def ancestry_filter(current_user, namespace_ancestry)
+      def ancestry_filter(current_user, namespace_ancestry, prefix:)
         return {} unless current_user
         return {} if namespace_ancestry.blank?
 
@@ -414,7 +414,7 @@ module Elastic
           filters = namespace_ancestry.map do |namespace_ids|
             {
               prefix: {
-                namespace_ancestry_ids: {
+                "#{prefix}": {
                   _name: context.name(:descendants),
                   value: namespace_ids
                 }

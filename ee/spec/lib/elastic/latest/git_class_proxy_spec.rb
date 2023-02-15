@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::Latest::GitClassProxy, :elastic do
+RSpec.describe Elastic::Latest::GitClassProxy, :elastic, feature_category: :global_search do
   let(:project) { create(:project, :public, :repository) }
   let(:included_class) { Elastic::Latest::RepositoryClassProxy }
 
@@ -85,5 +85,43 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic do
 
     assert_named_queries('doc:is_a:blob',
                          'blob:match:search_terms')
+  end
+
+  context 'when backfilling migration is incomplete' do
+    let_it_be(:user) { create(:user) }
+
+    before do
+      set_elasticsearch_migration_to(:backfill_traversal_ids_to_blobs_and_wiki_blobs, including: false)
+      stub_feature_flags(elasticsearch_use_traversal_id_optimization: false)
+    end
+
+    it 'does not use the traversal_id filter' do
+      expect(Namespace).not_to receive(:find)
+      subject.elastic_search_as_found_blob('*', options: { current_user: user, group_ids: [1] })
+    end
+  end
+
+  context 'when backfilling migration is complete' do
+    let_it_be(:user) { create(:user) }
+
+    before do
+      set_elasticsearch_migration_to(:backfill_traversal_ids_to_blobs_and_wiki_blobs, including: true)
+      stub_feature_flags(elasticsearch_use_traversal_id_optimization: true)
+    end
+
+    it 'does not use the traversal_id filter when project_ids are passed' do
+      expect(Namespace).not_to receive(:find)
+      subject.elastic_search_as_found_blob('*', options: { current_user: user, project_ids: [1, 2] })
+    end
+
+    it 'does not use the traversal_id filter when group_ids are not passed' do
+      expect(Namespace).not_to receive(:find)
+      subject.elastic_search_as_found_blob('*', options: { current_user: user })
+    end
+
+    it 'uses the traversal_id filter' do
+      expect(Namespace).to receive(:find).once.and_call_original
+      subject.elastic_search_as_found_blob('*', options: { current_user: user, group_ids: [1] })
+    end
   end
 end

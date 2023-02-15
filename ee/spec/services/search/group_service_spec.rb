@@ -288,6 +288,17 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
         end
 
         it_behaves_like 'search respects visibility'
+
+        context 'elasticsearch_use_group_level_optimization is enabled and migration is completed' do
+          before do
+            stub_feature_flags(elasticsearch_use_traversal_id_optimization: true)
+            set_elasticsearch_migration_to(:backfill_traversal_ids_to_blobs_and_wiki_blobs, including: true)
+          end
+
+          with_them do
+            it_behaves_like 'search respects visibility'
+          end
+        end
       end
     end
 

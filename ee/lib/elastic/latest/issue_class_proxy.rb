@@ -105,7 +105,7 @@ module Elastic
 
         context.name(:namespace) do
           query_hash[:query][:bool][:filter] ||= []
-          query_hash[:query][:bool][:filter] << ancestry_filter(current_user, namespace_ancestry)
+          query_hash[:query][:bool][:filter] << ancestry_filter(current_user, namespace_ancestry, prefix: :namespace_ancestry_ids)
         end
 
         query_hash

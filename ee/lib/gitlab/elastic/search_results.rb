@@ -281,6 +281,8 @@ module Gitlab
           base_options.merge(features: [:issues, :merge_requests])
         when :users
           base_options.merge(admin: current_user&.admin?, routing_disabled: true) # rubocop:disable Cop/UserAdmin
+        when :blobs
+          base_options.merge(filters.slice(:language))
         else
           base_options
         end
@@ -335,7 +337,7 @@ module Gitlab
             query,
             page: (page || 1).to_i,
             per: per_page,
-            options: base_options.merge(count_only: count_only).merge(filters.slice(:language)),
+            options: scope_options(:blobs).merge(count_only: count_only),
             preload_method: preload_method
           )
         end
@@ -349,7 +351,7 @@ module Gitlab
             query,
             page: (page || 1).to_i,
             per: per_page,
-            options: base_options.merge(count_only: count_only)
+            options: scope_options(:wiki_blobs).merge(count_only: count_only)
           )
         end
       end
@@ -368,7 +370,7 @@ module Gitlab
             query,
             page: (page || 1).to_i,
             per_page: per_page,
-            options: base_options.merge(count_only: count_only),
+            options: scope_options(:commits).merge(count_only: count_only),
             preload_method: preload_method
           )
         end
