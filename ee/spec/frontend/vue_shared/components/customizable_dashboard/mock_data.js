@@ -41,3 +41,9 @@ export const dashboard = {
     },
   ],
 };
+
+export const mockDateRangeFilterChangePayload = {
+  startDate: new Date('2016-01-01'),
+  endDate: new Date('2016-02-01'),
+  dateRangeOption: 'foo',
+};
