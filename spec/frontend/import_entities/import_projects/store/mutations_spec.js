@@ -210,13 +210,13 @@ describe('import_projects store mutations', () => {
   describe(`${types.RECEIVE_IMPORT_ERROR}`, () => {
     beforeEach(() => {
       const REPO_ID = 1;
-      state = { repositories: [{ importSource: { id: REPO_ID } }] };
+      state = { repositories: [{ importSource: { id: REPO_ID }, importedProject: {} }] };
 
       mutations[types.RECEIVE_IMPORT_ERROR](state, REPO_ID);
     });
 
-    it(`removes importedProject entry`, () => {
-      expect(state.repositories[0].importedProject).toBeNull();
+    it('sets status to failed', () => {
+      expect(state.repositories[0].importedProject.importStatus).toBe(STATUSES.FAILED);
     });
   });
 

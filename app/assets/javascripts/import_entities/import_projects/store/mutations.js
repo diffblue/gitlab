@@ -101,7 +101,7 @@ export default {
 
   [types.RECEIVE_IMPORT_ERROR](state, repoId) {
     const existingRepo = state.repositories.find((r) => r.importSource.id === repoId);
-    existingRepo.importedProject = null;
+    existingRepo.importedProject.importStatus = STATUSES.FAILED;
   },
 
   [types.RECEIVE_JOBS_SUCCESS](state, updatedProjects) {

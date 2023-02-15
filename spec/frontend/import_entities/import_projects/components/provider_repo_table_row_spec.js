@@ -246,6 +246,30 @@ describe('ProviderRepoTableRow', () => {
     });
   });
 
+  describe('when rendering failed project', () => {
+    const repo = {
+      importSource: {
+        id: 'remote-1',
+        fullName: 'fullName',
+        providerLink: 'providerLink',
+      },
+      importedProject: {
+        id: 1,
+        fullPath: 'fullPath',
+        importSource: 'importSource',
+        importStatus: STATUSES.FAILED,
+      },
+    };
+
+    beforeEach(() => {
+      mountComponent({ repo });
+    });
+
+    it('render import button', () => {
+      expect(findImportButton().exists()).toBe(true);
+    });
+  });
+
   describe('when rendering incompatible project', () => {
     const repo = {
       importSource: {
