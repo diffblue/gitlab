@@ -57,7 +57,6 @@ export default {
       'OnDemandScans|Could not delete saved scan. Please refresh the page, or try again later.',
     ),
     verifyConfigurationLabel: s__('OnDemandScans|Verify configuration'),
-    verifyConfigurationLabelSmallScreen: s__('OnDemandScans|Verify'),
   },
   data() {
     return {
