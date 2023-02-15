@@ -273,7 +273,7 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
         end
       end
 
-      it 'filters by child epic', :aggregate_failures do
+      it 'filters by child epic', :aggregate_failures, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/391611' do
         page.find('[data-testid="filtered-search-term-input"]').click
         click_link 'Epic'
         click_link sub_epic.title
