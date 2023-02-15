@@ -49323,6 +49323,9 @@ msgstr ""
 msgid "Your %{strong}%{plan_name}%{strong_close} subscription for %{strong}%{namespace_name}%{strong_close} will expire on %{strong}%{expires_on}%{strong_close}."
 msgstr ""
 
+msgid "Your Activity"
+msgstr ""
+
 msgid "Your CI/CD configuration syntax is invalid. Select the Validate tab for more details."
 msgstr ""
 
@@ -49432,6 +49435,9 @@ msgid "Your action has been rejected because the namespace storage limit has bee
 msgstr ""
 
 msgid "Your action succeeded."
+msgstr ""
+
+msgid "Your activity"
 msgstr ""
 
 msgid "Your applications (%{size})"
