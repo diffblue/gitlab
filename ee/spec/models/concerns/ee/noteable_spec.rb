@@ -86,31 +86,31 @@ RSpec.describe EE::Noteable do
 
     it 'includes weight and iteration synthetic notes' do
       discussions = issue.discussion_root_note_ids(notes_filter: UserPreference::NOTES_FILTERS[:all_notes]).map do |n|
-        { table_name: n.table_name, discussion_id: n.discussion_id, id: n.id }
+        { table_name: n.table_name, id: n.id }
       end
 
       expect(discussions).to match(
         [
           a_hash_including(table_name: 'resource_weight_events', id: weight_event.id),
-          a_hash_including(table_name: 'notes', discussion_id: regular_note.discussion_id),
+          a_hash_including(table_name: 'notes', id: regular_note.id),
           a_hash_including(table_name: 'resource_iteration_events', id: iteration_event.id)
         ])
     end
 
     it 'filters by comments only' do
       discussions = issue.discussion_root_note_ids(notes_filter: UserPreference::NOTES_FILTERS[:only_comments]).map do |n|
-        { table_name: n.table_name, discussion_id: n.discussion_id, id: n.id }
+        { table_name: n.table_name, id: n.id }
       end
 
       expect(discussions).to match(
         [
-          a_hash_including(table_name: 'notes', discussion_id: regular_note.discussion_id)
+          a_hash_including(table_name: 'notes', id: regular_note.id)
         ])
     end
 
     it 'filters by system notes only' do
       discussions = issue.discussion_root_note_ids(notes_filter: UserPreference::NOTES_FILTERS[:only_activity]).map do |n|
-        { table_name: n.table_name, discussion_id: n.discussion_id, id: n.id }
+        { table_name: n.table_name, id: n.id }
       end
 
       expect(discussions).to match(
