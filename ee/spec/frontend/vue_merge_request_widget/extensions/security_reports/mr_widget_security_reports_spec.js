@@ -9,6 +9,7 @@ import SummaryHighlights from 'ee/vue_merge_request_widget/extensions/security_r
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import Widget from '~/vue_merge_request_widget/components/widget/widget.vue';
 import toast from '~/vue_shared/plugins/global_toast';
+import download from '~/lib/utils/downloader';
 import MrWidgetRow from '~/vue_merge_request_widget/components/widget/widget_content_row.vue';
 import * as urlUtils from '~/lib/utils/url_utility';
 import { BV_HIDE_MODAL } from '~/lib/utils/constants';
@@ -17,6 +18,7 @@ import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status
 
 jest.mock('~/vue_shared/components/user_callout_dismisser.vue', () => ({ render: () => {} }));
 jest.mock('~/vue_shared/plugins/global_toast');
+jest.mock('~/lib/utils/downloader');
 
 describe('MR Widget Security Reports', () => {
   let wrapper;
@@ -403,6 +405,21 @@ describe('MR Widget Security Reports', () => {
           name: 'Password leak',
           isDismissed: false,
         },
+      });
+    });
+
+    it('downloads a patch when the downloadPatch event is emitted', async () => {
+      await createComponentExpandWidgetAndOpenModal({
+        mockDataProps: {
+          remediations: [{ diff: 'some-diff' }],
+        },
+      });
+
+      findModal().vm.$emit('downloadPatch');
+
+      expect(download).toHaveBeenCalledWith({
+        fileData: 'some-diff',
+        fileName: 'remediation.patch',
       });
     });
 
