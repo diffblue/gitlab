@@ -1,0 +1,32 @@
+- wiki_syntax_link_url = 'https://github.com/google/re2/wiki/Syntax'
+- wiki_syntax_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: wiki_syntax_link_url }
+- if Feature.enabled?(:mirror_only_branches_match_regex, @project) && @project.licensed_feature_available?(:repository_mirrors)
+  .form-group.gl-mt-5
+    = label_tag do
+      = _('Mirror branches')
+      .help-block.gl-font-weight-normal
+        = _('Choose which branches should be mirrored')
+    .form-check
+      = radio_button_tag :mirror_branch_setting, :all, true, class: 'form-check-input js-mirror-branch-setting'
+      = label_tag :mirror_branch_setting_all, class: 'form-check-label' do
+        = _('Mirror all branches')
+        .form-text.text-muted
+          = _("If enabled, all branches will be mirrored.")
+          = link_to _('Learn more.'), help_page_path('user/project/repository/mirror/index.md'), target: '_blank', rel: 'noopener noreferrer'
+    .form-check
+      = radio_button_tag :mirror_branch_setting, :protected, false, class: 'form-check-input js-mirror-branch-setting'
+      = label_tag :mirror_branch_setting_protected, class: 'form-check-label' do
+        = _('Mirror only protected branches')
+        .form-text.text-muted
+          = _('If enabled, only protected branches will be mirrored.')
+          = link_to _('Learn more.'), help_page_path('user/project/repository/mirror/index.md', anchor: 'mirror-only-protected-branches'), target: '_blank', rel: 'noopener noreferrer'
+    .form-check
+      = radio_button_tag :mirror_branch_setting, :regex, false, class: 'form-check-input js-mirror-branch-setting'
+      = label_tag :mirror_branch_setting_regex, class: 'form-check-label' do
+        = _('Mirror specific branches')
+        = text_field_tag :mirror_branch_regex, nil, class: 'form-control gl-form-input gl-mt-2 js-mirror-branch-regex', placeholder: _('Example') + ':(feature|hotfix)\/*', disabled: true
+        .form-text.text-muted
+          = _('All branch names must match %{link_start}this regular expression%{link_end}. If empty, any branch name is allowed.').html_safe % { link_start: wiki_syntax_link_start, link_end: '</a>'.html_safe }
+
+- else
+  = render_ce 'projects/mirrors/branch_filter'

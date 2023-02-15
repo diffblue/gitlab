@@ -8,7 +8,7 @@ RSpec.describe 'Project settings > [EE] repository', feature_category: :source_c
 
   before do
     project.add_maintainer(user)
-    gitlab_sign_in(user)
+    sign_in(user)
   end
 
   context 'unlicensed' do
@@ -106,6 +106,147 @@ RSpec.describe 'Project settings > [EE] repository', feature_category: :source_c
         expect(page).to have_selector('.js-delete-mirror', count: 0)
         expect(page).to have_select('Mirror direction', options: %w[Pull Push])
       end
+    end
+
+    context 'when create a push mirror' do
+      let(:ssh_url) { 'ssh://user@localhost/project.git' }
+
+      before do
+        visit project_settings_repository_path(project)
+      end
+
+      it 'that mirrors all branches', :js do
+        fill_in 'url', with: ssh_url
+        expect(page).to have_css(".js-mirror-url-hidden[value=\"#{ssh_url}\"]", visible: false)
+
+        select 'SSH public key', from: 'Authentication method'
+        select_direction
+
+        expect(page).to have_css('#mirror_branch_setting_all')
+        find('#mirror_branch_setting_all').click
+        Sidekiq::Testing.fake! do
+          click_button 'Mirror repository'
+        end
+
+        project.reload
+
+        expect(page).to have_content('Mirroring settings were successfully updated')
+        expect(project.remote_mirrors.first.only_protected_branches).to eq(false)
+        expect(project.remote_mirrors.first.mirror_branch_regex).to be_nil
+      end
+
+      it 'that mirrors protected branches', :js do
+        select_direction
+        find('#mirror_branch_setting_protected').click
+
+        fill_in 'url', with: ssh_url
+        expect(page).to have_css(".js-mirror-url-hidden[value=\"#{ssh_url}\"]", visible: false)
+
+        select 'SSH public key', from: 'Authentication method'
+
+        Sidekiq::Testing.fake! do
+          click_button 'Mirror repository'
+        end
+
+        project.reload
+
+        expect(page).to have_content('Mirroring settings were successfully updated')
+        expect(project.remote_mirrors.first.only_protected_branches).to eq(true)
+      end
+
+      it 'that mirrors branches match regex', :js do
+        fill_in 'url', with: ssh_url
+        expect(page).to have_css(".js-mirror-url-hidden[value=\"#{ssh_url}\"]", visible: false)
+
+        select 'SSH public key', from: 'Authentication method'
+        select_direction
+
+        find('#mirror_branch_setting_regex').click
+        fill_in 'mirror_branch_regex', with: 'text'
+
+        Sidekiq::Testing.fake! do
+          click_button 'Mirror repository'
+        end
+
+        project.reload
+
+        expect(page).to have_content('Mirroring settings were successfully updated')
+        expect(project.remote_mirrors.first.only_protected_branches).to be_falsey
+        expect(project.remote_mirrors.first.mirror_branch_regex).to eq('text')
+      end
+    end
+
+    context 'when create a pull mirror' do
+      let(:ssh_url) { 'ssh://user@localhost/project.git' }
+
+      before do
+        visit project_settings_repository_path(project)
+      end
+
+      it 'that mirrors all branches', :js do
+        fill_in 'url', with: ssh_url
+        expect(page).to have_css(".js-mirror-url-hidden[value=\"#{ssh_url}\"]", visible: false)
+
+        select 'SSH public key', from: 'Authentication method'
+        select_direction('pull')
+
+        expect(page).to have_css('#mirror_branch_setting_all')
+        find('#mirror_branch_setting_all').click
+        Sidekiq::Testing.fake! do
+          click_button 'Mirror repository'
+        end
+
+        project.reload
+
+        expect(page).to have_content('Mirroring settings were successfully updated')
+        expect(project.mirror_branches_setting).to eq('all')
+        expect(project.mirror_branch_regex).to be_nil
+      end
+
+      it 'that only mirrors protected branches', :js do
+        select_direction('pull')
+        find('#mirror_branch_setting_protected').click
+
+        fill_in 'url', with: ssh_url
+        expect(page).to have_css(".js-mirror-url-hidden[value=\"#{ssh_url}\"]", visible: false)
+
+        select 'SSH public key', from: 'Authentication method'
+
+        Sidekiq::Testing.fake! do
+          click_button 'Mirror repository'
+        end
+
+        project.reload
+
+        expect(page).to have_content('Mirroring settings were successfully updated')
+        expect(project.only_mirror_protected_branches).to eq(true)
+      end
+
+      it 'that mirrors branches match regex', :js do
+        fill_in 'url', with: ssh_url
+        expect(page).to have_css(".js-mirror-url-hidden[value=\"#{ssh_url}\"]", visible: false)
+
+        select 'SSH public key', from: 'Authentication method'
+        select_direction('pull')
+
+        find('#mirror_branch_setting_regex').click
+        fill_in 'mirror_branch_regex', with: 'text'
+
+        Sidekiq::Testing.fake! do
+          click_button 'Mirror repository'
+        end
+
+        project.reload
+
+        expect(page).to have_content('Mirroring settings were successfully updated')
+        expect(project.mirror_branches_setting).to eq('regex')
+        expect(project.mirror_branch_regex).to eq('text')
+      end
+    end
+
+    def select_direction(direction = 'push')
+      direction_select = find('#mirror_direction')
+      direction_select.select(direction.capitalize)
     end
   end
 end

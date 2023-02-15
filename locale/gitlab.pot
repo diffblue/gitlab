@@ -4107,6 +4107,9 @@ msgstr ""
 msgid "All Members"
 msgstr ""
 
+msgid "All branch names must match %{link_start}this regular expression%{link_end}. If empty, any branch name is allowed."
+msgstr ""
+
 msgid "All branches"
 msgstr ""
 
@@ -8738,6 +8741,9 @@ msgid "Choose what content you want to see on a group’s overview page."
 msgstr ""
 
 msgid "Choose which Git strategy to use when fetching the project."
+msgstr ""
+
+msgid "Choose which branches should be mirrored"
 msgstr ""
 
 msgid "Choose which repositories you want to connect and run CI/CD pipelines."
@@ -16773,6 +16779,9 @@ msgstr ""
 msgid "Exactly one of %{attributes} is required"
 msgstr ""
 
+msgid "Example"
+msgstr ""
+
 msgid "Example: (feature|hotfix)\\/*"
 msgstr ""
 
@@ -21239,6 +21248,9 @@ msgid "If disabled, a diverged local branch will not be automatically updated wi
 msgstr ""
 
 msgid "If disabled, only administrators can configure repository mirroring."
+msgstr ""
+
+msgid "If enabled, all branches will be mirrored."
 msgstr ""
 
 msgid "If enabled, only protected branches will be mirrored."
@@ -27335,6 +27347,12 @@ msgstr ""
 msgid "Minutes"
 msgstr ""
 
+msgid "Mirror all branches"
+msgstr ""
+
+msgid "Mirror branches"
+msgstr ""
+
 msgid "Mirror direction"
 msgstr ""
 
@@ -27345,6 +27363,9 @@ msgid "Mirror repository"
 msgstr ""
 
 msgid "Mirror settings are only available to GitLab administrators."
+msgstr ""
+
+msgid "Mirror specific branches"
 msgstr ""
 
 msgid "Mirror user"
@@ -40785,6 +40806,9 @@ msgid "Spam and Anti-bot Protection"
 msgstr ""
 
 msgid "Spam log successfully submitted as ham."
+msgstr ""
+
+msgid "Specific branches"
 msgstr ""
 
 msgid "Specified URL cannot be used: \"%{reason}\""
