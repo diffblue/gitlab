@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'fast_spec_helper'
+require 'spec_helper'
 require 'hashie'
 require './ee/app/services/package_metadata/data_object'
 
@@ -8,7 +8,8 @@ RSpec.describe Gitlab::PackageMetadata::Connector::Gcp, feature_category: :licen
   let(:connector) { described_class.new(bucket_name, version_format, purl_type) }
   let(:bucket_name) { 'gitlab-pm-bucket1' }
   let(:version_format) { 'v1' }
-  let(:purl_type) { 'rubygems' }
+  let(:registry_id) { 'rubygem' }
+  let(:purl_type) { 'gem' }
   let(:storage) { instance_double(Google::Cloud::Storage::Project, bucket: bucket) }
   let(:bucket) { instance_double(Google::Cloud::Storage::Bucket, files: file_list) }
   let(:file_list) { instance_double(Google::Cloud::Storage::File::List, all: all_files) }
@@ -120,9 +121,28 @@ RSpec.describe Gitlab::PackageMetadata::Connector::Gcp, feature_category: :licen
   end
 
   describe 'gcp bucket' do
-    it 'correctly queries the bucket' do
-      expect(bucket).to receive(:files).with(prefix: "#{version_format}/#{purl_type}/")
-      connector.data_after(Hashie::Mash.new(sequence_id: nil, chunk_id: nil))
+    using RSpec::Parameterized::TableSyntax
+
+    # The license db does not use a directory structure
+    # that maps 1:1 with the purl types. Therefore,
+    # we test that we correctly convert between purl type
+    # and registry id used by the license db structure.
+    where(:purl_type, :registry_id) do
+      :composer | "packagist"
+      :conan | "conan"
+      :gem | "rubygem"
+      :golang | "go"
+      :maven | "maven"
+      :npm | "npm"
+      :nuget | "nuget"
+      :pypi | "pypi"
+    end
+
+    with_them do
+      it 'correctly queries the bucket' do
+        expect(bucket).to receive(:files).with(prefix: "#{version_format}/#{registry_id}/")
+        connector.data_after(Hashie::Mash.new(sequence_id: nil, chunk_id: nil))
+      end
     end
   end
 end
