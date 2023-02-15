@@ -25,22 +25,25 @@ module Dora
     end
 
     class << self
-      def aggregate_for!(metric, interval)
-        query = "#{BaseMetric.for(metric).calculation_query} as data"
+      def aggregate_for!(metrics, interval)
+        select_query_part = metrics.map do |metric|
+          "#{BaseMetric.for(metric).calculation_query} as metric_#{metric}"
+        end.join(', ')
 
         case interval
         when INTERVAL_ALL
-          select(query).take.data
+          row = select(select_query_part).take
+          transform_aggregated_row(row.attributes.merge('interval_date' => nil), metrics)
         when INTERVAL_MONTHLY
-          select("DATE_TRUNC('month', date)::date AS month, #{query}")
+          select("DATE_TRUNC('month', date)::date AS interval_date, #{select_query_part}")
             .group("DATE_TRUNC('month', date)")
-            .order('month ASC')
-            .map { |row| { 'date' => row.month.to_s, 'value' => row.data } }
+            .order('interval_date ASC')
+            .map { |row| transform_aggregated_row(row, metrics) }
         when INTERVAL_DAILY
-          select("date, #{query}")
+          select("date AS interval_date, #{select_query_part}")
             .group('date')
-            .order('date ASC')
-            .map { |row| { 'date' => row.date.to_s, 'value' => row.data } }
+            .order('interval_date ASC')
+            .map { |row| transform_aggregated_row(row, metrics) }
         else
           raise ArgumentError, 'Unknown interval'
         end
@@ -71,6 +74,17 @@ module Dora
           DO UPDATE SET
             #{queries_to_refresh.map { |column, query| "#{column} = (#{query})" }.join(', ')}
         SQL
+      end
+
+      private
+
+      def transform_aggregated_row(row, metrics)
+        result = { 'date' => row['interval_date']&.to_s }
+        metrics.each do |key|
+          result[key.to_s] = row["metric_#{key}"]
+        end
+
+        result
       end
     end
   end
