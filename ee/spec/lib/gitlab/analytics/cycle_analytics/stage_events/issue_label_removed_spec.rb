@@ -20,7 +20,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelRemoved
 
     before(:context) do
       Sidekiq::Worker.skipping_transaction_check do
-        Issues::UpdateService.new(project: project, current_user: user, params: { label_ids: [] }).execute(record_with_data)
+        Issues::UpdateService.new(container: project, current_user: user, params: { label_ids: [] }).execute(record_with_data)
       end
     end
   end

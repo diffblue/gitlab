@@ -277,12 +277,12 @@ RSpec.describe 'getting a work item list for a project', feature_category: :team
 
         let(:version_gid) { "null" }
         let(:opts) { {} }
-        let(:spam_params) { {} }
+        let(:spam_params) { double }
         let(:widget_params) { { description_widget: { description: "updated description" } } }
 
         let(:service) do
           WorkItems::UpdateService.new(
-            project: project,
+            container: project,
             current_user: current_user,
             params: opts,
             spam_params: spam_params,
@@ -291,6 +291,7 @@ RSpec.describe 'getting a work item list for a project', feature_category: :team
         end
 
         before do
+          stub_spam_services
           project.add_developer(current_user)
           service.execute(work_item)
         end

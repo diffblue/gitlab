@@ -4,7 +4,7 @@ RSpec.shared_examples 'updating issuable health status' do
   context 'updating health_status' do
     let(:current_user) { create(:user) }
     let(:opts) { { health_status: 1 } }
-    let(:service) { described_class.new(project: parent, current_user: current_user, params: opts) }
+    let(:service) { described_class.new(container: parent, current_user: current_user, params: opts) }
 
     context 'when feature is not available' do
       it 'does not update issue health status' do

@@ -36,7 +36,7 @@ RSpec.shared_context '[EE] Analytics fixtures shared context' do
     travel_back
     travel_to(5.days.ago) do
       Issues::UpdateService.new(
-        project: project,
+        container: project,
         current_user: user,
         params: { label_ids: [label.id] }
       ).execute(issue)
@@ -44,7 +44,7 @@ RSpec.shared_context '[EE] Analytics fixtures shared context' do
 
     travel_to(2.days.ago) do
       Issues::UpdateService.new(
-        project: project,
+        container: project,
         current_user: user,
         params: { label_ids: [] }
       ).execute(issue)

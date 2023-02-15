@@ -19,7 +19,7 @@ module Mutations
         authorize_read_rights!(epic)
 
         begin
-          ::Issues::UpdateService.new(project: project, current_user: current_user, params: { epic: epic })
+          ::Issues::UpdateService.new(container: project, current_user: current_user, params: { epic: epic })
             .execute(issue)
         rescue ::Gitlab::Access::AccessDeniedError
           raise_resource_not_available_error!

@@ -21,7 +21,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelAdded d
     before(:context) do
       # adding label via the service so the resource_label_events record is populated
       Sidekiq::Worker.skipping_transaction_check do
-        Issues::UpdateService.new(project: project, current_user: user, params: { label_ids: [label.id] }).execute(record_with_data)
+        Issues::UpdateService.new(container: project, current_user: user, params: { label_ids: [label.id] }).execute(record_with_data)
       end
     end
   end
