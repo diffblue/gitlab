@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::LogCursor::Logger, :geo do
+RSpec.describe Gitlab::Geo::LogCursor::Logger, :geo, feature_category: :geo_replication do
   subject(:logger) { described_class.new(LoggerSpec) }
 
-  let(:data) { { pid: 111, class: 'LoggerSpec', host: 'localhost', message: 'Test' } }
+  let(:data) { { pid: 111, class: 'LoggerSpec', gitlab_host: 'localhost', message: 'Test' } }
 
   before do
     stub_const('LoggerSpec', Class.new)
@@ -36,7 +36,7 @@ RSpec.describe Gitlab::Geo::LogCursor::Logger, :geo do
         {
           pid: 111,
           class: "LoggerSpec",
-          host: 'localhost',
+          gitlab_host: 'localhost',
           message: 'Test',
           cursor_delay_s: 0.0
         }

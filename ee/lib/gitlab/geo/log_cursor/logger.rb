@@ -52,7 +52,7 @@ module Gitlab
         def base_log_data(message, params = {})
           {
             pid: PID,
-            host: Gitlab.config.gitlab.host,
+            gitlab_host: Gitlab.config.gitlab.host,
             class: caller_name,
             message: message
           }.merge(params)
