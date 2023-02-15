@@ -1,33 +1,29 @@
 <script>
-import { GlAlert, GlButton, GlLoadingIcon, GlTable, GlLink, GlKeysetPagination } from '@gitlab/ui';
+import { GlAlert, GlButton, GlKeysetPagination, GlLoadingIcon, GlTable } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import { s__, __ } from '~/locale';
-import { thWidthClass, sortObjectToString, sortStringToObject } from '~/lib/utils/table_utility';
+import { __, s__ } from '~/locale';
+import { sortObjectToString, sortStringToObject, thWidthClass } from '~/lib/utils/table_utility';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
-import { helpPagePath } from '~/helpers/help_page_helper';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 import { ISO_SHORT_FORMAT } from '~/vue_shared/constants';
 import getComplianceViolationsQuery from '../../graphql/compliance_violations.query.graphql';
 import { mapViolations } from '../../graphql/mappers';
-import { DEFAULT_SORT, GRAPHQL_PAGE_SIZE, DEFAULT_PAGINATION_CURSORS } from '../../constants';
-import { parseViolationsQueryFilter } from '../../utils';
-import MergeCommitsExportButton from './shared/merge_commits_export_button.vue';
+import { DEFAULT_PAGINATION_CURSORS, DEFAULT_SORT, GRAPHQL_PAGE_SIZE } from '../../constants';
+import { buildDefaultViolationsFilterParams, parseViolationsQueryFilter } from '../../utils';
 import MergeRequestDrawer from './drawer.vue';
 import ViolationReason from './violations/reason.vue';
 import ViolationFilter from './violations/filter.vue';
 
 export default {
-  name: 'ComplianceReport',
+  name: 'ComplianceViolationsReport',
   components: {
     GlAlert,
     GlButton,
     GlLoadingIcon,
     GlTable,
-    GlLink,
     GlKeysetPagination,
-    MergeCommitsExportButton,
     MergeRequestDrawer,
     ViolationReason,
     SeverityBadge,
@@ -44,17 +40,16 @@ export default {
       type: String,
       required: true,
     },
-    defaultFilterParams: {
-      type: Object,
-      required: true,
-    },
   },
   data() {
-    const sortParam = this.defaultFilterParams.sort || DEFAULT_SORT;
+    const defaultFilterParams = buildDefaultViolationsFilterParams(window.location.search);
+
+    const sortParam = defaultFilterParams.sort || DEFAULT_SORT;
     const { sortBy, sortDesc } = sortStringToObject(sortParam);
 
     return {
-      urlQuery: { ...this.defaultFilterParams },
+      defaultFilterParams,
+      urlQuery: { ...defaultFilterParams },
       queryError: false,
       violations: {
         list: [],
@@ -205,10 +200,6 @@ export default {
     },
   ],
   i18n: {
-    heading: __('Compliance report'),
-    subheading: __(
-      'The compliance report shows the merge request violations merged in protected environments.',
-    ),
     queryError: __('Retrieving the compliance report failed. Refresh the page and try again.'),
     noViolationsFound: s__('ComplianceReport|No violations found'),
     learnMore: __('Learn more.'),
@@ -216,7 +207,6 @@ export default {
     next: __('Next'),
     viewDetailsBtn: __('View details'),
   },
-  documentationPath: helpPagePath('user/compliance/compliance_report/index.md'),
   DRAWER_Z_INDEX,
 };
 </script>
@@ -226,23 +216,6 @@ export default {
     <gl-alert v-if="queryError" variant="danger" class="gl-mt-3" :dismissible="false">
       {{ $options.i18n.queryError }}
     </gl-alert>
-    <header
-      class="gl-mt-5 gl-mb-6 gl-display-flex gl-sm-flex-direction-column gl-justify-content-space-between"
-    >
-      <div>
-        <h2 class="gl-flex-grow-1 gl-my-0">{{ $options.i18n.heading }}</h2>
-        <p class="gl-mt-5" data-testid="subheading">
-          {{ $options.i18n.subheading }}
-          <gl-link :href="$options.documentationPath" target="_blank">{{
-            $options.i18n.learnMore
-          }}</gl-link>
-        </p>
-      </div>
-      <merge-commits-export-button
-        v-if="hasMergeCommitsCsvExportPath"
-        :merge-commits-csv-export-path="mergeCommitsCsvExportPath"
-      />
-    </header>
     <violation-filter
       :group-path="groupPath"
       :default-query="defaultFilterParams"

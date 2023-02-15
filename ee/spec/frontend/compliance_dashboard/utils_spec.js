@@ -1,6 +1,5 @@
 import timezoneMock from 'timezone-mock';
 import * as utils from 'ee/compliance_dashboard/utils';
-import { queryToObject } from '~/lib/utils/url_utility';
 
 jest.mock('ee/audit_events/constants', () => ({
   CURRENT_DATE: new Date('2022 2 28'),
@@ -57,11 +56,11 @@ describe('compliance report utils', () => {
     });
   });
 
-  describe('buildDefaultFilterParams', () => {
+  describe('buildDefaultViolationsFilterParams', () => {
     it('returns the expected result with the default date range of 30 days', () => {
       const queryString = 'projectIds[]=20';
 
-      expect(utils.buildDefaultFilterParams(queryString)).toStrictEqual({
+      expect(utils.buildDefaultViolationsFilterParams(queryString)).toStrictEqual({
         mergedAfter: '2022-01-29',
         mergedBefore: '2022-02-28',
         projectIds: ['20'],
@@ -69,11 +68,41 @@ describe('compliance report utils', () => {
     });
 
     it('return the expected result when the query contains dates', () => {
-      const queryString = 'mergedAfter=2022-02-09&mergedBefore=2022-03-11&projectIds[]=20';
+      const queryString =
+        'mergedAfter=2022-02-09&mergedBefore=2022-03-11&projectIds[]=20&tab=violations';
 
-      expect(utils.buildDefaultFilterParams(queryString)).toStrictEqual(
-        queryToObject(queryString, { gatherArrays: true }),
-      );
+      expect(utils.buildDefaultViolationsFilterParams(queryString)).toStrictEqual({
+        mergedAfter: '2022-02-09',
+        mergedBefore: '2022-03-11',
+        projectIds: ['20'],
+        tab: 'violations',
+      });
+    });
+  });
+
+  describe('buildDefaultFrameworkFilterParams', () => {
+    it('returns the tab parameter', () => {
+      const queryString = 'tab=frameworks';
+
+      expect(utils.buildDefaultFrameworkFilterParams(queryString)).toStrictEqual({
+        tab: 'frameworks',
+      });
+    });
+
+    it('returns a default value when no tab query parameter is provided', () => {
+      const queryString = '';
+
+      expect(utils.buildDefaultFrameworkFilterParams(queryString)).toStrictEqual({
+        tab: 'frameworks',
+      });
+    });
+
+    it('does not return unknown parameters', () => {
+      const queryString = 'tab=frameworks&foo=bar&ding=wow';
+
+      expect(utils.buildDefaultFrameworkFilterParams(queryString)).toStrictEqual({
+        tab: 'frameworks',
+      });
     });
   });
 });

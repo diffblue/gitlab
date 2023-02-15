@@ -3,7 +3,7 @@ import ViolationReason from 'ee/compliance_dashboard/components/violations_repor
 import UserAvatar from 'ee/compliance_dashboard/components/violations_report/shared/user_avatar.vue';
 import { MERGE_REQUEST_VIOLATION_MESSAGES } from 'ee/compliance_dashboard/constants';
 import { mapViolations } from 'ee/compliance_dashboard/graphql/mappers';
-import { createComplianceViolation } from '../../mock_data';
+import { createComplianceViolation } from '../../../mock_data';
 
 describe('ViolationReason component', () => {
   let wrapper;

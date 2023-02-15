@@ -3,7 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import UserAvatar from 'ee/compliance_dashboard/components/violations_report/shared/user_avatar.vue';
 import { DRAWER_AVATAR_SIZE } from 'ee/compliance_dashboard/constants';
 import { mapViolations } from 'ee/compliance_dashboard/graphql/mappers';
-import { createComplianceViolation } from '../../mock_data';
+import { createComplianceViolation } from '../../../mock_data';
 
 describe('UserAvatar component', () => {
   let wrapper;

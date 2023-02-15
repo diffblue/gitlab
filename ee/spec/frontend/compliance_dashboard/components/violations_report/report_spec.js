@@ -1,12 +1,11 @@
-import { GlAlert, GlButton, GlLoadingIcon, GlTable, GlLink, GlKeysetPagination } from '@gitlab/ui';
+import { GlAlert, GlButton, GlKeysetPagination, GlLink, GlLoadingIcon, GlTable } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
 import * as Sentry from '@sentry/browser';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import ComplianceReport from 'ee/compliance_dashboard/components/violations_report/report.vue';
+import ComplianceViolationsReport from 'ee/compliance_dashboard/components/violations_report/report.vue';
 import MergeRequestDrawer from 'ee/compliance_dashboard/components/violations_report/drawer.vue';
-import MergeCommitsExportButton from 'ee/compliance_dashboard/components/violations_report/shared/merge_commits_export_button.vue';
 import ViolationReason from 'ee/compliance_dashboard/components/violations_report/violations/reason.vue';
 import ViolationFilter from 'ee/compliance_dashboard/components/violations_report/violations/filter.vue';
 import getComplianceViolationsQuery from 'ee/compliance_dashboard/graphql/compliance_violations.query.graphql';
@@ -19,26 +18,28 @@ import { stubComponent } from 'helpers/stub_component';
 import { sortObjectToString } from '~/lib/utils/table_utility';
 import { parseViolationsQueryFilter } from 'ee/compliance_dashboard/utils';
 import {
+  DEFAULT_PAGINATION_CURSORS,
   DEFAULT_SORT,
   GRAPHQL_PAGE_SIZE,
-  DEFAULT_PAGINATION_CURSORS,
 } from 'ee/compliance_dashboard/constants';
-import { createComplianceViolationsResponse } from '../mock_data';
+import setWindowLocation from 'helpers/set_window_location_helper';
+import { TEST_HOST } from 'spec/test_constants';
+import { createComplianceViolationsResponse } from '../../mock_data';
 
 Vue.use(VueApollo);
 
-describe('ComplianceReport component', () => {
+describe('ComplianceViolationsReport component', () => {
   let wrapper;
 
   const mergeCommitsCsvExportPath = '/csv';
   const groupPath = 'group-path';
   const mergedAfter = '2021-11-16';
   const mergedBefore = '2021-12-15';
+  const defaultQueryParams = `?sort=${DEFAULT_SORT}&projectIds[]=${20}&mergedAfter=${mergedAfter}&mergedBefore=${mergedBefore}`;
   const defaultFilterParams = {
     projectIds: ['20'],
     mergedAfter,
     mergedBefore,
-    sort: DEFAULT_SORT,
   };
 
   const violationsResponse = createComplianceViolationsResponse({ count: 2 });
@@ -48,13 +49,11 @@ describe('ComplianceReport component', () => {
   const mockGraphQlLoading = jest.fn().mockResolvedValue(new Promise(() => {}));
   const mockGraphQlError = jest.fn().mockRejectedValue(sentryError);
 
-  const findSubheading = () => wrapper.findByTestId('subheading');
   const findErrorMessage = () => wrapper.findComponent(GlAlert);
   const findViolationsTable = () => wrapper.findComponent(GlTable);
   const findTableLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findPagination = () => wrapper.findComponent(GlKeysetPagination);
   const findMergeRequestDrawer = () => wrapper.findComponent(MergeRequestDrawer);
-  const findMergeCommitsExportButton = () => wrapper.findComponent(MergeCommitsExportButton);
   const findViolationReason = () => wrapper.findComponent(ViolationReason);
   const findSeverityBadge = () => wrapper.findComponent(SeverityBadge);
   const findViolationFilter = () => wrapper.findComponent(ViolationFilter);
@@ -89,12 +88,11 @@ describe('ComplianceReport component', () => {
     resolverMock = mockGraphQlLoading,
   ) => {
     return extendedWrapper(
-      mountFn(ComplianceReport, {
+      mountFn(ComplianceViolationsReport, {
         apolloProvider: createMockApolloProvider(resolverMock),
         propsData: {
           mergeCommitsCsvExportPath,
           groupPath,
-          defaultFilterParams,
           ...props,
         },
         stubs: {
@@ -112,21 +110,8 @@ describe('ComplianceReport component', () => {
 
   describe('default behavior', () => {
     beforeEach(() => {
+      setWindowLocation(TEST_HOST + defaultQueryParams);
       wrapper = createComponent();
-    });
-
-    it('renders the subheading with a help link', () => {
-      const helpLink = findSubheading().findComponent(GlLink);
-
-      expect(findSubheading().text()).toContain(
-        'The compliance report shows the merge request violations merged in protected environments.',
-      );
-      expect(helpLink.text()).toBe('Learn more.');
-      expect(helpLink.attributes('href')).toBe('/help/user/compliance/compliance_report/index.md');
-    });
-
-    it('renders the merge commit export button', () => {
-      expect(findMergeCommitsExportButton().exists()).toBe(true);
     });
 
     it('does not render an error message', () => {
@@ -147,6 +132,7 @@ describe('ComplianceReport component', () => {
 
   describe('when initializing', () => {
     beforeEach(() => {
+      setWindowLocation(TEST_HOST + defaultQueryParams);
       wrapper = createComponent(mount, {}, mockGraphQlLoading);
     });
 
@@ -166,15 +152,12 @@ describe('ComplianceReport component', () => {
     });
   });
 
-  describe('when the defaultFilterParams has a sort param', () => {
+  describe('when the URL has a sort param', () => {
     const sort = 'VIOLATION_ASC';
 
     beforeEach(() => {
-      wrapper = createComponent(
-        mount,
-        { defaultFilterParams: { ...defaultFilterParams, sort } },
-        mockGraphQlLoading,
-      );
+      setWindowLocation(`${TEST_HOST + defaultQueryParams}&sort=${sort}`);
+      wrapper = createComponent(mount, {}, mockGraphQlLoading);
     });
 
     it('fetches the list of merge request violations with sort params', async () => {
@@ -190,6 +173,7 @@ describe('ComplianceReport component', () => {
 
   describe('when the query fails', () => {
     beforeEach(() => {
+      setWindowLocation(TEST_HOST + defaultQueryParams);
       jest.spyOn(Sentry, 'captureException');
       wrapper = createComponent(shallowMount, {}, mockGraphQlError);
     });
@@ -207,6 +191,7 @@ describe('ComplianceReport component', () => {
 
   describe('when there are violations', () => {
     beforeEach(() => {
+      setWindowLocation(TEST_HOST + defaultQueryParams);
       wrapper = createComponent(mount, {}, mockGraphQlSuccess);
 
       return waitForPromises();
@@ -318,10 +303,6 @@ describe('ComplianceReport component', () => {
       const query = { mergedAfter, mergedBefore, projectIds: [1, 2, 3] };
 
       const changeFilters = async () => {
-        wrapper = createComponent(mount, {}, mockGraphQlSuccess);
-
-        await waitForPromises();
-
         return findViolationFilter().vm.$emit('filters-changed', query);
       };
 
@@ -354,8 +335,8 @@ describe('ComplianceReport component', () => {
       it('fetches the filtered violations', async () => {
         await changeFilters();
 
-        expect(mockGraphQlSuccess).toHaveBeenCalledTimes(3);
-        expect(mockGraphQlSuccess).toHaveBeenNthCalledWith(3, {
+        expect(mockGraphQlSuccess).toHaveBeenCalledTimes(2);
+        expect(mockGraphQlSuccess).toHaveBeenNthCalledWith(2, {
           fullPath: groupPath,
           filters: parseViolationsQueryFilter(query),
           sort: DEFAULT_SORT,
@@ -481,6 +462,7 @@ describe('ComplianceReport component', () => {
 
   describe('when there are no violations', () => {
     beforeEach(() => {
+      setWindowLocation(TEST_HOST + defaultQueryParams);
       const noViolationsResponse = createComplianceViolationsResponse({ count: 0 });
       const mockResolver = jest.fn().mockResolvedValue(noViolationsResponse);
 
@@ -491,16 +473,6 @@ describe('ComplianceReport component', () => {
 
     it('renders the empty table message', () => {
       expect(findViolationsTable().text()).toContain('No violations found');
-    });
-  });
-
-  describe('when the merge commit export link is not present', () => {
-    beforeEach(() => {
-      wrapper = createComponent(shallowMount, { mergeCommitsCsvExportPath: '' });
-    });
-
-    it('does not render the merge commit export button', () => {
-      expect(findMergeCommitsExportButton().exists()).toBe(false);
     });
   });
 });
