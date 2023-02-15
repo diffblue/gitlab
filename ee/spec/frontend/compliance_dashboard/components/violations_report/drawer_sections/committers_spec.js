@@ -2,7 +2,7 @@ import { shallowMount } from '@vue/test-utils';
 import Committers from 'ee/compliance_dashboard/components/violations_report/drawer_sections/committers.vue';
 import DrawerAvatarsList from 'ee/compliance_dashboard/components/violations_report/shared/drawer_avatars_list.vue';
 import DrawerSectionHeader from 'ee/compliance_dashboard/components/violations_report/shared/drawer_section_header.vue';
-import { createApprovers } from '../../mock_data';
+import { createApprovers } from '../../../mock_data';
 
 describe('Committers component', () => {
   let wrapper;

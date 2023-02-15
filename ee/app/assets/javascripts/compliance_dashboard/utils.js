@@ -3,6 +3,7 @@ import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import { formatDate, getDateInPast, pikadayToString } from '~/lib/utils/datetime_utility';
 import { ISO_SHORT_FORMAT } from '~/vue_shared/constants';
 import { queryToObject } from '~/lib/utils/url_utility';
+import { TAB_FRAMEWORKS } from 'ee/compliance_dashboard/constants';
 import { CURRENT_DATE } from '../audit_events/constants';
 
 export const convertProjectIdsToGraphQl = (projectIds) =>
@@ -17,8 +18,16 @@ export const parseViolationsQueryFilter = ({ mergedBefore, mergedAfter, projectI
   mergedAfter: formatDate(mergedAfter, ISO_SHORT_FORMAT, true),
 });
 
-export const buildDefaultFilterParams = (queryString) => ({
+export const buildDefaultViolationsFilterParams = (queryString) => ({
   mergedAfter: pikadayToString(getDateInPast(CURRENT_DATE, 30)),
   mergedBefore: pikadayToString(CURRENT_DATE),
   ...queryToObject(queryString, { gatherArrays: true }),
 });
+
+export const buildDefaultFrameworkFilterParams = (queryString) => {
+  const { tab } = queryToObject(queryString, { gatherArrays: true });
+
+  return {
+    tab: tab || TAB_FRAMEWORKS,
+  };
+};

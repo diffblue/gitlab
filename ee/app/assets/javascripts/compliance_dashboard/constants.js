@@ -34,3 +34,7 @@ export const BRANCH_FILTER_OPTIONS = {
   allBranches: __('All branches'),
   allProtectedBranches: __('All protected branches'),
 };
+
+export const TAB_VIOLATIONS = 'violations';
+export const TAB_FRAMEWORKS = 'frameworks';
+export const TABS = [TAB_VIOLATIONS, TAB_FRAMEWORKS];

@@ -2,7 +2,7 @@ import { GlAvatarLabeled, GlAvatarLink, GlLabel } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Project from 'ee/compliance_dashboard/components/violations_report/drawer_sections/project.vue';
 import DrawerSectionHeader from 'ee/compliance_dashboard/components/violations_report/shared/drawer_section_header.vue';
-import { complianceFramework } from '../../mock_data';
+import { complianceFramework } from '../../../mock_data';
 
 describe('Project component', () => {
   let wrapper;

@@ -4,8 +4,8 @@ import { GlDaterangePicker } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ViolationFilter from 'ee/compliance_dashboard/components/violations_report/violations/filter.vue';
 import {
+  buildDefaultViolationsFilterParams,
   convertProjectIdsToGraphQl,
-  buildDefaultFilterParams,
 } from 'ee/compliance_dashboard/utils';
 import ProjectsDropdownFilter from '~/analytics/shared/components/projects_dropdown_filter.vue';
 import { getDateInPast, pikadayToString } from '~/lib/utils/datetime_utility';
@@ -13,13 +13,13 @@ import { CURRENT_DATE } from 'ee/audit_events/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import getGroupProjectsQuery from 'ee/compliance_dashboard/graphql/violation_group_projects.query.graphql';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createDefaultProjects, createDefaultProjectsResponse } from '../../mock_data';
+import { createDefaultProjects, createDefaultProjectsResponse } from '../../../mock_data';
 
 Vue.use(VueApollo);
 
 describe('ViolationFilter component', () => {
   let wrapper;
-  const defaultQuery = buildDefaultFilterParams('');
+  const defaultQuery = buildDefaultViolationsFilterParams('');
   const groupPath = 'group-path';
   const projectIds = ['1', '2'];
   const startDate = getDateInPast(CURRENT_DATE, 20);
@@ -121,7 +121,11 @@ describe('ViolationFilter component', () => {
       await findDatePicker().vm.$emit('input', { startDate, endDate });
 
       expect(wrapper.emitted('filters-changed')).toHaveLength(1);
-      expect(wrapper.emitted('filters-changed')[0]).toStrictEqual([{ ...dateRangeQuery }]);
+      expect(wrapper.emitted('filters-changed')[0]).toStrictEqual([
+        {
+          ...dateRangeQuery,
+        },
+      ]);
     });
 
     it('emits the existing filter query with mutations on each update', async () => {
