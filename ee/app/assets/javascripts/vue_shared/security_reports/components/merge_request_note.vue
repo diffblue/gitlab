@@ -31,18 +31,29 @@ export default {
 
       return __('Created merge request %{mergeRequestLink}');
     },
+    createdAt() {
+      return this.feedback.created_at || this.feedback.createdAt;
+    },
+    mergeRequestPath() {
+      return this.feedback.merge_request_path || this.feedback.mergeRequestPath;
+    },
+    mergeRequestIid() {
+      return this.feedback.merge_request_iid || this.feedback.mergeRequestIid;
+    },
   },
 };
 </script>
 
 <template>
-  <event-item :author="feedback.author" :created-at="feedback.created_at" icon-name="merge-request">
+  <event-item :author="feedback.author" :created-at="createdAt" icon-name="merge-request">
     <gl-sprintf :message="eventText">
       <template #mergeRequestLink>
-        <gl-link :href="feedback.merge_request_path">!{{ feedback.merge_request_iid }}</gl-link>
+        <gl-link data-testid="mergeRequestLink" :href="mergeRequestPath">
+          !{{ mergeRequestIid }}
+        </gl-link>
       </template>
       <template v-if="hasProjectUrl" #projectLink>
-        <gl-link :href="project.url">{{ project.value }}</gl-link>
+        <gl-link data-testid="projectLink" :href="project.url">{{ project.value }}</gl-link>
       </template>
     </gl-sprintf>
   </event-item>
