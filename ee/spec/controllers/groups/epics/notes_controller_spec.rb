@@ -83,7 +83,7 @@ RSpec.describe Groups::Epics::NotesController, feature_category: :portfolio_mana
       let(:issue) { create(:issue, project: project) }
       let!(:discussion) { create(:discussion_note_on_issue, noteable: issue, project: issue.project) }
 
-      let(:epic) { Epics::IssuePromoteService.new(project: project, current_user: user).execute(issue) }
+      let(:epic) { Epics::IssuePromoteService.new(container: project, current_user: user).execute(issue) }
       let(:request_params) do
         {
           note: { note: 'reply note', noteable_id: epic.id, noteable_type: 'Epic' },

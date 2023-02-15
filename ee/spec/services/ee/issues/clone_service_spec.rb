@@ -9,7 +9,7 @@ RSpec.describe Issues::CloneService do
   let_it_be(:new_project) { create(:project, group: group) }
   let_it_be(:old_issue, reload: true) { create(:issue, project: old_project, author: user) }
 
-  let(:clone_service) { described_class.new(project: old_project, current_user: user) }
+  let(:clone_service) { described_class.new(container: old_project, current_user: user) }
 
   subject { clone_service.execute(old_issue, new_project) }
 
