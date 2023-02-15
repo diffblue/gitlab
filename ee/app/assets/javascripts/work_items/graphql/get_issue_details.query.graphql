@@ -1,15 +1,12 @@
-query issuableDetailsEE($fullPath: ID!, $iid: String) {
-  workspace: project(fullPath: $fullPath) {
+query issuableDetailsEE($id: IssueID!) {
+  issue(id: $id) {
     id
-    issuable: issue(iid: $iid) {
+    confidential
+    milestone {
       id
-      confidential
-      milestone {
-        id
-      }
-      iteration {
-        id
-      }
+    }
+    iteration {
+      id
     }
   }
 }
