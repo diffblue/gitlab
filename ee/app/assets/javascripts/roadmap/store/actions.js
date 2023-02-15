@@ -243,7 +243,7 @@ export const fetchGroupMilestones = (
     }),
     includeDescendants: true,
     includeAncestors: true,
-    ...filterParams,
+    searchTitle: filterParams.milestoneTitle,
   };
 
   return epicUtils.gqClient
