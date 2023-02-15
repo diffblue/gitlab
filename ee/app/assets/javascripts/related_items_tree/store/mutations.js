@@ -1,5 +1,5 @@
 import Vue from 'vue';
-
+import { TYPE_ISSUE } from '~/issues/constants';
 import { issuableTypesMap } from '~/related_issues/constants';
 import * as types from './mutation_types';
 
@@ -174,7 +174,7 @@ export default {
     state.showCreateIssueForm = toggleState;
     state.showAddItemForm = false;
     state.showCreateEpicForm = false;
-    state.issuableType = issuableTypesMap.ISSUE;
+    state.issuableType = TYPE_ISSUE;
   },
 
   [types.SET_PENDING_REFERENCES](state, references) {

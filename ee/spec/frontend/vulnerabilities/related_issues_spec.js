@@ -3,11 +3,12 @@ import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
 import RelatedIssues from 'ee/vulnerabilities/components/related_issues.vue';
 import { createAlert } from '~/flash';
+import { TYPE_ISSUE } from '~/issues/constants';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_OK, HTTP_STATUS_SERVICE_UNAVAILABLE } from '~/lib/utils/http_status';
 import * as urlUtility from '~/lib/utils/url_utility';
 import RelatedIssuesBlock from '~/related_issues/components/related_issues_block.vue';
-import { issuableTypesMap, PathIdSeparator } from '~/related_issues/constants';
+import { PathIdSeparator } from '~/related_issues/constants';
 
 jest.mock('~/flash');
 
@@ -89,7 +90,7 @@ describe('Vulnerability related issues component', () => {
       isFormVisible: data.isFormVisible,
       inputValue: data.inputValue,
       autoCompleteSources: window.gl.GfmAutoComplete.dataSources,
-      issuableType: issuableTypesMap.ISSUE,
+      issuableType: TYPE_ISSUE,
       pathIdSeparator: PathIdSeparator.Issue,
       showCategorizedIssues: false,
     });

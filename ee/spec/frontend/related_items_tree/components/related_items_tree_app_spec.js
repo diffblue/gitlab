@@ -15,6 +15,7 @@ import RelatedItemsTreeBody from 'ee/related_items_tree/components/related_items
 import RelatedItemsRoadmapApp from 'ee/related_items_tree/components/related_items_roadmap_app.vue';
 
 import createDefaultStore from 'ee/related_items_tree/store';
+import { TYPE_ISSUE } from '~/issues/constants';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { ITEM_TABS } from 'ee/related_items_tree/constants';
@@ -249,9 +250,9 @@ describe('RelatedItemsTreeApp', () => {
     });
 
     it.each`
-      issuableType              | autoCompleteIssues | autoCompleteEpics | expectedAutoCompleteIssues | expectedAutoCompleteEpics
-      ${issuableTypesMap.ISSUE} | ${true}            | ${true}           | ${true}                    | ${false}
-      ${issuableTypesMap.EPIC}  | ${true}            | ${true}           | ${false}                   | ${true}
+      issuableType             | autoCompleteIssues | autoCompleteEpics | expectedAutoCompleteIssues | expectedAutoCompleteEpics
+      ${TYPE_ISSUE}            | ${true}            | ${true}           | ${true}                    | ${false}
+      ${issuableTypesMap.EPIC} | ${true}            | ${true}           | ${false}                   | ${true}
     `(
       'enables $issuableType autocomplete only when "issuableType" is "$issuableType" and autocomplete for it is supported',
       async ({

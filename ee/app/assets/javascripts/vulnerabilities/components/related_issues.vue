@@ -2,10 +2,11 @@
 import { GlButton } from '@gitlab/ui';
 import axios from 'axios';
 import { createAlert } from '~/flash';
+import { TYPE_ISSUE } from '~/issues/constants';
 import { joinPaths, redirectTo } from '~/lib/utils/url_utility';
 import { sprintf, __, s__ } from '~/locale';
 import RelatedIssuesBlock from '~/related_issues/components/related_issues_block.vue';
-import { issuableTypesMap, PathIdSeparator } from '~/related_issues/constants';
+import { PathIdSeparator } from '~/related_issues/constants';
 import RelatedIssuesStore from '~/related_issues/stores/related_issues_store';
 import { RELATED_ISSUES_ERRORS } from '../constants';
 import { getFormattedIssue, getAddRelatedIssueRequestParams } from '../helpers';
@@ -202,7 +203,7 @@ export default {
     },
   },
   autoCompleteSources: gl?.GfmAutoComplete?.dataSources,
-  issuableType: issuableTypesMap.ISSUE,
+  issuableType: TYPE_ISSUE,
   pathIdSeparator: PathIdSeparator.Issue,
   i18n: {
     relatedIssues: __('Related issues'),
