@@ -52,6 +52,17 @@ RSpec.describe Users::BuildService do
           it 'marks the user as provisioned by group' do
             expect(service.execute.provisioned_by_group_id).to eq(group.id)
           end
+
+          it 'does not set user.provisioned_by_group_at' do
+            # This attribute is only set when a user becomes an enterprise user
+            # based on domain verification. We want to
+            # differentiate enterprise users provisioned by SCIM or SAML from
+            # those who were made as enterprise users based on domain verification.
+            # To know when users were provisioned by SCIM or SAML,
+            # `User#created_at` should be used.
+            # See https://gitlab.com/gitlab-org/gitlab/-/issues/385785#note_1258055975
+            expect(service.execute.provisioned_by_group_at).to be_nil
+          end
         end
 
         context 'with auditor as allowed params' do

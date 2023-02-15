@@ -108,6 +108,17 @@ RSpec.describe Gitlab::Auth::GroupSaml::User do
           expect(find_and_update.provisioned_by_group).to eq group
         end
 
+        it 'does not set user.provisioned_by_group_at' do
+          # This attribute is only set when a user becomes an enterprise user
+          # based on domain verification. We want to
+          # differentiate enterprise users provisioned by SCIM or SAML from
+          # those who were made as enterprise users based on domain verification.
+          # To know when users were provisioned by SCIM or SAML,
+          # `User#created_at` should be used.
+          # See https://gitlab.com/gitlab-org/gitlab/-/issues/385785#note_1258055975
+          expect(find_and_update.provisioned_by_group_at).to be_nil
+        end
+
         it 'creates the user SAML identity' do
           expect { find_and_update }.to change { Identity.count }.by(1)
         end
