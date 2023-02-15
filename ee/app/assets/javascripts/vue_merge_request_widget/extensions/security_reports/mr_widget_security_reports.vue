@@ -15,6 +15,7 @@ import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
 import { capitalizeFirstCharacter, convertToCamelCase } from '~/lib/utils/text_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { CRITICAL, HIGH } from '~/vulnerabilities/constants';
+import download from '~/lib/utils/downloader';
 import { DynamicScroller, DynamicScrollerItem } from 'vendor/vue-virtual-scroller';
 import SummaryText from './summary_text.vue';
 import SummaryHighlights from './summary_highlights.vue';
@@ -479,6 +480,13 @@ export default {
         });
     },
 
+    downloadPatch() {
+      download({
+        fileData: this.modalData.vulnerability.remediations[0].diff,
+        fileName: 'remediation.patch',
+      });
+    },
+
     hideModal() {
       this.$root.$emit(BV_HIDE_MODAL, VULNERABILITY_MODAL_ID);
     },
@@ -532,6 +540,7 @@ export default {
         @openDismissalCommentBox="openDismissalCommentBox"
         @editVulnerabilityDismissalComment="openDismissalCommentBox"
         @deleteDismissalComment="deleteDismissalComment"
+        @downloadPatch="downloadPatch"
         @revertDismissVulnerability="revertDismissVulnerability"
         @createNewIssue="createNewIssue"
         @dismissVulnerability="dismissFinding"
