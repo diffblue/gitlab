@@ -29,3 +29,5 @@ export const I18N_EMAIL_RESEND_SUCCESS = s__('IdentityVerification|A new code ha
 export const I18N_GENERIC_ERROR = s__(
   'IdentityVerification|Something went wrong. Please try again.',
 );
+
+export const REDIRECT_TIMEOUT = 1500;

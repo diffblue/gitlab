@@ -21088,6 +21088,9 @@ msgstr ""
 msgid "IdentityVerification|For added security, you'll need to verify your identity in a few quick steps."
 msgstr ""
 
+msgid "IdentityVerification|For added security, you'll need to verify your identity."
+msgstr ""
+
 msgid "IdentityVerification|For added security, you'll need to verify your identity. We've sent a verification code to %{email}"
 msgstr ""
 
@@ -21185,6 +21188,9 @@ msgid "IdentityVerification|Verify your identity"
 msgstr ""
 
 msgid "IdentityVerification|We sent a new code to +%{phoneNumber}"
+msgstr ""
+
+msgid "IdentityVerification|We've sent a verification code to %{email}"
 msgstr ""
 
 msgid "IdentityVerification|We've sent a verification code to +%{phoneNumber}"

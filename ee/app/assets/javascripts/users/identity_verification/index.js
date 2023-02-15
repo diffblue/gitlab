@@ -15,6 +15,7 @@ export const initIdentityVerification = () => {
     phoneNumber,
     verificationState,
     verificationMethods,
+    successfulVerificationPath,
   } = convertObjectPropsToCamelCase(JSON.parse(el.dataset.data), { deep: true });
 
   return new Vue({
@@ -27,6 +28,7 @@ export const initIdentityVerification = () => {
       phoneNumber,
       verificationSteps: convertArrayToCamelCase(verificationMethods),
       initialVerificationState: verificationState,
+      successfulVerificationPath,
     },
     render: (createElement) => createElement(IdentityVerificationWizard),
   });

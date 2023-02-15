@@ -5,7 +5,6 @@ import MockAdapter from 'axios-mock-adapter';
 import { s__ } from '~/locale';
 import { createAlert, VARIANT_SUCCESS } from '~/flash';
 import { HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from '~/lib/utils/http_status';
-import { visitUrl } from '~/lib/utils/url_utility';
 import EmailVerification from 'ee/users/identity_verification/components/email_verification.vue';
 import {
   I18N_EMAIL_EMPTY_CODE,
@@ -15,9 +14,6 @@ import {
 } from 'ee/users/identity_verification/constants';
 
 jest.mock('~/flash');
-jest.mock('~/lib/utils/url_utility', () => ({
-  visitUrl: jest.fn().mockName('visitUrlMock'),
-}));
 
 describe('EmailVerification', () => {
   let wrapper;
@@ -73,10 +69,6 @@ describe('EmailVerification', () => {
 
         await submitForm();
         await axios.waitForAll();
-      });
-
-      it('redirects to the returned redirect_url', () => {
-        expect(visitUrl).toHaveBeenCalledWith('root');
       });
 
       it('emits completed event', () => {

@@ -1,10 +1,15 @@
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
+import { visitUrl } from '~/lib/utils/url_utility';
 import IdentityVerificationWizard from 'ee/users/identity_verification/components/wizard.vue';
 import VerificationStep from 'ee/users/identity_verification/components/verification_step.vue';
 import CreditCardVerification from 'ee/users/identity_verification/components/credit_card_verification.vue';
 import PhoneVerification from 'ee/users/identity_verification/components/phone_verification.vue';
 import EmailVerification from 'ee/users/identity_verification/components/email_verification.vue';
+
+jest.mock('~/lib/utils/url_utility', () => ({
+  visitUrl: jest.fn().mockName('visitUrlMock'),
+}));
 
 describe('IdentityVerificationWizard', () => {
   let wrapper;
@@ -13,6 +18,7 @@ describe('IdentityVerificationWizard', () => {
   const DEFAULT_PROVIDE = {
     verificationSteps: ['creditCard', 'email'],
     initialVerificationState: { creditCard: false, email: false },
+    successfulVerificationPath: '/users/identity_verification/success',
   };
 
   const createComponent = ({ provide } = { provide: {} }) => {
@@ -73,17 +79,21 @@ describe('IdentityVerificationWizard', () => {
     });
 
     describe('when some steps are complete', () => {
-      it('is the first incomplete step', () => {
+      it('shows the incomplete steps at the end', () => {
         createComponent({
           provide: {
             verificationSteps: ['creditCard', 'phone', 'email'],
-            initialVerificationState: { creditCard: true, phone: false, email: false },
+            initialVerificationState: { creditCard: true, phone: false, email: true },
           },
         });
 
         expect(steps.at(0).props('isActive')).toBe(false);
-        expect(steps.at(1).props('isActive')).toBe(true);
-        expect(steps.at(2).props('isActive')).toBe(false);
+        expect(steps.at(1).props('isActive')).toBe(false);
+        expect(steps.at(2).props('isActive')).toBe(true);
+
+        expect(steps.at(0).props('title')).toBe('Step 1: Verify a payment method');
+        expect(steps.at(1).props('title')).toBe('Step 2: Verify email address');
+        expect(steps.at(2).props('title')).toBe('Step 3: Verify phone number');
       });
     });
 
@@ -119,18 +129,26 @@ describe('IdentityVerificationWizard', () => {
       createComponent();
     });
 
-    it('goes from first to last one step at a time', async () => {
+    it('goes from first to last one step at a time and redirects after all are completed', async () => {
+      const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+
       expectMethodToBeActive(1, steps.wrappers);
 
       steps.at(0).findComponent(CreditCardVerification).vm.$emit('completed');
       await nextTick();
 
+      expect(setTimeoutSpy).not.toHaveBeenCalled();
       expectMethodToBeActive(2, steps.wrappers);
 
       steps.at(1).findComponent(EmailVerification).vm.$emit('completed');
       await nextTick();
 
       expectNoActiveMethod(steps.wrappers);
+
+      jest.runAllTimers();
+
+      expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
+      expect(visitUrl).toHaveBeenCalledWith(DEFAULT_PROVIDE.successfulVerificationPath);
     });
   });
 
@@ -145,6 +163,16 @@ describe('IdentityVerificationWizard', () => {
 
     it('renders the method component', () => {
       expect(wrapper.findComponent(EmailVerification).exists()).toBe(true);
+    });
+
+    it('redirects to the successfulVerificationPath after completion', () => {
+      const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+      wrapper.findComponent(EmailVerification).vm.$emit('completed');
+
+      jest.runAllTimers();
+
+      expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
+      expect(visitUrl).toHaveBeenCalledWith(DEFAULT_PROVIDE.successfulVerificationPath);
     });
   });
 });

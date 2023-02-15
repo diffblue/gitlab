@@ -12,7 +12,8 @@ module Users
             form_id: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID
           },
           phone_number: phone_number_verification_data(user),
-          email: email_verification_data(user)
+          email: email_verification_data(user),
+          successful_verification_path: success_identity_verification_path
         }.to_json
       }
     end

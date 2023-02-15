@@ -7,15 +7,15 @@ module Users
     include Arkose::ContentSecurityPolicy
 
     skip_before_action :authenticate_user!
-    before_action :require_unverified_user!
+    before_action :require_verification_user!
+    before_action :require_unverified_user!, except: :success
     before_action :require_arkose_verification!, except: [:arkose_labs_challenge, :verify_arkose_labs_session]
 
     feature_category :authentication_and_authorization
 
     layout 'minimal'
 
-    def show
-    end
+    def show; end
 
     def verify_email_code
       result = verify_token
@@ -23,10 +23,7 @@ module Users
       if result[:status] == :success
         confirm_user
 
-        render json: {
-          status: :success,
-          redirect_url: users_successful_verification_path
-        }
+        render json: { status: :success }
       else
         log_identity_verification('Email', :failed_attempt, result[:reason])
 
@@ -79,12 +76,25 @@ module Users
       redirect_to action: :show
     end
 
+    def success
+      return redirect_to identity_verification_path unless @user.identity_verified?
+
+      sign_in(@user)
+      session.delete(:verification_user_id)
+      @redirect_url = after_sign_in_path_for(@user)
+
+      render 'devise/sessions/successful_verification'
+    end
+
     private
 
-    def require_unverified_user!
+    def require_verification_user!
       @user = User.find_by_id(session[:verification_user_id])
+      not_found unless @user
+    end
 
-      access_denied! if !@user || @user.identity_verified?
+    def require_unverified_user!
+      access_denied! if @user.identity_verified?
     end
 
     def require_arkose_verification!
@@ -121,7 +131,6 @@ module Users
     def confirm_user
       @user.confirm
       accept_pending_invitations(user: @user)
-      sign_in(@user)
       log_identity_verification('Email', :success)
     end
 
@@ -139,8 +148,8 @@ module Users
     def send_rate_limited_error_message
       interval_in_seconds = ::Gitlab::ApplicationRateLimiter.rate_limits[:email_verification_code_send][:interval]
       email_verification_code_send_interval = distance_of_time_in_words(interval_in_seconds)
-      format(s_("IdentityVerification|You've reached the maximum amount of resends. "\
-        'Wait %{interval} and try again.'), interval: email_verification_code_send_interval)
+      format(s_("IdentityVerification|You've reached the maximum amount of resends. " \
+                'Wait %{interval} and try again.'), interval: email_verification_code_send_interval)
     end
 
     def phone_verification_params

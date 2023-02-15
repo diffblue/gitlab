@@ -111,14 +111,6 @@ feature_category: :authentication_and_authorization do
         expect(member_invite.reload).not_to be_invite
       end
 
-      it 'signs in the user' do
-        stub_session(verification_user_id: unconfirmed_user.id)
-
-        do_request
-
-        expect(request.env['warden']).to be_authenticated
-      end
-
       it 'logs and tracks the successful attempt' do
         expect(Gitlab::AppLogger).to receive(:info).with(
           hash_including(
@@ -140,12 +132,12 @@ feature_category: :authentication_and_authorization do
         )
       end
 
-      it 'renders the result as json including a redirect URL' do
+      it 'renders the result as json' do
         stub_session(verification_user_id: unconfirmed_user.id)
 
         do_request
 
-        expect(response.body).to eq(service_response.merge(redirect_url: users_successful_verification_path).to_json)
+        expect(response.body).to eq(service_response.to_json)
       end
     end
 
@@ -521,6 +513,42 @@ feature_category: :authentication_and_authorization do
       do_request
 
       expect(response).to render_template('arkose_labs_challenge', layout: 'minimal')
+    end
+  end
+
+  describe 'GET success' do
+    let(:after_sign_in_path) { '/after/sign/in' }
+    let(:user) { confirmed_user }
+
+    before do
+      allow_next_instance_of(described_class) do |controller|
+        allow(controller).to receive(:after_sign_in_path_for).and_return(after_sign_in_path)
+      end
+
+      stub_session(verification_user_id: user.id)
+      get success_identity_verification_path
+    end
+
+    context 'when not yet verified' do
+      let(:user) { unconfirmed_user }
+
+      it 'redirects back to identity_verification_path' do
+        expect(response).to redirect_to(identity_verification_path)
+      end
+    end
+
+    it 'signs in the user' do
+      expect(request.env['warden']).to be_authenticated
+    end
+
+    it 'deletes the verification_user_id from the session' do
+      expect(request.session.has_key?(:verification_user_id)).to eq(false)
+    end
+
+    it 'renders the template with the after_sign_in_path_for variable' do
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response).to render_template('successful_verification', layout: 'minimal')
+      expect(assigns(:redirect_url)).to eq(after_sign_in_path)
     end
   end
 end

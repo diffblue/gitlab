@@ -41,7 +41,8 @@ RSpec.describe Users::IdentityVerificationHelper do
               obfuscated: helper.obfuscated_email(user.email),
               verify_path: verify_email_code_identity_verification_path,
               resend_path: resend_email_code_identity_verification_path
-            }
+            },
+            successful_verification_path: success_identity_verification_path
           }.to_json
         )
       end
@@ -70,7 +71,8 @@ RSpec.describe Users::IdentityVerificationHelper do
               obfuscated: helper.obfuscated_email(user.email),
               verify_path: verify_email_code_identity_verification_path,
               resend_path: resend_email_code_identity_verification_path
-            }
+            },
+            successful_verification_path: success_identity_verification_path
           }.to_json
         )
       end

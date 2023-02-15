@@ -3,7 +3,6 @@ import { GlForm, GlFormGroup, GlFormInput, GlIcon, GlLink, GlSprintf, GlButton }
 import { s__ } from '~/locale';
 import { createAlert, VARIANT_SUCCESS } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-import { visitUrl } from '~/lib/utils/url_utility';
 import {
   I18N_EMAIL_EMPTY_CODE,
   I18N_EMAIL_INVALID_CODE,
@@ -25,6 +24,13 @@ export default {
     GlButton,
   },
   inject: ['email'],
+  props: {
+    isStandalone: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
   data() {
     return {
       verificationCode: '',
@@ -78,8 +84,6 @@ export default {
     handleVerificationResponse(response) {
       if (response.data.status === SUCCESS_RESPONSE) {
         this.$emit('completed');
-
-        visitUrl(response.data.redirect_url);
       } else if (response.data.status === FAILURE_RESPONSE) {
         this.verifyError = response.data.message;
       }
@@ -107,9 +111,10 @@ export default {
     },
   },
   i18n: {
-    header: s__(
-      "IdentityVerification|For added security, you'll need to verify your identity. We've sent a verification code to %{email}",
+    headerStandalone: s__(
+      "IdentityVerification|For added security, you'll need to verify your identity.",
     ),
+    header: s__("IdentityVerification|We've sent a verification code to %{email}"),
     code: s__('IdentityVerification|Verification code'),
     noCode: s__("IdentityVerification|Didn't receive a code?"),
     resend: s__('IdentityVerification|Send a new code'),
@@ -119,14 +124,15 @@ export default {
 </script>
 <template>
   <div>
-    <p class="gl-text-center">
+    <p :class="{ 'gl-text-center': isStandalone }">
+      <span v-if="isStandalone">{{ $options.i18n.headerStandalone }}</span>
       <gl-sprintf :message="$options.i18n.header">
         <template #email>
           <b>{{ email.obfuscated }}</b>
         </template>
       </gl-sprintf>
     </p>
-    <div class="gl-p-5 gl-border gl-rounded-base">
+    <div :class="{ 'gl-p-5 gl-border gl-rounded-base': isStandalone }">
       <gl-form @submit.prevent="verify">
         <gl-form-group
           :label="$options.i18n.code"
@@ -138,7 +144,7 @@ export default {
             v-model="verificationCode"
             name="verification_code"
             :autofocus="true"
-            autocomplete="off"
+            autocomplete="one-time-code"
             inputmode="numeric"
             maxlength="6"
             :state="isValidInput"
