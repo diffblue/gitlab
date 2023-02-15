@@ -17,6 +17,15 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
         falsePositive
         mergeRequest {
           id
+          iid
+          createdAt
+          webUrl
+          author {
+            id
+            webUrl
+            name
+            username
+          }
         }
         remediations {
           diff
