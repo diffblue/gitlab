@@ -78,7 +78,7 @@ module Projects
         issue_created: project_issues_path(project),
         git_write: project_path(project),
         merge_request_created: project_merge_requests_path(project),
-        user_added: project_members_url(project),
+        user_added: '#',
         **deploy_section_action_urls(project)
       )
 

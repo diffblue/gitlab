@@ -8,7 +8,6 @@ module Projects
     before_action :authenticate_user! # since it is skipped in inherited controller
     before_action :owner_access!, only: :onboarding
     before_action :verify_learn_gitlab_available!, only: :show
-    before_action :enable_invite_for_help_continuous_onboarding_experiment, only: :show
     before_action :enable_video_tutorials_continuous_onboarding_experiment, only: :show
     before_action only: :onboarding do
       push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
@@ -36,14 +35,6 @@ module Projects
 
     def owner_access!
       access_denied! unless can?(current_user, :owner_access, project)
-    end
-
-    def enable_invite_for_help_continuous_onboarding_experiment
-      return unless current_user.can?(:admin_group_member, project.namespace)
-
-      experiment(:invite_for_help_continuous_onboarding, namespace: project.namespace) do |e|
-        e.candidate {}
-      end
     end
 
     def enable_video_tutorials_continuous_onboarding_experiment
