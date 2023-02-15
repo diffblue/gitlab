@@ -173,12 +173,11 @@ RSpec.describe Projects::Settings::CiCdController do
       let(:params) { { ci_config_path: '' } }
 
       subject do
-        patch :update,
-              params: {
-                namespace_id: project.namespace.to_param,
-                project_id: project,
-                project: params
-              }
+        patch :update, params: {
+          namespace_id: project.namespace.to_param,
+          project_id: project,
+          project: params
+        }
       end
 
       it 'redirects to the settings page' do
@@ -241,9 +240,7 @@ RSpec.describe Projects::Settings::CiCdController do
             end
 
             it 'creates a pipeline', :sidekiq_inline do
-              project.repository.create_file(user, 'Gemfile', 'Gemfile contents',
-                                            message: 'Add Gemfile',
-                                            branch_name: 'master')
+              project.repository.create_file(user, 'Gemfile', 'Gemfile contents', message: 'Add Gemfile', branch_name: 'master')
 
               expect { subject }.to change { Ci::Pipeline.count }.by(1)
             end
