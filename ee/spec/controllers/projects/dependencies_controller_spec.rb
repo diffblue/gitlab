@@ -164,10 +164,9 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
         context 'with found license report' do
           let(:user) { developer }
           let(:pipeline) { create(:ee_ci_pipeline, :with_dependency_list_report, project: project) }
-          let(:license_build) { create(:ee_ci_build, :success, :license_scanning, pipeline: pipeline) }
 
           before do
-            pipeline.builds << license_build
+            pipeline.builds << build
 
             create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem",
               version: "1.8.0", license_name: "BSD")
@@ -176,7 +175,9 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
           end
 
           context 'when the license_scanning_sbom_scanner feature flag is false' do
-            before_all do
+            let(:build) { create(:ee_ci_build, :success, :license_scanning, pipeline: pipeline) }
+
+            before do
               stub_feature_flags(license_scanning_sbom_scanner: false)
             end
 
@@ -188,7 +189,7 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
           end
 
           context 'when the license_scanning_sbom_scanner feature flag is true' do
-            let(:pipeline) { create(:ee_ci_pipeline, :with_dependency_list_report, :with_cyclonedx_report, project: project) }
+            let(:build) { create(:ee_ci_build, :success, :cyclonedx, pipeline: pipeline) }
 
             it 'includes license information in response' do
               nokogiri = json_response['dependencies'].find { |dep| dep['name'] == 'nokogiri' }

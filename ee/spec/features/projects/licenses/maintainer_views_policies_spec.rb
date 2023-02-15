@@ -55,7 +55,7 @@ RSpec.describe 'EE > Projects > Licenses > Maintainer views policies', :js, feat
   context "when a pipeline exists" do
     let_it_be(:pipeline) do
       create(:ee_ci_pipeline, project: project, status: :success,
-        builds: [create(:ee_ci_build, :license_scan_v2, :success), create(:ee_ci_build, :cyclonedx, :success)])
+        builds: [create(:ee_ci_build, :license_scan_v2, :success)])
     end
 
     context 'when the license_scanning_sbom_scanner feature flag is false' do
@@ -77,6 +77,11 @@ RSpec.describe 'EE > Projects > Licenses > Maintainer views policies', :js, feat
     end
 
     context 'when the license_scanning_sbom_scanner feature flag is true' do
+      let_it_be(:pipeline) do
+        create(:ee_ci_pipeline, project: project, status: :success,
+          builds: [create(:ee_ci_build, :cyclonedx, :success)])
+      end
+
       it 'displays licenses detected in the most recent scan report' do
         known_licenses.each do |license|
           selector = "div[data-spdx-id='#{license['id']}'"

@@ -28,8 +28,8 @@ module EE
       end
 
       def licenses
-        report = ::Gitlab::LicenseScanning.scanner_for_pipeline(project, pipeline)
-        return access_to_licenses_denied! unless report.has_data?
+        scanner = ::Gitlab::LicenseScanning.scanner_for_pipeline(project, pipeline)
+        return access_to_licenses_denied! unless scanner.has_data?
 
         respond_to do |format|
           format.html do

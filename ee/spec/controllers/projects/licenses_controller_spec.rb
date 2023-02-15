@@ -70,14 +70,9 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
           end
 
           context 'with existing report' do
-            let_it_be(:pipeline) do
-              create(:ci_pipeline, project: project, status: :success,
-                builds: [
-                  create(:ee_ci_build, :success, :license_scan_v2_1), create(:ee_ci_build, :success, :cyclonedx)
-                ])
-            end
+            context 'when the license_scanning_sbom_scanner feature flag is disabled' do
+              let_it_be(:pipeline) { create(:ci_pipeline, project: project, status: :success, builds: [create(:ee_ci_build, :success, :license_scan_v2_1)]) }
 
-            context 'when the license_scanning_sbom_scanner feature flag is false' do
               before do
                 stub_feature_flags(license_scanning_sbom_scanner: false)
                 get_licenses
@@ -129,7 +124,9 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
               end
             end
 
-            context 'when the license_scanning_sbom_scanner feature flag is true' do
+            context 'when the license_scanning_sbom_scanner feature flag is enabled' do
+              let_it_be(:pipeline) { create(:ee_ci_pipeline, status: :success, project: project, builds: [create(:ee_ci_build, :success, :cyclonedx)]) }
+
               before do
                 create(:pm_package_version_license, :with_all_relations, name: "activesupport", purl_type: "gem", version: "5.1.4", license_name: "MIT")
                 create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "MIT")
@@ -188,22 +185,16 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
           end
 
           context "when software policies are applied to some of the most recently detected licenses" do
-            let_it_be(:pipeline) do
-              create(:ci_pipeline, project: project, status: :success,
-                builds: [
-                  create(:ee_ci_build, :success, :license_scan_v2_1), create(:ee_ci_build, :success, :cyclonedx)
-                ])
-            end
-
-            context "when the license_scanning_sbom_scanner feature flag is false" do
-              before do
-                stub_feature_flags(license_scanning_sbom_scanner: false)
-              end
-
+            context "when the license_scanning_sbom_scanner feature flag is disabled" do
+              let_it_be(:pipeline) { create(:ci_pipeline, project: project, status: :success, builds: [create(:ee_ci_build, :success, :license_scan_v2_1)]) }
               let_it_be(:mit) { create(:software_license, :mit) }
               let_it_be(:mit_policy) { create(:software_license_policy, :denied, software_license: mit, project: project) }
               let_it_be(:other_license) { create(:software_license, spdx_identifier: "Other-Id") }
               let_it_be(:other_license_policy) { create(:software_license_policy, :allowed, software_license: other_license, project: project) }
+
+              before do
+                stub_feature_flags(license_scanning_sbom_scanner: false)
+              end
 
               context "when loading all policies" do
                 before do
@@ -367,7 +358,13 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
               end
             end
 
-            context "when the license_scanning_sbom_scanner feature flag is true" do
+            context "when the license_scanning_sbom_scanner feature flag is enabled" do
+              let_it_be(:pipeline) { create(:ee_ci_pipeline, status: :success, project: project, builds: [create(:ee_ci_build, :success, :cyclonedx)]) }
+              let_it_be(:mit) { create(:software_license, :mit) }
+              let_it_be(:mit_policy) { create(:software_license_policy, :denied, software_license: mit, project: project) }
+              let_it_be(:other_license) { create(:software_license, spdx_identifier: "Other-Id") }
+              let_it_be(:other_license_policy) { create(:software_license_policy, :allowed, software_license: other_license, project: project) }
+
               before do
                 create(:pm_package_version_license, :with_all_relations, name: "activesupport", purl_type: "gem", version: "5.1.4", license_name: "MIT")
                 create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "MIT")
@@ -376,11 +373,6 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
 
                 get_licenses
               end
-
-              let_it_be(:mit) { create(:software_license, :mit) }
-              let_it_be(:mit_policy) { create(:software_license_policy, :denied, software_license: mit, project: project) }
-              let_it_be(:other_license) { create(:software_license, spdx_identifier: "Other-Id") }
-              let_it_be(:other_license_policy) { create(:software_license_policy, :allowed, software_license: other_license, project: project) }
 
               context "when loading all policies" do
                 before do
