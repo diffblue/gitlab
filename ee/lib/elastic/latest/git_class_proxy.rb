@@ -49,6 +49,29 @@ module Elastic
 
       private
 
+      def should_use_project_ids_filter?(options)
+        return true if options[:project_ids] == :any || options[:group_ids].blank? || Feature.disabled?(:elasticsearch_use_traversal_id_optimization)
+
+        !Elastic::DataMigrationService.migration_has_finished?(:backfill_traversal_ids_to_blobs_and_wiki_blobs)
+      end
+
+      def authorization_filter(query_hash, options)
+        return project_ids_filter(query_hash, options) if should_use_project_ids_filter?(options)
+
+        current_user = options[:current_user]
+        traversal_ids = Namespace.find(authorized_namespace_ids(current_user, options))
+                                      .map(&:elastic_namespace_ancestry)
+
+        return project_ids_filter(query_hash, options) if traversal_ids.blank?
+
+        context.name(:namespace) do
+          query_hash[:query][:bool][:filter] ||= []
+          query_hash[:query][:bool][:filter] << ancestry_filter(current_user, traversal_ids, prefix: :traversal_ids)
+        end
+
+        query_hash
+      end
+
       def options_filter_context(type, options)
         repository_ids = [options[:repository_id]].flatten
         languages = [options[:language]].flatten
@@ -276,7 +299,7 @@ module Elastic
         #
         # Note that `:current_user` might be `nil` for a anonymous user
         if options.key?(:current_user)
-          query_hash = context.name(:blob, :authorized) { project_ids_filter(query_hash, options) }
+          query_hash = context.name(:blob, :authorized) { authorization_filter(query_hash, options) }
         end
 
         # add the document type filter
