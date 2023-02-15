@@ -71,6 +71,20 @@ RSpec.describe Search::Elasticsearchable, feature_category: :global_search do
     end
   end
 
+  describe '#global_elasticsearchable_scope?' do
+    it 'is false' do
+      expect(class_instance).not_to be_global_elasticsearchable_scope
+    end
+
+    context 'when scope is users' do
+      let(:params) { { scope: 'users' } }
+
+      it 'is true' do
+        expect(class_instance).to be_global_elasticsearchable_scope
+      end
+    end
+  end
+
   describe "#advanced_user_search?" do
     it 'is true when the scope is not users' do
       expect(class_instance).to be_advanced_user_search
