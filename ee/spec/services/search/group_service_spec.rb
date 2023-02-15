@@ -62,6 +62,23 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
     end
   end
 
+  describe '#elasticsearchable_scope' do
+    let(:service) { described_class.new(user, group, scope: scope) }
+    let(:scope) { 'blobs' }
+
+    it 'is set to group' do
+      expect(service.elasticsearchable_scope).to eq(group)
+    end
+
+    context 'when the scope is users' do
+      let(:scope) { 'users' }
+
+      it 'is nil' do
+        expect(service.elasticsearchable_scope).to be_nil
+      end
+    end
+  end
+
   context 'when searching with Zoekt' do
     let(:service) { described_class.new(user, group, search: 'foobar', scope: scope, basic_search: basic_search, page: page) }
     let(:use_zoekt) { true }

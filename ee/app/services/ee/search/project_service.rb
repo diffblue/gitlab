@@ -57,7 +57,7 @@ module EE
 
       override :elasticsearchable_scope
       def elasticsearchable_scope
-        project
+        project unless global_elasticsearchable_scope?
       end
 
       override :zoekt_searchable_scope

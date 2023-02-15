@@ -8,7 +8,7 @@ module EE
 
       override :elasticsearchable_scope
       def elasticsearchable_scope
-        group
+        group unless global_elasticsearchable_scope?
       end
 
       override :zoekt_searchable_scope

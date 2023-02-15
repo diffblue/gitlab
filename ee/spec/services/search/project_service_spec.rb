@@ -43,6 +43,25 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
     end
   end
 
+  describe '#elasticsearchable_scope' do
+    let(:service) { described_class.new(user, project, scope: scope) }
+    let(:scope) { 'blobs' }
+    let_it_be(:user) { create(:user) }
+    let_it_be(:project) { create(:project) }
+
+    it 'is set to project' do
+      expect(service.elasticsearchable_scope).to eq(project)
+    end
+
+    context 'when the scope is users' do
+      let(:scope) { 'users' }
+
+      it 'is nil' do
+        expect(service.elasticsearchable_scope).to be_nil
+      end
+    end
+  end
+
   context 'when searching with Zoekt' do
     let_it_be(:user) { create(:user) }
     let_it_be(:project) { create(:project, namespace: user.namespace) }
