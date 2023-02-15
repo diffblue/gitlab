@@ -19,6 +19,13 @@ module Gitlab
         find_by("identifier = concat(current_schema(), '.', ?)", name)
       end
 
+      def self.each_partition(table_name, &block)
+        find_by_name_in_current_schema(table_name)
+        .postgres_partitions
+        .order(:name)
+        .each(&block)
+      end
+
       def dynamic?
         DYNAMIC_PARTITION_STRATEGIES.include?(strategy)
       end
