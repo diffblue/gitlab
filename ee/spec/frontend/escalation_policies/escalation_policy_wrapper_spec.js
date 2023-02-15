@@ -1,18 +1,26 @@
-import { GlEmptyState, GlLoadingIcon, GlAlert } from '@gitlab/ui';
+import { GlEmptyState, GlLoadingIcon, GlAlert, GlSprintf, GlLink } from '@gitlab/ui';
 import { nextTick } from 'vue';
-import EscalationPoliciesWrapper from 'ee/escalation_policies/components/escalation_policies_wrapper.vue';
+import EscalationPoliciesWrapper, {
+  i18n,
+} from 'ee/escalation_policies/components/escalation_policies_wrapper.vue';
 import EscalationPolicy from 'ee/escalation_policies/components/escalation_policy.vue';
 import AddEscalationPolicyModal from 'ee/escalation_policies/components/add_edit_escalation_policy_modal.vue';
 import { parsePolicy } from 'ee/escalation_policies/utils';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import mockEscalationPolicies from './mocks/mockPolicies.json';
 
 describe('Escalation Policies Wrapper', () => {
   let wrapper;
   const emptyEscalationPoliciesSvgPath = 'illustration/path.svg';
   const projectPath = 'group/project';
+  const accessLevelDescriptionPath = 'group/project/-/project_members?sort=access_level_desc';
 
-  function mountComponent({ loading = false, escalationPolicies = [] } = {}) {
+  function mountComponent({
+    loading = false,
+    escalationPolicies = [],
+    userCanCreateEscalationPolicy = true,
+    isShallowExtendedMount = true,
+  } = {}) {
     const $apollo = {
       queries: {
         escalationPolicies: {
@@ -20,20 +28,30 @@ describe('Escalation Policies Wrapper', () => {
         },
       },
     };
-    wrapper = shallowMountExtended(EscalationPoliciesWrapper, {
+
+    const mountProps = {
       provide: {
         emptyEscalationPoliciesSvgPath,
         projectPath,
+        userCanCreateEscalationPolicy,
+        accessLevelDescriptionPath,
       },
       mocks: {
         $apollo,
+      },
+      stubs: {
+        GlSprintf,
       },
       data() {
         return {
           escalationPolicies,
         };
       },
-    });
+    };
+
+    wrapper = isShallowExtendedMount
+      ? shallowMountExtended(EscalationPoliciesWrapper, mountProps)
+      : mountExtended(EscalationPoliciesWrapper, mountProps);
   }
 
   beforeEach(() => {
@@ -73,6 +91,24 @@ describe('Escalation Policies Wrapper', () => {
 
     it(`does ${escalationPolicies.length ? 'show' : 'not show'} escalation policies`, () => {
       expect(findEscalationPolicies()).toHaveLength(escalationPolicies.length);
+    });
+  });
+
+  describe('Escalation policy empty state', () => {
+    it('should allow to create policy when user is at least a maintainer', () => {
+      mountComponent({ isShallowExtendedMount: false });
+
+      expect(findEmptyState().props('title')).toBe(i18n.emptyState.title);
+      expect(wrapper.findByText(i18n.emptyState.description).exists()).toBe(true);
+      expect(wrapper.findByRole('button', { name: i18n.emptyState.button }).exists()).toBe(true);
+    });
+
+    it('should show message about role restrictions when user is below maintainer level', () => {
+      mountComponent({ userCanCreateEscalationPolicy: false, isShallowExtendedMount: false });
+
+      expect(findEmptyState().props('title')).toBe(i18n.emptyState.title);
+      expect(wrapper.findComponent(GlLink).exists()).toBe(true);
+      expect(wrapper.findByRole('button', { name: i18n.emptyState.button }).exists()).toBe(false);
     });
   });
 

@@ -16501,6 +16501,9 @@ msgstr ""
 msgid "EscalationPolicies|Choose who to email if those contacted first about an alert don't respond."
 msgstr ""
 
+msgid "EscalationPolicies|Choose who to email if those contacted first about an alert don't respond. To access this feature, ask %{linkStart}a project Owner%{linkEnd} to grant you at least the Maintainer role."
+msgstr ""
+
 msgid "EscalationPolicies|Create an escalation policy in GitLab"
 msgstr ""
 

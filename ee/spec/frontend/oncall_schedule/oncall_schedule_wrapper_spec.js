@@ -21,6 +21,7 @@ describe('On-call schedule wrapper', () => {
   const emptyOncallSchedulesSvgPath = 'illustration/path.svg';
   const projectPath = 'group/project';
   const escalationPoliciesPath = 'group/project/-/escalation_policies';
+  const accessLevelDescriptionPath = 'group/project/-/project_members?sort=access_level_desc';
 
   function mountComponent({
     loading = false,
@@ -48,6 +49,7 @@ describe('On-call schedule wrapper', () => {
         escalationPoliciesPath,
         userCanCreateSchedule,
         timezones: mockTimezones,
+        accessLevelDescriptionPath,
       },
       directives: {
         GlTooltip: createMockDirective(),
@@ -85,6 +87,7 @@ describe('On-call schedule wrapper', () => {
         projectPath,
         escalationPoliciesPath,
         userCanCreateSchedule: true,
+        accessLevelDescriptionPath,
       },
     });
   }

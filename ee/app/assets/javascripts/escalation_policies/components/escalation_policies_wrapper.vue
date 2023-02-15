@@ -1,5 +1,13 @@
 <script>
-import { GlEmptyState, GlButton, GlModalDirective, GlLoadingIcon, GlAlert } from '@gitlab/ui';
+import {
+  GlEmptyState,
+  GlButton,
+  GlModalDirective,
+  GlLoadingIcon,
+  GlAlert,
+  GlSprintf,
+  GlLink,
+} from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { s__ } from '~/locale';
 import { addEscalationPolicyModalId } from '../constants';
@@ -15,6 +23,9 @@ export const i18n = {
     title: s__('EscalationPolicies|Create an escalation policy in GitLab'),
     description: s__(
       "EscalationPolicies|Choose who to email if those contacted first about an alert don't respond.",
+    ),
+    unauthorizedDescription: s__(
+      "EscalationPolicies|Choose who to email if those contacted first about an alert don't respond. To access this feature, ask %{linkStart}a project Owner%{linkEnd} to grant you at least the Maintainer role.",
     ),
     button: s__('EscalationPolicies|Add an escalation policy'),
   },
@@ -34,13 +45,20 @@ export default {
     GlButton,
     GlLoadingIcon,
     GlAlert,
+    GlSprintf,
+    GlLink,
     AddEscalationPolicyModal,
     EscalationPolicy,
   },
   directives: {
     GlModal: GlModalDirective,
   },
-  inject: ['projectPath', 'emptyEscalationPoliciesSvgPath'],
+  inject: [
+    'projectPath',
+    'emptyEscalationPoliciesSvgPath',
+    'userCanCreateEscalationPolicy',
+    'accessLevelDescriptionPath',
+  ],
   data() {
     return {
       escalationPolicies: [],
@@ -108,10 +126,19 @@ export default {
     <gl-empty-state
       v-else
       :title="$options.i18n.emptyState.title"
-      :description="$options.i18n.emptyState.description"
       :svg-path="emptyEscalationPoliciesSvgPath"
     >
-      <template #actions>
+      <template #description>
+        <p v-if="userCanCreateEscalationPolicy">
+          {{ $options.i18n.emptyState.description }}
+        </p>
+        <gl-sprintf v-else :message="$options.i18n.emptyState.unauthorizedDescription">
+          <template #link="{ content }">
+            <gl-link :href="accessLevelDescriptionPath">{{ content }}</gl-link>
+          </template>
+        </gl-sprintf>
+      </template>
+      <template v-if="userCanCreateEscalationPolicy" #actions>
         <gl-button v-gl-modal="$options.addEscalationPolicyModalId" variant="confirm">
           {{ $options.i18n.emptyState.button }}
         </gl-button>
