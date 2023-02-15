@@ -20,6 +20,61 @@ RSpec.describe Sidebars::Panel do
     end
   end
 
+  describe '#super_sidebar_menu_items' do
+    it "groups items under their parent and marks parent as active if a child item is active" do
+      panel.add_menu(menu1)
+      panel.add_menu(menu2)
+
+      allow(menu1).to receive(:render?).and_return(true)
+      allow(menu2).to receive(:render?).and_return(false)
+      allow(menu1).to receive(:serialize_for_super_sidebar).and_return([
+        {
+          id: 31,
+          parent_id: nil,
+          title: "Title",
+          is_active: false
+        },
+        {
+          parent_id: "non_existent_which_makes_this_top_level",
+          title: "Title 2",
+          is_active: false
+        },
+        {
+          parent_id: 31,
+          title: "Title > Item 1",
+          is_active: true
+        },
+        {
+          parent_id: 31,
+          title: "Title > Item 2",
+          is_active: false
+        }
+      ])
+
+      expect(panel.super_sidebar_menu_items).to eq([
+        {
+          id: 31,
+          title: "Title",
+          is_active: true,
+          items: [
+            {
+              title: "Title > Item 1",
+              is_active: true
+            },
+            {
+              title: "Title > Item 2",
+              is_active: false
+            }
+          ]
+        },
+        {
+          title: "Title 2",
+          is_active: false
+        }
+      ])
+    end
+  end
+
   describe '#has_renderable_menus?' do
     it 'returns false when no renderable menus' do
       expect(panel.has_renderable_menus?).to be false

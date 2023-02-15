@@ -64,11 +64,16 @@ RSpec.describe SidebarsHelper, feature_category: :navigation do
   describe '#super_sidebar_context' do
     let(:user) { build(:user) }
     let(:group) { build(:group) }
+    let(:panel) { {} }
 
-    subject { helper.super_sidebar_context(user, group: group, project: nil) }
+    subject do
+      helper.super_sidebar_context(user, group: group, project: nil, panel: panel)
+    end
 
     before do
       allow(helper).to receive(:current_user) { user }
+      allow(panel).to receive(:super_sidebar_menu_items).and_return(nil)
+      allow(panel).to receive(:super_sidebar_context_header).and_return(nil)
       Rails.cache.write(['users', user.id, 'assigned_open_issues_count'], 1)
       Rails.cache.write(['users', user.id, 'assigned_open_merge_requests_count'], 4)
       Rails.cache.write(['users', user.id, 'review_requested_open_merge_requests_count'], 0)
@@ -78,6 +83,8 @@ RSpec.describe SidebarsHelper, feature_category: :navigation do
 
     it 'returns sidebar values from user', :use_clean_rails_memory_store_caching do
       expect(subject).to include({
+        current_context_header: nil,
+        current_menu_items: nil,
         name: user.name,
         username: user.username,
         avatar_url: user.avatar_url,
