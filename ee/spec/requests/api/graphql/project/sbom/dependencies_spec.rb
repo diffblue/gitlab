@@ -11,6 +11,7 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
   let_it_be(:variables) { { full_path: project.full_path } }
   let_it_be(:fields) do
     <<~FIELDS
+      id
       name
       version
       packager
@@ -42,6 +43,7 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
     actual = graphql_data_at(:project, :dependencies, :nodes)
     expected = occurrences.map do |occurrence|
       {
+        'id' => occurrence.to_gid.to_s,
         'name' => occurrence.name,
         'version' => occurrence.version,
         'packager' => occurrence.packager,
@@ -57,13 +59,13 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
 
   it_behaves_like 'sorted paginated query' do
     def pagination_results_data(nodes)
-      nodes.pluck('name')
+      nodes.pluck('id')
     end
 
     let(:data_path) { %i[project dependencies] }
     let(:sort_argument) { {} }
     let(:first_param) { 2 }
-    let(:all_records) { occurrences.sort_by(&:id).map(&:name) }
+    let(:all_records) { occurrences.sort_by(&:id).map { |occurrence| occurrence.to_gid.to_s } }
   end
 
   it 'does not make N+1 queries' do
@@ -83,6 +85,7 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
       actual = graphql_data_at(:project, :dependencies, :nodes)
       expected = occurrences.map do |occurrence|
         {
+          'id' => occurrence.to_gid.to_s,
           'name' => occurrence.name,
           'version' => occurrence.version,
           'packager' => nil,
@@ -106,6 +109,7 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
       actual = graphql_data_at(:project, :dependencies, :nodes)
       expected = occurrences.map do |occurrence|
         {
+          'id' => occurrence.to_gid.to_s,
           'name' => occurrence.name,
           'version' => nil,
           'packager' => occurrence.packager,

@@ -8,6 +8,9 @@ module Types
 
       authorize :read_dependencies
 
+      field :id, ::Types::GlobalIDType,
+        null: false, description: 'ID of the dependency.'
+
       field :name, GraphQL::Types::String,
         null: false, description: 'Name of the dependency.'
 
