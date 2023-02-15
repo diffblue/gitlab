@@ -63,6 +63,7 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
         'source_code',
         'terraform',
         'testing',
+        'user_container_registry',
         'user_packages',
         'work_items',
         # EE-specific categories
