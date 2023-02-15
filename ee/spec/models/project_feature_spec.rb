@@ -6,6 +6,12 @@ RSpec.describe ProjectFeature do
   let(:project) { create(:project, :public) }
   let(:user) { create(:user) }
 
+  describe 'default values' do
+    subject { Project.new.project_feature }
+
+    specify { expect(subject.requirements_access_level).to eq(Featurable::ENABLED) }
+  end
+
   describe '#feature_available?' do
     let(:features) { %w(issues wiki builds merge_requests snippets repository pages) }
 
