@@ -62,7 +62,7 @@ RSpec.describe 'Merge requests > User merges immediately', :js, feature_category
 
         click_button 'Merge immediately'
 
-        expect(find('.media-body h4')).to have_content('Merging!')
+        expect(find('[data-testid="merging-state"]')).to have_content('Merging!')
       end
     end
   end

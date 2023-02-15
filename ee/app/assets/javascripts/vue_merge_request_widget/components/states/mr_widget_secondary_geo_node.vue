@@ -1,9 +1,17 @@
 <script>
 import { GlIcon, GlTooltipDirective } from '@gitlab/ui';
+import { s__ } from '~/locale';
 import StateContainer from '~/vue_merge_request_widget/components/state_container.vue';
+import BoldText from '~/vue_merge_request_widget/components/bold_text.vue';
+
+const message = s__(
+  'mrWidget|%{boldStart}Merge unavailable:%{boldEnd} merge requests are read-only in a secondary Geo node.',
+);
 
 export default {
+  message,
   components: {
+    BoldText,
     GlIcon,
     StateContainer,
   },
@@ -21,11 +29,10 @@ export default {
 
 <template>
   <state-container :mr="mr" status="failed">
-    <span class="gl-font-weight-bold">
-      {{ __('Merge unavailable: merge requests are read-only in a secondary Geo node.') }}
-    </span>
+    <bold-text :message="$options.message" />
     <a
       v-gl-tooltip
+      class="gl-ml-2"
       :href="mr.geoSecondaryHelpPath"
       :title="__('About this feature')"
       target="_blank"
