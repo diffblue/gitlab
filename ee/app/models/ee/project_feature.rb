@@ -30,7 +30,7 @@ module EE
         end
       end
 
-      default_value_for :requirements_access_level, value: Featurable::ENABLED, allows_nil: false
+      attribute :requirements_access_level, default: Featurable::ENABLED
 
       private
 
