@@ -4,6 +4,16 @@ module PackageMetadata
   class SyncConfiguration
     BUCKET_NAME = 'prod-export-license-bucket-1a6c642fc4de57d4'
     VERSION_FORMAT = 'v1'
+    PURL_TYPE_TO_REGISTRY_ID = {
+      composer: "packagist",
+      conan: "conan",
+      gem: "rubygem",
+      golang: "go",
+      maven: "maven",
+      npm: "npm",
+      nuget: "nuget",
+      pypi: "pypi"
+    }.with_indifferent_access.freeze
 
     def self.all
       storage_type = get_storage_type
@@ -18,6 +28,10 @@ module PackageMetadata
 
     def self.archive_path
       Rails.root.join('vendor/package_metadata_db')
+    end
+
+    def self.registry(purl_type)
+      PURL_TYPE_TO_REGISTRY_ID[purl_type].freeze
     end
 
     attr_accessor :storage_type, :base_uri, :version_format, :purl_type

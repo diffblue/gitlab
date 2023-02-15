@@ -36,8 +36,10 @@ module Gitlab
       class Gcp
         def initialize(bucket_name, version_format, purl_type)
           @bucket_name = bucket_name
-          @file_prefix = "#{version_format}/#{purl_type}/"
           @purl_type = purl_type
+
+          registry_id = ::PackageMetadata::SyncConfiguration.registry(purl_type)
+          @file_prefix = "#{version_format}/#{registry_id}/"
         end
 
         def data_after(checkpoint)
