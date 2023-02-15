@@ -76,7 +76,7 @@ class SafeMathRenderer {
 
       const html = `
           <div class="alert gl-alert gl-alert-warning alert-dismissible lazy-render-math-container js-lazy-render-math-container fade show" role="alert">
-            ${spriteIcon('warning', 'text-warning-600 s16 gl-alert-icon')}
+            ${spriteIcon('warning', 'gl-text-orange-600 s16 gl-alert-icon')}
             <div class="display-flex gl-alert-content">
               <div>${s__(
                 'math|Displaying this math block may cause performance issues on this page',

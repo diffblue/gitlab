@@ -250,7 +250,7 @@ export default {
             <gl-tooltip v-if="isEpic" :target="() => $refs.countBadge">
               <p v-if="allowSubEpics" class="gl-font-weight-bold gl-m-0">
                 {{ __('Epics') }} &#8226;
-                <span class="text-secondary-400 gl-font-weight-normal"
+                <span class="gl-text-gray-400 gl-font-weight-normal"
                   >{{
                     sprintf(__('%{openedEpics} open, %{closedEpics} closed'), {
                       openedEpics: item.descendantCounts && item.descendantCounts.openedEpics,
@@ -261,7 +261,7 @@ export default {
               </p>
               <p class="gl-font-weight-bold gl-m-0">
                 {{ __('Issues') }} &#8226;
-                <span class="text-secondary-400 gl-font-weight-normal"
+                <span class="gl-text-gray-400 gl-font-weight-normal"
                   >{{
                     sprintf(__('%{openedIssues} open, %{closedIssues} closed'), {
                       openedIssues: item.descendantCounts && item.descendantCounts.openedIssues,

@@ -160,7 +160,7 @@ export default {
         href="#"
         @click.native="toggleDetails"
       >
-        <gl-icon name="warning" class="text-warning-500 mr-1" />
+        <gl-icon name="warning" class="gl-text-orange-500 mr-1" />
         {{
           n__(
             'Dependencies|%d vulnerability detected',
