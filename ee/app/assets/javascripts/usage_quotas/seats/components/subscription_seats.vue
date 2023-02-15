@@ -341,7 +341,7 @@ export default {
         >
           <gl-icon
             :name="detailsShowing ? 'chevron-lg-down' : 'chevron-lg-right'"
-            class="text-secondary-900"
+            class="gl-text-gray-900"
           />
         </gl-button>
 
