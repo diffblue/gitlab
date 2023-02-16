@@ -13141,11 +13141,9 @@ CREATE TABLE ci_job_artifacts (
     id bigint NOT NULL,
     job_id bigint NOT NULL,
     locked smallint DEFAULT 2,
-    original_filename text,
     partition_id bigint DEFAULT 100 NOT NULL,
     accessibility smallint DEFAULT 0 NOT NULL,
-    CONSTRAINT check_27f0f6dbab CHECK ((file_store IS NOT NULL)),
-    CONSTRAINT check_85573000db CHECK ((char_length(original_filename) <= 512))
+    CONSTRAINT check_27f0f6dbab CHECK ((file_store IS NOT NULL))
 );
 
 CREATE SEQUENCE ci_job_artifacts_id_seq
