@@ -8,7 +8,7 @@ module Search
     def use_elasticsearch?
       return false if params[:basic_search]
       return false if SCOPES_ONLY_BASIC_SEARCH.include?(params[:scope])
-      return false unless advanced_user_search?
+      return false if user_search? && !advanced_user_search_available?
 
       ::Gitlab::CurrentSettings.search_using_elasticsearch?(scope: elasticsearchable_scope)
     end
@@ -21,10 +21,21 @@ module Search
       SCOPES_ADVANCED_SEARCH_ALWAYS_ENABLED.include?(params[:scope])
     end
 
-    def advanced_user_search?
-      return true unless params[:scope] == 'users'
-      return false unless ::Feature.enabled?(:advanced_user_search, current_user, type: :ops)
+    private
 
+    def user_search?
+      params[:scope] == 'users'
+    end
+
+    def advanced_user_search_available?
+      advanced_user_search_feature_enabled? && user_index_exists?
+    end
+
+    def advanced_user_search_feature_enabled?
+      ::Feature.enabled?(:advanced_user_search, current_user, type: :ops)
+    end
+
+    def user_index_exists?
       ::Elastic::DataMigrationService.migration_has_finished?(:create_user_index) &&
         ::Elastic::DataMigrationService.migration_has_finished?(:backfill_users)
     end
