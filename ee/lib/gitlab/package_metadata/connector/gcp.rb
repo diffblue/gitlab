@@ -73,7 +73,7 @@ module Gitlab
 
           def each(&blk)
             @file.download(skip_decompress: true).each_line do |line|
-              data_object = ::PackageMetadata::DataObject.from_csv(line, purl_type)
+              data_object = ::PackageMetadata::DataObject.from_csv(line.force_encoding('UTF-8'), purl_type)
 
               yield data_object if data_object
             end
