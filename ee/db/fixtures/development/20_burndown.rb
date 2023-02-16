@@ -60,7 +60,7 @@ class Gitlab::Seeder::Burndown
         weight: rand(1..9)
       }
 
-      Issues::CreateService.new(project: @project, current_user: @project.team.users.sample, params: issue_params, spam_params: nil).execute
+      Issues::CreateService.new(container: @project, current_user: @project.team.users.sample, params: issue_params, spam_params: nil).execute
     end
   end
 

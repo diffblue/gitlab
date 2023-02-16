@@ -15,7 +15,7 @@ module QualityManagement
 
       def execute
         Issues::CreateService.new(
-          project: project,
+          container: project,
           current_user: current_user,
           params: {
             issue_type: ISSUE_TYPE,

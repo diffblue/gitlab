@@ -49,7 +49,7 @@ class Gitlab::Seeder::ProductivityAnalytics
       }
 
       travel_to(rand(90..100).days.ago) do
-        Issues::CreateService.new(project: @project, current_user: @project.team.users.sample, params: issue_params, spam_params: nil).execute[:issue]
+        Issues::CreateService.new(container: @project, current_user: @project.team.users.sample, params: issue_params, spam_params: nil).execute[:issue]
       end
     end
   end

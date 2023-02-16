@@ -19,7 +19,7 @@ module Integrations
 
         def execute
           create_response = Issues::CreateService.new(
-            project: project,
+            container: project,
             current_user: find_user.user,
             params: incident_params,
             spam_params: nil
