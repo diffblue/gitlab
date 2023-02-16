@@ -41,18 +41,21 @@ module Security
         end
       end
 
-      # rubocop: disable Cop/GroupPublicOrVisibleToUser
       def group_approvers(action)
         return [] unless action[:group_approvers] || action[:group_approvers_ids]
 
         group_paths, group_ids = approvers_within_limit(action[:group_approvers], action[:group_approvers_ids])
 
-        # Using GroupFinder here would make groups more restrictive than current features related to others approval project rules as in:
-        # https://gitlab.com/gitlab-org/gitlab/-/blob/0aa924eaa1a4ca5ed6b226d826f7298ec847ea5f/ee/app/services/concerns/approval_rules/updater.rb#L44
-        # Therefore data migrated from Vulnerability-Check into Scan result policies would be inconsistent.
-        Group.public_or_visible_to_user(current_user).by_ids_or_paths(group_ids, group_paths)
+        Security::ApprovalGroupsFinder.new(group_ids: group_ids,
+          group_paths: group_paths,
+          user: current_user,
+          container: container,
+          search_globally: search_groups_globally?).execute
       end
-      # rubocop: enable Cop/GroupPublicOrVisibleToUser
+
+      def search_groups_globally?
+        Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled?
+      end
 
       def approvers_within_limit(names, ids)
         filtered_names = names&.first(Security::ScanResultPolicy::APPROVERS_LIMIT) || []

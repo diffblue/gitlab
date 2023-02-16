@@ -77,6 +77,35 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
         expect(response[:groups]).to match_array([group])
         expect(response[:users]).to be_empty
       end
+
+      context 'when groups with same name exist in and outside of container' do
+        let_it_be(:other_container) { create(:group) }
+        let_it_be(:other_group) { create(:group, name: group.name, parent: other_container) }
+
+        let(:action) { { type: "require_approval", approvals_required: 1, group_approvers: [group.name] } }
+
+        subject { service.execute[:groups] }
+
+        context 'with security_policy_global_group_approvers_enabled setting disabled' do
+          before do
+            stub_ee_application_setting(security_policy_global_group_approvers_enabled: false)
+          end
+
+          it 'excludes groups outside the container' do
+            expect(subject).not_to include(other_group)
+          end
+        end
+
+        context 'with security_policy_global_group_approvers_enabled setting enabled' do
+          before do
+            stub_ee_application_setting(security_policy_global_group_approvers_enabled: true)
+          end
+
+          it 'includes groups outside the container' do
+            expect(subject).to include(other_group)
+          end
+        end
+      end
     end
 
     context 'with both user and group approvers' do

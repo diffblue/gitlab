@@ -39,7 +39,9 @@ module EE::SecurityOrchestrationHelper
       policy_type: policy_type,
       scan_policy_documentation_path: help_page_path('user/application_security/policies/index'),
       scan_result_approvers: approvers&.to_json,
-      software_licenses: SoftwareLicense.all_license_names
+      software_licenses: SoftwareLicense.all_license_names,
+      global_group_approvers_enabled: Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled,
+      root_namespace_path: container.root_ancestor&.full_path
     }
 
     if container.is_a?(::Project)

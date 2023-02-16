@@ -83,6 +83,10 @@ RSpec.describe ApplicationSetting do
       it { is_expected.to allow_value('').for(:elasticsearch_username) }
       it { is_expected.to allow_value('a' * 255).for(:elasticsearch_username) }
       it { is_expected.not_to allow_value('a' * 256).for(:elasticsearch_username) }
+
+      it { is_expected.to allow_value(true).for(:security_policy_global_group_approvers_enabled) }
+      it { is_expected.to allow_value(false).for(:security_policy_global_group_approvers_enabled) }
+      it { is_expected.not_to allow_value(nil).for(:security_policy_global_group_approvers_enabled) }
     end
 
     describe 'future_subscriptions', feature_category: :subscription_management do
