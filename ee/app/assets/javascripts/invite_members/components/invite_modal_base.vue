@@ -83,6 +83,11 @@ export default {
       required: false,
       default: '',
     },
+    isCelebration: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     activeTrialDataset: {
       type: Object,
       required: false,
@@ -151,7 +156,7 @@ export default {
       return Boolean(this.newGroupToInvite || this.newUsersToInvite.length !== 0);
     },
     showActiveTrialUnlimitedUsersNotification() {
-      return !isEmpty(this.activeTrialDataset);
+      return !this.isCelebration && !isEmpty(this.activeTrialDataset);
     },
   },
   watch: {
@@ -305,6 +310,7 @@ export default {
     :reached-limit="reachedLimit"
     :is-loading="isLoading"
     :invalid-feedback-message="actualFeedbackMessage"
+    :is-celebration="isCelebration"
     @reset="onReset"
     @submit="onSubmit"
     @cancel="onCancel"
