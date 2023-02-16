@@ -8,13 +8,19 @@ module Gitlab
     class Indexer
       include Gitlab::Utils::StrongMemoize
 
-      TIMEOUT = 1.day.to_i
-
       Error = Class.new(StandardError)
 
       class << self
         def indexer_version
           Rails.root.join('GITLAB_ELASTICSEARCH_INDEXER_VERSION').read.chomp
+        end
+
+        def timeout
+          if Feature.enabled?(:advanced_search_decrease_indexing_timeout)
+            30.minutes.to_i
+          else
+            1.day.to_i
+          end
         end
       end
 
@@ -85,7 +91,7 @@ module Gitlab
         path_to_indexer = Gitlab.config.elasticsearch.indexer_path
 
         project_id_argument = "--project-id=#{project.id}"
-        timeout_argument = "--timeout=#{TIMEOUT}s"
+        timeout_argument = "--timeout=#{self.class.timeout}s"
 
         command = [path_to_indexer, project_id_argument, timeout_argument]
 
