@@ -131,7 +131,7 @@ RSpec.describe ElasticCommitIndexerWorker, feature_category: :global_search do
     context 'when the indexer is locked' do
       it 'does not run index' do
         expect(subject).to receive(:in_lock) # Mock and don't yield
-          .with("ElasticCommitIndexerWorker/#{project.id}/false", ttl: (Gitlab::Elastic::Indexer::TIMEOUT + 1.minute), retries: 0)
+          .with("ElasticCommitIndexerWorker/#{project.id}/false", ttl: (Gitlab::Elastic::Indexer.timeout + 1.minute), retries: 0)
 
         expect(Gitlab::Elastic::Indexer).not_to receive(:new)
 
@@ -140,7 +140,7 @@ RSpec.describe ElasticCommitIndexerWorker, feature_category: :global_search do
 
       it 'does not log anything' do
         expect(subject).to receive(:in_lock) # Mock and don't yield
-          .with("ElasticCommitIndexerWorker/#{project.id}/false", ttl: (Gitlab::Elastic::Indexer::TIMEOUT + 1.minute), retries: 0)
+          .with("ElasticCommitIndexerWorker/#{project.id}/false", ttl: (Gitlab::Elastic::Indexer.timeout + 1.minute), retries: 0)
 
         expect(logger_double).not_to receive(:info)
 
@@ -149,7 +149,7 @@ RSpec.describe ElasticCommitIndexerWorker, feature_category: :global_search do
 
       it 'does not record the apdex SLI' do
         expect(subject).to receive(:in_lock) # Mock and don't yield
-          .with("ElasticCommitIndexerWorker/#{project.id}/false", ttl: (Gitlab::Elastic::Indexer::TIMEOUT + 1.minute), retries: 0)
+          .with("ElasticCommitIndexerWorker/#{project.id}/false", ttl: (Gitlab::Elastic::Indexer.timeout + 1.minute), retries: 0)
 
         expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
 
@@ -158,7 +158,7 @@ RSpec.describe ElasticCommitIndexerWorker, feature_category: :global_search do
 
       it 'does not log extra metadata' do
         expect(subject).to receive(:in_lock) # Mock and don't yield
-          .with("ElasticCommitIndexerWorker/#{project.id}/false", ttl: (Gitlab::Elastic::Indexer::TIMEOUT + 1.minute), retries: 0)
+          .with("ElasticCommitIndexerWorker/#{project.id}/false", ttl: (Gitlab::Elastic::Indexer.timeout + 1.minute), retries: 0)
 
         expect(worker).not_to receive(:log_extra_metadata_on_done)
 
