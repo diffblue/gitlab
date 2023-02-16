@@ -4,11 +4,13 @@ module Gitlab
   module ImportExport
     module Project
       class ProjectHooksRestorer
-        def initialize(project:, shared:, user:, source:)
+        include CustomTemplateRestorerHelper
+
+        def initialize(project:, shared:, user:, source_project:)
           @project = project
           @shared = shared
           @user = user
-          @source = source
+          @source_project = source_project
         end
 
         def restore
@@ -16,38 +18,19 @@ module Gitlab
 
           hooks_duplicated = duplicate_source_hooks
 
-          return true if hooks_duplicated
+          report_failure unless hooks_duplicated
 
-          report_failure
-
-          false
+          true
         end
 
         private
 
-        def check_user_authorization
-          return if user_can_admin_source?
-
-          err = StandardError.new "Unauthorized service"
-          Gitlab::Import::Logger.warn(
-            message: "User tried to access unauthorized service",
-            username: @user.username,
-            user_id: @user.id,
-            service: self.class.name,
-            error: err.message
-          )
-
-          raise err
-        end
-
-        def user_can_admin_source?
-          @user.can_admin_all_resources? || @user.can?(:owner_access, @source)
-        end
+        attr_reader :project, :shared, :user, :source_project
 
         def duplicate_source_hooks
           result = []
 
-          @source.hooks.order_by(created_at: :asc).find_each do |source_hook|
+          source_project.hooks.order_by(created_at: :asc).find_each do |source_hook|
             target_hook = duplicate_hook(source_hook)
 
             result << target_hook.save
@@ -58,7 +41,7 @@ module Gitlab
 
         def duplicate_hook(source_hook)
           target_hook = source_hook.dup
-          target_hook.project_id = @project.id
+          target_hook.project_id = project.id
 
           # clean encrypted fields
           target_hook.encrypted_url = nil
@@ -76,12 +59,7 @@ module Gitlab
         end
 
         def report_failure
-          Gitlab::Import::ImportFailureService.track(
-            project_id: @project.id,
-            error_source: self.class.name,
-            exception: StandardError.new("Could not duplicate all project hooks from custom template Project"),
-            fail_import: false
-          )
+          report_failure_for(::ProjectHook)
         end
       end
     end

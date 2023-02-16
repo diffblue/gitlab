@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::ImportExport::Project::CustomTemplateRestorer, feature_category: :importers do
+RSpec.describe Gitlab::ImportExport::Project::CustomTemplateRestorer, feature_category: :source_code_management do
   include NonExistingRecordsHelpers
 
   let_it_be(:template_owner) { create(:user) }
@@ -23,7 +23,8 @@ RSpec.describe Gitlab::ImportExport::Project::CustomTemplateRestorer, feature_ca
 
   shared_examples 'successfully execute the restorers' do
     [
-      Gitlab::ImportExport::Project::ProjectHooksRestorer
+      Gitlab::ImportExport::Project::ProjectHooksRestorer,
+      Gitlab::ImportExport::Project::DeployKeysRestorer
     ].each do |restorer|
       it "calls the #{restorer}" do
         fake_restorer = instance_double(restorer.to_s)
@@ -39,7 +40,8 @@ RSpec.describe Gitlab::ImportExport::Project::CustomTemplateRestorer, feature_ca
 
   shared_examples 'do not execute the restorers' do
     [
-      Gitlab::ImportExport::Project::ProjectHooksRestorer
+      Gitlab::ImportExport::Project::ProjectHooksRestorer,
+      Gitlab::ImportExport::Project::DeployKeysRestorer
     ].each do |restorer|
       it "calls the #{restorer}" do
         fake_restorer = instance_double(restorer.to_s)
@@ -113,9 +115,7 @@ RSpec.describe Gitlab::ImportExport::Project::CustomTemplateRestorer, feature_ca
 
       let(:user) { create(:admin) }
 
-      it 'raises an ActiveRecord::RecordNotFound exception' do
-        expect { subject.restore }.to raise_error(::ActiveRecord::RecordNotFound)
-      end
+      it_behaves_like 'do not execute the restorers'
     end
   end
 
