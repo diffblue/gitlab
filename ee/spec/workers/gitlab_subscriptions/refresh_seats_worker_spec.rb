@@ -118,55 +118,15 @@ RSpec.describe GitlabSubscriptions::RefreshSeatsWorker, :saas, feature_category:
   describe '#max_running_jobs' do
     subject { worker.max_running_jobs }
 
-    before do
-      stub_feature_flags(
-        limited_capacity_seat_refresh_worker_low: false,
-        limited_capacity_seat_refresh_worker_medium: false,
-        limited_capacity_seat_refresh_worker_high: false
-      )
-    end
-
-    it { is_expected.to eq(0) }
-
-    context 'when limited_capacity_seat_refresh_worker_low flag is enabled' do
-      before do
-        stub_feature_flags(limited_capacity_seat_refresh_worker_low: true)
-      end
-
-      it { is_expected.to eq(described_class::MAX_RUNNING_JOBS) }
-    end
-
-    context 'when limited_capacity_seat_refresh_worker_medium flag is enabled' do
-      before do
-        stub_feature_flags(limited_capacity_seat_refresh_worker_medium: true)
-      end
-
-      it { is_expected.to eq(described_class::MAX_RUNNING_JOBS_MEDIUM) }
-    end
-
-    context 'when limited_capacity_seat_refresh_worker_high flag is enabled' do
-      before do
-        stub_feature_flags(limited_capacity_seat_refresh_worker_high: true)
-      end
-
-      it { is_expected.to eq(described_class::MAX_RUNNING_JOBS_HIGH) }
-    end
+    it { is_expected.to eq(described_class::MAX_RUNNING_JOBS) }
   end
 
   describe '#remaining_work_count', :freeze_time do
     let_it_be(:subscriptions_requiring_refresh) do
-      create_list(:gitlab_subscription, 5, last_seat_refresh_at: 3.days.ago)
+      create_list(:gitlab_subscription, 8, last_seat_refresh_at: 3.days.ago)
     end
 
     subject(:remaining_work_count) { worker.remaining_work_count }
-
-    before do
-      stub_feature_flags(
-        limited_capacity_seat_refresh_worker_low: true,
-        limited_capacity_seat_refresh_worker_medium: false,
-        limited_capacity_seat_refresh_worker_high: false
-      )
-    end
 
     context 'when there is remaining work' do
       it { is_expected.to eq(described_class::MAX_RUNNING_JOBS + 1) }

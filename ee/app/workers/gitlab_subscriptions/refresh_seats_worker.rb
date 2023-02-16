@@ -11,9 +11,7 @@ module GitlabSubscriptions
 
     idempotent!
 
-    MAX_RUNNING_JOBS = 2
-    MAX_RUNNING_JOBS_MEDIUM = 4
-    MAX_RUNNING_JOBS_HIGH = 6
+    MAX_RUNNING_JOBS = 6
 
     def perform_work
       return if ::Gitlab::Database.read_only?
@@ -31,15 +29,7 @@ module GitlabSubscriptions
     end
 
     def max_running_jobs
-      if Feature.enabled?(:limited_capacity_seat_refresh_worker_high)
-        MAX_RUNNING_JOBS_HIGH
-      elsif Feature.enabled?(:limited_capacity_seat_refresh_worker_medium)
-        MAX_RUNNING_JOBS_MEDIUM
-      elsif Feature.enabled?(:limited_capacity_seat_refresh_worker_low)
-        MAX_RUNNING_JOBS
-      else
-        0
-      end
+      MAX_RUNNING_JOBS
     end
 
     private

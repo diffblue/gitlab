@@ -29,21 +29,5 @@ RSpec.describe GitlabSubscriptions::ScheduleRefreshSeatsWorker, feature_category
         worker.perform
       end
     end
-
-    context 'when limited_capacity_seat_refresh_worker_* flags are disabled' do
-      before do
-        stub_feature_flags(
-          limited_capacity_seat_refresh_worker_low: false,
-          limited_capacity_seat_refresh_worker_medium: false,
-          limited_capacity_seat_refresh_worker_high: false
-        )
-      end
-
-      it 'does not schedule any jobs to perform_work' do
-        worker.perform
-
-        expect(GitlabSubscriptions::RefreshSeatsWorker.jobs.size).to eq 0
-      end
-    end
   end
 end
