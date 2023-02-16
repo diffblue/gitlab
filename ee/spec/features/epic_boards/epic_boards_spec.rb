@@ -142,6 +142,42 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
       end
     end
 
+    context 'ordering in list using move to position' do
+      let_it_be(:epic4) { create(:epic, group: group, title: 'Epic4') }
+      let(:move_to_position) { find('[data-testid="board-move-to-position"]') }
+
+      before do
+        visit_epic_boards_page
+        wait_for_requests
+      end
+
+      it 'moves to end of list' do
+        page.within(find('.board:nth-child(1)')) do
+          expect(all('.board-card').first).to have_content(epic4.title)
+
+          first('.board-card').hover
+          move_to_position.click
+
+          click_button 'Move to end of list'
+
+          expect(all('.board-card').last).to have_content(epic4.title)
+        end
+      end
+
+      it 'moves to start of list' do
+        page.within(find('.board:nth-child(1)')) do
+          expect(all('.board-card').last).to have_content(epic2.title)
+
+          all('.board-card').last.hover
+          move_to_position.click
+
+          click_button 'Move to start of list'
+
+          expect(all('.board-card').first).to have_content(epic2.title)
+        end
+      end
+    end
+
     context 'lists' do
       let_it_be(:label_list2) { create(:epic_list, epic_board: epic_board, label: label2, position: 1) }
 

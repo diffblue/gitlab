@@ -17,25 +17,11 @@ import {
 
 jest.mock('~/flash');
 
-const listIssueProps = {
-  project: {
-    path: '/test',
-  },
-  real_path: '',
-  webUrl: '',
-};
-
-const componentProps = {
-  groupId: undefined,
-};
-
 const actions = {
   addListNewEpic: jest.fn().mockResolvedValue(),
 };
 
 const componentConfig = {
-  listIssueProps,
-  componentProps,
   actions,
   stubs: {
     BoardCard,
@@ -59,18 +45,14 @@ describe('BoardList Component', () => {
     wrapper = createComponent(componentConfig);
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders link properly in issue', () => {
     expect(wrapper.find('.board-card .board-card-title a').attributes('href')).not.toContain(
       ':project_path',
     );
   });
 
-  it('does not render the move to position icon', () => {
-    expect(wrapper.findComponent(BoardCardMoveToPosition).exists()).toBe(false);
+  it('renders the move to position icon', () => {
+    expect(wrapper.findComponent(BoardCardMoveToPosition).exists()).toBe(true);
   });
 
   describe('Apollo boards', () => {
