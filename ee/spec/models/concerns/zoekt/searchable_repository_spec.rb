@@ -56,6 +56,14 @@ RSpec.describe ::Zoekt::SearchableRepository, :zoekt, feature_category: :global_
 
       expect { repository.update_zoekt_index! }.to raise_error(RuntimeError, 'command failed: exit status 128')
     end
+
+    it 'sets http the correct timeout' do
+      expect(::Gitlab::HTTP).to receive(:post)
+                                .with(anything, hash_including(timeout: described_class::READ_TIMEOUT_S))
+                                .and_return({})
+
+      repository.update_zoekt_index!
+    end
   end
 
   describe '.truncate_zoekt_index!' do

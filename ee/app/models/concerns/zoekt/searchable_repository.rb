@@ -4,6 +4,8 @@ module Zoekt
   module SearchableRepository
     extend ActiveSupport::Concern
 
+    READ_TIMEOUT_S = 10.minutes.to_i
+
     class_methods do
       def truncate_zoekt_index!(shard)
         ::Gitlab::HTTP.post(
@@ -31,7 +33,8 @@ module Zoekt
           URI.join(zoekt_index_base_url, '/index'),
           headers: { "Content-Type" => "application/json" },
           body: payload.to_json,
-          allow_local_requests: true
+          allow_local_requests: true,
+          timeout: READ_TIMEOUT_S
         )
 
         raise response['Error'] if response['Error']
