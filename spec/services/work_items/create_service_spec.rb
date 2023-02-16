@@ -188,7 +188,7 @@ RSpec.describe WorkItems::CreateService do
           {
             title: 'Awesome work_item',
             description: 'please fix',
-            work_item_type: create(:work_item_type, :task)
+            work_item_type: WorkItems::Type.default_by_type(:task)
           }
         end
 

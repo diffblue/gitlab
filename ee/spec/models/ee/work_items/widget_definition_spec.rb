@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe WorkItems::Type do
+RSpec.describe WorkItems::WidgetDefinition, feature_category: :team_planning do
   describe '.available_widgets' do
     subject { described_class.available_widgets }
 

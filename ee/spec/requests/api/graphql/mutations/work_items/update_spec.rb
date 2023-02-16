@@ -237,7 +237,8 @@ RSpec.describe 'Update a work item' do
             end
 
             before do
-              stub_const('::WorkItems::Type::WIDGETS_FOR_TYPE', { task: [::WorkItems::Widgets::Description] })
+              WorkItems::Type.default_by_type(:task).widget_definitions
+                .find_by_widget_type(:weight).update!(disabled: true)
             end
 
             it_behaves_like 'work item is not updated'
@@ -505,14 +506,15 @@ RSpec.describe 'Update a work item' do
           end
 
           context 'when the work item type does not support the health status widget' do
-            let_it_be(:work_item) { create(:work_item, :task, project: project) }
+            let_it_be(:work_item) { create(:work_item, :issue, project: project) }
 
             let(:input) do
               { 'descriptionWidget' => { 'description' => "Updating health status.\n/health_status on_track" } }
             end
 
             before do
-              stub_const('::WorkItems::Type::WIDGETS_FOR_TYPE', { task: [::WorkItems::Widgets::Description] })
+              WorkItems::Type.default_by_type(:issue).widget_definitions
+                .find_by_widget_type(:health_status).update!(disabled: true)
             end
 
             it_behaves_like 'work item is not updated'
