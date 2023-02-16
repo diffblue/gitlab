@@ -51,6 +51,8 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
       context 'when vulnerability_id is set' do
         subject(:create_finding_record) { create_finding(vulnerability: vulnerability2) }
 
+        let(:created_vulnerability_read) { described_class.find_by_vulnerability_id(vulnerability2.id) }
+
         context 'when the related vulnerability record is not marked as `present_on_default_branch`' do
           before do
             vulnerability2.update_column(:present_on_default_branch, false)
@@ -64,6 +66,13 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
         context 'when the related vulnerability record is marked as `present_on_default_branch`' do
           it 'creates a new vulnerability_reads row' do
             expect { create_finding_record }.to change { Vulnerabilities::Read.count }.from(0).to(1)
+            expect(created_vulnerability_read.has_issues).to eq(false)
+          end
+
+          it 'sets has_issues to true when there are issue links' do
+            create(:vulnerabilities_issue_link, vulnerability: vulnerability2)
+            create_finding_record
+            expect(created_vulnerability_read.has_issues).to eq(true)
           end
         end
       end
@@ -78,11 +87,19 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
     end
 
     describe 'trigger on vulnerability_occurrences update' do
+      let(:created_vulnerability_read) { described_class.find_by_vulnerability_id(vulnerability.id) }
+
       context 'when vulnerability_id is updated' do
         it 'creates a new vulnerability_reads row' do
           expect do
             finding.update!(vulnerability_id: vulnerability.id)
           end.to change { Vulnerabilities::Read.count }.from(0).to(1)
+        end
+
+        it 'sets has_issues when the vulnerability has issue links' do
+          create(:vulnerabilities_issue_link, vulnerability: vulnerability)
+          finding.update!(vulnerability_id: vulnerability.id)
+          expect(created_vulnerability_read.has_issues).to eq(true)
         end
       end
 
@@ -172,6 +189,8 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
     describe 'trigger_insert_vulnerability_reads_from_vulnerability' do
       subject(:update_vulnerability) { vulnerability.update!(new_vulnerability_params) }
 
+      let(:created_vulnerability_read) { described_class.find_by_vulnerability_id(vulnerability.id) }
+
       before do
         vulnerability.update_column(:present_on_default_branch, false)
 
@@ -191,6 +210,13 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
 
         it 'creates a new `vulnerability_reads` record' do
           expect { update_vulnerability }.to change { Vulnerabilities::Read.count }.by(1)
+          expect(created_vulnerability_read.has_issues).to eq(false)
+        end
+
+        it 'sets has_issues when the created vulnerability has issue links' do
+          create(:vulnerabilities_issue_link, vulnerability: vulnerability)
+          update_vulnerability
+          expect(created_vulnerability_read.has_issues).to eq(true)
         end
       end
     end
