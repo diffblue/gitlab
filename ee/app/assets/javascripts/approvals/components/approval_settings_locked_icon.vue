@@ -1,6 +1,6 @@
 <script>
+import { uniqueId } from 'lodash';
 import { GlIcon, GlPopover } from '@gitlab/ui';
-import { slugify } from '~/lib/utils/text_utility';
 import { __ } from '~/locale';
 
 export default {
@@ -21,7 +21,7 @@ export default {
   },
   computed: {
     lockIconId() {
-      return `approval-settings-lock-icon-${slugify(this.label)}`;
+      return uniqueId('approval-settings-lock-icon-');
     },
   },
   i18n: {

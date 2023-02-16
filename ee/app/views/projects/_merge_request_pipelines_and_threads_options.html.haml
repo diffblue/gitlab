@@ -1,0 +1,6 @@
+- support_group_level_mr_setting = Feature.enabled?(:support_group_level_merge_checks_setting, @project) && @project.licensed_feature_available?(:group_level_merge_checks_setting)
+
+- if !support_group_level_mr_setting
+  = render_ce 'projects/merge_request_pipelines_and_threads_options', form: form, project: project
+- else
+  .js-merge-request-merge-checks{ data: merge_checks(@project) }

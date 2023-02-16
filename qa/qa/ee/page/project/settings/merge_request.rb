@@ -25,6 +25,10 @@ module QA
                 view 'ee/app/views/projects/_merge_trains_settings.html.haml' do
                   element :merge_trains_checkbox
                 end
+
+                view 'ee/app/assets/javascripts/merge_checks/components/merge_checks_app.vue' do
+                  element :only_allow_merge_if_all_discussions_are_resolved_checkbox
+                end
               end
             end
 

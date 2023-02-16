@@ -4,6 +4,7 @@ import validateRestrictedIpAddress from 'ee/groups/settings/access_restriction_f
 import { initGroupPermissionsFormSubmit } from 'ee/groups/settings/permissions';
 import { initServicePingSettingsClickTracking } from 'ee/registration_features_discovery_message';
 import { createAlert } from '~/flash';
+import { initMergeRequestMergeChecksApp } from 'ee/merge_checks';
 import { __ } from '~/locale';
 
 if (gon.features.saasUserCapsAutoApprovePendingUsersOnCapIncrease) {
@@ -61,3 +62,4 @@ if (mergeRequestApprovalSetting) {
 }
 
 initServicePingSettingsClickTracking();
+initMergeRequestMergeChecksApp();

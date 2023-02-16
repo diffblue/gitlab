@@ -1,0 +1,10 @@
+= gitlab_ui_form_for @group.namespace_settings, url: group_settings_merge_requests_path(@group), html: { multipart: true, class: 'merge-request-settings-form js-mr-settings-form' }, authenticity_token: true do |f|
+  %input{ name: 'update_section', type: 'hidden', value: 'js-merge-request-settings' }
+
+  %fieldset.form-group.gl-form-group
+    %h5= s_('ProjectSettings|Merge checks')
+    %p.text-secondary= s_('ProjectSettings|These checks must pass before merge requests can be merged.')
+
+    .js-merge-request-merge-checks{ data: merge_checks(@group) }
+
+  = f.submit _('Save changes'), data: { testid: 'save_merge_request_changes' }, pajamas_button: true

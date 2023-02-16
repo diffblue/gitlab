@@ -5,14 +5,14 @@ RSpec.describe 'Project settings > [EE] Merge Requests', :js, feature_category: 
   include GitlabRoutingHelper
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project) }
   let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, :public, namespace: user.namespace, path: 'gitlab', name: 'sample', group: group) }
   let_it_be(:group_member) { create(:user) }
 
   before do
     sign_in(user)
     project.add_maintainer(user)
-    group.add_developer(user)
+    group.add_owner(user)
     group.add_developer(group_member)
   end
 
@@ -129,5 +129,11 @@ RSpec.describe 'Project settings > [EE] Merge Requests', :js, feature_category: 
         expect(page).to have_content('Choose the method, options, checks, and squash options for merge requests. You can also set up merge request templates for different actions.')
       end
     end
+  end
+
+  context 'MR checks' do
+    let(:merge_requests_settings_path) { project_settings_merge_requests_path(project) }
+
+    it_behaves_like 'MR checks settings'
   end
 end
