@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Ingestion::Tasks::IngestFindingIdentifiers do
+RSpec.describe Security::Ingestion::Tasks::IngestFindingIdentifiers, feature_category: :vulnerability_management do
   describe '#execute' do
     let(:pipeline) { create(:ci_pipeline) }
     let(:identifier) { create(:vulnerabilities_identifier) }

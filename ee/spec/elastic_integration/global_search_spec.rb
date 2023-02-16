@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'GlobalSearch', :elastic_clean, :clean_gitlab_redis_shared_state do
+RSpec.describe 'GlobalSearch', :elastic_clean, :clean_gitlab_redis_shared_state, feature_category: :global_search do
   include AdminModeHelper
 
   let(:features) { %i(issues merge_requests repository builds wiki snippets) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Terraform::StateVersion do
+RSpec.describe Terraform::StateVersion, feature_category: :infrastructure_as_code do
   using RSpec::Parameterized::TableSyntax
   include EE::GeoHelpers
 

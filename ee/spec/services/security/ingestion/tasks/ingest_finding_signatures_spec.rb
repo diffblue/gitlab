@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Ingestion::Tasks::IngestFindingSignatures do
+RSpec.describe Security::Ingestion::Tasks::IngestFindingSignatures, feature_category: :vulnerability_management do
   describe '#execute' do
     let(:pipeline) { create(:ci_pipeline) }
     let(:finding_1) { create(:vulnerabilities_finding) }

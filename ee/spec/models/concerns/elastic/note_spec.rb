@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state do
+RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state, feature_category: :global_search do
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
   end

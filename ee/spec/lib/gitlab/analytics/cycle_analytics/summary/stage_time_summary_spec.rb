@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary do
+RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, feature_category: :devops_reports do
   let_it_be_with_refind(:group) { create(:group) }
   let_it_be(:project) { create(:project, :repository, namespace: group) }
   let_it_be(:project_2) { create(:project, :repository, namespace: group) }

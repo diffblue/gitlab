@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Iteration do
+RSpec.describe Iteration, feature_category: :team_planning do
   using RSpec::Parameterized::TableSyntax
   include ActiveSupport::Testing::TimeHelpers
 
