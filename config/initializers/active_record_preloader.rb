@@ -15,6 +15,21 @@ module ActiveRecord
   module Associations
     class Preloader
       class Association
+        class LoaderQuery
+          # https://gitlab.com/gitlab-org/gitlab/-/issues/385739
+          module HandlePreloadsForDifferentClassesSeparately
+            def eql?(other)
+              scope.klass == other.scope.klass && super
+            end
+
+            def hash
+              [scope.klass, association_key_name, scope.table_name, scope.values_for_queries].hash
+            end
+          end
+
+          prepend HandlePreloadsForDifferentClassesSeparately
+        end
+
         module NonActiveRecordPreloader
           # https://github.com/rails/rails/blob/v7.0.4.2/activerecord/lib/active_record/associations/preloader/association.rb#L114-L116
           def run?
