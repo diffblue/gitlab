@@ -5,12 +5,12 @@ require 'csv'
 module PackageMetadata
   class DataObject
     def self.from_csv(text, purl_type)
-      parsed = CSV.parse_line(text)
+      parsed = CSV.parse_line(text)&.reject { |field| field.nil? || field.empty? }
       new(parsed[0], parsed[1], parsed[2], purl_type) if parsed&.count == 3
     end
 
-    attr_reader :version, :license, :purl_type
-    attr_accessor :package_id, :package_version_id, :license_id
+    attr_accessor :version, :license, :purl_type,
+      :package_id, :package_version_id, :license_id
 
     def initialize(name, version, license, purl_type)
       @name = name

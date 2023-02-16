@@ -4,7 +4,7 @@ require 'google/apis/storage_v1'
 require 'google/cloud/storage'
 
 # Package metadata is stored in a gcp bucket in the following format:
-#   <version_format>/<package_registry>/<sequence_id>/<chunk_id>.csv
+#   <version_format>/<package_registry>/<sequence>/<chunk>.csv
 #   Example:
 #   .
 #   - v1
@@ -29,7 +29,7 @@ require 'google/cloud/storage'
 # caller.
 #
 # To reduce the amount of data transferred the connector allows the
-# caller to ask for gcp files after <sequence_id> and <chunk_id>.
+# caller to ask for gcp files after <sequence> and <chunk>.
 module Gitlab
   module PackageMetadata
     module Connector
@@ -80,7 +80,7 @@ module Gitlab
           end
 
           def checkpoint?(checkpoint)
-            sequence == checkpoint.sequence_id && chunk == checkpoint.chunk_id
+            sequence == checkpoint.sequence && chunk == checkpoint.chunk
           end
         end
 
