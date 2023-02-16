@@ -4,7 +4,7 @@ class FixPartitionIdsForCiJobVariables < Gitlab::Database::Migration[2.1]
   disable_ddl_transaction!
   restrict_gitlab_migration gitlab_schema: :gitlab_ci
 
-  BATCH_SIZE = 250
+  BATCH_SIZE = 50
 
   def up
     return unless Gitlab.com?
