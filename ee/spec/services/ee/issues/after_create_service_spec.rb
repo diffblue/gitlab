@@ -9,7 +9,7 @@ RSpec.describe Issues::AfterCreateService do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:issue) { create(:issue, project: project, author: current_user) }
 
-  subject(:after_create_service) { described_class.new(project: project, current_user: current_user) }
+  subject(:after_create_service) { described_class.new(container: project, current_user: current_user) }
 
   describe '#execute' do
     context 'when issue sla is available' do

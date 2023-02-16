@@ -15,10 +15,6 @@ RSpec.describe 'Milestones on EE', feature_category: :team_planning do
     visit project_milestone_path(project, milestone)
   end
 
-  def close_issue(issue)
-    Issues::CloseService.new(issue.project, user, {}).execute(issue)
-  end
-
   context 'burndown charts' do
     let(:milestone) do
       create(:milestone,

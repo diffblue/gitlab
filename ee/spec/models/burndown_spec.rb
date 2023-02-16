@@ -235,12 +235,12 @@ RSpec.describe Burndown do
   end
 
   def close_issue(issue)
-    Issues::CloseService.new(project: issue.project, current_user: user).execute(issue)
+    Issues::CloseService.new(container: issue.project, current_user: user).execute(issue)
     adjust_issue_event_creation_time(issue.events.last)
   end
 
   def reopen_issue(issue)
-    Issues::ReopenService.new(project: issue.project, current_user: user).execute(issue)
+    Issues::ReopenService.new(container: issue.project, current_user: user).execute(issue)
     adjust_issue_event_creation_time(issue.events.last)
   end
 

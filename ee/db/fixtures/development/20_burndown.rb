@@ -73,7 +73,7 @@ class Gitlab::Seeder::Burndown
       open_issues  = open_issues.limit(close_number)
 
       open_issues.each do |issue|
-        Issues::CloseService.new(project: @project, current_user: @project.team.users.sample).execute(issue)
+        Issues::CloseService.new(container: @project, current_user: @project.team.users.sample).execute(issue)
       end
     end
 
