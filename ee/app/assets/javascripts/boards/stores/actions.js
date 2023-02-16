@@ -542,16 +542,31 @@ export default {
     }
   },
 
-  moveEpic: ({ state, commit }, { itemId, fromListId, toListId, moveBeforeId, moveAfterId }) => {
+  moveEpic: ({ state, commit }, params) => {
+    const {
+      itemId,
+      fromListId,
+      toListId,
+      moveBeforeId,
+      moveAfterId,
+      positionInList,
+      originalIndex,
+      allItemsLoadedInList,
+      reordering,
+    } = getMoveData(state, params);
+
     const originalEpic = state.boardItems[itemId];
-    const fromList = state.boardItemsByListId[fromListId];
-    const originalIndex = fromList.indexOf(Number(itemId));
+
     commit(types.MOVE_EPIC, {
       originalEpic,
       fromListId,
       toListId,
       moveBeforeId,
       moveAfterId,
+      positionInList,
+      atIndex: originalIndex,
+      allItemsLoadedInList,
+      reordering,
     });
 
     const { boardId, filterParams } = state;
@@ -566,13 +581,14 @@ export default {
           toListId,
           moveBeforeId,
           moveAfterId,
+          positionInList,
         },
         update(cache) {
           if (!window.gon.features.feEpicBoardTotalWeight) {
             return;
           }
 
-          if (fromListId === toListId) return;
+          if (reordering) return;
 
           const updateList = (listId, summationFunction) => {
             const movingList = cache.readQuery({

@@ -5,6 +5,7 @@ mutation EpicMoveList(
   $toListId: BoardsEpicListID!
   $moveAfterId: EpicID
   $moveBeforeId: EpicID
+  $positionInList: Int
 ) {
   epicMoveList(
     input: {
@@ -14,6 +15,7 @@ mutation EpicMoveList(
       toListId: $toListId
       moveAfterId: $moveAfterId
       moveBeforeId: $moveBeforeId
+      positionInList: $positionInList
     }
   ) {
     errors
