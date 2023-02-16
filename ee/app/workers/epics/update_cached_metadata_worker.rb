@@ -8,7 +8,7 @@ module Epics
     BATCH_SIZE = 100
     LEASE_TIMEOUT = 2.minutes
 
-    data_consistency :delayed, feature_flag: :delayed_epics_update_cached_metadata_worker
+    data_consistency :always
     loggable_arguments 0
     idempotent!
     queue_namespace :epics
