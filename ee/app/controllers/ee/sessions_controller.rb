@@ -134,7 +134,9 @@ module EE
 
     def check_user_confirmation
       user = ::User.find_by_login(user_params[:login])
+
       return if !user || !user.valid_password?(user_params[:password]) || user.access_locked? || user.identity_verified?
+      return if ::Gitlab::Qa.request?(request.user_agent)
 
       service_class = ::Users::EmailVerification::SendCustomConfirmationInstructionsService
       return unless service_class.identity_verification_enabled?(user.email)

@@ -56,6 +56,14 @@ RSpec.describe SessionsController, feature_category: :authentication_and_authori
 
         it { is_expected.not_to have_gitlab_http_status(:redirect) }
       end
+
+      context 'when the user is a GitLab QA user' do
+        before do
+          allow(Gitlab::Qa).to receive(:request?).and_return(true)
+        end
+
+        it { is_expected.not_to redirect_to(identity_verification_path) }
+      end
     end
   end
 end
