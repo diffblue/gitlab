@@ -116,13 +116,15 @@ export default {
     createFailedReportRow(statusCheck) {
       const row = this.createReportRow(statusCheck, EXTENSION_ICONS.failed);
 
-      row.actions = [
-        {
-          icon: 'retry',
-          text: __('Retry'),
-          onClick: () => this.retryStatusCheck(statusCheck),
-        },
-      ];
+      if (this.mr.canRetryExternalStatusChecks) {
+        row.actions = [
+          {
+            icon: 'retry',
+            text: __('Retry'),
+            onClick: () => this.retryStatusCheck(statusCheck),
+          },
+        ];
+      }
 
       return row;
     },

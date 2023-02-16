@@ -1,29 +1,64 @@
 {
   "type": "object",
   "allOf": [
-    { "$ref": "../../../../../../spec/fixtures/api/schemas/entities/merge_request_poll_widget.json" },
     {
-      "properties" : {
-        "approvals_before_merge": { "type": "integer" },
+      "$ref": "../../../../../../spec/fixtures/api/schemas/entities/merge_request_poll_widget.json"
+    },
+    {
+      "properties": {
+        "approvals_before_merge": {
+          "type": "integer"
+        },
         "blob_path": {
           "type": "object",
           "properties": {
-            "head_path": { "type": "string" }
+            "head_path": {
+              "type": "string"
+            }
           }
         },
-        "pipeline_id": { "type": "integer" },
-        "can_read_vulnerability_feedback": { "type": "boolean" },
-        "vulnerability_feedback_path": { "type": "string" },
-        "create_vulnerability_feedback_issue_path": { "type": "string" },
-        "create_vulnerability_feedback_merge_request_path": { "type": "string" },
-        "create_vulnerability_feedback_dismissal_path": { "type": "string" },
-        "merge_pipelines_enabled": { "type": "boolean" },
-        "has_approvals_available": { "type": "boolean" },
-        "approvals_path": { "type": "string" },
-        "api_approvals_path": { "type": "string" },
-        "api_approval_settings_path": { "type": "string" },
-        "api_approve_path": { "type": "string" },
-        "api_unapprove_path": { "type": "string" }
+        "pipeline_id": {
+          "type": "integer"
+        },
+        "can_read_vulnerability_feedback": {
+          "type": "boolean"
+        },
+        "vulnerability_feedback_path": {
+          "type": "string"
+        },
+        "create_vulnerability_feedback_issue_path": {
+          "type": "string"
+        },
+        "create_vulnerability_feedback_merge_request_path": {
+          "type": "string"
+        },
+        "create_vulnerability_feedback_dismissal_path": {
+          "type": "string"
+        },
+        "merge_pipelines_enabled": {
+          "type": "boolean"
+        },
+        "has_approvals_available": {
+          "type": "boolean"
+        },
+        "approvals_path": {
+          "type": "string"
+        },
+        "api_approvals_path": {
+          "type": "string"
+        },
+        "api_approval_settings_path": {
+          "type": "string"
+        },
+        "api_approve_path": {
+          "type": "string"
+        },
+        "api_unapprove_path": {
+          "type": "string"
+        },
+        "can_retry_external_status_checks": {
+          "type": "boolean"
+        }
       }
     }
   ]

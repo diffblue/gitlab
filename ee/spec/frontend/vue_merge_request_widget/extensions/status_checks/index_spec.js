@@ -36,21 +36,23 @@ describe('Status checks extension', () => {
 
   registerExtension(statusChecksExtension);
 
-  const createComponent = () => {
+  const createComponent = (mr) => {
     wrapper = mount(extensionsContainer, {
       propsData: {
         mr: {
           apiStatusChecksPath: getChecksEndpoint,
           apiStatusChecksRetryPath: retryCheckEndpoint,
+          canRetryExternalStatusChecks: true,
+          ...mr,
         },
       },
     });
   };
 
-  const setupWithResponse = (statusCode, data) => {
+  const setupWithResponse = (statusCode, data, mr = {}) => {
     mock.onGet(getChecksEndpoint).reply(statusCode, data);
 
-    createComponent();
+    createComponent(mr);
 
     return waitForPromises();
   };
@@ -137,6 +139,24 @@ describe('Status checks extension', () => {
       expect(listItems.at(0).text()).toBe('Foo: http://foo');
       expect(listItems.at(1).text()).toBe('<a class="test" data-test">Foo: http://foo');
       expect(listItems.at(2).text()).toBe('Foo Bar: http://foobar');
+    });
+  });
+
+  describe('when unable to retry failed checks', () => {
+    beforeEach(async () => {
+      await setupWithResponse(HTTP_STATUS_OK, failedChecks, {
+        canRetryExternalStatusChecks: false,
+      });
+      wrapper
+        .find('[data-testid="widget-extension"] [data-testid="toggle-button"]')
+        .trigger('click');
+    });
+
+    it('should not show a retry button', () => {
+      const listItem = wrapper.findAll('[data-testid="extension-list-item"]').at(0);
+      const actionButton = listItem.find('[data-testid="extension-actions-button"]');
+
+      expect(actionButton.exists()).toBe(false);
     });
   });
 
