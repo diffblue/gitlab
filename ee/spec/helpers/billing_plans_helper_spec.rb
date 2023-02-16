@@ -161,17 +161,7 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
         it { is_expected.to eq '12:13:14' }
       end
 
-      context 'when the subscription does not have a last_seat_refresh_at' do
-        before do
-          allow(UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker).to receive(:last_enqueue_time).and_return(enqueue_time)
-        end
-
-        it 'returns the cron worker last_enqueue_time' do
-          expect(seats_last_updated).to eq '12:13:14'
-        end
-      end
-
-      context 'when neither are available' do
+      context 'when no last_seat_refresh_at is available' do
         it { is_expected.to be nil }
       end
     end
