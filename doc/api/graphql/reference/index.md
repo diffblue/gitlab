@@ -18631,6 +18631,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="projectpipelineschedulesids"></a>`ids` | [`[ID!]`](#id) | Filter pipeline schedules by IDs. |
 | <a id="projectpipelineschedulesstatus"></a>`status` | [`PipelineScheduleStatus`](#pipelineschedulestatus) | Filter pipeline schedules by active status. |
 
 ##### `Project.pipelines`
