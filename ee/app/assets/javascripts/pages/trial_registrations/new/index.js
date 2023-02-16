@@ -12,10 +12,7 @@ new UsernameValidator(); // eslint-disable-line no-new
 new LengthValidator(); // eslint-disable-line no-new
 new SigninTabsMemoizer(); // eslint-disable-line no-new
 new NoEmojiValidator(); // eslint-disable-line no-new
-
-if (gon.features.trialEmailValidation) {
-  new EmailFormatValidator(); // eslint-disable-line no-new
-}
+new EmailFormatValidator(); // eslint-disable-line no-new
 
 trackFreeTrialAccountSubmissions();
 

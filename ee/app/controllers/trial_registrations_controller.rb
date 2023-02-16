@@ -17,7 +17,6 @@ class TrialRegistrationsController < RegistrationsController
   before_action :redirect_to_trial, only: [:new], if: :user_signed_in?
   before_action only: [:new] do
     push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
-    push_frontend_feature_flag(:trial_email_validation, type: :development)
   end
 
   def new; end
