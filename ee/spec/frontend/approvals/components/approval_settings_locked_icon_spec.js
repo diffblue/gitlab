@@ -3,12 +3,9 @@ import { shallowMount } from '@vue/test-utils';
 
 import ApprovalSettingsLockedIcon from 'ee/approvals/components/approval_settings_locked_icon.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import { slugify } from '~/lib/utils/text_utility';
 
 describe('ApprovalSettingsLockedIcon', () => {
   const label = 'Foo';
-  const lockIconId = `approval-settings-lock-icon-${slugify(label)}`;
-
   let wrapper;
 
   const createWrapper = (props = {}) => {
@@ -36,11 +33,11 @@ describe('ApprovalSettingsLockedIcon', () => {
 
     it('shows a lock icon', () => {
       expect(findLockIcon().props('name')).toBe('lock');
-      expect(findLockIcon().attributes('id')).toBe(lockIconId);
+      expect(findLockIcon().attributes('id')).toMatch(/approval-settings-lock-icon-\d+/);
     });
 
     it('shows a popover for the lock icon', () => {
-      expect(findPopover().props('target')).toBe(lockIconId);
+      expect(findPopover().props('target')).toBe(findLockIcon().attributes('id'));
     });
 
     it('configures how and when the popover should show', () => {

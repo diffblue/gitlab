@@ -1,0 +1,10 @@
+- if Feature.enabled?(:support_group_level_merge_checks_setting, @group) && @group.licensed_feature_available?(:group_level_merge_checks_setting)
+  %section.settings.no-animate#js-merge-requests-settings{ class: ('expanded' if expanded) }
+    .settings-header
+      %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only{ role: 'button' }
+        = _('Merge requests')
+      = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
+        = expanded ? _('Collapse') : _('Expand')
+      %p= s_('GroupSettings|Choose the merge request checks for projects in this group. This setting overrides the same settings configured on each project in this group.')
+    .settings-content
+      = render 'groups/settings/merge_request_pipelines_and_threads_options'

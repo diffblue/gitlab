@@ -1,10 +1,8 @@
 import { GlFormCheckbox } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 
 import ApprovalSettingsCheckbox from 'ee/approvals/components/approval_settings_checkbox.vue';
 import ApprovalSettingsLockedIcon from 'ee/approvals/components/approval_settings_locked_icon.vue';
-import { stubComponent } from 'helpers/stub_component';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 
 describe('ApprovalSettingsCheckbox', () => {
   const label = 'Foo';
@@ -12,17 +10,17 @@ describe('ApprovalSettingsCheckbox', () => {
 
   let wrapper;
 
-  const createWrapper = (props = {}) => {
-    wrapper = extendedWrapper(
-      shallowMount(ApprovalSettingsCheckbox, {
-        propsData: { label, lockedText, ...props },
-        stubs: {
-          GlFormCheckbox: stubComponent(GlFormCheckbox, {
-            props: ['checked'],
-          }),
+  const createWrapper = ({ mountFn = shallowMountExtended, props = {}, slots = {} } = {}) => {
+    wrapper = mountFn(ApprovalSettingsCheckbox, {
+      propsData: { label, lockedText, ...props },
+      slots,
+      stubs: {
+        GlFormCheckbox: {
+          ...GlFormCheckbox,
+          props: ['checked', 'disabled'],
         },
-      }),
-    );
+      },
+    });
   };
 
   const findCheckbox = () => wrapper.findComponent(GlFormCheckbox);
@@ -50,7 +48,7 @@ describe('ApprovalSettingsCheckbox', () => {
     });
 
     it('sets the checkbox to `true` when checked is `true`', () => {
-      createWrapper({ checked: true });
+      createWrapper({ props: { checked: true } });
 
       expect(findCheckbox().props('checked')).toBe(true);
     });
@@ -81,11 +79,11 @@ describe('ApprovalSettingsCheckbox', () => {
 
     describe('when the setting is locked', () => {
       beforeEach(() => {
-        createWrapper({ locked: true });
+        createWrapper({ props: { locked: true } });
       });
 
       it('disables the input', () => {
-        expect(findCheckbox().attributes('disabled')).toBe('disabled');
+        expect(findCheckbox().props('disabled')).toBe(true);
       });
 
       it('renders locked_icon', () => {
@@ -96,6 +94,20 @@ describe('ApprovalSettingsCheckbox', () => {
         expect(findLockedIcon().props('label')).toBe(label);
         expect(findLockedIcon().props('lockedText')).toBe(lockedText);
       });
+    });
+  });
+
+  describe('#slot', () => {
+    it('should render a default slot', () => {
+      const slotContent = 'test slot content';
+      createWrapper({
+        mountFn: mountExtended,
+        slots: {
+          help: slotContent,
+        },
+      });
+
+      expect(wrapper.text()).toContain(slotContent);
     });
   });
 });
