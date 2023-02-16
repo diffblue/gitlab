@@ -205,7 +205,7 @@ class Projects::IssuesController < Projects::ApplicationController
   end
 
   def reorder
-    service = ::Issues::ReorderService.new(project: project, current_user: current_user, params: reorder_params)
+    service = ::Issues::ReorderService.new(container: project, current_user: current_user, params: reorder_params)
 
     if service.execute(issue)
       head :ok
@@ -216,7 +216,7 @@ class Projects::IssuesController < Projects::ApplicationController
 
   def related_branches
     @related_branches = ::Issues::RelatedBranchesService
-      .new(project: project, current_user: current_user)
+      .new(container: project, current_user: current_user)
       .execute(issue)
       .map { |branch| branch.merge(link: branch_link(branch)) }
 
