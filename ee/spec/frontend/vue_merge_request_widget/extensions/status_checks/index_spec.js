@@ -22,6 +22,11 @@ import {
 import waitForPromises from 'helpers/wait_for_promises';
 import * as StatusCheckRetryApi from 'ee/api/status_check_api';
 
+const resizeWindow = (x) => {
+  window.innerWidth = x;
+  window.dispatchEvent(new Event('resize'));
+};
+
 describe('Status checks extension', () => {
   let wrapper;
   let mock;
@@ -80,6 +85,12 @@ describe('Status checks extension', () => {
 
       it('should render the button to retry fetching all status checks', () => {
         expect(wrapper.text()).toContain('Retry');
+      });
+
+      it('should render the button to retry fetching all status checks in mobile viewport', () => {
+        resizeWindow(500);
+        expect(wrapper.text()).toContain('Retry');
+        resizeWindow(1024);
       });
     });
 
@@ -172,6 +183,18 @@ describe('Status checks extension', () => {
 
         expect(actionButton.exists()).toBe(true);
         expect(actionButton.text()).toBe('Retry');
+      });
+
+      it(`should show a retry button at mobile viewport`, () => {
+        resizeWindow(500);
+
+        const listItem = wrapper.findAll('[data-testid="extension-list-item"]').at(0);
+        const actionButton = listItem.find('[data-testid="extension-actions-button"]');
+
+        expect(actionButton.exists()).toBe(true);
+        expect(actionButton.text()).toBe('Retry');
+
+        resizeWindow(1024);
       });
 
       it('should show a loading state when clicked', async () => {
