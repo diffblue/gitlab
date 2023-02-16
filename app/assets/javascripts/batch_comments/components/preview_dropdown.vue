@@ -73,7 +73,7 @@ export default {
     </template>
 
     <template #list-item="{ item }">
-      <preview-item :draft="item" :is-last="item.last" @click="onClickDraft(item)" />
+      <preview-item :draft="item" :is-last="item.last" />
     </template>
   </gl-disclosure-dropdown>
 </template>
