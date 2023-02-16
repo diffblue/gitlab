@@ -11,7 +11,7 @@ module EE
 
         override :admin_not_required_endpoints
         def admin_not_required_endpoints
-          super.concat(%i[update override])
+          super.concat(%i[update override export_csv])
         end
       end
 

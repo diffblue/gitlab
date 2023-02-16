@@ -269,4 +269,32 @@ RSpec.describe Groups::GroupMembersController, feature_category: :subgroups do
       end
     end
   end
+
+  describe "GET /groups/*group_id/-/group_members/export_csv" do
+    before do
+      stub_licensed_features(export_user_permissions: true)
+    end
+
+    subject do
+      get export_csv_group_group_members_path(group)
+    end
+
+    it 'redirects back to members list' do
+      subject
+      expect(response).to redirect_to(group_group_members_path(group))
+    end
+
+    context 'when LDAP sync is enabled' do
+      before do
+        allow_next_found_instance_of(Group) do |instance|
+          allow(instance).to receive(:ldap_synced?).and_return(true)
+        end
+      end
+
+      it 'redirects back to members list' do
+        subject
+        expect(response).to redirect_to(group_group_members_path(group))
+      end
+    end
+  end
 end
