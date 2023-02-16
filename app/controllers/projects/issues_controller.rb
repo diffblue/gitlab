@@ -371,7 +371,7 @@ class Projects::IssuesController < Projects::ApplicationController
 
   def update_service
     spam_params = ::Spam::SpamParams.new_from_request(request: request)
-    ::Issues::UpdateService.new(project: project, current_user: current_user, params: issue_params, spam_params: spam_params)
+    ::Issues::UpdateService.new(container: project, current_user: current_user, params: issue_params, spam_params: spam_params)
   end
 
   def finder_type

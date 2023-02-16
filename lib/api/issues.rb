@@ -319,7 +319,7 @@ module API
         update_params = convert_parameters_from_legacy_format(update_params)
 
         spam_params = ::Spam::SpamParams.new_from_request(request: request)
-        issue = ::Issues::UpdateService.new(project: user_project,
+        issue = ::Issues::UpdateService.new(container: user_project,
                                             current_user: current_user,
                                             params: update_params,
                                             spam_params: spam_params).execute(issue)

@@ -283,7 +283,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
 
           Sidekiq::Worker.skipping_transaction_check do
             Issues::UpdateService.new(
-              project: example_class.project,
+              container: example_class.project,
               current_user: user,
               params: { label_ids: [example_class.label.id] }
             ).execute(issue)
@@ -294,7 +294,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
 
         def create_data_for_end_event(resource, example_class)
           Issues::UpdateService.new(
-            project: example_class.project,
+            container: example_class.project,
             current_user: user,
             params: { label_ids: [] }
           ).execute(resource)
@@ -314,7 +314,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
 
           Sidekiq::Worker.skipping_transaction_check do
             Issues::UpdateService.new(
-              project: example_class.project,
+              container: example_class.project,
               current_user: user,
               params: { label_ids: [example_class.label.id] }
             ).execute(issue)
@@ -326,7 +326,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
         def create_data_for_end_event(issue, example_class)
           Sidekiq::Worker.skipping_transaction_check do
             Issues::UpdateService.new(
-              project: example_class.project,
+              container: example_class.project,
               current_user: user,
               params: { label_ids: [example_class.label.id, example_class.other_label.id] }
             ).execute(issue)
@@ -365,7 +365,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
         def create_data_for_end_event(issue, example_class)
           Sidekiq::Worker.skipping_transaction_check do
             Issues::UpdateService.new(
-              project: example_class.project,
+              container: example_class.project,
               current_user: user,
               params: { label_ids: [example_class.label.id] }
             ).execute(issue)

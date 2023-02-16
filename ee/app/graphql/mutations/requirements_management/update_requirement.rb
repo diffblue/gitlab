@@ -51,7 +51,7 @@ module Mutations
         args[:state] = 'closed' if args[:state].to_s == 'archived'
 
         issue = ::Issues::UpdateService.new(
-          project: requirement.project,
+          container: requirement.project,
           current_user: context[:current_user],
           params: args,
           spam_params: spam_params

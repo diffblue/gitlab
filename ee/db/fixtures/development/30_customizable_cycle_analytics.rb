@@ -125,7 +125,7 @@ class Gitlab::Seeder::CustomizableCycleAnalytics
     issues.pop(5).each do |issue|
       travel_to(issue.created_at + random_duration_in_hours.hours)
       Issues::UpdateService.new(
-        project: project,
+        container: project,
         current_user: user,
         params: { label_ids: [in_dev_label.id] },
         spam_params: nil
@@ -133,7 +133,7 @@ class Gitlab::Seeder::CustomizableCycleAnalytics
 
       travel_to(random_duration_in_hours.hours.from_now)
       Issues::UpdateService.new(
-        project: project,
+        container: project,
         current_user: user,
         params: { label_ids: [in_review_label.id] },
         spam_params: nil
