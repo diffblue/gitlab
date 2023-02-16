@@ -363,15 +363,18 @@ RSpec.describe MergeRequest do
   end
 
   describe '#enabled_reports' do
-    where(:report_type, :with_reports, :feature) do
-      :sast                | :with_sast_reports                | :sast
-      :container_scanning  | :with_container_scanning_reports  | :container_scanning
-      :dast                | :with_dast_reports                | :dast
-      :dependency_scanning | :with_dependency_scanning_reports | :dependency_scanning
-      :license_scanning    | :with_license_scanning_reports    | :license_scanning
-      :coverage_fuzzing    | :with_coverage_fuzzing_reports    | :coverage_fuzzing
-      :secret_detection    | :with_secret_detection_reports    | :secret_detection
-      :api_fuzzing         | :with_api_fuzzing_reports         | :api_fuzzing
+    where(:report_type, :with_reports, :enable_license_scanning_sbom_scanner?, :feature) do
+      :sast                | [:with_sast_reports]                                       | false | :sast
+      :container_scanning  | [:with_container_scanning_reports]                         | false | :container_scanning
+      :dast                | [:with_dast_reports]                                       | false | :dast
+      :dependency_scanning | [:with_dependency_scanning_reports]                        | false | :dependency_scanning
+      :license_scanning    | [:with_license_scanning_reports]                           | false | :license_scanning
+      :license_scanning    | [:with_license_scanning_reports]                           | true  | :license_scanning
+      :license_scanning    | [:with_license_scanning_reports, :with_cyclonedx_reports]  | true  | :license_scanning
+      :license_scanning    | [:with_cyclonedx_reports]                                  | true  | :license_scanning
+      :coverage_fuzzing    | [:with_coverage_fuzzing_reports]                           | false | :coverage_fuzzing
+      :secret_detection    | [:with_secret_detection_reports]                           | false | :secret_detection
+      :api_fuzzing         | [:with_api_fuzzing_reports]                                | false | :api_fuzzing
     end
 
     with_them do
@@ -379,10 +382,11 @@ RSpec.describe MergeRequest do
 
       before do
         stub_licensed_features({ feature => true })
+        stub_feature_flags(license_scanning_sbom_scanner: enable_license_scanning_sbom_scanner?)
       end
 
       context "when head pipeline has reports" do
-        let(:merge_request) { create(:ee_merge_request, with_reports, source_project: project) }
+        let(:merge_request) { create(:ee_merge_request, *with_reports, source_project: project) }
 
         it { is_expected.to be_truthy }
       end
