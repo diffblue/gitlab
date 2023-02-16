@@ -66,6 +66,50 @@ RSpec.describe MergeRequestDiff do
     end
   end
 
+  describe '.search' do
+    let_it_be(:merge_request_diff1) { create(:merge_request_diff) }
+    let_it_be(:merge_request_diff2) { create(:merge_request_diff) }
+    let_it_be(:merge_request_diff3) { create(:merge_request_diff) }
+
+    context 'when search query is empty' do
+      it 'returns all records' do
+        result = described_class.search('')
+
+        expect(result).to contain_exactly(merge_request_diff1, merge_request_diff2, merge_request_diff3)
+      end
+    end
+
+    context 'when search query is not empty' do
+      context 'without matches' do
+        it 'filters all records' do
+          result = described_class.search('something_that_does_not_exist')
+
+          expect(result).to be_empty
+        end
+      end
+
+      context 'with matches by attributes' do
+        context 'for external_diff attribute' do
+          before do
+            merge_request_diff1.update_column(:external_diff, 'diff-105')
+            merge_request_diff2.update_column(:external_diff, 'diff-106')
+            merge_request_diff3.update_column(:external_diff, 'diff-107')
+          end
+
+          it 'returns merge_request_diffs limited to 1000 records' do
+            expect_any_instance_of(described_class) do |instance|
+              expect(instance).to receive(:limit).and_return(1000)
+            end
+
+            result = described_class.search('diff-106')
+
+            expect(result).to contain_exactly(merge_request_diff2)
+          end
+        end
+      end
+    end
+  end
+
   describe '.with_files_stored_locally' do
     it 'includes states with local storage' do
       create(:merge_request, source_project: project)
