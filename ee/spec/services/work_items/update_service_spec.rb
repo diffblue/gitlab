@@ -6,7 +6,7 @@ RSpec.describe WorkItems::UpdateService do
   let_it_be(:developer) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group).tap { |proj| proj.add_developer(developer) } }
-  let_it_be(:work_item) { create(:work_item, project: project) }
+  let_it_be_with_refind(:work_item) { create(:work_item, project: project) }
 
   let(:spam_params) { double }
   let(:current_user) { developer }
