@@ -1,8 +1,0 @@
----
-name: delayed_epics_update_cached_metadata_worker
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/104948
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/384264
-milestone: '15.7'
-type: development
-group: group::product planning
-default_enabled: false
