@@ -1,11 +1,10 @@
 <script>
 import { GlLoadingIcon, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { mapState, mapActions, mapGetters } from 'vuex';
-import { TYPE_ISSUE } from '~/issues/constants';
+import { TYPE_EPIC, TYPE_ISSUE } from '~/issues/constants';
 import { __, sprintf } from '~/locale';
 import AddItemForm from '~/related_issues/components/add_issuable_form.vue';
 import SlotSwitch from '~/vue_shared/components/slot_switch.vue';
-import { issuableTypesMap } from '~/related_issues/constants';
 import { ITEM_TABS, OVERFLOW_AFTER, i18nConfidentialParent } from '../constants';
 import CreateEpicForm from './create_epic_form.vue';
 import CreateIssueForm from './create_issue_form.vue';
@@ -107,7 +106,7 @@ export default {
       ];
     },
     enableEpicsAutoComplete() {
-      return this.issuableType === issuableTypesMap.EPIC && this.autoCompleteEpics;
+      return this.issuableType === TYPE_EPIC && this.autoCompleteEpics;
     },
     enableIssuesAutoComplete() {
       return this.issuableType === TYPE_ISSUE && this.autoCompleteIssues;

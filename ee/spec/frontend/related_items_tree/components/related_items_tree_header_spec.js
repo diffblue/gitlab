@@ -9,8 +9,7 @@ import RelatedItemsTreeHeader from 'ee/related_items_tree/components/related_ite
 import createDefaultStore from 'ee/related_items_tree/store';
 import * as epicUtils from 'ee/related_items_tree/utils/epic_utils';
 
-import { TYPE_ISSUE } from '~/issues/constants';
-import { issuableTypesMap } from '~/related_issues/constants';
+import { TYPE_EPIC, TYPE_ISSUE } from '~/issues/constants';
 import { mockInitialConfig, mockParentItem, mockQueryResponse } from '../mock_data';
 
 Vue.use(Vuex);
@@ -111,7 +110,7 @@ describe('RelatedItemsTree', () => {
           const payload = toggleAddItemForm.mock.calls[0][1];
 
           expect(payload).toEqual({
-            issuableType: issuableTypesMap.EPIC,
+            issuableType: TYPE_EPIC,
             toggleState: true,
           });
         });

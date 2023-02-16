@@ -1,7 +1,6 @@
 import * as getters from 'ee/related_items_tree/store/getters';
 import createDefaultState from 'ee/related_items_tree/store/state';
-import { TYPE_ISSUE } from '~/issues/constants';
-import { issuableTypesMap } from '~/related_issues/constants';
+import { TYPE_EPIC, TYPE_ISSUE } from '~/issues/constants';
 
 import { mockEpic1, mockEpic2 } from '../mock_data';
 
@@ -64,7 +63,7 @@ describe('RelatedItemsTree', () => {
             autoCompleteSources: 'foo',
             isEpic: true,
           };
-          state.issuableType = issuableTypesMap.Epic;
+          state.issuableType = TYPE_EPIC;
           state.autoCompleteEpics = true;
 
           expect(getters.itemAutoCompleteSources(state, mockGetter)).toBe('foo');
@@ -127,10 +126,10 @@ describe('RelatedItemsTree', () => {
 
       describe('isEpic', () => {
         it.each`
-          issuableType             | expectedValue
-          ${null}                  | ${false}
-          ${TYPE_ISSUE}            | ${false}
-          ${issuableTypesMap.EPIC} | ${true}
+          issuableType  | expectedValue
+          ${null}       | ${false}
+          ${TYPE_ISSUE} | ${false}
+          ${TYPE_EPIC}  | ${true}
         `(
           'for issuableType = issuableType is $expectedValue',
           ({ issuableType, expectedValue }) => {

@@ -1,6 +1,5 @@
 import Vue from 'vue';
-import { TYPE_ISSUE } from '~/issues/constants';
-import { issuableTypesMap } from '~/related_issues/constants';
+import { TYPE_EPIC, TYPE_ISSUE } from '~/issues/constants';
 import * as types from './mutation_types';
 
 export default {
@@ -167,7 +166,7 @@ export default {
     state.showCreateEpicForm = toggleState;
     state.showAddItemForm = false;
     state.showCreateIssueForm = false;
-    state.issuableType = issuableTypesMap.EPIC;
+    state.issuableType = TYPE_EPIC;
   },
 
   [types.TOGGLE_CREATE_ISSUE_FORM](state, { toggleState }) {

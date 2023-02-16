@@ -17,13 +17,10 @@ import Tracking from '~/tracking';
 import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
 import { createAlert } from '~/flash';
+import { TYPE_EPIC } from '~/issues/constants';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
-import {
-  issuableTypesMap,
-  itemAddFailureTypesMap,
-  PathIdSeparator,
-} from '~/related_issues/constants';
+import { itemAddFailureTypesMap, PathIdSeparator } from '~/related_issues/constants';
 
 import {
   mockInitialConfig,
@@ -930,7 +927,7 @@ describe('RelatedItemTree', () => {
 
       describe('receiveAddItemSuccess', () => {
         it('should set `state.itemAddInProgress` to false and dispatches actions `setPendingReferences`, `setItemInputValue` and `toggleAddItemForm`', () => {
-          state.issuableType = issuableTypesMap.EPIC;
+          state.issuableType = TYPE_EPIC;
           state.isEpic = true;
 
           const mockEpicsWithoutPerm = mockEpics.map((item) => ({
@@ -1025,7 +1022,7 @@ describe('RelatedItemTree', () => {
         });
 
         it('should dispatch `requestAddItem` and `receiveAddItemSuccess` actions on request success', () => {
-          state.issuableType = issuableTypesMap.EPIC;
+          state.issuableType = TYPE_EPIC;
           state.epicsEndpoint = '/foo/bar';
           state.pendingReferences = ['foo'];
           state.isEpic = true;
@@ -1079,7 +1076,7 @@ describe('RelatedItemTree', () => {
         });
 
         it('should dispatch `requestAddItem` and `receiveAddItemFailure` actions on request failure', () => {
-          state.issuableType = issuableTypesMap.EPIC;
+          state.issuableType = TYPE_EPIC;
           state.epicsEndpoint = '/foo/bar';
           state.pendingReferences = ['foo'];
 
@@ -1122,7 +1119,7 @@ describe('RelatedItemTree', () => {
           state.parentItem = {
             fullPath: createdEpic.group.fullPath,
           };
-          state.issuableType = issuableTypesMap.EPIC;
+          state.issuableType = TYPE_EPIC;
           state.isEpic = true;
 
           testAction(
@@ -1188,7 +1185,7 @@ describe('RelatedItemTree', () => {
         beforeEach(() => {
           mock = new MockAdapter(axios);
           state.parentItem = mockParentItem;
-          state.issuableType = issuableTypesMap.EPIC;
+          state.issuableType = TYPE_EPIC;
         });
 
         afterEach(() => {
@@ -1779,7 +1776,7 @@ describe('RelatedItemTree', () => {
         beforeEach(() => {
           mock = new MockAdapter(axios);
           state.parentItem = mockParentItem;
-          state.issuableType = issuableTypesMap.EPIC;
+          state.issuableType = TYPE_EPIC;
         });
 
         afterEach(() => {

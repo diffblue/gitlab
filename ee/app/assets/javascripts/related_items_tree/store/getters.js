@@ -1,4 +1,5 @@
-import { issuableTypesMap, PathIdSeparator } from '~/related_issues/constants';
+import { TYPE_EPIC } from '~/issues/constants';
+import { PathIdSeparator } from '~/related_issues/constants';
 import { processIssueTypeIssueSources } from '../utils/epic_utils';
 
 export const autoCompleteSources = () => gl.GfmAutoComplete && gl.GfmAutoComplete.dataSources;
@@ -26,4 +27,4 @@ export const itemAutoCompleteSources = (state, getters) => {
 export const itemPathIdSeparator = (state, getters) =>
   getters.isEpic ? PathIdSeparator.Epic : PathIdSeparator.Issue;
 
-export const isEpic = (state) => state.issuableType === issuableTypesMap.EPIC;
+export const isEpic = (state) => state.issuableType === TYPE_EPIC;
