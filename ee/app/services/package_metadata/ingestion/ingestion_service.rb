@@ -3,9 +3,30 @@
 module PackageMetadata
   module Ingestion
     class IngestionService
+      TASKS = [
+        Tasks::IngestPackages,
+        Tasks::IngestPackageVersions,
+        Tasks::IngestLicenses,
+        Tasks::IngestPackageVersionLicenses
+      ].freeze
+
       def self.execute(import_data)
-        raise NoMethodError, 'ingestion service is implemented in !108600'
+        new(import_data).execute
       end
+
+      def initialize(import_data)
+        @data_map = DataMap.new(import_data)
+      end
+
+      def execute
+        ApplicationRecord.transaction do
+          TASKS.each { |t| t.execute(data_map) }
+        end
+      end
+
+      private
+
+      attr_reader :import_data, :data_map
     end
   end
 end

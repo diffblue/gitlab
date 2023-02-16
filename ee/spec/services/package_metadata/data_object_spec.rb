@@ -4,7 +4,43 @@ require 'fast_spec_helper'
 require './ee/app/services/package_metadata/data_object'
 
 RSpec.describe PackageMetadata::DataObject, feature_category: :license_compliance do
-  describe 'equality' do
+  describe '.from_csv' do
+    let(:purl_type) { 'npm' }
+
+    subject(:object) { described_class.from_csv(text, purl_type) }
+
+    context 'when text is well-formed' do
+      let(:text) { 'foo,v1.0.0,MIT' }
+
+      it { is_expected.to eq(described_class.new('foo', 'v1.0.0', 'MIT', purl_type)) }
+    end
+
+    context 'when text is not well-formed' do
+      context 'if it does not have 3 fields' do
+        let(:text) { 'foo,v1.0.0' }
+
+        it { is_expected.to eq(nil) }
+      end
+
+      context 'if an entry is blank' do
+        ['foo,v1,""', '"",v1,MIT', 'foo,"",MIT'].each do |t|
+          let(:text) { t }
+
+          it { is_expected.to eq(nil) }
+        end
+      end
+
+      context 'if an entry is missing' do
+        ['foo,v1,', ',v1,MIT', 'foo,,MIT'].each do |t|
+          let(:text) { t }
+
+          it { is_expected.to eq(nil) }
+        end
+      end
+    end
+  end
+
+  describe '==' do
     let(:obj) { described_class.new('foo', 'v1', 'mit', 'rubygems') }
     let(:other) { described_class.new('foo', 'v1', 'mit', 'rubygems') }
 

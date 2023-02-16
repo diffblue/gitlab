@@ -2,8 +2,8 @@
 
 module PackageMetadata
   class License < ApplicationRecord
-    validates :spdx_identifier, presence: true, length: { maximum: 50 }
+    has_many :package_version_licenses, inverse_of: :package_version, foreign_key: :pm_package_version_id
 
-    has_many :package_version_licenses, inverse_of: :license, foreign_key: :pm_license_id
+    validates :spdx_identifier, presence: true, length: { maximum: 50 }
   end
 end

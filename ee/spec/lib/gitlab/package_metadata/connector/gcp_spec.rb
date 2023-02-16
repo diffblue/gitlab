@@ -32,7 +32,7 @@ RSpec.describe Gitlab::PackageMetadata::Connector::Gcp, feature_category: :licen
   describe '.data_after(checkpoint)' do
     shared_examples_for 'it provides correct data' do
       let(:file_prefix) { "#{version_format}/#{bucket_name}" }
-      let(:checkpoint) { Hashie::Mash.new(sequence_id: seq, chunk_id: chunk) }
+      let(:checkpoint) { PackageMetadata::Checkpoint.new(sequence: seq, chunk: chunk) }
       let(:expected_attributes) do
         expected_files.map do |file|
           seq, chunk = file.name.delete_prefix(file_prefix).split('/')
@@ -46,7 +46,7 @@ RSpec.describe Gitlab::PackageMetadata::Connector::Gcp, feature_category: :licen
         allow(checkpoint).to receive(:blank?).and_return(seq.nil? || chunk.nil?)
       end
 
-      it { is_expected.to match(expected_attributes) }
+      it { expect(subject).to match(expected_attributes) }
     end
 
     context 'when no seq/chunk passed' do
@@ -103,7 +103,7 @@ RSpec.describe Gitlab::PackageMetadata::Connector::Gcp, feature_category: :licen
   end
 
   describe 'extracting CSV' do
-    let(:file) { connector.data_after(Hashie::Mash.new(sequence_id: nil, chunk_id: nil)).first }
+    let(:file) { connector.data_after(Hashie::Mash.new(sequence: nil, chunk: nil)).first }
 
     before do
       allow(all_files.first).to receive(:download)
