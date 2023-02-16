@@ -3,13 +3,15 @@
 require 'spec_helper'
 
 RSpec.describe 'Uncompleted learn gitlab link', :feature, :js, feature_category: :onboarding do
+  include Spec::Support::Helpers::Features::InviteMembersModalHelper
+
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, name: Onboarding::LearnGitlab::PROJECT_NAME, namespace: user.namespace) }
-  let_it_be(:namespace) { project.namespace }
+  let_it_be(:namespace) { create(:group).tap { |g| g.add_owner(user) } }
+  let_it_be(:project) { create(:project, namespace: namespace) }
 
   before do
     allow_next_instance_of(Onboarding::LearnGitlab) do |learn_gitlab|
-      allow(learn_gitlab).to receive(:available?).and_return(true)
+      allow(learn_gitlab).to receive(:onboarding_and_available?).and_return(true)
     end
   end
 
@@ -42,13 +44,14 @@ RSpec.describe 'Uncompleted learn gitlab link', :feature, :js, feature_category:
   end
 
   context 'without completion progress' do
-    before do
+    before_all do
       create(:onboarding_progress, namespace: namespace)
     end
 
-    it 'renders correct links' do
+    it 'renders correct links and navigates to project issues' do
       sign_in(user)
       visit namespace_project_learn_gitlab_path(namespace, project)
+
       issue_link = find_link('Create an issue')
 
       expect_correct_candidate_link(issue_link, project_issues_path(project))
@@ -59,11 +62,30 @@ RSpec.describe 'Uncompleted learn gitlab link', :feature, :js, feature_category:
       expect_correct_candidate_link(find_link('Add code owners'), project_issues_path(project, 10))
       expect_correct_candidate_link(find_link('Enable require merge approvals'), project_issues_path(project, 11))
       expect_correct_candidate_link(find_link('Submit a merge request (MR)'), project_merge_requests_path(project))
-      expect_correct_candidate_link(find_link('Run a Security scan using CI/CD'),
-                                    project_security_configuration_path(project))
+      expect_correct_candidate_link(
+        find_link('Run a Security scan using CI/CD'),
+        project_security_configuration_path(project)
+      )
 
       issue_link.click
       expect(page).to have_current_path(project_issues_path(project))
+    end
+
+    context 'with invite_for_help_continuous_onboarding candidate experience' do
+      before do
+        stub_experiments(invite_for_help_continuous_onboarding: :candidate)
+
+        sign_in(user)
+        visit namespace_project_learn_gitlab_path(namespace, project)
+      end
+
+      it 'launches invite modal when invite is clicked' do
+        click_link('Invite your colleagues')
+
+        page.within invite_modal_selector do
+          expect(page).to have_content("You're inviting members to the #{project.name} project")
+        end
+      end
     end
   end
 
