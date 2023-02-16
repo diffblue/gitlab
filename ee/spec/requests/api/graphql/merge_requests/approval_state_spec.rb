@@ -56,6 +56,11 @@ RSpec.describe 'Query.project.mergeRequest.approvalState', feature_category: :so
           invalidApproversRules {
             id
           }
+          suggestedApprovers {
+            nodes {
+              id
+            }
+          }
         }
       QUERY
     end
@@ -89,7 +94,10 @@ RSpec.describe 'Query.project.mergeRequest.approvalState', feature_category: :so
         expect(approval_state).to eq(
           'approvalRulesOverwritten' => false,
           'invalidApproversRules' => [],
-          'rules' => []
+          'rules' => [],
+          'suggestedApprovers' => {
+            'nodes' => []
+          }
         )
       end
     end
@@ -124,7 +132,10 @@ RSpec.describe 'Query.project.mergeRequest.approvalState', feature_category: :so
               'type' => 'CODE_OWNER',
               'users' => { 'nodes' => contain_exactly(a_graphql_entity_for(user)) }
             )
-          )
+          ),
+          'suggestedApprovers' => {
+            'nodes' => contain_exactly(a_graphql_entity_for(user))
+          }
         )
       end
 
