@@ -224,6 +224,34 @@ RSpec.describe Projects::PipelineHelper, feature_category: :pipeline_authoring d
     end
   end
 
+  describe 'license_scan_count' do
+    before do
+      project.add_developer(user)
+    end
+
+    subject(:license_scan_count) { helper.license_scan_count(project, pipeline) }
+
+    describe 'when `license_scanning` feature is not available' do
+      before do
+        stub_licensed_features(license_scanning: false)
+      end
+
+      it 'returns nil' do
+        is_expected.to be(nil)
+      end
+    end
+
+    describe 'when `license_scanning` feature is available' do
+      before do
+        stub_licensed_features(license_scanning: true)
+      end
+
+      it 'returns 0' do
+        is_expected.to be(0)
+      end
+    end
+  end
+
   describe 'vulnerability_report_data' do
     before do
       project.add_developer(user)
