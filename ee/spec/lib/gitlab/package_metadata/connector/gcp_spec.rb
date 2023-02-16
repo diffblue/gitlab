@@ -108,15 +108,33 @@ RSpec.describe Gitlab::PackageMetadata::Connector::Gcp, feature_category: :licen
     before do
       allow(all_files.first).to receive(:download)
         .with(skip_decompress: true)
-        .and_return(StringIO.new("foo,v1,MIT\nbar,v100,Apache\n\nSkip me\nbaz,vx,some-other-license"))
+        .and_return(StringIO.new(string))
     end
 
-    it 'extracts CSV lines correctly' do
-      expect { |b| file.each(&b) }.to yield_successive_args(
-        have_attributes(name: 'foo', version: 'v1', license: 'MIT', purl_type: purl_type),
-        have_attributes(name: 'bar', version: 'v100', license: 'Apache', purl_type: purl_type),
-        have_attributes(name: 'baz', version: 'vx', license: 'some-other-license', purl_type: purl_type)
-      )
+    context 'with multiple lines' do
+      let(:string) { "foo,v1,MIT\nbar,v100,Apache\n\nSkip me\nbaz,vx,some-other-license" }
+
+      it 'extracts and converts every line to a DataObject' do
+        expect { |b| file.each(&b) }.to yield_successive_args(
+          have_attributes(name: 'foo', version: 'v1', license: 'MIT', purl_type: purl_type),
+          have_attributes(name: 'bar', version: 'v100', license: 'Apache', purl_type: purl_type),
+          have_attributes(name: 'baz', version: 'vx', license: 'some-other-license', purl_type: purl_type)
+        )
+      end
+    end
+
+    context 'with escaped unicode characters in the returned data' do
+      let(:string) do
+        "f\xC3\xB3\xC3\xB3,v1,MIT\nb\xC3\xA1r,v100,Apache\nb\xC3\xAA\xC5\xBE,v\xC3\xA9rsion-1,\xC3\x80pache"
+      end
+
+      it 'converts the escaped characters to utf-8' do
+        expect { |b| file.each(&b) }.to yield_successive_args(
+          have_attributes(name: 'fóó', version: 'v1', license: 'MIT', purl_type: purl_type),
+          have_attributes(name: 'bár', version: 'v100', license: 'Apache', purl_type: purl_type),
+          have_attributes(name: 'bêž', version: 'vérsion-1', license: 'Àpache', purl_type: purl_type)
+        )
+      end
     end
   end
 
