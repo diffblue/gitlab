@@ -518,7 +518,7 @@ namespace :gitlab do
               end
 
               if existing_metadata['classes'] && existing_metadata['classes'].sort != table_metadata['classes'].sort
-                existing_metadata['classes'] = table_metadata['classes']
+                existing_metadata['classes'] = (existing_metadata['classes'] + table_metadata['classes']).uniq.sort
                 outdated = true
               end
 
