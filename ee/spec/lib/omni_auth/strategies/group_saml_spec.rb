@@ -126,6 +126,15 @@ RSpec.describe OmniAuth::Strategies::GroupSaml, type: :strategy do
   end
 
   describe 'POST /users/auth/group_saml' do
+    before do
+      mock_session = {}
+
+      allow(mock_session).to receive(:enabled?).and_return(true)
+      allow(mock_session).to receive(:loaded?).and_return(true)
+
+      env('rack.session', mock_session)
+    end
+
     it 'redirects to the provider login page', :aggregate_failures do
       post '/users/auth/group_saml', group_path: 'my-group'
 
