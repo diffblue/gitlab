@@ -14,8 +14,12 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService,
     create(:vulnerabilities_identifier, external_type: 'find_sec_bugs_type', external_id: 'PREDICTABLE_RANDOM')
   end
 
-  let_it_be(:dropped_ident) do
-    create(:vulnerabilities_identifier, external_type: 'find_sec_bugs_type', external_id: 'OLD_PREDICTABLE_RANDOM')
+  let_it_be(:dropped_ident1) do
+    create(:vulnerabilities_identifier, external_type: 'find_sec_bugs_type', external_id: 'OLD_PREDICTABLE_RANDOM_1')
+  end
+
+  let_it_be(:dropped_ident2) do
+    create(:vulnerabilities_identifier, external_type: 'find_sec_bugs_type', external_id: 'OLD_PREDICTABLE_RANDOM_2')
   end
 
   before_all do
@@ -55,7 +59,7 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService,
     # To be resolved (same scan_type)
     dropped_finding1 = create(
       :vulnerabilities_finding,
-      project_id: pipeline.project_id, primary_identifier_id: dropped_ident.id, identifiers: [dropped_ident])
+      project_id: pipeline.project_id, primary_identifier_id: dropped_ident1.id, identifiers: [dropped_ident1])
     create(
       :vulnerability,
       :detected, report_type: :sast, resolved_on_default_branch: true, project_id: pipeline.project_id
@@ -66,12 +70,23 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService,
     # To be resolved (same scan_type)
     dropped_finding2 = create(
       :vulnerabilities_finding,
-      project_id: pipeline.project_id, primary_identifier_id: dropped_ident.id, identifiers: [dropped_ident])
+      project_id: pipeline.project_id, primary_identifier_id: dropped_ident1.id, identifiers: [dropped_ident1])
     create(
       :vulnerability,
       :detected, report_type: :sast, resolved_on_default_branch: true, project_id: pipeline.project_id
     ).tap do |vuln|
       dropped_finding2.update!(vulnerability_id: vuln.id)
+    end
+
+    # To be resolved (same scan_type, different identifier)
+    dropped_finding3 = create(
+      :vulnerabilities_finding,
+      project_id: pipeline.project_id, primary_identifier_id: dropped_ident2.id, identifiers: [dropped_ident2])
+    create(
+      :vulnerability,
+      :detected, report_type: :sast, resolved_on_default_branch: true, project_id: pipeline.project_id
+    ).tap do |vuln|
+      dropped_finding3.update!(vulnerability_id: vuln.id)
     end
   end
 
@@ -84,11 +99,14 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService,
     end
 
     it 'schedules MarkDroppedAsResolvedWorker' do
-      expect { service }.to change { ::Vulnerabilities::MarkDroppedAsResolvedWorker.jobs.count }.by(1)
+      expect { service }.to change { ::Vulnerabilities::MarkDroppedAsResolvedWorker.jobs.count }.by(2)
 
       expect(
+        ::Vulnerabilities::MarkDroppedAsResolvedWorker.jobs.first['args']
+      ).to eq([pipeline.project_id, [dropped_ident1.id]])
+      expect(
         ::Vulnerabilities::MarkDroppedAsResolvedWorker.jobs.last['args']
-      ).to eq([pipeline.project_id, [dropped_ident.id]])
+      ).to eq([pipeline.project_id, [dropped_ident2.id]])
     end
 
     context 'when primary_identifiers is empty' do
@@ -100,7 +118,7 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService,
     end
 
     context 'when primary_identifiers do not reference existing types' do
-      subject(:service) { described_class.new(pipeline.project_id, 'sast', [dropped_ident]).execute }
+      subject(:service) { described_class.new(pipeline.project_id, 'sast', [dropped_ident1, dropped_ident2]).execute }
 
       it 'will not schedule a MarkDroppedAsResolvedWorker' do
         expect { service }.to change { ::Vulnerabilities::MarkDroppedAsResolvedWorker.jobs.count }.by(0)
