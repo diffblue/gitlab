@@ -15656,6 +15656,7 @@ Information relating to rules that must be satisfied to merge this merge request
 | <a id="mergerequestapprovalstateapprovalrulesoverwritten"></a>`approvalRulesOverwritten` | [`Boolean`](#boolean) | Indicates if the merge request approval rules are overwritten for the merge request. |
 | <a id="mergerequestapprovalstateinvalidapproversrules"></a>`invalidApproversRules` | [`[ApprovalRule!]`](#approvalrule) | List of approval rules that are associated with the merge request, but invalid. |
 | <a id="mergerequestapprovalstaterules"></a>`rules` | [`[ApprovalRule!]`](#approvalrule) | List of approval rules associated with the merge request. |
+| <a id="mergerequestapprovalstatesuggestedapprovers"></a>`suggestedApprovers` | [`UserCoreConnection`](#usercoreconnection) | List of suggested approvers. (see [Connections](#connections)) |
 
 ### `MergeRequestAssignee`
 
@@ -16423,6 +16424,7 @@ Check permissions for the current user on a merge request.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mergerequestpermissionsadminmergerequest"></a>`adminMergeRequest` | [`Boolean!`](#boolean) | Indicates the user can perform `admin_merge_request` on this resource. |
+| <a id="mergerequestpermissionscanapprove"></a>`canApprove` | [`Boolean!`](#boolean) | Indicates the user can perform `can_approve` on this resource. |
 | <a id="mergerequestpermissionscanmerge"></a>`canMerge` | [`Boolean!`](#boolean) | Indicates the user can perform `can_merge` on this resource. |
 | <a id="mergerequestpermissionscherrypickoncurrentmergerequest"></a>`cherryPickOnCurrentMergeRequest` | [`Boolean!`](#boolean) | Indicates the user can perform `cherry_pick_on_current_merge_request` on this resource. |
 | <a id="mergerequestpermissionscreatenote"></a>`createNote` | [`Boolean!`](#boolean) | Indicates the user can perform `create_note` on this resource. |
