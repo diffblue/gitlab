@@ -32,6 +32,7 @@ export default {
     'isFullCodequalityReportAvailable',
     'licensesApiPath',
     'licenseManagementApiUrl',
+    'licenseScanCount',
     'licenseManagementSettingsPath',
     'pipelineIid',
   ],
@@ -40,7 +41,7 @@ export default {
       activeTab: this.defaultTabValue,
       codeQualityCount: undefined,
       codeQualityCountFetched: false,
-      licenseCount: 0,
+      licenseCount: this.licenseScanCount,
     };
   },
   computed: {

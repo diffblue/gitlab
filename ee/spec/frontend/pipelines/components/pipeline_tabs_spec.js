@@ -35,6 +35,7 @@ describe('The Pipeline Tabs', () => {
     licenseManagementApiUrl: '/path/to/license_management_api_url',
     licensesApiPath: '/path/to/licenses_api',
     licenseManagementSettingsPath: '/path/to/license_management_settings',
+    licenseScanCount: 11,
     pipelineIid: '100',
     totalJobCount: 10,
     testsCount: 123,
@@ -191,10 +192,10 @@ describe('The Pipeline Tabs', () => {
       });
     });
 
-    it('updates the license count badge after a new count has been emitted', async () => {
+    it('sets the initial count and updates the license count badge after a new count has been emitted', async () => {
       const newLicenseCount = 100;
 
-      expect(getLicenseCount()).toBe('0');
+      expect(getLicenseCount()).toBe('11');
 
       findLicensesRouterView().vm.$emit('updateBadgeCount', newLicenseCount);
       await nextTick();
