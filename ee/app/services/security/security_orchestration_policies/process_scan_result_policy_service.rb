@@ -37,7 +37,7 @@ module Security
         end
       end
 
-      def create_software_license_policies(rule, rule_index, scan_result_policy_read)
+      def create_software_license_policies(rule, _rule_index, scan_result_policy_read)
         rule[:license_types].each do |license_type|
           create_params = {
             name: license_type,
@@ -126,9 +126,17 @@ module Security
 
       # rubocop: disable Cop/GroupPublicOrVisibleToUser
       def groups_ids(group_ids, group_paths)
-        Group.public_or_visible_to_user(author).get_ids_by_ids_or_paths(group_ids, group_paths)
+        Security::ApprovalGroupsFinder.new(group_ids: group_ids,
+          group_paths: group_paths,
+          user: author,
+          container: project.namespace,
+          search_globally: search_groups_globally?).execute
       end
       # rubocop: enable Cop/GroupPublicOrVisibleToUser
+
+      def search_groups_globally?
+        Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled?
+      end
     end
   end
 end

@@ -183,6 +183,9 @@ module EE
                 presence: true,
                 if: :product_analytics_enabled
 
+      validates :security_policy_global_group_approvers_enabled,
+                inclusion: { in: [true, false], message: 'must be a boolean value' }
+
       alias_attribute :delayed_project_deletion, :delayed_project_removal
 
       before_save :update_lock_delayed_project_removal, if: :delayed_group_deletion_changed?

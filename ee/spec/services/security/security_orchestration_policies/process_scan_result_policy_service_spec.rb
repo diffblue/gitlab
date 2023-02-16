@@ -106,6 +106,41 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       let(:policy) { build(:scan_result_policy, name: 'Test Policy', actions: [{ type: 'require_approval', approvals_required: 1, group_approvers: [group.path] }]) }
 
       it_behaves_like 'create approval rule with specific approver'
+
+      context 'when groups with same name exist in and outside of container' do
+        let(:other_container) { create(:group) }
+        let(:other_group) { create(:group, name: group.name, parent: other_container) }
+        let(:other_user) { create(:user) }
+        let(:policy) { build(:scan_result_policy, name: 'Test Policy', actions: [{ type: 'require_approval', approvals_required: 1, group_approvers: [group.name] }]) }
+
+        before do
+          other_group.add_developer(other_user)
+        end
+
+        context 'with security_policy_global_group_approvers_enabled setting disabled' do
+          before do
+            stub_ee_application_setting(security_policy_global_group_approvers_enabled: false)
+          end
+
+          it 'excludes groups outside the container' do
+            subject
+
+            expect(project.approval_rules.first.approvers).not_to include(other_user)
+          end
+        end
+
+        context 'with security_policy_global_group_approvers_enabled setting enabled' do
+          before do
+            stub_ee_application_setting(security_policy_global_group_approvers_enabled: true)
+          end
+
+          it 'includes groups outside the container' do
+            subject
+
+            expect(project.approval_rules.first.approvers).to include(other_user)
+          end
+        end
+      end
     end
 
     context 'with a specific number of rules' do
