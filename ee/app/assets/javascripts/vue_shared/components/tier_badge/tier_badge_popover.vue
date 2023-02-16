@@ -1,6 +1,7 @@
 <script>
 import { GlPopover, GlButton } from '@gitlab/ui';
 import { s__, sprintf } from '~/locale';
+import Tracking from '~/tracking';
 
 const GROUP_SOURCE_TYPE = 'Group';
 
@@ -10,6 +11,7 @@ export default {
     GlPopover,
     GlButton,
   },
+  mixins: [Tracking.mixin({ label: 'tier-badge' })],
   inject: ['primaryCtaLink', 'secondaryCtaLink', 'sourceType'],
   props: {
     popoverId: {
@@ -35,6 +37,14 @@ export default {
       }
 
       return sprintf(projectCopyStart, { tier: this.tier, copyEnd });
+    },
+  },
+  methods: {
+    trackPrimaryCta() {
+      this.track('click_start_trial_button');
+    },
+    trackSecondaryCta() {
+      this.track('click_compare_plans_button');
     },
   },
   i18n: {
@@ -67,6 +77,7 @@ export default {
       class="my-1 w-100"
       variant="info"
       data-testid="tier-badge-popover-primary-cta"
+      @click="trackPrimaryCta"
       >{{ $options.i18n.primaryCtaText }}</gl-button
     >
     <gl-button
@@ -75,6 +86,7 @@ export default {
       variant="info"
       category="secondary"
       data-testid="tier-badge-popover-secondary-cta"
+      @click="trackSecondaryCta"
       >{{ $options.i18n.secondaryCtaText }}</gl-button
     >
   </gl-popover>

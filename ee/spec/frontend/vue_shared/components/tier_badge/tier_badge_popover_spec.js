@@ -1,11 +1,12 @@
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import TierBadgePopover from 'ee/vue_shared/components/tier_badge/tier_badge_popover.vue';
+import { mockTracking } from 'helpers/tracking_helper';
 
 describe('TierBadgePopover', () => {
   let wrapper;
 
-  const primaryCTALink = '/trials/new';
-  const secondaryCTALink = '/groups/foobar-group/-/billings?source=overview-free-tier-highlight';
+  const primaryCTALink = '#trials/new';
+  const secondaryCTALink = '#/groups/foobar-group/-/billings?source=overview-free-tier-highlight';
   const popoverTitle = 'Enhance team productivity';
   const popoverContentForGroup =
     'This group and all its related projects use the Free GitLab tier. Want to enhance team productivity and access advanced features like Merge Approvals, Push rules, Epics, Code Review Analytics, and Container Scanning? Try all GitLab has to offer for free for 30 days. No credit card required.';
@@ -66,6 +67,24 @@ describe('TierBadgePopover', () => {
       it('renders the `Explore paid plans` cta button', () => {
         expect(findSecondaryCTA().text()).toEqual(secondaryCTAText);
         expect(findSecondaryCTA().attributes('href')).toEqual(secondaryCTALink);
+      });
+
+      describe('tracking', () => {
+        it('tracks primary CTA', () => {
+          const trackingSpy = mockTracking(undefined, undefined, jest.spyOn);
+          findPrimaryCTA().trigger('click');
+          expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_start_trial_button', {
+            label: 'tier-badge',
+          });
+        });
+
+        it('tracks secondary CTA', () => {
+          const trackingSpy = mockTracking(undefined, undefined, jest.spyOn);
+          findSecondaryCTA().trigger('click');
+          expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_compare_plans_button', {
+            label: 'tier-badge',
+          });
+        });
       });
     });
   });

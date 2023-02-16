@@ -1,6 +1,7 @@
 <script>
 import { GlBadge } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import Tracking from '~/tracking';
 import TierBadgePopover from './tier_badge_popover.vue';
 
 export default {
@@ -8,6 +9,7 @@ export default {
     GlBadge,
     TierBadgePopover,
   },
+  mixins: [Tracking.mixin({ label: 'tier-badge' })],
   props: {
     tier: {
       type: String,
@@ -15,11 +17,22 @@ export default {
       default: s__('TierBadge|Free'),
     },
   },
+  mounted() {
+    this.trackRender();
+  },
+  methods: {
+    trackRender() {
+      this.track('render_badge');
+    },
+    trackHover() {
+      this.track('render_flyout');
+    },
+  },
   popoverTriggerId: 'tier-badge-trigger-id',
 };
 </script>
 <template>
-  <span class="gl-display-flex gl-align-items-center gl-ml-2">
+  <span class="gl-display-flex gl-align-items-center gl-ml-2" @mouseover="trackHover">
     <gl-badge :id="$options.popoverTriggerId" data-testid="tier-badge" variant="tier" size="md">
       {{ tier }}
     </gl-badge>
