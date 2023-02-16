@@ -122,6 +122,23 @@ RSpec.describe ::ComplianceManagement::ComplianceReport::CommitLoader, feature_c
         end
       end
     end
+
+    context 'when a project does not have a repository' do
+      let(:project1) { create(:project, namespace: group, name: 'no repo') }
+      let(:commits) do
+        commits = []
+        loader.find_each { |row| commits << row&.commit }
+        commits
+      end
+
+      it 'does not throw a NoRepository error' do
+        expect { loader.find_each { |row| row } }.not_to raise_error
+      end
+
+      it 'returns an empty array' do
+        expect(commits).to eq([])
+      end
+    end
   end
 
   def create_commit(project, message = 'commit message')
