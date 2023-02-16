@@ -19127,6 +19127,9 @@ msgstr ""
 msgid "Gitea Import"
 msgstr ""
 
+msgid "GithubImporter|Collaborators"
+msgstr ""
+
 msgid "GithubImporter|Gist with id %{gist_id} failed due to error: %{error}."
 msgstr ""
 
