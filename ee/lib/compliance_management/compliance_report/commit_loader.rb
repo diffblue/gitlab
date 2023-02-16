@@ -102,6 +102,8 @@ module ComplianceManagement
           offset: offset,
           limit: limit
         )
+      rescue ::Gitlab::Git::Repository::NoRepository
+        []
       end
     end
   end
