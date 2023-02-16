@@ -29,7 +29,8 @@ RSpec.describe Gitlab::ImportExport::Project::ProjectHooksRestorer, feature_cate
     described_class.new(
       project: importable,
       shared: importable.import_export_shared,
-      user: user, source: source_project
+      user: user,
+      source_project: source_project
     )
   end
 
@@ -130,11 +131,11 @@ RSpec.describe Gitlab::ImportExport::Project::ProjectHooksRestorer, feature_cate
       excepted_msg = 'Could not duplicate all project hooks from custom template Project'
 
       expect(importable.import_failures.last.exception_message).to eq(excepted_msg)
-      expect(subject.restore).to eq(false)
+      expect(subject.restore).to eq(true)
     end
 
-    it 'returns false' do
-      expect(subject.restore).to eq(false)
+    it 'returns true' do
+      expect(subject.restore).to eq(true)
     end
   end
 end
