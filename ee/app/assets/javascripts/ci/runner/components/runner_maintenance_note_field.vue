@@ -8,6 +8,7 @@ export default {
     GlFormTextarea,
   },
   mixins: [glFeatureFlagMixin()],
+  inheritAttrs: false,
   computed: {
     shouldRender() {
       return this.glFeatures.runnerMaintenanceNote;
@@ -16,16 +17,20 @@ export default {
 };
 </script>
 <template>
-  <div v-if="shouldRender">
-    <gl-form-group
-      data-testid="runner-field-maintenance-note"
-      :label="s__('Runners|Maintenance note')"
-      :label-description="s__('Runners|Only administrators can view this.')"
-      :description="
-        s__('Runners|Add notes such as the runner owner or what it should be used for.')
-      "
-    >
-      <gl-form-textarea :no-resize="false" v-bind="$attrs" v-on="$listeners" />
-    </gl-form-group>
-  </div>
+  <gl-form-group
+    v-if="shouldRender"
+    data-testid="runner-field-maintenance-note"
+    :label="s__('Runners|Maintenance note')"
+    label-for="runner-maintenance-note"
+    :label-description="s__('Runners|Only administrators can view this.')"
+    :description="s__('Runners|Add notes such as the runner owner or what it should be used for.')"
+  >
+    <gl-form-textarea
+      id="runner-maintenance-note"
+      :no-resize="false"
+      name="maintenance-note"
+      v-bind="$attrs"
+      v-on="$listeners"
+    />
+  </gl-form-group>
 </template>
