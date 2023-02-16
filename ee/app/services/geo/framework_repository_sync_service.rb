@@ -33,6 +33,10 @@ module Geo
 
         log_info("Finished #{replicable_name} sync")
       end
+
+      # Must happen after releasing lease to avoid race condition where the new
+      # job cannot obtain the lease.
+      do_reschedule_sync if reschedule_sync?
     end
 
     def sync_repository
@@ -168,7 +172,7 @@ module Geo
       registry.missing_on_primary = missing_on_primary
       persisted = registry.synced!
 
-      reschedule_sync unless persisted
+      set_reschedule_sync unless persisted
 
       log_info("Finished #{replicable_name} sync",
                download_time_s: download_time_in_seconds)
@@ -287,8 +291,16 @@ module Geo
       retries.present? && retries > RETRIES_BEFORE_REDOWNLOAD && retries.odd?
     end
 
-    def reschedule_sync
-      log_info("Reschedule the sync because a RepositoryUpdateEvent was processed during the sync")
+    def set_reschedule_sync
+      @reschedule_sync = true
+    end
+
+    def reschedule_sync?
+      @reschedule_sync
+    end
+
+    def do_reschedule_sync
+      log_info("Reschedule the sync because an updated event was processed during the sync")
 
       replicator.reschedule_sync
     end

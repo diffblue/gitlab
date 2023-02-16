@@ -33,12 +33,8 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
 
   context 'reschedules sync due to race condition instead of waiting for backfill' do
     describe '#mark_sync_as_successful' do
-      context 'when UpdatedEvent was processed during a sync' do
-        it 'reschedules the sync' do
-          expect(replicator)
-            .to receive(:reschedule_sync)
-            .once
-
+      context 'when updated event was processed during a sync' do
+        it 'sets reschedule sync' do
           expect_any_instance_of(registry.class)
             .to receive(:synced!)
             .once
@@ -46,7 +42,24 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
 
           registry.pending!
 
-          subject.send(:mark_sync_as_successful)
+          expect do
+            subject.send(:mark_sync_as_successful)
+          end.to change { subject.send(:reschedule_sync?) }.from(nil).to(true)
+        end
+      end
+    end
+
+    describe '#execute' do
+      context 'when reschedule sync is set' do
+        it 'reschedules the sync after the lease block' do
+          # Stub most of execute. Only testing rescheduling after everything.
+          allow(subject).to receive(:try_obtain_lease)
+          # Set reschedule sync as if it occurred during replication work
+          subject.send(:set_reschedule_sync)
+
+          expect(replicator).to receive(:reschedule_sync).once
+
+          subject.execute
         end
       end
     end

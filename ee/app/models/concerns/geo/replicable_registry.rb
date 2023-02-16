@@ -102,7 +102,7 @@ module Geo::ReplicableRegistry
       end
 
       event :pending do
-        transition [:pending, :synced, :failed] => :pending
+        transition [:pending, :started, :synced, :failed] => :pending
       end
 
       event :start do

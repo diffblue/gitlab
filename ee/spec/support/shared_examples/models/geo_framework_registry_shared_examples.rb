@@ -201,4 +201,16 @@ RSpec.shared_examples 'a Geo framework registry' do
       end
     end
   end
+
+  describe '#pending!' do
+    context 'when a sync is currently running' do
+      let(:registry) { create(registry_class_factory, :started) }
+
+      it 'successfully moves state to pending' do
+        expect do
+          registry.pending!
+        end.to change { registry.pending? }.from(false).to(true)
+      end
+    end
+  end
 end

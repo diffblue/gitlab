@@ -36,6 +36,21 @@ module Geo
     def consume_event_updated(**params)
       return unless in_replicables_for_current_secondary?
 
+      # Race condition mitigation for mutable types.
+      #
+      # Within an updated event, we know that the source repo has changed. If a
+      # sync is currently running, then *this* sync will be deduplicated (exit
+      # early due to not being able to take the exclusive lease). In that case,
+      # moving the registry to "pending" will block the currently running sync
+      # from moving it to "synced". The running sync will then reschedule
+      # itself to ensure a sync begins *after* the last known change to the
+      # source repo. See `ReplicableRegistry#mark_synced_atomically`.
+      #
+      # We avoid saving when unpersisted since this should only occur if a
+      # resource was just created but not yet replicated. And all saves after
+      # the first one will raise the error `ActiveRecord::RecordNotUnique` anyway.
+      registry.pending! if registry.persisted? && mutable?
+
       sync_repository
     end
 
@@ -121,6 +136,10 @@ module Geo
     # @return [Boolean] whether the replicable is immutable
     def immutable?
       false
+    end
+
+    def mutable?
+      !immutable?
     end
   end
 end
