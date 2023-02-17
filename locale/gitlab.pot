@@ -19088,10 +19088,16 @@ msgstr ""
 msgid "GitLabPages|Updating your Pages configuration..."
 msgstr ""
 
+msgid "GitLabPages|Use unique domain"
+msgstr ""
+
 msgid "GitLabPages|Verified"
 msgstr ""
 
 msgid "GitLabPages|Waiting for the Pages Pipeline to complete..."
+msgstr ""
+
+msgid "GitLabPages|When enabled, a unique domain is generated to access pages."
 msgstr ""
 
 msgid "GitLabPages|When enabled, all attempts to visit your website through HTTP are automatically redirected to HTTPS using a response with status code 301. Requires a valid certificate for all domains. %{docs_link_start}Learn more.%{link_end}"
