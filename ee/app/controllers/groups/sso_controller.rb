@@ -95,7 +95,7 @@ class Groups::SsoController < Groups::ApplicationController
 
   def generate_unique_username
     username = ::Namespace.clean_path(oauth_data.username)
-    Uniquify.new.string(username) { |s| !NamespacePathValidator.valid_path?(s) }
+    ::Gitlab::Utils::Uniquify.new.string(username) { |s| !NamespacePathValidator.valid_path?(s) }
   end
 
   def check_oauth_data
