@@ -41,7 +41,6 @@ export default {
   apollo: {
     billableData: {
       query: getBillableMembersCountQuery,
-      loadingKey: 'isLoading',
       variables() {
         return {
           fullPath: this.selectedGroupFullPath,
@@ -67,7 +66,6 @@ export default {
   data() {
     return {
       billableData: { minimumSeats: 1, enforceFreeUserCap: false },
-      isLoading: 0,
       hasError: false,
     };
   },
@@ -91,6 +89,9 @@ export default {
       'selectedGroupName',
       'isSelectedGroupPresent',
     ]),
+    isLoading() {
+      return this.$apollo.queries.billableData.loading;
+    },
     selectedPlanModel: {
       get() {
         return this.selectedPlan;

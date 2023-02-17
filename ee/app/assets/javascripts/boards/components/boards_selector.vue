@@ -49,9 +49,11 @@ export default {
           return { fullPath: this.fullPath };
         },
         query: this.isEpicBoard ? this.epicBoardQuery : this.boardQuery,
-        loadingKey: 'loadingBoards',
         update: (data) =>
           this.isEpicBoard ? this.epicBoardUpdate(data) : this.boardUpdate(data, 'boards'),
+        watchLoading: (isLoading) => {
+          this.loadingBoards = isLoading;
+        },
       });
 
       if (!this.isEpicBoard) {
