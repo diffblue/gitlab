@@ -17,6 +17,15 @@ query getProjectQuality($projectPath: ID!, $defaultBranch: String!) {
             time
           }
         }
+        codeQualityReportSummary {
+          count
+          blocker
+          critical
+          major
+          minor
+          info
+          unknown
+        }
       }
     }
   }

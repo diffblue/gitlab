@@ -33328,7 +33328,19 @@ msgstr ""
 msgid "ProjectQualitySummary|An error occurred while trying to fetch project quality statistics"
 msgstr ""
 
+msgid "ProjectQualitySummary|Analysis of your source code's quality and complexity."
+msgstr ""
+
+msgid "ProjectQualitySummary|Blocker"
+msgstr ""
+
+msgid "ProjectQualitySummary|Code quality"
+msgstr ""
+
 msgid "ProjectQualitySummary|Coverage"
+msgstr ""
+
+msgid "ProjectQualitySummary|Critical"
 msgstr ""
 
 msgid "ProjectQualitySummary|Failure"
@@ -33341,6 +33353,9 @@ msgid "ProjectQualitySummary|Help us improve this page"
 msgstr ""
 
 msgid "ProjectQualitySummary|Latest pipeline results"
+msgstr ""
+
+msgid "ProjectQualitySummary|Learn more about Code Quality"
 msgstr ""
 
 msgid "ProjectQualitySummary|Learn more about test coverage"
@@ -33383,6 +33398,12 @@ msgid "ProjectQualitySummary|The percentage of tests that succeed, fail, or are 
 msgstr ""
 
 msgid "ProjectQualitySummary|This page helps you understand the code testing trends for your project. Let us know how we can improve it!"
+msgstr ""
+
+msgid "ProjectQualitySummary|Violations"
+msgstr ""
+
+msgid "ProjectQualitySummary|Violations found"
 msgstr ""
 
 msgid "ProjectSelect|No matching results"
