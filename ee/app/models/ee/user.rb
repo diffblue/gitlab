@@ -331,10 +331,11 @@ module EE
 
     def using_license_seat?
       active? &&
-      !internal? &&
-      !project_bot? &&
-      has_current_license? &&
-      paid_in_current_license?
+        !internal? &&
+        !project_bot? &&
+        !service_account? &&
+        has_current_license? &&
+        paid_in_current_license?
     end
 
     def using_gitlab_com_seat?(namespace)
