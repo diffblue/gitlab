@@ -96,11 +96,19 @@ export default {
     const wrappers = document.querySelectorAll('.container-fluid.container-limited');
 
     wrappers.forEach((el) => {
+      el.classList.add('not-container-limited');
       el.classList.remove('container-limited');
     });
   },
-  unmounted() {
+  beforeDestroy() {
     this.mounted = false;
+
+    const wrappers = document.querySelectorAll('.container-fluid.not-container-limited');
+
+    wrappers.forEach((el) => {
+      el.classList.add('container-limited');
+      el.classList.remove('not-container-limited');
+    });
   },
   methods: {
     initGridStack() {
@@ -198,9 +206,7 @@ export default {
 
 <template>
   <div>
-    <section
-      class="gl-display-flex gl-align-items-center gl-py-5 gl-border-b-1 gl-border-b-solid gl-border-b-gray-100"
-    >
+    <section class="gl-display-flex gl-align-items-center gl-py-5">
       <h3 class="gl-my-0 flex-fill">{{ dashboard.title }}</h3>
       <gl-button
         v-if="!editing"
@@ -231,11 +237,13 @@ export default {
         {{ s__('ProductAnalytics|Go back') }}
       </router-link>
     </section>
-    <div class="gl-bg-gray-10">
+    <div
+      class="grid-stack-container gl-mx-n5 gl-pl-2 gl-pr-2 gl-bg-gray-10 gl-border-t-1 gl-border-t-solid gl-border-t-gray-100"
+    >
       <section
         v-if="showFilters"
         data-testid="dashboard-filters"
-        class="gl-pt-6 gl-px-3 gl-display-flex"
+        class="gl-display-flex gl-pt-4 gl-px-3"
       >
         <date-range-filter
           v-if="showDateRangeFilter"
@@ -251,7 +259,7 @@ export default {
         :history-update-method="$options.HISTORY_REPLACE_UPDATE_METHOD"
       />
       <div class="grid-stack-container gl-display-flex">
-        <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-py-6">
+        <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-py-3">
           <div v-if="!showCode" class="grid-stack">
             <div
               v-for="(panel, index) in dashboard.panels"
