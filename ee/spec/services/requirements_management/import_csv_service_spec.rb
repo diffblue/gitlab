@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe RequirementsManagement::ImportCsvService, feature_category: :requirements_management do
   let_it_be_with_refind(:project) { create(:project) }
   let_it_be(:user) { create(:user) }
+  let(:file) { fixture_file_upload('spec/fixtures/csv_comma.csv') }
 
   let(:service) do
     uploader = FileUploader.new(project)
@@ -32,8 +33,6 @@ RSpec.describe RequirementsManagement::ImportCsvService, feature_category: :requ
   end
 
   context 'when user cannot create requirements' do
-    let(:file) { fixture_file_upload('spec/fixtures/csv_comma.csv') }
-
     before do
       project.add_guest(user)
     end
@@ -42,8 +41,6 @@ RSpec.describe RequirementsManagement::ImportCsvService, feature_category: :requ
   end
 
   context 'when requirements feature is not available' do
-    let(:file) { fixture_file_upload('spec/fixtures/csv_comma.csv') }
-
     before do
       stub_licensed_features(requirements: false)
     end
