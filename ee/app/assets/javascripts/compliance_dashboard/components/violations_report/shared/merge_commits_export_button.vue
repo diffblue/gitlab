@@ -42,13 +42,6 @@ export default {
     mergeCommitButtonDisabled() {
       return !this.validMergeCommitHash;
     },
-    listMergeCommitsButtonFF() {
-      if (this.glFeatures.allCommitsComplianceReport) {
-        return __('List of all commits');
-      }
-
-      return __('List of all merge commits');
-    },
   },
   mounted() {
     this.listMergeCommitsButton = this.$refs.listMergeCommitsButton;
@@ -59,6 +52,7 @@ export default {
     },
   },
   strings: {
+    listMergeCommitsButtonText: __('List of all commits'),
     mergeCommitInputLabel: __('Merge commit SHA'),
     mergeCommitInvalidMessage: __('Invalid hash'),
     mergeCommitButtonText: __('Export commit custody report'),
@@ -81,7 +75,7 @@ export default {
           icon="export"
           :href="mergeCommitsCsvExportPath"
         >
-          {{ listMergeCommitsButtonFF }}
+          {{ $options.strings.listMergeCommitsButtonText }}
         </gl-button>
       </template>
       <gl-dropdown-form>

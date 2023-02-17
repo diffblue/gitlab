@@ -40,7 +40,7 @@ describe('MergeCommitsExportButton component', () => {
     });
 
     it('renders the correct button text', () => {
-      expect(findCsvExportButton().text()).toEqual('List of all merge commits');
+      expect(findCsvExportButton().text()).toEqual('List of all commits');
     });
 
     it('renders the export icon', () => {
@@ -77,20 +77,6 @@ describe('MergeCommitsExportButton component', () => {
       wrapper = createComponent({ mountFn: mount });
 
       expect(findCommitInputFeedback().text()).toBe('Invalid hash');
-    });
-
-    describe('when report FF is enabled', () => {
-      beforeEach(() => {
-        wrapper = createComponent({
-          mountFn: mount,
-          data: { validMergeCommitHash: true },
-          provide: { glFeatures: { allCommitsComplianceReport: true } },
-        });
-      });
-
-      it('renders the correct button text', () => {
-        expect(findCsvExportButton().text()).toEqual('List of all commits');
-      });
     });
 
     describe('when the commit input is valid', () => {
