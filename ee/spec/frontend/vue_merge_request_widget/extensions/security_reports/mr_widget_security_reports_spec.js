@@ -227,7 +227,7 @@ describe('MR Widget Security Reports', () => {
         {
           href: '/path/to/pipeline/security',
           text: 'Full report',
-          fullReport: true,
+          trackFullReportClicked: true,
         },
       ]);
     });
