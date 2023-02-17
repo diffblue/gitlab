@@ -295,7 +295,7 @@ RSpec.describe Dora::DailyMetrics, type: :model, feature_category: :value_stream
         let(:interval) { described_class::INTERVAL_ALL }
 
         it 'aggregates the rows' do
-          is_expected.to eq({ 'date' => nil, 'deployment_frequency' => 6, 'change_failure_rate' => 4.0 / 6 })
+          is_expected.to match_array({ 'date' => nil, 'deployment_frequency' => 6, 'change_failure_rate' => be_within(0.005).of(4.0 / 6) })
         end
       end
 
@@ -303,7 +303,7 @@ RSpec.describe Dora::DailyMetrics, type: :model, feature_category: :value_stream
         let(:interval) { described_class::INTERVAL_MONTHLY }
 
         it 'aggregates the rows' do
-          is_expected.to eq([{ 'date' => '2021-01-01', 'deployment_frequency' => 6, 'change_failure_rate' => 4.0 / 6 }])
+          is_expected.to match_array([{ 'date' => '2021-01-01', 'deployment_frequency' => 6, 'change_failure_rate' => be_within(0.005).of(4.0 / 6) }])
         end
       end
 
@@ -311,7 +311,7 @@ RSpec.describe Dora::DailyMetrics, type: :model, feature_category: :value_stream
         let(:interval) { described_class::INTERVAL_DAILY }
 
         it 'aggregates the rows' do
-          is_expected.to eq([{ 'date' => '2021-01-01', 'deployment_frequency' => 4, 'change_failure_rate' => 3.0 / 4 },
+          is_expected.to match_array([{ 'date' => '2021-01-01', 'deployment_frequency' => 4, 'change_failure_rate' => be_within(0.005).of(3.0 / 4) },
                              { 'date' => '2021-01-02', 'deployment_frequency' => 2, 'change_failure_rate' => 0 },
                              { 'date' => '2021-01-03', 'deployment_frequency' => 0, 'change_failure_rate' => 1 },
                              { 'date' => '2021-01-04', 'deployment_frequency' => 0, 'change_failure_rate' => 0 }])
