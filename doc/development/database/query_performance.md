@@ -60,7 +60,7 @@ Buffers: shared hit=7323
 
 If the cache is cold, you also see `reads`.
 
-Using [database lab](database_lab.md):
+Using [Database Lab](database_lab.md):
 
 ```plaintext
 Shared buffers:
