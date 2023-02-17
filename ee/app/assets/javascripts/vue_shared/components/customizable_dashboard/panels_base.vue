@@ -79,7 +79,7 @@ export default {
 
 <template>
   <div
-    class="grid-stack-item-content gl-shadow gl-rounded-base gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
+    class="grid-stack-item-content gl-shadow-sm gl-rounded-base gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
   >
     <strong v-if="title" class="gl-mb-2" data-testid="panel-title">{{ title }}</strong>
     <div class="gl-overflow-y-auto gl-h-full" :class="{ 'gl--flex-center': loading }">

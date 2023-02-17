@@ -78,6 +78,34 @@ describe('CustomizableDashboard', () => {
     });
   });
 
+  describe('when mounted updates', () => {
+    let wrapperLimited;
+    beforeEach(() => {
+      loadCSSFile.mockResolvedValue();
+
+      wrapperLimited = document.createElement('div');
+      wrapperLimited.classList.add('container-fluid', 'container-limited');
+      document.body.appendChild(wrapperLimited);
+
+      createWrapper();
+    });
+
+    afterEach(() => {
+      document.body.removeChild(wrapperLimited);
+    });
+
+    it('body container', () => {
+      expect(document.querySelectorAll('.container-fluid.not-container-limited').length).toBe(1);
+    });
+
+    it('body container after destroy', () => {
+      wrapper.destroy();
+
+      expect(document.querySelectorAll('.container-fluid.not-container-limited').length).toBe(0);
+      expect(document.querySelectorAll('.container-fluid.container-limited').length).toBe(1);
+    });
+  });
+
   describe('when mounted', () => {
     beforeEach(() => {
       loadCSSFile.mockResolvedValue();
@@ -86,6 +114,15 @@ describe('CustomizableDashboard', () => {
     });
 
     it('sets up GridStack', () => {
+      expect(GridStack.init).toHaveBeenCalledWith({
+        staticGrid: true,
+        margin: GRIDSTACK_MARGIN,
+        minRow: 1,
+        handle: GRIDSTACK_CSS_HANDLE,
+      });
+    });
+
+    it('sets full width', () => {
       expect(GridStack.init).toHaveBeenCalledWith({
         staticGrid: true,
         margin: GRIDSTACK_MARGIN,
