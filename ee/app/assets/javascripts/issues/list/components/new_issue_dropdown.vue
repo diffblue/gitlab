@@ -1,9 +1,11 @@
 <script>
 import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { TYPE_ISSUE } from '~/issues/constants';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 
 export default {
+  TYPE_ISSUE,
   i18n: {
     newIssueLabel: __('New issue'),
     newObjectiveLabel: s__('WorkItem|New objective'),
@@ -15,12 +17,12 @@ export default {
   inject: ['newIssuePath'],
   data() {
     return {
-      selectedOption: 'issue',
+      selectedOption: TYPE_ISSUE,
     };
   },
   computed: {
     dropdownText() {
-      if (this.selectedOption === 'issue') {
+      if (this.selectedOption === TYPE_ISSUE) {
         return this.$options.i18n.newIssueLabel;
       } else if (this.selectedOption === 'objective') {
         return this.$options.i18n.newObjectiveLabel;
@@ -31,7 +33,7 @@ export default {
   },
   methods: {
     handleDropdownButtonClick() {
-      if (this.selectedOption === 'issue') {
+      if (this.selectedOption === TYPE_ISSUE) {
         visitUrl(this.newIssuePath);
       } else if (this.selectedOption === 'objective') {
         this.$emit('new-objective-clicked');
@@ -52,7 +54,7 @@ export default {
     variant="confirm"
     @click="handleDropdownButtonClick()"
   >
-    <gl-dropdown-item @click="handleDropdownItemClick('issue')">
+    <gl-dropdown-item @click="handleDropdownItemClick($options.TYPE_ISSUE)">
       {{ $options.i18n.newIssueLabel }}
     </gl-dropdown-item>
     <gl-dropdown-item @click="handleDropdownItemClick('objective')">
