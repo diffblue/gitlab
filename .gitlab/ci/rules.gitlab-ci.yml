@@ -2218,6 +2218,7 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-dot-com-ee-schedule-default-branch-maintenance
+      when: always
     - <<: *if-default-branch-refs
       changes:
         - ".gitlab/ci/test-metadata.gitlab-ci.yml"
