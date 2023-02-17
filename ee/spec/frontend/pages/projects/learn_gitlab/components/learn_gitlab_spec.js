@@ -4,6 +4,7 @@ import Cookies from '~/lib/utils/cookies';
 import LearnGitlab from 'ee/pages/projects/learn_gitlab/components/learn_gitlab.vue';
 import eventHub from '~/invite_members/event_hub';
 import { INVITE_MODAL_OPEN_COOKIE } from 'ee/pages/projects/learn_gitlab/constants';
+import { ON_CELEBRATION_TRACK_LABEL } from '~/invite_members/constants';
 import { testActions, testSections, testProject } from './mock_data';
 
 describe('Learn GitLab', () => {
@@ -76,7 +77,7 @@ describe('Learn GitLab', () => {
 
       expect(spy).toHaveBeenCalledWith('openModal', {
         mode: 'celebrate',
-        source: 'learn-gitlab',
+        source: ON_CELEBRATION_TRACK_LABEL,
       });
       expect(cookieSpy).toHaveBeenCalledWith(INVITE_MODAL_OPEN_COOKIE);
     });

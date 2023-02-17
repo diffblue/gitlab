@@ -5,6 +5,7 @@ import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue
 import { isExperimentVariant } from '~/experimentation/utils';
 import eventHub from '~/invite_members/event_hub';
 import { s__, __ } from '~/locale';
+import { LEARN_GITLAB } from '~/invite_members/constants';
 import { ACTION_LABELS } from '../constants';
 import IncludedInTrialIndicator from './included_in_trial_indicator.vue';
 
@@ -56,7 +57,7 @@ export default {
   },
   methods: {
     openModal() {
-      eventHub.$emit('openModal', { source: 'learn_gitlab' });
+      eventHub.$emit('openModal', { source: LEARN_GITLAB });
     },
     actionLabelValue(value) {
       return ACTION_LABELS[this.action][value];
