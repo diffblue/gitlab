@@ -18,6 +18,7 @@ import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import issueCreateMutation from '~/boards/graphql/issue_create.mutation.graphql';
 import * as typesCE from '~/boards/stores/mutation_types';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { TYPE_ISSUE } from '~/issues/constants';
 import { fetchPolicies } from '~/lib/graphql';
 import * as commonUtils from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams } from '~/lib/utils/url_utility';
@@ -102,7 +103,7 @@ describe('setFilters', () => {
   beforeEach(() => {
     state = {
       filters: {},
-      issuableType: issuableTypes.issue,
+      issuableType: TYPE_ISSUE,
     };
   });
 
@@ -774,9 +775,9 @@ describe('setActiveItemHealthStatus', () => {
 });
 
 describe.each`
-  isEpicBoard | issuableType             | dispatchedAction
-  ${false}    | ${'issuableTypes.issue'} | ${'moveIssue'}
-  ${true}     | ${'issuableTypes.epic'}  | ${'moveEpic'}
+  isEpicBoard | issuableType            | dispatchedAction
+  ${false}    | ${TYPE_ISSUE}           | ${'moveIssue'}
+  ${true}     | ${'issuableTypes.epic'} | ${'moveEpic'}
 `('moveItem', ({ isEpicBoard, issuableType, dispatchedAction }) => {
   it(`should dispatch ${dispatchedAction}  action when isEpicBoard is ${isEpicBoard}`, async () => {
     await testAction({

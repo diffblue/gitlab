@@ -5,8 +5,8 @@ import Vuex from 'vuex';
 import IssueCardWeight from 'ee/boards/components/issue_card_weight.vue';
 import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
 import BoardCardInner from '~/boards/components/board_card_inner.vue';
-import { issuableTypes } from '~/boards/constants';
 import defaultStore from '~/boards/stores';
+import { TYPE_ISSUE } from '~/issues/constants';
 
 Vue.use(Vuex);
 
@@ -39,7 +39,7 @@ describe('Board card component', () => {
         rootPath: '/',
         scopedLabelsAvailable: false,
         isEpicBoard: false,
-        issuableType: issuableTypes.issue,
+        issuableType: TYPE_ISSUE,
         isGroupBoard: true,
       },
     });

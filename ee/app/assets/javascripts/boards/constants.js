@@ -3,7 +3,7 @@ import { issuableTypes, FilterFields as FilterFieldsCE } from '~/boards/constant
 import destroyBoardListMutation from '~/boards/graphql/board_list_destroy.mutation.graphql';
 import updateBoardListMutation from '~/boards/graphql/board_list_update.mutation.graphql';
 import listIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
-
+import { TYPE_ISSUE } from '~/issues/constants';
 import { s__ } from '~/locale';
 
 import boardListsQuery from './graphql/board_lists.query.graphql';
@@ -26,8 +26,8 @@ export const EpicFilterType = {
 };
 
 export const FilterFields = {
-  [issuableTypes.issue]: [
-    ...FilterFieldsCE[issuableTypes.issue],
+  [TYPE_ISSUE]: [
+    ...FilterFieldsCE[TYPE_ISSUE],
     'epicId',
     'epicWildcardId',
     'weight',
@@ -145,7 +145,7 @@ export const ErrorMessages = {
 };
 
 export const listsQuery = {
-  [issuableTypes.issue]: {
+  [TYPE_ISSUE]: {
     query: boardListsQuery,
   },
   [issuableTypes.epic]: {
@@ -154,7 +154,7 @@ export const listsQuery = {
 };
 
 export const updateListQueries = {
-  [issuableTypes.issue]: {
+  [TYPE_ISSUE]: {
     mutation: updateBoardListMutation,
   },
   [issuableTypes.epic]: {
@@ -163,7 +163,7 @@ export const updateListQueries = {
 };
 
 export const deleteListQueries = {
-  [issuableTypes.issue]: {
+  [TYPE_ISSUE]: {
     mutation: destroyBoardListMutation,
   },
   [issuableTypes.epic]: {
@@ -172,7 +172,7 @@ export const deleteListQueries = {
 };
 
 export const listIssuablesQueries = {
-  [issuableTypes.issue]: {
+  [TYPE_ISSUE]: {
     query: listIssuesQuery,
   },
   [issuableTypes.epic]: {

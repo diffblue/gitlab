@@ -4,7 +4,8 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import { stubComponent } from 'helpers/stub_component';
 import BoardContentSidebar from '~/boards/components/board_content_sidebar.vue';
-import { ISSUABLE, issuableTypes } from '~/boards/constants';
+import { ISSUABLE } from '~/boards/constants';
+import { TYPE_ISSUE } from '~/issues/constants';
 import { mockIssue, mockIssueGroupPath, mockIssueProjectPath } from '../mock_data';
 
 Vue.use(Vuex);
@@ -54,7 +55,7 @@ describe('ee/BoardContentSidebar', () => {
         canUpdate: true,
         rootPath: '/',
         groupId: 1,
-        issuableType: issuableTypes.issue,
+        issuableType: TYPE_ISSUE,
         isGroupBoard: false,
         epicFeatureAvailable: true,
         iterationFeatureAvailable: true,
