@@ -19,16 +19,16 @@ module QA
             element :issue_content
           end
 
-          def has_push_element?(text)
-            has_element? :push_content, text: text
+          def push_analytics_content
+            find_element(:push_content)
           end
 
-          def has_mr_element?(text)
-            has_element? :merge_request_content, text: text
+          def mr_analytics_content
+            find_element(:merge_request_content)
           end
 
-          def has_issue_element?(text)
-            has_element? :issue_content, text: text
+          def issue_analytics_content
+            find_element(:issue_content)
           end
         end
       end
