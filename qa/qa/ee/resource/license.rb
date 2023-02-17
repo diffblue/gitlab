@@ -42,6 +42,7 @@ module QA
         def fabricate!
           QA::Page::Main::Login.perform(&:sign_in_using_admin_credentials)
           QA::Page::Main::Menu.perform(&:go_to_admin_area)
+          QA::Page::Main::Login.perform(&:set_up_new_admin_password_if_required)
           QA::Page::Admin::Menu.perform(&:click_subscription_menu_link)
 
           EE::Page::Admin::Settings::Component::AddLicense.perform do |admin_settings|
@@ -69,17 +70,29 @@ module QA
           # from license contents but we generally only need one license in the environment
           #
           # This is similar behaviour to UI fabrication where we only check general presence of a license
-          existing_license_id = all
-            .find { |license| !license[:expired] }
-            &.fetch(:id)
+          begin
+            existing_license_id = all
+              .find { |license| !license[:expired] }
+              &.fetch(:id)
 
-          if existing_license_id
-            QA::Runtime::Logger.warn("Environment already has a valid license, skipping!")
-            self.id = existing_license_id
-            return api_get
+            if existing_license_id
+              QA::Runtime::Logger.warn("Environment already has a valid license, skipping!")
+              self.id = existing_license_id
+              return api_get
+            end
+
+            api_post.tap { QA::Runtime::Logger.info("Successfully added license key. Details:\n#{license_info}") }
+          rescue RuntimeError => e
+            if e.message.include?('Your password expired')
+              QA::Runtime::Logger.warn('Admin password must be reset before the default access token can be used. ' \
+                                       'Setting password now...')
+
+              QA::Page::Main::Login.perform(&:sign_in_using_admin_credentials)
+              QA::Page::Main::Login.perform(&:set_up_new_admin_password_if_required)
+
+              retry
+            end
           end
-
-          api_post.tap { QA::Runtime::Logger.info("Successfully added license key. Details:\n#{license_info}") }
         end
 
         def api_post_path
