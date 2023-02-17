@@ -5,7 +5,8 @@ module EE
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
 
-    EE_PERMITTED_KEYS = %w[
+    EE_PERMITTED_KEYS = %i[
+      sprint_id
       weight
       health_status
       epic_id
