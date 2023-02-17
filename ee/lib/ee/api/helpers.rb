@@ -119,11 +119,17 @@ module EE
         result = ::Users::Abuse::ProjectsDownloadBanCheckService.execute(current_user, repository.project)
         forbidden!(_('You are not allowed to download code from this project.')) if result.error?
 
-        ::AuditEvents::RepositoryDownloadStartedAuditEventService.new(
-          current_user,
-          repository.project,
-          ip_address
-        ).for_project.security_event
+        project = repository.project
+        audit_context = {
+          name: 'repository_download_operation',
+          ip_address: ip_address,
+          author: current_user || ::Gitlab::Audit::UnauthenticatedAuthor.new,
+          target: project,
+          scope: project,
+          message: "Repository Download Started",
+          target_details: project.full_path
+        }
+        ::Gitlab::Audit::Auditor.audit(audit_context)
 
         super
       end
