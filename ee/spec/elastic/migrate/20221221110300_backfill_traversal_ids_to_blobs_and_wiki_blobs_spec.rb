@@ -26,7 +26,7 @@ feature_category: :global_search do
       expect(migration).to be_batched
       expect(migration).to be_retry_on_failure
       expect(migration.throttle_delay).to eq(5.seconds)
-      expect(migration.batch_size).to eq(100_000)
+      expect(migration.batch_size).to eq(50_000)
     end
   end
 
