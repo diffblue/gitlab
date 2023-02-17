@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-require 'fast_spec_helper'
-require './ee/app/services/package_metadata/data_object'
+require 'spec_helper'
 
 RSpec.describe PackageMetadata::DataObject, feature_category: :license_compliance do
   describe '.from_csv' do
@@ -35,6 +34,45 @@ RSpec.describe PackageMetadata::DataObject, feature_category: :license_complianc
           let(:text) { t }
 
           it { is_expected.to eq(nil) }
+        end
+      end
+
+      context 'and field is longer than expected' do
+        let(:name) { 'package' * 256 }
+        let(:version) { 'version' * 256 }
+        let(:license) { 'license' * 51 }
+
+        let(:text) { "#{name},#{version},#{license}" }
+
+        context 'and it is package name' do
+          subject { object.name.length }
+
+          it { is_expected.to eq(255) }
+        end
+
+        context 'and it is package version' do
+          subject { object.version.length }
+
+          it { is_expected.to eq(255) }
+        end
+
+        context 'and it is license' do
+          subject { object.license.length }
+
+          it { is_expected.to eq(50) }
+        end
+      end
+
+      context 'and it is invalid csv' do
+        let(:text) { 'sndfileio,\"0.6\n' }
+
+        it 'catches the error' do
+          expect { object }.not_to raise_error
+        end
+
+        it 'logs the error' do
+          expect(Gitlab::AppJsonLogger).to receive(:error).and_call_original
+          object
         end
       end
     end

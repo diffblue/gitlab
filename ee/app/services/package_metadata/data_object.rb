@@ -4,9 +4,21 @@ require 'csv'
 
 module PackageMetadata
   class DataObject
+    EXPECTED_CSV_FIELDS = 3
+    MAX_NAME_LENGTH = 255
+    MAX_VERSION_LENGTH = 255
+    MAX_LICENSE_LENGTH = 50
+
     def self.from_csv(text, purl_type)
       parsed = CSV.parse_line(text)&.reject { |field| field.nil? || field.empty? }
-      new(parsed[0], parsed[1], parsed[2], purl_type) if parsed&.count == 3
+      return unless parsed&.count == EXPECTED_CSV_FIELDS
+
+      name = parsed[0].slice(0, MAX_NAME_LENGTH)
+      version = parsed[1].slice(0, MAX_VERSION_LENGTH)
+      license = parsed[2].slice(0, MAX_LICENSE_LENGTH)
+      new(name, version, license, purl_type)
+    rescue CSV::MalformedCSVError => e
+      Gitlab::AppJsonLogger.error(class: self.name, message: 'csv parsing error', error: e)
     end
 
     attr_accessor :version, :license, :purl_type,
