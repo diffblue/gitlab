@@ -15,6 +15,8 @@ import { __, s__ } from '~/locale';
 
 const SEARCH_URL = '/search';
 const PROJECT_ID = '0';
+const API_LINK = `${TEST_HOST}/docs/api.md`;
+const DOCS_LINK = `${TEST_HOST}/docs/protected_environments.md`;
 
 describe('ee/protected_environments/create_protected_environment.vue', () => {
   const unmockLocation = useMockLocationHelper();
@@ -68,6 +70,8 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
       },
       provide: {
         glFeatures,
+        apiLink: API_LINK,
+        docsLink: DOCS_LINK,
         accessLevelsData: [
           {
             id: 40,
@@ -195,6 +199,42 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
       findRequredCountForApprover('root').vm.$emit('input', requiredApprovalCount);
       await findSubmitButton().vm.$emit('click');
     };
+
+    describe('alert', () => {
+      let alert;
+
+      unmockLocation();
+
+      beforeEach(() => {
+        createComponent();
+
+        alert = findAlert();
+      });
+
+      it('alerts users to the removal of unified approval rules', () => {
+        expect(alert.exists()).toBe(true);
+        expect(alert.props('title')).toMatchInterpolatedText(
+          s__(
+            'ProtectedEnvironments|Unified approval rules have been removed from the settings UI',
+          ),
+        );
+        expect(alert.find('p').text()).toMatchInterpolatedText(
+          s__(
+            'ProtectedEnvironments|You can still use the %{apiLinkStart}API%{apiLinkEnd} to configure unified approval rules. Consider using %{docsLinkStart}multiple approval rules%{docsLinkEnd} instead, because they provide greater flexibility.',
+          ),
+        );
+      });
+
+      it('links to the API documentation', () => {
+        expect(wrapper.findByRole('link', { name: 'API' }).attributes('href')).toBe(API_LINK);
+      });
+
+      it('links to the feature documentation', () => {
+        expect(
+          wrapper.findByRole('link', { name: 'multiple approval rules' }).attributes('href'),
+        ).toBe(DOCS_LINK);
+      });
+    });
 
     it('renders AccessDropdown and passes down the props', () => {
       createComponent();
