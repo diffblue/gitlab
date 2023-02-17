@@ -2,15 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe ComplianceManagement::ChainOfCustodyReportWorker do
+RSpec.describe ComplianceManagement::ChainOfCustodyReportWorker, feature_category: :compliance_management do
   let(:worker) { described_class.new }
-  let(:service) { instance_double(::MergeCommits::ExportCsvService, csv_data: 'data') }
-  let(:commit_sha) { nil }
-  let(:filters) { { commit_sha: commit_sha }.compact }
+  let(:service) { instance_double(Groups::ComplianceReportCsvService, csv_data: 'data') }
   let(:csv_data) { 'foo,bar,baz' }
   let(:service_response) { ServiceResponse.success(payload: csv_data) }
   let(:job_args) do
-    { user_id: user.id, group_id: group.id, commit_sha: commit_sha }
+    { user_id: user.id, group_id: group.id }
   end
 
   let_it_be(:user) { create(:user) }
@@ -18,33 +16,33 @@ RSpec.describe ComplianceManagement::ChainOfCustodyReportWorker do
 
   describe "#perform" do
     before do
-      allow(::MergeCommits::ExportCsvService).to receive(:new)
-                                                   .with(user, group, filters)
-                                                   .and_return(service)
+      allow(Groups::ComplianceReportCsvService).to receive(:new)
+                                                     .with(user, group, {})
+                                                     .and_return(service)
       allow(service).to receive(:csv_data).and_return(service_response)
-      stub_feature_flags(all_commits_compliance_report: false)
     end
 
     it 'has the `until_executed` deduplicate strategy' do
       expect(described_class.get_deduplicate_strategy).to eq(:until_executed)
     end
 
-    context 'when full commit feature flag is enabled' do
-      let(:service) { instance_double(Groups::ComplianceReportCsvService, csv_data: 'data') }
+    context 'when a commit_sha filter is present' do
+      let(:job_args) { super().merge(commit_sha: 'foo-bar') }
+      let(:filter) { { commit_sha: job_args[:commit_sha] } }
+      let(:service) { instance_double(::MergeCommits::ExportCsvService, csv_data: 'data') }
 
       before do
-        allow(Groups::ComplianceReportCsvService).to receive(:new)
-                                                       .with(user, group, filters)
-                                                       .and_return(service)
+        allow(::MergeCommits::ExportCsvService).to receive(:new)
+                                                     .with(user, group, filter)
+                                                     .and_return(service)
         allow(service).to receive(:csv_data).and_return(service_response)
-
-        stub_feature_flags(all_commits_compliance_report: true)
       end
 
-      it 'calls the new csv service' do
+      it 'calls the proper service for the csv data' do
         worker.perform(job_args)
 
-        expect(Groups::ComplianceReportCsvService).to have_received(:new)
+        expect(Groups::ComplianceReportCsvService).not_to have_received(:new)
+        expect(::MergeCommits::ExportCsvService).to have_received(:new)
         expect(service).to have_received(:csv_data)
       end
     end
@@ -53,7 +51,7 @@ RSpec.describe ComplianceManagement::ChainOfCustodyReportWorker do
       it 'calls the service' do
         worker.perform(job_args)
 
-        expect(::MergeCommits::ExportCsvService).to have_received(:new)
+        expect(Groups::ComplianceReportCsvService).to have_received(:new)
         expect(service).to have_received(:csv_data)
       end
 
@@ -90,7 +88,7 @@ RSpec.describe ComplianceManagement::ChainOfCustodyReportWorker do
                                              .with(ActiveRecord::RecordNotFound)
           subject
 
-          expect(::MergeCommits::ExportCsvService).not_to have_received(:new)
+          expect(Groups::ComplianceReportCsvService).not_to have_received(:new)
         end
       end
 
@@ -104,7 +102,7 @@ RSpec.describe ComplianceManagement::ChainOfCustodyReportWorker do
 
           subject
 
-          expect(::MergeCommits::ExportCsvService).not_to have_received(:new)
+          expect(Groups::ComplianceReportCsvService).not_to have_received(:new)
         end
       end
     end

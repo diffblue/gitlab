@@ -25458,9 +25458,6 @@ msgstr ""
 msgid "List of all commits"
 msgstr ""
 
-msgid "List of all merge commits"
-msgstr ""
-
 msgid "List of suitable GCP locations"
 msgstr ""
 

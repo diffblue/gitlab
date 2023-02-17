@@ -7,7 +7,6 @@ class Groups::Security::ComplianceDashboardsController < Groups::ApplicationCont
 
   before_action :authorize_compliance_dashboard!
   before_action do
-    push_frontend_feature_flag(:all_commits_compliance_report, group)
     push_frontend_feature_flag(:compliance_frameworks_report, group)
   end
 

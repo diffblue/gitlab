@@ -40,7 +40,7 @@ module ComplianceManagement
       # path, once that is migrated to
       # Groups::ComplianceReportCsvService the below
       # @filter_params.blank? can be removed
-      if Feature.enabled?(:all_commits_compliance_report, @group) && @filter_params.blank?
+      if @filter_params.blank?
         Groups::ComplianceReportCsvService.new(
           @user, @group, @filter_params
         ).csv_data
@@ -50,11 +50,7 @@ module ComplianceManagement
     end
 
     def merge_commits_csv_filename
-      if Feature.enabled?(:all_commits_compliance_report, @group)
-        "#{@group.id}-commits-#{Time.current.to_i}.csv"
-      else
-        "#{@group.id}-merge-commits-#{Time.current.to_i}.csv"
-      end
+      "#{@group.id}-commits-#{Time.current.to_i}.csv"
     end
   end
 end
