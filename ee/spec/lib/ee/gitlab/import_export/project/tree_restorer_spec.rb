@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Gitlab::ImportExport::Project::TreeRestorer do
+RSpec.describe Gitlab::ImportExport::Project::TreeRestorer, feature_category: :importers do
   include ImportExport::CommonUtil
 
   subject(:restored_project_json) { project_tree_restorer.restore }

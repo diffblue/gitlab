@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Analytics::CycleAnalytics::GroupLevel do
+RSpec.describe Analytics::CycleAnalytics::GroupLevel, feature_category: :value_stream_management do
   include CycleAnalyticsHelpers
 
   let_it_be(:group) { create(:group) }

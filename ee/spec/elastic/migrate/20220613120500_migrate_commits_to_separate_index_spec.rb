@@ -3,7 +3,7 @@
 require 'spec_helper'
 require File.expand_path('ee/elastic/migrate/20220613120500_migrate_commits_to_separate_index.rb')
 
-RSpec.describe MigrateCommitsToSeparateIndex do
+RSpec.describe MigrateCommitsToSeparateIndex, feature_category: :source_code_management do
   let(:version) { 20220613120500 }
   let(:migration) { described_class.new(version) }
   let(:index_name) { "#{es_helper.target_name}-commits" }

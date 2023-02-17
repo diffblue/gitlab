@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Ingestion::Tasks::AttachFindingsToVulnerabilities do
+RSpec.describe Security::Ingestion::Tasks::AttachFindingsToVulnerabilities, feature_category: :vulnerability_management do
   describe '#execute' do
     let(:pipeline) { create(:ci_pipeline) }
     let(:finding_maps) { create_list(:finding_map, 3, :new_record) }

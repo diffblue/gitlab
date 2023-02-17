@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Burndown do
+RSpec.describe Burndown, feature_category: :planning_analytics do
   let_it_be(:user) { create(:user) }
 
   let(:start_date) { "2017-03-01" }

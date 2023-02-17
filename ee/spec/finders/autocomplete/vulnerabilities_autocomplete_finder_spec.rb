@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Autocomplete::VulnerabilitiesAutocompleteFinder do
+RSpec.describe Autocomplete::VulnerabilitiesAutocompleteFinder, feature_category: :vulnerability_management do
   describe '#execute' do
     let_it_be(:group, refind: true) { create(:group) }
     let_it_be(:project, refind: true) { create(:project, group: group) }
