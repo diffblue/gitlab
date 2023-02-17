@@ -637,6 +637,7 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
 
   describe '.billable' do
     let_it_be(:bot_user) { create(:user, :bot) }
+    let_it_be(:service_account) { create(:user, :service_account) }
     let_it_be(:regular_user) { create(:user) }
     let_it_be(:project_reporter_user) { create(:project_member, :reporter).user }
     let_it_be(:project_guest_user) { create(:project_member, :guest).user }
@@ -649,7 +650,7 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
           FROM "users"
           WHERE ("users"."state" IN ('active'))
           AND
-          ("users"."user_type" IS NULL OR "users"."user_type" IN (6, 4))
+          ("users"."user_type" IS NULL OR "users"."user_type" IN (6, 4, 13))
           AND
           ("users"."user_type" IS NULL OR "users"."user_type" IN (4, 5))
         SQL
@@ -663,6 +664,7 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
         expect(users).to include(regular_user)
 
         expect(users).not_to include(bot_user)
+        expect(users).not_to include(service_account)
       end
     end
 
@@ -677,7 +679,7 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
           FROM "users"
           WHERE ("users"."state" IN ('active'))
           AND
-          ("users"."user_type" IS NULL OR "users"."user_type" IN (6, 4))
+          ("users"."user_type" IS NULL OR "users"."user_type" IN (6, 4, 13))
           AND
           ("users"."user_type" IS NULL OR "users"."user_type" IN (4, 5))
           AND
@@ -696,6 +698,7 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
         expect(users).not_to include(regular_user)
         expect(users).not_to include(project_guest_user)
         expect(users).not_to include(bot_user)
+        expect(users).not_to include(service_account)
       end
     end
   end
@@ -1098,6 +1101,14 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
             expect(user.using_license_seat?).to eq true
           end
         end
+
+        context 'when the user is a service account' do
+          let(:user) { create(:user, :service_account) }
+
+          it 'returns false' do
+            expect(user.using_license_seat?).to eq(false)
+          end
+        end
       end
     end
   end
@@ -1122,11 +1133,7 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
       it { is_expected.to be_falsey }
     end
 
-    context 'when Gitlab.com? is true' do
-      before do
-        allow(Gitlab).to receive(:com?).and_return(true)
-      end
-
+    context 'when SaaS', :saas do
       context 'when namespace is nil' do
         let(:namespace) { nil }
 
