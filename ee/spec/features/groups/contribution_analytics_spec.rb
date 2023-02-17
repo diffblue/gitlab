@@ -33,10 +33,10 @@ RSpec.describe 'Groups > Contribution Analytics', :js, feature_category: :value_
       expect(page).to have_content "Contribution analytics for issues, merge requests and push"
     end
 
-    it 'does not display text indicating pushes, merge requests and issues' do
-      expect(page).not_to have_content "No pushes for the selected time period."
-      expect(page).not_to have_content "No merge requests for the selected time period."
-      expect(page).not_to have_content "No issues for the selected time period."
+    it 'displays text indicating no pushes, merge requests and issues' do
+      expect(page).to have_content "No pushes for the selected time period."
+      expect(page).to have_content "No merge requests for the selected time period."
+      expect(page).to have_content "No issues for the selected time period."
     end
   end
 

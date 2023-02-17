@@ -68,7 +68,7 @@ RSpec.describe Resolvers::Analytics::ContributionAnalytics::ContributionsResolve
         let(:args) { { from: Date.parse('2021-01-01'), to: Date.parse('2022-05-10') } }
 
         it 'raises error' do
-          error_message = s_('ContributionAnalytics|The given date range is larger than 31 days')
+          error_message = s_('ContributionAnalytics|The given date range is larger than 93 days')
 
           expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError, error_message) do
             resolve_contributions(args)
