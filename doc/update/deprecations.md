@@ -386,6 +386,22 @@ While the above approach is recommended for most instances, Sidekiq can also be 
 
 <div class="deprecation removal-160 breaking-change">
 
+### Remove offset pagination from Jobs API
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+A request to the API for `/api/v4/projects/:id/jobs` can return a paginated list of jobs. Projects can contain hundreds or thousands of jobs, so using an offset to paginate through them is slow. Users should instead use [`keyset-based pagination`](https://docs.gitlab.com/ee/api/rest/index.html#keyset-based-pagination) when requesting consecutive pages of results.
+
+In milestone 16.0 we will remove offset-based pagination.
+
+</div>
+
+<div class="deprecation removal-160 breaking-change">
+
 ### Required Pipeline Configuration is deprecated
 
 Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
