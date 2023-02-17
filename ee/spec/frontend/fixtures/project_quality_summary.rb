@@ -11,7 +11,7 @@ RSpec.describe 'Project Quality Summary (GraphQL fixtures)' do
 
     let_it_be(:project) { create(:project, :repository) }
     let_it_be(:current_user) { create(:user) }
-    let_it_be(:pipeline) { create(:ci_pipeline, :with_test_reports, :with_report_results, project: project) }
+    let_it_be(:pipeline) { create(:ci_pipeline, :with_test_reports, :with_codequality_reports, :with_report_results, project: project) }
 
     let!(:coverage) { create(:ci_build, :success, pipeline: pipeline, coverage: 78) }
     let!(:build) { create(:ci_build, pipeline: pipeline) }

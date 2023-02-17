@@ -21,6 +21,8 @@ describe('Project quality summary app component', () => {
 
   const findTestRunsLink = () => wrapper.findByTestId('test-runs-link');
   const findTestRunsStat = (index) => wrapper.findAllByTestId('test-runs-stat').at(index);
+  const findCodeQualityLink = () => wrapper.findByTestId('code-quality-link');
+  const findCodeQualityStat = (index) => wrapper.findAllByTestId('code-quality-stat').at(index);
   const findCoverageLink = () => wrapper.findByTestId('coverage-link');
   const findCoverageStat = () => wrapper.findByTestId('coverage-stat');
   const findBanner = () => wrapper.findComponent(FeedbackBanner);
@@ -91,7 +93,6 @@ describe('Project quality summary app component', () => {
 
       it('shows the percentage of tests that passed', () => {
         const passedStat = findTestRunsStat(0).text();
-
         expect(passedStat).toContain('Passed');
         expect(passedStat).toContain(' 50%');
       });
@@ -108,6 +109,33 @@ describe('Project quality summary app component', () => {
 
         expect(skippedStat).toContain('Skipped');
         expect(skippedStat).toContain(' 0%');
+      });
+    });
+
+    describe('code quality card', () => {
+      it('shows a link to the full report', () => {
+        expect(findCodeQualityLink().attributes('href')).toBe(`${pipelinePath}/codequality_report`);
+      });
+
+      it('shows the number of violations found', () => {
+        const countStat = findCodeQualityStat(0);
+
+        expect(countStat.props().title).toBe('Violations found');
+        expect(countStat.props().value).toBe(3);
+      });
+
+      it('shows the number of blocker level violations found', () => {
+        const blockerStat = findCodeQualityStat(1);
+
+        expect(blockerStat.props().title).toBe('Blocker');
+        expect(blockerStat.props().value).toBe(0);
+      });
+
+      it('shows the percentage of tests that were skipped', () => {
+        const criticalStat = findCodeQualityStat(2);
+
+        expect(criticalStat.props().title).toBe('Critical');
+        expect(criticalStat.props().value).toBe(0);
       });
     });
 

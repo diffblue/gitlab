@@ -64,6 +64,12 @@ export default {
     hasTestRunsData() {
       return Boolean(this.projectQuality?.testReportSummary?.total.count);
     },
+    hasCodeQualityData() {
+      return Boolean(this.projectQuality?.codeQualityReportSummary?.count);
+    },
+    isShowCodeQualityCard() {
+      return Boolean(this.$apollo.queries.projectQuality.loading || this.hasCodeQualityData);
+    },
     testSuccessPercentage() {
       return formatStat(
         this.projectQuality.testReportSummary.total.success /
@@ -91,9 +97,13 @@ export default {
     pipelineTestReportPath() {
       return `${this.projectQuality?.pipelinePath}/test_report`;
     },
+    pipelineCodeQualityReportPath() {
+      return `${this.projectQuality?.pipelinePath}/codequality_report`;
+    },
   },
   i18n,
   testRunsHelpPath: helpPagePath('ci/unit_test_reports'),
+  codeQualityHelpPath: helpPagePath('ci/testing/code_quality'),
   coverageHelpPath: helpPagePath('ci/pipelines/settings', {
     anchor: 'add-test-coverage-results-to-a-merge-request',
   }),
@@ -170,6 +180,66 @@ export default {
       <test-runs-empty-state class="gl-mt-6" />
       <hr />
     </template>
+
+    <gl-card v-if="isShowCodeQualityCard" class="gl-mt-6">
+      <template #header>
+        <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
+          <h5 class="gl-font-lg gl-m-2">{{ $options.i18n.codeQuality.title }}</h5>
+          <gl-icon
+            id="code-quality-icon"
+            name="question-o"
+            class="gl-text-blue-600 gl-cursor-pointer gl-mx-2"
+          />
+          <gl-popover
+            target="code-quality-icon"
+            :title="$options.i18n.codeQuality.title"
+            placement="top"
+            container="viewport"
+            triggers="hover focus"
+          >
+            <p>{{ $options.i18n.codeQuality.popoverBody }}</p>
+            <gl-link :href="$options.codeQualityHelpPath" class="gl-font-sm" target="_blank">
+              {{ $options.i18n.codeQuality.learnMoreLink }}
+            </gl-link>
+          </gl-popover>
+          <strong class="gl-text-gray-500 gl-mx-2">{{ $options.i18n.subHeader }}</strong>
+          <gl-link
+            :href="pipelineCodeQualityReportPath"
+            class="gl-flex-grow-1 gl-text-right gl-mx-2"
+            data-testid="code-quality-link"
+          >
+            {{ $options.i18n.codeQuality.fullReportLink }}
+          </gl-link>
+        </div>
+      </template>
+      <template #default>
+        <gl-skeleton-loader v-if="$apollo.queries.projectQuality.loading" />
+        <div v-else class="row gl-ml-2">
+          <gl-single-stat
+            class="col-sm-6 col-md-4"
+            data-testid="code-quality-stat"
+            :title="$options.i18n.codeQuality.foundLabel"
+            :value="projectQuality.codeQualityReportSummary.count"
+          />
+          <gl-single-stat
+            class="col-sm-6 col-md-4 code-quality-blocker"
+            data-testid="code-quality-stat"
+            title-icon="severity-critical"
+            :title="$options.i18n.codeQuality.blockerLabel"
+            :value="projectQuality.codeQualityReportSummary.blocker"
+            :unit="$options.i18n.codeQuality.unit"
+          />
+          <gl-single-stat
+            class="col-sm-6 col-md-4 code-quality-critical"
+            data-testid="code-quality-stat"
+            title-icon="severity-high"
+            :title="$options.i18n.codeQuality.criticalLabel"
+            :value="projectQuality.codeQualityReportSummary.critical"
+            :unit="$options.i18n.codeQuality.unit"
+          />
+        </div>
+      </template>
+    </gl-card>
 
     <gl-card class="gl-mt-6">
       <template #header>
