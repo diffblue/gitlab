@@ -57,6 +57,9 @@ describe('Roadmap Vuex Actions', () => {
       basePath,
       timeframeStartDate,
       timeframeEndDate,
+      filterParams: {
+        milestoneTitle: '',
+      },
     };
     originalGon = window.gon;
   });
@@ -408,6 +411,7 @@ describe('Roadmap Vuex Actions', () => {
                 sort: state.sortedBy,
                 state: state.epicsState,
                 withColor: withColorEnabled,
+                milestoneTitle: '',
               },
             });
           });
@@ -523,6 +527,9 @@ describe('Roadmap Vuex Actions', () => {
         milestonesState: 'active',
         presetType: PRESET_TYPES.MONTHS,
         timeframe: mockTimeframeMonths,
+        filterParams: {
+          milestoneTitle: '',
+        },
       };
 
       expectedVariables = {
@@ -534,6 +541,7 @@ describe('Roadmap Vuex Actions', () => {
         },
         includeDescendants: true,
         includeAncestors: true,
+        searchTitle: '',
       };
     });
 
@@ -549,6 +557,26 @@ describe('Roadmap Vuex Actions', () => {
           query: groupMilestones,
           variables: expectedVariables,
         });
+      });
+    });
+
+    it('should fetch searched Group Milestones using GraphQL client', async () => {
+      mockState.filterParams = {
+        milestoneTitle: mockGroupMilestones[0].title,
+      };
+
+      expectedVariables.searchTitle = mockGroupMilestones[0].title;
+
+      jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(
+        Promise.resolve({
+          data: mockGroupMilestonesQueryResponse.data,
+        }),
+      );
+
+      await actions.fetchGroupMilestones(mockState);
+      expect(epicUtils.gqClient.query).toHaveBeenCalledWith({
+        query: groupMilestones,
+        variables: expectedVariables,
       });
     });
   });

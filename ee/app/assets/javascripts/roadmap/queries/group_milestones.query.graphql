@@ -4,6 +4,7 @@ query groupMilestonesEE(
   $timeframe: Timeframe
   $includeDescendants: Boolean
   $includeAncestors: Boolean
+  $searchTitle: String
 ) {
   group(fullPath: $fullPath) {
     id
@@ -13,6 +14,7 @@ query groupMilestonesEE(
       includeDescendants: $includeDescendants
       includeAncestors: $includeAncestors
       timeframe: $timeframe
+      searchTitle: $searchTitle
     ) {
       edges {
         node {

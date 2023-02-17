@@ -37,6 +37,9 @@ describe('RoadmapShell', () => {
       timeframe: mockTimeframeMonths,
       presetType,
       timeframeRangeType,
+      filterParams: {
+        milestoneTitle: '',
+      },
     });
   };
 
