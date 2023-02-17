@@ -6,6 +6,7 @@ import { mockTracking, triggerEvent, unmockTracking } from 'helpers/tracking_hel
 import eventHub from '~/invite_members/event_hub';
 import LearnGitlabSectionLink from 'ee/pages/projects/learn_gitlab/components/learn_gitlab_section_link.vue';
 import { ACTION_LABELS } from 'ee/pages/projects/learn_gitlab/constants';
+import { LEARN_GITLAB } from '~/invite_members/constants';
 
 const defaultAction = 'gitWrite';
 const defaultProps = {
@@ -167,7 +168,7 @@ describe('Learn GitLab Section Link', () => {
     it('calls the eventHub', () => {
       openInviteMembesrModalLink().vm.$emit('click');
 
-      expect(eventHub.$emit).toHaveBeenCalledWith('openModal', { source: 'learn_gitlab' });
+      expect(eventHub.$emit).toHaveBeenCalledWith('openModal', { source: LEARN_GITLAB });
     });
 
     it('tracks the click', async () => {
