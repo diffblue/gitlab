@@ -93,6 +93,14 @@ module QA
             end
           end
 
+          def click_compliance_report_link
+            hover_security_and_compliance do
+              within_submenu do
+                click_element(:sidebar_menu_item_link, menu_item: 'Compliance report')
+              end
+            end
+          end
+
           def click_group_wiki_link
             within_sidebar do
               scroll_to_element(:sidebar_menu_link, menu_item: 'Wiki')
