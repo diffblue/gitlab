@@ -268,6 +268,18 @@ and [Helm Chart deployments](https://docs.gitlab.com/charts/). They come with ap
 
 - This version removes `SanitizeConfidentialTodos` background migration [added](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/87908/diffs) in 15.6, which removed any user inaccessible to-do items. Make sure that this migration is finished before upgrading to 15.9.
 - As part of the [CI Partitioning effort](../architecture/blueprints/ci_data_decay/pipeline_partitioning.md), a [new Foreign Key](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/107547) was added to `ci_builds_needs`. On GitLab instances with large CI tables, adding this constraint can take longer than usual. Make sure that this migration is finished before upgrading to 15.9.
+- Praefect's metadata verifier's [invalid metadata deletion behavior](../administration/gitaly/praefect.md#enable-deletions) is now enabled by default.
+
+  The metadata verifier processes replica records in the Praefect database and verifies the replicas actually exist on the Gitaly nodes. If the replica doesn't exist, its
+  metadata record is deleted. This enables Praefect to fix situations where a replica has a metadata record indicating it's fine but, in reality, it doesn't exist on disk.
+  After the metadata record is deleted, Praefect's reconciler schedules a replication job to recreate the replica.
+
+  Because of past issues with the state management logic, there may be invalid metadata records in the database. These could exist, for example, because of incomplete
+  deletions of repositories or partially completed renames. The verifier deletes these stale replica records of affected repositories. These repositories may show up as
+  unavailable repositories in the metrics and `praefect dataloss` sub-command because of the replica records being removed. If you encounter such repositories, remove
+  the repository using `praefect remove-repository` to remove the repository's remaining records.
+
+  You can find repositories with invalid metadata records prior in GitLab 15.0 and later by searching for the log records outputted by the verifier. You can find an example log record [here](../administration/gitaly/praefect.md#repository-verification).
 - Praefect configuration structure in Omnibus GitLab [has changed](https://gitlab.com/gitlab-org/gitaly/-/issues/4467) to be consistent with the Praefect configuration structure
   used in source installs. Praefect configuration is now under `praefect['configuration']` as a single hash. There are still other top-level keys in `praefect` used by
   Omnibus GitLab.
