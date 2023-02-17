@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Sidebars::Menu do
+RSpec.describe Sidebars::Menu, feature_category: :navigation do
   let(:menu) { described_class.new(context) }
   let(:context) do
     Sidebars::Context.new(current_user: nil, container: nil, route_is_active: ->(x) { x[:controller] == 'fooc' })

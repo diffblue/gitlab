@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Sidebars::Panel do
+RSpec.describe Sidebars::Panel, feature_category: :navigation do
   let(:context) { Sidebars::Context.new(current_user: nil, container: nil) }
   let(:panel) { Sidebars::Panel.new(context) }
   let(:menu1) { Sidebars::Menu.new(context) }
@@ -72,6 +72,12 @@ RSpec.describe Sidebars::Panel do
           is_active: false
         }
       ])
+    end
+  end
+
+  describe '#super_sidebar_context_header' do
+    it 'raises `NotImplementedError`' do
+      expect { panel.super_sidebar_context_header }.to raise_error(NotImplementedError)
     end
   end
 
