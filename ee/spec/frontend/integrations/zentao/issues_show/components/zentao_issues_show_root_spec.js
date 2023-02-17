@@ -31,7 +31,7 @@ describe('ZentaoIssuesShow', () => {
   const createComponent = () => {
     wrapper = shallowMountExtended(ZentaoIssuesShow, {
       directives: {
-        GlTooltip: createMockDirective(),
+        GlTooltip: createMockDirective('gl-tooltip'),
       },
       stubs: {
         IssuableHeader,

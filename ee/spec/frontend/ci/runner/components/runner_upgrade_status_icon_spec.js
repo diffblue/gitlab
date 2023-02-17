@@ -26,7 +26,7 @@ describe('RunnerUpgradeStatusIcon', () => {
         },
       },
       directives: {
-        GlTooltip: createMockDirective(),
+        GlTooltip: createMockDirective('gl-tooltip'),
       },
       provide: {
         glFeatures,

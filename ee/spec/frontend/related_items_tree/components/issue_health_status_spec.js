@@ -15,7 +15,7 @@ describe('IssueHealthStatus', () => {
   const createComponent = () =>
     shallowMountExtended(IssueHealthStatus, {
       directives: {
-        GlTooltip: createMockDirective(),
+        GlTooltip: createMockDirective('gl-tooltip'),
       },
       propsData: {
         healthStatus,

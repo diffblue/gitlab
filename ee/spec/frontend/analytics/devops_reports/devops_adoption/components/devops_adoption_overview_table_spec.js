@@ -27,8 +27,8 @@ describe('DevopsAdoptionOverviewTable', () => {
       },
       provide,
       directives: {
-        GlTooltip: createMockDirective(),
-        GlModal: createMockDirective(),
+        GlTooltip: createMockDirective('gl-tooltip'),
+        GlModal: createMockDirective('gl-modal'),
       },
     });
   };

@@ -38,7 +38,7 @@ describe('RotationsListSectionComponent', () => {
           GlCard,
         },
         directives: {
-          GlTooltip: createMockDirective(),
+          GlTooltip: createMockDirective('gl-tooltip'),
         },
       }),
     );

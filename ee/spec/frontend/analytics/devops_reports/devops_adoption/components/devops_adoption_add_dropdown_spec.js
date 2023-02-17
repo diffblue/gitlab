@@ -65,7 +65,7 @@ describe('DevopsAdoptionAddDropdown', () => {
       },
       provide,
       directives: {
-        GlTooltip: createMockDirective(),
+        GlTooltip: createMockDirective('gl-tooltip'),
       },
       stubs: {
         GlDropdown,

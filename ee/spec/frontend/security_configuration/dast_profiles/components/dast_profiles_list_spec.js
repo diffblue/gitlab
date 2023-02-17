@@ -35,7 +35,7 @@ describe('EE - DastProfilesList', () => {
         options,
         {
           directives: {
-            GlTooltip: createMockDirective(),
+            GlTooltip: createMockDirective('gl-tooltip'),
           },
         },
       ),
