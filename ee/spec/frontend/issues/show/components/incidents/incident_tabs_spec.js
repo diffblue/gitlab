@@ -10,61 +10,57 @@ const mockAlert = {
   iid: '1',
 };
 
+const defaultMocks = {
+  $apollo: {
+    queries: {
+      alert: {
+        loading: true,
+      },
+    },
+  },
+};
+
 describe('Incident Tabs component', () => {
   let wrapper;
 
-  const mountComponent = (data = {}, options = {}) => {
+  const mountComponent = ({ uploadMetricsFeatureAvailable }) => {
     wrapper = shallowMount(
       IncidentTabs,
-      merge(
-        {
-          propsData: {
-            ...descriptionProps,
-          },
-          stubs: {
-            DescriptionComponent: true,
-            MetricsTab: true,
-          },
-          provide: {
-            fullPath: '',
-            iid: '',
-            projectId: '',
-            issuableId: '',
-            uploadMetricsFeatureAvailable: true,
-          },
-          data() {
-            return { alert: mockAlert, ...data };
-          },
-          mocks: {
-            $apollo: {
-              queries: {
-                alert: {
-                  loading: true,
-                },
-              },
-            },
-          },
+      merge({
+        propsData: {
+          ...descriptionProps,
         },
-        options,
-      ),
+        stubs: {
+          DescriptionComponent: true,
+          MetricsTab: true,
+        },
+        provide: {
+          fullPath: '',
+          iid: '',
+          projectId: '',
+          issuableId: '',
+          uploadMetricsFeatureAvailable,
+          hasLinkedAlerts: false,
+        },
+        data() {
+          return { alert: mockAlert };
+        },
+        mocks: defaultMocks,
+      }),
     );
   };
 
   const findMetricsTab = () => wrapper.find('[data-testid="metrics-tab"]');
 
   describe('upload metrics feature available', () => {
-    beforeEach(() => {
-      mountComponent();
-    });
-
     it('shows the metric tab when metrics are available', () => {
-      mountComponent({}, { provide: { uploadMetricsFeatureAvailable: true } });
+      mountComponent({ uploadMetricsFeatureAvailable: true });
 
       expect(findMetricsTab().exists()).toBe(true);
     });
 
     it('hides the tab when metrics are not available', () => {
-      mountComponent({}, { provide: { uploadMetricsFeatureAvailable: false } });
+      mountComponent({ uploadMetricsFeatureAvailable: false });
 
       expect(findMetricsTab().exists()).toBe(false);
     });
