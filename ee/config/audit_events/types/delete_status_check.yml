@@ -1,0 +1,9 @@
+---
+name: delete_status_check
+description: Event triggered when an external status check is deleted
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/355805
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/84624
+feature_category: compliance_management
+milestone: '15.9'
+saved_to_database: true
+streamed: true
