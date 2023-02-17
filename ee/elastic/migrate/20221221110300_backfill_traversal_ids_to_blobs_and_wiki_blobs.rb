@@ -2,12 +2,13 @@
 
 class BackfillTraversalIdsToBlobsAndWikiBlobs < Elastic::Migration
   include Elastic::MigrationHelper
+  include Elastic::Latest::Routing
 
   ELASTIC_TIMEOUT = '5m'
   BLOB_AND_WIKI_BLOB = %w[blob wiki_blob].freeze
   MAX_PROJECTS_TO_PROCESS = 50
 
-  batch_size 100_000
+  batch_size 50_000
   batched!
   throttle_delay 5.seconds
   retry_on_failure
@@ -110,6 +111,7 @@ class BackfillTraversalIdsToBlobsAndWikiBlobs < Elastic::Migration
       wait_for_completion: false,
       max_docs: batch_size,
       timeout: ELASTIC_TIMEOUT,
+      routing: routing_options({ project_id: project.id })[:routing],
       conflicts: 'proceed'
     )
 
