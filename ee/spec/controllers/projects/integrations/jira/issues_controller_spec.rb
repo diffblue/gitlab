@@ -69,7 +69,6 @@ RSpec.describe Projects::Integrations::Jira::IssuesController, feature_category:
     it_behaves_like 'Snowplow event tracking with RedisHLL context' do
       subject(:get_index) { get :index, params: { namespace_id: project.namespace, project_id: project } }
 
-      let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
       let(:category) { described_class.name }
       let(:action) { 'perform_integrations_action' }
       let(:namespace) { project.namespace }

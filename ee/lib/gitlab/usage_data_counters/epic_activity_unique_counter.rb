@@ -227,7 +227,6 @@ module Gitlab
         end
 
         def track_snowplow_action(event_name, author, namespace)
-          return unless Feature.enabled?(:route_hll_to_snowplow_phase2, namespace)
           return unless author
 
           Gitlab::Tracking.event(

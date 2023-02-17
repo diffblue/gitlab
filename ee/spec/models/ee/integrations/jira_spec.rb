@@ -316,7 +316,6 @@ RSpec.describe Integrations::Jira do
         subject(:create_issue) { jira_integration.create_issue('x', 'y', user) }
 
         let(:user) { build_stubbed(:user) }
-        let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
         let(:category) { 'Integrations::Jira' }
         let(:action) { 'perform_integrations_action' }
         let(:project) { nil }

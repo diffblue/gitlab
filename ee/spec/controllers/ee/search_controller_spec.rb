@@ -23,14 +23,6 @@ RSpec.describe SearchController, :elastic, feature_category: :global_search do
 
         subject { get :show, params: { group_id: namespace.id, scope: 'blobs', search: 'term' } }
 
-        it 'is not sending events if FF is disabled' do
-          stub_feature_flags(route_hll_to_snowplow_phase2: false)
-
-          subject
-
-          expect_no_snowplow_event
-        end
-
         it 'emits all search events' do
           action = 'executed'
           subject
