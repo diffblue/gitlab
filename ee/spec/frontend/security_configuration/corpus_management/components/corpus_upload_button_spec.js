@@ -1,36 +1,83 @@
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 import { GlModal } from '@gitlab/ui';
 import CorpusUploadButton from 'ee/security_configuration/corpus_management/components/corpus_upload_button.vue';
 import CorpusUploadForm from 'ee/security_configuration/corpus_management/components/corpus_upload_form.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+import createMockApollo from 'helpers/mock_apollo_helper';
 
 const TEST_PROJECT_FULL_PATH = '/namespace/project';
 
+Vue.use(VueApollo);
+
 describe('Corpus Upload Button', () => {
   let wrapper;
+  let uploadStateSpy;
+  let uploadCorpusSpy;
+  let uploadErrorSpy;
+  let resetCorpusSpy;
+  let addCorpusSpy;
+  let apolloProvider;
 
   const findModal = () => wrapper.findComponent(GlModal);
   const findCorpusUploadForm = () => wrapper.findComponent(CorpusUploadForm);
   const findNewCorpusButton = () => wrapper.findByTestId('new-corpus');
 
-  const createComponentFactory = (mountFn = shallowMountExtended) => (options = {}) => {
-    wrapper = mountFn(CorpusUploadButton, {
-      mocks: {
-        uploadState: {
-          progress: 0,
-        },
-      },
+  const getUploadStateResponse = (data = {}) => ({
+    isUploading: false,
+    progress: 0,
+    cancelSource: null,
+    uploadedPackageId: null,
+    errors: {
+      name: '',
+      file: '',
+      __typename: 'Errors',
+    },
+    __typename: 'UploadState',
+    ...data,
+  });
+
+  const createComponent = ({ canUploadCorpus = true } = {}) => {
+    wrapper = shallowMountExtended(CorpusUploadButton, {
       provide: {
         projectFullPath: TEST_PROJECT_FULL_PATH,
-        canUploadCorpus: true,
+        canUploadCorpus,
       },
-      ...options,
+      apolloProvider,
     });
   };
 
-  const createComponent = createComponentFactory();
+  const passVariablesToSpy = (spy) => (_, variables) => spy(variables);
 
-  afterEach(() => {
-    wrapper.destroy();
+  const createApolloProvider = () => {
+    uploadStateSpy = jest.fn().mockResolvedValue(getUploadStateResponse());
+    uploadCorpusSpy = jest.fn().mockResolvedValue({
+      errors: [],
+    });
+    uploadErrorSpy = jest.fn().mockResolvedValue(null);
+    resetCorpusSpy = jest.fn().mockResolvedValue(null);
+    addCorpusSpy = jest.fn().mockResolvedValue({
+      errors: [],
+    });
+
+    const mockResolvers = {
+      Query: {
+        uploadState: passVariablesToSpy(uploadStateSpy),
+      },
+      Mutation: {
+        uploadCorpus: passVariablesToSpy(uploadCorpusSpy),
+        uploadError: passVariablesToSpy(uploadErrorSpy),
+        resetCorpus: passVariablesToSpy(resetCorpusSpy),
+        addCorpus: passVariablesToSpy(addCorpusSpy),
+      },
+    };
+
+    apolloProvider = createMockApollo([], mockResolvers);
+  };
+
+  beforeEach(() => {
+    createApolloProvider();
   });
 
   describe('component', () => {
@@ -43,49 +90,61 @@ describe('Corpus Upload Button', () => {
     describe('addCorpus mutation', () => {
       it('gets called when the add button is clicked from the modal', async () => {
         createComponent();
-        jest.spyOn(wrapper.vm, 'addCorpus').mockImplementation(() => {});
-        await wrapper.vm.$forceUpdate();
+
         findModal().vm.$emit('primary');
-        expect(wrapper.vm.addCorpus).toHaveBeenCalled();
+        await waitForPromises();
+
+        expect(addCorpusSpy).toHaveBeenCalledWith({
+          name: CorpusUploadButton.i18n.newCorpus,
+          packageId: undefined,
+          projectPath: TEST_PROJECT_FULL_PATH,
+        });
+        expect(wrapper.emitted('corpus-added')).toHaveLength(1);
       });
     });
 
     describe('resetCorpus mutation', () => {
       it('gets called when the cancel button is clicked from the modal', async () => {
         createComponent();
-        jest.spyOn(wrapper.vm, 'resetCorpus').mockImplementation(() => {});
-        await wrapper.vm.$forceUpdate();
+
         findModal().vm.$emit('canceled');
-        expect(wrapper.vm.resetCorpus).toHaveBeenCalled();
+        await waitForPromises();
+
+        expect(resetCorpusSpy).toHaveBeenCalledWith({
+          projectPath: TEST_PROJECT_FULL_PATH,
+        });
       });
 
       it('gets called when the upload form triggers a reset', async () => {
         createComponent();
-        jest.spyOn(wrapper.vm, 'resetCorpus').mockImplementation(() => {});
-        await wrapper.vm.$forceUpdate();
+
         findCorpusUploadForm().vm.$emit('resetCorpus');
-        expect(wrapper.vm.resetCorpus).toHaveBeenCalled();
+        await waitForPromises();
+
+        expect(resetCorpusSpy).toHaveBeenCalledWith({
+          projectPath: TEST_PROJECT_FULL_PATH,
+        });
       });
     });
 
     describe('uploadCorpus mutation', () => {
       it('gets called when the upload file is clicked from the modal', async () => {
+        const payload = { name: 'name', files: [{ size: 2 }] };
         createComponent();
-        jest.spyOn(wrapper.vm, 'beginFileUpload').mockImplementation(() => {});
-        await wrapper.vm.$forceUpdate();
-        findCorpusUploadForm().vm.$emit('beginFileUpload');
-        expect(wrapper.vm.beginFileUpload).toHaveBeenCalled();
+
+        findCorpusUploadForm().vm.$emit('beginFileUpload', payload);
+        await waitForPromises();
+
+        expect(uploadCorpusSpy).toHaveBeenCalledWith({
+          projectPath: TEST_PROJECT_FULL_PATH,
+          ...payload,
+        });
       });
     });
 
     describe('with new uploading disabled', () => {
       it('does not render the upload button', () => {
-        createComponent({
-          provide: {
-            projectFullPath: TEST_PROJECT_FULL_PATH,
-            canUploadCorpus: false,
-          },
-        });
+        createComponent({ canUploadCorpus: false });
 
         expect(findNewCorpusButton().exists()).toBe(false);
       });
@@ -93,14 +152,13 @@ describe('Corpus Upload Button', () => {
 
     describe('add button', () => {
       it('is disabled when corpus has not been uploaded', () => {
-        createComponent({
-          mocks: {
-            uploadState: {
-              progress: 0,
-              uploadedPackageId: null,
-            },
-          },
-        });
+        uploadStateSpy.mockResolvedValue(
+          getUploadStateResponse({
+            progress: 0,
+            uploadedPackageId: null,
+          }),
+        );
+        createComponent();
 
         expect(findModal().props('actionPrimary')).toEqual({
           attributes: {
@@ -113,14 +171,13 @@ describe('Corpus Upload Button', () => {
       });
 
       it('is disabled when corpus has 100 percent completion, but is still waiting on the server response', () => {
-        createComponent({
-          mocks: {
-            uploadState: {
-              progress: 100,
-              uploadedPackageId: null,
-            },
-          },
-        });
+        uploadStateSpy.mockResolvedValue(
+          getUploadStateResponse({
+            progress: 100,
+            uploadedPackageId: null,
+          }),
+        );
+        createComponent();
 
         expect(findModal().props('actionPrimary')).toEqual({
           attributes: {
@@ -132,15 +189,16 @@ describe('Corpus Upload Button', () => {
         });
       });
 
-      it('is enabled when corpus has been uploaded', () => {
-        createComponent({
-          mocks: {
-            uploadState: {
-              progress: 100,
-              uploadedPackageId: 1,
-            },
-          },
-        });
+      it('is enabled when corpus has been uploaded', async () => {
+        uploadStateSpy.mockResolvedValue(
+          getUploadStateResponse({
+            progress: 100,
+            uploadedPackageId: 1,
+          }),
+        );
+
+        createComponent();
+        await waitForPromises();
 
         expect(findModal().props('actionPrimary')).toEqual({
           attributes: {

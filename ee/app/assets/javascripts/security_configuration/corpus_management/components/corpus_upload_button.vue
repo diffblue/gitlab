@@ -28,6 +28,11 @@ export default {
       query: getUploadState,
     },
   },
+  data() {
+    return {
+      uploadState: {},
+    };
+  },
   modal: {
     actionCancel: {
       text: __('Cancel'),
