@@ -175,7 +175,7 @@ export default {
         {
           href: `${this.mr.pipeline.path}/security`,
           text: this.$options.i18n.fullReport,
-          fullReport: true,
+          trackFullReportClicked: true,
         },
       ];
     },
