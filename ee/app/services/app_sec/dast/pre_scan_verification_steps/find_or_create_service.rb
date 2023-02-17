@@ -7,11 +7,13 @@ module AppSec
         def execute
           return ServiceResponse.error(message: _('Insufficient permissions')) unless allowed?
 
-          verification_step = ::Dast::PreScanVerificationStep.find_or_create_by(name: step, dast_pre_scan_verification: verification) # rubocop:disable CodeReuse/ActiveRecord
+          verification_step = ::Dast::PreScanVerificationStep.find_or_create_by(check_type: step, dast_pre_scan_verification: verification) # rubocop:disable CodeReuse/ActiveRecord
 
           return ServiceResponse.error(message: error_message(verification_step)) unless verification_step.persisted?
 
           ServiceResponse.success(payload: { verification_step: verification_step })
+        rescue ActiveRecord::StatementInvalid
+          ServiceResponse.error(message: format_error_message("#{step} is not a valid pre step name"))
         end
       end
     end

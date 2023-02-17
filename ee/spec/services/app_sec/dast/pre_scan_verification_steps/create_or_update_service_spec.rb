@@ -48,7 +48,7 @@ RSpec.describe AppSec::Dast::PreScanVerificationSteps::CreateOrUpdateService, :d
 
         it_behaves_like 'an error occurred in the execute method of dast service' do
           let(:error_message) do
-            'Error creating or updating PreScanVerificationStep: Name is not a valid pre step name'
+            'Error creating or updating PreScanVerificationStep: invalid_step is not a valid pre step name'
           end
         end
       end
