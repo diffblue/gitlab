@@ -11,6 +11,18 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 License Approval Policies allow you to specify multiple types of criteria that define when approval is required before a merge request can be merged in.
 
+## Create a new license approval policy
+
+Create a license approval policy to enforce license compliance.
+
+To create a license approval policy:
+
+1. [Link a security policy project](../application_security/policies/index.md#managing-the-linked-security-policy-project) to your development group, subgroup, or project (the Owner role is required).
+1. On the top bar, select **Main menu > Projects** and find your project.
+1. On the left sidebar, select **Security & Compliance > Policies**.
+1. Create a new [Scan Result Policy](../application_security/policies/scan-result-policies.md).
+1. In your policy rule, select **License scanning**.
+
 ## Criteria defining which licenses require approval
 
 The following types of criteria can be used to determine which licenses are "approved" or "denied" and require approval.
