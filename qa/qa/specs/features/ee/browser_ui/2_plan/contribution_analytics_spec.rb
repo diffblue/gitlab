@@ -46,11 +46,15 @@ module QA
         :aggregate_failures,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347765'
       ) do
-        EE::Page::Group::ContributionAnalytics.perform do |contribution_analytics|
-          expect(contribution_analytics).to have_push_element('3 pushes')
-          expect(contribution_analytics).to have_push_element('1 contributor')
-          expect(contribution_analytics).to have_mr_element('1 created, 1 merged, 0 closed.')
-          expect(contribution_analytics).to have_issue_element('1 created, 1 closed.')
+        EE::Page::Group::ContributionAnalytics.perform do |analytics_page|
+          expect { analytics_page.push_analytics_content }.to eventually_have_content('3 pushes')
+                                                 .within(max_duration: 120, reload_page: analytics_page)
+          expect { analytics_page.push_analytics_content }.to eventually_have_content('1 contributor')
+                                                 .within(max_duration: 120, reload_page: analytics_page)
+          expect { analytics_page.mr_analytics_content }.to eventually_have_content('1 created, 1 merged, 0 closed.')
+                                                 .within(max_duration: 120, reload_page: analytics_page)
+          expect { analytics_page.issue_analytics_content }.to eventually_have_content('1 created, 1 closed.')
+                                                 .within(max_duration: 120, reload_page: analytics_page)
         end
       end
     end
