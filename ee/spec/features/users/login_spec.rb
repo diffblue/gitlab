@@ -109,7 +109,7 @@ RSpec.describe 'Login', feature_category: :authentication_and_authorization do
 
               visit profile_path
 
-              expect(page).not_to have_content('Two-Factor Authentication')
+              expect(page).not_to have_content(_('Enter verification code'))
             end
           end
 
@@ -119,7 +119,7 @@ RSpec.describe 'Login', feature_category: :authentication_and_authorization do
 
               visit profile_path
 
-              expect(page).to have_content('Two-Factor Authentication')
+              expect(page).to have_content(_('Enter verification code'))
             end
           end
         end
