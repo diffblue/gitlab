@@ -241,11 +241,21 @@ export default {
       @row-selected="toggleDrawer"
       @sort-changed="handleSortChanged"
     >
-      <template #cell(severityLevel)="{ item: { severityLevel } }">
-        <severity-badge class="gl-reset-text-align!" :severity="severityLevel" />
+      <template #cell(severityLevel)="{ item: { severityLevel, mergeRequest } }">
+        <severity-badge
+          class="gl-reset-text-align!"
+          :severity="severityLevel"
+          data-qa-selector="violation_severity_content"
+          :data-qa-description="mergeRequest.title"
+        />
       </template>
-      <template #cell(violationReason)="{ item: { reason, violatingUser } }">
-        <violation-reason :reason="reason" :user="violatingUser" />
+      <template #cell(violationReason)="{ item: { reason, violatingUser, mergeRequest } }">
+        <violation-reason
+          :reason="reason"
+          :user="violatingUser"
+          data-qa-selector="violation_reason_content"
+          :data-qa-description="mergeRequest.title"
+        />
       </template>
       <template #cell(mergeRequestTitle)="{ item: { mergeRequest } }">
         {{ mergeRequest.title }}
