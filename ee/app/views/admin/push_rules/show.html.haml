@@ -1,10 +1,11 @@
 - breadcrumb_title _("Push Rules")
 - page_title _("Push Rules")
+- add_page_specific_style 'page_bundles/settings'
 - @content_class = "limit-container-width" unless fluid_layout
 
 %section.settings.no-animate#js-push-rule-settings{ class: ('expanded' if expanded_by_default?) }
   .settings-header
-    %h4
+    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
       = _('Push Rules')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded_by_default? ? _('Collapse') : _('Expand')
