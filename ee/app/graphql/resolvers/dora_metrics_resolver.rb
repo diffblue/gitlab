@@ -40,27 +40,21 @@ module Resolvers
         params[:environment_tiers] |= [params[:environment_tier]]
       end
 
+      params[:metrics] = [params[:metric]] if params[:metric]
+
       result = ::Dora::AggregateMetricsService
         .new(container: container, current_user: current_user, params: params)
         .execute
 
       raise Gitlab::Graphql::Errors::ArgumentError, result[:message] unless result[:status] == :success
 
-      data = result[:data]
+      backwards_compatibility(result[:data], params[:metric])
+    end
 
-      if data.is_a? Numeric
-        # When interval=ALL, the service above returns a single number (float or integer)
-        # instead of an array of hashes, like it does otherwise.
-        # To keep the return value of this resolver consistent, we wrap
-        # it in the structure we expect.
-        #
-        # This can be removed if/when we update the service to always
-        # return a consistent shape:
-        # https://gitlab.com/gitlab-org/gitlab/-/issues/334821
-        [{ 'date' => nil, 'value' => data }]
-      else
-        data
-      end
+    private
+
+    def backwards_compatibility(data, metric)
+      data.map { |row| { 'date' => row['date'], 'value' => row[metric] } }
     end
   end
 end

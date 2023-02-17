@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::TimeToRestoreService do
+RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::TimeToRestoreService, feature_category: :devops_reports do
   let(:stage) { build(:cycle_analytics_stage) }
   let(:user) { build(:user) }
 
@@ -28,7 +28,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::TimeToRestoreService 
   context 'when the DORA service returns 0 as value' do
     it 'returns "none" value' do
       expect_next_instance_of(Dora::AggregateMetricsService) do |service|
-        expect(service).to receive(:execute).and_return({ status: :success, data: 0 })
+        expect(service).to receive(:execute).and_return({ status: :success,
+data: [{ 'time_to_restore_service' => 0 }] })
       end
 
       expect(result.to_s).to eq('-')
@@ -38,7 +39,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::TimeToRestoreService 
   context 'when the DORA service returns the value' do
     it 'returns the value in days' do
       expect_next_instance_of(Dora::AggregateMetricsService) do |service|
-        expect(service).to receive(:execute).and_return({ status: :success, data: 5.days.to_i })
+        expect(service).to receive(:execute).and_return({ status: :success,
+data: [{ 'time_to_restore_service' => 5.days.to_i }] })
       end
 
       expect(result.to_s).to eq('5.0')

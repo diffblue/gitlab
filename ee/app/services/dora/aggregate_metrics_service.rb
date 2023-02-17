@@ -31,8 +31,6 @@ module Dora
         .in_range_of(start_date, end_date)
         .aggregate_for!(metrics, interval)
 
-      data = backwards_compatibility_convert(data)
-
       success(data: data)
     end
 
@@ -131,19 +129,11 @@ module Dora
     end
 
     def metrics
-      Array(params[:metric])
+      params[:metrics] || []
     end
 
     def group_project_ids
       Array(params[:group_project_ids])
-    end
-
-    def backwards_compatibility_convert(new_data)
-      metric = metrics.first
-
-      return new_data[metric] if interval == ::Dora::DailyMetrics::INTERVAL_ALL
-
-      new_data.map { |row| { 'date' => row['date'], 'value' => row[metric] } }
     end
   end
 end

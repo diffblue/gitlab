@@ -18,7 +18,9 @@ module Gitlab
               metric = dora_metric
 
               if metric[:status] == :success
-                metric[:data] ? (metric[:data] * 100).round(2) : 0
+                metric_value = metric[:data].first[metric_key]
+
+                metric_value ? (metric_value * 100).round(2) : 0
               else
                 nil # nil signals the summary class to not even try to serialize the result
               end

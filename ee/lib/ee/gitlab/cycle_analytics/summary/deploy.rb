@@ -25,7 +25,9 @@ module EE
               params: dora_aggregate_metrics_params
             ).execute_without_authorization
 
-            result[:status] == :success ? (result[:data] || 0) : 0
+            return 0 unless result[:status] == :success
+
+            result[:data].first[metric_key] || 0
           end
 
           def dora_aggregate_metrics_params
@@ -34,8 +36,12 @@ module EE
               end_date: (options[:to] || Date.today).to_date,
               interval: 'all',
               environment_tiers: %w[production],
-              metric: 'deployment_frequency'
+              metrics: [metric_key]
             }
+          end
+
+          def metric_key
+            'deployment_frequency'
           end
         end
       end

@@ -33,7 +33,7 @@ module Dora
         case interval
         when INTERVAL_ALL
           row = select(select_query_part).take
-          transform_aggregated_row(row.attributes.merge('interval_date' => nil), metrics)
+          [transform_aggregated_row(row.attributes.merge('interval_date' => nil), metrics)]
         when INTERVAL_MONTHLY
           select("DATE_TRUNC('month', date)::date AS interval_date, #{select_query_part}")
             .group("DATE_TRUNC('month', date)")

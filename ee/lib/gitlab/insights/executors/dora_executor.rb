@@ -38,7 +38,7 @@ module Gitlab
         attr_reader :query_params, :current_user, :insights_entity, :projects, :chart_type
 
         def format_data(data)
-          input = data.each_with_object({}) { |item, hash| hash[item['date']] = format_value(item['value']) }
+          input = data.each_with_object({}) { |item, hash| hash[item['date']] = format_value(item[metric]) }
 
           Gitlab::Analytics::DateFiller.new(input,
                                             from: start_date,
@@ -65,7 +65,7 @@ module Gitlab
             interval: dora_interval,
             environment_tiers: environment_tiers,
             start_date: start_date,
-            metric: metric
+            metrics: [metric]
           }
 
           # AggregateMetricsService filters out projects outside of the group

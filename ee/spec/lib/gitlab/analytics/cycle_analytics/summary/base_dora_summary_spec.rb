@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::BaseDoraSummary do
+RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::BaseDoraSummary, feature_category: :devops_reports do
   describe '#metric_key' do
     it 'is required to be overloaded' do
       expect do
