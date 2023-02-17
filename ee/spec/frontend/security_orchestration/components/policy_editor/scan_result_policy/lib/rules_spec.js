@@ -21,7 +21,7 @@ describe('invalidScanners', () => {
 
   describe('with rules without scanners', () => {
     it('returns true', () => {
-      expect(invalidScanners([{ anotherKey: 'anotherValue' }])).toBe(true);
+      expect(invalidScanners([{ anotherKey: 'anotherValue' }])).toBe(false);
     });
   });
 

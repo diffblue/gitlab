@@ -52,7 +52,8 @@ export function emptyBuildRule() {
 export function invalidScanners(rules) {
   return (
     rules
-      ?.flatMap((rule) => rule.scanners)
+      ?.filter((rule) => rule.scanners)
+      .flatMap((rule) => rule.scanners)
       .some((scanner) => !REPORT_TYPES_KEYS.includes(scanner)) || false
   );
 }

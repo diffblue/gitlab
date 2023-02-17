@@ -151,6 +151,9 @@ export default {
     hasLicenseScanningPolicies() {
       return this.glFeatures.licenseScanningPolicies;
     },
+    hasEmptyRules() {
+      return this.policy.rules?.length === 0 || this.policy.rules?.at(0)?.type === '';
+    },
   },
   watch: {
     invalidBranches(branches) {
@@ -258,7 +261,7 @@ export default {
       } else if (mode === EDITOR_MODE_RULE && !this.hasParsingError) {
         if (this.invalidForRuleMode()) {
           this.yamlEditorError = new Error();
-        } else if (this.namespaceType === NAMESPACE_TYPES.PROJECT) {
+        } else if (!this.hasEmptyRules && this.namespaceType === NAMESPACE_TYPES.PROJECT) {
           this.fetchBranches({ branches: this.allBranches(), projectId: this.namespaceId });
         }
       }
