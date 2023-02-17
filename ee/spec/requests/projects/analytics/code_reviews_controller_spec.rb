@@ -69,7 +69,6 @@ RSpec.describe Projects::Analytics::CodeReviewsController, type: :controller do
     subject { get :index, params: request_params, format: :html }
 
     let(:request_params) { { namespace_id: project.namespace, project_id: project } }
-    let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
     let(:category) { described_class.name }
     let(:action) { 'perform_analytics_usage_action' }
     let(:namespace) { project.namespace }

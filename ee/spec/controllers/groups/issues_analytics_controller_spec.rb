@@ -37,7 +37,6 @@ RSpec.describe Groups::IssuesAnalyticsController, feature_category: :team_planni
     it_behaves_like 'Snowplow event tracking with RedisHLL context' do
       subject { get :show, params: { group_id: group.to_param } }
 
-      let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
       let(:category) { described_class.name }
       let(:action) { 'perform_analytics_usage_action' }
       let(:label) { 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly' }

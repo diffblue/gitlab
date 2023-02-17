@@ -232,7 +232,6 @@ RSpec.describe SearchController do
         end
 
         let(:namespace) { create(:group) }
-        let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
       end
 
       context 'on restricted projects' do
