@@ -4,7 +4,7 @@ import VueApollo from 'vue-apollo';
 import { fullEpicBoardId } from 'ee_component/boards/boards_util';
 
 import BoardApp from '~/boards/components/board_app.vue';
-import { BoardType, issuableTypes } from '~/boards/constants';
+import { BoardType } from '~/boards/constants';
 import store from '~/boards/stores';
 
 import '~/boards/filters/due_date_filters';
@@ -15,6 +15,7 @@ import {
   convertObjectPropsToCamelCase,
 } from '~/lib/utils/common_utils';
 import { defaultClient } from '~/graphql_shared/issuable_client';
+import { TYPE_EPIC } from '~/issues/constants';
 import { queryToObject } from '~/lib/utils/url_utility';
 
 Vue.use(VueApollo);
@@ -45,7 +46,7 @@ function mountBoardApp(el) {
       allowSubEpics: parseBoolean(el.dataset.subEpicsFeatureAvailable),
       boardType,
       disabled: parseBoolean(el.dataset.disabled) || true,
-      issuableType: issuableTypes.epic,
+      issuableType: TYPE_EPIC,
       boardId,
       fullBoardId: fullEpicBoardId(boardId),
       fullPath,
@@ -77,7 +78,7 @@ function mountBoardApp(el) {
       labelsFilterBasePath: el.dataset.labelsFilterBasePath,
       timeTrackingLimitToHours: parseBoolean(el.dataset.timeTrackingLimitToHours),
       boardWeight: el.dataset.boardWeight ? parseInt(el.dataset.boardWeight, 10) : null,
-      issuableType: issuableTypes.epic,
+      issuableType: TYPE_EPIC,
       emailsDisabled: parseBoolean(el.dataset.emailsDisabled),
       hasMissingBoards: parseBoolean(el.dataset.hasMissingBoards),
       weights: JSON.parse(el.dataset.weights),

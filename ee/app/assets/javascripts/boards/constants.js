@@ -1,9 +1,9 @@
 /* eslint-disable import/export */
-import { issuableTypes, FilterFields as FilterFieldsCE } from '~/boards/constants';
+import { FilterFields as FilterFieldsCE } from '~/boards/constants';
 import destroyBoardListMutation from '~/boards/graphql/board_list_destroy.mutation.graphql';
 import updateBoardListMutation from '~/boards/graphql/board_list_update.mutation.graphql';
 import listIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
-import { TYPE_ISSUE } from '~/issues/constants';
+import { TYPE_EPIC, TYPE_ISSUE } from '~/issues/constants';
 import { s__ } from '~/locale';
 
 import boardListsQuery from './graphql/board_lists.query.graphql';
@@ -37,7 +37,7 @@ export const FilterFields = {
     'iterationCadenceId',
     'healthStatusFilter',
   ],
-  [issuableTypes.epic]: ['authorUsername', 'labelName', 'search', 'myReactionEmoji'],
+  [TYPE_EPIC]: ['authorUsername', 'labelName', 'search', 'myReactionEmoji'],
 };
 
 export const IterationFilterType = {
@@ -148,7 +148,7 @@ export const listsQuery = {
   [TYPE_ISSUE]: {
     query: boardListsQuery,
   },
-  [issuableTypes.epic]: {
+  [TYPE_EPIC]: {
     query: epicBoardListsQuery,
   },
 };
@@ -157,7 +157,7 @@ export const updateListQueries = {
   [TYPE_ISSUE]: {
     mutation: updateBoardListMutation,
   },
-  [issuableTypes.epic]: {
+  [TYPE_EPIC]: {
     mutation: updateEpicBoardListMutation,
   },
 };
@@ -166,7 +166,7 @@ export const deleteListQueries = {
   [TYPE_ISSUE]: {
     mutation: destroyBoardListMutation,
   },
-  [issuableTypes.epic]: {
+  [TYPE_EPIC]: {
     mutation: destroyEpicBoardListMutation,
   },
 };
@@ -175,7 +175,7 @@ export const listIssuablesQueries = {
   [TYPE_ISSUE]: {
     query: listIssuesQuery,
   },
-  [issuableTypes.epic]: {
+  [TYPE_EPIC]: {
     query: gon?.features?.epicColorHighlight ? listEpicsWithColorQuery : listEpicsQuery,
   },
 };

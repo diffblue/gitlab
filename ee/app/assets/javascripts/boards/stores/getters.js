@@ -1,6 +1,7 @@
 import { find } from 'lodash';
-import { issuableTypes, ListType } from '~/boards/constants';
+import { ListType } from '~/boards/constants';
 import gettersCE from '~/boards/stores/getters';
+import { TYPE_EPIC } from '~/issues/constants';
 
 export default {
   ...gettersCE,
@@ -52,6 +53,6 @@ export default {
   },
 
   isEpicBoard: (state) => {
-    return state.issuableType === issuableTypes.epic;
+    return state.issuableType === TYPE_EPIC;
   },
 };

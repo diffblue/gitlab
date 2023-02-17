@@ -7,7 +7,8 @@ import EpicBoardContentSidebar from 'ee_component/boards/components/epic_board_c
 import SidebarAncestorsWidget from 'ee_component/sidebar/components/ancestors_tree/sidebar_ancestors_widget.vue';
 import { stubComponent } from 'helpers/stub_component';
 import BoardSidebarTitle from '~/boards/components/sidebar/board_sidebar_title.vue';
-import { ISSUABLE, issuableTypes } from '~/boards/constants';
+import { ISSUABLE } from '~/boards/constants';
+import { TYPE_EPIC } from '~/issues/constants';
 import SidebarConfidentialityWidget from '~/sidebar/components/confidential/sidebar_confidentiality_widget.vue';
 import SidebarDateWidget from '~/sidebar/components/date/sidebar_date_widget.vue';
 import SidebarParticipantsWidget from '~/sidebar/components/participants/sidebar_participants_widget.vue';
@@ -48,7 +49,7 @@ describe('EpicBoardContentSidebar', () => {
         canUpdate: true,
         rootPath: '/',
         groupId: 1,
-        issuableType: issuableTypes.epic,
+        issuableType: TYPE_EPIC,
         labelsFilterBasePath: '',
         glFeatures,
       },
