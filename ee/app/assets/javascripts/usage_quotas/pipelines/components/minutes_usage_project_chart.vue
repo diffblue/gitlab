@@ -69,7 +69,7 @@ export default {
             }
 
             // eslint-disable-next-line no-param-reassign
-            prev[cur.year][cur.monthName] = cur;
+            prev[cur.year][cur.month] = cur;
             return prev;
           }, {})
         : [];

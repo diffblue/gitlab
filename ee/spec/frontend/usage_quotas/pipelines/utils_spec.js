@@ -18,7 +18,7 @@ describe('CI Minutes Usage Utils', () => {
         {
           day: '01',
           minutes: 5,
-          month: '06',
+          month: 'June',
           monthIso8601: '2021-06-01',
           projects: {
             nodes: [
@@ -42,7 +42,7 @@ describe('CI Minutes Usage Utils', () => {
         {
           day: '01',
           minutes: 0,
-          month: '07',
+          month: 'July',
           monthIso8601: '2021-07-01',
           projects: {
             nodes: [],
@@ -56,7 +56,7 @@ describe('CI Minutes Usage Utils', () => {
         {
           day: '01',
           minutes: 5,
-          month: '08',
+          month: 'August',
           monthIso8601: '2022-08-01',
           projects: {
             nodes: [
@@ -88,7 +88,7 @@ describe('CI Minutes Usage Utils', () => {
       {
         day: '01',
         minutes: 5,
-        month: '06',
+        month: 'June',
         monthIso8601: '2021-06-01',
         projects: {
           nodes: [
@@ -112,7 +112,7 @@ describe('CI Minutes Usage Utils', () => {
       {
         day: '01',
         minutes: 0,
-        month: '07',
+        month: 'July',
         monthIso8601: '2021-07-01',
         projects: {
           nodes: [],
@@ -124,7 +124,7 @@ describe('CI Minutes Usage Utils', () => {
       {
         day: '01',
         minutes: 5,
-        month: '08',
+        month: 'August',
         monthIso8601: '2022-08-01',
         projects: {
           nodes: [
@@ -155,9 +155,8 @@ describe('CI Minutes Usage Utils', () => {
       {
         day: '01',
         minutes: 5,
-        month: '06',
+        month: 'June',
         monthIso8601: '2021-06-01',
-        monthName: 'June',
         projects: {
           nodes: [
             {
@@ -180,9 +179,8 @@ describe('CI Minutes Usage Utils', () => {
       {
         day: '01',
         minutes: 0,
-        month: '07',
+        month: 'July',
         monthIso8601: '2021-07-01',
-        monthName: 'July',
         projects: {
           nodes: [],
           pageInfo,
@@ -193,9 +191,8 @@ describe('CI Minutes Usage Utils', () => {
       {
         day: '01',
         minutes: 5,
-        month: '08',
+        month: 'August',
         monthIso8601: '2022-08-01',
-        monthName: 'August',
         projects: {
           nodes: [
             {
