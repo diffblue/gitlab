@@ -36,6 +36,11 @@ export default {
       required: false,
       default: () => [],
     },
+    alertlist: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
     autoBanUsers: {
       type: Boolean,
       required: false,
@@ -44,7 +49,7 @@ export default {
   },
   data: () => ({ isLoading: false }),
   methods: {
-    async updateSettings({ maxDownloads, timePeriod, allowlist, autoBanUsers }) {
+    async updateSettings({ maxDownloads, timePeriod, allowlist, alertlist, autoBanUsers }) {
       try {
         this.isLoading = true;
 
@@ -52,6 +57,7 @@ export default {
           unique_project_download_limit: maxDownloads,
           unique_project_download_limit_interval_in_seconds: timePeriod,
           unique_project_download_limit_allowlist: allowlist,
+          unique_project_download_limit_alertlist: alertlist,
           auto_ban_user_on_excessive_projects_download: autoBanUsers,
         });
 
@@ -78,6 +84,7 @@ export default {
     :max-downloads="maxDownloads"
     :time-period="timePeriod"
     :allowlist="allowlist"
+    :alertlist="alertlist"
     :auto-ban-users="autoBanUsers"
     scope="namespace"
     @submit="updateSettings"

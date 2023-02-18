@@ -1,9 +1,11 @@
 <script>
 import { GlTokenSelector, GlAvatarLabeled } from '@gitlab/ui';
 
-import getUsersByUsernames from '~/graphql_shared/queries/get_users_by_usernames.query.graphql';
+import getUsersByUserIdsOrUsernames from 'ee/graphql_shared/queries/get_users_by_user_ids_or_usernames.query.graphql';
 import searchUsersQuery from '~/graphql_shared/queries/users_search_all.query.graphql';
 import searchGroupUsers from '~/graphql_shared/queries/group_users_search.query.graphql';
+import { getIdFromGraphQLId, convertToGraphQLIds } from '~/graphql_shared/utils';
+import { TYPENAME_USER } from '~/graphql_shared/constants';
 
 import { createAlert } from '~/flash';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
@@ -14,7 +16,7 @@ const SEARCH_TERM_MINIMUM_LENGTH = 3;
 const USERS_PER_PAGE = 20;
 
 export default {
-  name: 'UsersAllowlist',
+  name: 'UsersSelect',
   components: {
     GlTokenSelector,
     GlAvatarLabeled,
@@ -27,7 +29,16 @@ export default {
   },
   inject: { groupFullPath: { default: '' } },
   props: {
-    excludedUsernames: {
+    inputId: {
+      type: String,
+      required: true,
+    },
+    selectByUsername: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+    selected: {
       type: Array,
       required: false,
       default: () => [],
@@ -36,12 +47,12 @@ export default {
   apollo: {
     selectedUsers: {
       query() {
-        return getUsersByUsernames;
+        return getUsersByUserIdsOrUsernames;
       },
       variables() {
-        return {
-          usernames: this.excludedUsernames,
-        };
+        return this.selectByUsername
+          ? { usernames: this.selected }
+          : { user_ids: convertToGraphQLIds(TYPENAME_USER, this.selected) };
       },
       update(data) {
         return data?.users?.nodes || [];
@@ -57,7 +68,7 @@ export default {
         this.firstFetch = false;
       },
       skip() {
-        return !(this.firstFetch && this.excludedUsernames.length > 0);
+        return !(this.firstFetch && this.selected.length > 0);
       },
     },
     users: {
@@ -115,6 +126,11 @@ export default {
       return this.selectedUsers.length ? '' : this.$options.i18n.SEARCH_USERS;
     },
   },
+  watch: {
+    selectedUsers(newVal) {
+      this.$emit('selection-changed', newVal.map(this.userProperty));
+    },
+  },
   methods: {
     filterUsers(searchTerm) {
       this.search = searchTerm;
@@ -123,11 +139,8 @@ export default {
         this.users = [];
       }
     },
-    emitUserAdded(user) {
-      this.$emit('user-added', user.username);
-    },
-    emitUserRemoved(user) {
-      this.$emit('user-removed', user.username);
+    userProperty(user) {
+      return this.selectByUsername ? user.username : getIdFromGraphQLId(user.id);
     },
   },
 };
@@ -140,12 +153,8 @@ export default {
       :dropdown-items="users"
       :loading="isLoading"
       :placeholder="placeholderText"
-      :text-input-attrs="{
-        id: 'excluded-users',
-      }"
+      :text-input-attrs="{ id: inputId }"
       @text-input="filterUsers"
-      @token-add="emitUserAdded"
-      @token-remove="emitUserRemoved"
     >
       <template #dropdown-item-content="{ dropdownItem }">
         <gl-avatar-labeled

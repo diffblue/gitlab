@@ -1,0 +1,9 @@
+#import "~/graphql_shared/fragments/user.fragment.graphql"
+
+query getUsersByUserIdsOrUsernames($user_ids: [ID!], $usernames: [String!]) {
+  users(ids: $user_ids, usernames: $usernames) {
+    nodes {
+      ...User
+    }
+  }
+}

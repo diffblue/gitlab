@@ -8,6 +8,7 @@ describe('initSettingsForm', () => {
   const MAX_DOWNLOADS = 10;
   const TIME_PERIOD = 300;
   const ALLOWLIST = ['user1', 'user2'];
+  const ALERTLIST = [1, 2];
   const AUTO_BAN_USERS = true;
 
   let wrapper;
@@ -20,6 +21,7 @@ describe('initSettingsForm', () => {
     el.dataset.maxNumberOfRepositoryDownloads = MAX_DOWNLOADS;
     el.dataset.maxNumberOfRepositoryDownloadsWithinTimePeriod = TIME_PERIOD;
     el.dataset.gitRateLimitUsersAllowlist = JSON.stringify(ALLOWLIST);
+    el.dataset.gitRateLimitUsersAlertlist = JSON.stringify(ALERTLIST);
     el.dataset.autoBanUserOnExcessiveProjectsDownload = AUTO_BAN_USERS;
     document.body.appendChild(el);
 
@@ -46,6 +48,7 @@ describe('initSettingsForm', () => {
         maxDownloads: 10,
         timePeriod: 300,
         allowlist: ALLOWLIST,
+        alertlist: ALERTLIST,
         autoBanUsers: AUTO_BAN_USERS,
       });
     });
