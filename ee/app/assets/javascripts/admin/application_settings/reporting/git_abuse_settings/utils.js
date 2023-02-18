@@ -4,6 +4,7 @@ export const parseFormProps = ({
   maxNumberOfRepositoryDownloads,
   maxNumberOfRepositoryDownloadsWithinTimePeriod,
   gitRateLimitUsersAllowlist,
+  gitRateLimitUsersAlertlist,
   autoBanUserOnExcessiveProjectsDownload,
 }) => ({
   maxNumberOfRepositoryDownloads: parseInt(maxNumberOfRepositoryDownloads, 10),
@@ -12,5 +13,6 @@ export const parseFormProps = ({
     10,
   ),
   gitRateLimitUsersAllowlist: JSON.parse(gitRateLimitUsersAllowlist),
+  gitRateLimitUsersAlertlist: JSON.parse(gitRateLimitUsersAlertlist),
   autoBanUserOnExcessiveProjectsDownload: parseBoolean(autoBanUserOnExcessiveProjectsDownload),
 });

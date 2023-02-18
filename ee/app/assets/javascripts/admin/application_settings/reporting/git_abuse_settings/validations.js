@@ -9,8 +9,11 @@ import {
   TIME_PERIOD_BLANK_ERROR,
   TIME_PERIOD_NAN_ERROR,
   TIME_PERIOD_LIMIT_ERROR,
-  MAX_EXCLUDED_USERS,
-  EXCLUDED_USERS_LIMIT_ERROR,
+  MAX_ALLOWED_USERS,
+  ALLOWED_USERS_LIMIT_ERROR,
+  MIN_ALERTED_USERS,
+  MAX_ALERTED_USERS,
+  ALERTED_USERS_LIMIT_ERROR,
 } from './constants';
 
 export const validateNumberOfRepos = (data) => {
@@ -45,9 +48,17 @@ export const validateReportingTimePeriod = (data) => {
   return '';
 };
 
-export const validateExcludedUsers = (data) => {
-  if (data.length > MAX_EXCLUDED_USERS) {
-    return EXCLUDED_USERS_LIMIT_ERROR;
+export const validateAllowedUsers = (data) => {
+  if (data.length > MAX_ALLOWED_USERS) {
+    return ALLOWED_USERS_LIMIT_ERROR;
+  }
+
+  return '';
+};
+
+export const validateAlertedUsers = (data) => {
+  if (data.length < MIN_ALERTED_USERS || data.length > MAX_ALERTED_USERS) {
+    return ALERTED_USERS_LIMIT_ERROR;
   }
 
   return '';

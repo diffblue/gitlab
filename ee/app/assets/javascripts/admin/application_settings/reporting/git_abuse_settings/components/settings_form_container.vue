@@ -29,6 +29,11 @@ export default {
       required: false,
       default: () => [],
     },
+    alertlist: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
     autoBanUsers: {
       type: Boolean,
       required: false,
@@ -37,7 +42,7 @@ export default {
   },
   data: () => ({ isLoading: false }),
   methods: {
-    async updateSettings({ maxDownloads, timePeriod, allowlist, autoBanUsers }) {
+    async updateSettings({ maxDownloads, timePeriod, allowlist, alertlist, autoBanUsers }) {
       try {
         this.isLoading = true;
 
@@ -45,6 +50,7 @@ export default {
           max_number_of_repository_downloads: maxDownloads,
           max_number_of_repository_downloads_within_time_period: timePeriod,
           git_rate_limit_users_allowlist: allowlist,
+          git_rate_limit_users_alertlist: alertlist,
           auto_ban_user_on_excessive_projects_download: autoBanUsers,
         });
 
@@ -71,6 +77,7 @@ export default {
     :max-downloads="maxDownloads"
     :time-period="timePeriod"
     :allowlist="allowlist"
+    :alertlist="alertlist"
     :auto-ban-users="autoBanUsers"
     scope="application"
     @submit="updateSettings"

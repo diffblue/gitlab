@@ -5,20 +5,23 @@ import { sprintf } from '~/locale';
 import {
   validateNumberOfRepos,
   validateReportingTimePeriod,
-  validateExcludedUsers,
+  validateAllowedUsers,
+  validateAlertedUsers,
 } from '../validations';
 
 import {
   NUM_REPO_LABEL,
   NUM_REPO_DESCRIPTION,
   REPORTING_TIME_PERIOD_LABEL,
-  EXCLUDED_USERS_LABEL,
-  EXCLUDED_USERS_DESCRIPTION,
+  ALLOWED_USERS_LABEL,
+  ALLOWED_USERS_DESCRIPTION,
+  ALERTED_USERS_LABEL,
+  ALERTED_USERS_DESCRIPTION,
   AUTO_BAN_TOGGLE_LABEL,
   SAVE_CHANGES,
 } from '../constants';
 
-import UsersAllowlist from './users_allowlist.vue';
+import UsersSelect from './users_select.vue';
 
 export default {
   name: 'GitAbuseRateLimitSettingsForm',
@@ -28,14 +31,16 @@ export default {
     GlFormInput,
     GlButton,
     GlToggle,
-    UsersAllowlist,
+    UsersSelect,
   },
   i18n: {
     NUM_REPO_LABEL,
     NUM_REPO_DESCRIPTION,
     REPORTING_TIME_PERIOD_LABEL,
-    EXCLUDED_USERS_LABEL,
-    EXCLUDED_USERS_DESCRIPTION,
+    ALLOWED_USERS_LABEL,
+    ALLOWED_USERS_DESCRIPTION,
+    ALERTED_USERS_LABEL,
+    ALERTED_USERS_DESCRIPTION,
     AUTO_BAN_TOGGLE_LABEL,
     SAVE_CHANGES,
   },
@@ -60,6 +65,11 @@ export default {
       required: false,
       default: () => [],
     },
+    alertlist: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
     autoBanUsers: {
       type: Boolean,
       required: false,
@@ -73,14 +83,16 @@ export default {
   },
   data() {
     return {
-      excludedUsers: this.allowlist,
+      allowedUserNames: this.allowlist,
+      alertedUserIds: this.alertlist,
       numberOfRepos: this.maxDownloads,
       reportingTimePeriod: this.timePeriod,
       autoBanningEnabled: this.autoBanUsers,
       formErrors: {
         numberOfRepos: '',
         reportingTimePeriod: '',
-        excludedUsers: '',
+        allowedUserNames: '',
+        alertedUserIds: '',
       },
     };
   },
@@ -97,17 +109,18 @@ export default {
       this.$emit('submit', {
         maxDownloads: this.numberOfRepos,
         timePeriod: this.reportingTimePeriod,
-        allowlist: this.excludedUsers,
+        allowlist: this.allowedUserNames,
+        alertlist: this.alertedUserIds,
         autoBanUsers: this.autoBanningEnabled,
       });
     },
-    addToExcludedUsers(username) {
-      this.excludedUsers.push(username);
-      this.formErrors.excludedUsers = validateExcludedUsers(this.excludedUsers);
+    changedAllowedUsers(userNames) {
+      this.allowedUserNames = userNames;
+      this.formErrors.allowedUserNames = validateAllowedUsers(this.allowedUserNames);
     },
-    removeFromExcludedUsers(username) {
-      this.excludedUsers = this.excludedUsers.filter((x) => x !== username);
-      this.formErrors.excludedUsers = validateExcludedUsers(this.excludedUsers);
+    changedAlertedUsers(userIds) {
+      this.alertedUserIds = userIds;
+      this.formErrors.alertedUserIds = validateAlertedUsers(this.alertedUserIds);
     },
     checkNumberOfRepos() {
       this.formErrors.numberOfRepos = validateNumberOfRepos(this.numberOfRepos);
@@ -124,7 +137,7 @@ export default {
       :label="$options.i18n.NUM_REPO_LABEL"
       :description="$options.i18n.NUM_REPO_DESCRIPTION"
       label-for="number-of-repos"
-      :state="!Boolean(formErrors.numberOfRepos)"
+      :state="!formErrors.numberOfRepos"
       :invalid-feedback="formErrors.numberOfRepos"
       data-testid="number-of-repos-group"
     >
@@ -140,7 +153,7 @@ export default {
     <gl-form-group
       :label="$options.i18n.REPORTING_TIME_PERIOD_LABEL"
       label-for="reporting-time-period"
-      :state="!Boolean(formErrors.reportingTimePeriod)"
+      :state="!formErrors.reportingTimePeriod"
       :invalid-feedback="formErrors.reportingTimePeriod"
       data-testid="reporting-time-period-group"
     >
@@ -154,21 +167,42 @@ export default {
       />
     </gl-form-group>
     <gl-form-group
-      :label="$options.i18n.EXCLUDED_USERS_LABEL"
-      label-for="excluded-users"
-      :state="!Boolean(formErrors.excludedUsers)"
-      :invalid-feedback="formErrors.excludedUsers"
-      data-testid="excluded-users-group"
+      :label="$options.i18n.ALLOWED_USERS_LABEL"
+      label-for="allowed-users"
+      :state="!formErrors.allowedUserNames"
+      :invalid-feedback="formErrors.allowedUserNames"
+      data-testid="allowed-users-group"
     >
       <template #description>
         <div class="gl-mt-3">
-          {{ $options.i18n.EXCLUDED_USERS_DESCRIPTION }}
+          {{ $options.i18n.ALLOWED_USERS_DESCRIPTION }}
         </div>
       </template>
-      <users-allowlist
-        :excluded-usernames="excludedUsers"
-        @user-added="addToExcludedUsers"
-        @user-removed="removeFromExcludedUsers"
+      <users-select
+        input-id="allowed-users"
+        :selected="allowedUserNames"
+        data-testid="allowed-users"
+        @selection-changed="changedAllowedUsers"
+      />
+    </gl-form-group>
+    <gl-form-group
+      :label="$options.i18n.ALERTED_USERS_LABEL"
+      label-for="alerted-users"
+      :state="!formErrors.alertedUserIds"
+      :invalid-feedback="formErrors.alertedUserIds"
+      data-testid="alerted-users-group"
+    >
+      <template #description>
+        <div class="gl-mt-3">
+          {{ $options.i18n.ALERTED_USERS_DESCRIPTION }}
+        </div>
+      </template>
+      <users-select
+        input-id="alerted-users"
+        :select-by-username="false"
+        :selected="alertedUserIds"
+        data-testid="alerted-users"
+        @selection-changed="changedAlertedUsers"
       />
     </gl-form-group>
     <gl-form-group>

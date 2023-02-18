@@ -6,7 +6,10 @@ export const MAX_NUM_REPOS = 10000;
 export const MIN_TIME_PERIOD = 0;
 export const MAX_TIME_PERIOD = 10 * 24 * 60 * 60; // 10 days in seconds;
 
-export const MAX_EXCLUDED_USERS = 100;
+export const MAX_ALLOWED_USERS = 100;
+
+export const MIN_ALERTED_USERS = 1;
+export const MAX_ALERTED_USERS = 100;
 
 export const NUM_REPOS_BLANK_ERROR = s__(
   "GitAbuse|Number of repositories can't be blank. Set to 0 for no limit.",
@@ -34,10 +37,10 @@ export const TIME_PERIOD_LIMIT_ERROR = sprintf(
   },
 );
 
-export const EXCLUDED_USERS_LIMIT_ERROR = sprintf(
-  s__(`GitAbuse|You cannot specify more than %{maxExcludedUsers} excluded users.`),
+export const ALLOWED_USERS_LIMIT_ERROR = sprintf(
+  s__(`GitAbuse|You cannot specify more than %{maxAllowedUsers} excluded users.`),
   {
-    maxExcludedUsers: MAX_EXCLUDED_USERS,
+    maxAllowedUsers: MAX_ALLOWED_USERS,
   },
 );
 
@@ -47,9 +50,21 @@ export const NUM_REPO_DESCRIPTION = s__(
 );
 export const REPORTING_TIME_PERIOD_LABEL = s__('GitAbuse|Reporting time period (seconds)');
 
-export const EXCLUDED_USERS_LABEL = s__('GitAbuse|Excluded users');
-export const EXCLUDED_USERS_DESCRIPTION = s__(
+export const ALLOWED_USERS_LABEL = s__('GitAbuse|Excluded users');
+export const ALLOWED_USERS_DESCRIPTION = s__(
   'GitAbuse|Users who are excluded from the Git abuse rate limit.',
+);
+
+export const ALERTED_USERS_LABEL = s__('GitAbuse|Send notifications to');
+export const ALERTED_USERS_DESCRIPTION = s__(
+  'GitAbuse|Users who are emailed when Git abuse rate limit is exceeded.',
+);
+export const ALERTED_USERS_LIMIT_ERROR = sprintf(
+  s__(`GitAbuse|Select between %{minAlertedUsers} and %{maxAlertedUsers} users to notify.`),
+  {
+    minAlertedUsers: MIN_ALERTED_USERS,
+    maxAlertedUsers: MAX_ALERTED_USERS,
+  },
 );
 
 export const AUTO_BAN_TOGGLE_LABEL = s__(

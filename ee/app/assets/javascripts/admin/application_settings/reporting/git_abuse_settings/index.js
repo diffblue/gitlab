@@ -22,6 +22,7 @@ export const initGitAbuseRateLimitSettingsForm = () => {
     maxNumberOfRepositoryDownloads,
     maxNumberOfRepositoryDownloadsWithinTimePeriod,
     gitRateLimitUsersAllowlist,
+    gitRateLimitUsersAlertlist,
     autoBanUserOnExcessiveProjectsDownload,
   } = parseFormProps(el.dataset);
 
@@ -35,6 +36,7 @@ export const initGitAbuseRateLimitSettingsForm = () => {
           maxDownloads: maxNumberOfRepositoryDownloads,
           timePeriod: maxNumberOfRepositoryDownloadsWithinTimePeriod,
           allowlist: gitRateLimitUsersAllowlist,
+          alertlist: gitRateLimitUsersAlertlist,
           autoBanUsers: autoBanUserOnExcessiveProjectsDownload,
         },
       }),

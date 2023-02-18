@@ -22,6 +22,7 @@ export const initSettingsForm = () => {
     maxNumberOfRepositoryDownloads,
     maxNumberOfRepositoryDownloadsWithinTimePeriod,
     gitRateLimitUsersAllowlist,
+    gitRateLimitUsersAlertlist,
     autoBanUserOnExcessiveProjectsDownload,
   } = parseFormProps(el.dataset);
 
@@ -39,6 +40,7 @@ export const initSettingsForm = () => {
           maxDownloads: maxNumberOfRepositoryDownloads,
           timePeriod: maxNumberOfRepositoryDownloadsWithinTimePeriod,
           allowlist: gitRateLimitUsersAllowlist,
+          alertlist: gitRateLimitUsersAlertlist,
           autoBanUsers: autoBanUserOnExcessiveProjectsDownload,
         },
       }),

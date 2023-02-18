@@ -4,7 +4,6 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { sprintf } from '~/locale';
 
 import SettingsForm from 'ee/admin/application_settings/reporting/git_abuse_settings/components/settings_form.vue';
-import UsersAllowlist from 'ee/admin/application_settings/reporting/git_abuse_settings/components/users_allowlist.vue';
 
 import {
   NUM_REPOS_BLANK_ERROR,
@@ -16,9 +15,13 @@ import {
   NUM_REPO_LABEL,
   NUM_REPO_DESCRIPTION,
   REPORTING_TIME_PERIOD_LABEL,
-  EXCLUDED_USERS_LABEL,
-  MAX_EXCLUDED_USERS,
-  EXCLUDED_USERS_LIMIT_ERROR,
+  ALLOWED_USERS_LABEL,
+  MAX_ALLOWED_USERS,
+  ALLOWED_USERS_LIMIT_ERROR,
+  ALERTED_USERS_LABEL,
+  MIN_ALERTED_USERS,
+  MAX_ALERTED_USERS,
+  ALERTED_USERS_LIMIT_ERROR,
   AUTO_BAN_TOGGLE_LABEL,
 } from 'ee/admin/application_settings/reporting/git_abuse_settings/constants';
 
@@ -32,13 +35,28 @@ describe('Git abuse rate limit settings form component', () => {
     wrapper.findByTestId('reporting-time-period-group');
   const findReportingTimePeriodInput = () => wrapper.findByTestId('reporting-time-period-input');
 
-  const findExcludedUsersFormGroup = () => wrapper.findByTestId('excluded-users-group');
+  const findAllowedUsersFormGroup = () => wrapper.findByTestId('allowed-users-group');
 
-  const findUsersAllowlist = () => wrapper.findComponent(UsersAllowlist);
+  const findUsersAllowlist = () => wrapper.findByTestId('allowed-users');
+
+  const findAlertedUsersFormGroup = () => wrapper.findByTestId('alerted-users-group');
+
+  const findUsersAlertlist = () => wrapper.findByTestId('alerted-users');
 
   const findAutoBanToggle = () => wrapper.findComponent(GlToggle);
 
   const findSubmitButton = () => wrapper.findComponent(GlButton);
+
+  const expectSubmittedProperties = (object) => {
+    wrapper.findComponent(GlForm).vm.$emit('submit', {
+      preventDefault: jest.fn(),
+    });
+
+    const submitEvents = wrapper.emitted().submit;
+
+    expect(submitEvents.length).toEqual(1);
+    expect(submitEvents[0][0]).toMatchObject(object);
+  };
 
   const createComponent = ({ props = {} } = {}) => {
     wrapper = shallowMountExtended(SettingsForm, {
@@ -48,10 +66,6 @@ describe('Git abuse rate limit settings form component', () => {
       },
     });
   };
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   describe('Number of repositories input field', () => {
     beforeEach(() => {
@@ -164,72 +178,145 @@ describe('Git abuse rate limit settings form component', () => {
     );
   });
 
-  describe('Excluded Users input field', () => {
-    it('should have label and a valid state', () => {
+  describe('Allowed Users input field', () => {
+    beforeEach(() => {
       createComponent();
+    });
 
-      expect(findExcludedUsersFormGroup().attributes()).toMatchObject({
-        label: EXCLUDED_USERS_LABEL,
+    it('should have label and a valid state', () => {
+      expect(findAllowedUsersFormGroup().attributes()).toMatchObject({
+        label: ALLOWED_USERS_LABEL,
         state: 'true',
       });
     });
 
     it('should render UsersAllowlist component', () => {
-      createComponent();
-
       expect(findUsersAllowlist().exists()).toBe(true);
-      expect(findUsersAllowlist().props('excludedUsernames')).toEqual([]);
+      expect(findUsersAllowlist().props('selected')).toEqual([]);
     });
 
     it('should pass the correct props to UsersAllowlist component', () => {
       createComponent({ props: { allowlist: ['user1', 'user2'] } });
 
-      expect(findUsersAllowlist().props('excludedUsernames')).toEqual(['user1', 'user2']);
+      expect(findUsersAllowlist().props('selected')).toEqual(['user1', 'user2']);
     });
 
-    it('should add user to data when user-added event is emitted', () => {
-      createComponent();
+    it('should submit the allowed user names when selection has changed', () => {
+      findUsersAllowlist().vm.$emit('selection-changed', ['user111']);
 
-      findUsersAllowlist().vm.$emit('user-added', 'user1');
-
-      expect(wrapper.vm.excludedUsers).toEqual(['user1']);
-    });
-
-    it('should remove user from data when user-removed event is emitted', () => {
-      createComponent({ props: { allowlist: ['user1', 'user2'] } });
-
-      findUsersAllowlist().vm.$emit('user-removed', 'user1');
-
-      expect(wrapper.vm.excludedUsers).toEqual(['user2']);
+      expectSubmittedProperties({
+        allowlist: ['user111'],
+      });
     });
 
     describe('validation', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         createComponent();
-
-        for (let i = 1; i <= MAX_EXCLUDED_USERS; i += 1) {
-          findUsersAllowlist().vm.$emit('user-added', `user${i}`);
-        }
-
-        await nextTick();
       });
 
-      it('should be valid with a 100 users', () => {
-        expect(findExcludedUsersFormGroup().attributes()).toMatchObject({
+      it('should be valid with 100 users', async () => {
+        findUsersAllowlist().vm.$emit(
+          'selection-changed',
+          [...Array(MAX_ALLOWED_USERS).keys()].map((i) => `user${i}`),
+        );
+        await nextTick();
+
+        expect(findAllowedUsersFormGroup().attributes()).toMatchObject({
           'invalid-feedback': '',
           state: 'true',
         });
       });
 
-      it('should be invalid 101 users', async () => {
-        findUsersAllowlist().vm.$emit('user-added', 'user101');
+      it('should be invalid with 101 users', async () => {
+        findUsersAllowlist().vm.$emit(
+          'selection-changed',
+          [...Array(MAX_ALLOWED_USERS + 1).keys()].map((i) => `user${i}`),
+        );
         await nextTick();
 
-        expect(findExcludedUsersFormGroup().attributes()).toMatchObject({
-          'invalid-feedback': EXCLUDED_USERS_LIMIT_ERROR,
+        expect(findAllowedUsersFormGroup().attributes()).toMatchObject({
+          'invalid-feedback': ALLOWED_USERS_LIMIT_ERROR,
         });
 
-        expect(findExcludedUsersFormGroup().attributes('state')).toBe(undefined);
+        expect(findAllowedUsersFormGroup().attributes('state')).toBe(undefined);
+
+        expect(findSubmitButton().attributes('disabled')).toBe('true');
+      });
+    });
+  });
+
+  describe('Alerted Users input field', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
+    it('should have label and a valid state', () => {
+      expect(findAlertedUsersFormGroup().attributes()).toMatchObject({
+        label: ALERTED_USERS_LABEL,
+        state: 'true',
+      });
+    });
+
+    it('should render the alerted users component', () => {
+      expect(findUsersAlertlist().exists()).toBe(true);
+      expect(findUsersAlertlist().props('selected')).toEqual([]);
+    });
+
+    it('should pass the correct props to the alerted users component', () => {
+      createComponent({ props: { alertlist: [1, 2] } });
+
+      expect(findUsersAlertlist().props('selected')).toEqual([1, 2]);
+    });
+
+    it('should submit the allowed user names when selection has changed', () => {
+      findUsersAlertlist().vm.$emit('selection-changed', [7, 77]);
+
+      expectSubmittedProperties({
+        alertlist: [7, 77],
+      });
+    });
+
+    describe('validation', () => {
+      beforeEach(() => {
+        createComponent();
+      });
+
+      it('should be valid with 100 users', async () => {
+        findUsersAlertlist().vm.$emit('selection-changed', [...Array(MAX_ALERTED_USERS).keys()]);
+        await nextTick();
+
+        expect(findAlertedUsersFormGroup().attributes()).toMatchObject({
+          'invalid-feedback': '',
+          state: 'true',
+        });
+      });
+
+      it('should be invalid with 101 users', async () => {
+        findUsersAlertlist().vm.$emit('selection-changed', [
+          ...Array(MAX_ALERTED_USERS + 1).keys(),
+        ]);
+        await nextTick();
+
+        expect(findAlertedUsersFormGroup().attributes()).toMatchObject({
+          'invalid-feedback': ALERTED_USERS_LIMIT_ERROR,
+        });
+
+        expect(findAlertedUsersFormGroup().attributes('state')).toBe(undefined);
+
+        expect(findSubmitButton().attributes('disabled')).toBe('true');
+      });
+
+      it('should be invalid with 0 users', async () => {
+        findUsersAlertlist().vm.$emit('selection-changed', [
+          ...Array(MIN_ALERTED_USERS - 1).keys(),
+        ]);
+        await nextTick();
+
+        expect(findAlertedUsersFormGroup().attributes()).toMatchObject({
+          'invalid-feedback': ALERTED_USERS_LIMIT_ERROR,
+        });
+
+        expect(findAlertedUsersFormGroup().attributes('state')).toBe(undefined);
 
         expect(findSubmitButton().attributes('disabled')).toBe('true');
       });
@@ -266,18 +353,15 @@ describe('Git abuse rate limit settings form component', () => {
 
   describe('Form submission', () => {
     it('emits "submit" event with the correct arguments when form is submitted', () => {
-      createComponent({ props: { timePeriod: 1, allowlist: ['user1'], autoBanUsers: true } });
-
-      wrapper.findComponent(GlForm).vm.$emit('submit', {
-        preventDefault: jest.fn(),
+      createComponent({
+        props: { timePeriod: 1, allowlist: ['user1'], alertlist: [1], autoBanUsers: true },
       });
 
-      const submitEvents = wrapper.emitted().submit;
-      expect(submitEvents.length).toEqual(1);
-      expect(submitEvents[0][0]).toMatchObject({
+      expectSubmittedProperties({
         maxDownloads: 0,
         timePeriod: 1,
         allowlist: ['user1'],
+        alertlist: [1],
         autoBanUsers: true,
       });
     });
