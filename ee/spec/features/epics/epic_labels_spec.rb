@@ -55,7 +55,8 @@ RSpec.describe 'Assign labels to an epic', :js, feature_category: :portfolio_man
       end
     end
 
-    it 'collapses sidebar when clicked outside' do
+    it 'collapses sidebar when clicked outside',
+      quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/392017' do
       wait_for_requests
       page.within('.content-wrapper') do
         find('.epic-page-container').click
