@@ -1,6 +1,36 @@
 include:
   - local: .gitlab/ci/rails/shared.gitlab-ci.yml
 
+db:rollback single-db-ci-connection:
+  extends:
+    - db:rollback
+    - .single-db-ci-connection
+    - .rails:rules:single-db-ci-connection
+
+db:migrate:reset single-db-ci-connection:
+  extends:
+    - db:migrate:reset
+    - .single-db-ci-connection
+    - .rails:rules:single-db-ci-connection
+
+db:check-schema-single-db-ci-connection:
+  extends:
+    - db:check-schema
+    - .single-db-ci-connection
+    - .rails:rules:single-db-ci-connection
+
+db:post_deployment_migrations_validator-single-db-ci-connection:
+  extends:
+    - db:post_deployment_migrations_validator
+    - .single-db-ci-connection
+    - .rails:rules:db:check-migrations-single-db-ci-connection
+
+db:backup_and_restore single-db-ci-connection:
+  extends:
+    - db:backup_and_restore
+    - .single-db-ci-connection
+    - .rails:rules:db-backup
+
 db:rollback:
   extends:
     - .db-job-base
