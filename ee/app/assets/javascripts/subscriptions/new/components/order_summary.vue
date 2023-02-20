@@ -1,14 +1,22 @@
 <script>
 import { GlCard, GlLoadingIcon } from '@gitlab/ui';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { unescape } from 'lodash';
+import { unescape, isEmpty } from 'lodash';
 import { sprintf, s__ } from '~/locale';
 import { trackCheckout } from '~/google_tag_manager';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SummaryDetails from 'jh_else_ee/subscriptions/new/components/order_summary/summary_details.vue';
 import invoicePreviewQuery from 'ee/subscriptions/graphql/queries/new_subscription_invoice_preview.customer.query.graphql';
 import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constants';
-import { CHARGE_PROCESSING_TYPE, VALIDATION_ERROR_CODE } from 'ee/subscriptions/new/constants';
+import {
+  CHARGE_PROCESSING_TYPE,
+  VALIDATION_ERROR_CODE,
+  INVALID_PROMO_CODE_ERROR_MESSAGE,
+  PROMO_CODE_SUCCESS_MESSAGE,
+  PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE,
+  INVALID_PROMO_CODE_ERROR_CODE,
+  PROMO_CODE_ERROR_ATTRIBUTE,
+} from 'ee/subscriptions/new/constants';
 import { createAlert } from '~/flash';
 import formattingMixins from '../formatting_mixins';
 import PromoCodeInput from './promo_code_input.vue';
@@ -26,9 +34,12 @@ export default {
       client: CUSTOMERSDOT_CLIENT,
       query: invoicePreviewQuery,
       variables() {
+        const sendPromoCode = this.isEligibleToUsePromoCode && this.promoCode;
+
         return {
           planId: this.selectedPlan,
           quantity: this.numberOfUsers,
+          ...(sendPromoCode && { promoCode: this.promoCode }),
         };
       },
       update(data) {
@@ -52,10 +63,11 @@ export default {
   data() {
     return {
       invoicePreview: undefined,
+      promoCodeErrorMessage: undefined,
     };
   },
   computed: {
-    ...mapState(['numberOfUsers', 'selectedPlan']),
+    ...mapState(['numberOfUsers', 'selectedPlan', 'promoCode']),
     ...mapGetters([
       'selectedPlanPrice',
       'name',
@@ -63,8 +75,9 @@ export default {
       'isGroupSelected',
       'isSelectedGroupPresent',
       'isEligibleToUsePromoCode',
-      'hideAmount',
+      'showAmount',
       'totalAmount',
+      'discountItem',
     ]),
     titleWithName() {
       return sprintf(this.$options.i18n.title, { name: this.name });
@@ -91,8 +104,26 @@ export default {
         ],
       };
     },
+    showPromoCode() {
+      return this.isEligibleToUsePromoCode && this.glFeatures.useInvoicePreviewApiInSaasPurchase;
+    },
+    isApplyingPromoCode() {
+      return Boolean(this.promoCode) && this.isLoading && isEmpty(this.promoCodeSuccessMessage);
+    },
+    promoCodeSuccessMessage() {
+      return this.discountItem ? PROMO_CODE_SUCCESS_MESSAGE : undefined;
+    },
   },
   watch: {
+    selectedPlan() {
+      this.promoCodeErrorMessage = '';
+    },
+    usersPresent(usersPresent) {
+      // Clear promo code quantity error message when quantity is valid
+      if (usersPresent && this.promoCodeErrorMessage === PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE) {
+        this.promoCodeErrorMessage = '';
+      }
+    },
     legacyInvoicePreview: {
       handler(val) {
         // val is only truthy if FF is off and we're using legacy calculation
@@ -116,18 +147,32 @@ export default {
     trackCheckout(this.selectedPlan, this.numberOfUsers);
   },
   methods: {
-    ...mapActions(['updateInvoicePreviewLoading', 'updateInvoicePreview']),
+    ...mapActions(['updateInvoicePreviewLoading', 'updateInvoicePreview', 'updatePromoCode']),
     clearError() {
+      this.promoCodeErrorMessage = '';
       this.alert?.dismiss();
     },
     handleError(error) {
       this.invoicePreview = null;
 
       const { gqlError, networkError } = error;
+      const gqlErrorExtensions = gqlError?.extensions;
 
-      let errorMessage = gqlError?.extensions?.message || this.$options.i18n.errorMessageText;
+      let errorMessage = this.$options.i18n.errorMessageText;
 
-      if (networkError) {
+      if (gqlErrorExtensions) {
+        const { code, attributes, message } = gqlErrorExtensions || {};
+
+        if (this.isInvalidPromoCode(code, attributes)) {
+          this.promoCodeErrorMessage = INVALID_PROMO_CODE_ERROR_MESSAGE;
+          return;
+        }
+        if (gqlError.message) {
+          errorMessage = gqlError.message;
+        } else if (message) {
+          errorMessage = message;
+        }
+      } else if (networkError) {
         const message = sprintf(s__('Checkout|Network Error: %{message}'), {
           message: networkError.message,
         });
@@ -143,6 +188,24 @@ export default {
 
       // `alert` is intentionally not in `data` to avoid making it unnecessarily reactive
       this.alert = createAlert({ message: errorMessage, error, captureError });
+    },
+    isInvalidPromoCode(errorCode, errorAttributes = []) {
+      return (
+        errorAttributes.includes(PROMO_CODE_ERROR_ATTRIBUTE) &&
+        errorCode === INVALID_PROMO_CODE_ERROR_CODE
+      );
+    },
+    handlePromoCodeUpdate() {
+      // reset promo code when updated until requested to apply to avoid
+      // using previously entered values in preview/purchase API calls
+      this.updatePromoCode('');
+    },
+    applyPromoCode(promoCode) {
+      if (this.usersPresent) {
+        this.updatePromoCode(promoCode);
+      } else {
+        this.promoCodeErrorMessage = PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE;
+      }
     },
   },
   i18n: {
@@ -164,19 +227,33 @@ export default {
           <span class="gl-ml-2">{{ titleWithName }}</span>
         </div>
         <gl-loading-icon v-if="isLoading" inline size="sm" class="gl-my-auto gl-ml-3" />
-        <span v-else class="gl-ml-3">{{ formatAmount(totalAmount, !hideAmount) }}</span>
+        <span v-else class="gl-ml-3">{{ formatAmount(totalAmount, showAmount) }}</span>
       </h4>
       <summary-details class="gl-mt-6">
-        <template v-if="isEligibleToUsePromoCode" #promo-code>
-          <promo-code-input />
+        <template v-if="showPromoCode" #promo-code>
+          <promo-code-input
+            :can-show-success-alert="showAmount"
+            :applying-promo-code="isApplyingPromoCode"
+            :success-message="promoCodeSuccessMessage"
+            :error-message="promoCodeErrorMessage"
+            @promo-code-updated="handlePromoCodeUpdate"
+            @apply-promo-code="applyPromoCode"
+          />
         </template>
       </summary-details>
     </div>
     <div class="gl-display-none gl-lg-display-block" data-qa-selector="order_summary">
       <h4 class="gl-my-0 gl-font-lg" data-qa-selector="title">{{ titleWithName }}</h4>
       <summary-details class="gl-mt-6">
-        <template v-if="isEligibleToUsePromoCode" #promo-code>
-          <promo-code-input />
+        <template v-if="showPromoCode" #promo-code>
+          <promo-code-input
+            :can-show-success-alert="showAmount"
+            :applying-promo-code="isApplyingPromoCode"
+            :success-message="promoCodeSuccessMessage"
+            :error-message="promoCodeErrorMessage"
+            @promo-code-updated="handlePromoCodeUpdate"
+            @apply-promo-code="applyPromoCode"
+          />
         </template>
       </summary-details>
     </div>

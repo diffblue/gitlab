@@ -30,5 +30,16 @@ export const PurchaseEvent = Object.freeze({
 });
 
 export const CHARGE_PROCESSING_TYPE = 'Charge';
+export const DISCOUNT_PROCESSING_TYPE = 'Discount';
 
 export const VALIDATION_ERROR_CODE = 'VALIDATION_ERROR';
+export const PROMO_CODE_ERROR_ATTRIBUTE = 'promo_code';
+export const INVALID_PROMO_CODE_ERROR_CODE = 'INVALID';
+
+export const INVALID_PROMO_CODE_ERROR_MESSAGE = s__(
+  'Checkout|Invalid coupon code. Enter a valid coupon code.',
+);
+export const PROMO_CODE_SUCCESS_MESSAGE = s__(`Checkout|Coupon has been applied to your purchase`);
+export const PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE = s__(
+  'Checkout|Add active users before adding a coupon.',
+);

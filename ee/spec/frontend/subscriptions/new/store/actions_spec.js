@@ -42,7 +42,10 @@ describe('Subscriptions Actions', () => {
         actions.updateSelectedPlan,
         'planId',
         {},
-        [{ type: 'UPDATE_SELECTED_PLAN', payload: 'planId' }],
+        [
+          { type: 'UPDATE_SELECTED_PLAN', payload: 'planId' },
+          { type: 'UPDATE_PROMO_CODE', payload: null },
+        ],
         [],
       );
     });
@@ -104,6 +107,18 @@ describe('Subscriptions Actions', () => {
         'name',
         {},
         [{ type: 'UPDATE_ORGANIZATION_NAME', payload: 'name' }],
+        [],
+      );
+    });
+  });
+
+  describe('updatePromoCode', () => {
+    it('updates promoCode to the provided value', async () => {
+      await testAction(
+        actions.updatePromoCode,
+        'SamplePromoCode',
+        {},
+        [{ type: 'UPDATE_PROMO_CODE', payload: 'SamplePromoCode' }],
         [],
       );
     });

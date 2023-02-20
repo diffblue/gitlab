@@ -1,6 +1,6 @@
 <script>
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState, mapGetters } from 'vuex';
 import { STEPS } from 'ee/subscriptions/constants';
 import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 import activeStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/active_step.query.graphql';
@@ -27,6 +27,10 @@ export default {
   },
   computed: {
     ...mapState(['isConfirmingOrder']),
+    ...mapGetters(['hasValidPriceDetails']),
+    shouldDisableConfirmOrder() {
+      return this.isConfirmingOrder || !this.hasValidPriceDetails;
+    },
   },
   methods: {
     ...mapActions(['confirmOrder']),
@@ -40,7 +44,7 @@ export default {
 <template>
   <div v-if="isActive" class="full-width gl-mt-5 gl-mb-7">
     <gl-button
-      :disabled="isConfirmingOrder"
+      :disabled="shouldDisableConfirmOrder"
       variant="confirm"
       category="primary"
       @click="confirmOrder"

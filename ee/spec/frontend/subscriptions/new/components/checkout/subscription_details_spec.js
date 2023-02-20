@@ -564,13 +564,6 @@ describe('Subscription Details', () => {
         store.commit(types.UPDATE_SELECTED_PLAN, null);
 
         await nextTick();
-        expect(isStepValid()).toBe(false);
-      });
-
-      it('should be invalid when price details are invalid', async () => {
-        store.commit(types.UPDATE_INVOICE_PREVIEW, null);
-
-        await nextTick();
 
         expect(isStepValid()).toBe(false);
       });
@@ -580,6 +573,7 @@ describe('Subscription Details', () => {
         store.commit(types.UPDATE_SELECTED_GROUP, null);
 
         await nextTick();
+
         expect(isStepValid()).toBe(false);
       });
 
@@ -587,6 +581,7 @@ describe('Subscription Details', () => {
         store.commit(types.UPDATE_NUMBER_OF_USERS, 0);
 
         await nextTick();
+
         expect(isStepValid()).toBe(false);
       });
 
@@ -594,6 +589,7 @@ describe('Subscription Details', () => {
         store.commit(types.UPDATE_NUMBER_OF_USERS, 10);
 
         await nextTick();
+
         expect(isStepValid()).toBe(false);
       });
     });
@@ -656,6 +652,7 @@ describe('Subscription Details', () => {
         store.commit(types.UPDATE_SELECTED_PLAN, null);
 
         await nextTick();
+
         expect(isStepValid()).toBe(false);
       });
 
@@ -663,6 +660,7 @@ describe('Subscription Details', () => {
         store.commit(types.UPDATE_NUMBER_OF_USERS, 0);
 
         await nextTick();
+
         expect(isStepValid()).toBe(false);
       });
 
@@ -677,6 +675,7 @@ describe('Subscription Details', () => {
         store.commit(types.UPDATE_NUMBER_OF_USERS, 2);
 
         await nextTick();
+
         expect(isStepValid()).toBe(false);
       });
     });

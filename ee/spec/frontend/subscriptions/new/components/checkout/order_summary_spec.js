@@ -11,12 +11,21 @@ import { createMockClient } from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constants';
 import invoicePreviewQuery from 'ee/subscriptions/graphql/queries/new_subscription_invoice_preview.customer.query.graphql';
-import { VALIDATION_ERROR_CODE } from 'ee/subscriptions/new/constants';
 import {
+  VALIDATION_ERROR_CODE,
+  PROMO_CODE_ERROR_ATTRIBUTE,
+  INVALID_PROMO_CODE_ERROR_CODE,
+  PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE,
+  INVALID_PROMO_CODE_ERROR_MESSAGE,
+  PROMO_CODE_SUCCESS_MESSAGE,
+} from 'ee/subscriptions/new/constants';
+import {
+  mockDiscountItem,
   mockInvoicePreviewBronze,
   mockInvoicePreviewUltimate,
   mockInvoicePreviewUltimateWithMultipleUsers,
   mockNamespaces,
+  mockInvoicePreviewWithDiscount,
 } from 'ee_jest/subscriptions/mock_data';
 import { createAlert } from '~/flash';
 
@@ -58,6 +67,7 @@ describe('Order Summary', () => {
   const findTaxHelpLink = () => wrapper.findByTestId('tax-help-link');
   const findPromoCodeInput = () => wrapper.findComponent(PromoCodeInput);
 
+  const discount = () => wrapper.findByTestId('discount').text();
   const taxInfoLine = () => wrapper.findByTestId('tax-info-line').text();
   const totalOriginalPrice = () => wrapper.findByTestId('amount').text();
   const totalOriginalPriceExcludingVat = () => wrapper.findByTestId('total-ex-vat').text();
@@ -459,24 +469,183 @@ describe('Order Summary', () => {
   });
 
   describe('promo code', () => {
-    beforeEach(() => {
-      return createComponent();
-    });
-
     it('shows promo code input if eligible', async () => {
+      await createComponent();
       await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
 
       expect(findPromoCodeInput().exists()).toBe(true);
     });
 
-    it('doesnt show promo code input if not eligible', async () => {
-      await store.commit(types.UPDATE_SELECTED_PLAN, 'firstPlanId');
+    it('doesnt show promo code input when useInvoicePreviewApiInSaasPurchase ff is off even when eligible', async () => {
+      await createComponent(null, false);
+      await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
 
       expect(findPromoCodeInput().exists()).toBe(false);
+    });
+
+    it('doesnt show promo code input if not eligible', async () => {
+      await createComponent();
+      await store.commit(types.UPDATE_SELECTED_PLAN, 'firstPlanId');
+      const promoCodeInput = findPromoCodeInput();
+
+      expect(promoCodeInput.exists()).toBe(false);
 
       await store.commit(types.UPDATE_SELECTED_PLAN, 'thirdPlanId');
 
-      expect(findPromoCodeInput().exists()).toBe(false);
+      expect(promoCodeInput.exists()).toBe(false);
+    });
+
+    describe('when promo code is valid', () => {
+      const invoicePreviewSpy = jest.fn().mockResolvedValue(mockInvoicePreviewWithDiscount);
+      let promoCodeInput;
+
+      beforeEach(async () => {
+        await createComponent(invoicePreviewSpy);
+        await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
+        await store.commit(types.UPDATE_NUMBER_OF_USERS, 3);
+        promoCodeInput = findPromoCodeInput();
+
+        promoCodeInput.vm.$emit('apply-promo-code', 'promoCode');
+
+        await waitForPromises();
+      });
+
+      it('shows success message for promo code', () => {
+        expect(promoCodeInput.props()).toMatchObject({
+          errorMessage: '',
+          successMessage: PROMO_CODE_SUCCESS_MESSAGE,
+          canShowSuccessAlert: true,
+        });
+      });
+
+      it('shows discount details', () => {
+        expect(discount()).toBe(`$${mockDiscountItem.chargeAmount}`);
+      });
+
+      it('calls invoice preview API with appropriate params', () => {
+        expect(invoicePreviewSpy).toHaveBeenCalledWith({
+          planId: 'secondPlanId',
+          quantity: 3,
+          promoCode: 'promoCode',
+        });
+      });
+    });
+
+    describe('when promo code is valid but price is not shown', () => {
+      it('does not show success message for promo code', async () => {
+        const invoicePreviewSpy = jest.fn().mockResolvedValue(mockInvoicePreviewWithDiscount);
+        await createComponent(invoicePreviewSpy);
+        await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
+        await store.commit(types.UPDATE_NUMBER_OF_USERS, 3);
+        const promoCodeInput = findPromoCodeInput();
+        promoCodeInput.vm.$emit('apply-promo-code', 'promoCode');
+
+        await store.commit(types.UPDATE_NUMBER_OF_USERS, 0);
+
+        expect(promoCodeInput.props()).toMatchObject({
+          successMessage: PROMO_CODE_SUCCESS_MESSAGE,
+          canShowSuccessAlert: false,
+        });
+      });
+    });
+
+    describe('when promo code is invalid', () => {
+      let promoCodeInput;
+      beforeEach(async () => {
+        const invoicePreviewSpy = jest.fn().mockResolvedValue({
+          data: {},
+          errors: [
+            {
+              extensions: {
+                message: 'Error',
+                code: INVALID_PROMO_CODE_ERROR_CODE,
+                attributes: [PROMO_CODE_ERROR_ATTRIBUTE],
+              },
+            },
+          ],
+        });
+        await createComponent(invoicePreviewSpy);
+        await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
+        promoCodeInput = findPromoCodeInput();
+
+        promoCodeInput.vm.$emit('apply-promo-code', 'promoCode');
+
+        await waitForPromises();
+      });
+
+      it('shows error message for promo code', () => {
+        expect(promoCodeInput.props('errorMessage')).toBe(INVALID_PROMO_CODE_ERROR_MESSAGE);
+      });
+
+      it('does not show price details', () => {
+        assertEmptyPriceDetails();
+      });
+    });
+
+    describe('when promo code is updated after an invalid promo code is applied', () => {
+      let promoCodeInput;
+      const invoicePreviewSpy = jest.fn().mockResolvedValue({
+        data: {},
+        errors: [
+          {
+            extensions: {
+              message: 'Error',
+              code: INVALID_PROMO_CODE_ERROR_CODE,
+              attributes: [PROMO_CODE_ERROR_ATTRIBUTE],
+            },
+          },
+        ],
+      });
+
+      beforeEach(async () => {
+        await createComponent(invoicePreviewSpy);
+        await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
+        promoCodeInput = findPromoCodeInput();
+
+        promoCodeInput.vm.$emit('apply-promo-code', 'promoCode');
+
+        await waitForPromises();
+      });
+
+      it('shows error message for promo code', () => {
+        expect(promoCodeInput.props('errorMessage')).toBe(INVALID_PROMO_CODE_ERROR_MESSAGE);
+      });
+
+      it('resets promo code value on update', () => {
+        promoCodeInput.vm.$emit('promo-code-updated');
+
+        expect(invoicePreviewSpy).toHaveBeenCalledWith({
+          planId: 'secondPlanId',
+          quantity: 1,
+        });
+      });
+    });
+
+    it('shows error message when promo code is applied without valid users', async () => {
+      await createComponent();
+      await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
+      await store.commit(types.UPDATE_NUMBER_OF_USERS, 0);
+
+      const promoCodeInput = findPromoCodeInput();
+      promoCodeInput.vm.$emit('apply-promo-code', 'promoCode');
+
+      await waitForPromises();
+
+      expect(promoCodeInput.props('errorMessage')).toBe(PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE);
+    });
+
+    it('resets error message when quantity is specified after promo code is applied without valid users', async () => {
+      await createComponent();
+      await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
+      await store.commit(types.UPDATE_NUMBER_OF_USERS, 0);
+
+      const promoCodeInput = findPromoCodeInput();
+      promoCodeInput.vm.$emit('apply-promo-code', 'promoCode');
+
+      await waitForPromises();
+      await store.commit(types.UPDATE_NUMBER_OF_USERS, 1);
+
+      expect(promoCodeInput.props('errorMessage')).toBe('');
     });
   });
 

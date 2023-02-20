@@ -23,6 +23,7 @@ const trackConfirmOrder = (message) =>
 
 export const updateSelectedPlan = ({ commit, getters }, selectedPlan) => {
   commit(types.UPDATE_SELECTED_PLAN, selectedPlan);
+  commit(types.UPDATE_PROMO_CODE, null);
   trackCheckout(selectedPlan, getters.confirmOrderParams?.subscription?.quantity);
 };
 
@@ -42,6 +43,10 @@ export const updateNumberOfUsers = ({ commit, getters }, numberOfUsers) => {
 
 export const updateOrganizationName = ({ commit }, organizationName) => {
   commit(types.UPDATE_ORGANIZATION_NAME, organizationName);
+};
+
+export const updatePromoCode = ({ commit }, promoCode) => {
+  commit(types.UPDATE_PROMO_CODE, promoCode);
 };
 
 export const fetchCountries = ({ dispatch }) =>

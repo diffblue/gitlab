@@ -101,7 +101,8 @@ module GitlabSubscriptions
           main: {
             quantity: subscription_params[:quantity]
           }
-        }
+        },
+        promo_code: subscription_params[:promo_code]
       }.merge(create_params)
     end
 

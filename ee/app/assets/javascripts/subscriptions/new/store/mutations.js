@@ -21,6 +21,10 @@ export default {
     state.organizationName = organizationName;
   },
 
+  [types.UPDATE_PROMO_CODE](state, promoCode) {
+    state.promoCode = promoCode;
+  },
+
   [types.UPDATE_COUNTRY_OPTIONS](state, countryOptions) {
     state.countryOptions = countryOptions;
   },

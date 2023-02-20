@@ -32,7 +32,45 @@
       "gl_namespace_id": 222,
       "gl_namespace_name": "Group name",
       "preview": "false",
-      "source": "some_source"
+      "source": "some_source",
+      "promo_code": null
+    }
+  },
+  "subscription_params_with_promo_code": {
+    "customer": {
+      "provider": "gitlab",
+      "uid": 111,
+      "credentials": {
+        "token": "foo_token"
+      },
+      "customer": {
+        "country": "NLD",
+        "address_1": "Address line 1",
+        "address_2": "Address line 2",
+        "city": "City",
+        "state": "State",
+        "zip_code": "Zip code",
+        "company": "My organization"
+      },
+      "info": {
+        "first_name": "First name",
+        "last_name": "Last name",
+        "email": "first.last@gitlab.com"
+      }
+    },
+    "subscription": {
+      "plan_id": "Plan ID",
+      "payment_method_id": "Payment method ID",
+      "products": {
+        "main": {
+          "quantity": 123
+        }
+      },
+      "gl_namespace_id": 222,
+      "gl_namespace_name": "Group name",
+      "preview": "false",
+      "source": "some_source",
+      "promo_code": "Sample promo code"
     }
   },
   "addon_with_active_sub": {
@@ -101,7 +139,8 @@
       "gl_namespace_id": 222,
       "gl_namespace_name": "Group name",
       "preview": "false",
-      "source": "some_source"
+      "source": "some_source",
+      "promo_code": null
     }
   }
 }

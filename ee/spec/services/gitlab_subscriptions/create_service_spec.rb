@@ -128,6 +128,26 @@ RSpec.describe GitlabSubscriptions::CreateService do
         execute
       end
 
+      context 'with subscription purchase using promo code' do
+        let_it_be(:subscription_params) do
+          {
+            plan_id: "Plan ID",
+            payment_method_id: "Payment method ID",
+            quantity: 123,
+            promo_code: "Sample promo code",
+            source: "some_source"
+          }
+        end
+
+        it 'passes the correct parameters for creating a subscription' do
+          create_params = Gitlab::Json.parse(fixture_file('create_service_params.json', dir: 'ee'))["subscription_params_with_promo_code"].deep_symbolize_keys
+
+          expect(client).to receive(:create_subscription).with(create_params[:subscription], customer_email, 'token')
+
+          execute
+        end
+      end
+
       context 'with add-on purchase' do
         let_it_be(:subscription_params) do
           {
