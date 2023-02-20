@@ -32975,9 +32975,6 @@ msgstr ""
 msgid "Profile"
 msgstr ""
 
-msgid "Profile Settings"
-msgstr ""
-
 msgid "Profile failed to delete"
 msgstr ""
 
