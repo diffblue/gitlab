@@ -20,7 +20,7 @@ class UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker # rubocop:disable Scalab
       current_timestamp = Time.current
 
       subscriptions.each do |subscription|
-        subscription.refresh_seat_attributes!
+        subscription.refresh_seat_attributes
 
         max_seat_used_changed_at = if subscription.max_seats_used_changed?
                                      current_timestamp
