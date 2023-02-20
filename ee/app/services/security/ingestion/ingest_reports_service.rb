@@ -30,7 +30,6 @@ module Security
       def store_reports
         latest_security_scans
           .flat_map { |scan| ingest(scan) }
-          .then { |ids| mark_resolved_vulnerabilities(ids) }
       end
 
       def latest_security_scans
@@ -39,10 +38,6 @@ module Security
 
       def ingest(security_scan)
         IngestReportService.execute(security_scan)
-      end
-
-      def mark_resolved_vulnerabilities(existing_ids)
-        MarkAsResolvedService.execute(project, existing_ids)
       end
 
       def mark_project_as_vulnerable!

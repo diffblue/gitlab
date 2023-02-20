@@ -494,6 +494,21 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
     end
   end
 
+  describe '.by_scanner' do
+    let_it_be(:scanner) { create(:vulnerabilities_scanner, project: project) }
+    let_it_be(:other_scanner) { create(:vulnerabilities_scanner, project: project) }
+    let_it_be(:finding) { create(:vulnerabilities_finding, scanner: scanner) }
+    let_it_be(:other_finding) { create(:vulnerabilities_finding, scanner: other_scanner) }
+    let_it_be(:vulnerability) { create(:vulnerability, project: project, present_on_default_branch: true, findings: [finding]) }
+    let_it_be(:vulnerability_for_another_scanner) { create(:vulnerability, project: project, present_on_default_branch: true, findings: [other_finding]) }
+
+    subject(:vulnerability_reads) { described_class.by_scanner(scanner) }
+
+    it 'returns records by given scanner' do
+      expect(vulnerability_reads.pluck(:vulnerability_id)).to match_array([vulnerability.id])
+    end
+  end
+
   private
 
   def create_vulnerability(severity: 7, confidence: 7, report_type: 0)

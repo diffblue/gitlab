@@ -435,4 +435,13 @@ RSpec.describe Security::Scan, feature_category: :vulnerability_management do
     expect(scan.project_id).to eq(scan.build.project_id)
     expect(scan.pipeline_id).to eq(scan.build.commit_id)
   end
+
+  describe '#scanner' do
+    let_it_be(:scan) { create(:security_scan, :with_findings) }
+    let_it_be(:scanner) { create(:vulnerabilities_scanner, project: scan.project, external_id: 'a-dast-scanner') }
+
+    it 'returns the matching vulnerability scanner' do
+      expect(scan.scanner).to eql(scanner)
+    end
+  end
 end

@@ -112,10 +112,18 @@ module Security
       @remediations_proxy ||= RemediationsProxy.new(job_artifact&.file)
     end
 
+    def scanner
+      project.vulnerability_scanners.find_by_external_id(primary_scanner&.external_id)
+    end
+
     private
 
     def security_report
       job_artifact&.security_report
+    end
+
+    def primary_scanner
+      security_report&.primary_scanner
     end
 
     def job_artifact

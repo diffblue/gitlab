@@ -2,11 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Ingestion::IngestReportService do
+RSpec.describe Security::Ingestion::IngestReportService, feature_category: :vulnerability_management do
   let(:service_object) { described_class.new(security_scan) }
 
   describe '#execute' do
-    let(:security_scan) { create(:security_scan, scan_type: :sast) }
+    let(:security_scan) { create(:security_scan, :with_findings, scan_type: :sast) }
 
     subject(:ingest_report) { service_object.execute }
 
@@ -24,6 +24,19 @@ RSpec.describe Security::Ingestion::IngestReportService do
       expect(ingest_report).to eq([1, 2])
 
       expect(Security::Ingestion::IngestReportSliceService).to have_received(:execute).twice
+    end
+
+    context 'when ingesting vulnerabilities' do
+      let!(:scanner) { create(:vulnerabilities_scanner, project: security_scan.project, external_id: 'find_sec_bugs') }
+
+      it 'resolves the missing vulnerabilities' do
+        allow(Security::Ingestion::MarkAsResolvedService).to receive(:execute)
+
+        ingest_report
+
+        expect(Security::Ingestion::MarkAsResolvedService)
+          .to have_received(:execute).once.with(scanner, [1, 2])
+      end
     end
 
     context 'when ingesting a slice of vulnerabilities fails' do
