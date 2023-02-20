@@ -30,6 +30,7 @@ module EE
           end
 
           params :optional_update_params_ee do
+            optional :allow_pipeline_trigger_approve_deployment, type: Grape::API::Boolean, desc: 'Allow pipeline triggerer to approve deployments'
             optional :mirror_user_id, type: Integer, desc: 'User responsible for all the activity surrounding a pull mirror event. Can only be set by admins'
             optional :only_mirror_protected_branches, type: Grape::API::Boolean, desc: 'Only mirror protected branches'
             optional :mirror_branch_regex, type: String, desc: 'Only mirror branches match regex'
@@ -54,6 +55,7 @@ module EE
           # https://gitlab.com/gitlab-org/gitlab-foss/issues/50911.
           def update_params_at_least_one_of
             super.concat [
+              :allow_pipeline_trigger_approve_deployment,
               :only_allow_merge_if_all_status_checks_passed,
               :approvals_before_merge,
               :external_authorization_classification_label,
@@ -74,6 +76,10 @@ module EE
 
           unless ::License.feature_available?(:external_authorization_service_api_management)
             attrs.delete(:external_authorization_classification_label)
+          end
+
+          unless ::License.feature_available?(:protected_environments)
+            attrs.delete(:allow_pipeline_trigger_approve_deployment)
           end
         end
 
