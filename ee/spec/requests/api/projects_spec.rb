@@ -409,6 +409,32 @@ RSpec.describe API::Projects, feature_category: :projects do
         expect(json_response).not_to have_key 'merge_trains_enabled'
       end
     end
+
+    context 'when protected_environments is available' do
+      before do
+        stub_licensed_features(protected_environments: true)
+      end
+
+      it 'returns allow_pipeline_trigger_approve_deployment flag' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response).to have_key 'allow_pipeline_trigger_approve_deployment'
+      end
+    end
+
+    context 'when protected_environments is not available' do
+      before do
+        stub_licensed_features(protected_environments: false)
+      end
+
+      it 'does not returns allow_pipeline_trigger_approve_deployment flag' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response).not_to have_key 'allow_pipeline_trigger_approve_deployment'
+      end
+    end
   end
 
   # Assumes the following variables are defined:
@@ -1488,6 +1514,34 @@ RSpec.describe API::Projects, feature_category: :projects do
           expect(response).to have_gitlab_http_status(:ok)
           expect(json_response['approvals_before_merge']).to eq(3)
         end
+      end
+    end
+
+    context 'when protected_environments is available' do
+      before do
+        stub_licensed_features(protected_environments: true)
+      end
+
+      let(:project_params) { { allow_pipeline_trigger_approve_deployment: true } }
+
+      it 'updates the content' do
+        expect { subject }.to change { project.reload.allow_pipeline_trigger_approve_deployment }.from(false).to(true)
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response['allow_pipeline_trigger_approve_deployment']).to eq(project_params[:allow_pipeline_trigger_approve_deployment])
+      end
+    end
+
+    context 'when protected_environments not available' do
+      before do
+        stub_licensed_features(protected_environments: false)
+      end
+
+      let(:project_params) { { allow_pipeline_trigger_approve_deployment: true } }
+
+      it 'does not update the content' do
+        expect { subject }.to not_change { project.reload.allow_pipeline_trigger_approve_deployment }
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response).not_to have_key 'allow_pipeline_trigger_approve_deployment'
       end
     end
   end
