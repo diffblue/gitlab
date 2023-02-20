@@ -156,6 +156,70 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
         it { is_expected.to be_valid }
       end
+
+      context 'when customer is switching from a legacy license to a cloud license' do
+        let(:current_gl_license) { build(:gitlab_license, restrictions: { subscription_id: 'FOOBAR' }) }
+        let(:current_license) { build(:license, data: current_gl_license.export) }
+        let(:new_license_subscription_id) { current_license.subscription_id }
+        let(:new_gl_license) do
+          build(
+            :gitlab_license,
+            :cloud,
+            restrictions: {
+              subscription_id: new_license_subscription_id,
+              trueup_quantity: 10,
+              trueup_from: 1.year.ago.to_s,
+              trueup_to: 1.day.ago.to_s
+            }
+          )
+        end
+
+        subject(:new_license) { build(:license, cloud: true, data: new_gl_license.export) }
+
+        before do
+          allow(License).to receive(:current).and_return(current_license)
+        end
+
+        context 'when the new license is a cloud license' do
+          it 'does not validate for true-ups' do
+            expect(new_license).not_to receive(:check_trueup)
+
+            new_license.valid?
+          end
+        end
+
+        context 'when the new license is not a cloud license' do
+          subject(:new_license) { build(:license, cloud: false, data: new_gl_license.export) }
+
+          it 'validates for true-ups' do
+            expect(new_license).to receive(:check_trueup)
+
+            new_license.valid?
+          end
+        end
+
+        context 'when the new license refers to a different subscription' do
+          let(:new_license_subscription_id) { 'ANOTHERSUB' }
+
+          it 'validates for true-ups' do
+            expect(new_license).to receive(:check_trueup)
+
+            new_license.valid?
+          end
+        end
+
+        context 'when there is no current license' do
+          before do
+            allow(License).to receive(:current).and_return(nil)
+          end
+
+          it 'validates for true-ups' do
+            expect(new_license).to receive(:check_trueup)
+
+            new_license.valid?
+          end
+        end
+      end
     end
 
     describe '#check_restricted_user_count' do
