@@ -47,7 +47,7 @@ module API
       get ':id/managed_licenses' do
         authorize_can_read!
 
-        software_license_policies = user_project.software_license_policies
+        software_license_policies = user_project.software_license_policies.without_scan_result_policy_read
         present paginate(software_license_policies), with: EE::API::Entities::ManagedLicense
       end
 

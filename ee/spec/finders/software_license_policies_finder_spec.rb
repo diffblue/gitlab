@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SoftwareLicensePoliciesFinder do
+RSpec.describe SoftwareLicensePoliciesFinder, feature_category: :security_policy_management do
   let(:project) { create(:project) }
   let(:software_license_policy) { create(:software_license_policy, project: project) }
 
@@ -22,6 +22,20 @@ RSpec.describe SoftwareLicensePoliciesFinder do
     let(:params) { { name: software_license_policy.name } }
 
     it 'by name finds the software license policy by name' do
+      expect(finder.execute.take).to eq(software_license_policy)
+    end
+  end
+
+  context 'with policies from license_finding' do
+    let(:params) { { ignore_license_finding: false, name: software_license_policy.name } }
+    let!(:software_license_policy) do
+      create(:software_license_policy,
+        project: project,
+        scan_result_policy_read: create(:scan_result_policy_read)
+      )
+    end
+
+    it 'returns policy from license_finding rules' do
       expect(finder.execute.take).to eq(software_license_policy)
     end
   end

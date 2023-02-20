@@ -69,7 +69,11 @@ module SCA
       return {} if project.blank?
 
       strong_memoize(:known_policies) do
-        project.software_license_policies.including_license.unreachable_limit.to_h do |policy|
+        project
+          .software_license_policies
+          .without_scan_result_policy_read
+          .including_license
+          .unreachable_limit.to_h do |policy|
           [policy.software_license.canonical_id, report_for(policy)]
         end
       end

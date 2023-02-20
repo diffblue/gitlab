@@ -41,6 +41,28 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :license_compliance do
         end
       end
 
+      context "when some policies has scan_result_policy" do
+        let(:pipeline) { nil }
+
+        let!(:mit_policy) { create(:software_license_policy, :denied, software_license: mit, project: project) }
+        let!(:scan_result_policy) do
+          create(:software_license_policy, :denied,
+            software_license: mit,
+            project: project,
+            scan_result_policy_read: create(:scan_result_policy_read)
+          )
+        end
+
+        it "includes policy without scan_result_policy_read" do
+          expect(policies.count).to eq(1)
+          expect(policies[0].id).to eq(mit_policy.id)
+          expect(policies[0].name).to eq(mit.name)
+          expect(policies[0].url).to be_nil
+          expect(policies[0].classification).to eq("denied")
+          expect(policies[0].spdx_identifier).to eq(mit.spdx_identifier)
+        end
+      end
+
       context "when a pipeline has run" do
         let(:pipeline) { create(:ci_pipeline, :success, project: project, builds: builds) }
         let(:builds) { [] }
