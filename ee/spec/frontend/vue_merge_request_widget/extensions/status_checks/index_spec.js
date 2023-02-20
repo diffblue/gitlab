@@ -68,7 +68,8 @@ describe('Status checks extension', () => {
   describe('summary', () => {
     describe('when loading', () => {
       beforeEach(async () => {
-        await setupWithResponse(HTTP_STATUS_OK, new Promise(() => {}));
+        mock.onGet(getChecksEndpoint).reply(HTTP_STATUS_OK);
+        createComponent();
       });
 
       it('should render loading text', () => {
