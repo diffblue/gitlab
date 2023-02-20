@@ -95,7 +95,7 @@ RSpec.describe ApplicationSetting do
       it { is_expected.not_to allow_value(nil).for(:future_subscriptions) }
     end
 
-    describe 'required_instance', feature_category: :pipeline_authoring do
+    describe 'required_instance', feature_category: :pipeline_composition do
       it { is_expected.to allow_value(nil).for(:required_instance_ci_template) }
       it { is_expected.not_to allow_value("").for(:required_instance_ci_template) }
       it { is_expected.not_to allow_value("  ").for(:required_instance_ci_template) }

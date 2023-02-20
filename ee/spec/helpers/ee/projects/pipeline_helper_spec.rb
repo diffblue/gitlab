@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::PipelineHelper, feature_category: :pipeline_authoring do
+RSpec.describe Projects::PipelineHelper, feature_category: :pipeline_composition do
   include Ci::BuildsHelper
 
   let_it_be(:user) { create(:user) }

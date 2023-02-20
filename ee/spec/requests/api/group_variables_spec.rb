@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::GroupVariables, feature_category: :pipeline_authoring do
+RSpec.describe API::GroupVariables, feature_category: :pipeline_composition do
   let(:group) { create(:group) }
   let(:user) { create(:user) }
 
