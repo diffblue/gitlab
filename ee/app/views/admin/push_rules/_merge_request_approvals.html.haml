@@ -1,7 +1,7 @@
 - return unless License.feature_available?(:admin_merge_request_approvers_rules)
 %section.settings.no-animate#js-merge-request-approval-settings{ class: ('expanded' if expanded_by_default?), data: { testid: 'merge-request-approval-settings' } }
   .settings-header
-    %h4
+    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
       = _('Merge request approvals')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded_by_default? ? _('Collapse') : _('Expand')
