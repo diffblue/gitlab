@@ -42,7 +42,7 @@ module Groups
 
         override :all_cycle_analytics_params
         def all_cycle_analytics_params
-          super.merge({ group: @group })
+          super.merge({ namespace: @group })
         end
 
         def data_collector_for(summary_class)
