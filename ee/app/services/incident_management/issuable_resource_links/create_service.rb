@@ -15,9 +15,9 @@ module IncidentManagement
       def execute
         return error_no_permissions unless allowed?
 
-        params[:link_text] = params[:link] if params[:link_text].blank?
-
         params[:link_type] = get_link_type if params[:link_type].blank?
+
+        params[:link_text] = get_link_text(params[:link], params[:link_type].to_s) if params[:link_text].blank?
 
         issuable_resource_link_params = params.merge({ issue: incident })
         issuable_resource_link = IncidentManagement::IssuableResourceLink.new(issuable_resource_link_params)
@@ -42,6 +42,14 @@ module IncidentManagement
         return :slack if SLACK_REGEXP.match?(params[:link])
 
         :general
+      end
+
+      def get_link_text(link, link_type)
+        return link if link_type == 'general'
+
+        prefix = link_type == 'slack' ? 'Slack #' : 'Zoom #'
+
+        prefix + link.split('/').last.split('?').first
       end
     end
   end

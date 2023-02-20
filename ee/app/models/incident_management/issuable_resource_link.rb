@@ -15,5 +15,7 @@ module IncidentManagement
     validates :link_text, length: { maximum: 255 }
 
     scope :order_by_created_at_asc, -> { reorder(created_at: :asc) }
+    scope :slack_links, -> { where(link_type: :slack) }
+    scope :zoom_links, -> { where(link_type: :zoom) }
   end
 end
