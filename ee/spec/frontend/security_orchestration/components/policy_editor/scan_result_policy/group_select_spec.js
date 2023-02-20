@@ -3,7 +3,7 @@ import VueApollo from 'vue-apollo';
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import waitForPromises from 'helpers/wait_for_promises';
-import searchGroupsGroups from 'ee/security_orchestration/graphql/queries/get_users_groups.query.graphql';
+import searchGroups from 'ee/security_orchestration/graphql/queries/get_namespace_groups.query.graphql';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import GroupSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/group_select.vue';
@@ -21,18 +21,15 @@ const group = {
 
 const USERS_RESPONSE = {
   data: {
-    currentUser: {
-      id: 'gid://gitlab/User/6',
-      groups: {
-        nodes: [
-          {
-            ...group,
-          },
-        ],
-        __typename: 'GroupConnection',
-      },
-      __typename: 'UserCore',
+    groups: {
+      nodes: [
+        {
+          ...group,
+        },
+      ],
+      __typename: 'GroupConnection',
     },
+    __typename: 'UserCore',
   },
 };
 
@@ -42,7 +39,7 @@ describe('GroupSelect component', () => {
   const searchQueryHandlerSuccess = jest.fn().mockResolvedValue(USERS_RESPONSE);
 
   const createComponent = (propsData = {}) => {
-    const fakeApollo = createMockApollo([[searchGroupsGroups, searchQueryHandlerSuccess]]);
+    const fakeApollo = createMockApollo([[searchGroups, searchQueryHandlerSuccess]]);
 
     wrapper = mount(GroupSelect, {
       apolloProvider: fakeApollo,
