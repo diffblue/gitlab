@@ -17,7 +17,7 @@ module Groups
           return error(s_('EnterpriseUsers|The user does not match the "Enterprise User" definition for the group'))
         end
 
-        if @user.user_detail.update(provisioned_by_group_id: @group.id)
+        if @user.user_detail.update(provisioned_by_group_id: @group.id, provisioned_by_group_at: Time.current)
           Notify.provisioned_member_access_granted_email(@group_member.id).deliver_later
 
           log_info(message: 'Marked the user as an enterprise user of the group')

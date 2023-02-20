@@ -39,6 +39,7 @@ module EE
                to: :namespace
       delegate :provisioned_by_group, :provisioned_by_group=,
                :provisioned_by_group_id, :provisioned_by_group_id=,
+               :provisioned_by_group_at, :provisioned_by_group_at=,
                to: :user_detail, allow_nil: true
 
       has_many :epics,                    foreign_key: :author_id

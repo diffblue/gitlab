@@ -46,6 +46,14 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
         expect(user.reload.provisioned_by_group_id).to eq(group.id)
       end
 
+      it 'sets user.provisioned_by_group_at to Time.current', :freeze_time do
+        expect(user.provisioned_by_group_at).to eq(nil)
+
+        service.execute
+
+        expect(user.reload.provisioned_by_group_at).to eq(Time.current)
+      end
+
       it 'enqueues provisioned_member_access_granted_email email for later delivery to the user' do
         expect do
           service.execute
@@ -92,6 +100,14 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
         service.execute
 
         expect(user.reload.provisioned_by_group_id).to eq(previous_user_provisioned_by_group_id)
+      end
+
+      it 'does not update user.provisioned_by_group_at' do
+        previous_user_provisioned_by_group_at = user.provisioned_by_group_at
+
+        service.execute
+
+        expect(user.reload.provisioned_by_group_at).to eq(previous_user_provisioned_by_group_at)
       end
 
       it 'does not enqueue any email for later delivery' do
