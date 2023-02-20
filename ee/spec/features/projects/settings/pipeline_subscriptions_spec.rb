@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Project Subscriptions', :js, feature_category: :pipeline_authoring do
+RSpec.describe 'Project Subscriptions', :js, feature_category: :pipeline_composition do
   let(:project) { create(:project, :public, :repository) }
   let(:upstream_project) { create(:project, :public, :repository) }
   let(:downstream_project) { create(:project, :public, :repository, upstream_projects: [project]) }
