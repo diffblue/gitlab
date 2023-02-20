@@ -233,6 +233,8 @@ module EE
       end
 
       def track_ci_secrets_management_usage
+        return unless ::Feature.enabled?(:usage_data_i_ci_secrets_management_vault_build_created)
+
         return unless ci_secrets_management_available? && secrets?
 
         ::Gitlab::UsageDataCounters::HLLRedisCounter.track_event('i_ci_secrets_management_vault_build_created', values: user_id)
