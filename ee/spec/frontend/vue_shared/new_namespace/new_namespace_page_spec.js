@@ -14,7 +14,7 @@ describe('Experimental new project creation app', () => {
 
   const DEFAULT_PROPS = {
     title: 'Create something',
-    initialBreadcrumb: 'Something',
+    initialBreadcrumbs: [{ text: 'Something', href: '#' }],
     panels: [
       { name: 'panel1', selector: '#some-selector1' },
       { name: 'panel2', selector: '#some-selector2' },

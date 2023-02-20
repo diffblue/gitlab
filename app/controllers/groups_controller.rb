@@ -76,6 +76,7 @@ class GroupsController < Groups::ApplicationController
   end
 
   def new
+    @parent_group = Group.find_by_id(params[:parent_id])
     @group = Group.new(params.permit(:parent_id))
     @group.build_namespace_settings
   end
