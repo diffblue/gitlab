@@ -52,8 +52,8 @@ module EE
     def show_discover_group_security?(group)
       !!current_user &&
         ::Gitlab.com? &&
-        !@group.licensed_feature_available?(:security_dashboard) &&
-        can?(current_user, :admin_group, @group)
+        !group.licensed_feature_available?(:security_dashboard) &&
+        can?(current_user, :admin_group, group)
     end
 
     def show_group_activity_analytics?
