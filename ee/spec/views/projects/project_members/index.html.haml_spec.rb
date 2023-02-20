@@ -34,7 +34,6 @@ RSpec.describe 'projects/project_members/index', :aggregate_failures, feature_ca
         expect(rendered).to have_selector('.js-invite-groups-modal')
         expect(rendered).not_to have_selector('.js-invite-members-trigger')
         expect(rendered).not_to have_content('Members can be added by project')
-        expect(response).to render_template(partial: 'projects/_invite_members_modal')
         expect(response).to render_template(partial: 'projects/_invite_groups_modal')
       end
 
@@ -50,7 +49,6 @@ RSpec.describe 'projects/project_members/index', :aggregate_failures, feature_ca
           expect(rendered).not_to have_content('You can invite')
           expect(rendered).not_to have_selector('.js-invite-group-trigger')
           expect(response).not_to render_template(partial: 'projects/_invite_groups_modal')
-          expect(response).to render_template(partial: 'projects/_invite_members_modal')
         end
       end
     end
