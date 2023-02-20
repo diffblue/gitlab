@@ -30,17 +30,17 @@ export const NO_INSTANCE_DATA = 'no_instance_data';
 
 export const EMPTY_STATE_I18N = {
   empty: {
-    title: s__('Product Analytics|Analyze your product with Product Analytics'),
+    title: s__('ProductAnalytics|Analyze your product with Product Analytics'),
     description: s__(
-      'Product Analytics|Set up Product Analytics to track how your product is performing. Combine it with your GitLab data to better understand where you can improve your product and development processes.',
+      'ProductAnalytics|Set up Product Analytics to track how your product is performing. Combine it with your GitLab data to better understand where you can improve your product and development processes.',
     ),
-    setUpBtnText: s__('Product Analytics|Set up product analytics'),
+    setUpBtnText: s__('ProductAnalytics|Set up product analytics'),
     learnMoreBtnText: __('Learn more'),
   },
   loading: {
-    title: s__('Product Analytics|Creating your product analytics instance...'),
+    title: s__('ProductAnalytics|Creating your product analytics instance...'),
     description: s__(
-      'Product Analytics|This might take a while, feel free to navigate away from this page and come back later.',
+      'ProductAnalytics|This might take a while, feel free to navigate away from this page and come back later.',
     ),
   },
 };
