@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Build, :saas do
+RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
   let_it_be(:group) { create(:group_with_plan, plan: :bronze_plan) }
 
   let(:project) { create(:project, :repository, group: group) }
@@ -16,7 +16,7 @@ RSpec.describe Ci::Build, :saas do
 
   let(:job) { create(:ci_build, pipeline: pipeline) }
   let(:artifact) { create(:ee_ci_job_artifact, :sast, job: job, project: job.project) }
-  let(:valid_secrets) do
+  let_it_be(:valid_secrets) do
     {
       DATABASE_PASSWORD: {
         vault: {
@@ -731,16 +731,24 @@ RSpec.describe Ci::Build, :saas do
     end
   end
 
-  describe "secrets management usage data" do
+  describe 'secrets management usage data' do
+    let_it_be(:user) { create(:user) }
+
     context 'when secrets management feature is not available' do
       before do
         stub_licensed_features(ci_secrets_management: false)
       end
 
-      it 'does not track unique users' do
-        expect(Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event)
+      it 'does not track RedisHLL event' do
+        expect(::Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event)
 
         create(:ci_build, secrets: valid_secrets)
+      end
+
+      it 'does not track Snowplow event' do
+        create(:ci_build, secrets: valid_secrets)
+
+        expect_no_snowplow_event
       end
     end
 
@@ -750,13 +758,33 @@ RSpec.describe Ci::Build, :saas do
       end
 
       context 'when there are secrets defined' do
-        let(:ci_build) { build(:ci_build, secrets: valid_secrets) }
-
         context 'on create' do
-          it 'tracks unique users' do
-            expect(Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event).with('i_ci_secrets_management_vault_build_created', values: ci_build.user_id)
+          let(:ci_build) { build(:ci_build, secrets: valid_secrets, user: user) }
+
+          it 'tracks RedisHLL event with user_id' do
+            expect(::Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event)
+              .with('i_ci_secrets_management_vault_build_created', values: user.id)
 
             ci_build.save!
+          end
+
+          it 'tracks Snowplow event with RedisHLL context' do
+            params = {
+              category: described_class.to_s,
+              action: 'create_secrets_vault',
+              namespace: ci_build.namespace,
+              user: user,
+              label: 'redis_hll_counters.ci_secrets_management.i_ci_secrets_management_vault_build_created_monthly',
+              ultimate_namespace_id: ci_build.namespace.root_ancestor.id,
+              context: [::Gitlab::Tracking::ServicePingContext.new(
+                data_source: :redis_hll,
+                event: 'i_ci_secrets_management_vault_build_created'
+              ).to_context.to_json]
+            }
+
+            ci_build.save!
+
+            expect_snowplow_event(**params)
           end
 
           context 'with usage_data_i_ci_secrets_management_vault_build_created FF disabled' do
@@ -764,34 +792,54 @@ RSpec.describe Ci::Build, :saas do
               stub_feature_flags(usage_data_i_ci_secrets_management_vault_build_created: false)
             end
 
-            it 'does not track unique users' do
+            it 'does not track RedisHLL event' do
               # Events FF are checked inside track_event, so need to verify it on the next level
-              expect(Gitlab::Redis::HLL).not_to receive(:add)
+              expect(::Gitlab::Redis::HLL).not_to receive(:add)
 
               ci_build.save!
+            end
+
+            it 'does not track Snowplow event' do
+              ci_build.save!
+
+              expect_no_snowplow_event
             end
           end
         end
 
         context 'on update' do
-          it 'does not track unique users' do
-            ci_build = create(:ci_build, secrets: valid_secrets)
+          let_it_be(:ci_build) { create(:ci_build, secrets: valid_secrets, user: user) }
 
-            expect(Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event)
+          it 'does not track RedisHLL event' do
+            expect(::Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event)
 
             ci_build.success
+          end
+
+          it 'does not track Snowplow event' do
+            ci_build.success
+
+            expect_no_snowplow_event
           end
         end
       end
     end
 
     context 'when there are no secrets defined' do
-      let(:secrets) { {} }
+      let(:ci_build) { build(:ci_build, user: user) }
 
-      it 'does not track unique users' do
-        expect(Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event)
+      context 'on create' do
+        it 'does not track RedisHLL event' do
+          expect(::Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event)
 
-        create(:ci_build, secrets: {})
+          ci_build.save!
+        end
+
+        it 'does not track Snowplow event' do
+          ci_build.save!
+
+          expect_no_snowplow_event
+        end
       end
     end
   end
