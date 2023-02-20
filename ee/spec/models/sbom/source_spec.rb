@@ -66,4 +66,30 @@ RSpec.describe Sbom::Source, type: :model, feature_category: :dependency_managem
       it { is_expected.to be_invalid }
     end
   end
+
+  describe 'readers' do
+    let(:source_attributes) do
+      {
+        'category' => 'development',
+        'input_file' => { 'path' => 'package-lock.json' },
+        'source_file' => { 'path' => 'package.json' },
+        'package_manager' => { 'name' => 'npm' },
+        'language' => { 'name' => 'JavaScript' }
+      }
+    end
+
+    let(:source) { build(:sbom_source, source: source_attributes) }
+
+    describe '#packager' do
+      subject { source.packager }
+
+      it { is_expected.to eq('npm') }
+    end
+
+    describe '#input_file_path' do
+      subject { source.input_file_path }
+
+      it { is_expected.to eq('package-lock.json') }
+    end
+  end
 end

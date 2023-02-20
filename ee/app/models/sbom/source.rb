@@ -9,5 +9,13 @@ module Sbom
 
     validates :source_type, presence: true
     validates :source, presence: true, json_schema: { filename: 'sbom_source' }
+
+    def packager
+      source.dig('package_manager', 'name')
+    end
+
+    def input_file_path
+      source.dig('input_file', 'path')
+    end
   end
 end

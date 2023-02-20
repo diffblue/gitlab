@@ -240,6 +240,12 @@ module EE
               description: 'Jitsu key assigned to the project.',
               alpha: { milestone: '15.7' },
               authorize: :developer_access
+
+        field :dependencies, ::Types::Sbom::DependencyType.connection_type,
+              null: true,
+              description: 'Software dependencies used by the project.',
+              alpha: { milestone: '15.9' },
+              resolver: ::Resolvers::Sbom::DependenciesResolver
       end
 
       def jitsu_key
