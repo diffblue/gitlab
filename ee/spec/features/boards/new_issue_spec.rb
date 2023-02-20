@@ -8,7 +8,8 @@ RSpec.describe 'Issue Boards new issue', :js, feature_category: :team_planning d
   end
 
   let_it_be(:user)            { create(:user) }
-  let_it_be(:project)         { create(:project, :public) }
+  let_it_be(:group)           { create(:group, :public) }
+  let_it_be(:project)         { create(:project, :public, group: group) }
   let_it_be(:milestone)       { create(:milestone, project: project, title: 'Milestone 1') }
   let_it_be(:board)           { create(:board, project: project) }
   let_it_be(:backlog_list)    { create(:backlog_list, board: board) }
@@ -57,6 +58,27 @@ RSpec.describe 'Issue Boards new issue', :js, feature_category: :team_planning d
         end
       end
     end
+
+    describe 'board scoped to current iteration' do
+      let!(:iteration) do
+        create(:current_iteration, iterations_cadence: create(:iterations_cadence, group: group),
+          start_date: 3.days.ago, due_date: 3.days.from_now)
+      end
+
+      it 'adds a new issue' do
+        scope_board_to_current_iteration
+
+        expect { create_issue_in_board_list(0) }.to change { Issue.count }.by(1)
+
+        page.within('[data-testid="iteration-edit"]') do
+          expect(page).to have_content iteration.title
+        end
+
+        page.within('.board-card') do
+          expect(page).to have_content 'new issue'
+        end
+      end
+    end
   end
 
   def create_issue_in_board_list(list_index)
@@ -70,6 +92,28 @@ RSpec.describe 'Issue Boards new issue', :js, feature_category: :team_planning d
       find('.form-control').set('new issue')
       click_button 'Create issue'
     end
+
+    wait_for_requests
+  end
+
+  def click_on_board_modal
+    find('.board-config-modal .modal-content').click
+  end
+
+  def scope_board_to_current_iteration
+    find('.btn', text: 'Edit board').click
+
+    page.within(".iteration") do
+      click_button 'Edit'
+
+      page.within(".dropdown-menu") do
+        click_button "Current"
+      end
+    end
+
+    click_on_board_modal
+
+    click_button 'Save changes'
 
     wait_for_requests
   end
