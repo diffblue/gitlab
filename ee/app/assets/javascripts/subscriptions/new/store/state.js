@@ -63,6 +63,7 @@ export default ({
     stateOptions: [],
     paymentFormParams: {},
     paymentMethodId: null,
+    promoCode: null,
     creditCardDetails: {},
     isLoadingPaymentMethod: false,
     isConfirmingOrder: false,

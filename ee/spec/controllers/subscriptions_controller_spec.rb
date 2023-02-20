@@ -347,6 +347,29 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
         end
       end
 
+      context 'when using a promo code' do
+        let(:params) do
+          {
+            setup_for_company: setup_for_company,
+            customer: { company: 'My company', country: 'NL' },
+            subscription: { plan_id: 'x', quantity: 2, source: 'some_source', promo_code: 'Sample promo code' }
+          }
+        end
+
+        it 'creates subscription using promo code' do
+          expect_next_instance_of(GitlabSubscriptions::CreateService,
+            user,
+            group: group,
+            customer_params: ActionController::Parameters.new(params[:customer]).permit!,
+            subscription_params: ActionController::Parameters.new(params[:subscription]).permit!
+          ) do |instance|
+            expect(instance).to receive(:execute).and_return(service_response)
+          end
+
+          subject
+        end
+      end
+
       context 'when not setting up for a company' do
         let(:params) do
           {

@@ -83,7 +83,7 @@ module SubscriptionPortalHelpers
   def stub_invoice_preview
     stub_full_request(EE::SUBSCRIPTIONS_GRAPHQL_URL, method: :post)
       .with(
-        body: "{\"operationName\":\"GetInvoicePreview\",\"variables\":{\"planId\":\"bronze_id\",\"quantity\":1},\"query\":\"query GetInvoicePreview($planId: ID!, $quantity: Int!) {\\n  invoicePreview(planId: $planId, quantity: $quantity) {\\n    invoice {\\n      amountWithoutTax\\n      __typename\\n    }\\n    invoiceItem {\\n      chargeAmount\\n      processingType\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\"}"
+        body: "{\"operationName\":\"GetInvoicePreview\",\"variables\":{\"planId\":\"bronze_id\",\"quantity\":1},\"query\":\"query GetInvoicePreview($planId: ID!, $quantity: Int!, $promoCode: String) {\\n  invoicePreview(planId: $planId, quantity: $quantity, promoCode: $promoCode) {\\n    invoice {\\n      amountWithoutTax\\n      __typename\\n    }\\n    invoiceItem {\\n      chargeAmount\\n      processingType\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\"}"
       )
       .to_return(
         status: 200,

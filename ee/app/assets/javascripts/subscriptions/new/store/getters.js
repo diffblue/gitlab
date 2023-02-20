@@ -1,5 +1,10 @@
 import { s__ } from '~/locale';
-import { NEW_GROUP, ULTIMATE, CHARGE_PROCESSING_TYPE } from '../constants';
+import {
+  NEW_GROUP,
+  ULTIMATE,
+  CHARGE_PROCESSING_TYPE,
+  DISCOUNT_PROCESSING_TYPE,
+} from '../constants';
 
 export const selectedPlanText = (state, getters) => getters.selectedPlanDetails.text;
 
@@ -31,6 +36,7 @@ export const confirmOrderParams = (state, getters) => ({
     payment_method_id: state.paymentMethodId,
     quantity: state.numberOfUsers,
     source: state.source,
+    ...(state.promoCode ? { promo_code: state.promoCode } : {}),
   },
 });
 
@@ -38,7 +44,7 @@ export const endDate = (state) =>
   new Date(state.startDate).setFullYear(state.startDate.getFullYear() + 1);
 
 export const totalExVat = (state, getters) => {
-  if (getters.hideAmount) {
+  if (!getters.showAmount) {
     return 0;
   }
 
@@ -48,7 +54,7 @@ export const totalExVat = (state, getters) => {
 export const vat = (state, getters) => state.taxRate * getters.totalExVat;
 
 export const totalAmount = (state, getters) => {
-  if (getters.hideAmount) {
+  if (!getters.showAmount) {
     return 0;
   }
 
@@ -94,19 +100,22 @@ export const selectedGroupName = (state, getters) => {
 export const selectedGroupId = (state, getters) =>
   getters.isGroupSelected ? state.selectedGroup : null;
 
-export const hideAmount = (state, getters) => {
-  if (!getters.usersPresent) {
-    return true;
-  }
-
-  if (!gon.features?.useInvoicePreviewApiInSaasPurchase) {
+export const showAmount = (state, getters) => {
+  if (state.isInvoicePreviewLoading || !getters.hasValidPriceDetails || !getters.usersPresent) {
     return false;
   }
 
-  return state.isInvoicePreviewLoading || !getters.hasValidPriceDetails;
+  return true;
 };
 
 export const hasValidPriceDetails = (state) => Boolean(state.invoicePreview);
 
 export const chargeItem = (state) =>
   state.invoicePreview?.invoiceItem?.find((item) => item.processingType === CHARGE_PROCESSING_TYPE);
+
+export const discountItem = (state) =>
+  state.invoicePreview?.invoiceItem?.find(
+    (item) => item.processingType === DISCOUNT_PROCESSING_TYPE,
+  );
+
+export const discount = (_, getters) => getters.discountItem?.chargeAmount ?? 0;

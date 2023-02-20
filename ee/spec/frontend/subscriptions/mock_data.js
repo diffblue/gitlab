@@ -115,6 +115,13 @@ export const mockInvoicePreviewBronze = {
   },
 };
 
+export const mockDiscountItem = {
+  chargeAmount: -10,
+  processingType: 'Discount',
+  serviceEndDate: '2020-12-05',
+  serviceStartDate: '2019-12-05',
+};
+
 export const mockInvoicePreviewUltimate = {
   data: {
     invoicePreview: {
@@ -126,6 +133,25 @@ export const mockInvoicePreviewUltimate = {
           chargeAmount: 1188,
           processingType: 'Charge',
         },
+      ],
+    },
+  },
+};
+
+export const mockInvoicePreviewWithDiscount = {
+  data: {
+    invoicePreview: {
+      invoice: {
+        amountWithoutTax: 1188,
+      },
+      invoiceItem: [
+        {
+          chargeAmount: 1188,
+          processingType: 'Charge',
+          serviceEndDate: '2020-12-05',
+          serviceStartDate: '2019-12-05',
+        },
+        mockDiscountItem,
       ],
     },
   },

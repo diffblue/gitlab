@@ -156,6 +156,10 @@ describe('projectsSelector default state', () => {
     expect(state.organizationName).toBeNull();
   });
 
+  it('sets the promoCode to null', () => {
+    expect(state.promoCode).toBeNull();
+  });
+
   it('sets the numberOfUsers to 1', () => {
     expect(state.numberOfUsers).toEqual(1);
   });

@@ -22,10 +22,11 @@ export default {
       'vat',
       'totalAmount',
       'usersPresent',
-      'hideAmount',
+      'showAmount',
+      'discount',
     ]),
     taxAmount() {
-      return this.taxRate ? this.formatAmount(this.vat, !this.hideAmount) : '–';
+      return this.taxRate ? this.formatAmount(this.vat, this.showAmount) : '–';
     },
     taxLine() {
       return `${this.$options.i18n.tax} ${this.$options.i18n.taxNote}`;
@@ -37,6 +38,7 @@ export default {
     pricePerUserPerYear: s__('Checkout|$%{selectedPlanPrice} per user per year'),
     dates: s__('Checkout|%{startDate} - %{endDate}'),
     subtotal: s__('Checkout|Subtotal'),
+    discount: s__('Checkout|Discount'),
     tax: s__('Checkout|Tax'),
     taxNote: s__('Checkout|(may be %{linkStart}charged upon purchase%{linkEnd})'),
     total: s__('Checkout|Total'),
@@ -57,7 +59,7 @@ export default {
       </div>
       <gl-loading-icon v-if="isInvoicePreviewLoading" inline class="gl-my-auto gl-ml-3" />
       <div v-else class="gl-ml-3" data-testid="amount" data-qa-selector="total">
-        {{ formatAmount(totalExVat, !hideAmount) }}
+        {{ formatAmount(totalExVat, showAmount) }}
       </div>
     </div>
     <div v-if="!isInvoicePreviewLoading" class="gl-text-gray-500" data-testid="per-user">
@@ -81,7 +83,15 @@ export default {
       <div class="gl-display-flex gl-justify-content-space-between gl-text-gray-500 gl-mb-2">
         <div>{{ $options.i18n.subtotal }}</div>
         <gl-loading-icon v-if="isInvoicePreviewLoading" inline class="gl-my-auto" />
-        <div v-else data-testid="total-ex-vat">{{ formatAmount(totalExVat, !hideAmount) }}</div>
+        <div v-else data-testid="total-ex-vat">{{ formatAmount(totalExVat, showAmount) }}</div>
+      </div>
+      <div
+        v-if="discount"
+        class="gl-display-flex gl-justify-content-space-between gl-text-gray-500 gl-mb-2"
+      >
+        <div>{{ $options.i18n.discount }}</div>
+        <gl-loading-icon v-if="isInvoicePreviewLoading" inline class="gl-my-auto" />
+        <div v-else data-testid="discount">{{ formatAmount(discount, showAmount) }}</div>
       </div>
       <div class="gl-display-flex gl-justify-content-space-between gl-text-gray-500">
         <div data-testid="tax-info-line">
@@ -107,7 +117,7 @@ export default {
       <div>{{ $options.i18n.total }}</div>
       <gl-loading-icon v-if="isInvoicePreviewLoading" inline class="gl-my-auto" />
       <div v-else data-testid="total-amount" data-qa-selector="total_amount">
-        {{ formatAmount(totalAmount, !hideAmount) }}
+        {{ formatAmount(totalAmount, showAmount) }}
       </div>
     </div>
   </div>

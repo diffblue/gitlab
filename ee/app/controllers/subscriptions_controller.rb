@@ -152,7 +152,9 @@ class SubscriptionsController < ApplicationController
   end
 
   def subscription_params
-    params.require(:subscription).permit(:plan_id, :is_addon, :payment_method_id, :quantity, :source).merge(params.permit(:active_subscription))
+    params.require(:subscription)
+          .permit(:plan_id, :is_addon, :payment_method_id, :quantity, :source, :promo_code)
+          .merge(params.permit(:active_subscription))
   end
 
   def validate_payment_method_params

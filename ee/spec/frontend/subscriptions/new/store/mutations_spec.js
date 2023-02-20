@@ -26,6 +26,7 @@ describe('ee/subscriptions/new/store/mutation', () => {
     ${types.UPDATE_IS_SETUP_FOR_COMPANY}      | ${false}                                | ${'isSetupForCompany'}
     ${types.UPDATE_NUMBER_OF_USERS}           | ${2}                                    | ${'numberOfUsers'}
     ${types.UPDATE_ORGANIZATION_NAME}         | ${'new name'}                           | ${'organizationName'}
+    ${types.UPDATE_PROMO_CODE}                | ${'SamplePromoCode'}                    | ${'promoCode'}
     ${types.UPDATE_COUNTRY_OPTIONS}           | ${[{ text: 'country', value: 'id' }]}   | ${'countryOptions'}
     ${types.UPDATE_STATE_OPTIONS}             | ${[{ text: 'state', value: 'id' }]}     | ${'stateOptions'}
     ${types.UPDATE_COUNTRY}                   | ${'NL'}                                 | ${'country'}

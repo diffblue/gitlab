@@ -1,6 +1,6 @@
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import Api from 'ee/api';
@@ -8,6 +8,8 @@ import { STEPS } from 'ee/subscriptions/constants';
 import ConfirmOrder from 'ee/subscriptions/new/components/checkout/confirm_order.vue';
 import createStore from 'ee/subscriptions/new/store';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
+import { mockInvoicePreviewBronze } from 'ee_jest/subscriptions/mock_data';
+import * as types from 'ee/subscriptions/new/store/mutation_types';
 
 jest.mock('~/flash');
 
@@ -74,6 +76,43 @@ describe('Confirm Order', () => {
 
       it('the loading indicator should be visible', () => {
         expect(findLoadingIcon().exists()).toBe(true);
+      });
+
+      it('button should be disabled', async () => {
+        await nextTick();
+
+        expect(findConfirmButton().attributes('disabled')).toBe('true');
+      });
+    });
+
+    describe('Button state', () => {
+      beforeEach(() => {
+        const mockApolloProvider = createMockApolloProvider(STEPS, 3);
+        wrapper = createComponent({ apolloProvider: mockApolloProvider });
+      });
+
+      it('should be enabled when not confirming and has valid price details', async () => {
+        store.commit(types.UPDATE_IS_CONFIRMING_ORDER, false);
+        store.commit(types.UPDATE_INVOICE_PREVIEW, mockInvoicePreviewBronze);
+        await nextTick();
+
+        expect(findConfirmButton().attributes('disabled')).toBe(undefined);
+      });
+
+      it('should be disabled when confirming and has valid price details', async () => {
+        store.commit(types.UPDATE_IS_CONFIRMING_ORDER, true);
+        store.commit(types.UPDATE_INVOICE_PREVIEW, mockInvoicePreviewBronze);
+        await nextTick();
+
+        expect(findConfirmButton().attributes('disabled')).toBe('true');
+      });
+
+      it('should be disabled when not confirming and has invalid price details', async () => {
+        store.commit(types.UPDATE_IS_CONFIRMING_ORDER, false);
+        store.commit(types.UPDATE_INVOICE_PREVIEW, null);
+        await nextTick();
+
+        expect(findConfirmButton().attributes('disabled')).toBe('true');
       });
     });
   });

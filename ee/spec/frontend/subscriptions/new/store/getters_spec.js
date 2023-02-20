@@ -1,6 +1,10 @@
 import * as constants from 'ee/subscriptions/new/constants';
 import * as getters from 'ee/subscriptions/new/store/getters';
-import { mockChargeItem, mockInvoicePreviewBronze } from 'ee_jest/subscriptions/mock_data';
+import {
+  mockChargeItem,
+  mockDiscountItem,
+  mockInvoicePreviewBronze,
+} from 'ee_jest/subscriptions/mock_data';
 
 const state = {
   isSetupForCompany: true,
@@ -69,23 +73,23 @@ describe('Subscriptions Getters', () => {
       expect(
         getters.totalExVat(
           { numberOfUsers: 5 },
-          { chargeItem: mockChargeItem, hideAmount: false, selectedPlanPrice: 10 },
+          { chargeItem: mockChargeItem, showAmount: true, selectedPlanPrice: 10 },
         ),
       ).toBe(48);
     });
 
-    it('returns 0 if hideAmount is true', () => {
+    it('returns 0 if showAmount is false', () => {
       expect(
         getters.totalExVat(
           { numberOfUsers: 5 },
-          { chargeItem: mockChargeItem, hideAmount: true, selectedPlanPrice: 10 },
+          { chargeItem: mockChargeItem, showAmount: false, selectedPlanPrice: 10 },
         ),
       ).toBe(0);
     });
 
     it(`returns 0 if charge item doesn't exist`, () => {
       expect(
-        getters.totalExVat({ numberOfUsers: 5 }, { hideAmount: false, selectedPlanPrice: 10 }),
+        getters.totalExVat({ numberOfUsers: 5 }, { showAmount: true, selectedPlanPrice: 10 }),
       ).toBe(0);
     });
   });
@@ -101,54 +105,52 @@ describe('Subscriptions Getters', () => {
       expect(
         getters.totalAmount(
           { invoicePreview: mockInvoicePreviewBronze.data.invoicePreview },
-          { hideAmount: false, vat: 8 },
+          { showAmount: true, vat: 8 },
         ),
       ).toBe(56);
     });
 
-    it('returns 0 if hideAmount is true', () => {
+    it('returns 0 if showAmount is false', () => {
       expect(
         getters.totalExVat(
           { invoicePreview: mockInvoicePreviewBronze.data.invoicePreview },
-          { hideAmount: false, vat: 8 },
+          { showAmount: false, vat: 8 },
         ),
       ).toBe(0);
     });
   });
 
-  describe('hideAmount', () => {
-    it('returns true if no users are present', () => {
-      expect(getters.hideAmount({}, { usersPresent: false })).toBe(true);
+  describe('showAmount', () => {
+    it('returns false if no users are present', () => {
+      expect(getters.showAmount({}, { usersPresent: false })).toBe(false);
     });
 
-    it('returns false if users are present and not using invoice preview api', () => {
+    it('returns true if users are present and not using invoice preview api', () => {
       gon.features = { useInvoicePreviewApiInSaasPurchase: false };
 
-      expect(getters.hideAmount({}, { usersPresent: true })).toBe(false);
+      expect(getters.showAmount({}, { usersPresent: true, hasValidPriceDetails: true })).toBe(true);
     });
 
-    it('returns true if users are present when using invoice preview api and when loading', () => {
+    it('returns false if users are present when using invoice preview api and when loading', () => {
       gon.features = { useInvoicePreviewApiInSaasPurchase: true };
 
-      expect(getters.hideAmount({ isInvoicePreviewLoading: true }, { usersPresent: true })).toBe(
-        true,
-      );
-    });
-
-    it('returns true if users are present when using invoice preview api and invoice preview is not valid', () => {
-      gon.features = { useInvoicePreviewApiInSaasPurchase: true };
-
-      expect(getters.hideAmount({}, { usersPresent: true, hasValidPriceDetails: false })).toBe(
-        true,
-      );
-    });
-
-    it('returns false if users are present when using invoice preview api and invoice preview is valid', () => {
-      gon.features = { useInvoicePreviewApiInSaasPurchase: true };
-
-      expect(getters.hideAmount({}, { usersPresent: true, hasValidPriceDetails: true })).toBe(
+      expect(getters.showAmount({ isInvoicePreviewLoading: true }, { usersPresent: true })).toBe(
         false,
       );
+    });
+
+    it('returns false if users are present when using invoice preview api and invoice preview is not valid', () => {
+      gon.features = { useInvoicePreviewApiInSaasPurchase: true };
+
+      expect(getters.showAmount({}, { usersPresent: true, hasValidPriceDetails: false })).toBe(
+        false,
+      );
+    });
+
+    it('returns true if users are present when using invoice preview api and invoice preview is valid', () => {
+      gon.features = { useInvoicePreviewApiInSaasPurchase: true };
+
+      expect(getters.showAmount({}, { usersPresent: true, hasValidPriceDetails: true })).toBe(true);
     });
   });
 
@@ -174,6 +176,29 @@ describe('Subscriptions Getters', () => {
 
     it(`returns false if invoice preview data doesn't exist`, () => {
       expect(getters.chargeItem({ invoicePreview: null })).toBe(undefined);
+    });
+  });
+
+  describe('discountItem', () => {
+    it('returns discount item when present', () => {
+      const invoicePreview = { invoiceItem: [mockDiscountItem] };
+      expect(getters.discountItem({ invoicePreview })).toBe(mockDiscountItem);
+    });
+
+    it(`returns false if invoice preview data doesn't exist`, () => {
+      expect(getters.discountItem({ invoicePreview: null })).toBe(undefined);
+    });
+  });
+
+  describe('discount', () => {
+    it('returns discount value when present', () => {
+      expect(getters.discount({}, { discountItem: mockDiscountItem })).toBe(
+        mockDiscountItem.chargeAmount,
+      );
+    });
+
+    it(`returns false if invoice preview data doesn't exist`, () => {
+      expect(getters.discount({}, { discountItem: undefined })).toBe(0);
     });
   });
 
@@ -332,6 +357,35 @@ describe('Subscriptions Getters', () => {
           payment_method_id: 'Payment method ID',
           quantity: 1,
           source: 'some_source',
+        },
+      });
+    });
+
+    it('returns the params to confirm the order with promoCode', () => {
+      expect(
+        getters.confirmOrderParams(
+          { ...state, promoCode: 'SamplePromoCode' },
+          { selectedGroupId: 11 },
+        ),
+      ).toEqual({
+        setup_for_company: true,
+        selected_group: 11,
+        new_user: true,
+        customer: {
+          country: 'Country',
+          address_1: 'Street address line 1',
+          address_2: 'Street address line 2',
+          city: 'City',
+          state: 'State',
+          zip_code: 'Zip code',
+          company: 'Organization name',
+        },
+        subscription: {
+          plan_id: 'firstPlan',
+          payment_method_id: 'Payment method ID',
+          quantity: 1,
+          source: 'some_source',
+          promo_code: 'SamplePromoCode',
         },
       });
     });
