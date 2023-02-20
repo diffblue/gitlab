@@ -1,0 +1,10 @@
+query getNamespaceGroups($search: String) {
+  groups(search: $search) {
+    nodes {
+      avatarUrl
+      id
+      fullName
+      fullPath
+    }
+  }
+}

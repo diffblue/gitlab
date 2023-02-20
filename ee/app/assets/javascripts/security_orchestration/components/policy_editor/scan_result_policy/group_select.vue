@@ -1,7 +1,7 @@
 <script>
 import { GlAvatarLabeled, GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import searchUsersGroups from 'ee/security_orchestration/graphql/queries/get_users_groups.query.graphql';
+import searchGroups from 'ee/security_orchestration/graphql/queries/get_namespace_groups.query.graphql';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { GROUP_TYPE } from 'ee/security_orchestration/constants';
@@ -26,14 +26,14 @@ export default {
   },
   apollo: {
     groups: {
-      query: searchUsersGroups,
+      query: searchGroups,
       variables() {
         return {
           search: this.search,
         };
       },
       update(data) {
-        return (data?.currentUser?.groups?.nodes || []).map((group) => createGroupObject(group));
+        return (data?.groups?.nodes || []).map((group) => createGroupObject(group));
       },
       debounce: DEFAULT_DEBOUNCE_AND_THROTTLE_MS,
     },
