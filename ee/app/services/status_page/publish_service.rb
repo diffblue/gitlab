@@ -101,6 +101,9 @@ module StatusPage
 
       namespace = project.namespace
       event = 'incident_management_incident_published'
+
+      return unless Feature.enabled?(:usage_data_incident_management_incident_published, namespace)
+
       track_usage_event(event, user.id)
 
       Gitlab::Tracking.event(
