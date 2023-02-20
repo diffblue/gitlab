@@ -12,7 +12,7 @@ RSpec.shared_examples 'zoom quick actions ee' do
     context 'with valid zoom_meetings' do
       where(:link_text, :link_text_expected) do
         [
-          ['', zoom_link],
+          ['', 'Zoom #123456789'],
           ['Demo meeting', 'Demo meeting'],
           ['Fire, fire, everything on fire', 'Fire, fire, everything on fire'],
           [' Space, fire extinguished', 'Space, fire extinguished']

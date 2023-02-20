@@ -4,6 +4,8 @@ require 'spec_helper'
 
 RSpec.describe IncidentManagement::IssuableResourceLink, type: :model do
   let_it_be(:issuable_resource_link) { create(:issuable_resource_link) }
+  let_it_be(:issuable_resource_link1) { create(:issuable_resource_link, link_type: :slack, link_text: 'slack1') }
+  let_it_be(:issuable_resource_link2) { create(:issuable_resource_link, link_type: :slack, link_text: 'slack2') }
 
   describe 'associations' do
     it { is_expected.to belong_to(:issue) }
@@ -49,5 +51,18 @@ RSpec.describe IncidentManagement::IssuableResourceLink, type: :model do
     end
 
     it { is_expected.to define_enum_for(:link_type).with_values(link_type_values) }
+  end
+
+  describe 'scopes' do
+    it 'returns slack links for slack_links' do
+      expect(described_class.slack_links).to contain_exactly(
+        issuable_resource_link1,
+        issuable_resource_link2
+      )
+    end
+
+    it 'returns zoom links for zoom_links' do
+      expect(described_class.zoom_links).to contain_exactly(issuable_resource_link)
+    end
   end
 end

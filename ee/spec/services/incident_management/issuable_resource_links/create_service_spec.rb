@@ -10,7 +10,7 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::CreateService do
   let_it_be_with_refind(:incident) { create(:incident, project: project) }
 
   let(:current_user) { user_with_permissions }
-  let(:link) { 'https://gitlab.zoom.us' }
+  let(:link) { 'https://gitlab.zoom.us/j/12345?pwd=1234555' }
   let(:link_type) { :zoom }
   let(:link_text) { 'Incident zoom link' }
   let(:args) { { link: link, link_type: link_type, link_text: link_text } }
@@ -97,12 +97,25 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::CreateService do
       where(:link_text) { [nil, '', ' '] }
 
       with_them do
-        it 'stores link as link text' do
+        it 'stores id as link text' do
           result = execute.payload[:issuable_resource_link]
 
           expect(execute).to be_success
-          expect(result.link_text).to eq(result.link)
+          expect(result.link_text).to eq('Zoom #12345')
         end
+      end
+    end
+
+    context 'when link type is general' do
+      let(:link_type) { :general }
+      let(:link) { 'https://gitlab.com/project/issue/1' }
+      let(:link_text) { '' }
+
+      it 'stores link as link text for general type' do
+        result = execute.payload[:issuable_resource_link]
+
+        expect(execute).to be_success
+        expect(result.link_text).to eq(link)
       end
     end
 
