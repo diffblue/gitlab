@@ -3,10 +3,9 @@ import { __, s__, sprintf } from '~/locale';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_UNPROCESSABLE_ENTITY } from '~/lib/utils/http_status';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
-import { PASSED, PENDING } from 'ee/ci/reports/status_checks_report/constants';
 import * as StatusCheckRetryApi from 'ee/api/status_check_api';
 
-import { getFailedChecksWithLoadingState } from './get_failed_checks_with_loading_state';
+import { mapStatusCheckResponse, getFailedChecksWithLoadingState } from './mappers';
 
 export default {
   name: 'WidgetStatusChecks',
@@ -71,16 +70,25 @@ export default {
   },
   methods: {
     // Extension methods
-    fetchCollapsedData() {
-      return this.fetchStatusChecks(this.apiStatusChecksPath).then(this.compareStatusChecks);
+    async fetchCollapsedData() {
+      const response = await this.fetchStatusChecks(this.apiStatusChecksPath);
+
+      return mapStatusCheckResponse(
+        response,
+        {
+          canRetry: this.mr.canRetryExternalStatusChecks,
+        },
+        (statusCheck) => this.retryStatusCheck(statusCheck),
+      );
     },
-    fetchFullData() {
+    async fetchFullData() {
       const { approved, pending, failed } = this.collapsedData;
-      return Promise.resolve([...approved, ...pending, ...failed]);
+
+      return [...approved, ...pending, ...failed];
     },
     // Custom methods
-    fetchStatusChecks(endpoint) {
-      return axios.get(endpoint).then(({ data }) => data);
+    async fetchStatusChecks(endpoint) {
+      return axios.get(endpoint);
     },
     async retryStatusCheck(statusCheck) {
       const { approved, pending, failed } = this.collapsedData;
@@ -105,48 +113,6 @@ export default {
         this.setFullData([...approved, ...pending, ...failed]);
         Sentry.captureException(err);
       }
-    },
-    createReportRow(statusCheck, iconName) {
-      return {
-        id: statusCheck.id,
-        text: `${statusCheck.name}: ${statusCheck.external_url}`,
-        icon: { name: iconName },
-      };
-    },
-    createFailedReportRow(statusCheck) {
-      const row = this.createReportRow(statusCheck, EXTENSION_ICONS.failed);
-
-      if (this.mr.canRetryExternalStatusChecks) {
-        row.actions = [
-          {
-            icon: 'retry',
-            text: __('Retry'),
-            onClick: () => this.retryStatusCheck(statusCheck),
-          },
-        ];
-      }
-
-      return row;
-    },
-    compareStatusChecks(statusChecks) {
-      const approved = [];
-      const pending = [];
-      const failed = [];
-
-      statusChecks.forEach((statusCheck) => {
-        switch (statusCheck.status) {
-          case PASSED:
-            approved.push(this.createReportRow(statusCheck, EXTENSION_ICONS.success));
-            break;
-          case PENDING:
-            pending.push(this.createReportRow(statusCheck, EXTENSION_ICONS.neutral));
-            break;
-          default:
-            failed.push(this.createFailedReportRow(statusCheck));
-        }
-      });
-
-      return { approved, pending, failed };
     },
   },
 };
