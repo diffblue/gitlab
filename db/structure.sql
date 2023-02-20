@@ -11696,6 +11696,7 @@ CREATE TABLE application_settings (
     allow_runner_registration_token boolean DEFAULT true NOT NULL,
     user_defaults_to_private_profile boolean DEFAULT false NOT NULL,
     allow_possible_spam boolean DEFAULT false NOT NULL,
+    default_syntax_highlighting_theme integer DEFAULT 1 NOT NULL,
     encrypted_product_analytics_clickhouse_connection_string bytea,
     encrypted_product_analytics_clickhouse_connection_string_iv bytea,
     search_max_shard_size_gb integer DEFAULT 50 NOT NULL,

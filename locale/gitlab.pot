@@ -51219,6 +51219,9 @@ msgstr ""
 msgid "must be a valid json schema"
 msgstr ""
 
+msgid "must be a valid syntax highlighting theme ID"
+msgstr ""
+
 msgid "must be after start"
 msgstr ""
 
