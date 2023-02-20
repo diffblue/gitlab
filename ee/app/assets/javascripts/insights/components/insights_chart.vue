@@ -8,7 +8,6 @@ import {
 
 import { isNumber } from 'lodash';
 import { getSvgIconPathContent } from '~/lib/utils/icon_utils';
-import ResizableChartContainer from '~/vue_shared/components/resizable_chart/resizable_chart_container.vue';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import ChartTooltipText from 'ee/analytics/shared/components/chart_tooltip_text.vue';
 
@@ -58,7 +57,6 @@ export default {
     GlLineChart,
     GlStackedColumnChart,
     InsightsChartError,
-    ResizableChartContainer,
     ChartSkeletonLoader,
     ChartTooltipText,
     GlChartLegend,
@@ -191,7 +189,7 @@ export default {
       :error="error"
     />
   </div>
-  <resizable-chart-container v-else class="insights-chart">
+  <div v-else class="insights-chart">
     <h5 class="gl-text-center">{{ title }}</h5>
     <p v-if="description" class="gl-text-center">{{ description }}</p>
     <gl-column-chart
@@ -240,5 +238,5 @@ export default {
       </div>
     </template>
     <chart-skeleton-loader v-else />
-  </resizable-chart-container>
+  </div>
 </template>

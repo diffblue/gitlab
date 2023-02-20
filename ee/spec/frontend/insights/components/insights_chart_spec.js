@@ -10,7 +10,6 @@ import {
   lineChartData,
   stackedBarChartData,
 } from 'ee_jest/insights/mock_data';
-import ResizableChartContainer from '~/vue_shared/components/resizable_chart/resizable_chart_container.vue';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 
 const DEFAULT_PROPS = {
@@ -39,7 +38,6 @@ describe('Insights chart component', () => {
       wrapper = factory(DEFAULT_PROPS);
 
       expect(wrapper.findComponent(ChartSkeletonLoader).exists()).toBe(true);
-      expect(wrapper.findComponent(ResizableChartContainer).exists()).toBe(true);
     });
   });
 
@@ -59,7 +57,6 @@ describe('Insights chart component', () => {
       });
 
       expect(wrapper.findComponent(ChartSkeletonLoader).exists()).toBe(false);
-      expect(wrapper.findComponent(ResizableChartContainer).exists()).toBe(true);
       expect(wrapper.findComponent(component).exists()).toBe(true);
     });
   });
@@ -77,7 +74,6 @@ describe('Insights chart component', () => {
 
     it('displays info about the error', () => {
       expect(wrapper.findComponent(ChartSkeletonLoader).exists()).toBe(false);
-      expect(wrapper.findComponent(ResizableChartContainer).exists()).toBe(false);
       expect(wrapper.findComponent(InsightsChartError).exists()).toBe(true);
     });
   });
