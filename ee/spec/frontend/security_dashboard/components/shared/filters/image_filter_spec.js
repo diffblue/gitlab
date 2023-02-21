@@ -40,7 +40,7 @@ describe('ImageFilter component', () => {
         [projectImagesQuery, projectQueryResolver],
       ]),
       provide: { projectFullPath, ...provide },
-      directives: { GlTooltip: createMockDirective() },
+      directives: { GlTooltip: createMockDirective('gl-tooltip') },
       stubs: { QuerystringSync: true },
     });
   };

@@ -16,7 +16,7 @@ describe('Filter Item component', () => {
       propsData: { ...defaultProps, ...props },
       slots: { default: slotContent },
       directives: {
-        GlTooltip: createMockDirective(),
+        GlTooltip: createMockDirective('gl-tooltip'),
       },
     });
   };

@@ -70,7 +70,7 @@ describe('MilestonesListSectionComponent', () => {
         ...props,
       },
       directives: {
-        GlTooltip: createMockDirective(),
+        GlTooltip: createMockDirective('gl-tooltip'),
       },
     });
   };

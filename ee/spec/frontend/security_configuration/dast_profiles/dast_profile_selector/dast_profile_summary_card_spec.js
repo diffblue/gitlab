@@ -18,7 +18,7 @@ describe('DastProfileSummaryCard', () => {
       propsData,
       stubs: { GlCard },
       directives: {
-        GlTooltip: createMockDirective(),
+        GlTooltip: createMockDirective('gl-tooltip'),
       },
       ...options,
     });

@@ -16,7 +16,7 @@ describe('Approvals HiddenGroupsItem', () => {
       shallowMount(HiddenGroupsItem, {
         ...options,
         directives: {
-          GlTooltip: createMockDirective(),
+          GlTooltip: createMockDirective('gl-tooltip'),
         },
       }),
     );

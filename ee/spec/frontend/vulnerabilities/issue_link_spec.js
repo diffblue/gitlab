@@ -19,7 +19,7 @@ describe('IssueLink component', () => {
       shallowMount(IssueLink, {
         propsData,
         directives: {
-          GlTooltip: createMockDirective(),
+          GlTooltip: createMockDirective('gl-tooltip'),
         },
         // this allows us to retrieve the rendered text
         stubs: { GlSprintf },

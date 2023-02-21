@@ -18,7 +18,7 @@ describe('IssueField', () => {
   const createComponent = ({ props = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(IssueField, {
       directives: {
-        GlTooltip: createMockDirective(),
+        GlTooltip: createMockDirective('gl-tooltip'),
       },
       propsData: { ...defaultProps, ...props },
       stubs: {

@@ -16,7 +16,7 @@ describe('Severity Badge', () => {
     wrapper = shallowMount(SeverityBadge, {
       propsData: { ...propsData },
       directives: {
-        tooltip: createMockDirective(),
+        tooltip: createMockDirective('tooltip'),
       },
     });
   };

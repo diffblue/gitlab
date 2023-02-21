@@ -31,7 +31,7 @@ describe('TableActions', () => {
           ...props,
         },
         directives: {
-          GlTooltip: createMockDirective(),
+          GlTooltip: createMockDirective('gl-tooltip'),
         },
       }),
     );

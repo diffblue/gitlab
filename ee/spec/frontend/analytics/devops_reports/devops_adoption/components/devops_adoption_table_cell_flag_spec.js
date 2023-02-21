@@ -13,7 +13,7 @@ describe('DevopsAdoptionTableCellFlag', () => {
         ...props,
       },
       directives: {
-        GlTooltip: createMockDirective(),
+        GlTooltip: createMockDirective('gl-tooltip'),
       },
     });
   };

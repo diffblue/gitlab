@@ -28,7 +28,7 @@ describe('GeoReplicableFilterBar', () => {
     wrapper = shallowMount(GeoReplicableFilterBar, {
       store: fakeStore,
       directives: {
-        GlModalDirective: createMockDirective(),
+        GlModalDirective: createMockDirective('gl-modal-directive'),
       },
     });
   };

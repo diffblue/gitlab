@@ -52,7 +52,7 @@ describe('On-call schedule wrapper', () => {
         accessLevelDescriptionPath,
       },
       directives: {
-        GlTooltip: createMockDirective(),
+        GlTooltip: createMockDirective('gl-tooltip'),
       },
       mocks: { $apollo },
       stubs: {

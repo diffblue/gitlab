@@ -18,7 +18,7 @@ describe('RunnerPerformanceStat', () => {
         ...props,
       },
       directives: {
-        GlModal: createMockDirective(),
+        GlModal: createMockDirective('gl-modal'),
       },
       ...options,
     });

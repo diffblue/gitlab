@@ -15,7 +15,7 @@ describe('EE - DastScanSchedule', () => {
         schedule,
       },
       directives: {
-        GlTooltip: createMockDirective(),
+        GlTooltip: createMockDirective('gl-tooltip'),
       },
     });
   };
