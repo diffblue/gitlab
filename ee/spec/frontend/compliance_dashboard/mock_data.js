@@ -118,3 +118,47 @@ export const complianceFramework = {
   description: 'General Data Protection Regulation',
   name: 'GDPR',
 };
+
+export const createComplianceFrameworksResponse = ({ count = 1, pageInfo = {} } = {}) => {
+  return {
+    data: {
+      group: {
+        id: 'gid://gitlab/Group/1',
+        projects: {
+          nodes: Array(count)
+            .fill(null)
+            .map((_, id) => ({
+              id: `gid://gitlab/Project/${id}`,
+              name: 'Gitlab Shell',
+              fullPath: 'gitlab-org/gitlab-shell',
+              webUrl: 'https://example.com/gitlab-org/gitlab-shell',
+              complianceFrameworks: {
+                nodes: [
+                  {
+                    id: 'gid://gitlab/ComplianceManagement::Framework/1',
+                    name: 'some framework',
+                    default: false,
+                    description: 'this is a framework',
+                    color: '#3cb371',
+                    __typename: 'ComplianceFramework',
+                  },
+                ],
+                __typename: 'ComplianceFrameworkConnection',
+              },
+              __typename: 'Project',
+            })),
+          pageInfo: {
+            hasNextPage: true,
+            hasPreviousPage: false,
+            startCursor: 'eyJpZCI6IjQxIn0',
+            endCursor: 'eyJpZCI6IjIyIn0',
+            __typename: 'PageInfo',
+            ...pageInfo,
+          },
+          __typename: 'ProjectConnection',
+        },
+        __typename: 'Group',
+      },
+    },
+  };
+};

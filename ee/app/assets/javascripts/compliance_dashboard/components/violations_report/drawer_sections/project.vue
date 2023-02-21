@@ -1,16 +1,17 @@
 <script>
-import { GlAvatarLabeled, GlAvatarLink, GlLabel } from '@gitlab/ui';
+import { GlAvatarLabeled, GlAvatarLink } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { __ } from '~/locale';
 import { DRAWER_AVATAR_SIZE } from '../../../constants';
 import DrawerSectionHeader from '../shared/drawer_section_header.vue';
+import FrameworkBadge from '../../shared/framework_badge.vue';
 
 export default {
   components: {
     DrawerSectionHeader,
+    FrameworkBadge,
     GlAvatarLabeled,
     GlAvatarLink,
-    GlLabel,
   },
   props: {
     avatarUrl: {
@@ -56,13 +57,12 @@ export default {
           :src="avatarUrl"
         />
       </gl-avatar-link>
-      <gl-label
+      <framework-badge
         v-if="hasComplianceFramework"
-        class="gl-ml-3"
-        :title="complianceFramework.name"
-        :background-color="complianceFramework.color"
-        :description="complianceFramework.description"
+        :framework="complianceFramework"
+        :show-default="false"
         size="sm"
+        class="gl-ml-3"
       />
     </div>
   </div>

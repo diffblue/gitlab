@@ -102,7 +102,7 @@ export default {
         query-param-value="frameworks"
         data-testid="frameworks-tab"
       >
-        <frameworks-report />
+        <frameworks-report :group-path="groupPath" />
       </gl-tab>
     </gl-tabs>
     <!-- This additional violations-report element will be removed in a subsequent MR once tabs are always shown -->

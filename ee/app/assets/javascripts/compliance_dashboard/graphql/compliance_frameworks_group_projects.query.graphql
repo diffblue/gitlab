@@ -1,0 +1,33 @@
+#import "~/graphql_shared/fragments/page_info.fragment.graphql"
+
+query complianceFrameworksGroupProjects(
+  $groupPath: ID!
+  $after: String
+  $before: String
+  $first: Int
+  $last: Int
+) {
+  group(fullPath: $groupPath) {
+    id
+    projects(includeSubgroups: true, after: $after, before: $before, first: $first, last: $last) {
+      nodes {
+        id
+        name
+        fullPath
+        webUrl
+        complianceFrameworks {
+          nodes {
+            id
+            name
+            default
+            description
+            color
+          }
+        }
+      }
+      pageInfo {
+        ...PageInfo
+      }
+    }
+  }
+}
