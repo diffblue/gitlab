@@ -37260,6 +37260,9 @@ msgstr ""
 msgid "Runners|Enter the number of seconds. This timeout takes precedence over lower timeouts set for the project."
 msgstr ""
 
+msgid "Runners|Environment"
+msgstr ""
+
 msgid "Runners|Executor"
 msgstr ""
 
@@ -37294,6 +37297,9 @@ msgid "Runners|Idle"
 msgstr ""
 
 msgid "Runners|If both settings are disabled, new runners cannot be registered."
+msgstr ""
+
+msgid "Runners|Install GitLab Runner"
 msgstr ""
 
 msgid "Runners|Install a runner"
@@ -37577,7 +37583,13 @@ msgstr ""
 msgid "Runners|Security or compatibility upgrades are recommended."
 msgstr ""
 
+msgid "Runners|See more %{linkStart}installation methods and architectures%{linkEnd}."
+msgstr ""
+
 msgid "Runners|Select all"
+msgstr ""
+
+msgid "Runners|Select platform specifications to install GitLab Runner."
 msgstr ""
 
 msgid "Runners|Select projects to assign to this runner"
