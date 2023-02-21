@@ -4714,6 +4714,9 @@ msgstr ""
 msgid "Analytics"
 msgstr ""
 
+msgid "Analytics|Analytics dashboards"
+msgstr ""
+
 msgid "Analyze your dependencies for known vulnerabilities."
 msgstr ""
 
