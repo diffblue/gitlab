@@ -14351,10 +14351,13 @@ msgstr ""
 msgid "DesignManagement|Could not create new discussion. Please try again."
 msgstr ""
 
-msgid "DesignManagement|Could not update discussion. Please try again."
+msgid "DesignManagement|Could not delete comment. Please try again."
 msgstr ""
 
-msgid "DesignManagement|Could not update note. Please try again."
+msgid "DesignManagement|Could not update comment. Please try again."
+msgstr ""
+
+msgid "DesignManagement|Could not update discussion. Please try again."
 msgstr ""
 
 msgid "DesignManagement|Deselect all"
@@ -40467,6 +40470,9 @@ msgid "Something went wrong trying to load issue contacts."
 msgstr ""
 
 msgid "Something went wrong when deleting a comment. Please try again"
+msgstr ""
+
+msgid "Something went wrong when deleting a comment. Please try again."
 msgstr ""
 
 msgid "Something went wrong when reordering designs. Please try again"
