@@ -449,8 +449,6 @@ Settings.mattermost['host'] = nil unless Settings.mattermost.enabled
 Settings['jira_connect'] ||= Settingslogic.new({})
 
 Settings.jira_connect['atlassian_js_url'] ||= 'https://connect-cdn.atl-paas.net/all.js'
-Settings.jira_connect['enable_public_keys_storage'] ||= false
-Settings.jira_connect['enable_public_keys_storage'] = true if Gitlab.com?
 Settings.jira_connect['enforce_jira_base_url_https'] = true if Settings.jira_connect['enforce_jira_base_url_https'].nil?
 Settings.jira_connect['additional_iframe_ancestors'] ||= []
 
