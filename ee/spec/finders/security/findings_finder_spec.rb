@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Security::FindingsFinder, feature_category: :vulnerability_management do
   it_behaves_like 'security findings finder' do
     let(:findings) { service_object.execute.findings }
-    let(:query_limit) { 11 }
+    let(:query_limit) { 16 }
 
     context 'when the `security_findings` records have `overridden_uuid`s' do
       let(:security_findings) { Security::Finding.by_build_ids(build_1) }

@@ -97,6 +97,9 @@ module Security
               .with_pipeline_entities
               .with_scan
               .with_scanner
+              .with_state_transitions
+              .with_issue_links
+              .with_merge_request_links
               .deduplicated
               .ordered
               .merge(::Security::Scan.latest_successful)

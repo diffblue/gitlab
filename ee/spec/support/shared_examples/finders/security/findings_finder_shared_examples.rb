@@ -74,6 +74,13 @@ RSpec.shared_examples 'security findings finder' do
                project: pipeline.project,
                category: :dependency_scanning,
                finding_uuid: findings.first.uuid)
+
+        vulnerability_finding = create(:vulnerabilities_finding, uuid: findings.second.uuid)
+
+        vulnerability = create(:vulnerability, findings: [vulnerability_finding])
+        create(:vulnerability_state_transitions, vulnerability: vulnerability)
+        create(:vulnerabilities_issue_link, vulnerability: vulnerability)
+        create(:vulnerabilities_merge_request_link, vulnerability: vulnerability)
       end
 
       before do
@@ -142,7 +149,9 @@ RSpec.shared_examples 'security findings finder' do
             let(:deprecate_vulnerabilities_feedback?) { true }
 
             before do
-              create(:vulnerabilities_finding, :dismissed, uuid: finding_to_dismiss.uuid)
+              vulnerability_finding = create(:vulnerabilities_finding, uuid: finding_to_dismiss.uuid)
+
+              create(:vulnerability, state: :dismissed, findings: [vulnerability_finding])
             end
 
             it { is_expected.to be(7) }
