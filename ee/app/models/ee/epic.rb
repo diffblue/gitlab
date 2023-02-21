@@ -184,6 +184,7 @@ module EE
       after_create_commit :usage_ping_record_epic_creation
       after_save :set_epic_id_to_update_cache
       after_destroy :set_epic_id_to_update_cache
+      after_commit :expire_etag_cache
 
       def epic_tree_root?
         parent_id.nil?
@@ -758,6 +759,11 @@ module EE
     def level_depth_exceeded?(parent_epic)
       # The epic's depth (minimum 1, for the epic itself) + the depth of its parent
       (hierarchy.max_descendants_depth || 1) + parent_epic.ancestors.count >= MAX_HIERARCHY_DEPTH
+    end
+
+    def expire_etag_cache
+      key = ::Gitlab::Routing.url_helpers.realtime_changes_group_epic_path(group, self)
+      ::Gitlab::EtagCaching::Store.new.touch(key)
     end
   end
 end
