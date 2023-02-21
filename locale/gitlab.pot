@@ -28506,6 +28506,15 @@ msgstr ""
 msgid "No severity matches the provided parameter"
 msgstr ""
 
+msgid "No slash-separated component can begin with %{sequencePrefixes}"
+msgstr ""
+
+msgid "No slash-separated component can end with %{sequencePostfixes}"
+msgstr ""
+
+msgid "No slash-separated tag name component can be empty"
+msgstr ""
+
 msgid "No source selected"
 msgstr ""
 
@@ -42112,7 +42121,25 @@ msgstr ""
 msgid "Tag name"
 msgstr ""
 
+msgid "Tag name cannot be one of the following: %{names}"
+msgstr ""
+
 msgid "Tag name is required."
+msgstr ""
+
+msgid "Tag name should not be empty"
+msgstr ""
+
+msgid "Tag name should not contain any control characters"
+msgstr ""
+
+msgid "Tag name should not contain any of the following: %{substrings}"
+msgstr ""
+
+msgid "Tag name should not end with %{postfixes}"
+msgstr ""
+
+msgid "Tag name should not start with %{prefixes}"
 msgstr ""
 
 msgid "Tag push"
