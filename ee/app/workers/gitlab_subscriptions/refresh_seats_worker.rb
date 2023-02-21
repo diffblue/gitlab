@@ -22,7 +22,7 @@ module GitlabSubscriptions
       subscription = find_next_subscription
       return unless subscription
 
-      subscription.refresh_seat_attributes!
+      subscription.refresh_seat_attributes
       subscription.save!
     end
 

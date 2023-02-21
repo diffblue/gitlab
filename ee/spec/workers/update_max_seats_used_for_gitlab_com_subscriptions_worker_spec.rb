@@ -51,7 +51,7 @@ RSpec.describe UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker, :saas do
     end
 
     shared_examples 'updates only paid plans' do
-      it "persists seat attributes after refresh_seat_attributes! for only paid plans", :freeze_time do
+      it "persists seat attributes after refresh_seat_attributes for only paid plans", :freeze_time do
         expect do
           perform_and_reload
         end.to not_change(gitlab_subscription, :max_seats_used)
@@ -76,7 +76,7 @@ RSpec.describe UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker, :saas do
         gitlab_subscription.update!(subscription_attrs) if subscription_attrs
 
         allow_next_found_instance_of(GitlabSubscription) do |subscription|
-          allow(subscription).to receive(:refresh_seat_attributes!) do
+          allow(subscription).to receive(:refresh_seat_attributes) do
             subscription.max_seats_used = subscription.seats + 3
             subscription.seats_in_use = subscription.seats + 2
             subscription.seats_owed = subscription.seats + 1
@@ -120,7 +120,7 @@ RSpec.describe UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker, :saas do
     context 'when the max_seat_used does not increase' do
       before do
         allow_next_found_instance_of(GitlabSubscription) do |subscription|
-          allow(subscription).to receive(:refresh_seat_attributes!) do
+          allow(subscription).to receive(:refresh_seat_attributes) do
             subscription.max_seats_used = subscription.max_seats_used
             subscription.seats_in_use = subscription.seats - 1
             subscription.seats_owed = subscription.seats_owed
@@ -160,7 +160,7 @@ RSpec.describe UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker, :saas do
     context 'when a statement timeout exception is thrown for a subscription' do
       before do
         allow_next_found_instance_of(GitlabSubscription) do |subscription|
-          allow(subscription).to receive(:refresh_seat_attributes!) do
+          allow(subscription).to receive(:refresh_seat_attributes) do
             if subscription.id == gitlab_subscription.id
               raise ActiveRecord::QueryCanceled, 'statement timeout'
             else

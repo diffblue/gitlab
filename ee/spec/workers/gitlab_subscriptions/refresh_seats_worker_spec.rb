@@ -50,7 +50,7 @@ RSpec.describe GitlabSubscriptions::RefreshSeatsWorker, :saas, feature_category:
 
           before do
             allow_next_found_instance_of(GitlabSubscription) do |subscription|
-              allow(subscription).to receive(:refresh_seat_attributes!) do
+              allow(subscription).to receive(:refresh_seat_attributes) do
                 subscription.max_seats_used = subscription.seats + 3
                 subscription.seats_in_use = subscription.seats + 2
                 subscription.seats_owed = subscription.seats + 1

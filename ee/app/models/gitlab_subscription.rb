@@ -88,7 +88,7 @@ class GitlabSubscription < ApplicationRecord
   end
 
   # Refresh seat related attribute (without persisting them)
-  def refresh_seat_attributes!
+  def refresh_seat_attributes
     self.seats_in_use = calculate_seats_in_use
     self.max_seats_used = [max_seats_used, seats_in_use].max
     self.seats_owed = calculate_seats_owed

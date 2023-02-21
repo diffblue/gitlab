@@ -266,7 +266,7 @@ RSpec.describe GitlabSubscription, :saas do
     end
   end
 
-  describe '#refresh_seat_attributes!' do
+  describe '#refresh_seat_attributes' do
     subject(:gitlab_subscription) { create(:gitlab_subscription, seats: 3, max_seats_used: 2) }
 
     before do
@@ -278,7 +278,7 @@ RSpec.describe GitlabSubscription, :saas do
 
       it 'does not increase max_seats_used' do
         expect do
-          gitlab_subscription.refresh_seat_attributes!
+          gitlab_subscription.refresh_seat_attributes
         end.to change(gitlab_subscription, :seats_in_use).from(0).to(1)
           .and not_change(gitlab_subscription, :max_seats_used)
           .and not_change(gitlab_subscription, :seats_owed)
@@ -290,7 +290,7 @@ RSpec.describe GitlabSubscription, :saas do
 
       it 'increases seats and max_seats_used' do
         expect do
-          gitlab_subscription.refresh_seat_attributes!
+          gitlab_subscription.refresh_seat_attributes
         end.to change(gitlab_subscription, :seats_in_use).from(0).to(4)
           .and change(gitlab_subscription, :max_seats_used).from(2).to(4)
           .and change(gitlab_subscription, :seats_owed).from(0).to(1)

@@ -53,7 +53,7 @@ class Groups::BillingsController < Groups::ApplicationController
 
     return false unless gitlab_subscription
 
-    gitlab_subscription.refresh_seat_attributes!
+    gitlab_subscription.refresh_seat_attributes
     gitlab_subscription.save
   end
 
