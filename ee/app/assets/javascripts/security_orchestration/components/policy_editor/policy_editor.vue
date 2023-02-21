@@ -83,11 +83,12 @@ export default {
     </span>
     <gl-alert
       v-if="error"
-      class="gl-mt-5"
+      class="gl-mt-5 security-policies-alert"
       :title="error"
       dismissible
       variant="danger"
       data-testid="error-alert"
+      sticky
       @dismiss="setError('')"
     >
       <ul v-if="errorMessages.length" class="gl-mb-0! gl-ml-5">

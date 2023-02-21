@@ -1,0 +1,4 @@
+.security-policies-alert {
+  @include sticky-top-positioning();
+  @include gl-z-index-1;
+}
