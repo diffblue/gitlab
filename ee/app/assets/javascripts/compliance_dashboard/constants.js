@@ -35,6 +35,10 @@ export const BRANCH_FILTER_OPTIONS = {
   allProtectedBranches: __('All protected branches'),
 };
 
+export const FRAMEWORK_BADGE_SIZE_SM = 'sm';
+export const FRAMEWORK_BADGE_SIZE_MD = 'md';
+export const FRAMEWORK_BADGE_SIZES = [FRAMEWORK_BADGE_SIZE_SM, FRAMEWORK_BADGE_SIZE_MD];
+
 export const TAB_VIOLATIONS = 'violations';
 export const TAB_FRAMEWORKS = 'frameworks';
 export const TABS = [TAB_VIOLATIONS, TAB_FRAMEWORKS];

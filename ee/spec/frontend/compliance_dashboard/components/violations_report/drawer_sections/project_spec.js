@@ -1,7 +1,10 @@
-import { GlAvatarLabeled, GlAvatarLink, GlLabel } from '@gitlab/ui';
+import { GlAvatarLabeled, GlAvatarLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+
 import Project from 'ee/compliance_dashboard/components/violations_report/drawer_sections/project.vue';
 import DrawerSectionHeader from 'ee/compliance_dashboard/components/violations_report/shared/drawer_section_header.vue';
+import ComplianceFrameworkBadge from 'ee/compliance_dashboard/components/shared/framework_badge.vue';
+
 import { complianceFramework } from '../../../mock_data';
 
 describe('Project component', () => {
@@ -13,7 +16,7 @@ describe('Project component', () => {
   const findSectionHeader = () => wrapper.findComponent(DrawerSectionHeader);
   const findAvatarLink = () => wrapper.findComponent(GlAvatarLink);
   const findAvatarLabel = () => wrapper.findComponent(GlAvatarLabeled);
-  const findComplianceFrameworkLabel = () => wrapper.findComponent(GlLabel);
+  const findComplianceFrameworkBadge = () => wrapper.findComponent(ComplianceFrameworkBadge);
 
   const createComponent = (props) => {
     return shallowMount(Project, {
@@ -56,7 +59,7 @@ describe('Project component', () => {
     });
 
     it('does not render the compliance framework label', () => {
-      expect(findComplianceFrameworkLabel().exists()).toBe(false);
+      expect(findComplianceFrameworkBadge().exists()).toBe(false);
     });
   });
 
@@ -85,10 +88,9 @@ describe('Project component', () => {
     it('renders the compliance framework label', () => {
       const { color, description, name } = complianceFramework;
 
-      expect(findComplianceFrameworkLabel().props()).toMatchObject({
-        backgroundColor: color,
-        description,
-        title: name,
+      expect(findComplianceFrameworkBadge().props()).toMatchObject({
+        framework: { color, description, name },
+        showDefault: false,
         size: 'sm',
       });
     });

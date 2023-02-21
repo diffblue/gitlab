@@ -1,4 +1,4 @@
-import { getIdFromGraphQLId, convertNodeIdsFromGraphQLIds } from '~/graphql_shared/utils';
+import { convertNodeIdsFromGraphQLIds, getIdFromGraphQLId } from '~/graphql_shared/utils';
 
 export const mapViolations = (nodes = []) => {
   return nodes.map((node) => ({
@@ -24,3 +24,12 @@ export const mapViolations = (nodes = []) => {
     },
   }));
 };
+
+export function mapProjects(nodes = []) {
+  return nodes.map((node) => {
+    return {
+      ...node,
+      complianceFrameworks: node.complianceFrameworks.nodes,
+    };
+  });
+}

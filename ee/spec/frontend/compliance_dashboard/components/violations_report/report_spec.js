@@ -183,7 +183,7 @@ describe('ComplianceViolationsReport component', () => {
 
       expect(findErrorMessage().exists()).toBe(true);
       expect(findErrorMessage().text()).toBe(
-        'Retrieving the compliance report failed. Refresh the page and try again.',
+        'Unable to load the compliance violations report. Refresh the page and try again.',
       );
       expect(Sentry.captureException.mock.calls[0][0].networkError).toBe(sentryError);
     });

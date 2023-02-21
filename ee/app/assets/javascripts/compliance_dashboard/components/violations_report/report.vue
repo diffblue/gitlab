@@ -200,9 +200,10 @@ export default {
     },
   ],
   i18n: {
-    queryError: __('Retrieving the compliance report failed. Refresh the page and try again.'),
+    queryError: s__(
+      'ComplianceReport|Unable to load the compliance violations report. Refresh the page and try again.',
+    ),
     noViolationsFound: s__('ComplianceReport|No violations found'),
-    learnMore: __('Learn more.'),
     prev: __('Prev'),
     next: __('Next'),
     viewDetailsBtn: __('View details'),
