@@ -71,6 +71,19 @@ RSpec.describe API::ProtectedBranches, feature_category: :source_code_management
 
         it_behaves_like 'protected branch'
       end
+
+      context 'when unprotect_access_level is set to NO_ACCESS' do
+        let(:protected_branch) do
+          create(:protected_branch, :no_one_can_unprotect, project: project, name: protected_name)
+        end
+
+        it 'unprotect_access_level is returned as NO_ACCESS' do
+          get api(route, user)
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response['unprotect_access_levels'].first['access_level_description']).to eq('No one')
+        end
+      end
     end
 
     context 'when authenticated as a guest' do
@@ -239,6 +252,13 @@ RSpec.describe API::ProtectedBranches, feature_category: :source_code_management
         expect(json_response['push_access_levels'][0]['access_level']).to eq(Gitlab::Access::MAINTAINER)
         expect(json_response['merge_access_levels'][0]['access_level']).to eq(Gitlab::Access::MAINTAINER)
         expect(json_response['unprotect_access_levels'][0]['access_level']).to eq(Gitlab::Access::ADMIN)
+      end
+
+      it 'no access is not a valid access level' do
+        post post_endpoint, params: { name: branch_name, unprotect_access_level: Gitlab::Access::NO_ACCESS }
+
+        expect(response).to have_gitlab_http_status(:bad_request)
+        expect(response.body).to include('unprotect_access_level does not have a valid value')
       end
 
       context "code_owner_approval_required" do
