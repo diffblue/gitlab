@@ -10,6 +10,8 @@ import {
   ANALYTICS_FIELDS,
 } from '../../constants';
 
+import { DATE_RANGE_FILTER_DIMENSIONS } from '../../data_sources/cube_analytics';
+
 export default {
   name: 'AnalyticsQueryDesignerDimensionSelect',
   GRANULARITIES,
@@ -82,9 +84,12 @@ export default {
       this.selectedDimensionMode = false;
     },
     setGranularity(selectedGranularity) {
-      this.setTimeDimensions([
-        { dimension: `${EVENTS_DB_TABLE_NAME}.utcTime`, granularity: selectedGranularity },
-      ]);
+      const dimensionFieldName =
+        DATE_RANGE_FILTER_DIMENSIONS[
+          this.measureType === 'sessions' ? this.measureType : 'trackedevents'
+        ];
+
+      this.setTimeDimensions([{ dimension: dimensionFieldName, granularity: selectedGranularity }]);
       this.selectedDimensionMode = false;
     },
     showDimensionMode() {
@@ -156,39 +161,41 @@ export default {
             >
           </gl-dropdown>
         </div>
-        <ul v-if="measureType === 'events'" class="content-list">
-          <li>
-            <gl-button
-              icon="documents"
-              category="tertiary"
-              variant="confirm"
-              @click="selectDimension('eventType')"
-              >{{ s__('ProductAnalytics|Event Type') }}</gl-button
-            >
-          </li>
-        </ul>
-        <div
-          v-for="fieldCategory in $options.ANALYTICS_FIELD_CATEGORIES"
-          :key="fieldCategory.index"
-        >
-          <h3 class="gl-font-lg">
-            {{ fieldCategory.name }}
-          </h3>
-          <ul class="content-list">
-            <li
-              v-for="field in getAnalyticsFieldsByCategory(fieldCategory.category)"
-              :key="field.index"
-            >
+        <div v-if="measureType !== 'sessions'">
+          <ul v-if="measureType === 'events'" class="content-list">
+            <li>
               <gl-button
-                :icon="field.icon"
-                :data-testid="getAnalyticsFieldTestId(field)"
+                icon="documents"
                 category="tertiary"
                 variant="confirm"
-                @click="selectDimension(field.dbField)"
-                >{{ field.name }}</gl-button
+                @click="selectDimension('eventType')"
+                >{{ s__('ProductAnalytics|Event Type') }}</gl-button
               >
             </li>
           </ul>
+          <div
+            v-for="fieldCategory in $options.ANALYTICS_FIELD_CATEGORIES"
+            :key="fieldCategory.index"
+          >
+            <h3 class="gl-font-lg">
+              {{ fieldCategory.name }}
+            </h3>
+            <ul class="content-list">
+              <li
+                v-for="field in getAnalyticsFieldsByCategory(fieldCategory.category)"
+                :key="field.index"
+              >
+                <gl-button
+                  :icon="field.icon"
+                  :data-testid="getAnalyticsFieldTestId(field)"
+                  category="tertiary"
+                  variant="confirm"
+                  @click="selectDimension(field.dbField)"
+                  >{{ field.name }}</gl-button
+                >
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
       <div v-if="dimensions && dimensions.length > 0" class="gl-mt-6">

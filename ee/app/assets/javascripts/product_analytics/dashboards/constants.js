@@ -1,7 +1,7 @@
 import { s__, __ } from '~/locale';
 
 export const I18N_DASHBOARD_LIST = {
-  title: s__('ProductAnalytics|Product analytics dashboards'),
+  title: s__('ProductAnalytics|Analytics dashboards'),
   description: s__(
     'ProductAnalytics|Dashboards are created by editing the projects dashboard files.',
   ),
@@ -14,6 +14,10 @@ export const I18N_DASHBOARD_LIST = {
 };
 
 export const EVENTS_TYPES = ['pageViews', 'featureUsages', 'clickEvents', 'events'];
+
+export function isTrackedEvent(eventType) {
+  return EVENTS_TYPES.includes(eventType);
+}
 
 export const PANEL_DISPLAY_TYPES = {
   DATA: 'data',
@@ -43,6 +47,7 @@ export const MEASURE_COLOR = '#00b140';
 export const DIMENSION_COLOR = '#c3e6cd';
 
 export const EVENTS_DB_TABLE_NAME = 'TrackedEvents';
+export const SESSIONS_TABLE_NAME = 'Sessions';
 
 export const ANALYTICS_FIELD_CATEGORIES = [
   {

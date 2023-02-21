@@ -9,7 +9,7 @@ const PRODUCT_ANALYTICS_CUBE_PROXY = '/api/v4/projects/:id/product_analytics/req
 const DEFAULT_COUNT_KEY = 'TrackedEvents.count';
 
 // Filter measurement types must be lowercase
-const DATE_RANGE_FILTER_DIMENSIONS = {
+export const DATE_RANGE_FILTER_DIMENSIONS = {
   sessions: 'Sessions.startAt',
   trackedevents: 'TrackedEvents.utcTime',
 };
