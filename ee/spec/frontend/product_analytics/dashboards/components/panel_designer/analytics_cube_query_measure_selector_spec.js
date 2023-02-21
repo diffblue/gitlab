@@ -2,13 +2,18 @@ import { nextTick } from 'vue';
 import { GlLabel } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import AnalyticsMeasureSelector from 'ee/product_analytics/dashboards/components/panel_designer/analytics_cube_query_measure_selector.vue';
-import { EVENTS_DB_TABLE_NAME } from 'ee/product_analytics/dashboards/constants';
+import {
+  EVENTS_DB_TABLE_NAME,
+  SESSIONS_TABLE_NAME,
+} from 'ee/product_analytics/dashboards/constants';
 
 describe('AnalyticsQueryMeasureSelector', () => {
   let wrapper;
 
   const findMeasureSummary = () => wrapper.findByTestId('measure-summary');
   const findBackButton = () => wrapper.findByTestId('measure-back-button');
+  const findAllEventsButton = (testId) => wrapper.findByTestId(testId);
+  const getLabelTitle = () => wrapper.findComponent(GlLabel).props('title');
 
   const setMeasures = jest.fn();
   const setFilters = jest.fn();
@@ -24,6 +29,27 @@ describe('AnalyticsQueryMeasureSelector', () => {
         addFilters,
       },
     });
+  };
+
+  const navigateToSubPage = async (startbutton) => {
+    const overvViewButton = wrapper.findByTestId(startbutton);
+
+    // Overview
+    overvViewButton.vm.$emit('click');
+
+    await nextTick();
+
+    // Detail selection checks
+    expect(wrapper.findByTestId(startbutton).exists()).toBe(false);
+  };
+
+  const checkFinalStep = async (measureFieldName, summaryString) => {
+    await nextTick();
+
+    expect(setMeasures).toHaveBeenCalledWith([measureFieldName]);
+
+    expect(findMeasureSummary().exists()).toBe(true);
+    expect(getLabelTitle()).toContain(summaryString);
   };
 
   describe('when mounted', () => {
@@ -50,51 +76,108 @@ describe('AnalyticsQueryMeasureSelector', () => {
   });
 
   it.each`
-    startbutton             | showAllbutton               | selectMethod       | summaryString
-    ${'pageviews-button'}   | ${'pageviews-all-button'}   | ${'pageViews'}     | ${'pageViews::all'}
-    ${'feature-button'}     | ${'feature-all-button'}     | ${'featureUsages'} | ${'featureUsages::all'}
-    ${'clickevents-button'} | ${'clickevents-all-button'} | ${'clickEvents'}   | ${'clickEvents::all'}
-    ${'events-button'}      | ${'events-all-button'}      | ${'events'}        | ${'events::all'}
+    startbutton             | showAllbutton               | eventType       | summaryString
+    ${'feature-button'}     | ${'feature-all-button'}     | ${'featureuse'} | ${'featureUsages::all'}
+    ${'clickevents-button'} | ${'clickevents-all-button'} | ${'click'}      | ${'clickEvents::all'}
+    ${'events-button'}      | ${'events-all-button'}      | ${''}           | ${'events::all'}
   `(
-    'navigates from overview to subpage $selectMethod',
-    async ({ startbutton, showAllbutton, selectMethod, summaryString }) => {
+    'navigates from overview to event subpage $selectMethod',
+    async ({ startbutton, showAllbutton, eventType, summaryString }) => {
       createWrapper();
 
-      const overvViewButton = wrapper.findByTestId(startbutton);
-      const summarySubValues = summaryString.split('::');
+      await navigateToSubPage(startbutton);
 
-      // Overview
-      overvViewButton.vm.$emit('click');
-
-      await nextTick();
-
-      // Detail selection checks
-      expect(wrapper.findByTestId(startbutton).exists()).toBe(false);
-
-      const showAllEventsButton = wrapper.findByTestId(showAllbutton);
+      const showAllEventsButton = findAllEventsButton(showAllbutton);
       expect(showAllEventsButton.exists()).toBe(true);
       expect(findBackButton().exists()).toBe(true);
 
       showAllEventsButton.vm.$emit('click');
 
+      const summarySubValues = summaryString.split('::');
       expect(wrapper.emitted('measureSelected')).toEqual([[summarySubValues[0]], summarySubValues]);
 
-      await nextTick();
+      await checkFinalStep(`${EVENTS_DB_TABLE_NAME}.count`, summaryString);
 
-      expect(wrapper.vm.measureType).toBe(selectMethod);
-      expect(wrapper.vm.measureSubType).toBe('all');
-
-      expect(setMeasures).toHaveBeenCalledWith([`${EVENTS_DB_TABLE_NAME}.count`]);
-      if (summarySubValues[0] === 'pageViews') {
+      if (eventType) {
         expect(addFilters).toHaveBeenCalledWith({
           member: `${EVENTS_DB_TABLE_NAME}.eventType`,
           operator: 'equals',
-          values: ['pageview'],
+          values: [eventType],
         });
       }
+    },
+  );
 
-      expect(findMeasureSummary().exists()).toBe(true);
-      expect(wrapper.findComponent(GlLabel).props('title')).toContain(summaryString);
+  it.each`
+    startbutton           | showAllbutton             | summaryString
+    ${'pageviews-button'} | ${'pageviews-all-button'} | ${'pageViews::all'}
+  `(
+    'navigates from overview to event subpage $selectMethod',
+    async ({ startbutton, showAllbutton, summaryString }) => {
+      createWrapper();
+
+      await navigateToSubPage(startbutton);
+
+      const showAllEventsButton = findAllEventsButton(showAllbutton);
+
+      expect(showAllEventsButton.exists()).toBe(true);
+      expect(findBackButton().exists()).toBe(true);
+
+      showAllEventsButton.vm.$emit('click');
+
+      const summarySubValues = summaryString.split('::');
+      expect(wrapper.emitted('measureSelected')).toEqual([[summarySubValues[0]], summarySubValues]);
+
+      await checkFinalStep(`${EVENTS_DB_TABLE_NAME}.pageViewsCount`, summaryString);
+    },
+  );
+
+  it.each`
+    startbutton       | summaryString
+    ${'users-button'} | ${'uniqueUsers::all'}
+  `(
+    'navigates from overview to users subpage $selectMethod',
+    async ({ startbutton, summaryString }) => {
+      createWrapper();
+
+      await navigateToSubPage(startbutton);
+
+      const summarySubValues = summaryString.split('::');
+      expect(wrapper.emitted('measureSelected')).toEqual([
+        [summarySubValues[0], summarySubValues[1]],
+      ]);
+
+      await checkFinalStep(`${EVENTS_DB_TABLE_NAME}.uniqueUsersCount`, summaryString);
+    },
+  );
+
+  it.each`
+    startbutton                      | measureName                 | summaryString
+    ${'sessions-count-button'}       | ${'count'}                  | ${'sessions::count'}
+    ${'sessions-avgduration-button'} | ${'averageDurationMinutes'} | ${'sessions::averageDurationMinutes'}
+    ${'sessions-avgperuser-button'}  | ${'averagePerUser'}         | ${'sessions::averagePerUser'}
+    ${'sessions-repeat-button'}      | ${'repeatPercent'}          | ${'sessions::repeatPercent'}
+  `(
+    'navigates from overview to sessions subpage $measureName',
+    async ({ startbutton, measureName, summaryString }) => {
+      createWrapper();
+
+      const summarySubValues = summaryString.split('::');
+
+      // Overview
+      wrapper.findByTestId('sessions-button').vm.$emit('click');
+
+      await nextTick();
+
+      const selectTypeButton = wrapper.findByTestId(startbutton);
+      expect(selectTypeButton.exists()).toBe(true);
+      expect(findBackButton().exists()).toBe(true);
+
+      selectTypeButton.vm.$emit('click');
+
+      expect(wrapper.emitted('measureSelected')).toEqual([[summarySubValues[0]], summarySubValues]);
+
+      await checkFinalStep(`${SESSIONS_TABLE_NAME}.${measureName}`, summaryString);
     },
   );
 });

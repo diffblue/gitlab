@@ -2,7 +2,10 @@ import { nextTick } from 'vue';
 import { GlLabel, GlDropdownItem } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import AnalyticsDimensionSelector from 'ee/product_analytics/dashboards/components/panel_designer/analytics_cube_query_dimension_selector.vue';
-import { EVENTS_DB_TABLE_NAME } from 'ee/product_analytics/dashboards/constants';
+import {
+  EVENTS_DB_TABLE_NAME,
+  SESSIONS_TABLE_NAME,
+} from 'ee/product_analytics/dashboards/constants';
 
 describe('AnalyticsQueryDimensionSelector', () => {
   let wrapper;
@@ -16,12 +19,12 @@ describe('AnalyticsQueryDimensionSelector', () => {
   const setTimeDimensions = jest.fn();
   const removeTimeDimension = jest.fn();
 
-  const createWrapper = ({ selectedEventType = '', dimensions = [], timeDimensions = [] } = {}) => {
+  const createWrapper = ({ measureType = '', dimensions = [], timeDimensions = [] } = {}) => {
     wrapper = shallowMountExtended(AnalyticsDimensionSelector, {
       propsData: {
         dimensions,
         timeDimensions,
-        measureType: selectedEventType,
+        measureType,
         measureSubType: '',
         addDimensions,
         removeDimension,
@@ -150,7 +153,7 @@ describe('AnalyticsQueryDimensionSelector', () => {
 
   describe('when timedimension is selected', () => {
     it('should setTimeDimensions when a granularity is selected', async () => {
-      createWrapper();
+      createWrapper({ measureType: 'events' });
 
       wrapper
         .findByTestId('event-granularities-dd')
@@ -185,6 +188,32 @@ describe('AnalyticsQueryDimensionSelector', () => {
       await findDimensionLabel().vm.$emit('close', 'seconds');
 
       expect(removeTimeDimension).toHaveBeenCalled();
+    });
+  });
+
+  describe('when sessions measuretype', () => {
+    beforeEach(() => {
+      createWrapper({ measureType: 'sessions' });
+    });
+
+    it('should not render any items on overview', () => {
+      const overViewButton = wrapper.findByTestId('pages-url-button');
+
+      expect(overViewButton.exists()).toBe(false);
+    });
+
+    it('should setTimeDimensions with session field when a granularity is selected', async () => {
+      wrapper
+        .findByTestId('event-granularities-dd')
+        .findComponent(GlDropdownItem)
+        .vm.$emit('click');
+
+      expect(setTimeDimensions).toHaveBeenCalledWith([
+        {
+          dimension: `${SESSIONS_TABLE_NAME}.startAt`,
+          granularity: 'seconds',
+        },
+      ]);
     });
   });
 
