@@ -110,19 +110,22 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
   end
 
   context 'add issue to swimlanes list' do
+    let(:dropdown) { first("[data-testid='header-list-actions']") }
+
     before do
       wait_for_all_requests
 
       load_unassigned_issues
+      dropdown.click
     end
 
     it 'displays new issue button' do
-      expect(first('.board')).to have_button('New issue', count: 1)
+      expect(first('.board')).to have_button('Create new issue', count: 1)
     end
 
     it 'shows form in unassigned issues lane when clicking button' do
       page.within(first('.board')) do
-        click_button 'New issue'
+        click_button 'Create new issue'
       end
 
       page.within("[data-testid='board-lane-unassigned-issues']") do
@@ -132,7 +135,7 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
 
     it 'hides form when clicking cancel' do
       page.within(first('.board')) do
-        click_button 'New issue'
+        click_button 'Create new issue'
       end
 
       page.within("[data-testid='board-lane-unassigned-issues']") do
@@ -146,7 +149,7 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
 
     it 'creates new issue in unassigned issues lane' do
       page.within(first('.board')) do
-        click_button 'New issue'
+        click_button 'Create new issue'
       end
 
       wait_for_all_requests

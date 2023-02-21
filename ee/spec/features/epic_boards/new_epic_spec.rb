@@ -23,7 +23,9 @@ RSpec.describe 'create epic in board', :js, feature_category: :portfolio_managem
 
     it 'creates new epic and opens sidebar' do
       page.within(first('.board')) do
-        click_button 'New epic'
+        dropdown = first("[data-testid='header-list-actions']")
+        dropdown.click
+        click_button 'Create new epic'
       end
 
       page.within(first('.board-new-issue-form')) do

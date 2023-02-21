@@ -6991,13 +6991,25 @@ msgstr[1] ""
 msgid "Boards|Collapse"
 msgstr ""
 
+msgid "Boards|Create new epic"
+msgstr ""
+
+msgid "Boards|Create new issue"
+msgstr ""
+
 msgid "Boards|Edit board"
+msgstr ""
+
+msgid "Boards|Edit list settings"
 msgstr ""
 
 msgid "Boards|Expand"
 msgstr ""
 
 msgid "Boards|Failed to fetch blocking %{issuableType}s"
+msgstr ""
+
+msgid "Boards|List actions"
 msgstr ""
 
 msgid "Boards|Move card"
@@ -7010,9 +7022,6 @@ msgid "Boards|Move to start of list"
 msgstr ""
 
 msgid "Boards|New board"
-msgstr ""
-
-msgid "Boards|New epic"
 msgstr ""
 
 msgid "Boards|Retrieving blocking %{issuableType}s"
