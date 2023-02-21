@@ -97,6 +97,7 @@ class Namespace < ApplicationRecord
   validates :path,
     presence: true,
     length: { maximum: URL_MAX_LENGTH }
+  validate :container_registry_namespace_path_validation
 
   validates :path, namespace_path: true, if: ->(n) { !n.project_namespace? }
   # Project path validator is used for project namespaces for now to assure
@@ -263,6 +264,13 @@ class Namespace < ApplicationRecord
     def top_most
       by_parent(nil)
     end
+  end
+
+  def container_registry_namespace_path_validation
+    return if Feature.disabled?(:restrict_special_characters_in_namespace_path, self)
+    return if !path_changed? || path.match?(Gitlab::Regex.oci_repository_path_regex)
+
+    errors.add(:path, Gitlab::Regex.oci_repository_path_regex_message)
   end
 
   def package_settings
