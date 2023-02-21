@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :authentication_and_authorization do
+RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :system_access do
   let(:saml_provider) { build_stubbed(:saml_provider, enforced_sso: true) }
   let(:session) { {} }
 

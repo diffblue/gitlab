@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Edit group settings', :js, feature_category: :authentication_and_authorization do
+RSpec.describe 'Edit group settings', :js, feature_category: :system_access do
   let(:user) { create(:user) }
   let(:group) { create(:group, path: 'foo') }
 

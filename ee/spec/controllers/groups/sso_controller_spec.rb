@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::SsoController, feature_category: :authentication_and_authorization do
+RSpec.describe Groups::SsoController, feature_category: :system_access do
   let(:user) { create(:user) }
   let(:group) { create(:group, :private, name: 'our-group', saml_discovery_token: 'test-token') }
 

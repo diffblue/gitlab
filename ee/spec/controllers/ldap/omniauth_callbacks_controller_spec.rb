@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ldap::OmniauthCallbacksController, feature_category: :authentication_and_authorization do
+RSpec.describe Ldap::OmniauthCallbacksController, feature_category: :system_access do
   include_context 'Ldap::OmniauthCallbacksController'
 
   it "displays LDAP sync flash on first sign in" do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PasswordsController, feature_category: :authentication_and_authorization do
+RSpec.describe PasswordsController, feature_category: :system_access do
   describe '#create' do
     before do
       @request.env["devise.mapping"] = Devise.mappings[:user]

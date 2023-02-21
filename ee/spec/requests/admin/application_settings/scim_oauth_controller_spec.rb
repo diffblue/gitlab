@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::ApplicationSettings::ScimOauthController, feature_category: :authentication_and_authorization do
+RSpec.describe Admin::ApplicationSettings::ScimOauthController, feature_category: :system_access do
   include AdminModeHelper
 
   describe 'POST admin_application_settings_scim_oauth' do

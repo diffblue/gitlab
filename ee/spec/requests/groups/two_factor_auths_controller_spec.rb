@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::TwoFactorAuthsController, feature_category: :authentication_and_authorization do
+RSpec.describe Groups::TwoFactorAuthsController, feature_category: :system_access do
   let_it_be(:group) { create(:group) }
   let_it_be(:current_user) { create(:user, provisioned_by_group_id: group.id) }
 

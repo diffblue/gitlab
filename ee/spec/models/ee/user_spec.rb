@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe User, feature_category: :authentication_and_authorization do
+RSpec.describe User, feature_category: :system_access do
   subject(:user) { described_class.new }
 
   describe 'user creation' do

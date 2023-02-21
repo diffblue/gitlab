@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PhoneVerification::Users::VerifyCodeService, feature_category: :authentication_and_authorization do
+RSpec.describe PhoneVerification::Users::VerifyCodeService, feature_category: :system_access do
   let_it_be_with_reload(:user) { create(:user) }
   let_it_be_with_reload(:record) { create(:phone_number_validation, user: user, telesign_reference_xid: '123') }
 

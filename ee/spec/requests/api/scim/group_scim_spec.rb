@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Scim::GroupScim, feature_category: :authentication_and_authorization do
+RSpec.describe API::Scim::GroupScim, feature_category: :system_access do
   let(:user) { create(:user) }
   let(:scim_token) { create(:scim_oauth_access_token, group: group) }
   let(:group) { identity.group }

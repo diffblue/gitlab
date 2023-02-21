@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe ConfirmationsController, type: :request,
-                                        feature_category: :authentication_and_authorization do
+                                        feature_category: :system_access do
   describe "GET #show" do
     let_it_be_with_reload(:user) { create(:user, :unconfirmed) }
     let(:confirmation_token) { user.confirmation_token }

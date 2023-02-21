@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Admin::CredentialsInventory', feature_category: :credential_management do
+RSpec.describe 'Admin::CredentialsInventory', feature_category: :user_management do
   include Spec::Support::Helpers::Features::ResponsiveTableHelpers
 
   before do

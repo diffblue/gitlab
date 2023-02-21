@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ScimOauthAccessToken, feature_category: :authentication_and_authorization do
+RSpec.describe ScimOauthAccessToken, feature_category: :system_access do
   describe "Associations" do
     it { is_expected.to belong_to :group }
   end

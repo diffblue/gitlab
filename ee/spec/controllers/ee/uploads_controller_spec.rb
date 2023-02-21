@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe UploadsController, feature_category: :authentication_and_authorization do
+RSpec.describe UploadsController, feature_category: :system_access do
   let!(:user) { create(:user) }
   let!(:project) { create(:project) }
 

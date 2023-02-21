@@ -2,7 +2,7 @@
 
 require 'fast_spec_helper'
 
-RSpec.describe EE::Gitlab::Scim::ParamsParser, feature_category: :authentication_and_authorization do
+RSpec.describe EE::Gitlab::Scim::ParamsParser, feature_category: :system_access do
   describe '#filter_params' do
     it 'returns the correct filter attributes' do
       filter = 'id eq "6ba81b08-77da"'

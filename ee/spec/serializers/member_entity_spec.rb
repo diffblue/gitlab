@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MemberEntity, feature_category: :authentication_and_authorization do
+RSpec.describe MemberEntity, feature_category: :system_access do
   let_it_be(:current_user) { create(:user) }
 
   let(:entity) { described_class.new(member, { current_user: current_user, group: group }) }

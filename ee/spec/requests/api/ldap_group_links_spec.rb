@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::LdapGroupLinks, api: true, feature_category: :authentication_and_authorization do
+RSpec.describe API::LdapGroupLinks, api: true, feature_category: :system_access do
   include ApiHelpers
 
   let(:owner) { create(:user) }

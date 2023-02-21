@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: :authentication_and_authorization do
+RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: :system_access do
   let_it_be(:group) { create(:group) }
   let_it_be(:subgroup) { create(:group, parent: group) }
   let_it_be(:project1) { create(:project, group: group) }
