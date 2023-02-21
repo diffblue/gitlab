@@ -9,10 +9,22 @@ RSpec.describe Dast::PreScanVerificationStep, :dynamic_analysis,
   let_it_be(:dast_profile) { create(:dast_profile, project: project) }
   let_it_be(:dast_pre_scan_verification) { create(:dast_pre_scan_verification, dast_profile: dast_profile) }
 
-  subject { build(:dast_pre_scan_verification_step, dast_pre_scan_verification: dast_pre_scan_verification) }
+  let_it_be(:valid_steps) { %w[connection authentication crawling] }
+
+  subject do
+    build(:dast_pre_scan_verification_step, name: 'connection', dast_pre_scan_verification: dast_pre_scan_verification)
+  end
 
   describe 'associations' do
     it { is_expected.to belong_to(:dast_pre_scan_verification).class_name('Dast::PreScanVerification').required }
+  end
+
+  describe 'validations' do
+    it { is_expected.to be_valid }
+
+    it {
+      is_expected.to validate_inclusion_of(:name).in_array(valid_steps).with_message('is not a valid pre step name')
+    }
   end
 
   describe 'instance methods' do
