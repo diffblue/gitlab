@@ -6,6 +6,8 @@ module Dast
 
     belongs_to :dast_pre_scan_verification, class_name: 'Dast::PreScanVerification', optional: false
 
+    validates :name, inclusion: { in: %w[connection authentication crawling], message: 'is not a valid pre step name' }
+
     def success?
       verification_errors.blank?
     end
