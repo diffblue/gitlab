@@ -89,7 +89,12 @@ export default {
 <template>
   <div>
     <dom-element-listener :selector="formSelector" @submit="onSubmit" />
-    <input :name="$options.VERIFICATION_TOKEN_INPUT_NAME" type="hidden" :value="arkoseToken" />
+    <input
+      v-model="arkoseToken"
+      :name="$options.VERIFICATION_TOKEN_INPUT_NAME"
+      type="hidden"
+      data-testid="arkose-labs-token-input"
+    />
     <div
       v-show="arkoseLabsIframeShown"
       class="gl-display-flex gl-justify-content-center"

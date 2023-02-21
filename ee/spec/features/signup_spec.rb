@@ -150,4 +150,15 @@ RSpec.describe 'Signup on EE', feature_category: :user_profile do
       end
     end
   end
+
+  it_behaves_like 'creates a user with ArkoseLabs risk band' do
+    let(:signup_path) { new_user_registration_path }
+    let(:user_email) { new_user[:email] }
+
+    subject(:fill_and_submit_signup_form) do
+      fill_in_signup_form
+
+      click_button "Register"
+    end
+  end
 end

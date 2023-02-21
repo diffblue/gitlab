@@ -119,9 +119,9 @@ describe('SignUpArkoseApp', () => {
         onShown();
         onCompleted(MOCK_ARKOSE_RESPONSE);
 
-        submitForm(mockSubmitEvent);
-
         await nextTick();
+
+        submitForm(mockSubmitEvent);
       });
 
       it('does not show verification required error message', async () => {
