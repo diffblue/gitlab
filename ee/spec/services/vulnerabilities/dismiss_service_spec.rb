@@ -71,6 +71,7 @@ RSpec.describe Vulnerabilities::DismissService, feature_category: :vulnerability
               have_attributes(state: 'dismissed', dismissed_by: user, dismissed_at: be_like_time(Time.current)))
             expect(vulnerability.findings).to all have_vulnerability_dismissal_feedback
             expect(vulnerability.finding.dismissal_feedback.finding_uuid).to eq(vulnerability.finding.uuid_v5)
+            expect(vulnerability.finding.dismissal_feedback.migrated_to_state_transition).to eq(true)
           end
         end
       end

@@ -76,7 +76,8 @@ module Vulnerabilities
         dismissal_reason: @dismissal_reason,
         pipeline: @project.latest_ingested_security_pipeline,
         finding_uuid: @finding.uuid_v5,
-        dismiss_vulnerability: false
+        dismiss_vulnerability: false,
+        migrated_to_state_transition: true
       }
     end
   end
