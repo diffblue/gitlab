@@ -109,12 +109,7 @@ describe('CommaSeparatedListTokenSelector', () => {
       ];
 
       createComponent();
-
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      return wrapper.setData({
-        selectedTokens: tokens,
-      });
+      findTokenSelector().vm.$emit('input', tokens);
     };
 
     it('sets input value', async () => {
