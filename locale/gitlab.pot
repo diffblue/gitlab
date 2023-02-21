@@ -1231,6 +1231,9 @@ msgstr ""
 msgid "%{user} created an issue: %{issue_link}"
 msgstr ""
 
+msgid "%{user} user’s menu"
+msgstr ""
+
 msgid "%{value} is not included in the list"
 msgstr ""
 
@@ -28578,6 +28581,9 @@ msgid "NorthstarNavigation|Navigation redesign"
 msgstr ""
 
 msgid "NorthstarNavigation|New navigation"
+msgstr ""
+
+msgid "NorthstarNavigation|Provide feedback"
 msgstr ""
 
 msgid "NorthstarNavigation|Toggle new navigation"
