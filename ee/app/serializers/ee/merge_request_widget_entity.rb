@@ -6,6 +6,14 @@ module EE
     extend ActiveSupport::Concern
 
     prepended do
+      expose :require_password_to_approve do |merge_request|
+        merge_request.target_project.require_password_to_approve?
+      end
+
+      expose :merge_request_approvers_available do |merge_request|
+        merge_request.target_project.licensed_feature_available?(:merge_request_approvers)
+      end
+
       expose :multiple_approval_rules_available do |merge_request|
         merge_request.target_project.multiple_approval_rules_available?
       end

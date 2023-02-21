@@ -1,23 +1,31 @@
-import { GlButton } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
+import { GlButton, GlSprintf } from '@gitlab/ui';
+import approvedByCurrentUser from 'test_fixtures/graphql/merge_requests/approvals/approvals.query.graphql.json';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { createAlert } from '~/flash';
 import Approvals from 'ee/vue_merge_request_widget/components/approvals/approvals.vue';
 import ApprovalsAuth from 'ee/vue_merge_request_widget/components/approvals/approvals_auth.vue';
 import ApprovalsFooter from 'ee/vue_merge_request_widget/components/approvals/approvals_footer.vue';
-import { createAlert } from '~/flash';
 import ApprovalsFoss from '~/vue_merge_request_widget/components/approvals/approvals.vue';
-import ApprovalsSummary from '~/vue_merge_request_widget/components/approvals/approvals_summary.vue';
-import ApprovalsSummaryOptional from '~/vue_merge_request_widget/components/approvals/approvals_summary_optional.vue';
-
-import {
-  FETCH_LOADING,
-  FETCH_ERROR,
-  APPROVE_ERROR,
-  UNAPPROVE_ERROR,
-} from '~/vue_merge_request_widget/components/approvals/messages';
-import MrWidgetContainer from '~/vue_merge_request_widget/components/mr_widget_container.vue';
+import { APPROVE_ERROR } from '~/vue_merge_request_widget/components/approvals/messages';
 import eventHub from '~/vue_merge_request_widget/event_hub';
+import approvedByQuery from 'ee/vue_merge_request_widget/components/approvals/queries/approvals.query.graphql';
+import { createCanApproveResponse } from 'jest/approvals/mock_data';
 
+Vue.use(VueApollo);
+
+const mockAlertDismiss = jest.fn();
+jest.mock('~/flash', () => ({
+  createAlert: jest.fn().mockImplementation(() => ({
+    dismiss: mockAlertDismiss,
+  })),
+}));
+
+const RULE_NAME = 'first_rule';
 const TEST_HELP_PATH = 'help/path';
 const TEST_PASSWORD = 'password';
 const testApprovedBy = () => [1, 7, 10].map((id) => ({ id }));
@@ -32,25 +40,25 @@ const testApprovals = () => ({
   require_password_to_approve: false,
   invalid_approvers_rules: [],
 });
-const testApprovalRulesResponse = () => ({ rules: [{ id: 2 }] });
 
-jest.mock('~/flash');
-
-describe('EE MRWidget approvals', () => {
+describe('MRWidget approvals', () => {
   let wrapper;
   let service;
   let mr;
 
-  const createComponent = (props = {}) => {
-    wrapper = shallowMount(Approvals, {
+  const createComponent = (props = {}, response = approvedByCurrentUser) => {
+    const requestHandlers = [[approvedByQuery, jest.fn().mockResolvedValue(response)]];
+    const apolloProvider = createMockApollo(requestHandlers);
+
+    wrapper = mountExtended(Approvals, {
+      apolloProvider,
       propsData: {
         mr,
         service,
         ...props,
       },
       stubs: {
-        approvals: ApprovalsFoss,
-        MrWidgetContainer,
+        GlSprintf,
       },
     });
   };
@@ -67,21 +75,17 @@ describe('EE MRWidget approvals', () => {
           text: action.text(),
         };
   };
-  const findSummary = () => wrapper.findComponent(ApprovalsSummary);
-  const findOptionalSummary = () => wrapper.findComponent(ApprovalsSummaryOptional);
   const findFooter = () => wrapper.findComponent(ApprovalsFooter);
+  const findInvalidRules = () => wrapper.findByTestId('invalid-rules');
 
   beforeEach(() => {
     service = {
       ...{
-        fetchApprovals: jest.fn().mockResolvedValue(testApprovals()),
-        fetchApprovalSettings: jest.fn().mockResolvedValue(testApprovalRulesResponse()),
-        approveMergeRequest: jest.fn().mockResolvedValue(testApprovals()),
-        unapproveMergeRequest: jest.fn().mockResolvedValue(testApprovals()),
-        approveMergeRequestWithAuth: jest.fn().mockResolvedValue(testApprovals()),
+        approveMergeRequest: jest.fn().mockReturnValue(Promise.resolve(testApprovals())),
+        unapproveMergeRequest: jest.fn().mockReturnValue(Promise.resolve(testApprovals())),
+        approveMergeRequestWithAuth: jest.fn().mockReturnValue(Promise.resolve(testApprovals())),
       },
     };
-
     mr = {
       ...{
         setApprovals: jest.fn(),
@@ -92,136 +96,34 @@ describe('EE MRWidget approvals', () => {
       approvalRules: [],
       isOpen: true,
       state: 'open',
-      approvalsWidgetType: 'full',
       targetProjectFullPath: 'gitlab-org/gitlab',
-      iid: 1,
+      iid: '1',
     };
 
     jest.spyOn(eventHub, '$emit').mockImplementation(() => {});
-  });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
-  describe('when created', () => {
-    beforeEach(() => {
-      jest.spyOn(service, 'fetchApprovals').mockResolvedValue(testApprovals());
-      createComponent();
-    });
-
-    it('shows loading message', async () => {
-      wrapper.findComponent(ApprovalsFoss).setData({ fetchingApprovals: true });
-
-      await nextTick();
-      expect(wrapper.text()).toContain(FETCH_LOADING);
-    });
-
-    it('fetches approvals', () => {
-      expect(service.fetchApprovals).toHaveBeenCalled();
-    });
-  });
-
-  describe('when fetch approvals success', () => {
-    beforeEach(async () => {
-      jest.spyOn(service, 'fetchApprovals').mockResolvedValue();
-      createComponent();
-
-      await nextTick();
-    });
-
-    it('hides loading message', () => {
-      expect(createAlert).not.toHaveBeenCalled();
-      expect(wrapper.text()).not.toContain(FETCH_LOADING);
-    });
-  });
-
-  describe('when fetch approvals error', () => {
-    beforeEach(async () => {
-      jest.spyOn(service, 'fetchApprovals').mockRejectedValue();
-      createComponent();
-
-      await nextTick();
-    });
-
-    it('still shows loading message', () => {
-      expect(wrapper.text()).toContain(FETCH_LOADING);
-    });
-
-    it('flashes error', () => {
-      expect(createAlert).toHaveBeenCalledWith({ message: FETCH_ERROR });
-    });
+    gon.current_user_id = getIdFromGraphQLId(
+      approvedByCurrentUser.data.project.mergeRequest.approvedBy.nodes[0].id,
+    );
   });
 
   describe('action button', () => {
-    beforeEach(() => {
-      jest.spyOn(service, 'fetchApprovals').mockResolvedValue(testApprovals());
-    });
-
-    describe('when mr is closed', () => {
-      beforeEach(async () => {
-        mr.isOpen = false;
-        mr.approvals.user_has_approved = false;
-        mr.approvals.user_can_approve = true;
-
-        createComponent();
-
-        await nextTick();
-      });
-
-      it('action is not rendered', () => {
-        expect(findActionData()).toBe(null);
-      });
-    });
-
-    describe('when user cannot approve', () => {
-      beforeEach(async () => {
-        mr.approvals.user_has_approved = false;
-        mr.approvals.user_can_approve = false;
-
-        createComponent();
-
-        await nextTick();
-      });
-
-      it('action is not rendered', () => {
-        expect(findActionData()).toBe(null);
-      });
-    });
-
     describe('when user can approve', () => {
+      let canApproveResponse;
+
       beforeEach(() => {
-        mr.approvals.user_has_approved = false;
-        mr.approvals.user_can_approve = true;
-      });
-
-      describe('and MR is unapproved', () => {
-        beforeEach(async () => {
-          createComponent();
-
-          await nextTick();
-        });
-
-        it('approve action is rendered', () => {
-          expect(findActionData()).toEqual({
-            variant: 'confirm',
-            text: 'Approve',
-            category: 'primary',
-          });
-        });
+        canApproveResponse = createCanApproveResponse();
       });
 
       describe('and MR is approved', () => {
         beforeEach(() => {
-          mr.approvals.approved = true;
+          canApproveResponse.data.project.mergeRequest.approved = true;
         });
 
         describe('with no approvers', () => {
           beforeEach(async () => {
-            mr.approvals.approved_by = [];
-            createComponent();
-
+            canApproveResponse.data.project.mergeRequest.approvedBy.nodes = [];
+            createComponent({}, canApproveResponse);
             await nextTick();
           });
 
@@ -233,258 +135,59 @@ describe('EE MRWidget approvals', () => {
             });
           });
         });
-
-        describe('with approvers', () => {
-          beforeEach(async () => {
-            mr.approvals.approved_by = [{ user: { id: 7 } }];
-            createComponent();
-
-            await nextTick();
-          });
-
-          it('approve additionally action is rendered', () => {
-            expect(findActionData()).toEqual({
-              variant: 'confirm',
-              text: 'Approve additionally',
-              category: 'secondary',
-            });
-          });
-        });
       });
 
       describe('when approve action is clicked', () => {
-        beforeEach(async () => {
-          createComponent();
-
-          await nextTick();
-        });
-
-        it('shows loading icon', async () => {
-          jest.spyOn(service, 'approveMergeRequest').mockReturnValue(new Promise(() => {}));
-          const action = findAction();
-
-          expect(action.props('loading')).toBe(false);
-
-          action.vm.$emit('click');
-
-          await nextTick();
-          expect(action.props('loading')).toBe(true);
-        });
-
-        describe('and after loading', () => {
+        describe('when project requires password to approve', () => {
           beforeEach(async () => {
-            findAction().vm.$emit('click');
-
-            await nextTick();
+            mr.requirePasswordToApprove = true;
+            createComponent({}, canApproveResponse);
+            await waitForPromises();
           });
 
-          it('calls service approve', () => {
-            expect(service.approveMergeRequest).toHaveBeenCalled();
-          });
-
-          it('emits to eventHub', () => {
-            expect(eventHub.$emit).toHaveBeenCalledWith('MRWidgetUpdateRequested');
-          });
-
-          it('calls store setApprovals', () => {
-            expect(mr.setApprovals).toHaveBeenCalledWith(testApprovals());
-          });
-
-          it('refetches the rules', () => {
-            expect(service.fetchApprovalSettings).toHaveBeenCalled();
-          });
-        });
-
-        describe('and error', () => {
-          beforeEach(async () => {
-            jest.spyOn(service, 'approveMergeRequest').mockRejectedValue();
-            findAction().vm.$emit('click');
-
-            await nextTick();
-          });
-
-          it('flashes error message', () => {
-            expect(createAlert).toHaveBeenCalledWith({ message: APPROVE_ERROR });
-          });
-        });
-      });
-
-      describe('when project requires password to approve', () => {
-        beforeEach(async () => {
-          mr.approvals.require_password_to_approve = true;
-          createComponent();
-
-          await nextTick();
-        });
-
-        describe('when approve is clicked', () => {
-          beforeEach(async () => {
-            findAction().vm.$emit('click');
-
-            await nextTick();
-          });
-
-          describe('when emits approve', () => {
-            const findApprovalsAuth = () => wrapper.findComponent(ApprovalsAuth);
-
+          describe('when approve is clicked', () => {
             beforeEach(async () => {
-              jest.spyOn(service, 'approveMergeRequestWithAuth').mockRejectedValue();
-              jest.spyOn(service, 'approveMergeRequest').mockReturnValue(new Promise(() => {}));
-
-              findApprovalsAuth().vm.$emit('approve', TEST_PASSWORD);
+              findAction().vm.$emit('click');
 
               await nextTick();
             });
 
-            it('calls service when emits approve', () => {
-              expect(service.approveMergeRequestWithAuth).toHaveBeenCalledWith(TEST_PASSWORD);
+            describe('when emits approve', () => {
+              const findApprovalsAuth = () => wrapper.findComponent(ApprovalsAuth);
+
+              beforeEach(async () => {
+                jest.spyOn(service, 'approveMergeRequestWithAuth').mockRejectedValue();
+                jest.spyOn(service, 'approveMergeRequest').mockReturnValue(new Promise(() => {}));
+
+                findApprovalsAuth().vm.$emit('approve', TEST_PASSWORD);
+
+                await nextTick();
+              });
+
+              it('calls service when emits approve', () => {
+                expect(service.approveMergeRequestWithAuth).toHaveBeenCalledWith(TEST_PASSWORD);
+              });
+
+              it('sets isApproving', async () => {
+                wrapper.findComponent(ApprovalsFoss).setData({ isApproving: true });
+
+                await nextTick();
+                expect(findApprovalsAuth().props('isApproving')).toBe(true);
+              });
+
+              it('sets hasError when auth fails', async () => {
+                wrapper.findComponent(ApprovalsFoss).setData({ hasApprovalAuthError: true });
+
+                await nextTick();
+                expect(findApprovalsAuth().props('hasError')).toBe(true);
+              });
+
+              it('shows flash if general error', () => {
+                expect(createAlert).toHaveBeenCalledWith({ message: APPROVE_ERROR });
+              });
             });
-
-            it('sets isApproving', async () => {
-              wrapper.findComponent(ApprovalsFoss).setData({ isApproving: true });
-
-              await nextTick();
-              expect(findApprovalsAuth().props('isApproving')).toBe(true);
-            });
-
-            it('sets hasError when auth fails', async () => {
-              wrapper.findComponent(ApprovalsFoss).setData({ hasApprovalAuthError: true });
-
-              await nextTick();
-              expect(findApprovalsAuth().props('hasError')).toBe(true);
-            });
-
-            it('shows flash if general error', () => {
-              expect(createAlert).toHaveBeenCalledWith({ message: APPROVE_ERROR });
-            });
           });
         });
-      });
-    });
-
-    describe('when user has approved', () => {
-      beforeEach(async () => {
-        mr.approvals.user_has_approved = true;
-        mr.approvals.user_can_approve = false;
-
-        createComponent();
-
-        await nextTick();
-      });
-
-      it('revoke action is rendered', () => {
-        expect(findActionData()).toEqual({
-          category: 'primary',
-          variant: 'default',
-          text: 'Revoke approval',
-        });
-      });
-
-      describe('when revoke action is clicked', () => {
-        describe('and successful', () => {
-          beforeEach(async () => {
-            findAction().vm.$emit('click');
-
-            await nextTick();
-          });
-
-          it('calls service unapprove', () => {
-            expect(service.unapproveMergeRequest).toHaveBeenCalled();
-          });
-
-          it('emits to eventHub', () => {
-            expect(eventHub.$emit).toHaveBeenCalledWith('MRWidgetUpdateRequested');
-          });
-
-          it('calls store setApprovals', () => {
-            expect(mr.setApprovals).toHaveBeenCalledWith(testApprovals());
-          });
-
-          it('refetches the rules', () => {
-            expect(service.fetchApprovalSettings).toHaveBeenCalled();
-          });
-        });
-
-        describe('and error', () => {
-          beforeEach(async () => {
-            jest.spyOn(service, 'unapproveMergeRequest').mockRejectedValue();
-            findAction().vm.$emit('click');
-
-            await nextTick();
-          });
-
-          it('flashes error message', () => {
-            expect(createAlert).toHaveBeenCalledWith({ message: UNAPPROVE_ERROR });
-          });
-        });
-      });
-    });
-  });
-
-  describe('approvals optional summary', () => {
-    describe('when no approvals required and no approvers', () => {
-      beforeEach(() => {
-        jest.spyOn(service, 'fetchApprovals').mockResolvedValue(testApprovals());
-        mr.approvals.approved_by = [];
-        mr.approvals.approvals_required = 0;
-        mr.approvals.user_has_approved = false;
-      });
-
-      describe('and can approve', () => {
-        beforeEach(async () => {
-          mr.approvals.user_can_approve = true;
-
-          createComponent();
-
-          await nextTick();
-        });
-
-        it('is shown', () => {
-          expect(findSummary().exists()).toBe(false);
-          expect(findOptionalSummary().props()).toEqual({
-            canApprove: true,
-            helpPath: TEST_HELP_PATH,
-          });
-        });
-      });
-
-      describe('and cannot approve', () => {
-        beforeEach(async () => {
-          mr.approvals.user_can_approve = false;
-
-          createComponent();
-
-          await nextTick();
-        });
-
-        it('is shown', () => {
-          expect(findSummary().exists()).toBe(false);
-          expect(findOptionalSummary().props()).toEqual({
-            canApprove: false,
-            helpPath: TEST_HELP_PATH,
-          });
-        });
-      });
-    });
-  });
-
-  describe('approvals summary', () => {
-    beforeEach(async () => {
-      jest.spyOn(service, 'fetchApprovals').mockResolvedValue(testApprovals());
-      createComponent();
-
-      await nextTick();
-    });
-
-    it('is rendered with props', () => {
-      const summary = findSummary();
-
-      expect(findOptionalSummary().exists()).toBe(false);
-      expect(summary.exists()).toBe(true);
-      expect(summary.props()).toMatchObject({
-        projectPath: 'gitlab-org/gitlab',
-        iid: '1',
-        updatedCount: 0,
       });
     });
   });
@@ -495,7 +198,7 @@ describe('EE MRWidget approvals', () => {
     beforeEach(async () => {
       createComponent();
 
-      await nextTick();
+      await waitForPromises();
     });
 
     beforeEach(() => {
@@ -505,7 +208,47 @@ describe('EE MRWidget approvals', () => {
     it('is rendered with props', () => {
       expect(footer.exists()).toBe(true);
       expect(footer.props()).toMatchObject({
-        suggestedApprovers: mr.approvals.suggested_approvers,
+        suggestedApprovers: [],
+      });
+    });
+  });
+
+  describe('invalid rules', () => {
+    beforeEach(() => {
+      mr.mergeRequestApproversAvailable = true;
+    });
+
+    it('does not render related components', async () => {
+      createComponent();
+
+      await waitForPromises();
+
+      expect(findInvalidRules().exists()).toBe(false);
+    });
+
+    describe('when invalid rules are present', () => {
+      beforeEach(async () => {
+        const response = JSON.parse(JSON.stringify(approvedByCurrentUser));
+        response.data.project.mergeRequest.approvalState.invalidApproversRules = [
+          { id: 1, name: RULE_NAME },
+        ];
+        createComponent({}, response);
+
+        await waitForPromises();
+      });
+
+      it('renders related components', () => {
+        const invalidRules = findInvalidRules();
+
+        expect(invalidRules.exists()).toBe(true);
+
+        const invalidRulesText = invalidRules.text();
+
+        expect(invalidRulesText).toContain(RULE_NAME);
+        expect(invalidRulesText).toContain(
+          'GitLab has approved this rule automatically to unblock the merge request.',
+        );
+        expect(invalidRulesText).toContain('Learn more.');
       });
     });
   });

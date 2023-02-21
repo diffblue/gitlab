@@ -5,6 +5,7 @@ import VueApollo from 'vue-apollo';
 
 import getStateQueryResponse from 'test_fixtures/graphql/merge_requests/get_state.query.graphql.json';
 import readyToMergeResponse from 'test_fixtures/graphql/merge_requests/states/ready_to_merge.query.graphql.json';
+import approvedByCurrentUser from 'test_fixtures/graphql/merge_requests/approvals/approvals.query.graphql.json';
 
 import {
   registerExtension,
@@ -51,6 +52,9 @@ import securityReportMergeRequestDownloadPathsQuery from '~/vue_shared/security_
 
 import getStateQuery from '~/vue_merge_request_widget/queries/get_state.query.graphql';
 import readyToMergeQuery from 'ee_else_ce/vue_merge_request_widget/queries/states/ready_to_merge.query.graphql';
+import mergeQuery from '~/vue_merge_request_widget/queries/states/new_ready_to_merge.query.graphql';
+import approvalsQuery from 'ee_else_ce/vue_merge_request_widget/components/approvals/queries/approvals.query.graphql';
+import securityReportSummaryQuery from 'ee/vue_shared/security_reports/graphql/mr_security_report_summary.graphql';
 
 import mockData from './mock_data';
 
@@ -73,6 +77,24 @@ describe('ee merge request widget options', () => {
   const createComponent = (options) => {
     wrapper = mount(MrWidgetOptions, {
       ...options,
+      apolloProvider: createMockApollo([
+        [approvalsQuery, jest.fn().mockResolvedValue(approvedByCurrentUser)],
+        [getStateQuery, jest.fn().mockResolvedValue(getStateQueryResponse)],
+        [readyToMergeQuery, jest.fn().mockResolvedValue(readyToMergeResponse)],
+        [
+          securityReportMergeRequestDownloadPathsQuery,
+          async () => ({ data: securityReportMergeRequestDownloadPathsQueryResponse }),
+        ],
+        [securityReportSummaryQuery, jest.fn().mockResolvedValue({ data: { project: null } })],
+        [
+          mergeQuery,
+          jest.fn().mockResolvedValue({
+            data: {
+              project: { id: 1, mergeRequest: { id: 1, userPermissions: { canMerge: true } } },
+            },
+          }),
+        ],
+      ]),
       data() {
         return {
           loading: false,
@@ -688,14 +710,6 @@ describe('ee merge request widget options', () => {
 
         createComponent({
           propsData: { mrData: gl.mrWidgetData },
-          apolloProvider: createMockApollo([
-            [getStateQuery, jest.fn().mockResolvedValue(getStateQueryResponse)],
-            [readyToMergeQuery, jest.fn().mockResolvedValue(readyToMergeResponse)],
-            [
-              securityReportMergeRequestDownloadPathsQuery,
-              async () => ({ data: securityReportMergeRequestDownloadPathsQueryResponse }),
-            ],
-          ]),
         });
 
         return waitForPromises();

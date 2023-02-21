@@ -1,12 +1,10 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { mount } from '@vue/test-utils';
-import approvalRulesResponse from 'test_fixtures/graphql/merge_requests/approvals/approved_by.query.graphql_approval_rules.json';
-import approvalsRequiredResponse from 'test_fixtures/graphql/merge_requests/approvals/approved_by.query.graphql_approvals_required.json';
-import createMockApollo from 'helpers/mock_apollo_helper';
+import approvalRulesResponse from 'test_fixtures/graphql/merge_requests/approvals/approvals.query.graphql_approval_rules.json';
+import approvalsRequiredResponse from 'test_fixtures/graphql/merge_requests/approvals/approvals.query.graphql_approvals_required.json';
 import { toNounSeriesText } from '~/lib/utils/grammar';
 import ApprovalsSummary from '~/vue_merge_request_widget/components/approvals/approvals_summary.vue';
-import approvedByQuery from 'ee/vue_merge_request_widget/components/approvals/queries/approved_by.query.graphql';
 
 const TEST_APPROVALS_LEFT = 3;
 
@@ -18,11 +16,9 @@ describe('MRWidget approvals summary', () => {
   const createComponent = (response = approvalRulesResponse) => {
     wrapper = mount(ApprovalsSummary, {
       propsData: {
-        projectPath: 'gitlab-org/gitlab',
-        iid: '1',
+        approvalState: response.data.project.mergeRequest,
         multipleApprovalRulesAvailable: true,
       },
-      apolloProvider: createMockApollo([[approvedByQuery, jest.fn().mockResolvedValue(response)]]),
     });
   };
 
