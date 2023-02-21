@@ -90,7 +90,11 @@ RSpec.describe Vulnerabilities::FindingDismissService, feature_category: :vulner
             dismiss_finding
 
             expect(finding.reload).to(have_attributes(state: 'dismissed'))
-            expect(finding.dismissal_feedback).to have_attributes(comment: comment, comment_author: user, comment_timestamp: be_like_time(Time.current), pipeline_id: pipeline.id)
+            expect(finding.dismissal_feedback).to have_attributes(comment: comment,
+              comment_author: user,
+              comment_timestamp: be_like_time(Time.current),
+              pipeline_id: pipeline.id,
+              migrated_to_state_transition: true)
           end
         end
       end
@@ -103,7 +107,7 @@ RSpec.describe Vulnerabilities::FindingDismissService, feature_category: :vulner
           dismiss_finding
 
           expect(finding.reload).to have_attributes(state: 'dismissed')
-          expect(finding.dismissal_feedback).to have_attributes(dismissal_reason: dismissal_reason)
+          expect(finding.dismissal_feedback).to have_attributes(dismissal_reason: dismissal_reason, migrated_to_state_transition: true)
         end
       end
 

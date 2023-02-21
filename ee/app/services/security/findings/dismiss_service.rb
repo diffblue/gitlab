@@ -76,7 +76,8 @@ module Security
           dismissal_reason: @dismissal_reason,
           pipeline: @security_finding.pipeline,
           finding_uuid: @security_finding.uuid,
-          dismiss_vulnerability: false
+          dismiss_vulnerability: false,
+          migrated_to_state_transition: true
         }
       end
     end

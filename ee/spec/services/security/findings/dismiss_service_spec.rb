@@ -35,7 +35,8 @@ RSpec.describe Security::Findings::DismissService do
               expect(finding.feedbacks.where(feedback_type: "dismissal").last)
                 .to have_attributes(comment: comment,
                                     pipeline_id: finding.pipeline.id,
-                                    feedback_type: 'dismissal')
+                                    feedback_type: 'dismissal',
+                                    migrated_to_state_transition: true)
             end
           end
         end
@@ -48,7 +49,9 @@ RSpec.describe Security::Findings::DismissService do
           dismiss_finding
 
           expect(finding.feedbacks.where(feedback_type: "dismissal").last)
-            .to have_attributes(dismissal_reason: dismissal_reason, feedback_type: 'dismissal')
+            .to have_attributes(dismissal_reason: dismissal_reason,
+                                feedback_type: 'dismissal',
+                                migrated_to_state_transition: true)
         end
       end
 
