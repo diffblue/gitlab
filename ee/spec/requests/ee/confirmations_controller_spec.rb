@@ -26,5 +26,22 @@ RSpec.describe ConfirmationsController, type: :request,
         perform_request
       end
     end
+
+    context 'when user is provisioned by group' do
+      let(:token) { 'supersecrettoken' }
+      let(:group) { create(:group, saml_discovery_token: token) }
+      let(:scim_identity) { create(:scim_identity, group: group) }
+
+      before do
+        user.update!(provisioned_by_group: scim_identity.group)
+      end
+
+      it 'confirms the user and redirects to SSO login', :aggregate_failures do
+        perform_request
+
+        expect(response).to redirect_to(sso_group_saml_providers_path(group, token: token))
+        expect(user.reload).to be_confirmed
+      end
+    end
   end
 end
