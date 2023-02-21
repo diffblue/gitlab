@@ -69,4 +69,11 @@ RSpec.describe 'Group or Project invitations', feature_category: :onboarding do
       expect(page).to have_content('You have signed up successfully. However, we could not sign you in because your account is awaiting approval from your GitLab administrator.')
     end
   end
+
+  it_behaves_like 'creates a user with ArkoseLabs risk band' do
+    let(:signup_path) { invite_path(group_invite.raw_invite_token) }
+    let(:user_email) { new_user[:email] }
+
+    subject(:fill_and_submit_signup_form) { fill_in_sign_up_form(new_user) }
+  end
 end
