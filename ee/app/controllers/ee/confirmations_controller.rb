@@ -13,5 +13,15 @@ module EE
 
       super(resource)
     end
+
+    override :sign_in_path
+    def sign_in_path(user)
+      if user.provisioned_by_group_id
+        group = user.provisioned_by_group
+        sso_group_saml_providers_path(group, token: group.saml_discovery_token)
+      else
+        super(user)
+      end
+    end
   end
 end
