@@ -14,4 +14,4 @@ cmd = ['bundle', 'exec', 'rake', task, *ARGV]
 
 puts "Running: `#{cmd.join(' ')}`"
 
-system(*cmd)
+exit 1 unless system(*cmd)
