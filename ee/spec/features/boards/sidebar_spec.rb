@@ -378,21 +378,25 @@ RSpec.describe 'Issue Boards', :js, feature_category: :team_planning do
   end
 
   context 'when opening sidebars' do
-    let(:settings_button) { find_button _('List settings') }
-
     it 'closes card sidebar when opening settings sidebar' do
       click_card(card1)
 
       expect(page).to have_selector('[data-testid="issue-boards-sidebar"]')
 
-      settings_button.click
+      page.within(find('.board:nth-child(2)')) do
+        find("[data-testid='header-list-actions']").click
+        find_button('Edit list settings').click
+      end
 
       expect(page).to have_selector('.js-board-settings-sidebar')
       expect(page).not_to have_selector('[data-testid="issue-boards-sidebar"]')
     end
 
     it 'closes settings sidebar when opening card sidebar' do
-      settings_button.click
+      page.within(find('.board:nth-child(2)')) do
+        find("[data-testid='header-list-actions']").click
+        find_button('Edit list settings').click
+      end
 
       expect(page).to have_selector('.js-board-settings-sidebar')
 

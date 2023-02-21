@@ -175,14 +175,20 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
       end
 
       it 'shows the list settings button' do
-        expect(page).to have_selector(:button, "List settings")
+        page.within(find(".board:nth-child(2)")) do
+          dropdown = first("[data-testid='header-list-actions']")
+          dropdown.click
+          expect(page).to have_selector(:button, "Edit list settings")
+        end
         expect(page).not_to have_selector(".js-board-settings-sidebar")
       end
 
       context 'when settings button is clicked' do
         it 'shows the board list settings sidebar' do
           page.within(find(".board:nth-child(2)")) do
-            click_button('List settings')
+            dropdown = first("[data-testid='header-list-actions']")
+            dropdown.click
+            click_button('Edit list settings')
           end
 
           expect(page.find('.js-board-settings-sidebar').find('.gl-label-text')).to have_text("Brount")
@@ -192,7 +198,9 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
       context 'when boards setting sidebar is open' do
         before do
           page.within(find(".board:nth-child(2)")) do
-            click_button('List settings')
+            dropdown = first("[data-testid='header-list-actions']")
+            dropdown.click
+            click_button('Edit list settings')
           end
         end
 
@@ -237,7 +245,9 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
             wait_for_requests
 
             page.within(find(".board:nth-child(2)")) do
-              click_button('List settings')
+              dropdown = find("[data-testid='header-list-actions']")
+              dropdown.click
+              click_button('Edit list settings')
             end
 
             expect(page.find('[data-testid="wip-limit"]')).to have_text(max_issue_count)
@@ -303,7 +313,9 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
       end
 
       it 'does not show the list settings button' do
-        expect(page).to have_no_selector(:button, "List settings")
+        dropdown = first("[data-testid='header-list-actions']")
+        dropdown.click
+        expect(page).to have_no_selector(:button, "Edit list settings")
         expect(page).not_to have_selector(".js-board-settings-sidebar")
       end
     end

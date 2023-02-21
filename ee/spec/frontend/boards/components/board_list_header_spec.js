@@ -1,11 +1,11 @@
-import { GlButton, GlButtonGroup } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { GlDisclosureDropdown, GlDisclosureDropdownItem } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import BoardListHeader from 'ee/boards/components/board_list_header.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
   boardListQueryResponse,
   epicBoardListQueryResponse,
@@ -88,7 +88,7 @@ describe('Board List Header Component', () => {
       },
     });
 
-    wrapper = shallowMount(BoardListHeader, {
+    wrapper = shallowMountExtended(BoardListHeader, {
       apolloProvider: fakeApollo,
       store,
       propsData: {
@@ -104,10 +104,23 @@ describe('Board List Header Component', () => {
         isEpicBoard,
         disabled: false,
       },
+      stubs: {
+        GlDisclosureDropdown,
+        GlDisclosureDropdownItem,
+      },
     });
+
+    wrapper.vm.$refs.headerListActions = { close: jest.fn() };
   };
 
-  const findSettingsButton = () => wrapper.findComponent({ ref: 'settingsBtn' });
+  const newEpicText = 'Create new epic';
+  const listSettingsText = 'Edit list settings';
+  const newEpicBtnTestId = 'newEpicBtn';
+  const listSettingsTestId = 'settingsBtn';
+
+  const findDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
+  const findNewEpicButton = () => wrapper.findByTestId(newEpicBtnTestId);
+  const findSettingsButton = () => wrapper.findByTestId(listSettingsTestId);
 
   afterEach(() => {
     wrapper.destroy();
@@ -116,33 +129,36 @@ describe('Board List Header Component', () => {
   });
 
   describe('New epic button', () => {
-    let newEpicButton;
-
     beforeEach(() => {
       jest.spyOn(boardsEventHub, '$emit');
       createComponent({ isEpicBoard: true });
-      newEpicButton = wrapper.findComponent(GlButtonGroup).findComponent(GlButton);
     });
 
-    it('renders New epic button', () => {
-      expect(newEpicButton.exists()).toBe(true);
-      expect(newEpicButton.attributes()).toMatchObject({
-        title: 'New epic',
-        'aria-label': 'New epic',
+    it('renders Create new epic button', () => {
+      expect(findDropdown().exists()).toBe(true);
+
+      expect(findNewEpicButton().exists()).toBe(true);
+
+      expect(findNewEpicButton().attributes()).toMatchObject({
+        'data-testid': newEpicBtnTestId,
+        title: newEpicText,
+        'aria-label': newEpicText,
       });
     });
 
-    it('does not render New epic button when canCreateEpic is false', () => {
+    it('does not render dropdown and New epic button when canCreateEpic is false', () => {
       createComponent({
         canCreateEpic: false,
         isEpicBoard: true,
       });
 
-      expect(wrapper.findComponent(GlButtonGroup).exists()).toBe(false);
+      expect(findDropdown().exists()).toBe(false);
     });
 
-    it('emits `toggle-epic-form` event on Sidebar eventHub when clicked', async () => {
-      await newEpicButton.vm.$emit('click');
+    it('emits `toggle-epic-form` event on Sidebar eventHub when clicked', () => {
+      expect(boardsEventHub.$emit).not.toHaveBeenCalled();
+
+      findNewEpicButton().trigger('click');
 
       expect(boardsEventHub.$emit).toHaveBeenCalledWith(`toggle-epic-form-${mockList.id}`);
       expect(boardsEventHub.$emit).toHaveBeenCalledTimes(1);
@@ -151,26 +167,30 @@ describe('Board List Header Component', () => {
 
   describe('Settings Button', () => {
     const hasSettings = [ListType.assignee, ListType.milestone, ListType.iteration, ListType.label];
-    const hasNoSettings = [ListType.backlog, ListType.closed];
 
     it.each(hasSettings)('does render for List Type `%s`', (listType) => {
       createComponent({ listType });
 
-      expect(findSettingsButton().exists()).toBe(true);
+      expect(findSettingsButton().attributes()).toMatchObject({
+        'data-testid': listSettingsTestId,
+        title: listSettingsText,
+        'aria-label': listSettingsText,
+      });
     });
 
-    it.each(hasNoSettings)('does not render for List Type `%s`', (listType) => {
+    it('does not render for List Type `backlog`', () => {
+      const listType = ListType.backlog;
+
       createComponent({ listType });
 
       expect(findSettingsButton().exists()).toBe(false);
     });
 
-    it('has a test for each list type', () => {
-      createComponent();
+    it('does not render dropdown for List Type `closed`', () => {
+      const listType = ListType.closed;
+      createComponent({ listType });
 
-      Object.values(ListType).forEach((value) => {
-        expect([...hasSettings, ...hasNoSettings]).toContain(value);
-      });
+      expect(findDropdown().exists()).toBe(false);
     });
 
     describe('emits sidebar.closeAll event on openSidebarSettings', () => {
