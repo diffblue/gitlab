@@ -97,6 +97,7 @@ export default {
       :show-progress-bar="storageLimitEnforced"
       :loading="loading"
       data-testid="namespace-usage-card"
+      data-qa-selector="namespace_usage_total"
       class="gl-flex-grow-1"
     >
       <template #description>
