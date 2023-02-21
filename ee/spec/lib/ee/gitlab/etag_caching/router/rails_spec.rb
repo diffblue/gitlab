@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::EtagCaching::Router::Rails do
+RSpec.describe Gitlab::EtagCaching::Router::Rails, feature_category: :portfolio_management do
   it 'matches epic notes endpoint' do
     result = described_class.match(
       double(path_info: '/groups/my-group/and-subgroup/-/epics/1/notes')
@@ -15,6 +15,23 @@ RSpec.describe Gitlab::EtagCaching::Router::Rails do
   it 'does not match invalid epic notes endpoint' do
     result = described_class.match(
       double(path_info: '/groups/my-group/-/and-subgroup/-/epics/1/notes')
+    )
+
+    expect(result).to be_blank
+  end
+
+  it 'matches epic realtime_changes endpoint' do
+    result = described_class.match(
+      double(path_info: '/groups/my-group/and-subgroup/-/epics/1/realtime_changes')
+    )
+
+    expect(result).to be_present
+    expect(result.name).to eq 'epic_realtime_changes'
+  end
+
+  it 'does not match invalid epic notes endpoint' do
+    result = described_class.match(
+      double(path_info: '/groups/my-group/-/and-subgroup/-/epics/1/realtime_changes')
     )
 
     expect(result).to be_blank

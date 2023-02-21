@@ -1420,6 +1420,19 @@ RSpec.describe Epic, feature_category: :portfolio_management do
     end
   end
 
+  describe '#expire_etag_cache' do
+    it 'expires etag cache when epic is changed' do
+      epic = create(:epic, group: group)
+
+      expect_next_instance_of(Gitlab::EtagCaching::Store) do |instance|
+        expect(instance).to receive(:touch)
+          .with(Gitlab::Routing.url_helpers.realtime_changes_group_epic_path(group, epic))
+      end
+
+      epic.update!(title: 'new title')
+    end
+  end
+
   it_behaves_like 'resource with exportable associations' do
     let_it_be(:other_group) { create(:group, :private) }
     let_it_be(:cross_group_parent) { create(:epic, group: other_group) }
