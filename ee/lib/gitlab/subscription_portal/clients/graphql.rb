@@ -13,7 +13,8 @@ module Gitlab
           Errno::ECONNREFUSED,
           Errno::ECONNRESET,
           SocketError,
-          Timeout::Error
+          Timeout::Error,
+          OpenSSL::SSL::SSLError
         ].freeze
 
         class_methods do
