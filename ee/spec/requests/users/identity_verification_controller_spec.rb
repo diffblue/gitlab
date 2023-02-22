@@ -20,13 +20,13 @@ feature_category: :authentication_and_authorization do
     context 'when session contains no `verification_user_id`' do
       let_it_be(:user) { nil }
 
-      it { is_expected.to have_gitlab_http_status(:not_found) }
+      it { is_expected.to redirect_to(root_path) }
     end
 
     context 'when session contains a `verification_user_id` from a confirmed user' do
       let_it_be(:user) { confirmed_user }
 
-      it { is_expected.to have_gitlab_http_status(:not_found) }
+      it { is_expected.to redirect_to(success_identity_verification_path) }
     end
 
     context 'when session contains a `verification_user_id` from an unconfirmed user' do
