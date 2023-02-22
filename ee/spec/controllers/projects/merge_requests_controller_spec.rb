@@ -48,6 +48,58 @@ RSpec.shared_examples 'pending pipeline response' do
   end
 end
 
+RSpec.shared_examples 'comparable report' do
+  context 'when comparison is being processed' do
+    let(:comparison_status) { { status: :parsing } }
+
+    it 'sends polling interval' do
+      expect(::Gitlab::PollingInterval).to receive(:set_header)
+
+      subject
+    end
+
+    it 'returns 204 HTTP status' do
+      subject
+
+      expect(response).to have_gitlab_http_status(:no_content)
+    end
+  end
+
+  context 'when comparison is done' do
+    let(:comparison_status) { { status: :parsed, data: { added: [], fixed: [], existing: [] } } }
+
+    it 'does not send polling interval' do
+      expect(::Gitlab::PollingInterval).not_to receive(:set_header)
+
+      subject
+    end
+
+    it 'returns 200 HTTP status' do
+      subject
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(json_response).to eq({ "added" => [], "fixed" => [], "existing" => [] })
+    end
+  end
+
+  context 'when user created corrupted reports' do
+    let(:comparison_status) { { status: :error, status_reason: 'Report parsing error' } }
+
+    it 'does not send polling interval' do
+      expect(::Gitlab::PollingInterval).not_to receive(:set_header)
+
+      subject
+    end
+
+    it 'returns 400 HTTP status' do
+      subject
+
+      expect(response).to have_gitlab_http_status(:bad_request)
+      expect(json_response).to eq({ 'status_reason' => 'Report parsing error' })
+    end
+  end
+end
+
 RSpec.describe Projects::MergeRequestsController do
   include ProjectForksHelper
 
@@ -413,57 +465,7 @@ RSpec.describe Projects::MergeRequestsController do
     end
 
     it_behaves_like 'pending pipeline response'
-
-    context 'when comparison is being processed' do
-      let(:comparison_status) { { status: :parsing } }
-
-      it 'sends polling interval' do
-        expect(::Gitlab::PollingInterval).to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 204 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:no_content)
-      end
-    end
-
-    context 'when comparison is done' do
-      let(:comparison_status) { { status: :parsed, data: { added: [], fixed: [], existing: [] } } }
-
-      it 'does not send polling interval' do
-        expect(::Gitlab::PollingInterval).not_to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 200 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response).to eq({ "added" => [], "fixed" => [], "existing" => [] })
-      end
-    end
-
-    context 'when user created corrupted vulnerability reports' do
-      let(:comparison_status) { { status: :error, status_reason: 'Failed to parse container scanning reports' } }
-
-      it 'does not send polling interval' do
-        expect(::Gitlab::PollingInterval).not_to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 400 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:bad_request)
-        expect(json_response).to eq({ 'status_reason' => 'Failed to parse container scanning reports' })
-      end
-    end
-
+    it_behaves_like 'comparable report'
     it_behaves_like 'authorize read pipeline'
   end
 
@@ -488,57 +490,7 @@ RSpec.describe Projects::MergeRequestsController do
     end
 
     it_behaves_like 'pending pipeline response'
-
-    context 'when comparison is being processed' do
-      let(:comparison_status) { { status: :parsing } }
-
-      it 'sends polling interval' do
-        expect(::Gitlab::PollingInterval).to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 204 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:no_content)
-      end
-    end
-
-    context 'when comparison is done' do
-      let(:comparison_status) { { status: :parsed, data: { added: [], fixed: [], existing: [] } } }
-
-      it 'does not send polling interval' do
-        expect(::Gitlab::PollingInterval).not_to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 200 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response).to eq({ "added" => [], "fixed" => [], "existing" => [] })
-      end
-    end
-
-    context 'when user created corrupted vulnerability reports' do
-      let(:comparison_status) { { status: :error, status_reason: 'Failed to parse container scanning reports' } }
-
-      it 'does not send polling interval' do
-        expect(::Gitlab::PollingInterval).not_to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 400 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:bad_request)
-        expect(json_response).to eq({ 'status_reason' => 'Failed to parse container scanning reports' })
-      end
-    end
-
+    it_behaves_like 'comparable report'
     it_behaves_like 'authorize read pipeline'
   end
 
@@ -563,57 +515,7 @@ RSpec.describe Projects::MergeRequestsController do
     end
 
     it_behaves_like 'pending pipeline response'
-
-    context 'when comparison is being processed' do
-      let(:comparison_status) { { status: :parsing } }
-
-      it 'sends polling interval' do
-        expect(::Gitlab::PollingInterval).to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 204 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:no_content)
-      end
-    end
-
-    context 'when comparison is done' do
-      let(:comparison_status) { { status: :parsed, data: { added: [], fixed: [], existing: [] } } }
-
-      it 'does not send polling interval' do
-        expect(::Gitlab::PollingInterval).not_to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 200 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response).to eq({ "added" => [], "fixed" => [], "existing" => [] })
-      end
-    end
-
-    context 'when user created corrupted vulnerability reports' do
-      let(:comparison_status) { { status: :error, status_reason: 'Failed to parse sast reports' } }
-
-      it 'does not send polling interval' do
-        expect(::Gitlab::PollingInterval).not_to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 400 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:bad_request)
-        expect(json_response).to eq({ 'status_reason' => 'Failed to parse sast reports' })
-      end
-    end
-
+    it_behaves_like 'comparable report'
     it_behaves_like 'authorize read pipeline'
   end
 
@@ -638,57 +540,7 @@ RSpec.describe Projects::MergeRequestsController do
     end
 
     it_behaves_like 'pending pipeline response'
-
-    context 'when comparison is being processed' do
-      let(:comparison_status) { { status: :parsing } }
-
-      it 'sends polling interval' do
-        expect(::Gitlab::PollingInterval).to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 204 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:no_content)
-      end
-    end
-
-    context 'when comparison is done' do
-      let(:comparison_status) { { status: :parsed, data: { added: [], fixed: [], existing: [] } } }
-
-      it 'does not send polling interval' do
-        expect(::Gitlab::PollingInterval).not_to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 200 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response).to eq({ "added" => [], "fixed" => [], "existing" => [] })
-      end
-    end
-
-    context 'when user created corrupted vulnerability reports' do
-      let(:comparison_status) { { status: :error, status_reason: 'Failed to parse coverage fuzzing reports' } }
-
-      it 'does not send polling interval' do
-        expect(::Gitlab::PollingInterval).not_to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 400 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:bad_request)
-        expect(json_response).to eq({ 'status_reason' => 'Failed to parse coverage fuzzing reports' })
-      end
-    end
-
+    it_behaves_like 'comparable report'
     it_behaves_like 'authorize read pipeline'
   end
 
@@ -713,57 +565,7 @@ RSpec.describe Projects::MergeRequestsController do
     end
 
     it_behaves_like 'pending pipeline response'
-
-    context 'when comparison is being processed' do
-      let(:comparison_status) { { status: :parsing } }
-
-      it 'sends polling interval' do
-        expect(::Gitlab::PollingInterval).to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 204 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:no_content)
-      end
-    end
-
-    context 'when comparison is done' do
-      let(:comparison_status) { { status: :parsed, data: { added: [], fixed: [], existing: [] } } }
-
-      it 'does not send polling interval' do
-        expect(::Gitlab::PollingInterval).not_to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 200 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response).to eq({ "added" => [], "fixed" => [], "existing" => [] })
-      end
-    end
-
-    context 'when user created corrupted fuzzing reports' do
-      let(:comparison_status) { { status: :error, status_reason: 'Failed to parse api fuzzing reports' } }
-
-      it 'does not send polling interval' do
-        expect(::Gitlab::PollingInterval).not_to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 400 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:bad_request)
-        expect(json_response).to eq({ 'status_reason' => 'Failed to parse api fuzzing reports' })
-      end
-    end
-
+    it_behaves_like 'comparable report'
     it_behaves_like 'authorize read pipeline'
   end
 
@@ -789,57 +591,7 @@ RSpec.describe Projects::MergeRequestsController do
     end
 
     it_behaves_like 'pending pipeline response'
-
-    context 'when comparison is being processed' do
-      let(:comparison_status) { { status: :parsing } }
-
-      it 'sends polling interval' do
-        expect(::Gitlab::PollingInterval).to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 204 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:no_content)
-      end
-    end
-
-    context 'when comparison is done' do
-      let(:comparison_status) { { status: :parsed, data: { added: [], fixed: [], existing: [] } } }
-
-      it 'does not send polling interval' do
-        expect(::Gitlab::PollingInterval).not_to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 200 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response).to eq({ "added" => [], "fixed" => [], "existing" => [] })
-      end
-    end
-
-    context 'when user created corrupted vulnerability reports' do
-      let(:comparison_status) { { status: :error, status_reason: 'Failed to parse secret detection reports' } }
-
-      it 'does not send polling interval' do
-        expect(::Gitlab::PollingInterval).not_to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 400 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:bad_request)
-        expect(json_response).to eq({ 'status_reason' => 'Failed to parse secret detection reports' })
-      end
-    end
-
+    it_behaves_like 'comparable report'
     it_behaves_like 'authorize read pipeline'
   end
 
@@ -864,57 +616,7 @@ RSpec.describe Projects::MergeRequestsController do
     end
 
     it_behaves_like 'pending pipeline response'
-
-    context 'when comparison is being processed' do
-      let(:comparison_status) { { status: :parsing } }
-
-      it 'sends polling interval' do
-        expect(::Gitlab::PollingInterval).to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 204 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:no_content)
-      end
-    end
-
-    context 'when comparison is done' do
-      let(:comparison_status) { { status: :parsed, data: { added: [], fixed: [], existing: [] } } }
-
-      it 'does not send polling interval' do
-        expect(::Gitlab::PollingInterval).not_to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 200 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response).to eq({ "added" => [], "fixed" => [], "existing" => [] })
-      end
-    end
-
-    context 'when user created corrupted vulnerability reports' do
-      let(:comparison_status) { { status: :error, status_reason: 'Failed to parse DAST reports' } }
-
-      it 'does not send polling interval' do
-        expect(::Gitlab::PollingInterval).not_to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 400 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:bad_request)
-        expect(json_response).to eq({ 'status_reason' => 'Failed to parse DAST reports' })
-      end
-    end
-
+    it_behaves_like 'comparable report'
     it_behaves_like 'authorize read pipeline'
   end
 
@@ -1034,56 +736,7 @@ RSpec.describe Projects::MergeRequestsController do
       end
     end
 
-    context 'when comparison is being processed' do
-      let(:comparison_status) { { status: :parsing } }
-
-      it 'sends polling interval' do
-        expect(::Gitlab::PollingInterval).to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 204 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:no_content)
-      end
-    end
-
-    context 'when comparison is done' do
-      let(:comparison_status) { { status: :parsed, data: { summary: 1 } } }
-
-      it 'does not send polling interval' do
-        expect(::Gitlab::PollingInterval).not_to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 200 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response).to eq({ 'summary' => 1 })
-      end
-    end
-
-    context 'when user created corrupted test reports' do
-      let(:comparison_status) { { status: :error, status_reason: 'Failed to parse test reports' } }
-
-      it 'does not send polling interval' do
-        expect(::Gitlab::PollingInterval).not_to receive(:set_header)
-
-        subject
-      end
-
-      it 'returns 400 HTTP status' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:bad_request)
-        expect(json_response).to eq({ 'status_reason' => 'Failed to parse test reports' })
-      end
-    end
-
+    it_behaves_like 'comparable report'
     it_behaves_like 'authorize read pipeline'
   end
 
