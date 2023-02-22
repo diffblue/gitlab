@@ -14,6 +14,7 @@ module Sidebars
 
         add_menu(Sidebars::StaticMenu.new(context))
         add_menu(Sidebars::Projects::SuperSidebarMenus::PlanMenu.new(context))
+        # "Develop" menu
         pick_from_old_menus(old_menus, Sidebars::Projects::Menus::RepositoryMenu)
         pick_from_old_menus(old_menus, Sidebars::Projects::Menus::CiCdMenu)
         pick_from_old_menus(old_menus, Sidebars::Projects::Menus::SecurityComplianceMenu)
