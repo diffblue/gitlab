@@ -9,10 +9,6 @@ module EE
       false
     end
 
-    def supports_health_status?
-      false
-    end
-
     def supports_weight?
       false
     end
