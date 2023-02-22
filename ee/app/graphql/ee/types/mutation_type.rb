@@ -103,6 +103,7 @@ module EE
         mount_mutation ::Mutations::AuditEvents::Streaming::EventTypeFilters::Create
         mount_mutation ::Mutations::AuditEvents::Streaming::EventTypeFilters::Destroy
         mount_mutation ::Mutations::Deployments::DeploymentApprove
+        mount_mutation ::Mutations::MergeRequests::UpdateApprovalRule
 
         prepend(Types::DeprecatedMutations)
       end
