@@ -32035,6 +32035,8 @@ CREATE INDEX index_users_on_unconfirmed_email ON users USING btree (unconfirmed_
 
 CREATE UNIQUE INDEX index_users_on_unlock_token ON users USING btree (unlock_token);
 
+CREATE INDEX index_users_on_updated_at ON users USING btree (updated_at);
+
 CREATE INDEX index_users_on_user_type_and_id ON users USING btree (user_type, id);
 
 CREATE INDEX index_users_on_username ON users USING btree (username);
