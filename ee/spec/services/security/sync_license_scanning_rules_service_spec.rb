@@ -102,166 +102,67 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
       end
 
       context 'when license_scanning_policies is enabled' do
-        before do
-          stub_feature_flags(license_scanning_policies: true)
+        let(:case1) { [] }
+        let(:case2) { [['GPL v3', 'A']] }
+        let(:case3) { [['GPL v3', 'A'], ['MIT', 'B']] }
+        let(:case4) { [['GPL v3', 'A'], ['MIT', 'B'], ['GPL v3', 'C']] }
+        let(:case5) { [['GPL v3', 'A'], ['MIT', 'B'], ['GPL v3', 'C'], ['Apache 2', 'D']] }
+
+        using RSpec::Parameterized::TableSyntax
+
+        where(:default_branch, :pipeline_branch, :states, :policy_license, :policy_state, :result) do
+          ref(:case1) | ref(:case2) | ['newly_detected'] | 'GPL v3' | :denied  | true
+          ref(:case2) | ref(:case3) | ['newly_detected'] | 'GPL v3' | :denied  | false
+          ref(:case3) | ref(:case4) | ['newly_detected'] | 'GPL v3' | :denied  | true
+          ref(:case4) | ref(:case5) | ['newly_detected'] | 'GPL v3' | :denied  | false
+          ref(:case1) | ref(:case2) | ['detected'] | 'GPL v3' | :denied  | false
+          ref(:case2) | ref(:case3) | ['detected'] | 'GPL v3' | :denied  | true
+          ref(:case3) | ref(:case4) | ['detected'] | 'GPL v3' | :denied  | true
+          ref(:case4) | ref(:case5) | ['detected'] | 'GPL v3' | :denied  | true
+
+          ref(:case1) | ref(:case2) | ['newly_detected'] | 'MIT' | :allowed  | true
+          ref(:case2) | ref(:case3) | ['newly_detected'] | 'MIT' | :allowed  | false
+          ref(:case3) | ref(:case4) | ['newly_detected'] | 'MIT' | :allowed  | true
+          ref(:case4) | ref(:case5) | ['newly_detected'] | 'MIT' | :allowed  | true
+          ref(:case1) | ref(:case2) | ['detected'] | 'MIT' | :allowed  | false
+          ref(:case2) | ref(:case3) | ['detected'] | 'MIT' | :allowed  | true
+          ref(:case3) | ref(:case4) | ['detected'] | 'MIT' | :allowed  | true
+          ref(:case4) | ref(:case5) | ['detected'] | 'MIT' | :allowed  | true
         end
 
-        context 'when match_on_inclusion is true' do
-          context 'when license_scanning contains denied license' do
-            let!(:software_license_policy) do
-              create(:software_license_policy, :denied,
-                project: project,
-                software_license: denied_license,
-                scan_result_policy_read: scan_result_policy_read
-              )
+        with_them do
+          let(:match_on_inclusion) { policy_state == :denied }
+          let(:default_branch_report) { create(:ci_reports_license_scanning_report) }
+          let(:pipeline_report) { create(:ci_reports_license_scanning_report) }
+          let(:license_states) { states }
+          let(:license) { create(:software_license, name: policy_license) }
+
+          before do
+            stub_feature_flags(license_scanning_policies: true)
+
+            default_branch.each do |ld|
+              default_branch_report.add_license(id: nil, name: ld[0]).add_dependency(name: ld[1])
             end
 
-            let(:denied_license) { create(:software_license, name: license_report.license_names[0]) }
-
-            context 'when license_states has only newly_detected' do
-              it 'does not require approval' do
-                expect { subject }.to change { license_finding_rule.reload.approvals_required }.from(1).to(0)
-              end
+            pipeline_branch.each do |ld|
+              pipeline_report.add_license(id: nil, name: ld[0]).add_dependency(name: ld[1])
             end
 
-            context 'when license_states has newly_detected' do
-              let(:license_states) { %w[newly_detected detected] }
+            create(:software_license_policy, policy_state,
+              project: project,
+              software_license: license,
+              scan_result_policy_read: scan_result_policy_read
+            )
 
-              it 'requires approval' do
-                expect { subject }.not_to change { license_finding_rule.reload.approvals_required }
-              end
-            end
-
-            context 'when license_states has only detected' do
-              let(:license_states) { %w[detected] }
-
-              it 'requires approval' do
-                expect { subject }.not_to change { license_finding_rule.reload.approvals_required }
-              end
-            end
+            allow(service).to receive(:report).and_return(pipeline_report)
+            allow(service).to receive(:default_branch_report).and_return(default_branch_report)
           end
 
-          context 'when license_scanning contains new dependency with un-denied license' do
-            let(:default_branch_report) { create(:ci_reports_license_scanning_report) }
-            let(:pipeline_report) { create(:ci_reports_license_scanning_report) }
-
-            before do
-              default_branch_report.add_license(id: nil, name: 'MIT').add_dependency(name: 'Library1')
-              pipeline_report.add_license(id: nil, name: 'MIT').add_dependency(name: 'Library1')
-              pipeline_report.add_license(id: nil, name: 'MIT').add_dependency(name: 'Library2')
-
-              allow(service).to receive(:report).and_return(pipeline_report)
-              allow(service).to receive(:default_branch_report).and_return(default_branch_report)
-            end
-
-            it 'requires approval' do
+          it 'sync approvals_required' do
+            if result
               expect { subject }.not_to change { license_finding_rule.reload.approvals_required }
-            end
-          end
-        end
-
-        context 'when match_on_inclusion is false' do
-          let(:match_on_inclusion) { false }
-
-          context 'when license_states has newly_detected' do
-            context 'when license_scanning contains new dependency' do
-              let(:default_branch_report) { create(:ci_reports_license_scanning_report) }
-              let(:pipeline_report) { create(:ci_reports_license_scanning_report) }
-
-              before do
-                default_branch_report.add_license(id: nil, name: 'MIT').add_dependency(name: 'Library1')
-                pipeline_report.add_license(id: nil, name: 'MIT').add_dependency(name: 'Library1')
-                pipeline_report.add_license(id: nil, name: 'MIT').add_dependency(name: 'Library2')
-
-                allow(service).to receive(:report).and_return(pipeline_report)
-                allow(service).to receive(:default_branch_report).and_return(default_branch_report)
-              end
-
-              it 'requires approval' do
-                expect { subject }.not_to change { license_finding_rule.reload.approvals_required }
-              end
-            end
-
-            context 'when license_scanning does not contain new dependency' do
-              it 'does not require approval' do
-                expect { subject }.to change { license_finding_rule.reload.approvals_required }.from(1).to(0)
-              end
-            end
-          end
-
-          context 'when license_states has detected' do
-            let(:license_states) { ['detected'] }
-
-            context 'when license_scanning contains un-allowed license' do
-              let(:pipeline_report) { create(:ci_reports_license_scanning_report) }
-
-              before do
-                pipeline_report.add_license(id: nil, name: 'Denied license').add_dependency(name: 'Library1')
-
-                allow(service).to receive(:report).and_return(pipeline_report)
-              end
-
-              it 'requires approval' do
-                expect { subject }.not_to change { license_finding_rule.reload.approvals_required }
-              end
-            end
-
-            context 'when license_scanning contains only allowed license' do
-              let(:default_branch_report) { create(:ci_reports_license_scanning_report) }
-              let(:pipeline_report) { create(:ci_reports_license_scanning_report) }
-
-              let!(:software_license_policy) do
-                create(:software_license_policy, :allowed,
-                  project: project,
-                  software_license: allowed_license,
-                  scan_result_policy_read: scan_result_policy_read
-                )
-              end
-
-              let(:allowed_license) { create(:software_license, name: 'MIT') }
-
-              before do
-                default_branch_report.add_license(id: nil, name: 'MIT').add_dependency(name: 'Library1')
-                pipeline_report.add_license(id: nil, name: 'MIT').add_dependency(name: 'Library1')
-
-                allow(service).to receive(:report).and_return(pipeline_report)
-                allow(service).to receive(:default_branch_report).and_return(default_branch_report)
-              end
-
-              it 'does not require approval' do
-                expect { subject }.to change { license_finding_rule.reload.approvals_required }.from(1).to(0)
-              end
-            end
-          end
-
-          context 'when license_states has both detected and newly_detected' do
-            let(:license_states) { %w[newly_detected detected] }
-
-            context 'when default branch already has un-allowed license' do
-              let(:default_branch_report) { create(:ci_reports_license_scanning_report) }
-              let(:pipeline_report) { create(:ci_reports_license_scanning_report) }
-
-              let!(:software_license_policy) do
-                create(:software_license_policy, :allowed,
-                  project: project,
-                  software_license: allowed_license,
-                  scan_result_policy_read: scan_result_policy_read
-                )
-              end
-
-              let(:allowed_license) { create(:software_license, name: 'MIT') }
-
-              before do
-                default_branch_report.add_license(id: nil, name: 'Denied license').add_dependency(name: 'Library1')
-                pipeline_report.add_license(id: nil, name: 'Denied license').add_dependency(name: 'Library1')
-
-                allow(service).to receive(:report).and_return(pipeline_report)
-                allow(service).to receive(:default_branch_report).and_return(default_branch_report)
-              end
-
-              it 'requires approval' do
-                expect { subject }.not_to change { license_finding_rule.reload.approvals_required }
-              end
+            else
+              expect { subject }.to change { license_finding_rule.reload.approvals_required }.from(1).to(0)
             end
           end
         end
