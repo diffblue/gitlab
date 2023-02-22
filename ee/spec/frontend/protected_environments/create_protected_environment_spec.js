@@ -1,6 +1,6 @@
 import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
-import { GlAlert, GlCollapsibleListbox, GlFormInput, GlAvatar } from '@gitlab/ui';
+import { GlAlert, GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
 import { useMockLocationHelper } from 'helpers/mock_window_location_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -9,6 +9,7 @@ import Api from 'ee/api';
 import axios from '~/lib/utils/axios_utils';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
 import { ACCESS_LEVELS } from 'ee/protected_environments/constants';
+import AddApprovers from 'ee/protected_environments/add_approvers.vue';
 import CreateProtectedEnvironment from 'ee/protected_environments/create_protected_environment.vue';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { __, s__ } from '~/locale';
@@ -32,12 +33,12 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
     wrapper.findByTestId('create-deployer-dropdown').findComponent(AccessDropdown);
   const findRequiredCountSelect = () =>
     wrapper.findByTestId('create-approval-count').findComponent(GlCollapsibleListbox);
-  const findRequredCountForApprover = (name) =>
+  const findRequiredCountForApprover = (name) =>
     wrapper
       .findAllComponents(GlFormInput)
       .wrappers.find((w) => w.attributes('name') === `approval-count-${name}`);
-  const findApproverDropdown = () =>
-    wrapper.findByTestId('create-approver-dropdown').findComponent(AccessDropdown);
+  const findAddApprovers = () => wrapper.findComponent(AddApprovers);
+  const findApproverDropdown = () => findAddApprovers().findComponent(AccessDropdown);
   const findSubmitButton = () =>
     wrapper.findByRole('button', { name: s__('ProtectedEnvironment|Protect') });
 
@@ -99,6 +100,7 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
       findAccessDropdown().vm.$emit('hidden', deployAccessLevels);
       findEnvironmentsListbox().vm.$emit('select', name);
       findRequiredCountSelect().vm.$emit('select', requiredApprovalCount);
+
       await findSubmitButton().vm.$emit('click');
     };
 
@@ -196,7 +198,8 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
       findEnvironmentsListbox().vm.$emit('select', name);
       findApproverDropdown().vm.$emit('hidden', deployAccessLevels);
       await waitForPromises();
-      findRequredCountForApprover('root').vm.$emit('input', requiredApprovalCount);
+      findRequiredCountForApprover('root').vm.$emit('input', requiredApprovalCount);
+      await nextTick();
       await findSubmitButton().vm.$emit('click');
     };
 
@@ -264,11 +267,10 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
     it('renders a dropdown for selecting approvers', () => {
       createComponent();
 
-      const approvers = findApproverDropdown();
+      const approvers = findAddApprovers();
 
       expect(approvers.props()).toMatchObject({
-        accessLevel: ACCESS_LEVELS.DEPLOY,
-        label: __('Select users'),
+        disabled: false,
       });
     });
 
@@ -284,7 +286,7 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
 
       expect(Api.createProtectedEnvironment).toHaveBeenCalledWith(PROJECT_ID, {
         deploy_access_levels: deployAccessLevels,
-        approval_rules: [{ user_id: 1, required_approvals: '3' }],
+        approval_rules: [{ user_id: 1, required_approvals: requiredApprovalCount }],
         name,
       });
     });
@@ -310,72 +312,6 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
         expect(findAlert().text()).toBe(__('Failed to protect the environment'));
 
         expect(window.location.reload).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('information for approvers', () => {
-      unmockLocation();
-      beforeEach(() => {
-        mockAxios.onGet('/api/v4/users/1').replyOnce(HTTP_STATUS_OK, {
-          name: 'root',
-          web_url: `${TEST_HOST}/root`,
-          avatar_url: '/root.png',
-          id: 1,
-        });
-        mockAxios.onGet('/api/v4/groups/1').replyOnce(HTTP_STATUS_OK, {
-          full_name: 'root / group',
-          name: 'group',
-          web_url: `${TEST_HOST}/root/group`,
-          avatar_url: '/root/group.png',
-          id: 1,
-        });
-      });
-
-      describe.each`
-        type              | access                  | details
-        ${'access level'} | ${{ access_level: 30 }} | ${{ name: 'Developers + Maintainers' }}
-        ${'group'}        | ${{ group_id: 1 }}      | ${{ avatarUrl: '/root/group.png', href: `${TEST_HOST}/root/group`, name: 'root / group' }}
-        ${'user'}         | ${{ user_id: 1 }}       | ${{ avatarUrl: '/root.png', href: `${TEST_HOST}/root`, name: 'root', inputDisabled: true }}
-      `('it displays correct information for $type', ({ access, details }) => {
-        beforeEach(async () => {
-          createComponent();
-          findEnvironmentsListbox().vm.$emit('select', 'production');
-          findApproverDropdown().vm.$emit('hidden', [access]);
-          await waitForPromises();
-          await nextTick();
-        });
-
-        if (details.href) {
-          it('should link to the entity', () => {
-            const link = wrapper.findByRole('link', { name: details.name });
-            expect(link.attributes('href')).toBe(details.href);
-          });
-        } else {
-          it('should display the name of the entity', () => {
-            expect(wrapper.text()).toContain(details.name);
-          });
-        }
-
-        if (details.avatarUrl) {
-          it('should show an avatar', () => {
-            const avatar = wrapper.findComponent(GlAvatar);
-            expect(avatar.props('src')).toBe(details.avatarUrl);
-          });
-        }
-
-        if (details.inputDisabled) {
-          it('should have the input disabled and set to 1', () => {
-            const input = findRequredCountForApprover(details.name);
-            expect(input.element.value).toBe('1');
-            expect(input.attributes('disabled')).toBeDefined();
-          });
-        } else {
-          it('should not have the input disabled and set to 0', () => {
-            const input = findRequredCountForApprover(details.name);
-            expect(input.element.value).toBe('1');
-            expect(input.attributes('disabled')).toBeUndefined();
-          });
-        }
       });
     });
   });
