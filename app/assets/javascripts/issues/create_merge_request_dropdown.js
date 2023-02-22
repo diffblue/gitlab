@@ -546,11 +546,7 @@ export default class CreateMergeRequestDropdown {
     // target - 'branch' or 'ref' - which the input field we are searching a ref for.
     // ref - string - what a user typed.
     // result - string - what has been found on backend.
-    this.branchIsValid = true;
-    this.refIsValid = true;
-
     if (target === INPUT_TARGET_BRANCH) this.updateTargetBranchInput(ref, result);
-
     if (target === INPUT_TARGET_REF) this.updateRefInput(ref, result);
 
     if (this.inputsAreValid()) {
@@ -561,8 +557,9 @@ export default class CreateMergeRequestDropdown {
   }
 
   updateRefInput(ref, result) {
+    this.refInput.dataset.value = ref;
     if (ref === result) {
-      this.refInput.dataset.value = ref;
+      this.refIsValid = true;
       this.showAvailableMessage(INPUT_TARGET_REF);
       this.updateCreatePaths(INPUT_TARGET_REF, ref);
     } else {
@@ -582,8 +579,8 @@ export default class CreateMergeRequestDropdown {
   updateTargetBranchInput(ref, result) {
     const branchNameErrors = findInvalidBranchNameCharacters(ref);
     const isInvalidString = branchNameErrors.length;
-
     if (ref !== result && !isInvalidString) {
+      this.branchIsValid = true;
       // If a found branch equals exact the same text a user typed,
       // Or user typed input contains invalid chars,
       // that means a new branch cannot be created as it already exists.

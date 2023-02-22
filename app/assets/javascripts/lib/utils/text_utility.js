@@ -555,20 +555,16 @@ export const findInvalidBranchNameCharacters = (name) => {
  * @return {String} Error message describing on the invalid characters found
  */
 export const humanizeBranchValidationErrors = (invalidChars = []) => {
-  let msg = '';
-
   const chars = invalidChars.filter((c) => INVALID_BRANCH_NAME_CHARS.includes(c));
-  if (!chars.length) return '';
 
-  if (chars.includes(' ')) {
-    msg =
-      chars.length > 1
-        ? sprintf(__("Can't contain spaces, %{chars}"), {
-            chars: chars.filter((c) => c !== ' ').join(', '),
-          })
-        : __("Can't contain spaces");
-  } else {
-    msg = sprintf(__("Can't contain %{chars}"), { chars: chars.join(', ') });
+  if (chars.length && !chars.includes(' ')) {
+    return sprintf(__("Can't contain %{chars}"), { chars: chars.join(', ') });
+  } else if (chars.includes(' ') && chars.length <= 1) {
+    return __("Can't contain spaces");
+  } else if (chars.includes(' ') && chars.length > 1) {
+    return sprintf(__("Can't contain spaces, %{chars}"), {
+      chars: chars.filter((c) => c !== ' ').join(', '),
+    });
   }
-  return msg;
+  return '';
 };
