@@ -24,14 +24,14 @@ import {
   STATUS_OPEN,
   TYPE_EPIC,
   TYPE_ISSUE,
-  WorkspaceType,
+  WORKSPACE_PROJECT,
 } from '~/issues/constants';
 import epicUtils from '../utils/epic_utils';
 
 export default {
   TYPE_EPIC,
   TYPE_ISSUE,
-  WorkspaceType,
+  WORKSPACE_PROJECT,
   deleteModalId: 'delete-modal-id',
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -123,7 +123,7 @@ export default {
         <confidentiality-badge
           v-if="confidential"
           data-testid="confidential-icon"
-          :workspace-type="$options.WorkspaceType.project"
+          :workspace-type="$options.WORKSPACE_PROJECT"
           :issuable-type="$options.TYPE_ISSUE"
         />
         {{ __('Created') }}
