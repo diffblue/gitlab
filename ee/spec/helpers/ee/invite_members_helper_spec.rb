@@ -163,35 +163,6 @@ RSpec.describe EE::InviteMembersHelper, feature_category: :onboarding do
           end
         end
       end
-
-      context 'with the invite_for_help_continuous_onboarding experiment' do
-        where(:invite_continuous_onboarding?, :logged_in?, :expected?) do
-          true  | true  | true
-          true  | false | false
-          false | true  | false
-          false | false | false
-        end
-
-        with_them do
-          before do
-            allow(helper).to receive(:current_user).and_return(developer) if logged_in?
-            stub_experiments(invite_for_help_continuous_onboarding: :candidate) if invite_continuous_onboarding?
-          end
-
-          context 'when the source is a project' do
-            let(:source) { project }
-
-            it_behaves_like 'including the tasks to be done attributes'
-          end
-
-          context 'when the source is a group' do
-            let(:source) { group }
-            let(:expected?) { false }
-
-            it_behaves_like 'including the tasks to be done attributes'
-          end
-        end
-      end
     end
 
     context 'when a namespace has an active trial' do

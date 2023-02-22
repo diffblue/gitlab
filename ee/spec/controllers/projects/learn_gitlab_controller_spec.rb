@@ -42,17 +42,6 @@ RSpec.describe Projects::LearnGitlabController, feature_category: :onboarding do
 
         it { is_expected.to have_gitlab_http_status(:not_found) }
       end
-
-      context 'with invite_for_help_continuous_onboarding experiment' do
-        it 'tracks the assignment', :experiment do
-          stub_experiments(invite_for_help_continuous_onboarding: true)
-
-          expect(experiment(:invite_for_help_continuous_onboarding))
-            .to track(:assignment).with_context(namespace: project.namespace).on_next_instance
-
-          action
-        end
-      end
     end
   end
 

@@ -2,7 +2,7 @@ import { GlPopover, GlLink } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { stubExperiments } from 'helpers/experimentation_helper';
-import { mockTracking, triggerEvent, unmockTracking } from 'helpers/tracking_helper';
+import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import eventHub from '~/invite_members/event_hub';
 import LearnGitlabSectionLink from 'ee/pages/projects/learn_gitlab/components/learn_gitlab_section_link.vue';
 import { ACTION_LABELS } from 'ee/pages/projects/learn_gitlab/constants';
@@ -37,9 +37,6 @@ describe('Learn GitLab Section Link', () => {
       }),
     );
   };
-
-  const openInviteMembesrModalLink = () =>
-    wrapper.find('[data-testid="invite-for-help-continuous-onboarding-experiment-link"]');
 
   const findUncompletedLink = () => wrapper.find('[data-testid="uncompleted-learn-gitlab-link"]');
   const findDisabledLink = () => wrapper.findByTestId('disabled-learn-gitlab-link');
@@ -139,34 +136,15 @@ describe('Learn GitLab Section Link', () => {
     });
   });
 
-  describe('rendering a link to open the invite_members modal instead of a regular link', () => {
-    it.each`
-      action           | experimentVariant | showModal
-      ${'userAdded'}   | ${'candidate'}    | ${true}
-      ${'userAdded'}   | ${'control'}      | ${false}
-      ${defaultAction} | ${'candidate'}    | ${false}
-      ${defaultAction} | ${'control'}      | ${false}
-    `(
-      'when the invite_for_help_continuous_onboarding experiment has variant: $experimentVariant and action is $action, the modal link is shown: $showModal',
-      ({ action, experimentVariant, showModal }) => {
-        stubExperiments({ invite_for_help_continuous_onboarding: experimentVariant });
-        createWrapper(action);
-
-        expect(openInviteMembesrModalLink().exists()).toBe(showModal);
-      },
-    );
-  });
-
   describe('clicking the link to open the invite_members modal', () => {
     beforeEach(() => {
       jest.spyOn(eventHub, '$emit').mockImplementation();
 
-      stubExperiments({ invite_for_help_continuous_onboarding: 'candidate' });
-      createWrapper('userAdded');
+      createWrapper('userAdded', { url: '#' });
     });
 
     it('calls the eventHub', () => {
-      openInviteMembesrModalLink().vm.$emit('click');
+      findUncompletedLink().vm.$emit('click');
 
       expect(eventHub.$emit).toHaveBeenCalledWith('openModal', { source: LEARN_GITLAB });
     });
@@ -174,11 +152,10 @@ describe('Learn GitLab Section Link', () => {
     it('tracks the click', async () => {
       const trackingSpy = mockTracking('_category_', wrapper.element, jest.spyOn);
 
-      triggerEvent(openInviteMembesrModalLink().element);
+      findUncompletedLink().trigger('click');
 
       expect(trackingSpy).toHaveBeenCalledWith('_category_', 'click_link', {
         label: 'invite_your_colleagues',
-        property: 'Growth::Activation::Experiment::InviteForHelpContinuousOnboarding',
       });
 
       unmockTracking();

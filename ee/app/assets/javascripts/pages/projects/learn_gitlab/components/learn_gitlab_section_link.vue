@@ -2,7 +2,6 @@
 import { uniqueId } from 'lodash';
 import { GlLink, GlIcon, GlButton, GlPopover, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
 import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
-import { isExperimentVariant } from '~/experimentation/utils';
 import eventHub from '~/invite_members/event_hub';
 import { s__, __ } from '~/locale';
 import { LEARN_GITLAB } from '~/invite_members/constants';
@@ -43,11 +42,6 @@ export default {
     };
   },
   computed: {
-    showInviteModalLink() {
-      return (
-        this.action === 'userAdded' && isExperimentVariant('invite_for_help_continuous_onboarding')
-      );
-    },
     openInNewTab() {
       return ACTION_LABELS[this.action]?.openInNewTab === true || this.value.openInNewTab === true;
     },
@@ -56,8 +50,10 @@ export default {
     },
   },
   methods: {
-    openModal() {
-      eventHub.$emit('openModal', { source: LEARN_GITLAB });
+    openModalIfIsInviteLink() {
+      if (this.action === 'userAdded') {
+        eventHub.$emit('openModal', { source: LEARN_GITLAB });
+      }
     },
     actionLabelValue(value) {
       return ACTION_LABELS[this.action][value];
@@ -73,18 +69,6 @@ export default {
         {{ actionLabelValue('title') }}
         <included-in-trial-indicator v-if="actionLabelValue('trialRequired')" />
       </span>
-      <div v-else-if="showInviteModalLink">
-        <gl-link
-          data-track-action="click_link"
-          :data-track-label="actionLabelValue('trackLabel')"
-          data-track-property="Growth::Activation::Experiment::InviteForHelpContinuousOnboarding"
-          data-testid="invite-for-help-continuous-onboarding-experiment-link"
-          @click="openModal"
-          >{{ actionLabelValue('title') }}</gl-link
-        >
-
-        <included-in-trial-indicator v-if="actionLabelValue('trialRequired')" />
-      </div>
       <div v-else-if="value.enabled">
         <gl-link
           :target="openInNewTab ? '_blank' : '_self'"
@@ -93,6 +77,7 @@ export default {
           data-qa-selector="uncompleted_learn_gitlab_link"
           data-track-action="click_link"
           :data-track-label="actionLabelValue('trackLabel')"
+          @click="openModalIfIsInviteLink"
           >{{ actionLabelValue('title') }}</gl-link
         >
 

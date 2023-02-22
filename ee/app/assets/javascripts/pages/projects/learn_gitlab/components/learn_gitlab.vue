@@ -106,6 +106,7 @@ export default {
   <div>
     <gl-alert
       v-if="showSuccessfulInvitationsAlert"
+      variant="success"
       class="gl-mt-5"
       @dismiss="showSuccessfulInvitationsAlert = false"
     >

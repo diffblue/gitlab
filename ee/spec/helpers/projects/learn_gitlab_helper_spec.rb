@@ -78,7 +78,7 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
           required_mr_approvals_enabled: a_hash_including(url: %r{/learn_gitlab/-/issues/11\z}),
           issue_created: a_hash_including(url: %r{/learn_gitlab/-/issues\z}),
           git_write: a_hash_including(url: %r{/learn_gitlab\z}),
-          user_added: a_hash_including(url: %r{/learn_gitlab/-/project_members\z}),
+          user_added: a_hash_including(url: %r{#\z}),
           merge_request_created: a_hash_including(url: %r{/learn_gitlab/-/merge_requests\z})
         }
       end
