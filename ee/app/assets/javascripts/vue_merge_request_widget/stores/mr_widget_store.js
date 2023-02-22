@@ -2,7 +2,6 @@ import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { s__ } from '~/locale';
 import CEMergeRequestStore from '~/vue_merge_request_widget/stores/mr_widget_store';
 import { DETAILED_MERGE_STATUS } from '~/vue_merge_request_widget/constants';
-import { mapApprovalsResponse, mapApprovalRulesResponse } from '../mappers';
 
 export default class MergeRequestStore extends CEMergeRequestStore {
   constructor(data) {
@@ -29,6 +28,8 @@ export default class MergeRequestStore extends CEMergeRequestStore {
     this.visualReviewAppAvailable = Boolean(data.visual_review_app_available);
     this.appUrl = gon && gon.gitlab_url;
     this.licenseScanning = data.license_scanning;
+    this.requirePasswordToApprove = data.require_password_to_approve;
+    this.mergeRequestApproversAvailable = data.merge_request_approvers_available;
 
     this.initBrowserPerformanceReport(data);
     this.initLoadPerformanceReport(data);
@@ -75,28 +76,17 @@ export default class MergeRequestStore extends CEMergeRequestStore {
     this.geoSecondaryHelpPath = this.geoSecondaryHelpPath || data.geo_secondary_help_path;
   }
 
-  initApprovals() {
-    super.initApprovals();
-
-    this.approvalRules = this.approvalRules || [];
-  }
-
   setApprovals(data) {
     super.setApprovals(data);
 
-    this.approvals = mapApprovalsResponse(data);
-    this.approvalsLeft = Boolean(data.approvals_left);
+    this.approvalsLeft = data.approvalsRequired - data.approvedBy.nodes.length !== 0;
     this.preventMerge = !this.isApproved;
 
     this.setState();
   }
 
-  setApprovalRules(data) {
-    this.approvalRules = mapApprovalRulesResponse(data.rules, this.approvals);
-  }
-
   get hasMergeChecksFailed() {
-    if (this.hasApprovalsAvailable && this.approvals && this.approvalsLeft) {
+    if (this.hasApprovalsAvailable && this.approvalsLeft) {
       return this.detailedMergeStatus === DETAILED_MERGE_STATUS.NOT_APPROVED;
     }
 

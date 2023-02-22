@@ -36,7 +36,7 @@ RSpec.describe Projects::MergeRequestsController, '(JavaScript fixtures in EE co
     context 'when merge request has no approvals' do
       base_input_path = 'vue_merge_request_widget/components/approvals/queries/'
       base_output_path = 'graphql/merge_requests/approvals/'
-      query_name = 'approved_by.query.graphql'
+      query_name = 'approvals.query.graphql'
 
       it "#{base_output_path}#{query_name}_no_approvals.json" do
         query = get_graphql_query_as_string("#{base_input_path}#{query_name}", ee: true)
@@ -50,7 +50,7 @@ RSpec.describe Projects::MergeRequestsController, '(JavaScript fixtures in EE co
     context 'when merge request is approved by current user' do
       base_input_path = 'vue_merge_request_widget/components/approvals/queries/'
       base_output_path = 'graphql/merge_requests/approvals/'
-      query_name = 'approved_by.query.graphql'
+      query_name = 'approvals.query.graphql'
 
       it "#{base_output_path}#{query_name}.json" do
         merge_request.approved_by_users << user
@@ -66,7 +66,7 @@ RSpec.describe Projects::MergeRequestsController, '(JavaScript fixtures in EE co
     context 'when merge request is approved by multiple users' do
       base_input_path = 'vue_merge_request_widget/components/approvals/queries/'
       base_output_path = 'graphql/merge_requests/approvals/'
-      query_name = 'approved_by.query.graphql'
+      query_name = 'approvals.query.graphql'
 
       it "#{base_output_path}#{query_name}_multiple_users.json" do
         merge_request.approved_by_users << user
@@ -97,7 +97,7 @@ RSpec.describe Projects::MergeRequestsController, '(JavaScript fixtures in EE co
     context 'with merge request approval rules' do
       base_input_path = 'vue_merge_request_widget/components/approvals/queries/'
       base_output_path = 'graphql/merge_requests/approvals/'
-      query_name = 'approved_by.query.graphql'
+      query_name = 'approvals.query.graphql'
 
       it "#{base_output_path}#{query_name}_approval_rules.json" do
         stub_licensed_features(multiple_approval_rules: true)
@@ -123,7 +123,7 @@ RSpec.describe Projects::MergeRequestsController, '(JavaScript fixtures in EE co
     context 'with merge request approvals required' do
       base_input_path = 'vue_merge_request_widget/components/approvals/queries/'
       base_output_path = 'graphql/merge_requests/approvals/'
-      query_name = 'approved_by.query.graphql'
+      query_name = 'approvals.query.graphql'
 
       it "#{base_output_path}#{query_name}_approvals_required.json" do
         create(:approval_project_rule, project: project, rule_type: :any_approver, approvals_required: 3)

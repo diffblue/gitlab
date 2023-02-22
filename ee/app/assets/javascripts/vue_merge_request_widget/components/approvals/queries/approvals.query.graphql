@@ -1,3 +1,5 @@
+#import "~/graphql_shared/fragments/user.fragment.graphql"
+
 query approvedByEE($projectPath: ID!, $iid: String!) {
   project(fullPath: $projectPath) {
     id
@@ -5,7 +7,17 @@ query approvedByEE($projectPath: ID!, $iid: String!) {
       id
       approved
       approvalsLeft
+      approvalsRequired
       approvalState {
+        suggestedApprovers {
+          nodes {
+            ...User
+          }
+        }
+        invalidApproversRules {
+          id
+          name
+        }
         rules {
           id
           approved
@@ -16,11 +28,11 @@ query approvedByEE($projectPath: ID!, $iid: String!) {
       }
       approvedBy {
         nodes {
-          id
-          name
-          avatarUrl
-          webUrl
+          ...User
         }
+      }
+      userPermissions {
+        canApprove
       }
     }
   }

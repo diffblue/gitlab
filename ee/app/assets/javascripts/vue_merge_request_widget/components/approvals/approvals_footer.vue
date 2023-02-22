@@ -53,9 +53,6 @@ export default {
     suggestedApproversTrimmed() {
       return this.suggestedApprovers.slice(0, Math.min(5, this.suggestedApprovers.length));
     },
-    shouldShowLoadingSpinner() {
-      return !this.isCollapsed;
-    },
   },
   methods: {
     toggle() {
@@ -72,7 +69,6 @@ export default {
         class="gl-mr-3"
         size="small"
         :aria-label="ariaLabel"
-        :loading="shouldShowLoadingSpinner"
         :icon="angleIcon"
         category="tertiary"
         @click="toggle"
