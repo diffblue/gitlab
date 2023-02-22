@@ -9,6 +9,9 @@ export const TITLE_LENGTH_MAX = 255;
 export const TYPE_EPIC = 'epic';
 export const TYPE_ISSUE = 'issue';
 
+export const WORKSPACE_GROUP = 'group';
+export const WORKSPACE_PROJECT = 'project';
+
 export const IssuableStatusText = {
   [STATUS_CLOSED]: __('Closed'),
   [STATUS_OPEN]: __('Open'),
@@ -28,9 +31,4 @@ export const IssueType = {
   Issue: 'issue',
   Incident: 'incident',
   TestCase: 'test_case',
-};
-
-export const WorkspaceType = {
-  project: 'project',
-  group: 'group',
 };
