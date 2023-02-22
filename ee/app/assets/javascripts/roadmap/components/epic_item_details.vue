@@ -175,7 +175,7 @@ export default {
       >
         {{ expandIconLabel }}
       </gl-tooltip>
-      <div class="overflow-hidden flex-grow-1 mx-2">
+      <div class="flex-grow-1 mx-2 gl-w-13">
         <div class="gl-display-flex gl-mt-1">
           <issuable-blocked-icon
             v-if="epic.blocked"
