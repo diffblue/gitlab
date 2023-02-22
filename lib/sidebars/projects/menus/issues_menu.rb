@@ -68,6 +68,16 @@ module Sidebars
           }
         end
 
+        override :serialize_as_menu_item_args
+        def serialize_as_menu_item_args
+          super.merge({
+            sprite_icon: sprite_icon,
+            pill_count: pill_count,
+            has_pill: has_pill?,
+            super_sidebar_parent: ::Sidebars::StaticMenu
+          })
+        end
+
         private
 
         def show_issues_menu_items?

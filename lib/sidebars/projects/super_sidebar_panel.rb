@@ -12,6 +12,7 @@ module Sidebars
         old_menus = @menus
         @menus = []
 
+        add_menu(Sidebars::StaticMenu.new(context))
         add_menu(Sidebars::Projects::SuperSidebarMenus::PlanMenu.new(context))
         pick_from_old_menus(old_menus, Sidebars::Projects::Menus::RepositoryMenu)
         pick_from_old_menus(old_menus, Sidebars::Projects::Menus::CiCdMenu)
@@ -24,7 +25,7 @@ module Sidebars
         add_menu(Sidebars::UncategorizedMenu.new(context))
         pick_from_old_menus(old_menus, Sidebars::Projects::Menus::SettingsMenu)
 
-        transform_old_menus(@menus, *old_menus)
+        transform_old_menus(@menus, @scope_menu, *old_menus)
       end
 
       override :super_sidebar_context_header

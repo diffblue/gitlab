@@ -25,6 +25,7 @@ RSpec.describe Sidebars::Projects::SuperSidebarPanel, feature_category: :navigat
   describe '#renderable_menus' do
     let(:category_menu) do
       [
+        Sidebars::StaticMenu,
         Sidebars::Projects::SuperSidebarMenus::PlanMenu,
         Sidebars::Projects::Menus::RepositoryMenu,
         Sidebars::Projects::Menus::CiCdMenu,

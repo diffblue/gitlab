@@ -33349,6 +33349,9 @@ msgstr ""
 msgid "Project order will not be saved as local storage is not available."
 msgstr ""
 
+msgid "Project overview"
+msgstr ""
+
 msgid "Project path"
 msgstr ""
 
