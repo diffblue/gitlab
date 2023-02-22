@@ -4,7 +4,7 @@ import eventHub from '~/invite_members/event_hub';
 import { s__ } from '~/locale';
 import { getCookie, removeCookie, parseBoolean } from '~/lib/utils/common_utils';
 import { ON_CELEBRATION_TRACK_LABEL } from '~/invite_members/constants';
-import { ACTION_LABELS, ACTION_SECTIONS, INVITE_MODAL_OPEN_COOKIE } from '../constants';
+import { ACTION_LABELS, INVITE_MODAL_OPEN_COOKIE } from '../constants';
 import LearnGitlabSectionCard from './learn_gitlab_section_card.vue';
 
 export default {
@@ -18,6 +18,8 @@ export default {
     successfulInvitations: s__(
       "LearnGitLab|Your team is growing! You've successfully invited new team members to the %{projectName} project.",
     ),
+    addCodeBlockTitle: s__('LearnGitLab|1. Add code to your project'),
+    buildBlockTitle: s__('LearnGitLab|2. Build'),
   },
   props: {
     actions: {
@@ -26,7 +28,7 @@ export default {
     },
     sections: {
       required: true,
-      type: Object,
+      type: Array,
     },
     project: {
       required: true,
@@ -39,8 +41,13 @@ export default {
       actionsData: this.actions,
     };
   },
-  actionSections: Object.keys(ACTION_SECTIONS),
   computed: {
+    firstBlockSections() {
+      return Object.keys(this.sections[0]);
+    },
+    secondBlockSections() {
+      return Object.keys(this.sections[1]);
+    },
     maxValue() {
       return Object.keys(this.actionsData).length;
     },
@@ -84,8 +91,8 @@ export default {
       );
       return actions;
     },
-    svgFor(section) {
-      return this.sections[section].svg;
+    svgFor(index, section) {
+      return this.sections[index][section].svg;
     },
     markActionAsCompleted(completedAction) {
       Object.keys(this.actionsData).forEach((action) => {
@@ -131,15 +138,42 @@ export default {
       </p>
       <gl-progress-bar :value="progressValue" :max="maxValue" />
     </div>
+
+    <div class="gl-mt-6">
+      <h2 class="gl-font-weight-bold gl-font-size-h2">
+        {{ $options.i18n.addCodeBlockTitle }}
+      </h2>
+    </div>
+
     <div class="row">
       <div
-        v-for="section in $options.actionSections"
+        v-for="section in firstBlockSections"
+        :key="section"
+        class="gl-mt-5 col-sm-12 col-mb-6 col-lg-3"
+      >
+        <learn-gitlab-section-card
+          :section="section"
+          :svg="svgFor(0, section)"
+          :actions="actionsFor(section)"
+        />
+      </div>
+    </div>
+
+    <div class="gl-mt-6">
+      <h2 class="gl-font-weight-bold gl-font-size-h2">
+        {{ $options.i18n.buildBlockTitle }}
+      </h2>
+    </div>
+
+    <div class="row">
+      <div
+        v-for="section in secondBlockSections"
         :key="section"
         class="gl-mt-5 col-sm-12 col-mb-6 col-lg-4"
       >
         <learn-gitlab-section-card
           :section="section"
-          :svg="svgFor(section)"
+          :svg="svgFor(1, section)"
           :actions="actionsFor(section)"
         />
       </div>

@@ -31,23 +31,114 @@ exports[`Learn GitLab renders correctly 1`] = `
       class="gl-text-gray-500 gl-mb-2"
       data-testid="completion-percentage"
     >
-      22% completed
+      30% completed
     </p>
      
     <div
       class="progress"
-      max="9"
-      value="2"
+      max="10"
+      value="3"
     >
       <div
-        aria-valuemax="9"
+        aria-valuemax="10"
         aria-valuemin="0"
-        aria-valuenow="2"
+        aria-valuenow="3"
         class="progress-bar"
         role="progressbar"
-        style="width: 22.22222222222222%;"
+        style="width: 30%;"
       />
     </div>
+  </div>
+   
+  <div
+    class="gl-mt-6"
+  >
+    <h2
+      class="gl-font-weight-bold gl-font-size-h2"
+    >
+      
+      1. Add code to your project
+    
+    </h2>
+  </div>
+   
+  <div
+    class="row"
+  >
+    <div
+      class="gl-mt-5 col-sm-12 col-mb-6 col-lg-3"
+    >
+      <div
+        class="gl-card gl-pt-0 h-100"
+      >
+        <div
+          class="gl-card-header gl-bg-white gl-border-0 gl-pb-0"
+        >
+          <img
+            src="code.svg"
+          />
+           
+          <h2
+            class="gl-font-lg gl-mb-3"
+          >
+            Start with the WebIDE
+          </h2>
+           
+          <p
+            class="gl-text-gray-700 gl-mb-6"
+          >
+            Use the built-in editor to create or upload files.
+          </p>
+        </div>
+         
+        <div
+          class="gl-card-body gl-pt-0"
+        >
+          <div
+            class="gl-mb-4"
+          >
+            <div
+              class="flex align-items-center"
+            >
+              <span
+                class="gl-text-green-500"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-icon s16"
+                  data-testid="completed-icon"
+                  role="img"
+                >
+                  <use
+                    href="#check-circle-filled"
+                  />
+                </svg>
+                
+      Add code
+      
+                <!---->
+              </span>
+               
+              <!---->
+            </div>
+          </div>
+        </div>
+         
+        <!---->
+      </div>
+    </div>
+  </div>
+   
+  <div
+    class="gl-mt-6"
+  >
+    <h2
+      class="gl-font-weight-bold gl-font-size-h2"
+    >
+      
+      2. Build
+    
+    </h2>
   </div>
    
   <div
@@ -270,6 +361,66 @@ exports[`Learn GitLab renders correctly 1`] = `
           class="gl-card-header gl-bg-white gl-border-0 gl-pb-0"
         >
           <img
+            src="deploy.svg"
+          />
+           
+          <h2
+            class="gl-font-lg gl-mb-3"
+          >
+            Deploy
+          </h2>
+           
+          <p
+            class="gl-text-gray-700 gl-mb-6"
+          >
+            Use your new GitLab workflow to deploy your application, monitor its health, and keep it secure:
+          </p>
+        </div>
+         
+        <div
+          class="gl-card-body gl-pt-0"
+        >
+          <div
+            class="gl-mb-4"
+          >
+            <div
+              class="flex align-items-center"
+            >
+              <div>
+                <a
+                  class="gl-link"
+                  data-qa-selector="uncompleted_learn_gitlab_link"
+                  data-testid="uncompleted-learn-gitlab-link"
+                  data-track-action="click_link"
+                  data-track-label="run_a_security_scan_using_ci_cd"
+                  href="https://docs.gitlab.com/ee/foobar/"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Run a Security scan using CI/CD
+                </a>
+                 
+                <!---->
+              </div>
+               
+              <!---->
+            </div>
+          </div>
+        </div>
+         
+        <!---->
+      </div>
+    </div>
+    <div
+      class="gl-mt-5 col-sm-12 col-mb-6 col-lg-4"
+    >
+      <div
+        class="gl-card gl-pt-0 h-100"
+      >
+        <div
+          class="gl-card-header gl-bg-white gl-border-0 gl-pb-0"
+        >
+          <img
             src="plan.svg"
           />
            
@@ -331,66 +482,6 @@ exports[`Learn GitLab renders correctly 1`] = `
                   target="_self"
                 >
                   Submit a merge request (MR)
-                </a>
-                 
-                <!---->
-              </div>
-               
-              <!---->
-            </div>
-          </div>
-        </div>
-         
-        <!---->
-      </div>
-    </div>
-    <div
-      class="gl-mt-5 col-sm-12 col-mb-6 col-lg-4"
-    >
-      <div
-        class="gl-card gl-pt-0 h-100"
-      >
-        <div
-          class="gl-card-header gl-bg-white gl-border-0 gl-pb-0"
-        >
-          <img
-            src="deploy.svg"
-          />
-           
-          <h2
-            class="gl-font-lg gl-mb-3"
-          >
-            Deploy
-          </h2>
-           
-          <p
-            class="gl-text-gray-700 gl-mb-6"
-          >
-            Use your new GitLab workflow to deploy your application, monitor its health, and keep it secure:
-          </p>
-        </div>
-         
-        <div
-          class="gl-card-body gl-pt-0"
-        >
-          <div
-            class="gl-mb-4"
-          >
-            <div
-              class="flex align-items-center"
-            >
-              <div>
-                <a
-                  class="gl-link"
-                  data-qa-selector="uncompleted_learn_gitlab_link"
-                  data-testid="uncompleted-learn-gitlab-link"
-                  data-track-action="click_link"
-                  data-track-label="run_a_security_scan_using_ci_cd"
-                  href="https://docs.gitlab.com/ee/foobar/"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  Run a Security scan using CI/CD
                 </a>
                  
                 <!---->

@@ -1,4 +1,10 @@
 export const testActions = {
+  codeAdded: {
+    url: 'http://example.com/',
+    completed: true,
+    svg: 'http://example.com/images/illustration.svg',
+    enabled: true,
+  },
   gitWrite: {
     url: 'http://example.com/',
     completed: true,
@@ -56,17 +62,24 @@ export const testActions = {
   },
 };
 
-export const testSections = {
-  workspace: {
-    svg: 'workspace.svg',
+export const testSections = [
+  {
+    code: {
+      svg: 'code.svg',
+    },
   },
-  deploy: {
-    svg: 'deploy.svg',
+  {
+    workspace: {
+      svg: 'workspace.svg',
+    },
+    deploy: {
+      svg: 'deploy.svg',
+    },
+    plan: {
+      svg: 'plan.svg',
+    },
   },
-  plan: {
-    svg: 'plan.svg',
-  },
-};
+];
 
 export const testProject = {
   name: 'test-project',
