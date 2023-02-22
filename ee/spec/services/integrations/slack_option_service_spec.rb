@@ -48,6 +48,20 @@ RSpec.describe Integrations::SlackOptionService, feature_category: :integrations
       end
     end
 
+    context 'when action_id is labels' do
+      let(:action_id) { 'labels' }
+
+      it 'executes the label search handler' do
+        label_search_handler = described_class::OPTIONS['labels']
+
+        expect_next_instance_of(label_search_handler, chat_name, 'Search value', 'VHDFR54DSA') do |service|
+          expect(service).to receive(:execute).and_return(ServiceResponse.success)
+        end
+
+        execute
+      end
+    end
+
     context 'when action_id is unknown' do
       let(:action_id) { 'foo' }
 
