@@ -10,5 +10,9 @@ module Security
     has_many :software_license_policies
 
     validates :match_on_inclusion, inclusion: { in: [true, false], message: 'must be a boolean value' }
+
+    def newly_detected?
+      license_states.include?(ApprovalProjectRule::NEWLY_DETECTED)
+    end
   end
 end
