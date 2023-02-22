@@ -21355,6 +21355,9 @@ msgstr ""
 msgid "If enabled, only protected branches will be mirrored."
 msgstr ""
 
+msgid "If the email address is incorrect, you can %{registration_link_start}register again with a different email%{registration_link_end}."
+msgstr ""
+
 msgid "If the number of active users exceeds the user limit, you will be charged for the number of %{users_over_license_link} at your next license reconciliation."
 msgstr ""
 
