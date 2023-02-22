@@ -50,8 +50,8 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
         end
       end
 
-      context 'when metric is invalid' do
-        let(:extra_params) { { metric: 'unknown' } }
+      context 'when metrics is invalid' do
+        let(:extra_params) { { metrics: ['unknown'] } }
 
         it_behaves_like 'request failure' do
           let(:message) { "The metric must be one of #{::Dora::DailyMetrics::AVAILABLE_METRICS.join(',')}." }
@@ -96,7 +96,8 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
 
       let(:container) { project }
       let(:user) { maintainer }
-      let(:params) { { metric: 'deployment_frequency' }.merge(extra_params) }
+      let(:metric) { 'deployment_frequency' }
+      let(:params) { { metrics: [metric] }.merge(extra_params) }
       let(:extra_params) { {} }
 
       before_all do
@@ -115,7 +116,7 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
 
       it 'returns the aggregated data' do
         expect(subject[:status]).to eq(:success)
-        expect(subject[:data]).to eq([{ 'date' => Time.current.to_date.to_s, 'value' => 2 }])
+        expect(subject[:data]).to eq([{ 'date' => Time.current.to_date.to_s, metric => 2 }])
       end
 
       context 'when interval is monthly' do
@@ -123,7 +124,7 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
 
         it 'returns the aggregated data' do
           expect(subject[:status]).to eq(:success)
-          expect(subject[:data]).to eq([{ 'date' => Time.current.beginning_of_month.to_date.to_s, 'value' => 2 }])
+          expect(subject[:data]).to eq([{ 'date' => Time.current.beginning_of_month.to_date.to_s, metric => 2 }])
         end
       end
 
@@ -132,7 +133,7 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
 
         it 'returns the aggregated data' do
           expect(subject[:status]).to eq(:success)
-          expect(subject[:data]).to eq(2)
+          expect(subject[:data]).to eq([{ 'date' => nil, metric => 2 }])
         end
       end
 
@@ -141,7 +142,7 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
 
         it 'returns the aggregated data' do
           expect(subject[:status]).to eq(:success)
-          expect(subject[:data]).to eq([{ 'date' => Time.current.to_date.to_s, 'value' => 1 }])
+          expect(subject[:data]).to eq([{ 'date' => Time.current.to_date.to_s, metric => 1 }])
         end
       end
 
@@ -166,7 +167,8 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
 
       let(:container) { group }
       let(:user) { maintainer }
-      let(:params) { { metric: 'deployment_frequency' }.merge(extra_params) }
+      let(:metric) { 'deployment_frequency' }
+      let(:params) { { metrics: [metric] }.merge(extra_params) }
       let(:extra_params) { {} }
 
       before_all do
@@ -185,7 +187,7 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
 
       it 'returns the aggregated data' do
         expect(subject[:status]).to eq(:success)
-        expect(subject[:data]).to eq([{ 'date' => Time.current.to_date.to_s, 'value' => 3 }])
+        expect(subject[:data]).to eq([{ 'date' => Time.current.to_date.to_s, metric => 3 }])
       end
 
       context 'when interval is monthly' do
@@ -193,7 +195,7 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
 
         it 'returns the aggregated data' do
           expect(subject[:status]).to eq(:success)
-          expect(subject[:data]).to eq([{ 'date' => Time.current.beginning_of_month.to_date.to_s, 'value' => 3 }])
+          expect(subject[:data]).to eq([{ 'date' => Time.current.beginning_of_month.to_date.to_s, metric => 3 }])
         end
       end
 
@@ -202,7 +204,7 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
 
         it 'returns the aggregated data' do
           expect(subject[:status]).to eq(:success)
-          expect(subject[:data]).to eq(3)
+          expect(subject[:data]).to eq([{ 'date' => nil, metric => 3 }])
         end
       end
 
@@ -211,7 +213,7 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
 
         it 'returns the aggregated data' do
           expect(subject[:status]).to eq(:success)
-          expect(subject[:data]).to eq(1)
+          expect(subject[:data]).to eq([{ 'date' => nil, metric => 1 }])
         end
       end
     end
@@ -240,7 +242,8 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
 
         let(:container) { group }
         let(:user) { maintainer }
-        let(:params) { { environment_tiers: ['production'], interval: 'all', metric: 'deployment_frequency' } }
+        let(:metric) { 'deployment_frequency' }
+        let(:params) { { environment_tiers: ['production'], interval: 'all', metrics: [metric] } }
 
         before do
           group.add_maintainer(maintainer)
@@ -252,7 +255,7 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
 
         it 'loads the deployment frequency metrics' do
           expect(subject[:status]).to eq(:success)
-          expect(subject[:data]).to eq(2)
+          expect(subject[:data]).to eq([{ 'date' => nil, metric => 2 }])
         end
       end
     end

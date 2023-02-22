@@ -140,7 +140,7 @@ RSpec.describe Dora::DailyMetrics, type: :model, feature_category: :value_stream
         let(:interval) { described_class::INTERVAL_ALL }
 
         it 'aggregates the rows' do
-          is_expected.to eq({ 'date' => nil, metric => 6 })
+          is_expected.to eq([{ 'date' => nil, metric => 6 }])
         end
       end
 
@@ -186,7 +186,7 @@ RSpec.describe Dora::DailyMetrics, type: :model, feature_category: :value_stream
         let(:interval) { described_class::INTERVAL_ALL }
 
         it 'aggregates the rows' do
-          is_expected.to eq({ 'date' => nil, metric => 0.5 })
+          is_expected.to eq([{ 'date' => nil, metric => 0.5 }])
         end
       end
 
@@ -235,7 +235,7 @@ RSpec.describe Dora::DailyMetrics, type: :model, feature_category: :value_stream
         let(:interval) { described_class::INTERVAL_ALL }
 
         it 'calculates the median' do
-          is_expected.to eq({ 'date' => nil, metric => 70 })
+          is_expected.to eq([{ 'date' => nil, metric => 70 }])
         end
       end
 
@@ -295,7 +295,7 @@ RSpec.describe Dora::DailyMetrics, type: :model, feature_category: :value_stream
         let(:interval) { described_class::INTERVAL_ALL }
 
         it 'aggregates the rows' do
-          is_expected.to match_array({ 'date' => nil, 'deployment_frequency' => 6, 'change_failure_rate' => be_within(0.005).of(4.0 / 6) })
+          is_expected.to match_array([{ 'date' => nil, 'deployment_frequency' => 6, 'change_failure_rate' => be_within(0.005).of(4.0 / 6) }])
         end
       end
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::ChangeFailureRate do
+RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::ChangeFailureRate, feature_category: :devops_reports do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:stage) { build(:cycle_analytics_stage, project: project) }
@@ -30,7 +30,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::ChangeFailureRate do
   context 'when the DORA service returns 0 as value' do
     it 'returns "0" value' do
       expect_next_instance_of(Dora::AggregateMetricsService) do |service|
-        expect(service).to receive(:execute).and_return({ status: :success, data: 0 })
+        expect(service).to receive(:execute).and_return({ status: :success, data: [{ 'change_failure_rate' => 0 }] })
       end
 
       expect(result.to_s).to eq('0')
@@ -40,7 +40,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::ChangeFailureRate do
   context 'when the DORA service returns the value' do
     it 'returns the value in days' do
       expect_next_instance_of(Dora::AggregateMetricsService) do |service|
-        expect(service).to receive(:execute).and_return({ status: :success, data: 0.85 })
+        expect(service).to receive(:execute).and_return({ status: :success, data: [{ 'change_failure_rate' => 0.85 }] })
       end
 
       expect(result.to_s).to eq('85.0')

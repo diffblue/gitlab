@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::LeadTimeForChanges do
+RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::LeadTimeForChanges, feature_category: :devops_reports do
   let(:stage) { build(:cycle_analytics_stage) }
   let(:user) { build(:user) }
 
@@ -45,7 +45,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::LeadTimeForChanges do
   context 'when the DORA service returns 0 as the lead time for changes' do
     it 'returns "none" value' do
       expect_next_instance_of(Dora::AggregateMetricsService) do |service|
-        expect(service).to receive(:execute).and_return({ status: :success, data: 0 })
+        expect(service).to receive(:execute).and_return({ status: :success, data: [{ 'lead_time_for_changes' => 0 }] })
       end
 
       expect(result.to_s).to eq('-')
@@ -55,7 +55,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::LeadTimeForChanges do
   context 'when the DORA service returns the lead time for changes as seconds' do
     it 'returns the value in days' do
       expect_next_instance_of(Dora::AggregateMetricsService) do |service|
-        expect(service).to receive(:execute).and_return({ status: :success, data: 5.days.to_i })
+        expect(service).to receive(:execute).and_return({ status: :success,
+data: [{ 'lead_time_for_changes' => 5.days.to_i }] })
       end
 
       expect(result.to_s).to eq('5.0')

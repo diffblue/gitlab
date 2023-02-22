@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::LeadTime do
+RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::LeadTime, feature_category: :devops_reports do
   let(:stage) { build(:cycle_analytics_stage) }
   let(:user) { build(:user) }
 

@@ -20,7 +20,7 @@ module Gitlab
               metric = dora_metric
 
               # nil signals the summary class to not even try to serialize the result
-              metric[:status] == :success ? convert_to_days(metric[:data]) : nil
+              convert_to_days(metric[:data].first[metric_key]) if metric[:status] == :success
             end
           end
 
@@ -42,7 +42,7 @@ module Gitlab
               end_date: to,
               interval: 'all',
               environment_tiers: %w[production],
-              metric: metric_key
+              metrics: [metric_key]
             }
 
             params[:group_project_ids] = options[:projects] if options[:projects].present?
