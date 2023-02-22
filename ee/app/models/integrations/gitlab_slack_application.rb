@@ -29,11 +29,7 @@ module Integrations
     end
 
     def description
-      if Feature.enabled?(:integration_slack_app_notifications, project)
-        s_('Integrations|Enable slash commands and notifications for a Slack workspace.')
-      else
-        s_('Integrations|Enable GitLab.com slash commands in a Slack workspace.')
-      end
+      s_('Integrations|Enable slash commands and notifications for a Slack workspace.')
     end
 
     def self.to_param
@@ -52,11 +48,11 @@ module Integrations
       { success: failures.blank?, result: failures }
     end
 
-    # The form fields of this integration are visible only after the Slack App installation
+    # The form fields of this integration are editable only after the Slack App installation
     # flow has been completed, which causes the integration to become activated/enabled.
     override :editable?
     def editable?
-      activated? && Feature.enabled?(:integration_slack_app_notifications, project)
+      activated?
     end
 
     override :fields
@@ -105,13 +101,6 @@ module Integrations
     end
 
     private
-
-    override :should_execute?
-    def should_execute?(_data)
-      return false unless Feature.enabled?(:integration_slack_app_notifications, project)
-
-      super
-    end
 
     override :notify
     def notify(message, opts)

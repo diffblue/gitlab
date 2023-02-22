@@ -81,16 +81,6 @@ RSpec.describe Integrations::GitlabSlackApplication, feature_category: :integrat
       expect(integration.execute(data)).to be true
     end
 
-    context 'when the flag is disabled' do
-      before do
-        stub_feature_flags(integration_slack_app_notifications: false)
-      end
-
-      it 'does not notify Slack' do
-        expect(integration.execute(data)).to be false
-      end
-    end
-
     context 'when the integration is not configured for event' do
       before do
         integration.push_channel = nil
@@ -193,49 +183,6 @@ RSpec.describe Integrations::GitlabSlackApplication, feature_category: :integrat
     end
   end
 
-  context 'when the integration is active' do
-    before do
-      subject.active = true
-    end
-
-    context 'when the feature flag is disabled' do
-      before do
-        stub_feature_flags(integration_slack_app_notifications: false)
-      end
-
-      it 'is not editable, and presents no editable fields' do
-        expect(subject).not_to be_editable
-        expect(subject.fields).to be_empty
-        expect(subject.configurable_events).to be_empty
-      end
-
-      it 'does not include sections' do
-        section_types = subject.sections.pluck(:type)
-
-        expect(section_types).to be_empty
-      end
-    end
-
-    context 'when the feature flag is enabled' do
-      it 'is editable, and presents editable fields' do
-        expect(subject).to be_editable
-        expect(subject.fields).not_to be_empty
-        expect(subject.configurable_events).not_to be_empty
-      end
-
-      it 'includes the expected sections' do
-        section_types = subject.sections.pluck(:type)
-
-        expect(section_types).to eq(
-          [
-            described_class::SECTION_TYPE_TRIGGER,
-            described_class::SECTION_TYPE_CONFIGURATION
-          ]
-        )
-      end
-    end
-  end
-
   describe '#test' do
     let(:integration) { build(:gitlab_slack_application_integration) }
 
@@ -323,6 +270,29 @@ RSpec.describe Integrations::GitlabSlackApplication, feature_category: :integrat
     end
   end
 
+  context 'when the integration is active' do
+    before do
+      subject.active = true
+    end
+
+    it 'is editable, and presents editable fields' do
+      expect(subject).to be_editable
+      expect(subject.fields).not_to be_empty
+      expect(subject.configurable_events).not_to be_empty
+    end
+
+    it 'includes the expected sections' do
+      section_types = subject.sections.pluck(:type)
+
+      expect(section_types).to eq(
+        [
+          described_class::SECTION_TYPE_TRIGGER,
+          described_class::SECTION_TYPE_CONFIGURATION
+        ]
+      )
+    end
+  end
+
   context 'when the integration is not active' do
     before do
       subject.active = false
@@ -342,13 +312,7 @@ RSpec.describe Integrations::GitlabSlackApplication, feature_category: :integrat
   end
 
   describe '#description' do
-    it 'mentions notifications only when the flag is disabled' do
-      expect(subject.description).to include('notifications')
-
-      stub_feature_flags(integration_slack_app_notifications: false)
-
-      expect(subject.description).not_to include('notifications')
-    end
+    specify { expect(subject.description).to be_present }
   end
 
   describe '#upgrade_needed?' do
