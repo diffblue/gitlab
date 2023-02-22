@@ -66,7 +66,8 @@ module Integrations
             "description": description,
             "escalation_status": { status: status },
             "issue_type": "incident",
-            "assignee_ids": [assignee]
+            "assignee_ids": [assignee],
+            "label_ids": labels
           }
         end
 
@@ -150,6 +151,10 @@ module Integrations
           end
 
           member.user_id
+        end
+
+        def labels
+          values.dig(:label_selector, :labels, :selected_options)&.pluck(:value)
         end
       end
     end

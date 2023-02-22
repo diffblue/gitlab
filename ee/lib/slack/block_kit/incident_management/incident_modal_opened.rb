@@ -22,6 +22,7 @@ module Slack
               title_block,
               details_selection_block,
               status_and_assignee_block,
+              label_block,
               confidential_block,
               incident_description_block,
               zoom_link_block
@@ -176,6 +177,25 @@ module Slack
             "placeholder": {
               "type": "plain_text",
               "text": s_("Assignee (optional)")
+            }
+          }
+        end
+
+        def label_block
+          {
+            "type": "input",
+            "block_id": "label_selector",
+            "label": {
+              "type": "plain_text",
+              "text": s_("Labels")
+            },
+            "element": {
+              "type": "multi_external_select",
+              "action_id": "labels",
+              "placeholder": {
+                "type": "plain_text",
+                "text": s_("Select labels (optional)")
+              }
             }
           }
         end

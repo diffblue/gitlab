@@ -5,7 +5,8 @@ module Integrations
     UnknownOptionError = Class.new(StandardError)
 
     OPTIONS = {
-      'assignee' => SlackOptions::UserSearchHandler
+      'assignee' => SlackOptions::UserSearchHandler,
+      'labels' => SlackOptions::LabelSearchHandler
     }.freeze
 
     def initialize(params)

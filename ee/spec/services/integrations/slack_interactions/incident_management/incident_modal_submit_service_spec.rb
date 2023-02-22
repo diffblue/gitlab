@@ -26,6 +26,8 @@ RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModa
     let(:severity) { {} }
     let(:status) { '' }
     let(:assignee_id) { nil }
+    let(:selected_label_ids) { [] }
+    let(:label_ids) { { selected_options: selected_label_ids } }
     let(:confidential_selected_options) { [] }
     let(:confidential) { { selected_options: confidential_selected_options } }
     let(:title) { 'Incident title' }
@@ -83,6 +85,9 @@ RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModa
                     value: assignee_id
                   }
                 }
+              },
+              label_selector: {
+                labels: label_ids
               }
             }
           }
@@ -239,6 +244,24 @@ RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModa
 
             expect(incident.assignees).to be_empty
           end
+        end
+      end
+
+      context 'with label ids' do
+        let_it_be(:project_label1) { create(:label, project: project, title: 'Label 1') }
+        let_it_be(:project_label2) { create(:label, project: project, title: 'Label 2') }
+
+        let(:selected_label_ids) do
+          [
+            { value: project_label1.id.to_s },
+            { value: project_label2.id.to_s }
+          ]
+        end
+
+        it 'assigns the label to the incident' do
+          incident = execute_service[:incident]
+
+          expect(incident.labels).to contain_exactly(project_label1, project_label2)
         end
       end
 
