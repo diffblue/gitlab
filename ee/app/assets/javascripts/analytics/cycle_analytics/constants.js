@@ -3,8 +3,6 @@ import { METRIC_TYPE_SUMMARY, METRIC_TYPE_TIME_SUMMARY } from '~/api/analytics_a
 import { OVERVIEW_STAGE_ID } from '~/analytics/cycle_analytics/constants';
 import { __, s__ } from '~/locale';
 
-export const EVENTS_LIST_ITEM_LIMIT = 50;
-
 export const TASKS_BY_TYPE_SUBJECT_ISSUE = 'Issue';
 export const TASKS_BY_TYPE_SUBJECT_MERGE_REQUEST = 'MergeRequest';
 export const TASKS_BY_TYPE_MAX_LABELS = 15;

@@ -69,7 +69,6 @@ export const LABEL_BUY_ADDITIONAL_MINUTES = s__('UsageQuota|Buy additional minut
 export const LABEL_CI_MINUTES_DISABLED = s__(
   'UsageQuota|%{linkStart}Shared runners%{linkEnd} are disabled, so there are no limits set on pipeline usage',
 );
-export const USAGE_QUOTAS_HELP_LINK = helpPagePath('user/usage_quotas');
 export const ADDITIONAL_MINUTES_HELP_LINK = helpPagePath('ci/pipelines/cicd_minutes', {
   anchor: 'purchase-additional-cicd-minutes-free-saas',
 });

@@ -36,8 +36,6 @@ export const APPROVAL_RULE_CONFIGS = {
   },
 };
 
-export const APPROVALS_HELP_PATH = 'user/project/merge_requests/approvals/settings';
-
 export const APPROVAL_SETTINGS_I18N = {
   learnMore: __('Learn more.'),
   approvalSettingsHeader: __('Approval settings'),

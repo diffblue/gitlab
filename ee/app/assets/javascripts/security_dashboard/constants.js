@@ -14,13 +14,9 @@ export const DOC_PATH_VULNERABILITY_DETAILS = helpPagePath(
 export const DOC_PATH_VULNERABILITY_REPORT = helpPagePath(
   'user/application_security/vulnerability_report/index',
 );
-export const DOC_PATH_SECURITY_DASHBOARD = helpPagePath(
-  'user/application_security/security_dashboard/index',
-);
 export const DOC_PATH_SECURITY_CONFIGURATION = helpPagePath(
   'user/application_security/configuration/index',
 );
-export const DOC_PATH_POLICIES = helpPagePath('user/application_security/policies/index');
 export const DOC_PATH_SECURITY_SCANNER_INTEGRATION_REPORT = helpPagePath(
   'development/integrations/secure',
   { anchor: 'report' },

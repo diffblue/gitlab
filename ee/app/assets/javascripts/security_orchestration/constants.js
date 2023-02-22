@@ -1,8 +1,4 @@
-import { __ } from '~/locale';
-
 export const DEFAULT_ASSIGNED_POLICY_PROJECT = { fullPath: '', branch: '' };
-
-export const LOADING_TEXT = __('Loading...');
 
 export const PAGE_SIZE = 20;
 

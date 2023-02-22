@@ -7,9 +7,3 @@ export const LEVEL_TYPES = {
   USER: 'user',
   GROUP: 'group',
 };
-
-export const LEVEL_ID_PROP = {
-  ROLE: 'access_level',
-  USER: 'user_id',
-  GROUP: 'group_id',
-};
