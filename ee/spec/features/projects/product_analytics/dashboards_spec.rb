@@ -36,7 +36,7 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
     end
 
     it do
-      expect(page).to have_content(s_('Product Analytics|Analyze your product with Product Analytics'))
+      expect(page).to have_content(s_('ProductAnalytics|Analyze your product with Product Analytics'))
     end
   end
 
@@ -46,7 +46,7 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
     end
 
     it do
-      expect(page).to have_content(s_('Product Analytics|Instrument your application'))
+      expect(page).to have_content(s_('ProductAnalytics|Instrument your application'))
     end
   end
 
@@ -108,9 +108,9 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
             end
 
             it 'renders the creating instance loading screen and then the setup page' do
-              click_button s_('Product Analytics|Set up product analytics')
+              click_button s_('ProductAnalytics|Set up product analytics')
 
-              expect(page).to have_content(s_('Product Analytics|Creating your product analytics instance...'))
+              expect(page).to have_content(s_('ProductAnalytics|Creating your product analytics instance...'))
 
               wait_for_requests
 
@@ -118,13 +118,13 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
               project.reload
 
               travel_to(1.minute.from_now) do
-                expect(page).to have_content(s_('Product Analytics|Instrument your application'))
+                expect(page).to have_content(s_('ProductAnalytics|Instrument your application'))
               end
             end
 
             context 'when a new instance has already been initialized' do
               it 'renders an error alert when setting up a new instance' do
-                click_button s_('Product Analytics|Set up product analytics')
+                click_button s_('ProductAnalytics|Set up product analytics')
 
                 expect(find('[data-testid="alert-danger"]'))
                   .to have_text(/Product analytics initialization is already (completed|in progress)/)
@@ -185,7 +185,7 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
 
             it 'renders the dashboard view after polling' do
               travel_to(1.minute.from_now) do
-                expect(page).to have_content(s_('Product Analytics|Instrument your application'))
+                expect(page).to have_content(s_('ProductAnalytics|Instrument your application'))
               end
 
               stub_cube_proxy_success
