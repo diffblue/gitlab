@@ -13,9 +13,9 @@ import {
 } from '@gitlab/ui';
 import { kebabCase } from 'lodash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { isScopedLabel } from '~/lib/utils/common_utils';
 import { __, n__, sprintf } from '~/locale';
-import { Namespace } from '../constants';
 import iterationIssuesQuery from '../queries/iteration_issues.query.graphql';
 import iterationIssuesWithLabelFilterQuery from '../queries/iteration_issues_with_label_filter.query.graphql';
 
@@ -117,8 +117,8 @@ export default {
     namespaceType: {
       type: String,
       required: false,
-      default: Namespace.Group,
-      validator: (value) => Object.values(Namespace).includes(value),
+      default: WORKSPACE_GROUP,
+      validator: (value) => [WORKSPACE_GROUP, WORKSPACE_PROJECT].includes(value),
     },
   },
   data() {
@@ -156,7 +156,7 @@ export default {
       const vars = {
         fullPath: this.fullPath,
         id: getIdFromGraphQLId(this.iterationId),
-        isGroup: this.namespaceType === Namespace.Group,
+        isGroup: this.namespaceType === WORKSPACE_GROUP,
         labelName: this.label.title,
       };
 

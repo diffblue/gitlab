@@ -11,10 +11,11 @@ import {
   GlSkeletonLoader,
 } from '@gitlab/ui';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { fetchPolicies } from '~/lib/graphql';
 import { __, s__ } from '~/locale';
 import { getIterationPeriod } from '../utils';
-import { Namespace, iterationSortDesc } from '../constants';
+import { iterationSortDesc } from '../constants';
 import groupQuery from '../queries/group_iterations_in_cadence.query.graphql';
 import projectQuery from '../queries/project_iterations_in_cadence.query.graphql';
 import TimeboxStatusBadge from './timebox_status_badge.vue';
@@ -120,10 +121,10 @@ export default {
   },
   computed: {
     query() {
-      if (this.namespaceType === Namespace.Group) {
+      if (this.namespaceType === WORKSPACE_GROUP) {
         return groupQuery;
       }
-      if (this.namespaceType === Namespace.Project) {
+      if (this.namespaceType === WORKSPACE_PROJECT) {
         return projectQuery;
       }
       throw new Error('Must provide a namespaceType');

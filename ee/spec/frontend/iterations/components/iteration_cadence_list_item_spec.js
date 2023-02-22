@@ -5,7 +5,7 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import IterationCadenceListItem from 'ee/iterations/components/iteration_cadence_list_item.vue';
 import TimeboxStatusBadge from 'ee/iterations/components/timebox_status_badge.vue';
-import { Namespace, iterationSortDesc } from 'ee/iterations/constants';
+import { iterationSortDesc } from 'ee/iterations/constants';
 import { getIterationPeriod } from 'ee/iterations/utils';
 import groupIterationsInCadenceQuery from 'ee/iterations/queries/group_iterations_in_cadence.query.graphql';
 import projectIterationsInCadenceQuery from 'ee/iterations/queries/project_iterations_in_cadence.query.graphql';
@@ -13,6 +13,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended as mount } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { automaticIterationCadence } from '../mock_data';
 
 const { i18n } = IterationCadenceListItem;
@@ -97,7 +98,7 @@ describe('Iteration cadence list item', () => {
     canEditCadence,
     currentRoute,
     cadence = automaticIterationCadence,
-    namespaceType = Namespace.Group,
+    namespaceType = WORKSPACE_GROUP,
     query = groupIterationsInCadenceQuery,
     resolverMock = jest.fn().mockResolvedValue(querySuccessResponse),
   } = {}) {
@@ -156,11 +157,11 @@ describe('Iteration cadence list item', () => {
 
   it.each([
     {
-      namespaceType: Namespace.Group,
+      namespaceType: WORKSPACE_GROUP,
       query: groupIterationsInCadenceQuery,
     },
     {
-      namespaceType: Namespace.Project,
+      namespaceType: WORKSPACE_PROJECT,
       query: projectIterationsInCadenceQuery,
     },
   ])('uses DESC sort order for closed iterations', async (params) => {
@@ -297,7 +298,7 @@ describe('Iteration cadence list item', () => {
 
   it('loads project iterations for Project namespaceType', async () => {
     await createComponent({
-      namespaceType: Namespace.Project,
+      namespaceType: WORKSPACE_PROJECT,
       query: projectIterationsInCadenceQuery,
     });
 

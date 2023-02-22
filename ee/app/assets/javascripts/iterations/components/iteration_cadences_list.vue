@@ -1,9 +1,9 @@
 <script>
 import { GlAlert, GlButton, GlLoadingIcon, GlKeysetPagination, GlTab, GlTabs } from '@gitlab/ui';
 import produce from 'immer';
+import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { Namespace } from '../constants';
 import destroyIterationCadence from '../queries/destroy_cadence.mutation.graphql';
 import groupQuery from '../queries/group_iteration_cadences_list.query.graphql';
 import projectQuery from '../queries/project_iteration_cadences_list.query.graphql';
@@ -59,10 +59,10 @@ export default {
   },
   computed: {
     query() {
-      if (this.namespaceType === Namespace.Group) {
+      if (this.namespaceType === WORKSPACE_GROUP) {
         return groupQuery;
       }
-      if (this.namespaceType === Namespace.Project) {
+      if (this.namespaceType === WORKSPACE_PROJECT) {
         return projectQuery;
       }
       throw new Error('Must provide a namespaceType');
