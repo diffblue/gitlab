@@ -4798,13 +4798,28 @@ msgstr ""
 msgid "Append the comment with %{tableflip}"
 msgstr ""
 
+msgid "AppleAppStore|Drag your Private Key file here or %{linkStart}click to upload%{linkEnd}."
+msgstr ""
+
+msgid "AppleAppStore|Drop your Private Key file to start the upload."
+msgstr ""
+
+msgid "AppleAppStore|Error: You are trying to upload something other than a Private Key file."
+msgstr ""
+
+msgid "AppleAppStore|Leave empty to use your current Private Key."
+msgstr ""
+
 msgid "AppleAppStore|The Apple App Store Connect Issuer ID."
 msgstr ""
 
 msgid "AppleAppStore|The Apple App Store Connect Key ID."
 msgstr ""
 
-msgid "AppleAppStore|The Apple App Store Connect Private Key."
+msgid "AppleAppStore|The Apple App Store Connect Private Key (.p8)"
+msgstr ""
+
+msgid "AppleAppStore|Upload a new Apple App Store Connect Private Key (replace %{currentFileName})"
 msgstr ""
 
 msgid "AppleAppStore|Use GitLab to build and release an app in the Apple App Store."
@@ -22860,6 +22875,12 @@ msgstr ""
 msgid "Integrations|Default settings are inherited from the instance level."
 msgstr ""
 
+msgid "Integrations|Drag your file here or %{linkStart}click to upload%{linkEnd}."
+msgstr ""
+
+msgid "Integrations|Drop your file to start the upload."
+msgstr ""
+
 msgid "Integrations|Edit project alias"
 msgstr ""
 
@@ -22879,6 +22900,9 @@ msgid "Integrations|Ensure your instance URL is correct and your instance is con
 msgstr ""
 
 msgid "Integrations|Enter your alias"
+msgstr ""
+
+msgid "Integrations|Error: You are trying to upload something other than an allowed file."
 msgstr ""
 
 msgid "Integrations|Failed to link namespace. Please try again."
