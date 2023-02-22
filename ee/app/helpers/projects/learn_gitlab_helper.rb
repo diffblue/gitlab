@@ -2,6 +2,7 @@
 
 module Projects
   module LearnGitlabHelper
+    IMAGE_PATH_CODE = "learn_gitlab/section_code.svg"
     IMAGE_PATH_PLAN = "learn_gitlab/section_plan.svg"
     IMAGE_PATH_DEPLOY = "learn_gitlab/section_deploy.svg"
     IMAGE_PATH_WORKSPACE = "learn_gitlab/section_workspace.svg"
@@ -26,15 +27,14 @@ module Projects
     private
 
     def onboarding_actions_data(project)
-      onboarding_progress = Onboarding::Progress.find_by(namespace: project.namespace) # rubocop: disable CodeReuse/ActiveRecord
-      attributes = onboarding_progress.attributes.symbolize_keys
+      onboarding_completion = Onboarding::Completion.new(project)
 
       data = action_urls(project).to_h do |action, url|
         [
           action,
           {
             url: url,
-            completed: attributes[Onboarding::Progress.column_name(action)].present?,
+            completed: onboarding_completion.completed?(Onboarding::Progress.column_name(action)),
             enabled: true
           }
         ]
@@ -46,6 +46,12 @@ module Projects
           s_('LearnGitlab|Contact your administrator to start a free Ultimate trial.')
       end
 
+      data[:code_added] = {
+        url: CGI.unescape(ide_project_edit_path(project.full_path, learn_gitlab_source: true)),
+        completed: onboarding_completion.completed?(:code_added),
+        enabled: true
+      }
+
       data
     end
 
@@ -55,17 +61,24 @@ module Projects
     end
 
     def onboarding_sections_data
-      {
-        workspace: {
-          svg: image_path(IMAGE_PATH_WORKSPACE)
+      [
+        {
+          code: {
+            svg: image_path(IMAGE_PATH_CODE)
+          }
         },
-        plan: {
-          svg: image_path(IMAGE_PATH_PLAN)
-        },
-        deploy: {
-          svg: image_path(IMAGE_PATH_DEPLOY)
+        {
+          workspace: {
+            svg: image_path(IMAGE_PATH_WORKSPACE)
+          },
+          plan: {
+            svg: image_path(IMAGE_PATH_PLAN)
+          },
+          deploy: {
+            svg: image_path(IMAGE_PATH_DEPLOY)
+          }
         }
-      }
+      ]
     end
 
     def onboarding_project_data(project)

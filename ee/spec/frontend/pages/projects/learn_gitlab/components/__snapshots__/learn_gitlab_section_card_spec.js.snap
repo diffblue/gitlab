@@ -23,6 +23,10 @@ exports[`Learn GitLab Section Card renders correctly 1`] = `
     Complete these tasks first so you can enjoy GitLab's features to their fullest:
   </p>
   <learn-gitlab-section-link-stub
+    action="codeAdded"
+    value="[object Object]"
+  />
+  <learn-gitlab-section-link-stub
     action="userAdded"
     value="[object Object]"
   />

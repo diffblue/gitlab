@@ -1,6 +1,13 @@
 import { s__ } from '~/locale';
 
 export const ACTION_LABELS = {
+  codeAdded: {
+    title: s__('LearnGitLab|Add code'),
+    trackLabel: 'add_code',
+    section: 'code',
+    position: 0,
+    openInNewTab: true,
+  },
   gitWrite: {
     title: s__('LearnGitLab|Create a repository'),
     actionLabel: s__('LearnGitLab|Create a repository'),
@@ -110,6 +117,10 @@ export const ACTION_LABELS = {
 };
 
 export const ACTION_SECTIONS = {
+  code: {
+    title: s__('LearnGitLab|Start with the WebIDE'),
+    description: s__('LearnGitLab|Use the built-in editor to create or upload files.'),
+  },
   workspace: {
     title: s__('LearnGitLab|Set up your workspace'),
     description: s__(

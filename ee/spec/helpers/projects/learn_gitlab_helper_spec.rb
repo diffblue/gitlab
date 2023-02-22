@@ -13,7 +13,7 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
     let_it_be(:namespace) { create(:group) }
     let_it_be(:project) { build_stubbed(:project, name: Onboarding::LearnGitlab::PROJECT_NAME, namespace: namespace) }
     let(:onboarding_actions_data) { Gitlab::Json.parse(learn_gitlab_data[:actions]).deep_symbolize_keys }
-    let(:onboarding_sections_data) { Gitlab::Json.parse(learn_gitlab_data[:sections]).deep_symbolize_keys }
+    let(:onboarding_sections_data) { Gitlab::Json.parse(learn_gitlab_data[:sections], symbolize_names: true) }
     let(:onboarding_project_data) { Gitlab::Json.parse(learn_gitlab_data[:project]).deep_symbolize_keys }
 
     before do
@@ -34,15 +34,17 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
           :trial_started,
           :required_mr_approvals_enabled,
           :code_owners_enabled,
-          :security_scan_enabled
+          :security_scan_enabled,
+          :code_added
         ]
 
         expect(onboarding_actions_data.keys).to contain_exactly(*expected_keys)
       end
 
       it 'has all section data', :aggregate_failures do
-        expect(onboarding_sections_data.keys).to contain_exactly(:deploy, :plan, :workspace)
-        expect(onboarding_sections_data.values.map(&:keys)).to match_array([[:svg]] * 3)
+        expect(onboarding_sections_data.map(&:keys)).to match_array([[:code], [:workspace, :plan, :deploy]])
+        expect(onboarding_sections_data.first.values.map(&:keys)).to match_array([[:svg]])
+        expect(onboarding_sections_data.second.values.map(&:keys)).to match_array([[:svg]] * 3)
       end
 
       it 'has all project data', :aggregate_failures do
@@ -63,7 +65,8 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
         trial_started: a_hash_including(completed: false),
         required_mr_approvals_enabled: a_hash_including(completed: false),
         code_owners_enabled: a_hash_including(completed: false),
-        security_scan_enabled: a_hash_including(completed: false)
+        security_scan_enabled: a_hash_including(completed: false),
+        code_added: a_hash_including(completed: false)
       }
 
       expect(onboarding_actions_data).to match(result)
@@ -79,7 +82,8 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
           issue_created: a_hash_including(url: %r{/learn_gitlab/-/issues\z}),
           git_write: a_hash_including(url: %r{/learn_gitlab\z}),
           user_added: a_hash_including(url: %r{#\z}),
-          merge_request_created: a_hash_including(url: %r{/learn_gitlab/-/merge_requests\z})
+          merge_request_created: a_hash_including(url: %r{/learn_gitlab/-/merge_requests\z}),
+          code_added: a_hash_including(url: %r{/-/ide/project/#{project.full_path}/edit\?learn_gitlab_source=true\z})
         }
       end
 
