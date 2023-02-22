@@ -12,6 +12,7 @@ import download from '~/lib/utils/downloader';
 import { redirectTo } from '~/lib/utils/url_utility';
 import UsersCache from '~/lib/utils/users_cache';
 import { s__ } from '~/locale';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { VULNERABILITY_STATE_OBJECTS, FEEDBACK_TYPES, HEADER_ACTION_BUTTONS } from '../constants';
 import { normalizeGraphQLVulnerability } from '../helpers';
 import ResolutionAlert from './resolution_alert.vue';
@@ -30,6 +31,8 @@ export default {
     SplitButton,
     StatusDescription,
   },
+
+  mixins: [glFeatureFlagMixin()],
 
   props: {
     vulnerability: {
@@ -64,7 +67,7 @@ export default {
     canDownloadPatch() {
       return (
         this.vulnerability.state !== VULNERABILITY_STATE_OBJECTS.resolved.state &&
-        !this.vulnerability.hasMr &&
+        !this.mergeRequest &&
         this.hasRemediation
       );
     },
@@ -72,15 +75,15 @@ export default {
       return Boolean(this.vulnerability.issueFeedback?.issueIid);
     },
     hasRemediation() {
-      const { remediations } = this.vulnerability;
-      return Boolean(remediations && remediations[0]?.diff?.length > 0);
+      return this.vulnerability.remediations?.[0]?.diff?.length > 0;
+    },
+    mergeRequest() {
+      return this.glFeatures.deprecateVulnerabilitiesFeedback
+        ? this.vulnerability.mergeRequestLinks.at(-1)
+        : this.vulnerability.mergeRequestFeedback;
     },
     canCreateMergeRequest() {
-      return (
-        !this.vulnerability.mergeRequestFeedback?.mergeRequestPath &&
-        Boolean(this.vulnerability.createMrUrl) &&
-        this.hasRemediation
-      );
+      return !this.mergeRequest && this.vulnerability.createMrUrl && this.hasRemediation;
     },
     showResolutionAlert() {
       return (
@@ -182,7 +185,11 @@ export default {
             },
           },
         })
-        .then(({ data: { merge_request_path: mergeRequestPath } }) => {
+        .then(({ data }) => {
+          const mergeRequestPath = this.glFeatures.deprecateVulnerabilitiesFeedback
+            ? data.merge_request_links.at(-1).merge_request_path
+            : data.merge_request_path;
+
           redirectTo(mergeRequestPath);
         })
         .catch(() => {

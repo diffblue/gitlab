@@ -36,7 +36,6 @@ describe('Vulnerability Footer', () => {
     },
     canModifyRelatedIssues: true,
     relatedIssuesHelpPath: 'help/path',
-    hasMr: false,
     pipeline: {},
   };
 
@@ -231,7 +230,7 @@ describe('Vulnerability Footer', () => {
         solution: properties.solution,
         remediation: properties.remediations[0],
         hasDownload: true,
-        hasMr: vulnerability.hasMr,
+        hasMr: false,
       });
     });
 

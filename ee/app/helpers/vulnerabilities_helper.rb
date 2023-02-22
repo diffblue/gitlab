@@ -16,7 +16,6 @@ module VulnerabilitiesHelper
       create_jira_issue_url: create_jira_issue_url_for(vulnerability),
       related_jira_issues_path: project_integrations_jira_issues_path(vulnerability.project, vulnerability_ids: [vulnerability.id]),
       jira_integration_settings_path: edit_project_settings_integration_path(vulnerability.project, ::Integrations::Jira),
-      has_mr: has_mr?(vulnerability),
       create_mr_url: create_vulnerability_feedback_merge_request_path(vulnerability.finding.project),
       discussions_url: discussions_project_security_vulnerability_path(vulnerability.project, vulnerability),
       notes_url: project_security_vulnerability_notes_path(vulnerability.project, vulnerability),
@@ -29,14 +28,6 @@ module VulnerabilitiesHelper
     }
 
     result.merge(vulnerability_data(vulnerability), vulnerability_finding_data(vulnerability))
-  end
-
-  def has_mr?(vulnerability)
-    if Feature.enabled?(:deprecate_vulnerabilities_feedback, vulnerability.project)
-      vulnerability.merge_requests.any?
-    else
-      !!vulnerability.finding.merge_request_feedback.try(:merge_request_id)
-    end
   end
 
   def dismissal_descriptions

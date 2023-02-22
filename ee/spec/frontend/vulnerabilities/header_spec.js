@@ -52,6 +52,7 @@ describe('Vulnerability Header', () => {
     links: 'links',
     location: 'location',
     name: 'name',
+    mergeRequestLinks: [],
   };
 
   const diff = 'some diff to download';
@@ -59,15 +60,12 @@ describe('Vulnerability Header', () => {
   const getVulnerability = ({
     shouldShowMergeRequestButton,
     shouldShowDownloadPatchButton = true,
-  }) => {
-    return {
-      remediations: shouldShowMergeRequestButton ? [{ diff }] : null,
-      hasMr: !shouldShowDownloadPatchButton,
-      mergeRequestFeedback: {
-        mergeRequestPath: shouldShowMergeRequestButton ? null : 'some path',
-      },
-    };
-  };
+  }) => ({
+    remediations: shouldShowMergeRequestButton ? [{ diff }] : null,
+    state: shouldShowDownloadPatchButton ? 'detected' : 'resolved',
+    mergeRequestLinks: shouldShowMergeRequestButton ? [] : [{}],
+    mergeRequestFeedback: shouldShowMergeRequestButton ? null : {},
+  });
 
   const createApolloProvider = (...queries) => {
     return createMockApollo([...queries]);
@@ -94,7 +92,11 @@ describe('Vulnerability Header', () => {
     dropdown.vm.$emit('change', { action });
   };
 
-  const createWrapper = ({ vulnerability = {}, apolloProvider }) => {
+  const createWrapper = ({
+    vulnerability = {},
+    apolloProvider,
+    deprecateVulnerabilitiesFeedback = true,
+  }) => {
     wrapper = shallowMount(Header, {
       apolloProvider,
       propsData: {
@@ -102,6 +104,9 @@ describe('Vulnerability Header', () => {
           ...defaultVulnerability,
           ...vulnerability,
         },
+      },
+      provide: {
+        glFeatures: { deprecateVulnerabilitiesFeedback },
       },
     });
   };
@@ -201,7 +206,7 @@ describe('Vulnerability Header', () => {
   });
 
   describe('split button', () => {
-    it('does render the create merge request and issue button as a split button', () => {
+    it('renders the create merge request and issue button as a split button', () => {
       createWrapper({ vulnerability: getVulnerability({ shouldShowMergeRequestButton: true }) });
       expect(findSplitButton().exists()).toBe(true);
       const buttons = findSplitButton().props('buttons');
@@ -227,36 +232,39 @@ describe('Vulnerability Header', () => {
       expect(findGlButton().exists()).toBe(false);
     });
 
-    describe('create merge request', () => {
-      beforeEach(() => {
-        createWrapper({
-          vulnerability: {
-            ...getVulnerability({
-              shouldShowMergeRequestButton: true,
-              shouldShowDownloadPatchButton: false,
-            }),
-            state: 'resolved',
-          },
+    describe.each([true, false])(
+      'create merge request - deprecateVulnerabilitiesFeedback feature flag %s',
+      (deprecateVulnerabilitiesFeedback) => {
+        beforeEach(() => {
+          createWrapper({
+            deprecateVulnerabilitiesFeedback,
+            vulnerability: {
+              ...getVulnerability({
+                shouldShowMergeRequestButton: true,
+                shouldShowDownloadPatchButton: false,
+              }),
+            },
+          });
         });
-      });
 
-      it('only renders the create merge request button', () => {
-        expect(findGlButton().exists()).toBe(true);
-        expect(findGlButton().text()).toBe('Resolve with merge request');
-      });
-
-      it('emits createMergeRequest when create merge request button is clicked', () => {
-        const mergeRequestPath = '/group/project/merge_request/123';
-        const spy = jest.spyOn(urlUtility, 'redirectTo');
-        mockAxios.onPost(defaultVulnerability.createMrUrl).reply(HTTP_STATUS_OK, {
-          merge_request_path: mergeRequestPath,
+        it('only renders the create merge request button', () => {
+          expect(findGlButton().exists()).toBe(true);
+          expect(findGlButton().text()).toBe('Resolve with merge request');
         });
-        findGlButton().vm.$emit('click');
-        return waitForPromises().then(() => {
+
+        it('emits createMergeRequest when create merge request button is clicked', async () => {
+          const mergeRequestPath = '/group/project/merge_request/123';
+          const spy = jest.spyOn(urlUtility, 'redirectTo');
+          mockAxios.onPost(defaultVulnerability.createMrUrl).reply(HTTP_STATUS_OK, {
+            merge_request_path: mergeRequestPath,
+            merge_request_links: [{ merge_request_path: mergeRequestPath }],
+          });
+          findGlButton().vm.$emit('click');
+          await waitForPromises();
+
+          expect(spy).toHaveBeenCalledWith(mergeRequestPath);
           expect(mockAxios.history.post).toHaveLength(1);
-          const [postRequest] = mockAxios.history.post;
-          expect(postRequest.url).toBe(defaultVulnerability.createMrUrl);
-          expect(JSON.parse(postRequest.data)).toMatchObject({
+          expect(JSON.parse(mockAxios.history.post[0].data)).toMatchObject({
             vulnerability_feedback: {
               feedback_type: FEEDBACK_TYPES.MERGE_REQUEST,
               category: defaultVulnerability.reportType,
@@ -266,29 +274,27 @@ describe('Vulnerability Header', () => {
                 ...convertObjectPropsToSnakeCase(
                   getVulnerability({ shouldShowMergeRequestButton: true }),
                 ),
-                has_mr: true,
                 category: defaultVulnerability.reportType,
                 state: 'resolved',
               },
             },
           });
-          expect(spy).toHaveBeenCalledWith(mergeRequestPath);
         });
-      });
 
-      it('shows an error message when merge request creation fails', () => {
-        mockAxios
-          .onPost(defaultVulnerability.create_mr_url)
-          .reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
-        findGlButton().vm.$emit('click');
-        return waitForPromises().then(() => {
-          expect(mockAxios.history.post).toHaveLength(1);
-          expect(createAlert).toHaveBeenCalledWith({
-            message: 'There was an error creating the merge request. Please try again.',
+        it('shows an error message when merge request creation fails', () => {
+          mockAxios
+            .onPost(defaultVulnerability.create_mr_url)
+            .reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+          findGlButton().vm.$emit('click');
+          return waitForPromises().then(() => {
+            expect(mockAxios.history.post).toHaveLength(1);
+            expect(createAlert).toHaveBeenCalledWith({
+              message: 'There was an error creating the merge request. Please try again.',
+            });
           });
         });
-      });
-    });
+      },
+    );
 
     describe('can download patch', () => {
       beforeEach(() => {
