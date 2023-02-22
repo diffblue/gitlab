@@ -22896,9 +22896,6 @@ msgstr ""
 msgid "Integrations|Edit project alias"
 msgstr ""
 
-msgid "Integrations|Enable GitLab.com slash commands in a Slack workspace."
-msgstr ""
-
 msgid "Integrations|Enable SSL verification"
 msgstr ""
 

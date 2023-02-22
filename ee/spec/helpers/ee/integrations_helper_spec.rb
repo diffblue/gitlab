@@ -130,16 +130,6 @@ RSpec.describe EE::IntegrationsHelper do
         'state' => 'a token'
       )
     end
-
-    context 'when flag is disabled' do
-      before do
-        stub_feature_flags(integration_slack_app_notifications: false)
-      end
-
-      it 'returns limited scopes in scope param' do
-        expect(query).to include('scope' => 'commands')
-      end
-    end
   end
 
   describe '#jira_issues_show_data' do

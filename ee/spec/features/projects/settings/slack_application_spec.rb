@@ -46,14 +46,4 @@ RSpec.describe 'Slack application', :js, feature_category: :integrations do
       expect(page).not_to have_selector('[data-testid="trigger-fields-group"]')
     end
   end
-
-  context 'when the feature flag is disabled' do
-    before do
-      stub_feature_flags(integration_slack_app_notifications: false)
-    end
-
-    it 'does not show the trigger form fields' do
-      expect(page).not_to have_selector('[data-testid="trigger-fields-group"]')
-    end
-  end
 end
