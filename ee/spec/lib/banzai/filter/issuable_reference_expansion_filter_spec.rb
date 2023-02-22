@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Banzai::Filter::IssuableReferenceExpansionFilter do
+RSpec.describe Banzai::Filter::IssuableReferenceExpansionFilter, feature_category: :portfolio_management do
   include FilterSpecHelper
 
   let_it_be(:user) { create(:user) }
@@ -48,5 +48,39 @@ RSpec.describe Banzai::Filter::IssuableReferenceExpansionFilter do
     doc = filter(link, context)
 
     expect(doc.css('a').last.text).to eq("#{epic.title} (#{epic.to_reference})")
+  end
+
+  it 'shows title for references with +s' do
+    link = create_link(epic.to_reference, epic: epic.id, reference_type: 'epic', reference_format: '+s')
+
+    doc = filter(link, context)
+
+    expect(doc.css('a').last.text).to eq("#{epic.title} (#{epic.to_reference})")
+  end
+
+  context 'when extended summary props are present' do
+    let_it_be(:project) { create(:project, :public) }
+    let_it_be(:milestone) { create(:milestone, project: project) }
+    let_it_be(:assignees) { create_list(:user, 3) }
+
+    before do
+      stub_licensed_features(issuable_health_status: true)
+    end
+
+    it 'shows extended summary for references with +s' do
+      issue = create(:issue, :opened,
+        project: project,
+        title: 'Some issue',
+        milestone: milestone,
+        assignees: assignees,
+        health_status: Issue.health_statuses.values.sample)
+      link = create_link(issue.to_reference, issue: issue.id, reference_type: 'issue', reference_format: '+s')
+      doc = filter(link, context)
+
+      expect(doc.css('a').last.text).to eq(
+        "#{issue.title} (#{issue.to_reference}) • #{assignees[0].name}, #{assignees[1].name}+ • " \
+        "#{milestone.title} • #{issue.health_status.humanize}"
+      )
+    end
   end
 end
