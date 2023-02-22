@@ -2,7 +2,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { BoardType, GroupByParamType, issuableTypes, IterationIDs } from 'ee/boards/constants';
+import { BoardType, GroupByParamType, IterationIDs } from 'ee/boards/constants';
 import epicCreateMutation from 'ee/boards/graphql/epic_create.mutation.graphql';
 import searchIterationCadencesQuery from 'ee/issues/list/queries/search_iteration_cadences.query.graphql';
 import actions, { gqlClient } from 'ee/boards/stores/actions';
@@ -18,7 +18,7 @@ import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import issueCreateMutation from '~/boards/graphql/issue_create.mutation.graphql';
 import * as typesCE from '~/boards/stores/mutation_types';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import { TYPE_ISSUE } from '~/issues/constants';
+import { TYPE_EPIC, TYPE_ISSUE } from '~/issues/constants';
 import { fetchPolicies } from '~/lib/graphql';
 import * as commonUtils from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams } from '~/lib/utils/url_utility';
@@ -218,8 +218,8 @@ describe('fetchLists', () => {
   };
 
   it.each`
-    issuableType          | boardType          | fullBoardId                           | isGroup      | isProject
-    ${issuableTypes.epic} | ${BoardType.group} | ${'gid://gitlab/Boards::EpicBoard/1'} | ${undefined} | ${undefined}
+    issuableType | boardType          | fullBoardId                           | isGroup      | isProject
+    ${TYPE_EPIC} | ${BoardType.group} | ${'gid://gitlab/Boards::EpicBoard/1'} | ${undefined} | ${undefined}
   `(
     'calls $issuableType query with correct variables',
     async ({ issuableType, boardType, fullBoardId, isGroup, isProject }) => {
@@ -775,9 +775,9 @@ describe('setActiveItemHealthStatus', () => {
 });
 
 describe.each`
-  isEpicBoard | issuableType            | dispatchedAction
-  ${false}    | ${TYPE_ISSUE}           | ${'moveIssue'}
-  ${true}     | ${'issuableTypes.epic'} | ${'moveEpic'}
+  isEpicBoard | issuableType  | dispatchedAction
+  ${false}    | ${TYPE_ISSUE} | ${'moveIssue'}
+  ${true}     | ${TYPE_EPIC}  | ${'moveEpic'}
 `('moveItem', ({ isEpicBoard, issuableType, dispatchedAction }) => {
   it(`should dispatch ${dispatchedAction}  action when isEpicBoard is ${isEpicBoard}`, async () => {
     await testAction({
@@ -878,9 +878,9 @@ describe('updateEpicForIssue', () => {
 });
 
 describe.each`
-  isEpicBoard | issuableType             | dispatchedAction
-  ${false}    | ${'issuableTypes.issue'} | ${'createIssueList'}
-  ${true}     | ${'issuableTypes.epic'}  | ${'createEpicList'}
+  isEpicBoard | issuableType  | dispatchedAction
+  ${false}    | ${TYPE_ISSUE} | ${'createIssueList'}
+  ${true}     | ${TYPE_EPIC}  | ${'createEpicList'}
 `('createList', ({ isEpicBoard, issuableType, dispatchedAction }) => {
   it(`should dispatch ${dispatchedAction}  action when isEpicBoard is ${isEpicBoard}`, async () => {
     await testAction({

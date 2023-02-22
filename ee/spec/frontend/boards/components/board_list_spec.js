@@ -6,8 +6,9 @@ import createComponent from 'jest/boards/board_list_helper';
 import BoardCard from '~/boards/components/board_card.vue';
 import BoardCardInner from '~/boards/components/board_card_inner.vue';
 import BoardCardMoveToPosition from '~/boards/components/board_card_move_to_position.vue';
-import { BoardType, issuableTypes } from '~/boards/constants';
+import { BoardType } from '~/boards/constants';
 import listIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
+import { TYPE_EPIC } from '~/issues/constants';
 import listEpicsQuery from 'ee/boards/graphql/lists_epics.query.graphql';
 import {
   mockGroupIssuesResponse,
@@ -32,7 +33,7 @@ const componentConfig = {
   provide: {
     scopedLabelsAvailable: true,
     isEpicBoard: true,
-    issuableType: issuableTypes.epic,
+    issuableType: TYPE_EPIC,
     isGroupBoard: true,
     isProjectBoard: false,
   },
