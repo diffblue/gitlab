@@ -2,7 +2,6 @@
 // This is a false violation of @gitlab/no-runtime-template-compiler, since it
 // extends a valid Vue single file component.
 /* eslint-disable @gitlab/no-runtime-template-compiler */
-import { mapActions } from 'vuex';
 import { orderBy } from 'lodash';
 import IssueBoardFilteredSearchFoss from '~/boards/components/issue_board_filtered_search.vue';
 import {
@@ -23,6 +22,7 @@ import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_
 import HealthToken from 'ee/vue_shared/components/filtered_search_bar/tokens/health_token.vue';
 import IterationToken from 'ee/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
 import WeightToken from 'ee/vue_shared/components/filtered_search_bar/tokens/weight_token.vue';
+import issueBoardFilters from '../issue_board_filters';
 
 export default {
   extends: IssueBoardFilteredSearchFoss,
@@ -43,6 +43,12 @@ export default {
         : this.fullPath.slice(0, this.fullPath.lastIndexOf('/'));
     },
     tokens() {
+      const { fetchIterations, fetchIterationCadences } = issueBoardFilters(
+        this.$apollo,
+        this.fullPath,
+        this.isGroupBoard,
+      );
+
       const tokens = [
         ...this.tokensCE,
         ...(this.epicFeatureAvailable
@@ -69,8 +75,8 @@ export default {
                 operators: OPERATORS_IS_NOT,
                 token: IterationToken,
                 unique: true,
-                fetchIterations: this.fetchIterations,
-                fetchIterationCadences: this.fetchIterationCadences,
+                fetchIterations,
+                fetchIterationCadences,
               },
             ]
           : []),
@@ -97,9 +103,6 @@ export default {
 
       return orderBy(tokens, ['title']);
     },
-  },
-  methods: {
-    ...mapActions(['fetchIterations', 'fetchIterationCadences']),
   },
 };
 </script>

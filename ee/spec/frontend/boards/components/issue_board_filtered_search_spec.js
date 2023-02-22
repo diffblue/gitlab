@@ -2,16 +2,19 @@ import { shallowMount } from '@vue/test-utils';
 import { orderBy } from 'lodash';
 import BoardFilteredSearch from 'ee/boards/components/board_filtered_search.vue';
 import IssueBoardFilteredSpec from 'ee/boards/components/issue_board_filtered_search.vue';
-import issueBoardFilters from '~/boards/issue_board_filters';
+import issueBoardFilters from 'ee/boards/issue_board_filters';
 import { mockTokens } from '../mock_data';
 
-jest.mock('~/boards/issue_board_filters');
+jest.mock('ee/boards/issue_board_filters');
 
 describe('IssueBoardFilter', () => {
   let wrapper;
 
   const createComponent = () => {
     wrapper = shallowMount(IssueBoardFilteredSpec, {
+      propsData: {
+        boardId: 'gid://gitlab/Board/1',
+      },
       provide: {
         isSignedIn: true,
         releasesFetchPath: '/releases',
@@ -26,13 +29,22 @@ describe('IssueBoardFilter', () => {
 
   let fetchUsersSpy;
   let fetchLabelsSpy;
+  let fetchMilestonesSpy;
+  let fetchIterationsSpy;
+  let fetchIterationCadencesSpy;
   beforeEach(() => {
     fetchUsersSpy = jest.fn();
     fetchLabelsSpy = jest.fn();
+    fetchMilestonesSpy = jest.fn();
+    fetchIterationsSpy = jest.fn();
+    fetchIterationCadencesSpy = jest.fn();
 
     issueBoardFilters.mockReturnValue({
       fetchUsers: fetchUsersSpy,
       fetchLabels: fetchLabelsSpy,
+      fetchMilestones: fetchMilestonesSpy,
+      fetchIterations: fetchIterationsSpy,
+      fetchIterationCadences: fetchIterationCadencesSpy,
     });
   });
 
@@ -53,9 +65,9 @@ describe('IssueBoardFilter', () => {
       const tokens = mockTokens(
         fetchLabelsSpy,
         fetchUsersSpy,
-        wrapper.vm.fetchMilestones,
-        wrapper.vm.fetchIterations,
-        wrapper.vm.fetchIterationCadences,
+        fetchMilestonesSpy,
+        fetchIterationsSpy,
+        fetchIterationCadencesSpy,
       );
 
       expect(wrapper.findComponent(BoardFilteredSearch).props('tokens')).toEqual(

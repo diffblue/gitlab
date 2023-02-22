@@ -16,6 +16,8 @@ describe('EpicFilteredSearch', () => {
   let wrapper;
   const { fetchUsers, fetchLabels } = issueBoardFilters({}, '', true);
 
+  const findFilteredSearch = () => wrapper.findComponent(BoardFilteredSearch);
+
   const createComponent = ({ initialFilterParams = {} } = {}) => {
     wrapper = shallowMount(EpicFilteredSearch, {
       provide: { initialFilterParams, fullPath: '', boardType: '', isGroupBoard: true },
@@ -39,7 +41,12 @@ describe('EpicFilteredSearch', () => {
     });
 
     it('finds BoardFilteredSearch', () => {
-      expect(wrapper.findComponent(BoardFilteredSearch).exists()).toBe(true);
+      expect(findFilteredSearch().exists()).toBe(true);
+    });
+
+    it('emits setFilters when setFilters is emitted', () => {
+      findFilteredSearch().vm.$emit('setFilters');
+      expect(wrapper.emitted('setFilters')).toHaveLength(1);
     });
 
     it('passes tokens to BoardFilteredSearch', () => {
@@ -74,7 +81,7 @@ describe('EpicFilteredSearch', () => {
           ],
         },
       ];
-      expect(wrapper.findComponent(BoardFilteredSearch).props('tokens').toString()).toBe(
+      expect(findFilteredSearch().props('tokens').toString()).toBe(
         orderBy(tokens, ['title']).toString(),
       );
     });

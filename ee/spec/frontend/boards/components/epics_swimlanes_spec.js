@@ -49,6 +49,7 @@ describe('EpicsSwimlanes', () => {
           epicLanesFetchMoreInProgress,
         },
         hasMoreEpics,
+        filterParams: {},
       },
       getters,
       actions: {
@@ -72,10 +73,11 @@ describe('EpicsSwimlanes', () => {
 
     wrapper = extendedWrapper(
       shallowMount(EpicsSwimlanes, {
-        propsData: { ...defaultProps, canAdminList },
+        propsData: { ...defaultProps, canAdminList, filters: {} },
         store,
         provide: {
           disabled: false,
+          isApolloBoard: false,
         },
       }),
     );

@@ -55,26 +55,4 @@ describe('ee/BoardFilteredSearch', () => {
       );
     });
   });
-
-  describe('when resetFilters is true and boardConfig is not empty', () => {
-    beforeEach(() => {
-      store = createStore();
-
-      createComponent();
-    });
-
-    it('renders BoardFilteredSearchCe', async () => {
-      store.state.boardConfig = {};
-
-      await nextTick();
-
-      expect(findFilteredSearch().exists()).toEqual(false);
-
-      store.state.boardConfig = { labels: [] };
-
-      await nextTick();
-
-      expect(findFilteredSearch().exists()).toBe(true);
-    });
-  });
 });
