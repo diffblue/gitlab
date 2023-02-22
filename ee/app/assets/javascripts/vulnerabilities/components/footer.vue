@@ -85,12 +85,14 @@ export default {
       };
     },
     solutionInfo() {
-      const { solution, solutionHtml, hasMr, remediations, state } = this.vulnerability;
+      const { solution, solutionHtml, remediations, state } = this.vulnerability;
 
       const remediation = remediations?.[0];
-      const hasDownload = Boolean(
-        state !== VULNERABILITY_STATE_OBJECTS.resolved.state && remediation?.diff?.length && !hasMr,
-      );
+      const hasMr = Boolean(this.mergeRequest);
+      const hasDownload =
+        state !== VULNERABILITY_STATE_OBJECTS.resolved.state &&
+        remediation?.diff?.length > 0 &&
+        !hasMr;
 
       return {
         solution,
@@ -120,6 +122,11 @@ export default {
             pipeline,
           }
         : null;
+    },
+    mergeRequest() {
+      return this.glFeatures.deprecateVulnerabilitiesFeedback
+        ? this.vulnerability.mergeRequestLinks.at(-1)
+        : this.vulnerability.mergeRequestFeedback;
     },
   },
   beforeDestroy() {
@@ -204,12 +211,8 @@ export default {
       class="md gl-mt-6"
       :details="vulnerability.details"
     />
-    <div v-if="vulnerability.mergeRequestFeedback" class="card gl-mt-5">
-      <merge-request-note
-        :feedback="vulnerability.mergeRequestFeedback"
-        :project="project"
-        class="card-body"
-      />
+    <div v-if="mergeRequest" class="card gl-mt-5">
+      <merge-request-note :feedback="mergeRequest" :project="project" class="card-body" />
     </div>
     <related-jira-issues v-if="createJiraIssueUrl" class="gl-mt-6" />
     <related-issues

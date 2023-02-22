@@ -67,7 +67,6 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
         create_jira_issue_url: nil,
         related_jira_issues_path: "/#{project.full_path}/-/integrations/jira/issues?vulnerability_ids%5B%5D=#{vulnerability.id}",
         jira_integration_settings_path: "/#{project.full_path}/-/settings/integrations/jira/edit",
-        has_mr: anything,
         create_mr_url: "/#{project.full_path}/-/vulnerability_feedback",
         discussions_url: "/#{project.full_path}/-/security/vulnerabilities/#{vulnerability.id}/discussions",
         notes_url: "/#{project.full_path}/-/security/vulnerabilities/#{vulnerability.id}/notes",
@@ -145,46 +144,6 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
 
       it 'returns no pipeline data' do
         expect(subject[:pipeline]).to be_nil
-      end
-    end
-
-    describe '[:has_mr]' do
-      subject { helper.vulnerability_details(vulnerability, pipeline)[:has_mr] }
-
-      context 'when `deprecate_vulnerabilities_feedback` is enabled' do
-        before do
-          stub_feature_flags(deprecate_vulnerabilities_feedback: true)
-        end
-
-        context 'with existing merge request' do
-          before do
-            create(:vulnerabilities_merge_request_link, vulnerability: vulnerability)
-          end
-
-          it { is_expected.to be_truthy }
-        end
-
-        context 'without existing merge request' do
-          it { is_expected.to be_falsey }
-        end
-      end
-
-      context 'when `deprecate_vulnerabilities_feedback` is disabled' do
-        before do
-          stub_feature_flags(deprecate_vulnerabilities_feedback: false)
-        end
-
-        context 'with existing merge request feedback' do
-          before do
-            create(:vulnerability_feedback, :merge_request, project: project, pipeline: pipeline, finding_uuid: finding.uuid)
-          end
-
-          it { is_expected.to be_truthy }
-        end
-
-        context 'without feedback' do
-          it { is_expected.to be_falsey }
-        end
       end
     end
 
