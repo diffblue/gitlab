@@ -88,6 +88,10 @@ module Billing
       plan.features || [] # features can be nil
     end
 
+    def purchase_link
+      "https://about.gitlab.com/pricing/gitlab-com/feature-comparison/"
+    end
+
     def plans_data
       {
         'free' => {
@@ -119,7 +123,7 @@ module Billing
           ],
           "cta_text": s_("BillingPlans|Learn more"),
           "purchase_link": {
-            "href": "https://about.gitlab.com/pricing/gitlab-com/feature-comparison/"
+            "href": purchase_link
           }
         },
         'premium' => {
@@ -197,3 +201,5 @@ module Billing
     end
   end
 end
+
+Billing::PlanComponent.prepend_mod
