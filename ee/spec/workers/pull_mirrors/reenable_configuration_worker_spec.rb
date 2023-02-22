@@ -27,18 +27,6 @@ RSpec.describe PullMirrors::ReenableConfigurationWorker, feature_category: :sour
       .and not_change { another_namespace_mirror_state.reload.retry_count }
   end
 
-  context 'when feature flag add_refresh_pull_mirror_worker is disabled' do
-    before do
-      stub_feature_flags(add_refresh_pull_mirror_worker: false)
-    end
-
-    it 'does not re-enable pull mirror configurations' do
-      expect do
-        consume_event(subscriber: described_class, event: subscription_started_event)
-      end.not_to change { mirror_state.reload.retry_count }
-    end
-  end
-
   context 'when namespace id is missing' do
     let(:data) { { namespace_id: non_existing_record_id } }
 
