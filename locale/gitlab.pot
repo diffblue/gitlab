@@ -5948,7 +5948,16 @@ msgstr ""
 msgid "Authorized applications (%{size})"
 msgstr ""
 
+msgid "AuthorizedApplication|Application secret was successfully updated."
+msgstr ""
+
+msgid "AuthorizedApplication|Are you sure you want to renew this secret? Any applications using the old secret will no longer be able to authenticate with GitLab."
+msgstr ""
+
 msgid "AuthorizedApplication|Are you sure you want to revoke this application?"
+msgstr ""
+
+msgid "AuthorizedApplication|Renew secret"
 msgstr ""
 
 msgid "AuthorizedApplication|Revoke application"
@@ -43218,7 +43227,7 @@ msgstr ""
 msgid "The scan has been created."
 msgstr ""
 
-msgid "The secret is only available when you first create the application."
+msgid "The secret is only available when you create the application or renew the secret."
 msgstr ""
 
 msgid "The snippet can be accessed without any authentication."
