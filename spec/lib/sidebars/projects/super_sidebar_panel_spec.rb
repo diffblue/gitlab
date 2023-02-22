@@ -34,6 +34,7 @@ RSpec.describe Sidebars::Projects::SuperSidebarPanel, feature_category: :navigat
         Sidebars::Projects::Menus::InfrastructureMenu,
         Sidebars::Projects::Menus::MonitorMenu,
         Sidebars::Projects::Menus::AnalyticsMenu,
+        Sidebars::UncategorizedMenu,
         Sidebars::Projects::Menus::SettingsMenu
       ]
     end

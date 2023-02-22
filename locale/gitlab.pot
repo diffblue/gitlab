@@ -45712,6 +45712,9 @@ msgstr ""
 msgid "Unban"
 msgstr ""
 
+msgid "Uncategorized"
+msgstr ""
+
 msgid "Uncommitted changes will be lost if you change branches. Do you want to continue?"
 msgstr ""
 

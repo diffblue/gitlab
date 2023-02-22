@@ -48,6 +48,8 @@ RSpec.describe Sidebars::Concerns::SuperSidebarPanel, feature_category: :navigat
   end
 
   describe '#transform_old_menus' do
+    let(:uncategorized_menu) { ::Sidebars::UncategorizedMenu.new({}) }
+
     let(:menu_item) do
       Sidebars::MenuItem.new(title: 'foo3', link: 'foo3', active_routes: { controller: 'barc' },
         super_sidebar_parent: menu_class_foo)
@@ -63,9 +65,10 @@ RSpec.describe Sidebars::Concerns::SuperSidebarPanel, feature_category: :navigat
       )
     end
 
-    let(:current_menus) { [menu_foo] }
+    let(:current_menus) { [menu_foo, uncategorized_menu] }
 
     before do
+      allow(menu_bar).to receive(:serialize_as_menu_item_args).and_return(nil)
       menu_foo.add_item(existing_item)
     end
 
@@ -79,6 +82,7 @@ RSpec.describe Sidebars::Concerns::SuperSidebarPanel, feature_category: :navigat
         subject.transform_old_menus(current_menus, menu_bar)
 
         expect(menu_foo.renderable_items).to eq([existing_item, menu_item])
+        expect(uncategorized_menu.renderable_items).to eq([])
       end
 
       it 'adds Menu Items to defined super_sidebar_parent, before super_sidebar_before' do
@@ -86,13 +90,31 @@ RSpec.describe Sidebars::Concerns::SuperSidebarPanel, feature_category: :navigat
         subject.transform_old_menus(current_menus, menu_bar)
 
         expect(menu_foo.renderable_items).to eq([menu_item, existing_item])
+        expect(uncategorized_menu.renderable_items).to eq([])
       end
 
-      it 'drops Menu Items if super_sidebar_parent is nil' do
+      it 'considers Menu Items uncategorized if super_sidebar_parent is nil' do
         allow(menu_item).to receive(:super_sidebar_parent).and_return(nil)
         subject.transform_old_menus(current_menus, menu_bar)
 
         expect(menu_foo.renderable_items).to eq([existing_item])
+        expect(uncategorized_menu.renderable_items).to eq([menu_item])
+      end
+
+      it 'considers Menu Items uncategorized if super_sidebar_parent cannot be found' do
+        allow(menu_item).to receive(:super_sidebar_parent).and_return(menu_class_bar)
+        subject.transform_old_menus(current_menus, menu_bar)
+
+        expect(menu_foo.renderable_items).to eq([existing_item])
+        expect(uncategorized_menu.renderable_items).to eq([menu_item])
+      end
+
+      it 'considers Menu Items deleted if super_sidebar_parent is Sidebars::NilMenuItem' do
+        allow(menu_item).to receive(:super_sidebar_parent).and_return(::Sidebars::NilMenuItem)
+        subject.transform_old_menus(current_menus, menu_bar)
+
+        expect(menu_foo.renderable_items).to eq([existing_item])
+        expect(uncategorized_menu.renderable_items).to eq([])
       end
     end
 
@@ -103,6 +125,7 @@ RSpec.describe Sidebars::Concerns::SuperSidebarPanel, feature_category: :navigat
       subject.transform_old_menus(current_menus, menu_bar)
 
       expect(menu_foo.renderable_items).to eq([existing_item, menu_item])
+      expect(uncategorized_menu.renderable_items).to eq([])
     end
 
     it 'drops "solo" top-level Menu entries, if they serialize to nil' do
@@ -112,6 +135,7 @@ RSpec.describe Sidebars::Concerns::SuperSidebarPanel, feature_category: :navigat
       subject.transform_old_menus(current_menus, menu_bar)
 
       expect(menu_foo.renderable_items).to eq([existing_item])
+      expect(uncategorized_menu.renderable_items).to eq([])
     end
   end
 end

@@ -78,6 +78,7 @@ module Sidebars
           ::Sidebars::MenuItem.new(
             title: _('List'),
             link: project_issues_path(context.project),
+            super_sidebar_parent: ::Sidebars::NilMenuItem,
             active_routes: { path: 'projects/issues#index' },
             container_html_options: { aria: { label: _('Issues') } },
             item_id: :issue_list

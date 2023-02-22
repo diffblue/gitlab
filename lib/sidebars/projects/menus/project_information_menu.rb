@@ -33,6 +33,11 @@ module Sidebars
           'project'
         end
 
+        override :serialize_as_menu_item_args
+        def serialize_as_menu_item_args
+          nil
+        end
+
         private
 
         def activity_menu_item

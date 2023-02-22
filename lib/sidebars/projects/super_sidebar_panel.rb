@@ -21,6 +21,7 @@ module Sidebars
         pick_from_old_menus(old_menus, Sidebars::Projects::Menus::InfrastructureMenu)
         pick_from_old_menus(old_menus, Sidebars::Projects::Menus::MonitorMenu)
         pick_from_old_menus(old_menus, Sidebars::Projects::Menus::AnalyticsMenu)
+        add_menu(Sidebars::UncategorizedMenu.new(context))
         pick_from_old_menus(old_menus, Sidebars::Projects::Menus::SettingsMenu)
 
         transform_old_menus(@menus, *old_menus)
