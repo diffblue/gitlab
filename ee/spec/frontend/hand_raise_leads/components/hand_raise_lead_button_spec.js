@@ -1,10 +1,12 @@
-import { GlButton, GlModal } from '@gitlab/ui';
+import { GlButton, GlModal, GlFormTextarea } from '@gitlab/ui';
+import { kebabCase, pick } from 'lodash';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { sprintf } from '~/locale';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { mockTracking } from 'helpers/tracking_helper';
 import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
+import CountryOrRegionSelector from 'ee/trials/components/country_or_region_selector.vue';
 import {
   PQL_BUTTON_TEXT,
   PQL_MODAL_PRIMARY,
@@ -42,6 +44,32 @@ describe('HandRaiseLeadButton', () => {
   const findButton = () => wrapper.findComponent(GlButton);
   const findModal = () => wrapper.findComponent(GlModal);
   const findFormInput = (testId) => wrapper.findByTestId(testId);
+  const findCountryOrRegionSelector = () => wrapper.findComponent(CountryOrRegionSelector);
+
+  const fillForm = ({ stateRequired = false, comment = '' } = {}) => {
+    const { country, state } = FORM_DATA;
+    const inputForms = pick(FORM_DATA, [
+      'firstName',
+      'lastName',
+      'companyName',
+      'companySize',
+      'phoneNumber',
+    ]);
+
+    Object.entries(inputForms).forEach(([key, value]) => {
+      wrapper.findByTestId(kebabCase(key)).vm.$emit('input', value);
+    });
+
+    findCountryOrRegionSelector().vm.$emit('change', {
+      country,
+      state,
+      stateRequired,
+    });
+
+    wrapper.findComponent(GlFormTextarea).vm.$emit('input', comment);
+
+    return nextTick();
+  };
 
   afterEach(() => {
     wrapper.destroy();
@@ -222,11 +250,7 @@ describe('HandRaiseLeadButton', () => {
     });
 
     it('becomes enabled when required info is there', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ ...FORM_DATA });
-
-      await nextTick();
+      await fillForm();
 
       expect(findModal().props('actionPrimary')).toStrictEqual({
         text: PQL_MODAL_PRIMARY,
@@ -239,10 +263,7 @@ describe('HandRaiseLeadButton', () => {
     beforeEach(async () => {
       wrapper = createComponent();
       trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
-
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ ...FORM_DATA, stateRequired: true, comment: 'comment' });
+      await fillForm({ stateRequired: true, comment: 'comment' });
     });
 
     describe('successful submission', () => {
@@ -267,9 +288,11 @@ describe('HandRaiseLeadButton', () => {
         );
 
         expect(wrapper.findByTestId('company-size').attributes('value')).toBe(undefined);
-        expect(wrapper.vm.country).toBe('');
-        expect(wrapper.vm.state).toBe('');
-        expect(wrapper.vm.stateRequired).toBe(false);
+        expect(findCountryOrRegionSelector().props()).toMatchObject({
+          country: '',
+          state: '',
+          required: false,
+        });
       });
 
       it('tracks successful submission', async () => {
