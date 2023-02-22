@@ -311,37 +311,25 @@ describe('EEInviteModalBase', () => {
   });
 
   describe('rendering the active trial unlimited users alert', () => {
-    const fullPath = 'project';
+    const arrange = async (activeTrialDataset, isCelebration = false) => {
+      createComponent({ props: { activeTrialDataset, fullPath: 'project', isCelebration } });
+      clickInviteButton();
+    };
 
     it('shows the alert when a trial is active', async () => {
-      const activeTrialDataset = { freeUsersLimit: '5' };
-
-      createComponent({ props: { activeTrialDataset, fullPath, isCelebration: false } });
-      clickInviteButton();
-      await nextTick();
-      await waitForPromises();
+      await arrange({ freeUsersLimit: '5' });
 
       expect(findActiveTrialUnlimitedMembersAlert().exists()).toBe(true);
     });
 
-    it('does not show the alert when a trial is not active', async () => {
-      const activeTrialDataset = {};
-
-      createComponent({ props: { activeTrialDataset, fullPath, isCelebration: false } });
-      clickInviteButton();
-      await nextTick();
-      await waitForPromises();
+    it('does not show the alert when a celebration modal', async () => {
+      await arrange({ freeUsersLimit: '5' }, true);
 
       expect(findActiveTrialUnlimitedMembersAlert().exists()).toBe(false);
     });
 
-    it('does not show the alert when a celebration modal', async () => {
-      const activeTrialDataset = { freeUsersLimit: '5' };
-
-      createComponent({ props: { activeTrialDataset, fullPath, isCelebration: true } });
-      clickInviteButton();
-      await nextTick();
-      await waitForPromises();
+    it('does not show the alert when a trial is not active', async () => {
+      await arrange({});
 
       expect(findActiveTrialUnlimitedMembersAlert().exists()).toBe(false);
     });
