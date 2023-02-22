@@ -32,7 +32,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  inject: ['disabled'],
+  inject: ['disabled', 'isApolloBoard'],
   props: {
     lists: {
       type: Array,
@@ -42,6 +42,10 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+    filters: {
+      type: Object,
+      required: true,
     },
   },
   data() {
@@ -61,6 +65,9 @@ export default {
       'hasMoreEpics',
     ]),
     ...mapGetters(['getUnassignedIssues']),
+    filtersToUse() {
+      return this.isApolloBoard ? this.filters : this.filterParams;
+    },
     addColumnFormVisible() {
       return this.addColumnForm?.visible;
     },
@@ -205,6 +212,7 @@ export default {
           <board-list-header
             :can-admin-list="canAdminList"
             :list="list"
+            :filter-params="filtersToUse"
             :is-swimlanes-header="true"
           />
         </div>

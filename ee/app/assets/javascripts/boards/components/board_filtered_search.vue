@@ -17,14 +17,10 @@ export default {
   data() {
     return {
       filterParams: {},
-      resetFilters: false,
     };
   },
   computed: {
     ...mapState({ boardScopeConfig: ({ boardConfig }) => boardConfig }),
-    shouldRenderComponent() {
-      return this.resetFilters || !isEmpty(this.boardScopeConfig);
-    },
   },
   watch: {
     boardScopeConfig(newVal) {
@@ -43,8 +39,6 @@ export default {
           this.filterParams = {
             ...convertObjectPropsToCamelCase(rawFilterParams, {}),
           };
-
-          this.resetFilters = true;
         }
       }
     },
@@ -57,8 +51,8 @@ export default {
 
 <template>
   <board-filtered-search-ce
-    v-if="shouldRenderComponent"
     :ee-filters="filterParams"
     v-bind="{ ...$props, ...$attrs }"
+    @setFilters="$emit('setFilters', $event)"
   />
 </template>

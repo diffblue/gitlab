@@ -72,5 +72,9 @@ export default {
 </script>
 
 <template>
-  <board-filtered-search data-testid="epic-filtered-search" :tokens="tokens" />
+  <board-filtered-search
+    data-testid="epic-filtered-search"
+    :tokens="tokens"
+    @setFilters="$emit('setFilters', $event)"
+  />
 </template>

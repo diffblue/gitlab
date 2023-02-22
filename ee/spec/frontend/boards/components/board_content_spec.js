@@ -33,6 +33,7 @@ describe('ee/BoardContent', () => {
       propsData: {
         lists: [],
         boardId: 'gid://gitlab/Board/1',
+        filterParams: {},
       },
       stubs: {
         'board-content-sidebar': BoardContentSidebar,
