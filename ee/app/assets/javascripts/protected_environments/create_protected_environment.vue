@@ -6,61 +6,31 @@ import {
   GlFormGroup,
   GlCollapse,
   GlCollapsibleListbox,
-  GlAvatar,
   GlLink,
-  GlFormInput,
   GlSprintf,
 } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import Api from 'ee/api';
-import { getUser } from '~/rest_api';
 import axios from '~/lib/utils/axios_utils';
 import { __, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
+import AddApprovers from './add_approvers.vue';
 import { ACCESS_LEVELS } from './constants';
-
-const mapUserToApprover = (user) => ({
-  name: user.name,
-  entityName: user.name,
-  webUrl: user.web_url,
-  avatarUrl: user.avatar_url,
-  id: user.id,
-  avatarShape: 'circle',
-  approvals: 1,
-  inputDisabled: true,
-  type: 'user',
-});
-
-const mapGroupToApprover = (group) => ({
-  name: group.full_name,
-  entityName: group.name,
-  webUrl: group.web_url,
-  avatarUrl: group.avatar_url,
-  id: group.id,
-  avatarShape: 'rect',
-  approvals: 1,
-  type: 'group',
-});
-
-const MIN_APPROVALS_COUNT = 1;
-
-const MAX_APPROVALS_COUNT = 5;
 
 export default {
   ACCESS_LEVELS,
   components: {
     GlAlert,
-    GlAvatar,
     GlButton,
     GlCard,
     GlCollapse,
     GlFormGroup,
     GlCollapsibleListbox,
     GlLink,
-    GlFormInput,
     GlSprintf,
     AccessDropdown,
+    AddApprovers,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: { accessLevelsData: { default: [] }, apiLink: {}, docsLink: {} },
@@ -84,7 +54,6 @@ export default {
       environments: [],
       environmentsLoading: false,
       errorMessage: '',
-      approverInfo: [],
       alertDismissed: false,
     };
   },
@@ -100,53 +69,6 @@ export default {
     },
     hasSelectedEnvironment() {
       return Boolean(this.environment);
-    },
-    hasSelectedApprovers() {
-      return Boolean(this.approvers.length);
-    },
-    approvalRules() {
-      return this.approverInfo.map((info) => {
-        switch (info.type) {
-          case 'user':
-            return { user_id: info.id, required_approvals: info.approvals };
-          case 'group':
-            return { group_id: info.id, required_approvals: info.approvals };
-          case 'access':
-            return { access_level: info.accessLevel, required_approvals: info.approvals };
-          default:
-            return {};
-        }
-      });
-    },
-  },
-  watch: {
-    async approvers() {
-      try {
-        this.errorMessage = '';
-        this.approverInfo = await Promise.all(
-          this.approvers.map((approver) => {
-            if (approver.user_id) {
-              return getUser(approver.user_id).then(({ data }) => mapUserToApprover(data));
-            }
-
-            if (approver.group_id) {
-              return Api.group(approver.group_id).then(mapGroupToApprover);
-            }
-
-            return Promise.resolve({
-              accessLevel: approver.access_level,
-              name: this.accessLevelsData.find(({ id }) => id === approver.access_level).text,
-              approvals: 1,
-              type: 'access',
-            });
-          }),
-        );
-      } catch (e) {
-        Sentry.captureException(e);
-        this.errorMessage = s__(
-          'ProtectedEnvironments|An error occurred while fetching information on the selected approvers.',
-        );
-      }
     },
   },
   methods: {
@@ -187,7 +109,7 @@ export default {
         name: this.environment,
         deploy_access_levels: this.deployers,
         ...(this.canCreateMultipleRules
-          ? { approval_rules: this.approvalRules }
+          ? { approval_rules: this.approvers }
           : { required_approval_count: this.approvals }),
       };
       Api.createProtectedEnvironment(this.projectId, protectedEnvironment)
@@ -198,10 +120,6 @@ export default {
           Sentry.captureException(error);
           this.errorMessage = __('Failed to protect the environment');
         });
-    },
-    isApprovalValid(approvals) {
-      const count = parseFloat(approvals);
-      return count >= MIN_APPROVALS_COUNT && count <= MAX_APPROVALS_COUNT;
     },
   },
   i18n: {
@@ -215,16 +133,10 @@ export default {
     environmentLabel: s__('ProtectedEnvironment|Select environment'),
     environmentText: s__('ProtectedEnvironment|Select an environment'),
     approvalLabel: s__('ProtectedEnvironment|Required approvals'),
-    approverLabel: s__('ProtectedEnvironment|Approvers'),
-    approverHelp: s__(
-      'ProtectedEnvironments|Set which groups, access levels or users are required to approve.',
-    ),
     deployerLabel: s__('ProtectedEnvironments|Allowed to deploy'),
     deployerHelp: s__(
       'ProtectedEnvironments|Set which groups, access levels or users that are allowed to deploy to this environment',
     ),
-    approvalRulesLabel: s__('ProtectedEnvironments|Approval rules'),
-    approvalsInvalid: s__('ProtectedEnvironments|Number of approvals must be between 1 and 5'),
     buttonText: s__('ProtectedEnvironment|Protect'),
   },
   APPROVAL_COUNT_OPTIONS: ['0', '1', '2', '3', '4', '5'].map((value) => ({ value, text: value })),
@@ -291,65 +203,11 @@ export default {
               @hidden="updateDeployers"
             />
           </gl-form-group>
-          <gl-form-group
-            data-testid="create-approver-dropdown"
-            label-for="create-approver-dropdown"
-            :label="$options.i18n.approverLabel"
-          >
-            <template #label-description>
-              {{ $options.i18n.approverHelp }}
-            </template>
-            <access-dropdown
-              id="create-approver-dropdown"
-              :access-levels-data="accessLevelsData"
-              :access-level="$options.ACCESS_LEVELS.DEPLOY"
-              :disabled="disabled"
-              :preselected-items="approvers"
-              @hidden="updateApprovers"
-            />
-          </gl-form-group>
-          <gl-collapse :visible="hasSelectedApprovers">
-            <span class="gl-font-weight-bold">{{ $options.i18n.approvalRulesLabel }}</span>
-            <div
-              data-testid="approval-rules"
-              class="protected-environment-approvers gl-display-grid gl-gap-5 gl-align-items-center"
-            >
-              <span class="protected-environment-approvers-label">{{ __('Approvers') }}</span>
-              <span>{{ __('Approvals required') }}</span>
-              <template v-for="(approver, index) in approverInfo">
-                <gl-avatar
-                  v-if="approver.avatarShape"
-                  :key="`${index}-avatar`"
-                  :src="approver.avatarUrl"
-                  :size="24"
-                  :entity-id="approver.id"
-                  :entity-name="approver.entityName"
-                  :shape="approver.avatarShape"
-                />
-                <span v-else :key="`${index}-avatar`" class="gl-w-6"></span>
-                <gl-link v-if="approver.webUrl" :key="`${index}-name`" :href="approver.webUrl">
-                  {{ approver.name }}
-                </gl-link>
-                <span v-else :key="`${index}-name`">{{ approver.name }}</span>
-
-                <gl-form-group
-                  :key="`${index}-approvals`"
-                  :state="isApprovalValid(approver.approvals)"
-                >
-                  <gl-form-input
-                    v-model="approver.approvals"
-                    :disabled="approver.inputDisabled"
-                    :state="isApprovalValid(approver.approvals)"
-                    :name="`approval-count-${approver.name}`"
-                    type="number"
-                  />
-                  <template #invalid-feedback>
-                    {{ $options.i18n.approvalsInvalid }}
-                  </template>
-                </gl-form-group>
-              </template>
-            </div>
-          </gl-collapse>
+          <add-approvers
+            :project-id="projectId"
+            @change="updateApprovers"
+            @error="errorMessage = $event"
+          />
         </gl-collapse>
       </template>
       <template v-else>
@@ -387,12 +245,3 @@ export default {
     </template>
   </gl-card>
 </template>
-<style>
-.protected-environment-approvers {
-  grid-template-columns: repeat(3, max-content);
-}
-
-.protected-environment-approvers-label {
-  grid-column: span 2;
-}
-</style>
