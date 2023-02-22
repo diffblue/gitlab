@@ -269,6 +269,8 @@ class License < MainClusterwide::ApplicationRecord
   end
 
   def validate_with_trueup?
+    return false if converting_from_legacy_to_cloud?
+
     [restricted_attr(:trueup_quantity),
      restricted_attr(:trueup_from),
      restricted_attr(:trueup_to)].all?(&:present?)
@@ -495,6 +497,13 @@ class License < MainClusterwide::ApplicationRecord
     Date.parse(restrictions[:trueup_to]).end_of_day
   rescue StandardError
     previous_expired_at
+  end
+
+  def converting_from_legacy_to_cloud?
+    return false unless new_record? && cloud?
+
+    license = License.current
+    license&.license_type == LEGACY_LICENSE_TYPE && license&.subscription_id == subscription_id
   end
 
   def check_trueup
