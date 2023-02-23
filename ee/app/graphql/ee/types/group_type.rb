@@ -139,6 +139,13 @@ module EE
             resolver: ::Resolvers::Analytics::ContributionAnalytics::ContributionsResolver,
             description: 'Provides the aggregated contributions by users within the group and its subgroups',
             authorize: :read_group_contribution_analytics
+        field :flow_metrics,
+          ::Types::Analytics::CycleAnalytics::FlowMetrics[:group],
+          null: true,
+          description: 'Flow metrics for value stream analytics.',
+          method: :itself,
+          authorize: :read_group_cycle_analytics,
+          alpha: { milestone: '15.10' }
 
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)
