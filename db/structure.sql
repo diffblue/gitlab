@@ -35655,9 +35655,6 @@ ALTER TABLE ONLY project_custom_attributes
     ADD CONSTRAINT fk_rails_719c3dccc5 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY ci_pending_builds
-    ADD CONSTRAINT fk_rails_725a2644a3 FOREIGN KEY (build_id) REFERENCES ci_builds(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY ci_pending_builds
     ADD CONSTRAINT fk_rails_725a2644a3_p FOREIGN KEY (partition_id, build_id) REFERENCES ci_builds(partition_id, id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE security_findings

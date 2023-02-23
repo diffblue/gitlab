@@ -43,7 +43,7 @@ RSpec.describe 'Database schema', feature_category: :database do
     ci_job_artifacts: %w[partition_id job_id],
     ci_job_variables: %w[partition_id],
     ci_namespace_monthly_usages: %w[namespace_id],
-    ci_pending_builds: %w[partition_id],
+    ci_pending_builds: %w[partition_id build_id],
     ci_pipeline_variables: %w[partition_id],
     ci_pipelines: %w[partition_id],
     ci_resources: %w[partition_id build_id],
