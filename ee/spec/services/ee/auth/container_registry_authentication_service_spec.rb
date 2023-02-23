@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Auth::ContainerRegistryAuthenticationService do
+RSpec.describe Auth::ContainerRegistryAuthenticationService, feature_category: :container_registry do
   include AdminModeHelper
 
   describe 'with deploy keys' do
