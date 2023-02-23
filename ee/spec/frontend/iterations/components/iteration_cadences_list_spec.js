@@ -3,7 +3,6 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import IterationCadenceListItem from 'ee/iterations/components/iteration_cadence_list_item.vue';
 import IterationCadencesList from 'ee/iterations/components/iteration_cadences_list.vue';
-import { Namespace } from 'ee/iterations/constants';
 import destroyIterationCadence from 'ee/iterations/queries/destroy_cadence.mutation.graphql';
 import cadencesListQuery from 'ee/iterations/queries/group_iteration_cadences_list.query.graphql';
 import projectCadencesListQuery from 'ee/iterations/queries/project_iteration_cadences_list.query.graphql';
@@ -12,6 +11,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { TEST_HOST } from 'helpers/test_constants';
 import { mountExtended as mount } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 
 const baseUrl = '/cadences/';
 const router = createRouter(baseUrl);
@@ -95,7 +95,7 @@ describe('Iteration cadences list', () => {
   function createComponent({
     canCreateCadence,
     canEditCadence,
-    namespaceType = Namespace.Group,
+    namespaceType = WORKSPACE_GROUP,
     query = cadencesListQuery,
     resolverMock = jest.fn().mockResolvedValue(querySuccessResponse()),
     destroyMutationMock = jest
@@ -182,7 +182,7 @@ describe('Iteration cadences list', () => {
 
     it('loads project iterations for Project namespaceType', async () => {
       await createComponent({
-        namespaceType: Namespace.Project,
+        namespaceType: WORKSPACE_PROJECT,
         query: projectCadencesListQuery,
       });
 

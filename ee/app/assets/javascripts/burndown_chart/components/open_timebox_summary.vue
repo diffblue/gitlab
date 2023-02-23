@@ -1,6 +1,7 @@
 <script>
+import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { __ } from '~/locale';
-import { Namespace, Unit } from '../constants';
+import { Unit } from '../constants';
 import summaryStatsQuery from '../graphql/iteration_issues_summary.query.graphql';
 
 export default {
@@ -34,8 +35,8 @@ export default {
     namespaceType: {
       type: String,
       required: false,
-      default: Namespace.Group,
-      validator: (value) => Object.values(Namespace).includes(value),
+      default: WORKSPACE_GROUP,
+      validator: (value) => [WORKSPACE_GROUP, WORKSPACE_PROJECT].includes(value),
     },
     displayValue: {
       type: String,
@@ -58,7 +59,7 @@ export default {
       return {
         fullPath: this.fullPath,
         id: this.iterationId,
-        isGroup: this.namespaceType === Namespace.Group,
+        isGroup: this.namespaceType === WORKSPACE_GROUP,
         weight: this.displayValue === Unit.weight,
       };
     },

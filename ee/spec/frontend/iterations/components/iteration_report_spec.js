@@ -5,12 +5,12 @@ import VueApollo from 'vue-apollo';
 import IterationReport from 'ee/iterations/components/iteration_report.vue';
 import IterationReportTabs from 'ee/iterations/components/iteration_report_tabs.vue';
 import TimeboxStatusBadge from 'ee/iterations/components/timebox_status_badge.vue';
-import { Namespace } from 'ee/iterations/constants';
 import deleteIteration from 'ee/iterations/queries/destroy_iteration.mutation.graphql';
 import query from 'ee/iterations/queries/iteration.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import { getIterationPeriod } from 'ee/iterations/utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -41,7 +41,7 @@ describe('Iterations report', () => {
 
   const defaultProps = {
     fullPath: 'gitlab-org',
-    namespaceType: Namespace.Group,
+    namespaceType: WORKSPACE_GROUP,
   };
   const labelsFetchPath = '/labels.json';
 
@@ -101,18 +101,18 @@ describe('Iterations report', () => {
   describe('with mock apollo', () => {
     describe.each([
       [
-        Namespace.Group,
+        WORKSPACE_GROUP,
         'group-name',
         mockIterationNodeWithoutTitle,
         createMockGroupIterations(mockIterationNodeWithoutTitle),
       ],
       [
-        Namespace.Group,
+        WORKSPACE_GROUP,
         'group-name',
         mockIterationNode,
         createMockGroupIterations(mockIterationNode),
       ],
-      [Namespace.Project, 'group-name/project-name', mockIterationNode, mockProjectIterations],
+      [WORKSPACE_PROJECT, 'group-name/project-name', mockIterationNode, mockProjectIterations],
     ])(
       'when viewing an iteration in a %s',
       (namespaceType, fullPath, mockIteration, mockIterations) => {
@@ -135,7 +135,7 @@ describe('Iterations report', () => {
           expect(iterationQueryHandler).toHaveBeenNthCalledWith(1, {
             fullPath,
             id: mockIteration.id,
-            isGroup: namespaceType === Namespace.Group,
+            isGroup: namespaceType === WORKSPACE_GROUP,
           });
         });
 
@@ -295,7 +295,7 @@ describe('Iterations report', () => {
           fullPath: defaultProps.fullPath,
           iterationId: mockIterationNode.id,
           labelsFetchPath,
-          namespaceType: Namespace.Group,
+          namespaceType: WORKSPACE_GROUP,
         });
       });
     });
@@ -303,17 +303,17 @@ describe('Iterations report', () => {
     describe('actions dropdown to edit iteration', () => {
       describe.each`
         description                    | canEditIteration | namespaceType        | canEdit
-        ${'has permissions'}           | ${true}          | ${Namespace.Group}   | ${true}
-        ${'has permissions'}           | ${true}          | ${Namespace.Project} | ${false}
-        ${'does not have permissions'} | ${false}         | ${Namespace.Group}   | ${false}
-        ${'does not have permissions'} | ${false}         | ${Namespace.Project} | ${false}
+        ${'has permissions'}           | ${true}          | ${WORKSPACE_GROUP}   | ${true}
+        ${'has permissions'}           | ${true}          | ${WORKSPACE_PROJECT} | ${false}
+        ${'does not have permissions'} | ${false}         | ${WORKSPACE_GROUP}   | ${false}
+        ${'does not have permissions'} | ${false}         | ${WORKSPACE_PROJECT} | ${false}
       `(
         'when user $description and they are viewing an iteration within a $namespaceType',
         ({ canEdit, namespaceType, canEditIteration }) => {
           beforeEach(async () => {
             const mockQueryResponse = {
-              [Namespace.Group]: createMockGroupIterations(mockIterationNode),
-              [Namespace.Project]: mockProjectIterations,
+              [WORKSPACE_GROUP]: createMockGroupIterations(mockIterationNode),
+              [WORKSPACE_PROJECT]: mockProjectIterations,
             }[namespaceType];
 
             mountComponent({
