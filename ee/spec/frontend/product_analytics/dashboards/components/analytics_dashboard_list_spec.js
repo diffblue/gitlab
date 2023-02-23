@@ -4,7 +4,7 @@ import { I18N_DASHBOARD_LIST } from 'ee/product_analytics/dashboards/constants';
 import jsonList from 'ee/product_analytics/dashboards/gl_dashboards/analytics_dashboards.json';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import AnalyticsClipboardInput from 'ee/product_analytics/shared/analytics_clipboard_input.vue';
-import { TEST_JITSU_HOST, TEST_JITSU_PROJECT_ID } from '../../mock_data';
+import { TEST_COLLECTOR_HOST, TEST_JITSU_KEY } from '../../mock_data';
 
 describe('AnalyticsDashboardList', () => {
   let wrapper;
@@ -36,8 +36,8 @@ describe('AnalyticsDashboardList', () => {
         $router,
       },
       provide: {
-        jitsuHost: TEST_JITSU_HOST,
-        jitsuProjectId: TEST_JITSU_PROJECT_ID,
+        collectorHost: TEST_COLLECTOR_HOST,
+        jitsuKey: TEST_JITSU_KEY,
       },
     });
   };
@@ -62,8 +62,8 @@ describe('AnalyticsDashboardList', () => {
         split: 'true',
       });
 
-      expect(findKeyInputAt(0).props('value')).toBe(TEST_JITSU_HOST);
-      expect(findKeyInputAt(1).props('value')).toBe(TEST_JITSU_PROJECT_ID);
+      expect(findKeyInputAt(0).props('value')).toBe(TEST_COLLECTOR_HOST);
+      expect(findKeyInputAt(1).props('value')).toBe(TEST_JITSU_KEY);
     });
 
     it('should render the help link', () => {

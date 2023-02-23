@@ -7,7 +7,7 @@ import {
   COMMON_JS_SETUP_WITH_NPM,
   HTML_SCRIPT_SETUP,
 } from 'ee/product_analytics/onboarding/constants';
-import { TEST_JITSU_HOST, TEST_JITSU_PROJECT_ID } from '../mock_data';
+import { TEST_COLLECTOR_HOST, TEST_JITSU_KEY } from '../mock_data';
 
 const { i18n } = ProductAnalyticsSetupView;
 
@@ -29,8 +29,8 @@ describe('ProductAnalyticsSetupView', () => {
         isInitialSetup,
       },
       provide: {
-        jitsuHost: TEST_JITSU_HOST,
-        jitsuProjectId: TEST_JITSU_PROJECT_ID,
+        collectorHost: TEST_COLLECTOR_HOST,
+        jitsuKey: TEST_JITSU_KEY,
       },
     });
   };
@@ -60,9 +60,9 @@ describe('ProductAnalyticsSetupView', () => {
     );
 
     it.each`
-      key                      | index
-      ${TEST_JITSU_HOST}       | ${0}
-      ${TEST_JITSU_PROJECT_ID} | ${1}
+      key                    | index
+      ${TEST_COLLECTOR_HOST} | ${0}
+      ${TEST_JITSU_KEY}      | ${1}
     `('should render key inputs at $index', ({ key, index }) => {
       createWrapper();
 

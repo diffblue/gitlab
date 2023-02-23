@@ -17,10 +17,10 @@ export default {
     AnalyticsClipboardInput,
   },
   inject: {
-    jitsuHost: {
+    collectorHost: {
       type: String,
     },
-    jitsuProjectId: {
+    jitsuKey: {
       type: String,
     },
   },
@@ -66,14 +66,14 @@ export default {
             class="gl-mb-6 gl-w-full"
             :label="$options.i18n.sdkHost"
             :description="$options.i18n.sdkHostDescription"
-            :value="jitsuHost"
+            :value="collectorHost"
           />
 
           <analytics-clipboard-input
             class="gl-w-full"
             :label="$options.i18n.sdkAppId"
             :description="$options.i18n.sdkAppIdDescription"
-            :value="jitsuProjectId"
+            :value="jitsuKey"
           />
         </gl-dropdown-form>
       </gl-dropdown>
