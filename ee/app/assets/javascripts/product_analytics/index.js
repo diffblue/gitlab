@@ -15,8 +15,7 @@ export default () => {
     jitsuKey,
     projectId,
     projectFullPath,
-    jitsuHost,
-    jitsuProjectId,
+    collectorHost,
     chartEmptyStateIllustrationPath,
     routerBase,
   } = el.dataset;
@@ -34,8 +33,7 @@ export default () => {
       jitsuKey,
       projectFullPath,
       projectId,
-      jitsuHost,
-      jitsuProjectId,
+      collectorHost,
       chartEmptyStateIllustrationPath,
     },
     render(h) {

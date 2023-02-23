@@ -20,10 +20,10 @@ export default {
     GlButton,
   },
   inject: {
-    jitsuHost: {
+    collectorHost: {
       type: String,
     },
-    jitsuProjectId: {
+    jitsuKey: {
       type: String,
     },
   },
@@ -55,7 +55,7 @@ export default {
       const hostKey = '$host';
       const appIdKey = '$applicationId';
 
-      return template.replace(hostKey, this.jitsuHost).replace(appIdKey, this.jitsuProjectId);
+      return template.replace(hostKey, this.collectorHost).replace(appIdKey, this.jitsuKey);
     },
   },
   i18n: {
@@ -128,13 +128,13 @@ export default {
         class="gl-mr-6 gl-mb-6 gl-md-mb-0"
         :label="$options.i18n.sdkHost"
         :description="$options.i18n.sdkHostDescription"
-        :value="jitsuHost"
+        :value="collectorHost"
       />
 
       <analytics-clipboard-input
         :label="$options.i18n.sdkAppId"
         :description="$options.i18n.sdkAppIdDescription"
-        :value="jitsuProjectId"
+        :value="jitsuKey"
       />
     </section>
 

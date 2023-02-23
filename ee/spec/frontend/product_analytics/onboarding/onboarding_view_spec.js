@@ -21,8 +21,8 @@ import { s__ } from '~/locale';
 import {
   createInstanceResponse,
   getJitsuKeyResponse,
-  TEST_JITSU_HOST,
-  TEST_JITSU_PROJECT_ID,
+  TEST_COLLECTOR_HOST,
+  TEST_JITSU_KEY,
   TEST_PROJECT_FULL_PATH,
   TEST_PROJECT_ID,
 } from '../mock_data';
@@ -69,8 +69,8 @@ describe('ProductAnalyticsOnboardingView', () => {
         chartEmptyStateIllustrationPath: TEST_HOST,
         projectFullPath: TEST_PROJECT_FULL_PATH,
         projectId: TEST_PROJECT_ID,
-        jitsuHost: TEST_JITSU_HOST,
-        jitsuProjectId: TEST_JITSU_PROJECT_ID,
+        collectorHost: TEST_COLLECTOR_HOST,
+        jitsuKey: TEST_JITSU_KEY,
       },
     });
   };

@@ -8,8 +8,7 @@ import { TEST_HOST } from 'helpers/test_constants';
 import { NO_INSTANCE_DATA, NO_PROJECT_INSTANCE } from 'ee/product_analytics/onboarding/constants';
 import {
   TEST_JITSU_KEY,
-  TEST_JITSU_HOST,
-  TEST_JITSU_PROJECT_ID,
+  TEST_COLLECTOR_HOST,
   TEST_PROJECT_FULL_PATH,
   TEST_PROJECT_ID,
 } from './mock_data';
@@ -32,8 +31,7 @@ describe('ProductAnalyticsApp', () => {
         chartEmptyStateIllustrationPath: TEST_HOST,
         jitsuKey: TEST_JITSU_KEY,
         projectId: TEST_PROJECT_ID,
-        jitsuHost: TEST_JITSU_HOST,
-        jitsuProjectId: TEST_JITSU_PROJECT_ID,
+        collectorHost: TEST_COLLECTOR_HOST,
         projectFullPath: TEST_PROJECT_FULL_PATH,
         ...provided,
       },
