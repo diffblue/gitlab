@@ -34,4 +34,8 @@ RSpec.describe PackageMetadata::SyncWorker, type: :worker, feature_category: :li
       end
     end
   end
+
+  it 'excludes the same job from starting until it has executed' do
+    expect(described_class.get_deduplicate_strategy).to eq(:until_executed)
+  end
 end
