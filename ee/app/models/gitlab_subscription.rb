@@ -13,7 +13,7 @@ class GitlabSubscription < ApplicationRecord
 
   before_update :set_max_seats_used_changed_at
   before_update :log_previous_state_for_update
-  before_update :reset_seats_for_new_term
+  before_update :reset_seat_statistics
   before_update :publish_subscription_renewed_event
 
   after_commit :index_namespace, on: [:create, :update]
@@ -88,9 +88,9 @@ class GitlabSubscription < ApplicationRecord
   end
 
   # Refresh seat related attribute (without persisting them)
-  def refresh_seat_attributes
+  def refresh_seat_attributes(reset_max: false)
     self.seats_in_use = calculate_seats_in_use
-    self.max_seats_used = [max_seats_used, seats_in_use].max
+    self.max_seats_used = reset_max ? seats_in_use : [max_seats_used, seats_in_use].max
     self.seats_owed = calculate_seats_owed
   end
 
@@ -167,14 +167,13 @@ class GitlabSubscription < ApplicationRecord
     ElasticsearchIndexedNamespace.safe_find_or_create_by!(namespace_id: namespace_id)
   end
 
-  # If the subscription starts a new term, the dates will change. We reset max_seats_used
-  # and seats_owed so that we don't carry it over from the previous term
-  def reset_seats_for_new_term
-    return unless new_term?
+  # If the subscription changes, we reset max_seats_used and seats_owed
+  # if they're out of date, so that we don't carry them over from the previous term/subscription.
+  def reset_seat_statistics
+    return unless reset_seat_statistics?
 
-    self.max_seats_used = attributes['seats_in_use']
-    self.seats_owed = calculate_seats_owed
-    self.max_seats_used_changed_at = nil
+    refresh_seat_attributes(reset_max: true)
+    self.max_seats_used_changed_at = Time.current
   end
 
   def publish_subscription_renewed_event
@@ -194,5 +193,9 @@ class GitlabSubscription < ApplicationRecord
   def new_term?
     persisted? && start_date_changed? && end_date_changed? &&
       (end_date_was.nil? || start_date >= end_date_was)
+  end
+
+  def reset_seat_statistics?
+    new_term? || (max_seats_used_changed_at.present? && max_seats_used_changed_at.to_date < start_date)
   end
 end
