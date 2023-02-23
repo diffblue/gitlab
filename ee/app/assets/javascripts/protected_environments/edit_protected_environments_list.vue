@@ -1,7 +1,5 @@
 <script>
 import {
-  GlAccordion,
-  GlAccordionItem,
   GlAvatar,
   GlButton,
   GlFormGroup,
@@ -16,17 +14,17 @@ import { ACCESS_LEVELS, DEPLOYER_RULE_KEY, APPROVER_RULE_KEY } from './constants
 import EditProtectedEnvironmentRulesCard from './edit_protected_environment_rules_card.vue';
 import AddRuleModal from './add_rule_modal.vue';
 import AddApprovers from './add_approvers.vue';
+import ProtectedEnvironments from './protected_environments.vue';
 
 export default {
   components: {
-    GlAccordion,
-    GlAccordionItem,
     GlAvatar,
     GlButton,
     GlFormGroup,
     GlFormInput,
     GlSprintf,
     AccessDropdown,
+    ProtectedEnvironments,
     EditProtectedEnvironmentRulesCard,
     AddRuleModal,
     AddApprovers,
@@ -62,11 +60,8 @@ export default {
       'editRule',
       'updateRule',
     ]),
-    filterRules(env) {
-      return env.deploy_access_levels.filter(({ _destroy: destroy = false }) => !destroy);
-    },
-    canDeleteRules(env) {
-      return env.deploy_access_levels.length > 1;
+    canDeleteDeployerRules(env) {
+      return env[DEPLOYER_RULE_KEY].length > 1;
     },
     addRule({ environment, ruleKey }) {
       this.addingEnvironment = environment;
@@ -129,12 +124,8 @@ export default {
         />
       </template>
     </add-rule-modal>
-    <gl-accordion :header-level="6">
-      <gl-accordion-item
-        v-for="environment in protectedEnvironments"
-        :key="environment.name"
-        :title="environment.name"
-      >
+    <protected-environments :environments="protectedEnvironments">
+      <template #default="{ environment }">
         <edit-protected-environment-rules-card
           :loading="loading"
           :add-button-text="$options.i18n.addDeployerText"
@@ -164,7 +155,7 @@ export default {
             />
 
             <gl-button
-              v-if="canDeleteRules(environment)"
+              v-if="canDeleteDeployerRules(environment)"
               v-gl-tooltip
               category="secondary"
               variant="danger"
@@ -241,7 +232,7 @@ export default {
             />
           </template>
         </edit-protected-environment-rules-card>
-      </gl-accordion-item>
-    </gl-accordion>
+      </template>
+    </protected-environments>
   </div>
 </template>

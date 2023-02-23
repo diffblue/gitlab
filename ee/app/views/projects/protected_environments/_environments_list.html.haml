@@ -1,6 +1,5 @@
 - if Feature.enabled?(:multiple_environment_approval_rules_fe, @project)
-  .settings-content
-    #js-edit-protected-environment-list{ data: { project_id: @project.id } }
+  #js-edit-protected-environment-list{ data: { project_id: @project.id } }
 - else
   .protected-branches-list.js-protected-environments-list
     - unless @protected_environments.empty?

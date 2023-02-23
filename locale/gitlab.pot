@@ -34957,6 +34957,16 @@ msgstr ""
 msgid "ProtectedBranch|default"
 msgstr ""
 
+msgid "ProtectedEnvironments|%d Approval Rule"
+msgid_plural "ProtectedEnvironments|%d Approval Rules"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "ProtectedEnvironments|%d Deployment Rule"
+msgid_plural "ProtectedEnvironments|%d Deployment Rules"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "ProtectedEnvironments|Add approval rules"
 msgstr ""
 

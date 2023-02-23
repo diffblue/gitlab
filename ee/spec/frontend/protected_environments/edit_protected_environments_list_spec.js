@@ -142,7 +142,7 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
   it('shows a header for the protected environment', async () => {
     await createComponent();
 
-    expect(wrapper.findByRole('heading', { name: 'staging' }).exists()).toBe(true);
+    expect(wrapper.findByRole('button', { name: 'staging' }).exists()).toBe(true);
   });
 
   it('shows member avatars in each row', async () => {
