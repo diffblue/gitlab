@@ -1,8 +1,5 @@
 - page_title s_("ValueStreamAnalytics|New Value Stream")
 - add_page_specific_style 'page_bundles/cycle_analytics'
-- data_attributes = group_cycle_analytics_data(@group)
-- data_attributes[:create_value_stream_url] = group_analytics_cycle_analytics_value_streams_path(group_id: @group)
-- data_attributes[:stage_events] = @stage_events.to_json
 
-#js-cycle-analytics-new-vs-app{ data: data_attributes }
+#js-cycle-analytics-new-vs-app{ data: {} }
 

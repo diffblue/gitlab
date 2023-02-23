@@ -1,7 +1,4 @@
 - page_title s_("ValueStreamAnalytics|Edit Value Stream: %{name}") % { name: @value_stream.name }
 - add_page_specific_style 'page_bundles/cycle_analytics'
-- data_attributes = group_cycle_analytics_data(@group).merge(value_stream_id: @value_stream.id)
-- data_attributes[:value_stream_url] = group_analytics_cycle_analytics_value_stream_path(group_id: @group, id: @value_stream.id)
-- data_attributes[:stage_events] = @stage_events.to_json
 
-#js-cycle-analytics-edit-vs-app{ data: data_attributes }
+#js-cycle-analytics-edit-vs-app{ data: {} }

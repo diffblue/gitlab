@@ -31,7 +31,7 @@ class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::Applicati
   override :all_cycle_analytics_params
 
   def all_cycle_analytics_params
-    super.merge({ group: @group, value_stream: @value_stream })
+    super.merge({ namespace: @group, value_stream: @value_stream })
   end
 
   def load_value_stream

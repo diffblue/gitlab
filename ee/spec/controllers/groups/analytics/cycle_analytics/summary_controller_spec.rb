@@ -51,7 +51,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::SummaryController, feature_cat
 
     it 'passes the group to RequestParams' do
       expect_next_instance_of(Gitlab::Analytics::CycleAnalytics::RequestParams) do |instance|
-        expect(instance.group).to eq(group)
+        expect(instance.namespace).to eq(group)
       end
 
       subject

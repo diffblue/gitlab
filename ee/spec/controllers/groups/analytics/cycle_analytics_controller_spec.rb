@@ -101,7 +101,7 @@ RSpec.describe Groups::Analytics::CycleAnalyticsController, feature_category: :p
 
       it 'builds request params with group and value stream' do
         expect_next_instance_of(Gitlab::Analytics::CycleAnalytics::RequestParams) do |instance|
-          expect(instance).to have_attributes(group: group, value_stream: value_stream)
+          expect(instance).to have_attributes(namespace: group, value_stream: value_stream)
         end
 
         get(:show, params: { group_id: group, value_stream_id: value_stream })

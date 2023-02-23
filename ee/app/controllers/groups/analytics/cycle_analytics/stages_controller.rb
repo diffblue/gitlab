@@ -17,7 +17,7 @@ module Groups
 
         override :all_cycle_analytics_params
         def all_cycle_analytics_params
-          super.merge({ group: @group })
+          super.merge({ namespace: @group })
         end
 
         override :authorize_stage
