@@ -2,10 +2,21 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.[project|group](fullPath).dora.metrics', feature_category: :continuous_delivery do
+RSpec.describe 'Query.[project|group](fullPath).dora.metrics', feature_category: :devops_reports do
   include GraphqlHelpers
 
   let_it_be(:reporter) { create(:user) }
+  let(:query_body) do
+    <<~QUERY
+      dora {
+        metrics {
+          date
+          deploymentFrequency
+        }
+      }
+    QUERY
+  end
+
   let_it_be(:group) { create(:group) }
   let_it_be(:project_1) { create(:project, group: group) }
   let_it_be(:project_2) { create(:project, group: group) }
@@ -17,17 +28,6 @@ RSpec.describe 'Query.[project|group](fullPath).dora.metrics', feature_category:
 
   let(:post_query) { post_graphql(query, current_user: reporter) }
   let(:data) { graphql_data.dig(*path_prefix) }
-
-  let(:query_body) do
-    <<~QUERY
-      dora {
-        metrics(metric: DEPLOYMENT_FREQUENCY) {
-          date
-          value
-        }
-      }
-    QUERY
-  end
 
   around do |example|
     travel_to '2021-02-01'.to_time do
@@ -44,7 +44,7 @@ RSpec.describe 'Query.[project|group](fullPath).dora.metrics', feature_category:
     create(:dora_daily_metrics, deployment_frequency: 2, environment: production_in_project_1, date: '2021-01-04')
     create(:dora_daily_metrics, deployment_frequency: 1, environment: production_in_project_1, date: '2021-01-05')
     create(:dora_daily_metrics, deployment_frequency: 1, environment: production_in_project_1, date: '2021-01-06')
-    create(:dora_daily_metrics, deployment_frequency: nil, environment: production_in_project_1, date: '2021-01-07')
+    create(:dora_daily_metrics, incidents_count: 48, environment: production_in_project_1, date: '2021-01-07')
 
     create(:dora_daily_metrics, deployment_frequency: 4, environment: staging_in_project_1, date: '2021-01-08')
 
@@ -69,15 +69,37 @@ RSpec.describe 'Query.[project|group](fullPath).dora.metrics', feature_category:
 
       expect(data).to eq(
         [
-          { 'value' => 3, 'date' => '2021-01-01' },
-          { 'value' => 3, 'date' => '2021-01-02' },
-          { 'value' => 2, 'date' => '2021-01-03' },
-          { 'value' => 2, 'date' => '2021-01-04' },
-          { 'value' => 1, 'date' => '2021-01-05' },
-          { 'value' => 1, 'date' => '2021-01-06' },
-          { 'value' => nil, 'date' => '2021-01-07' }
+          { 'deploymentFrequency' => 3, 'date' => '2021-01-01' },
+          { 'deploymentFrequency' => 3, 'date' => '2021-01-02' },
+          { 'deploymentFrequency' => 2, 'date' => '2021-01-03' },
+          { 'deploymentFrequency' => 2, 'date' => '2021-01-04' },
+          { 'deploymentFrequency' => 1, 'date' => '2021-01-05' },
+          { 'deploymentFrequency' => 1, 'date' => '2021-01-06' },
+          { 'deploymentFrequency' => nil, 'date' => '2021-01-07' }
         ]
       )
+    end
+
+    context 'when querying multiple metrics' do
+      let(:query_body) do
+        <<~QUERY
+      dora {
+        metrics(interval: ALL) {
+          date
+          deploymentFrequency
+          changeFailureRate
+        }
+      }
+        QUERY
+      end
+
+      it 'returns data for multiple metrics' do
+        post_query
+
+        expect(data).to eq([
+          { 'deploymentFrequency' => 12, 'changeFailureRate' => 4, 'date' => nil }
+        ])
+      end
     end
   end
 
@@ -93,16 +115,100 @@ RSpec.describe 'Query.[project|group](fullPath).dora.metrics', feature_category:
 
       expect(data).to eq(
         [
-          { 'value' => 3, 'date' => '2021-01-01' },
-          { 'value' => 3, 'date' => '2021-01-02' },
-          { 'value' => 2, 'date' => '2021-01-03' },
-          { 'value' => 2, 'date' => '2021-01-04' },
-          { 'value' => 1, 'date' => '2021-01-05' },
-          { 'value' => 1, 'date' => '2021-01-06' },
-          { 'value' => nil, 'date' => '2021-01-07' },
-          { 'value' => 4, 'date' => '2021-01-09' }
+          { 'deploymentFrequency' => 3, 'date' => '2021-01-01' },
+          { 'deploymentFrequency' => 3, 'date' => '2021-01-02' },
+          { 'deploymentFrequency' => 2, 'date' => '2021-01-03' },
+          { 'deploymentFrequency' => 2, 'date' => '2021-01-04' },
+          { 'deploymentFrequency' => 1, 'date' => '2021-01-05' },
+          { 'deploymentFrequency' => 1, 'date' => '2021-01-06' },
+          { 'deploymentFrequency' => nil, 'date' => '2021-01-07' },
+          { 'deploymentFrequency' => 4, 'date' => '2021-01-09' }
         ]
       )
+    end
+
+    context 'when querying multiple metrics' do
+      let(:query_body) do
+        <<~QUERY
+      dora {
+        metrics(interval: ALL) {
+          date
+          deploymentFrequency
+          changeFailureRate
+        }
+      }
+        QUERY
+      end
+
+      it 'returns data for multiple metrics' do
+        post_query
+
+        expect(data).to eq([
+          { 'deploymentFrequency' => 16, 'changeFailureRate' => 3, 'date' => nil }
+        ])
+      end
+    end
+  end
+
+  context 'with deprecated format' do
+    let(:query_body) do
+      <<~QUERY
+      dora {
+        metrics(metric: DEPLOYMENT_FREQUENCY) {
+          date
+          value
+        }
+      }
+      QUERY
+    end
+
+    context 'when querying for project-level metrics' do
+      let(:path_prefix) { %w[project dora metrics] }
+
+      let(:query) do
+        graphql_query_for(:project, { fullPath: project_1.full_path }, query_body)
+      end
+
+      it 'returns the expected project-level DORA metrics' do
+        post_query
+
+        expect(data).to eq(
+          [
+            { 'value' => 3, 'date' => '2021-01-01' },
+            { 'value' => 3, 'date' => '2021-01-02' },
+            { 'value' => 2, 'date' => '2021-01-03' },
+            { 'value' => 2, 'date' => '2021-01-04' },
+            { 'value' => 1, 'date' => '2021-01-05' },
+            { 'value' => 1, 'date' => '2021-01-06' },
+            { 'value' => nil, 'date' => '2021-01-07' }
+          ]
+        )
+      end
+    end
+
+    context 'when querying for group-level metrics' do
+      let(:path_prefix) { %w[group dora metrics] }
+
+      let(:query) do
+        graphql_query_for(:group, { fullPath: group.full_path }, query_body)
+      end
+
+      it 'returns the expected group-level DORA metrics' do
+        post_query
+
+        expect(data).to eq(
+          [
+            { 'value' => 3, 'date' => '2021-01-01' },
+            { 'value' => 3, 'date' => '2021-01-02' },
+            { 'value' => 2, 'date' => '2021-01-03' },
+            { 'value' => 2, 'date' => '2021-01-04' },
+            { 'value' => 1, 'date' => '2021-01-05' },
+            { 'value' => 1, 'date' => '2021-01-06' },
+            { 'value' => nil, 'date' => '2021-01-07' },
+            { 'value' => 4, 'date' => '2021-01-09' }
+          ]
+        )
+      end
     end
   end
 end
