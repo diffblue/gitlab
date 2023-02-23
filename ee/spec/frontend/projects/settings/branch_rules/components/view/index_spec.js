@@ -40,12 +40,19 @@ describe('View branch rules in enterprise edition', () => {
     .fn()
     .mockResolvedValue(branchProtectionsMockResponse);
 
-  const createComponent = async () => {
+  const createComponent = async ({ showApprovers, showStatusChecks } = {}) => {
     fakeApollo = createMockApollo([[branchRulesQuery, branchProtectionsMockRequestHandler]]);
 
     wrapper = shallowMountExtended(RuleView, {
       apolloProvider: fakeApollo,
-      provide: { projectPath, protectedBranchesPath, approvalRulesPath, statusChecksPath },
+      provide: {
+        projectPath,
+        protectedBranchesPath,
+        approvalRulesPath,
+        statusChecksPath,
+        showApprovers,
+        showStatusChecks,
+      },
     });
 
     await waitForPromises();
@@ -73,7 +80,14 @@ describe('View branch rules in enterprise edition', () => {
     });
   });
 
-  it('renders a branch protection component for approvals', () => {
+  it('does not render approvals and status checks sections by default', () => {
+    expect(findApprovalsTitle().exists()).toBe(false);
+    expect(findStatusChecksTitle().exists()).toBe(false);
+  });
+
+  it('renders a branch protection component for approvals if "showApprovers" is true', async () => {
+    await createComponent({ showApprovers: true });
+
     expect(findApprovalsTitle().exists()).toBe(true);
 
     expect(findBranchProtections().at(2).props()).toMatchObject({
@@ -84,10 +98,12 @@ describe('View branch rules in enterprise edition', () => {
     });
   });
 
-  it('renders a branch protection component for status checks', () => {
+  it('renders a branch protection component for status checks  if "showStatusChecks" is true', async () => {
+    await createComponent({ showStatusChecks: true });
+
     expect(findStatusChecksTitle().exists()).toBe(true);
 
-    expect(findBranchProtections().at(3).props()).toMatchObject({
+    expect(findBranchProtections().at(2).props()).toMatchObject({
       header: sprintf(I18N.statusChecksHeader, { total: statusChecksRulesMock.length }),
       headerLinkHref: statusChecksPath,
       headerLinkTitle: I18N.statusChecksLinkTitle,
