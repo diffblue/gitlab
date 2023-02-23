@@ -15,10 +15,6 @@ module Types
       field :total_weight, GraphQL::Types::Int, null: true,
                                                 description: 'Total weight of all issues in the list.',
                                                 alpha: { milestone: '14.7' }
-
-      def total_weight
-        object[:total_weight] if Feature.enabled?(:epic_board_total_weight)
-      end
     end
     # rubocop: enable Graphql/AuthorizeTypes
   end
