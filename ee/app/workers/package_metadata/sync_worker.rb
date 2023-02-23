@@ -9,6 +9,7 @@ module PackageMetadata
     feature_category :license_compliance
     urgency :low
 
+    deduplicate :until_executed
     idempotent!
 
     def perform
