@@ -6,6 +6,8 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
+        has_one :cost_settings, class_name: 'Ci::Minutes::CostSetting', foreign_key: :runner_id, inverse_of: :runner
+
         def self.any_shared_runners_with_enabled_cost_factor?(project)
           if project.public?
             instance_type.where('public_projects_minutes_cost_factor > 0').exists?
