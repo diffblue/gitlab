@@ -9,6 +9,15 @@ RSpec.describe Ci::Runner, feature_category: :continuous_integration do
     allow(::Gitlab::CurrentSettings).to receive(:shared_runners_minutes) { shared_runners_minutes }
   end
 
+  describe 'ci associations' do
+    it 'has one cost setting' do
+      is_expected.to have_one(:cost_settings)
+      .inverse_of(:runner)
+      .class_name('Ci::Minutes::CostSetting')
+      .with_foreign_key(:runner_id)
+    end
+  end
+
   describe '#cost_factor_for_project' do
     subject { runner.cost_factor_for_project(project) }
 
