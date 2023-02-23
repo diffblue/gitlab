@@ -543,6 +543,13 @@ CREATE TABLE batched_background_migration_job_transition_logs (
 )
 PARTITION BY RANGE (created_at);
 
+CREATE TABLE p_ci_runner_machine_builds (
+    partition_id bigint NOT NULL,
+    build_id bigint NOT NULL,
+    runner_machine_id bigint NOT NULL
+)
+PARTITION BY LIST (partition_id);
+
 CREATE TABLE incident_management_pending_alert_escalations (
     id bigint NOT NULL,
     rule_id bigint NOT NULL,
@@ -19017,13 +19024,6 @@ CREATE SEQUENCE operations_user_lists_id_seq
     CACHE 1;
 
 ALTER SEQUENCE operations_user_lists_id_seq OWNED BY operations_user_lists.id;
-
-CREATE TABLE p_ci_runner_machine_builds (
-    partition_id bigint NOT NULL,
-    build_id bigint NOT NULL,
-    runner_machine_id bigint NOT NULL
-)
-PARTITION BY LIST (partition_id);
 
 CREATE TABLE packages_build_infos (
     id bigint NOT NULL,
