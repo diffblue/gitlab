@@ -1,11 +1,13 @@
-import { GlEmptyState, GlAlert } from '@gitlab/ui';
-import Vue from 'vue';
+import { GlEmptyState } from '@gitlab/ui';
+import * as Sentry from '@sentry/browser';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { pick } from 'lodash';
+import { logError } from '~/lib/logger';
 import {
+  I18N_API_ERROR,
   I18N_CI_1000_MINUTES_PLAN,
   I18N_STORAGE_PLAN,
-  I18N_API_ERROR,
   planTags,
 } from 'ee/subscriptions/buy_addons_shared/constants';
 import Checkout from 'ee/subscriptions/buy_addons_shared/components/checkout.vue';
@@ -17,13 +19,17 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createMockApolloProvider } from 'ee_jest/subscriptions/spec_helper';
 import { mockCiMinutesPlans, mockStoragePlans } from 'ee_jest/subscriptions/mock_data';
+import ErrorAlert from 'ee/vue_shared/purchase_flow/components/checkout/error_alert.vue';
+import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 
 Vue.use(VueApollo);
+
+jest.mock('~/lib/logger');
 
 describe('Buy Addons Shared App', () => {
   let wrapper;
 
-  async function createComponent(apolloProvider, injectedProps) {
+  const createComponent = (apolloProvider, injectedProps) => {
     wrapper = shallowMountExtended(App, {
       apolloProvider,
       provide: injectedProps,
@@ -34,15 +40,15 @@ describe('Buy Addons Shared App', () => {
         SummaryDetails,
       },
     });
-    await waitForPromises();
-  }
+    return waitForPromises();
+  };
 
   const getStoragePlan = () => pick(mockStoragePlans[0], ['id', 'code', 'pricePerYear', 'name']);
   const getCiMinutesPlan = () =>
     pick(mockCiMinutesPlans[0], ['id', 'code', 'pricePerYear', 'name']);
   const findCheckout = () => wrapper.findComponent(Checkout);
   const findOrderSummary = () => wrapper.findComponent(OrderSummary);
-  const findAlert = () => wrapper.findComponent(GlAlert);
+  const findErrorAlert = () => wrapper.findComponent(ErrorAlert);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findPriceLabel = () => wrapper.findByTestId('price-per-unit');
   const findQuantityText = () => wrapper.findByTestId('addon-quantity-text');
@@ -50,8 +56,8 @@ describe('Buy Addons Shared App', () => {
   const findSummaryLabel = () => wrapper.findByTestId('summary-label');
   const findSummaryTotal = () => wrapper.findByTestId('summary-total');
 
-  afterEach(() => {
-    wrapper.destroy();
+  beforeEach(() => {
+    jest.spyOn(Sentry, 'captureException');
   });
 
   describe('Storage', () => {
@@ -66,8 +72,11 @@ describe('Buy Addons Shared App', () => {
         await createComponent(mockApollo, injectedProps);
       });
 
-      it('should display the root element', () => {
+      it('displays the root element', () => {
         expect(findRootElement().exists()).toBe(true);
+      });
+
+      it('hides the empty state component', () => {
         expect(findEmptyState().exists()).toBe(false);
       });
 
@@ -77,24 +86,35 @@ describe('Buy Addons Shared App', () => {
         });
       });
 
-      it('provides the correct props to order summary', () => {
+      it('provides the correct props to OrderSummary', () => {
         expect(findOrderSummary().props()).toMatchObject({
           plan: { ...getStoragePlan, isAddon: true },
           title: I18N_STORAGE_PLAN.title,
         });
       });
 
-      describe('and an error occurred', () => {
+      it('does not display the error alert', () => {
+        expect(findErrorAlert().exists()).toBe(false);
+      });
+
+      describe('when OrderSummary emits an `error` event', () => {
+        const error = new Error(I18N_API_ERROR);
+
         beforeEach(() => {
-          findOrderSummary().vm.$emit('alertError', I18N_API_ERROR);
+          findOrderSummary().vm.$emit(PurchaseEvent.ERROR, error);
+          return nextTick();
         });
 
-        it('shows the alert', () => {
-          expect(findAlert().props()).toMatchObject({
-            dismissible: false,
-            variant: 'danger',
-          });
-          expect(findAlert().text()).toBe(I18N_API_ERROR);
+        it('passes the correct props to the alert', () => {
+          expect(findErrorAlert().props('error')).toBe(error);
+        });
+
+        it('captures the error', () => {
+          expect(Sentry.captureException.mock.calls[0][0]).toBe(error);
+        });
+
+        it('logs the error', () => {
+          expect(logError).toHaveBeenCalledWith(error);
         });
       });
     });
@@ -205,7 +225,7 @@ describe('Buy Addons Shared App', () => {
         });
       });
 
-      it('provides the correct props to order summary', () => {
+      it('provides the correct props to OrderSummary', () => {
         expect(findOrderSummary().props()).toMatchObject({
           plan: { ...getCiMinutesPlan, isAddon: true },
           title: I18N_CI_1000_MINUTES_PLAN.title,

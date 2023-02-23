@@ -1,13 +1,10 @@
 <script>
-import { GlCard, GlIcon, GlCollapse, GlCollapseToggleDirective } from '@gitlab/ui';
+import { GlCard, GlCollapse, GlCollapseToggleDirective, GlIcon } from '@gitlab/ui';
 import find from 'lodash/find';
-import { logError } from '~/lib/logger';
-
-import { TAX_RATE } from 'ee/subscriptions/new/constants';
-import { CUSTOMERSDOT_CLIENT, I18N_API_ERROR } from 'ee/subscriptions/buy_addons_shared/constants';
+import { PurchaseEvent, TAX_RATE } from 'ee/subscriptions/new/constants';
+import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constants';
 import formattingMixins from 'ee/subscriptions/new/formatting_mixins';
 import { sprintf } from '~/locale';
-
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import orderPreviewQuery from 'ee/subscriptions/graphql/queries/order_preview.customer.query.graphql';
 import SummaryDetails from 'jh_else_ee/subscriptions/buy_addons_shared/components/order_summary/summary_details.vue';
@@ -75,8 +72,7 @@ export default {
       },
       error(error) {
         this.hasError = true;
-        this.$emit('alertError', I18N_API_ERROR);
-        logError(error);
+        this.$emit(PurchaseEvent.ERROR, error);
       },
       skip() {
         return !this.purchaseHasExpiration || !this.quantity;

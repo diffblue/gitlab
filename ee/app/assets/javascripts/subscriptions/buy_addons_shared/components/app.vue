@@ -1,7 +1,8 @@
 <script>
 import emptySvg from '@gitlab/svgs/dist/illustrations/security-dashboard-empty-state.svg';
-import { GlEmptyState, GlAlert } from '@gitlab/ui';
+import { GlEmptyState } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
+import { logError } from '~/lib/logger';
 import StepOrderApp from 'ee/vue_shared/purchase_flow/components/step_order_app.vue';
 import OrderSummary from 'jh_else_ee/subscriptions/buy_addons_shared/components/order_summary.vue';
 import { ERROR_FETCHING_DATA_HEADER, ERROR_FETCHING_DATA_DESCRIPTION } from '~/ensure_data';
@@ -9,6 +10,7 @@ import Checkout from 'jh_else_ee/subscriptions/buy_addons_shared/components/chec
 import AddonPurchaseDetails from 'ee/subscriptions/buy_addons_shared/components/checkout/addon_purchase_details.vue';
 import { formatNumber, sprintf } from '~/locale';
 import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constants';
+import ErrorAlert from 'ee/vue_shared/purchase_flow/components/checkout/error_alert.vue';
 
 import plansQuery from 'ee/subscriptions/graphql/queries/plans.customer.query.graphql';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
@@ -17,16 +19,16 @@ export default {
   components: {
     AddonPurchaseDetails,
     Checkout,
+    ErrorAlert,
     GlEmptyState,
-    GlAlert,
     OrderSummary,
     StepOrderApp,
   },
   inject: ['tags', 'i18n'],
   data() {
     return {
-      hasError: false,
-      alertMessage: '',
+      didFailInitialDataLoad: false,
+      error: null,
     };
   },
   computed: {
@@ -77,8 +79,10 @@ export default {
         selectedPlanPrice: price,
       });
     },
-    alertError(errorMessage) {
-      this.alertMessage = errorMessage;
+    handleError(error) {
+      this.error = error;
+      Sentry.captureException(error);
+      logError(error);
     },
   },
   apollo: {
@@ -90,13 +94,13 @@ export default {
       },
       update(data) {
         if (!data?.plans?.length) {
-          this.hasError = true;
+          this.didFailInitialDataLoad = true;
           return [];
         }
         return data.plans;
       },
       error(error) {
-        this.hasError = true;
+        this.didFailInitialDataLoad = true;
         Sentry.captureException(error);
       },
     },
@@ -111,29 +115,24 @@ export default {
 </script>
 <template>
   <gl-empty-state
-    v-if="hasError"
+    v-if="didFailInitialDataLoad"
     :description="errorDescription"
     :title="errorTitle"
     :svg-path="emptySvgPath"
   />
   <step-order-app v-else-if="!$apollo.loading" data-testid="buy-addons-shared">
+    <template #alerts>
+      <error-alert v-if="error" class="checkout-alert gl-mb-5" :error="error" />
+    </template>
     <template #checkout>
-      <gl-alert
-        v-if="alertMessage"
-        class="checkout-alert gl-mb-5"
-        variant="danger"
-        :dismissible="false"
-      >
-        {{ alertMessage }}
-      </gl-alert>
-      <checkout :plan="plan" @alertError="alertError">
+      <checkout :plan="plan" @error="handleError">
         <template #purchase-details>
           <addon-purchase-details
             :product-label="plan.label"
             :quantity="quantity"
             :show-alert="true"
             :alert-text="i18n.alertText"
-            @alertError="alertError"
+            @error="handleError"
           >
             <template #formula>
               {{ formulaText }}
@@ -155,7 +154,7 @@ export default {
         :plan="plan"
         :title="i18n.title"
         :purchase-has-expiration="plan.hasExpiration"
-        @alertError="alertError"
+        @error="handleError"
       >
         <template #price-per-unit="{ price }">
           {{ pricePerUnitLabel(price) }}

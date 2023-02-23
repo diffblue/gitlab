@@ -9,8 +9,8 @@ import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import { I18N_DETAILS_INVALID_QUANTITY_MESSAGE } from 'ee/subscriptions/buy_addons_shared/constants';
+import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 
 Vue.use(VueApollo);
 
@@ -56,10 +56,6 @@ describe('AddonPurchaseDetails', () => {
 
   beforeEach(() => {
     createComponent();
-  });
-
-  afterEach(() => {
-    wrapper.destroy();
   });
 
   it('sets the min quantity to 1', () => {
@@ -182,19 +178,20 @@ describe('AddonPurchaseDetails', () => {
   });
 
   describe('when the mutation fails', () => {
+    const error = new Error('Error om input change');
+
     beforeEach(() => {
-      jest.spyOn(console, 'error').mockImplementation(() => {});
-      updateState = jest.fn().mockRejectedValue(new Error('Error om input change'));
+      updateState = jest.fn().mockRejectedValue(error);
       createComponent();
     });
 
-    it('should emit `alertError` event', async () => {
+    it('emits `error` event', async () => {
       findGlFormInput().element.value = 2;
       findGlFormInput().trigger('input');
 
       await waitForPromises();
 
-      expect(wrapper.emitted('alertError')).toEqual([[GENERAL_ERROR_MESSAGE]]);
+      expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([[error]]);
     });
   });
 });

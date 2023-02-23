@@ -1,12 +1,12 @@
 <script>
+import * as Sentry from '@sentry/browser';
 import StepOrderApp from 'ee/vue_shared/purchase_flow/components/step_order_app.vue';
 import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
 import Checkout from 'jh_else_ee/subscriptions/new/components/checkout.vue';
 import ConfirmOrder from 'ee/subscriptions/new/components/checkout/confirm_order.vue';
 import OrderSummary from 'jh_else_ee/subscriptions/new/components/order_summary.vue';
 import Modal from 'ee/subscriptions/new/components/modal.vue';
-import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
-import { createAlert } from '~/flash';
+import ErrorAlert from 'ee/vue_shared/purchase_flow/components/checkout/error_alert.vue';
 
 export default {
   components: {
@@ -16,10 +16,20 @@ export default {
     Checkout,
     OrderSummary,
     ConfirmOrder,
+    ErrorAlert,
+  },
+  data() {
+    return {
+      error: null,
+    };
   },
   methods: {
-    showError({ error, message = GENERAL_ERROR_MESSAGE }) {
-      createAlert({ message, error, captureError: true });
+    handleError(error) {
+      this.error = error;
+      Sentry.captureException(error);
+    },
+    hideError() {
+      this.error = null;
     },
   },
 };
@@ -31,14 +41,14 @@ export default {
         <modal />
       </template>
     </gitlab-experiment>
-
+    <error-alert v-if="error" class="gl-mb-4" :error="error" />
     <step-order-app>
       <template #checkout>
-        <checkout />
+        <checkout @error="handleError" @error-reset="hideError" />
         <confirm-order
           class="gl-display-none gl-lg-display-block!"
           data-testid="confirm-order-desktop"
-          @error="showError"
+          @error="handleError"
         />
       </template>
       <template #order-summary>
@@ -46,7 +56,7 @@ export default {
         <confirm-order
           class="gl-display-block gl-lg-display-none!"
           data-testid="confirm-order-mobile"
-          @error="showError"
+          @error="handleError"
         />
       </template>
     </step-order-app>

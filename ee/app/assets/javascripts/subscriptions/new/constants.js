@@ -5,7 +5,6 @@ const MODAL_RENDERED_ACTION = 'modal_rendered';
 
 export const TAX_RATE = 0;
 export const MODAL_TIMEOUT = 180000; // 3 minutes
-
 export const NEW_GROUP = 'new_group';
 export const ULTIMATE = 'ultimate';
 export const MODAL_TITLE = s__('Subscriptions|Not ready to buy yet?');

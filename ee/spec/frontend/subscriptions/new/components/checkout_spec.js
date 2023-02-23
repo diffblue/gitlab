@@ -5,7 +5,6 @@ import Checkout from 'ee/subscriptions/new/components/checkout.vue';
 import createStore from 'ee/subscriptions/new/store';
 import { mockTracking } from 'helpers/tracking_helper';
 import SubscriptionDetails from 'ee/subscriptions/new/components/checkout/subscription_details.vue';
-import { createAlert } from '~/flash';
 import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 
 const mockCreateAlert = {
@@ -42,35 +41,20 @@ describe('Checkout', () => {
     });
   });
 
-  describe('when the children component emit events', () => {
-    const error = new Error('Yikes!');
+  describe('when the children component emits an error event', () => {
+    it('emits an error event', () => {
+      const error = new Error('Yikes!');
+      findSubscriptionDetails().vm.$emit(PurchaseEvent.ERROR, error);
 
-    describe('when the alert is not created yet', () => {
-      it('dismisses the subscription details alert', () => {
-        findSubscriptionDetails().vm.$emit(PurchaseEvent.ERROR_RESET);
-
-        expect(mockCreateAlert.dismiss.mock.calls).toHaveLength(0);
-      });
+      expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([[error]]);
     });
+  });
 
-    describe('when the alert is present', () => {
-      beforeEach(() => {
-        findSubscriptionDetails().vm.$emit(PurchaseEvent.ERROR, { message: 'A message', error });
-      });
+  describe('when the children component emits an error-reset event', () => {
+    it('emits an error event', () => {
+      findSubscriptionDetails().vm.$emit(PurchaseEvent.ERROR_RESET);
 
-      it('creates an alert from subscription details error', () => {
-        expect(createAlert).toHaveBeenCalledWith({
-          message: 'A message',
-          captureError: true,
-          error,
-        });
-      });
-
-      it('dismisses the subscription details alert', () => {
-        findSubscriptionDetails().vm.$emit(PurchaseEvent.ERROR_RESET);
-
-        expect(mockCreateAlert.dismiss.mock.calls).toHaveLength(1);
-      });
+      expect(wrapper.emitted(PurchaseEvent.ERROR_RESET)).toHaveLength(1);
     });
   });
 });

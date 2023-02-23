@@ -1,11 +1,10 @@
 <script>
 import { GlAlert, GlFormInput } from '@gitlab/ui';
-import { logError } from '~/lib/logger';
 import { STEPS } from 'ee/subscriptions/constants';
 import updateState from 'ee/subscriptions/graphql/mutations/update_state.mutation.graphql';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
-import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
+import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 import {
   I18N_DETAILS_STEP_TITLE,
   I18N_DETAILS_NEXT_STEP_BUTTON_TEXT,
@@ -71,13 +70,10 @@ export default {
             input: { subscription: { quantity: this.quantityModel } },
           },
         })
-        .catch((error) => {
-          this.emitError(error);
-        });
+        .catch(this.handleError);
     },
-    emitError(error) {
-      this.$emit('alertError', GENERAL_ERROR_MESSAGE);
-      logError(error);
+    handleError(error) {
+      this.$emit(PurchaseEvent.ERROR, error);
     },
   },
   i18n: {

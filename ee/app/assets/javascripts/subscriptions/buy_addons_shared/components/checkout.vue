@@ -1,12 +1,10 @@
 <script>
-import { logError } from '~/lib/logger';
 import updateState from 'ee/subscriptions/graphql/mutations/update_state.mutation.graphql';
 import BillingAddress from 'jh_else_ee/vue_shared/purchase_flow/components/checkout/billing_address.vue';
 import ConfirmOrder from 'ee/vue_shared/purchase_flow/components/checkout/confirm_order.vue';
 import PaymentMethod from 'ee/vue_shared/purchase_flow/components/checkout/payment_method.vue';
-import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import { s__ } from '~/locale';
-import { createAlert } from '~/flash';
+import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 
 export default {
   components: {
@@ -32,14 +30,10 @@ export default {
             input: { selectedPlan: { id, isAddon } },
           },
         })
-        .catch(this.emitError);
+        .catch(this.handleError);
     },
-    emitError(error) {
-      this.$emit('alertError', GENERAL_ERROR_MESSAGE);
-      logError(error);
-    },
-    showError({ error, message = GENERAL_ERROR_MESSAGE }) {
-      createAlert({ message, error, captureError: true });
+    handleError(error) {
+      this.$emit(PurchaseEvent.ERROR, error);
     },
   },
   i18n: {
@@ -51,8 +45,8 @@ export default {
   <div>
     <div class="flash-container"></div>
     <slot name="purchase-details"></slot>
-    <billing-address @error="showError" />
-    <payment-method @error="showError" />
-    <confirm-order @error="showError" />
+    <billing-address @error="handleError" />
+    <payment-method @error="handleError" />
+    <confirm-order @error="handleError" />
   </div>
 </template>

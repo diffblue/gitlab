@@ -2,7 +2,6 @@ import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import * as Sentry from '@sentry/browser';
 import Api from 'ee/api';
 import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
@@ -13,6 +12,7 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { createAlert } from '~/flash';
 import * as UrlUtility from '~/lib/utils/url_utility';
 import waitForPromises from 'helpers/wait_for_promises';
+import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 
 jest.mock('~/lib/utils/url_utility');
 jest.mock('~/flash');
@@ -132,7 +132,6 @@ describe('Confirm Order', () => {
         const expectedError = new Error(JSON.stringify(errors));
 
         beforeEach(() => {
-          jest.spyOn(Sentry, 'captureException');
           Api.confirmOrder = jest.fn().mockResolvedValueOnce({ data: { errors } });
           findConfirmButton().vm.$emit('click');
 
@@ -140,7 +139,7 @@ describe('Confirm Order', () => {
         });
 
         it('emits an error', () => {
-          expect(wrapper.emitted('error')).toEqual([[{ error: expectedError }]]);
+          expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([[expectedError]]);
         });
       });
     });

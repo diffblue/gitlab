@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
-import * as Sentry from '@sentry/browser';
 import { gitLabResolvers } from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
 import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
@@ -11,6 +10,7 @@ import { stateData as initialStateData } from 'ee_jest/subscriptions/mock_data';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 
 Vue.use(VueApollo);
 
@@ -165,23 +165,21 @@ describe('Billing Address', () => {
     });
   });
 
-  describe('when an error occurs with the resolver', () => {
+  describe('when the mutation fails', () => {
     const error = new Error('Yikes!');
 
     beforeEach(() => {
-      jest.spyOn(Sentry, 'captureException');
       updateState = jest.fn().mockRejectedValue(error);
       createComponent({
         customer: { country: 'US' },
       });
-
       findCountrySelect().vm.$emit('input', 'IT');
 
       return waitForPromises();
     });
 
     it('emits an error', () => {
-      expect(wrapper.emitted('error')).toEqual([[{ error }]]);
+      expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([[error]]);
     });
   });
 });

@@ -10,11 +10,7 @@ import {
 } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import {
-  ERROR_UNEXPECTED,
-  QSR_RECONCILIATION_PATH,
-  STEP_SUBSCRIPTION_DETAILS,
-} from 'ee/subscriptions/constants';
+import { QSR_RECONCILIATION_PATH, STEP_SUBSCRIPTION_DETAILS } from 'ee/subscriptions/constants';
 import { PurchaseEvent, NEW_GROUP } from 'ee/subscriptions/new/constants';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { __, s__, sprintf } from '~/locale';
@@ -225,7 +221,7 @@ export default {
     ]),
     handleError(error) {
       this.hasError = true;
-      this.$emit(PurchaseEvent.ERROR, { message: ERROR_UNEXPECTED, error });
+      this.$emit(PurchaseEvent.ERROR, error);
     },
     resetError() {
       this.$emit(PurchaseEvent.ERROR_RESET);

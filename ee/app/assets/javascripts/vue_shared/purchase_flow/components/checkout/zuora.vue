@@ -12,6 +12,7 @@ import updateStateMutation from 'ee/subscriptions/graphql/mutations/update_state
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import Tracking from '~/tracking';
+import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 
 export default {
   components: {
@@ -68,7 +69,7 @@ export default {
           this.renderZuoraIframe();
         })
         .catch((error) => {
-          this.$emit('error', { error, message: ERROR_LOADING_PAYMENT_FORM });
+          this.$emit(PurchaseEvent.ERROR, new Error(ERROR_LOADING_PAYMENT_FORM));
           this.track('error', {
             label: 'payment_form_fetch_params',
             property: error?.message,
@@ -106,7 +107,7 @@ export default {
         .then(() => this.track('success'))
         .then(() => this.activateNextStep())
         .catch((error) => {
-          this.$emit('error', { error });
+          this.$emit(PurchaseEvent.ERROR, error);
           this.track('error', {
             label: 'payment_form_submitted',
             property: error?.message,
@@ -121,25 +122,17 @@ export default {
       window.Z.render(this.renderParams, {}, this.paymentFormSubmitted);
     },
     activateNextStep() {
-      return this.$apollo
-        .mutate({
-          mutation: activateNextStepMutation,
-        })
-        .catch((error) => {
-          this.$emit('error', { error });
-        });
+      return this.$apollo.mutate({
+        mutation: activateNextStepMutation,
+      });
     },
     updateState(payload) {
-      return this.$apollo
-        .mutate({
-          mutation: updateStateMutation,
-          variables: {
-            input: payload,
-          },
-        })
-        .catch((error) => {
-          this.$emit('error', { error });
-        });
+      return this.$apollo.mutate({
+        mutation: updateStateMutation,
+        variables: {
+          input: payload,
+        },
+      });
     },
   },
 };

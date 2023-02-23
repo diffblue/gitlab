@@ -15,7 +15,8 @@ import {
 import createMockApollo, { createMockClient } from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import orderPreviewQuery from 'ee/subscriptions/graphql/queries/order_preview.customer.query.graphql';
-import { CUSTOMERSDOT_CLIENT, I18N_API_ERROR } from 'ee/subscriptions/buy_addons_shared/constants';
+import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constants';
+import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 
 Vue.use(VueApollo);
 
@@ -131,7 +132,6 @@ describe('Order Summary', () => {
 
     describe('calls api that returns no data', () => {
       it('does not render amount', () => {
-        jest.spyOn(console, 'error').mockImplementation(() => {});
         const orderPreviewQueryMock = jest.fn().mockResolvedValue({ data: null });
         const apolloProvider = createMockApolloProvider(
           { subscription: { quantity: 1 } },
@@ -144,9 +144,10 @@ describe('Order Summary', () => {
     });
 
     describe('calls api that returns an error', () => {
+      const error = new Error('An error happened!');
+
       beforeEach(() => {
-        jest.spyOn(console, 'error').mockImplementation(() => {});
-        const orderPreviewQueryMock = jest.fn().mockRejectedValue(new Error('An error happened!'));
+        const orderPreviewQueryMock = jest.fn().mockRejectedValue(error);
         const apolloProvider = createMockApolloProvider(
           { subscription: { quantity: 1 } },
           orderPreviewQueryMock,
@@ -159,8 +160,8 @@ describe('Order Summary', () => {
         expect(findAmount().text()).toBe('-');
       });
 
-      it('should emit `alertError` event', () => {
-        expect(wrapper.emitted('alertError')).toEqual([[I18N_API_ERROR]]);
+      it('should emit `error` event', () => {
+        expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([[error]]);
       });
     });
 
@@ -188,7 +189,7 @@ describe('Order Summary', () => {
         createComponent(apolloProvider, { purchaseHasExpiration: true });
       });
 
-      it('doesn not call api', () => {
+      it('does not call api', () => {
         expect(orderPreviewHandlerMock).not.toHaveBeenCalled();
       });
     });

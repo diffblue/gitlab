@@ -13,6 +13,7 @@ import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
 import Zuora from 'ee/vue_shared/purchase_flow/components/checkout/zuora.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 
 Vue.use(VueApollo);
 
@@ -110,6 +111,16 @@ describe('Payment Method', () => {
         wrapper = createComponent({ eligibleNamespaces, selectedNamespaceId, activeStep });
 
         expect(findZuora().props()).toMatchObject({ active, accountId: '' });
+      });
+    });
+
+    describe('when Zuora emits an error', () => {
+      const error = new Error('An error!');
+
+      it('emits an `error` event', () => {
+        findZuora().vm.$emit(PurchaseEvent.ERROR, error);
+
+        expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([[error]]);
       });
     });
   });

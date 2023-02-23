@@ -5,7 +5,6 @@ import BillingAddress from 'jh_else_ee/vue_shared/purchase_flow/components/check
 import OrderConfirmation from 'ee/vue_shared/purchase_flow/components/checkout/confirm_order.vue';
 import PaymentMethod from 'ee/vue_shared/purchase_flow/components/checkout/payment_method.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import Checkout from 'ee/subscriptions/buy_addons_shared/components/checkout.vue';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import {
@@ -15,7 +14,7 @@ import {
 } from 'ee_jest/subscriptions/mock_data';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createAlert } from '~/flash';
+import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 
 jest.mock('~/flash');
 
@@ -92,57 +91,34 @@ describe('Checkout', () => {
     const error = new Error('Yikes!');
 
     beforeEach(() => {
-      jest.spyOn(console, 'error').mockImplementation(() => {});
       updateState = jest.fn().mockRejectedValue(error);
       createComponent();
 
       return waitForPromises();
     });
 
-    it('should emit `alertError` event', () => {
-      expect(wrapper.emitted('alertError')).toEqual([[GENERAL_ERROR_MESSAGE]]);
+    it('emits an `error` event', () => {
+      expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([[error]]);
     });
   });
 
-  describe('when the children component emit error', () => {
-    const error = new Error('Yikes!');
+  describe.each([findBillingAddress, findPaymentMethod, findOrderConfirmation])(
+    'when %s emits error',
+    (findMethod) => {
+      const error = new Error('Yikes!');
 
-    beforeEach(() => {
-      jest.spyOn(console, 'error').mockImplementation(() => {});
-      updateState = jest.fn().mockResolvedValue('');
-      createComponent();
+      beforeEach(async () => {
+        updateState = jest.fn().mockResolvedValue('');
+        createComponent();
 
-      return waitForPromises();
-    });
+        await waitForPromises();
 
-    it('emits an error message from billing address', () => {
-      findBillingAddress().vm.$emit('error', { error });
-
-      expect(createAlert).toHaveBeenCalledWith({
-        message: GENERAL_ERROR_MESSAGE,
-        captureError: true,
-        error,
+        findMethod().vm.$emit(PurchaseEvent.ERROR, error);
       });
-    });
 
-    it('emits an error message from payment method', () => {
-      findPaymentMethod().vm.$emit('error', { error });
-
-      expect(createAlert).toHaveBeenCalledWith({
-        message: GENERAL_ERROR_MESSAGE,
-        captureError: true,
-        error,
+      it('emits an `error` event', () => {
+        expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([[error]]);
       });
-    });
-
-    it('emits an error message from order confirmation', () => {
-      findOrderConfirmation().vm.$emit('error', { error });
-
-      expect(createAlert).toHaveBeenCalledWith({
-        message: GENERAL_ERROR_MESSAGE,
-        captureError: true,
-        error,
-      });
-    });
-  });
+    },
+  );
 });
