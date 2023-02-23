@@ -7,10 +7,10 @@ import {
   GlModalDirective,
   GlDropdown,
   GlDropdownItem,
-  GlDropdownDivider,
 } from '@gitlab/ui';
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { EVENT_ISSUABLE_VUE_APP_CHANGE } from '~/issuable/constants';
+import issuesEventHub from '~/issues/show/event_hub';
 
 import { __ } from '~/locale';
 
@@ -44,7 +44,6 @@ export default {
     GlButton,
     GlDropdown,
     GlDropdownItem,
-    GlDropdownDivider,
     UserAvatarLink,
     TimeagoTooltip,
     ConfidentialityBadge,
@@ -55,6 +54,8 @@ export default {
     deleteButtonText: __('Delete epic'),
     dropdownText: __('Epic actions'),
     newEpicText: __('New epic'),
+    edit: __('Edit'),
+    editTitleAndDescription: __('Edit title and description'),
   },
   computed: {
     ...mapState([
@@ -102,6 +103,9 @@ export default {
   },
   methods: {
     ...mapActions(['toggleSidebar', 'requestEpicStatusChangeSuccess', 'toggleEpicStatus']),
+    editEpic() {
+      issuesEventHub.$emit('open.form');
+    },
   },
 };
 </script>
@@ -164,6 +168,9 @@ export default {
         :text="$options.i18n.dropdownText"
         data-testid="mobile-dropdown"
       >
+        <gl-dropdown-item v-if="canUpdate" @click="editEpic">
+          {{ $options.i18n.edit }}
+        </gl-dropdown-item>
         <gl-dropdown-item v-if="canCreate" :href="newEpicWebUrl">
           {{ $options.i18n.newEpicText }}
         </gl-dropdown-item>
@@ -171,7 +178,6 @@ export default {
           {{ actionButtonText }}
         </gl-dropdown-item>
         <template v-if="canDestroy">
-          <gl-dropdown-divider />
           <gl-dropdown-item
             v-gl-modal="$options.deleteModalId"
             variant="danger"
@@ -184,11 +190,24 @@ export default {
 
       <gl-button
         v-if="canUpdate"
+        :title="$options.i18n.editTitleAndDescription"
+        :aria-label="$options.i18n.editTitleAndDescription"
+        category="secondary"
+        variant="default"
+        data-testid="edit-button"
+        class="js-issuable-edit gl-display-none gl-sm-display-block"
+        @click="editEpic"
+      >
+        {{ $options.i18n.edit }}
+      </gl-button>
+
+      <gl-button
+        v-if="canUpdate"
         :loading="epicStatusChangeInProgress"
         :class="actionButtonClass"
         category="secondary"
         variant="default"
-        class="gl-display-none gl-sm-display-inline-flex! gl-mt-3 gl-sm-mt-0! gl-w-full gl-sm-w-auto!"
+        class="gl-display-none gl-sm-display-block gl-sm-ml-3"
         data-qa-selector="close_reopen_epic_button"
         data-testid="toggle-status-button"
         @click="toggleEpicStatus(isEpicOpen)"
@@ -199,7 +218,7 @@ export default {
       <gl-dropdown
         v-if="canCreate || canDestroy"
         v-gl-tooltip.hover
-        class="gl-display-none gl-sm-display-inline-flex! gl-ml-3"
+        class="gl-display-none gl-sm-display-inline-flex! gl-sm-ml-3"
         icon="ellipsis_v"
         category="tertiary"
         :text="$options.i18n.dropdownText"
@@ -214,7 +233,6 @@ export default {
           {{ $options.i18n.newEpicText }}
         </gl-dropdown-item>
         <template v-if="canDestroy">
-          <gl-dropdown-divider />
           <gl-dropdown-item
             v-gl-modal="$options.deleteModalId"
             variant="danger"
