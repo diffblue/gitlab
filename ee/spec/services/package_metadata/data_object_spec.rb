@@ -74,6 +74,10 @@ RSpec.describe PackageMetadata::DataObject, feature_category: :license_complianc
           expect(Gitlab::AppJsonLogger).to receive(:error).and_call_original
           object
         end
+
+        it 'returns nil' do
+          expect(object).to eq(nil)
+        end
       end
     end
   end

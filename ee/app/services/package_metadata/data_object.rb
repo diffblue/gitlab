@@ -19,6 +19,7 @@ module PackageMetadata
       new(name, version, license, purl_type)
     rescue CSV::MalformedCSVError => e
       Gitlab::AppJsonLogger.error(class: self.name, message: 'csv parsing error', error: e)
+      nil
     end
 
     attr_accessor :version, :license, :purl_type,
