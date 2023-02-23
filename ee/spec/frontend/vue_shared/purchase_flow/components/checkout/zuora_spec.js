@@ -4,8 +4,8 @@ import AxiosMockAdapter from 'axios-mock-adapter';
 import { merge } from 'lodash';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { gitLabResolvers } from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
-import { STEPS } from 'ee/subscriptions/constants';
+import Api from 'ee/api';
+import { ERROR_LOADING_PAYMENT_FORM, STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import Zuora from 'ee/vue_shared/purchase_flow/components/checkout/zuora.vue';
 import { stateData as initialStateData } from 'ee_jest/subscriptions/mock_data';
@@ -14,6 +14,7 @@ import axios from '~/lib/utils/axios_utils';
 import waitForPromises from 'helpers/wait_for_promises';
 import { mockTracking } from 'helpers/tracking_helper';
 import { HTTP_STATUS_OK, HTTP_STATUS_UNAUTHORIZED } from '~/lib/utils/http_status';
+import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 
 Vue.use(VueApollo);
 
@@ -22,8 +23,10 @@ describe('Zuora', () => {
   let wrapper;
   let trackingSpy;
 
-  const createComponent = (props = {}, data = {}, apolloLocalState = {}) => {
-    const apolloProvider = createMockApolloProvider(STEPS, STEPS[1], gitLabResolvers);
+  const fakePaymentMethodId = '000000000';
+
+  const createComponent = (props = {}, data = {}, apolloLocalState = {}, resolvers = {}) => {
+    const apolloProvider = createMockApolloProvider(STEPS, STEPS[1], resolvers);
     apolloProvider.clients.defaultClient.cache.writeQuery({
       query: stateQuery,
       data: merge({}, initialStateData, apolloLocalState),
@@ -55,13 +58,12 @@ describe('Zuora', () => {
     };
 
     axiosMock = new AxiosMockAdapter(axios);
-    axiosMock.onGet(`/-/subscriptions/payment_form`).reply(HTTP_STATUS_OK, {});
-    axiosMock.onGet(`/-/subscriptions/payment_method`).reply(HTTP_STATUS_OK, {});
+    axiosMock.onGet(Api.paymentFormPath).reply(HTTP_STATUS_OK, {});
+    axiosMock.onGet(Api.paymentMethodPath).reply(HTTP_STATUS_OK, { id: fakePaymentMethodId });
   });
 
   afterEach(() => {
     delete window.Z;
-    wrapper.destroy();
   });
 
   describe('when active', () => {
@@ -120,7 +122,7 @@ describe('Zuora', () => {
     beforeEach(() => {
       createComponent({}, { isLoading: false });
       wrapper.vm.zuoraScriptEl.onload();
-      axiosMock.onGet(`/-/subscriptions/payment_form`).reply(HTTP_STATUS_UNAUTHORIZED, {});
+      axiosMock.onGet(Api.paymentFormPath).reply(HTTP_STATUS_UNAUTHORIZED, {});
       return waitForPromises();
     });
 
@@ -131,6 +133,12 @@ describe('Zuora', () => {
         property: 'Request failed with status code 401',
         category: 'Zuora_cc',
       });
+    });
+
+    it('emits an `error` event', () => {
+      expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([
+        [new Error(ERROR_LOADING_PAYMENT_FORM)],
+      ]);
     });
   });
 
@@ -157,6 +165,8 @@ describe('Zuora', () => {
   });
 
   describe('when fetch payment details is not successful', () => {
+    const error = new Error('Request failed with status code 401');
+
     beforeEach(() => {
       window.Z = {
         runAfterRender(fn) {
@@ -169,7 +179,7 @@ describe('Zuora', () => {
 
       createComponent({}, { isLoading: false });
       wrapper.vm.zuoraScriptEl.onload();
-      axiosMock.onGet(`/-/subscriptions/payment_method`).reply(HTTP_STATUS_UNAUTHORIZED, {});
+      axiosMock.onGet(Api.paymentMethodPath).reply(HTTP_STATUS_UNAUTHORIZED, {});
       return waitForPromises();
     });
 
@@ -177,9 +187,119 @@ describe('Zuora', () => {
       expect(trackingSpy).toHaveBeenCalledTimes(2);
       expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'error', {
         label: 'payment_form_submitted',
-        property: 'Request failed with status code 401',
+        property: error.message,
         category: 'Zuora_cc',
       });
+    });
+
+    it('emits an `error` event', () => {
+      expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([[error]]);
+    });
+  });
+
+  describe('when updateState is not successful', () => {
+    const error = new Error('updateState failed');
+    const updateState = jest.fn().mockRejectedValue(error);
+    const activateNextStep = jest.fn();
+
+    beforeEach(() => {
+      window.Z = {
+        runAfterRender(fn) {
+          return Promise.resolve().then(fn);
+        },
+        render(params, object, fn) {
+          return Promise.resolve().then(fn);
+        },
+      };
+
+      createComponent(
+        {},
+        { isLoading: false },
+        {},
+        { Mutation: { activateNextStep, updateState } },
+      );
+      wrapper.vm.zuoraScriptEl.onload();
+      return waitForPromises();
+    });
+
+    it('tracks the error event', () => {
+      expect(trackingSpy).toHaveBeenCalledTimes(2);
+      expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'error', {
+        label: 'payment_form_submitted',
+        property: error.message,
+        category: 'Zuora_cc',
+      });
+    });
+
+    it('invokes updateState mutation', () => {
+      expect(updateState).toHaveBeenNthCalledWith(
+        1,
+        expect.any(Object),
+        { input: { paymentMethod: { id: fakePaymentMethodId } } },
+        expect.any(Object),
+        expect.any(Object),
+      );
+    });
+
+    it('does not activate next step', () => {
+      expect(activateNextStep).not.toHaveBeenCalled();
+    });
+
+    it('emits an `error` event', () => {
+      expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([[error]]);
+    });
+  });
+
+  describe('when activateNextStep is not successful', () => {
+    const error = new Error('activateNextStep failed');
+    const updateState = jest.fn().mockResolvedValue('');
+    const activateNextStep = jest.fn().mockRejectedValue(error);
+
+    beforeEach(() => {
+      window.Z = {
+        runAfterRender(fn) {
+          return Promise.resolve().then(fn);
+        },
+        render(params, object, fn) {
+          return Promise.resolve().then(fn);
+        },
+      };
+
+      createComponent(
+        {},
+        { isLoading: false },
+        {},
+        { Mutation: { activateNextStep, updateState } },
+      );
+      wrapper.vm.zuoraScriptEl.onload();
+      return waitForPromises();
+    });
+
+    it('tracks the error event', () => {
+      expect(trackingSpy).toHaveBeenCalledTimes(3);
+      expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'error', {
+        label: 'payment_form_submitted',
+        property: error.message,
+        category: 'Zuora_cc',
+      });
+    });
+
+    it('updates the state', () => {
+      expect(updateState).toHaveBeenNthCalledWith(
+        1,
+        expect.any(Object),
+        { input: { paymentMethod: { id: fakePaymentMethodId } } },
+        expect.any(Object),
+        expect.any(Object),
+      );
+    });
+
+    it('does not activate next step', () => {
+      expect(activateNextStep).toHaveBeenCalled();
+    });
+
+    it('emits an `error` event', () => {
+      expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([[error]]);
     });
   });
 

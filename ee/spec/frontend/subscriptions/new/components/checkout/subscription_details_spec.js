@@ -3,7 +3,7 @@ import { GlLink } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import { mockTracking } from 'helpers/tracking_helper';
-import { ERROR_UNEXPECTED, QSR_RECONCILIATION_PATH, STEPS } from 'ee/subscriptions/constants';
+import { QSR_RECONCILIATION_PATH, STEPS } from 'ee/subscriptions/constants';
 import Component from 'ee/subscriptions/new/components/checkout/subscription_details.vue';
 import { PurchaseEvent, NEW_GROUP } from 'ee/subscriptions/new/constants';
 import createStore from 'ee/subscriptions/new/store';
@@ -735,10 +735,8 @@ describe('Subscription Details', () => {
       return createComponent({ store, billableMembersCountMock });
     });
 
-    it('emits an error with a message', () => {
-      expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([
-        [{ message: ERROR_UNEXPECTED, error: mockError }],
-      ]);
+    it('emits an `error` event', () => {
+      expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([[mockError]]);
     });
 
     it('should not show the number of users label description when in error', async () => {
@@ -755,7 +753,7 @@ describe('Subscription Details', () => {
       return createComponent({ store, billableMembersCountMock });
     });
 
-    it('emits an error reset event', () => {
+    it('emits an `error-reset` event', () => {
       expect(wrapper.emitted(PurchaseEvent.ERROR_RESET)).toBeUndefined();
     });
 

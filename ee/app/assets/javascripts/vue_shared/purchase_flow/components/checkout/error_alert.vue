@@ -14,13 +14,14 @@ export default {
   },
   props: {
     error: {
-      type: String,
-      required: true,
+      type: Error,
+      required: false,
+      default: null,
     },
   },
   computed: {
     friendlyError() {
-      return mapSystemToFriendlyError(this.error);
+      return mapSystemToFriendlyError(this.error?.message);
     },
     friendlyErrorMessage() {
       return generateHelpTextWithLinks(this.friendlyError);

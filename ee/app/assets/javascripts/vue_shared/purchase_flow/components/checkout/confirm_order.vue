@@ -6,6 +6,7 @@ import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import activeStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/active_step.query.graphql';
 import { redirectTo } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
+import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 
 export default {
   components: {
@@ -23,7 +24,7 @@ export default {
       query: activeStepQuery,
       update: ({ activeStep }) => activeStep?.id === STEPS[3].id,
       error: (error) => {
-        this.$emit('error', { error });
+        this.$emit(PurchaseEvent.ERROR, error);
       },
     },
     confirmOrderParams: {
@@ -71,7 +72,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.$emit('error', { error });
+          this.$emit(PurchaseEvent.ERROR, error);
         })
         .finally(() => {
           this.isLoading = false;

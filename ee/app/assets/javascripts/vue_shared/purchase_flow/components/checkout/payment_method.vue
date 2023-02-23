@@ -6,6 +6,7 @@ import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import Zuora from 'ee/vue_shared/purchase_flow/components/checkout/zuora.vue';
 import { s__, sprintf } from '~/locale';
+import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 
 export default {
   components: {
@@ -42,7 +43,7 @@ export default {
   },
   methods: {
     handleError(payload) {
-      this.$emit('error', payload);
+      this.$emit(PurchaseEvent.ERROR, payload);
     },
   },
   i18n: {

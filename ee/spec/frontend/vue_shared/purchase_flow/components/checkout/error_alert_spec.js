@@ -6,7 +6,7 @@ import {
   mapSystemToFriendlyError,
 } from 'ee/vue_shared/purchase_flow/utils/purchase_errors';
 
-const error = 'An error';
+const error = new Error('An error');
 const friendlyError = 'A friendly error';
 const friendlyErrorHTML = '<a href="https://a.link">A friendly error message with links</a>';
 
@@ -20,7 +20,7 @@ describe('Purchase Error Alert', () => {
 
   const findAlert = () => wrapper.findComponent(GlAlert);
 
-  const createComponent = (props = { error: '' }) => {
+  const createComponent = (props = { error: undefined }) => {
     wrapper = shallowMount(PurchaseErrorAlert, {
       propsData: props,
     });
@@ -53,7 +53,7 @@ describe('Purchase Error Alert', () => {
     });
 
     it('invokes mapSystemToFriendlyError', () => {
-      expect(mapSystemToFriendlyError).toHaveBeenCalledWith(error);
+      expect(mapSystemToFriendlyError).toHaveBeenCalledWith(error.message);
     });
 
     it('passes the correct html', () => {

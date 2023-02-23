@@ -2,10 +2,10 @@
 import { GlFormGroup, GlFormInput, GlFormSelect } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import {
-  STEPS,
   COUNTRIES_WITH_STATES_REQUIRED,
   COUNTRY_SELECT_PROMPT,
   STATE_SELECT_PROMPT,
+  STEPS,
 } from 'ee/subscriptions/constants';
 import updateStateMutation from 'ee/subscriptions/graphql/mutations/update_state.mutation.graphql';
 import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.graphql';
@@ -14,6 +14,7 @@ import statesQuery from 'ee/subscriptions/graphql/queries/states.query.graphql';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { s__ } from '~/locale';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
+import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 
 export default {
   components: {
@@ -149,7 +150,7 @@ export default {
           },
         })
         .catch((error) => {
-          this.$emit('error', { error });
+          this.$emit(PurchaseEvent.ERROR, error);
         });
     },
   },
