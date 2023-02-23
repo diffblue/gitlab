@@ -34,7 +34,7 @@ RSpec.describe 'Database schema', feature_category: :database do
     chat_teams: %w[team_id],
     ci_build_needs: %w[partition_id build_id],
     ci_build_pending_states: %w[partition_id build_id],
-    ci_build_report_results: %w[partition_id],
+    ci_build_report_results: %w[partition_id build_id],
     ci_build_trace_chunks: %w[partition_id build_id],
     ci_build_trace_metadata: %w[partition_id],
     ci_builds: %w[erased_by_id trigger_request_id partition_id],
