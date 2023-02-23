@@ -535,4 +535,48 @@ RSpec.describe ProjectsHelper do
       end
     end
   end
+
+  describe '#remote_mirror_setting_enabled?' do
+    context 'when ci_cd_projects licensed feature is enabled' do
+      before do
+        stub_licensed_features(ci_cd_projects: true)
+      end
+
+      context 'when there are import sources' do
+        before do
+          allow(Gitlab::CurrentSettings).to receive(:import_sources).and_return(["gitlab"])
+        end
+
+        context 'when application setting mirror_available is enabled' do
+          before do
+            stub_application_setting(mirror_available: true)
+          end
+
+          it 'is true' do
+            expect(helper.remote_mirror_setting_enabled?).to be_truthy
+          end
+        end
+
+        context 'when application setting mirror_available is disabled' do
+          before do
+            stub_application_setting(mirror_available: false)
+          end
+
+          it 'is false' do
+            expect(helper.remote_mirror_setting_enabled?).to be_falsey
+          end
+        end
+      end
+    end
+
+    context 'when ci_cd_projects licensed feature is disabled' do
+      before do
+        stub_licensed_features(ci_cd_projects: false)
+      end
+
+      it 'is false' do
+        expect(helper.remote_mirror_setting_enabled?).to be_falsey
+      end
+    end
+  end
 end

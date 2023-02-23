@@ -134,6 +134,11 @@ module EE
       ::License.feature_available?(:ci_cd_projects) && import_sources_enabled?
     end
 
+    override :remote_mirror_setting_enabled?
+    def remote_mirror_setting_enabled?
+      ::Gitlab::CurrentSettings.import_sources.any? && ::License.feature_available?(:ci_cd_projects) && ::Gitlab::CurrentSettings.current_application_settings.mirror_available
+    end
+
     def merge_pipelines_available?
       return false unless @project.builds_enabled?
 
