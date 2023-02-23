@@ -35,7 +35,7 @@ export default {
       return Number.isInteger(this.progress);
     },
     hasHealthStatus() {
-      return this.healthStatus !== null;
+      return Boolean(this.healthStatus);
     },
     healthStatusText() {
       return this.hasHealthStatus ? healthStatusTextMap[this.healthStatus] : '';
