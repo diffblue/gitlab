@@ -36330,9 +36330,6 @@ ALTER TABLE ONLY merge_request_reviewers
     ADD CONSTRAINT fk_rails_d9fec24b9d FOREIGN KEY (merge_request_id) REFERENCES merge_requests(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY ci_running_builds
-    ADD CONSTRAINT fk_rails_da45cfa165 FOREIGN KEY (build_id) REFERENCES ci_builds(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY ci_running_builds
     ADD CONSTRAINT fk_rails_da45cfa165_p FOREIGN KEY (partition_id, build_id) REFERENCES ci_builds(partition_id, id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE ONLY jira_imports

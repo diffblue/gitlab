@@ -48,7 +48,7 @@ RSpec.describe 'Database schema', feature_category: :database do
     ci_pipelines: %w[partition_id],
     ci_resources: %w[partition_id build_id],
     ci_runner_projects: %w[runner_id],
-    ci_running_builds: %w[partition_id],
+    ci_running_builds: %w[partition_id build_id],
     ci_sources_pipelines: %w[partition_id source_partition_id],
     ci_stages: %w[partition_id],
     ci_trigger_requests: %w[commit_id],
