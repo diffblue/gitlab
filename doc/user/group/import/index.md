@@ -112,16 +112,15 @@ To migrate groups by direct transfer:
 
 To ensure GitLab maps users and their contributions correctly:
 
-1. Create the required users on the destination GitLab instance. When migrating to GitLab.com, you must create users
-   manually unless [SCIM](../../group/saml_sso/scim_setup.md) is used. Creating users with the API is only available to
-   self-managed instances because it requires administrator access.
-1. Check that users have a public email on the source GitLab instance that matches their primary email on the
-   destination GitLab instance.
-1. Ensure that users confirm their primary email addresses on the destination GitLab instance. Most users receive an
-   email asking them to confirm their email address.
-1. If using an OmniAuth provider like SAML, link GitLab and SAML accounts of users on GitLab. All users on the
-   destination GitLab instance must sign in and verify their account on the destination GitLab instance. If using
-   [SAML SSO for GitLab.com groups](../../group/saml_sso/index.md), users must
+1. Create the required users on the destination GitLab instance. You can create users with the API only on self-managed instances because it requires
+   administrator access. When migrating to GitLab.com or a self-managed GitLab instance you can:
+   - Create users manually.
+   - Set up or use your existing [SAML SSO provider](../saml_sso/index.md) and leverage user synchronization of SAML SSO groups supported through
+     [SCIM](../../group/saml_sso/scim_setup.md). You can
+     [bypass the GitLab user account verification with verified email domains](../saml_sso/index.md#bypass-user-email-confirmation-with-verified-domains).
+   1. Ensure that users have a public email on the source GitLab instance that matches any confirmed email address on the destination GitLab instance. Most
+      users receive an email asking them to confirm their email address.
+   1. If users already exist on the destination instance and you use [SAML SSO for GitLab.com groups](../../group/saml_sso/index.md), all users must
    [link their SAML identity to their GitLab.com account](../../group/saml_sso/index.md#linking-saml-to-your-existing-gitlabcom-account).
 
 ### Connect the source GitLab instance
@@ -418,7 +417,7 @@ Items that are **not** exported include:
 
 - To preserve the member list and their respective permissions on imported groups, review the users in these groups. Make
 sure these users exist before importing the desired groups.
-- Users must set a public email in the source GitLab instance that matches one of their verified emails in the target GitLab instance.
+- Users must set a public email in the source GitLab instance that matches their confirmed primary email in the destination GitLab instance. Most users receive an email asking them to confirm their email address.
 
 ### Enable export for a group
 
