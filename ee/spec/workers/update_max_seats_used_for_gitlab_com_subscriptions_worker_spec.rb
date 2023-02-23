@@ -17,7 +17,8 @@ RSpec.describe UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker, :saas do
         namespace: create(:namespace, :with_namespace_settings),
         seats: 11,
         max_seats_used: 11,
-        max_seats_used_changed_at: 1.month.ago.to_s(:db)
+        max_seats_used_changed_at: 1.month.ago.to_s(:db),
+        start_date: 2.months.ago.to_s(:db)
       )
     end
 
