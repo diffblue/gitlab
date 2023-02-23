@@ -63,11 +63,18 @@ groups are in the same GitLab instance. Transferring groups is a faster and more
 See [epic 6629](https://gitlab.com/groups/gitlab-org/-/epics/6629) for a list of known issues for migrating by direct
 transfer.
 
-### Rate limit
+### Limits
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/386452) in GitLab 15.9.
-
-Each user can perform up to six migrations per minute.
+| Limit       | Description                                                                                                                          |
+|:------------|:-------------------------------------------------------------------------------------------------------------------------------------|
+| 6           | Maximum number of migrations per minute per user. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/386452) in GitLab 15.9. |
+| 5 GB        | Maximum relation size that can be downloaded from the source instance.                                                               |
+| 10 GB       | Maximum size of a decompressed archive.                                                                                              |
+| 210 seconds | Maximum number of seconds to wait for decompressing an archive file.                                                                 |
+| 50 MB       | Maximum length an NDJSON row can have.                                                                                               |
+| 5 minutes   | Maximum number of seconds until an empty export status on source instance is raised.                                                 |
+| 8 hours     | Time until migration times out.                                                                                                      |
+| 90 minutes  | Time the destination is waiting for export to complete.                                                                              |
 
 ### Visibility rules
 
