@@ -175,11 +175,13 @@ for your version of GitLab to see the list of items relevant to you. For example
 Group items that are migrated to the destination GitLab instance include:
 
 - Badges ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/292431) in 13.11)
-- Board Lists
-- Boards
+- Boards ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/18938) in GitLab 13.7)
+- Board Lists ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/24863) in GitLab 13.7)
 - Epics ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/250281) in 13.7)
   - Epic resource state events ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/291983) in GitLab 15.4)
-- Finisher
+  - Label associations ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/62074) in GitLab 13.12)
+  - State and State ID ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/28203) in GitLab 13.7)
+  - System Note Metadata ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/63551) in GitLab 14.0)
 - Group Labels ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/292429) in 13.9)
 - Iterations ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/292428) in 13.10)
 - Iterations cadences ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96570) in 15.4)
@@ -189,11 +191,11 @@ Group items that are migrated to the destination GitLab instance include:
   - The user has a public email in the source GitLab instance that matches a
     confirmed email in the destination GitLab instance
 - Milestones ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/292427) in 13.10)
-- Namespace Settings
+- Namespace Settings ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/85128) in GitLab 14.10)
 - Releases
   - Milestones ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339422) in GitLab 15.0).
-- Subgroups
-- Uploads
+- Subgroups ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/18938) in GitLab 13.7)
+- Uploads ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/18938) in GitLab 13.7)
 
 Any other items are **not** migrated.
 
