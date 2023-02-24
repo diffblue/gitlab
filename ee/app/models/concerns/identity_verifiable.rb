@@ -14,6 +14,22 @@ module IdentityVerifiable
     email_wrapper = ::Gitlab::Email::FeatureFlagWrapper.new(email)
     return email_verified? unless Feature.enabled?(:identity_verification, email_wrapper)
 
+    # Treat users that have already signed in before as verified if their email
+    # is already verified.
+    #
+    # This prevents the scenario where a user has to verify their identity
+    # multiple times. For example:
+    #
+    # 1. identity_verification FF is enabled while
+    # identity_verification_credit_card is disabled
+    # 2. A user registers, is assigned High risk band, verifies their email as
+    # prompted, and starts using GitLab
+    # 3. identity_verification_credit_card FF is enabled
+    # 4. User signs out and signs in again
+    # 5. User is redirected to Identity Verification which requires them to
+    # verify their credit card
+    return email_verified? if last_sign_in_at.present?
+
     identity_verification_state.values.all?
   end
 

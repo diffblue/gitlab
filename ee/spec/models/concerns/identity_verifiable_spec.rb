@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IdentityVerifiable do
+RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be_with_reload(:user) { create(:user) }
@@ -32,6 +32,20 @@ RSpec.describe IdentityVerifiable do
       end
 
       it { is_expected.to eq(result) }
+    end
+
+    context 'when user has already signed in before' do
+      context 'and their email is already verified' do
+        let(:user) { create(:user, last_sign_in_at: Time.zone.now) }
+
+        it { is_expected.to eq(true) }
+      end
+
+      context 'and their email is not yet verified' do
+        let(:user) { create(:user, :unconfirmed, last_sign_in_at: Time.zone.now) }
+
+        it { is_expected.to eq(false) }
+      end
     end
 
     context('when identity_verification feature flag is disabled') do

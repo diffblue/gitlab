@@ -7,27 +7,33 @@ feature_category: :authentication_and_authorization do
   include EmailHelpers
   include SessionsHelper
 
+  let(:new_user) { build_stubbed(:user) }
+  let(:user) { User.find_by_username(new_user.username) }
+
+  before do
+    stub_application_setting_enum('email_confirmation_setting', 'hard')
+    stub_application_setting(require_admin_approval_after_user_signup: false)
+
+    stub_feature_flags(soft_email_confirmation: false)
+    stub_feature_flags(identity_verification_phone_number: false)
+    stub_feature_flags(identity_verification_credit_card: false)
+
+    # Identity Verification page requires the user to have an
+    # `arkose_risk_band` to determine what verification methods will be
+    # required. Here, we stub the `arkose_risk_band` method to return a valid
+    # risk band value instead of solving the actual ArkoseLabs challenge
+    stub_feature_flags(arkose_labs_signup_challenge: false)
+    allow_next_found_instance_of(User) do |user|
+      allow(user).to receive(:arkose_risk_band).and_return(arkose_risk_band)
+    end
+  end
+
   describe 'signing up' do
-    let(:new_user) { build_stubbed(:user) }
-    let(:user) { User.find_by_username(new_user.username) }
+    # Having a 'low' ArkoseLabs risk band will require the user to verify
+    # their email
+    let(:arkose_risk_band) { 'low' }
 
     before do
-      stub_application_setting_enum('email_confirmation_setting', 'hard')
-      stub_application_setting(require_admin_approval_after_user_signup: false)
-      stub_feature_flags(identity_verification_credit_card: false)
-      stub_feature_flags(soft_email_confirmation: false)
-
-      # Identity Verification page requires the user to have an
-      # `arkose_risk_band` to determine what verification methods will be
-      # required. Here, we stub the `arkose_risk_band` method to return a valid
-      # risk band value instead of solving the actual ArkoseLabs challenge
-      stub_feature_flags(arkose_labs_signup_challenge: false)
-      allow_next_found_instance_of(User) do |user|
-        # Having a 'low' ArkoseLabs risk band will require the user to verify
-        # their email
-        allow(user).to receive(:arkose_risk_band).and_return('low')
-      end
-
       sign_up
     end
 
@@ -120,6 +126,26 @@ feature_category: :authentication_and_authorization do
         new_code = confirmation_code
         expect(code).not_to eq(new_code)
       end
+    end
+  end
+
+  describe 'user that already went through identity verification' do
+    let(:arkose_risk_band) { 'high' }
+
+    it 'does not require identity verification again' do
+      sign_up
+
+      verify_code confirmation_code
+
+      expect(page).to have_current_path(success_identity_verification_path)
+
+      stub_feature_flags(identity_verification_credit_card: true)
+
+      sign_out(user)
+
+      gitlab_sign_in(user, password: new_user.password)
+
+      expect(page).not_to have_current_path(identity_verification_path)
     end
   end
 
