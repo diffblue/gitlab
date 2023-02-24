@@ -82,14 +82,18 @@ export default {
         .finally(this.resetForm);
     },
     handleVerificationResponse(response) {
-      if (response.data.status === SUCCESS_RESPONSE) {
+      if (response.data.status === undefined) {
+        this.handleError();
+      } else if (response.data.status === SUCCESS_RESPONSE) {
         this.$emit('completed');
       } else if (response.data.status === FAILURE_RESPONSE) {
         this.verifyError = response.data.message;
       }
     },
     handleResendResponse(response) {
-      if (response.data.status === SUCCESS_RESPONSE) {
+      if (response.data.status === undefined) {
+        this.handleError();
+      } else if (response.data.status === SUCCESS_RESPONSE) {
         createAlert({
           message: I18N_EMAIL_RESEND_SUCCESS,
           variant: VARIANT_SUCCESS,

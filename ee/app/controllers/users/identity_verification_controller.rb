@@ -90,11 +90,11 @@ module Users
 
     def require_verification_user!
       @user = User.find_by_id(session[:verification_user_id])
-      not_found unless @user
+      redirect_to root_path unless @user
     end
 
     def require_unverified_user!
-      access_denied! if @user.identity_verified?
+      redirect_to success_identity_verification_path if @user.identity_verified?
     end
 
     def require_arkose_verification!

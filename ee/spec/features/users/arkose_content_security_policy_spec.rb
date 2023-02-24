@@ -75,6 +75,10 @@ RSpec.describe 'ArkoseLabs content security policy', feature_category: :system_a
         arkose_labs_signup_challenge: false,
         arkose_labs_oauth_signup_challenge: feature_flag_state
       )
+
+      Warden.on_next_request do |proxy|
+        proxy.raw_session[:verification_user_id] = create(:user, :unconfirmed).id
+      end
     end
 
     it_behaves_like 'configures Content Security Policy headers correctly', Users::IdentityVerificationController

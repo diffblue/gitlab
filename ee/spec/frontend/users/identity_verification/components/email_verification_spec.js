@@ -130,7 +130,7 @@ describe('EmailVerification', () => {
       it('captures the error and shows a flash message when the request failed', async () => {
         enterCode('123456');
 
-        axiosMock.onPost(PROVIDE.email.verifyPath).replyOnce(HTTP_STATUS_NOT_FOUND);
+        axiosMock.onPost(PROVIDE.email.verifyPath).replyOnce(HTTP_STATUS_OK, null);
 
         await submitForm();
         await axios.waitForAll();
@@ -141,6 +141,21 @@ describe('EmailVerification', () => {
           error: expect.any(Error),
         });
       });
+
+      it('captures the error and shows a flash message when the request undefined', async () => {
+        enterCode('123456');
+
+        axiosMock.onPost(PROVIDE.email.verifyPath).reply(HTTP_STATUS_OK, { status: undefined });
+
+        await submitForm();
+        await axios.waitForAll();
+
+        expect(createAlert).toHaveBeenCalledWith({
+          message: I18N_GENERIC_ERROR,
+          captureError: true,
+          error: undefined,
+        });
+      });
     });
   });
 
@@ -149,6 +164,7 @@ describe('EmailVerification', () => {
       scenario                                    | statusCode               | response
       ${'the code was successfully resend'}       | ${HTTP_STATUS_OK}        | ${{ status: 'success' }}
       ${'there was a problem resending the code'} | ${HTTP_STATUS_OK}        | ${{ status: 'failure', message: 'Failure sending the code' }}
+      ${'when the request is undefined'}          | ${HTTP_STATUS_OK}        | ${{ status: undefined }}
       ${'when the request failed'}                | ${HTTP_STATUS_NOT_FOUND} | ${null}
     `(`shows a flash message when $scenario`, async ({ statusCode, response }) => {
       enterCode('xxx');
@@ -162,12 +178,18 @@ describe('EmailVerification', () => {
       await axios.waitForAll();
 
       let alertObject;
-      if (statusCode === HTTP_STATUS_OK && response.status === 'success') {
+      if (statusCode === HTTP_STATUS_OK && response.status === undefined) {
+        alertObject = {
+          captureError: true,
+          error: undefined,
+          message: I18N_GENERIC_ERROR,
+        };
+      } else if (statusCode === HTTP_STATUS_OK && response?.status === 'success') {
         alertObject = {
           message: I18N_EMAIL_RESEND_SUCCESS,
           variant: VARIANT_SUCCESS,
         };
-      } else if (statusCode === HTTP_STATUS_OK) {
+      } else if (statusCode === HTTP_STATUS_OK && response) {
         alertObject = { message: response.message };
       } else {
         alertObject = {
