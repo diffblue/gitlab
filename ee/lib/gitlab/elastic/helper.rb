@@ -269,20 +269,9 @@ module Gitlab
       end
 
       def reindex(from: target_index_name, to:, max_slice:, slice:, wait_for_completion: false)
-        body = {
-          source: {
-            index: from,
-            slice: {
-              id: slice,
-              max: max_slice
-            }
-          },
-          dest: {
-            index: to
-          }
-        }
-
-        response = client.reindex(body: body, wait_for_completion: wait_for_completion)
+        response = ::Search::ReindexingService.execute(
+          from: from, to: to, slice: slice, max_slices: max_slice, wait_for_completion: wait_for_completion
+        )
 
         response['task']
       end
