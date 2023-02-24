@@ -10,8 +10,6 @@ import {
   SECURITY_POLICY_ACTIONS,
   ACTIONS_LABEL,
   ADD_ACTION_LABEL,
-  ADD_RULE_LABEL,
-  RULES_LABEL,
 } from '../constants';
 import PolicyEditorLayout from '../policy_editor_layout.vue';
 import DimDisableContainer from '../dim_disable_container.vue';
@@ -26,7 +24,7 @@ import {
   fromYaml,
   toYaml,
 } from './lib';
-import { DEFAULT_SCANNER } from './constants';
+import { DEFAULT_SCANNER, ADD_CONDITION_LABEL, CONDITIONS_LABEL } from './constants';
 
 export default {
   ACTION: 'actions',
@@ -37,8 +35,8 @@ export default {
   i18n: {
     ACTIONS_LABEL,
     ADD_ACTION_LABEL,
-    ADD_RULE_LABEL,
-    RULES_LABEL,
+    ADD_CONDITION_LABEL,
+    CONDITIONS_LABEL,
     PARSING_ERROR_MESSAGE,
     createMergeRequest: __('Configure with a merge request'),
     notOwnerButtonText: __('Learn more'),
@@ -217,7 +215,7 @@ export default {
     <template #rules>
       <dim-disable-container data-testid="rule-builder-container" :disabled="hasParsingError">
         <template #title>
-          <h4>{{ $options.i18n.RULES_LABEL }}</h4>
+          <h4>{{ $options.i18n.CONDITIONS_LABEL }}</h4>
         </template>
 
         <template #disabled>
@@ -236,7 +234,7 @@ export default {
 
         <div class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-mb-5">
           <gl-button variant="link" data-testid="add-rule" icon="plus" @click="addRule">
-            {{ $options.i18n.ADD_RULE_LABEL }}
+            {{ $options.i18n.ADD_CONDITION_LABEL }}
           </gl-button>
         </div>
       </dim-disable-container>

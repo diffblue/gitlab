@@ -16,6 +16,9 @@ export const SCAN_EXECUTION_RULES_LABELS = {
   schedule: s__('ScanExecutionPolicy|Schedule'),
 };
 
+export const ADD_CONDITION_LABEL = s__('ScanExecutionPolicy|Add condition');
+export const CONDITIONS_LABEL = s__('ScanExecutionPolicy|Conditions');
+
 export const SCAN_EXECUTION_PIPELINE_RULE = 'pipeline';
 export const SCAN_EXECUTION_SCHEDULE_RULE = 'schedule';
 
