@@ -5,6 +5,7 @@ import Vuex from 'vuex';
 import { BoardType, GroupByParamType, IterationIDs } from 'ee/boards/constants';
 import epicCreateMutation from 'ee/boards/graphql/epic_create.mutation.graphql';
 import searchIterationCadencesQuery from 'ee/issues/list/queries/search_iteration_cadences.query.graphql';
+import currentIterationQuery from 'ee/boards/graphql/board_current_iteration.query.graphql';
 import actions, { gqlClient } from 'ee/boards/stores/actions';
 import * as types from 'ee/boards/stores/mutation_types';
 import mutations from 'ee/boards/stores/mutations';
@@ -1608,6 +1609,17 @@ describe('addListNewIssue', () => {
           { dispatch: jest.fn(), commit: jest.fn(), state },
           { issueInput: mockIssue, list: fakeList },
         );
+
+        expect(gqlClient.query).toHaveBeenCalledWith({
+          query: currentIterationQuery,
+          variables: {
+            fullPath: state.fullPath,
+            isGroup: state.boardType === BoardType.group,
+          },
+          context: {
+            isSingleRequest: true,
+          },
+        });
 
         expect(gqlClient.mutate).toHaveBeenCalledWith({
           mutation: issueCreateMutation,

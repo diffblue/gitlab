@@ -155,7 +155,7 @@ export default {
         },
         variables: {
           isGroup: bType === BoardType.group,
-          fPath,
+          fullPath: fPath,
         },
       });
 
