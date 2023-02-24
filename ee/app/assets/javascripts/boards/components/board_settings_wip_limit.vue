@@ -6,7 +6,7 @@ import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
 
 export default {
   i18n: {
-    wipLimitText: __('Work in progress Limit'),
+    wipLimitText: __('Work in progress limit'),
     editLinkText: __('Edit'),
     noneText: __('None'),
     inputPlaceholderText: __('Enter number of issues'),
