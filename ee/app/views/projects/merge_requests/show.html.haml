@@ -23,4 +23,10 @@
     window.gl.mrWidgetData.secret_detection_comparison_path = '#{secret_detection_reports_project_merge_request_path(@project, @merge_request) if @project.feature_available?(:secret_detection)}'
     window.gl.mrWidgetData.coverage_fuzzing_comparison_path = '#{coverage_fuzzing_reports_project_merge_request_path(@project, @merge_request) if @project.feature_available?(:coverage_fuzzing)}'
     window.gl.mrWidgetData.api_fuzzing_comparison_path = '#{api_fuzzing_reports_project_merge_request_path(@project, @merge_request) if @project.feature_available?(:api_fuzzing)}'
-
+    window.gl.mrWidgetData.new_container_scanning_comparison_path = '#{security_reports_project_merge_request_path(@project, @merge_request, type: :container_scanning) if @project.feature_available?(:container_scanning)}'
+    window.gl.mrWidgetData.new_dependency_scanning_comparison_path = '#{security_reports_project_merge_request_path(@project, @merge_request, type: :dependency_scanning) if @project.feature_available?(:dependency_scanning)}'
+    window.gl.mrWidgetData.new_sast_comparison_path = '#{security_reports_project_merge_request_path(@project, @merge_request, type: :sast) if @project.feature_available?(:sast)}'
+    window.gl.mrWidgetData.new_dast_comparison_path = '#{security_reports_project_merge_request_path(@project, @merge_request, type: :dast) if @project.feature_available?(:dast)}'
+    window.gl.mrWidgetData.new_secret_detection_comparison_path = '#{security_reports_project_merge_request_path(@project, @merge_request, type: :secret_detection) if @project.feature_available?(:secret_detection)}'
+    window.gl.mrWidgetData.new_coverage_fuzzing_comparison_path = '#{security_reports_project_merge_request_path(@project, @merge_request, type: :coverage_fuzzing) if @project.feature_available?(:coverage_fuzzing)}'
+    window.gl.mrWidgetData.new_api_fuzzing_comparison_path = '#{security_reports_project_merge_request_path(@project, @merge_request, type: :api_fuzzing) if @project.feature_available?(:api_fuzzing)}'

@@ -40,13 +40,13 @@ describe('MR Widget Security Reports', () => {
   const createVulnerabilityFeedbackMergeRequestPath = '/create/merge/request/path';
 
   const reportEndpoints = {
-    sastComparisonPath: '/my/sast/endpoint',
-    dastComparisonPath: '/my/dast/endpoint',
-    dependencyScanningComparisonPath: '/my/dependency-scanning/endpoint',
-    coverageFuzzingComparisonPath: '/my/coverage-fuzzing/endpoint',
-    apiFuzzingComparisonPath: '/my/api-fuzzing/endpoint',
-    secretDetectionComparisonPath: '/my/secret-detection/endpoint',
-    containerScanningComparisonPath: '/my/container-scanning/endpoint',
+    sastComparisonPathV2: '/my/sast/endpoint',
+    dastComparisonPathV2: '/my/dast/endpoint',
+    dependencyScanningComparisonPathV2: '/my/dependency-scanning/endpoint',
+    coverageFuzzingComparisonPathV2: '/my/coverage-fuzzing/endpoint',
+    apiFuzzingComparisonPathV2: '/my/api-fuzzing/endpoint',
+    secretDetectionComparisonPathV2: '/my/secret-detection/endpoint',
+    containerScanningComparisonPathV2: '/my/container-scanning/endpoint',
   };
 
   const createComponent = ({ propsData, mountFn = shallowMountExtended } = {}) => {
@@ -158,7 +158,7 @@ describe('MR Widget Security Reports', () => {
 
   describe('with MR data', () => {
     const mockWithData = () => {
-      mockAxios.onGet(reportEndpoints.sastComparisonPath).replyOnce(HTTP_STATUS_OK, {
+      mockAxios.onGet(reportEndpoints.sastComparisonPathV2).replyOnce(HTTP_STATUS_OK, {
         added: [
           {
             uuid: 1,
@@ -170,7 +170,7 @@ describe('MR Widget Security Reports', () => {
         ],
       });
 
-      mockAxios.onGet(reportEndpoints.dastComparisonPath).replyOnce(HTTP_STATUS_OK, {
+      mockAxios.onGet(reportEndpoints.dastComparisonPathV2).replyOnce(HTTP_STATUS_OK, {
         added: [
           { uuid: 5, severity: 'low', name: 'SQL Injection' },
           { uuid: 3, severity: 'unknown', name: 'Weak password' },
@@ -178,11 +178,11 @@ describe('MR Widget Security Reports', () => {
       });
 
       [
-        reportEndpoints.dependencyScanningComparisonPath,
-        reportEndpoints.coverageFuzzingComparisonPath,
-        reportEndpoints.apiFuzzingComparisonPath,
-        reportEndpoints.secretDetectionComparisonPath,
-        reportEndpoints.containerScanningComparisonPath,
+        reportEndpoints.dependencyScanningComparisonPathV2,
+        reportEndpoints.coverageFuzzingComparisonPathV2,
+        reportEndpoints.apiFuzzingComparisonPathV2,
+        reportEndpoints.secretDetectionComparisonPathV2,
+        reportEndpoints.containerScanningComparisonPathV2,
       ].forEach((path) => {
         mockAxios.onGet(path).replyOnce(HTTP_STATUS_OK, {
           added: [],
@@ -298,9 +298,9 @@ describe('MR Widget Security Reports', () => {
 
   describe('error states', () => {
     const mockWithData = () => {
-      mockAxios.onGet(reportEndpoints.sastComparisonPath).replyOnce(HTTP_STATUS_BAD_REQUEST);
+      mockAxios.onGet(reportEndpoints.sastComparisonPathV2).replyOnce(HTTP_STATUS_BAD_REQUEST);
 
-      mockAxios.onGet(reportEndpoints.dastComparisonPath).replyOnce(HTTP_STATUS_OK, {
+      mockAxios.onGet(reportEndpoints.dastComparisonPathV2).replyOnce(HTTP_STATUS_OK, {
         added: [
           { uuid: 5, severity: 'low', name: 'SQL Injection' },
           { uuid: 3, severity: 'unknown', name: 'Weak password' },
@@ -308,11 +308,11 @@ describe('MR Widget Security Reports', () => {
       });
 
       [
-        reportEndpoints.dependencyScanningComparisonPath,
-        reportEndpoints.coverageFuzzingComparisonPath,
-        reportEndpoints.apiFuzzingComparisonPath,
-        reportEndpoints.secretDetectionComparisonPath,
-        reportEndpoints.containerScanningComparisonPath,
+        reportEndpoints.dependencyScanningComparisonPathV2,
+        reportEndpoints.coverageFuzzingComparisonPathV2,
+        reportEndpoints.apiFuzzingComparisonPathV2,
+        reportEndpoints.secretDetectionComparisonPathV2,
+        reportEndpoints.containerScanningComparisonPathV2,
       ].forEach((path) => {
         mockAxios.onGet(path).replyOnce(HTTP_STATUS_OK, {
           added: [],
