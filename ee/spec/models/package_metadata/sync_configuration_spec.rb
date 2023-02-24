@@ -52,7 +52,7 @@ RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :license_co
     ::Enums::Sbom::PURL_TYPES.each do |purl_type, _|
       context "when purl type is #{purl_type}" do
         it "returns a non-default value" do
-          expect(described_class.registry(purl_type)).not_to be_nil
+          expect(described_class.registry_id(purl_type)).not_to be_nil
         end
       end
     end

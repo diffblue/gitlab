@@ -14,6 +14,12 @@ RSpec.describe PackageMetadata::DataObject, feature_category: :license_complianc
       it { is_expected.to eq(described_class.new('foo', 'v1.0.0', 'MIT', purl_type)) }
     end
 
+    context 'when text is escaped unicode' do
+      let(:text) { (+'fóó,vérsion-1,Àpache').force_encoding('ASCII-8BIT') }
+
+      it { is_expected.to eq(described_class.new('fóó', 'vérsion-1', 'Àpache', purl_type)) }
+    end
+
     context 'when text is not well-formed' do
       context 'if it does not have 3 fields' do
         let(:text) { 'foo,v1.0.0' }

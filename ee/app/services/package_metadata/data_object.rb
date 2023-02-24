@@ -10,7 +10,7 @@ module PackageMetadata
     MAX_LICENSE_LENGTH = 50
 
     def self.from_csv(text, purl_type)
-      parsed = CSV.parse_line(text)&.reject { |field| field.nil? || field.empty? }
+      parsed = CSV.parse_line(text.dup.force_encoding('UTF-8'))&.reject { |field| field.nil? || field.empty? }
       return unless parsed&.count == EXPECTED_CSV_FIELDS
 
       name = parsed[0].slice(0, MAX_NAME_LENGTH)
