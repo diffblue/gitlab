@@ -685,6 +685,25 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
     end
   end
 
+  describe '#reindex' do
+    let(:from) { :from }
+    let(:slice) { :slice }
+    let(:max_slice) { :max_slice }
+    let(:to) { :to }
+    let(:wait_for_completion) { :wait_for_completion }
+    let(:result) { { 'task' => '8675-309' } }
+
+    it 'passes correct arguments to Search::ReindexingService' do
+      expect(::Search::ReindexingService).to receive(:execute).with(
+        from: from, to: to, slice: slice, max_slices: max_slice, wait_for_completion: wait_for_completion
+      ).and_return(result)
+
+      expect(helper.reindex(
+        from: from, to: to, slice: slice, max_slice: max_slice, wait_for_completion: wait_for_completion)
+            ).to eq(result['task'])
+    end
+  end
+
   describe '.build_es_id' do
     it 'returns a calculated es_id' do
       expect(described_class.build_es_id(es_type: 'project', target_id: 123)).to eq('project_123')
