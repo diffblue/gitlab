@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe 'Kerberos clone instructions', :js, feature_category: :authentication_and_authorization do
+RSpec.describe 'Kerberos clone instructions', :js, feature_category: :system_access do
   include MobileHelpers
 
   let(:project) { create(:project, :empty_repo) }

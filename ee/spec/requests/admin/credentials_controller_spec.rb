@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::CredentialsController, type: :request, feature_category: :credential_management do
+RSpec.describe Admin::CredentialsController, type: :request, feature_category: :user_management do
   include AdminModeHelper
 
   let_it_be(:admin) { create(:admin) }

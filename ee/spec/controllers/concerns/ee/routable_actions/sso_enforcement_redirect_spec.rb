@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::RoutableActions::SsoEnforcementRedirect, feature_category: :authentication_and_authorization do
+RSpec.describe EE::RoutableActions::SsoEnforcementRedirect, feature_category: :system_access do
   let(:saml_provider) { create(:saml_provider, enforced_sso: true) }
   let(:root_group) { saml_provider.group }
   let(:nested_group) { create(:group, :private, parent: root_group) }

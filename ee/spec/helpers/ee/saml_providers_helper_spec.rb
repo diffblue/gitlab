@@ -2,7 +2,7 @@
 #
 require "spec_helper"
 
-RSpec.describe EE::SamlProvidersHelper, feature_category: :authentication_and_authorization do
+RSpec.describe EE::SamlProvidersHelper, feature_category: :system_access do
   let_it_be_with_reload(:current_user) { create_default(:user, name: "John Doe", username: "john") }
   let_it_be_with_reload(:group) { create_default(:group, :public, name: "circuitverse") }
 

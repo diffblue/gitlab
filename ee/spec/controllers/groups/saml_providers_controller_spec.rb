@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::SamlProvidersController, feature_category: :authentication_and_authorization do
+RSpec.describe Groups::SamlProvidersController, feature_category: :system_access do
   let(:saml_provider) { create(:saml_provider, group: group) }
   let(:group) { create(:group, :private, parent_id: nil) }
   let(:user) { create(:user) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe OmniauthCallbacksController, type: :controller, feature_category: :authentication_and_authorization do
+RSpec.describe OmniauthCallbacksController, type: :controller, feature_category: :system_access do
   include LoginHelpers
 
   let_it_be(:extern_uid) { 'my-uid' }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SessionsController, :geo, feature_category: :authentication_and_authorization do
+RSpec.describe SessionsController, :geo, feature_category: :system_access do
   include DeviseHelpers
   include EE::GeoHelpers
 

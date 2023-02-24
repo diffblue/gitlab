@@ -3,7 +3,7 @@
 require 'spec_helper'
 require_migration!
 
-RSpec.describe BackfillNamespaceLdapSettings, feature_category: :authentication_and_authorization do
+RSpec.describe BackfillNamespaceLdapSettings, feature_category: :system_access do
   describe '#up' do
     it 'schedules background migration' do
       migrate!

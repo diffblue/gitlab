@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::GitAccess, feature_category: :authentication_and_authorization do
+RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
   include EE::GeoHelpers
   include AdminModeHelper
   include NamespaceStorageHelpers

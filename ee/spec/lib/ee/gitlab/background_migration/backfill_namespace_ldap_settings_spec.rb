@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::BackgroundMigration::BackfillNamespaceLdapSettings,
-  :migration, feature_category: :authentication_and_authorization do
+  :migration, feature_category: :system_access do
   let!(:namespaces) { table(:namespaces) }
   let!(:namespace_ldap_settings) { table(:namespace_ldap_settings) }
 

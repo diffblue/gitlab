@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'devise/registrations/new', feature_category: :authentication_and_authorization do
+RSpec.describe 'devise/registrations/new', feature_category: :system_access do
   let(:arkose_enabled_for_signup) { true }
   let(:arkose_labs_api_key) { "api-key" }
   let(:arkose_labs_domain) { "domain" }

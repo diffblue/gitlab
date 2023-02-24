@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Rack Attack EE throttles', feature_category: :authentication_and_authorization do
+RSpec.describe 'Rack Attack EE throttles', feature_category: :system_access do
   include RackAttackSpecHelpers
 
   let(:project) { create(:project) }

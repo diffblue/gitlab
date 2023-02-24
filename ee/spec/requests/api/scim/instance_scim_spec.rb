@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Scim::InstanceScim, feature_category: :authentication_and_authorization do
+RSpec.describe API::Scim::InstanceScim, feature_category: :system_access do
   include LoginHelpers
 
   let(:user) { create(:user) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::API::Entities::UserWithProvisionedAttrs, feature_category: :authentication_and_authorization do
+RSpec.describe ::API::Entities::UserWithProvisionedAttrs, feature_category: :system_access do
   let(:group) { create(:group) }
   let(:user) { create(:user, provisioned_by_group: group) }
   let(:options) { {} }

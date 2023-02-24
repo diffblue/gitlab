@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category: :authentication_and_authorization do
+RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category: :system_access do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :private, :in_group) }
   let_it_be(:project_member) { create(:project_member, :guest, user: user, source: project) }

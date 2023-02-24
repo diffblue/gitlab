@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe RegistrationsController, feature_category: :authentication_and_authorization do
+RSpec.describe RegistrationsController, feature_category: :system_access do
   describe '#create' do
     let_it_be(:base_user_params) { build_stubbed(:user).slice(:first_name, :last_name, :username, :password) }
     let_it_be(:new_user_email) { 'new@user.com' }

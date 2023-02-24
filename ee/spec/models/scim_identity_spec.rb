@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ScimIdentity, feature_category: :authentication_and_authorization do
+RSpec.describe ScimIdentity, feature_category: :system_access do
   describe 'relations' do
     it { is_expected.to belong_to(:group) }
     it { is_expected.to belong_to(:user) }

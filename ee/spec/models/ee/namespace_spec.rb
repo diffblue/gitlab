@@ -1840,7 +1840,7 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#custom_roles_enabled?', feature_category: :authentication_and_authorization do
+  describe '#custom_roles_enabled?', feature_category: :system_access do
     let_it_be(:namespace) { create(:group) }
 
     let(:feature_flag_enabled) { true }

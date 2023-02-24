@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe TrialRegistrationsController, feature_category: :authentication_and_authorization do
+RSpec.describe TrialRegistrationsController, feature_category: :system_access do
   include FullNameHelper
 
   let(:com) { true }

@@ -667,7 +667,7 @@ RSpec.describe GroupPolicy do
         end
       end
 
-      context 'with transparent SSO', feature_category: :authentication_and_authorization do
+      context 'with transparent SSO', feature_category: :system_access do
         let(:current_user) { guest }
 
         let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: false) }

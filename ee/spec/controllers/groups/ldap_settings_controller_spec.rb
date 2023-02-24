@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::LdapSettingsController, feature_category: :authentication_and_authorization do
+RSpec.describe Groups::LdapSettingsController, feature_category: :system_access do
   include LdapHelpers
 
   let(:group) { create(:group) }

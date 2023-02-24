@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group SAML SSO', :js, :snowplow, feature_category: :authentication_and_authorization do
+RSpec.describe 'Group SAML SSO', :js, :snowplow, feature_category: :system_access do
   include CookieHelper
 
   let(:user) { create(:user) }

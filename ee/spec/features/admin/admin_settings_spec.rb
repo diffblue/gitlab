@@ -567,7 +567,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
   end
 
-  describe 'SCIM token', feature_category: :authentication_and_authorization do
+  describe 'SCIM token', feature_category: :system_access do
     context 'when the feature is not licensed' do
       before do
         stub_licensed_features(instance_level_scim: false)

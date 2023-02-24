@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SmartcardController, type: :request, feature_category: :authentication_and_authorization do
+RSpec.describe SmartcardController, type: :request, feature_category: :system_access do
   include LdapHelpers
 
   let(:smartcard_host) { 'smartcard.example.com' }

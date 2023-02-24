@@ -102,7 +102,7 @@ RSpec.describe ApplicationSetting do
       it { is_expected.to allow_value("template_name").for(:required_instance_ci_template) }
     end
 
-    describe 'max_personal_access_token', feature_category: :credential_management do
+    describe 'max_personal_access_token', feature_category: :user_management do
       it { is_expected.to allow_value(1).for(:max_personal_access_token_lifetime) }
       it { is_expected.to allow_value(nil).for(:max_personal_access_token_lifetime) }
       it { is_expected.to allow_value(10).for(:max_personal_access_token_lifetime) }
@@ -123,7 +123,7 @@ RSpec.describe ApplicationSetting do
       it { is_expected.not_to allow_value(2.5).for(:new_user_signups_cap) }
     end
 
-    describe 'git_two_factor', feature_category: :authentication_and_authorization do
+    describe 'git_two_factor', feature_category: :system_access do
       it { is_expected.to allow_value(1).for(:git_two_factor_session_expiry) }
       it { is_expected.to allow_value(10).for(:git_two_factor_session_expiry) }
       it { is_expected.to allow_value(10079).for(:git_two_factor_session_expiry) }
@@ -961,7 +961,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#max_personal_access_token_lifetime_from_now', feature_category: :credential_management do
+  describe '#max_personal_access_token_lifetime_from_now', feature_category: :user_management do
     subject { setting.max_personal_access_token_lifetime_from_now }
 
     let(:days_from_now) { nil }
@@ -993,7 +993,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe 'updates to max_personal_access_token_lifetime', feature_category: :credential_management do
+  describe 'updates to max_personal_access_token_lifetime', feature_category: :user_management do
     context 'without personal_access_token_expiration_policy licensed' do
       before do
         stub_licensed_features(personal_access_token_expiration_policy: false)
@@ -1068,7 +1068,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe "#max_ssh_key_lifetime_from_now", :freeze_time, feature_category: :authentication_and_authorization do
+  describe "#max_ssh_key_lifetime_from_now", :freeze_time, feature_category: :system_access do
     subject { setting.max_ssh_key_lifetime_from_now }
 
     let(:days_from_now) { nil }
@@ -1128,7 +1128,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#personal_access_tokens_disabled?', feature_category: :credential_management do
+  describe '#personal_access_tokens_disabled?', feature_category: :user_management do
     subject { setting.personal_access_tokens_disabled? }
 
     context 'when disable_personal_access_tokens feature is available' do
@@ -1150,7 +1150,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#disable_feed_token', feature_category: :credential_management do
+  describe '#disable_feed_token', feature_category: :user_management do
     subject { setting.disable_feed_token }
 
     before do

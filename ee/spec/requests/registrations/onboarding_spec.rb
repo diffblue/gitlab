@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Registration Onboarding', type: :request,
-  feature_category: :authentication_and_authorization do
+  feature_category: :system_access do
   describe '#continuous_onboarding_getting_started' do
     it 'redirects to learn gitlab onboarding' do
       project = create(:project, namespace: create(:group))

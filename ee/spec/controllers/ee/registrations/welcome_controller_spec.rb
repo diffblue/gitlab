@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Registrations::WelcomeController, feature_category: :authentication_and_authorization do
+RSpec.describe Registrations::WelcomeController, feature_category: :system_access do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project) }
