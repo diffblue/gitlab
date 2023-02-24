@@ -35461,6 +35461,9 @@ msgstr ""
 msgid "Refresh the page and try again."
 msgstr ""
 
+msgid "Refresh the page to view sync status"
+msgstr ""
+
 msgid "Refreshing in a second to show the updated status..."
 msgid_plural "Refreshing in %d seconds to show the updated status..."
 msgstr[0] ""
