@@ -11,6 +11,8 @@ module EE
       has_many :required_code_owners_sections, class_name: "ProtectedBranch::RequiredCodeOwnersSection"
 
       protected_ref_access_levels :unprotect
+
+      scope :preload_access_levels, -> { preload(:push_access_levels, :merge_access_levels, :unprotect_access_levels) }
     end
 
     class_methods do
