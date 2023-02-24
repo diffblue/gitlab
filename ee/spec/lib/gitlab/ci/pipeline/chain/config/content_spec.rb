@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Config::Content do
+RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Config::Content, feature_category: :continuous_integration do
   let(:ci_config_path) { nil }
   let(:pipeline) { build(:ci_pipeline, project: project) }
   let(:content) { nil }
@@ -36,6 +36,7 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Config::Content do
       expect(pipeline.config_source).to eq 'compliance_source'
       expect(pipeline.pipeline_config.content).to eq(content_result)
       expect(command.config_content).to eq(content_result)
+      expect(command.pipeline_config.contains_internal_include?).to eq(true)
     end
   end
 
