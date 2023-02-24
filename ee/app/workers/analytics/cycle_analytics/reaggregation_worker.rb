@@ -15,7 +15,7 @@ module Analytics
       data_consistency :always
       feature_category :value_stream_management
 
-      MAX_RUNTIME = 250.seconds
+      MAX_RUNTIME = 200.seconds
 
       def perform
         current_time = Time.current

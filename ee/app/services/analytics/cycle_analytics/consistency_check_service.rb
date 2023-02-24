@@ -13,7 +13,7 @@ module Analytics
       end
 
       # rubocop: disable CodeReuse/ActiveRecord
-      def execute(runtime_limiter: RuntimeLimiter.new(250.seconds), cursor_data: {})
+      def execute(runtime_limiter: RuntimeLimiter.new(Analytics::CycleAnalytics::ConsistencyWorker::MAX_RUNTIME), cursor_data: {})
         @runtime_limiter = runtime_limiter
 
         error_response = validate
