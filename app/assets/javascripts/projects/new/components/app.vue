@@ -91,7 +91,7 @@ export default {
       return [
         this.parentGroupUrl && { text: this.parentGroupName, href: this.parentGroupUrl },
         { text: s__('ProjectsNew|New project'), href: '#' },
-      ].filter(Boolean);
+      ];
     },
     availablePanels() {
       return this.isCiCdAvailable ? PANELS : PANELS.filter((p) => p.name !== CI_CD_PANEL);

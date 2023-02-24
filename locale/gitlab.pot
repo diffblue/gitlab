@@ -20525,6 +20525,9 @@ msgstr ""
 msgid "GroupsNew|GitLab source instance URL"
 msgstr ""
 
+msgid "GroupsNew|Groups"
+msgstr ""
+
 msgid "GroupsNew|Groups can also be nested by creating %{linkStart}subgroups%{linkEnd}."
 msgstr ""
 
