@@ -36,7 +36,8 @@ module SystemCheck
           SystemCheck::Geo::GeoDatabaseConfiguredCheck,
           SystemCheck::Geo::DatabaseReplicationEnabledCheck,
           SystemCheck::Geo::DatabaseReplicationWorkingCheck,
-          SystemCheck::Geo::HttpConnectionCheck
+          SystemCheck::Geo::HttpConnectionCheck,
+          SystemCheck::Geo::SshPortCheck
         ] + common_checks
       end
     end
