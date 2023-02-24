@@ -57,6 +57,7 @@ module EE
         mount ::API::SamlGroupLinks
         mount ::API::Iterations
         mount ::API::GroupRepositoryStorageMoves
+        mount ::API::GroupProtectedBranches
         mount ::API::Ci::Minutes
         mount ::API::CaptchaCheck
         mount ::API::Integrations::Slack::Events
