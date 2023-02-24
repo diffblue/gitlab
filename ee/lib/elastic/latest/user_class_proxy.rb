@@ -3,60 +3,57 @@
 module Elastic
   module Latest
     class UserClassProxy < ApplicationClassProxy
-      FUZZY_SEARCH_FIELDS = %w[name username email public_email].freeze
+      SEARCH_FIELDS = %w[name username email public_email].freeze
 
-      def elastic_search(query, fuzzy_search_fields: FUZZY_SEARCH_FIELDS, options: {})
-        query_hash = {}
-        musts = []
+      def elastic_search(query, options: {})
+        query_hash = if use_simple_query_string?(query, options)
+                       basic_query_hash(valid_fields(options), query, options)
+                     else
+                       fuzzy_query_hash(valid_fields(options), query, options)
+                     end
+
         filters = []
-
-        if options[:count_only]
-          filters = fuzzy_query(clauses: filters, query: query, search_fields: fuzzy_search_fields, options: options)
-          filters = namespace_query(filters, options)
-          query_hash[:size] = 0
-        else
-          musts = fuzzy_query(clauses: musts, query: query, search_fields: fuzzy_search_fields, options: options)
-          musts = namespace_query(musts, options)
-        end
-
+        filters = namespace_query(filters, options)
         filters = forbidden_states_filter(filters, options)
 
-        query_hash[:query] = {
-          bool: {
-            must: musts,
-            filter: filters
-          }
-        }
+        query_hash[:query][:bool][:filter] ||= []
+        query_hash[:query][:bool][:filter] += filters
 
+        query_hash[:size] = 0 if options[:count_only]
         query_hash = apply_sort(query_hash, options)
 
         search(query_hash, options)
       end
 
-      def fuzzy_query(clauses:, query:, search_fields:, options: {})
-        return clauses unless query
-
-        search_fields -= ['email'] unless is_admin?(options)
+      def fuzzy_query_hash(fields, query, options)
         shoulds = []
+        clause = options[:count_only] ? :filter : :must
 
-        search_fields.each do |field|
+        fields.each do |field|
           shoulds << {
-            fuzzy: {
+            match: {
               "#{field}": {
-                value: query,
-                _name: "search:query:fuzzy:#{field}"
+                query: query,
+                fuzziness: 'AUTO',
+                _name: "#{clause}:bool:should:fuzzy:#{field}"
               }
             }
           }
         end
 
-        clauses << context.name(:fuzzy_search) do
-          {
+        {
+          query: {
             bool: {
-              should: shoulds
+              "#{clause}": [
+                {
+                  bool: {
+                    should: shoulds
+                  }
+                }
+              ]
             }
           }
-        end
+        }
       end
 
       def forbidden_states_filter(filters, options)
@@ -64,13 +61,16 @@ module Elastic
 
         filters << {
           term: {
-            in_forbidden_state: false
+            in_forbidden_state: {
+              value: false,
+              _name: 'filter:not_forbidden_state'
+            }
           }
         }
       end
 
-      def namespace_query(clauses, options)
-        return clauses unless options[:project_id].present? || options[:group_id].present?
+      def namespace_query(filters, options)
+        return filters unless options[:project_id].present? || options[:group_id].present?
 
         project = Project.find_by_id(options[:project_id])
         group = Group.find_by_id(options[:group_id])
@@ -88,13 +88,11 @@ module Elastic
           shoulds << { terms: { namespace_ancestry_ids: terms } } if terms.any?
         end
 
-        clauses << context.name(:namespace_filter) do
-          {
-            bool: {
-              should: shoulds
-            }
+        filters << {
+          bool: {
+            should: shoulds
           }
-        end
+        }
       end
 
       # rubocop: disable CodeReuse/ActiveRecord
@@ -104,6 +102,23 @@ module Elastic
       # rubocop: enable CodeReuse/ActiveRecord
 
       private
+
+      def use_simple_query_string?(query, options)
+        ::Feature.enabled?(:user_search_simple_query_string, options[:current_user]) &&
+          simple_query_string_syntax?(query)
+      end
+
+      def simple_query_string_syntax?(query)
+        query.match?(/[+\-|*()~"]/)
+      end
+
+      def valid_fields(options)
+        return SEARCH_FIELDS if is_admin?(options)
+
+        # Searching by private email is only available to admins.
+        # Non-admins can get results matching on public_email.
+        SEARCH_FIELDS - ['email']
+      end
 
       def namespace_ids(ids, separator = '-')
         ids = ids.split(separator)

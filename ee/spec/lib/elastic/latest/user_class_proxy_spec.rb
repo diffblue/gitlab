@@ -6,6 +6,8 @@ RSpec.describe Elastic::Latest::UserClassProxy, feature_category: :global_search
   subject { described_class.new(User) }
 
   let(:query) { 'bob' }
+  let(:options) { {} }
+  let(:elastic_search) { subject.elastic_search(query, options: options) }
   let(:response) do
     Elasticsearch::Model::Response::Response.new(User, Elasticsearch::Model::Searching::SearchRequest.new(User, '*'))
   end
@@ -18,7 +20,7 @@ RSpec.describe Elastic::Latest::UserClassProxy, feature_category: :global_search
     it 'calls ApplicationClassProxy.search once' do
       expect(subject).to receive(:search).once
 
-      subject.elastic_search(query)
+      elastic_search
     end
 
     describe 'methods being called' do
@@ -26,103 +28,95 @@ RSpec.describe Elastic::Latest::UserClassProxy, feature_category: :global_search
         allow(subject).to receive(:search).and_return(response)
       end
 
-      it 'calls fuzzy_query, namespace_query and forbidden_states_filter' do
-        expect(subject).to receive(:fuzzy_query).once
-        expect(subject).to receive(:namespace_query).once
-        expect(subject).to receive(:forbidden_states_filter).once
+      it 'calls fuzzy_query_hash, namespace_query and forbidden_states_filter' do
+        expect(subject).to receive(:fuzzy_query_hash).and_call_original.once
+        expect(subject).to receive(:namespace_query).and_call_original.once
+        expect(subject).to receive(:forbidden_states_filter).and_call_original.once
 
-        subject.elastic_search(query)
+        elastic_search
       end
 
-      describe 'query' do
-        let(:fuzzy_query_result) { instance_double(Array) }
-        let(:forbidden_states_query_result) { instance_double(Array) }
-        let(:namespace_query_result) { fuzzy_query_result }
+      context 'when the query contains simple query string syntax characters' do
+        let(:query) { 'bo*' }
 
-        before do
-          allow(subject).to receive(:fuzzy_query).and_return(fuzzy_query_result)
-          allow(subject).to receive(:forbidden_states_filter).and_return(forbidden_states_query_result)
-          allow(subject).to receive(:namespace_query).and_return(namespace_query_result)
+        it 'calls basic_query_hash, namespace_query and forbidden_states_filter' do
+          expect(subject).to receive(:basic_query_hash).and_call_original.once
+          expect(subject).to receive(:namespace_query).and_call_original.once
+          expect(subject).to receive(:forbidden_states_filter).and_call_original.once
+
+          elastic_search
         end
 
-        it 'builds a bool query with musts and filters' do
-          query_hash = {
-            query: {
-              bool: {
-                must: fuzzy_query_result,
-                filter: forbidden_states_query_result
-              }
-            }
-          }
+        context 'with the user_search_simple_query_string feature flag disabled' do
+          before do
+            stub_feature_flags(user_search_simple_query_string: false)
+          end
 
-          expect(subject).to receive(:search).with(query_hash, any_args).once
+          it 'calls fuzzy_query_hash' do
+            expect(subject).to receive(:fuzzy_query_hash).and_call_original.once
 
-          subject.elastic_search(query)
-        end
-
-        context 'with count_only passed in arguments' do
-          it 'builds a bool query with filters only and size is 0' do
-            query_hash = {
-              query: {
-                bool: {
-                  must: [],
-                  filter: forbidden_states_query_result
-                }
-              },
-              size: 0
-            }
-
-            expect(subject).to receive(:search).with(query_hash, any_args).once
-
-            subject.elastic_search(query, options: { count_only: true })
+            elastic_search
           end
         end
       end
     end
-  end
 
-  describe '#fuzzy_query' do
-    let(:query_hash) do
-      subject.fuzzy_query(clauses: musts, query: query, search_fields: fuzzy_search_fields, options: options)
-    end
+    context 'when the query does not contain simple query string syntax characters', :elastic_delete_by_query do
+      describe 'query' do
+        it 'has fuzzy queries and filters for forbidden state' do
+          elastic_search.response
 
-    let(:musts) { [] }
-    let(:query) { nil }
-    let(:fuzzy_search_fields) { described_class::FUZZY_SEARCH_FIELDS }
-    let(:options) { {} }
+          assert_named_queries(
+            'must:bool:should:fuzzy:name',
+            'must:bool:should:fuzzy:username',
+            'must:bool:should:fuzzy:public_email',
+            'filter:not_forbidden_state'
+          )
+        end
 
-    it 'returns musts if no query is passed' do
-      expect(query_hash).to eq(musts)
-    end
+        context 'with admin passed in arguments' do
+          let(:options) { { admin: true } }
 
-    context 'when a query is passed' do
-      let(:query) { 'bob' }
+          it 'does not have the forbidden state filter and includes email for the query search' do
+            elastic_search.response
 
-      it 'has 3 fuzzy queries' do
-        expect(query_hash.count).to eq(1)
-        fuzzy_query = query_hash.first
+            assert_named_queries(
+              'must:bool:should:fuzzy:name',
+              'must:bool:should:fuzzy:username',
+              'must:bool:should:fuzzy:email',
+              'must:bool:should:fuzzy:public_email'
+            )
+          end
+        end
 
-        expect(fuzzy_query).to have_key(:bool)
-        expect(fuzzy_query[:bool]).to have_key(:should)
-        expect(fuzzy_query[:bool][:should].count).to eq(3)
+        context 'with count_only passed in arguments' do
+          let(:options) { { count_only: true } }
 
-        fuzzy_keys = fuzzy_query[:bool][:should].map { |s| s[:fuzzy].keys }.flatten
-        expect(fuzzy_keys).to match_array([:name, :username, :public_email])
+          it 'only has filters' do
+            elastic_search.response
+
+            assert_named_queries(
+              'filter:bool:should:fuzzy:name',
+              'filter:bool:should:fuzzy:username',
+              'filter:bool:should:fuzzy:public_email',
+              'filter:not_forbidden_state'
+            )
+          end
+        end
       end
+    end
 
-      context 'when the user is an admin' do
-        let(:options) { { admin: true } }
+    context 'when the query contains simple query string syntax characters', :elastic_delete_by_query do
+      let(:query) { 'bo*' }
 
-        it 'has an extra fuzzy query for email' do
-          expect(query_hash.count).to eq(1)
-          fuzzy_query = query_hash.first
+      describe 'query' do
+        it 'has a simple query string and filters for forbidden state' do
+          elastic_search.response
 
-          expect(fuzzy_query).to have_key(:bool)
-          expect(fuzzy_query[:bool]).to have_key(:should)
-          expect(fuzzy_query[:bool][:should].count).to eq(4)
-
-          fuzzy_keys = fuzzy_query[:bool][:should].map { |s| s[:fuzzy].keys }.flatten
-          expect(fuzzy_keys).to match_array([:name, :username, :public_email, :email])
+          assert_named_queries(
+            'user:match:search_terms',
+            'filter:not_forbidden_state'
+          )
         end
       end
     end
@@ -215,7 +209,7 @@ RSpec.describe Elastic::Latest::UserClassProxy, feature_category: :global_search
       filter_query = query_hash.first
 
       expect(filter_query).to have_key(:term)
-      expect(filter_query[:term]).to eq({ in_forbidden_state: false })
+      expect(filter_query[:term]).to include({ in_forbidden_state: hash_including(value: false) })
     end
 
     context 'when the user is an admin' do
