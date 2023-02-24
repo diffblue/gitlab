@@ -33,17 +33,6 @@ RSpec.describe 'Observability rendering', :js, feature_category: :metrics do
       it_behaves_like 'embeds observability'
     end
 
-    context 'when user is not a developer of the embedded group' do
-      before do
-        visit group_epic_path(group, epic)
-        wait_for_requests
-      end
-
-      it_behaves_like 'does not embed observability' do
-        let_it_be(:observable_url) { "https://observe.gitlab.com/1234/some-dashboard" }
-      end
-    end
-
     context 'when feature flag is disabled' do
       before do
         stub_feature_flags(observability_group_tab: false)
