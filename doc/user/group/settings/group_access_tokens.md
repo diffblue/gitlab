@@ -173,3 +173,7 @@ to groups instead of projects. Bot users for groups:
 - Have an email set to `group{group_id}_bot_{random_string}@noreply.{Gitlab.config.gitlab.host}`. For example, `group123_bot_4ffca233d8298ea1@noreply.example.com`.
 
 All other properties are similar to [bot users for projects](../../project/settings/project_access_tokens.md#bot-users-for-projects).
+
+## Token availability
+
+Group access tokens are only available in paid subscriptions, and not available in trial subscriptions. For more information, see the ["What is included" section of the GitLab Trial FAQ](https://about.gitlab.com/free-trial/#what-is-included-in-my-free-trial-what-is-excluded).
