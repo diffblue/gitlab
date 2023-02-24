@@ -140,3 +140,7 @@ When the project access token is [revoked](#revoke-a-project-access-token):
 - All records are moved to a system-wide user with the username [Ghost User](../../profile/account/delete_account.md#associated-records).
 
 See also [Bot users for groups](../../group/settings/group_access_tokens.md#bot-users-for-groups).
+
+## Token availability
+
+Project access tokens are only available in paid subscriptions, and not available in trial subscriptions. For more information, see the ["What is included" section of the GitLab Trial FAQ](https://about.gitlab.com/free-trial/#what-is-included-in-my-free-trial-what-is-excluded).
