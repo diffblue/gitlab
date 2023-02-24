@@ -118,12 +118,8 @@ The bot users for projects have [permissions](../../permissions.md#project-membe
 selected role and [scope](#scopes-for-a-project-access-token) of the project access token.
 
 - The name is set to the name of the token.
-- The username is set to `project_{project_id}_bot` for the first access token. For example, `project_123_bot`.
-- The email is set to `project{project_id}_bot@noreply.{Gitlab.config.gitlab.host}`. For example, `project123_bot@noreply.example.com`.
-- For additional access tokens in the same project, the username is set to `project_{project_id}_bot{bot_count}`. For
-  example, `project_123_bot1`.
-- For additional access tokens in the same project, the email is set to `project{project_id}_bot{bot_count}@noreply.{Gitlab.config.gitlab.host}`.
-  For example, `project123_bot1@noreply.example.com`.
+- The username is set to `project_{project_id}_bot_{random_string}`. For example, `project_123_bot_4ffca233d8298ea1`.
+- The email is set to `project{project_id}_bot_{random_string}@noreply.{Gitlab.config.gitlab.host}`. For example, `project123_bot_4ffca233d8298ea1@noreply.example.com`.
 
 API calls made with a project access token are associated with the corresponding bot user.
 
