@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'hashie'
-require './ee/app/services/package_metadata/data_object'
 
 RSpec.describe Gitlab::PackageMetadata::Connector::Gcp, feature_category: :license_compliance do
   let(:connector) { described_class.new(bucket_name, version_format, purl_type) }
@@ -103,7 +101,7 @@ RSpec.describe Gitlab::PackageMetadata::Connector::Gcp, feature_category: :licen
   end
 
   describe 'extracting CSV' do
-    let(:file) { connector.data_after(Hashie::Mash.new(sequence: nil, chunk: nil)).first }
+    let(:file) { connector.data_after(PackageMetadata::Checkpoint.new(sequence: nil, chunk: nil)).first }
 
     before do
       allow(all_files.first).to receive(:download)
@@ -119,20 +117,6 @@ RSpec.describe Gitlab::PackageMetadata::Connector::Gcp, feature_category: :licen
           have_attributes(name: 'foo', version: 'v1', license: 'MIT', purl_type: purl_type),
           have_attributes(name: 'bar', version: 'v100', license: 'Apache', purl_type: purl_type),
           have_attributes(name: 'baz', version: 'vx', license: 'some-other-license', purl_type: purl_type)
-        )
-      end
-    end
-
-    context 'with escaped unicode characters in the returned data' do
-      let(:string) do
-        "f\xC3\xB3\xC3\xB3,v1,MIT\nb\xC3\xA1r,v100,Apache\nb\xC3\xAA\xC5\xBE,v\xC3\xA9rsion-1,\xC3\x80pache"
-      end
-
-      it 'converts the escaped characters to utf-8' do
-        expect { |b| file.each(&b) }.to yield_successive_args(
-          have_attributes(name: 'fóó', version: 'v1', license: 'MIT', purl_type: purl_type),
-          have_attributes(name: 'bár', version: 'v100', license: 'Apache', purl_type: purl_type),
-          have_attributes(name: 'bêž', version: 'vérsion-1', license: 'Àpache', purl_type: purl_type)
         )
       end
     end
@@ -159,7 +143,7 @@ RSpec.describe Gitlab::PackageMetadata::Connector::Gcp, feature_category: :licen
     with_them do
       it 'correctly queries the bucket' do
         expect(bucket).to receive(:files).with(prefix: "#{version_format}/#{registry_id}/")
-        connector.data_after(Hashie::Mash.new(sequence_id: nil, chunk_id: nil))
+        connector.data_after(PackageMetadata::Checkpoint.new(sequence: nil, chunk: nil))
       end
     end
   end

@@ -17,7 +17,8 @@ module PackageMetadata
       when :gcp
         Gitlab::PackageMetadata::Connector::Gcp.new(config.base_uri, config.version_format, config.purl_type)
       when :offline
-        Gitlab::PackageMetadata::Connector::Offline.new(config.base_uri, config.version_format, config.purl_type)
+        Gitlab::PackageMetadata::Connector::Offline.new(config.class.archive_path, config.version_format,
+          config.purl_type)
       else
         raise UnknownAdapterError, "unable to find '#{config.storage_type}' connector"
       end

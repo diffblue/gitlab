@@ -4,6 +4,7 @@ module PackageMetadata
   class SyncConfiguration
     BUCKET_NAME = 'prod-export-license-bucket-1a6c642fc4de57d4'
     VERSION_FORMAT = 'v1'
+    OFFLINE_STORAGE_LOCATION = Rails.root.join('vendor/package_metadata_db').freeze
     PURL_TYPE_TO_REGISTRY_ID = {
       composer: "packagist",
       conan: "conan",
@@ -27,10 +28,10 @@ module PackageMetadata
     end
 
     def self.archive_path
-      Rails.root.join('vendor/package_metadata_db')
+      OFFLINE_STORAGE_LOCATION
     end
 
-    def self.registry(purl_type)
+    def self.registry_id(purl_type)
       PURL_TYPE_TO_REGISTRY_ID[purl_type].freeze
     end
 
