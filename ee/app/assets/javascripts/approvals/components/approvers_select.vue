@@ -2,7 +2,6 @@
 import { GlCollapsibleListbox, GlAvatarLabeled } from '@gitlab/ui';
 import Api from 'ee/api';
 import { __ } from '~/locale';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { TYPE_USER, TYPE_GROUP } from '../constants';
 
@@ -15,7 +14,6 @@ export default {
     GlCollapsibleListbox,
     GlAvatarLabeled,
   },
-  mixins: [glFeatureFlagsMixin()],
   i18n: {
     toggleText: __('Search users or groups'),
   },
@@ -57,11 +55,6 @@ export default {
       searchString: '',
     };
   },
-  computed: {
-    isFeatureEnabled() {
-      return this.glFeatures.permitAllSharedGroupsForApproval;
-    },
-  },
   methods: {
     fetchGroupsAndUsers(term) {
       const groupsAsync = this.fetchGroups(term).then(addType(TYPE_GROUP));
@@ -76,20 +69,6 @@ export default {
         .then((results) => ({ results }));
     },
     fetchGroups(term) {
-      if (this.isFeatureEnabled) {
-        const hasTerm = term.trim().length > 0;
-        const DEVELOPER_ACCESS_LEVEL = 30;
-
-        return Api.projectGroups(this.namespaceId, {
-          skip_groups: this.skipGroupIds,
-          ...(hasTerm ? { search: term } : {}),
-          with_shared: true,
-          shared_visible_only: false,
-          shared_min_access_level: DEVELOPER_ACCESS_LEVEL,
-          order_by: 'id',
-        });
-      }
-
       // Don't includeAll when search is empty. Otherwise, the user could get a lot of garbage choices.
       // https://gitlab.com/gitlab-org/gitlab/issues/11566
       const includeAll = term.trim().length > 0;
