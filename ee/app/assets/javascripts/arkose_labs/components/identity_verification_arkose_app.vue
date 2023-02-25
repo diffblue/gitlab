@@ -61,9 +61,19 @@ export default {
 </script>
 
 <template>
-  <gl-form ref="form" :action="sessionVerificationPath" method="post">
+  <gl-form
+    ref="form"
+    :action="sessionVerificationPath"
+    method="post"
+    data-testid="arkose-labs-token-form"
+  >
     <input :value="$options.csrf.token" type="hidden" name="authenticity_token" />
-    <input :name="$options.VERIFICATION_TOKEN_INPUT_NAME" type="hidden" :value="arkoseToken" />
+    <input
+      :name="$options.VERIFICATION_TOKEN_INPUT_NAME"
+      type="hidden"
+      :value="arkoseToken"
+      data-testid="arkose-labs-token-input"
+    />
     <div
       class="gl-display-flex gl-justify-content-center"
       :class="$options.CHALLENGE_CONTAINER_CLASS"
