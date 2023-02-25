@@ -36,16 +36,11 @@ describe('Approvers Selector', () => {
   const findAvatar = (index) => findAllListboxItems().at(index).findComponent(GlAvatarLabeled);
   const search = (searchString) => findListbox().vm.$emit('search', searchString);
 
-  const createComponent = (props = {}, permitAllSharedGroupsForApproval = false) => {
+  const createComponent = (props = {}) => {
     wrapper = shallowMount(ApproversSelect, {
       propsData: {
         namespaceId: TEST_PROJECT_ID,
         ...props,
-      },
-      provide: {
-        glFeatures: {
-          permitAllSharedGroupsForApproval,
-        },
       },
       stubs: { GlCollapsibleListbox },
     });
@@ -117,26 +112,6 @@ describe('Approvers Selector', () => {
         expect(findListbox().props('items')).toMatchObject([...TEST_GROUPS, ...TEST_USERS]);
       });
 
-      it("doesn't call `Api.projectGroups` when the `permitAllSharedGroupsForApproval` feature is disabled", () => {
-        createComponent();
-        openListbox();
-
-        expect(Api.projectGroups).not.toHaveBeenCalled();
-      });
-
-      it('calls `Api.projectGroups` when the `permitAllSharedGroupsForApproval` feature is enabled', () => {
-        createComponent({}, true);
-        openListbox();
-
-        expect(Api.projectGroups).toHaveBeenCalledWith(TEST_PROJECT_ID, {
-          skip_groups: [],
-          with_shared: true,
-          shared_visible_only: false,
-          shared_min_access_level: 30,
-          order_by: 'id',
-        });
-      });
-
       it('sets `searching` to `true` when first opening the dropdown', async () => {
         createComponent();
 
@@ -188,7 +163,7 @@ describe('Approvers Selector', () => {
           beforeEach(async () => {
             jest.spyOn(Api, api).mockReturnValue(Promise.resolve(mockedValue));
 
-            createComponent({ namespaceType }, false);
+            createComponent({ namespaceType });
             await waitForPromises();
 
             search(TERM);

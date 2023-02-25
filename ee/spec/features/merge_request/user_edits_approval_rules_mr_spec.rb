@@ -65,8 +65,6 @@ RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature
     let_it_be(:public_group) { create(:group, :public) }
 
     before do
-      stub_feature_flags(permit_all_shared_groups_for_approval: false)
-
       group_project = create(:project, :public, :repository, namespace: group)
       group_project_merge_request = create(:merge_request, source_project: group_project)
       group.add_developer(author)

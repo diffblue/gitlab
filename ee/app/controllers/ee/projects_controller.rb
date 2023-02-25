@@ -13,10 +13,6 @@ module EE
       before_action :log_archive_audit_event, only: [:archive]
       before_action :log_unarchive_audit_event, only: [:unarchive]
 
-      before_action only: :edit do
-        push_frontend_feature_flag(:permit_all_shared_groups_for_approval, project)
-      end
-
       before_action only: :show do
         @seat_count_data = generate_seat_count_alert_data(@project)
       end
