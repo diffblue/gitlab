@@ -34,10 +34,10 @@ describe('EpicToken', () => {
 
   const findBaseToken = () => wrapper.findComponent(BaseToken);
 
-  function createComponent(
-    options = {},
-    epicsQueryHandler = jest.fn().mockResolvedValue(mockGroupEpicsQueryResponse),
-  ) {
+  const epicQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupEpicsQueryResponse);
+  const epicQueryHandlerError = jest.fn().mockRejectedValue({});
+
+  function createComponent(options = {}, epicsQueryHandler = epicQueryHandlerSuccess) {
     fakeApollo = createMockApollo([[searchEpicsQuery, epicsQueryHandler]]);
     const {
       config = mockEpicToken,
@@ -64,7 +64,6 @@ describe('EpicToken', () => {
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    wrapper = createComponent();
   });
 
   afterEach(() => {
@@ -74,46 +73,48 @@ describe('EpicToken', () => {
 
   describe('methods', () => {
     describe('fetchEpicsBySearchTerm', () => {
-      it('calls fetchEpics with provided searchTerm param', () => {
-        jest.spyOn(wrapper.vm, 'fetchEpics');
+      describe('when request is successful', () => {
+        const searchTerm = 'foo';
 
-        findBaseToken().vm.$emit('fetch-suggestions', 'foo');
-
-        expect(wrapper.vm.fetchEpics).toHaveBeenCalledWith('foo');
-      });
-
-      it('sets response to `epics` when request is successful', async () => {
-        jest.spyOn(wrapper.vm, 'fetchEpics').mockResolvedValue({
-          data: mockEpics,
+        beforeEach(() => {
+          wrapper = createComponent();
+          findBaseToken().vm.$emit('fetch-suggestions', searchTerm);
+          return waitForPromises();
         });
 
-        findBaseToken().vm.$emit('fetch-suggestions');
+        it('calls fetchEpics with provided searchTerm param', () => {
+          expect(epicQueryHandlerSuccess).toHaveBeenCalledWith({
+            fullPath: expect.any(String),
+            search: searchTerm,
+          });
+        });
 
-        await waitForPromises();
+        it('sets response to `epics`', () => {
+          const mockEpicsData = mockGroupEpicsQueryResponse.data.group.epics.nodes;
+          expect(findBaseToken().props('suggestions')).toEqual(mockEpicsData);
+        });
 
-        expect(wrapper.vm.epics).toEqual(mockEpics);
-      });
-
-      it('calls `createAlert` with flash error message when request fails', async () => {
-        jest.spyOn(wrapper.vm, 'fetchEpics').mockRejectedValue({});
-
-        findBaseToken().vm.$emit('fetch-suggestions', 'foo');
-
-        await waitForPromises();
-
-        expect(createAlert).toHaveBeenCalledWith({
-          message: 'There was a problem fetching epics.',
+        it('sets `loading` to false when request completes', () => {
+          expect(findBaseToken().props('suggestionsLoading')).toBe(false);
         });
       });
 
-      it('sets `loading` to false when request completes', async () => {
-        jest.spyOn(wrapper.vm, 'fetchEpics').mockRejectedValue({});
+      describe('when request is unsuccessful', () => {
+        beforeEach(() => {
+          wrapper = createComponent({}, epicQueryHandlerError);
+          findBaseToken().vm.$emit('fetch-suggestions');
+          return waitForPromises();
+        });
 
-        findBaseToken().vm.$emit('fetch-suggestions', 'foo');
+        it('calls `createAlert` with flash error message', () => {
+          expect(createAlert).toHaveBeenCalledWith({
+            message: 'There was a problem fetching epics.',
+          });
+        });
 
-        await waitForPromises();
-
-        expect(wrapper.vm.loading).toBe(false);
+        it('sets `loading` to false when request completes', () => {
+          expect(findBaseToken().props('suggestionsLoading')).toBe(false);
+        });
       });
     });
   });
@@ -146,7 +147,7 @@ describe('EpicToken', () => {
       ${`${mockEpics[0].title}::&${mockEpics[0].iid}`} | ${'string'} | ${`${mockEpics[0].title}::&${mockEpics[0].iid}`}
       ${`${mockEpics[1].title}::&${mockEpics[1].iid}`} | ${'number'} | ${`${mockEpics[1].title}::&${mockEpics[1].iid}`}
     `('renders token item when selection is a $valueType', async ({ value, tokenValueString }) => {
-      wrapper.setProps({
+      wrapper = createComponent({
         value: { data: value },
       });
 
