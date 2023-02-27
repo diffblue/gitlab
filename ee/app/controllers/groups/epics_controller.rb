@@ -24,8 +24,8 @@ class Groups::EpicsController < Groups::ApplicationController
   end
 
   feature_category :portfolio_management
-  urgency :default, [:show, :new]
-  urgency :low, [:discussions, :realtime_changes]
+  urgency :default, [:show, :new, :realtime_changes]
+  urgency :low, [:discussions]
 
   def new
     @noteable = Epic.new
