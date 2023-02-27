@@ -184,6 +184,20 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
           expect(subject.keys).to match_array(expected_jobs)
         end
       end
+
+      context 'when scan type is sast_iac', :aggregate_failures do
+        let_it_be(:action) { { scan: 'sast_iac', tags: ['runner-tag'] } }
+
+        it 'returns prepared CI configuration for SAST IaC' do
+          expected_jobs = [
+            :"iac-sast-0",
+            :"kics-iac-sast-0"
+          ]
+
+          expect(subject[:variables]).to be_nil
+          expect(subject.keys).to match_array(expected_jobs)
+        end
+      end
     end
 
     context 'when action is invalid' do
