@@ -28,6 +28,64 @@ RSpec.describe Uploads::Fog do
   context 'model with uploads' do
     let(:project) { create(:project) }
     let(:relation) { project.uploads }
+    let(:credentials) { FileUploader.object_store_credentials }
+    let(:connection) { ::Fog::Storage.new(credentials) }
+    let(:paths) { relation.pluck(:path) }
+
+    # Only fog-aws simulates mocking of deleting an object properly.
+    # We'll just test that the various providers implement the require methods.
+    describe 'Fog provider acceptance tests' do
+      let!(:uploads) { create_list(:upload, 2, :with_file, :issuable_upload, model: project) }
+
+      shared_examples 'Fog provider' do
+        describe '#get_object' do
+          it 'returns a Hash with a body' do
+            expect(connection.get_object('uploads', paths.first)[:body]).not_to be_nil
+          end
+        end
+
+        describe '#delete_object' do
+          it 'returns true' do
+            expect(connection.delete_object('uploads', paths.first)).to be_truthy
+          end
+        end
+      end
+
+      before do
+        config = Gitlab.config.uploads.object_store.to_h.symbolize_keys.merge(connection: credentials)
+        stub_uploads_object_storage(FileUploader, config: config)
+
+        uploads.each { |upload| upload.retrieve_uploader.migrate!(2) }
+      end
+
+      context 'with AWS provider' do
+        it_behaves_like 'Fog provider'
+      end
+
+      context 'with Google provider' do
+        let(:credentials) do
+          {
+            provider: "Google",
+            google_storage_access_key_id: 'ACCESS_KEY_ID',
+            google_storage_secret_access_key: 'SECRET_ACCESS_KEY'
+          }
+        end
+
+        it_behaves_like 'Fog provider'
+      end
+
+      context 'with AzureRM provider' do
+        let(:credentials) do
+          {
+            provider: 'AzureRM',
+            azure_storage_account_name: 'test-access-id',
+            azure_storage_access_key: 'secret'
+          }
+        end
+
+        it_behaves_like 'Fog provider'
+      end
+    end
 
     describe '#keys' do
       let!(:uploads) { create_list(:upload, 2, :object_storage, uploader: FileUploader, model: project) }
