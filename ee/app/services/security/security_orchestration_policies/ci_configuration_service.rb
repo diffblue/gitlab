@@ -7,6 +7,7 @@ module Security
         'secret_detection' => 'Jobs/Secret-Detection',
         'container_scanning' => 'Jobs/Container-Scanning',
         'sast' => 'Jobs/SAST',
+        'sast_iac' => 'Jobs/SAST-IaC',
         'dependency_scanning' => 'Jobs/Dependency-Scanning'
       }.freeze
 
