@@ -14,7 +14,6 @@ module PullMirrors
       namespace = Namespace.find_by_id(event.data[:namespace_id])
 
       return if namespace.blank?
-      return if Feature.disabled?(:add_refresh_pull_mirror_worker, namespace)
 
       cte = Gitlab::SQL::CTE.new(:namespace_ids, namespace.self_and_descendant_ids)
 
