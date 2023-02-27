@@ -478,6 +478,11 @@ module EE
         prevent :owner_access
       end
 
+      with_scope :subject
+      condition(:strict_ip_enforcement, scope: :subject) do
+        ::Feature.enabled?(:strict_ip_enforcement, @subject)
+      end
+
       rule { ip_enforcement_prevents_access & ~admin & ~auditor }.policy do
         prevent :read_project
         prevent :read_issue
@@ -486,6 +491,10 @@ module EE
         prevent :read_container_image
         prevent :create_container_image
         prevent(*create_read_update_admin_destroy(:package))
+      end
+
+      rule { ip_enforcement_prevents_access & ~admin & ~auditor & strict_ip_enforcement }.policy do
+        prevent_all
       end
 
       rule { locked_approvers_rules }.policy do

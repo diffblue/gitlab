@@ -39,5 +39,49 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::Validate::Abilities, feature_categor
           .to include('Pipeline is disabled for mirror updates')
       end
     end
+
+    context 'when the maintainer is blocked by IP restriction' do
+      # Project must belong to a group to use IP restriction
+      let_it_be(:project) { create(:project, :in_group) }
+
+      before do
+        allow_next_instance_of(Gitlab::IpRestriction::Enforcer) do |enforcer|
+          allow(enforcer).to receive(:allows_current_ip?).and_return(false)
+        end
+
+        step.perform!
+      end
+
+      it 'adds an error about insufficient permissions' do
+        expect(pipeline.errors.to_a)
+          .to include(/Insufficient permissions/)
+      end
+
+      it 'breaks the pipeline builder chain' do
+        expect(step.break?).to eq true
+      end
+    end
+
+    context 'when the maintainer is blocked by IP restriction with strict_ip_enforcement disabled' do
+      let_it_be(:project) { create(:project, :in_group) }
+
+      before do
+        stub_feature_flags(strict_ip_enforcement: false)
+
+        allow_next_instance_of(Gitlab::IpRestriction::Enforcer) do |enforcer|
+          allow(enforcer).to receive(:allows_current_ip?).and_return(false)
+        end
+
+        step.perform!
+      end
+
+      it 'adds no errors' do
+        expect(pipeline.errors.to_a).to be_empty
+      end
+
+      it 'continues the pipeline builder chain' do
+        expect(step.break?).to eq false
+      end
+    end
   end
 end
