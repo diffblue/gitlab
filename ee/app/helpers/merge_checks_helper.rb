@@ -6,12 +6,12 @@ module MergeChecksHelper
     when Group
       target = source.namespace_settings
       source_type = 'namespace_setting'
-      group_name = source.name
+      parent_group_name = source.parent.nil? ? '' : source.parent.name
     when Project
       target = source
       source_type = 'project'
       # When the project has no group it should be an empty strings
-      group_name = source.group.nil? ? '' : source.group.name
+      parent_group_name = source.group.nil? ? '' : source.group.name
     end
 
     {
@@ -30,7 +30,7 @@ module MergeChecksHelper
           value: target.only_allow_merge_if_all_discussions_are_resolved?(inherit_group_setting: true)
         }
       }.to_json,
-      group_name: group_name
+      parent_group_name: parent_group_name
     }
   end
 end
