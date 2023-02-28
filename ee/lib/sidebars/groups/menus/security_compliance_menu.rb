@@ -45,6 +45,11 @@ module Sidebars
           { page: link }
         end
 
+        override :pick_into_super_sidebar?
+        def pick_into_super_sidebar?
+          true
+        end
+
         private
 
         def security_dashboard_menu_item

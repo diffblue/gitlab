@@ -49,12 +49,23 @@ module Sidebars
           }
         end
 
+        override :serialize_as_menu_item_args
+        def serialize_as_menu_item_args
+          super.merge({
+            sprite_icon: sprite_icon,
+            pill_count: pill_count,
+            has_pill: has_pill?,
+            super_sidebar_parent: ::Sidebars::StaticMenu
+          })
+        end
+
         private
 
         def list_menu_item
           ::Sidebars::MenuItem.new(
             title: _('List'),
             link: issues_group_path(context.group),
+            super_sidebar_parent: ::Sidebars::NilMenuItem,
             active_routes: { path: 'groups#issues' },
             container_html_options: { aria: { label: _('Issues') } },
             item_id: :issue_list
@@ -66,11 +77,16 @@ module Sidebars
             return ::Sidebars::NilMenuItem.new(item_id: :boards)
           end
 
-          title = context.group.multiple_issue_boards_available? ? s_('IssueBoards|Boards') : s_('IssueBoards|Board')
+          title = if context.is_super_sidebar
+                    context.group.multiple_issue_boards_available? ? s_('Issue boards') : s_('Issue board')
+                  else
+                    context.group.multiple_issue_boards_available? ? s_('IssueBoards|Boards') : s_('IssueBoards|Board')
+                  end
 
           ::Sidebars::MenuItem.new(
             title: title,
             link: group_boards_path(context.group),
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::PlanMenu,
             active_routes: { path: %w[boards#index boards#show] },
             item_id: :boards
           )
@@ -84,6 +100,7 @@ module Sidebars
           ::Sidebars::MenuItem.new(
             title: _('Milestones'),
             link: group_milestones_path(context.group),
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::PlanMenu,
             active_routes: { path: 'milestones#index' },
             item_id: :milestones
           )

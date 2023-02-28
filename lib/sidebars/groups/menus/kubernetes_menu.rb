@@ -38,6 +38,14 @@ module Sidebars
         def active_routes
           { controller: :clusters }
         end
+
+        override :serialize_as_menu_item_args
+        def serialize_as_menu_item_args
+          super.merge({
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::OperationsMenu,
+            item_id: :wiki
+          })
+        end
       end
     end
   end
