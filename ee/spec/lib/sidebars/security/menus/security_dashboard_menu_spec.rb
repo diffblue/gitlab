@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Sidebars::Security::Menus::SecurityDashboardMenu, feature_category: :navigation do
-  it_behaves_like 'Security menu',
+  it_behaves_like 'Top-Level menu item',
     link: '/-/security/dashboard',
     title: _('Security Dashboard'),
     icon: 'dashboard',
