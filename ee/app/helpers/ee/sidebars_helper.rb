@@ -31,5 +31,37 @@ module EE
         super
       end
     end
+
+    override :super_sidebar_context
+    def super_sidebar_context(user, group:, project:, panel:)
+      show_buy_pipeline_minutes = show_buy_pipeline_minutes?(project, group)
+
+      return super unless show_buy_pipeline_minutes
+
+      root_namespace = root_ancestor_namespace(project, group)
+
+      super.merge({
+        pipeline_minutes: {
+          show_buy_pipeline_minutes: show_buy_pipeline_minutes,
+          show_notification_dot: show_pipeline_minutes_notification_dot?(project, group),
+          show_with_subtext: show_buy_pipeline_with_subtext?(project, group),
+          buy_pipeline_minutes_path: usage_quotas_path(root_namespace),
+          tracking_attrs: {
+            'track-action': 'click_buy_ci_minutes',
+            'track-label': root_namespace.actual_plan_name,
+            'track-property': 'user_dropdown'
+          },
+          notification_dot_attrs: {
+            'data-track-action': 'render',
+            'data-track-label': 'show_buy_ci_minutes_notification',
+            'data-track-property': current_user.namespace.actual_plan_name
+          },
+          callout_attrs: {
+            feature_id: ::Ci::RunnersHelper::BUY_PIPELINE_MINUTES_NOTIFICATION_DOT,
+            dismiss_endpoint: callouts_path
+          }
+        }
+      })
+    end
   end
 end
