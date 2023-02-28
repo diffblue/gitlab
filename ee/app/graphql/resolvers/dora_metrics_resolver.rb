@@ -3,6 +3,7 @@
 module Resolvers
   class DoraMetricsResolver < BaseResolver
     include Gitlab::Graphql::Authorize::AuthorizeResource
+    include LooksAhead
 
     authorizes_object!
     authorize :read_dora4_analytics
@@ -10,8 +11,9 @@ module Resolvers
     alias_method :container, :object
 
     argument :metric, Types::DoraMetricTypeEnum,
-             required: true,
-             description: 'Type of metric to return.'
+             required: false,
+             description: 'Type of metric to return.',
+             deprecated: { reason: 'Superseded by metrics fields. See `DoraMetric` type', milestone: '15.10' }
 
     argument :start_date, Types::DateType,
              required: false,
@@ -23,24 +25,25 @@ module Resolvers
 
     argument :interval, Types::DoraMetricBucketingIntervalEnum,
              required: false,
-             description: 'How the metric should be aggregrated. Defaults to `DAILY`. In the case of `ALL`, the `date` field in the response will be `null`.'
+             description: 'How the metric should be aggregated. Defaults to `DAILY`. In the case of `ALL`, the `date` field in the response will be `null`.'
 
     argument :environment_tier, Types::DeploymentTierEnum,
              required: false,
-             description: 'Deployment tier of the environments to return. Deprecated, please update to `environment_tiers` param.'
+             description: 'Deployment tier of the environments to return.',
+             deprecated: { reason: 'Superseded by `environment_tiers` param', milestone: '15.2' }
 
     argument :environment_tiers, [Types::DeploymentTierEnum],
              required: false,
              description: 'Deployment tiers of the environments to return. Defaults to `[PRODUCTION]`.'
 
-    def resolve(params)
+    def resolve_with_lookahead(**params)
       # Backwards compatibility until %16.0
       if params[:environment_tier]
         params[:environment_tiers] ||= []
         params[:environment_tiers] |= [params[:environment_tier]]
       end
 
-      params[:metrics] = [params[:metric]] if params[:metric]
+      params[:metrics] = Array(params[:metric] || selected_metrics)
 
       result = ::Dora::AggregateMetricsService
         .new(container: container, current_user: current_user, params: params)
@@ -48,13 +51,22 @@ module Resolvers
 
       raise Gitlab::Graphql::Errors::ArgumentError, result[:message] unless result[:status] == :success
 
-      backwards_compatibility(result[:data], params[:metric])
+      # Backwards compatibility until %17.0
+      single_metric_support(result[:data], params[:metric]) if params[:metric]
+
+      result[:data]
     end
 
     private
 
-    def backwards_compatibility(data, metric)
-      data.map { |row| { 'date' => row['date'], 'value' => row[metric] } }
+    def single_metric_support(data, metric)
+      data.each { |row| row['value'] = row[metric] }
+    end
+
+    def selected_metrics
+      return unless lookahead&.selected?
+
+      Dora::DailyMetrics::AVAILABLE_METRICS.select { |name| lookahead.selects?(name.to_sym) }
     end
   end
 end
