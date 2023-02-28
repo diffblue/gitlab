@@ -69,7 +69,7 @@ module Types
 
       def title
         BatchLoader::GraphQL.for(object).batch do |lists, callback|
-          ActiveRecord::Associations::Preloader.new.preload(lists, :label) # rubocop: disable CodeReuse/ActiveRecord
+          ActiveRecord::Associations::Preloader.new(records: lists, associations: :label).call # rubocop: disable CodeReuse/ActiveRecord
 
           # all list titles are preloaded at this point
           lists.each { |list| callback.call(list, list.title) }

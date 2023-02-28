@@ -597,7 +597,7 @@ RSpec.describe User, feature_category: :authentication_and_authorization do
 
       context 'when identities and saml_providers pre-loaded' do
         before do
-          ActiveRecord::Associations::Preloader.new.preload(subject, group_saml_identities: :saml_provider)
+          ActiveRecord::Associations::Preloader.new(records: [subject], associations: { group_saml_identities: :saml_provider }).call
         end
 
         it 'returns true' do
