@@ -47,7 +47,7 @@ export default {
       v-if="shouldShowPagination"
       :change="fetchPage"
       :page-info="module.pageInfo"
-      class="justify-content-center gl-mt-3"
+      align="center"
     />
   </div>
 </template>

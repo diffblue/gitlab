@@ -69,7 +69,7 @@ export default {
 <template>
   <div
     :class="{
-      'gl-pr-2': canRemove,
+      'gl-pr-3': canRemove,
     }"
     class="item-body d-flex align-items-center gl-px-5"
   >

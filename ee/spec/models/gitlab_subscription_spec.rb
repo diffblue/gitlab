@@ -68,10 +68,12 @@ RSpec.describe GitlabSubscription, :saas, feature_category: :subscription_manage
       let_it_be(:ultimate_subscription) { create(:gitlab_subscription, hosted_plan: ultimate_plan, last_seat_refresh_at: nil) }
       let_it_be(:ultimate_subscription_12_hours) { create(:gitlab_subscription, hosted_plan: ultimate_plan, last_seat_refresh_at: 12.hours.ago) }
       let_it_be(:ultimate_subscription_2_days) { create(:gitlab_subscription, hosted_plan: ultimate_plan, last_seat_refresh_at: 2.days.ago) }
+      let_it_be(:ultimate_subscription_24_hours) { create(:gitlab_subscription, hosted_plan: ultimate_plan, last_seat_refresh_at: 24.hours.ago) }
 
       let_it_be(:premium_subscription) { create(:gitlab_subscription, hosted_plan: premium_plan, last_seat_refresh_at: nil) }
       let_it_be(:premium_subscription_12_hours) { create(:gitlab_subscription, hosted_plan: premium_plan, last_seat_refresh_at: 12.hours.ago) }
       let_it_be(:premium_subscription_2_days) { create(:gitlab_subscription, hosted_plan: premium_plan, last_seat_refresh_at: 2.days.ago) }
+      let_it_be(:premium_subscription_24_hours) { create(:gitlab_subscription, hosted_plan: premium_plan, last_seat_refresh_at: 24.hours.ago) }
 
       let_it_be(:free_subscription) { create(:gitlab_subscription, :free, last_seat_refresh_at: 2.days.ago) }
       let_it_be(:trial_subscription) { create(:gitlab_subscription, hosted_plan: ultimate_plan, trial: true, last_seat_refresh_at: 2.days.ago) }
@@ -80,11 +82,13 @@ RSpec.describe GitlabSubscription, :saas, feature_category: :subscription_manage
         matching_subscriptions = [
           ultimate_subscription,
           ultimate_subscription_2_days,
+          ultimate_subscription_24_hours,
           premium_subscription,
-          premium_subscription_2_days
+          premium_subscription_2_days,
+          premium_subscription_24_hours
         ]
 
-        expect(described_class.requiring_seat_refresh(4))
+        expect(described_class.requiring_seat_refresh(6))
           .to match_array(matching_subscriptions)
       end
 
