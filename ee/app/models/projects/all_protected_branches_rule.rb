@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Projects
-  class AllBranchesRule < BranchRule
+  class AllProtectedBranchesRule < BranchRule
     include Projects::CustomBranchRule
 
     attr_reader :project
@@ -11,19 +11,21 @@ module Projects
     end
 
     def name
-      s_('All branches')
+      s_('All protected branches')
     end
 
     def matching_branches_count
-      project.repository.branch_count
+      project.repository.branch_names.count do |branch_name|
+        ProtectedBranch.protected?(project, branch_name)
+      end
     end
 
     def approval_project_rules
-      project.approval_rules.for_all_branches
+      project.approval_rules.for_all_protected_branches
     end
 
     def external_status_checks
-      project.external_status_checks.for_all_branches
+      []
     end
   end
 end

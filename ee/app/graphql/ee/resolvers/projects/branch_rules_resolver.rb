@@ -11,6 +11,7 @@ module EE
         override :resolve_with_lookahead
         def resolve_with_lookahead(**args)
           super.tap do |rules|
+            rules.unshift(all_protected_branches_rule) if all_protected_branches_rule.any_rules?
             rules.unshift(all_branches_rule) if all_branches_rule.any_rules?
           end
         end
@@ -22,6 +23,11 @@ module EE
           ::Projects::AllBranchesRule.new(project)
         end
         strong_memoize_attr :all_branches_rule
+
+        def all_protected_branches_rule
+          ::Projects::AllProtectedBranchesRule.new(project)
+        end
+        strong_memoize_attr :all_protected_branches_rule
 
         override :preloads
         def preloads
