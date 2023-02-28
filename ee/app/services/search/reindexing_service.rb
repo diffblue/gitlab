@@ -18,7 +18,7 @@ module Search
 
     private
 
-    def build_request(params, overrides = {})
+    def build_request(params, overrides)
       r = {
         wait_for_completion: params[:wait_for_completion],
         body: {
