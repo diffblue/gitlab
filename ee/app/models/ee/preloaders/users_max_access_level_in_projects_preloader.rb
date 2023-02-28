@@ -9,7 +9,7 @@ module EE
 
       override :preload_users_namespace_bans
       def preload_users_namespace_bans(users)
-        ActiveRecord::Associations::Preloader.new.preload(users, :namespace_bans)
+        ActiveRecord::Associations::Preloader.new(records: users, associations: :namespace_bans).call
       end
     end
   end

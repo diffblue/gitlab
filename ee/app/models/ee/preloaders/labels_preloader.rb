@@ -9,8 +9,10 @@ module EE
       def preload_all
         super
 
-        preloader = ActiveRecord::Associations::Preloader.new
-        preloader.preload(labels.select { |l| l.is_a? GroupLabel }, { group: [:ip_restrictions, :saml_provider] })
+        ActiveRecord::Associations::Preloader.new(
+          records: labels.select { |l| l.is_a? GroupLabel },
+          associations: { group: [:ip_restrictions, :saml_provider] }
+        ).call
       end
     end
   end

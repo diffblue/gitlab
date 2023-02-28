@@ -21,10 +21,10 @@ module EE
       has_many :status_check_responses, class_name: 'MergeRequests::StatusCheckResponse', inverse_of: :merge_request
       has_many :approval_rules, class_name: 'ApprovalMergeRequestRule', inverse_of: :merge_request do
         def applicable_to_branch(branch)
-          ActiveRecord::Associations::Preloader.new.preload(
-            self,
-            [:users, :groups, approval_project_rule: [:users, :groups, :protected_branches]]
-          )
+          ActiveRecord::Associations::Preloader.new(
+            records: self,
+            associations: [:users, :groups, approval_project_rule: [:users, :groups, :protected_branches]]
+          ).call
 
           self.select do |rule|
             next true unless rule.approval_project_rule.present?

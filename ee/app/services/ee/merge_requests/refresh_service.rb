@@ -35,13 +35,6 @@ module EE
         MergeRequestResetApprovalsWorker.perform_in(10.seconds, project.id, current_user.id, ref, newrev)
       end
 
-      # @return [Hash<Integer, MergeRequestDiff>] Diffs prior to code push, mapped from merge request id
-      def fetch_latest_merge_request_diffs
-        merge_requests = merge_requests_for_source_branch
-        ActiveRecord::Associations::Preloader.new.preload(merge_requests, :latest_merge_request_diff) # rubocop: disable CodeReuse/ActiveRecord
-        merge_requests.map(&:latest_merge_request_diff)
-      end
-
       def update_approvers_for_source_branch_merge_requests
         merge_requests_for_source_branch.each do |merge_request|
           ::MergeRequests::SyncCodeOwnerApprovalRules.new(merge_request).execute if project.feature_available?(:code_owners)

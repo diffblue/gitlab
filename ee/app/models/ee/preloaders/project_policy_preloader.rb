@@ -11,7 +11,7 @@ module EE
 
         super
 
-        ActiveRecord::Associations::Preloader.new.preload(projects, :group)
+        ActiveRecord::Associations::Preloader.new(records: projects, associations: :group).call
         ::Preloaders::ProjectRootAncestorPreloader.new(projects, :group, root_ancestor_preloads).execute
 
         # Manually preloads saml_providers, which cannot be done in AR, since the
