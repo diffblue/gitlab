@@ -6,9 +6,8 @@ import createComponent from 'jest/boards/board_list_helper';
 import BoardCard from '~/boards/components/board_card.vue';
 import BoardCardInner from '~/boards/components/board_card_inner.vue';
 import BoardCardMoveToPosition from '~/boards/components/board_card_move_to_position.vue';
-import { BoardType } from '~/boards/constants';
 import listIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
-import { TYPE_EPIC } from '~/issues/constants';
+import { TYPE_EPIC, WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import listEpicsQuery from 'ee/boards/graphql/lists_epics.query.graphql';
 import {
   mockGroupIssuesResponse,
@@ -63,9 +62,9 @@ describe('BoardList Component', () => {
 
     it.each`
       boardType            | isEpicBoard | queryHandler                        | notCalledHandler
-      ${BoardType.group}   | ${false}    | ${groupIssuesQueryHandlerSuccess}   | ${projectIssuesQueryHandlerSuccess}
-      ${BoardType.project} | ${false}    | ${projectIssuesQueryHandlerSuccess} | ${groupIssuesQueryHandlerSuccess}
-      ${BoardType.group}   | ${true}     | ${groupEpicsQueryHandlerSuccess}    | ${groupIssuesQueryHandlerSuccess}
+      ${WORKSPACE_GROUP}   | ${false}    | ${groupIssuesQueryHandlerSuccess}   | ${projectIssuesQueryHandlerSuccess}
+      ${WORKSPACE_PROJECT} | ${false}    | ${projectIssuesQueryHandlerSuccess} | ${groupIssuesQueryHandlerSuccess}
+      ${WORKSPACE_GROUP}   | ${true}     | ${groupEpicsQueryHandlerSuccess}    | ${groupIssuesQueryHandlerSuccess}
     `(
       'fetches $boardType items when isEpicBoard is $isEpicBoard',
       async ({ boardType, isEpicBoard, queryHandler, notCalledHandler }) => {
@@ -73,8 +72,8 @@ describe('BoardList Component', () => {
           provide: {
             boardType,
             issuableType: isEpicBoard ? 'epic' : 'issue',
-            isProjectBoard: boardType === BoardType.project,
-            isGroupBoard: boardType === BoardType.group,
+            isProjectBoard: boardType === WORKSPACE_PROJECT,
+            isGroupBoard: boardType === WORKSPACE_GROUP,
             isEpicBoard,
             isApolloBoard: true,
           },

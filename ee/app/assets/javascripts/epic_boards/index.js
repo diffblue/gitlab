@@ -4,7 +4,6 @@ import VueApollo from 'vue-apollo';
 import { fullEpicBoardId } from 'ee_component/boards/boards_util';
 
 import BoardApp from '~/boards/components/board_app.vue';
-import { BoardType } from '~/boards/constants';
 import store from '~/boards/stores';
 
 import '~/boards/filters/due_date_filters';
@@ -15,7 +14,7 @@ import {
   convertObjectPropsToCamelCase,
 } from '~/lib/utils/common_utils';
 import { defaultClient } from '~/graphql_shared/issuable_client';
-import { TYPE_EPIC } from '~/issues/constants';
+import { TYPE_EPIC, WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { queryToObject } from '~/lib/utils/url_utility';
 
 Vue.use(VueApollo);
@@ -70,8 +69,8 @@ function mountBoardApp(el) {
       initialFilterParams,
       boardBaseUrl: el.dataset.boardBaseUrl,
       boardType,
-      isGroupBoard: boardType === BoardType.group,
-      isProjectBoard: boardType === BoardType.project,
+      isGroupBoard: boardType === WORKSPACE_GROUP,
+      isProjectBoard: boardType === WORKSPACE_PROJECT,
       currentUserId: gon.current_user_id || null,
       labelsFetchPath: el.dataset.labelsFetchPath,
       labelsManagePath: el.dataset.labelsManagePath,

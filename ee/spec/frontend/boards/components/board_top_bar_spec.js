@@ -14,7 +14,7 @@ import BoardsSelector from '~/boards/components/boards_selector.vue';
 import ConfigToggle from '~/boards/components/config_toggle.vue';
 import NewBoardButton from '~/boards/components/new_board_button.vue';
 import ToggleFocus from '~/boards/components/toggle_focus.vue';
-import { BoardType } from '~/boards/constants';
+import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 
 import groupBoardQuery from '~/boards/graphql/group_board.query.graphql';
 import projectBoardQuery from '~/boards/graphql/project_board.query.graphql';
@@ -144,17 +144,17 @@ describe('BoardTopBar', () => {
   describe('Apollo boards', () => {
     it.each`
       boardType            | isEpicBoard | queryHandler                       | notCalledHandler
-      ${BoardType.group}   | ${false}    | ${groupBoardQueryHandlerSuccess}   | ${projectBoardQueryHandlerSuccess}
-      ${BoardType.project} | ${false}    | ${projectBoardQueryHandlerSuccess} | ${groupBoardQueryHandlerSuccess}
-      ${BoardType.group}   | ${true}     | ${epicBoardQueryHandlerSuccess}    | ${groupBoardQueryHandlerSuccess}
+      ${WORKSPACE_GROUP}   | ${false}    | ${groupBoardQueryHandlerSuccess}   | ${projectBoardQueryHandlerSuccess}
+      ${WORKSPACE_PROJECT} | ${false}    | ${projectBoardQueryHandlerSuccess} | ${groupBoardQueryHandlerSuccess}
+      ${WORKSPACE_GROUP}   | ${true}     | ${epicBoardQueryHandlerSuccess}    | ${groupBoardQueryHandlerSuccess}
     `(
       'fetches $boardType boards when isEpicBoard is $isEpicBoard',
       async ({ boardType, isEpicBoard, queryHandler, notCalledHandler }) => {
         createComponent({
           provide: {
             boardType,
-            isProjectBoard: boardType === BoardType.project,
-            isGroupBoard: boardType === BoardType.group,
+            isProjectBoard: boardType === WORKSPACE_PROJECT,
+            isGroupBoard: boardType === WORKSPACE_GROUP,
             isEpicBoard,
             isApolloBoard: true,
           },

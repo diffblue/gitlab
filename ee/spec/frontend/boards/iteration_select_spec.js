@@ -13,8 +13,8 @@ import { boardObj } from 'jest/boards/mock_data';
 
 import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query.graphql';
 import { ANY_ITERATION, CURRENT_ITERATION, IterationFilterType } from 'ee/boards/constants';
+import { WORKSPACE_GROUP } from '~/issues/constants';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
-import { BoardType } from '~/boards/constants';
 import { mockIterationsResponse, mockIterations, mockIterationCadence } from './mock_data';
 
 Vue.use(VueApollo);
@@ -65,7 +65,7 @@ describe('Iteration select component', () => {
       },
       provide: {
         fullPath: 'gitlab-org',
-        boardType: BoardType.group,
+        boardType: WORKSPACE_GROUP,
         isGroupBoard: true,
         isProjectBoard: false,
       },

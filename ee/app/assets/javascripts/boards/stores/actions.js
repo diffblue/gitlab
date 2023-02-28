@@ -5,7 +5,6 @@ import {
   getMoveData,
   filterVariables,
 } from '~/boards/boards_util';
-import { BoardType } from '~/boards/constants';
 import eventHub from '~/boards/eventhub';
 import { defaultClient as gqlClient } from '~/graphql_shared/issuable_client';
 import groupBoardMembersQuery from '~/boards/graphql/group_board_members.query.graphql';
@@ -14,8 +13,8 @@ import projectBoardMembersQuery from '~/boards/graphql/project_board_members.que
 import actionsCE from '~/boards/stores/actions';
 import * as typesCE from '~/boards/stores/mutation_types';
 import { TYPENAME_ITERATION, TYPENAME_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
-
 import { getIdFromGraphQLId, convertToGraphQLId } from '~/graphql_shared/utils';
+import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { fetchPolicies } from '~/lib/graphql';
 import { historyPushState, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams, queryToObject } from '~/lib/utils/url_utility';
@@ -60,8 +59,8 @@ const fetchAndFormatListIssues = (state, { fetchPolicy, ...extraVariables }) => 
     fullPath,
     boardId: fullBoardId(boardId),
     filters: { ...filterParams },
-    isGroup: boardType === BoardType.group,
-    isProject: boardType === BoardType.project,
+    isGroup: boardType === WORKSPACE_GROUP,
+    isProject: boardType === WORKSPACE_PROJECT,
     ...extraVariables,
   };
 
@@ -154,7 +153,7 @@ export default {
           isSingleRequest: true,
         },
         variables: {
-          isGroup: bType === BoardType.group,
+          isGroup: bType === WORKSPACE_GROUP,
           fullPath: fPath,
         },
       });
@@ -209,10 +208,10 @@ export default {
     const { fullPath, boardType } = state;
 
     const id = Number(title);
-    let variables = { fullPath, search: title, isProject: boardType === BoardType.project };
+    let variables = { fullPath, search: title, isProject: boardType === WORKSPACE_PROJECT };
 
     if (!Number.isNaN(id) && title !== '') {
-      variables = { fullPath, id, isProject: boardType === BoardType.project };
+      variables = { fullPath, id, isProject: boardType === WORKSPACE_PROJECT };
     }
 
     return gqlClient
@@ -244,13 +243,13 @@ export default {
     const { fullPath, boardType } = state;
 
     const id = Number(title);
-    let variables = { fullPath, title, isProject: boardType === BoardType.project };
+    let variables = { fullPath, title, isProject: boardType === WORKSPACE_PROJECT };
 
     if (!Number.isNaN(id) && title !== '') {
       variables = {
         fullPath,
         id: convertToGraphQLId(TYPENAME_ITERATIONS_CADENCE, id),
-        isProject: boardType === BoardType.project,
+        isProject: boardType === WORKSPACE_PROJECT,
       };
     }
 
@@ -303,8 +302,8 @@ export default {
       fullPath,
       boardId: `gid://gitlab/Board/${boardId}`,
       issueFilters: filterParams,
-      isGroup: boardType === BoardType.group,
-      isProject: boardType === BoardType.project,
+      isGroup: boardType === WORKSPACE_GROUP,
+      isProject: boardType === WORKSPACE_PROJECT,
       after: fetchNext ? epicsEndCursor : undefined,
     };
 
@@ -644,10 +643,10 @@ export default {
     };
 
     let query;
-    if (boardType === BoardType.project) {
+    if (boardType === WORKSPACE_PROJECT) {
       query = projectBoardMembersQuery;
     }
-    if (boardType === BoardType.group) {
+    if (boardType === WORKSPACE_GROUP) {
       query = groupBoardMembersQuery;
     }
 

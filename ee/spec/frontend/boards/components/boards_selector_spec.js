@@ -4,12 +4,12 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import BoardsSelector from 'ee/boards/components/boards_selector.vue';
-import { BoardType } from '~/boards/constants';
 import epicBoardsQuery from 'ee/boards/graphql/epic_boards.query.graphql';
 import groupBoardsQuery from '~/boards/graphql/group_boards.query.graphql';
 import projectBoardsQuery from '~/boards/graphql/project_boards.query.graphql';
 import groupRecentBoardsQuery from '~/boards/graphql/group_recent_boards.query.graphql';
 import projectRecentBoardsQuery from '~/boards/graphql/project_recent_boards.query.graphql';
+import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { TEST_HOST } from 'spec/test_constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import {
@@ -87,7 +87,7 @@ describe('BoardsSelector', () => {
         scopedIssueBoardFeatureEnabled: true,
         weights: [],
         isEpicBoard,
-        boardType: isGroupBoard ? BoardType.group : BoardType.project,
+        boardType: isGroupBoard ? WORKSPACE_GROUP : WORKSPACE_PROJECT,
         isGroupBoard,
         isProjectBoard,
         isApolloBoard: false,
@@ -104,17 +104,17 @@ describe('BoardsSelector', () => {
   describe('fetching all boards', () => {
     it.each`
       boardType            | isEpicBoard | queryHandler                        | notCalledHandler
-      ${BoardType.group}   | ${false}    | ${groupBoardsQueryHandlerSuccess}   | ${projectBoardsQueryHandlerSuccess}
-      ${BoardType.project} | ${false}    | ${projectBoardsQueryHandlerSuccess} | ${groupBoardsQueryHandlerSuccess}
-      ${BoardType.group}   | ${true}     | ${epicBoardsQueryHandlerSuccess}    | ${groupBoardsQueryHandlerSuccess}
+      ${WORKSPACE_GROUP}   | ${false}    | ${groupBoardsQueryHandlerSuccess}   | ${projectBoardsQueryHandlerSuccess}
+      ${WORKSPACE_PROJECT} | ${false}    | ${projectBoardsQueryHandlerSuccess} | ${groupBoardsQueryHandlerSuccess}
+      ${WORKSPACE_GROUP}   | ${true}     | ${epicBoardsQueryHandlerSuccess}    | ${groupBoardsQueryHandlerSuccess}
     `(
       'fetches $boardType boards when isEpicBoard is $isEpicBoard',
       async ({ boardType, isEpicBoard, queryHandler, notCalledHandler }) => {
         createStore();
         createComponent({
           isEpicBoard,
-          isProjectBoard: boardType === BoardType.project,
-          isGroupBoard: boardType === BoardType.group,
+          isProjectBoard: boardType === WORKSPACE_PROJECT,
+          isGroupBoard: boardType === WORKSPACE_GROUP,
         });
 
         await nextTick();
