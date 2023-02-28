@@ -19004,6 +19004,9 @@ msgstr ""
 msgid "GitLab Pages"
 msgstr ""
 
+msgid "GitLab Pages has moved"
+msgstr ""
+
 msgid "GitLab Shell"
 msgstr ""
 
@@ -44944,6 +44947,9 @@ msgid "To get started, please enter your Gitea Host URL and a %{link_to_personal
 msgstr ""
 
 msgid "To get started, use the link below to confirm your account."
+msgstr ""
+
+msgid "To go to GitLab Pages, on the left sidebar, select %{pages_link}."
 msgstr ""
 
 msgid "To help improve GitLab, we would like to periodically %{docs_link}. This can be changed at any time in %{settings_link}."
