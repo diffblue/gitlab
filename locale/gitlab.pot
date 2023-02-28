@@ -471,6 +471,9 @@ msgid_plural "%s additional commits have been omitted to prevent performance iss
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%{actionText} %{actionDetail}"
+msgstr ""
+
 msgid "%{actionText} & %{openOrClose} %{noteable}"
 msgstr ""
 
@@ -478,6 +481,9 @@ msgid "%{actionText} & close %{noteable}"
 msgstr ""
 
 msgid "%{actionText} & reopen %{noteable}"
+msgstr ""
+
+msgid "%{actionText} by %{author} %{actionDetail}"
 msgstr ""
 
 msgid "%{address} is an invalid IP address range"
