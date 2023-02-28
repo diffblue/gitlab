@@ -106,8 +106,10 @@ class Groups::Analytics::ProductivityAnalyticsController < Groups::Analytics::Ap
     # Due to Rails bug: https://github.com/rails/rails/issues/34889 we can't use .includes statement
     # to avoid N+1 call when we load custom columns.
     # So we load relations manually here.
-    preloader = ActiveRecord::Associations::Preloader.new
-    preloader.preload(paginated_mrs, { author: [], target_project: { namespace: :route } })
+    ActiveRecord::Associations::Preloader.new(
+      records: paginated_mrs,
+      associations: { author: [], target_project: { namespace: :route } }
+    ).call
     paginated_mrs
   end
   # rubocop: enable CodeReuse/ActiveRecord

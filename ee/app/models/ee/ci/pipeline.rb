@@ -14,6 +14,7 @@ module EE
 
         has_many :vulnerabilities_finding_pipelines, class_name: 'Vulnerabilities::FindingPipeline', inverse_of: :pipeline
         has_many :vulnerability_findings, source: :finding, through: :vulnerabilities_finding_pipelines, class_name: 'Vulnerabilities::Finding'
+        has_many :vulnerability_state_transitions, foreign_key: :state_changed_at_pipeline_id, class_name: 'Vulnerabilities::StateTransition', inverse_of: :pipeline
 
         has_many :auto_canceled_pipelines, class_name: 'Ci::Pipeline', foreign_key: 'auto_canceled_by_id'
         has_many :auto_canceled_jobs, class_name: 'CommitStatus', foreign_key: 'auto_canceled_by_id'

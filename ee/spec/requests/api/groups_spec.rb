@@ -990,7 +990,7 @@ RSpec.describe API::Groups, feature_category: :subgroups do
     subject { delete api("/groups/#{group.id}", user), params: params }
 
     shared_examples_for 'immediately enqueues the job to delete the group' do
-      specify do
+      it 'immediately enqueues the job to delete the group', :clean_gitlab_redis_queues do
         Sidekiq::Testing.fake! do
           expect { subject }.to change(GroupDestroyWorker.jobs, :size).by(1)
         end
@@ -1000,7 +1000,7 @@ RSpec.describe API::Groups, feature_category: :subgroups do
     end
 
     shared_examples_for 'does not immediately enqueues the job to delete the group' do |error_message|
-      specify do
+      it 'does not immediately enqueues the job to delete the group', :clean_gitlab_redis_queues do
         Sidekiq::Testing.fake! do
           expect { subject }.not_to change(GroupDestroyWorker.jobs, :size)
         end
@@ -1011,7 +1011,7 @@ RSpec.describe API::Groups, feature_category: :subgroups do
     end
 
     shared_examples_for 'marks group for delayed deletion' do
-      specify do
+      it 'marks group for delayed deletion', :clean_gitlab_redis_queues do
         Sidekiq::Testing.fake! do
           expect { subject }.not_to change(GroupDestroyWorker.jobs, :size)
         end

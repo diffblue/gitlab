@@ -8,11 +8,18 @@ module EE
     def preload_all
       super
 
-      ActiveRecord::Associations::Preloader.new.preload(members, user: { group_saml_identities: :saml_provider })
-      ActiveRecord::Associations::Preloader.new.preload(members, user: :oncall_schedules)
-      ActiveRecord::Associations::Preloader.new.preload(members, user: :escalation_policies)
-      ActiveRecord::Associations::Preloader.new.preload(members, user: :user_detail)
-      ActiveRecord::Associations::Preloader.new.preload(members, user: :namespace_bans)
+      ActiveRecord::Associations::Preloader.new(
+        records: members,
+        associations: {
+          user: [
+            :oncall_schedules,
+            :escalation_policies,
+            :user_detail,
+            :namespace_bans,
+            { group_saml_identities: :saml_provider }
+          ]
+        }
+      ).call
     end
   end
 end
