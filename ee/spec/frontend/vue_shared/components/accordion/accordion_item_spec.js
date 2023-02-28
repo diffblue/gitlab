@@ -1,14 +1,7 @@
-import { shallowMount } from '@vue/test-utils';
-import { nextTick } from 'vue';
 import { uniqueId } from 'lodash';
+import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { AccordionItem } from 'ee/vue_shared/components/accordion';
 import accordionEventBus from 'ee/vue_shared/components/accordion/accordion_event_bus';
-
-jest.mock('ee/vue_shared/components/accordion/accordion_event_bus', () => ({
-  $on: jest.fn(),
-  $emit: jest.fn(),
-  $off: jest.fn(),
-}));
 
 jest.mock('lodash/uniqueId', () => jest.fn().mockReturnValue('mockUniqueId'));
 
@@ -25,7 +18,7 @@ describe('AccordionItem component', () => {
       maxHeight: '',
     };
 
-    wrapper = shallowMount(AccordionItem, {
+    wrapper = shallowMountExtended(AccordionItem, {
       propsData: {
         ...defaultPropsData,
         ...propsData,
@@ -37,15 +30,29 @@ describe('AccordionItem component', () => {
     });
   };
 
-  const loadingIndicator = () => wrapper.findComponent({ ref: 'loadingIndicator' });
-  const expansionTrigger = () => wrapper.findComponent({ ref: 'expansionTrigger' });
-  const contentContainer = () => wrapper.findComponent({ ref: 'contentContainer' });
-  const content = () => wrapper.findComponent({ ref: 'content' });
+  const factoryMultiple = () => {
+    wrapper = mountExtended({
+      components: { AccordionItem },
+      template: `
+        <div>
+          <accordion-item accordion-id="1">Content</accordion-item>
+          <accordion-item accordion-id="1">Content</accordion-item>
+        </div>
+      `,
+    });
+  };
+
+  const allExpansionTriggers = () => wrapper.findAllByTestId('expansion-trigger');
+  const allContentContainers = () => wrapper.findAllByTestId('content-container');
+  const loadingIndicator = () => wrapper.findByTestId('loading-indicator');
+  const expansionTrigger = () => allExpansionTriggers().at(0);
+  const contentContainer = () => allContentContainers().at(0);
+
+  const content = () => wrapper.findByTestId('content');
   const namespacedCloseOtherAccordionItemsEvent = `${accordionId}.closeOtherAccordionItems`;
 
   afterEach(() => {
     wrapper.destroy();
-    wrapper = null;
   });
 
   describe('rendering options', () => {
@@ -88,21 +95,40 @@ describe('AccordionItem component', () => {
       expect(wrapper.find(`.foo`).exists()).toBe(true);
     });
 
-    it.each([true, false])(
-      'passes the "isExpanded" and "isDisabled" state to the title slot',
-      async (state) => {
+    describe('title slot', () => {
+      it.each([true, false])(
+        'receives the "isDisabled" state when "isDisabled" is "%s"',
+        (state) => {
+          const titleSlot = jest.fn();
+          factory({ propsData: { disabled: state }, titleSlot });
+
+          expect(titleSlot).toHaveBeenCalledWith(
+            expect.objectContaining({
+              isDisabled: state,
+            }),
+          );
+        },
+      );
+
+      it('receives the "isExpanded" state', async () => {
         const titleSlot = jest.fn();
+        factory({ propsData: { disabled: false }, titleSlot });
 
-        factory({ propsData: { disabled: state }, titleSlot });
-        wrapper.vm.isExpanded = state;
+        expect(titleSlot).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            isExpanded: false,
+          }),
+        );
 
-        await nextTick();
-        expect(titleSlot).toHaveBeenCalledWith({
-          isExpanded: state,
-          isDisabled: state,
-        });
-      },
-    );
+        await expansionTrigger().trigger('click');
+
+        expect(titleSlot).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            isExpanded: true,
+          }),
+        );
+      });
+    });
   });
 
   describe('collapsing and expanding', () => {
@@ -115,49 +141,34 @@ describe('AccordionItem component', () => {
     it('expands when the trigger-element gets clicked', async () => {
       expect(contentContainer().isVisible()).toBe(false);
 
-      expansionTrigger().trigger('click');
+      await expansionTrigger().trigger('click');
 
-      await nextTick();
       expect(contentContainer().isVisible()).toBe(true);
     });
 
-    it('emits a namespaced "closeOtherAccordionItems" event, containing the trigger item as a payload', () => {
-      expansionTrigger().trigger('click');
+    it('collapses when it is already expanded', async () => {
+      factory();
 
-      expect(accordionEventBus.$emit).toHaveBeenCalledTimes(1);
-      expect(accordionEventBus.$emit).toHaveBeenCalledWith(
-        namespacedCloseOtherAccordionItemsEvent,
-        wrapper.vm,
-      );
+      await expansionTrigger().trigger('click');
+      expect(contentContainer().isVisible()).toBe(true);
+
+      await expansionTrigger().trigger('click');
+      expect(contentContainer().isVisible()).toBe(false);
     });
 
-    it('subscribes "onCloseOtherAccordionItems" as handler to the namespaced "closeOtherAccordionItems" event', () => {
-      expect(accordionEventBus.$on).toHaveBeenCalledTimes(1);
-      expect(accordionEventBus.$on).toHaveBeenCalledWith(
-        namespacedCloseOtherAccordionItemsEvent,
-        wrapper.vm.onCloseOtherAccordionItems,
-      );
-    });
+    it('collapses when another accordion item is expanded', async () => {
+      factoryMultiple();
+      const firstItemContentContainer = allContentContainers().at(0);
 
-    it('collapses if "closeOtherAccordionItems" is called with the trigger not being the current item', () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ isExpanded: true });
-      wrapper.vm.onCloseOtherAccordionItems({});
+      await allExpansionTriggers().at(0).trigger('click');
+      expect(firstItemContentContainer.isVisible()).toBe(true);
 
-      expect(wrapper.vm.isExpanded).toBe(false);
-    });
-
-    it('does not collapses if "closeOtherAccordionItems" is called with the trigger being the current item', () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ isExpanded: true });
-      wrapper.vm.onCloseOtherAccordionItems(wrapper.vm);
-
-      expect(wrapper.vm.isExpanded).toBe(true);
+      await allExpansionTriggers().at(1).trigger('click');
+      expect(firstItemContentContainer.isVisible()).toBe(false);
     });
 
     it('unsubscribes from namespaced "closeOtherAccordionItems" when the component is destroyed', () => {
+      jest.spyOn(accordionEventBus, '$off');
       wrapper.destroy();
       expect(accordionEventBus.$off).toHaveBeenCalledTimes(1);
       expect(accordionEventBus.$off).toHaveBeenCalledWith(namespacedCloseOtherAccordionItemsEvent);
@@ -180,11 +191,8 @@ describe('AccordionItem component', () => {
     it('has a trigger element that has an "aria-expanded" attribute set, to show if it is expanded or collapsed', async () => {
       expect(expansionTrigger().attributes('aria-expanded')).toBeUndefined();
 
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ isExpanded: true });
+      await expansionTrigger().trigger('click');
 
-      await nextTick();
       expect(expansionTrigger().attributes('aria-expanded')).toBe('true');
     });
 

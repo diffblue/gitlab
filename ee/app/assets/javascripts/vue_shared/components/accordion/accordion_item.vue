@@ -93,7 +93,7 @@ export default {
       <div class="d-flex align-items-stretch">
         <button
           :id="buttonId"
-          ref="expansionTrigger"
+          data-testid="expansion-trigger"
           type="button"
           :disabled="isDisabled"
           :aria-expanded="isExpanded"
@@ -117,14 +117,14 @@ export default {
       <section
         v-show="isExpanded"
         :id="contentContainerId"
-        ref="contentContainer"
+        data-testid="content-container"
         :aria-labelledby="buttonId"
       >
         <slot name="sub-title"></slot>
-        <div ref="content" :style="contentStyles"><slot name="default"></slot></div>
+        <div data-testid="content" :style="contentStyles"><slot name="default"></slot></div>
       </section>
     </template>
-    <div v-else ref="loadingIndicator" class="d-flex p-2">
+    <div v-else data-testid="loading-indicator" class="d-flex p-2">
       <div class="h-32-px">
         <gl-skeleton-loader :height="32">
           <rect width="12" height="16" rx="4" x="0" y="8" />
