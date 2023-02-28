@@ -88,28 +88,6 @@ module EE
       namespace&.errors&.full_messages&.to_sentence&.presence || service_result&.errors&.presence
     end
 
-    def show_extend_reactivate_trial_button?(namespace)
-      return false unless ::Feature.enabled?(:allow_extend_reactivate_trial)
-
-      namespace.can_extend_trial? || namespace.can_reactivate_trial?
-    end
-
-    def extend_reactivate_trial_button_data(namespace)
-      action = if namespace.can_extend_trial?
-                 'extend'
-               elsif namespace.can_reactivate_trial?
-                 'reactivate'
-               else
-                 nil
-               end
-
-      {
-        namespace_id: namespace.id,
-        trial_plan_name: ::Plan::ULTIMATE.titleize,
-        action: action
-      }
-    end
-
     def only_trialable_group_namespace
       trialable_group_namespaces.first if trialable_group_namespaces.count == 1
     end

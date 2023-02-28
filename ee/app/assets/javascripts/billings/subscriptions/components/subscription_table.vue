@@ -4,7 +4,6 @@ import { escape } from 'lodash';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { removeTrialSuffix } from 'ee/billings/billings_util';
 import { TABLE_TYPE_DEFAULT, TABLE_TYPE_FREE, TABLE_TYPE_TRIAL } from 'ee/billings/constants';
-import ExtendReactivateTrialButton from 'ee/trials/extend_reactivate_trial/components/extend_reactivate_trial_button.vue';
 import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { s__ } from '~/locale';
@@ -21,7 +20,6 @@ export default {
     GlCard,
     GlLoadingIcon,
     SubscriptionTableRow,
-    ExtendReactivateTrialButton,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: {
@@ -44,12 +42,6 @@ export default {
       default: '',
     },
     refreshSeatsHref: {
-      default: '',
-    },
-    availableTrialAction: {
-      default: null,
-    },
-    trialPlanName: {
       default: '',
     },
     readOnly: {
@@ -174,13 +166,6 @@ export default {
           subscriptionHeader
         }}</strong>
         <div v-if="!readOnly" class="gl-display-flex">
-          <extend-reactivate-trial-button
-            v-if="availableTrialAction"
-            :namespace-id="namespaceId"
-            :action="availableTrialAction"
-            :plan-name="trialPlanName"
-            class="gl-mr-3"
-          />
           <gl-button
             v-for="(button, index) in buttons"
             :key="button.text"

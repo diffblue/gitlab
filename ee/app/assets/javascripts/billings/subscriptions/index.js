@@ -23,8 +23,6 @@ export default (containerId = 'js-billing-plans') => {
     billableSeatsHref,
     planName,
     refreshSeatsHref,
-    action,
-    trialPlanName,
     readOnly,
   } = containerEl.dataset;
 
@@ -41,8 +39,6 @@ export default (containerId = 'js-billing-plans') => {
       billableSeatsHref,
       planName,
       refreshSeatsHref,
-      availableTrialAction: action,
-      trialPlanName,
       readOnly: parseBoolean(readOnly),
     },
     render(createElement) {
