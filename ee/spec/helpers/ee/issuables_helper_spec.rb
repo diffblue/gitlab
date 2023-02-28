@@ -107,7 +107,8 @@ RSpec.describe IssuablesHelper, feature_category: :team_planning do
           action: "show",
           namespace_id: "foo",
           project_id: "bar",
-          id: issue.iid
+          id: issue.iid,
+          incident_tab: 'timeline'
         }).permit!
       end
 

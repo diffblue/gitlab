@@ -11,6 +11,7 @@ const mockAlert = {
 };
 
 const defaultMocks = {
+  $route: { params: { id: '' } },
   $apollo: {
     queries: {
       alert: {
