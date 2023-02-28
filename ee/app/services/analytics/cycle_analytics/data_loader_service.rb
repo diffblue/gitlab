@@ -5,7 +5,7 @@ module Analytics
     class DataLoaderService
       include Validations
 
-      MAX_UPSERT_COUNT = 50_000
+      MAX_UPSERT_COUNT = 25_000
       UPSERT_LIMIT = 1000
       BATCH_LIMIT = 500
       EVENTS_LIMIT = 25
