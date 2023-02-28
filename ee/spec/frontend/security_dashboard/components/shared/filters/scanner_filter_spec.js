@@ -1,8 +1,8 @@
 import { GlDropdownItem, GlDropdownDivider } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
-import { sampleSize, cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash';
 import VueRouter from 'vue-router';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
 import ScannerFilter from 'ee/security_dashboard/components/shared/filters/scanner_filter.vue';
 import { DEFAULT_SCANNER, SCANNER_ID_PREFIX } from 'ee/security_dashboard/constants';
@@ -43,7 +43,7 @@ describe('Scanner Filter component', () => {
   const createWrapper = ({ scanners = customScanners } = {}) => {
     filter = cloneDeep(vendorScannerFilter);
 
-    wrapper = shallowMount(ScannerFilter, {
+    wrapper = shallowMountExtended(ScannerFilter, {
       router,
       propsData: { filter },
       provide: { scanners },
@@ -53,8 +53,12 @@ describe('Scanner Filter component', () => {
   const getTestIds = (selector) =>
     wrapper.findAllComponents(selector).wrappers.map((x) => x.attributes('data-testid'));
 
+  const findDropdownItem = () => wrapper.findComponent(GlDropdownItem);
+  const findDropdownDivider = () => wrapper.findComponent(GlDropdownDivider);
+  const findAllFilterItems = () => wrapper.findAllComponents(FilterItem);
+  const findHeader = () => wrapper.findByTestId('GitLabHeader');
+
   afterEach(() => {
-    wrapper.destroy();
     // Clear out the querystring if one exists, it persists between tests.
     if (router.currentRoute.query[filter.id]) {
       router.replace('/');
@@ -68,8 +72,8 @@ describe('Scanner Filter component', () => {
       const expectedOptions = ['all', ...filter.options.map((x) => x.id)];
 
       expect(options).toEqual(expectedOptions);
-      expect(wrapper.findComponent(GlDropdownDivider).exists()).toBe(false);
-      expect(wrapper.findComponent(GlDropdownItem).exists()).toBe(false);
+      expect(findDropdownDivider().exists()).toBe(false);
+      expect(findDropdownItem().exists()).toBe(false);
     });
   });
 
@@ -94,32 +98,19 @@ describe('Scanner Filter component', () => {
 
     it('toggles selection of all items in a group when the group header is clicked', async () => {
       createWrapper();
-      const expectSelectedItems = (items) => {
-        const checkedItems = wrapper
-          .findAllComponents(FilterItem)
-          .wrappers.filter((x) => x.props('isChecked'))
-          .map((x) => x.attributes('data-testid'));
-        const expectedItems = items.map((x) => x.id);
 
-        expect(checkedItems.sort()).toEqual(expectedItems.sort());
-      };
+      /**
+       * First filter item for all item
+       */
+      const NUMBER_OF_FILTER_ITEMS = findAllFilterItems().length - 1;
+      const selectFilterItemsWhereIsChecked = (isChecked) =>
+        findAllFilterItems().wrappers.filter((x) => x.props('isChecked') === isChecked);
 
-      const clickAndCheck = async (expectedOptions) => {
-        await wrapper.find('[data-testid="GitLabHeader"]').trigger('click');
+      await findHeader().trigger('click');
+      expect(selectFilterItemsWhereIsChecked(true)).toHaveLength(filter.options.length);
 
-        expectSelectedItems(expectedOptions);
-      };
-
-      const selectedOptions = sampleSize(filter.options, 3); // Randomly select some options.
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      await wrapper.setData({ selectedOptions });
-
-      expectSelectedItems(selectedOptions);
-
-      await clickAndCheck(filter.options); // First click selects all.
-      await clickAndCheck([{ id: 'all' }]); // Second check unselects all.
-      await clickAndCheck(filter.options); // Third click selects all again.
+      await findHeader().trigger('click');
+      expect(selectFilterItemsWhereIsChecked(false)).toHaveLength(NUMBER_OF_FILTER_ITEMS);
     });
 
     it('emits filter-changed event with expected data for selected options', async () => {
