@@ -23,6 +23,7 @@ describe('EpicsSwimlanes', () => {
 
   const findDraggable = () => wrapper.findComponent(Draggable);
   const findLoadMoreEpicsButton = () => wrapper.findByTestId('load-more-epics');
+  const findLaneUnassignedIssues = () => wrapper.findByTestId('board-lane-unassigned-issues-title');
 
   const fetchItemsForListSpy = jest.fn();
   const fetchIssuesForEpicSpy = jest.fn();
@@ -157,9 +158,12 @@ describe('EpicsSwimlanes', () => {
     });
 
     it('displays IssueLaneList component when toggling unassigned issues lane', async () => {
+      expect(findLaneUnassignedIssues().classes()).not.toContain('board-epic-lane-shadow');
       wrapper.findByTestId('unassigned-lane-toggle').vm.$emit('click');
 
       await nextTick();
+
+      expect(findLaneUnassignedIssues().classes()).toContain('board-epic-lane-shadow');
       expect(wrapper.findComponent(IssueLaneList).exists()).toBe(true);
     });
 
