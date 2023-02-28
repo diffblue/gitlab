@@ -15288,7 +15288,11 @@ CREATE TABLE design_management_designs (
     filename character varying NOT NULL,
     relative_position integer,
     iid integer,
+    cached_markdown_version integer,
+    description text,
+    description_html text,
     CONSTRAINT check_07155e2715 CHECK ((char_length((filename)::text) <= 255)),
+    CONSTRAINT check_aaf9fa6ae5 CHECK ((char_length(description) <= 1000000)),
     CONSTRAINT check_cfb92df01a CHECK ((iid IS NOT NULL))
 );
 
