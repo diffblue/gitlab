@@ -11,7 +11,7 @@ import {
   GlModalDirective,
   GlLoadingIcon,
 } from '@gitlab/ui';
-import { sprintf } from '~/locale';
+import { n__, sprintf } from '~/locale';
 import { AVATAR_SIZE } from 'ee/usage_quotas/seats/constants';
 import {
   PENDING_MEMBERS_TITLE,
@@ -20,7 +20,6 @@ import {
   LABEL_APPROVE_ALL,
   LABEL_CONFIRM,
   LABEL_CONFIRM_APPROVE,
-  LABEL_CONFIRM_APPROVE_ALL,
 } from 'ee/pending_members/constants';
 
 export default {
@@ -38,6 +37,22 @@ export default {
   directives: {
     GlModalDirective,
   },
+  i18n: {
+    labelConfirmApprove: (count) =>
+      n__('Approve a pending member', 'Approve %d pending members', count),
+    labelConfirmApproveAll: (count) =>
+      n__(
+        'Approved members will use an additional seat in your subscription.',
+        'Approved members will use an additional %d seats in your subscription.',
+        count,
+      ),
+    labelConfirmApproveAllWithUserCapSet: (count) =>
+      n__(
+        'Approved members will use an additional seat in your subscription, which may override your user cap.',
+        'Approved members will use an additional %d seats in your subscription, which may override your user cap.',
+        count,
+      ),
+  },
   computed: {
     ...mapState([
       'isLoading',
@@ -54,6 +69,7 @@ export default {
       'search',
       'approveAllMembersLoading',
       'approveAllMembersDisabled',
+      'userCapSet',
     ]),
     ...mapGetters(['tableItems']),
     currentPage: {
@@ -63,6 +79,15 @@ export default {
       set(val) {
         this.setCurrentPage(val);
       },
+    },
+    approveAllPopoverTitle() {
+      return this.$options.i18n.labelConfirmApprove(this.total);
+    },
+    approveAllPopoverBody() {
+      if (this.userCapSet) {
+        return this.$options.i18n.labelConfirmApproveAllWithUserCapSet(this.total);
+      }
+      return this.$options.i18n.labelConfirmApproveAll(this.total);
     },
   },
   created() {
@@ -93,7 +118,6 @@ export default {
   LABEL_APPROVE,
   LABEL_APPROVE_ALL,
   LABEL_CONFIRM,
-  LABEL_CONFIRM_APPROVE_ALL,
   PENDING_MEMBERS_TITLE,
 };
 </script>
@@ -101,7 +125,7 @@ export default {
   <div>
     <div class="gl-display-flex gl-justify-content-space-between">
       <h1 class="page-title gl-font-size-h-display">{{ $options.PENDING_MEMBERS_TITLE }}</h1>
-      <div class="gl-align-self-center">
+      <div v-if="!isLoading" class="gl-align-self-center">
         <gl-button
           v-gl-modal-directive="`approve-all-confirmation-modal`"
           :loading="approveAllMembersLoading"
@@ -112,11 +136,12 @@ export default {
         </gl-button>
         <gl-modal
           :modal-id="`approve-all-confirmation-modal`"
-          :title="$options.LABEL_CONFIRM"
+          :title="approveAllPopoverTitle"
           no-fade
+          data-testid="approve-all-modal"
           @primary="approveAllMembers"
         >
-          <p>{{ $options.LABEL_CONFIRM_APPROVE_ALL }}</p>
+          <p>{{ approveAllPopoverBody }}</p>
         </gl-modal>
       </div>
     </div>

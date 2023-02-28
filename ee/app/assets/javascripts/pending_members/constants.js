@@ -16,7 +16,6 @@ export const LABEL_APPROVE = __('Approve');
 export const LABEL_APPROVE_ALL = __('Approve All');
 export const LABEL_CONFIRM = __('Confirm approval');
 export const LABEL_CONFIRM_APPROVE = __('Are you sure you want to approve %{user}?');
-export const LABEL_CONFIRM_APPROVE_ALL = __('Are you sure you want to approve all users?');
 export const APPROVAL_SUCCESSFUL_MESSAGE = s__('Billing|%{user} was successfully approved');
 export const ALL_MEMBERS_APPROVAL_SUCCESSFUL_MESSAGE = s__(
   'Billing|All members were successfully approved',

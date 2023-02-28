@@ -1,4 +1,4 @@
-import { GlPagination, GlBadge, GlAvatarLabeled } from '@gitlab/ui';
+import { GlPagination, GlBadge, GlAvatarLabeled, GlModal } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -68,6 +68,36 @@ describe('PendingMembersApp', () => {
   it('renders approve all button', () => {
     const approveAllButton = wrapper.findByTestId('approve-all-button');
     expect(approveAllButton.text()).toBe(LABEL_APPROVE_ALL);
+  });
+
+  describe('approve all members modal', () => {
+    const findApproveAllModal = () => wrapper.findByTestId('approve-all-modal');
+
+    describe('when user cap is not set', () => {
+      beforeEach(() => {
+        createComponent({ stubs: { GlModal } });
+      });
+
+      it('passes correct text to modal', () => {
+        expect(findApproveAllModal().props('title')).toBe('Approve 300 pending members');
+        expect(findApproveAllModal().text()).toContain(
+          'Approved members will use an additional 300 seats in your subscription.',
+        );
+      });
+    });
+
+    describe('when user cap is set', () => {
+      beforeEach(() => {
+        createComponent({ initialState: { userCapSet: true }, stubs: { GlModal } });
+      });
+
+      it('passes correct text to modal', () => {
+        expect(findApproveAllModal().props('title')).toBe('Approve 300 pending members');
+        expect(findApproveAllModal().text()).toContain(
+          'Approved members will use an additional 300 seats in your subscription, which may override your user cap.',
+        );
+      });
+    });
   });
 
   it('renders pending members', () => {
