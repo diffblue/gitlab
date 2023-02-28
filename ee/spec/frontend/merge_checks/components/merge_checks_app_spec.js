@@ -17,7 +17,7 @@ describe('MergeChecksApp', () => {
     wrapper = shallowMountExtended(MergeChecksApp, {
       provide: {
         sourceType: defaultType,
-        groupName: defaultGroupName,
+        parentGroupName: defaultGroupName,
         pipelineMustSucceed: defaultCheckValue,
         allowMergeOnSkippedPipeline: defaultCheckValue,
         onlyAllowMergeIfAllResolved: defaultCheckValue,
@@ -62,11 +62,11 @@ describe('MergeChecksApp', () => {
     });
 
     it('with other groupName', () => {
-      const groupName = 'new-name';
-      createWrapper({ groupName });
+      const parentGroupName = 'new-name';
+      createWrapper({ parentGroupName });
 
       expect(findOnlyAllowMergeWhenPipelineSucceeds().attributes('lockedtext')).toBe(
-        sprintf(I18N.lockedText, { groupName }),
+        sprintf(I18N.lockedText, { groupName: parentGroupName }),
       );
     });
   });

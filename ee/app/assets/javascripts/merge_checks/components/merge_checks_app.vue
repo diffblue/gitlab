@@ -10,7 +10,7 @@ export default {
   },
   inject: [
     'sourceType',
-    'groupName',
+    'parentGroupName',
     'pipelineMustSucceed',
     'allowMergeOnSkippedPipeline',
     'onlyAllowMergeIfAllResolved',
@@ -26,7 +26,7 @@ export default {
   },
   computed: {
     lockedText() {
-      return sprintf(I18N.lockedText, { groupName: this.groupName });
+      return sprintf(I18N.lockedText, { groupName: this.parentGroupName });
     },
     skippedPipelineLocked() {
       return this.allowMergeOnSkippedPipeline.locked || !this.hasPipelineMustSucceed;

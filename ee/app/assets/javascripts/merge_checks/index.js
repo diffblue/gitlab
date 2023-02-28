@@ -11,7 +11,7 @@ export const initMergeRequestMergeChecksApp = async () => {
   const { default: MergeChecksApp } = await import(
     /* webpackChunkName: 'mergeChecksApp' */ './components/merge_checks_app.vue'
   );
-  const { sourceType, settings, groupName } = el.dataset;
+  const { sourceType, settings, parentGroupName } = el.dataset;
 
   const {
     allowMergeOnSkippedPipeline,
@@ -23,7 +23,7 @@ export const initMergeRequestMergeChecksApp = async () => {
     el,
     name: 'MergeChecksRoot',
     provide: {
-      groupName,
+      parentGroupName,
       sourceType,
       allowMergeOnSkippedPipeline,
       onlyAllowMergeIfAllResolved,
