@@ -22,7 +22,7 @@
       = render 'top_level_billing_plan_header', namespace: @group, current_plan: current_plan
 
     = render 'shared/billings/billing_plans', plans_data: @plans_data, namespace: @group, current_plan: current_plan, read_only: read_only
-    - data_attributes = subscription_plan_data_attributes(@group, current_plan, read_only: read_only).merge(extend_reactivate_trial_button_data(@group))
+    - data_attributes = subscription_plan_data_attributes(@group, current_plan, read_only: read_only)
     #js-billing-plans{ data: data_attributes }
   - else
     = render 'free_plan_billing_index', plans_data: @plans_data, namespace: @group, current_plan: current_plan

@@ -2,7 +2,7 @@
 - add_page_specific_style 'page_bundles/billings'
 - namespace = current_user.namespace
 - current_plan = subscription_plan_info(@plans_data, namespace.actual_plan_name)
-- data_attributes = subscription_plan_data_attributes(namespace, current_plan).merge(extend_reactivate_trial_button_data(namespace))
+- data_attributes = subscription_plan_data_attributes(namespace, current_plan)
 
 = content_for :flash_message do
   = render 'shared/billings/eoa_bronze_plan_banner', namespace: namespace, eoa_bronze_plan_end_date: eoa_bronze_plan_end_date
