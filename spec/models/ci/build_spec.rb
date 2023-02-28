@@ -1922,62 +1922,6 @@ RSpec.describe Ci::Build, feature_category: :continuous_integration, factory_def
     end
   end
 
-  describe '#failed_but_allowed?' do
-    subject { build.failed_but_allowed? }
-
-    context 'when build is not allowed to fail' do
-      before do
-        build.allow_failure = false
-      end
-
-      context 'and build.status is success' do
-        before do
-          build.status = 'success'
-        end
-
-        it { is_expected.to be_falsey }
-      end
-
-      context 'and build.status is failed' do
-        before do
-          build.status = 'failed'
-        end
-
-        it { is_expected.to be_falsey }
-      end
-    end
-
-    context 'when build is allowed to fail' do
-      before do
-        build.allow_failure = true
-      end
-
-      context 'and build.status is success' do
-        before do
-          build.status = 'success'
-        end
-
-        it { is_expected.to be_falsey }
-      end
-
-      context 'and build status is failed' do
-        before do
-          build.status = 'failed'
-        end
-
-        it { is_expected.to be_truthy }
-      end
-
-      context 'when build is a manual action' do
-        before do
-          build.status = 'manual'
-        end
-
-        it { is_expected.to be_falsey }
-      end
-    end
-  end
-
   describe 'flags' do
     describe '#cancelable?' do
       subject { build }
