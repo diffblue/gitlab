@@ -119,10 +119,13 @@ export default {
 <template>
   <div v-if="shouldDisplay" class="board-epic-lane-container">
     <div
-      class="board-epic-lane gl-sticky gl-left-0 gl-display-inline-block"
+      class="board-epic-lane gl-w-full gl-max-w-full gl-sticky gl-left-0 gl-display-inline-block"
+      :class="{
+        'board-epic-lane-shadow': !isCollapsed,
+      }"
       data-testid="board-epic-lane"
     >
-      <div class="gl-pb-5 gl-px-3 gl-display-flex gl-align-items-center">
+      <div class="gl-py-3 gl-px-3 gl-display-flex gl-align-items-center">
         <gl-button
           v-gl-tooltip.hover.right
           :aria-label="chevronTooltip"

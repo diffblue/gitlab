@@ -193,7 +193,7 @@ export default {
       <component
         :is="treeRootWrapper"
         v-bind="treeRootOptions"
-        class="board-swimlanes-headers gl-display-table gl-sticky gl-pt-5 gl-mb-5 gl-top-0 gl-z-index-3"
+        class="board-swimlanes-headers gl-bg-white gl-display-table gl-sticky gl-pt-5 gl-mb-5 gl-top-0 gl-z-index-3"
         data-testid="board-swimlanes-headers"
         @end="moveList"
       >
@@ -244,36 +244,44 @@ export default {
             {{ epicButtonLabel }}
           </gl-button>
         </div>
-        <div class="board-lane-unassigned-issues-title gl-sticky gl-display-inline-block gl-left-0">
-          <div class="gl-left-0 gl-pb-5 gl-px-3 gl-display-flex gl-align-items-center">
-            <gl-button
-              v-gl-tooltip.hover.right
-              :aria-label="chevronTooltip"
-              :title="chevronTooltip"
-              :icon="chevronIcon"
-              class="gl-mr-2 gl-cursor-pointer"
-              category="tertiary"
-              size="small"
-              data-testid="unassigned-lane-toggle"
-              @click="toggleUnassignedLane"
-            />
-            <span
-              class="gl-mr-3 gl-font-weight-bold gl-white-space-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
-            >
-              {{ __('Issues with no epic assigned') }}
-            </span>
+        <div>
+          <div
+            class="board-lane-unassigned-issues-title gl-w-full gl-max-w-full gl-sticky gl-display-inline-block gl-left-0"
+            :class="{
+              'board-epic-lane-shadow': !isUnassignedCollapsed,
+            }"
+            data-testid="board-lane-unassigned-issues-title"
+          >
+            <div class="gl-py-3 gl-px-3 gl-display-flex gl-align-items-center">
+              <gl-button
+                v-gl-tooltip.hover.right
+                :aria-label="chevronTooltip"
+                :title="chevronTooltip"
+                :icon="chevronIcon"
+                class="gl-mr-2 gl-cursor-pointer"
+                category="tertiary"
+                size="small"
+                data-testid="unassigned-lane-toggle"
+                @click="toggleUnassignedLane"
+              />
+              <span
+                class="gl-mr-3 gl-font-weight-bold gl-white-space-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
+              >
+                {{ __('Issues with no epic assigned') }}
+              </span>
+            </div>
           </div>
-        </div>
-        <div v-if="!isUnassignedCollapsed" data-testid="board-lane-unassigned-issues">
-          <div class="gl-display-flex">
-            <issues-lane-list
-              v-for="list in lists"
-              :key="`${list.id}-issues`"
-              :list="list"
-              :issues="unassignedIssues(list.id)"
-              :is-unassigned-issues-lane="true"
-              :can-admin-list="canAdminList"
-            />
+          <div v-if="!isUnassignedCollapsed" data-testid="board-lane-unassigned-issues">
+            <div class="gl-display-flex">
+              <issues-lane-list
+                v-for="list in lists"
+                :key="`${list.id}-issues`"
+                :list="list"
+                :issues="unassignedIssues(list.id)"
+                :is-unassigned-issues-lane="true"
+                :can-admin-list="canAdminList"
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -100,3 +100,22 @@ $epic-icons-spacing: 40px;
     max-width: calc(100vw - #{$contextual-sidebar-width} - #{$gutter-width} - #{$epic-icons-spacing});
   }
 }
+
+.board-epic-lane-shadow {
+  box-shadow: 0 10px 2px -6px rgba($black, 0.1);
+
+  .gl-dark & {
+    box-shadow: none;
+  }
+}
+
+.board-epic-lane,
+.board-lane-unassigned-issues-title {
+  top: $board-swimlanes-headers-height;
+  background-color: $white;
+  z-index: 2;
+
+  .gl-dark & {
+    background-color: var(--gray-10);
+  }
+}

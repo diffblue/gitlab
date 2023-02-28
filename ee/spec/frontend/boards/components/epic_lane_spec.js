@@ -16,6 +16,8 @@ describe('EpicLane', () => {
   const fetchIssuesForEpicSpy = jest.fn();
 
   const findChevronButton = () => wrapper.findComponent(GlButton);
+  const findEpicLane = () => wrapper.findByTestId('board-epic-lane');
+  const findEpicLaneIssueCount = () => wrapper.findByTestId('epic-lane-issue-count');
 
   const createStore = ({ boardItemsByListId = mockIssuesByListId, isLoading = false }) => {
     return new Vuex.Store({
@@ -77,7 +79,7 @@ describe('EpicLane', () => {
     });
 
     it('displays count of issues in epic which belong to board', () => {
-      expect(wrapper.findByTestId('epic-lane-issue-count').text()).toContain('2');
+      expect(findEpicLaneIssueCount().text()).toContain('2');
     });
 
     it('displays 1 icon', () => {
@@ -110,13 +112,14 @@ describe('EpicLane', () => {
     it('displays loading icon and hides issues count when issues are loading', () => {
       createComponent({ isLoading: true });
       expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
-      expect(wrapper.findByTestId('epic-lane-issue-count').exists()).toBe(false);
+      expect(findEpicLaneIssueCount().exists()).toBe(false);
     });
 
     it('invokes `updateBoardEpicUserPreferences` method on collapse', async () => {
       const collapsedValue = false;
 
       expect(wrapper.vm.isCollapsed).toBe(collapsedValue);
+      expect(findEpicLane().classes()).toContain('board-epic-lane-shadow');
 
       findChevronButton().vm.$emit('click');
 
@@ -129,13 +132,13 @@ describe('EpicLane', () => {
         collapsed: !collapsedValue,
         epicId: mockEpic.id,
       });
-
       expect(wrapper.vm.isCollapsed).toBe(true);
+      expect(findEpicLane().classes()).not.toContain('board-epic-lane-shadow');
     });
 
     it('does not render when issuesCount is 0', () => {
       createComponent({ boardItemsByListId: {} });
-      expect(wrapper.findByTestId('board-epic-lane').exists()).toBe(false);
+      expect(findEpicLane().exists()).toBe(false);
     });
   });
 });
