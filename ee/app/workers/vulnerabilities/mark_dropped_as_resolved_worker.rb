@@ -6,6 +6,7 @@ module Vulnerabilities
     include ApplicationWorker
 
     data_consistency :delayed
+    idempotent!
     deduplicate :until_executing, including_scheduled: true
 
     feature_category :static_application_security_testing
