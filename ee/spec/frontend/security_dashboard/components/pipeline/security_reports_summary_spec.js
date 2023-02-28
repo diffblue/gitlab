@@ -1,4 +1,4 @@
-import { GlSprintf } from '@gitlab/ui';
+import { GlSprintf, GlCollapse } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import SecurityReportsSummary from 'ee/security_dashboard/components/pipeline/security_reports_summary.vue';
@@ -15,7 +15,7 @@ describe('Security reports summary component', () => {
 
   let wrapper;
 
-  const createWrapper = (options, mountFunc = shallowMountExtended) => {
+  const createWrapper = (options = {}, mountFunc = shallowMountExtended) => {
     wrapper = mountFunc(SecurityReportsSummary, {
       propsData: {
         summary: {},
@@ -32,6 +32,7 @@ describe('Security reports summary component', () => {
 
   const findToggleButton = () => wrapper.findByTestId('collapse-button');
   const findModalButton = () => wrapper.findByTestId('modal-button');
+  const findCollapse = () => wrapper.findComponent(GlCollapse);
   const findDownloadDropdown = () => wrapper.findComponent(SecurityReportDownloadDropdown);
   const findDownloadDropdownForScanType = (scanType) =>
     wrapper
@@ -43,7 +44,6 @@ describe('Security reports summary component', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     localStorage.clear();
   });
 
@@ -153,9 +153,7 @@ describe('Security reports summary component', () => {
       });
 
       it('set local storage item to 1 when summary is hidden', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({ isVisible: false });
+        findCollapse().vm.$emit('input', false);
         await nextTick();
 
         expect(localStorage.setItem).toHaveBeenCalledWith(LOCAL_STORAGE_KEY, '1');
@@ -173,11 +171,7 @@ describe('Security reports summary component', () => {
       });
 
       it('removes local storage item when summary is shown', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({ isVisible: true });
-        await nextTick();
-
+        await findCollapse().vm.$emit('input', true);
         expect(localStorage.removeItem).toHaveBeenCalledWith(LOCAL_STORAGE_KEY);
       });
 
