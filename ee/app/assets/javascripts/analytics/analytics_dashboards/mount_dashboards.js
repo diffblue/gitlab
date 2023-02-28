@@ -1,11 +1,11 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
-import AnalyticsApp from './product_analytics_app.vue';
+import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
 import createRouter from './router';
 
-export default () => {
-  const el = document.getElementById('js-analytics-dashboard');
+export default (id, App) => {
+  const el = document.getElementById(id);
 
   if (!el) {
     return false;
@@ -18,6 +18,8 @@ export default () => {
     collectorHost,
     chartEmptyStateIllustrationPath,
     routerBase,
+    features,
+    showInstrumentationDetailsButton,
   } = el.dataset;
   Vue.use(VueApollo);
 
@@ -35,9 +37,11 @@ export default () => {
       projectId,
       collectorHost,
       chartEmptyStateIllustrationPath,
+      features: convertObjectPropsToCamelCase(JSON.parse(features)),
+      showInstrumentationDetailsButton: parseBoolean(showInstrumentationDetailsButton),
     },
     render(h) {
-      return h(AnalyticsApp);
+      return h(App);
     },
   });
 };

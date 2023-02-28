@@ -1,16 +1,14 @@
 # frozen_string_literal: true
 
 module Analytics
-  module DashboardsListHelper
+  module AnalyticsDashboardsHelper
     def analytics_dashboards_list_app_data(project)
       {
         project_id: project.id,
         jitsu_key: project.project_setting.jitsu_key,
-        jitsu_host: Gitlab::CurrentSettings.current_application_settings.jitsu_host,
-        jitsu_project_id: Gitlab::CurrentSettings.current_application_settings.jitsu_project_xid,
+        collector_host: get_collector_host,
         chart_empty_state_illustration_path: image_path('illustrations/chart-empty-state.svg'),
         project_full_path: project.full_path,
-        router_base: project_analytics_dashboards_path(project),
         features: {
           product_analytics: product_analytics_enabled?(project)
         }.to_json
@@ -18,6 +16,12 @@ module Analytics
     end
 
     private
+
+    def get_collector_host
+      return unless ::Gitlab::CurrentSettings.jitsu_host.present?
+
+      ::Gitlab::CurrentSettings.current_application_settings.jitsu_host.gsub(%r{(://\w+.)}, '://collector.')
+    end
 
     def product_analytics_enabled?(project)
       all_product_analytics_application_settings_defined? &&
