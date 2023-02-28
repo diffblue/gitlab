@@ -20063,6 +20063,7 @@ CREATE TABLE postgres_async_foreign_key_validations (
     table_name text NOT NULL,
     last_error text,
     attempts integer DEFAULT 0 NOT NULL,
+    constraint_type smallint DEFAULT 0 NOT NULL,
     CONSTRAINT check_536a40afbf CHECK ((char_length(last_error) <= 10000)),
     CONSTRAINT check_74fb7c8e57 CHECK ((char_length(name) <= 63)),
     CONSTRAINT check_cd435d6301 CHECK ((char_length(table_name) <= 63))
