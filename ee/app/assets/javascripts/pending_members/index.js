@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { parseBoolean } from '~/lib/utils/common_utils';
 import PendingMembersApp from './components/app.vue';
 import initialStore from './store';
 
@@ -12,12 +13,14 @@ export default (containerId = 'js-pending-members-app') => {
     return false;
   }
 
-  const { namespaceId, namespaceName } = el.dataset;
+  const { namespaceId, namespaceName, userCapSet } = el.dataset;
 
   return new Vue({
     el,
     apolloProvider: {},
-    store: new Vuex.Store(initialStore({ namespaceId, namespaceName })),
+    store: new Vuex.Store(
+      initialStore({ namespaceId, namespaceName, userCapSet: parseBoolean(userCapSet) }),
+    ),
     render(createElement) {
       return createElement(PendingMembersApp);
     },

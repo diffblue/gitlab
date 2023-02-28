@@ -1,4 +1,4 @@
-export default ({ namespaceId = null, namespaceName = null } = {}) => ({
+export default ({ namespaceId = null, namespaceName = null, userCapSet = false } = {}) => ({
   isLoading: false,
   hasError: false,
   alertMessage: '',
@@ -11,4 +11,5 @@ export default ({ namespaceId = null, namespaceName = null } = {}) => ({
   perPage: null,
   approveAllMembersLoading: false,
   approveAllMembersDisabled: true,
+  userCapSet,
 });
