@@ -97,7 +97,7 @@ export default {
 
 <template>
   <div
-    class="card-header gl-display-flex gl-px-5 gl-py-3 gl-flex-direction-column gl-sm-flex-direction-row gl-bg-gray-10"
+    class="card-header gl-display-flex gl-pl-5 gl-pr-4 gl-py-4 gl-flex-direction-column gl-sm-flex-direction-row gl-bg-white"
   >
     <div
       class="gl-display-flex gl-flex-grow-1 gl-flex-shrink-0 gl-flex-wrap gl-flex-direction-column gl-sm-flex-direction-row"
@@ -108,7 +108,7 @@ export default {
         </h3>
         <div
           v-if="parentIsEpic"
-          class="gl-display-inline-flex lh-100 gl-vertical-align-middle gl-ml-5 gl-flex-wrap"
+          class="gl-display-inline-flex lh-100 gl-vertical-align-middle gl-ml-3 gl-flex-wrap"
         >
           <gl-popover :target="() => $refs.countBadge">
             <p v-if="allowSubEpics" class="gl-font-weight-bold gl-m-0">

@@ -28,7 +28,7 @@ export default {
 
 <template>
   <div
-    class="related-issues-token-body gl-border-t gl-bg-white"
+    class="related-issues-token-body gl-border-t gl-bg-gray-10"
     :class="{
       'bordered-box': isFormVisible,
     }"
