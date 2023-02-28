@@ -197,6 +197,28 @@ RSpec.describe SearchController, :elastic, feature_category: :global_search do
       expect(response).to have_gitlab_http_status(:bad_request)
       expect(json_response['error']).to include('Search query is too long')
     end
+
+    it 'sets correct cache control headers' do
+      get :aggregations, params: { search: 'test', scope: 'issues' }
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response.headers['Cache-Control']).to eq('max-age=60, private')
+      expect(response.headers['Pragma']).to be_nil
+    end
+
+    context 'when on gitlab.com' do
+      before do
+        allow(::Gitlab).to receive(:com?).and_return(true)
+      end
+
+      it 'sets correct cache control headers' do
+        get :aggregations, params: { search: 'test', scope: 'issues' }
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(response.headers['Cache-Control']).to eq('max-age=300, private')
+        expect(response.headers['Pragma']).to be_nil
+      end
+    end
   end
 
   describe '#append_info_to_payload' do
