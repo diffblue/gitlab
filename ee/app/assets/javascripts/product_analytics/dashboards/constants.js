@@ -1,17 +1,4 @@
-import { s__, __ } from '~/locale';
-
-export const I18N_DASHBOARD_LIST = {
-  title: s__('ProductAnalytics|Analytics dashboards'),
-  description: s__(
-    'ProductAnalytics|Dashboards are created by editing the projects dashboard files.',
-  ),
-  learnMore: __('Learn more.'),
-  instrumentationDetails: s__('ProductAnalytics|Instrumentation details'),
-  sdkHost: s__('ProductAnalytics|SDK Host'),
-  sdkHostDescription: s__('ProductAnalytics|The host to send all tracking events to'),
-  sdkAppId: s__('ProductAnalytics|SDK App ID'),
-  sdkAppIdDescription: s__('ProductAnalytics|Identifies the sender of tracking events'),
-};
+import { s__ } from '~/locale';
 
 export const EVENTS_TYPES = ['pageViews', 'featureUsages', 'clickEvents', 'events'];
 

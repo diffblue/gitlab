@@ -7,7 +7,10 @@ import {
   COMMON_JS_SETUP_WITH_NPM,
   HTML_SCRIPT_SETUP,
 } from 'ee/product_analytics/onboarding/constants';
-import { TEST_COLLECTOR_HOST, TEST_JITSU_KEY } from '../mock_data';
+import {
+  TEST_JITSU_KEY,
+  TEST_COLLECTOR_HOST,
+} from 'ee_jest/analytics/analytics_dashboards/mock_data';
 
 const { i18n } = ProductAnalyticsSetupView;
 

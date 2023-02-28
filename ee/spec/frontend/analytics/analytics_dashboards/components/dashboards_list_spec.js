@@ -1,12 +1,17 @@
+import DashboardsList from 'ee/analytics/analytics_dashboards/components/dashboards_list.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import AnalyticsDashboardList from 'ee/product_analytics/dashboards/components/analytics_dashboard_list.vue';
-import { I18N_DASHBOARD_LIST } from 'ee/product_analytics/dashboards/constants';
-import jsonList from 'ee/product_analytics/dashboards/gl_dashboards/analytics_dashboards.json';
+import {
+  I18N_DASHBOARD_LIST_TITLE,
+  I18N_DASHBOARD_LIST_DESCRIPTION,
+  I18N_DASHBOARD_LIST_LEARN_MORE,
+  I18N_DASHBOARD_LIST_INSTRUMENTATION_DETAILS,
+} from 'ee/analytics/analytics_dashboards/constants';
+import jsonList from 'ee/analytics/analytics_dashboards/gl_dashboards/analytics_dashboards.json';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import AnalyticsClipboardInput from 'ee/product_analytics/shared/analytics_clipboard_input.vue';
-import { TEST_COLLECTOR_HOST, TEST_JITSU_KEY } from '../../mock_data';
+import { TEST_COLLECTOR_HOST, TEST_JITSU_KEY } from '../mock_data';
 
-describe('AnalyticsDashboardList', () => {
+describe('DashboardsList', () => {
   let wrapper;
 
   const findRouterDescriptions = () => wrapper.findAllByTestId('dashboard-description');
@@ -21,14 +26,14 @@ describe('AnalyticsDashboardList', () => {
     wrapper.findByTestId('intrumentation-details-dropdown');
   const findKeyInputAt = (index) => wrapper.findAllComponents(AnalyticsClipboardInput).at(index);
 
-  const NUMBER_OF_DASHBOARDS = jsonList.internalDashboards.length;
+  const NUMBER_OF_DASHBOARDS = jsonList.productAnalytics.length;
 
   const $router = {
     push: jest.fn(),
   };
 
-  const createWrapper = () => {
-    wrapper = shallowMountExtended(AnalyticsDashboardList, {
+  const createWrapper = (provided = {}) => {
+    wrapper = shallowMountExtended(DashboardsList, {
       stubs: {
         RouterLink: true,
       },
@@ -38,26 +43,27 @@ describe('AnalyticsDashboardList', () => {
       provide: {
         collectorHost: TEST_COLLECTOR_HOST,
         jitsuKey: TEST_JITSU_KEY,
+        ...provided,
       },
     });
   };
 
-  describe('when mounted', () => {
+  describe('by default', () => {
     beforeEach(() => {
       createWrapper();
     });
 
     it('should render the page title', () => {
-      expect(findPageTitle().text()).toBe(I18N_DASHBOARD_LIST.title);
+      expect(findPageTitle().text()).toBe(I18N_DASHBOARD_LIST_TITLE);
     });
 
     it('should render the page description', () => {
-      expect(findPageDescription().text()).toContain(I18N_DASHBOARD_LIST.description);
+      expect(findPageDescription().text()).toContain(I18N_DASHBOARD_LIST_DESCRIPTION);
     });
 
     it('should render the instrumentation details dropdown', () => {
       expect(findInstrumentationDetailsDropdown().attributes()).toMatchObject({
-        text: I18N_DASHBOARD_LIST.instrumentationDetails,
+        text: I18N_DASHBOARD_LIST_INSTRUMENTATION_DETAILS,
         'split-to': 'setup',
         split: 'true',
       });
@@ -67,12 +73,22 @@ describe('AnalyticsDashboardList', () => {
     });
 
     it('should render the help link', () => {
-      expect(findHelpLink().text()).toBe(I18N_DASHBOARD_LIST.learnMore);
+      expect(findHelpLink().text()).toBe(I18N_DASHBOARD_LIST_LEARN_MORE);
       expect(findHelpLink().attributes('href')).toBe(
         helpPagePath('user/product_analytics/index', {
           anchor: 'product-analytics-dashboards',
         }),
       );
+    });
+
+    it('does not render any feature dashboards', () => {
+      expect(findRouterLinks()).toHaveLength(0);
+    });
+  });
+
+  describe('when the feature dashboards are enabled', () => {
+    beforeEach(() => {
+      createWrapper({ features: { productAnalytics: true } });
     });
 
     it('should render titles', () => {
@@ -104,6 +120,16 @@ describe('AnalyticsDashboardList', () => {
       await findListItems().at(0).trigger('click');
 
       expect($router.push).toHaveBeenCalledWith('dashboard_audience');
+    });
+  });
+
+  describe('when the instrumentation details button is disabled', () => {
+    beforeEach(() => {
+      createWrapper({ showInstrumentationDetailsButton: false });
+    });
+
+    it('should not render the instrumentation details dropdown', () => {
+      expect(findInstrumentationDetailsDropdown().exists()).toBe(false);
     });
   });
 });

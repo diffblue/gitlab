@@ -1,17 +1,16 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import AnalyticsApp from 'ee/product_analytics/product_analytics_app.vue';
 import OnboardingView from 'ee/product_analytics/onboarding/onboarding_view.vue';
-import DashboardsView from 'ee/product_analytics/dashboards/dashboards_view.vue';
-import createRouter from 'ee/product_analytics/router';
+import DashboardsView from 'ee/analytics/analytics_dashboards/dashboards_app.vue';
+import createRouter from 'ee/analytics/analytics_dashboards/router';
 import waitForPromises from 'helpers/wait_for_promises';
 import { TEST_HOST } from 'helpers/test_constants';
 import { NO_INSTANCE_DATA, NO_PROJECT_INSTANCE } from 'ee/product_analytics/onboarding/constants';
 import {
   TEST_JITSU_KEY,
   TEST_COLLECTOR_HOST,
-  TEST_PROJECT_FULL_PATH,
-  TEST_PROJECT_ID,
-} from './mock_data';
+} from 'ee_jest/analytics/analytics_dashboards/mock_data';
+import { TEST_PROJECT_FULL_PATH, TEST_PROJECT_ID } from './mock_data';
 
 jest.mock('ee/product_analytics/dashboards/data_sources/cube_analytics', () => ({
   hasAnalyticsData: jest.fn(),

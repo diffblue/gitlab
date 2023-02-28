@@ -2,24 +2,21 @@
 
 require 'spec_helper'
 
-RSpec.describe Analytics::DashboardsListHelper, feature_category: :product_analytics do
+RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_analytics do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:project) { create(:project) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
   let_it_be(:user) { build_stubbed(:user) }
 
-  let(:dashboards_path) { '/mock/project' }
   let(:jitsu_key) { '1234567890' }
-  let(:jitsu_host) { 'https://jitsu.example.com' }
-  let(:jitsu_project_xid) { '123' }
+  let(:collector_host) { 'https://collector.example.com' }
 
   before do
     allow(helper).to receive(:current_user) { user }
-    allow(helper).to receive(:project_analytics_dashboards_path).with(project).and_return(dashboards_path)
     allow(helper).to receive(:image_path).and_return('illustrations/chart-empty-state.svg')
 
-    stub_application_setting(jitsu_host: jitsu_host)
-    stub_application_setting(jitsu_project_xid: jitsu_project_xid)
+    stub_application_setting(jitsu_host: 'https://jitsu.example.com')
+    stub_application_setting(jitsu_project_xid: '123')
     stub_application_setting(jitsu_administrator_email: 'test@example.com')
     stub_application_setting(jitsu_administrator_password: 'password')
     stub_application_setting(product_analytics_clickhouse_connection_string: 'clickhouse://localhost:9000')
@@ -57,14 +54,12 @@ RSpec.describe Analytics::DashboardsListHelper, feature_category: :product_analy
       subject(:data) { helper.analytics_dashboards_list_app_data(project) }
 
       it 'returns the expected data' do
-        expect(helper.analytics_dashboards_list_app_data(project)).to eq({
+        expect(data).to eq({
           project_id: project.id,
           jitsu_key: jitsu_key,
-          jitsu_host: jitsu_host,
-          jitsu_project_id: jitsu_project_xid,
+          collector_host: collector_host,
           chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
           project_full_path: project.full_path,
-          router_base: dashboards_path,
           features: {
             product_analytics: enabled
           }.to_json

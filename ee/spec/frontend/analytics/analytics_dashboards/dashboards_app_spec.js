@@ -1,14 +1,14 @@
 import { shallowMount } from '@vue/test-utils';
 import VueRouter from 'vue-router';
 import Vue, { nextTick } from 'vue';
-import ProductAnalyticsDashboardsView from 'ee/product_analytics/dashboards/dashboards_view.vue';
-import ProductAnalyticsOnboardingSetup from 'ee/product_analytics/onboarding/onboarding_setup.vue';
-import DashboardsList from 'ee/product_analytics/dashboards/components/analytics_dashboard_list.vue';
+import DashboardsList from 'ee/analytics/analytics_dashboards/components/dashboards_list.vue';
+import AnalyticsDashboardsApp from 'ee/analytics/analytics_dashboards/dashboards_app.vue';
 import AnalyticsDashboard from 'ee/product_analytics/dashboards/components/analytics_dashboard.vue';
+import ProductAnalyticsOnboardingSetup from 'ee/product_analytics/onboarding/onboarding_setup.vue';
 import AnalyticsPanelDesigner from 'ee/product_analytics/dashboards/components/analytics_panel_designer.vue';
-import createAnalyticsRouter from 'ee/product_analytics/router';
+import createRouter from 'ee/analytics/analytics_dashboards/router';
 
-describe('ProductAnalyticsDashboardsView', () => {
+describe('AnalyticsDashboardsApp', () => {
   let wrapper;
   let router;
 
@@ -17,9 +17,9 @@ describe('ProductAnalyticsDashboardsView', () => {
   const findRouterView = () => wrapper.findComponent({ ref: 'router-view' });
 
   const createWrapper = () => {
-    router = createAnalyticsRouter();
+    router = createRouter();
 
-    wrapper = shallowMount(ProductAnalyticsDashboardsView, {
+    wrapper = shallowMount(AnalyticsDashboardsApp, {
       router,
       stubs: {
         RouterView: true,
