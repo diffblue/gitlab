@@ -33465,6 +33465,9 @@ msgstr ""
 msgid "Project order will not be saved as local storage is not available."
 msgstr ""
 
+msgid "Project overview"
+msgstr ""
+
 msgid "Project path"
 msgstr ""
 
@@ -45859,6 +45862,9 @@ msgid "Unavailable"
 msgstr ""
 
 msgid "Unban"
+msgstr ""
+
+msgid "Uncategorized"
 msgstr ""
 
 msgid "Uncommitted changes will be lost if you change branches. Do you want to continue?"

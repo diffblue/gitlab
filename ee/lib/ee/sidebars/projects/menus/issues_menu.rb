@@ -44,6 +44,8 @@ module EE
             ::Sidebars::MenuItem.new(
               title: _('Iterations'),
               link: project_iteration_cadences_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::PlanMenu,
+              super_sidebar_before: :service_desk,
               active_routes: { controller: :iteration_cadences },
               item_id: :iterations
             )
@@ -59,6 +61,8 @@ module EE
             ::Sidebars::MenuItem.new(
               title: _('Requirements'),
               link: project_requirements_management_requirements_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::PlanMenu,
+              super_sidebar_before: :service_desk,
               active_routes: { path: 'requirements#index' },
               item_id: :requirements
             )
