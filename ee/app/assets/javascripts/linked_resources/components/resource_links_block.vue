@@ -217,7 +217,7 @@ export default {
     <div class="card card-slim gl-overflow-hidden">
       <div
         :class="{ 'panel-empty-heading border-bottom-0': !isFormVisible, 'gl-border-b-1': !isOpen }"
-        class="card-header gl-display-flex gl-justify-content-space-between gl-bg-gray-10 gl-align-items-center gl-line-height-24 gl-py-3"
+        class="card-header gl-display-flex gl-justify-content-space-between gl-bg-white gl-align-items-center gl-line-height-24 gl-pl-5 gl-pr-4 gl-py-4"
       >
         <h3 class="card-title h5 position-relative gl-my-0 gl-display-flex gl-align-items-center">
           <gl-link
@@ -238,7 +238,7 @@ export default {
           </gl-link>
 
           <div class="gl-display-inline-flex">
-            <div class="gl-display-inline-flex gl-mx-5">
+            <div class="gl-display-inline-flex gl-mx-3">
               <span class="gl-display-inline-flex gl-align-items-center">
                 <gl-icon name="link" class="gl-mr-2 gl-text-gray-500" />
                 {{ badgeLabel }}
@@ -276,7 +276,7 @@ export default {
           'linked-issues-card-body gl-p-5': isFormVisible,
         }"
       >
-        <div v-show="isFormVisible" class="card-body bordered-box gl-bg-white">
+        <div v-show="isFormVisible" class="card-body bordered-box gl-bg-white gl-mb-4">
           <add-issuable-resource-link-form
             ref="resourceLinkForm"
             :is-submitting="isSubmitting"
