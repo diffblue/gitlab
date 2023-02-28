@@ -1,11 +1,11 @@
 import VueRouter from 'vue-router';
-import createAnalyticsRouter from 'ee/product_analytics/router';
+import createRouter from 'ee/analytics/analytics_dashboards/router';
 
-describe('Product Analytics Router Spec', () => {
+describe('Dashboards list router', () => {
   const base = '/dashboard';
 
   it('returns a router object', () => {
-    const router = createAnalyticsRouter(base);
+    const router = createRouter(base);
 
     expect(router).toBeInstanceOf(VueRouter);
     expect(router.history.base).toBe(base);

@@ -6,7 +6,7 @@ export default {
   name: 'ProductAnalyticsApp',
   components: {
     OnboardingView,
-    DashboardsView: () => import('ee/product_analytics/dashboards/dashboards_view.vue'),
+    DashboardsView: () => import('ee/analytics/analytics_dashboards/dashboards_app.vue'),
   },
   inject: {
     jitsuKey: {

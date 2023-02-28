@@ -19,10 +19,12 @@ import {
 } from 'ee/product_analytics/onboarding/constants';
 import { s__ } from '~/locale';
 import {
+  TEST_JITSU_KEY,
+  TEST_COLLECTOR_HOST,
+} from 'ee_jest/analytics/analytics_dashboards/mock_data';
+import {
   createInstanceResponse,
   getJitsuKeyResponse,
-  TEST_COLLECTOR_HOST,
-  TEST_JITSU_KEY,
   TEST_PROJECT_FULL_PATH,
   TEST_PROJECT_ID,
 } from '../mock_data';

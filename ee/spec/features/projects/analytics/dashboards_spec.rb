@@ -22,6 +22,16 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :product_analytics 
 
   subject(:visit_page) { visit project_analytics_dashboards_path(project) }
 
+  shared_examples 'renders the product analytics dashboards' do
+    before do
+      visit_page
+    end
+
+    it do
+      expect(page).to have_content('Understand your audience')
+    end
+  end
+
   shared_examples 'does not render the product analytics dashboards' do
     before do
       visit_page
@@ -42,5 +52,60 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :product_analytics 
     end
 
     it_behaves_like 'does not render the product analytics dashboards'
+  end
+
+  context 'for product analytics' do
+    context 'with the required application settings' do
+      before do
+        stub_application_setting(product_analytics_enabled?: true)
+        stub_application_setting(jitsu_host: 'https://jitsu.example.com')
+        stub_application_setting(jitsu_project_xid: '123')
+        stub_application_setting(jitsu_administrator_email: 'test@example.com')
+        stub_application_setting(jitsu_administrator_password: 'password')
+        stub_application_setting(product_analytics_clickhouse_connection_string: 'clickhouse://localhost:9000')
+        stub_application_setting(cube_api_base_url: 'https://cube.example.com')
+        stub_application_setting(cube_api_key: '123')
+      end
+
+      context 'with the feature flag disabled' do
+        before do
+          stub_feature_flags(product_analytics_internal_preview: false)
+        end
+
+        it_behaves_like 'does not render the product analytics dashboards'
+      end
+
+      context 'with the feature flag enabled' do
+        before do
+          stub_feature_flags(product_analytics_internal_preview: true)
+        end
+
+        context 'with the licensed feature disabled' do
+          before do
+            stub_licensed_features(product_analytics: false)
+          end
+
+          it_behaves_like 'does not render the product analytics dashboards'
+        end
+
+        context 'with the licensed feature enabled' do
+          before do
+            stub_licensed_features(product_analytics: true)
+          end
+
+          context 'without the correct user permissions' do
+            it_behaves_like 'does not render the product analytics dashboards'
+          end
+
+          context 'with the correct user permissions' do
+            before do
+              project.add_owner(user)
+            end
+
+            it_behaves_like 'renders the product analytics dashboards'
+          end
+        end
+      end
+    end
   end
 end

@@ -40,6 +40,10 @@ module EE
     def aggregations
       params.require([:search, :scope])
 
+      # Cache the response on the frontend
+      cache_for = ::Gitlab.com? ? 5.minutes : 1.minute
+      expires_in cache_for
+
       if search_term_valid?
         render json: search_service.search_aggregations.to_json
       else

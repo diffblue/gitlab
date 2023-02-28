@@ -1,3 +1,4 @@
-import initProductAnalytics from 'ee/product_analytics';
+import mountDashboards from 'ee/analytics/analytics_dashboards/mount_dashboards';
+import AnalyticsApp from 'ee/product_analytics/product_analytics_app.vue';
 
-initProductAnalytics();
+mountDashboards('js-analytics-dashboard', AnalyticsApp);

@@ -4743,6 +4743,9 @@ msgstr ""
 msgid "Analytics|Analytics dashboards"
 msgstr ""
 
+msgid "Analytics|Dashboards are created by editing the projects dashboard files."
+msgstr ""
+
 msgid "Analyze your dependencies for known vulnerabilities."
 msgstr ""
 
@@ -32589,9 +32592,6 @@ msgstr ""
 msgid "ProductAnalytics|An error occurred while fetching data. Refresh the page to try again."
 msgstr ""
 
-msgid "ProductAnalytics|Analytics dashboards"
-msgstr ""
-
 msgid "ProductAnalytics|Analyze your product with Product Analytics"
 msgstr ""
 
@@ -32650,9 +32650,6 @@ msgid "ProductAnalytics|Compares pageviews of all pages against each other"
 msgstr ""
 
 msgid "ProductAnalytics|Creating your product analytics instance..."
-msgstr ""
-
-msgid "ProductAnalytics|Dashboards are created by editing the projects dashboard files."
 msgstr ""
 
 msgid "ProductAnalytics|Data"

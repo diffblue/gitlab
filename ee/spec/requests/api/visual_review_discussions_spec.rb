@@ -53,18 +53,6 @@ RSpec.describe API::VisualReviewDiscussions, feature_category: :review_apps do
       )
     end
 
-    context 'with notes_create_service_tracking feature flag disabled' do
-      before do
-        stub_feature_flags(notes_create_service_tracking: false)
-      end
-
-      it 'does not track any events', :snowplow do
-        request
-
-        expect_no_snowplow_event
-      end
-    end
-
     describe 'the API response' do
       before do
         request
