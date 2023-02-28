@@ -76,4 +76,11 @@ RSpec.describe Vulnerabilities::StateTransition, type: :model, feature_category:
       is_expected.to contain_exactly(dismissed_state_transition)
     end
   end
+
+  context 'when loose foreign key on vulnerability_state_transitions.state_changed_at_pipeline_id' do
+    it_behaves_like 'cleanup by a loose foreign key' do
+      let!(:parent) { create(:ci_pipeline) }
+      let!(:model) { create(:vulnerability_state_transitions, pipeline: parent) }
+    end
+  end
 end
