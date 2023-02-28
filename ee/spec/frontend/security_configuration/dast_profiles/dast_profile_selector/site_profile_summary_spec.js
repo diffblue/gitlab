@@ -40,9 +40,6 @@ describe('DastScannerProfileSummary', () => {
 
   const defaultProvide = {
     projectPath,
-    glFeatures: {
-      dastSiteValidationDrawer: true,
-    },
   };
 
   const createMockApolloProvider = (handlers) => {
@@ -50,28 +47,6 @@ describe('DastScannerProfileSummary', () => {
     requestHandlers = handlers;
     return createApolloProvider([[dastSiteValidationsQuery, requestHandlers.dastSiteValidations]]);
   };
-
-  // const createComponentFactory = (mountFn = shallowMountExtended) => (
-  //   props = {},
-  //   glFeatures = {},
-  // ) => {
-  //   wrapper = mountFn(App, {
-  //     propsData: {
-  //       profile: {
-  //         ...profile,
-  //         ...scanMethodOption,
-  //       },
-  //       ...props,
-  //     },
-  //     provide: {
-  //       projectPath,
-  //       glFeatures: {
-  //         dastSiteValidationDrawer: true,
-  //         ...glFeatures,
-  //       },
-  //     },
-  //   });
-  // };
 
   const createComponentFactory = (mountFn = shallowMountExtended) => (options = {}, handlers) => {
     apolloProvider = handlers && createMockApolloProvider(handlers);
@@ -179,26 +154,6 @@ describe('DastScannerProfileSummary', () => {
         const apolloQuery = wrapper.vm.$apollo.queries.validations;
         expect(apolloQuery.options.pollInterval).toBe(DAST_SITE_VALIDATION_POLLING_INTERVAL);
       });
-    });
-  });
-
-  describe('when `dastSiteValidationDrawer` flag is disabled', () => {
-    beforeEach(() => {
-      createComponent({
-        provide: {
-          glFeatures: {
-            dastSiteValidationDrawer: false,
-          },
-        },
-      });
-    });
-
-    it('validate button should not be visible', () => {
-      expect(findValidateButton().exists()).toBe(false);
-    });
-
-    it('validation modal should not be present', () => {
-      expect(findModal().exists()).toBe(false);
     });
   });
 });

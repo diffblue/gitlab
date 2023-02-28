@@ -49,7 +49,7 @@ export default {
       },
       pollInterval: DAST_SITE_VALIDATION_POLLING_INTERVAL,
       skip() {
-        return !this.glFeatures.dastSiteValidationDrawer || !this.urlsPendingValidation.length;
+        return !this.urlsPendingValidation.length;
       },
       result({
         data: {
@@ -147,7 +147,7 @@ export default {
       });
     },
     showValidatebutton(status) {
-      return this.glFeatures.dastSiteValidationDrawer && [NONE, FAILED].includes(status);
+      return [NONE, FAILED].includes(status);
     },
     validateButtonLabel(status) {
       return status === DAST_SITE_VALIDATION_STATUS.NONE
@@ -222,7 +222,7 @@ export default {
           >{{ validateButtonLabel(profile.validationStatus) }}</gl-button
         >
         <dast-site-validation-modal
-          v-if="glFeatures.dastSiteValidationDrawer && validateTargetUrl"
+          v-if="validateTargetUrl"
           :ref="$options.dastSiteValidationModalId"
           :full-path="projectPath"
           :target-url="validateTargetUrl"
