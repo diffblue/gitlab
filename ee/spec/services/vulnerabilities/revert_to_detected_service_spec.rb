@@ -10,10 +10,11 @@ RSpec.describe Vulnerabilities::RevertToDetectedService, feature_category: :vuln
   end
 
   let_it_be(:user) { create(:user) }
+  let_it_be(:comment) { "wheee" }
 
   let(:project) { create(:project) } # cannot use let_it_be here: caching causes problems with permission-related tests
   let(:vulnerability) { create(:vulnerability, :with_findings, project: project) }
-  let(:service) { described_class.new(user, vulnerability) }
+  let(:service) { described_class.new(user, vulnerability, comment) }
 
   subject(:revert_vulnerability_to_detected) { service.execute }
 
@@ -39,6 +40,7 @@ RSpec.describe Vulnerabilities::RevertToDetectedService, feature_category: :vuln
         .to(1)
       expect(::Vulnerabilities::StateTransition.last.vulnerability_id).to eq(vulnerability.id)
       expect(::Vulnerabilities::StateTransition.last.to_state).to eq('detected')
+      expect(::Vulnerabilities::StateTransition.last.comment).to eq(comment)
       expect(::Vulnerabilities::StateTransition.last.author).to eq(user)
     end
 

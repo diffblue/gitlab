@@ -76,10 +76,14 @@ module API
       desc 'Revert a vulnerability to a detected state' do
         success EE::API::Entities::Vulnerability
       end
+      params do
+        optional :comment, type: String
+      end
       post ':id/revert' do
         not_modified! if @vulnerability.detected?
 
-        @vulnerability = ::Vulnerabilities::RevertToDetectedService.new(current_user, @vulnerability).execute
+        @vulnerability = ::Vulnerabilities::RevertToDetectedService.new(current_user, @vulnerability,
+          params[:comment]).execute
         render_vulnerability(@vulnerability)
       end
     end

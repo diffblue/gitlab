@@ -16,9 +16,14 @@ module Mutations
                required: true,
                description: 'ID of the vulnerability to be reverted.'
 
-      def resolve(id:)
+      argument :comment,
+               GraphQL::Types::String,
+               required: false,
+               description: 'Comment why vulnerability was reverted to detected (max. 50 000 characters).'
+
+      def resolve(id:, comment:)
         vulnerability = authorized_find!(id: id)
-        result = ::Vulnerabilities::RevertToDetectedService.new(current_user, vulnerability).execute
+        result = ::Vulnerabilities::RevertToDetectedService.new(current_user, vulnerability, comment).execute
 
         {
           vulnerability: result,
