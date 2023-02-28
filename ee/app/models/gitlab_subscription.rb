@@ -44,8 +44,10 @@ class GitlabSubscription < ApplicationRecord
   end
 
   scope :requiring_seat_refresh, -> (limit) do
+    # look for subscriptions that have not been refreshed in more than
+    # 18 hours (catering for 6-hourly refresh schedule)
     with_a_paid_hosted_plan
-      .where("last_seat_refresh_at < ? OR last_seat_refresh_at IS NULL", 24.hours.ago)
+      .where("last_seat_refresh_at < ? OR last_seat_refresh_at IS NULL", 18.hours.ago)
       .limit(limit)
   end
 
