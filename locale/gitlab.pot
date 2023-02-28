@@ -2246,9 +2246,6 @@ msgstr ""
 msgid "Add a collapsible section"
 msgstr ""
 
-msgid "Add a comment"
-msgstr ""
-
 msgid "Add a comment to this line"
 msgstr ""
 
@@ -2277,6 +2274,9 @@ msgid "Add a related epic"
 msgstr ""
 
 msgid "Add a related issue"
+msgstr ""
+
+msgid "Add a reply"
 msgstr ""
 
 msgid "Add a suffix to Service Desk email address. %{linkStart}Learn more.%{linkEnd}"
