@@ -47,6 +47,7 @@ describe('On-call schedule', () => {
     props = {},
     provide = {},
     userCanCreateSchedule = true,
+    presetType = PRESET_TYPES.WEEKS,
   } = {}) => {
     fakeApollo = createMockApollo([
       [getShiftsForRotationsQuery, getShiftsForRotationsQueryHandler],
@@ -62,6 +63,7 @@ describe('On-call schedule', () => {
       data() {
         return {
           rotations: schedule.rotations.nodes,
+          presetType,
         };
       },
       provide: {
@@ -192,12 +194,6 @@ describe('On-call schedule', () => {
 
   describe('Timeframe update', () => {
     describe('WEEKS view', () => {
-      beforeEach(() => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({ presetType: PRESET_TYPES.WEEKS });
-      });
-
       it('should load next timeframe', () => {
         const mockDate = new Date('2021/01/28');
         jest.spyOn(dateTimeUtility, 'nWeeksAfter').mockReturnValue(mockDate);
@@ -229,10 +225,9 @@ describe('On-call schedule', () => {
 
     describe('DAYS view', () => {
       beforeEach(() => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({ presetType: PRESET_TYPES.DAYS });
+        createComponent({ presetType: PRESET_TYPES.DAYS });
       });
+
       it('should load next timeframe', () => {
         const mockDate = new Date('2021/01/28');
         jest.spyOn(dateTimeUtility, 'nDaysAfter').mockReturnValue(mockDate);
