@@ -5,6 +5,8 @@ import VueApollo from 'vue-apollo';
 import { mount, shallowMount } from '@vue/test-utils';
 import siteProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql.basic.json';
 import scannerProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql.basic.json';
+import dastSiteValidationsQuery from 'ee/security_configuration/dast_site_validation/graphql/dast_site_validations.query.graphql';
+import * as responses from 'ee_jest/security_configuration/dast_profiles/mocks/apollo_mock';
 import ProfileConflictAlert from 'ee/on_demand_scans_form/components/profile_selector/profile_conflict_alert.vue';
 import { s__ } from '~/locale';
 import DastProfilesConfigurator from 'ee/security_configuration/dast_profiles/dast_profiles_configurator/dast_profiles_configurator.vue';
@@ -44,12 +46,14 @@ describe('DastProfilesConfigurator', () => {
     requestHandlers = {
       dastScannerProfiles: jest.fn().mockResolvedValue(scannerProfilesFixtures),
       dastSiteProfiles: jest.fn().mockResolvedValue(siteProfilesFixtures),
+      validations: jest.fn().mockResolvedValue(responses.dastSiteValidations()),
     };
 
     return createApolloProvider(
       [
         [dastScannerProfilesQuery, requestHandlers.dastScannerProfiles],
         [dastSiteProfilesQuery, requestHandlers.dastSiteProfiles],
+        [dastSiteValidationsQuery, requestHandlers.validations],
       ],
       resolvers,
       { typePolicies },

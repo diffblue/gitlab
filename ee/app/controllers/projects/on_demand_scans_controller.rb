@@ -10,7 +10,6 @@ module Projects
     before_action :authorize_edit_on_demand_dast_scan!, only: [:edit]
     before_action do
       push_frontend_feature_flag(:dast_pre_scan_verification, @project)
-      push_frontend_feature_flag(:dast_site_validation_drawer, @project)
       push_frontend_feature_flag(:on_demand_scans_runner_tags, @project)
     end
 
