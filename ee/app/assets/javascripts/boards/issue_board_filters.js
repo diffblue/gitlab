@@ -1,12 +1,12 @@
-import { BoardType } from '~/boards/constants';
 import issueBoardFiltersCE from '~/boards/issue_board_filters';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
+import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import searchIterationQuery from '../issues/list/queries/search_iterations.query.graphql';
 import searchIterationCadencesQuery from '../issues/list/queries/search_iteration_cadences.query.graphql';
 
 export default function issueBoardFilters(apollo, fullPath, isGroupBoard) {
-  const boardType = isGroupBoard ? BoardType.group : BoardType.project;
+  const boardType = isGroupBoard ? WORKSPACE_GROUP : WORKSPACE_PROJECT;
 
   const fetchIterations = (searchTerm) => {
     const id = Number(searchTerm);

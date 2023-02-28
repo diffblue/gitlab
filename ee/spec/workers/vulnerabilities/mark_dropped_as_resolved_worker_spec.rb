@@ -21,37 +21,39 @@ RSpec.describe Vulnerabilities::MarkDroppedAsResolvedWorker, feature_category: :
   end
 
   describe "#perform" do
-    let(:subject) { described_class.new.perform(pipeline.project_id, [dropped_identifier.id]) }
+    include_examples 'an idempotent worker' do
+      let(:subject) { described_class.new.perform(pipeline.project_id, [dropped_identifier.id]) }
 
-    it 'changes state of Vulnerabilities to resolved' do
-      expect { subject }.to change { dismissable_vulnerability.reload.state }
-        .from('detected')
-        .to('resolved')
-        .and change { dismissable_vulnerability.reload.resolved_by_id }
-        .from(nil)
-        .to(User.security_bot.id)
-    end
-
-    it 'creates state transition entry with note for each vulnerability' do
-      expect { subject }.to change(::Vulnerabilities::StateTransition, :count)
-        .from(0)
-        .to(1)
-        .and change(Note, :count)
-        .by(1)
-
-      transition = ::Vulnerabilities::StateTransition.last
-      expect(transition.vulnerability_id).to eq(dismissable_vulnerability.id)
-      expect(transition.author_id).to eq(User.security_bot.id)
-      expect(transition.comment).to match(/automatically resolved/)
-    end
-
-    context 'when flag is disabled' do
-      before do
-        stub_feature_flags(sec_mark_dropped_findings_as_resolved: false)
+      it 'changes state of Vulnerabilities to resolved' do
+        expect { subject }.to change { dismissable_vulnerability.reload.state }
+          .from('detected')
+          .to('resolved')
+          .and change { dismissable_vulnerability.reload.resolved_by_id }
+          .from(nil)
+          .to(User.security_bot.id)
       end
 
-      it 'wont change state of Vulnerabilities to resolved' do
-        expect { subject }.not_to change { dismissable_vulnerability.reload.state }
+      it 'creates state transition entry with note for each vulnerability' do
+        expect { subject }.to change(::Vulnerabilities::StateTransition, :count)
+          .from(0)
+          .to(1)
+          .and change(Note, :count)
+          .by(1)
+
+        transition = ::Vulnerabilities::StateTransition.last
+        expect(transition.vulnerability_id).to eq(dismissable_vulnerability.id)
+        expect(transition.author_id).to eq(User.security_bot.id)
+        expect(transition.comment).to match(/automatically resolved/)
+      end
+
+      context 'when flag is disabled' do
+        before do
+          stub_feature_flags(sec_mark_dropped_findings_as_resolved: false)
+        end
+
+        it 'wont change state of Vulnerabilities to resolved' do
+          expect { subject }.not_to change { dismissable_vulnerability.reload.state }
+        end
       end
     end
   end

@@ -2,7 +2,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { BoardType, GroupByParamType, IterationIDs } from 'ee/boards/constants';
+import { GroupByParamType, IterationIDs } from 'ee/boards/constants';
 import epicCreateMutation from 'ee/boards/graphql/epic_create.mutation.graphql';
 import searchIterationCadencesQuery from 'ee/issues/list/queries/search_iteration_cadences.query.graphql';
 import currentIterationQuery from 'ee/boards/graphql/board_current_iteration.query.graphql';
@@ -19,7 +19,7 @@ import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import issueCreateMutation from '~/boards/graphql/issue_create.mutation.graphql';
 import * as typesCE from '~/boards/stores/mutation_types';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import { TYPE_EPIC, TYPE_ISSUE } from '~/issues/constants';
+import { TYPE_EPIC, TYPE_ISSUE, WORKSPACE_GROUP } from '~/issues/constants';
 import { fetchPolicies } from '~/lib/graphql';
 import * as commonUtils from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams } from '~/lib/utils/url_utility';
@@ -220,7 +220,7 @@ describe('fetchLists', () => {
 
   it.each`
     issuableType | boardType          | fullBoardId                           | isGroup      | isProject
-    ${TYPE_EPIC} | ${BoardType.group} | ${'gid://gitlab/Boards::EpicBoard/1'} | ${undefined} | ${undefined}
+    ${TYPE_EPIC} | ${WORKSPACE_GROUP} | ${'gid://gitlab/Boards::EpicBoard/1'} | ${undefined} | ${undefined}
   `(
     'calls $issuableType query with correct variables',
     async ({ issuableType, boardType, fullBoardId, isGroup, isProject }) => {
@@ -1614,7 +1614,7 @@ describe('addListNewIssue', () => {
           query: currentIterationQuery,
           variables: {
             fullPath: state.fullPath,
-            isGroup: state.boardType === BoardType.group,
+            isGroup: state.boardType === WORKSPACE_GROUP,
           },
           context: {
             isSingleRequest: true,

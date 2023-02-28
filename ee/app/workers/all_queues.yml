@@ -1621,7 +1621,7 @@
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent: false
+  :idempotent: true
   :tags: []
 - :name: vulnerabilities_statistics_adjustment
   :worker_name: Vulnerabilities::Statistics::AdjustmentWorker
