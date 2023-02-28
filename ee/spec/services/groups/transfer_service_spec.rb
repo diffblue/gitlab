@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::TransferService, '#execute' do
+RSpec.describe Groups::TransferService, '#execute', feature_category: :subgroups do
   let_it_be(:user) { create(:user) }
 
   let(:group) { create(:group, :public) }
@@ -31,6 +31,60 @@ RSpec.describe Groups::TransferService, '#execute' do
         transfer_service.execute(new_group)
 
         expect(group.parent).to eq(new_group)
+      end
+    end
+
+    context 'when SAML provider or SCIM token is configured for the group' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:parent_group) { create(:group, :private) }
+
+      before do
+        group.add_owner(user)
+        parent_group.add_owner(user)
+      end
+
+      shared_examples_for 'raises error for paid group' do
+        before do
+          allow(group).to receive(:paid?).and_return true
+        end
+
+        it 'returns false' do
+          expect(transfer_service.execute(parent_group)).to be_falsy
+        end
+
+        it 'does not add saml provider error' do
+          transfer_service.execute(parent_group)
+
+          expect(transfer_service.error).not_to eq('Transfer failed: SAML Provider or SCIM Token is configured for this group.')
+        end
+      end
+
+      context 'when the group has a scim token' do
+        before do
+          create(:scim_oauth_access_token, group: group)
+        end
+
+        it_behaves_like 'raises error for paid group'
+
+        it 'adds an error on group' do
+          transfer_service.execute(parent_group)
+
+          expect(transfer_service.error).to eq('Transfer failed: SAML Provider or SCIM Token is configured for this group.')
+        end
+      end
+
+      context 'when the group has a saml provider' do
+        before do
+          create(:saml_provider, group: group)
+        end
+
+        it_behaves_like 'raises error for paid group'
+
+        it 'adds an error on group' do
+          transfer_service.execute(parent_group)
+
+          expect(transfer_service.error).to eq('Transfer failed: SAML Provider or SCIM Token is configured for this group.')
+        end
       end
     end
   end
