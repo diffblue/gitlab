@@ -52,6 +52,21 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
           expect(response[:users]).to match_array([user])
           expect(response[:groups]).to be_empty
         end
+
+        context 'with user approvers inherited from parent group' do
+          let(:action) { { type: "require_approval", approvals_required: 1, user_approvers: [user.username] } }
+
+          let_it_be(:child) { create(:group, parent: group) }
+          let(:container) { child }
+
+          it 'returns user approvers' do
+            response = service.execute
+
+            expect(response[:status]).to eq(:success)
+            expect(response[:users]).to match_array([user])
+            expect(response[:groups]).to be_empty
+          end
+        end
       end
 
       context 'with container of any other type' do

@@ -35,11 +35,26 @@ module Security
         when Project
           container.team.users.by_ids_or_usernames(user_ids, user_names)
         when Group
-          container.users.by_ids_or_usernames(user_ids, user_names)
+          authorizable_users_in_group_hierarchy_by_ids_or_usernames(user_ids, user_names)
         else
           []
         end
       end
+
+      # rubocop: disable CodeReuse/ActiveRecord
+      def authorizable_users_in_group_hierarchy_by_ids_or_usernames(user_ids, user_names)
+        User
+          .by_ids_or_usernames(user_ids, user_names)
+          .where(
+            container
+              .authorizable_members_with_parents
+              .merge(Member.where(Member.arel_table[:user_id].eq(User.arel_table[:id])), rewhere: true)
+              .select(1)
+              .arel
+              .exists
+          )
+      end
+      # rubocop: enable CodeReuse/ActiveRecord
 
       def group_approvers(action)
         return [] unless action[:group_approvers] || action[:group_approvers_ids]
