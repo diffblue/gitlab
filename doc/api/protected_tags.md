@@ -95,7 +95,18 @@ POST /projects/:id/protected_tags
 
 ```shell
 curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" \
-  "https://gitlab.example.com/api/v4/projects/5/protected_tags?name=*-stable&create_access_level=30"
+   "https://gitlab.example.com/api/v4/projects/5/protected_tags" -d '{
+   "allowed_to_create" : [
+      {
+         "user_id" : 1
+      },
+      {
+         "access_level" : 30
+      }
+   ],
+   "create_access_level" : 30,
+   "name" : "*-stable"
+}'
 ```
 
 | Attribute | Type | Required | Description |
