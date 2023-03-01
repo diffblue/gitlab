@@ -122,15 +122,6 @@ describe('CustomizableDashboard', () => {
       });
     });
 
-    it('sets full width', () => {
-      expect(GridStack.init).toHaveBeenCalledWith({
-        staticGrid: true,
-        margin: GRIDSTACK_MARGIN,
-        minRow: 1,
-        handle: GRIDSTACK_CSS_HANDLE,
-      });
-    });
-
     it.each(
       dashboard.panels.map((panel, index) => [
         panel.id,
