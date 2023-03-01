@@ -84,29 +84,15 @@ export default {
         value: this.vulnerability.project.fullName,
       };
     },
-    solutionInfo() {
-      const { solution, solutionHtml, remediations, state } = this.vulnerability;
-
-      const remediation = remediations?.[0];
-      const hasMr = Boolean(this.mergeRequest);
-      const hasDownload =
-        state !== VULNERABILITY_STATE_OBJECTS.resolved.state &&
-        remediation?.diff?.length > 0 &&
-        !hasMr;
-
-      return {
-        solution,
-        solutionHtml,
-        remediation,
-        hasDownload,
-        hasMr,
-      };
+    solutionText() {
+      const { solutionHtml, solution, remediations } = this.vulnerability;
+      return solutionHtml || solution || remediations?.[0]?.summary;
     },
-    hasSolution() {
-      return Boolean(
-        this.solutionInfo.solution ||
-          this.solutionInfo.solutionHtml ||
-          this.solutionInfo.remediation,
+    canDownloadPatch() {
+      return (
+        !this.mergeRequest &&
+        this.vulnerability.state !== VULNERABILITY_STATE_OBJECTS.resolved.state &&
+        this.vulnerability.remediations?.[0]?.diff?.length > 0
       );
     },
     issueLinksEndpoint() {
@@ -205,7 +191,12 @@ export default {
 </script>
 <template>
   <div data-qa-selector="vulnerability_footer">
-    <solution-card v-if="hasSolution" v-bind="solutionInfo" />
+    <solution-card
+      v-if="solutionText"
+      class="md gl-my-6"
+      :solution-text="solutionText"
+      :can-download-patch="canDownloadPatch"
+    />
     <generic-report-section
       v-if="vulnerability.details"
       class="md gl-mt-6"

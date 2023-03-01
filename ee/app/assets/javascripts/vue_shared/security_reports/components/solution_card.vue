@@ -7,38 +7,13 @@ export default {
     SafeHtml,
   },
   props: {
-    solution: {
+    solutionText: {
       type: String,
-      default: null,
-      required: false,
+      required: true,
     },
-    solutionHtml: {
-      type: String,
-      default: null,
-      required: false,
-    },
-    remediation: {
-      type: Object,
-      default: null,
-      required: false,
-    },
-    hasDownload: {
+    canDownloadPatch: {
       type: Boolean,
-      default: false,
-      required: false,
-    },
-    hasMr: {
-      type: Boolean,
-      default: false,
-      required: false,
-    },
-  },
-  computed: {
-    solutionText() {
-      return this.solutionHtml || this.solution || (this.remediation && this.remediation.summary);
-    },
-    showCreateMergeRequestMsg() {
-      return !this.hasMr && Boolean(this.remediation) && this.hasDownload;
+      required: true,
     },
   },
   i18n: {
@@ -49,13 +24,11 @@ export default {
 };
 </script>
 <template>
-  <div v-if="solutionText" class="md my-4">
+  <div>
     <h3>{{ s__('ciReport|Solution') }}</h3>
-    <div ref="solution-text">
-      <p v-safe-html="solutionText"></p>
-      <p v-if="showCreateMergeRequestMsg" class="gl-font-style-italic">
-        {{ $options.i18n.createMergeRequestMsg }}
-      </p>
-    </div>
+    <p v-safe-html="solutionText" data-testid="solution-text"></p>
+    <p v-if="canDownloadPatch" class="gl-font-style-italic" data-testid="create-mr-message">
+      {{ $options.i18n.createMergeRequestMsg }}
+    </p>
   </div>
 </template>
