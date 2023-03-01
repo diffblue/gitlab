@@ -24,9 +24,12 @@ module EE
                                                         :metrics_reports]
         before_action :authorize_read_licenses!, only: [:license_scanning_reports, :license_scanning_reports_collapsed]
 
+        before_action :authorize_read_security_reports!, only: [:security_reports]
+
         feature_category :vulnerability_management, [:container_scanning_reports, :dependency_scanning_reports,
-                                                     :sast_reports, :secret_detection_reports,
-                                                     :dast_reports, :coverage_fuzzing_reports, :api_fuzzing_reports]
+                                                     :sast_reports, :secret_detection_reports, :dast_reports,
+                                                     :coverage_fuzzing_reports, :api_fuzzing_reports,
+                                                     :security_reports]
         feature_category :metrics, [:metrics_reports]
         feature_category :license_compliance, [:license_scanning_reports, :license_scanning_reports_collapsed]
         feature_category :code_review_workflow, [:delete_description_version, :description_diff]
@@ -37,7 +40,8 @@ module EE
                        :secret_detection_reports, :dast_reports,
                        :coverage_fuzzing_reports, :api_fuzzing_reports,
                        :metrics_reports, :description_diff,
-                       :license_scanning_reports, :license_scanning_reports_collapsed]
+                       :license_scanning_reports, :license_scanning_reports_collapsed,
+                       :security_reports]
       end
 
       def can_run_sast_experiments_on?(project)
@@ -75,6 +79,20 @@ module EE
 
       def api_fuzzing_reports
         reports_response(merge_request.compare_api_fuzzing_reports(current_user), head_pipeline)
+      end
+
+      def security_reports
+        report = ::Security::MergeRequestSecurityReportGenerationService.execute(merge_request, params[:type])
+
+        reports_response(report, head_pipeline)
+      rescue ::Security::MergeRequestSecurityReportGenerationService::InvalidReportTypeError
+        head :bad_request
+      end
+
+      private
+
+      def authorize_read_security_reports!
+        return render_404 unless can?(current_user, :read_security_resource, merge_request.project)
       end
     end
   end
