@@ -8,7 +8,7 @@ module Groups
       before_action :check_feature_availability
       before_action :authorize_admin_group!
 
-      feature_category :authentication_and_authorization
+      feature_category :system_access
       urgency :low
 
       def show

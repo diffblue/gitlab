@@ -5,7 +5,7 @@ class OmniauthKerberosController < ApplicationController
 
   skip_before_action :authenticate_user!
 
-  feature_category :authentication_and_authorization
+  feature_category :system_access
 
   def negotiate
     if spnego_provided? && (krb_principal = spnego_credentials!(spnego_token))

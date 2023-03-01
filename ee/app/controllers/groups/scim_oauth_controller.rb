@@ -8,7 +8,7 @@ class Groups::ScimOauthController < Groups::ApplicationController
   before_action :check_group_saml_available!
   before_action :check_group_saml_configured
 
-  feature_category :authentication_and_authorization
+  feature_category :system_access
 
   # rubocop: disable CodeReuse/ActiveRecord
   def create

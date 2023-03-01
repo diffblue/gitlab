@@ -9,7 +9,7 @@ module Groups
       push_frontend_feature_flag(:group_owners_to_disable_two_factor)
     end
 
-    feature_category :authentication_and_authorization
+    feature_category :user_management
 
     def destroy
       result = TwoFactor::DestroyService.new(current_user, user: @user, group: group).execute

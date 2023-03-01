@@ -10,7 +10,7 @@ module API
 
     ldap_groups_tags = %w[ldap_groups]
 
-    feature_category :authentication_and_authorization
+    feature_category :system_access
 
     resource :ldap do
       helpers do

@@ -8,7 +8,7 @@ class GroupSamlGroupSyncWorker
   sidekiq_options retry: 3
   include Gitlab::Utils::StrongMemoize
 
-  feature_category :authentication_and_authorization
+  feature_category :system_access
   idempotent!
 
   loggable_arguments 2

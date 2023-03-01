@@ -10,7 +10,7 @@ class LdapAllGroupsSyncWorker # rubocop:disable Scalability/IdempotentWorker
   include CronjobQueue
   # rubocop:enable Scalability/CronWorkerContext
 
-  feature_category :authentication_and_authorization
+  feature_category :system_access
   worker_has_external_dependencies!
 
   def perform

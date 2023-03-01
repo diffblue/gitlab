@@ -11,7 +11,7 @@ module Users
     before_action :require_unverified_user!, except: :success
     before_action :require_arkose_verification!, except: [:arkose_labs_challenge, :verify_arkose_labs_session]
 
-    feature_category :authentication_and_authorization
+    feature_category :system_access
 
     layout 'minimal'
 
