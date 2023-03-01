@@ -66,6 +66,7 @@ describe('GroupSelect', () => {
       expect(groupsApi.getGroups).toHaveBeenCalledWith(group1.name, {
         exclude_internal: true,
         active: true,
+        order_by: 'similarity',
       });
     });
 
