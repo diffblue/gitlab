@@ -31242,6 +31242,9 @@ msgstr ""
 msgid "PipelineGraph|Are you sure you want to retry %{jobName}?"
 msgstr ""
 
+msgid "PipelineGraph|Downstream pipeline might not display in the graph while the new downstream pipeline is being created."
+msgstr ""
+
 msgid "PipelineGraph|Retrying a trigger job will create a new downstream pipeline."
 msgstr ""
 
