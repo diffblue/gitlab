@@ -94,6 +94,7 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
           expect do
             finding.update!(vulnerability_id: vulnerability.id)
           end.to change { Vulnerabilities::Read.count }.from(0).to(1)
+          expect(created_vulnerability_read.has_issues).to eq(false)
         end
 
         it 'sets has_issues when the vulnerability has issue links' do
