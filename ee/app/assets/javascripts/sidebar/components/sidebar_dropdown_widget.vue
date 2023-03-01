@@ -1,7 +1,7 @@
 <script>
 import { __ } from '~/locale';
 import SidebarDropdownWidget from '~/sidebar/components/sidebar_dropdown_widget.vue';
-import { IssuableType, TYPE_ISSUE } from '~/issues/constants';
+import { TYPE_ISSUE, TYPE_MERGE_REQUEST } from '~/issues/constants';
 import {
   IssuableAttributeType,
   IssuableAttributeState,
@@ -55,7 +55,7 @@ export default {
       type: String,
       required: true,
       validator(value) {
-        return [TYPE_ISSUE, IssuableType.MergeRequest].includes(value);
+        return [TYPE_ISSUE, TYPE_MERGE_REQUEST].includes(value);
       },
     },
     icon: {
