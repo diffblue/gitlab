@@ -42019,7 +42019,13 @@ msgstr ""
 msgid "SuperSonics|Start free trial"
 msgstr ""
 
+msgid "SuperSonics|Subscription detail synchronization has started and will complete soon."
+msgstr ""
+
 msgid "SuperSonics|Subscription details"
+msgstr ""
+
+msgid "SuperSonics|Subscription details did not synchronize due to a possible connectivity issue with GitLab servers. %{connectivityHelpLinkStart}How do I check connectivity%{connectivityHelpLinkEnd}?"
 msgstr ""
 
 msgid "SuperSonics|Subscription unavailable"
@@ -42028,7 +42034,7 @@ msgstr ""
 msgid "SuperSonics|Sync subscription details"
 msgstr ""
 
-msgid "SuperSonics|Sync subscription request."
+msgid "SuperSonics|Synchronization started"
 msgstr ""
 
 msgid "SuperSonics|The activation code is not valid. Please make sure to copy it exactly from the Customers Portal or confirmation email. Learn more about %{linkStart}activating your subscription%{linkEnd}."
@@ -42037,7 +42043,7 @@ msgstr ""
 msgid "SuperSonics|The activation code should be a 24-character alphanumeric string"
 msgstr ""
 
-msgid "SuperSonics|There is a connectivity issue."
+msgid "SuperSonics|There is a connectivity issue"
 msgstr ""
 
 msgid "SuperSonics|This is the highest peak of users on your installation since the license started."
@@ -42064,9 +42070,6 @@ msgid "SuperSonics|Users with a Guest role or those who don't belong to a Projec
 msgstr ""
 
 msgid "SuperSonics|You can %{purchaseSubscriptionLinkStart}purchase a new subscription%{purchaseSubscriptionLinkEnd} and try again. If you need further assistance, please %{supportLinkStart}contact GitLab Support%{supportLinkEnd}."
-msgstr ""
-
-msgid "SuperSonics|You can no longer sync your subscription details with GitLab. Get help for the most common connectivity issues by %{connectivityHelpLinkStart}troubleshooting the activation code%{connectivityHelpLinkEnd}."
 msgstr ""
 
 msgid "SuperSonics|You can start a free trial of GitLab Ultimate without any obligation or payment details."
@@ -42109,9 +42112,6 @@ msgid "SuperSonics|Your subscription"
 msgstr ""
 
 msgid "SuperSonics|Your subscription cannot be located"
-msgstr ""
-
-msgid "SuperSonics|Your subscription details will sync shortly."
 msgstr ""
 
 msgid "SuperSonics|Your subscription is expired"

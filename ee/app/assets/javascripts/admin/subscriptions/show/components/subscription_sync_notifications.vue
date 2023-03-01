@@ -4,11 +4,13 @@ import { mapActions, mapGetters } from 'vuex';
 import { s__ } from '~/locale';
 
 export const i18n = Object.freeze({
-  CONNECTIVITY_ERROR_TITLE: s__('SuperSonics|There is a connectivity issue.'),
-  MANUAL_SYNC_PENDING_TEXT: s__('SuperSonics|Your subscription details will sync shortly.'),
-  MANUAL_SYNC_PENDING_TITLE: s__('SuperSonics|Sync subscription request.'),
+  CONNECTIVITY_ERROR_TITLE: s__('SuperSonics|There is a connectivity issue'),
+  MANUAL_SYNC_SUCCESS_TEXT: s__(
+    'SuperSonics|Subscription detail synchronization has started and will complete soon.',
+  ),
+  MANUAL_SYNC_SUCCESS_TITLE: s__('SuperSonics|Synchronization started'),
   MANUAL_SYNC_FAILURE_TEXT: s__(
-    'SuperSonics|You can no longer sync your subscription details with GitLab. Get help for the most common connectivity issues by %{connectivityHelpLinkStart}troubleshooting the activation code%{connectivityHelpLinkEnd}.',
+    'SuperSonics|Subscription details did not synchronize due to a possible connectivity issue with GitLab servers. %{connectivityHelpLinkStart}How do I check connectivity%{connectivityHelpLinkEnd}?',
   ),
 });
 
@@ -21,7 +23,7 @@ export default {
   },
   inject: ['connectivityHelpURL'],
   computed: {
-    ...mapGetters(['didSyncFail', 'isSyncPending']),
+    ...mapGetters(['didSyncFail', 'didSyncSucceed']),
   },
   methods: {
     ...mapActions(['dismissAlert']),
@@ -33,12 +35,12 @@ export default {
 <template>
   <div>
     <gl-alert
-      v-if="isSyncPending"
+      v-if="didSyncSucceed"
       variant="info"
-      :title="$options.i18n.MANUAL_SYNC_PENDING_TITLE"
-      data-testid="sync-info-alert"
+      :title="$options.i18n.MANUAL_SYNC_SUCCESS_TITLE"
+      data-testid="sync-success-alert"
       @dismiss="dismissAlert"
-      >{{ $options.i18n.MANUAL_SYNC_PENDING_TEXT }}</gl-alert
+      >{{ $options.i18n.MANUAL_SYNC_SUCCESS_TEXT }}</gl-alert
     >
     <gl-alert
       v-else-if="didSyncFail"

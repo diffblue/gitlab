@@ -40,7 +40,10 @@ describe('Admin Subscriptions Show Actions', () => {
     });
 
     describe('when axios response is successful', () => {
-      const successMutation = { type: types.RECEIVE_SYNC_SUCCESS };
+      const successMutation = {
+        type: types.RECEIVE_SYNC_SUCCESS,
+        payload: subscriptionSyncStatus.SYNC_SUCCESS,
+      };
 
       beforeEach(() => {
         axiosMock.onPost().replyOnce(HTTP_STATUS_OK);

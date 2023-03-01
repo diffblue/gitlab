@@ -12,6 +12,7 @@ describe('Admin Subscriptions Show Getters', () => {
     it.each([
       [true, subscriptionSyncStatus.SYNC_FAILURE],
       [false, subscriptionSyncStatus.SYNC_PENDING],
+      [false, subscriptionSyncStatus.SYNC_SUCCESS],
       [false, null],
     ])('returns %s when subscriptionSyncStatus is %s', (expected, syncStatus) => {
       state.subscriptionSyncStatus = syncStatus;
@@ -20,15 +21,16 @@ describe('Admin Subscriptions Show Getters', () => {
     });
   });
 
-  describe('isSyncPending', () => {
+  describe('didSyncSucceed', () => {
     it.each([
       [false, subscriptionSyncStatus.SYNC_FAILURE],
-      [true, subscriptionSyncStatus.SYNC_PENDING],
+      [false, subscriptionSyncStatus.SYNC_PENDING],
+      [true, subscriptionSyncStatus.SYNC_SUCCESS],
       [false, null],
     ])('returns %s when subscriptionSyncStatus is %s', (expected, syncStatus) => {
       state = { subscriptionSyncStatus: syncStatus };
 
-      expect(getters.isSyncPending(state)).toBe(expected);
+      expect(getters.didSyncSucceed(state)).toBe(expected);
     });
   });
 });
