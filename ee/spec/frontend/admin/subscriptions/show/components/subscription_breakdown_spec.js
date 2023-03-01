@@ -71,7 +71,7 @@ describe('Subscription Breakdown', () => {
       },
       getters: {
         didSyncFail: () => didSyncFail,
-        isSyncPending: () => false,
+        didSyncSucceed: () => false,
       },
       state: {
         ...initialState,

@@ -85,7 +85,7 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
         page.within(find('#content-body', match: :first)) do
           click_button('Sync subscription details')
 
-          expect(page).to have_content('Your subscription details will sync shortly.')
+          expect(page).to have_content('Subscription detail synchronization has started and will complete soon.')
         end
       end
 
@@ -95,7 +95,7 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
         page.within(find('#content-body', match: :first)) do
           click_button('Sync subscription details')
 
-          expect(page).to have_content('You can no longer sync your subscription details with GitLab. Get help for the most common connectivity issues by troubleshooting the activation code')
+          expect(page).to have_content('Subscription details did not synchronize due to a possible connectivity issue with GitLab servers. How do I check connectivity?')
         end
       end
 

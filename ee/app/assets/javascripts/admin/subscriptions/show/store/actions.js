@@ -8,7 +8,7 @@ export const syncSubscription = async ({ commit, state }) => {
 
   try {
     await axios.post(state.paths.subscriptionSyncPath);
-    commit(types.RECEIVE_SYNC_SUCCESS);
+    commit(types.RECEIVE_SYNC_SUCCESS, subscriptionSyncStatus.SYNC_SUCCESS);
   } catch (e) {
     commit(types.RECEIVE_SYNC_ERROR, subscriptionSyncStatus.SYNC_FAILURE);
   }
