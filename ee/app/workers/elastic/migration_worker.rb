@@ -16,10 +16,14 @@ module Elastic
     idempotent!
     urgency :low
 
+    LOCK_TIMEOUT = 30.minutes
+    LOCK_SLEEP_SEC = 2
+    LOCK_RETRIES = 10
+
     def perform
       return false unless preflight_check_successful?
 
-      in_lock(self.class.name.underscore, ttl: 1.day, retries: 10, sleep_sec: 1) do
+      in_lock(self.class.name.underscore, ttl: LOCK_TIMEOUT, retries: LOCK_RETRIES, sleep_sec: LOCK_SLEEP_SEC) do
         # migration index should be checked before pulling the current_migration because if no migrations_index exists,
         # current_migration will return nil
         unless helper.migrations_index_exists?

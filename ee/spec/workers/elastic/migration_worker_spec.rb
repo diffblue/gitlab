@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::MigrationWorker, :elastic_clean do
+RSpec.describe Elastic::MigrationWorker, :elastic_clean, feature_category: :global_search do
   subject { described_class.new }
 
   describe '#perform' do
@@ -155,9 +155,8 @@ RSpec.describe Elastic::MigrationWorker, :elastic_clean do
 
             it 'handles batched migrations' do
               if batched && !completed
-                # default throttle_delay is 5.minutes
                 expect( Elastic::MigrationWorker).to receive(:perform_in)
-                  .with(5.minutes)
+                  .with(3.minutes)
               else
                 expect( Elastic::MigrationWorker).not_to receive(:perform_in)
               end
