@@ -1,0 +1,8 @@
+---
+name: geo_proxy_direct_to_primary
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/111888
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/391407
+milestone: '15.10'
+type: development
+group: group::geo
+default_enabled: false
