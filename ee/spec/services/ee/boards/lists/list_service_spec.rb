@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Boards::Lists::ListService do
+RSpec.describe Boards::Lists::ListService, feature_category: :team_planning do
   describe '#execute' do
     before do
       stub_licensed_features(board_assignee_lists: false, board_milestone_lists: false, board_iteration_lists: false)

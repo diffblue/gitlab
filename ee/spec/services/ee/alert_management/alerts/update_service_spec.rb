@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AlertManagement::Alerts::UpdateService do
+RSpec.describe AlertManagement::Alerts::UpdateService, feature_category: :incident_management do
   let_it_be(:user_with_permissions) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be(:escalation_policy) { create(:incident_management_escalation_policy, project: project) }

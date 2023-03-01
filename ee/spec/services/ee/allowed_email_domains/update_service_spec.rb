@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::AllowedEmailDomains::UpdateService do
+RSpec.describe EE::AllowedEmailDomains::UpdateService, feature_category: :team_planning do
   let(:group) { create(:group) }
   let(:user) { create(:user) }
 

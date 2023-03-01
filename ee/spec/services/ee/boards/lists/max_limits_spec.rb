@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Max Limits Module' do
+RSpec.describe 'Max Limits Module', feature_category: :team_planning do
   let(:clazz) do
     Class.new do
       include EE::Boards::Lists::MaxLimits
