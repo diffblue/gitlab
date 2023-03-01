@@ -100,11 +100,14 @@ describe('EEInviteModalBase', () => {
   const findOverageModalContent = () => wrapper.findByTestId('invite-modal-overage-content');
   const findModalTitle = () => findModal().props('title');
   const findActiveTrialUnlimitedMembersAlert = () => wrapper.findByTestId('alert-trial-info');
+  const findActionButton = () => wrapper.findByTestId('invite-modal-submit');
+  const findCancelButton = () => wrapper.findByTestId('invite-modal-cancel');
 
-  const emitEventFromModal = (eventName) => () =>
-    findModal().vm.$emit(eventName, { preventDefault: jest.fn() });
-  const clickInviteButton = emitEventFromModal('primary');
-  const clickBackButton = emitEventFromModal('cancel');
+  const emitClickFromModal = (findButton) => () =>
+    findButton().vm.$emit('click', { preventDefault: jest.fn() });
+
+  const clickInviteButton = emitClickFromModal(findActionButton);
+  const clickBackButton = emitClickFromModal(findCancelButton);
 
   describe('default', () => {
     beforeEach(() => {
@@ -193,21 +196,20 @@ describe('EEInviteModalBase', () => {
     });
 
     it('renders the Back button text correctly', () => {
-      expect(findModal().props('actionPrimary')).toMatchObject({
-        text: OVERAGE_MODAL_CONTINUE_BUTTON,
-        attributes: {
-          variant: 'confirm',
-          disabled: false,
-          loading: false,
-          'data-qa-selector': 'invite_button',
-        },
+      const actionButton = findActionButton();
+
+      expect(actionButton.text()).toBe(OVERAGE_MODAL_CONTINUE_BUTTON);
+      expect(actionButton.attributes('data-qa-selector')).toBe('invite_button');
+
+      expect(actionButton.props()).toMatchObject({
+        variant: 'confirm',
+        disabled: false,
+        loading: false,
       });
     });
 
     it('renders the Continue button text correctly', () => {
-      expect(findModal().props('actionCancel')).toMatchObject({
-        text: OVERAGE_MODAL_BACK_BUTTON,
-      });
+      expect(findCancelButton().text()).toBe(OVERAGE_MODAL_BACK_BUTTON);
     });
 
     it('shows the info text', () => {
@@ -216,7 +218,7 @@ describe('EEInviteModalBase', () => {
       );
     });
 
-    it('doesn\t show the initial modal content', () => {
+    it('does not show the initial modal content', () => {
       expect(findInitialModalContent().isVisible()).toBe(false);
     });
 
