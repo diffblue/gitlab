@@ -1773,6 +1773,14 @@ RSpec.describe Group, feature_category: :subgroups do
     end
   end
 
+  describe '#any_hook_failed?' do
+    let_it_be(:group) { create(:group) }
+
+    subject { group.any_hook_failed? }
+
+    it { is_expected.to eq(false) }
+  end
+
   describe "#execute_hooks" do
     context "group_webhooks", :request_store do
       let_it_be(:parent_group) { create(:group) }
