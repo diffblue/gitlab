@@ -17,7 +17,9 @@ module EE
           'action' => 'geo_proxy_to_primary',
           'data' => {
             'api_endpoints' => custom_action_api_endpoints_for(cmd),
-            'primary_repo' => primary_http_repo_internal_url
+            'primary_repo' => primary_http_repo_internal_url,
+            'geo_proxy_direct_to_primary' => ::Feature.enabled?(:geo_proxy_direct_to_primary),
+            'request_headers' => proxy_direct_to_primary_headers
           }
         }
 
@@ -35,6 +37,43 @@ module EE
         return false unless project
 
         upload_pack? && ::Geo::ProjectRegistry.repository_out_of_date?(project.id)
+      end
+
+      def proxy_direct_to_primary_headers
+        proxy_direct_to_primary_base_request.headers
+      end
+
+      def proxy_direct_to_primary_base_request
+        ::Gitlab::Geo::BaseRequest.new({
+          scope: auth_scope,
+          gl_id: actor_gl_id
+        })
+      end
+
+      # @param [User, Key] actor a user or key which responds to `id`
+      def actor_gl_id
+        "#{actor_gl_id_prefix}-#{actor.id}"
+      end
+
+      def actor_gl_id_prefix
+        if key?
+          'key'
+        elsif actor.is_a?(User)
+          'user'
+        elsif geo?
+          raise ::Gitlab::GitAccess::ForbiddenError,
+            "Unexpected actor :geo. Secondary sites don't receive Git requests from other Geo sites."
+        elsif ci?
+          raise ::Gitlab::GitAccess::ForbiddenError,
+            'Unexpected actor :ci. CI requests use Git over HTTP.'
+        else
+          raise ::Gitlab::GitAccess::ForbiddenError,
+            'Unknown type of actor'
+        end
+      end
+
+      def auth_scope
+        URI.parse(primary_http_repo_internal_url).path.gsub(%r{^/|\.git$}, '')
       end
 
       def messages

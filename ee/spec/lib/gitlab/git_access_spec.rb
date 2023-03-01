@@ -557,9 +557,12 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
   end
 
   describe 'Geo' do
-    let(:actor) { :geo }
+    let_it_be(:primary_node) { create(:geo_node, :primary) }
+    let_it_be(:secondary_node) { create(:geo_node) }
 
     context 'git pull' do
+      let(:actor) { :geo }
+
       it { expect { pull_changes }.not_to raise_error }
 
       context 'for non-Geo with maintenance mode' do
@@ -576,77 +579,307 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
         end
       end
 
+      context 'for a primary' do
+        before do
+          stub_licensed_features(geo: true)
+          stub_current_geo_node(primary_node)
+        end
+
+        context 'when the request is signed by a Geo site' do
+          let(:actor) { :geo }
+
+          it { expect { pull_changes }.not_to raise_error }
+        end
+
+        # This case should be fully tested elsewhere. It's only here as a point of comparison with :geo actor.
+        context 'when the actor is a user and the user is a developer' do
+          let(:actor) { user }
+
+          before do
+            project.add_developer(user)
+          end
+
+          it { expect { pull_changes }.not_to raise_error }
+        end
+
+        # This case should be fully tested elsewhere. It's only here as a point of comparison with :geo actor.
+        context 'when the actor is a key' do
+          let_it_be(:deploy_key) { create(:deploy_key, user: user) }
+          let(:actor) { deploy_key }
+
+          before do
+            project.add_developer(user)
+            deploy_key.deploy_keys_projects.create!(project: project)
+          end
+
+          it { expect { pull_changes }.not_to raise_error }
+        end
+      end
+
       context 'for a secondary' do
         let(:current_replication_lag) { nil }
 
         before do
           stub_licensed_features(geo: true)
-          stub_current_geo_node(create(:geo_node))
-
-          allow_next_instance_of(Gitlab::Geo::HealthCheck) do |instance|
-            allow(instance).to receive(:db_replication_lag_seconds).and_return(current_replication_lag)
-          end
+          stub_current_geo_node(secondary_node)
         end
 
-        context 'for a repository that has been replicated' do
-          context 'that has no DB replication lag' do
+        context 'when the request is signed by a Geo site' do
+          let(:actor) { :geo }
+
+          # At the moment, this scenario (a secondary site receives Git requests from another Geo site)
+          # is not valid.
+          it { expect { pull_changes }.to raise_forbidden("Unexpected actor :geo. Secondary sites don't receive Git requests from other Geo sites.") }
+        end
+
+        context 'when the actor is CI' do
+          let(:actor) { :ci }
+
+          it { expect { pull_changes }.to raise_forbidden('Unexpected actor :ci. CI requests use Git over HTTP.') }
+        end
+
+        context 'when the request is by an unaccounted for type of actor' do
+          let(:actor) { :foobar }
+
+          it { expect { pull_changes }.to raise_forbidden('Unknown type of actor') }
+        end
+
+        context 'when the actor is a user' do
+          let(:actor) { user }
+
+          context 'for a repository that has been replicated' do
+            before do
+              allow_next_instance_of(Gitlab::Geo::HealthCheck) do |instance|
+                allow(instance).to receive(:db_replication_lag_seconds).and_return(current_replication_lag)
+              end
+            end
+
+            context 'that has no DB replication lag' do
+              let(:current_replication_lag) { 0 }
+
+              it 'does not return a replication lag message in the console messages' do
+                expect(pull_changes.console_messages).not_to include('Current replication lag: 7 seconds')
+              end
+            end
+
+            context 'that has DB replication lag > 0' do
+              let(:current_replication_lag) { 7 }
+
+              it 'returns a replication lag message in the console messages' do
+                expect(pull_changes.console_messages).to include('Current replication lag: 7 seconds')
+              end
+            end
+          end
+
+          context 'for a repository that has yet to be replicated' do
+            let_it_be(:project_no_repo) { create(:project) }
+            let(:project) { project_no_repo }
             let(:current_replication_lag) { 0 }
 
-            it 'does not return a replication lag message in the console messages' do
-              expect(pull_changes.console_messages).to be_empty
+            it 'returns a custom action' do
+              expected_payload = {
+                "action" => "geo_proxy_to_primary",
+                "data" => {
+                  "api_endpoints" => ["/api/v4/geo/proxy_git_ssh/info_refs_upload_pack", "/api/v4/geo/proxy_git_ssh/upload_pack"],
+                  "primary_repo" => geo_primary_http_internal_url_to_repo(project_no_repo),
+                  "geo_proxy_direct_to_primary" => true,
+                  "request_headers" => include('Authorization')
+                }
+              }
+              expected_console_messages = ["This request to a Geo secondary node will be forwarded to the", "Geo primary node:", "", "  #{geo_primary_ssh_url_to_repo(project)}"]
+
+              response = pull_changes
+
+              expect(response).to be_instance_of(Gitlab::GitAccessResult::CustomAction)
+              expect(response.payload).to include(expected_payload)
+              expect(response.console_messages).to eq(expected_console_messages)
             end
-          end
 
-          context 'that has DB replication lag > 0' do
-            let(:current_replication_lag) { 7 }
+            context 'with the feature flag geo_proxy_direct_to_primary disabled' do
+              it 'returns a custom action' do
+                stub_feature_flags(geo_proxy_direct_to_primary: false)
 
-            it 'returns a replication lag message in the console messages' do
-              expect(pull_changes.console_messages).to eq(['Current replication lag: 7 seconds'])
+                expected_payload = {
+                  "action" => "geo_proxy_to_primary",
+                  "data" => {
+                    "api_endpoints" => ["/api/v4/geo/proxy_git_ssh/info_refs_upload_pack", "/api/v4/geo/proxy_git_ssh/upload_pack"],
+                    "primary_repo" => geo_primary_http_internal_url_to_repo(project_no_repo),
+                    "geo_proxy_direct_to_primary" => false,
+                    "request_headers" => include('Authorization')
+                  }
+                }
+                expected_console_messages = ["This request to a Geo secondary node will be forwarded to the", "Geo primary node:", "", "  #{geo_primary_ssh_url_to_repo(project)}"]
+
+                response = pull_changes
+
+                expect(response).to be_instance_of(Gitlab::GitAccessResult::CustomAction)
+                expect(response.payload).to include(expected_payload)
+                expect(response.console_messages).to eq(expected_console_messages)
+              end
             end
-          end
-        end
-
-        context 'for a repository that has yet to be replicated' do
-          let(:project) { create(:project) }
-          let(:current_replication_lag) { 0 }
-
-          before do
-            create(:geo_node, :primary)
-          end
-
-          it 'returns a custom action' do
-            expected_payload = { "action" => "geo_proxy_to_primary", "data" => { "api_endpoints" => ["/api/v4/geo/proxy_git_ssh/info_refs_upload_pack", "/api/v4/geo/proxy_git_ssh/upload_pack"], "primary_repo" => geo_primary_http_internal_url_to_repo(project) } }
-            expected_console_messages = ["This request to a Geo secondary node will be forwarded to the", "Geo primary node:", "", "  #{geo_primary_ssh_url_to_repo(project)}"]
-
-            response = pull_changes
-
-            expect(response).to be_instance_of(Gitlab::GitAccessResult::CustomAction)
-            expect(response.payload).to eq(expected_payload)
-            expect(response.console_messages).to eq(expected_console_messages)
           end
         end
       end
     end
 
     context 'git push' do
-      it { expect { push_changes }.to raise_forbidden(Gitlab::GitAccess::ERROR_MESSAGES[:upload]) }
+      context 'for a primary' do
+        before do
+          stub_licensed_features(geo: true)
+          stub_current_geo_node(primary_node)
+        end
+
+        context 'when the request is signed by a Geo site' do
+          let(:actor) { :geo }
+
+          it { expect { push_changes }.to raise_forbidden(Gitlab::GitAccess::ERROR_MESSAGES[:upload]) }
+        end
+
+        # This case should be fully tested elsewhere. It's only here as a point of comparison with :geo actor.
+        context 'when the actor is a user and the user is a developer' do
+          let(:actor) { user }
+
+          before do
+            project.add_developer(user)
+          end
+
+          it { expect { push_changes }.not_to raise_error }
+        end
+
+        # This case should be fully tested elsewhere. It's only here as a point of comparison with :geo actor.
+        context 'when the actor is a key' do
+          let_it_be(:deploy_key) { create(:deploy_key, user: user) }
+          let(:actor) { deploy_key }
+
+          before do
+            project.add_developer(user)
+            deploy_key.deploy_keys_projects.create!(project: project, can_push: true)
+          end
+
+          it { expect { push_changes }.not_to raise_error }
+        end
+      end
 
       context 'for a secondary' do
         before do
           stub_licensed_features(geo: true)
-          create(:geo_node, :primary)
-          stub_current_geo_node(create(:geo_node))
+          stub_current_geo_node(secondary_node)
         end
 
-        it 'returns a custom action' do
-          expected_payload = { "action" => "geo_proxy_to_primary", "data" => { "api_endpoints" => ["/api/v4/geo/proxy_git_ssh/info_refs_receive_pack", "/api/v4/geo/proxy_git_ssh/receive_pack"], "primary_repo" => geo_primary_http_internal_url_to_repo(project) } }
-          expected_console_messages = ["This request to a Geo secondary node will be forwarded to the", "Geo primary node:", "", "  #{geo_primary_ssh_url_to_repo(project)}"]
+        context 'when the request is signed by a Geo site' do
+          let(:actor) { :geo }
 
-          response = push_changes
+          it { expect { push_changes }.to raise_forbidden("Unexpected actor :geo. Secondary sites don't receive Git requests from other Geo sites.") }
+        end
 
-          expect(response).to be_instance_of(Gitlab::GitAccessResult::CustomAction)
-          expect(response.payload).to eq(expected_payload)
-          expect(response.console_messages).to eq(expected_console_messages)
+        context 'when the actor is CI' do
+          let(:actor) { :ci }
+
+          it { expect { push_changes }.to raise_forbidden('Unexpected actor :ci. CI requests use Git over HTTP.') }
+        end
+
+        context 'when the request is by an unaccounted for type of actor' do
+          let(:actor) { :foobar }
+
+          it { expect { push_changes }.to raise_forbidden('Unknown type of actor') }
+        end
+
+        context 'when the actor is a key' do
+          let_it_be(:deploy_key) { create(:deploy_key, user: user) }
+          let(:actor) { deploy_key }
+
+          before do
+            project.add_developer(user)
+            deploy_key.deploy_keys_projects.create!(project: project, can_push: true)
+          end
+
+          it 'returns a custom action' do
+            expected_payload = {
+              "action" => "geo_proxy_to_primary",
+              "data" => {
+                "api_endpoints" => ["/api/v4/geo/proxy_git_ssh/info_refs_receive_pack", "/api/v4/geo/proxy_git_ssh/receive_pack"],
+                "primary_repo" => geo_primary_http_internal_url_to_repo(project),
+                "geo_proxy_direct_to_primary" => true,
+                "request_headers" => include('Authorization')
+              }
+            }
+            expected_console_messages = ["This request to a Geo secondary node will be forwarded to the", "Geo primary node:", "", "  #{geo_primary_ssh_url_to_repo(project)}"]
+
+            response = push_changes
+
+            expect(response).to be_instance_of(Gitlab::GitAccessResult::CustomAction)
+            expect(response.payload).to include(expected_payload)
+            expect(response.console_messages).to eq(expected_console_messages)
+          end
+
+          context 'with the feature flag geo_proxy_direct_to_primary disabled' do
+            it 'returns a custom action' do
+              stub_feature_flags(geo_proxy_direct_to_primary: false)
+
+              expected_payload = {
+                "action" => "geo_proxy_to_primary",
+                "data" => {
+                  "api_endpoints" => ["/api/v4/geo/proxy_git_ssh/info_refs_receive_pack", "/api/v4/geo/proxy_git_ssh/receive_pack"],
+                  "primary_repo" => geo_primary_http_internal_url_to_repo(project),
+                  "geo_proxy_direct_to_primary" => false,
+                  "request_headers" => include('Authorization')
+                }
+              }
+              expected_console_messages = ["This request to a Geo secondary node will be forwarded to the", "Geo primary node:", "", "  #{geo_primary_ssh_url_to_repo(project)}"]
+
+              response = push_changes
+
+              expect(response).to be_instance_of(Gitlab::GitAccessResult::CustomAction)
+              expect(response.payload).to include(expected_payload)
+              expect(response.console_messages).to eq(expected_console_messages)
+            end
+          end
+        end
+
+        context 'when the actor is a user' do
+          let(:actor) { user }
+
+          it 'returns a custom action' do
+            expected_payload = {
+              "action" => "geo_proxy_to_primary",
+              "data" => {
+                "api_endpoints" => ["/api/v4/geo/proxy_git_ssh/info_refs_receive_pack", "/api/v4/geo/proxy_git_ssh/receive_pack"],
+                "primary_repo" => geo_primary_http_internal_url_to_repo(project),
+                "geo_proxy_direct_to_primary" => true,
+                "request_headers" => include('Authorization')
+              }
+            }
+            expected_console_messages = ["This request to a Geo secondary node will be forwarded to the", "Geo primary node:", "", "  #{geo_primary_ssh_url_to_repo(project)}"]
+
+            response = push_changes
+
+            expect(response).to be_instance_of(Gitlab::GitAccessResult::CustomAction)
+            expect(response.payload).to include(expected_payload)
+            expect(response.console_messages).to eq(expected_console_messages)
+          end
+
+          context 'with the feature flag geo_proxy_direct_to_primary disabled' do
+            it 'returns a custom action' do
+              stub_feature_flags(geo_proxy_direct_to_primary: false)
+
+              expected_payload = {
+                "action" => "geo_proxy_to_primary",
+                "data" => {
+                  "api_endpoints" => ["/api/v4/geo/proxy_git_ssh/info_refs_receive_pack", "/api/v4/geo/proxy_git_ssh/receive_pack"],
+                  "primary_repo" => geo_primary_http_internal_url_to_repo(project),
+                  "geo_proxy_direct_to_primary" => false,
+                  "request_headers" => include('Authorization')
+                }
+              }
+              expected_console_messages = ["This request to a Geo secondary node will be forwarded to the", "Geo primary node:", "", "  #{geo_primary_ssh_url_to_repo(project)}"]
+
+              response = push_changes
+
+              expect(response).to be_instance_of(Gitlab::GitAccessResult::CustomAction)
+              expect(response.payload).to include(expected_payload)
+              expect(response.console_messages).to eq(expected_console_messages)
+            end
+          end
         end
       end
     end
