@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::SetFeatureFlagService do
+RSpec.describe Admin::SetFeatureFlagService, feature_category: :feature_flags do
   let(:service) { described_class.new(feature_flag_name: feature_name, params: params) }
 
   describe '#execute' do
