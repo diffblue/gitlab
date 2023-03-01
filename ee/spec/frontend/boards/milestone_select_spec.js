@@ -8,6 +8,7 @@ import MilestoneSelect from 'ee/boards/components/milestone_select.vue';
 
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { stubComponent } from 'helpers/stub_component';
 
 import { boardObj } from 'jest/boards/mock_data';
 import {
@@ -70,12 +71,11 @@ describe('Milestone select component', () => {
       stubs: {
         GlDropdown,
         GlDropdownItem,
+        DropdownWidget: stubComponent(DropdownWidget, {
+          methods: { showDropdown: jest.fn() },
+        }),
       },
     });
-
-    // We need to mock out `showDropdown` which
-    // invokes `show` method of BDropdown used inside GlDropdown.
-    jest.spyOn(wrapper.vm, 'showDropdown').mockImplementation();
   };
 
   beforeEach(() => {
@@ -84,7 +84,6 @@ describe('Milestone select component', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     fakeApollo = null;
     store = null;
   });
