@@ -1,0 +1,11 @@
+query getGroupRunnerTags($fullPath: ID!) {
+  group(fullPath: $fullPath) {
+    id
+    runners {
+      nodes {
+        id
+        tagList
+      }
+    }
+  }
+}
