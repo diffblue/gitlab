@@ -1,8 +1,13 @@
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import { GlDropdown, GlSprintf } from '@gitlab/ui';
 import { __ } from '~/locale';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import createApolloProvider from 'helpers/mock_apollo_helper';
+import RunnerTagsList from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/runner_tags_list.vue';
 import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/policy_action_builder.vue';
+import projectRunnerTags from 'ee/security_orchestration/graphql/queries/get_project_runner_tags.query.graphql';
+import groupRunnerTags from 'ee/security_orchestration/graphql/queries/get_group_runner_tags.query.graphql';
 import { buildScannerAction } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib';
 import {
   ACTION_AND_LABEL,
@@ -12,16 +17,52 @@ import {
   DAST_HUMANIZED_TEMPLATE,
   SCANNER_HUMANIZED_TEMPLATE,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
+import { RUNNER_TAG_LIST_MOCK } from '../../../../on_demand_scans/mocks';
 
 describe('PolicyActionBuilder', () => {
   let wrapper;
+  let requestHandlers;
+  const namespacePath = 'gid://gitlab/Project/20';
+  const namespaceType = 'project';
 
-  const factory = ({ mountFn = mountExtended, props = {}, stubs = {} } = {}) => {
+  const defaultHandlerValue = (type = 'project') =>
+    jest.fn().mockResolvedValue({
+      data: {
+        [type]: {
+          id: namespacePath,
+          runners: {
+            nodes: RUNNER_TAG_LIST_MOCK,
+          },
+        },
+      },
+    });
+
+  const createMockApolloProvider = (handlers) => {
+    Vue.use(VueApollo);
+
+    requestHandlers = handlers;
+    return createApolloProvider([
+      [projectRunnerTags, requestHandlers],
+      [groupRunnerTags, requestHandlers],
+    ]);
+  };
+
+  const factory = ({
+    mountFn = mountExtended,
+    props = {},
+    stubs = {},
+    handlers = defaultHandlerValue(),
+  } = {}) => {
     wrapper = mountFn(PolicyActionBuilder, {
+      apolloProvider: createMockApolloProvider(handlers),
       propsData: {
         initAction: buildScannerAction({ scanner: 'dast' }),
         actionIndex: 0,
         ...props,
+      },
+      provide: {
+        namespacePath,
+        namespaceType,
       },
       stubs: { GlDropdownItem: true, ...stubs },
     });
@@ -32,7 +73,7 @@ describe('PolicyActionBuilder', () => {
   const findDropdown = () => wrapper.findComponent(GlDropdown);
   const findDropdownOption = (scanner) => wrapper.findByText(scanner);
   const findSprintf = () => wrapper.findComponent(GlSprintf);
-  const findTagsInput = () => wrapper.findByTestId('policy-tags-input');
+  const findTagsList = () => wrapper.findComponent(RunnerTagsList);
 
   it('renders correctly with DAST as the default scanner', async () => {
     factory({ stubs: { GlDropdown: true } });
@@ -98,12 +139,12 @@ describe('PolicyActionBuilder', () => {
 
     expect(wrapper.emitted('changed')).toBe(undefined);
 
-    const branches = 'main,branch1,branch2';
-    findTagsInput().vm.$emit('input', branches);
+    const branches = ['main', 'branch1', 'branch2'];
+    findTagsList().vm.$emit('input', branches);
     await nextTick();
 
     expect(wrapper.emitted('changed')).toStrictEqual([
-      [{ ...buildScannerAction({ scanner: 'dast' }), tags: branches.split(',') }],
+      [{ ...buildScannerAction({ scanner: 'dast' }), tags: branches }],
     ]);
   });
 

@@ -1,4 +1,4 @@
-import { GlButton, GlPopover } from '@gitlab/ui';
+import { GlButton, GlIcon, GlLoadingIcon, GlPopover } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
 import SubscriptionSyncButton from 'ee/admin/subscriptions/show/components/subscription_sync_button.vue';
@@ -40,6 +40,8 @@ describe('Subscription Sync Button', () => {
   };
 
   const findButton = (wrapper) => wrapper.findComponent(GlButton);
+  const findSyncIcon = (wrapper) => wrapper.findComponent(GlIcon);
+  const findLoadingIcon = (wrapper) => wrapper.findComponent(GlLoadingIcon);
   const findPopover = (wrapper) => wrapper.findComponent(GlPopover);
 
   describe('button', () => {
@@ -64,7 +66,9 @@ describe('Subscription Sync Button', () => {
     });
 
     it('displays correct icon', () => {
-      expect(syncButton.props('icon')).toBe('retry');
+      expect(findSyncIcon(wrapper).exists()).toBe(true);
+      expect(findSyncIcon(wrapper).props('name')).toBe('retry');
+      expect(findLoadingIcon(wrapper).exists()).toBe(false);
     });
 
     it('contains an aria-label', () => {
@@ -133,6 +137,14 @@ describe('Subscription Sync Button', () => {
 
     it('disables the sync button', () => {
       expect(findButton(wrapper).props('disabled')).toBe(true);
+    });
+    it('hides a popover', () => {
+      expect(findPopover(wrapper).exists()).toBe(false);
+    });
+
+    it('displays correct icon', () => {
+      expect(findLoadingIcon(wrapper).exists()).toBe(true);
+      expect(findSyncIcon(wrapper).exists()).toBe(false);
     });
   });
 });

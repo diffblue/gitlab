@@ -14,19 +14,19 @@ describe('Subscription Sync Notifications', () => {
 
   const findAllAlerts = () => wrapper.findAllComponents(GlAlert);
   const findFailureAlert = () => wrapper.findByTestId('sync-failure-alert');
-  const findInfoAlert = () => wrapper.findByTestId('sync-info-alert');
+  const findSuccessAlert = () => wrapper.findByTestId('sync-success-alert');
   const findLink = () => wrapper.findComponent(GlLink);
 
   const createStore = ({
     didSyncFail = false,
-    isSyncPending = false,
+    didSyncSucceed = false,
     dismissMock = jest.fn(),
   } = {}) => {
     return new Vuex.Store({
       ...initialStore,
       getters: {
         didSyncFail: () => didSyncFail,
-        isSyncPending: () => isSyncPending,
+        didSyncSucceed: () => didSyncSucceed,
       },
       actions: {
         dismissAlert: dismissMock,
@@ -61,7 +61,7 @@ describe('Subscription Sync Notifications', () => {
 
     beforeEach(() => {
       spy = jest.fn();
-      const store = createStore({ isSyncPending: true, dismissMock: spy });
+      const store = createStore({ didSyncSucceed: true, dismissMock: spy });
 
       createComponent({
         store,
@@ -69,19 +69,19 @@ describe('Subscription Sync Notifications', () => {
     });
 
     it('displays an info alert', () => {
-      expect(findInfoAlert().props('variant')).toBe('info');
+      expect(findSuccessAlert().props('variant')).toBe('info');
     });
 
     it('displays an alert with a title', () => {
-      expect(findInfoAlert().props('title')).toBe(i18n.MANUAL_SYNC_PENDING_TITLE);
+      expect(findSuccessAlert().props('title')).toBe(i18n.MANUAL_SYNC_SUCCESS_TITLE);
     });
 
     it('displays an alert with a message', () => {
-      expect(findInfoAlert().text()).toBe(i18n.MANUAL_SYNC_PENDING_TEXT);
+      expect(findSuccessAlert().text()).toBe(i18n.MANUAL_SYNC_SUCCESS_TEXT);
     });
 
     it('triggers dismissAlert action when dismiss event is emitted', () => {
-      findInfoAlert().vm.$emit('dismiss');
+      findSuccessAlert().vm.$emit('dismiss');
 
       expect(spy).toHaveBeenCalled();
     });
@@ -105,7 +105,7 @@ describe('Subscription Sync Notifications', () => {
 
     it('displays an alert with a failure message', () => {
       expect(findFailureAlert().text()).toBe(
-        'You can no longer sync your subscription details with GitLab. Get help for the most common connectivity issues by troubleshooting the activation code.',
+        'Subscription details did not synchronize due to a possible connectivity issue with GitLab servers. How do I check connectivity?',
       );
     });
 

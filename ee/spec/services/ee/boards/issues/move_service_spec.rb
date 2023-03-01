@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Boards::Issues::MoveService, services: true do
+RSpec.describe Boards::Issues::MoveService, services: true, feature_category: :team_planning do
   shared_examples 'moving an issue to/from milestone lists' do
     context 'from backlog to milestone list' do
       let!(:issue) { create(:labeled_issue, project: project) }

@@ -31,7 +31,7 @@ export default () => {
     licenseUsageFilePath,
   } = el.dataset;
   const connectivityHelpURL = helpPagePath('/user/admin_area/license.html', {
-    anchor: 'there-is-a-connectivity-issue',
+    anchor: 'cannot-activate-instance-due-to-connectivity-error',
   });
 
   return new Vue({

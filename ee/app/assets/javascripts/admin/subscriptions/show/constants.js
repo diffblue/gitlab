@@ -73,6 +73,7 @@ export const subscriptionActivationForm = {
 export const subscriptionSyncStatus = {
   SYNC_FAILURE: 'SYNC_FAILURE',
   SYNC_PENDING: 'SYNC_PENDING',
+  SYNC_SUCCESS: 'SYNC_SUCCESS',
 };
 
 export const subscriptionTypes = {

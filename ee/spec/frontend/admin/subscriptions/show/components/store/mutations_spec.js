@@ -21,10 +21,6 @@ describe('Mutations', () => {
         expect(localState.subscriptionSyncStatus).toBe(payload);
       });
 
-      it('updates shouldShowNotifications', () => {
-        expect(localState.breakdown.shouldShowNotifications).toBe(true);
-      });
-
       it('updates hasAsyncActivity', () => {
         expect(localState.breakdown.hasAsyncActivity).toBe(true);
       });
@@ -41,18 +37,28 @@ describe('Mutations', () => {
         expect(localState.subscriptionSyncStatus).toBe(payload);
       });
 
+      it('updates shouldShowNotifications', () => {
+        expect(localState.breakdown.shouldShowNotifications).toBe(true);
+      });
+
       it('updates hasAsyncActivity', () => {
         expect(localState.breakdown.hasAsyncActivity).toBe(false);
       });
     });
 
     describe('RECEIVE_SYNC_SUCCESS', () => {
+      const payload = 'anything';
+
       beforeEach(() => {
-        mutations[types.RECEIVE_SYNC_SUCCESS](localState);
+        mutations[types.RECEIVE_SYNC_SUCCESS](localState, payload);
       });
 
       it('updates subscriptionSyncStatus', () => {
-        expect(localState.subscriptionSyncStatus).toBe(null);
+        expect(localState.subscriptionSyncStatus).toBe(payload);
+      });
+
+      it('updates shouldShowNotifications', () => {
+        expect(localState.breakdown.shouldShowNotifications).toBe(true);
       });
 
       it('updates hasAsyncActivity', () => {

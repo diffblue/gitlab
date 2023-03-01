@@ -24,3 +24,14 @@ export const unsupportedManifestObject = {
     },
   ],
 };
+
+export const RUNNER_TAG_LIST_MOCK = [
+  {
+    id: 'gid://gitlab/Ci::Runner/1',
+    tagList: ['macos', 'linux', 'docker'],
+  },
+  {
+    id: 'gid://gitlab/Ci::Runner/2',
+    tagList: ['backup', 'linux', 'development'],
+  },
+];

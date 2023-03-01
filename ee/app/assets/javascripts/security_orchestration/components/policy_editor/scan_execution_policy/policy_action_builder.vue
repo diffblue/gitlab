@@ -19,6 +19,7 @@ import {
   SCANNER_HUMANIZED_TEMPLATE,
   RULE_MODE_SCANNERS,
 } from './constants';
+import RunnerTagsList from './runner_tags_list.vue';
 import { buildScannerAction } from './lib';
 
 export default {
@@ -32,10 +33,12 @@ export default {
     GlFormInput,
     GlIcon,
     GlSprintf,
+    RunnerTagsList,
   },
   directives: {
     GlTooltip,
   },
+  inject: ['namespacePath', 'namespaceType'],
   props: {
     initAction: {
       type: Object,
@@ -79,11 +82,10 @@ export default {
     },
     tags: {
       get() {
-        return this.initAction.tags?.join(',').trim() ?? '';
+        return this.initAction.tags || [];
       },
       set(values) {
-        const tags = values.split(',');
-        this.$emit('changed', { ...this.initAction, tags });
+        this.$emit('changed', { ...this.initAction, tags: values });
       },
     },
   },
@@ -110,7 +112,6 @@ export default {
   i18n: {
     selectedScannerProfilePlaceholder: s__('ScanExecutionPolicy|Select scanner profile'),
     selectedSiteProfilePlaceholder: s__('ScanExecutionPolicy|Select site profile'),
-    selectedTagsPlaceholder: s__('ScanExecutionPolicy|Ex, tag-name-1, tag-name-2'),
     selectedTagsInformation: s__(
       'ScanExecutionPolicy|If the field is empty, the runner will be automatically selected',
     ),
@@ -175,19 +176,20 @@ export default {
             label-for="policy-tags"
             label-sr-only
           >
-            <gl-form-input
-              id="policy-tags"
-              v-model="tags"
-              :placeholder="$options.i18n.selectedTagsPlaceholder"
-              data-testid="policy-tags-input"
-            />
+            <div class="gl-display-flex gl-align-items-center">
+              <runner-tags-list
+                v-model="tags"
+                :namespace-path="namespacePath"
+                :namespace-type="namespaceType"
+              />
+              <gl-icon
+                v-gl-tooltip
+                name="question-o"
+                :title="$options.i18n.selectedTagsInformation"
+                class="gl-text-blue-600 gl-ml-2"
+              />
+            </div>
           </gl-form-group>
-          <gl-icon
-            v-gl-tooltip
-            name="question-o"
-            :title="$options.i18n.selectedTagsInformation"
-            class="gl-text-blue-600"
-          />
         </template>
       </gl-sprintf>
     </gl-form>
