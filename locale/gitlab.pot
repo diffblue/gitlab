@@ -26447,6 +26447,9 @@ msgstr ""
 msgid "MemberRole|cannot be deleted because it is already assigned to a user. Please disassociate the member role from all users before deletion."
 msgstr ""
 
+msgid "MemberRole|maximum number of Member Roles are already in use by the group hierarchy. Please delete an existing Member Role."
+msgstr ""
+
 msgid "MemberRole|must be top-level namespace"
 msgstr ""
 
