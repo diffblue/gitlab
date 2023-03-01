@@ -13,6 +13,7 @@ module EE
       include TokenAuthenticatable
       include InsightsFeature
       include HasWiki
+      include ::WebHooks::HasWebHooks
       include CanMoveRepositoryStorage
       include ReactiveCaching
 
@@ -644,6 +645,13 @@ module EE
       self_and_ancestor_hooks.hooks_for(hooks_scope).each do |hook|
         hook.async_execute(data, hooks_scope.to_s)
       end
+    end
+
+    override :any_hook_failed?
+    def any_hook_failed?
+      # morally `hooks.disabled.exists?`, but since the GroupHook model includes
+      # WebHooks::Unstoppable, we simply return `false`.
+      false
     end
 
     override :git_transfer_in_progress?
