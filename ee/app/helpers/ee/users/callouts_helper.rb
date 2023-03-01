@@ -91,6 +91,13 @@ module EE
 
       private
 
+      override :dismissed_callout?
+      def dismissed_callout?(object, query)
+        return super if object.is_a?(Project)
+
+        current_user.dismissed_callout_for_group?(group: object, **query)
+      end
+
       def eoa_bronze_plan_end_date
         Date.parse(EOA_BRONZE_PLAN_END_DATE)
       end

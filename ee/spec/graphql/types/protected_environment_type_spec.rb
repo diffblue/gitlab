@@ -7,7 +7,7 @@ RSpec.describe GitlabSchema.types['ProtectedEnvironment'] do
 
   it 'includes the expected fields' do
     expected_fields = %w[
-      name project group deployAccessLevels approvalRules
+      name project group deployAccessLevels approvalRules required_approval_count
     ]
 
     expect(described_class).to include_graphql_fields(*expected_fields)
