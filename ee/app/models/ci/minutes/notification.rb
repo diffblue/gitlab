@@ -20,7 +20,7 @@ module Ci
         return false unless @context.namespace
         return false if alert_has_been_dismissed?(cookies)
 
-        Ability.allowed?(current_user, :read_ci_minutes_usage, @context.namespace)
+        Ability.allowed?(current_user, :admin_ci_minutes, @context.namespace)
       end
 
       def text
