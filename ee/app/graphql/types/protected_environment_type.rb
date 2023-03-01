@@ -22,6 +22,9 @@ module Types
 
     field :approval_rules, ::Types::ProtectedEnvironments::ApprovalRuleType.connection_type,
           description: 'Which group, user or role is allowed to approve deployments to the environment.'
+
+    field :required_approval_count, GraphQL::Types::Int,
+          description: "Required approval count for Unified Approval Setting."
   end
   # rubocop:enable Graphql/AuthorizeTypes
 end

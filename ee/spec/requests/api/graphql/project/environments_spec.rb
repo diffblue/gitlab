@@ -49,6 +49,7 @@ RSpec.describe 'Project Environments query', feature_category: :continuous_deliv
                       #{authorizable_attributes}
                     }
                   }
+                  requiredApprovalCount
                 }
               }
             }
@@ -107,6 +108,14 @@ RSpec.describe 'Project Environments query', feature_category: :continuous_deliv
       expect(approval_rule_data['group']).to be_nil
       expect(approval_rule_data['user']).to be_nil
       expect(approval_rule_data['accessLevel']['stringValue']).to eq('DEVELOPER')
+    end
+
+    it 'returns unified approval setting', :aggregate_failures do
+      subject
+
+      required_approval_count = graphql_data_at(:project, :environment, :protectedEnvironments, :nodes, 0,
+                                                :requiredApprovalCount)
+      expect(required_approval_count).to eq(0)
     end
 
     context 'when a specifc user is allowed to deploy' do
