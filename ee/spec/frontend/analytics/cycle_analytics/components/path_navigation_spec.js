@@ -65,7 +65,7 @@ describe('Group PathNavigation', () => {
 
     it('shows the sanitized end event description for the first stage item', () => {
       const expectedStartEventDescription =
-        'Issue first associated with a milestone or issue first added to a board';
+        'Issue first associated with a milestone or first added to a board';
       expect(firstPopover().text()).toContain(expectedStartEventDescription);
     });
 
