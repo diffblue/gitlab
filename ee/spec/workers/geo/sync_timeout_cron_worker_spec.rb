@@ -17,7 +17,6 @@ RSpec.describe Geo::SyncTimeoutCronWorker, :geo do
 
   it 'uses a cronjob queue' do
     expect(subject.sidekiq_options_hash).to include(
-      'queue' => 'cronjob:geo_sync_timeout_cron',
       'queue_namespace' => :cronjob
     )
   end
