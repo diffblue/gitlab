@@ -40,10 +40,6 @@ describe('GeoNodeReplicationDetails', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findGeoMobileReplicationDetails = () =>
     wrapper.findByTestId('geo-replication-details-mobile');
   const findGeoMobileReplicationStatus = () =>

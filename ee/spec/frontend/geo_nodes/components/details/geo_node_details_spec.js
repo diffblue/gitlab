@@ -1,4 +1,4 @@
-import { shallowMount } from '@vue/test-utils';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeCoreDetails from 'ee/geo_nodes/components/details/geo_node_core_details.vue';
 import GeoNodeDetails from 'ee/geo_nodes/components/details/geo_node_details.vue';
 import GeoNodePrimaryOtherInfo from 'ee/geo_nodes/components/details/primary_node/geo_node_primary_other_info.vue';
@@ -7,7 +7,6 @@ import GeoNodeReplicationDetails from 'ee/geo_nodes/components/details/secondary
 import GeoNodeReplicationSummary from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_summary.vue';
 import GeoNodeSecondaryOtherInfo from 'ee/geo_nodes/components/details/secondary_node/geo_node_secondary_other_info.vue';
 import { MOCK_PRIMARY_NODE, MOCK_SECONDARY_NODE } from 'ee_jest/geo_nodes/mock_data';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 describe('GeoNodeDetails', () => {
   let wrapper;
@@ -17,19 +16,13 @@ describe('GeoNodeDetails', () => {
   };
 
   const createComponent = (props) => {
-    wrapper = extendedWrapper(
-      shallowMount(GeoNodeDetails, {
-        propsData: {
-          ...defaultProps,
-          ...props,
-        },
-      }),
-    );
+    wrapper = shallowMountExtended(GeoNodeDetails, {
+      propsData: {
+        ...defaultProps,
+        ...props,
+      },
+    });
   };
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   const findGeoNodeCoreDetails = () => wrapper.findComponent(GeoNodeCoreDetails);
   const findGeoNodePrimaryOtherInfo = () => wrapper.findComponent(GeoNodePrimaryOtherInfo);

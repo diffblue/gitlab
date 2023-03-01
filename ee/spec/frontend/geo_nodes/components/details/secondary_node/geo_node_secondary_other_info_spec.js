@@ -1,8 +1,7 @@
 import { GlSprintf } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeSecondaryOtherInfo from 'ee/geo_nodes/components/details/secondary_node/geo_node_secondary_other_info.vue';
 import { MOCK_SECONDARY_NODE } from 'ee_jest/geo_nodes/mock_data';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 
 // Dates come from the backend in seconds, we mimic that here.
@@ -16,20 +15,14 @@ describe('GeoNodeSecondaryOtherInfo', () => {
   };
 
   const createComponent = (props) => {
-    wrapper = extendedWrapper(
-      shallowMount(GeoNodeSecondaryOtherInfo, {
-        propsData: {
-          ...defaultProps,
-          ...props,
-        },
-        stubs: { GlSprintf, TimeAgo },
-      }),
-    );
+    wrapper = shallowMountExtended(GeoNodeSecondaryOtherInfo, {
+      propsData: {
+        ...defaultProps,
+        ...props,
+      },
+      stubs: { GlSprintf, TimeAgo },
+    });
   };
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   const findDbReplicationLag = () => wrapper.findByTestId('replication-lag');
   const findLastEvent = () => wrapper.findByTestId('last-event');

@@ -1,10 +1,9 @@
 import { GlButton } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeActionsDesktop from 'ee/geo_nodes/components/header/geo_node_actions_desktop.vue';
 import { MOCK_PRIMARY_NODE } from 'ee_jest/geo_nodes/mock_data';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 Vue.use(Vuex);
 
@@ -23,20 +22,14 @@ describe('GeoNodeActionsDesktop', () => {
       },
     });
 
-    wrapper = extendedWrapper(
-      shallowMount(GeoNodeActionsDesktop, {
-        store,
-        propsData: {
-          ...defaultProps,
-          ...props,
-        },
-      }),
-    );
+    wrapper = shallowMountExtended(GeoNodeActionsDesktop, {
+      store,
+      propsData: {
+        ...defaultProps,
+        ...props,
+      },
+    });
   };
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   const findGeoDesktopActionsButtons = () => wrapper.findAllComponents(GlButton);
   const findGeoDesktopActionsEditButton = () => wrapper.findByTestId('geo-desktop-edit-action');

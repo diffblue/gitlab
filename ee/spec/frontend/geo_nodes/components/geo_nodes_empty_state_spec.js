@@ -24,10 +24,6 @@ describe('GeoNodesEmptyState', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findGeoEmptyState = () => wrapper.findComponent(GlEmptyState);
 
   describe('template', () => {

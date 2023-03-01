@@ -1,7 +1,6 @@
-import { shallowMount } from '@vue/test-utils';
+import { shallowMountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
 import GeoNodeProgressBar from 'ee/geo_nodes/components/details/geo_node_progress_bar.vue';
 import GeoNodeReplicationStatusMobile from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_status_mobile.vue';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 describe('GeoNodeReplicationStatusMobile', () => {
   let wrapper;
@@ -20,19 +19,13 @@ describe('GeoNodeReplicationStatusMobile', () => {
   };
 
   const createComponent = (props) => {
-    wrapper = extendedWrapper(
-      shallowMount(GeoNodeReplicationStatusMobile, {
-        propsData: {
-          ...defaultProps,
-          ...props,
-        },
-      }),
-    );
+    wrapper = shallowMountExtended(GeoNodeReplicationStatusMobile, {
+      propsData: {
+        ...defaultProps,
+        ...props,
+      },
+    });
   };
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   const findItemSyncStatus = () => wrapper.findByTestId('sync-status');
   const findItemVerificationStatus = () => wrapper.findByTestId('verification-status');

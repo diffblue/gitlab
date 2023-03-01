@@ -1,9 +1,8 @@
 import { GlPopover, GlLink } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeReplicationStatus from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_status.vue';
 import { REPLICATION_STATUS_UI, REPLICATION_PAUSE_URL } from 'ee/geo_nodes/constants';
 import { MOCK_SECONDARY_NODE } from 'ee_jest/geo_nodes/mock_data';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 describe('GeoNodeReplicationStatus', () => {
   let wrapper;
@@ -13,19 +12,13 @@ describe('GeoNodeReplicationStatus', () => {
   };
 
   const createComponent = (props) => {
-    wrapper = extendedWrapper(
-      shallowMount(GeoNodeReplicationStatus, {
-        propsData: {
-          ...defaultProps,
-          ...props,
-        },
-      }),
-    );
+    wrapper = shallowMountExtended(GeoNodeReplicationStatus, {
+      propsData: {
+        ...defaultProps,
+        ...props,
+      },
+    });
   };
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   const findReplicationStatusText = () => wrapper.findByTestId('replication-status-text');
   const findQuestionIcon = () => wrapper.findComponent({ ref: 'replicationStatus' });

@@ -1,4 +1,4 @@
-import { shallowMount } from '@vue/test-utils';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeReplicationSyncPercentage from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_sync_percentage.vue';
 
 describe('GeoNodeReplicationSyncPercentage', () => {
@@ -9,7 +9,7 @@ describe('GeoNodeReplicationSyncPercentage', () => {
   };
 
   const createComponent = (props) => {
-    wrapper = shallowMount(GeoNodeReplicationSyncPercentage, {
+    wrapper = shallowMountExtended(GeoNodeReplicationSyncPercentage, {
       propsData: {
         ...defaultProps,
         ...props,
@@ -17,12 +17,8 @@ describe('GeoNodeReplicationSyncPercentage', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
-  const findPercentageIndicator = () => wrapper.find('.gl-rounded-full');
-  const findPercentage = () => wrapper.find('span');
+  const findPercentageIndicator = () => wrapper.findByTestId('geo-sync-percentage-indicator');
+  const findPercentage = () => wrapper.findByTestId('geo-sync-percentage');
 
   describe('template', () => {
     describe('always', () => {

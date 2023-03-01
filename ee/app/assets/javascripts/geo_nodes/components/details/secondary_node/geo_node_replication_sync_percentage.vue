@@ -41,8 +41,12 @@ export default {
 
 <template>
   <div class="gl-display-flex gl-align-items-center gl-justify-content-end">
-    <div :class="percentColor" class="gl-rounded-full gl-w-3 gl-h-3 gl-mr-2"></div>
-    <span class="gl-font-weight-bold">
+    <div
+      :class="percentColor"
+      class="gl-rounded-full gl-w-3 gl-h-3 gl-mr-2"
+      data-testid="geo-sync-percentage-indicator"
+    ></div>
+    <span class="gl-font-weight-bold" data-testid="geo-sync-percentage">
       {{ percent === null ? `-%` : `${percent}%` }}
     </span>
   </div>

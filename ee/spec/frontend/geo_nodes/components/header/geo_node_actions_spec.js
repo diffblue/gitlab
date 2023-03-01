@@ -36,10 +36,6 @@ describe('GeoNodeActions', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findGeoMobileActions = () => wrapper.findComponent(GeoNodeActionsMobile);
   const findGeoDesktopActions = () => wrapper.findComponent(GeoNodeActionsDesktop);
 

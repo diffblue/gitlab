@@ -1,10 +1,9 @@
 import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeActionsMobile from 'ee/geo_nodes/components/header/geo_node_actions_mobile.vue';
 import { MOCK_PRIMARY_NODE } from 'ee_jest/geo_nodes/mock_data';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 Vue.use(Vuex);
 
@@ -23,25 +22,20 @@ describe('GeoNodeActionsMobile', () => {
       },
     });
 
-    wrapper = extendedWrapper(
-      shallowMount(GeoNodeActionsMobile, {
-        store,
-        propsData: {
-          ...defaultProps,
-          ...props,
-        },
-      }),
-    );
+    wrapper = shallowMountExtended(GeoNodeActionsMobile, {
+      store,
+      propsData: {
+        ...defaultProps,
+        ...props,
+      },
+    });
   };
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   const findGeoMobileActionsDropdown = () => wrapper.findComponent(GlDropdown);
   const findGeoMobileActionsDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
   const findGeoMobileActionsRemoveDropdownItem = () =>
     wrapper.findByTestId('geo-mobile-remove-action');
+  const findGeoMobileActionsRemoveDropdownItemText = () => wrapper.findByText('Remove');
 
   describe('template', () => {
     describe('always', () => {
@@ -87,9 +81,7 @@ describe('GeoNodeActionsMobile', () => {
           canRemoveNode ? 'not ' : ''
         }disable the Mobile Remove dropdown item and adds proper class`, () => {
           expect(findGeoMobileActionsRemoveDropdownItem().attributes('disabled')).toBe(disabled);
-          expect(findGeoMobileActionsRemoveDropdownItem().find('span').classes(dropdownClass)).toBe(
-            true,
-          );
+          expect(findGeoMobileActionsRemoveDropdownItemText().classes(dropdownClass)).toBe(true);
         });
       });
     });

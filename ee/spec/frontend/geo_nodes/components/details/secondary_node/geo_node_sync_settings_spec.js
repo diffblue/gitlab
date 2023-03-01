@@ -1,7 +1,6 @@
-import { shallowMount } from '@vue/test-utils';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeSyncSettings from 'ee/geo_nodes/components/details/secondary_node/geo_node_sync_settings.vue';
 import { MOCK_SECONDARY_NODE } from 'ee_jest/geo_nodes/mock_data';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 describe('GeoNodeSyncSettings', () => {
   let wrapper;
@@ -11,19 +10,13 @@ describe('GeoNodeSyncSettings', () => {
   };
 
   const createComponent = (props) => {
-    wrapper = extendedWrapper(
-      shallowMount(GeoNodeSyncSettings, {
-        propsData: {
-          ...defaultProps,
-          ...props,
-        },
-      }),
-    );
+    wrapper = shallowMountExtended(GeoNodeSyncSettings, {
+      propsData: {
+        ...defaultProps,
+        ...props,
+      },
+    });
   };
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   const findSyncType = () => wrapper.findByTestId('sync-type');
   const findSyncStatusEventInfo = () => wrapper.findByTestId('sync-status-event-info');

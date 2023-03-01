@@ -1,12 +1,11 @@
 import { GlPopover, GlLink, GlIcon, GlSprintf } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeLastUpdated from 'ee/geo_nodes/components/header/geo_node_last_updated.vue';
 import {
   HELP_NODE_HEALTH_URL,
   GEO_TROUBLESHOOTING_URL,
   STATUS_DELAY_THRESHOLD_MS,
 } from 'ee/geo_nodes/constants';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { differenceInMilliseconds } from '~/lib/utils/datetime_utility';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 
@@ -23,25 +22,19 @@ describe('GeoNodeLastUpdated', () => {
   };
 
   const createComponent = (props) => {
-    wrapper = extendedWrapper(
-      shallowMount(GeoNodeLastUpdated, {
-        propsData: {
-          ...defaultProps,
-          ...props,
-        },
-        stubs: { GlSprintf },
-      }),
-    );
+    wrapper = shallowMountExtended(GeoNodeLastUpdated, {
+      propsData: {
+        ...defaultProps,
+        ...props,
+      },
+      stubs: { GlSprintf },
+    });
   };
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   const findMainText = () => wrapper.findByTestId('last-updated-main-text');
   const findGlIcon = () => wrapper.findComponent(GlIcon);
   const findGlPopover = () => wrapper.findComponent(GlPopover);
-  const findPopoverText = () => findGlPopover().find('p');
+  const findPopoverText = () => wrapper.findByTestId('geo-last-updated-text');
   const findPopoverLink = () => findGlPopover().findComponent(GlLink);
 
   describe('template', () => {

@@ -1,8 +1,7 @@
 import { GlLink } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { shallowMountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
 import GeoNodeProgressBar from 'ee/geo_nodes/components/details/geo_node_progress_bar.vue';
 import GeoNodeReplicationDetailsResponsive from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_details_responsive.vue';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 describe('GeoNodeReplicationDetailsResponsive', () => {
   let wrapper;
@@ -13,22 +12,16 @@ describe('GeoNodeReplicationDetailsResponsive', () => {
   };
 
   const createComponent = (props, slots) => {
-    wrapper = extendedWrapper(
-      shallowMount(GeoNodeReplicationDetailsResponsive, {
-        propsData: {
-          ...defaultProps,
-          ...props,
-        },
-        scopedSlots: {
-          ...slots,
-        },
-      }),
-    );
+    wrapper = shallowMountExtended(GeoNodeReplicationDetailsResponsive, {
+      propsData: {
+        ...defaultProps,
+        ...props,
+      },
+      scopedSlots: {
+        ...slots,
+      },
+    });
   };
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   const findReplicationDetailsHeader = () => wrapper.findByTestId('replication-details-header');
   const findReplicationDetailsItems = () => wrapper.findAllByTestId('replication-details-item');

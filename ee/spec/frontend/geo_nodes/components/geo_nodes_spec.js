@@ -21,21 +21,12 @@ describe('GeoNodes', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
-  const findGeoNodesContainer = () => wrapper.find('div');
   const findGeoNodeHeader = () => wrapper.findComponent(GeoNodeHeader);
   const findGeoNodeDetails = () => wrapper.findComponent(GeoNodeDetails);
 
   describe('template', () => {
     beforeEach(() => {
       createComponent();
-    });
-
-    it('renders the Geo Nodes Container always', () => {
-      expect(findGeoNodesContainer().exists()).toBe(true);
     });
 
     it('renders the Geo Node Header always', () => {

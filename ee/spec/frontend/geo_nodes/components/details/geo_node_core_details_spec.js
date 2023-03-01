@@ -1,7 +1,7 @@
 import { GlLink } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeCoreDetails from 'ee/geo_nodes/components/details/geo_node_core_details.vue';
 import {
   MOCK_PRIMARY_VERSION,
@@ -9,7 +9,6 @@ import {
   MOCK_PRIMARY_NODE,
   MOCK_SECONDARY_NODE,
 } from 'ee_jest/geo_nodes/mock_data';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 Vue.use(Vuex);
 
@@ -30,20 +29,14 @@ describe('GeoNodeCoreDetails', () => {
       },
     });
 
-    wrapper = extendedWrapper(
-      shallowMount(GeoNodeCoreDetails, {
-        store,
-        propsData: {
-          ...defaultProps,
-          ...props,
-        },
-      }),
-    );
+    wrapper = shallowMountExtended(GeoNodeCoreDetails, {
+      store,
+      propsData: {
+        ...defaultProps,
+        ...props,
+      },
+    });
   };
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   const findNodeUrl = () => wrapper.findComponent(GlLink);
   const findNodeInternalUrl = () => wrapper.findByTestId('node-internal-url');
