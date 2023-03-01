@@ -84,6 +84,27 @@ RSpec.describe Users::Abuse::GitAbuse::ApplicationThrottleService, feature_categ
         execute
       end
 
+      describe 'when admin is rate-limited', :enable_admin_mode do
+        let(:user) { admin }
+
+        before do
+          mock_throttled_calls(project, peek_result: false, result: true)
+        end
+
+        it 'returns { banned: false }' do
+          response = execute
+
+          expect(response).to be_success
+          expect(response.payload).to eq(banned: false)
+        end
+
+        it 'does not ban the user' do
+          execute
+
+          expect(user.banned?).to eq(false)
+        end
+      end
+
       describe 'sending notifications' do
         shared_examples 'sends an email' do
           it do

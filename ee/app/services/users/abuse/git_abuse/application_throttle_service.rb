@@ -17,6 +17,7 @@ module Users
 
         def ban_user!
           return false unless auto_ban_users
+          return false if current_user.can_admin_all_resources?
 
           begin
             result = current_user.ban!
