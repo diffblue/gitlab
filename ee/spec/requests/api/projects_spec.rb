@@ -1139,6 +1139,14 @@ RSpec.describe API::Projects, feature_category: :projects do
       end
     end
 
+    context 'when approvals_before_merge is nil' do
+      let(:project_params) { { approvals_before_merge: nil } }
+
+      it_behaves_like '400 response' do
+        let(:request) { subject }
+      end
+    end
+
     context 'when external_status_checks not available' do
       before do
         stub_licensed_features(external_status_checks: false)

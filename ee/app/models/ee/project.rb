@@ -264,7 +264,7 @@ module EE
         numericality: { only_integer: true, greater_than_or_equal_to: 0, allow_nil: true,
                         less_than: ::Gitlab::Pages::MAX_SIZE / 1.megabyte }
 
-      validates :approvals_before_merge, numericality: true, allow_blank: true
+      validates :approvals_before_merge, numericality: true, allow_blank: false
       validate :import_url_inside_fork_network, if: :import_url_changed?
 
       with_options if: :mirror? do
