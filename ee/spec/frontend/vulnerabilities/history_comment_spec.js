@@ -57,6 +57,7 @@ describe('History Comment', () => {
         discussionId: TEST_DISCUSSION_ID,
         ...propsData,
       },
+      attachTo: document.body,
     });
   };
 
@@ -102,11 +103,11 @@ describe('History Comment', () => {
     expectExists(eventItem, confirmDeleteButton, cancelDeleteButton);
   };
 
-  // Either the add comment button or the edit button will exist, but not both at the same time, so we'll just find
-  // whichever one exists and click it to show the editor.
+  // Either the add comment button or the edit button will exist, but not both at the same time.
+  // If the add comment button exists we focus it, otherwise we click the edit button.
   const showEditView = async () => {
     if (addCommentButton().exists()) {
-      addCommentButton().trigger('click');
+      addCommentButton().trigger('focus');
     } else {
       editButton().vm.$emit('click');
     }
@@ -131,7 +132,7 @@ describe('History Comment', () => {
       expectAddCommentView();
     });
 
-    it('shows the comment editor when the add comment button is clicked', () => {
+    it('shows the comment editor when the add comment button is focused', () => {
       return showEditView().then(() => {
         expectEditCommentView();
         expect(commentEditor().props('initialComment')).toBe('');

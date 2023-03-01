@@ -229,7 +229,7 @@ export default {
       ref="addCommentButton"
       class="btn btn-text-field"
       type="button"
-      @click="showCommentInput"
+      @focus="showCommentInput"
     >
       {{ s__('vulnerability|Add a comment') }}
     </button>
