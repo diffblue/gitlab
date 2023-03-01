@@ -151,7 +151,7 @@ RSpec.describe 'layouts/nav/sidebar/_project', feature_category: :navigation do
       it 'top level navigation link is not visible' do
         render
 
-        expect(rendered).not_to have_link('Security & Compliance', href: project_security_dashboard_index_path(project))
+        expect(rendered).not_to have_link('Security and Compliance', href: project_security_dashboard_index_path(project))
       end
     end
 
@@ -171,7 +171,7 @@ RSpec.describe 'layouts/nav/sidebar/_project', feature_category: :navigation do
       end
 
       it 'top level navigation link is visible' do
-        expect(rendered).to have_link('Security & Compliance', href: project_security_dashboard_index_path(project))
+        expect(rendered).to have_link('Security and Compliance', href: project_security_dashboard_index_path(project))
       end
 
       it 'security dashboard link is visible' do
