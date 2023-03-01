@@ -24,7 +24,6 @@ namespace :tw do
       CodeOwnerRule.new('Certify', '@msedlakjakubowski'),
       CodeOwnerRule.new('Code Review', '@aqualls'),
       CodeOwnerRule.new('Compliance', '@eread'),
-      CodeOwnerRule.new('Commerce Integrations', '@drcatherinepope'),
       CodeOwnerRule.new('Composition Analysis', '@rdickenson'),
       CodeOwnerRule.new('Configure', '@phillipwells'),
       CodeOwnerRule.new('Container Registry', '@marcel.amirault'),
