@@ -479,6 +479,9 @@ msgstr[1] ""
 msgid "%{actionText} %{actionDetail}"
 msgstr ""
 
+msgid "%{actionText} %{actionDetail} %{timeago} by %{author}"
+msgstr ""
+
 msgid "%{actionText} & %{openOrClose} %{noteable}"
 msgstr ""
 
@@ -486,9 +489,6 @@ msgid "%{actionText} & close %{noteable}"
 msgstr ""
 
 msgid "%{actionText} & reopen %{noteable}"
-msgstr ""
-
-msgid "%{actionText} by %{author} %{actionDetail}"
 msgstr ""
 
 msgid "%{address} is an invalid IP address range"
