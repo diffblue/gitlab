@@ -5,11 +5,6 @@ export const SCAN_TYPE = {
   PASSIVE: 'PASSIVE',
 };
 
-export const REFERRAL = {
-  PARENT: 'parent',
-  SELF: 'self',
-};
-
 export const SCAN_TYPE_LABEL = {
   [SCAN_TYPE.ACTIVE]: s__('DastProfiles|Active'),
   [SCAN_TYPE.PASSIVE]: s__('DastProfiles|Passive'),
