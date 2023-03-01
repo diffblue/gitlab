@@ -29,28 +29,59 @@ RSpec.describe 'Trial Sign Up', :saas, feature_category: :purchase do
     end
 
     context 'when arkose_labs_signup_challenge is enabled', :js do
+      let(:new_user) { build(:user) }
+
       before do
         stub_feature_flags(arkose_labs_signup_challenge: true)
         stub_application_setting(
           arkose_labs_public_api_key: 'public_key',
           arkose_labs_private_api_key: 'private_key'
         )
-
-        visit new_trial_registration_path
       end
 
-      it 'creates the user' do
-        new_user = build(:user)
+      shared_examples 'creates the user' do
+        it 'creates the user' do
+          fill_and_submit_signup_form(new_user)
 
-        fill_in 'new_user_first_name', with: new_user.first_name
-        fill_in 'new_user_last_name', with: new_user.last_name
-        fill_in 'new_user_username', with: new_user.username
-        fill_in 'new_user_email', with: new_user.email
-        fill_in 'new_user_password', with: new_user.password
+          expect(User.find_by_username!(new_user[:username])).not_to be_nil
+        end
+      end
+
+      it_behaves_like 'creates the user'
+
+      context 'when reCAPTCHA is enabled' do
+        before do
+          stub_application_setting(recaptcha_enabled: true)
+        end
+
+        it_behaves_like 'creates the user'
+
+        context 'when reCAPTCHA verification fails' do
+          before do
+            allow_next_instance_of(TrialRegistrationsController) do |instance|
+              allow(instance).to receive(:verify_recaptcha).and_return(false)
+            end
+          end
+
+          it 'does not create the user' do
+            fill_and_submit_signup_form(new_user)
+
+            expect(User.find_by_username(new_user[:username])).to be_nil
+            expect(page).to have_content(_('There was an error with the reCAPTCHA. Please solve the reCAPTCHA again.'))
+          end
+        end
+      end
+
+      def fill_and_submit_signup_form(user)
+        visit new_trial_registration_path
+
+        fill_in 'new_user_first_name', with: user.first_name
+        fill_in 'new_user_last_name', with: user.last_name
+        fill_in 'new_user_username', with: user.username
+        fill_in 'new_user_email', with: user.email
+        fill_in 'new_user_password', with: user.password
 
         click_button 'Continue'
-
-        expect(User.find_by_username!(new_user[:username])).not_to be_nil
       end
     end
   end

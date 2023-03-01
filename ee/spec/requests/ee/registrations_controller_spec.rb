@@ -100,6 +100,29 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
         it_behaves_like 'creates the user'
 
         it_behaves_like 'skips verification and data recording'
+
+        context 'when reCAPTCHA is enabled' do
+          before do
+            stub_application_setting(recaptcha_enabled: true)
+          end
+
+          it_behaves_like 'creates the user'
+
+          context 'when reCAPTCHA verification fails' do
+            before do
+              allow_next_instance_of(described_class) do |controller|
+                allow(controller).to receive(:verify_recaptcha).and_return(false)
+              end
+            end
+
+            it 'does not create the user' do
+              create_user
+
+              expect(User.find_by(email: user_attrs[:email])).to be_nil
+              expect(flash[:alert]).to eq(_('There was an error with the reCAPTCHA. Please solve the reCAPTCHA again.'))
+            end
+          end
+        end
       end
 
       context 'when arkose_labs_token param is not present' do

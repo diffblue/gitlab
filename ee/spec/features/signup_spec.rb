@@ -151,6 +151,35 @@ RSpec.describe 'Signup on EE', feature_category: :user_profile do
     end
   end
 
+  context 'when reCAPTCHA is enabled' do
+    before do
+      stub_application_setting(recaptcha_enabled: true)
+    end
+
+    it 'creates the user' do
+      visit new_user_registration_path
+      fill_in_signup_form
+
+      expect { click_button 'Register' }.to change { User.count }
+    end
+
+    context 'when reCAPTCHA verification fails' do
+      before do
+        allow_next_instance_of(RegistrationsController) do |instance|
+          allow(instance).to receive(:verify_recaptcha).and_return(false)
+        end
+      end
+
+      it 'does not create the user' do
+        visit new_user_registration_path
+        fill_in_signup_form
+
+        expect { click_button 'Register' }.not_to change { User.count }
+        expect(page).to have_content(_('There was an error with the reCAPTCHA. Please solve the reCAPTCHA again.'))
+      end
+    end
+  end
+
   it_behaves_like 'creates a user with ArkoseLabs risk band' do
     let(:signup_path) { new_user_registration_path }
     let(:user_email) { new_user[:email] }
