@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'git access for a read-only GitLab instance' do
+  include EE::GeoHelpers
+
   it 'denies push access' do
     project.add_maintainer(user)
 
@@ -8,7 +10,7 @@ RSpec.shared_examples 'git access for a read-only GitLab instance' do
   end
 
   context 'for a Geo setup' do
-    let(:primary_node) do
+    let_it_be(:primary_node) do
       create(
         :geo_node,
         :primary,
@@ -17,13 +19,13 @@ RSpec.shared_examples 'git access for a read-only GitLab instance' do
       )
     end
 
+    let_it_be(:secondary_node) { create(:geo_node) }
+
     before do
-      allow(Gitlab::Geo).to receive(:primary).and_return(primary_node)
-      allow(Gitlab::Geo).to receive(:secondary_with_primary?).and_return(secondary_with_primary)
+      stub_licensed_features(geo: true)
     end
 
     context 'that is incorrectly set up' do
-      let(:secondary_with_primary) { false }
       let(:error_message) { "You can't push code to a read-only GitLab instance." }
 
       it 'denies push access with primary present' do
@@ -34,7 +36,6 @@ RSpec.shared_examples 'git access for a read-only GitLab instance' do
     end
 
     context 'that is correctly set up' do
-      let(:secondary_with_primary) { true }
       let(:console_messages) do
         [
           "This request to a Geo secondary node will be forwarded to the",
@@ -44,13 +45,19 @@ RSpec.shared_examples 'git access for a read-only GitLab instance' do
         ]
       end
 
+      before do
+        stub_current_geo_node(secondary_node)
+      end
+
       context 'for a git clone/pull' do
         let(:payload) do
           {
             'action' => 'geo_proxy_to_primary',
             'data' => {
               'api_endpoints' => %w{/api/v4/geo/proxy_git_ssh/info_refs_upload_pack /api/v4/geo/proxy_git_ssh/upload_pack},
-              'primary_repo' => primary_repo_url
+              'primary_repo' => primary_repo_url,
+              "geo_proxy_direct_to_primary" => true,
+              "request_headers" => include('Authorization')
             }
           }
         end
@@ -59,7 +66,7 @@ RSpec.shared_examples 'git access for a read-only GitLab instance' do
           project.add_maintainer(user)
 
           expect(pull_changes).to be_a(Gitlab::GitAccessResult::CustomAction)
-          expect(pull_changes.payload).to eql(payload)
+          expect(pull_changes.payload).to include(payload)
           expect(pull_changes.console_messages).to include(*console_messages)
         end
       end
@@ -70,7 +77,9 @@ RSpec.shared_examples 'git access for a read-only GitLab instance' do
             'action' => 'geo_proxy_to_primary',
             'data' => {
               'api_endpoints' => %w{/api/v4/geo/proxy_git_ssh/info_refs_receive_pack /api/v4/geo/proxy_git_ssh/receive_pack},
-              'primary_repo' => primary_repo_url
+              'primary_repo' => primary_repo_url,
+              "geo_proxy_direct_to_primary" => true,
+              "request_headers" => include('Authorization')
             }
           }
         end
@@ -79,7 +88,7 @@ RSpec.shared_examples 'git access for a read-only GitLab instance' do
           project.add_maintainer(user)
 
           expect(push_changes).to be_a(Gitlab::GitAccessResult::CustomAction)
-          expect(push_changes.payload).to eql(payload)
+          expect(push_changes.payload).to include(payload)
           expect(push_changes.console_messages).to include(*console_messages)
         end
       end
