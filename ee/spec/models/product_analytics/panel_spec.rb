@@ -9,7 +9,7 @@ RSpec.describe ProductAnalytics::Panel, feature_category: :product_analytics do
 
   before do
     stub_licensed_features(product_analytics: true)
-    stub_feature_flags(cube_api_proxy: true)
+    stub_feature_flags(product_analytics_internal_preview: true)
   end
 
   it 'returns the correct object' do

@@ -36,7 +36,7 @@ RSpec.describe API::Analytics::ProductAnalytics, feature_category: :product_anal
   shared_examples 'does basics of a cube query' do |is_dry_run: false|
     context 'when feature flag is disabled' do
       before do
-        stub_feature_flags(cube_api_proxy: false)
+        stub_feature_flags(product_analytics_internal_preview: false)
       end
 
       it 'returns a 404' do
