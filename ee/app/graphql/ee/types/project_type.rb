@@ -246,6 +246,9 @@ module EE
               description: 'Software dependencies used by the project.',
               alpha: { milestone: '15.9' },
               resolver: ::Resolvers::Sbom::DependenciesResolver
+        field :merge_requests_disable_committers_approval, GraphQL::Types::Boolean,
+          null: false,
+          description: 'Indicates that committers of the given merge request cannot approve.'
       end
 
       def jitsu_key
