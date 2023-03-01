@@ -73,7 +73,7 @@ namespace :tw do
       CodeOwnerRule.new('Static Analysis', '@rdickenson'),
       CodeOwnerRule.new('Style Guide', '@sselhorn'),
       CodeOwnerRule.new('Testing', '@eread'),
-      CodeOwnerRule.new('Threat Insights', '@dianalogan'),
+      CodeOwnerRule.new('Threat Insights', '@rdickenson'),
       CodeOwnerRule.new('Tutorials', '@kpaizee'),
       CodeOwnerRule.new('Utilization', '@fneill'),
       CodeOwnerRule.new('Vulnerability Research', '@dianalogan'),

@@ -44,7 +44,7 @@ RSpec.describe 'Query.project(fullPath).jitsuKey', feature_category: :product_an
   with_them do
     before do
       stub_licensed_features(product_analytics: licensed)
-      stub_feature_flags(cube_api_proxy: enabled)
+      stub_feature_flags(product_analytics_internal_preview: enabled)
       project.add_role(user, user_role)
       project.project_setting.update!(jitsu_key: jitsu_key)
       project.reload

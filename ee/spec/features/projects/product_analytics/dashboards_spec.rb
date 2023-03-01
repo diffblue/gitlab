@@ -13,7 +13,7 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
   let(:cube_api_url) { "https://cube.example.com/cubejs-api/v1/load" }
 
   before do
-    stub_feature_flags(cube_api_proxy: true)
+    stub_feature_flags(product_analytics_internal_preview: true)
     project.add_owner(user)
     sign_in(user)
   end

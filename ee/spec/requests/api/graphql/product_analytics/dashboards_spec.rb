@@ -35,7 +35,7 @@ RSpec.describe 'Query.project(id).dashboards', feature_category: :product_analyt
 
     context 'when feature flag is disabled' do
       before do
-        stub_feature_flags(cube_api_proxy: false)
+        stub_feature_flags(product_analytics_internal_preview: false)
       end
 
       it 'returns nil' do
