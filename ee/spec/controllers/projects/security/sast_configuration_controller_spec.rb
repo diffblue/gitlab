@@ -23,7 +23,7 @@ feature_category: :static_application_security_testing do
 
     render_views
 
-    include_context '"Security & Compliance" permissions' do
+    include_context '"Security and Compliance" permissions' do
       let(:valid_request) { request }
 
       before_request do

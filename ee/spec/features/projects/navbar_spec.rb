@@ -75,7 +75,7 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
   context 'when security dashboard is available' do
     let(:security_and_compliance_nav_item) do
       {
-        nav_item: _('Security & Compliance'),
+        nav_item: _('Security and Compliance'),
         nav_sub_items: [
           _('Security dashboard'),
           _('Vulnerability report'),

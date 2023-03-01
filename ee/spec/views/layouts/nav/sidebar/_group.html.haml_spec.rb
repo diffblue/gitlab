@@ -91,7 +91,7 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
     end
   end
 
-  describe 'Security & Compliance menu', :saas do
+  describe 'Security and compliance menu', :saas do
     let(:group) { create(:group_with_plan, plan: :ultimate_plan) }
 
     before do
@@ -106,7 +106,7 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
       it 'is visible' do
         render
 
-        expect(rendered).to have_link 'Security & Compliance'
+        expect(rendered).to have_link 'Security and Compliance'
         expect(rendered).to have_link 'Security'
       end
     end
@@ -120,7 +120,7 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
         it 'is not visible' do
           render
 
-          expect(rendered).not_to have_link 'Security & Compliance'
+          expect(rendered).not_to have_link 'Security and Compliance'
           expect(rendered).not_to have_link 'Compliance'
         end
       end
@@ -134,7 +134,7 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
         it 'is visible' do
           render
 
-          expect(rendered).to have_link 'Security & Compliance'
+          expect(rendered).to have_link 'Security and Compliance'
           expect(rendered).to have_link 'Compliance'
         end
       end
@@ -145,7 +145,7 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
         it 'does not show the `Credentials` tab' do
           render
 
-          expect(rendered).not_to have_link 'Security & Compliance'
+          expect(rendered).not_to have_link 'Security and Compliance'
           expect(rendered).not_to have_link 'Credentials'
         end
       end
@@ -172,7 +172,7 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
           it 'is visible' do
             render
 
-            expect(rendered).to have_link 'Security & Compliance'
+            expect(rendered).to have_link 'Security and Compliance'
             expect(rendered).to have_link 'Credentials'
           end
         end
@@ -197,7 +197,7 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
         it 'is not visible' do
           render
 
-          expect(rendered).not_to have_link 'Security & Compliance'
+          expect(rendered).not_to have_link 'Security and Compliance'
           expect(rendered).not_to have_link 'Audit events'
         end
       end
@@ -211,7 +211,7 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
         it 'is visible' do
           render
 
-          expect(rendered).to have_link 'Security & Compliance'
+          expect(rendered).to have_link 'Security and Compliance'
           expect(rendered).to have_link 'Audit events'
         end
       end
@@ -223,7 +223,7 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
       it 'is not visible' do
         render
 
-        expect(rendered).not_to have_link 'Security & Compliance'
+        expect(rendered).not_to have_link 'Security and Compliance'
       end
     end
   end

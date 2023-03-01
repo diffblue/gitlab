@@ -13,7 +13,7 @@ RSpec.describe Projects::Security::CorpusManagementController, type: :request, f
       login_as(user)
     end
 
-    include_context '"Security & Compliance" permissions' do
+    include_context '"Security and Compliance" permissions' do
       let(:valid_request) { get project_security_configuration_corpus_management_path(project) }
 
       before_request do

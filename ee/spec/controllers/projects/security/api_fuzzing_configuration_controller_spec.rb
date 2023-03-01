@@ -15,7 +15,7 @@ RSpec.describe Projects::Security::ApiFuzzingConfigurationController, feature_ca
     group.add_guest(guest)
   end
 
-  include_context '"Security & Compliance" permissions' do
+  include_context '"Security and Compliance" permissions' do
     let(:valid_request) { request }
 
     before_request do

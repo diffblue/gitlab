@@ -37,7 +37,7 @@ RSpec.describe Sidebars::Groups::Menus::SecurityComplianceMenu do
     subject { menu.title }
 
     specify do
-      is_expected.to eq 'Security & Compliance'
+      is_expected.to eq 'Security and Compliance'
     end
 
     context 'when menu does not have any menu items' do

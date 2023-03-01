@@ -42,7 +42,7 @@ RSpec.describe 'Projects > Audit Events', :js, feature_category: :audit_events d
       allow(LicenseHelper).to receive(:show_promotions?).and_return(true)
     end
 
-    include_context '"Security & Compliance" permissions' do
+    include_context '"Security and Compliance" permissions' do
       let(:response) { inspect_requests { visit project_audit_events_path(project) }.first }
     end
 
@@ -123,7 +123,7 @@ RSpec.describe 'Projects > Audit Events', :js, feature_category: :audit_events d
       end
 
       page.within('.sidebar-top-level-items') do
-        find(:link, text: 'Security & Compliance').click
+        find(:link, text: 'Security and Compliance').click
         click_link 'Audit events'
       end
 
@@ -153,7 +153,7 @@ RSpec.describe 'Projects > Audit Events', :js, feature_category: :audit_events d
       wait_for_all_requests
 
       page.within('.sidebar-top-level-items') do
-        click_link 'Security & Compliance'
+        click_link 'Security and Compliance'
 
         wait_for_all_requests
 

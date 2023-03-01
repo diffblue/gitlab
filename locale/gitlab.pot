@@ -22113,7 +22113,7 @@ msgstr ""
 msgid "InProductMarketing|Rapid development, simplified"
 msgstr ""
 
-msgid "InProductMarketing|Reduce Security & Compliance Risk"
+msgid "InProductMarketing|Reduce Security and Compliance Risk"
 msgstr ""
 
 msgid "InProductMarketing|Require multiple approvers on a merge request, so you know it's in good shape before it's merged."
@@ -34077,10 +34077,10 @@ msgstr ""
 msgid "ProjectSettings|Search for topic"
 msgstr ""
 
-msgid "ProjectSettings|Security & Compliance"
+msgid "ProjectSettings|Security and Compliance"
 msgstr ""
 
-msgid "ProjectSettings|Security & Compliance for this project"
+msgid "ProjectSettings|Security and compliance for this project."
 msgstr ""
 
 msgid "ProjectSettings|Select the default branch for this project, and configure the template for branch names."
@@ -38379,9 +38379,6 @@ msgstr ""
 msgid "Security"
 msgstr ""
 
-msgid "Security & Compliance"
-msgstr ""
-
 msgid "Security Configuration"
 msgstr ""
 
@@ -38389,6 +38386,9 @@ msgid "Security Dashboard"
 msgstr ""
 
 msgid "Security Finding not found"
+msgstr ""
+
+msgid "Security and Compliance"
 msgstr ""
 
 msgid "Security dashboard"
