@@ -572,6 +572,11 @@ RSpec.describe Project, feature_category: :projects do
       it { is_expected.to validate_presence_of(:mirror_user) }
     end
 
+    context 'approvals_before_merge' do
+      it { is_expected.to validate_numericality_of(:approvals_before_merge) }
+      it { expect(build(:project, approvals_before_merge: nil)).to be_invalid }
+    end
+
     it 'creates import state when mirror gets enabled' do
       project2 = create(:project)
 
