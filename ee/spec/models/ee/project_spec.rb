@@ -174,7 +174,7 @@ RSpec.describe Project, feature_category: :projects do
 
       with_them do
         before do
-          stub_feature_flags(cube_api_proxy: flag)
+          stub_feature_flags(product_analytics_internal_preview: flag)
           stub_licensed_features(product_analytics: licensed)
         end
 
