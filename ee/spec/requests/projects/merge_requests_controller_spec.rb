@@ -136,4 +136,105 @@ RSpec.describe Projects::MergeRequestsController, feature_category: :code_review
       expect { get_index }.not_to exceed_query_limit(control_count)
     end
   end
+
+  describe 'security_reports' do
+    let_it_be(:merge_request) { create(:merge_request, :with_head_pipeline) }
+    let_it_be(:user) { create(:user) }
+
+    subject(:request_report) { get security_reports_project_merge_request_path(project, merge_request, type: :sast, format: :json) }
+
+    before do
+      stub_licensed_features(security_dashboard: true)
+    end
+
+    context 'when the user can not read project security resources' do
+      before do
+        project.add_guest(user)
+      end
+
+      it 'responds with 404' do
+        request_report
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'when the user can read project security resources' do
+      before do
+        project.add_developer(user)
+      end
+
+      context 'when the pipeline is pending' do
+        it 'returns 204 HTTP status along with the `Poll-Interval` header' do
+          request_report
+
+          expect(response).to have_gitlab_http_status(:no_content)
+          expect(response.headers['Poll-Interval']).to eq('3000')
+        end
+      end
+
+      context 'when the pipeline is not pending' do
+        before do
+          merge_request.head_pipeline.reload.succeed!
+        end
+
+        context 'when the given type is invalid' do
+          let(:error) { ::Security::MergeRequestSecurityReportGenerationService::InvalidReportTypeError }
+
+          before do
+            allow(::Security::MergeRequestSecurityReportGenerationService).to receive(:execute).and_raise(error)
+          end
+
+          it 'responds with 400' do
+            request_report
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(response.header).not_to include('Poll-Interval')
+          end
+        end
+
+        context 'when the given type is valid' do
+          before do
+            allow(::Security::MergeRequestSecurityReportGenerationService)
+              .to receive(:execute).with(an_instance_of(MergeRequest), 'sast').and_return(report_payload)
+          end
+
+          context 'when comparison is being processed' do
+            let(:report_payload) { { status: :parsing } }
+
+            it 'returns 204 HTTP status along with the `Poll-Interval` header' do
+              request_report
+
+              expect(response).to have_gitlab_http_status(:no_content)
+              expect(response.headers['Poll-Interval']).to eq('3000')
+            end
+          end
+
+          context 'when comparison is done' do
+            context 'when the comparison is errored' do
+              let(:report_payload) { { status: :error } }
+
+              it 'responds with 400' do
+                request_report
+
+                expect(response).to have_gitlab_http_status(:bad_request)
+                expect(response.header).not_to include('Poll-Interval')
+              end
+            end
+
+            context 'when the comparision is succeeded' do
+              let(:report_payload) { { status: :parsed, data: { added: ['foo'], fixed: ['bar'] } } }
+
+              it 'responds with 200 along with the report payload' do
+                request_report
+
+                expect(response).to have_gitlab_http_status(:ok)
+                expect(json_response).to eq({ 'added' => ['foo'], 'fixed' => ['bar'] })
+              end
+            end
+          end
+        end
+      end
+    end
+  end
 end

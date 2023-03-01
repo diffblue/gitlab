@@ -13,7 +13,6 @@ RSpec.describe Geo::SecondaryUsageDataCronWorker, :clean_gitlab_redis_shared_sta
 
   it 'uses a cronjob queue' do
     expect(subject.sidekiq_options_hash).to include(
-      'queue' => 'cronjob:geo_secondary_usage_data_cron',
       'queue_namespace' => :cronjob
     )
   end

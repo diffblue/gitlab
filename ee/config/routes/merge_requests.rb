@@ -14,6 +14,7 @@ resources :merge_requests, only: [], constraints: { id: /\d+/ } do
     get :dast_reports
     get :coverage_fuzzing_reports
     get :api_fuzzing_reports
+    get :security_reports
 
     post :rebase
   end
