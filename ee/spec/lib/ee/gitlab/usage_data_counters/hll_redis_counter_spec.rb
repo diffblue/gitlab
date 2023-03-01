@@ -36,50 +36,6 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
     described_class.clear_memoization(:known_events)
   end
 
-  describe '.categories' do
-    it 'gets all unique category names' do
-      expect(described_class.categories).to contain_exactly(
-        'analytics',
-        'ci_templates',
-        'ci_users',
-        'code_review',
-        'deploy_token_packages',
-        'ecosystem',
-        'environments',
-        'error_tracking',
-        'geo',
-        'ide_edit',
-        'importer',
-        'incident_management_alerts',
-        'incident_management',
-        'issues_edit',
-        'kubernetes_agent',
-        'manage',
-        'pipeline_authoring',
-        'quickactions',
-        'search',
-        'secure',
-        'snippets',
-        'source_code',
-        'terraform',
-        'testing',
-        'user_container_registry',
-        'user_packages',
-        'work_items',
-        # EE-specific categories
-        'compliance',
-        'incident_management_oncall',
-        'integrations',
-        'ci_secrets_management',
-        'epic_boards_usage',
-        'epics_usage',
-        'network_policies',
-        'growth',
-        'runner'
-      )
-    end
-  end
-
   describe '.known_events' do
     let(:ce_temp_dir) { Dir.mktmpdir }
     let(:ee_temp_dir) { Dir.mktmpdir }
@@ -89,7 +45,6 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
       {
         "name" => "ce_event",
         "redis_slot" => "analytics",
-        "category" => "analytics",
         "expiry" => 84,
         "aggregation" => "weekly"
       }
@@ -99,7 +54,6 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
       {
         "name" => "ee_event",
         "redis_slot" => "analytics",
-        "category" => "analytics",
         "expiry" => 84,
         "aggregation" => "weekly"
       }
