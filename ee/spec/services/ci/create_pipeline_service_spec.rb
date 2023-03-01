@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::CreatePipelineService, '#execute', :saas do
+RSpec.describe Ci::CreatePipelineService, '#execute', :saas, feature_category: :continuous_integration do
   let_it_be(:namespace) { create(:namespace) }
   let_it_be(:ultimate_plan) { create(:ultimate_plan) }
   let_it_be(:plan_limits) { create(:plan_limits, plan: ultimate_plan) }

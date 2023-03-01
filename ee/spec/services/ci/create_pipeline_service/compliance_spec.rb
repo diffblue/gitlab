@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::CreatePipelineService do
+RSpec.describe Ci::CreatePipelineService, feature_category: :continuous_integration do
   include AfterNextHelpers
   include RepoHelpers
 

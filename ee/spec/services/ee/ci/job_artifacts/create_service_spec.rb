@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::JobArtifacts::CreateService, :clean_gitlab_redis_shared_state do
+RSpec.describe Ci::JobArtifacts::CreateService, :clean_gitlab_redis_shared_state, feature_category: :build_artifacts do
   let_it_be(:project) { create(:project) }
 
   let(:service) { described_class.new(job) }

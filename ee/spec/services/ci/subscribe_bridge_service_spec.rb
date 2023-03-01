@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::SubscribeBridgeService do
+RSpec.describe Ci::SubscribeBridgeService, feature_category: :continuous_integration do
   let(:project) { create(:project) }
   let(:user) { create(:user) }
   let(:bridge) { build(:ci_bridge, upstream: upstream_project) }

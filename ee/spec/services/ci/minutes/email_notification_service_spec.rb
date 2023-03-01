@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::EmailNotificationService do
+RSpec.describe Ci::Minutes::EmailNotificationService, feature_category: :continuous_integration do
   include ::Ci::MinutesHelpers
 
   describe '#execute' do

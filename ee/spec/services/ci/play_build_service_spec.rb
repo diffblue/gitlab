@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::PlayBuildService, '#execute' do
+RSpec.describe Ci::PlayBuildService, '#execute', feature_category: :continuous_integration do
   it_behaves_like 'restricts access to protected environments' do
     subject { service.execute(build) }
   end

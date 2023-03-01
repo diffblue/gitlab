@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::BatchResetService do
+RSpec.describe Ci::Minutes::BatchResetService, feature_category: :continuous_integration do
   include ::Ci::MinutesHelpers
 
   let(:service) { described_class.new }

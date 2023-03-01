@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Ci::RetryJobService do
+RSpec.describe Ci::RetryJobService, feature_category: :continuous_integration do
   let_it_be(:user) { create(:user) }
 
   let(:pipeline) { create(:ci_pipeline, project: project) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::CreatePipelineService, :sidekiq_inline do
+RSpec.describe Ci::CreatePipelineService, :sidekiq_inline, feature_category: :runner_fleet do
   let_it_be(:namespace) { create(:namespace, :with_used_build_minutes_limit) }
   let_it_be(:project) { create(:project, :repository, namespace: namespace) }
   let_it_be(:user) { project.first_owner }
