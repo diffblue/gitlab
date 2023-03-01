@@ -10,6 +10,8 @@ RSpec.describe Issue, feature_category: :team_planning do
   describe 'associations' do
     subject { build(:issue) }
 
+    it { is_expected.to belong_to(:iteration) }
+
     it { is_expected.to have_many(:resource_weight_events) }
     it { is_expected.to have_many(:resource_iteration_events) }
     it { is_expected.to have_one(:issuable_sla) }

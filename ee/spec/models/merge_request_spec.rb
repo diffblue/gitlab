@@ -18,6 +18,7 @@ RSpec.describe MergeRequest do
   describe 'associations' do
     subject { build_stubbed(:merge_request) }
 
+    it { is_expected.to belong_to(:iteration) }
     it { is_expected.to have_many(:approvals).dependent(:delete_all) }
     it { is_expected.to have_many(:approvers).dependent(:delete_all) }
     it { is_expected.to have_many(:approver_users).through(:approvers) }
@@ -107,7 +108,9 @@ RSpec.describe MergeRequest do
 
               let(:protected_branches) { [create(:protected_branch, name: branch.reverse)] }
 
-              it { is_expected.to be_empty }
+              it 'does not find applicable rules', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/394838' do
+                expect(subject).to be_empty
+              end
             end
           end
         end

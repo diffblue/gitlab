@@ -15,6 +15,8 @@ module EE
       include UsageStatistics
       include IterationEventable
 
+      belongs_to :iteration, foreign_key: 'sprint_id'
+
       has_many :approvers, as: :target, dependent: :delete_all # rubocop:disable Cop/ActiveRecordDependent
       has_many :approver_users, through: :approvers, source: :user
       has_many :approver_groups, as: :target, dependent: :delete_all # rubocop:disable Cop/ActiveRecordDependent

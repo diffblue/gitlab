@@ -42,6 +42,17 @@ module EE
               .find_by(where_clause)
           end
           # rubocop: enable CodeReuse/ActiveRecord
+
+          private
+
+          def iteration?
+            klass == Iteration
+          end
+
+          override :group_level_object?
+          def group_level_object?
+            super || iteration?
+          end
         end
       end
     end

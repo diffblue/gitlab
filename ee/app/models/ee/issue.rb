@@ -97,6 +97,8 @@ module EE
         epic_ids
       end
 
+      belongs_to :iteration, foreign_key: 'sprint_id', inverse_of: :issues
+
       has_one :epic_issue
       has_one :epic, through: :epic_issue
       belongs_to :promoted_to_epic, class_name: 'Epic'
