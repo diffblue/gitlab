@@ -16,6 +16,7 @@ module EE
       include ::WebHooks::HasWebHooks
       include CanMoveRepositoryStorage
       include ReactiveCaching
+      include IssueParent
 
       ALLOWED_ACTIONS_TO_USE_FILTERING_OPTIMIZATION = [:read_epic, :read_confidential_epic].freeze
       EPIC_BATCH_SIZE = 500
