@@ -128,8 +128,8 @@ module QA
 
           def hover_security_and_compliance
             within_sidebar do
-              scroll_to_element(:sidebar_menu_link, menu_item: 'Security & Compliance')
-              find_element(:sidebar_menu_link, menu_item: 'Security & Compliance').hover
+              scroll_to_element(:sidebar_menu_link, menu_item: 'Security and Compliance')
+              find_element(:sidebar_menu_link, menu_item: 'Security and Compliance').hover
 
               yield
             end

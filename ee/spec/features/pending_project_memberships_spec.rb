@@ -59,7 +59,7 @@ RSpec.describe 'Pending project memberships', :js, feature_category: :projects d
       visit project_path(project)
 
       expect(page).to have_content "Project information"
-      expect(page).not_to have_content "Security & Compliance"
+      expect(page).not_to have_content "Security and Compliance"
       expect(page).not_to have_content "Infrastructure"
     end
 

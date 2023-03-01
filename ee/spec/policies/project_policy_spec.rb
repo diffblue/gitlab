@@ -755,13 +755,13 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         project.project_feature.update!(security_and_compliance_access_level: access_level)
       end
 
-      context 'when the "Security & Compliance" is not enabled' do
+      context 'when the "Security and Compliance" is not enabled' do
         let(:access_level) { Featurable::DISABLED }
 
         it { is_expected.to be_disallowed(:access_security_and_compliance) }
       end
 
-      context 'when the "Security & Compliance" is enabled' do
+      context 'when the "Security and Compliance" is enabled' do
         let(:access_level) { Featurable::PRIVATE }
 
         it { is_expected.to be_allowed(:access_security_and_compliance) }

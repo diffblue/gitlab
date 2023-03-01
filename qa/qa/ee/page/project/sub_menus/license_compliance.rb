@@ -18,7 +18,7 @@ module QA
 
             def hover_security_compliance
               within_sidebar do
-                find_element(:sidebar_menu_link, menu_item: 'Security & Compliance').hover
+                find_element(:sidebar_menu_link, menu_item: 'Security and Compliance').hover
 
                 yield
               end

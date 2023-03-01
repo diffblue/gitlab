@@ -14,7 +14,7 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
       sign_in(user)
     end
 
-    include_context '"Security & Compliance" permissions' do
+    include_context '"Security and Compliance" permissions' do
       let(:valid_request) { get :index, params: params }
 
       before_request do

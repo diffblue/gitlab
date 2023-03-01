@@ -35,7 +35,7 @@ RSpec.describe Projects::Security::ConfigurationController do
         sign_in(user)
       end
 
-      include_context '"Security & Compliance" permissions' do
+      include_context '"Security and Compliance" permissions' do
         let(:valid_request) { request }
       end
 

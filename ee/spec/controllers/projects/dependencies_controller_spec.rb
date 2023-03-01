@@ -17,7 +17,7 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
       sign_in(user)
     end
 
-    include_context '"Security & Compliance" permissions' do
+    include_context '"Security and Compliance" permissions' do
       let(:user) { developer }
       let(:valid_request) { get :index, params: params }
     end

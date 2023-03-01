@@ -23,7 +23,7 @@ RSpec.describe Projects::Security::VulnerabilitiesController, feature_category: 
       allow(controller).to receive(:can?).with(controller.current_user, :create_vulnerability, project).and_return(can_create_vulnerability)
     end
 
-    include_context '"Security & Compliance" permissions' do
+    include_context '"Security and Compliance" permissions' do
       let(:valid_request) { request_new_vulnerability_page }
       let(:can_create_vulnerability) { true }
     end
@@ -61,7 +61,7 @@ RSpec.describe Projects::Security::VulnerabilitiesController, feature_category: 
 
     subject(:show_vulnerability) { get :show, params: { namespace_id: project.namespace, project_id: project, id: vulnerability.id } }
 
-    include_context '"Security & Compliance" permissions' do
+    include_context '"Security and Compliance" permissions' do
       let(:valid_request) { show_vulnerability }
     end
 
@@ -102,7 +102,7 @@ RSpec.describe Projects::Security::VulnerabilitiesController, feature_category: 
 
     subject(:show_vulnerability_discussion_list) { get :discussions, params: { namespace_id: project.namespace, project_id: project, id: vulnerability } }
 
-    include_context '"Security & Compliance" permissions' do
+    include_context '"Security and Compliance" permissions' do
       let(:valid_request) { show_vulnerability_discussion_list }
     end
 

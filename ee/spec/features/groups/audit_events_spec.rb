@@ -53,7 +53,7 @@ RSpec.describe 'Groups > Audit Events', :js, feature_category: :audit_events do
       end
 
       page.within('.sidebar-top-level-items') do
-        find(:link, text: 'Security & Compliance').click
+        find(:link, text: 'Security and Compliance').click
         click_link 'Audit events'
       end
 

@@ -219,7 +219,7 @@ RSpec.describe 'Group navbar', feature_category: :subgroups do
 
     describe 'structure' do
       before do
-        insert_after_nav_item(_('Security & Compliance'), new_nav_item: ci_cd_nav_item)
+        insert_after_nav_item(_('Security and Compliance'), new_nav_item: ci_cd_nav_item)
         insert_after_nav_item(_('Analytics'), new_nav_item: settings_nav_item)
         insert_after_nav_item(_('Settings'), new_nav_item: administration_nav_item)
 
@@ -233,7 +233,7 @@ RSpec.describe 'Group navbar', feature_category: :subgroups do
       before do
         stub_licensed_features(group_saml: true, domain_verification: true)
 
-        insert_after_nav_item(_('Security & Compliance'), new_nav_item: ci_cd_nav_item)
+        insert_after_nav_item(_('Security and Compliance'), new_nav_item: ci_cd_nav_item)
         insert_after_nav_item(_('Analytics'), new_nav_item: settings_nav_item)
         insert_after_nav_item(
           _('Settings'),
@@ -255,7 +255,7 @@ RSpec.describe 'Group navbar', feature_category: :subgroups do
     context 'when security dashboard is available' do
       let(:security_and_compliance_nav_item) do
         {
-          nav_item: _('Security & Compliance'),
+          nav_item: _('Security and Compliance'),
           nav_sub_items: [
             _('Security dashboard'),
             _('Vulnerability report'),
@@ -272,7 +272,7 @@ RSpec.describe 'Group navbar', feature_category: :subgroups do
           domain_verification: true
         )
 
-        insert_after_nav_item(_('Security & Compliance'), new_nav_item: ci_cd_nav_item)
+        insert_after_nav_item(_('Security and Compliance'), new_nav_item: ci_cd_nav_item)
         insert_after_nav_item(_('Analytics'), new_nav_item: settings_nav_item)
         insert_after_nav_item(_('Settings'), new_nav_item: administration_nav_item)
 

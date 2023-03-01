@@ -25,7 +25,7 @@ feature_category: :dynamic_application_security_testing do
       project.add_developer(user)
     end
 
-    include_context '"Security & Compliance" permissions' do
+    include_context '"Security and Compliance" permissions' do
       let(:valid_request) { request }
     end
 

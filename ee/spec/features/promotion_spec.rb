@@ -279,7 +279,7 @@ RSpec.describe 'Promotions', :js do
       sign_in(user)
     end
 
-    include_context '"Security & Compliance" permissions' do
+    include_context '"Security and Compliance" permissions' do
       let(:response) { inspect_requests { visit project_audit_events_path(project) }.first }
     end
 
