@@ -68,23 +68,5 @@ RSpec.describe Gitlab::Usage::Metrics::Aggregates::Aggregate, :clean_gitlab_redi
         end
       end
     end
-
-    context 'when using the ignored undefined event' do
-      let(:event2) { 'i_code_review_merge_request_widget_license_compliance_warning' }
-      let(:events) { ['event1', event2] }
-
-      before do
-        allow(Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:known_event?).with('event1').and_return(true)
-        allow(Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:known_event?).with(event2).and_return(false)
-      end
-
-      it 'returns the number of unique events for aggregation', :aggregate_failures do
-        expect(namespace::SOURCES[datasource])
-          .to receive(:calculate_metrics_intersections)
-                .with(params.merge(metric_names: events))
-                .and_return(5)
-        expect(calculate_count_for_aggregation).to eq(5)
-      end
-    end
   end
 end
