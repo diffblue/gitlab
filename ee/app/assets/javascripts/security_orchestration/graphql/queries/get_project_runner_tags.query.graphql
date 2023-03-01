@@ -1,0 +1,11 @@
+query getProjectRunnerTags($fullPath: ID!) {
+  project(fullPath: $fullPath) {
+    id
+    runners {
+      nodes {
+        id
+        tagList
+      }
+    }
+  }
+}

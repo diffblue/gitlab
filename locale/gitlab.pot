@@ -37889,9 +37889,6 @@ msgstr ""
 msgid "ScanExecutionPolicy|Conditions"
 msgstr ""
 
-msgid "ScanExecutionPolicy|Ex, tag-name-1, tag-name-2"
-msgstr ""
-
 msgid "ScanExecutionPolicy|If the field is empty, the runner will be automatically selected"
 msgstr ""
 
@@ -38640,6 +38637,9 @@ msgstr ""
 msgid "SecurityOrchestration|Choose approver type"
 msgstr ""
 
+msgid "SecurityOrchestration|Clear all"
+msgstr ""
+
 msgid "SecurityOrchestration|Create more robust vulnerability rules and apply them to all your projects."
 msgstr ""
 
@@ -38745,6 +38745,9 @@ msgstr ""
 msgid "SecurityOrchestration|No description"
 msgstr ""
 
+msgid "SecurityOrchestration|No matching results"
+msgstr ""
+
 msgid "SecurityOrchestration|No rules defined - policy will not run."
 msgstr ""
 
@@ -38838,6 +38841,9 @@ msgstr ""
 msgid "SecurityOrchestration|Scan to be performed on every pipeline on the %{branches}"
 msgstr ""
 
+msgid "SecurityOrchestration|Scan will automatically choose a runner to run on because there are no tags exist on runners"
+msgstr ""
+
 msgid "SecurityOrchestration|Security Approvals"
 msgstr ""
 
@@ -38859,6 +38865,9 @@ msgstr ""
 msgid "SecurityOrchestration|Select policy"
 msgstr ""
 
+msgid "SecurityOrchestration|Select runner tags"
+msgstr ""
+
 msgid "SecurityOrchestration|Select scan type"
 msgstr ""
 
@@ -38866,6 +38875,9 @@ msgid "SecurityOrchestration|Select security project"
 msgstr ""
 
 msgid "SecurityOrchestration|Select users"
+msgstr ""
+
+msgid "SecurityOrchestration|Selected automatically"
 msgstr ""
 
 msgid "SecurityOrchestration|Something went wrong, unable to fetch policies"
