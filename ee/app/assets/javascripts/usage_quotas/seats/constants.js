@@ -1,4 +1,3 @@
-import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { thWidthPercent } from '~/lib/utils/table_utility';
 import { __, s__ } from '~/locale';
 
@@ -71,7 +70,6 @@ If you continue, the user will be removed from the %{namespace}
 group and all its subgroups and projects. This action can't be undone.`,
 );
 export const AVATAR_SIZE = 32;
-export const SEARCH_DEBOUNCE_MS = DEFAULT_DEBOUNCE_AND_THROTTLE_MS;
 
 export const SORT_OPTIONS = [
   {

@@ -83,4 +83,3 @@ export const scatterPlotAddonQueryDays = 30;
 
 export const accessLevelReporter = 20;
 export const projectsPerPage = 50;
-export const defaultDaysInPast = 30;

@@ -12,8 +12,6 @@ export const STORAGE_STATISTICS_PURCHASED_STORAGE = s__('UsageQuota|Purchased st
 
 export const BUY_STORAGE = s__('UsageQuota|Buy storage');
 
-export const SKELETON_LOADER_ROWS = 5;
-
 export const NONE_THRESHOLD = 'none';
 export const INFO_THRESHOLD = 'info';
 export const ALERT_THRESHOLD = 'alert';
