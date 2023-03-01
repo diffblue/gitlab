@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class InitSchema < ActiveRecord::Migration[6.0]
+class InitSchema < Gitlab::Database::Migration[1.0]
   DOWNTIME = false
 
   def up
