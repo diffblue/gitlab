@@ -38883,7 +38883,7 @@ msgstr ""
 msgid "SecurityOrchestration|Update scan policies"
 msgstr ""
 
-msgid "SecurityOrchestration|Use a scan execution policy to create rules which enforce security scans for particular branches at a certain time. Supported types are SAST, DAST, Secret detection, Container scanning, and Dependency scanning."
+msgid "SecurityOrchestration|Use a scan execution policy to create rules which enforce security scans for particular branches at a certain time. Supported types are SAST, SAST IaC, DAST, Secret detection, Container scanning, and Dependency scanning."
 msgstr ""
 
 msgid "SecurityOrchestration|Use a scan result policy to create rules that check for security vulnerabilities and license compliance before merging a merge request."
@@ -50616,9 +50616,6 @@ msgstr ""
 msgid "ciReport|Generic Report"
 msgstr ""
 
-msgid "ciReport|IaC Scanning"
-msgstr ""
-
 msgid "ciReport|Investigate this vulnerability by creating an issue"
 msgstr ""
 
@@ -50682,6 +50679,9 @@ msgid "ciReport|Resolve with merge request"
 msgstr ""
 
 msgid "ciReport|SAST"
+msgstr ""
+
+msgid "ciReport|SAST IaC"
 msgstr ""
 
 msgid "ciReport|Secret Detection"

@@ -24,7 +24,7 @@ const i18n = {
   ),
   scanExecutionPolicyTitle: s__('SecurityOrchestration|Scan execution policy'),
   scanExecutionPolicyDesc: s__(
-    'SecurityOrchestration|Use a scan execution policy to create rules which enforce security scans for particular branches at a certain time. Supported types are SAST, DAST, Secret detection, Container scanning, and Dependency scanning.',
+    'SecurityOrchestration|Use a scan execution policy to create rules which enforce security scans for particular branches at a certain time. Supported types are SAST, SAST IaC, DAST, Secret detection, Container scanning, and Dependency scanning.',
   ),
   scanExecutionPolicyExample: s__(
     'SecurityOrchestration|Run a DAST scan with Scan Profile A and Site Profile A when a pipeline run against the main branch.',
