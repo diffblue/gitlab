@@ -5,7 +5,7 @@ module Elastic
     extend ActiveSupport::Concern
     include Gitlab::ClassAttributes
 
-    DEFAULT_THROTTLE_DELAY = 5.minutes
+    DEFAULT_THROTTLE_DELAY = 3.minutes
     DEFAULT_BATCH_SIZE = 1000
     DEFAULT_MAX_ATTEMPTS = 30
 
