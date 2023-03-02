@@ -61,13 +61,13 @@ module Elastic
 
         execute_migration(migration)
 
-        completed = migration.completed?
-        logger.info "MigrationWorker: migration[#{migration.name}] updating with completed: #{completed}"
-        migration.save!(completed: completed)
+        completed = check_and_save_completed_status(migration)
 
         unpause_indexing!(migration) if completed
 
         Elastic::DataMigrationService.drop_migration_has_finished_cache!(migration)
+
+        enqueue_next_batch(migration)
       end
     rescue StandardError => e
       logger.error("#{self.class.name}: #{e.class} #{e.message}")
@@ -101,11 +101,6 @@ module Elastic
 
       logger.info "MigrationWorker: migration[#{migration.name}] executing migrate method"
       migration.migrate
-
-      if migration.batched? && !migration.completed?
-        logger.info "MigrationWorker: migration[#{migration.name}] kicking off next migration batch"
-        Elastic::MigrationWorker.perform_in(migration.throttle_delay)
-      end
     rescue StandardError => e
       retry_migration(migration, e) if migration.retry_on_failure?
 
@@ -121,6 +116,20 @@ module Elastic
       else
         logger.info "MigrationWorker: increasing previous_attempts to #{migration.current_attempt}"
         migration.save_state!(previous_attempts: migration.current_attempt)
+      end
+    end
+
+    def enqueue_next_batch(migration)
+      return unless migration.batched? && !migration.completed?
+
+      logger.info "MigrationWorker: migration[#{migration.name}] kicking off next migration batch"
+      Elastic::MigrationWorker.perform_in(migration.throttle_delay)
+    end
+
+    def check_and_save_completed_status(migration)
+      migration.completed?.tap do |status|
+        logger.info "MigrationWorker: migration[#{migration.name}] updating with completed: #{status}"
+        migration.save!(completed: status)
       end
     end
 
