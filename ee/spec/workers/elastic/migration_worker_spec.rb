@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::MigrationWorker, :elastic_clean do
+RSpec.describe Elastic::MigrationWorker, :elastic_clean, feature_category: :global_search do
   subject { described_class.new }
 
   describe '#perform' do
