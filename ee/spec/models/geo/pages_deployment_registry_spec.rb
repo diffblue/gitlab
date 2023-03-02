@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::PagesDeploymentRegistry, :geo, type: :model do
+RSpec.describe Geo::PagesDeploymentRegistry, :geo, type: :model, feature_category: :geo_replication do
   let(:registry) { create(:geo_pages_deployment_registry) }
 
   specify 'factory is valid' do

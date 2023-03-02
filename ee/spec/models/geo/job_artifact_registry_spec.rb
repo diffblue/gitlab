@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::JobArtifactRegistry, :geo, type: :model do
+RSpec.describe Geo::JobArtifactRegistry, :geo, type: :model, feature_category: :geo_replication do
   include EE::GeoHelpers
 
   let(:registry) { create(:geo_job_artifact_registry) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::MergeRequestDiffRegistry, :geo, type: :model do
+RSpec.describe Geo::MergeRequestDiffRegistry, :geo, type: :model, feature_category: :geo_replication do
   let(:registry) { create(:geo_merge_request_diff_registry) }
 
   specify 'factory is valid' do

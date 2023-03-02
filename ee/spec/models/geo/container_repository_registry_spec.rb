@@ -218,7 +218,7 @@ RSpec.describe Geo::ContainerRepositoryRegistry, :geo, feature_category: :geo_re
   end
 end
 
-RSpec.describe Geo::ContainerRepositoryRegistry, :geo, type: :model do
+RSpec.describe Geo::ContainerRepositoryRegistry, :geo, type: :model, feature_category: :geo_replication do
   let(:registry) { create(:geo_container_repository_registry) }
 
   specify 'factory is valid' do

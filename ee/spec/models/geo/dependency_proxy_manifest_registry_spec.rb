@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::DependencyProxyManifestRegistry, :geo, type: :model do
+RSpec.describe Geo::DependencyProxyManifestRegistry, :geo, type: :model, feature_category: :geo_replication do
   let_it_be(:registry) { create(:geo_dependency_proxy_manifest_registry) }
 
   specify 'factory is valid' do

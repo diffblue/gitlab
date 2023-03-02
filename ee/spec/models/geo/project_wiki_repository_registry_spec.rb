@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::ProjectWikiRepositoryRegistry, :geo, type: :model do
+RSpec.describe Geo::ProjectWikiRepositoryRegistry, :geo, type: :model, feature_category: :geo_replication do
   let_it_be(:registry) { create(:geo_project_wiki_repository_registry) }
 
   specify 'factory is valid' do
