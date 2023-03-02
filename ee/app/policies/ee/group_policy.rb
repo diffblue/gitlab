@@ -257,11 +257,6 @@ module EE
         enable :read_group_compliance_dashboard
       end
 
-      rule { owner | admin }.policy do
-        enable :read_billable_member
-        enable :owner_access
-      end
-
       rule { owner }
         .enable :admin_protected_environment
 
@@ -429,6 +424,8 @@ module EE
       end
 
       rule { admin | owner }.policy do
+        enable :owner_access
+        enable :read_billable_member
         enable :read_group_compliance_dashboard
         enable :read_group_credentials_inventory
         enable :admin_group_credentials_inventory
