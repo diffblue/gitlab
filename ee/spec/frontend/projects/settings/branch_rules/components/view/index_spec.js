@@ -1,11 +1,18 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { GlIcon } from '@gitlab/ui';
 import RuleView from 'ee/projects/settings/branch_rules/components/view/index.vue';
 import branchRulesQuery from 'ee/projects/settings/branch_rules/queries/branch_rules_details.query.graphql';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { I18N } from '~/projects/settings/branch_rules/components/view/constants';
+import {
+  I18N,
+  REQUIRED_ICON,
+  NOT_REQUIRED_ICON,
+  REQUIRED_ICON_CLASS,
+  NOT_REQUIRED_ICON_CLASS,
+} from '~/projects/settings/branch_rules/components/view/constants';
 import Protection from '~/projects/settings/branch_rules/components/view/protection.vue';
 import { sprintf } from '~/locale';
 import {
@@ -36,12 +43,16 @@ describe('View branch rules in enterprise edition', () => {
   const protectedBranchesPath = 'protected/branches';
   const approvalRulesPath = 'approval/rules';
   const statusChecksPath = 'status/checks';
-  const branchProtectionsMockRequestHandler = jest
-    .fn()
-    .mockResolvedValue(branchProtectionsMockResponse);
+  const branchProtectionsMockRequestHandler = (response = branchProtectionsMockResponse) =>
+    jest.fn().mockResolvedValue(response);
 
-  const createComponent = async ({ showApprovers, showStatusChecks } = {}) => {
-    fakeApollo = createMockApollo([[branchRulesQuery, branchProtectionsMockRequestHandler]]);
+  const createComponent = async (
+    { showApprovers, showStatusChecks, showCodeOwners } = {},
+    mockResponse,
+  ) => {
+    fakeApollo = createMockApollo([
+      [branchRulesQuery, branchProtectionsMockRequestHandler(mockResponse)],
+    ]);
 
     wrapper = shallowMountExtended(RuleView, {
       apolloProvider: fakeApollo,
@@ -52,6 +63,7 @@ describe('View branch rules in enterprise edition', () => {
         statusChecksPath,
         showApprovers,
         showStatusChecks,
+        showCodeOwners,
       },
     });
 
@@ -65,6 +77,9 @@ describe('View branch rules in enterprise edition', () => {
   const findBranchProtections = () => wrapper.findAllComponents(Protection);
   const findApprovalsTitle = () => wrapper.findByText(I18N.approvalsTitle);
   const findStatusChecksTitle = () => wrapper.findByText(I18N.statusChecksTitle);
+  const findCodeOwnerApprovalIcon = () => wrapper.findComponent(GlIcon);
+  const findCodeOwnerApprovalTitle = (title) => wrapper.findByText(title);
+  const findCodeOwnerApprovalDescription = (description) => wrapper.findByText(description);
 
   it('renders a branch protection component for push rules', () => {
     expect(findBranchProtections().at(0).props()).toMatchObject({
@@ -78,6 +93,34 @@ describe('View branch rules in enterprise edition', () => {
       header: sprintf(I18N.allowedToMergeHeader, { total: 2 }),
       ...protectionMockProps,
     });
+  });
+
+  describe('Code owner approvals', () => {
+    it('does not render a code owner approval section by default', () => {
+      expect(findCodeOwnerApprovalIcon().exists()).toBe(false);
+      expect(findCodeOwnerApprovalTitle(I18N.requiresCodeOwnerApprovalTitle).exists()).toBe(false);
+      expect(
+        findCodeOwnerApprovalDescription(I18N.requiresCodeOwnerApprovalDescription).exists(),
+      ).toBe(false);
+    });
+
+    it.each`
+      codeOwnerApprovalRequired | iconName             | iconClass                  | title                                        | description
+      ${true}                   | ${REQUIRED_ICON}     | ${REQUIRED_ICON_CLASS}     | ${I18N.requiresCodeOwnerApprovalTitle}       | ${I18N.requiresCodeOwnerApprovalDescription}
+      ${false}                  | ${NOT_REQUIRED_ICON} | ${NOT_REQUIRED_ICON_CLASS} | ${I18N.doesNotRequireCodeOwnerApprovalTitle} | ${I18N.doesNotRequireCodeOwnerApprovalDescription}
+    `(
+      'code owners with the correct icon, title and description',
+      async ({ codeOwnerApprovalRequired, iconName, iconClass, title, description }) => {
+        const mockResponse = branchProtectionsMockResponse;
+        mockResponse.data.project.branchRules.nodes[0].branchProtection.codeOwnerApprovalRequired = codeOwnerApprovalRequired;
+        await createComponent({ showCodeOwners: true }, mockResponse);
+
+        expect(findCodeOwnerApprovalIcon().props('name')).toBe(iconName);
+        expect(findCodeOwnerApprovalIcon().attributes('class')).toBe(iconClass);
+        expect(findCodeOwnerApprovalTitle(title).exists()).toBe(true);
+        expect(findCodeOwnerApprovalTitle(description).exists()).toBe(true);
+      },
+    );
   });
 
   it('does not render approvals and status checks sections by default', () => {

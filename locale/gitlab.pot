@@ -7173,6 +7173,12 @@ msgstr ""
 msgid "BranchRules|Allowed to push and merge (%{total})"
 msgstr ""
 
+msgid "BranchRules|Also accepts code pushes that change files listed in CODEOWNERS file."
+msgstr ""
+
+msgid "BranchRules|Also rejects code pushes that change files listed in CODEOWNERS file."
+msgstr ""
+
 msgid "BranchRules|An error occurred while fetching branches."
 msgstr ""
 
@@ -7201,6 +7207,9 @@ msgid "BranchRules|Create wildcard: %{searchTerm}"
 msgstr ""
 
 msgid "BranchRules|Details"
+msgstr ""
+
+msgid "BranchRules|Does not require approval from code owners"
 msgstr ""
 
 msgid "BranchRules|Force push"
@@ -7246,6 +7255,9 @@ msgid "BranchRules|Required approvals (%{total})"
 msgstr ""
 
 msgid "BranchRules|Requires CODEOWNERS approval"
+msgstr ""
+
+msgid "BranchRules|Requires approval from code owners"
 msgstr ""
 
 msgid "BranchRules|Roles"
