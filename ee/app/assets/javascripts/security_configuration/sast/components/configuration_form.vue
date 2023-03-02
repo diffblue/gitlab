@@ -52,16 +52,12 @@ export default {
       analyzersConfiguration: cloneDeep(this.sastCiConfiguration.analyzers.nodes),
       hasSubmissionError: false,
       isSubmitting: false,
-      showAnalyzersTip: false,
     };
   },
   computed: {
     shouldRenderAnalyzersSection() {
       return this.analyzersConfiguration.length > 0;
     },
-  },
-  beforeMount() {
-    this.shouldRenderAnalyzersTip();
   },
   methods: {
     onSubmit() {
@@ -101,29 +97,13 @@ export default {
         analyzers: this.analyzersConfiguration.map(toSastCiConfigurationAnalyzerEntityInput),
       };
     },
-    shouldRenderAnalyzersTip() {
-      this.analyzersConfiguration.some((analyzer) => {
-        if (analyzer.enabled === false && this.showAnalyzersTip === false) {
-          this.showAnalyzersTip = true;
-          return true;
-        }
-        return false;
-      });
-    },
     onAnalyzerChange(name, updatedAnalyzer) {
-      // show AnalyzersTip when Analyzer was unchecked
-      if (updatedAnalyzer.enabled === false && this.showAnalyzersTip === false) {
-        this.showAnalyzersTip = true;
-      }
       const index = this.analyzersConfiguration.findIndex((analyzer) => analyzer.name === name);
       if (index === -1) {
         return;
       }
 
       this.analyzersConfiguration.splice(index, 1, updatedAnalyzer);
-    },
-    dismissAnalyzersTip() {
-      this.showAnalyzersTip = false;
     },
   },
   i18n: {
@@ -158,6 +138,15 @@ export default {
       data-testid="analyzers-section"
       data-qa-selector="analyzer_settings_content"
     >
+      <gl-alert
+        class="gl-mb-5"
+        data-testid="analyzers-section-tip"
+        :title="$options.i18n.analyzersTipHeading"
+        variant="tip"
+        :dismissible="false"
+      >
+        <gl-sprintf :message="$options.i18n.analyzersTipBody" />
+      </gl-alert>
       <template #heading>
         {{ $options.i18n.analyzersHeading }}
         <gl-link
@@ -179,15 +168,6 @@ export default {
         :entity="analyzer"
         @input="onAnalyzerChange(analyzer.name, $event)"
       />
-      <gl-alert
-        v-if="showAnalyzersTip"
-        data-testid="analyzers-section-tip"
-        :title="$options.i18n.analyzersTipHeading"
-        variant="tip"
-        @dismiss="dismissAnalyzersTip"
-      >
-        <gl-sprintf :message="$options.i18n.analyzersTipBody" />
-      </gl-alert>
     </expandable-section>
 
     <hr v-else />
