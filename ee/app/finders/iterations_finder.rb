@@ -14,6 +14,7 @@
 class IterationsFinder
   include FinderMethods
   include TimeFrameFilter
+  include UpdatedAtFilter
 
   SEARCHABLE_FIELDS = %i(title cadence_title).freeze
 
@@ -38,6 +39,7 @@ class IterationsFinder
     items = by_state(items)
     items = by_timeframe(items)
     items = by_iteration_cadences(items)
+    items = by_updated_at(items)
 
     order(items)
   end

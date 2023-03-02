@@ -8,6 +8,7 @@ import AssigneeSelect from 'ee/boards/components/assignee_select.vue';
 
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { stubComponent } from 'helpers/stub_component';
 
 import { boardObj } from 'jest/boards/mock_data';
 import { projectMembersResponse, groupMembersResponse, mockUser2 } from 'jest/sidebar/mock_data';
@@ -63,11 +64,12 @@ describe('Assignee select component', () => {
         isGroupBoard,
         isProjectBoard,
       },
+      stubs: {
+        DropdownWidget: stubComponent(DropdownWidget, {
+          methods: { showDropdown: jest.fn() },
+        }),
+      },
     });
-
-    // We need to mock out `showDropdown` which
-    // invokes `show` method of BDropdown used inside GlDropdown.
-    jest.spyOn(wrapper.vm, 'showDropdown').mockImplementation();
   };
 
   beforeEach(() => {
@@ -76,7 +78,6 @@ describe('Assignee select component', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     fakeApollo = null;
     store = null;
   });
