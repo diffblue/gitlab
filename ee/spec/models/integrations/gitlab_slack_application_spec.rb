@@ -34,12 +34,6 @@ RSpec.describe Integrations::GitlabSlackApplication, feature_category: :integrat
     it { is_expected.not_to be_wiki_page_events }
   end
 
-  describe '#chat_responder' do
-    it 'returns the chat responder to use' do
-      expect(subject.chat_responder).to eq(Gitlab::Chat::Responder::Slack)
-    end
-  end
-
   describe '#execute' do
     let_it_be(:user) { build_stubbed(:user) }
 
