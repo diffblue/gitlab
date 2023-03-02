@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Standard flow for user picking company and joining a project', :js, :saas, :saas_registration,
+RSpec.describe 'Standard flow for user picking company and joining a project', :js, :saas_registration,
 feature_category: :onboarding do
   it 'registers the user and sends them to a project listing page' do
     user_signs_up

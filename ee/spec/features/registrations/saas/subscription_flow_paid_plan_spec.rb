@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Subscription flow for paid plan', :js, :saas, :saas_registration,
+RSpec.describe 'Subscription flow for paid plan', :js, :saas_registration,
 feature_category: :onboarding do
   include SubscriptionPortalHelpers
 

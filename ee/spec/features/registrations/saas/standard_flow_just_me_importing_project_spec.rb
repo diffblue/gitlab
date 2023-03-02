@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Standard flow for user picking just me and importing a project', :js, :saas, :saas_registration,
+RSpec.describe 'Standard flow for user picking just me and importing a project', :js, :saas_registration,
 feature_category: :onboarding do
   it 'registers the user and starts to import a project' do
     user_signs_up
