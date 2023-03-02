@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Commits::CreateService do
+RSpec.describe Commits::CreateService, feature_category: :source_code_management do
   include NamespaceStorageHelpers
 
   let_it_be(:user) { create(:user) }

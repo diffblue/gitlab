@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ComplianceManagement::Frameworks::CreateService do
+RSpec.describe ComplianceManagement::Frameworks::CreateService, feature_category: :compliance_management do
   let_it_be_with_refind(:namespace) { create(:group) }
   let_it_be(:current_user) { create(:user) }
 
