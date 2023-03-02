@@ -112,7 +112,7 @@ module Sidebars
 
         def compare_menu_item
           ::Sidebars::MenuItem.new(
-            title: _('Compare'),
+            title: _('Compare revisions'),
             link: project_compare_index_path(context.project, from: context.project.repository.root_ref, to: context.current_ref),
             active_routes: { controller: :compare },
             item_id: :compare

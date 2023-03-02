@@ -122,11 +122,11 @@ RSpec.describe 'layouts/nav/sidebar/_project', feature_category: :navigation do
       end
     end
 
-    describe 'Compare' do
+    describe 'Compare revisions' do
       it 'has a link to the project compare path' do
         render
 
-        expect(rendered).to have_link('Compare', href: project_compare_index_path(project, from: project.repository.root_ref, to: current_ref))
+        expect(rendered).to have_link('Compare revisions', href: project_compare_index_path(project, from: project.repository.root_ref, to: current_ref))
       end
     end
   end

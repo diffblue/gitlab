@@ -10371,9 +10371,6 @@ msgstr ""
 msgid "Compare GitLab plans"
 msgstr ""
 
-msgid "Compare Revisions"
-msgstr ""
-
 msgid "Compare branches and continue"
 msgstr ""
 
@@ -10384,6 +10381,9 @@ msgid "Compare changes with the last commit"
 msgstr ""
 
 msgid "Compare changes with the merge request target branch"
+msgstr ""
+
+msgid "Compare revisions"
 msgstr ""
 
 msgid "Compare submodule commit revisions"
