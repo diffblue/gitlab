@@ -131,10 +131,6 @@ export const WeightIDs = {
   ANY: -1,
 };
 
-export const GroupByParamType = {
-  epic: 'epic',
-};
-
 export const ErrorMessages = {
   fetchIssueError: s__(
     'Boards|An error occurred while fetching the board issues. Please reload the page.',

@@ -1,8 +1,9 @@
 <script>
 import RelatedIssuableInput from '~/related_issues/components/related_issuable_input.vue';
-import { issuableTypesMap } from '~/related_issues/constants';
+import { TYPE_MERGE_REQUEST } from '~/issues/constants';
 
 export default {
+  TYPE_MERGE_REQUEST,
   components: {
     RelatedIssuableInput,
   },
@@ -60,7 +61,6 @@ export default {
       }
     },
   },
-  issuableTypesMap,
 };
 </script>
 
@@ -71,7 +71,7 @@ export default {
       input-id="merge_request_blocking_merge_request_references"
       :references="references"
       :input-value="inputValue"
-      :issuable-type="$options.issuableTypesMap.MERGE_REQUEST"
+      :issuable-type="$options.TYPE_MERGE_REQUEST"
       @addIssuableFormInput="onAddIssuable"
       @pendingIssuableRemoveRequest="removeReference"
       @addIssuableFormBlur="onBlur"

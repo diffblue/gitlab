@@ -14,7 +14,7 @@ import actionsCE from '~/boards/stores/actions';
 import * as typesCE from '~/boards/stores/mutation_types';
 import { TYPENAME_ITERATION, TYPENAME_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 import { getIdFromGraphQLId, convertToGraphQLId } from '~/graphql_shared/utils';
-import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
+import { TYPE_EPIC, WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { fetchPolicies } from '~/lib/graphql';
 import { historyPushState, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams, queryToObject } from '~/lib/utils/url_utility';
@@ -24,7 +24,6 @@ import searchIterationCadencesQuery from 'ee/issues/list/queries/search_iteratio
 import epicBoardListQuery from 'ee/boards/graphql/epic_board_lists_deferred.query.graphql';
 import {
   EpicFilterType,
-  GroupByParamType,
   FilterFields,
   IterationIDs,
   DEFAULT_BOARD_LIST_ITEMS_SIZE,
@@ -183,7 +182,7 @@ export default {
   setFilters: ({ commit, dispatch, state: { issuableType } }, filters) => {
     const filtersCopy = { ...filters };
 
-    if (filters.groupBy === GroupByParamType.epic) {
+    if (filters.groupBy === TYPE_EPIC) {
       dispatch('setEpicSwimlanes');
     }
 
@@ -462,7 +461,7 @@ export default {
 
     if (state.isShowingEpicsSwimlanes) {
       historyPushState(
-        mergeUrlParams({ group_by: GroupByParamType.epic }, window.location.href, {
+        mergeUrlParams({ group_by: TYPE_EPIC }, window.location.href, {
           spreadArrays: true,
         }),
       );
