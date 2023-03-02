@@ -7,6 +7,7 @@ import IterationSelect from 'ee/boards/components/iteration_select.vue';
 
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { stubComponent } from 'helpers/stub_component';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import { boardObj } from 'jest/boards/mock_data';
@@ -72,16 +73,14 @@ describe('Iteration select component', () => {
       stubs: {
         GlDropdown,
         GlDropdownItem,
+        DropdownWidget: stubComponent(DropdownWidget, {
+          methods: { showDropdown: jest.fn() },
+        }),
       },
     });
-
-    // We need to mock out `showDropdown` which
-    // invokes `show` method of BDropdown used inside GlDropdown.
-    jest.spyOn(wrapper.vm, 'showDropdown').mockImplementation();
   };
 
   afterEach(() => {
-    wrapper.destroy();
     fakeApollo = null;
   });
 
