@@ -30,6 +30,7 @@ module Elastic
         indexes :project_id, type: :integer
         indexes :author_id, type: :integer
         indexes :confidential, type: :boolean
+        indexes :hidden, type: :boolean
         indexes :assignee_id, type: :integer
 
         indexes :visibility_level, type: :integer
