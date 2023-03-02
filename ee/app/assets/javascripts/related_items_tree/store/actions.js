@@ -6,7 +6,6 @@ import { HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_st
 import { s__, __ } from '~/locale';
 import Tracking from '~/tracking';
 import {
-  issuableTypesMap,
   itemAddFailureTypesMap,
   pathIndeterminateErrorMap,
   relatedIssuesRemoveErrorMap,
@@ -245,7 +244,7 @@ export const receiveRemoveItemSuccess = ({ commit }, data) =>
   commit(types.RECEIVE_REMOVE_ITEM_SUCCESS, data);
 export const receiveRemoveItemFailure = ({ commit }, { item, status }) => {
   commit(types.RECEIVE_REMOVE_ITEM_FAILURE, { item });
-  const issuableType = issuableTypesMap[item.type.toUpperCase()];
+  const issuableType = item.type.toLowerCase();
   createAlert({
     message:
       status === HTTP_STATUS_NOT_FOUND

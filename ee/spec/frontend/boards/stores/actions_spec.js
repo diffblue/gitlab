@@ -2,7 +2,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { GroupByParamType, IterationIDs } from 'ee/boards/constants';
+import { IterationIDs } from 'ee/boards/constants';
 import epicCreateMutation from 'ee/boards/graphql/epic_create.mutation.graphql';
 import searchIterationCadencesQuery from 'ee/issues/list/queries/search_iteration_cadences.query.graphql';
 import currentIterationQuery from 'ee/boards/graphql/board_current_iteration.query.graphql';
@@ -682,7 +682,7 @@ describe('toggleEpicSwimlanes', () => {
       [{ type: 'fetchEpicsSwimlanes' }, { type: 'fetchLists' }],
       () => {
         expect(commonUtils.historyPushState).toHaveBeenCalledWith(
-          mergeUrlParams({ group_by: GroupByParamType.epic }, window.location.href),
+          mergeUrlParams({ group_by: TYPE_EPIC }, window.location.href),
         );
         expect(global.window.location.href).toBe(
           `${TEST_HOST}/groups/gitlab-org/-/boards/1?group_by=epic`,
