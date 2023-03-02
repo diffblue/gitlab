@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe ComplianceManagement::MergeRequests::CreateComplianceViolationsService do
+RSpec.describe ComplianceManagement::MergeRequests::CreateComplianceViolationsService,
+  feature_category: :compliance_management do
   # Works around https://gitlab.com/gitlab-org/gitlab/-/issues/335054
   let_it_be_with_refind(:unmerged_merge_request) { create(:merge_request) }
   let_it_be_with_refind(:merged_merge_request) { create(:merge_request, :merged) }
