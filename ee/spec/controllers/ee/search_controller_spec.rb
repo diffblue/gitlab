@@ -184,12 +184,6 @@ RSpec.describe SearchController, :elastic, feature_category: :global_search do
       end.to raise_error(ActionController::ParameterMissing)
     end
 
-    it 'raises an error if search scope is missing' do
-      expect do
-        get :aggregations, params: { search: 'hello' }
-      end.to raise_error(ActionController::ParameterMissing)
-    end
-
     it 'returns an error if search term is invalid' do
       search_term = 'a' * (::Gitlab::Search::Params::SEARCH_CHAR_LIMIT + 1)
       get :aggregations, params: { scope: 'blobs', search: search_term }

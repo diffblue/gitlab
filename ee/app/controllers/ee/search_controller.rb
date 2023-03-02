@@ -38,7 +38,7 @@ module EE
     end
 
     def aggregations
-      params.require([:search, :scope])
+      params.require(:search)
 
       # Cache the response on the frontend
       cache_for = ::Gitlab.com? ? 5.minutes : 1.minute
