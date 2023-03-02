@@ -136,6 +136,19 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
       end
     end
 
+    describe 'group-level data attributes' do
+      subject(:attributes) { described_class.new(params).to_data_attributes }
+
+      it 'includes the namespace attribute' do
+        expect(attributes).to match(hash_including({
+          namespace: {
+            name: root_group.name,
+            full_path: "groups/#{root_group.full_path}"
+          }
+        }))
+      end
+    end
+
     describe 'aggregation params' do
       it 'exposes the aggregation params' do
         data_collector_params = subject.to_data_attributes
@@ -157,7 +170,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
     describe 'enable_tasks_by_type_chart data attribute' do
       subject(:value) { described_class.new(params).to_data_attributes[:enable_tasks_by_type_chart] }
 
-      it { is_expected.to eq(true) }
+      it { is_expected.to eq('true') }
     end
   end
 end

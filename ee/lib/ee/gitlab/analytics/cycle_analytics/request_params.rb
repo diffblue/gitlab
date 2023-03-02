@@ -6,18 +6,32 @@ module EE
       module CycleAnalytics
         module RequestParams
           include ::Gitlab::Utils::StrongMemoize
+          extend ::Gitlab::Utils::Override
 
+          override :to_data_attributes
           def to_data_attributes
             super.tap do |attrs|
               attrs[:aggregation] = aggregation_attributes if use_aggregated_backend?
               attrs[:group] = group_data_attributes if group.present?
               attrs[:projects] = group_projects(project_ids) if group.present? && project_ids.present?
-              attrs[:enable_tasks_by_type_chart] = true if group.present?
+              attrs[:enable_tasks_by_type_chart] = 'true' if group.present?
             end
           end
 
           private
 
+          override :namespace_attributes
+          def namespace_attributes
+            return super if project
+            return {} if group.nil?
+
+            {
+              name: group.name,
+              full_path: "groups/#{group.full_path}"
+            }
+          end
+
+          override :resource_paths
           def resource_paths
             paths = super
             return paths unless group.present?
@@ -28,6 +42,7 @@ module EE
             })
           end
 
+          override :use_aggregated_backend?
           def use_aggregated_backend?
             super || licensed?
           end
