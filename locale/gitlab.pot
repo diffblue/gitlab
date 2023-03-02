@@ -8015,6 +8015,15 @@ msgstr ""
 msgid "Can't be empty"
 msgstr ""
 
+msgid "Can't contain %{chars}"
+msgstr ""
+
+msgid "Can't contain spaces"
+msgstr ""
+
+msgid "Can't contain spaces, %{chars}"
+msgstr ""
+
 msgid "Can't create snippet: %{err}"
 msgstr ""
 
@@ -25536,6 +25545,9 @@ msgid "Link an external wiki from the project's sidebar. %{docs_link}"
 msgstr ""
 
 msgid "Link copied"
+msgstr ""
+
+msgid "Link does not exist"
 msgstr ""
 
 msgid "Link text"
