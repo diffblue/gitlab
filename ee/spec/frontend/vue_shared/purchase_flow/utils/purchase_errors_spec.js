@@ -8,7 +8,7 @@ import {
 describe('Purchase Dynamic Errors', () => {
   describe('errorDictionary', () => {
     it('contains all the declared errors', () => {
-      expect(Object.keys(errorDictionary)).toHaveLength(5);
+      expect(Object.keys(errorDictionary)).toHaveLength(7);
     });
   });
 
