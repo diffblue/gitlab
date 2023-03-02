@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::PipelineCreation::DropNotRunnableBuildsService do
+RSpec.describe Ci::PipelineCreation::DropNotRunnableBuildsService, feature_category: :continuous_integration do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
 

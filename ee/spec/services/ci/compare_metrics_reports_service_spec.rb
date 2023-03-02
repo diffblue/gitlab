@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::CompareMetricsReportsService do
+RSpec.describe Ci::CompareMetricsReportsService, feature_category: :continuous_integration do
   let_it_be(:project) { create(:project, :repository) }
 
   let(:service) { described_class.new(project) }

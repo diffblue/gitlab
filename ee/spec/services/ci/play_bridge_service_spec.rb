@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::PlayBridgeService, '#execute' do
+RSpec.describe Ci::PlayBridgeService, '#execute', feature_category: :continuous_integration do
   it_behaves_like 'prevents playing job when credit card is required' do
     let(:user) { create(:user, maintainer_projects: [project, downstream_project]) }
     let(:project) { create(:project) }

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Ci::CopyCrossDatabaseAssociationsService do
+RSpec.describe Ci::CopyCrossDatabaseAssociationsService, feature_category: :continuous_integration do
   let_it_be(:project) { create(:project) }
   let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
   let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project) }

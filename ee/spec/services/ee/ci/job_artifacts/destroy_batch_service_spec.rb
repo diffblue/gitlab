@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::JobArtifacts::DestroyBatchService do
+RSpec.describe Ci::JobArtifacts::DestroyBatchService, feature_category: :build_artifacts do
   include EE::GeoHelpers
 
   describe '.execute' do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::AdditionalPacks::CreateService do
+RSpec.describe Ci::Minutes::AdditionalPacks::CreateService, feature_category: :continuous_integration do
   include AfterNextHelpers
 
   describe '#execute' do

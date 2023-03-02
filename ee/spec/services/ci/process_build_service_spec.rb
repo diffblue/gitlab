@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Ci::ProcessBuildService, '#execute' do
+RSpec.describe Ci::ProcessBuildService, '#execute', feature_category: :continuous_integration do
   let(:user) { create(:user) }
   let(:project) { create(:project, :repository) }
   let(:environment) { create(:environment, project: project, name: 'production') }

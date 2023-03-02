@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::CompareSecurityReportsService do
+RSpec.describe Ci::CompareSecurityReportsService, feature_category: :continuous_integration do
   let_it_be(:project) { create(:project, :repository) }
 
   let(:current_user) { project.owner }

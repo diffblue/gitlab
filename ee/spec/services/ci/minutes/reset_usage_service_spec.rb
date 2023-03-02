@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::ResetUsageService do
+RSpec.describe Ci::Minutes::ResetUsageService, feature_category: :continuous_integration do
   include AfterNextHelpers
 
   describe '#execute' do

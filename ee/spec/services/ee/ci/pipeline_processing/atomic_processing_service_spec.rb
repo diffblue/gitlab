@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::PipelineProcessing::AtomicProcessingService do
+RSpec.describe Ci::PipelineProcessing::AtomicProcessingService, feature_category: :continuous_integration do
   describe 'Pipeline Processing Service' do
     let(:project) { create(:project, :repository) }
     let(:user)    { project.first_owner }

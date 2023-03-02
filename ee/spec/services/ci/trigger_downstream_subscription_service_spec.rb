@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::TriggerDownstreamSubscriptionService do
+RSpec.describe Ci::TriggerDownstreamSubscriptionService, feature_category: :continuous_integration do
   describe '#execute' do
     subject(:execute) { described_class.new(pipeline.project, pipeline.user).execute(pipeline) }
 

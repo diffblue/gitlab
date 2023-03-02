@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::CreatePipelineService do
+RSpec.describe Ci::CreatePipelineService, feature_category: :build_artifacts do
   subject(:execute) { service.execute(:push) }
 
   let_it_be(:project) { create(:project, :repository) }

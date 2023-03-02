@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Ci::RetryPipelineService do
+RSpec.describe Ci::RetryPipelineService, feature_category: :continuous_integration do
   let_it_be(:runner) { create(:ci_runner, :instance, :online) }
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project) }
