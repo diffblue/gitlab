@@ -14,7 +14,11 @@ module Mutations
 
           argument :event_type_filters, [GraphQL::Types::String],
                    required: true,
-                   description: 'List of event type filters to add for streaming.'
+                   description: 'List of event type filters to add for streaming.',
+                   prepare: ->(filters, _ctx) do
+                     filters.presence || (raise ::Gitlab::Graphql::Errors::ArgumentError,
+                                                'event type filters must be present')
+                   end
 
           field :event_type_filters, [GraphQL::Types::String],
                 null: true,
@@ -25,7 +29,8 @@ module Mutations
 
             response = ::AuditEvents::Streaming::EventTypeFilters::CreateService.new(
               destination: destination,
-              event_type_filters: event_type_filters
+              event_type_filters: event_type_filters,
+              current_user: current_user
             ).execute
 
             if response.success?

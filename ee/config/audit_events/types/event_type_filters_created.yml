@@ -1,0 +1,9 @@
+---
+name: event_type_filters_created
+description: Event triggered when a new audit events streaming event type filter is created
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/344848
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/113081
+feature_category: audit_events
+milestone: '15.10'
+saved_to_database: true
+streamed: true
