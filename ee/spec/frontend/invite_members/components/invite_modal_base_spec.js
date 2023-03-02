@@ -99,7 +99,6 @@ describe('EEInviteModalBase', () => {
   const findInitialModalContent = () => wrapper.findByTestId('invite-modal-initial-content');
   const findOverageModalContent = () => wrapper.findByTestId('invite-modal-overage-content');
   const findModalTitle = () => findModal().props('title');
-  const findActiveTrialUnlimitedMembersAlert = () => wrapper.findByTestId('alert-trial-info');
   const findActionButton = () => wrapper.findByTestId('invite-modal-submit');
   const findCancelButton = () => wrapper.findByTestId('invite-modal-cancel');
 
@@ -309,31 +308,6 @@ describe('EEInviteModalBase', () => {
       // shows initial modal again
       expect(findModal().props('title')).toBe(propsDataCE.modalTitle);
       expect(findCEBase().props('invalidFeedbackMessage')).toBe('invalid message');
-    });
-  });
-
-  describe('rendering the active trial unlimited users alert', () => {
-    const arrange = async (activeTrialDataset, isCelebration = false) => {
-      createComponent({ props: { activeTrialDataset, fullPath: 'project', isCelebration } });
-      clickInviteButton();
-    };
-
-    it('shows the alert when a trial is active', async () => {
-      await arrange({ freeUsersLimit: '5' });
-
-      expect(findActiveTrialUnlimitedMembersAlert().exists()).toBe(true);
-    });
-
-    it('does not show the alert when a celebration modal', async () => {
-      await arrange({ freeUsersLimit: '5' }, true);
-
-      expect(findActiveTrialUnlimitedMembersAlert().exists()).toBe(false);
-    });
-
-    it('does not show the alert when a trial is not active', async () => {
-      await arrange({});
-
-      expect(findActiveTrialUnlimitedMembersAlert().exists()).toBe(false);
     });
   });
 });
