@@ -35,7 +35,7 @@ describe('Single Stat Visualization', () => {
       expect(findSingleStat().props('value')).toBe(35);
     });
 
-    it('should pass the visualization options to the single stat', () => {
+    describe('when there are user defined options that include decimal places', () => {
       const options = {
         title: 'Sessions',
         decimalPlaces: 2,
@@ -44,16 +44,31 @@ describe('Single Stat Visualization', () => {
         titleIcon: 'users',
         unit: 'days',
       };
-      createWrapper({ options });
 
-      expect(findSingleStat().props()).toMatchObject({
-        title: 'Sessions',
-        metaText: 'meta text',
-        metaIcon: 'project',
-        titleIcon: 'users',
-        unit: 'days',
-        animationDecimalPlaces: 2,
+      it('should pass the visualization options to the single stat', () => {
+        createWrapper({ options });
+
+        expect(findSingleStat().props()).toMatchObject({
+          title: 'Sessions',
+          metaText: 'meta text',
+          metaIcon: 'project',
+          titleIcon: 'users',
+          unit: 'days',
+        });
       });
+
+      it.each`
+        data         | animationDecimalPlaces
+        ${undefined} | ${0}
+        ${35}        | ${options.decimalPlaces}
+      `(
+        'should display $animationDecimalPlaces decimal places when the data is "$data"',
+        ({ data, animationDecimalPlaces }) => {
+          createWrapper({ data, options });
+
+          expect(findSingleStat().props()).toMatchObject({ animationDecimalPlaces });
+        },
+      );
     });
   });
 });

@@ -4,6 +4,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
 import dataSources from 'ee/product_analytics/dashboards/data_sources';
 import waitForPromises from 'helpers/wait_for_promises';
+import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
 import { dashboard } from './mock_data';
 
 jest.mock('ee/product_analytics/dashboards/data_sources', () => ({
@@ -31,7 +32,7 @@ describe('PanelsBase', () => {
 
   const findVisualization = () => wrapper.findComponent(LineChart);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
-  const findPanelTitle = () => wrapper.findByTestId('panel-title');
+  const findPanelTitle = () => wrapper.findComponent(TooltipOnTruncate);
 
   afterEach(() => {
     wrapper.destroy();
@@ -43,6 +44,11 @@ describe('PanelsBase', () => {
     });
 
     it('should render title', () => {
+      expect(findPanelTitle().props()).toMatchObject({
+        placement: 'top',
+        title: panelConfig.title,
+        boundary: 'viewport',
+      });
       expect(findPanelTitle().text()).toBe(panelConfig.title);
     });
 
@@ -128,6 +134,16 @@ describe('PanelsBase', () => {
       expect(dataSources.cube_analytics().fetch).toHaveBeenCalledWith(
         expect.objectContaining({ filters }),
       );
+    });
+  });
+
+  describe('when the panel has no title', () => {
+    beforeEach(() => {
+      createWrapper({ title: null });
+    });
+
+    it('should not render the title', () => {
+      expect(findPanelTitle().exists()).toBe(false);
     });
   });
 });

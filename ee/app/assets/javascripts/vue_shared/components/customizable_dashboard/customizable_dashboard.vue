@@ -7,7 +7,12 @@ import { createAlert } from '~/flash';
 import { s__, sprintf } from '~/locale';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
 import PanelsBase from './panels_base.vue';
-import { GRIDSTACK_MARGIN, GRIDSTACK_CSS_HANDLE } from './constants';
+import {
+  GRIDSTACK_MARGIN,
+  GRIDSTACK_CSS_HANDLE,
+  GRIDSTACK_CELL_HEIGHT,
+  GRIDSTACK_MIN_ROW,
+} from './constants';
 import { filtersToQueryParams } from './utils';
 
 export default {
@@ -117,7 +122,8 @@ export default {
           staticGrid: !this.editing,
           margin: GRIDSTACK_MARGIN,
           handle: GRIDSTACK_CSS_HANDLE,
-          minRow: 1,
+          cellHeight: GRIDSTACK_CELL_HEIGHT,
+          minRow: GRIDSTACK_MIN_ROW,
         });
 
         this.grid.on('change', (event, items) => {

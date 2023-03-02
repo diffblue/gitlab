@@ -47,7 +47,7 @@ const convertToSingleValue = (resultSet, query) => {
     return undefined;
   }
 
-  return row[measure ?? DEFAULT_COUNT_KEY] ?? Object.values(row)[0];
+  return row[measure ?? DEFAULT_COUNT_KEY] ?? Object.values(row)[0] ?? undefined;
 };
 
 const buildDateRangeFilter = (query, queryOverrides, { startDate, endDate }) => {
