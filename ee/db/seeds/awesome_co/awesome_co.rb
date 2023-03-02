@@ -122,7 +122,7 @@ module AwesomeCo
               build = definition.build(@parser_binding)
               errors << build.errors unless build.valid?
             rescue NoMethodError => e
-              message = "is not a valid attribute for #{e.receiver}."
+              message = +"is not a valid attribute for #{e.receiver}."
               message << " Did you mean #{e.corrections.join(',')}" if e.corrections.any?
 
               errors << { e.name => message.rstrip }
