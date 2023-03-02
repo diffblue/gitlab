@@ -2,11 +2,15 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Minutes::BuildConsumption, feature_category: :continuous_integration do
+RSpec.describe Gitlab::Ci::Minutes::Consumption, feature_category: :continuous_integration do
   using RSpec::Parameterized::TableSyntax
 
-  let(:consumption) { described_class.new(build, build.duration) }
-  let(:build) { build_stubbed(:ci_build, runner: runner, project: project) }
+  let(:consumption) do
+    described_class.new(pipeline: build.pipeline, duration: build.duration, runner_matcher: runner.runner_matcher)
+  end
+
+  let(:pipeline) { build_stubbed(:ci_pipeline, project: project) }
+  let(:build) { build_stubbed(:ci_build, runner: runner, project: project, pipeline: pipeline) }
 
   let_it_be(:project) { create(:project) }
   let_it_be_with_refind(:runner) { create(:ci_runner, :instance) }
@@ -39,7 +43,7 @@ RSpec.describe Gitlab::Ci::Minutes::BuildConsumption, feature_category: :continu
         project.update!(visibility_level: visibility_level)
 
         allow(build).to receive(:duration).and_return(duration)
-        allow(::Gitlab::CurrentSettings).to receive(:shared_runners_minutes) { 400 }
+        allow(::Gitlab::CurrentSettings).to receive(:shared_runners_minutes).and_return(400)
       end
 
       it 'returns the expected consumption' do
