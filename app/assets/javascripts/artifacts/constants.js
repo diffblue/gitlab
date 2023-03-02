@@ -54,6 +54,7 @@ export const I18N_FEEDBACK_BANNER_BODY = s__(
 export const I18N_FEEDBACK_BANNER_BUTTON = s__('Artifacts|Take a quick survey');
 export const FEEDBACK_URL = 'https://gitlab.fra1.qualtrics.com/jfe/form/SV_cI9rAUI20Vo2St8';
 
+export const BULK_DELETE_FEATURE_FLAG = 'ciJobArtifactBulkDestroy';
 export const I18N_BULK_DELETE_BANNER = (count) =>
   sprintf(
     n__(

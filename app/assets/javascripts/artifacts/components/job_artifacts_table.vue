@@ -14,6 +14,7 @@ import { createAlert } from '~/alert';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import CiIcon from '~/vue_shared/components/ci_icon.vue';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import getJobArtifactsQuery from '../graphql/queries/get_job_artifacts.query.graphql';
 import { totalArtifactsSizeForJob, mapArchivesToJobNodes, mapBooleansToJobNodes } from '../utils';
 import {
@@ -34,6 +35,7 @@ import {
   INITIAL_NEXT_PAGE_CURSOR,
   JOBS_PER_PAGE,
   INITIAL_LAST_PAGE_SIZE,
+  BULK_DELETE_FEATURE_FLAG,
 } from '../constants';
 import JobCheckbox from './job_checkbox.vue';
 import ArtifactsBulkDelete from './artifacts_bulk_delete.vue';
@@ -67,6 +69,7 @@ export default {
     ArtifactsTableRowDetails,
     FeedbackBanner,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: ['projectPath', 'canDestroyArtifacts'],
   apollo: {
     jobArtifacts: {
@@ -127,7 +130,7 @@ export default {
     },
     fields() {
       return [
-        this.canDestroyArtifacts && {
+        this.canBulkDestroyArtifacts && {
           key: 'checkbox',
           label: '',
         },
@@ -136,6 +139,9 @@ export default {
     },
     anyArtifactsSelected() {
       return Boolean(this.selectedArtifacts.length);
+    },
+    canBulkDestroyArtifacts() {
+      return this.glFeatures[BULK_DELETE_FEATURE_FLAG] && this.canDestroyArtifacts;
     },
   },
   methods: {
@@ -247,7 +253,7 @@ export default {
   <div>
     <feedback-banner />
     <artifacts-bulk-delete
-      v-if="anyArtifactsSelected"
+      v-if="canBulkDestroyArtifacts && anyArtifactsSelected"
       :selected-artifacts="selectedArtifacts"
       @clearSelectedArtifacts="clearSelectedArtifacts"
     />
@@ -261,7 +267,7 @@ export default {
       <template #table-busy>
         <gl-loading-icon size="lg" />
       </template>
-      <template v-if="canDestroyArtifacts" #head(checkbox)>
+      <template v-if="canBulkDestroyArtifacts" #head(checkbox)>
         <gl-form-checkbox
           :disabled="!anyArtifactsSelected"
           :checked="anyArtifactsSelected"
@@ -269,7 +275,10 @@ export default {
           @change="clearSelectedArtifacts"
         />
       </template>
-      <template v-if="canDestroyArtifacts" #cell(checkbox)="{ item: { hasArtifacts, artifacts } }">
+      <template
+        v-if="canBulkDestroyArtifacts"
+        #cell(checkbox)="{ item: { hasArtifacts, artifacts } }"
+      >
         <job-checkbox
           :has-artifacts="hasArtifacts"
           :selected-artifacts="
