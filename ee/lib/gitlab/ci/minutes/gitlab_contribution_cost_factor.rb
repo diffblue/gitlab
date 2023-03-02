@@ -20,8 +20,9 @@ module Gitlab
         # in contributions to GitLab projects.
         MAX_SHARED_RUNNERS_DURATION_MINUTES = 300_000
 
-        def initialize(build)
-          @build = build
+        def initialize(project, merge_request)
+          @project = project
+          @merge_request = merge_request
         end
 
         def cost_factor
@@ -41,9 +42,11 @@ module Gitlab
 
         private
 
+        attr_reader :project, :merge_request
+
         def minutes_quota
           strong_memoize(:minutes_quota) do
-            ::Ci::Minutes::Quota.new(@build.project.root_namespace)
+            ::Ci::Minutes::Quota.new(project.root_namespace)
           end
         end
 
@@ -71,12 +74,6 @@ module Gitlab
         def merge_request_target_namespace
           strong_memoize(:merge_request_target_namespace) do
             target_project&.root_namespace
-          end
-        end
-
-        def merge_request
-          strong_memoize(:merge_request) do
-            @build&.merge_request
           end
         end
 
