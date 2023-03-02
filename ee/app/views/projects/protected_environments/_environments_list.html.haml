@@ -15,7 +15,7 @@
         %thead
           %tr
             %th= s_('ProtectedEnvironment|Protected Environment (%{protected_environments_count})') % { protected_environments_count: limited_counter_with_delimiter(@protected_environments) }
-            %th= s_('ProtectedEnvironment|Allowed to deploy')
+            %th= s_('ProtectedEnvironment|Allowed to deploy and approve')
             %th= s_('ProtectedEnvironment|Required approvals')
             - if can_admin_project
               %th
