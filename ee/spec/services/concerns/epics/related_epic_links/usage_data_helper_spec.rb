@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Epics::RelatedEpicLinks::UsageDataHelper do
+RSpec.describe Epics::RelatedEpicLinks::UsageDataHelper, feature_category: :portfolio_management do
   using RSpec::Parameterized::TableSyntax
 
   describe '#track_related_epics_event_for' do
