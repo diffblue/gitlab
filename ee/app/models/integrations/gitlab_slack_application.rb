@@ -92,10 +92,6 @@ module Integrations
       false
     end
 
-    def chat_responder
-      Gitlab::Chat::Responder::Slack
-    end
-
     def upgrade_needed?
       slack_integration.present? && slack_integration.upgrade_needed?
     end
