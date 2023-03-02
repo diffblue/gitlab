@@ -3,17 +3,11 @@
 module AuditEvents
   module Streaming
     module EventTypeFilters
-      class CreateService
-        attr_reader :destination, :event_type_filters
-
-        def initialize(destination:, event_type_filters:)
-          @destination = destination
-          @event_type_filters = event_type_filters
-        end
-
+      class CreateService < BaseService
         def execute
           begin
             create_event_type_filters!
+            log_audit_event
           rescue ActiveRecord::RecordInvalid => e
             return ServiceResponse.error(message: e.message)
           end
@@ -29,6 +23,18 @@ module AuditEvents
               destination.event_type_filters.create!(audit_event_type: filter)
             end
           end
+        end
+
+        def log_audit_event
+          audit_context = {
+            name: 'event_type_filters_created',
+            author: current_user,
+            scope: destination.group,
+            target: destination,
+            message: "Created audit event type filter(s): #{event_type_filters.to_sentence}"
+          }
+
+          ::Gitlab::Audit::Auditor.audit(audit_context)
         end
       end
     end

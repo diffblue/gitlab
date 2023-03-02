@@ -29,6 +29,10 @@ module AuditEvents
       { STREAMING_TOKEN_HEADER_KEY => verification_token }.merge(headers.map(&:to_hash).inject(:merge).to_h)
     end
 
+    def audit_details
+      destination_url
+    end
+
     private
 
     def has_fewer_than_20_headers?

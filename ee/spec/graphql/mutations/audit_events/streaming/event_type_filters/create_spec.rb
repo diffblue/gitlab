@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Mutations::AuditEvents::Streaming::EventTypeFilters::Create do
+RSpec.describe Mutations::AuditEvents::Streaming::EventTypeFilters::Create, feature_category: :audit_events do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:destination) { create(:external_audit_event_destination) }
 

@@ -93,4 +93,10 @@ RSpec.describe AuditEvents::ExternalAuditEventDestination, feature_category: :au
   it_behaves_like 'includes Limitable concern' do
     subject { build(:external_audit_event_destination, group: create(:group)) }
   end
+
+  describe '#audit_details' do
+    it "equals to the destination url" do
+      expect(destination.audit_details).to eq(destination.destination_url)
+    end
+  end
 end
