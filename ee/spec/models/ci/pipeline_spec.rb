@@ -135,6 +135,20 @@ RSpec.describe Ci::Pipeline do
           expect(filtered_report_types).to eq(%w(sast))
         end
       end
+
+      context 'when pipeline is a child pipeline' do
+        let_it_be(:parent_pipeline) { create(:ci_empty_pipeline, project: project) }
+        let_it_be(:pipeline) do
+          create(:ci_empty_pipeline, child_of: parent_pipeline, status: :created, project: project)
+        end
+
+        let(:parent_reports) { parent_pipeline.security_reports.reports }
+
+        it 'the reports should be accessible from the parent pipeline', :aggregate_failures do
+          expect(parent_reports.keys).to contain_exactly(*subject.reports.keys)
+          expect(parent_reports).not_to be_empty
+        end
+      end
     end
 
     context 'when pipeline does not have any builds with security reports' do
