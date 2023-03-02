@@ -106,11 +106,11 @@ RSpec.describe 'layouts/nav/sidebar/_project', feature_category: :navigation do
       end
     end
 
-    describe 'Contributors' do
+    describe 'Contributor statistics' do
       it 'has a link to the project contributors path' do
         render
 
-        expect(rendered).to have_link('Contributors', href: project_graph_path(project, current_ref, ref_type: 'heads'))
+        expect(rendered).to have_link('Contributor statistics', href: project_graph_path(project, current_ref, ref_type: 'heads'))
       end
     end
 

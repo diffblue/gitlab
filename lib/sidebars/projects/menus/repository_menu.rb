@@ -92,7 +92,7 @@ module Sidebars
           link = project_graph_path(context.project, context.current_ref, ref_type: ref_type_from_context(context))
 
           ::Sidebars::MenuItem.new(
-            title: _('Contributors'),
+            title: _('Contributor statistics'),
             link: link,
             active_routes: { path: 'graphs#show' },
             item_id: :contributors

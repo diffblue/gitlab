@@ -11379,7 +11379,7 @@ msgstr ""
 msgid "Contributor"
 msgstr ""
 
-msgid "Contributors"
+msgid "Contributor statistics"
 msgstr ""
 
 msgid "Control emails linked to your account"
