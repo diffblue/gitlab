@@ -30,6 +30,7 @@ module EE
       include AfterCommitQueue
       include IidRoutes
       include FromUnion
+      include UpdatedAtFilterable
 
       attr_accessor :skip_future_date_validation
 

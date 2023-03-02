@@ -24,6 +24,14 @@ module API
           default: true,
           desc: 'Include iterations from parent and its ancestors',
           documentation: { example: false }
+        optional :updated_before,
+          type: DateTime,
+          desc: 'Return milestones updated before the specified datetime. Format: ISO 8601 YYYY-MM-DDTHH:MM:SSZ',
+          documentation: { example: '2023-02-28T21:22:12Z' }
+        optional :updated_after,
+          type: DateTime,
+          desc: 'Return milestones updated after the specified datetime. Format: ISO 8601 YYYY-MM-DDTHH:MM:SSZ',
+          documentation: { example: '2023-02-28T21:22:12Z' }
         use :pagination
       end
 
@@ -39,7 +47,9 @@ module API
           include_ancestors: params[:include_ancestors],
           state: params[:state],
           search: nil,
-          in: nil
+          in: nil,
+          updated_before: params[:updated_before],
+          updated_after: params[:updated_after]
         }
 
         finder_params.merge!(search_params) if params[:search]

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IterationsFinder do
+RSpec.describe IterationsFinder, feature_category: :team_planning do
   let_it_be(:root) { create(:group, :private) }
   let_it_be(:group) { create(:group, :private, parent: root) }
   let_it_be(:project_1) { create(:project, namespace: group) }
@@ -11,8 +11,8 @@ RSpec.describe IterationsFinder do
   let_it_be(:iteration_cadence2) { create(:iterations_cadence, group: group, active: true, duration_in_weeks: 2, title: 'two week iterations') }
   let_it_be(:iteration_cadence3) { create(:iterations_cadence, group: root, active: true, duration_in_weeks: 3, title: 'three week iterations') }
 
-  let_it_be(:closed_iteration) { create(:closed_iteration, :skip_future_date_validation, iterations_cadence: iteration_cadence2, start_date: 7.days.ago, due_date: 2.days.ago) }
-  let_it_be(:started_group_iteration) { create(:current_iteration, :skip_future_date_validation, iterations_cadence: iteration_cadence2, title: 'one test', start_date: 1.day.ago, due_date: Date.today) }
+  let_it_be(:closed_iteration) { create(:closed_iteration, :skip_future_date_validation, iterations_cadence: iteration_cadence2, start_date: 7.days.ago, due_date: 2.days.ago, updated_at: 10.days.ago) }
+  let_it_be(:started_group_iteration) { create(:current_iteration, :skip_future_date_validation, iterations_cadence: iteration_cadence2, title: 'one test', start_date: 1.day.ago, due_date: Date.today, updated_at: 5.days.ago) }
   let_it_be(:upcoming_group_iteration) { create(:iteration, iterations_cadence: iteration_cadence1, title: 'Iteration 1', start_date: 1.day.from_now, due_date: 3.days.from_now) }
   let_it_be(:root_group_iteration) { create(:current_iteration, iterations_cadence: iteration_cadence3, start_date: 1.day.ago, due_date: 2.days.from_now) }
   let_it_be(:root_closed_iteration) { create(:closed_iteration, iterations_cadence: iteration_cadence3, start_date: 1.week.ago, due_date: 2.days.ago) }
@@ -186,6 +186,31 @@ RSpec.describe IterationsFinder do
         params[:iteration_cadence_ids] = [iteration_cadence1.id, iteration_cadence2.id]
 
         expect(subject).to contain_exactly(closed_iteration, started_group_iteration, upcoming_group_iteration)
+      end
+
+      context 'by updated_at' do
+        it 'returns iterations filtered only by updated_before' do
+          params[:updated_before] = 3.days.ago.iso8601
+
+          expect(subject).to contain_exactly(closed_iteration, started_group_iteration)
+        end
+
+        it 'returns iterations filtered only by updated_after' do
+          params[:updated_after] = 7.days.ago.iso8601
+
+          expect(subject).to contain_exactly(
+            started_group_iteration,
+            upcoming_group_iteration,
+            root_group_iteration,
+            root_closed_iteration
+          )
+        end
+
+        it 'returns iterations filtered by updated_after and updated_before' do
+          params.merge!(updated_before: 3.days.ago.iso8601, updated_after: 7.days.ago)
+
+          expect(subject).to contain_exactly(started_group_iteration)
+        end
       end
 
       context 'by iteration_wildcard_id' do
