@@ -68,14 +68,18 @@ export const EMAIL_TAKEN_ERROR = '{"email"=>["has already been taken"]}';
 export const GENERIC_DECLINE_ERROR =
   'Transaction declined.generic_decline - Your card was declined';
 export const INSUFFICIENT_FUNDS_ERROR = 'Your card has insufficient funds.';
-export const LAST_NAME_BLANK_ERROR = '"last_name":["can\'t be blank"]';
+export const FIRST_NAME_BLANK_ERROR_VARIATION = `{"first_name":["can't be blank"]}`;
+export const LAST_NAME_BLANK_ERROR = `"last_name":["can't be blank"]`;
+export const LAST_NAME_BLANK_ERROR_VARIATION = `{${LAST_NAME_BLANK_ERROR}}`;
 
 export const errorDictionary = convertObjectPropsToLowerCase({
   [CONTRACT_EFFECTIVE_ERROR]: EXPIRED_SUBSCRIPTION_ERROR,
   [GENERIC_DECLINE_ERROR]: DECLINED_CARD_GENERIC_ERROR,
   [EMAIL_TAKEN_ERROR]: UNLINKED_ACCOUNT_ERROR,
   [INSUFFICIENT_FUNDS_ERROR]: DECLINED_CARD_FUNDS_ERROR,
+  [FIRST_NAME_BLANK_ERROR_VARIATION]: FULL_NAME_REQUIRED_ERROR,
   [LAST_NAME_BLANK_ERROR]: FULL_NAME_REQUIRED_ERROR,
+  [LAST_NAME_BLANK_ERROR_VARIATION]: FULL_NAME_REQUIRED_ERROR,
 });
 
 export const mapSystemToFriendlyError = (systemError) => {
