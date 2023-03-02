@@ -111,7 +111,7 @@ export default {
 </script>
 
 <template>
-  <div class="detail-page-header gl-flex-wrap gl-py-3">
+  <div class="detail-page-header gl-flex-wrap">
     <div class="detail-page-header-body">
       <gl-badge
         class="issuable-status-badge gl-mr-3"
