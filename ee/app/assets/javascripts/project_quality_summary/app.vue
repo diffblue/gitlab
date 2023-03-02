@@ -222,7 +222,8 @@ export default {
             :value="projectQuality.codeQualityReportSummary.count"
           />
           <gl-single-stat
-            class="col-sm-6 col-md-4 code-quality-blocker"
+            class="col-sm-6 col-md-4"
+            title-icon-class="gl-text-red-800"
             data-testid="code-quality-stat"
             title-icon="severity-critical"
             :title="$options.i18n.codeQuality.blockerLabel"
@@ -230,7 +231,8 @@ export default {
             :unit="$options.i18n.codeQuality.unit"
           />
           <gl-single-stat
-            class="col-sm-6 col-md-4 code-quality-critical"
+            class="col-sm-6 col-md-4"
+            title-icon-class="gl-text-red-600"
             data-testid="code-quality-stat"
             title-icon="severity-high"
             :title="$options.i18n.codeQuality.criticalLabel"
