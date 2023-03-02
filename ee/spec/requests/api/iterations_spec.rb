@@ -7,9 +7,24 @@ RSpec.describe API::Iterations, feature_category: :team_planning do
   let_it_be(:parent_group) { create(:group, :private) }
   let_it_be(:group) { create(:group, :private, parent: parent_group) }
 
-  let_it_be(:current_iteration) { create(:iteration, group: group, title: 'search_title', start_date: 5.days.ago, due_date: 1.week.from_now) }
-  let_it_be(:closed_iteration) { create(:iteration, group: group, start_date: 2.weeks.ago, due_date: 1.week.ago) }
-  let_it_be(:ancestor_iteration) { create(:iteration, group: parent_group) }
+  let_it_be(:current_iteration) do
+    create(
+      :iteration,
+      group: group,
+      title: 'search_title',
+      start_date: 5.days.ago,
+      due_date: 1.week.from_now,
+      updated_at: 1.day.ago
+    )
+  end
+
+  let_it_be(:closed_iteration) do
+    create(:iteration, group: group, start_date: 2.weeks.ago, due_date: 1.week.ago, updated_at: 5.days.ago)
+  end
+
+  let_it_be(:ancestor_iteration) do
+    create(:iteration, group: parent_group, updated_at: 10.days.ago)
+  end
 
   before_all do
     parent_group.add_guest(user)
@@ -58,6 +73,38 @@ RSpec.describe API::Iterations, feature_category: :team_planning do
           expect(response).to have_gitlab_http_status(:ok)
           expect(json_response.size).to eq(1)
           expect(json_response.first['id']).to eq(current_iteration.id)
+        end
+      end
+
+      context 'filter by updated_at' do
+        it 'returns iterations filtered only by updated_before' do
+          get api(api_path, user), params: { updated_before: 3.days.ago.iso8601 }
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response.size).to eq(2)
+          expect(json_response).to contain_exactly(
+            hash_including('id' => closed_iteration.id),
+            hash_including('id' => ancestor_iteration.id)
+          )
+        end
+
+        it 'returns iterations filtered only by updated_after' do
+          get api(api_path, user), params: { updated_after: 7.days.ago.iso8601 }
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response.size).to eq(2)
+          expect(json_response).to contain_exactly(
+            hash_including('id' => closed_iteration.id),
+            hash_including('id' => current_iteration.id)
+          )
+        end
+
+        it 'returns iterations filtered by updated_after and updated_before' do
+          get api(api_path, user), params: { updated_after: 7.days.ago.iso8601, updated_before: 3.days.ago }
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response.size).to eq(1)
+          expect(json_response).to contain_exactly(hash_including('id' => closed_iteration.id))
         end
       end
 
