@@ -8,6 +8,8 @@ import DateRangeFilter from 'ee/vue_shared/components/customizable_dashboard/fil
 import {
   GRIDSTACK_MARGIN,
   GRIDSTACK_CSS_HANDLE,
+  GRIDSTACK_CELL_HEIGHT,
+  GRIDSTACK_MIN_ROW,
 } from 'ee/vue_shared/components/customizable_dashboard/constants';
 import { loadCSSFile } from '~/lib/utils/css_utils';
 import { createAlert } from '~/flash';
@@ -117,8 +119,9 @@ describe('CustomizableDashboard', () => {
       expect(GridStack.init).toHaveBeenCalledWith({
         staticGrid: true,
         margin: GRIDSTACK_MARGIN,
-        minRow: 1,
         handle: GRIDSTACK_CSS_HANDLE,
+        cellHeight: GRIDSTACK_CELL_HEIGHT,
+        minRow: GRIDSTACK_MIN_ROW,
       });
     });
 
