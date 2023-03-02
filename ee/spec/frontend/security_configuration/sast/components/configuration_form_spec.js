@@ -2,7 +2,6 @@ import { GlLink } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
-import { nextTick } from 'vue';
 import DynamicFields from 'ee/security_configuration/components/dynamic_fields.vue';
 import ExpandableSection from 'ee/security_configuration/components/expandable_section.vue';
 import AnalyzerConfiguration from 'ee/security_configuration/sast/components/analyzer_configuration.vue';
@@ -191,9 +190,11 @@ describe('ConfigurationForm component', () => {
       });
     });
 
-    it('does not render alert-tip', () => {
+    it('always render the alert-tip', () => {
       const analyzersSectionTip = findAnalyzersSectionTip();
-      expect(analyzersSectionTip.exists()).toBe(false);
+      expect(analyzersSectionTip.exists()).toBe(true);
+      expect(analyzersSectionTip.html()).toContain(ConfigurationForm.i18n.analyzersTipHeading);
+      expect(analyzersSectionTip.html()).toContain(ConfigurationForm.i18n.analyzersTipBody);
     });
 
     describe('when an AnalyzerConfiguration emits an input event', () => {
@@ -211,37 +212,6 @@ describe('ConfigurationForm component', () => {
 
       it('updates the entity binding', () => {
         expect(analyzer.props('entity')).toBe(updatedEntity);
-      });
-    });
-
-    describe('when at least 1 analyzer gets disabled', () => {
-      let analyzer;
-      let updatedEntity;
-
-      beforeEach(() => {
-        analyzer = findAnalyzerConfigurations().at(0);
-        // eslint-disable-next-line prefer-destructuring
-        updatedEntity = sastCiConfiguration.analyzers.nodes[0];
-        updatedEntity.enabled = false;
-        analyzer.vm.$emit('input', updatedEntity);
-      });
-
-      it('renders alert-tip', () => {
-        const analyzersSectionTip = findAnalyzersSectionTip();
-        expect(analyzersSectionTip.exists()).toBe(true);
-        expect(analyzersSectionTip.html()).toContain(ConfigurationForm.i18n.analyzersTipHeading);
-        expect(analyzersSectionTip.html()).toContain(ConfigurationForm.i18n.analyzersTipBody);
-      });
-
-      describe('when alert-tip is dismissed', () => {
-        beforeEach(async () => {
-          findAnalyzersSectionTip().vm.$emit('dismiss');
-          await nextTick();
-        });
-
-        it('should not be displayed', () => {
-          expect(findAnalyzersSectionTip().exists()).toBe(false);
-        });
       });
     });
   });
