@@ -174,7 +174,7 @@ module DesignManagement
           (?<url_filename> #{valid_char}+ \. #{ext})
         }x
 
-        super(path_segment, filename_pattern)
+        compose_link_reference_pattern(path_segment, filename_pattern)
       end
     end
 
