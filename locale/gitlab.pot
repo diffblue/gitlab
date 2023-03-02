@@ -25538,6 +25538,9 @@ msgstr ""
 msgid "Link copied"
 msgstr ""
 
+msgid "Link does not exist"
+msgstr ""
+
 msgid "Link text"
 msgstr ""
 
