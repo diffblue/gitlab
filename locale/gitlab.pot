@@ -25730,9 +25730,6 @@ msgstr ""
 msgid "Locked"
 msgstr ""
 
-msgid "Locked Files"
-msgstr ""
-
 msgid "Locked by %{fileLockUserName}"
 msgstr ""
 

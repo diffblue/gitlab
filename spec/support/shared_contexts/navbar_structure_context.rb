@@ -37,7 +37,7 @@ RSpec.shared_context 'project navbar structure' do
           _('Contributor statistics'),
           _('Graph'),
           _('Compare revisions'),
-          (_('Locked Files') if Gitlab.ee?)
+          (_('Locked files') if Gitlab.ee?)
         ]
       },
       {

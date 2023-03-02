@@ -36,7 +36,7 @@ RSpec.describe 'layouts/nav/sidebar/_project', feature_category: :navigation do
 
         render
 
-        expect(rendered).to have_link('Locked Files', href: project_path_locks_path(project))
+        expect(rendered).to have_link('Locked files', href: project_path_locks_path(project))
       end
     end
   end
