@@ -22,5 +22,5 @@ export default {
 </script>
 
 <template>
-  <gl-line-chart :data="data" :option="options" responsive />
+  <gl-line-chart :data="data" :option="options" responsive class="gl-overflow-hidden" />
 </template>

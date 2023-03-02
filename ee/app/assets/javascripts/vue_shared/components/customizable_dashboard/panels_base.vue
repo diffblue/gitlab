@@ -1,11 +1,13 @@
 <script>
 import { GlLoadingIcon } from '@gitlab/ui';
 import dataSources from 'ee/product_analytics/dashboards/data_sources';
+import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
 
 export default {
   name: 'AnalyticsDashboardPanel',
   components: {
     GlLoadingIcon,
+    TooltipOnTruncate,
     LineChart: () =>
       import('ee/product_analytics/dashboards/components/visualizations/line_chart.vue'),
     DataTable: () =>
@@ -81,7 +83,15 @@ export default {
   <div
     class="grid-stack-item-content gl-shadow-sm gl-rounded-base gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
   >
-    <strong v-if="title" class="gl-mb-2" data-testid="panel-title">{{ title }}</strong>
+    <tooltip-on-truncate
+      v-if="title"
+      :title="title"
+      placement="top"
+      boundary="viewport"
+      class="gl-pb-3 gl-text-truncate"
+    >
+      <strong>{{ title }}</strong>
+    </tooltip-on-truncate>
     <div class="gl-overflow-y-auto gl-h-full" :class="{ 'gl--flex-center': loading }">
       <gl-loading-icon v-if="loading" size="lg" />
       <component

@@ -23,7 +23,8 @@ export default {
       return this.options.title ?? '';
     },
     decimalPlaces() {
-      return parseInt(this.options.decimalPlaces, 10) || 0;
+      // Only set the decimals places if this has data
+      return (this.data && parseInt(this.options.decimalPlaces, 10)) || 0;
     },
   },
 };
