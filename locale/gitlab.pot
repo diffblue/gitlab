@@ -35597,6 +35597,9 @@ msgstr ""
 msgid "Register a one-time password authenticator"
 msgstr ""
 
+msgid "Register a one-time password authenticator or a WebAuthn device first."
+msgstr ""
+
 msgid "Register a universal two-factor (U2F) device"
 msgstr ""
 
@@ -46651,6 +46654,9 @@ msgid "Use the public cloud instance URL (%{kroki_public_url}) or %{install_link
 msgstr ""
 
 msgid "Use the search bar on the top of this page"
+msgstr ""
+
+msgid "Use this section to disable your one-time password authenticator and WebAuthn devices. You can also generate new recovery codes."
 msgstr ""
 
 msgid "Use this token to validate received payloads."
