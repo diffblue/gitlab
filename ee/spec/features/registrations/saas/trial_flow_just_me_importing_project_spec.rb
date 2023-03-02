@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Trial flow for user picking just me and importing a project', :js, :saas, :saas_registration,
+RSpec.describe 'Trial flow for user picking just me and importing a project', :js, :saas_registration,
 feature_category: :onboarding do
   it 'registers the user and starts to import a project' do
     visit new_trial_registration_path

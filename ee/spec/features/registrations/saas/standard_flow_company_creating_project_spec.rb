@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Standard flow for user picking company and creating a project', :js, :saas, :saas_registration,
+RSpec.describe 'Standard flow for user picking company and creating a project', :js, :saas_registration,
 feature_category: :onboarding do
   context 'when opting into a trial' do
     it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
