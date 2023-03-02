@@ -8,7 +8,7 @@ import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import ProjectSelect from '~/sidebar/components/move/issuable_move_dropdown.vue';
 import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
 
-import { IssuableType, WORKSPACE_PROJECT } from '~/issues/constants';
+import { TYPE_TEST_CASE, WORKSPACE_PROJECT } from '~/issues/constants';
 import { mockProvide, mockTestCase } from '../mock_data';
 
 const createComponent = ({
@@ -297,7 +297,7 @@ describe('TestCaseSidebar', () => {
         fullPath: projectFullPath,
         allowLabelRemove: canEditTestCase,
         allowMultiselect: true,
-        issuableType: IssuableType.TestCase,
+        issuableType: TYPE_TEST_CASE,
         attrWorkspacePath: projectFullPath,
         workspaceType: 'project',
         variant: 'sidebar',
