@@ -3,11 +3,11 @@ import { GlTooltipDirective as GlTooltip, GlButton, GlIcon, GlLoadingIcon } from
 import { s__, __ } from '~/locale';
 import ProjectSelect from '~/sidebar/components/move/issuable_move_dropdown.vue';
 import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
-import { IssuableType } from '~/issues/constants';
-import { LabelType } from '~/sidebar/components/labels/labels_select_widget/constants';
+import { IssuableType, WORKSPACE_PROJECT } from '~/issues/constants';
 import TestCaseGraphQL from '../mixins/test_case_graphql';
 
 export default {
+  WORKSPACE_PROJECT,
   components: {
     GlButton,
     GlIcon,
@@ -53,7 +53,6 @@ export default {
     return {
       sidebarExpandedOnClick: false,
       testCaseLabelsSelectInProgress: false,
-      LabelType,
       IssuableType,
     };
   },
@@ -204,7 +203,7 @@ export default {
       workspace-type="project"
       class="block labels js-labels-block"
       variant="sidebar"
-      :label-create-type="LabelType.project"
+      :label-create-type="$options.WORKSPACE_PROJECT"
       :labels-filter-base-path="testCasesPath"
       @toggleCollapse="handleLabelsCollapsedButtonClick"
     >

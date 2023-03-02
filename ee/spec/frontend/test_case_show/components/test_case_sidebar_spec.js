@@ -8,8 +8,7 @@ import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import ProjectSelect from '~/sidebar/components/move/issuable_move_dropdown.vue';
 import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
 
-import { IssuableType } from '~/issues/constants';
-import { LabelType } from '~/sidebar/components/labels/labels_select_widget/constants';
+import { IssuableType, WORKSPACE_PROJECT } from '~/issues/constants';
 import { mockProvide, mockTestCase } from '../mock_data';
 
 const createComponent = ({
@@ -302,7 +301,7 @@ describe('TestCaseSidebar', () => {
         attrWorkspacePath: projectFullPath,
         workspaceType: 'project',
         variant: 'sidebar',
-        labelCreateType: LabelType.project,
+        labelCreateType: WORKSPACE_PROJECT,
         labelsFilterBasePath: testCasesPath,
       });
       expect(labelSelectEl.text()).toBe('None');

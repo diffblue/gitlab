@@ -15,7 +15,7 @@ import {
   getFilterParams,
   getFilterValues,
 } from 'jest/vue_shared/components/filtered_search_bar/store/modules/filters/test_helper';
-import { ITEM_TYPE } from '~/groups/constants';
+import { WORKSPACE_PROJECT } from '~/issues/constants';
 import * as commonUtils from '~/lib/utils/common_utils';
 import * as urlUtils from '~/lib/utils/url_utility';
 import {
@@ -109,7 +109,7 @@ describe('Filter bar', () => {
   };
 
   function createComponent(initialStore, options = {}) {
-    const { type = ITEM_TYPE.PROJECT } = options;
+    const { type = WORKSPACE_PROJECT } = options;
     return shallowMount(FilterBar, {
       store: initialStore,
       provide: () => ({

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { ITEM_TYPE } from '~/groups/constants';
+import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import createDefaultClient from '~/lib/graphql';
 import { getParameterValues } from '~/lib/utils/url_utility';
 import { extractFilterQueryParameters } from '~/analytics/shared/utils';
@@ -25,8 +25,8 @@ export default () => {
   store.dispatch('filters/setEndpoints', {
     milestonesEndpoint: milestonePath,
     labelsEndpoint: labelsPath,
-    groupEndpoint: type === ITEM_TYPE.GROUP ? fullPath : null,
-    projectEndpoint: type === ITEM_TYPE.PROJECT ? fullPath : null,
+    groupEndpoint: type === WORKSPACE_GROUP ? fullPath : null,
+    projectEndpoint: type === WORKSPACE_PROJECT ? fullPath : null,
   });
 
   const {
