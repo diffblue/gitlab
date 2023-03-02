@@ -69,15 +69,19 @@ export default {
 <template>
   <div
     :class="{
-      'gl-pr-3': canRemove,
+      'gl-pr-2': canRemove,
     }"
-    class="item-body d-flex align-items-center gl-px-5"
+    class="item-body d-flex align-items-center gl-px-3"
   >
     <div
       class="item-contents gl-display-flex gl-align-items-center gl-flex-wrap gl-flex-grow-1 flex-xl-nowrap gl-min-h-7"
     >
       <div class="item-title d-flex align-items-xl-center mb-xl-0 gl-min-w-0">
-        <gl-icon class="gl-mr-3" :name="getLinkIcon(iconName)" :class="iconClasses" />
+        <gl-icon
+          class="gl-mr-3 gl-text-gray-500"
+          :name="getLinkIcon(iconName)"
+          :class="iconClasses"
+        />
         <gl-link
           :href="linkValue"
           target="_blank"
@@ -92,8 +96,9 @@ export default {
       v-gl-tooltip
       icon="close"
       category="tertiary"
+      size="small"
       :disabled="isRemoveDisabled"
-      class="gl-ml-3"
+      class="js-issue-item-remove-button gl-ml-5"
       :title="$options.i18n.linkRemoveText"
       :aria-label="$options.i18n.linkRemoveText"
       @click="handleRemove"

@@ -28,18 +28,18 @@ export default {
 
 <template>
   <div
-    class="related-issues-token-body gl-border-t gl-bg-gray-10"
+    class="related-issues-token-body"
     :class="{
-      'bordered-box': isFormVisible,
+      'gl-border-t': !isFormVisible,
     }"
     data-testid="resource-link-list"
   >
-    <ul class="related-items-list content-list">
+    <ul class="related-items-list content-list gl-p-3!">
       <li
         v-for="link in resourceLinks"
         :key="link.id"
         :data-key="link.id"
-        class="list-item gl-pt-0 gl-pb-0"
+        class="list-item gl-py-0! gl-border-0!"
       >
         <resource-link-item
           :id-key="link.id"
