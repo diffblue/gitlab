@@ -5,13 +5,22 @@
   "data": {
     "type": "cube_analytics",
     "query": {
-      "measures": ["Sessions.count"],
+      "measures": [
+        "Sessions.count"
+      ],
       "limit": 100,
       "timezone": "UTC",
-      "filters": [],
-      "dimensions": [],
-      "timeDimensions": []
+      "filters": [
+
+      ],
+      "dimensions": [
+
+      ],
+      "timeDimensions": [
+
+      ]
     }
   },
-  "options": {}
+  "options": {
+  }
 }

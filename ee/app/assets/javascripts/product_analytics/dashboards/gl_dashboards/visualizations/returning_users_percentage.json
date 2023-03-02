@@ -10,9 +10,15 @@
       ],
       "limit": 100,
       "timezone": "UTC",
-      "filters": [],
-      "dimensions": [],
-      "timeDimensions": []
+      "filters": [
+
+      ],
+      "dimensions": [
+
+      ],
+      "timeDimensions": [
+
+      ]
     }
   },
   "options": {

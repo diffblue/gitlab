@@ -5,13 +5,22 @@
   "data": {
     "type": "cube_analytics",
     "query": {
-      "measures": ["TrackedEvents.count"],
+      "measures": [
+        "TrackedEvents.count"
+      ],
       "limit": 100,
       "timezone": "UTC",
-      "filters": [],
-      "dimensions": [],
-      "timeDimensions": []
+      "filters": [
+
+      ],
+      "dimensions": [
+
+      ],
+      "timeDimensions": [
+
+      ]
     }
   },
-  "options": {}
+  "options": {
+  }
 }

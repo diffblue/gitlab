@@ -5,16 +5,39 @@
   "data": {
     "type": "cube_analytics",
     "query": {
-      "measures": ["TrackedEvents.pageViewsCount"],
-      "timeDimensions": [{ "dimension": "TrackedEvents.utcTime", "granularity": "day" }],
-      "filters": [{ "operator": "equals", "values": ["pageview"], "member": "TrackedEvents.eventType" }],
+      "measures": [
+        "TrackedEvents.pageViewsCount"
+      ],
+      "timeDimensions": [
+        {
+          "dimension": "TrackedEvents.utcTime",
+          "granularity": "day"
+        }
+      ],
+      "filters": [
+        {
+          "operator": "equals",
+          "values": [
+            "pageview"
+          ],
+          "member": "TrackedEvents.eventType"
+        }
+      ],
       "limit": 100,
       "timezone": "UTC",
-      "dimensions": []
+      "dimensions": [
+
+      ]
     }
   },
   "options": {
-    "xAxis": { "name": "Time", "type": "time" },
-    "yAxis": { "name": "Counts", "type": "time" }
+    "xAxis": {
+      "name": "Time",
+      "type": "time"
+    },
+    "yAxis": {
+      "name": "Counts",
+      "type": "time"
+    }
   }
 }
