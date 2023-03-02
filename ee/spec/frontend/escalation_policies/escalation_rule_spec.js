@@ -44,10 +44,6 @@ describe('EscalationRule', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findStatusDropdown = () => wrapper.findByTestId('alert-status-dropdown');
   const findStatusDropdownOptions = () => findStatusDropdown().findAllComponents(GlDropdownItem);
 
@@ -163,9 +159,8 @@ describe('EscalationRule', () => {
               },
             },
           });
-          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-          // eslint-disable-next-line no-restricted-syntax
-          wrapper.setData({ hasFocus: false });
+
+          wrapper.vm.$el.dispatchEvent(new Event('focusout'));
         });
 
         it(`sets form group validation state to ${formState}`, () => {
