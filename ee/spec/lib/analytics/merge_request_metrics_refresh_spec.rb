@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Analytics::MergeRequestMetricsRefresh do
+RSpec.describe Analytics::MergeRequestMetricsRefresh, feature_category: :devops_reports do
   subject { calculator_class.new(merge_request) }
 
   around do |example|
@@ -32,6 +32,12 @@ RSpec.describe Analytics::MergeRequestMetricsRefresh do
   describe '#execute' do
     it 'updates metric via update_metric! method' do
       expect { subject.execute }.to change { merge_request.metrics.first_comment_at }.to(be_like_time(Time.zone.now))
+    end
+
+    it 'when MR was deleted right before metrics refresh does not raise an error' do
+      merge_request.destroy!
+
+      expect { subject.execute }.not_to raise_error
     end
 
     context 'when metric is already present' do

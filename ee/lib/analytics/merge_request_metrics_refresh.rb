@@ -8,10 +8,9 @@ module Analytics
 
     def execute(force: false)
       merge_requests.each do |mr|
-        mr.ensure_metrics
-        mr.reset # clear already loaded (nil) metrics association
-        metrics = mr.metrics
+        metrics = ensure_metrics(mr)
 
+        next unless metrics
         next if !force && metric_already_present?(metrics)
 
         update_metric!(metrics)
@@ -34,6 +33,14 @@ module Analytics
 
     def update_metric!(metrics)
       raise NotImplementedError
+    end
+
+    def ensure_metrics(mr)
+      mr.ensure_metrics!
+      mr.reset # clear already loaded (nil) metrics association
+      mr.metrics
+    rescue ActiveRecord::InvalidForeignKey
+      nil # MR was deleted before metrics were created. So there is no metrics anymore.
     end
   end
 end
