@@ -859,4 +859,21 @@ RSpec.describe Ci::Pipeline do
       it { is_expected.to be_truthy }
     end
   end
+
+  describe '#total_ci_minutes_consumed' do
+    let(:pipeline_consumption) do
+      instance_double(::Gitlab::Ci::Minutes::PipelineConsumption, amount: 26)
+    end
+
+    before do
+      allow(::Gitlab::Ci::Minutes::PipelineConsumption)
+        .to receive(:new)
+        .with(pipeline)
+        .and_return(pipeline_consumption)
+    end
+
+    it "returns calculated ci_minutes" do
+      expect(pipeline.total_ci_minutes_consumed).to eq(26)
+    end
+  end
 end

@@ -233,6 +233,10 @@ module EE
         security_scans.with_errors.exists?
       end
 
+      def total_ci_minutes_consumed
+        ::Gitlab::Ci::Minutes::PipelineConsumption.new(self).amount
+      end
+
       private
 
       def has_security_reports?

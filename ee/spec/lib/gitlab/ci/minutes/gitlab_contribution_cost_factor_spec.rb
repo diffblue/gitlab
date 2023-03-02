@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Minutes::GitlabContributionCostFactor do
+RSpec.describe Gitlab::Ci::Minutes::GitlabContributionCostFactor, feature_category: :continuous_integration do
   using RSpec::Parameterized::TableSyntax
   include ProjectForksHelper
 
@@ -51,7 +51,7 @@ RSpec.describe Gitlab::Ci::Minutes::GitlabContributionCostFactor do
     end
 
     it 'returns the expected cost factor' do
-      result = described_class.new(build).cost_factor
+      result = described_class.new(build.project, build.pipeline.merge_request).cost_factor
 
       expect(result&.floor(4)).to eq(expectation&.floor(4))
     end

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::UpdateBuildMinutesService do
+RSpec.describe Ci::Minutes::UpdateBuildMinutesService, feature_category: :continuous_integration do
   include ::Ci::MinutesHelpers
 
   let(:namespace) { create(:group, shared_runners_minutes_limit: 100) }
@@ -37,6 +37,20 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService do
       it 'does not update project monthly usage' do
         expect { subject }.not_to change { Ci::Minutes::ProjectMonthlyUsage.count }
       end
+
+      context 'when refactor_ci_minutes_consumption feature flag is disabled' do
+        before do
+          stub_feature_flags(refactor_ci_minutes_consumption: false)
+        end
+
+        it 'does not update namespace monthly usage' do
+          expect { subject }.not_to change { Ci::Minutes::NamespaceMonthlyUsage.count }
+        end
+
+        it 'does not update project monthly usage' do
+          expect { subject }.not_to change { Ci::Minutes::ProjectMonthlyUsage.count }
+        end
+      end
     end
 
     shared_examples 'updates usage' do |expected_ci_minutes, expected_shared_runners_duration|
@@ -68,6 +82,23 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService do
 
         expect(project_usage.amount_used.to_f).to eq(expected_ci_minutes)
         expect(project_usage.shared_runners_duration).to eq(expected_shared_runners_duration)
+      end
+
+      context 'when refactor_ci_minutes_consumption feature flag is disabled' do
+        before do
+          stub_feature_flags(refactor_ci_minutes_consumption: false)
+        end
+
+        it 'performs the same and tracks usages' do
+          subject
+
+          expect(project.statistics.reload.shared_runners_seconds)
+            .to eq(expected_ci_minutes * 60)
+          expect(namespace_usage.amount_used.to_f)
+            .to eq((namespace.reload.namespace_statistics.shared_runners_seconds.to_f / 60).round(2))
+          expect(project_usage.amount_used.to_f).to eq(expected_ci_minutes)
+          expect(project_usage.shared_runners_duration).to eq(expected_shared_runners_duration)
+        end
       end
     end
 
@@ -101,7 +132,7 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService do
 
       context 'when consumption is 0', :saas do
         before do
-          allow_next_instance_of(::Gitlab::Ci::Minutes::BuildConsumption) do |consumption|
+          allow_next_instance_of(::Gitlab::Ci::Minutes::Consumption) do |consumption|
             allow(consumption).to receive(:amount).and_return(0)
           end
         end
