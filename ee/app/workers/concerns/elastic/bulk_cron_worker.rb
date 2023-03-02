@@ -20,12 +20,12 @@ module Elastic
         return false
       end
 
+      return if legacy_lock_exists? # skip execution if legacy lease is still obtained
+
       if shard_number
         process_shard(shard_number)
-      elsif Feature.enabled?(:parallel_bulk_cron_worker)
-        schedule_shards
       else
-        process_all_shards
+        schedule_shards
       end
     rescue Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError
       # We're scheduled on a cronjob, so nothing to do here
@@ -34,8 +34,6 @@ module Elastic
     private
 
     def process_shard(shard_number)
-      return if legacy_lock_exists? # skip execution if legacy lease is still obtained
-
       in_lock("#{self.class.name.underscore}/shard/#{shard_number}", ttl: 10.minutes, retries: 10, sleep_sec: 1) do
         service.execute(shards: [shard_number]).tap do |records_count|
           log_extra_metadata_on_done(:records_count, records_count)
@@ -48,21 +46,8 @@ module Elastic
     end
 
     def schedule_shards
-      return if legacy_lock_exists? # skip execution if legacy lease is still obtained
-
       Elastic::ProcessBookkeepingService::SHARDS.each do |shard_number|
         self.class.perform_async(shard_number)
-      end
-    end
-
-    def process_all_shards
-      in_lock(self.class.name.underscore, ttl: 10.minutes, retries: 10, sleep_sec: 1) do
-        service.execute.tap do |records_count|
-          log_extra_metadata_on_done(:records_count, records_count)
-
-          # Requeue current worker if the queue isn't empty
-          self.class.perform_in(RESCHEDULE_INTERVAL) if should_requeue?(records_count)
-        end
       end
     end
 
