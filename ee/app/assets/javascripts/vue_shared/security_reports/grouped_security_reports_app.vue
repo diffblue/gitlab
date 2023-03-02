@@ -6,11 +6,11 @@ import { spriteIcon } from '~/lib/utils/common_utils';
 import { s__, n__, __, sprintf } from '~/locale';
 import { componentNames } from 'ee/ci/reports/components/issue_body';
 import { fetchPolicies } from '~/lib/graphql';
-import { mrStates } from '~/issuable/popover/constants';
 import GroupedIssuesList from '~/ci/reports/components/grouped_issues_list.vue';
 import ReportSection from '~/ci/reports/components/report_section.vue';
 import SummaryRow from '~/ci/reports/components/summary_row.vue';
 import { LOADING } from '~/ci/reports/constants';
+import { STATUS_CLOSED, STATUS_MERGED } from '~/issues/constants';
 import Tracking from '~/tracking';
 import MergeRequestArtifactDownload from '~/vue_shared/security_reports/components/artifact_downloads/merge_request_artifact_download.vue';
 import SecuritySummary from '~/vue_shared/security_reports/components/security_summary.vue';
@@ -339,7 +339,7 @@ export default {
       return this.enabledReports.secretDetection;
     },
     isMRActive() {
-      return this.mrState !== mrStates.merged && this.mrState !== mrStates.closed;
+      return this.mrState !== STATUS_MERGED && this.mrState !== STATUS_CLOSED;
     },
     hasDivergedFromTargetBranch() {
       return this.divergedCommitsCount > 0;

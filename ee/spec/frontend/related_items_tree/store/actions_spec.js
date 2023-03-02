@@ -2,7 +2,6 @@ import MockAdapter from 'axios-mock-adapter';
 import mockProjects from 'test_fixtures_static/projects.json';
 import {
   ChildType,
-  ChildState,
   SNOWPLOW_EPIC_ACTIVITY,
   trackingAddedIssue,
 } from 'ee/related_items_tree/constants';
@@ -17,7 +16,7 @@ import Tracking from '~/tracking';
 import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
 import { createAlert } from '~/alert';
-import { TYPE_EPIC } from '~/issues/constants';
+import { STATUS_OPEN, TYPE_EPIC } from '~/issues/constants';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { itemAddFailureTypesMap, PathIdSeparator } from '~/related_issues/constants';
@@ -1207,7 +1206,7 @@ describe('RelatedItemTree', () => {
               {
                 type: 'receiveCreateItemSuccess',
                 payload: {
-                  rawItem: { ...mockEpic1, path: '', state: ChildState.Open, created_at: '' },
+                  rawItem: { ...mockEpic1, path: '', state: STATUS_OPEN, created_at: '' },
                 },
               },
               {

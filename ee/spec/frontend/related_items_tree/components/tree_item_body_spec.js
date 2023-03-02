@@ -8,13 +8,14 @@ import ItemWeight from 'ee/boards/components/issue_card_weight.vue';
 import StateTooltip from 'ee/related_items_tree/components/state_tooltip.vue';
 import TreeItemBody from 'ee/related_items_tree/components/tree_item_body.vue';
 
-import { ChildType, ChildState } from 'ee/related_items_tree/constants';
+import { ChildType } from 'ee/related_items_tree/constants';
 import createDefaultStore from 'ee/related_items_tree/store';
 import * as epicUtils from 'ee/related_items_tree/utils/epic_utils';
 import ItemDueDate from '~/boards/components/issue_due_date.vue';
 import { PathIdSeparator } from '~/related_issues/constants';
 import ItemAssignees from '~/issuable/components/issue_assignees.vue';
 import ItemMilestone from '~/issuable/components/issue_milestone.vue';
+import { STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
 
 import {
   mockParentItem,
@@ -141,7 +142,7 @@ describe('RelatedItemsTree', () => {
       describe('isOpen', () => {
         it('returns true when `item.state` value is `opened`', async () => {
           wrapper.setProps({
-            item: { ...mockItem, state: ChildState.Open },
+            item: { ...mockItem, state: STATUS_OPEN },
           });
 
           await nextTick();
@@ -163,7 +164,7 @@ describe('RelatedItemsTree', () => {
       describe('isClosed', () => {
         it('returns true when `item.state` value is `closed`', async () => {
           wrapper.setProps({
-            item: { ...mockItem, state: ChildState.Closed },
+            item: { ...mockItem, state: STATUS_CLOSED },
           });
 
           await nextTick();
@@ -216,7 +217,7 @@ describe('RelatedItemsTree', () => {
       describe('stateText', () => {
         it('returns string `Created` when `item.state` value is `created`', async () => {
           wrapper.setProps({
-            item: { ...mockItem, state: ChildState.Open },
+            item: { ...mockItem, state: STATUS_OPEN },
           });
 
           await nextTick();
@@ -225,7 +226,7 @@ describe('RelatedItemsTree', () => {
 
         it('returns string `Closed` when `item.state` value is `closed`', async () => {
           wrapper.setProps({
-            item: { ...mockItem, state: ChildState.Closed },
+            item: { ...mockItem, state: STATUS_CLOSED },
           });
 
           await nextTick();
@@ -236,7 +237,7 @@ describe('RelatedItemsTree', () => {
       describe('stateIconClass', () => {
         it('returns string `issue-token-state-icon-open gl-text-green-500` when `item.state` value is `opened`', async () => {
           wrapper.setProps({
-            item: { ...mockItem, state: ChildState.Open },
+            item: { ...mockItem, state: STATUS_OPEN },
           });
 
           await nextTick();
@@ -256,7 +257,7 @@ describe('RelatedItemsTree', () => {
 
         it('returns string `issue-token-state-icon-closed gl-text-blue-500` when `item.state` value is `closed`', async () => {
           wrapper.setProps({
-            item: { ...mockItem, state: ChildState.Closed },
+            item: { ...mockItem, state: STATUS_CLOSED },
           });
 
           await nextTick();
