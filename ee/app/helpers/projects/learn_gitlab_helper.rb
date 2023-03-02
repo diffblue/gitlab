@@ -40,7 +40,7 @@ module Projects
         ]
       end
 
-      if ::Gitlab::CurrentSettings.should_check_namespace_plan? && !can_start_trial?(project)
+      unless can_start_trial?(project)
         data[:trial_started][:enabled] = false
         data[:trial_started][:message] =
           s_('LearnGitlab|Contact your administrator to start a free Ultimate trial.')
@@ -86,16 +86,14 @@ module Projects
     end
 
     def action_urls(project)
-      urls = action_issue_urls(project).merge(
+      urls = {
         pipeline_created: project_pipelines_path(project),
         issue_created: project_issues_path(project),
         git_write: project_path(project),
         merge_request_created: project_merge_requests_path(project),
         user_added: '#',
         **deploy_section_action_urls(project)
-      )
-
-      return urls unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
+      }
 
       trial_items = {
         trial_started: project_project_members_path(project),
@@ -116,12 +114,6 @@ module Projects
 
     def new_trial_path_with_glm(content:, source: GITLAB_COM)
       new_trial_path({ glm_source: source, glm_content: content })
-    end
-
-    def action_issue_urls(project)
-      Onboarding::Completion::ACTION_ISSUE_IDS.transform_values do |id|
-        project_issue_url(project, id)
-      end
     end
 
     def deploy_section_action_urls(project)

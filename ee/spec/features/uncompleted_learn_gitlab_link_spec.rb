@@ -58,13 +58,26 @@ RSpec.describe 'Uncompleted learn gitlab link', :feature, :js, feature_category:
       expect_correct_candidate_link(find_link('Create a repository'), project_path(project))
       expect_correct_candidate_link(find_link('Invite your colleagues'), '#')
       expect_correct_candidate_link(find_link("Set up your first project's CI/CD"), project_pipelines_path(project))
-      expect_correct_candidate_link(find_link('Start a free trial of GitLab Ultimate'), project_issues_path(project, 2))
-      expect_correct_candidate_link(find_link('Add code owners'), project_issues_path(project, 10))
-      expect_correct_candidate_link(find_link('Enable require merge approvals'), project_issues_path(project, 11))
       expect_correct_candidate_link(find_link('Submit a merge request (MR)'), project_merge_requests_path(project))
+
       expect_correct_candidate_link(
         find_link('Run a Security scan using CI/CD'),
         project_security_configuration_path(project)
+      )
+
+      expect_correct_candidate_link(
+        find_link('Start a free trial of GitLab Ultimate'),
+        new_trial_path(glm_content: 'onboarding-start-trial')
+      )
+
+      expect_correct_candidate_link(
+        find_link('Enable require merge approvals'),
+        new_trial_path(glm_content: 'onboarding-require-merge-approvals')
+      )
+
+      expect_correct_candidate_link(
+        find_link('Add code owners'),
+        new_trial_path(glm_content: 'onboarding-code-owners')
       )
 
       issue_link.click
@@ -95,7 +108,7 @@ RSpec.describe 'Uncompleted learn gitlab link', :feature, :js, feature_category:
   end
 
   def expect_correct_candidate_link(link, path)
-    expect(link['href']).to match(path)
+    expect(link['href']).to include(path)
     expect(link['data-testid']).to eq('uncompleted-learn-gitlab-link')
   end
 end
