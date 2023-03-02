@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::TerraformStateVersionRegistry, :geo, type: :model do
+RSpec.describe Geo::TerraformStateVersionRegistry, :geo, type: :model, feature_category: :geo_replication do
   let(:registry) { create(:geo_terraform_state_version_registry) }
 
   specify 'factory is valid' do

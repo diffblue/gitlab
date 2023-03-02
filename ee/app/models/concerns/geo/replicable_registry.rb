@@ -84,7 +84,7 @@ module Geo::ReplicableRegistry
       end
 
       before_transition any => :pending do |registry, _|
-        registry.retry_at = 0
+        registry.retry_at = nil
         registry.retry_count = 0
       end
 

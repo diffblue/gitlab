@@ -29,8 +29,8 @@ RSpec.shared_examples 'a Geo framework registry' do
   end
 
   context 'finders' do
-    let!(:failed_item1) { create(registry_class_factory, :failed) }
-    let!(:failed_item2) { create(registry_class_factory, :failed) }
+    let!(:failed_item1) { create(registry_class_factory, :failed, retry_at: 1.minute.ago) }
+    let!(:failed_item2) { create(registry_class_factory, :failed, retry_at: 1.minute.ago) }
     let!(:unsynced_item1) { create(registry_class_factory) } # rubocop:disable Rails/SaveBang
     let!(:unsynced_item2) { create(registry_class_factory) } # rubocop:disable Rails/SaveBang
 
@@ -210,6 +210,18 @@ RSpec.shared_examples 'a Geo framework registry' do
         expect do
           registry.pending!
         end.to change { registry.pending? }.from(false).to(true)
+      end
+    end
+
+    context 'when the registry has recorded a failure' do
+      let(:registry) { create(registry_class_factory, :failed) }
+
+      it 'clears failure retry fields' do
+        expect do
+          registry.pending!
+          registry.reload
+        end.to change { registry.retry_at }.from(a_kind_of(ActiveSupport::TimeWithZone)).to(nil)
+           .and change { registry.retry_count }.to(0)
       end
     end
   end
