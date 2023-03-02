@@ -1,6 +1,6 @@
 <script>
-import { GlLink, GlAlert, GlSprintf } from '@gitlab/ui';
-import { partition, isString, invert, isEmpty } from 'lodash';
+import { GlLink } from '@gitlab/ui';
+import { partition, isString, invert } from 'lodash';
 import * as Sentry from '@sentry/browser';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import InviteModalBase from '~/invite_members/components/invite_modal_base.vue';
@@ -11,8 +11,6 @@ import {
   OVERAGE_MODAL_BACK_BUTTON,
   OVERAGE_MODAL_CONTINUE_BUTTON,
   OVERAGE_MODAL_LINK_TEXT,
-  TRIAL_ACTIVE_UNLIMITED_USERS_ALERT_TITLE,
-  TRIAL_ACTIVE_UNLIMITED_USERS_ALERT_BODY,
   overageModalInfoText,
   overageModalInfoWarning,
 } from '../constants';
@@ -33,8 +31,6 @@ const EXTRA_SLOTS = [
 export default {
   components: {
     GlLink,
-    GlAlert,
-    GlSprintf,
     InviteModalBase,
   },
   apolloProvider,
@@ -82,16 +78,6 @@ export default {
       type: String,
       required: false,
       default: '',
-    },
-    isCelebration: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    activeTrialDataset: {
-      type: Object,
-      required: false,
-      default: () => ({}),
     },
   },
   data() {
@@ -154,9 +140,6 @@ export default {
     },
     hasInput() {
       return Boolean(this.newGroupToInvite || this.newUsersToInvite.length !== 0);
-    },
-    showActiveTrialUnlimitedUsersNotification() {
-      return !this.isCelebration && !isEmpty(this.activeTrialDataset);
     },
   },
   watch: {
@@ -288,8 +271,6 @@ export default {
     OVERAGE_MODAL_BACK_BUTTON,
     OVERAGE_MODAL_CONTINUE_BUTTON,
     OVERAGE_MODAL_LINK_TEXT,
-    TRIAL_ACTIVE_UNLIMITED_USERS_ALERT_TITLE,
-    TRIAL_ACTIVE_UNLIMITED_USERS_ALERT_BODY,
   },
   OVERAGE_CONTENT_SLOT,
   EXTRA_SLOTS,
@@ -310,7 +291,6 @@ export default {
     :reached-limit="reachedLimit"
     :is-loading="isLoading"
     :invalid-feedback-message="actualFeedbackMessage"
-    :is-celebration="isCelebration"
     @reset="onReset"
     @submit="onSubmit"
     @cancel="onCancel"
@@ -324,25 +304,6 @@ export default {
     </template>
     <template v-for="(_, slot) of $scopedSlots" #[slot]="scope">
       <slot :name="slot" v-bind="scope"></slot>
-    </template>
-    <template #active-trial-alert>
-      <gl-alert
-        v-if="showActiveTrialUnlimitedUsersNotification"
-        class="gl-mb-4"
-        data-testid="alert-trial-info"
-        :dismissible="false"
-        :title="$options.i18n.TRIAL_ACTIVE_UNLIMITED_USERS_ALERT_TITLE"
-      >
-        <gl-sprintf :message="$options.i18n.TRIAL_ACTIVE_UNLIMITED_USERS_ALERT_BODY">
-          <template #groupName>{{ name }}</template>
-
-          <template #dashboardLimit>{{ activeTrialDataset.freeUsersLimit }}</template>
-
-          <template #link="{ content }">
-            <gl-link :href="activeTrialDataset.purchasePath">{{ content }}</gl-link>
-          </template>
-        </gl-sprintf>
-      </gl-alert>
     </template>
   </invite-modal-base>
 </template>
