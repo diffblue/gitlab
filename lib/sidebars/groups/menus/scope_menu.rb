@@ -38,7 +38,8 @@ module Sidebars
           super.merge({
             title: _('Group overview'),
             sprite_icon: 'group',
-            super_sidebar_parent: ::Sidebars::StaticMenu
+            super_sidebar_parent: ::Sidebars::StaticMenu,
+            item_id: :group_overview
           })
         end
       end

@@ -43,7 +43,7 @@ module Sidebars
         def serialize_as_menu_item_args
           super.merge({
             super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::OperationsMenu,
-            item_id: :wiki
+            item_id: :group_kubernetes_clusters
           })
         end
       end
