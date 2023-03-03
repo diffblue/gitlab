@@ -17,3 +17,6 @@ export const RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_ERROR =
 export const ADD_RULE = 'ADD_RULE';
 export const SET_RULE = 'SET_RULE';
 export const SAVE_RULE = 'SAVE_RULE';
+export const EDIT_RULE = 'EDIT_RULE';
+
+export const RECEIVE_RULE_UPDATED = 'RECIEVE_RULE_UPDATED';

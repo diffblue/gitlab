@@ -24,8 +24,8 @@ export const mutations = {
   [types.RECEIVE_MEMBERS_ERROR](state) {
     state.loading = false;
   },
-  [types.RECEIVE_MEMBER_SUCCESS](state, { rule, users }) {
-    Vue.set(state.usersForRules, rule.id, users);
+  [types.RECEIVE_MEMBER_SUCCESS](state, { type, rule, users }) {
+    Vue.set(state.usersForRules, `${type}-${rule.id}`, users);
   },
   [types.REQUEST_UPDATE_PROTECTED_ENVIRONMENT](state) {
     state.loading = true;
@@ -42,5 +42,11 @@ export const mutations = {
   },
   [types.SET_RULE](state, { environment, rules }) {
     state.newDeployAccessLevelsForEnvironment[environment.name] = rules;
+  },
+  [types.EDIT_RULE](state, rule) {
+    Vue.set(state.editingRules, rule.id, { ...rule });
+  },
+  [types.RECEIVE_RULE_UPDATED](state, rule) {
+    Vue.set(state.editingRules, rule.id, null);
   },
 };

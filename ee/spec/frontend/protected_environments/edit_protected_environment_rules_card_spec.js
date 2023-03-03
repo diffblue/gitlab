@@ -1,5 +1,6 @@
 import { GlButton } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { DEPLOYER_RULE_KEY } from 'ee/protected_environments/constants';
 import EditProtectedEnvironmentRulesCard from 'ee/protected_environments/edit_protected_environment_rules_card.vue';
 import { DEVELOPER_ACCESS_LEVEL } from './constants';
 
@@ -16,7 +17,7 @@ describe('ee/protected_environments/edit_protected_environment_rules_card.vue', 
   let wrapper;
 
   const createComponent = ({
-    ruleKey = 'deploy_access_levels',
+    ruleKey = DEPLOYER_RULE_KEY,
     loading = false,
     addButtonText = 'Add Deploy Rule',
     environment = DEFAULT_ENVIRONMENT,
@@ -88,7 +89,9 @@ describe('ee/protected_environments/edit_protected_environment_rules_card.vue', 
     it('emits the addRule event when clicked', () => {
       button.vm.$emit('click');
 
-      expect(wrapper.emitted('addRule')).toEqual([[DEFAULT_ENVIRONMENT]]);
+      expect(wrapper.emitted('addRule')).toEqual([
+        [{ environment: DEFAULT_ENVIRONMENT, ruleKey: DEPLOYER_RULE_KEY }],
+      ]);
     });
   });
 });

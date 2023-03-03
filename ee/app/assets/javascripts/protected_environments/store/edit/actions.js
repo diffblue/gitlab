@@ -1,8 +1,7 @@
 import { getUser, getProjectMembers, getGroupMembers } from '~/rest_api';
 import Api from 'ee/api';
+import { INHERITED_GROUPS, RULE_KEYS } from '../../constants';
 import * as types from './mutation_types';
-
-const INHERITED_GROUPS = '1';
 
 const fetchUsersForRuleForProject = (
   projectId,
@@ -44,33 +43,37 @@ export const fetchAllMembers = async ({ state, dispatch, commit }) => {
 
   try {
     await Promise.all(
-      state.protectedEnvironments.flatMap((env) =>
-        env.deploy_access_levels.map((rule) => dispatch('fetchMembers', rule)),
-      ),
+      state.protectedEnvironments.flatMap((env) => dispatch('fetchAllMembersForEnvironment', env)),
     );
   } finally {
     commit(types.RECEIVE_MEMBERS_FINISH);
   }
 };
 
-export const fetchMembers = ({ state, commit }, rule) => {
+export const fetchAllMembersForEnvironment = ({ dispatch }, environment) => {
+  RULE_KEYS.flatMap((type) =>
+    environment[type].map((rule) => dispatch('fetchMembers', { type, rule })),
+  );
+};
+
+export const fetchMembers = ({ state, commit }, { type, rule }) => {
   return fetchUsersForRuleForProject(state.projectId, rule)
     .then((users) => {
-      commit(types.RECEIVE_MEMBER_SUCCESS, { rule, users });
+      commit(types.RECEIVE_MEMBER_SUCCESS, { type, rule, users });
     })
     .catch((error) => {
       commit(types.RECEIVE_MEMBERS_ERROR, error);
     });
 };
 
-export const deleteRule = ({ dispatch }, { environment, rule }) => {
+export const deleteRule = ({ dispatch }, { environment, rule, ruleKey }) => {
   const deletedRuleEntries = [
     ['_destroy', true],
     ...Object.entries(rule).filter(([, value]) => value),
   ];
   const updatedEnvironment = {
     name: environment.name,
-    deploy_access_levels: [Object.fromEntries(deletedRuleEntries)],
+    [ruleKey]: [Object.fromEntries(deletedRuleEntries)],
   };
 
   dispatch('updateEnvironment', updatedEnvironment);
@@ -79,10 +82,10 @@ export const deleteRule = ({ dispatch }, { environment, rule }) => {
 export const setRule = ({ commit }, { environment, newRules }) =>
   commit(types.SET_RULE, { environment, rules: newRules });
 
-export const saveRule = ({ dispatch, state }, environment) => {
+export const saveRule = ({ dispatch, state }, { environment, ruleKey }) => {
   const newDeployAccessLevels = state.newDeployAccessLevelsForEnvironment[environment.name].filter(
     ({ user_id: newUserId, group_id: newGroupId, access_level: newAccessLevel }) =>
-      !environment.deploy_access_levels.some(
+      !environment[ruleKey].some(
         ({ user_id: userId, group_id: groupId, access_level: accessLevel }) =>
           (userId !== null && newUserId === userId) ||
           (groupId !== null && newGroupId === groupId) ||
@@ -91,18 +94,34 @@ export const saveRule = ({ dispatch, state }, environment) => {
   );
   return dispatch('updateEnvironment', {
     ...environment,
-    deploy_access_levels: newDeployAccessLevels,
+    [ruleKey]: newDeployAccessLevels,
   });
 };
 
-export const updateEnvironment = ({ state, commit }, environment) => {
+export const updateRule = ({ dispatch, state, commit }, { environment, ruleKey, rule }) => {
+  const updatedRuleEntries = Object.entries(state.editingRules[rule.id]).filter(
+    ([, value]) => value,
+  );
+  const updatedEnvironment = {
+    name: environment.name,
+    [ruleKey]: [Object.fromEntries(updatedRuleEntries)],
+  };
+  return dispatch('updateEnvironment', updatedEnvironment).then(() => {
+    commit(types.RECEIVE_RULE_UPDATED, rule);
+  });
+};
+
+export const updateEnvironment = ({ state, commit, dispatch }, environment) => {
   commit(types.REQUEST_UPDATE_PROTECTED_ENVIRONMENT);
 
   return Api.updateProtectedEnvironment(state.projectId, environment)
     .then(({ data }) => {
       commit(types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_SUCCESS, data);
+      dispatch('fetchAllMembersForEnvironment', data);
     })
     .catch((error) => {
       commit(types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_ERROR, error);
     });
 };
+
+export const editRule = ({ commit }, rule) => commit(types.EDIT_RULE, rule);
