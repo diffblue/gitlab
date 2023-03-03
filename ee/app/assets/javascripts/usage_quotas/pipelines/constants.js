@@ -8,8 +8,6 @@ export const X_AXIS_PROJECT_LABEL = __('Projects');
 export const Y_AXIS_SHARED_RUNNER_LABEL = __('Duration (min)');
 export const Y_AXIS_PROJECT_LABEL = __('CI/CD minutes');
 export const NO_CI_MINUTES_MSG = s__('UsageQuota|No CI minutes usage data available.');
-export const USAGE_BY_MONTH_HEADER = s__('UsageQuota|Usage by month');
-export const USAGE_BY_PROJECT_HEADER = s__('UsageQuota|Usage by project');
 export const CI_CD_MINUTES_USAGE = s__('UsageQuota|CI/CD minutes usage');
 export const SHARED_RUNNER_USAGE = s__('UsageQuota|Shared runner duration');
 

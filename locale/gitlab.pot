@@ -46270,6 +46270,9 @@ msgstr ""
 msgid "Usage statistics"
 msgstr ""
 
+msgid "UsageQuotas|An error occurred loading the transfer data. Please refresh the page to try again."
+msgstr ""
+
 msgid "UsageQuotas|The project-level storage statistics for the Container Registry are directional only and do not include savings for instance-wide deduplication."
 msgstr ""
 
@@ -46439,6 +46442,9 @@ msgid "UsageQuota|This namespace has no projects which used shared runners in th
 msgstr ""
 
 msgid "UsageQuota|This table omits projects that used 0 CI/CD minutes or 0 shared runners duration"
+msgstr ""
+
+msgid "UsageQuota|Transfer"
 msgstr ""
 
 msgid "UsageQuota|Uploads"

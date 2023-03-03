@@ -394,4 +394,12 @@ RSpec.describe GroupsHelper do
     specify { expect(helper.saml_sso_settings_generate_helper_text(display_none: false, text: text)).to eq result }
     specify { expect(helper.saml_sso_settings_generate_helper_text(display_none: true, text: text)).to include('gl-display-none') }
   end
+
+  describe '#group_transfer_app_data' do
+    it 'returns expected hash' do
+      expect(helper.group_transfer_app_data(group)).to eq({
+        full_path: group.full_path
+      })
+    end
+  end
 end
