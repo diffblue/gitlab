@@ -128,8 +128,8 @@ export default {
       return isSearchFiltered(this.search);
     },
     shouldShowCreateRunnerWorkflow() {
-      // create_runner_workflow feature flag
-      return this.glFeatures.createRunnerWorkflow;
+      // create_runner_workflow_for_admin feature flag
+      return this.glFeatures.createRunnerWorkflowForAdmin;
     },
   },
   watch: {
