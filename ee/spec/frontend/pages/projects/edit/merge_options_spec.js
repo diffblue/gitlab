@@ -3,10 +3,10 @@ import {
   ERROR_LOADING_MERGE_OPTION_SETTINGS,
 } from 'ee/pages/projects/edit/merge_options';
 import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import * as createDefaultClient from '~/lib/graphql';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('MergOptions', () => {
   beforeEach(() => {
@@ -23,7 +23,7 @@ describe('MergOptions', () => {
     resetHTMLFixture();
   });
 
-  it('shows flash message on network error', async () => {
+  it('shows alert message on network error', async () => {
     await initMergeOptionSettings();
 
     expect(createAlert).toHaveBeenCalledWith({

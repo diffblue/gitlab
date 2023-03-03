@@ -3,7 +3,7 @@ import * as actions from 'ee/geo_nodes/store/actions';
 import * as types from 'ee/geo_nodes/store/mutation_types';
 import createState from 'ee/geo_nodes/store/state';
 import testAction from 'helpers/vuex_action_helper';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import {
@@ -14,7 +14,7 @@ import {
   MOCK_NODE_STATUSES_RES,
 } from '../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('GeoNodes Store Actions', () => {
   let mock;

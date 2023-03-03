@@ -2,7 +2,7 @@ import { shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
 import RelatedIssues from 'ee/vulnerabilities/components/related_issues.vue';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { TYPE_ISSUE } from '~/issues/constants';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_OK, HTTP_STATUS_SERVICE_UNAVAILABLE } from '~/lib/utils/http_status';
@@ -10,7 +10,7 @@ import * as urlUtility from '~/lib/utils/url_utility';
 import RelatedIssuesBlock from '~/related_issues/components/related_issues_block.vue';
 import { PathIdSeparator } from '~/related_issues/constants';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 const mockAxios = new MockAdapter(axios);
 
