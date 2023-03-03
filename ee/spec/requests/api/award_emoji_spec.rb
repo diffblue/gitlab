@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::AwardEmoji, feature_category: :not_owned do
+RSpec.describe API::AwardEmoji, feature_category: :shared do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:epic) { create(:epic, group: group, author: user) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::DashboardController, feature_category: :not_owned do
+RSpec.describe Admin::DashboardController, feature_category: :shared do
   describe '#index' do
     it "allows an admin user to access the page" do
       sign_in(create(:user, :admin))
