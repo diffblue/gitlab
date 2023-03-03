@@ -10,7 +10,12 @@ module Types
 
       field :name, GraphQL::Types::String,
             null: true,
+            deprecated: { reason: :renamed, replacement: 'DastPreScanVerificationStep.checkType', milestone: '15.10' },
             description: 'Name of the pre scan verification step.'
+
+      field :check_type, Types::Dast::CheckTypeEnum,
+            null: true,
+            description: 'Type of the pre scan verification check.'
 
       field :errors,
             type: [GraphQL::Types::String],

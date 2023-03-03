@@ -32,7 +32,7 @@ RSpec.describe AppSec::Dast::PreScanVerificationSteps::FindOrCreateService, :dyn
         context 'when there is an error during the verification step creation' do
           let_it_be(:step) { 'invalid_step' }
           let(:error_message) do
-            'Error creating or updating PreScanVerificationStep: Name is not a valid pre step name'
+            'Error creating or updating PreScanVerificationStep: invalid_step is not a valid pre step name'
           end
 
           it_behaves_like 'an error occurred in the execute method of dast service'
@@ -42,7 +42,7 @@ RSpec.describe AppSec::Dast::PreScanVerificationSteps::FindOrCreateService, :dyn
       context 'when the verification step was completed before' do
         let_it_be(:verification_step) do
           create(:dast_pre_scan_verification_step,
-            name: 'connection',
+            check_type: 'connection',
             dast_pre_scan_verification: dast_pre_scan_verification,
             verification_errors: [])
         end

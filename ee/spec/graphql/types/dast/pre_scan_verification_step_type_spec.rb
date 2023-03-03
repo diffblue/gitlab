@@ -11,13 +11,13 @@ RSpec.describe GitlabSchema.types['DastPreScanVerificationStep'], :dynamic_analy
   let_it_be(:dast_pre_scan_verification) { create(:dast_pre_scan_verification, dast_profile: dast_profile) }
   let_it_be(:object) do
     create(:dast_pre_scan_verification_step,
-           name: 'connection',
+           check_type: 'connection',
            dast_pre_scan_verification: dast_pre_scan_verification,
            verification_errors: ['Actionable error message'])
   end
 
   let_it_be(:user) { create(:user, developer_projects: [project]) }
-  let_it_be(:fields) { %i[name errors success] }
+  let_it_be(:fields) { %i[name check_type errors success] }
 
   before do
     stub_licensed_features(security_on_demand_scans: true)
@@ -28,11 +28,11 @@ RSpec.describe GitlabSchema.types['DastPreScanVerificationStep'], :dynamic_analy
 
   it { expect(described_class).to have_graphql_fields(fields) }
 
-  describe 'name field' do
+  describe 'check_type field' do
     it 'correctly resolves the field' do
       expected_result = 'connection'
 
-      expect(resolve_field(:name, object, current_user: user)).to eq(expected_result)
+      expect(resolve_field(:check_type, object, current_user: user)).to eq(expected_result)
     end
   end
 
