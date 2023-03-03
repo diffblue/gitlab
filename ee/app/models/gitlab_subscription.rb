@@ -198,6 +198,10 @@ class GitlabSubscription < ApplicationRecord
   end
 
   def reset_seat_statistics?
-    new_term? || (max_seats_used_changed_at.present? && max_seats_used_changed_at.to_date < start_date)
+    return false unless has_a_paid_hosted_plan?
+    return true if new_term?
+    return true if trial_changed? && !trial
+
+    max_seats_used_changed_at.present? && max_seats_used_changed_at.to_date < start_date
   end
 end
