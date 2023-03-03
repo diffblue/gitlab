@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Settings, 'EE Settings', feature_category: :not_owned do
+RSpec.describe API::Settings, 'EE Settings', feature_category: :shared do
   include StubENV
 
   let(:user) { create(:user) }

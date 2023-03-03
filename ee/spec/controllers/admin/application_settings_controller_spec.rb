@@ -11,7 +11,7 @@ RSpec.describe Admin::ApplicationSettingsController do
     stub_env('IN_MEMORY_APPLICATION_SETTINGS', 'false')
   end
 
-  describe 'PUT #update', feature_category: :not_owned do
+  describe 'PUT #update', feature_category: :shared do
     before do
       sign_in(admin)
     end

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::ApplicationsController, feature_category: :not_owned do
+RSpec.describe Admin::ApplicationsController, feature_category: :shared do
   let(:admin) { create(:admin) }
   let(:application) { create(:oauth_application, owner_id: nil, owner_type: nil) }
 

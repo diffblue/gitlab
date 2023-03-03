@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SitemapController, feature_category: :not_owned do
+RSpec.describe SitemapController, feature_category: :shared do
   describe '#show' do
     subject { get :show, format: :xml }
 
