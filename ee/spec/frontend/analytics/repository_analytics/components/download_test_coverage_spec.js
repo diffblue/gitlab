@@ -19,6 +19,7 @@ describe('Download test coverage component', () => {
       .find('[data-testid="group-code-coverage-select-all-projects-button"]')
       .vm.$emit('click');
   const findAlert = () => wrapper.findComponent(GlAlert);
+  const findSelectProjectsDropdown = () => wrapper.findComponent(SelectProjectsDropdown);
 
   const injectedProperties = {
     groupAnalyticsCoverageReportsPath: '/coverage.csv',
@@ -44,11 +45,6 @@ describe('Download test coverage component', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   it('renders button to open download code coverage modal', () => {
     expect(findCodeCoverageModalButton().exists()).toBe(true);
   });
@@ -60,9 +56,7 @@ describe('Download test coverage component', () => {
 
     describe('when there is an error fetching the projects', () => {
       it('displays an alert for the failed query', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({ hasError: true });
+        findSelectProjectsDropdown().vm.$emit('projects-query-error');
 
         await nextTick();
         expect(findAlert().exists()).toBe(true);
@@ -74,9 +68,7 @@ describe('Download test coverage component', () => {
 
       describe('with all projects selected', () => {
         it('renders primary action as a link with no project_ids param', async () => {
-          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-          // eslint-disable-next-line no-restricted-syntax
-          wrapper.setData({ allProjectsSelected: true, selectedProjectIds: [] });
+          findSelectProjectsDropdown().vm.$emit('select-all-projects');
 
           await nextTick();
           expect(findCodeCoverageDownloadButton().attributes('href')).toBe(
@@ -87,9 +79,9 @@ describe('Download test coverage component', () => {
 
       describe('with two or more projects selected without selecting all projects', () => {
         it('renders primary action as a link with two project IDs as parameters', async () => {
-          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-          // eslint-disable-next-line no-restricted-syntax
-          wrapper.setData({ allProjectsSelected: false, selectedProjectIds: [1, 2] });
+          findSelectProjectsDropdown().vm.$emit('select-project', { parsedId: 1 });
+          findSelectProjectsDropdown().vm.$emit('select-project', { parsedId: 2 });
+
           const projectIdsQueryParam = `project_ids[]=1&project_ids[]=2`;
           const expectedPath = `${groupAnalyticsCoverageReportsPathWithDates}&${projectIdsQueryParam}`;
 
@@ -100,9 +92,8 @@ describe('Download test coverage component', () => {
 
       describe('with one project selected', () => {
         it('renders primary action as a link with one project ID as a parameter', async () => {
-          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-          // eslint-disable-next-line no-restricted-syntax
-          wrapper.setData({ allProjectsSelected: false, selectedProjectIds: [1] });
+          findSelectProjectsDropdown().vm.$emit('select-project', { parsedId: 1 });
+
           const projectIdsQueryParam = `project_ids[]=1`;
           const expectedPath = `${groupAnalyticsCoverageReportsPathWithDates}&${projectIdsQueryParam}`;
 
@@ -119,9 +110,10 @@ describe('Download test coverage component', () => {
 
       describe('when clicking the select all button', () => {
         it('selects all projects and removes the disabled attribute from the download button', async () => {
-          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-          // eslint-disable-next-line no-restricted-syntax
-          wrapper.setData({ allProjectsSelected: false, selectedProjectIds: [] });
+          // Simulate clicking same project twice so there are no selected project ids
+          findSelectProjectsDropdown().vm.$emit('select-project', { parsedId: 1 });
+          findSelectProjectsDropdown().vm.$emit('select-project', { parsedId: 1 });
+
           clickSelectAllProjectsButton();
 
           await nextTick();
