@@ -18,6 +18,13 @@ import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label
 export default {
   components: { BoardFilteredSearch },
   inject: ['fullPath', 'boardType', 'isGroupBoard'],
+  props: {
+    board: {
+      type: Object,
+      required: false,
+      default: () => {},
+    },
+  },
   computed: {
     tokens() {
       const { fetchLabels, fetchUsers } = issueBoardFilters(
@@ -75,6 +82,7 @@ export default {
   <board-filtered-search
     data-testid="epic-filtered-search"
     :tokens="tokens"
+    :board="board"
     @setFilters="$emit('setFilters', $event)"
   />
 </template>
