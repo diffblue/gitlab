@@ -49,7 +49,7 @@ module QA
             def click_on_security_configuration_link
               hover_security_compliance do
                 within_submenu do
-                  click_element(:sidebar_menu_item_link, menu_item: 'Configuration')
+                  click_element(:sidebar_menu_item_link, menu_item: 'Security configuration')
                 end
               end
             end

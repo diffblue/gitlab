@@ -81,7 +81,7 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
           _('Vulnerability report'),
           s_('OnDemandScans|On-demand scans'),
           _('Audit events'),
-          _('Configuration')
+          _('Security configuration')
         ]
       }
     end

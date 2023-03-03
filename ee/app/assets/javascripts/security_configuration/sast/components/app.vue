@@ -95,7 +95,7 @@ export default {
       </dismissible-feedback-alert>
     </template>
 
-    <template #heading> {{ s__('SecurityConfiguration|SAST Configuration') }} </template>
+    <template #heading> {{ s__('SecurityConfiguration|SAST configuration') }} </template>
     <template #description>
       <gl-sprintf :message="$options.i18n.helpText">
         <template #link="{ content }">
