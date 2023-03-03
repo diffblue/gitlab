@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Deployments::AutoRollbackService, :clean_gitlab_redis_rate_limiting do
+RSpec.describe Deployments::AutoRollbackService, :clean_gitlab_redis_rate_limiting, feature_category: :continuous_delivery do
   let_it_be(:maintainer) { create(:user) }
   let_it_be(:project, refind: true) { create(:project, :repository) }
   let_it_be(:environment, refind: true) { create(:environment, project: project) }

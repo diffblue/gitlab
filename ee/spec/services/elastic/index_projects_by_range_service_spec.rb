@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::IndexProjectsByRangeService do
+RSpec.describe Elastic::IndexProjectsByRangeService, feature_category: :global_search do
   describe '#execute' do
     context 'when without project' do
       it 'does not err' do

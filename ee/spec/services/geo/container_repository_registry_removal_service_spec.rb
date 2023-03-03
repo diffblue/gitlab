@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::ContainerRepositoryRegistryRemovalService, :geo do
+RSpec.describe Geo::ContainerRepositoryRegistryRemovalService, :geo, feature_category: :geo_replication do
   include ::EE::GeoHelpers
   include ExclusiveLeaseHelpers
 

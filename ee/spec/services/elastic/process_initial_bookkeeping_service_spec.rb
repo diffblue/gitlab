@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::ProcessInitialBookkeepingService do
+RSpec.describe Elastic::ProcessInitialBookkeepingService, feature_category: :global_search do
   let(:project) { create(:project) }
   let(:issue) { create(:issue) }
 

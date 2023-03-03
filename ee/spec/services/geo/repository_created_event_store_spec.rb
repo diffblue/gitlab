@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::RepositoryCreatedEventStore do
+RSpec.describe Geo::RepositoryCreatedEventStore, feature_category: :geo_replication do
   include EE::GeoHelpers
 
   let_it_be(:project) { create(:project) }

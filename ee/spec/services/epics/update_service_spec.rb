@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Epics::UpdateService do
+RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
   let(:group) { create(:group, :internal) }
   let(:user) { create(:user) }
   let(:epic) { create(:epic, group: group) }

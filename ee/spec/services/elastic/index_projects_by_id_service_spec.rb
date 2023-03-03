@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::IndexProjectsByIdService do
+RSpec.describe Elastic::IndexProjectsByIdService, feature_category: :global_search do
   describe '#execute' do
     it 'schedules index workers' do
       project1 = create(:project)

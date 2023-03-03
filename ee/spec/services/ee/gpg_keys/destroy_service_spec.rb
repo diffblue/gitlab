@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GpgKeys::DestroyService do
+RSpec.describe GpgKeys::DestroyService, feature_category: :source_code_management do
   let_it_be(:user) { create(:user) }
 
   subject { described_class.new(user) }

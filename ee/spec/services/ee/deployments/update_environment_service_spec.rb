@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Deployments::UpdateEnvironmentService do
+RSpec.describe Deployments::UpdateEnvironmentService, feature_category: :continuous_delivery do
   include ::EE::GeoHelpers
 
   let(:primary) { create(:geo_node, :primary) }

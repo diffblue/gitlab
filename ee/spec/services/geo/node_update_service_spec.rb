@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::NodeUpdateService do
+RSpec.describe Geo::NodeUpdateService, feature_category: :geo_replication do
   include EE::GeoHelpers
 
   let_it_be(:primary, reload: true) { create(:geo_node, :primary) }

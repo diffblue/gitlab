@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ExternalStatusChecks::UpdateService do
+RSpec.describe ExternalStatusChecks::UpdateService, feature_category: :projects do
   let_it_be(:project) { create(:project) }
   let_it_be(:check) { create(:external_status_check, project: project) }
   let_it_be(:protected_branch) { create(:protected_branch, project: project) }

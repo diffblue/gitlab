@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Geo::BlobDownloadService do
+RSpec.describe Geo::BlobDownloadService, feature_category: :geo_replication do
   include ::EE::GeoHelpers
   include ExclusiveLeaseHelpers
 

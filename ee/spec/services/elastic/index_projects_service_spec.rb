@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::IndexProjectsService do
+RSpec.describe Elastic::IndexProjectsService, feature_category: :global_search do
   describe '#execute' do
     context 'when elasticsearch_limit_indexing? is true' do
       before do

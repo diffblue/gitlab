@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::BlobUploadService do
+RSpec.describe Geo::BlobUploadService, feature_category: :geo_replication do
   let(:package_file) { create(:package_file, :npm) }
 
   subject { described_class.new(replicable_name: 'package_file', replicable_id: package_file.id, decoded_params: {}) }

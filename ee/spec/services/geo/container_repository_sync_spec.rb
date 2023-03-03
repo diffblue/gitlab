@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::ContainerRepositorySync, :geo do
+RSpec.describe Geo::ContainerRepositorySync, :geo, feature_category: :geo_replication do
   let_it_be(:group) { create(:group, name: 'group') }
   let_it_be(:project) { create(:project, path: 'test', group: group) }
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::MoveRepositoryService, :geo do
+RSpec.describe Geo::MoveRepositoryService, :geo, feature_category: :geo_replication do
   describe '#execute' do
     let(:project) { create(:project, :repository, :wiki_repo, :legacy_storage) }
     let(:old_path) { project.full_path }

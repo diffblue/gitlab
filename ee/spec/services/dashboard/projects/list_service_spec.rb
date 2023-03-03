@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Dashboard::Projects::ListService do
+RSpec.describe Dashboard::Projects::ListService, feature_category: :projects do
   let!(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
 
   let(:user) { create(:user) }

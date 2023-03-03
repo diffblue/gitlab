@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::DataMigrationService, :elastic, :clean_gitlab_redis_shared_state do
+RSpec.describe Elastic::DataMigrationService, :elastic, :clean_gitlab_redis_shared_state, feature_category: :global_search do
   subject { described_class }
 
   describe '.migrations' do

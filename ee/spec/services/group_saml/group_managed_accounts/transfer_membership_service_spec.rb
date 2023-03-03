@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GroupSaml::GroupManagedAccounts::TransferMembershipService do
+RSpec.describe GroupSaml::GroupManagedAccounts::TransferMembershipService, feature_category: :system_access do
   subject(:service) { described_class.new(current_user, group, session) }
 
   let(:group) { create(:group) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe DeployKeys::CreateService do
+RSpec.describe DeployKeys::CreateService, feature_category: :continuous_delivery do
   let_it_be(:group) { create(:group) }
   let_it_be(:destination) { create(:external_audit_event_destination, group: group) }
   let_it_be(:project) { create(:project, :repository, group: group) }

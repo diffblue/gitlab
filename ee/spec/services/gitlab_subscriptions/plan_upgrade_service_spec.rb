@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::PlanUpgradeService do
+RSpec.describe GitlabSubscriptions::PlanUpgradeService, feature_category: :billing_and_payments do
   subject(:execute) { described_class.new(namespace_id: namespace_id).execute }
 
   let(:namespace_id) { '111' }

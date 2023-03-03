@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Epics::CreateService do
+RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
   let_it_be(:ancestor_group) { create(:group, :internal) }
   let_it_be(:group) { create(:group, :internal, parent: ancestor_group) }
   let_it_be(:user) { create(:user) }

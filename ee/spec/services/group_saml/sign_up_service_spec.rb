@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GroupSaml::SignUpService do
+RSpec.describe GroupSaml::SignUpService, feature_category: :system_access do
   subject(:service) { described_class.new(new_user, group, session) }
 
   let(:new_user) { build(:user) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::CreateService do
+RSpec.describe GitlabSubscriptions::CreateService, feature_category: :billing_and_payments do
   subject(:execute) { described_class.new(user, group: group, customer_params: customer_params, subscription_params: subscription_params).execute }
 
   let_it_be(:user) { create(:user, id: 111, first_name: 'First name', last_name: 'Last name', email: 'first.last@gitlab.com') }

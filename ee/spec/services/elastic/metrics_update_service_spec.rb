@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::MetricsUpdateService, :prometheus do
+RSpec.describe Elastic::MetricsUpdateService, :prometheus, feature_category: :global_search do
   subject { described_class.new }
 
   describe '#execute' do

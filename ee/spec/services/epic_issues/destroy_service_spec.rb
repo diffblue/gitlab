@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EpicIssues::DestroyService do
+RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_management do
   describe '#execute' do
     let_it_be(:user) { create(:user) }
     let_it_be(:group, refind: true) { create(:group, :public) }
