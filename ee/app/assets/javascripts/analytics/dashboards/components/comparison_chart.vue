@@ -2,7 +2,7 @@
 import { GlAlert, GlSkeletonLoader } from '@gitlab/ui';
 import { joinPaths } from '~/lib/utils/url_utility';
 import { sprintf } from '~/locale';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import {
   DASHBOARD_DESCRIPTION_GROUP,
   DASHBOARD_DESCRIPTION_PROJECT,

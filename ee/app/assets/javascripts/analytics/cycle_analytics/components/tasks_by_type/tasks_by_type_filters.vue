@@ -1,7 +1,7 @@
 <script>
 import { GlDropdownDivider, GlSegmentedControl, GlIcon, GlSprintf } from '@gitlab/ui';
 import { removeFlash } from '~/analytics/shared/utils';
-import { createAlert, VARIANT_INFO } from '~/flash';
+import { createAlert, VARIANT_INFO } from '~/alert';
 import { s__, sprintf } from '~/locale';
 import {
   TASKS_BY_TYPE_FILTERS,

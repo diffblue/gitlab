@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client/core';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import createDefaultClient from '~/lib/graphql';
 import { s__ } from '~/locale';
 

@@ -1,5 +1,5 @@
 import Api from '~/api';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { normalizeHeaders, parseIntPagination } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
 import * as types from './mutation_types';

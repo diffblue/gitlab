@@ -5,7 +5,7 @@ import createNoteMutation from 'ee/security_dashboard/graphql/mutations/note_cre
 import destroyNoteMutation from 'ee/security_dashboard/graphql/mutations/note_destroy.mutation.graphql';
 import updateNoteMutation from 'ee/security_dashboard/graphql/mutations/note_update.mutation.graphql';
 import EventItem from 'ee/vue_shared/security_reports/components/event_item.vue';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import {
   TYPENAME_NOTE,
   TYPENAME_DISCUSSION,
