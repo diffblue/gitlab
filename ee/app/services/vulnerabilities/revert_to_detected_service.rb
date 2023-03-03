@@ -6,6 +6,11 @@ module Vulnerabilities
   class RevertToDetectedService < BaseService
     REVERT_PARAMS = { resolved_by: nil, resolved_at: nil, dismissed_by: nil, dismissed_at: nil, confirmed_by: nil, confirmed_at: nil }.freeze
 
+    def initialize(user, vulnerability, comment)
+      super(user, vulnerability)
+      @comment = comment
+    end
+
     def execute
       raise Gitlab::Access::AccessDeniedError unless authorized?
 
@@ -15,7 +20,8 @@ module Vulnerabilities
             vulnerability: @vulnerability,
             from_state: @vulnerability.state,
             to_state: :detected,
-            author: @user
+            author: @user,
+            comment: @comment
           )
 
           update_vulnerability_with(state: :detected, **REVERT_PARAMS) do

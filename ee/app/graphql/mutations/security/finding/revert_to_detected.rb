@@ -26,7 +26,7 @@ module Mutations
 
           result =
             if vulnerability
-              ::Vulnerabilities::RevertToDetectedService.new(current_user, vulnerability).execute
+              ::Vulnerabilities::RevertToDetectedService.new(current_user, vulnerability, comment).execute
             elsif dismissal_feedback # eslif to be removed with https://gitlab.com/gitlab-org/gitlab/-/issues/324899
               VulnerabilityFeedback::DestroyService
               .new(project, current_user, dismissal_feedback, revert_vulnerability_state: false)

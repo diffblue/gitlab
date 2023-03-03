@@ -9,10 +9,11 @@ RSpec.describe Mutations::Vulnerabilities::RevertToDetected, feature_category: :
   describe '#resolve' do
     let_it_be(:vulnerability) { create(:vulnerability, :dismissed, :with_findings) }
     let_it_be(:user) { create(:user) }
+    let_it_be(:comment) { "wheee" }
 
     let(:mutated_vulnerability) { subject[:vulnerability] }
 
-    subject { mutation.resolve(id: GitlabSchema.id_from_object(vulnerability).to_s) }
+    subject { mutation.resolve(id: GitlabSchema.id_from_object(vulnerability).to_s, comment: comment) }
 
     context 'when the user can revert the vulnerability to detected' do
       before do
