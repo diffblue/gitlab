@@ -1,7 +1,7 @@
 <script>
 import { GlButton, GlLink, GlSprintf, GlScrollableTabs, GlAlert } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { VARIANT_WARNING } from '~/flash';
+import { VARIANT_WARNING } from '~/alert';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
 import {
   getQueryHeaders,

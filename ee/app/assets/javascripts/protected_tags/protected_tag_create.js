@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import CreateItemDropdown from '~/create_item_dropdown';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { s__, __ } from '~/locale';
 import AccessDropdown from '~/projects/settings/access_dropdown';

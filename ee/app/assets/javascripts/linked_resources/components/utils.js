@@ -1,5 +1,5 @@
 import { s__ } from '~/locale';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 
 const zoomRegex = /(https:\/\/(?:[\w-]+\.)?zoom\.us\/(?:s|j|my)\/\S+)/;
 const slackRegex = /(https:\/\/[a-zA-Z0-9]+.slack\.com\/[a-z\][a-zA-Z0-9_]+)/;

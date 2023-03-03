@@ -9,7 +9,7 @@ import {
   GlModalDirective,
 } from '@gitlab/ui';
 import * as SubscriptionsApi from 'ee/api/subscriptions_api';
-import { createAlert, VARIANT_SUCCESS } from '~/flash';
+import { createAlert, VARIANT_SUCCESS } from '~/alert';
 import { sprintf } from '~/locale';
 import Tracking from '~/tracking';
 import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.graphql';

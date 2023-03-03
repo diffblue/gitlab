@@ -1,5 +1,5 @@
 import epicDetailsQuery from 'shared_queries/epic/epic_details.query.graphql';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { EVENT_ISSUABLE_VUE_APP_CHANGE } from '~/issuable/constants';
 import { STATUS_CLOSED } from '~/issues/constants';
 

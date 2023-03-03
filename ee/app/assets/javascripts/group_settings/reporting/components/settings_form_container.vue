@@ -1,5 +1,5 @@
 <script>
-import { createAlert, VARIANT_INFO } from '~/flash';
+import { createAlert, VARIANT_INFO } from '~/alert';
 import { updateGroupSettings } from 'ee/api/groups_api';
 import SettingsForm from 'ee_component/admin/application_settings/reporting/git_abuse_settings/components/settings_form.vue';
 import {

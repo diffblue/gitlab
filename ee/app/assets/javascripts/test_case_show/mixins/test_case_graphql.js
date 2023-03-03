@@ -1,5 +1,5 @@
 import Api from '~/api';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 

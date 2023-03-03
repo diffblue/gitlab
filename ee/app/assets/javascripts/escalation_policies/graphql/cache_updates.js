@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 
 import { s__ } from '~/locale';
 

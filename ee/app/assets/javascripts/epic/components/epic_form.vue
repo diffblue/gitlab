@@ -7,7 +7,7 @@ import {
   GlFormGroup,
   GlFormInput,
 } from '@gitlab/ui';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import Autosave from '~/autosave';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { formatDate } from '~/lib/utils/datetime_utility';

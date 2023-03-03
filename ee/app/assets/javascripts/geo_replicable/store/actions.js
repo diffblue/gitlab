@@ -1,5 +1,5 @@
 import Api from 'ee/api';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import {
   parseIntPagination,
   normalizeHeaders,
