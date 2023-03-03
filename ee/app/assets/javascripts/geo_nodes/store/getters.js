@@ -118,3 +118,10 @@ export const filteredNodes = (state) => {
 export const countNodesForStatus = (state) => (status) => {
   return state.nodes.filter(filterByStatus(status)).length;
 };
+
+export const nodeHasVersionMismatch = (state) => (id) => {
+  const node = state.nodes.find((n) => n.id === id);
+  const primaryNode = state.nodes.find((n) => n.primary);
+
+  return node?.version !== primaryNode?.version || node?.revision !== primaryNode?.revision;
+};

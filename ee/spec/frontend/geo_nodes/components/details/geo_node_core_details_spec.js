@@ -4,7 +4,6 @@ import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeCoreDetails from 'ee/geo_nodes/components/details/geo_node_core_details.vue';
 import {
-  MOCK_PRIMARY_VERSION,
   MOCK_REPLICABLE_TYPES,
   MOCK_PRIMARY_NODE,
   MOCK_SECONDARY_NODE,
@@ -19,13 +18,18 @@ describe('GeoNodeCoreDetails', () => {
     node: MOCK_PRIMARY_NODE,
   };
 
-  const createComponent = (initialState, props) => {
+  const defaultGetters = {
+    nodeHasVersionMismatch: () => () => false,
+  };
+
+  const createComponent = (props, getters) => {
     const store = new Vuex.Store({
       state: {
-        primaryVersion: MOCK_PRIMARY_VERSION.version,
-        primaryRevision: MOCK_PRIMARY_VERSION.revision,
         replicableTypes: MOCK_REPLICABLE_TYPES,
-        ...initialState,
+      },
+      getters: {
+        ...defaultGetters,
+        ...getters,
       },
     });
 
@@ -66,7 +70,7 @@ describe('GeoNodeCoreDetails', () => {
       ${MOCK_SECONDARY_NODE}
     `('internal URL', ({ node }) => {
       beforeEach(() => {
-        createComponent(null, { node });
+        createComponent({ node });
       });
 
       describe(`when primary is ${node.primary}`, () => {
@@ -78,14 +82,17 @@ describe('GeoNodeCoreDetails', () => {
 
     describe('node version', () => {
       describe.each`
-        currentNode                                                                           | versionText                                                             | versionMismatch
-        ${{ version: MOCK_PRIMARY_VERSION.version, revision: MOCK_PRIMARY_VERSION.revision }} | ${`${MOCK_PRIMARY_VERSION.version} (${MOCK_PRIMARY_VERSION.revision})`} | ${false}
-        ${{ version: 'asdf', revision: MOCK_PRIMARY_VERSION.revision }}                       | ${`asdf (${MOCK_PRIMARY_VERSION.revision})`}                            | ${true}
-        ${{ version: MOCK_PRIMARY_VERSION.version, revision: 'asdf' }}                        | ${`${MOCK_PRIMARY_VERSION.version} (asdf)`}                             | ${true}
-        ${{ version: null, revision: null }}                                                  | ${'Unknown'}                                                            | ${true}
+        currentNode                                                                     | versionText                                                       | versionMismatch
+        ${{ version: MOCK_PRIMARY_NODE.version, revision: MOCK_PRIMARY_NODE.revision }} | ${`${MOCK_PRIMARY_NODE.version} (${MOCK_PRIMARY_NODE.revision})`} | ${false}
+        ${{ version: 'asdf', revision: MOCK_PRIMARY_NODE.revision }}                    | ${`asdf (${MOCK_PRIMARY_NODE.revision})`}                         | ${true}
+        ${{ version: MOCK_PRIMARY_NODE.version, revision: 'asdf' }}                     | ${`${MOCK_PRIMARY_NODE.version} (asdf)`}                          | ${true}
+        ${{ version: null, revision: null }}                                            | ${'Unknown'}                                                      | ${true}
       `(`conditionally`, ({ currentNode, versionText, versionMismatch }) => {
         beforeEach(() => {
-          createComponent(null, { node: { ...MOCK_PRIMARY_NODE, ...currentNode } });
+          createComponent(
+            { node: { ...MOCK_PRIMARY_NODE, ...currentNode } },
+            { nodeHasVersionMismatch: () => () => versionMismatch },
+          );
         });
 
         describe(`when version mismatch is ${versionMismatch} and current node version is ${versionText}`, () => {

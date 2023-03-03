@@ -1,6 +1,4 @@
-const createState = ({ primaryVersion, primaryRevision, replicableTypes, searchFilter }) => ({
-  primaryVersion,
-  primaryRevision,
+const createState = ({ replicableTypes, searchFilter }) => ({
   replicableTypes,
   searchFilter,
   statusFilter: null,

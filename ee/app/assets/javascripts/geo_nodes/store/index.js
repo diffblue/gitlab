@@ -7,16 +7,11 @@ import createState from './state';
 
 Vue.use(Vuex);
 
-export const getStoreConfig = ({
-  primaryVersion,
-  primaryRevision,
-  replicableTypes,
-  searchFilter = '',
-}) => ({
+export const getStoreConfig = ({ replicableTypes, searchFilter = '' }) => ({
   actions,
   getters,
   mutations,
-  state: createState({ primaryVersion, primaryRevision, replicableTypes, searchFilter }),
+  state: createState({ replicableTypes, searchFilter }),
 });
 
 const createStore = (config) => new Vuex.Store(getStoreConfig(config));

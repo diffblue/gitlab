@@ -1,14 +1,12 @@
 import * as types from 'ee/geo_nodes/store/mutation_types';
 import mutations from 'ee/geo_nodes/store/mutations';
 import createState from 'ee/geo_nodes/store/state';
-import { MOCK_PRIMARY_VERSION, MOCK_REPLICABLE_TYPES, MOCK_NODES } from '../mock_data';
+import { MOCK_REPLICABLE_TYPES, MOCK_NODES } from '../mock_data';
 
 describe('GeoNodes Store Mutations', () => {
   let state;
   beforeEach(() => {
     state = createState({
-      primaryVersion: MOCK_PRIMARY_VERSION.version,
-      primaryRevision: MOCK_PRIMARY_VERSION.revision,
       replicableTypes: MOCK_REPLICABLE_TYPES,
     });
   });
