@@ -3,6 +3,15 @@ import { GlLoadingIcon } from '@gitlab/ui';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import { buildDefaultDashboardFilters } from 'ee/vue_shared/components/customizable_dashboard/utils';
 
+import { isValidConfigFileName, configFileNameToID } from 'ee/analytics/analytics_dashboards/utils';
+import {
+  getCustomDashboard,
+  getProductAnalyticsVisualizationList,
+  getProductAnalyticsVisualization,
+} from 'ee/analytics/analytics_dashboards/api/dashboards_api';
+
+import { VISUALIZATION_TYPE_FILE } from '../constants';
+
 // TODO: Replace the hardcoded values with API calls in https://gitlab.com/gitlab-org/gitlab/-/issues/382551
 const VISUALIZATION_JSONS = {
   average_session_duration: () =>
@@ -35,36 +44,97 @@ export default {
     GlLoadingIcon,
     CustomizableDashboard,
   },
+  inject: {
+    customDashboardsProject: {
+      type: Object,
+      default: null,
+    },
+  },
   data() {
     return {
       dashboard: null,
+      availableVisualizations: [],
       defaultFilters: buildDefaultDashboardFilters(window.location.search),
     };
   },
   async created() {
+    let loadedDashboard;
+
     if (DASHBOARD_JSONS[this.$route?.params.id]) {
-      const dashboard = await DASHBOARD_JSONS[this.$route.params.id]();
-      this.dashboard = await this.importDashboardDependencies(dashboard);
+      // Getting a GitLab pre-defined dashboard
+      loadedDashboard = await DASHBOARD_JSONS[this.$route.params.id]();
+      this.dashboard = await this.importDashboardDependencies(loadedDashboard);
+    } else if (this.customDashboardsProject) {
+      // Load custom dashboard from file
+      loadedDashboard = await getCustomDashboard(
+        this.$route?.params.id,
+        this.customDashboardsProject,
+      );
+      loadedDashboard.default = { ...loadedDashboard };
+      this.dashboard = await this.importDashboardDependencies(loadedDashboard);
+    } else {
+      return;
     }
 
-    this.availableVisualizations = [];
+    this.loadAvailableVisualizations();
   },
   methods: {
+    async loadAvailableVisualizations() {
+      // Loading all visualizations from file
+      this.availableVisualizations = [];
+
+      if (this.customDashboardsProject) {
+        const visualizations = await getProductAnalyticsVisualizationList(
+          this.customDashboardsProject,
+        );
+
+        for (const visualization of visualizations) {
+          const fileName = visualization.file_name;
+          if (isValidConfigFileName(fileName)) {
+            const id = configFileNameToID(fileName);
+
+            this.availableVisualizations.push({
+              id,
+              name: id,
+            });
+          }
+        }
+      }
+    },
     // TODO: Remove in https://gitlab.com/gitlab-org/gitlab/-/issues/382551
-    async importVisualization(visualization) {
-      const module = await VISUALIZATION_JSONS[visualization]();
-      // Convert module to an object because panel_base.vue expects an object property.
-      return { ...module };
+    async importVisualization(visualization, visualizationType) {
+      const isFileVisualization =
+        visualizationType === VISUALIZATION_TYPE_FILE || visualizationType === undefined;
+
+      if (isFileVisualization && VISUALIZATION_JSONS[visualization]) {
+        const module = await VISUALIZATION_JSONS[visualization]();
+        return { ...module };
+      }
+
+      if (isFileVisualization) {
+        const file = await getProductAnalyticsVisualization(
+          visualization,
+          this.customDashboardsProject,
+        );
+        return { ...file };
+      }
+
+      return visualization;
     },
     async importDashboardDependencies(dashboard) {
       return {
         ...dashboard,
-        panels: await Promise.all(
-          dashboard.panels.map(async (panel) => ({
-            ...panel,
-            visualization: await this.importVisualization(panel.visualization),
-          })),
-        ),
+        panels: dashboard.panels
+          ? await Promise.all(
+              dashboard.panels.map(async (panel) => ({
+                ...panel,
+                visualization: await this.importVisualization(
+                  panel.visualization,
+                  panel.visualizationType,
+                ),
+              })),
+            )
+          : [],
       };
     },
   },

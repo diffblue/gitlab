@@ -9,7 +9,16 @@ import {
 import jsonList from 'ee/analytics/analytics_dashboards/gl_dashboards/analytics_dashboards.json';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import AnalyticsClipboardInput from 'ee/product_analytics/shared/analytics_clipboard_input.vue';
-import { TEST_COLLECTOR_HOST, TEST_JITSU_KEY } from '../mock_data';
+
+import { getCustomDashboards } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
+import {
+  TEST_COLLECTOR_HOST,
+  TEST_JITSU_KEY,
+  TEST_CUSTOM_DASHBOARDS_PROJECT,
+  TEST_CUSTOM_DASHBOARDS_LIST,
+} from '../mock_data';
+
+jest.mock('ee/analytics/analytics_dashboards/api/dashboards_api');
 
 describe('DashboardsList', () => {
   let wrapper;
@@ -26,7 +35,7 @@ describe('DashboardsList', () => {
     wrapper.findByTestId('intrumentation-details-dropdown');
   const findKeyInputAt = (index) => wrapper.findAllComponents(AnalyticsClipboardInput).at(index);
 
-  const NUMBER_OF_DASHBOARDS = jsonList.productAnalytics.length;
+  const NUMBER_OF_DASHBOARDS = jsonList.productAnalytics.length + 1;
 
   const $router = {
     push: jest.fn(),
@@ -43,10 +52,15 @@ describe('DashboardsList', () => {
       provide: {
         collectorHost: TEST_COLLECTOR_HOST,
         jitsuKey: TEST_JITSU_KEY,
+        customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
         ...provided,
       },
     });
   };
+
+  beforeEach(() => {
+    getCustomDashboards.mockImplementation(() => TEST_CUSTOM_DASHBOARDS_LIST);
+  });
 
   describe('by default', () => {
     beforeEach(() => {
@@ -82,7 +96,7 @@ describe('DashboardsList', () => {
     });
 
     it('does not render any feature dashboards', () => {
-      expect(findRouterLinks()).toHaveLength(0);
+      expect(findRouterLinks()).toHaveLength(1);
     });
   });
 
@@ -91,16 +105,20 @@ describe('DashboardsList', () => {
       createWrapper({ features: { productAnalytics: true } });
     });
 
-    it('should render titles', () => {
+    it('should render titles of pre-built dashboards', () => {
       expect(findRouterLinks()).toHaveLength(NUMBER_OF_DASHBOARDS);
-      expect(findRouterLinks().at(0).element.innerText).toContain('Audience');
+      expect(findRouterLinks().at(0).text()).toContain('Audience');
+    });
+
+    it('should render titles of custom dashboard', () => {
+      expect(getCustomDashboards).toHaveBeenCalledWith(TEST_CUSTOM_DASHBOARDS_PROJECT);
+      expect(findRouterLinks()).toHaveLength(NUMBER_OF_DASHBOARDS);
+      expect(findRouterLinks().at(2).text()).toContain('new_dashboard');
     });
 
     it('should render descriptions', () => {
       expect(findRouterDescriptions()).toHaveLength(NUMBER_OF_DASHBOARDS);
-      expect(findRouterDescriptions().at(0).element.innerText).toContain(
-        'Understand your audience',
-      );
+      expect(findRouterDescriptions().at(0).text()).toContain('Understand your audience');
     });
 
     it('should render links', () => {
