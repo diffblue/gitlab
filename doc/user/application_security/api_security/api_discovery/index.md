@@ -21,6 +21,12 @@ API Discovery runs as a standalone job in your pipeline. The resulting OpenAPI d
 
 API Discovery runs in the `test` stage by default. The `test` stage was chosen as it typically executes before the stages used by other API Security features such as DAST API and API Fuzzing.
 
+## Example API Discovery configurations
+
+The following projects demonstrate API Discovery:
+
+- [Example Java Spring Boot v2 Pet Store](https://gitlab.com/gitlab-org/security-products/demos/api-discovery/java-spring-boot-v2-petstore)
+
 ## Java Spring-Boot
 
 [Spring Boot](https://spring.io/projects/spring-boot) is a popular framework for creating stand-alone, production-grade Spring-based applications.
@@ -35,7 +41,7 @@ API Discovery supports Spring Boot major version 2, minor versions 1 and higher.
 
 Major version 3 is planned to be supported in the future. Support for major version 1 is not planned.
 
-API Discovery is tested with and officially supports LTS versions of the Java runtime. Other versions will likely work also, and bug reports from non-LTS versions are welcome.
+API Discovery is tested with and officially supports LTS versions of the Java runtime. Other versions may work also, and bug reports from non-LTS versions are welcome.
 
 Only applications that are built as Spring Boot [executable JARs](https://docs.spring.io/spring-boot/docs/current/reference/html/executable-jar.html#appendix.executable-jar.nested-jars.jar-structure) are supported.
 
