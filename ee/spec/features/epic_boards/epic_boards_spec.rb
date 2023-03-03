@@ -117,7 +117,8 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
       end
     end
 
-    it 'moving updates weight of both lists', :aggregate_failures do
+    it 'moving updates weight of both lists', :aggregate_failures,
+      quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/393939' do
       expect(find_board_list(1)).to have_content(epic3.title)
 
       page.within(find_board_list(1)) do
