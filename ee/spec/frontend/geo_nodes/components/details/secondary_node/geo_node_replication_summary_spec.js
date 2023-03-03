@@ -23,10 +23,6 @@ describe('GeoNodeReplicationSummary', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findGlButton = () => wrapper.findComponent(GlButton);
   const findGeoNodeReplicationStatus = () => wrapper.findComponent(GeoNodeReplicationStatus);
   const findGeoNodeReplicationCounts = () => wrapper.findComponent(GeoNodeReplicationCounts);

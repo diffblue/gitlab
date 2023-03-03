@@ -46,10 +46,6 @@ describe('GeoNodesFilters', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findGlTabs = () => wrapper.findComponent(GlTabs);
   const findAllGlTabs = () => wrapper.findAllComponents(GlTab);
   const findAllGlTabTitles = () => wrapper.findAllComponents(GlTab).wrappers.map((w) => w.text());

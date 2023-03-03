@@ -1,10 +1,9 @@
-import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeReplicationCounts from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_counts.vue';
 import GeoNodeReplicationSyncPercentage from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_sync_percentage.vue';
 import { MOCK_SECONDARY_NODE, MOCK_REPLICATION_COUNTS } from 'ee_jest/geo_nodes/mock_data';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 Vue.use(Vuex);
 
@@ -23,20 +22,14 @@ describe('GeoNodeReplicationCounts', () => {
       },
     });
 
-    wrapper = extendedWrapper(
-      shallowMount(GeoNodeReplicationCounts, {
-        store,
-        propsData: {
-          ...defaultProps,
-          ...props,
-        },
-      }),
-    );
+    wrapper = shallowMountExtended(GeoNodeReplicationCounts, {
+      store,
+      propsData: {
+        ...defaultProps,
+        ...props,
+      },
+    });
   };
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   const findReplicationTypeSections = () => wrapper.findAllByTestId('replication-type');
   const findReplicationTypeSectionTitles = () =>

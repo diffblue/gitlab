@@ -23,10 +23,6 @@ describe('GeoNodeHeader', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findHeaderCollapseButton = () => wrapper.findComponent(GlButton);
   const findGeoNodeHealthStatus = () => wrapper.findComponent(GeoNodeHealthStatus);
   const findGeoNodeLastUpdated = () => wrapper.findComponent(GeoNodeLastUpdated);

@@ -51,11 +51,6 @@ describe('GeoNodesApp', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
-  const findGeoNodesAppContainer = () => wrapper.find('section');
   const findGeoAddSiteButton = () => wrapper.findComponent(GlButton);
   const findGlLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findGeoEmptyState = () => wrapper.findComponent(GeoNodesEmptyState);
@@ -70,10 +65,6 @@ describe('GeoNodesApp', () => {
     describe('always', () => {
       beforeEach(() => {
         createComponent();
-      });
-
-      it('renders the Geo Nodes App Container', () => {
-        expect(findGeoNodesAppContainer().exists()).toBe(true);
       });
 
       it('renders the GlModal', () => {

@@ -1,12 +1,11 @@
 import { GlCard, GlIcon, GlPopover, GlLink } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeProgressBar from 'ee/geo_nodes/components/details/geo_node_progress_bar.vue';
 import GeoNodeVerificationInfo from 'ee/geo_nodes/components/details/primary_node/geo_node_verification_info.vue';
 import { HELP_INFO_URL } from 'ee/geo_nodes/constants';
 import { MOCK_PRIMARY_NODE, MOCK_PRIMARY_VERIFICATION_INFO } from 'ee_jest/geo_nodes/mock_data';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 Vue.use(Vuex);
 
@@ -24,21 +23,15 @@ describe('GeoNodeVerificationInfo', () => {
       },
     });
 
-    wrapper = extendedWrapper(
-      shallowMount(GeoNodeVerificationInfo, {
-        store,
-        propsData: {
-          ...defaultProps,
-          ...props,
-        },
-        stubs: { GlCard },
-      }),
-    );
+    wrapper = shallowMountExtended(GeoNodeVerificationInfo, {
+      store,
+      propsData: {
+        ...defaultProps,
+        ...props,
+      },
+      stubs: { GlCard },
+    });
   };
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   const findGlCard = () => wrapper.findComponent(GlCard);
   const findGlIcon = () => wrapper.findComponent(GlIcon);

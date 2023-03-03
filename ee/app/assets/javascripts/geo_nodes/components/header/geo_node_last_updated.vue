@@ -76,7 +76,7 @@ export default {
         class="gl-text-blue-600 gl-cursor-pointer gl-ml-2"
       />
       <gl-popover :target="() => $refs.lastUpdated.$el" placement="top">
-        <p class="gl-font-base">
+        <p class="gl-font-base" data-testid="geo-last-updated-text">
           <gl-sprintf :message="$options.i18n.timeAgoPopoverText">
             <template #timeAgo>
               <time-ago :time="statusCheckTimestamp" />

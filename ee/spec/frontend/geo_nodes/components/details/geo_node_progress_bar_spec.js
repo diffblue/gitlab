@@ -1,5 +1,5 @@
 import { GlPopover } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeProgressBar from 'ee/geo_nodes/components/details/geo_node_progress_bar.vue';
 import { MOCK_PRIMARY_VERIFICATION_INFO } from 'ee_jest/geo_nodes/mock_data';
 import StackedProgressBar from '~/vue_shared/components/stacked_progress_bar.vue';
@@ -13,7 +13,7 @@ describe('GeoNodeProgressBar', () => {
   };
 
   const createComponent = (props) => {
-    wrapper = shallowMount(GeoNodeProgressBar, {
+    wrapper = shallowMountExtended(GeoNodeProgressBar, {
       propsData: {
         ...defaultProps,
         ...props,
@@ -21,13 +21,9 @@ describe('GeoNodeProgressBar', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findStackedProgressBar = () => wrapper.findComponent(StackedProgressBar);
   const findGlPopover = () => wrapper.findComponent(GlPopover);
-  const findCounts = () => findGlPopover().findAll('section > div');
+  const findCounts = () => wrapper.findAllByTestId('geo-progress-count');
 
   describe('template', () => {
     describe('always', () => {
