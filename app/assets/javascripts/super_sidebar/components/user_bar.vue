@@ -106,6 +106,7 @@ export default {
         :count="sidebarData.todos_pending_count"
         href="/dashboard/todos"
         :label="$options.i18n.todoList"
+        data-qa-selector="todos_shortcut_button"
       />
     </div>
   </div>
