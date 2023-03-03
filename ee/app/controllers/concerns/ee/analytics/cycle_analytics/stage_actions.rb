@@ -12,10 +12,12 @@ module EE
             .duration_chart_average_data
             .each_with_object({}) { |item, hash| hash[item.date] = item.average_duration_in_seconds }
 
-          date_with_value = ::Gitlab::Analytics::DateFiller.new(date_with_value,
-                                                              from: request_params.created_after,
-                                                              to: request_params.created_before,
-                                                              default_value: nil).fill
+          date_with_value = ::Gitlab::Analytics::DateFiller.new(
+            date_with_value,
+            from: request_params.created_after,
+            to: request_params.created_before,
+            default_value: nil
+          ).fill
 
           formatted_data = date_with_value.map { |k, v| { date: k, average_duration_in_seconds: v } }
 

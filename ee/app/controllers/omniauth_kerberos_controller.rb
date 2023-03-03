@@ -27,8 +27,8 @@ class OmniauthKerberosController < ApplicationController
     #
     headers['Www-Authenticate'] = spnego_challenge
     render template: 'errors/kerberos_denied',
-           formats: :html,
-           locals: { layout: 'errors' },
-           status: :unauthorized
+      formats: :html,
+      locals: { layout: 'errors' },
+      status: :unauthorized
   end
 end

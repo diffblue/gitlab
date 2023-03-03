@@ -80,8 +80,8 @@ module EE
     def ensure_can_remove_self
       unless current_user&.can_remove_self?
         redirect_to profile_account_path,
-                    status: :see_other,
-                    alert: s_('Profiles|Account could not be deleted. GitLab was unable to verify your identity.')
+          status: :see_other,
+          alert: s_('Profiles|Account could not be deleted. GitLab was unable to verify your identity.')
       end
     end
 

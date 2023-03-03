@@ -19,8 +19,10 @@ module Groups
           group_group_members_path(group),
           status: :found,
           notice: format(
-            format(_("Two-factor authentication has been disabled successfully for %{username}!"),
-                    username: @user.username)
+            format(
+              _("Two-factor authentication has been disabled successfully for %{username}!"),
+              username: @user.username
+            )
           ))
       else
         redirect_to group_group_members_path(group), status: :found, alert: result[:message]
