@@ -865,9 +865,6 @@ msgstr ""
 msgid "%{message} showing first %{warnings_displayed}"
 msgstr ""
 
-msgid "%{message}. Your attention request was removed."
-msgstr ""
-
 msgid "%{milestone} (expired)"
 msgstr ""
 
