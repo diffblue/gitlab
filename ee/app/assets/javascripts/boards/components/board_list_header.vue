@@ -44,9 +44,6 @@ export default {
     countIcon() {
       return this.isEpicBoard ? 'epic' : 'issues';
     },
-    itemsCount() {
-      return this.isEpicBoard ? this.list.epicsCount : this.boardList?.issuesCount;
-    },
     itemsTooltipLabel() {
       const { maxIssueCount } = this.list;
       if (maxIssueCount > 0) {
