@@ -338,7 +338,8 @@ describe('Pipeline Security Dashboard component', () => {
         jobs: [],
         summary: mapValues(
           pipelineSecurityReportSummary.data.project.pipeline.securityReportSummary,
-          (obj) => pick(obj, 'vulnerabilitiesCount', 'scannedResourcesCsvPath'),
+          (obj) =>
+            pick(obj, 'vulnerabilitiesCount', 'scannedResourcesCsvPath', 'scans', '__typename'),
         ),
       });
     });
