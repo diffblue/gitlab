@@ -87,10 +87,14 @@ module IdentityVerifiable
   end
 
   def credit_card_verification_enabled?
-    Feature.enabled?(:identity_verification_credit_card)
+    return false unless is_a?(User)
+
+    Feature.enabled?(:identity_verification_credit_card, self)
   end
 
   def phone_number_verification_enabled?
-    Feature.enabled?(:identity_verification_phone_number)
+    return false unless is_a?(User)
+
+    Feature.enabled?(:identity_verification_phone_number, self)
   end
 end

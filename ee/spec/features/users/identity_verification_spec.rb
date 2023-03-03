@@ -139,7 +139,7 @@ feature_category: :system_access do
 
       expect(page).to have_current_path(success_identity_verification_path)
 
-      stub_feature_flags(identity_verification_credit_card: true)
+      stub_feature_flags(identity_verification_credit_card: user)
 
       sign_out(user)
 
