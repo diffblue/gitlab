@@ -92,13 +92,13 @@ actions:
 - scan: secret_detection
 `;
 
-export const mockDastAndSecretDetectionScanExecutionManifest = `---
+export const mockInvalidYamlCadenceValue = `---
 name: Enforce DAST in every pipeline
 description: This policy enforces pipeline configuration to have a job with DAST scan
 enabled: true
 rules:
 - type: schedule
-  cadence: "*/10 * * * *"
+  cadence: */10 * * * *
   branches:
   - main
 - type: pipeline

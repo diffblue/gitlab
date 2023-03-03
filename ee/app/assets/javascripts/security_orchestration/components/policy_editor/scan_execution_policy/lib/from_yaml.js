@@ -24,27 +24,34 @@ export const hasRuleModeSupportedScanners = (policy) => {
   Construct a policy object expected by the policy editor from a yaml manifest.
 */
 export const fromYaml = ({ manifest, validateRuleMode = false }) => {
-  const policy = safeLoad(manifest, { json: true });
+  try {
+    const policy = safeLoad(manifest, { json: true });
 
-  if (validateRuleMode) {
+    if (validateRuleMode) {
+      /**
+       * These values are what is supported by rule mode. If the yaml has any other values,
+       * rule mode will be disabled. This validation should not be used to check whether
+       * the yaml is a valid policy; that should be done on the backend with the official
+       * schema.
+       */
+      const primaryKeys = ['type', 'name', 'description', 'enabled', 'rules', 'actions'];
+      const rulesKeys = ['type', 'agents', 'branches', 'cadence'];
+      const actionsKeys = ['scan', 'site_profile', 'scanner_profile', 'variables', 'tags'];
+
+      return isValidPolicy({ policy, primaryKeys, rulesKeys, actionsKeys }) &&
+        !hasInvalidCron(policy) &&
+        hasRuleModeSupportedScanners(policy)
+        ? policy
+        : { error: true };
+    }
+
+    return policy;
+  } catch {
     /**
-     * These values are what is supported by rule mode. If the yaml has any other values,
-     * rule mode will be disabled. This validation should not be used to check whether
-     * the yaml is a valid policy; that should be done on the backend with the official
-     * schema.
+     * Catch parsing error of safeLoad
      */
-    const primaryKeys = ['type', 'name', 'description', 'enabled', 'rules', 'actions'];
-    const rulesKeys = ['type', 'agents', 'branches', 'cadence'];
-    const actionsKeys = ['scan', 'site_profile', 'scanner_profile', 'variables', 'tags'];
-
-    return isValidPolicy({ policy, primaryKeys, rulesKeys, actionsKeys }) &&
-      !hasInvalidCron(policy) &&
-      hasRuleModeSupportedScanners(policy)
-      ? policy
-      : { error: true };
+    return { error: true, key: 'yaml-parsing' };
   }
-
-  return policy;
 };
 
 /**
