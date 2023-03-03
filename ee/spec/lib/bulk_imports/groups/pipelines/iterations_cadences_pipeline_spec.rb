@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe BulkImports::Groups::Pipelines::IterationsCadencesPipeline do
+RSpec.describe BulkImports::Groups::Pipelines::IterationsCadencesPipeline, feature_category: :importers do
   let(:user) { create(:user) }
   let(:group) { create(:group) }
   let(:bulk_import) { create(:bulk_import, user: user) }
@@ -74,17 +74,19 @@ RSpec.describe BulkImports::Groups::Pipelines::IterationsCadencesPipeline do
   end
 
   describe '#load' do
-    context 'when milestone is not persisted' do
+    context 'when iterations cadence is not persisted' do
       it 'saves the milestone' do
-        milestone = build(:milestone, group: group)
+        cadence = build(:iterations_cadence, group: group)
 
-        expect(milestone).to receive(:save!)
+        expect_next_instance_of(Gitlab::ImportExport::Base::RelationObjectSaver) do |saver|
+          expect(saver).to receive(:execute)
+        end
 
-        subject.load(context, milestone)
+        subject.load(context, cadence)
       end
     end
 
-    context 'when milestone is missing' do
+    context 'when iterations cadence is missing' do
       it 'returns' do
         expect(subject.load(context, nil)).to be_nil
       end
