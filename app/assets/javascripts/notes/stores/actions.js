@@ -2,7 +2,7 @@ import $ from 'jquery';
 import Visibility from 'visibilityjs';
 import Vue from 'vue';
 import Api from '~/api';
-import { createAlert, VARIANT_INFO } from '~/flash';
+import { createAlert, VARIANT_INFO } from '~/alert';
 import { EVENT_ISSUABLE_VUE_APP_CHANGE } from '~/issuable/constants';
 import { TYPE_ISSUE } from '~/issues/constants';
 import axios from '~/lib/utils/axios_utils';
@@ -759,10 +759,10 @@ export const submitSuggestion = (
 
       const errorMessage = err.response.data?.message;
 
-      const flashMessage = errorMessage || defaultMessage;
+      const alertMessage = errorMessage || defaultMessage;
 
       createAlert({
-        message: flashMessage,
+        message: alertMessage,
         parent: flashContainer,
       });
     })
@@ -795,10 +795,10 @@ export const submitSuggestionBatch = ({ commit, dispatch, state }, { message, fl
 
       const errorMessage = err.response.data?.message;
 
-      const flashMessage = errorMessage || defaultMessage;
+      const alertMessage = errorMessage || defaultMessage;
 
       createAlert({
-        message: flashMessage,
+        message: alertMessage,
         parent: flashContainer,
       });
     })
