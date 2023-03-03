@@ -1,7 +1,7 @@
 <script>
 import { GlSkeletonLoader } from '@gitlab/ui';
 import { isEqual, keyBy } from 'lodash';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { sprintf, s__ } from '~/locale';
 import { fetchMetricsData, removeFlash } from '../utils';
 import MetricTile from './metric_tile.vue';

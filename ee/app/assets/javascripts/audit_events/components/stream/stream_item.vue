@@ -8,7 +8,7 @@ import {
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
 import { sprintf } from '~/locale';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import deleteExternalDestination from '../../graphql/delete_external_destination.mutation.graphql';
 import { AUDIT_STREAMS_NETWORK_ERRORS, STREAM_ITEMS_I18N } from '../../constants';
 import StreamDestinationEditor from './stream_destination_editor.vue';

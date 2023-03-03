@@ -1,6 +1,6 @@
 <script>
 import { GlAlert, GlButton, GlLoadingIcon, GlIcon } from '@gitlab/ui';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import {
   ADD_STREAM,
   ADD_STREAM_MESSAGE,

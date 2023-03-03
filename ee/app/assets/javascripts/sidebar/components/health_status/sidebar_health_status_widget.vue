@@ -1,7 +1,7 @@
 <script>
 import { GlIcon, GlLoadingIcon, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { s__, sprintf } from '~/locale';
 import { OPENED, REOPENED } from '~/notes/constants';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';

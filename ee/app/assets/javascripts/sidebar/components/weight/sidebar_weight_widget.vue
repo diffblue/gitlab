@@ -8,7 +8,7 @@ import {
   GlIcon,
   GlTooltipDirective,
 } from '@gitlab/ui';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { __, sprintf } from '~/locale';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
 import { Tracking } from '~/sidebar/constants';
