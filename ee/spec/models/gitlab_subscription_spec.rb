@@ -636,6 +636,9 @@ RSpec.describe GitlabSubscription, :saas, feature_category: :subscription_manage
       end
 
       context 'when starting a new term' do
+        let(:new_start) { Date.today + 1.year }
+        let(:new_end) { new_start + 1.year }
+
         context 'when start_date is after the old end_date' do
           let(:new_start) { gitlab_subscription.end_date + 1.year }
           let(:new_end) { new_start + 1.year }
@@ -650,9 +653,6 @@ RSpec.describe GitlabSubscription, :saas, feature_category: :subscription_manage
         end
 
         context 'when the end_date was nil' do
-          let(:new_start) { Date.today + 1.year }
-          let(:new_end) { new_start + 1.year }
-
           before do
             gitlab_subscription.update!(end_date: nil)
           end
@@ -662,7 +662,14 @@ RSpec.describe GitlabSubscription, :saas, feature_category: :subscription_manage
 
         context 'when the start_date is before the old end_date' do
           let(:new_start) { gitlab_subscription.end_date - 1.month }
-          let(:new_end) { new_start + 1.year }
+
+          it_behaves_like 'resets seats'
+        end
+
+        context 'when max_seats_used_changed_at is not set' do
+          before do
+            gitlab_subscription.update!(max_seats_used_changed_at: nil)
+          end
 
           it_behaves_like 'resets seats'
         end
@@ -735,6 +742,64 @@ RSpec.describe GitlabSubscription, :saas, feature_category: :subscription_manage
         end
 
         it_behaves_like 'resets seats'
+      end
+
+      context 'with an active trial' do
+        let_it_be(:trial_subscription) do
+          create(:gitlab_subscription, hosted_plan: ultimate_plan, trial: true, max_seats_used: 10, seats_owed: 0, seats_in_use: 5)
+        end
+
+        it 'resets seats when upgrading to a paid plan' do
+          expect do
+            trial_subscription.update!(trial: false)
+          end.to change(trial_subscription, :max_seats_used).from(10).to(1)
+            .and not_change(trial_subscription, :seats_owed)
+            .and not_change(trial_subscription, :seats_in_use)
+
+          expect(trial_subscription.max_seats_used_changed_at).to be_like_time(Time.current)
+        end
+
+        it 'does not reset seats when downgrading to a free plan' do
+          expect do
+            trial_subscription.update!(trial: false, hosted_plan: free_plan)
+          end.to not_change(trial_subscription, :max_seats_used)
+            .and not_change(trial_subscription, :max_seats_used_changed_at)
+        end
+      end
+
+      context 'when starting a trial with an expired subscription' do
+        let(:new_start) { Date.today }
+        let(:new_end) { new_start + 1.year }
+        let(:max_seats_used_changed_at) { nil }
+        let(:gitlab_subscription) do
+          create(
+            :gitlab_subscription,
+            hosted_plan: ultimate_plan,
+            start_date: Date.current - 2.years,
+            end_date: Date.current - 1.year,
+            max_seats_used_changed_at: max_seats_used_changed_at
+          )
+        end
+
+        shared_examples 'does not reset seat statistics' do
+          it 'does not reset seat statistics' do
+            expect do
+              gitlab_subscription.update!(trial: true, start_date: new_start, end_date: new_end)
+            end.to not_change(gitlab_subscription, :max_seats_used)
+              .and not_change(gitlab_subscription, :max_seats_used_changed_at)
+              .and not_change(gitlab_subscription, :seats_owed)
+          end
+        end
+
+        context 'when max_seats_used_changed_at has never been set' do
+          it_behaves_like 'does not reset seat statistics'
+        end
+
+        context 'when max_seats_used_changed_at has been set' do
+          let(:max_seats_used_changed_at) { Time.current - 1.year }
+
+          it_behaves_like 'does not reset seat statistics'
+        end
       end
     end
 
