@@ -14903,9 +14903,6 @@ msgstr ""
 msgid "DiscordService|Send notifications about project events to a Discord channel."
 msgstr ""
 
-msgid "Discover"
-msgstr ""
-
 msgid "Discover GitLab Geo"
 msgstr ""
 
@@ -38405,6 +38402,9 @@ msgid "Security Finding not found"
 msgstr ""
 
 msgid "Security and Compliance"
+msgstr ""
+
+msgid "Security capabilities"
 msgstr ""
 
 msgid "Security dashboard"

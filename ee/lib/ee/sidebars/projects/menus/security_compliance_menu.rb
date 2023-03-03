@@ -52,7 +52,7 @@ module EE
             end
 
             ::Sidebars::MenuItem.new(
-              title: _('Discover'),
+              title: _('Security capabilities'),
               link: project_security_discover_path(context.project),
               active_routes: { path: 'projects/security/discover#show' },
               item_id: :discover_project_security
