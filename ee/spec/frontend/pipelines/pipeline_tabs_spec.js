@@ -2,7 +2,7 @@ import { createAppOptions } from 'ee/pipelines/pipeline_tabs';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import findingsQuery from 'ee/security_dashboard/graphql/queries/pipeline_findings.query.graphql';
 import { dataset } from 'ee_jest/security_dashboard/mock_data/pipeline_report_dataset';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { HTTP_STATUS_FORBIDDEN, HTTP_STATUS_UNAUTHORIZED } from '~/lib/utils/http_status';
 import { __ } from '~/locale';
 
@@ -13,7 +13,7 @@ const mockCeOptions = {
 jest.mock('~/pipelines/pipeline_tabs', () => ({
   createAppOptions: () => mockCeOptions,
 }));
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('createAppOptions', () => {
   const EL_ID = 'EL_ID';

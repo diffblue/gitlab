@@ -1,6 +1,6 @@
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { createAlert, VARIANT_INFO } from '~/flash';
+import { createAlert, VARIANT_INFO } from '~/alert';
 import Api from 'ee/api';
 import SettingsForm from 'ee/admin/application_settings/reporting/git_abuse_settings/components/settings_form.vue';
 import SettingsFormContainer from 'ee/admin/application_settings/reporting/git_abuse_settings/components/settings_form_container.vue';
@@ -10,7 +10,7 @@ import {
 } from 'ee/admin/application_settings/reporting/git_abuse_settings/constants';
 
 jest.mock('ee/api.js');
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('SettingsFormContainer', () => {
   let wrapper;
@@ -69,7 +69,7 @@ describe('SettingsFormContainer', () => {
       });
     });
 
-    it('creates a flash with the correct message and type', async () => {
+    it('creates an alert with the correct message and type', async () => {
       wrapper.findComponent(SettingsForm).vm.$emit('submit', payload);
 
       await nextTick();
@@ -78,7 +78,7 @@ describe('SettingsFormContainer', () => {
     });
 
     describe('Api.updateApplicationSettings fails', () => {
-      it('creates a flash with the correct message and type', async () => {
+      it('creates an alert with the correct message and type', async () => {
         Api.updateApplicationSettings.mockImplementation(() => Promise.reject());
 
         wrapper.findComponent(SettingsForm).vm.$emit('submit', payload);

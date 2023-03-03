@@ -9,12 +9,12 @@ import {
   mockUserSubscription,
 } from 'ee_jest/usage_quotas/seats/mock_data';
 import testAction from 'helpers/vuex_action_helper';
-import { createAlert, VARIANT_SUCCESS } from '~/flash';
+import { createAlert, VARIANT_SUCCESS } from '~/alert';
 import Tracking from '~/tracking';
 
 jest.mock('ee/api/groups_api');
 jest.mock('ee/api');
-jest.mock('~/flash');
+jest.mock('~/alert');
 jest.mock('~/tracking');
 
 describe('Usage Quotas Seats actions', () => {

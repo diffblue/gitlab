@@ -13,7 +13,7 @@ import * as types from 'ee/dependencies/store/modules/list/mutation_types';
 import getInitialState from 'ee/dependencies/store/modules/list/state';
 import { TEST_HOST } from 'helpers/test_constants';
 import testAction from 'helpers/vuex_action_helper';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import download from '~/lib/utils/downloader';
 import {
   HTTP_STATUS_CREATED,
@@ -24,7 +24,7 @@ import {
 
 import mockDependenciesResponse from './data/mock_dependencies.json';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 jest.mock('~/lib/utils/downloader');
 
 describe('Dependencies actions', () => {
@@ -267,7 +267,7 @@ describe('Dependencies actions', () => {
         mock.onGet(state.endpoint).replyOnce(...responseDetails);
       });
 
-      it('dispatches the receiveDependenciesError action and creates a flash', () =>
+      it('dispatches the receiveDependenciesError action and creates an alert', () =>
         testAction(
           actions.fetchDependencies,
           undefined,

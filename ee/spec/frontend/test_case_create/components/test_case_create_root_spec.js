@@ -7,11 +7,11 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import IssuableCreate from '~/vue_shared/issuable/create/components/issuable_create_root.vue';
 import { redirectTo } from '~/lib/utils/url_utility';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 jest.mock('~/lib/utils/url_utility');
 
 Vue.use(VueApollo);

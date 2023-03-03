@@ -2,7 +2,7 @@ import { GlLoadingIcon, GlTableLite } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import IssuesAnalyticsTable from 'ee/issues_analytics/components/issues_analytics_table.vue';
 import getIssuesAnalyticsData from 'ee/issues_analytics/graphql/queries/issues_analytics.query.graphql';
@@ -14,7 +14,7 @@ import {
 } from '../mock_data';
 
 Vue.use(VueApollo);
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('IssuesAnalyticsTable', () => {
   let wrapper;

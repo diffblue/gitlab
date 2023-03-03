@@ -8,12 +8,12 @@ import last180DaysData from 'test_fixtures/api/dora/metrics/daily_deployment_fre
 import { useFixturesFakeDate } from 'helpers/fake_date';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 const makeMockCiCdAnalyticsCharts = ({ selectedChart = 0 } = {}) => ({
   render() {
@@ -109,7 +109,7 @@ describe('deployment_frequency_charts.vue', () => {
       expect(chartWrapper.props().charts).toMatchSnapshot();
     });
 
-    it('does not show a flash message', () => {
+    it('does not show an alert message', () => {
       expect(createAlert).not.toHaveBeenCalled();
     });
 
@@ -159,7 +159,7 @@ describe('deployment_frequency_charts.vue', () => {
       captureExceptionSpy.mockRestore();
     });
 
-    it('shows a flash message', () => {
+    it('shows an alert message', () => {
       expect(createAlert).toHaveBeenCalledTimes(1);
       expect(createAlert).toHaveBeenCalledWith({
         message: 'Something went wrong while getting deployment frequency data.',
@@ -243,7 +243,7 @@ describe('deployment_frequency_charts.vue', () => {
         await axios.waitForAll();
       });
 
-      it('throws an error (which shows a flash message)', () => {
+      it('throws an error (which shows an alert message)', () => {
         expect(createAlert).toHaveBeenCalled();
       });
     });
@@ -257,7 +257,7 @@ describe('deployment_frequency_charts.vue', () => {
         await axios.waitForAll();
       });
 
-      it('throws an error (which shows a flash message)', () => {
+      it('throws an error (which shows an alert message)', () => {
         expect(createAlert).toHaveBeenCalled();
       });
     });

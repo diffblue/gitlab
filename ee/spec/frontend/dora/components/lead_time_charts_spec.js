@@ -6,11 +6,11 @@ import lastMonthData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_ch
 import last90DaysData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_90_days.json';
 import last180DaysData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_180_days.json';
 import { useFixturesFakeDate } from 'helpers/fake_date';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('lead_time_charts.vue', () => {
   useFixturesFakeDate();
@@ -88,7 +88,7 @@ describe('lead_time_charts.vue', () => {
       expect(mock.history.get).toHaveLength(4);
     });
 
-    it('does not show a flash message', () => {
+    it('does not show an alert message', () => {
       expect(createAlert).not.toHaveBeenCalled();
     });
 
@@ -106,7 +106,7 @@ describe('lead_time_charts.vue', () => {
       await axios.waitForAll();
     });
 
-    it('shows a flash message', () => {
+    it('shows an alert message', () => {
       expect(createAlert).toHaveBeenCalledTimes(1);
       expect(createAlert.mock.calls[0]).toEqual([
         {
@@ -186,7 +186,7 @@ describe('lead_time_charts.vue', () => {
         await axios.waitForAll();
       });
 
-      it('throws an error (which shows a flash message)', () => {
+      it('throws an error (which shows an alert message)', () => {
         expect(createAlert).toHaveBeenCalled();
       });
     });
@@ -202,7 +202,7 @@ describe('lead_time_charts.vue', () => {
         await axios.waitForAll();
       });
 
-      it('throws an error (which shows a flash message)', () => {
+      it('throws an error (which shows an alert message)', () => {
         expect(createAlert).toHaveBeenCalled();
       });
     });

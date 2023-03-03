@@ -24,7 +24,7 @@ import { TEST_HOST } from 'helpers/test_constants';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { queryToObject } from '~/lib/utils/url_utility';
 import {
   FILTERED_SEARCH_TERM,
@@ -54,7 +54,7 @@ jest.mock('ee/requirements/constants', () => ({
   DEFAULT_PAGE_SIZE: 2,
 }));
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 const $toast = {
   show: jest.fn(),
