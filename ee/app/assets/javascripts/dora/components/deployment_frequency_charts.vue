@@ -3,7 +3,7 @@ import * as Sentry from '@sentry/browser';
 import * as DoraApi from 'ee/api/dora_api';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
 import { toYmd } from '~/analytics/shared/utils';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { s__, sprintf } from '~/locale';
 import { SUMMARY_METRICS_REQUEST } from '~/analytics/cycle_analytics/constants';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';

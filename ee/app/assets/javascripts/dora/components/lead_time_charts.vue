@@ -1,6 +1,6 @@
 <script>
 import * as DoraApi from 'ee/api/dora_api';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { s__, sprintf } from '~/locale';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
 import { buildNullSeries } from '../../analytics/shared/utils';
@@ -109,7 +109,7 @@ export default {
       const allErrorMessages = requestErrors.join('\n');
 
       createAlert({
-        message: this.$options.i18n.flashMessage,
+        message: this.$options.i18n.alertMessage,
         error: new Error(`Something went wrong while getting lead time data:\n${allErrorMessages}`),
         captureError: true,
       });
@@ -123,7 +123,7 @@ export default {
     },
     /**
      * Validates that exactly one of [this.projectPath, this.groupPath] has been
-     * provided to this component. If not, a flash message is shown and an error
+     * provided to this component. If not, a alert message is shown and an error
      * is logged with Sentry. This is mainly intended to be a development aid.
 
      * @returns {Boolean} Whether or not the paths are valid
@@ -141,7 +141,7 @@ export default {
 
       if (errorMessage) {
         createAlert({
-          message: this.$options.i18n.flashMessage,
+          message: this.$options.i18n.alertMessage,
           error: new Error(`Error while rendering lead time charts: ${errorMessage}`),
           captureError: true,
         });
@@ -156,7 +156,7 @@ export default {
   chartDescriptionText,
   chartDocumentationHref,
   i18n: {
-    flashMessage: s__('DORA4Metrics|Something went wrong while getting lead time data.'),
+    alertMessage: s__('DORA4Metrics|Something went wrong while getting lead time data.'),
     chartHeaderText: CHART_TITLE,
     medianLeadTime: CHART_TITLE,
     noMergeRequestsDeployed: NO_DATA_MESSAGE,

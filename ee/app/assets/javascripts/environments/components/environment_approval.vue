@@ -13,7 +13,7 @@ import {
 import { uniqueId } from 'lodash';
 import Api from 'ee/api';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { __, s__, sprintf } from '~/locale';
 import deploymentApprovalQuery from '../graphql/queries/deployment.query.graphql';
 import MultipleApprovalRulesTable from './multiple_approval_rules_table.vue';

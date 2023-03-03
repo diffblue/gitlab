@@ -1,6 +1,6 @@
 <script>
 import { GlLoadingIcon } from '@gitlab/ui';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import simplePoll from '~/lib/utils/simple_poll';
 import initializeProductAnalyticsMutation from '../graphql/mutations/initialize_product_analytics.mutation.graphql';
 import getProjectJitsuKeyQuery from '../graphql/mutations/get_project_jitsu_key.query.graphql';

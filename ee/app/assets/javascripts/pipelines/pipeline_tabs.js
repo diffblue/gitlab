@@ -4,7 +4,7 @@ import { merge } from 'lodash';
 import { createAppOptions as createAppOptionsCE } from '~/pipelines/pipeline_tabs';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { getPipelineReportOptions } from 'ee/security_dashboard/utils/pipeline_report_options';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { __ } from '~/locale';
 
 Vue.use(VueRouter);

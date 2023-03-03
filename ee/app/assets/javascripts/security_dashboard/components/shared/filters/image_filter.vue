@@ -2,7 +2,7 @@
 import { GlDropdown, GlTruncate, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
 import { xor } from 'lodash';
 import { s__ } from '~/locale';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import agentImagesQuery from 'ee/security_dashboard/graphql/queries/agent_images.query.graphql';
 import projectImagesQuery from 'ee/security_dashboard/graphql/queries/project_images.query.graphql';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
