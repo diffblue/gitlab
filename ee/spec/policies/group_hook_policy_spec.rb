@@ -14,8 +14,8 @@ RSpec.describe GroupHookPolicy do
       hook.group.add_maintainer(user)
     end
 
-    it "cannot read and destroy web-hooks" do
-      expect(policy).to be_disallowed(:read_web_hook, :destroy_web_hook)
+    it "cannot destroy web-hooks" do
+      expect(policy).to be_disallowed(:destroy_web_hook)
     end
   end
 
@@ -24,8 +24,8 @@ RSpec.describe GroupHookPolicy do
       hook.group.add_owner(user)
     end
 
-    it "can read and destroy web-hooks" do
-      expect(policy).to be_allowed(:read_web_hook, :destroy_web_hook)
+    it "can destroy web-hooks" do
+      expect(policy).to be_allowed(:destroy_web_hook)
     end
   end
 end

@@ -3,11 +3,18 @@
 require 'spec_helper'
 
 RSpec.describe Groups::HooksController, feature_category: :integrations do
-  let_it_be(:user)  { create(:user) }
+  let_it_be(:group_owner) { create(:user) }
+  let_it_be(:group_maintainer) { create(:user) }
   let_it_be(:group) { create(:group) }
 
+  let(:user) { group_owner }
+
+  before_all do
+    group.add_owner(group_owner)
+    group.add_maintainer(group_maintainer)
+  end
+
   before do
-    group.add_owner(user)
     sign_in(user)
   end
 
@@ -274,6 +281,16 @@ RSpec.describe Groups::HooksController, feature_category: :integrations do
     let(:params) { { group_id: group.to_param, id: hook } }
 
     it_behaves_like 'Web hook destroyer'
+
+    context 'When user is not logged in' do
+      let(:user) { group_maintainer }
+
+      it 'renders a 404' do
+        delete :destroy, params: params
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
   end
 
   context 'with group_webhooks disabled' do

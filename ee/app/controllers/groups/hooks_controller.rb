@@ -5,9 +5,10 @@ class Groups::HooksController < Groups::ApplicationController
 
   # Authorize
   before_action :group
-  before_action :authorize_admin_group!
+  before_action :authorize_admin_group!, except: :destroy
   before_action :check_group_webhooks_available!
   before_action :hook, only: [:edit, :update, :test, :destroy]
+  before_action :authorize_destroy_group_hook!, only: :destroy
   before_action :hook_logs, only: :edit
   before_action -> { check_rate_limit!(:group_testing_hook, scope: [@group, current_user]) }, only: :test
 
@@ -52,5 +53,9 @@ class Groups::HooksController < Groups::ApplicationController
 
   def check_group_webhooks_available!
     render_404 unless @group.licensed_feature_available?(:group_webhooks) || LicenseHelper.show_promotions?(current_user)
+  end
+
+  def authorize_destroy_group_hook!
+    render_404 unless can?(current_user, :destroy_web_hook, @hook)
   end
 end
