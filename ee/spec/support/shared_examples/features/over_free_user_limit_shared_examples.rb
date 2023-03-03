@@ -31,32 +31,17 @@ RSpec.shared_examples_for 'over the free user limit alert' do
       stub_ee_application_setting(dashboard_enforcement_limit: 3)
     end
 
-    it 'performs dismiss cycle', :js do
+    it 'does not show alert and then goes over limit and shows alert', :js do
       visit_page
 
-      expect(page).not_to have_content('is over the')
-      expect(page).not_to have_content('user limit')
+      expect(page).to have_content(group.name)
+      expect_not_to_see_owner_alert
 
       group.add_developer(new_user)
 
       page.refresh
 
-      expect(page).to have_content('is over the')
-      expect(page).to have_content('user limit')
-      expect(page).not_to have_content(non_owner_text)
-
-      page.within('[data-testid="user-over-limit-free-plan-alert"]') do
-        expect(page).to have_link('Manage members')
-        expect(page).to have_link('Explore paid plans')
-      end
-
-      find(dismiss_button).click
-      wait_for_requests
-
-      page.refresh
-
-      expect(page).not_to have_content('is over the')
-      expect(page).not_to have_content('user limit')
+      expect_to_see_owner_alert
     end
 
     context 'when over storage limits' do
@@ -66,36 +51,50 @@ RSpec.shared_examples_for 'over the free user limit alert' do
         visit_page
 
         expect(page).to have_content(group.name)
-        expect(page).not_to have_content('is over the')
-        expect(page).not_to have_content('user limit')
+        expect_not_to_see_owner_alert
       end
     end
 
     context 'when user is not an owner' do
       let(:role) { :developer }
 
-      it 'performs dismiss cycle', :js do
+      it 'does not show alert and then goes over limit and shows alert', :js do
         visit_page
 
-        expect(page).not_to have_content('is over the')
-        expect(page).not_to have_content('user limit')
+        expect(page).to have_content(group.name)
+        expect_not_to_see_owner_alert
 
         group.add_developer(new_user)
 
         page.refresh
 
+        expect_to_see_non_owner_alert
+      end
+    end
+
+    def expect_to_see_non_owner_alert
+      page.within('[data-testid="user-over-limit-free-plan-alert"]') do
         expect(page).to have_content('is over the')
         expect(page).to have_content('user limit')
         expect(page).to have_content(non_owner_text)
-
-        find(dismiss_button).click
-        wait_for_requests
-
-        page.refresh
-
-        expect(page).not_to have_content('is over the')
-        expect(page).not_to have_content('user limit')
+        expect(page).not_to have_css(dismiss_button)
       end
+    end
+
+    def expect_to_see_owner_alert
+      page.within('[data-testid="user-over-limit-free-plan-alert"]') do
+        expect(page).to have_content('Because you are over the')
+        expect(page).to have_content('user limit')
+        expect(page).not_to have_content(non_owner_text)
+        expect(page).not_to have_css(dismiss_button)
+        expect(page).to have_link('Manage members')
+        expect(page).to have_link('Explore paid plans')
+      end
+    end
+
+    def expect_not_to_see_owner_alert
+      expect(page).not_to have_content('Because you are over the')
+      expect(page).not_to have_content('user limit')
     end
   end
 

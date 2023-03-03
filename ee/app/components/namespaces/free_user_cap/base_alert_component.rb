@@ -48,11 +48,13 @@ module Namespaces
       end
 
       def alert_data
-        base_alert_data.merge(Shared.extra_alert_data(namespace))
+        return base_alert_data unless dismissible
+
+        base_alert_data.merge(Shared.extra_alert_data(namespace, feature_name))
       end
 
       def base_alert_data
-        Shared.base_alert_data(feature_name)
+        Shared.base_alert_data
       end
 
       def close_button_data

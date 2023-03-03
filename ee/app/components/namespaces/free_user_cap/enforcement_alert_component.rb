@@ -5,8 +5,6 @@ module Namespaces
     class EnforcementAlertComponent < BaseAlertComponent
       private
 
-      USER_REACHED_LIMIT_FREE_PLAN_ALERT = 'user_reached_limit_free_plan_alert'
-
       def variant
         :danger
       end
@@ -17,10 +15,6 @@ module Namespaces
 
       def dismissed?
         false
-      end
-
-      def feature_name
-        USER_REACHED_LIMIT_FREE_PLAN_ALERT
       end
 
       def alert_attributes

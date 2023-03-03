@@ -17,7 +17,6 @@ module Namespaces
         {
           track_action: 'render',
           track_property: 'free_group_limited_usage_quota_banner',
-          feature_id: feature_name,
           testid: 'free-group-limited-alert'
         }
       end

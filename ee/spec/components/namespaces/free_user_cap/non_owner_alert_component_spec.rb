@@ -37,11 +37,7 @@ RSpec.describe Namespaces::FreeUserCap::NonOwnerAlertComponent, :saas, :aggregat
 
         expect(page).to have_css(".gl-overflow-auto.#{content_class}")
 
-        expect(page)
-          .to have_css("[data-testid='user-over-limit-free-plan-alert']" \
-                       "[data-dismiss-endpoint='#{group_callouts_path}']" \
-                       "[data-feature-id='#{described_class::USER_REACHED_LIMIT_FREE_PLAN_ALERT}']" \
-                       "[data-group-id='#{namespace.id}']")
+        expect(page).to have_css('[data-testid="user-over-limit-free-plan-alert"]')
       end
     end
 

@@ -5,45 +5,43 @@ module Namespaces
     class NotificationAlertComponent < BaseAlertComponent
       private
 
-      NOTIFICATION_USER_OVER_LIMIT_FREE_PLAN_ALERT = 'preview_user_over_limit_free_plan_alert'
+      PROMOTION_URL = 'https://about.gitlab.com/pricing/faq-efficient-free-tier/#transition-offer'
 
       def breached_cap_limit?
         Shared.over_notification_limit?(namespace)
       end
 
-      def ignore_dismissal_earlier_than
-        Shared::NOTIFICATION_IGNORE_DISMISSAL_EARLIER_THAN
+      def dismissible
+        false
       end
 
-      def feature_name
-        NOTIFICATION_USER_OVER_LIMIT_FREE_PLAN_ALERT
+      def dismissed?
+        false
       end
 
       def alert_attributes
         {
-          title: _(
-            'Your top-level group %{namespace_name} is over the %{free_user_limit} user limit'
-          ).html_safe % {
-            namespace_name: namespace.name,
-            free_user_limit: free_user_limit
-          },
-          body: n_(
-            'GitLab will enforce this limit in the future. If you are over %{free_user_limit} ' \
-            'user when enforcement begins, your top-level group, including any ' \
-            'subgroups and projects, will be placed in a %{link_start}read-only%{link_end} ' \
-            'state. To avoid being placed in a read-only state, reduce your top-level group ' \
-            'to %{free_user_limit} user or less or purchase a paid tier.',
-            'GitLab will enforce this limit in the future. If you are over %{free_user_limit} ' \
-            'users when enforcement begins, your top-level group, including any ' \
-            'subgroups and projects, will be placed in a %{link_start}read-only%{link_end} ' \
-            'state. To avoid being placed in a read-only state, reduce your top-level group ' \
-            'to %{free_user_limit} users or less or purchase a paid tier.',
-            free_user_limit
-          ).html_safe % {
+          title: Kernel.format(
+            _(
+              'Your top-level group %{namespace_name} will move to a read-only state soon'
+            ),
+            namespace_name: namespace.name
+          ).html_safe,
+          body: Kernel.format(
+            _(
+              'Because you are over the %{free_user_limit} user limit, ' \
+              'your top-level group, including any subgroups and projects, will be placed in a ' \
+              '%{readonly_link_start}read-only state%{link_end} soon. To retain write access, ' \
+              'reduce the number of users of your top-level group to ' \
+              '%{free_user_limit} or less, or purchase a paid tier. To minimize the impact to your operations, ' \
+              'GitLab is offering a %{promotion_link_start}one-time discount%{link_end} ' \
+              'for a new purchase of a one-year subscription of GitLab Premium SaaS.'
+            ),
             free_user_limit: free_user_limit,
-            link_start: read_only_namespaces_link_start,
+            readonly_link_start: read_only_namespaces_link_start,
+            promotion_link_start: "<a href='#{PROMOTION_URL}' target='_blank' rel='noopener noreferrer'>".html_safe,
             link_end: link_end
-          },
+          ).html_safe,
           primary_cta: namespace_primary_cta,
           secondary_cta: namespace_secondary_cta
         }
