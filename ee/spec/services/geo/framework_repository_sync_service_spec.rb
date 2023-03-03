@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
+RSpec.describe Geo::FrameworkRepositorySyncService, :geo, feature_category: :geo_replication do
   include ::EE::GeoHelpers
   include ExclusiveLeaseHelpers
   using RSpec::Parameterized::TableSyntax

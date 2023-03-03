@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::ProjectHousekeepingService do
+RSpec.describe Geo::ProjectHousekeepingService, feature_category: :geo_replication do
   include ExclusiveLeaseHelpers
   include ::EE::GeoHelpers
 

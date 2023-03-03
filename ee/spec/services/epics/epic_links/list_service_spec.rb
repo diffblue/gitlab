@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Epics::EpicLinks::ListService do
+RSpec.describe Epics::EpicLinks::ListService, feature_category: :portfolio_management do
   let(:user) { create :user }
   let(:group) { create(:group, :public) }
   let(:parent_epic) { create(:epic, group: group) }

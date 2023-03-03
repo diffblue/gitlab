@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::HashedStorageAttachmentsEventStore do
+RSpec.describe Geo::HashedStorageAttachmentsEventStore, feature_category: :geo_replication do
   include EE::GeoHelpers
 
   let_it_be(:secondary_node) { create(:geo_node) }

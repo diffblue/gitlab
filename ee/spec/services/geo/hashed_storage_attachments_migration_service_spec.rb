@@ -6,7 +6,7 @@ def base_path(storage)
   File.join(FileUploader.root, storage.disk_path)
 end
 
-RSpec.describe Geo::HashedStorageAttachmentsMigrationService do
+RSpec.describe Geo::HashedStorageAttachmentsMigrationService, feature_category: :geo_replication do
   let!(:project) { create(:project, :legacy_storage) }
 
   let(:legacy_storage) { Storage::LegacyProject.new(project) }

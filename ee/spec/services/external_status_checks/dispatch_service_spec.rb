@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ExternalStatusChecks::DispatchService do
+RSpec.describe ExternalStatusChecks::DispatchService, feature_category: :projects do
   let_it_be(:rule) { build_stubbed(:external_status_check, external_url: 'https://test.example.com/callback') }
 
   subject { described_class.new(rule, {}).execute }

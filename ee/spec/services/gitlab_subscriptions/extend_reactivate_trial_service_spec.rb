@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::ExtendReactivateTrialService do
+RSpec.describe GitlabSubscriptions::ExtendReactivateTrialService, feature_category: :billing_and_payments do
   subject(:execute) { described_class.new.execute(extend_reactivate_trial_params) }
 
   let_it_be(:namespace) { create(:namespace) }

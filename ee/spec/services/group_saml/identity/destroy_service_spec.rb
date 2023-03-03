@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GroupSaml::Identity::DestroyService do
+RSpec.describe GroupSaml::Identity::DestroyService, feature_category: :system_access do
   let(:identity) { create(:group_saml_identity) }
 
   subject { described_class.new(identity) }

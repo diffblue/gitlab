@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe DesignManagement::SaveDesignsService do
+RSpec.describe DesignManagement::SaveDesignsService, feature_category: :design_management do
   include DesignManagementTestHelpers
 
   let_it_be(:project) { create(:project) }

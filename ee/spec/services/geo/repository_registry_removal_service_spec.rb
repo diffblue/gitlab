@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::RepositoryRegistryRemovalService do
+RSpec.describe Geo::RepositoryRegistryRemovalService, feature_category: :geo_replication do
   include EE::GeoHelpers
 
   let(:snippet_repository_registry) { create(:geo_snippet_repository_registry) }

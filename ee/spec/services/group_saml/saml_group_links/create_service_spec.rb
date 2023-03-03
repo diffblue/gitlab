@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe GroupSaml::SamlGroupLinks::CreateService do
+RSpec.describe GroupSaml::SamlGroupLinks::CreateService, feature_category: :system_access do
   subject(:service) { described_class.new(current_user: current_user, group: group, params: params) }
 
   let_it_be(:group) { create(:group) }

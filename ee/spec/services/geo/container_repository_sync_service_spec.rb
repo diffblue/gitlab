@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::ContainerRepositorySyncService, :geo do
+RSpec.describe Geo::ContainerRepositorySyncService, :geo, feature_category: :geo_replication do
   include ::EE::GeoHelpers
   include ExclusiveLeaseHelpers
 

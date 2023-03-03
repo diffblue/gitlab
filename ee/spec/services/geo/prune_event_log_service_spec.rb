@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::PruneEventLogService do
+RSpec.describe Geo::PruneEventLogService, feature_category: :geo_replication do
   include ExclusiveLeaseHelpers
 
   let(:min_id) { :all }

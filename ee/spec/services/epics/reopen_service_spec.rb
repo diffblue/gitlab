@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Epics::ReopenService do
+RSpec.describe Epics::ReopenService, feature_category: :portfolio_management do
   let_it_be(:group) { create(:group, :internal) }
   let_it_be(:user) { create(:user) }
   let_it_be(:epic, reload: true) { create(:epic, group: group, state: :closed, closed_at: Date.today, closed_by: user) }

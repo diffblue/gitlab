@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::RepositoryUpdatedService do
+RSpec.describe Geo::RepositoryUpdatedService, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   let_it_be(:project) { create(:project) }

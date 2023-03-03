@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::FetchPurchaseEligibleNamespacesService do
+RSpec.describe GitlabSubscriptions::FetchPurchaseEligibleNamespacesService, feature_category: :billing_and_payments do
   describe '#execute' do
     let_it_be(:user) { build(:user) }
     let_it_be(:namespace_1) { create(:namespace) }

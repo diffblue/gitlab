@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::NodeCreateService do
+RSpec.describe Geo::NodeCreateService, feature_category: :geo_replication do
   describe '#execute' do
     it 'creates a new node with valid params' do
       service = described_class.new(name: 'foo', url: 'http://example.com')

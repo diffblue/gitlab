@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_shared_state do
+RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_shared_state, feature_category: :global_search do
   subject(:cluster_reindexing_service) { described_class.new }
 
   let(:helper) { Gitlab::Elastic::Helper.new }

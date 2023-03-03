@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::CreateTrialOrLeadService do
+RSpec.describe GitlabSubscriptions::CreateTrialOrLeadService, feature_category: :billing_and_payments do
   let(:user) { build(:user, last_name: 'Jones') }
 
   describe '#execute' do

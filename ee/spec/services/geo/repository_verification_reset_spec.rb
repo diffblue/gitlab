@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::RepositoryVerificationReset, :geo do
+RSpec.describe Geo::RepositoryVerificationReset, :geo, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   let(:secondary) { create(:geo_node) }

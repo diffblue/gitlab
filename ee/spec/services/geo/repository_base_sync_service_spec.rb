@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::RepositoryBaseSyncService do
+RSpec.describe Geo::RepositoryBaseSyncService, feature_category: :geo_replication do
   include ::EE::GeoHelpers
   let(:project) { build('project') }
   let(:repository) { project.repository }

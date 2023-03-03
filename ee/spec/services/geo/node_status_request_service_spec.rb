@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::NodeStatusRequestService, :geo do
+RSpec.describe Geo::NodeStatusRequestService, :geo, feature_category: :geo_replication do
   include ::EE::GeoHelpers
   include ApiHelpers
 

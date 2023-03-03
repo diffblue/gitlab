@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GroupSaml::SamlProvider::UpdateService do
+RSpec.describe GroupSaml::SamlProvider::UpdateService, feature_category: :system_access do
   let(:current_user) { create(:user) }
   subject(:service) { described_class.new(current_user, saml_provider, params: params) }
 

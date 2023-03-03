@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe GroupSaml::SamlGroupLinks::DestroyService do
+RSpec.describe GroupSaml::SamlGroupLinks::DestroyService, feature_category: :system_access do
   subject(:service) { described_class.new(current_user: current_user, group: group, saml_group_link: saml_group_link) }
 
   let_it_be(:group) { create(:group) }

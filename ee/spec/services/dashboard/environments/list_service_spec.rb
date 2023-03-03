@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Dashboard::Environments::ListService do
+RSpec.describe Dashboard::Environments::ListService, feature_category: :continuous_delivery do
   describe '#execute' do
     def setup
       user = create(:user)

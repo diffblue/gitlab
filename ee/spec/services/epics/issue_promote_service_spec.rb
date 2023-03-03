@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Epics::IssuePromoteService, :aggregate_failures do
+RSpec.describe Epics::IssuePromoteService, :aggregate_failures, feature_category: :portfolio_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:ancestor) { create(:group) }
   let_it_be(:group) { create(:group, parent: ancestor) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::BaseFileService do
+RSpec.describe Geo::BaseFileService, feature_category: :geo_replication do
   subject { described_class.new('file', 8) }
 
   describe '#execute' do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::RenameRepositoryService do
+RSpec.describe Geo::RenameRepositoryService, feature_category: :geo_replication do
   let(:project) { create(:project, :repository, :legacy_storage) }
   let(:old_path) { project.full_path }
   let(:new_path) { "#{old_path}+renamed" }

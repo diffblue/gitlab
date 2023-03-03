@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Dashboard::Operations::ListService do
+RSpec.describe Dashboard::Operations::ListService, feature_category: :continuous_delivery do
   let(:subject) { described_class.new(user).execute }
   let(:dashboard_project) { subject.first }
 
