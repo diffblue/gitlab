@@ -3,16 +3,19 @@ import testAction from 'helpers/vuex_action_helper';
 import {
   fetchProtectedEnvironments,
   fetchAllMembers,
+  fetchAllMembersForEnvironment,
   fetchMembers,
   deleteRule,
   setRule,
   saveRule,
+  updateRule,
   updateEnvironment,
 } from 'ee/protected_environments/store/edit/actions';
 import * as types from 'ee/protected_environments/store/edit/mutation_types';
 import { state } from 'ee/protected_environments/store/edit/state';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_OK, HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
+import { DEPLOYER_RULE_KEY, RULE_KEYS } from 'ee/protected_environments/constants';
 import { MAINTAINER_ACCESS_LEVEL, DEVELOPER_ACCESS_LEVEL } from '../../constants';
 
 describe('ee/protected_environments/store/edit/actions', () => {
@@ -75,18 +78,34 @@ describe('ee/protected_environments/store/edit/actions', () => {
 
       mockedState.protectedEnvironments = environments;
 
-      mock.onGet().replyOnce(HTTP_STATUS_OK, environments);
-
       return testAction(
         fetchAllMembers,
         undefined,
         mockedState,
         [{ type: types.REQUEST_MEMBERS }, { type: types.RECEIVE_MEMBERS_FINISH }],
-        [
-          ...environments.flatMap((env) =>
-            env.deploy_access_levels.map((rule) => ({ type: 'fetchMembers', payload: rule })),
-          ),
-        ],
+        [...environments.map((env) => ({ type: 'fetchAllMembersForEnvironment', payload: env }))],
+      );
+    });
+  });
+
+  describe('fetchAllMembersForEnvironment', () => {
+    it('successfully fetches all members for a given environment', () => {
+      const deployLevels = [{ group_id: 1 }, { user_id: 1 }];
+      const approvalRules = [{ group_id: 2 }, { user_id: 2 }];
+      const environment = {
+        name: 'staging',
+        deploy_access_levels: deployLevels,
+        approval_rules: approvalRules,
+      };
+
+      return testAction(
+        fetchAllMembersForEnvironment,
+        environment,
+        mockedState,
+        [],
+        RULE_KEYS.flatMap((type) =>
+          environment[type].map((rule) => ({ type: 'fetchMembers', payload: { type, rule } })),
+        ),
       );
     });
   });
@@ -104,9 +123,14 @@ describe('ee/protected_environments/store/edit/actions', () => {
 
         return testAction(
           fetchMembers,
-          rule,
+          { type: DEPLOYER_RULE_KEY, rule },
           mockedState,
-          [{ type: types.RECEIVE_MEMBER_SUCCESS, payload: { rule, users: [].concat(response) } }],
+          [
+            {
+              type: types.RECEIVE_MEMBER_SUCCESS,
+              payload: { rule, type: DEPLOYER_RULE_KEY, users: [].concat(response) },
+            },
+          ],
           [],
         );
       },
@@ -128,9 +152,14 @@ describe('ee/protected_environments/store/edit/actions', () => {
 
       return testAction(
         fetchMembers,
-        rule,
+        { type: DEPLOYER_RULE_KEY, rule },
         mockedState,
-        [{ type: types.RECEIVE_MEMBER_SUCCESS, payload: { rule, users: [root] } }],
+        [
+          {
+            type: types.RECEIVE_MEMBER_SUCCESS,
+            payload: { rule, type: DEPLOYER_RULE_KEY, users: [root] },
+          },
+        ],
         [],
       );
     });
@@ -146,7 +175,7 @@ describe('ee/protected_environments/store/edit/actions', () => {
 
       return testAction(
         fetchMembers,
-        rule,
+        { type: DEPLOYER_RULE_KEY, rule },
         mockedState,
         [{ type: types.RECEIVE_MEMBERS_ERROR, payload: expect.any(Error) }],
         [],
@@ -169,13 +198,47 @@ describe('ee/protected_environments/store/edit/actions', () => {
     `('marks a rule for deletion of type $type', ({ rule, updatedRule }) => {
       return testAction(
         deleteRule,
-        { environment, rule },
+        { environment, rule, ruleKey: DEPLOYER_RULE_KEY },
         mockedState,
         [],
         [
           {
             type: 'updateEnvironment',
-            payload: { ...environment, deploy_access_levels: [updatedRule] },
+            payload: { ...environment, [DEPLOYER_RULE_KEY]: [updatedRule] },
+          },
+        ],
+      );
+    });
+  });
+
+  describe('updateRule', () => {
+    let environment;
+
+    beforeEach(() => {
+      environment = { name: 'staging' };
+    });
+
+    it('filters out all null attributes for rule updating', () => {
+      const rule = {
+        id: 1,
+        group_id: 1,
+        user_id: null,
+        access_level: null,
+        group_inheritance_type: '1',
+      };
+      const updatedRule = { id: 1, group_id: 1, group_inheritance_type: '1' };
+
+      mockedState.editingRules = { [rule.id]: rule };
+
+      return testAction(
+        updateRule,
+        { environment, rule, ruleKey: DEPLOYER_RULE_KEY },
+        mockedState,
+        [{ type: types.RECEIVE_RULE_UPDATED, payload: rule }],
+        [
+          {
+            type: 'updateEnvironment',
+            payload: { ...environment, [DEPLOYER_RULE_KEY]: [updatedRule] },
           },
         ],
       );
@@ -204,7 +267,7 @@ describe('ee/protected_environments/store/edit/actions', () => {
           },
           { type: types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_SUCCESS, payload: updatedEnvironment },
         ],
-        [],
+        [{ type: 'fetchAllMembersForEnvironment', payload: updatedEnvironment }],
       );
     });
 
@@ -250,7 +313,7 @@ describe('ee/protected_environments/store/edit/actions', () => {
 
       return testAction(
         saveRule,
-        environment,
+        { environment, ruleKey: DEPLOYER_RULE_KEY },
         mockedState,
         [],
         [

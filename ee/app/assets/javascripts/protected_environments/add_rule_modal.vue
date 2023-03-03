@@ -16,11 +16,16 @@ export default {
       type: Boolean,
       required: true,
     },
+    title: {
+      type: String,
+      required: true,
+    },
   },
   computed: {
     modalProps() {
       return {
         ...this.$attrs,
+        title: this.title,
         modalId: uniqueId('add-protected-environment-modal'),
         actionPrimary: { text: __('Save') },
         actionSecondary: { text: __('Cancel') },

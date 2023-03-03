@@ -5,15 +5,17 @@ import {
   GlAvatar,
   GlButton,
   GlFormGroup,
+  GlFormInput,
   GlSprintf,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import { s__, __ } from '~/locale';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
-import { ACCESS_LEVELS } from './constants';
+import { ACCESS_LEVELS, DEPLOYER_RULE_KEY, APPROVER_RULE_KEY } from './constants';
 import EditProtectedEnvironmentRulesCard from './edit_protected_environment_rules_card.vue';
 import AddRuleModal from './add_rule_modal.vue';
+import AddApprovers from './add_approvers.vue';
 
 export default {
   components: {
@@ -22,34 +24,53 @@ export default {
     GlAvatar,
     GlButton,
     GlFormGroup,
+    GlFormInput,
     GlSprintf,
     AccessDropdown,
     EditProtectedEnvironmentRulesCard,
     AddRuleModal,
+    AddApprovers,
   },
   directives: {
     GlTooltip,
   },
   inject: { accessLevelsData: { default: [] } },
   data() {
-    return { isAddingRule: false, addingEnvironment: null };
+    return { isAddingRule: false, addingEnvironment: null, addingRule: '' };
   },
   computed: {
-    ...mapState(['loading', 'protectedEnvironments', 'usersForRules']),
+    ...mapState(['projectId', 'loading', 'protectedEnvironments', 'editingRules']),
+    ...mapGetters(['getUsersForRule']),
+    isAddingDeploymentRule() {
+      return this.addingRule === DEPLOYER_RULE_KEY;
+    },
+    addRuleModalTitle() {
+      return this.isAddingDeploymentRule
+        ? this.$options.i18n.addDeploymentRuleModalTitle
+        : this.$options.i18n.addApprovalRuleModalTitle;
+    },
   },
   mounted() {
     this.fetchProtectedEnvironments();
   },
   methods: {
-    ...mapActions(['fetchProtectedEnvironments', 'deleteRule', 'setRule', 'saveRule']),
+    ...mapActions([
+      'fetchProtectedEnvironments',
+      'deleteRule',
+      'setRule',
+      'saveRule',
+      'editRule',
+      'updateRule',
+    ]),
     filterRules(env) {
       return env.deploy_access_levels.filter(({ _destroy: destroy = false }) => !destroy);
     },
     canDeleteRules(env) {
       return env.deploy_access_levels.length > 1;
     },
-    addRule(env) {
-      this.addingEnvironment = env;
+    addRule({ environment, ruleKey }) {
+      this.addingEnvironment = environment;
+      this.addingRule = ruleKey;
       this.isAddingRule = true;
     },
   },
@@ -58,14 +79,23 @@ export default {
       'ProtectedEnvironments|List of protected environments (%{protectedEnvironmentsCount})',
     ),
     deployersHeader: s__('ProtectedEnvironments|Allowed to deploy'),
+    approversHeader: s__('ProtectedEnvironments|Allowed to approve'),
+    approvalsHeader: s__('ProtectedEnvironments|Approvals required'),
     usersHeader: s__('ProtectedEnvironments|Users'),
-    addButtonText: s__('ProtectedEnvironments|Add deployment rules'),
-    deleteButtonTitle: s__('ProtectedEnvironments|Delete deployment rule'),
-    addModalTitle: s__('ProtectedEnvironments|Create deployment rule'),
+    addDeployerText: s__('ProtectedEnvironments|Add deployment rules'),
+    addApproverText: s__('ProtectedEnvironments|Add approval rules'),
+    deployerDeleteButtonTitle: s__('ProtectedEnvironments|Delete deployer rule'),
+    approverDeleteButtonTitle: s__('ProtectedEnvironments|Delete approver rule'),
+    addDeploymentRuleModalTitle: s__('ProtectedEnvironments|Create deployment rule'),
+    addApprovalRuleModalTitle: s__('ProtectedEnvironments|Create approval rule'),
     addModalText: __('Set a group, access level or users who are required to deploy.'),
     addDeployerLabel: s__('ProtectedEnvironments|Allowed to deploy'),
+    editApproverButton: s__('ProtectedEnvironments|Edit'),
+    saveApproverButton: s__('ProtectedEnvironments|Save'),
   },
   ACCESS_LEVELS,
+  DEPLOYER_RULE_KEY,
+  APPROVER_RULE_KEY,
 };
 </script>
 <template>
@@ -77,10 +107,10 @@ export default {
     </h5>
     <add-rule-modal
       v-model="isAddingRule"
-      :title="$options.i18n.addModalTitle"
-      @saveRule="saveRule(addingEnvironment)"
+      :title="addRuleModalTitle"
+      @saveRule="saveRule({ environment: addingEnvironment, ruleKey: addingRule })"
     >
-      <template #add-rule-form>
+      <template v-if="isAddingDeploymentRule" #add-rule-form>
         <p>{{ $options.i18n.addModalText }}</p>
         <gl-form-group :label="$options.i18n.addDeployerLabel" label-for="create-deployer-dropdown">
           <access-dropdown
@@ -92,6 +122,12 @@ export default {
           />
         </gl-form-group>
       </template>
+      <template v-else #add-rule-form>
+        <add-approvers
+          :project-id="projectId"
+          @change="setRule({ environment: addingEnvironment, newRules: $event })"
+        />
+      </template>
     </add-rule-modal>
     <gl-accordion :header-level="6">
       <gl-accordion-item
@@ -101,23 +137,24 @@ export default {
       >
         <edit-protected-environment-rules-card
           :loading="loading"
-          :add-button-text="$options.i18n.addButtonText"
+          :add-button-text="$options.i18n.addDeployerText"
           :environment="environment"
-          rule-key="deploy_access_levels"
+          :rule-key="$options.DEPLOYER_RULE_KEY"
           :data-testid="`protected-environment-${environment.name}-deployers`"
+          class="gl-rounded-top-base gl-border gl-border-b-initial"
           @addRule="addRule"
         >
           <template #card-header>
-            <span class="gl-w-30p gl-font-weight-bold">{{ $options.i18n.deployersHeader }}</span>
-            <span class="gl-font-weight-bold">{{ $options.i18n.usersHeader }}</span>
+            <span class="gl-w-30p">{{ $options.i18n.deployersHeader }}</span>
+            <span class="">{{ $options.i18n.usersHeader }}</span>
           </template>
-          <template #rule="{ rule }">
+          <template #rule="{ rule, ruleKey }">
             <span class="gl-w-30p" data-testid="rule-description">
               {{ rule.access_level_description }}
             </span>
 
             <gl-avatar
-              v-for="user in usersForRules[rule.id]"
+              v-for="user in getUsersForRule(rule, ruleKey)"
               :key="user.id"
               v-gl-tooltip
               :src="user.avatar_url"
@@ -128,14 +165,79 @@ export default {
 
             <gl-button
               v-if="canDeleteRules(environment)"
+              v-gl-tooltip
               category="secondary"
               variant="danger"
               icon="remove"
               :loading="loading"
-              :title="$options.i18n.deleteButtonTitle"
-              :aria-label="$options.i18n.deleteButtonTitle"
+              :title="$options.i18n.deployerDeleteButtonTitle"
+              :aria-label="$options.i18n.deployerDeleteButtonTitle"
               class="gl-ml-auto"
-              @click="deleteRule({ environment, rule })"
+              @click="deleteRule({ environment, rule, ruleKey })"
+            />
+          </template>
+        </edit-protected-environment-rules-card>
+        <edit-protected-environment-rules-card
+          :loading="loading"
+          :add-button-text="$options.i18n.addApproverText"
+          :environment="environment"
+          :rule-key="$options.APPROVER_RULE_KEY"
+          :data-testid="`protected-environment-${environment.name}-approvers`"
+          class="gl-rounded-bottom-left-base gl-rounded-bottom-right-base gl-border"
+          @addRule="addRule"
+        >
+          <template #card-header>
+            <span class="gl-w-30p">{{ $options.i18n.approversHeader }}</span>
+            <span class="gl-w-20p">{{ $options.i18n.usersHeader }}</span>
+            <span class="gl-w-30p">{{ $options.i18n.approvalsHeader }}</span>
+          </template>
+          <template #rule="{ rule, ruleKey }">
+            <span class="gl-w-30p" data-testid="rule-description">
+              {{ rule.access_level_description }}
+            </span>
+
+            <div class="gl-w-20p">
+              <gl-avatar
+                v-for="user in getUsersForRule(rule, ruleKey)"
+                :key="user.id"
+                v-gl-tooltip
+                :src="user.avatar_url"
+                :title="user.name"
+                :size="32"
+                class="gl-mr-2"
+              />
+            </div>
+
+            <template v-if="editingRules[rule.id]">
+              <gl-form-input
+                v-model="editingRules[rule.id].required_approvals"
+                class="gl-w-20p gl-text-center"
+              />
+
+              <gl-button
+                class="gl-ml-auto gl-mr-4"
+                @click="updateRule({ rule, environment, ruleKey })"
+              >
+                {{ $options.i18n.saveApproverButton }}
+              </gl-button>
+            </template>
+            <template v-else>
+              <span class="gl-w-20p gl-text-center">{{ rule.required_approvals }}</span>
+
+              <gl-button class="gl-ml-auto gl-mr-4" @click="editRule(rule)">
+                {{ $options.i18n.editApproverButton }}
+              </gl-button>
+            </template>
+
+            <gl-button
+              v-gl-tooltip
+              category="secondary"
+              variant="danger"
+              icon="remove"
+              :loading="loading"
+              :title="$options.i18n.approverDeleteButtonTitle"
+              :aria-label="$options.i18n.approverDeleteButtonTitle"
+              @click="deleteRule({ environment, rule, ruleKey })"
             />
           </template>
         </edit-protected-environment-rules-card>

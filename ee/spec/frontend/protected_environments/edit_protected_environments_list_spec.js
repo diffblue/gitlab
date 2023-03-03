@@ -10,8 +10,10 @@ import { sprintf, s__ } from '~/locale';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
 import { createStore } from 'ee/protected_environments/store/edit';
 import AddRuleModal from 'ee/protected_environments/add_rule_modal.vue';
+import AddApprovers from 'ee/protected_environments/add_approvers.vue';
 import EditProtectedEnvironmentRulesCard from 'ee/protected_environments/edit_protected_environment_rules_card.vue';
 import EditProtectedEnvironmentsList from 'ee/protected_environments/edit_protected_environments_list.vue';
+import { DEPLOYER_RULE_KEY, APPROVER_RULE_KEY } from 'ee/protected_environments/constants';
 import { MAINTAINER_ACCESS_LEVEL, DEVELOPER_ACCESS_LEVEL } from './constants';
 
 const DEFAULT_ENVIRONMENTS = [
@@ -20,6 +22,22 @@ const DEFAULT_ENVIRONMENTS = [
     deploy_access_levels: [
       {
         access_level: DEVELOPER_ACCESS_LEVEL,
+        access_level_description: 'Deployers + Maintainers',
+        group_id: null,
+        user_id: null,
+      },
+      {
+        group_id: 1,
+        group_inheritance_type: '1',
+        access_level_description: 'Some group',
+        access_level: null,
+        user_id: null,
+      },
+      { user_id: 1, access_level_description: 'Some user', access_level: null, group_id: null },
+    ],
+    approval_rules: [
+      {
+        access_level: 30,
         access_level_description: 'Deployers + Maintainers',
         group_id: null,
         user_id: null,
@@ -69,11 +87,12 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
     });
 
     await waitForPromises();
-    await nextTick();
   };
 
-  const findDeleteButton = () =>
-    wrapper.findByTitle(s__('ProtectedEnvironments|Delete deployment rule'));
+  const findDeployerDeleteButton = () =>
+    wrapper.findByTitle(s__('ProtectedEnvironments|Delete deployer rule'));
+  const findApproverDeleteButton = () =>
+    wrapper.findByTitle(s__('ProtectedEnvironments|Delete approver rule'));
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
@@ -131,22 +150,30 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
 
     const avatars = wrapper.findAllComponents(GlAvatar).wrappers;
 
-    expect(avatars).toHaveLength(3);
+    expect(avatars).toHaveLength(6);
     avatars.forEach((avatar) => expect(avatar.props('src')).toBe('/avatar.png'));
   });
 
   it('shows the description of the rule', async () => {
-    const [{ deploy_access_levels: deployAccessLevels }] = DEFAULT_ENVIRONMENTS;
+    const [
+      { deploy_access_levels: deployAccessLevels, approval_rules: approvalRules },
+    ] = DEFAULT_ENVIRONMENTS;
+
+    const ruleDescriptions = [
+      ...deployAccessLevels.map((d) => d.access_level_description),
+      ...approvalRules.map((a) => a.access_level_description),
+    ];
+
     await createComponent();
 
     const descriptions = wrapper.findAllByTestId('rule-description').wrappers;
 
     descriptions.forEach((description, i) => {
-      expect(description.text()).toBe(deployAccessLevels[i].access_level_description);
+      expect(description.text()).toBe(ruleDescriptions[i]);
     });
   });
 
-  describe('add rule', () => {
+  describe('add deployer rule', () => {
     let environment;
     let dropdown;
     let modal;
@@ -156,12 +183,18 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
 
       await createComponent();
 
-      wrapper.findComponent(EditProtectedEnvironmentRulesCard).vm.$emit('addRule', environment);
+      wrapper
+        .findComponent(EditProtectedEnvironmentRulesCard)
+        .vm.$emit('addRule', { environment, ruleKey: DEPLOYER_RULE_KEY });
 
       await nextTick();
 
       dropdown = wrapper.findComponent(AccessDropdown);
       modal = wrapper.findComponent(AddRuleModal);
+    });
+
+    it('titles the modal appropriately', () => {
+      expect(modal.props('title')).toBe(s__('ProtectedEnvironments|Create deployment rule'));
     });
 
     it('puts the access level dropdown into the modal form', () => {
@@ -174,8 +207,6 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
       const rule = [{ user_id: 5 }];
       dropdown.vm.$emit('hidden', rule);
 
-      await nextTick();
-
       modal.vm.$emit('saveRule');
 
       await waitForPromises();
@@ -187,7 +218,7 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
     });
   });
 
-  describe('delete rule', () => {
+  describe('deployer delete rule', () => {
     it('sends the deleted rule with _destroy set', async () => {
       const [environment] = DEFAULT_ENVIRONMENTS;
 
@@ -195,7 +226,7 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
 
       wrapper.findComponent(GlButton).vm.$emit('click');
 
-      const button = findDeleteButton();
+      const button = findDeployerDeleteButton();
 
       mock.onPut().reply(HTTP_STATUS_OK);
 
@@ -213,7 +244,7 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
 
       const [{ data }] = mock.history.put;
       expect(JSON.parse(data)).toMatchObject({
-        ...environment,
+        name: environment.name,
         deploy_access_levels: [destroyedRule],
       });
     });
@@ -232,9 +263,86 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
 
       wrapper.findComponent(GlButton).vm.$emit('click');
 
-      const button = findDeleteButton();
+      const button = findDeployerDeleteButton();
 
       expect(button.exists()).toBe(false);
+    });
+  });
+
+  describe('add approval rule', () => {
+    let environment;
+    let addApprover;
+    let modal;
+
+    beforeEach(async () => {
+      [environment] = DEFAULT_ENVIRONMENTS;
+
+      await createComponent();
+
+      wrapper
+        .findComponent(EditProtectedEnvironmentRulesCard)
+        .vm.$emit('addRule', { environment, ruleKey: APPROVER_RULE_KEY });
+
+      await nextTick();
+
+      addApprover = wrapper.findComponent(AddApprovers);
+      modal = wrapper.findComponent(AddRuleModal);
+    });
+
+    it('titles the modal appropriately', () => {
+      expect(modal.props('title')).toBe(s__('ProtectedEnvironments|Create approval rule'));
+    });
+
+    it('puts the access level dropdown into the modal form', () => {
+      expect(addApprover.exists()).toBe(true);
+    });
+
+    it('sends new rules to be added', async () => {
+      mock.onPut().reply(HTTP_STATUS_OK);
+
+      const rule = [{ user_id: 5, required_approvals: 3 }];
+      addApprover.vm.$emit('change', rule);
+
+      modal.vm.$emit('saveRule');
+
+      await waitForPromises();
+
+      expect(mock.history.put.length).toBe(1);
+
+      const [{ data }] = mock.history.put;
+      expect(JSON.parse(data)).toMatchObject({ ...environment, approval_rules: rule });
+    });
+  });
+
+  describe('approver delete rule', () => {
+    it('sends the deleted rule with _destroy set', async () => {
+      const [environment] = DEFAULT_ENVIRONMENTS;
+
+      await createComponent();
+
+      wrapper.findComponent(GlButton).vm.$emit('click');
+
+      const button = findApproverDeleteButton();
+
+      mock.onPut().reply(HTTP_STATUS_OK);
+
+      const destroyedRule = {
+        access_level: DEVELOPER_ACCESS_LEVEL,
+        access_level_description: 'Deployers + Maintainers',
+        _destroy: true,
+      };
+
+      button.trigger('click');
+
+      await waitForPromises();
+
+      expect(mock.history.put.length).toBe(1);
+
+      const [{ data }] = mock.history.put;
+      expect(JSON.parse(data)).toMatchObject({
+        name: environment.name,
+        approval_rules: [destroyedRule],
+      });
     });
   });
 });
