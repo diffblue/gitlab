@@ -17,6 +17,25 @@ FactoryBot.modify do
       end
     end
 
+    trait :enterprise_user_created_via_saml do
+      after(:create) do |user, evaluator|
+        group_saml_identity = create(:group_saml_identity, user: user)
+        user.user_detail.update!(provisioned_by_group_id: group_saml_identity.saml_provider.group_id)
+      end
+    end
+
+    trait :enterprise_user_created_via_scim do
+      after(:create) do |user, evaluator|
+        scim_identity = create(:scim_identity, user: user)
+        user.user_detail.update!(provisioned_by_group_id: scim_identity.group_id)
+      end
+    end
+
+    trait :enterprise_user_based_on_domain_verification do
+      provisioned_by_group_id { create(:group).id }
+      provisioned_by_group_at { Time.current }
+    end
+
     trait :service_user do
       user_type { :service_user }
     end

@@ -32,6 +32,8 @@ RSpec.describe Gitlab::UsageDataMetrics, feature_category: :service_ping do
         expect(subject[:counts]).to include(:saml_group_links)
         expect(subject[:counts]).to include(:users_with_custom_roles)
         expect(subject[:counts]).to include(:member_roles)
+        expect(subject[:counts]).to include(:enterprise_users_created_via_saml_or_scim)
+        expect(subject[:counts]).to include(:enterprise_users_based_on_domain_verification)
       end
 
       describe 'Redis_HLL_counters' do

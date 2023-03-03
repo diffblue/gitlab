@@ -107,6 +107,45 @@ RSpec.describe User, feature_category: :system_access do
         expect(described_class.managed_by(group)).to match_array(managed_users)
       end
     end
+
+    context 'for enterprise users' do
+      let_it_be(:enterprise_user_created_via_saml) { create(:user, :enterprise_user_created_via_saml) }
+
+      let_it_be(:enterprise_user_created_via_scim) { create(:user, :enterprise_user_created_via_scim) }
+
+      let_it_be(:enterprise_user_based_on_domain_verification) do
+        create(:user, :enterprise_user_based_on_domain_verification)
+      end
+
+      let_it_be(:non_enterprise_users) { create_list(:user, 3) }
+
+      describe '.enterprise' do
+        it 'returns all enterprise users' do
+          expect(described_class.enterprise).to contain_exactly(
+            enterprise_user_created_via_saml,
+            enterprise_user_created_via_scim,
+            enterprise_user_based_on_domain_verification
+          )
+        end
+      end
+
+      describe '.enterprise_created_via_saml_or_scim' do
+        it 'returns enterprise users created via saml or scim' do
+          expect(described_class.enterprise_created_via_saml_or_scim).to contain_exactly(
+            enterprise_user_created_via_saml,
+            enterprise_user_created_via_scim
+          )
+        end
+      end
+
+      describe '.enterprise_based_on_domain_verification' do
+        it 'returns enterprise users based on domain verification' do
+          expect(described_class.enterprise_based_on_domain_verification).to contain_exactly(
+            enterprise_user_based_on_domain_verification
+          )
+        end
+      end
+    end
   end
 
   describe 'after_create' do

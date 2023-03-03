@@ -1,0 +1,21 @@
+---
+key_path: counts.enterprise_users_created_via_saml_or_scim
+description: "Number of enterprise users created via SAML or SCIM"
+product_section: dev
+product_stage: manage
+product_group: authentication_and_authorization
+product_category: user_management
+value_type: number
+status: active
+milestone: "15.10"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/112185
+time_frame: all
+data_source: database
+data_category: optional
+instrumentation_class: CountEnterpriseUsersCreatedViaSamlOrScimMetric
+performance_indicator_type: []
+distribution:
+- ee
+tier:
+- premium
+- ultimate

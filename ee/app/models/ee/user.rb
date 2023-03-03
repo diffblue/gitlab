@@ -99,6 +99,10 @@ module EE
 
       scope :managed_by, ->(group) { where(managing_group: group) }
 
+      scope :enterprise, -> { where(id: ::UserDetail.enterprise) }
+      scope :enterprise_created_via_saml_or_scim, -> { where(id: ::UserDetail.enterprise_created_via_saml_or_scim) }
+      scope :enterprise_based_on_domain_verification, -> { where(id: ::UserDetail.enterprise_based_on_domain_verification) }
+
       scope :excluding_guests, -> do
         subquery = ::Member
           .select(1)
