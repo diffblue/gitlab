@@ -226,27 +226,6 @@ RSpec.describe 'Login', feature_category: :system_access do
       end
     end
 
-    context 'with U2F two factor', :js do
-      let(:user) { create(:user, :two_factor_via_u2f) }
-
-      before do
-        stub_feature_flags(webauthn: false)
-      end
-
-      it 'shows U2F prompt after SAML' do
-        visit sso_group_saml_providers_path(group, token: group.saml_discovery_token)
-
-        click_link 'Sign in'
-
-        expect(page).to have_content('Trying to communicate with your device')
-        expect(page).to have_link('Sign in via 2FA code')
-
-        fake_successful_u2f_authentication
-
-        expect(page).to have_current_path group_path(group), ignore_query: true
-      end
-    end
-
     context 'with WebAuthn two factor', :js do
       let(:user) { create(:user, :two_factor_via_webauthn) }
 

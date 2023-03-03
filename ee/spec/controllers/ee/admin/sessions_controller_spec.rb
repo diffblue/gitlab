@@ -25,19 +25,6 @@ feature_category: :system_access do
         end
       end
 
-      context 'when U2F authentication fails' do
-        before do
-          stub_feature_flags(webauthn: false)
-          allow(U2fRegistration).to receive(:authenticate).and_return(false)
-        end
-
-        it_behaves_like 'an auditable failed authentication' do
-          let(:user) { create(:admin, :two_factor_via_u2f) }
-          let(:operation) { authenticate_2fa(device_response: 'invalid', otp_user_id: user.id) }
-          let(:method) { 'U2F' }
-        end
-      end
-
       context 'when WebAuthn authentication fails' do
         before do
           stub_feature_flags(webauthn: true)
