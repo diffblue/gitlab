@@ -1,5 +1,5 @@
 <script>
-import chartEmptyStateIllustration from '@gitlab/svgs/dist/illustrations/chart-empty-state.svg';
+import chartEmptyStateIllustration from '@gitlab/svgs/dist/illustrations/chart-empty-state.svg?raw';
 import { GlCard, GlSprintf, GlSkeletonLoader, GlPopover } from '@gitlab/ui';
 import { GlSingleStat, GlAreaChart } from '@gitlab/ui/dist/charts';
 import SafeHtml from '~/vue_shared/directives/safe_html';

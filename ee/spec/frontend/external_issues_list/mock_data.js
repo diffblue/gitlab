@@ -1,4 +1,4 @@
-import jiraLogo from '@gitlab/svgs/dist/illustrations/logos/jira.svg';
+import jiraLogo from '@gitlab/svgs/dist/illustrations/logos/jira.svg?raw';
 import mockGetJiraIssuesQuery from 'ee/integrations/jira/issues_list/graphql/queries/get_jira_issues.query.graphql';
 
 export const mockProvide = {
