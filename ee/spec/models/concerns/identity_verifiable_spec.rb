@@ -92,6 +92,35 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
 
       it { is_expected.to eq(result) }
     end
+
+    context 'when flag is enabled for a specific user' do
+      let_it_be(:another_user) { create(:user) }
+
+      where(:risk_band, :credit_card, :phone_number, :result) do
+        'High'   | true  | false | %w[credit_card email]
+        'Medium' | false | true  | %w[phone email]
+      end
+
+      with_them do
+        before do
+          stub_feature_flags(
+            identity_verification_phone_number: false,
+            identity_verification_credit_card: false
+          )
+
+          add_user_risk_band(risk_band)
+          create(:user_custom_attribute, key: 'arkose_risk_band', value: risk_band, user: another_user)
+
+          stub_feature_flags(identity_verification_phone_number: user) if phone_number
+          stub_feature_flags(identity_verification_credit_card: user) if credit_card
+        end
+
+        it 'only affects that user' do
+          expect(user.required_identity_verification_methods).to eq(result)
+          expect(another_user.required_identity_verification_methods).to eq(%w[email])
+        end
+      end
+    end
   end
 
   describe('#identity_verification_state') do
