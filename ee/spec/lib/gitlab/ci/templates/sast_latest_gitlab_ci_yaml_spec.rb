@@ -28,7 +28,9 @@ RSpec.describe 'SAST.latest.gitlab-ci.yml', feature_category: :continuous_integr
     end
 
     context 'when project has no license' do
-      context 'when SAST_DISABLED=1' do
+      let(:files) { { 'a.rb' => '' } }
+
+      context 'when SAST_DISABLED="1"' do
         before do
           create(:ci_variable, project: project, key: 'SAST_DISABLED', value: '1')
         end
@@ -37,6 +39,28 @@ RSpec.describe 'SAST.latest.gitlab-ci.yml', feature_category: :continuous_integr
           expect(build_names).to be_empty
           expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
             'The rules configuration prevented any jobs from being added to the pipeline.'])
+        end
+      end
+
+      context 'when SAST_DISABLED="true"' do
+        before do
+          create(:ci_variable, project: project, key: 'SAST_DISABLED', value: 'true')
+        end
+
+        it 'includes no jobs' do
+          expect(build_names).to be_empty
+          expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
+            'The rules configuration prevented any jobs from being added to the pipeline.'])
+        end
+      end
+
+      context 'when SAST_DISABLED="false"' do
+        before do
+          create(:ci_variable, project: project, key: 'SAST_DISABLED', value: 'false')
+        end
+
+        it 'includes jobs' do
+          expect(build_names).not_to be_empty
         end
       end
 
