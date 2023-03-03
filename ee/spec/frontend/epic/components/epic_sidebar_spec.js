@@ -11,6 +11,7 @@ import SidebarParticipantsWidget from '~/sidebar/components/participants/sidebar
 import SidebarReferenceWidget from '~/sidebar/components/copy/sidebar_reference_widget.vue';
 import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
 import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
+import { parsePikadayDate } from '~/lib/utils/datetime_utility';
 
 import { mockEpicMeta, mockEpicData } from '../mock_data';
 
@@ -171,6 +172,24 @@ describe('EpicSidebarComponent', () => {
       expect(actionSpies.fetchEpicDetails).toHaveBeenCalled();
 
       wrapperWithMethod.destroy();
+    });
+  });
+
+  describe('sidebardatewidget dates', () => {
+    const mockDate = '2023-03-01';
+
+    it('sets min date when start date is selected', () => {
+      const startDateWidget = wrapper.find('[data-testid="start-date"]');
+      startDateWidget.vm.$emit('startDateUpdated', mockDate);
+
+      expect(wrapper.vm.minDate).toStrictEqual(parsePikadayDate(mockDate));
+    });
+
+    it('sets max date when due date is selected', () => {
+      const dueDateWidget = wrapper.find('[data-testid="due-date"]');
+      dueDateWidget.vm.$emit('dueDateUpdated', mockDate);
+
+      expect(wrapper.vm.maxDate).toStrictEqual(parsePikadayDate(mockDate));
     });
   });
 });

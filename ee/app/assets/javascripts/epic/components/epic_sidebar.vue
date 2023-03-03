@@ -18,6 +18,7 @@ import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget
 import ColorSelectDropdown from '~/vue_shared/components/color_select_dropdown/color_select_root.vue';
 import { LabelType } from '~/sidebar/components/labels/labels_select_widget/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { parsePikadayDate } from '~/lib/utils/datetime_utility';
 
 import epicUtils from '../utils/epic_utils';
 import SidebarHeader from './sidebar_items/sidebar_header.vue';
@@ -41,6 +42,8 @@ export default {
     return {
       sidebarExpandedOnClick: false,
       LabelType,
+      minDate: null,
+      maxDate: null,
     };
   },
   computed: {
@@ -90,6 +93,12 @@ export default {
     isEpicColorEnabled() {
       return this.glFeatures.epicColorHighlight;
     },
+    updateMinDate(value) {
+      this.minDate = value ? parsePikadayDate(value) : null;
+    },
+    updateMaxDate(value) {
+      this.maxDate = value ? parsePikadayDate(value) : null;
+    },
   },
 };
 </script>
@@ -122,6 +131,8 @@ export default {
         :issuable-type="issuableType"
         :can-inherit="true"
         data-testid="start-date"
+        :max-date="maxDate"
+        @startDateUpdated="updateMinDate"
       />
       <sidebar-date-widget
         :iid="String(iid)"
@@ -130,6 +141,8 @@ export default {
         :issuable-type="issuableType"
         :can-inherit="true"
         data-testid="due-date"
+        :min-date="minDate"
+        @dueDateUpdated="updateMaxDate"
       />
       <labels-select-widget
         class="block labels js-labels-block"

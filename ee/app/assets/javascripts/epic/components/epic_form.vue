@@ -222,7 +222,12 @@ export default {
       </gl-form-group>
       <gl-form-group :label="__('Start date')" :description="$options.i18n.epicDatesHint">
         <div class="gl-display-inline-block gl-mr-2">
-          <gl-datepicker v-model="startDateFixed" data-testid="epic-start-date" />
+          <gl-datepicker
+            v-model="startDateFixed"
+            :max-date="dueDateFixed"
+            :default-date="dueDateFixed"
+            data-testid="epic-start-date"
+          />
         </div>
         <gl-button
           v-show="startDateFixed"
@@ -235,7 +240,12 @@ export default {
       </gl-form-group>
       <gl-form-group :label="__('Due date')" :description="$options.i18n.epicDatesHint">
         <div class="gl-display-inline-block gl-mr-2">
-          <gl-datepicker v-model="dueDateFixed" data-testid="epic-due-date" />
+          <gl-datepicker
+            v-model="dueDateFixed"
+            :min-date="startDateFixed"
+            :default-date="startDateFixed"
+            data-testid="epic-due-date"
+          />
         </div>
         <gl-button
           v-show="dueDateFixed"
