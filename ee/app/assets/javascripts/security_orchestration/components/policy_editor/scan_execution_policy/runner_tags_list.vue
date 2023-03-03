@@ -37,8 +37,8 @@ export default {
         this.selectExistingTags();
         this.sortTags();
       },
-      error({ message }) {
-        this.$emit('error', message);
+      error() {
+        this.$emit('error');
       },
       variables() {
         return {
@@ -118,7 +118,14 @@ export default {
     },
     selectExistingTags() {
       if (this.value.length > 0) {
-        this.selected = this.value.filter((tag) => this.doesTagExist(tag));
+        const nonExistingTags = this.value.filter((tag) => !this.doesTagExist(tag));
+
+        if (nonExistingTags.length > 0) {
+          this.$emit('error');
+          return;
+        }
+
+        this.selected = this.value;
       }
     },
     setSelection(tags) {

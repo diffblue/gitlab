@@ -19,7 +19,10 @@ import {
 import { visitUrl } from '~/lib/utils/url_utility';
 
 import { modifyPolicy } from 'ee/security_orchestration/components/policy_editor/utils';
-import { SECURITY_POLICY_ACTIONS } from 'ee/security_orchestration/components/policy_editor/constants';
+import {
+  SECURITY_POLICY_ACTIONS,
+  RUNNER_TAGS_PARSING_ERROR,
+} from 'ee/security_orchestration/components/policy_editor/constants';
 import {
   DEFAULT_SCANNER,
   SCAN_EXECUTION_PIPELINE_RULE,
@@ -296,6 +299,17 @@ enabled: true`;
       expect(
         fromYaml({ manifest: findPolicyEditorLayout().props('yamlEditorValue') }).actions,
       ).toHaveLength(1);
+    });
+  });
+
+  describe('parsing tags errors', () => {
+    it('disables rule editor when parsing of tags fails', async () => {
+      factory();
+      findPolicyActionBuilder().vm.$emit('parsing-error');
+      await nextTick();
+
+      expect(findPolicyEditorLayout().props('hasParsingError')).toBe(true);
+      expect(findPolicyEditorLayout().props('parsingError')).toBe(RUNNER_TAGS_PARSING_ERROR);
     });
   });
 });

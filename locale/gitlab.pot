@@ -38764,6 +38764,9 @@ msgstr ""
 msgid "SecurityOrchestration|No rules defined - policy will not run."
 msgstr ""
 
+msgid "SecurityOrchestration|Non-existing tags have been detected in the policy yaml. As a result, rule mode has been disabled. To enable rule mode, remove those non-existing tags from the policy yaml."
+msgstr ""
+
 msgid "SecurityOrchestration|Not enabled"
 msgstr ""
 

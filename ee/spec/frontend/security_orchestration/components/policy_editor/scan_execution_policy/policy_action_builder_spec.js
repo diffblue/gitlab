@@ -159,4 +159,13 @@ describe('PolicyActionBuilder', () => {
 
     expect(wrapper.emitted('remove')).toStrictEqual([[undefined]]);
   });
+
+  describe('parsing error', () => {
+    it('emits an error when tags parsing happens', () => {
+      factory();
+      findTagsList().vm.$emit('error');
+
+      expect(wrapper.emitted('parsing-error')).toHaveLength(1);
+    });
+  });
 });
