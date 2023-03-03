@@ -2,12 +2,11 @@
 import { GlTab, GlTabs } from '@gitlab/ui';
 import HelpPopover from '~/vue_shared/components/help_popover.vue';
 import {
-  USAGE_BY_MONTH_HEADER,
-  USAGE_BY_PROJECT_HEADER,
   CI_CD_MINUTES_USAGE,
   SHARED_RUNNER_USAGE,
   SHARED_RUNNER_POPOVER_OPTIONS,
 } from '../constants';
+import { USAGE_BY_MONTH_HEADER, USAGE_BY_PROJECT_HEADER } from '../../constants';
 import MinutesUsageMonthChart from './minutes_usage_month_chart.vue';
 import MinutesUsageProjectChart from './minutes_usage_project_chart.vue';
 import SharedRunnerUsageMonthChart from './shared_runner_usage_month_chart.vue';

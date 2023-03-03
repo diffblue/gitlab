@@ -10,6 +10,12 @@ module EE
       include GoogleAnalyticsCSP
       include GitlabSubscriptions::SeatCountAlert
 
+      prepended do
+        before_action only: [:index] do
+          push_frontend_feature_flag(:data_transfer_monitoring)
+        end
+      end
+
       def pending_members
         render_404 unless group.user_cap_available?
       end
