@@ -244,11 +244,34 @@ describe('MRWidget approvals', () => {
 
         const invalidRulesText = invalidRules.text();
 
-        expect(invalidRulesText).toContain(RULE_NAME);
         expect(invalidRulesText).toContain(
-          'GitLab has approved this rule automatically to unblock the merge request.',
+          '1 invalid rule has been approved automatically, as no one can approve it.',
         );
-        expect(invalidRulesText).toContain('Learn more.');
+      });
+    });
+
+    describe('when multiple invalid rules are present', () => {
+      beforeEach(async () => {
+        const response = JSON.parse(JSON.stringify(approvedByCurrentUser));
+        response.data.project.mergeRequest.approvalState.invalidApproversRules = [
+          { id: 1, name: RULE_NAME },
+          { id: 2, name: RULE_NAME },
+        ];
+        createComponent({}, response);
+
+        await waitForPromises();
+      });
+
+      it('renders related components', () => {
+        const invalidRules = findInvalidRules();
+
+        expect(invalidRules.exists()).toBe(true);
+
+        const invalidRulesText = invalidRules.text();
+
+        expect(invalidRulesText).toContain(
+          '2 invalid rules have been approved automatically, as no one can approve them.',
+        );
       });
     });
   });
