@@ -14,7 +14,7 @@ import { debounce } from 'lodash';
 import { mapState, mapActions } from 'vuex';
 
 import Api from '~/api';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { STORAGE_KEY } from '~/frequent_items/constants';
 import { getTopFrequentItems } from '~/frequent_items/utils';
 import AccessorUtilities from '~/lib/utils/accessor';

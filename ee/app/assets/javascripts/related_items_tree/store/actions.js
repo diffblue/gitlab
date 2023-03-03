@@ -1,5 +1,5 @@
 import Api from 'ee/api';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
@@ -466,7 +466,7 @@ export const reorderItem = (
     })
     .then(({ data }) => {
       // Mutation was unsuccessful;
-      // revert to original order and show flash error
+      // revert to original order and show alert error
       if (data.epicTreeReorder.errors.length) {
         dispatch('receiveReorderItemFailure', {
           parentItem,
@@ -478,7 +478,7 @@ export const reorderItem = (
     })
     .catch(() => {
       // Mutation was unsuccessful;
-      // revert to original order and show flash error
+      // revert to original order and show alert error
       dispatch('receiveReorderItemFailure', {
         parentItem,
         targetItem,
@@ -544,7 +544,7 @@ export const moveItem = (
     })
     .then(({ data }) => {
       // Mutation was unsuccessful;
-      // revert to original order and show flash error
+      // revert to original order and show alert error
       if (data.epicTreeReorder.errors.length) {
         dispatch('receiveMoveItemFailure', {
           oldParentItem,
@@ -557,7 +557,7 @@ export const moveItem = (
     })
     .catch(() => {
       // Mutation was unsuccessful;
-      // revert to original order and show flash error
+      // revert to original order and show alert error
       dispatch('receiveMoveItemFailure', {
         oldParentItem,
         newParentItem,
