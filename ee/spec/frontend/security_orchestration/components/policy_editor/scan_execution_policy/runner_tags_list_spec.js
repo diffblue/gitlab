@@ -129,15 +129,20 @@ describe('RunnerTagsList', () => {
   });
 
   describe('error handling', () => {
-    it.each`
-      mockedValue                     | expectedResult
-      ${{ message: 'error message' }} | ${'error message'}
-    `('should emit error event', async ({ mockedValue, expectedResult }) => {
-      createComponent({}, jest.fn().mockRejectedValue(mockedValue));
+    it('should emit error event', async () => {
+      createComponent({}, jest.fn().mockRejectedValue({ error: new Error() }));
       await waitForPromises();
 
-      const [[errorPayload]] = wrapper.emitted('error');
-      expect(errorPayload).toBe(expectedResult);
+      expect(wrapper.emitted('error')).toHaveLength(1);
+    });
+
+    it('should emit error when invalid tag is provided or saved', async () => {
+      createComponent({
+        value: ['invalid tag'],
+      });
+      await waitForPromises();
+
+      expect(wrapper.emitted('error')).toHaveLength(1);
     });
   });
 

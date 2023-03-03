@@ -7,6 +7,7 @@ import {
   EDITOR_MODE_YAML,
   GRAPHQL_ERROR_MESSAGE,
   PARSING_ERROR_MESSAGE,
+  RUNNER_TAGS_PARSING_ERROR,
   SECURITY_POLICY_ACTIONS,
   ACTIONS_LABEL,
   ADD_ACTION_LABEL,
@@ -38,6 +39,7 @@ export default {
     ADD_CONDITION_LABEL,
     CONDITIONS_LABEL,
     PARSING_ERROR_MESSAGE,
+    RUNNER_TAGS_PARSING_ERROR,
     createMergeRequest: __('Configure with a merge request'),
     notOwnerButtonText: __('Learn more'),
     notOwnerDescription: s__(
@@ -87,6 +89,7 @@ export default {
       newlyCreatedPolicyProject: null,
       policy,
       hasParsingError,
+      parsingError: this.$options.i18n.PARSING_ERROR_MESSAGE,
       yamlEditorValue,
       mode: EDITOR_MODE_RULE,
       documentationPath: setUrlFragment(
@@ -126,6 +129,10 @@ export default {
       } else {
         this.$emit('error', error.message);
       }
+    },
+    handleActionBuilderParsingError() {
+      this.hasParsingError = true;
+      this.parsingError = this.$options.i18n.RUNNER_TAGS_PARSING_ERROR;
     },
     handleSetPolicyProperty(property, value) {
       this.policy[property] = value;
@@ -186,6 +193,7 @@ export default {
 
       this.yamlEditorValue = manifest;
       this.hasParsingError = hasParsingError;
+      this.parsingError = this.$options.i18n.PARSING_ERROR_MESSAGE;
       this.policy = policy;
     },
     updateYamlEditorValue(policy) {
@@ -203,7 +211,7 @@ export default {
     :is-editing="isEditing"
     :is-removing-policy="isRemovingPolicy"
     :is-updating-policy="isCreatingMR"
-    :parsing-error="$options.i18n.PARSING_ERROR_MESSAGE"
+    :parsing-error="parsingError"
     :policy="policy"
     :yaml-editor-value="yamlEditorValue"
     @remove-policy="handleModifyPolicy($options.SECURITY_POLICY_ACTIONS.REMOVE)"
@@ -257,6 +265,7 @@ export default {
           :action-index="index"
           @changed="updateActionOrRule($options.ACTION, index, $event)"
           @remove="removeActionOrRule($options.ACTION, index)"
+          @parsing-error="handleActionBuilderParsingError"
         />
 
         <div class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-mb-5">

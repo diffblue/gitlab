@@ -181,6 +181,7 @@ export default {
                 v-model="tags"
                 :namespace-path="namespacePath"
                 :namespace-type="namespaceType"
+                @error="$emit('parsing-error')"
               />
               <gl-icon
                 v-gl-tooltip
