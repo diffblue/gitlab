@@ -93,7 +93,6 @@ export default {
         <counter
           v-gl-tooltip:super-sidebar.hover.bottom="$options.i18n.mergeRequests"
           class="gl-w-full"
-          tabindex="-1"
           icon="merge-request-open"
           :count="sidebarData.total_merge_requests_count"
           :label="$options.i18n.mergeRequests"
