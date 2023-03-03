@@ -4,6 +4,12 @@ import createDefaultClient from '~/lib/graphql';
 import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
 import createRouter from './router';
 
+const buildAnalyticsDashboardPointer = (analyticsDashboardPointerJSON = '') => {
+  return analyticsDashboardPointerJSON.length
+    ? convertObjectPropsToCamelCase(JSON.parse(analyticsDashboardPointerJSON))
+    : null;
+};
+
 export default (id, App) => {
   const el = document.getElementById(id);
 
@@ -12,6 +18,7 @@ export default (id, App) => {
   }
 
   const {
+    dashboardProject: analyticsDashboardPointerJSON = '',
     jitsuKey,
     projectId,
     projectFullPath,
@@ -21,6 +28,9 @@ export default (id, App) => {
     features,
     showInstrumentationDetailsButton,
   } = el.dataset;
+
+  const analyticsDashboardPointer = buildAnalyticsDashboardPointer(analyticsDashboardPointerJSON);
+
   Vue.use(VueApollo);
 
   const apolloProvider = new VueApollo({
@@ -32,6 +42,7 @@ export default (id, App) => {
     apolloProvider,
     router: createRouter(routerBase),
     provide: {
+      customDashboardsProject: analyticsDashboardPointer,
       jitsuKey,
       projectFullPath,
       projectId,

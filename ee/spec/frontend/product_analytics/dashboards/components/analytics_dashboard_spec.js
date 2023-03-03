@@ -6,11 +6,30 @@ import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboa
 import { dashboard } from 'ee_jest/vue_shared/components/customizable_dashboard/mock_data';
 import { buildDefaultDashboardFilters } from 'ee/vue_shared/components/customizable_dashboard/utils';
 
+import {
+  getCustomDashboard,
+  getProductAnalyticsVisualizationList,
+  getProductAnalyticsVisualization,
+} from 'ee/analytics/analytics_dashboards/api/dashboards_api';
+
+import {
+  TEST_CUSTOM_DASHBOARDS_PROJECT,
+  TEST_CUSTOM_DASHBOARD,
+} from '../../../analytics/analytics_dashboards/mock_data';
+
+jest.mock('ee/analytics/analytics_dashboards/api/dashboards_api');
+
 describe('AnalyticsDashboard', () => {
   let wrapper;
 
   const findDashboard = () => wrapper.findComponent(CustomizableDashboard);
   const findLoader = () => wrapper.findComponent(GlLoadingIcon);
+
+  beforeEach(() => {
+    getCustomDashboard.mockImplementation(() => TEST_CUSTOM_DASHBOARD);
+    getProductAnalyticsVisualizationList.mockImplementation(() => []);
+    getProductAnalyticsVisualization.mockImplementation(() => TEST_CUSTOM_DASHBOARD);
+  });
 
   const createWrapper = (data = {}, routeId) => {
     const mocks = {
@@ -34,14 +53,19 @@ describe('AnalyticsDashboard', () => {
       },
       stubs: ['router-link', 'router-view'],
       mocks,
+      provide: {
+        customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
+      },
     });
   };
 
   describe('when mounted', () => {
-    it('should render with mock dashboard with filter properties', () => {
+    it('should render with mock dashboard with filter properties', async () => {
       createWrapper({
         dashboard,
       });
+
+      expect(getCustomDashboard).toHaveBeenCalledWith('', TEST_CUSTOM_DASHBOARDS_PROJECT);
 
       expect(findDashboard().props()).toMatchObject({
         initialDashboard: dashboard,
@@ -66,6 +90,12 @@ describe('AnalyticsDashboard', () => {
 
       await waitForPromises();
 
+      expect(getCustomDashboard).toHaveBeenCalledTimes(0);
+      expect(getProductAnalyticsVisualizationList).toHaveBeenCalledWith(
+        TEST_CUSTOM_DASHBOARDS_PROJECT,
+      );
+      expect(getProductAnalyticsVisualization).toHaveBeenCalledTimes(0);
+
       expect(findDashboard().exists()).toBe(true);
     });
 
@@ -73,6 +103,32 @@ describe('AnalyticsDashboard', () => {
       createWrapper({}, 'dashboard_behavior');
 
       await waitForPromises();
+
+      expect(getCustomDashboard).toHaveBeenCalledTimes(0);
+      expect(getProductAnalyticsVisualizationList).toHaveBeenCalledWith(
+        TEST_CUSTOM_DASHBOARDS_PROJECT,
+      );
+      expect(getProductAnalyticsVisualization).toHaveBeenCalledTimes(0);
+
+      expect(findDashboard().exists()).toBe(true);
+    });
+
+    it('should render custom dashboard by id', async () => {
+      createWrapper({}, 'custom_dashboard');
+
+      await waitForPromises();
+
+      expect(getCustomDashboard).toHaveBeenCalledWith(
+        'custom_dashboard',
+        TEST_CUSTOM_DASHBOARDS_PROJECT,
+      );
+      expect(getProductAnalyticsVisualizationList).toHaveBeenCalledWith(
+        TEST_CUSTOM_DASHBOARDS_PROJECT,
+      );
+      expect(getProductAnalyticsVisualization).toHaveBeenCalledWith(
+        'page_views_per_day',
+        TEST_CUSTOM_DASHBOARDS_PROJECT,
+      );
 
       expect(findDashboard().exists()).toBe(true);
     });

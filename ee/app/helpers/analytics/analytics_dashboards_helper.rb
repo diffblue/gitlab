@@ -5,6 +5,7 @@ module Analytics
     def analytics_dashboards_list_app_data(project)
       {
         project_id: project.id,
+        dashboard_project: analytics_dashboard_pointer_project(project)&.to_json,
         jitsu_key: project.project_setting.jitsu_key,
         collector_host: get_collector_host,
         chart_empty_state_illustration_path: image_path('illustrations/chart-empty-state.svg'),
@@ -41,6 +42,14 @@ module Analytics
       return false unless ::Gitlab::CurrentSettings.cube_api_key.present?
 
       true
+    end
+
+    def analytics_dashboard_pointer_project(project)
+      return unless project.analytics_dashboards_pointer
+
+      pointer_project = project.analytics_dashboards_pointer.target_project
+
+      { id: pointer_project.id, full_path: pointer_project.full_path, name: pointer_project.name }
     end
   end
 end

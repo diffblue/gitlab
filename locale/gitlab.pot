@@ -32677,7 +32677,13 @@ msgstr ""
 msgid "ProductAnalytics|Compares pageviews of all pages against each other"
 msgstr ""
 
+msgid "ProductAnalytics|Configure Dashboard Project"
+msgstr ""
+
 msgid "ProductAnalytics|Creating your product analytics instance..."
+msgstr ""
+
+msgid "ProductAnalytics|Custom dashboards"
 msgstr ""
 
 msgid "ProductAnalytics|Data"
@@ -32711,6 +32717,9 @@ msgid "ProductAnalytics|Feature Usage"
 msgstr ""
 
 msgid "ProductAnalytics|Feature usage"
+msgstr ""
+
+msgid "ProductAnalytics|For being able to create your own dashboards please configure a special project to store your dashboards."
 msgstr ""
 
 msgid "ProductAnalytics|For the product analytics dashboard to start showing you some data, you need to add the analytics tracking code to your project."

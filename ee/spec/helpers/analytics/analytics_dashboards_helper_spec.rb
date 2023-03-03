@@ -7,6 +7,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
 
   let_it_be(:project) { create(:project) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
   let_it_be(:user) { build_stubbed(:user) }
+  let_it_be(:pointer) { create(:analytics_dashboards_pointer, :project_based, project: project) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
 
   let(:jitsu_key) { '1234567890' }
   let(:collector_host) { 'https://collector.example.com' }
@@ -56,6 +57,11 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
       it 'returns the expected data' do
         expect(data).to eq({
           project_id: project.id,
+          dashboard_project: {
+            id: pointer.target_project.id,
+            full_path: pointer.target_project.full_path,
+            name: pointer.target_project.name
+          }.to_json,
           jitsu_key: jitsu_key,
           collector_host: collector_host,
           chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
