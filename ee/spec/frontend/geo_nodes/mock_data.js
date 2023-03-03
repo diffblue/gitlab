@@ -2,11 +2,6 @@ export const MOCK_NEW_NODE_URL = 'http://localhost:3000/admin/geo/sites/new';
 
 export const MOCK_EMPTY_STATE_SVG = 'illustrations/empty-state/geo-empty.svg';
 
-export const MOCK_PRIMARY_VERSION = {
-  version: '10.4.0-pre',
-  revision: 'b93c51849b',
-};
-
 export const MOCK_REPLICABLE_TYPES = [
   {
     dataType: 'repository',

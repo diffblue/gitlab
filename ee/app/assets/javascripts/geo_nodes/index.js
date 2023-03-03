@@ -14,7 +14,7 @@ export const initGeoNodes = () => {
     return false;
   }
 
-  const { primaryVersion, primaryRevision, newNodeUrl, geoNodesEmptyStateSvg } = el.dataset;
+  const { newNodeUrl, geoNodesEmptyStateSvg } = el.dataset;
   const searchFilter = getParameterByName('search') || '';
   let { replicableTypes } = el.dataset;
 
@@ -22,7 +22,7 @@ export const initGeoNodes = () => {
 
   return new Vue({
     el,
-    store: createStore({ primaryVersion, primaryRevision, replicableTypes, searchFilter }),
+    store: createStore({ replicableTypes, searchFilter }),
     provide: {
       geoNodesEmptyStateSvg,
     },

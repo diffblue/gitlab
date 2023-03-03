@@ -1,7 +1,6 @@
 import * as getters from 'ee/geo_nodes/store/getters';
 import createState from 'ee/geo_nodes/store/state';
 import {
-  MOCK_PRIMARY_VERSION,
   MOCK_REPLICABLE_TYPES,
   MOCK_NODES,
   MOCK_PRIMARY_VERIFICATION_INFO,
@@ -18,8 +17,6 @@ describe('GeoNodes Store Getters', () => {
 
   beforeEach(() => {
     state = createState({
-      primaryVersion: MOCK_PRIMARY_VERSION.version,
-      primaryRevision: MOCK_PRIMARY_VERSION.revision,
       replicableTypes: MOCK_REPLICABLE_TYPES,
     });
   });
@@ -156,5 +153,53 @@ describe('GeoNodes Store Getters', () => {
         ).toStrictEqual(expectedResponse);
       },
     );
+  });
+
+  describe('nodeHasVersionMismatch', () => {
+    const NODE_ID = '9';
+
+    describe.each`
+      node                                                                                         | nodeHasVersionMismatch
+      ${{ id: NODE_ID, version: '1.0.0', revision: 'asdf' }}                                       | ${true}
+      ${{ id: NODE_ID, version: MOCK_PRIMARY_NODE.version, revision: 'asdf' }}                     | ${true}
+      ${{ id: NODE_ID, version: '1.0.0', revision: MOCK_PRIMARY_NODE.revision }}                   | ${true}
+      ${{ id: NODE_ID, version: MOCK_PRIMARY_NODE.version, revision: MOCK_PRIMARY_NODE.revision }} | ${false}
+    `('when primary site exists', ({ node, nodeHasVersionMismatch }) => {
+      describe(`when node version: ${node.version} (${node.revision}) and primary node version: ${MOCK_PRIMARY_NODE.version} (${MOCK_PRIMARY_NODE.revision}) version mismatch is ${nodeHasVersionMismatch}`, () => {
+        beforeEach(() => {
+          state.nodes = [node, MOCK_PRIMARY_NODE];
+        });
+
+        it(`should return ${nodeHasVersionMismatch}`, () => {
+          expect(getters.nodeHasVersionMismatch(state)(NODE_ID)).toBe(nodeHasVersionMismatch);
+        });
+      });
+    });
+
+    describe('when passed in site does not exist', () => {
+      beforeEach(() => {
+        state.nodes = [MOCK_PRIMARY_NODE];
+      });
+
+      it('should return true', () => {
+        expect(getters.nodeHasVersionMismatch(state)(NODE_ID)).toBe(true);
+      });
+    });
+
+    describe('when primary site does not exist', () => {
+      const node = {
+        id: NODE_ID,
+        version: MOCK_PRIMARY_NODE.version,
+        revision: MOCK_PRIMARY_NODE.revision,
+      };
+
+      beforeEach(() => {
+        state.nodes = [node];
+      });
+
+      it('should return true', () => {
+        expect(getters.nodeHasVersionMismatch(state)(NODE_ID)).toBe(true);
+      });
+    });
   });
 });

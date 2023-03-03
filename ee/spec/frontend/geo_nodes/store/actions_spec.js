@@ -7,7 +7,6 @@ import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import {
-  MOCK_PRIMARY_VERSION,
   MOCK_REPLICABLE_TYPES,
   MOCK_NODES,
   MOCK_NODES_RES,
@@ -22,8 +21,6 @@ describe('GeoNodes Store Actions', () => {
 
   beforeEach(() => {
     state = createState({
-      primaryVersion: MOCK_PRIMARY_VERSION.version,
-      primaryRevision: MOCK_PRIMARY_VERSION.revision,
       replicableTypes: MOCK_REPLICABLE_TYPES,
     });
     mock = new MockAdapter(axios);

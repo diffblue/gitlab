@@ -1,6 +1,6 @@
 <script>
 import { GlLink, GlIcon } from '@gitlab/ui';
-import { mapState } from 'vuex';
+import { mapGetters } from 'vuex';
 import { __, s__ } from '~/locale';
 
 export default {
@@ -22,17 +22,15 @@ export default {
     },
   },
   computed: {
-    ...mapState(['primaryVersion', 'primaryRevision']),
+    ...mapGetters(['nodeHasVersionMismatch']),
     nodeVersion() {
       if (!this.node.version || !this.node.revision) {
         return this.$options.i18n.unknown;
       }
       return `${this.node.version} (${this.node.revision})`;
     },
-    versionMismatch() {
-      return (
-        this.node.version !== this.primaryVersion || this.node.revision !== this.primaryRevision
-      );
+    hasMismatchVersion() {
+      return this.nodeHasVersionMismatch(this.node.id);
     },
   },
 };
@@ -61,7 +59,7 @@ export default {
     <div class="gl-display-flex gl-flex-direction-column gl-lg-mt-5">
       <span>{{ $options.i18n.gitlabVersion }}</span>
       <span
-        :class="{ 'gl-text-red-500': versionMismatch }"
+        :class="{ 'gl-text-red-500': hasMismatchVersion }"
         class="gl-font-weight-bold"
         data-testid="node-version"
       >

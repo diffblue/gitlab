@@ -17,18 +17,7 @@ module EE
     end
 
     def node_vue_list_properties
-      version, revision =
-        if ::Gitlab::Geo.primary?
-          [::Gitlab::VERSION, ::Gitlab.revision]
-        else
-          status = ::Gitlab::Geo.primary_node&.status
-
-          [status&.version, status&.revision]
-        end
-
       {
-        primary_version: version.to_s,
-        primary_revision: revision.to_s,
         replicable_types: replicable_types.to_json,
         new_node_url: new_admin_geo_node_path,
         geo_nodes_empty_state_svg: image_path("illustrations/empty-state/geo-empty.svg")
