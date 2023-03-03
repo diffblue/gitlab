@@ -211,14 +211,26 @@ RSpec.describe API::Settings, 'EE Settings', feature_category: :shared do
     let(:settings) { { delayed_group_deletion: true } }
     let(:feature) { :adjourned_deletion_for_projects_and_groups }
 
-    it_behaves_like 'settings for licensed features'
+    context 'when `always_perform_delayed_deletion` is disabled' do
+      before do
+        stub_feature_flags(always_perform_delayed_deletion: false)
+      end
+
+      it_behaves_like 'settings for licensed features'
+    end
   end
 
   context 'delayed project deletion' do
     let(:settings) { { delayed_project_deletion: true } }
     let(:feature) { :adjourned_deletion_for_projects_and_groups }
 
-    it_behaves_like 'settings for licensed features'
+    context 'when `always_perform_delayed_deletion` is disabled' do
+      before do
+        stub_feature_flags(always_perform_delayed_deletion: false)
+      end
+
+      it_behaves_like 'settings for licensed features'
+    end
   end
 
   context 'group_owners_can_manage_default_branch_protection setting' do

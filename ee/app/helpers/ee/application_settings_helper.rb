@@ -121,14 +121,13 @@ module EE
       merge_request_appovers_rules_attributes +
       password_complexity_attributes +
       git_abuse_rate_limit_attributes +
+      delayed_deletion_attributes +
        %i[
          email_additional_text
          file_template_project_id
          git_two_factor_session_expiry
          group_owners_can_manage_default_branch_protection
          default_project_deletion_protection
-         delayed_project_deletion
-         delayed_group_deletion
          disable_personal_access_tokens
          deletion_adjourned_period
          updating_name_disabled_for_users
@@ -165,6 +164,16 @@ module EE
         git_rate_limit_users_allowlist
         git_rate_limit_users_alertlist
         auto_ban_user_on_excessive_projects_download
+      ]
+    end
+
+    def self.delayed_deletion_attributes
+      # TODO: Remove in 16.0, after https://gitlab.com/gitlab-org/gitlab/-/issues/393622 is turned ON
+      # We cannot add a feature flag check in this file, due to the reason mentioned in
+      # https://gitlab.com/gitlab-org/gitlab/-/merge_requests/92218#note_1026250151
+      %i[
+        delayed_project_deletion
+        delayed_group_deletion
       ]
     end
 

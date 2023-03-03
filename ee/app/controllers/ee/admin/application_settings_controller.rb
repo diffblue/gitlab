@@ -75,14 +75,18 @@ module EE
           attrs += EE::ApplicationSettingsHelper.repository_mirror_attributes
         end
 
+        if License.feature_available?(:adjourned_deletion_for_projects_and_groups) &&
+            ::Feature.disabled?(:always_perform_delayed_deletion)
+          attrs += EE::ApplicationSettingsHelper.delayed_deletion_attributes
+        end
+
         # License feature => attribute name
         {
           custom_project_templates: :custom_project_templates_group_id,
           email_additional_text: :email_additional_text,
           custom_file_templates: :file_template_project_id,
           default_project_deletion_protection: :default_project_deletion_protection,
-          adjourned_deletion_for_projects_and_groups: [:delayed_project_deletion, :delayed_group_deletion,
-                                                       :deletion_adjourned_period],
+          adjourned_deletion_for_projects_and_groups: :deletion_adjourned_period,
           required_ci_templates: :required_instance_ci_template,
           disable_name_update_for_users: :updating_name_disabled_for_users,
           package_forwarding: [:npm_package_requests_forwarding,

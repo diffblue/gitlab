@@ -2057,11 +2057,15 @@ RSpec.describe Group, feature_category: :subgroups do
     end
 
     context 'delayed deletion feature is available' do
-      where(:adjourned_period, :delayed_group_deletion, :expected) do
-        0 | true  | false
-        0 | false | false
-        1 | true  | true
-        1 | false | false
+      where(:adjourned_period, :delayed_group_deletion, :always_perform_delayed_deletion, :expected) do
+        0 | true  | true  | false
+        0 | false | true  | false
+        1 | true  | true  | true
+        1 | false | true  | true
+        0 | true  | false | false
+        0 | false | false | false
+        1 | true  | false | true
+        1 | false | false | false
       end
 
       with_them do
@@ -2069,6 +2073,7 @@ RSpec.describe Group, feature_category: :subgroups do
           stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
           stub_application_setting(deletion_adjourned_period: adjourned_period)
           stub_application_setting(delayed_group_deletion: delayed_group_deletion)
+          stub_feature_flags(always_perform_delayed_deletion: always_perform_delayed_deletion)
         end
 
         it { is_expected.to expected ? be_truthy : be_falsey }

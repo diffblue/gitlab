@@ -1163,6 +1163,7 @@ module EE
 
     # Return the group's setting for delayed deletion, false for user namespace projects
     def group_deletion_mode_configured?
+      return true if ::Feature.enabled?(:always_perform_delayed_deletion) && !personal?
       return false unless group&.namespace_settings
 
       group.namespace_settings.delayed_project_removal?

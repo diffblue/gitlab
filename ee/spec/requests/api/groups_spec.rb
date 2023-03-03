@@ -1142,7 +1142,17 @@ RSpec.describe API::Groups, feature_category: :subgroups do
           stub_application_setting(delayed_group_deletion: false)
         end
 
-        it_behaves_like 'immediately enqueues the job to delete the group'
+        context 'when `always_perform_delayed_deletion` is disabled' do
+          before do
+            stub_feature_flags(always_perform_delayed_deletion: false)
+          end
+
+          it_behaves_like 'immediately enqueues the job to delete the group'
+        end
+
+        context 'when `always_perform_delayed_deletion` is enabled' do
+          it_behaves_like 'marks group for delayed deletion'
+        end
       end
 
       context 'failure' do
