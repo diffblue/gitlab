@@ -10,11 +10,11 @@ import * as getters from 'ee/analytics/cycle_analytics/store/modules/type_of_wor
 import * as types from 'ee/analytics/cycle_analytics/store/modules/type_of_work/mutation_types';
 import testAction from 'helpers/vuex_action_helper';
 import { createdAfter, createdBefore } from 'jest/analytics/cycle_analytics/mock_data';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { groupLabels, groupLabelNames, endpoints, rawTasksByTypeData } from '../../../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 const error = new Error(`Request failed with status code ${HTTP_STATUS_NOT_FOUND}`);
 
@@ -136,7 +136,7 @@ describe('Type of work actions', () => {
     });
 
     describe('receiveTopRankedGroupLabelsError', () => {
-      it('flashes an error message if the request fails', () => {
+      it('alerts an error message if the request fails', () => {
         actions.receiveTopRankedGroupLabelsError({
           commit: () => {},
         });
@@ -208,7 +208,7 @@ describe('Type of work actions', () => {
     });
 
     describe('receiveTasksByTypeDataError', () => {
-      it('flashes an error message if the request fails', () => {
+      it('alerts an error message if the request fails', () => {
         actions.receiveTasksByTypeDataError({
           commit: () => {},
         });

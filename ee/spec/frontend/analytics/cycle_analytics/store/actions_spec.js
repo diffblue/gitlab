@@ -13,7 +13,7 @@ import {
   I18N_VSA_ERROR_STAGES,
   I18N_VSA_ERROR_STAGE_MEDIAN,
 } from '~/analytics/cycle_analytics/constants';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import {
   HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_FORBIDDEN,
@@ -26,7 +26,7 @@ const group = { fullPath: 'fake_group_full_path' };
 const milestonesPath = 'fake_milestones_path.json';
 const labelsPath = 'fake_labels_path.json';
 
-const flashErrorMessage = 'There was an error while fetching value stream analytics data.';
+const alertErrorMessage = 'There was an error while fetching value stream analytics data.';
 
 stages[0].hidden = true;
 const activeStages = stages.filter(({ hidden }) => !hidden);
@@ -37,7 +37,7 @@ const mockGetters = {
   currentValueStreamId: () => selectedValueStream.id,
 };
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('Value Stream Analytics actions', () => {
   let state;
@@ -239,7 +239,7 @@ describe('Value Stream Analytics actions', () => {
       );
     });
 
-    it('will flash an error when the response is not 403', () => {
+    it('will alert an error when the response is not 403', () => {
       const response = { status: HTTP_STATUS_INTERNAL_SERVER_ERROR };
       actions.receiveCycleAnalyticsDataError(
         {
@@ -248,7 +248,7 @@ describe('Value Stream Analytics actions', () => {
         { response },
       );
 
-      expect(createAlert).toHaveBeenCalledWith({ message: flashErrorMessage });
+      expect(createAlert).toHaveBeenCalledWith({ message: alertErrorMessage });
     });
   });
 

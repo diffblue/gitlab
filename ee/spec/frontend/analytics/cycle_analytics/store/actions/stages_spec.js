@@ -15,7 +15,7 @@ import {
   I18N_VSA_ERROR_STAGE_MEDIAN,
   I18N_VSA_ERROR_SELECTED_STAGE,
 } from '~/analytics/cycle_analytics/constants';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import {
   allowedStages as stages,
@@ -46,7 +46,7 @@ const mockGetters = {
   }),
 };
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('Value Stream Analytics actions / stages', () => {
   let state;
@@ -204,7 +204,7 @@ describe('Value Stream Analytics actions / stages', () => {
       );
     });
 
-    it('will flash an error message', () => {
+    it('will alert an error message', () => {
       actions.receiveStageDataError({ commit: () => {} }, {});
       expect(createAlert).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_SELECTED_STAGE });
     });
@@ -313,7 +313,7 @@ describe('Value Stream Analytics actions / stages', () => {
         [],
       ));
 
-    it('will flash an error message', () => {
+    it('will alert an error message', () => {
       actions.receiveStageMedianValuesError({ commit: () => {} });
       expect(createAlert).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_STAGE_MEDIAN });
     });
@@ -364,7 +364,7 @@ describe('Value Stream Analytics actions / stages', () => {
       });
     });
 
-    it('will flash an error message', async () => {
+    it('will alert an error message', async () => {
       expect(createAlert).not.toHaveBeenCalled();
 
       await actions.receiveGroupStagesError({ commit: () => {} });

@@ -28,8 +28,6 @@ const mockGetters = {
   currentValueStreamId: () => selectedValueStream.id,
 };
 
-jest.mock('~/flash');
-
 describe('Value Stream Analytics actions / value streams', () => {
   let state;
   let mock;

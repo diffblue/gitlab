@@ -8,11 +8,11 @@ import LabelsSelector from 'ee/analytics/cycle_analytics/components/labels_selec
 import createStore from 'ee/analytics/cycle_analytics/store';
 import * as getters from 'ee/analytics/cycle_analytics/store/getters';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { groupLabels } from '../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 Vue.use(Vuex);
 
 const selectedLabel = groupLabels[groupLabels.length - 1];
@@ -95,7 +95,7 @@ describe('Value Stream Analytics LabelsSelector', () => {
         return waitForPromises();
       });
 
-      it('should flash an error message', () => {
+      it('should alert an error message', () => {
         expect(createAlert).toHaveBeenCalledWith({
           message: 'There was an error fetching label data for the selected group',
         });

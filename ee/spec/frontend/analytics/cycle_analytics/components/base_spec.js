@@ -30,7 +30,7 @@ import {
   I18N_VSA_ERROR_STAGE_MEDIAN,
   I18N_VSA_ERROR_SELECTED_STAGE,
 } from '~/analytics/cycle_analytics/constants';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import * as commonUtils from '~/lib/utils/common_utils';
 import {
@@ -57,7 +57,7 @@ const emptyStateSvgPath = 'path/to/empty/state';
 const stage = null;
 
 Vue.use(Vuex);
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 const defaultStubs = {
   'tasks-by-type-chart': true,

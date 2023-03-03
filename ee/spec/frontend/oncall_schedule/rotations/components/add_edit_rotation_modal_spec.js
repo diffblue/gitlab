@@ -21,7 +21,7 @@ import {
 } from '../../mocks/apollo_mock';
 import mockRotation from '../../mocks/mock_rotation.json';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 jest.mock('~/lib/utils/color_utils');
 
 const schedule =
