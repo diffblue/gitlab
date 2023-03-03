@@ -34495,6 +34495,9 @@ msgstr ""
 msgid "ProjectsNew|Project description %{tag_start}(optional)%{tag_end}"
 msgstr ""
 
+msgid "ProjectsNew|Projects"
+msgstr ""
+
 msgid "ProjectsNew|Recommended if you're new to GitLab"
 msgstr ""
 
