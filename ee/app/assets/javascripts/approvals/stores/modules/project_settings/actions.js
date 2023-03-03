@@ -3,7 +3,7 @@ import {
   mapApprovalSettingsResponse,
   mapApprovalFallbackRuleRequest,
 } from 'ee/approvals/mappers';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
 import * as types from '../base/mutation_types';

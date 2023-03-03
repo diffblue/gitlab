@@ -1,7 +1,7 @@
 <script>
 import { GlDropdownDivider, GlDropdownSectionHeader, GlFilteredSearchSuggestion } from '@gitlab/ui';
 import { groupByIterationCadences, getIterationPeriod } from 'ee/iterations/utils';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { TYPENAME_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';

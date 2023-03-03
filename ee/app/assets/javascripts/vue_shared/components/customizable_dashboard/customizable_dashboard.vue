@@ -3,7 +3,7 @@ import { GridStack } from 'gridstack';
 import * as Sentry from '@sentry/browser';
 import { GlButton } from '@gitlab/ui';
 import { loadCSSFile } from '~/lib/utils/css_utils';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { s__, sprintf } from '~/locale';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
 import PanelsBase from './panels_base.vue';

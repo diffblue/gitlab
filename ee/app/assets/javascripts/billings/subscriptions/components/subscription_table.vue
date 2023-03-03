@@ -4,7 +4,7 @@ import { escape } from 'lodash';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { removeTrialSuffix } from 'ee/billings/billings_util';
 import { TABLE_TYPE_DEFAULT, TABLE_TYPE_FREE, TABLE_TYPE_TRIAL } from 'ee/billings/constants';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';

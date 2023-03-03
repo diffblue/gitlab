@@ -2,7 +2,7 @@
 import { intersection } from 'lodash';
 import { GlIcon, GlLink, GlLoadingIcon, GlSprintf, GlTable, GlTooltipDirective } from '@gitlab/ui';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { getTimeago } from '~/lib/utils/datetime_utility';
 import { mergeUrlParams } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';

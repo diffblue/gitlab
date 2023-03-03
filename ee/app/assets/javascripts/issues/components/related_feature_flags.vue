@@ -6,7 +6,7 @@ import {
   GlTruncate,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
 
