@@ -30041,28 +30041,34 @@ msgstr ""
 msgid "Out-of-compliance with this project's policies and should be removed"
 msgstr ""
 
-msgid "OutboundRequests|Allow requests to the local network from hooks and services."
+msgid "OutboundRequests|Allow requests to the local network from hooks and integrations."
 msgstr ""
 
 msgid "OutboundRequests|Allow requests to the local network from system hooks"
 msgstr ""
 
-msgid "OutboundRequests|Allow requests to the local network from web hooks and services"
+msgid "OutboundRequests|Allow requests to the local network from webhooks and integrations"
 msgstr ""
 
-msgid "OutboundRequests|Enforce DNS rebinding attack protection"
+msgid "OutboundRequests|Block all requests, except for IP addresses, IP ranges, and domain names defined in the allowlist"
 msgstr ""
 
-msgid "OutboundRequests|Local IP addresses and domain names that hooks and services may access"
+msgid "OutboundRequests|Enforce DNS-rebinding attack protection"
+msgstr ""
+
+msgid "OutboundRequests|Local IP addresses and domain names that hooks and integrations can access"
 msgstr ""
 
 msgid "OutboundRequests|Outbound requests"
 msgstr ""
 
-msgid "OutboundRequests|Requests to these domains and IP addresses are accessible to both system hooks and web hooks even when local requests are not allowed. IP ranges such as 1:0:0:0:0:0:0:0/124 and 127.0.0.0/28 are supported. Domain wildcards are not supported. To separate entries use commas, semicolons, or newlines. The allowlist can hold a maximum of 1000 entries. Domains must be IDNA encoded."
+msgid "OutboundRequests|Requests can be made to these IP addresses and domains even when local requests are not allowed. IP ranges such as %{code_start}1:0:0:0:0:0:0:0/124%{code_end} and %{code_start}127.0.0.0/28%{code_end} are supported. Domain wildcards are not supported. To separate entries, use commas, semicolons, or newlines. The allowlist can have a maximum of 1000 entries. Domains must be IDNA-encoded."
 msgstr ""
 
-msgid "OutboundRequests|Resolve IP addresses once and uses them to submit requests."
+msgid "OutboundRequests|Resolve IP addresses for outbound requests to prevent DNS-rebinding attacks."
+msgstr ""
+
+msgid "OutboundRequests|Webhooks and integrations might not work properly."
 msgstr ""
 
 msgid "OutdatedBrowser|GitLab may not work properly, because you are using an outdated web browser."
