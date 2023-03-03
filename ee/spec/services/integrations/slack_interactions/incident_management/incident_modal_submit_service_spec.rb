@@ -16,8 +16,7 @@ RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModa
       create(:chat_name,
         user: user,
         team_id: slack_installation.team_id,
-        chat_id: slack_installation.user_id,
-        integration: slack_installation.integration
+        chat_id: slack_installation.user_id
       )
     end
 
