@@ -470,22 +470,17 @@ RSpec.describe Member, type: :model do
 
     subject { member.maintaining_elasticsearch? }
 
-    where(:elasticsearch_indexing, :migration_finished, :feature_enabled, :expected_result) do
-      true | true | true  | true
-      true | true | false | false
-      true | false | false | false
-      false | false | false | false
-      true | false | true | false
-      false | true | true | false
-      true | false | true | false
-      false | true | false | false
+    where(:elasticsearch_indexing, :migration_finished, :expected_result) do
+      true | true  | true
+      true | false | false
+      false | true | false
+      false | false | false
     end
 
     with_them do
       before do
         stub_ee_application_setting(elasticsearch_indexing: elasticsearch_indexing)
         set_elasticsearch_migration_to(:create_user_index, including: migration_finished)
-        stub_feature_flags(advanced_user_index: feature_enabled)
       end
 
       it { is_expected.to eq(expected_result) }
