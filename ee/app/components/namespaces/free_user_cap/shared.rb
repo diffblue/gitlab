@@ -46,24 +46,20 @@ module Namespaces
       # there are descendents to the base AlertComponent that override
       # different parts
 
-      def self.base_alert_data(feature_name)
+      def self.base_alert_data
         {
           track_action: 'render',
           track_label: 'user_limit_banner',
-          feature_id: feature_name,
           testid: 'user-over-limit-free-plan-alert'
         }
       end
 
-      def self.extra_alert_data(namespace)
+      def self.extra_alert_data(namespace, feature_name)
         {
+          feature_id: feature_name,
           dismiss_endpoint: Rails.application.routes.url_helpers.group_callouts_path,
           group_id: namespace.id
         }
-      end
-
-      def self.alert_data(namespace:, feature_name:)
-        base_alert_data(feature_name).merge(**extra_alert_data(namespace))
       end
 
       # region: notification specifics --------------------------------------

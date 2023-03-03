@@ -18,7 +18,6 @@ module Namespaces
 
       def base_alert_data
         {
-          feature_id: feature_name,
           testid: 'usage-quota-trial-alert'
         }
       end

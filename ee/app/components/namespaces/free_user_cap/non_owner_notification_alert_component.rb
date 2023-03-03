@@ -7,7 +7,6 @@ module Namespaces
 
       def render?
         return false unless Shared.non_owner_render?(user: user, namespace: namespace)
-        return false if dismissed?
 
         breached_cap_limit?
       end
