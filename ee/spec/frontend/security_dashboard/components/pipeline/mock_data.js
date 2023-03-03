@@ -8,71 +8,87 @@ export const pipelineSecurityReportSummary = {
         id: 'gid://gitlab/Ci::Pipeline/99',
         securityReportSummary: {
           dast: {
+            __typename: 'SecurityReportSummarySection',
             vulnerabilitiesCount: 5,
             scannedResourcesCsvPath:
               '/security/security-reports/-/security/scanned_resources.csv?pipeline_id=99',
             scans: {
-              nodes: [{ name: 'dast', errors: [] }],
+              nodes: [{ name: 'dast', errors: [], warnings: [], status: 'SUCCEEDED' }],
             },
           },
           sast: {
+            __typename: 'SecurityReportSummarySection',
             vulnerabilitiesCount: 67,
             scans: {
-              nodes: [{ name: 'sast', errors: [] }],
+              nodes: [{ name: 'sast', errors: [], warnings: [], status: 'SUCCEEDED' }],
             },
           },
           containerScanning: {
+            __typename: 'SecurityReportSummarySection',
             vulnerabilitiesCount: 2,
             scans: {
               nodes: [
                 {
                   name: 'container-scanning',
                   errors: [],
+                  warnings: [],
+                  status: 'SUCCEEDED',
                 },
               ],
             },
           },
           dependencyScanning: {
+            __typename: 'SecurityReportSummarySection',
             vulnerabilitiesCount: 66,
             scans: {
               nodes: [
                 {
                   name: 'dependency-scanning',
                   errors: [],
+                  warnings: [],
+                  status: 'SUCCEEDED',
                 },
               ],
             },
           },
           apiFuzzing: {
+            __typename: 'SecurityReportSummarySection',
             vulnerabilitiesCount: 6,
             scans: {
-              nodes: [{ name: 'api-fuzzing', errors: [] }],
+              nodes: [{ name: 'api-fuzzing', errors: [], warnings: [], status: 'SUCCEEDED' }],
             },
           },
           coverageFuzzing: {
+            __typename: 'SecurityReportSummarySection',
             vulnerabilitiesCount: 1,
             scans: {
-              nodes: [{ name: 'coverage-fuzzing', errors: [] }],
+              nodes: [{ name: 'coverage-fuzzing', errors: [], warnings: [], status: 'SUCCEEDED' }],
             },
           },
           clusterImageScanning: {
+            __typename: 'SecurityReportSummarySection',
             vulnerabilitiesCount: 2,
             scans: {
               nodes: [
                 {
                   name: 'cluster-image-scanning',
                   errors: [],
+                  warnings: [],
+                  status: 'SUCCEEDED',
                 },
               ],
             },
           },
           secretDetection: {
+            __typename: 'SecurityReportSummarySection',
             vulnerabilitiesCount: 2,
             scans: {
               nodes: [
                 {
                   name: 'secret-detection',
                   errors: [],
+                  warnings: [],
+                  status: 'SUCCEEDED',
                 },
               ],
             },
@@ -348,7 +364,16 @@ export const pipelineSecurityReportSummaryEmpty = merge({}, pipelineSecurityRepo
       id: 'project-1',
       pipeline: {
         id: 'pipeline-1',
-        securityReportSummary: null,
+        securityReportSummary: {
+          dast: null,
+          sast: null,
+          containerScanning: null,
+          dependencyScanning: null,
+          apiFuzzing: null,
+          coverageFuzzing: null,
+          clusterImageScanning: null,
+          secretDetection: null,
+        },
       },
     },
   },

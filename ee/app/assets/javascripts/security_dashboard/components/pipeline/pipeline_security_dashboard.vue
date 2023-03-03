@@ -91,6 +91,9 @@ export default {
             .flatMap(getScans)
         : [];
     },
+    hasScans() {
+      return this.scans.length > 0;
+    },
     purgedScans() {
       return this.scans.filter((scan) => scan.status === this.$options.scanPurgedStatus);
     },
@@ -146,7 +149,7 @@ export default {
       />
     </p>
 
-    <div v-if="reportSummary" class="gl-mb-5">
+    <div v-if="hasScans" class="gl-mb-5">
       <scan-alerts
         v-if="showScanErrors"
         :type="$options.errorsAlertType"
