@@ -66,18 +66,6 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, feature_category: :glob
       expect(result.first.buckets.first[:key]).to eq('Markdown')
       expect(result.first.buckets.first[:count]).to eq(2)
     end
-
-    context 'when search_blobs_language_aggregation feature flag is disabled' do
-      before do
-        stub_feature_flags(search_blobs_language_aggregation: false)
-      end
-
-      it 'returns empty array' do
-        result = subject.blob_aggregations('This guide details how contribute to GitLab', options)
-
-        expect(result).to match_array([])
-      end
-    end
   end
 
   it "names elasticsearch queries" do
