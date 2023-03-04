@@ -1,5 +1,4 @@
 <script>
-import { ITEM_TYPE } from '~/groups/constants';
 import IssuesListApp from '~/issues/list/components/issues_list_app.vue';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
@@ -15,6 +14,7 @@ import {
   TOKEN_TITLE_HEALTH,
   TOKEN_TYPE_HEALTH,
 } from 'ee/vue_shared/components/filtered_search_bar/constants';
+import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { TYPE_TOKEN_OBJECTIVE_OPTION, TYPE_TOKEN_KEY_RESULT_OPTION } from '~/issues/list/constants';
 import {
   WORK_ITEM_TYPE_ENUM_OBJECTIVE,
@@ -58,7 +58,7 @@ export default {
   },
   computed: {
     namespace() {
-      return this.isProject ? ITEM_TYPE.PROJECT : ITEM_TYPE.GROUP;
+      return this.isProject ? WORKSPACE_PROJECT : WORKSPACE_GROUP;
     },
     workItemTypes() {
       const types = [];

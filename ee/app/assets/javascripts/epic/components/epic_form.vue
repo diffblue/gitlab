@@ -10,18 +10,19 @@ import {
 import { createAlert } from '~/flash';
 import Autosave from '~/autosave';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { WORKSPACE_GROUP } from '~/issues/constants';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import MarkdownField from '~/vue_shared/components/markdown/field.vue';
 import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
 import ColorSelectDropdown from '~/vue_shared/components/color_select_dropdown/color_select_root.vue';
-import { LabelType } from '~/sidebar/components/labels/labels_select_widget/constants';
 import { DEFAULT_COLOR } from '~/vue_shared/components/color_select_dropdown/constants';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import createEpic from '../queries/create_epic.mutation.graphql';
 
 export default {
+  WORKSPACE_GROUP,
   components: {
     ColorSelectDropdown,
     GlButton,
@@ -45,7 +46,6 @@ export default {
       startDateFixed: null,
       dueDateFixed: null,
       loading: false,
-      LabelType,
     };
   },
   computed: {
@@ -212,7 +212,7 @@ export default {
           :labels-filter-base-path="groupEpicsPath"
           :attr-workspace-path="groupPath"
           workspace-type="group"
-          :label-create-type="LabelType.group"
+          :label-create-type="$options.WORKSPACE_GROUP"
           issuable-type="epic"
           variant="embedded"
           data-qa-selector="labels_block"
@@ -268,7 +268,7 @@ export default {
           :full-path="groupPath"
           :attr-workspace-path="groupPath"
           workspace-type="group"
-          :label-create-type="LabelType.group"
+          :label-create-type="$options.WORKSPACE_GROUP"
           :default-color="color"
           issuable-type="epic"
           variant="embedded"

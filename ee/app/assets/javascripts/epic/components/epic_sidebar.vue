@@ -5,7 +5,7 @@ import SidebarAncestorsWidget from 'ee_component/sidebar/components/ancestors_tr
 
 import { TYPENAME_EPIC } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { TYPE_EPIC } from '~/issues/constants';
+import { TYPE_EPIC, WORKSPACE_GROUP } from '~/issues/constants';
 import notesEventHub from '~/notes/event_hub';
 import SidebarConfidentialityWidget from '~/sidebar/components/confidential/sidebar_confidentiality_widget.vue';
 import SidebarDateWidget from '~/sidebar/components/date/sidebar_date_widget.vue';
@@ -16,7 +16,6 @@ import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_wid
 import sidebarEventHub from '~/sidebar/event_hub';
 import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
 import ColorSelectDropdown from '~/vue_shared/components/color_select_dropdown/color_select_root.vue';
-import { LabelType } from '~/sidebar/components/labels/labels_select_widget/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { parsePikadayDate } from '~/lib/utils/datetime_utility';
 
@@ -24,6 +23,7 @@ import epicUtils from '../utils/epic_utils';
 import SidebarHeader from './sidebar_items/sidebar_header.vue';
 
 export default {
+  WORKSPACE_GROUP,
   components: {
     SidebarHeader,
     SidebarDateWidget,
@@ -41,7 +41,6 @@ export default {
   data() {
     return {
       sidebarExpandedOnClick: false,
-      LabelType,
       minDate: null,
       maxDate: null,
     };
@@ -155,7 +154,7 @@ export default {
         issuable-type="epic"
         workspace-type="group"
         :attr-workspace-path="fullPath"
-        :label-create-type="LabelType.group"
+        :label-create-type="$options.WORKSPACE_GROUP"
         data-testid="labels-select"
         @toggleCollapse="handleSidebarToggle"
       >
