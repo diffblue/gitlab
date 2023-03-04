@@ -194,24 +194,28 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic do
       'commits'        | nil        | false
       'users'          | nil        | false
       'unknown'        | nil        | false
-      'blobs'          | 'language' | :search_blobs_language_aggregation
+      'blobs'          | 'language' | false
     end
 
     with_them do
       context 'when feature flag is enabled for user' do
+        let(:feature_enabled) { true }
+
         before do
           stub_feature_flags(feature_flag => user) if feature_flag
         end
 
-        it_behaves_like 'loads aggregations'
+        it_behaves_like 'loads expected aggregations'
       end
 
       context 'when feature flag is disabled for user' do
+        let(:feature_enabled) { false }
+
         before do
           stub_feature_flags(feature_flag => false) if feature_flag
         end
 
-        it_behaves_like 'does not load aggregations'
+        it_behaves_like 'loads expected aggregations'
       end
     end
 

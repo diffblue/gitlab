@@ -38,8 +38,6 @@ module Elastic
       end
 
       def blob_aggregations(query, options)
-        return [] unless ::Feature.enabled?(:search_blobs_language_aggregation, options[:current_user])
-
         query_hash, options = blob_query(query, options: options.merge(features: 'repository', aggregation: true))
 
         results = search(query_hash, options)
@@ -87,7 +85,7 @@ module Elastic
           }
         end
 
-        if languages.any? && type == :blob && (!options[:count_only] || options[:aggregation]) && ::Feature.enabled?(:search_blobs_language_aggregation, options[:current_user])
+        if languages.any? && type == :blob && (!options[:count_only] || options[:aggregation])
           filters << {
             terms: {
               _name: context.name(type, :match, :languages),
@@ -335,8 +333,7 @@ module Elastic
           }
         end
 
-        current_user = options[:current_user]
-        if type == 'blob' && aggregation && ::Feature.enabled?(:search_blobs_language_aggregation, current_user)
+        if type == 'blob' && aggregation
           query_hash[:aggs] = {
             language: {
               terms: {
