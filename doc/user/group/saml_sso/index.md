@@ -316,34 +316,45 @@ OneLogin supports its own [GitLab (SaaS) application](https://onelogin.service-n
 
 1. For **NameID**, use `OneLogin ID`.
 
-### Change the SAML app
+## Manage your identity provider
 
-To change the SAML app used for sign in:
+After you have configured your identity provider, you can:
 
-- If the NameID is not identical in both the existing and new SAML apps, users must:
+- Change the identity provider users sign in with.
+- Migrate to a different identity provider.
+- Change email domains.
+
+### Change the identity provider
+
+To change the identity provider:
+
+- If the `NameID` is not identical in the existing and new identity providers,
+   tell users to:
   1. [Unlink the current SAML identity](#unlinking-accounts).
-  1. [Link their identity](#user-access-and-management) to the new SAML app.
-- If the NameID is identical, no change is required.
+  1. [Link their identity](#user-access-and-management) to the new identity provider.
+- If the `NameID` is identical, users do not have to make any changes.
 
-### Migrate to a different SAML provider
+### Migrate to a different identity provider
 
-You can migrate to a different SAML provider. During the migration process users will not be able to access any of the SAML groups.
-To mitigate this, you can disable [SSO enforcement](#sso-enforcement).
+You can migrate to a different identity provider. During the migration process,
+users cannot access any of the SAML groups. To mitigate this, you can disable
+[SSO enforcement](#sso-enforcement).
 
-To migrate SAML providers:
+To migrate identity providers:
 
-1. [Configure](#configure-your-identity-provider) the group with the new identity provider SAML app.
-1. Ask users to [unlink their account from the group](#unlinking-accounts).
-1. Ask users to [link their account to the new SAML app](#linking-saml-to-your-existing-gitlabcom-account).
+1. [Configure](#configure-your-identity-provider) the group with the new identity provider.
+1. Tell users to:
+   1. [Unlink their account from the group](#unlinking-accounts).
+   1. [Link their account to the new SAML app](#linking-saml-to-your-existing-gitlabcom-account).
 
 ### Change email domains
 
-To migrate users to a new email domain, users must:
+To migrate users to a new email domain, tell users to:
 
 1. Add their new email as the primary email to their accounts and verify it.
 1. [Unlink their account from the group](#unlinking-accounts).
 1. [Link their account to the group](#linking-saml-to-your-existing-gitlabcom-account).
-1. (Optional) Remove their old email from the account.
+1. Optional. Remove their old email from the account.
 
 ## User access and management
 
