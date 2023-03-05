@@ -1,8 +1,7 @@
 <script>
 import {
   GlButton,
-  GlDropdown,
-  GlDropdownItem,
+  GlCollapsibleListbox,
   GlForm,
   GlFormGroup,
   GlFormInput,
@@ -22,11 +21,9 @@ import RunnerTagsList from './runner_tags_list.vue';
 import { buildScannerAction } from './lib';
 
 export default {
-  SCANNERS: RULE_MODE_SCANNERS,
   components: {
     GlButton,
-    GlDropdown,
-    GlDropdownItem,
+    GlCollapsibleListbox,
     GlForm,
     GlFormGroup,
     GlFormInput,
@@ -58,10 +55,19 @@ export default {
     actionLabel() {
       return this.actionIndex === 0 ? ACTION_THEN_LABEL : ACTION_AND_LABEL;
     },
+    actionScannerList() {
+      return Object.entries(RULE_MODE_SCANNERS).map(([value, text]) => ({
+        value,
+        text,
+      }));
+    },
     actionMessage() {
       return this.selectedScanner === SCANNER_DAST
         ? DAST_HUMANIZED_TEMPLATE
         : SCANNER_HUMANIZED_TEMPLATE;
+    },
+    selectedScannerText() {
+      return RULE_MODE_SCANNERS[this.selectedScanner];
     },
     siteProfile: {
       get() {
@@ -129,15 +135,12 @@ export default {
         </template>
 
         <template #scan>
-          <gl-dropdown :text="$options.SCANNERS[selectedScanner]" data-testid="action-scanner-text">
-            <gl-dropdown-item
-              v-for="(value, key) in $options.SCANNERS"
-              :key="key"
-              @click="setSelectedScanner({ scanner: key })"
-            >
-              {{ value }}
-            </gl-dropdown-item>
-          </gl-dropdown>
+          <gl-collapsible-listbox
+            :items="actionScannerList"
+            :selected="selectedScanner"
+            :toggle-text="selectedScannerText"
+            @select="setSelectedScanner({ scanner: $event })"
+          />
         </template>
 
         <template #scannerProfile>

@@ -1,6 +1,6 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlDropdown, GlSprintf } from '@gitlab/ui';
+import { GlSprintf, GlCollapsibleListbox } from '@gitlab/ui';
 import { __ } from '~/locale';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createApolloProvider from 'helpers/mock_apollo_helper';
@@ -24,6 +24,7 @@ describe('PolicyActionBuilder', () => {
   let requestHandlers;
   const namespacePath = 'gid://gitlab/Project/20';
   const namespaceType = 'project';
+  const scannerKey = 'sast';
 
   const defaultHandlerValue = (type = 'project') =>
     jest.fn().mockResolvedValue({
@@ -64,50 +65,46 @@ describe('PolicyActionBuilder', () => {
         namespacePath,
         namespaceType,
       },
-      stubs: { GlDropdownItem: true, ...stubs },
+      stubs: { ...stubs },
     });
   };
 
   const findActionLabel = () => wrapper.findByTestId('action-component-label');
   const findRemoveButton = () => wrapper.findByRole('button', { name: __('Remove') });
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
-  const findDropdownOption = (scanner) => wrapper.findByText(scanner);
+  const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const findSprintf = () => wrapper.findComponent(GlSprintf);
   const findTagsList = () => wrapper.findComponent(RunnerTagsList);
 
   it('renders correctly with DAST as the default scanner', async () => {
-    factory({ stubs: { GlDropdown: true } });
+    factory({ stubs: { GlCollapsibleListbox: true } });
     await nextTick();
 
     expect(findActionLabel().text()).toBe(ACTION_THEN_LABEL);
-    expect(findDropdown().props('text')).toBe('DAST');
+    expect(findDropdown().props('selected')).toBe('dast');
   });
 
   it('renders correctly the message with DAST as the default scanner', async () => {
-    factory({ mountFn: shallowMountExtended, stubs: { GlDropdown: true } });
+    factory({ mountFn: shallowMountExtended, stubs: { GlCollapsibleListbox: true } });
     await nextTick();
 
     expect(findSprintf().attributes('message')).toBe(DAST_HUMANIZED_TEMPLATE);
   });
 
   it('renders correctly with non-DAST scanner action', async () => {
-    const scanner = 'SAST';
-
-    factory({ stubs: { GlDropdown: true } });
+    factory({ stubs: { GlCollapsibleListbox: true } });
     await nextTick();
 
-    findDropdownOption(scanner).vm.$emit('click');
+    findDropdown().vm.$emit('select', scannerKey);
     await nextTick();
 
     expect(findActionLabel().text()).toBe(ACTION_THEN_LABEL);
-    expect(findDropdown().props('text')).toBe(scanner);
+    expect(findDropdown().props('selected')).toBe(scannerKey);
   });
 
   it('renders correctly the message with non-DAST scanner action', async () => {
     factory({
       mountFn: shallowMountExtended,
       props: { initAction: buildScannerAction({ scanner: 'sast' }) },
-      stubs: { GlDropdown: true },
     });
     await nextTick();
 
@@ -127,10 +124,12 @@ describe('PolicyActionBuilder', () => {
 
     expect(wrapper.emitted('changed')).toBe(undefined);
 
-    findDropdownOption('SAST').vm.$emit('click');
+    findDropdown().vm.$emit('select', scannerKey);
     await nextTick();
 
-    expect(wrapper.emitted('changed')).toStrictEqual([[buildScannerAction({ scanner: 'sast' })]]);
+    expect(wrapper.emitted('changed')).toStrictEqual([
+      [buildScannerAction({ scanner: scannerKey })],
+    ]);
   });
 
   it('emits the "changed" event when action tags are changed', async () => {
