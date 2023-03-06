@@ -1830,9 +1830,6 @@ msgstr ""
 msgid "API Fuzzing"
 msgstr ""
 
-msgid "API Fuzzing Configuration"
-msgstr ""
-
 msgid "API Help"
 msgstr ""
 
@@ -10639,9 +10636,6 @@ msgstr ""
 msgid "Confidentiality"
 msgstr ""
 
-msgid "Configuration"
-msgstr ""
-
 msgid "Configuration help"
 msgstr ""
 
@@ -12640,9 +12634,6 @@ msgid "CycleAnalytics|the assigned object is not supported"
 msgstr ""
 
 msgid "DAG visualization requires at least 3 dependent jobs."
-msgstr ""
-
-msgid "DAST Configuration"
 msgstr ""
 
 msgid "DAST configuration not found"
@@ -14916,9 +14907,6 @@ msgid "DiscordService|Discord Notifications"
 msgstr ""
 
 msgid "DiscordService|Send notifications about project events to a Discord channel."
-msgstr ""
-
-msgid "Discover"
 msgstr ""
 
 msgid "Discover GitLab Geo"
@@ -37807,9 +37795,6 @@ msgstr ""
 msgid "SAML|Your organization's SSO has been connected to your GitLab account"
 msgstr ""
 
-msgid "SAST Configuration"
-msgstr ""
-
 msgid "SCIM|SCIM Token"
 msgstr ""
 
@@ -38444,9 +38429,6 @@ msgstr ""
 msgid "Security"
 msgstr ""
 
-msgid "Security Configuration"
-msgstr ""
-
 msgid "Security Dashboard"
 msgstr ""
 
@@ -38454,6 +38436,12 @@ msgid "Security Finding not found"
 msgstr ""
 
 msgid "Security and Compliance"
+msgstr ""
+
+msgid "Security capabilities"
+msgstr ""
+
+msgid "Security configuration"
 msgstr ""
 
 msgid "Security dashboard"
@@ -38588,7 +38576,7 @@ msgstr ""
 msgid "SecurityConfiguration|SAST Analyzers"
 msgstr ""
 
-msgid "SecurityConfiguration|SAST Configuration"
+msgid "SecurityConfiguration|SAST configuration"
 msgstr ""
 
 msgid "SecurityConfiguration|Secure your project"

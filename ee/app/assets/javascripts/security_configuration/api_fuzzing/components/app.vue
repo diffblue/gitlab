@@ -45,7 +45,7 @@ export default {
 
 <template>
   <configuration-page-layout>
-    <template #heading> {{ s__('APIFuzzing|API Fuzzing Configuration') }} </template>
+    <template #heading> {{ $options.i18n.title }} </template>
     <template #description>
       <gl-sprintf :message="$options.i18n.helpText">
         <template #docsLink="{ content }">

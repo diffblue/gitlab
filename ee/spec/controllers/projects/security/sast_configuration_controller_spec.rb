@@ -51,7 +51,7 @@ feature_category: :static_application_security_testing do
       it 'renders the side navigation with the correct submenu set as active' do
         request
 
-        expect(response.body).to have_active_sub_navigation('Configuration')
+        expect(response.body).to have_active_sub_navigation('Security configuration')
       end
     end
 
