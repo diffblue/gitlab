@@ -6,7 +6,7 @@ module Namespaces
       private
 
       def render?
-        return false unless Shared.non_owner_render?(user: user, namespace: namespace)
+        return false unless ::Namespaces::FreeUserCap.non_owner_access?(user: user, namespace: namespace)
 
         breached_cap_limit?
       end

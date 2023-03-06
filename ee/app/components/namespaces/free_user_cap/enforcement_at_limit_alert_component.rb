@@ -8,7 +8,7 @@ module Namespaces
       ENFORCEMENT_AT_LIMIT_ALERT = 'enforcement_at_limit_alert'
 
       def breached_cap_limit?
-        Shared.enforcement_at_limit?(namespace)
+        ::Namespaces::FreeUserCap::Enforcement.new(namespace).at_limit?
       end
 
       def feature_name
