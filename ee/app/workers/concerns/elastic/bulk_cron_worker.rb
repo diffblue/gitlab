@@ -58,7 +58,7 @@ module Elastic
     def should_requeue?(records_count)
       return false unless records_count
 
-      records_count > 0 && Feature.enabled?(:bulk_cron_worker_auto_requeue)
+      records_count > 0
     end
 
     def logger
