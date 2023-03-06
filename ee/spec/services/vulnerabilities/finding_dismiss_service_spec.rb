@@ -52,7 +52,7 @@ RSpec.describe Vulnerabilities::FindingDismissService, feature_category: :vulner
 
         context 'when comment and dismissal_reason is given', :aggregate_failures do
           let(:comment) { "Dismissal comment" }
-          let(:dismissal_reason) { Vulnerabilities::DismissalReasonEnum.values[:false_positive] }
+          let(:dismissal_reason) { 'false_positive' }
           let(:service) { described_class.new(user, finding, comment, dismissal_reason) }
 
           it 'creates a state transition entry with comment and dismissal_reason' do

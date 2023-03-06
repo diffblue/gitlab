@@ -22,7 +22,7 @@ RSpec.describe Vulnerabilities::DismissService, feature_category: :vulnerability
 
   shared_examples 'creates a vulnerability state transition record' do
     let(:comment) { "Dismissal comment" }
-    let(:dismissal_reason) { Vulnerabilities::DismissalReasonEnum.values[:false_positive] }
+    let(:dismissal_reason) { 'false_positive' }
     let(:service) { described_class.new(user, vulnerability, comment, dismissal_reason, dismiss_findings: dismiss_findings) }
 
     it 'creates a vulnerability state transition record' do

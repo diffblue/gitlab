@@ -18,6 +18,8 @@ module Vulnerabilities
     enum from_state: ::Enums::Vulnerability.vulnerability_states, _prefix: true
     enum to_state: ::Enums::Vulnerability.vulnerability_states, _prefix: true
 
+    declarative_enum DismissalReasonEnum
+
     scope :by_to_states, ->(states) { where(to_state: states) }
 
     private

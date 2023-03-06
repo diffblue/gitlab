@@ -89,7 +89,7 @@ feature_category: :vulnerability_management do
 
       context 'when comment and dismissal_reason is given', :aggregate_failures do
         let(:comment) { "Dismissal comment" }
-        let(:dismissal_reason) { Vulnerabilities::DismissalReasonEnum.values[:false_positive] }
+        let(:dismissal_reason) { 'false_positive' }
 
         before do
           params.merge!({ comment: comment, dismissal_reason: dismissal_reason })

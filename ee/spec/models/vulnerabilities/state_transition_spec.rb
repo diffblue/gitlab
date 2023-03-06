@@ -49,8 +49,13 @@ RSpec.describe Vulnerabilities::StateTransition, type: :model, feature_category:
       ::Enums::Vulnerability.vulnerability_states
     end
 
+    let(:dismissal_reasons) do
+      ::Vulnerabilities::DismissalReasonEnum.values
+    end
+
     it { is_expected.to define_enum_for(:from_state).with_values(**vulnerability_states).with_prefix }
     it { is_expected.to define_enum_for(:to_state).with_values(**vulnerability_states).with_prefix }
+    it { is_expected.to define_enum_for(:dismissal_reason).with_values(**dismissal_reasons) }
   end
 
   describe '.by_to_states' do
