@@ -6,7 +6,7 @@ module Groups
 
     layout 'group_settings'
 
-    feature_category :authentication_and_authorization
+    feature_category :system_access
 
     def create
       response = ::GroupSaml::SamlGroupLinks::CreateService.new(current_user: current_user,

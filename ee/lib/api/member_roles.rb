@@ -6,7 +6,7 @@ module API
     before { authorize_admin_group }
     before { not_found! unless user_group.custom_roles_enabled? }
 
-    feature_category :authentication_and_authorization
+    feature_category :system_access
 
     params do
       requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the group'

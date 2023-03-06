@@ -3,7 +3,7 @@ name: user_enable_admin_mode
 description: Event triggered on enabling admin mode
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/362101
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/104754
-feature_category: "authentication_and_authorization"
+feature_category: "system_access"
 milestone: "15.7"
 saved_to_database: true
 streamed: true

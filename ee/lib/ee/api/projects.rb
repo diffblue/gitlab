@@ -10,7 +10,7 @@ module EE
           desc 'Restore a project' do
             success ::API::Entities::Project
           end
-          post ':id/restore', feature_category: :authentication_and_authorization do
+          post ':id/restore', feature_category: :system_access do
             authorize!(:remove_project, user_project)
             break not_found! unless user_project.feature_available?(:adjourned_deletion_for_projects_and_groups)
 

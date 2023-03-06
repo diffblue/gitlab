@@ -5,7 +5,7 @@ class Groups::LdapsController < Groups::ApplicationController
   before_action :authorize_admin_group!
   before_action :check_enabled_extras!
 
-  feature_category :authentication_and_authorization
+  feature_category :system_access
 
   def sync
     # A group can transition to pending if it is in the ready or failed

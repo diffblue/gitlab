@@ -11,7 +11,7 @@ module Auth
 
     data_consistency :always
 
-    feature_category :authentication_and_authorization
+    feature_category :system_access
     idempotent!
 
     loggable_arguments 1

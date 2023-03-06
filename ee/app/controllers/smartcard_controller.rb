@@ -9,7 +9,7 @@ class SmartcardController < ApplicationController
   before_action :check_ngingx_certificate_header, only: :extract_certificate
   before_action :check_certificate_param, only: :verify_certificate
 
-  feature_category :authentication_and_authorization
+  feature_category :system_access
 
   def auth
     redirect_to extract_certificate_smartcard_url(extract_certificate_url_options)

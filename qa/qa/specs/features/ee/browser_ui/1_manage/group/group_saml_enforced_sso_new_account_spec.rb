@@ -5,7 +5,7 @@ module QA
     name: :group_administration_nav_item,
     scope: :global
   } do
-    describe 'Group SAML SSO - Enforced SSO', product_group: :authentication_and_authorization do
+    describe 'Group SAML SSO - Enforced SSO', product_group: :system_access do
       include Support::API
 
       let!(:group) do

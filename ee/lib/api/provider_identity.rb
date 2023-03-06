@@ -7,7 +7,7 @@ module API
     before { authenticate! }
     before { authorize_admin_group }
 
-    feature_category :authentication_and_authorization
+    feature_category :system_access
 
     params do
       requires :id, type: String, desc: 'The ID of a group'

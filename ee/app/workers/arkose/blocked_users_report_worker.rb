@@ -11,7 +11,7 @@ module Arkose
 
     idempotent!
     data_consistency :always
-    feature_category :authentication_and_authorization
+    feature_category :system_access
 
     def perform
       return unless ::Feature.enabled?(:arkose_labs_login_challenge)

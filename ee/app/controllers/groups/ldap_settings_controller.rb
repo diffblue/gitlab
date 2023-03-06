@@ -6,7 +6,7 @@ class Groups::LdapSettingsController < Groups::ApplicationController
   before_action :authorize_admin_group!
   before_action :authorize_manage_ldap_settings!
 
-  feature_category :authentication_and_authorization
+  feature_category :system_access
 
   def update
     if @group.update(ldap_settings_params)

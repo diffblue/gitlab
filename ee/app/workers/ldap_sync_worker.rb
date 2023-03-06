@@ -7,7 +7,7 @@ class LdapSyncWorker # rubocop:disable Scalability/IdempotentWorker
 
   include CronjobQueue # rubocop:disable Scalability/CronWorkerContext
 
-  feature_category :authentication_and_authorization
+  feature_category :system_access
   worker_has_external_dependencies!
 
   # rubocop: disable CodeReuse/ActiveRecord

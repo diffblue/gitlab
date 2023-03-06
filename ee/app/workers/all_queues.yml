@@ -86,7 +86,7 @@
   :tags: []
 - :name: cronjob:arkose_blocked_users_report
   :worker_name: Arkose::BlockedUsersReportWorker
-  :feature_category: :authentication_and_authorization
+  :feature_category: :system_access
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -410,7 +410,7 @@
   :tags: []
 - :name: cronjob:ldap_all_groups_sync
   :worker_name: LdapAllGroupsSyncWorker
-  :feature_category: :authentication_and_authorization
+  :feature_category: :system_access
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown
@@ -419,7 +419,7 @@
   :tags: []
 - :name: cronjob:ldap_sync
   :worker_name: LdapSyncWorker
-  :feature_category: :authentication_and_authorization
+  :feature_category: :system_access
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown
@@ -869,7 +869,7 @@
   :tags: []
 - :name: personal_access_tokens:personal_access_tokens_groups_policy
   :worker_name: PersonalAccessTokens::Groups::PolicyWorker
-  :feature_category: :authentication_and_authorization
+  :feature_category: :system_access
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -878,7 +878,7 @@
   :tags: []
 - :name: personal_access_tokens:personal_access_tokens_instance_policy
   :worker_name: PersonalAccessTokens::Instance::PolicyWorker
-  :feature_category: :authentication_and_authorization
+  :feature_category: :system_access
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -1067,7 +1067,7 @@
   :tags: []
 - :name: auth_saml_group_sync
   :worker_name: Auth::SamlGroupSyncWorker
-  :feature_category: :authentication_and_authorization
+  :feature_category: :system_access
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -1256,7 +1256,7 @@
   :tags: []
 - :name: group_saml_group_sync
   :worker_name: GroupSamlGroupSyncWorker
-  :feature_category: :authentication_and_authorization
+  :feature_category: :system_access
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -1373,7 +1373,7 @@
   :tags: []
 - :name: ldap_group_sync
   :worker_name: LdapGroupSyncWorker
-  :feature_category: :authentication_and_authorization
+  :feature_category: :system_access
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown

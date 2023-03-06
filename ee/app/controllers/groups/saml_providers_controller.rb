@@ -8,7 +8,7 @@ class Groups::SamlProvidersController < Groups::ApplicationController
   before_action :check_group_saml_available!
   before_action :check_group_saml_configured
 
-  feature_category :authentication_and_authorization
+  feature_category :system_access
 
   def show
     @saml_provider = @group.saml_provider || @group.build_saml_provider

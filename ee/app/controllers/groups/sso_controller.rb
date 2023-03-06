@@ -16,7 +16,7 @@ class Groups::SsoController < Groups::ApplicationController
 
   layout 'devise'
 
-  feature_category :authentication_and_authorization
+  feature_category :system_access
   urgency :low
 
   def saml

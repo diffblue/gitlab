@@ -10,7 +10,7 @@ module PersonalAccessTokens
       sidekiq_options retry: 3
 
       queue_namespace :personal_access_tokens
-      feature_category :authentication_and_authorization
+      feature_category :system_access
 
       def perform
         expiration_date = ::Gitlab::CurrentSettings.max_personal_access_token_lifetime_from_now

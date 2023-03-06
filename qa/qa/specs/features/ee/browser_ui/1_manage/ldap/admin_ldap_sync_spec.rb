@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 module QA
-  RSpec.describe 'Manage', :orchestrated, :ldap_no_server, product_group: :authentication_and_authorization do
+  RSpec.describe 'Manage', :orchestrated, :ldap_no_server, product_group: :system_access do
     describe 'LDAP admin sync' do
       before do
         run_ldap_service_with_user_as('admin')
