@@ -1,13 +1,13 @@
 import { GlLoadingIcon } from '@gitlab/ui';
-import LineChart from 'ee/product_analytics/dashboards/components/visualizations/line_chart.vue';
+import LineChart from 'ee/analytics/analytics_dashboards/components/visualizations/line_chart.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
-import dataSources from 'ee/product_analytics/dashboards/data_sources';
+import dataSources from 'ee/analytics/analytics_dashboards/data_sources';
 import waitForPromises from 'helpers/wait_for_promises';
 import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
 import { dashboard } from './mock_data';
 
-jest.mock('ee/product_analytics/dashboards/data_sources', () => ({
+jest.mock('ee/analytics/analytics_dashboards/data_sources', () => ({
   cube_analytics: jest.fn().mockReturnValue({
     fetch: jest.fn().mockReturnValue([]),
   }),

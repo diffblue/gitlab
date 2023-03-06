@@ -1,6 +1,6 @@
 import { GlLineChart } from '@gitlab/ui/dist/charts';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import LineChart from 'ee/product_analytics/dashboards/components/visualizations/line_chart.vue';
+import LineChart from 'ee/analytics/analytics_dashboards/components/visualizations/line_chart.vue';
 
 describe('LineChart Visualization', () => {
   let wrapper;

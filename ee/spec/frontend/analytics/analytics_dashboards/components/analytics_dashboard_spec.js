@@ -1,21 +1,16 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import AnalyticsDashboard from 'ee/product_analytics/dashboards/components/analytics_dashboard.vue';
+import AnalyticsDashboard from 'ee/analytics/analytics_dashboards/components/analytics_dashboard.vue';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import { dashboard } from 'ee_jest/vue_shared/components/customizable_dashboard/mock_data';
 import { buildDefaultDashboardFilters } from 'ee/vue_shared/components/customizable_dashboard/utils';
-
 import {
   getCustomDashboard,
   getProductAnalyticsVisualizationList,
   getProductAnalyticsVisualization,
 } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
-
-import {
-  TEST_CUSTOM_DASHBOARDS_PROJECT,
-  TEST_CUSTOM_DASHBOARD,
-} from '../../../analytics/analytics_dashboards/mock_data';
+import { TEST_CUSTOM_DASHBOARDS_PROJECT, TEST_CUSTOM_DASHBOARD } from '../mock_data';
 
 jest.mock('ee/analytics/analytics_dashboards/api/dashboards_api');
 

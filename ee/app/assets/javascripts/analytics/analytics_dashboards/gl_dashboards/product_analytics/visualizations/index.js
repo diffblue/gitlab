@@ -1,0 +1,16 @@
+export default {
+  average_session_duration: () => import(`./average_session_duration.json`),
+  average_sessions_per_user: () => import(`./average_sessions_per_user.json`),
+  browsers_per_users: () => import(`./browsers_per_users.json`),
+  daily_active_users: () => import(`./daily_active_users.json`),
+  events_over_time: () => import(`./events_over_time.json`),
+  page_views_over_time: () => import(`./page_views_over_time.json`),
+  returning_users_percentage: () => import(`./returning_users_percentage.json`),
+  sessions_over_time: () => import(`./sessions_over_time.json`),
+  sessions_per_browser: () => import(`./sessions_per_browser.json`),
+  top_pages: () => import(`./top_pages.json`),
+  total_events: () => import(`./total_events.json`),
+  total_pageviews: () => import(`./total_pageviews.json`),
+  total_sessions: () => import(`./total_sessions.json`),
+  total_unique_users: () => import(`./total_unique_users.json`),
+};

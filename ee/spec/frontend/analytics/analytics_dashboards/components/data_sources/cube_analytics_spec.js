@@ -3,9 +3,9 @@ import {
   fetch,
   hasAnalyticsData,
   NO_DATABASE_ERROR_MESSAGE,
-} from 'ee/product_analytics/dashboards/data_sources/cube_analytics';
+} from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { pikadayToString } from '~/lib/utils/datetime_utility';
-import { mockCountResultSet, mockResultSet, mockFilters } from '../mock_data';
+import { mockCountResultSet, mockResultSet, mockFilters } from '../../mock_data';
 
 const mockLoad = jest.fn().mockImplementation(() => mockResultSet);
 

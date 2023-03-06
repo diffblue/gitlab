@@ -30,9 +30,6 @@ export const PANEL_DISPLAY_TYPE_ITEMS = [
   },
 ];
 
-export const VISUALIZATION_TYPE_FILE = 'yml';
-export const VISUALIZATION_TYPE_BUILT_IN = 'builtin';
-
 export const MEASURE_COLOR = '#00b140';
 export const DIMENSION_COLOR = '#c3e6cd';
 

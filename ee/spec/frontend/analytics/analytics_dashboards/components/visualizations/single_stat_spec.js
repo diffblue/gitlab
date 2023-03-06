@@ -1,6 +1,6 @@
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
-import SingleStat from 'ee/product_analytics/dashboards/components/visualizations/single_stat.vue';
+import SingleStat from 'ee/analytics/analytics_dashboards/components/visualizations/single_stat.vue';
 
 describe('Single Stat Visualization', () => {
   let wrapper;

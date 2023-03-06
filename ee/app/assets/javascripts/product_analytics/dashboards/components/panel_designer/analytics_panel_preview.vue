@@ -4,7 +4,7 @@ import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_b
 import { createAlert } from '~/flash';
 import { s__, sprintf } from '~/locale';
 
-import DataTable from 'ee/product_analytics/dashboards/components/visualizations/data_table.vue';
+import DataTable from 'ee/analytics/analytics_dashboards/components/visualizations/data_table.vue';
 
 import { PANEL_DISPLAY_TYPES, PANEL_DISPLAY_TYPE_ITEMS } from '../../constants';
 
