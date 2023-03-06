@@ -11,13 +11,13 @@ import * as types from 'ee/billings/subscriptions/store/mutation_types';
 import { mockDataSubscription } from 'ee_jest/billings/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { getSubscriptionData } from 'ee/billings/subscriptions/subscription_actions.customer.query.graphql';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 Vue.use(VueApollo);
 
@@ -335,7 +335,7 @@ describe('SubscriptionTable component', () => {
         await waitForPromises();
       });
 
-      it('flashes error', () => {
+      it('alerts error', () => {
         expect(createAlert).toHaveBeenCalledWith({
           message: 'Something went wrong trying to refresh seats',
           captureError: true,

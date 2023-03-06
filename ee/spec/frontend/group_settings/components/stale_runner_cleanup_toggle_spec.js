@@ -6,7 +6,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { staleTimeoutSecs } from 'jest/ci/runner/mock_data';
 
 import groupStaleRunnerPruningQuery from 'ee/group_settings/graphql/group_stale_runner_pruning.query.graphql';
@@ -16,7 +16,7 @@ import StaleRunnerCleanupToggle from 'ee/group_settings/components/stale_runner_
 Vue.use(VueApollo);
 
 jest.mock('@sentry/browser');
-jest.mock('~/flash');
+jest.mock('~/alert');
 jest.mock('~/ci/runner/sentry_utils');
 jest.mock('~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal');
 

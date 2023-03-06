@@ -5,7 +5,7 @@ import * as actions from 'ee/geo_replicable/store/actions';
 import * as types from 'ee/geo_replicable/store/mutation_types';
 import createState from 'ee/geo_replicable/store/state';
 import testAction from 'helpers/vuex_action_helper';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { normalizeHeaders, parseIntPagination } from '~/lib/utils/common_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import toast from '~/vue_shared/plugins/global_toast';
@@ -20,7 +20,7 @@ import {
   MOCK_GRAPHQL_REGISTRY,
 } from '../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 jest.mock('~/vue_shared/plugins/global_toast');
 
 const mockGeoGqClient = { query: jest.fn() };

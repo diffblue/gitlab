@@ -9,7 +9,7 @@ import { RETRY_DELAY } from 'ee/diffs/store/constants';
 import * as types from 'ee/diffs/store/mutation_types';
 import testAction from 'helpers/vuex_action_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import {
   HTTP_STATUS_BAD_REQUEST,
@@ -18,7 +18,7 @@ import {
 } from '~/lib/utils/http_status';
 import Poll from '~/lib/utils/poll';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('EE DiffsStoreActions', () => {
   describe('setCodequalityEndpoint', () => {
@@ -75,7 +75,7 @@ describe('EE DiffsStoreActions', () => {
         mock.onGet(endpointCodequality).reply(HTTP_STATUS_BAD_REQUEST);
       });
 
-      it('should not show a flash message', async () => {
+      it('should not show an alert message', async () => {
         await testAction(fetchCodequality, {}, { endpointCodequality }, [], []);
 
         expect(createAlert).not.toHaveBeenCalled();
@@ -112,7 +112,7 @@ describe('EE DiffsStoreActions', () => {
       });
     });
 
-    it('with unexpected error should stop polling and show a flash message', async () => {
+    it('with unexpected error should stop polling and show an alert message', async () => {
       mock.onGet(endpointCodequality).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       await testAction(

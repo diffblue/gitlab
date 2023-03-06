@@ -12,7 +12,7 @@ import getIssuableResourceLinks from 'ee/linked_resources/components/graphql/que
 import deleteIssuableResourceLink from 'ee/linked_resources/components/graphql/queries/delete_issuable_resource_link.mutation.graphql';
 import createIssuableResourceLink from 'ee/linked_resources/components/graphql/queries/create_issuable_resource_link.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import {
   mockResourceLinks,
   resourceLinksListResponse,
@@ -25,7 +25,7 @@ import {
 
 Vue.use(VueApollo);
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 const grapqhQlError = new Error('GraphQL Error');
 const userInput = {

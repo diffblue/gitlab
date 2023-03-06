@@ -7,7 +7,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.graphql';
@@ -25,7 +25,7 @@ import { COUNTRIES, mockCountry1, mockCountry2 } from '../mock_data';
 
 Vue.use(VueApollo);
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('International Phone input component', () => {
   let wrapper;

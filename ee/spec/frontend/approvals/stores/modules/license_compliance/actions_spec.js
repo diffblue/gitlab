@@ -2,12 +2,12 @@ import MockAdapter from 'axios-mock-adapter';
 import { mapApprovalSettingsResponse } from 'ee/approvals/mappers';
 import * as baseMutationTypes from 'ee/approvals/stores/modules/base/mutation_types';
 import * as actions from 'ee/approvals/stores/modules/license_compliance/actions';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import testAction from 'helpers/vuex_action_helper';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('EE approvals license-compliance actions', () => {
   let state;
@@ -73,7 +73,7 @@ describe('EE approvals license-compliance actions', () => {
       );
     });
 
-    it('creates a flash error if the request is not successful', async () => {
+    it('creates an alert error if the request is not successful', async () => {
       axiosMock.onGet(mocks.state.settingsPath).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       await actions.fetchRules({ rootState: state, dispatch: () => {}, commit: () => {} });
@@ -108,7 +108,7 @@ describe('EE approvals license-compliance actions', () => {
       );
     });
 
-    it('creates a flash error if the request is not successful', async () => {
+    it('creates an alert error if the request is not successful', async () => {
       axiosMock.onPost(mocks.state.settingsPath).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       await actions.postRule({ rootState: state, dispatch: () => {}, commit: () => {} }, []);
@@ -147,7 +147,7 @@ describe('EE approvals license-compliance actions', () => {
       );
     });
 
-    it('creates a flash error if the request is not successful', async () => {
+    it('creates an alert error if the request is not successful', async () => {
       axiosMock.onPut(putUrl).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       await actions.putRule({ rootState: state, dispatch: () => {} }, { id });
@@ -176,7 +176,7 @@ describe('EE approvals license-compliance actions', () => {
       );
     });
 
-    it('creates a flash error if the request is not successful', async () => {
+    it('creates an alert error if the request is not successful', async () => {
       axiosMock.onDelete(deleteUrl).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       await actions.deleteRule({ rootState: state, dispatch: () => {} }, deleteUrl);
@@ -211,7 +211,7 @@ describe('EE approvals license-compliance actions', () => {
       );
     });
 
-    it('creates a flash error if the request is not successful', async () => {
+    it('creates an alert error if the request is not successful', async () => {
       axiosMock.onPut(mocks.state.projectPath).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
       await actions.putFallbackRule({ rootState: state, dispatch: () => {} }, {});

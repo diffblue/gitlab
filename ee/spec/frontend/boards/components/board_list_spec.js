@@ -15,7 +15,7 @@ import {
   mockGroupEpicsResponse,
 } from '../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 const actions = {
   addListNewEpic: jest.fn().mockResolvedValue(),

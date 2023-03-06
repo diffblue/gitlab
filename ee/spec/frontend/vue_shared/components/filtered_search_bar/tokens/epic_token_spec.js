@@ -5,7 +5,7 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
@@ -14,7 +14,7 @@ import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_
 
 import { mockEpicToken, mockEpics, mockGroupEpicsQueryResponse } from '../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 Vue.use(VueApollo);
 
 const defaultStubs = {
@@ -106,7 +106,7 @@ describe('EpicToken', () => {
           return waitForPromises();
         });
 
-        it('calls `createAlert` with flash error message', () => {
+        it('calls `createAlert` with alert error message', () => {
           expect(createAlert).toHaveBeenCalledWith({
             message: 'There was a problem fetching epics.',
           });
