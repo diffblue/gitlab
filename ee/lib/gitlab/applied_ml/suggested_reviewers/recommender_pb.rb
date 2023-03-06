@@ -28,6 +28,13 @@ module Gitlab
               optional :project_id, :int64, 1
               optional :registered_at, :string, 2
             end
+            add_message "bot.DeregisterProjectReq" do
+              optional :project_id, :int64, 1
+            end
+            add_message "bot.DeregisterProjectRes" do
+              optional :project_id, :int64, 1
+              optional :deregistered_at, :string, 2
+            end
           end
         rescue Google::Protobuf::TypeError
           'Log'
@@ -38,6 +45,8 @@ module Gitlab
         MergeRequestRecommendationsResV2 = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("bot.MergeRequestRecommendationsResV2").msgclass
         RegisterProjectReq = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("bot.RegisterProjectReq").msgclass
         RegisterProjectRes = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("bot.RegisterProjectRes").msgclass
+        DeregisterProjectReq = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("bot.DeregisterProjectReq").msgclass
+        DeregisterProjectRes = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("bot.DeregisterProjectRes").msgclass
         # rubocop: enable Layout/LineLength
       end
     end
