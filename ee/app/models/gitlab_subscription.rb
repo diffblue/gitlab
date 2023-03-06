@@ -12,7 +12,7 @@ class GitlabSubscription < ApplicationRecord
   attribute :start_date, default: -> { Date.today }
 
   before_update :set_max_seats_used_changed_at
-  before_update :log_previous_state_for_update
+  before_update :log_previous_state_for_update, if: :tracked_attributes_changed?
   before_update :reset_seat_statistics
   before_update :publish_subscription_renewed_event
 
@@ -203,5 +203,9 @@ class GitlabSubscription < ApplicationRecord
     return true if trial_changed? && !trial
 
     max_seats_used_changed_at.present? && max_seats_used_changed_at.to_date < start_date
+  end
+
+  def tracked_attributes_changed?
+    changed.intersection(GitlabSubscriptionHistory::TRACKED_ATTRIBUTES).any?
   end
 end
