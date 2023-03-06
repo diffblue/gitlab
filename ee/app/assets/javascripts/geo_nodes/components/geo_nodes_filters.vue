@@ -25,7 +25,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['countNodesForStatus']),
+    ...mapGetters(['countSitesForStatus']),
     ...mapState(['searchFilter']),
     search: {
       get() {
@@ -40,7 +40,7 @@ export default {
       const tabs = [ALL_TAB];
 
       Object.entries(HEALTH_STATUS_UI).forEach(([status, tab]) => {
-        const count = this.countNodesForStatus(status);
+        const count = this.countSitesForStatus(status);
 
         if (count) {
           tabs.push({ ...tab, count, status });

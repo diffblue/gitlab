@@ -2,8 +2,8 @@ const createState = ({ replicableTypes, searchFilter }) => ({
   replicableTypes,
   searchFilter,
   statusFilter: null,
-  nodes: [],
+  sites: [],
   isLoading: false,
-  nodeToBeRemoved: null,
+  siteToBeRemoved: null,
 });
 export default createState;

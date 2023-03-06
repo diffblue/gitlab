@@ -4,13 +4,13 @@ import GeoNodeActions from 'ee/geo_nodes/components/header/geo_node_actions.vue'
 import GeoNodeHeader from 'ee/geo_nodes/components/header/geo_node_header.vue';
 import GeoNodeHealthStatus from 'ee/geo_nodes/components/header/geo_node_health_status.vue';
 import GeoNodeLastUpdated from 'ee/geo_nodes/components/header/geo_node_last_updated.vue';
-import { MOCK_PRIMARY_NODE, MOCK_SECONDARY_NODE } from 'ee_jest/geo_nodes/mock_data';
+import { MOCK_PRIMARY_SITE, MOCK_SECONDARY_SITE } from 'ee_jest/geo_nodes/mock_data';
 
 describe('GeoNodeHeader', () => {
   let wrapper;
 
   const defaultProps = {
-    node: MOCK_PRIMARY_NODE,
+    node: MOCK_PRIMARY_SITE,
     collapsed: false,
   };
 
@@ -82,7 +82,7 @@ describe('GeoNodeHeader', () => {
         beforeEach(() => {
           createComponent({
             node: {
-              ...MOCK_SECONDARY_NODE,
+              ...MOCK_SECONDARY_SITE,
               lastSuccessfulStatusCheckTimestamp: new Date().getTime(),
             },
           });

@@ -1,37 +1,37 @@
 import * as types from './mutation_types';
 
 export default {
-  [types.REQUEST_NODES](state) {
+  [types.REQUEST_SITES](state) {
     state.isLoading = true;
   },
-  [types.RECEIVE_NODES_SUCCESS](state, data) {
+  [types.RECEIVE_SITES_SUCCESS](state, data) {
     state.isLoading = false;
-    state.nodes = data;
+    state.sites = data;
   },
-  [types.RECEIVE_NODES_ERROR](state) {
+  [types.RECEIVE_SITES_ERROR](state) {
     state.isLoading = false;
-    state.nodes = [];
+    state.sites = [];
   },
-  [types.STAGE_NODE_REMOVAL](state, id) {
-    state.nodeToBeRemoved = id;
+  [types.STAGE_SITE_REMOVAL](state, id) {
+    state.siteToBeRemoved = id;
   },
-  [types.UNSTAGE_NODE_REMOVAL](state) {
-    state.nodeToBeRemoved = null;
+  [types.UNSTAGE_SITE_REMOVAL](state) {
+    state.siteToBeRemoved = null;
   },
-  [types.REQUEST_NODE_REMOVAL](state) {
+  [types.REQUEST_SITE_REMOVAL](state) {
     state.isLoading = true;
   },
-  [types.RECEIVE_NODE_REMOVAL_SUCCESS](state) {
+  [types.RECEIVE_SITE_REMOVAL_SUCCESS](state) {
     state.isLoading = false;
 
-    const index = state.nodes.findIndex((n) => n.id === state.nodeToBeRemoved);
-    state.nodes.splice(index, 1);
+    const index = state.sites.findIndex((n) => n.id === state.siteToBeRemoved);
+    state.sites.splice(index, 1);
 
-    state.nodeToBeRemoved = null;
+    state.siteToBeRemoved = null;
   },
-  [types.RECEIVE_NODE_REMOVAL_ERROR](state) {
+  [types.RECEIVE_SITE_REMOVAL_ERROR](state) {
     state.isLoading = false;
-    state.nodeToBeRemoved = null;
+    state.siteToBeRemoved = null;
   },
   [types.SET_STATUS_FILTER](state, status) {
     state.statusFilter = status;

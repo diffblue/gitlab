@@ -18,9 +18,9 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['prepNodeRemoval']),
+    ...mapActions(['prepSiteRemoval']),
     async warnNodeRemoval() {
-      await this.prepNodeRemoval(this.node.id);
+      await this.prepSiteRemoval(this.node.id);
       this.$root.$emit(BV_SHOW_MODAL, REMOVE_NODE_MODAL_ID);
     },
   },

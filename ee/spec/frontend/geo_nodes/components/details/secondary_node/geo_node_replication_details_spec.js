@@ -6,7 +6,7 @@ import GeoNodeReplicationDetails from 'ee/geo_nodes/components/details/secondary
 import GeoNodeReplicationDetailsResponsive from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_details_responsive.vue';
 import GeoNodeReplicationStatusMobile from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_status_mobile.vue';
 import { GEO_REPLICATION_SUPPORTED_TYPES_URL } from 'ee/geo_nodes/constants';
-import { MOCK_SECONDARY_NODE, MOCK_REPLICABLE_TYPES } from 'ee_jest/geo_nodes/mock_data';
+import { MOCK_SECONDARY_SITE, MOCK_REPLICABLE_TYPES } from 'ee_jest/geo_nodes/mock_data';
 
 Vue.use(Vuex);
 
@@ -14,7 +14,7 @@ describe('GeoNodeReplicationDetails', () => {
   let wrapper;
 
   const defaultProps = {
-    node: MOCK_SECONDARY_NODE,
+    node: MOCK_SECONDARY_SITE,
   };
 
   const createComponent = (initialState, props, getters) => {
@@ -122,7 +122,7 @@ describe('GeoNodeReplicationDetails', () => {
       dataTypeTitle: MOCK_REPLICABLE_TYPES[0].dataTypeTitle,
       component: MOCK_REPLICABLE_TYPES[0].titlePlural,
       replicationView: new URL(
-        `${MOCK_SECONDARY_NODE.url}${MOCK_REPLICABLE_TYPES[0].customReplicationUrl}`,
+        `${MOCK_SECONDARY_SITE.url}${MOCK_REPLICABLE_TYPES[0].customReplicationUrl}`,
       ).toString(),
       syncValues: null,
       verificationValues: null,
@@ -132,7 +132,7 @@ describe('GeoNodeReplicationDetails', () => {
       dataTypeTitle: MOCK_REPLICABLE_TYPES[0].dataTypeTitle,
       component: MOCK_REPLICABLE_TYPES[0].titlePlural,
       replicationView: new URL(
-        `${MOCK_SECONDARY_NODE.url}${MOCK_REPLICABLE_TYPES[0].customReplicationUrl}`,
+        `${MOCK_SECONDARY_SITE.url}${MOCK_REPLICABLE_TYPES[0].customReplicationUrl}`,
       ).toString(),
       syncValues: { total: 100, success: 0 },
       verificationValues: null,
@@ -142,7 +142,7 @@ describe('GeoNodeReplicationDetails', () => {
       dataTypeTitle: MOCK_REPLICABLE_TYPES[0].dataTypeTitle,
       component: MOCK_REPLICABLE_TYPES[0].titlePlural,
       replicationView: new URL(
-        `${MOCK_SECONDARY_NODE.url}${MOCK_REPLICABLE_TYPES[0].customReplicationUrl}`,
+        `${MOCK_SECONDARY_SITE.url}${MOCK_REPLICABLE_TYPES[0].customReplicationUrl}`,
       ).toString(),
       syncValues: null,
       verificationValues: { total: 50, success: 50 },
@@ -152,7 +152,7 @@ describe('GeoNodeReplicationDetails', () => {
       dataTypeTitle: MOCK_REPLICABLE_TYPES[0].dataTypeTitle,
       component: MOCK_REPLICABLE_TYPES[0].titlePlural,
       replicationView: new URL(
-        `${MOCK_SECONDARY_NODE.url}${MOCK_REPLICABLE_TYPES[0].customReplicationUrl}`,
+        `${MOCK_SECONDARY_SITE.url}${MOCK_REPLICABLE_TYPES[0].customReplicationUrl}`,
       ).toString(),
       syncValues: { total: 100, success: 0 },
       verificationValues: { total: 50, success: 50 },
@@ -177,14 +177,14 @@ describe('GeoNodeReplicationDetails', () => {
         it('passes the correct props to the mobile replication details', () => {
           expect(findGeoMobileReplicationDetails().props()).toStrictEqual({
             replicationItems: expectedProps,
-            nodeId: MOCK_SECONDARY_NODE.id,
+            nodeId: MOCK_SECONDARY_SITE.id,
           });
         });
 
         it('passes the correct props to the desktop replication details', () => {
           expect(findGeoDesktopReplicationDetails().props()).toStrictEqual({
             replicationItems: expectedProps,
-            nodeId: MOCK_SECONDARY_NODE.id,
+            nodeId: MOCK_SECONDARY_SITE.id,
           });
         });
 
@@ -214,8 +214,8 @@ describe('GeoNodeReplicationDetails', () => {
 
     describe.each`
       description                       | replicableType              | expectedUrl
-      ${'with customReplicationUrl'}    | ${MOCK_REPLICABLE_TYPES[2]} | ${`${MOCK_SECONDARY_NODE.url}${MOCK_REPLICABLE_TYPES[2].customReplicationUrl}`}
-      ${'without customReplicationUrl'} | ${MOCK_REPLICABLE_TYPES[3]} | ${`${MOCK_SECONDARY_NODE.url}admin/geo/sites/${MOCK_SECONDARY_NODE.id}/replication/${MOCK_REPLICABLE_TYPES[3].namePlural}`}
+      ${'with customReplicationUrl'}    | ${MOCK_REPLICABLE_TYPES[2]} | ${`${MOCK_SECONDARY_SITE.url}${MOCK_REPLICABLE_TYPES[2].customReplicationUrl}`}
+      ${'without customReplicationUrl'} | ${MOCK_REPLICABLE_TYPES[3]} | ${`${MOCK_SECONDARY_SITE.url}admin/geo/sites/${MOCK_SECONDARY_SITE.id}/replication/${MOCK_REPLICABLE_TYPES[3].namePlural}`}
     `('component links $description', ({ replicableType, expectedUrl }) => {
       beforeEach(() => {
         createComponent({ replicableTypes: [replicableType] });

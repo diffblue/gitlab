@@ -4,46 +4,47 @@ import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { s__ } from '~/locale';
 import * as types from './mutation_types';
 
-export const fetchNodes = ({ commit }) => {
-  commit(types.REQUEST_NODES);
+export const fetchSites = ({ commit }) => {
+  commit(types.REQUEST_SITES);
 
-  const promises = [Api.getGeoNodes(), Api.getGeoNodesStatus()];
+  const promises = [Api.getGeoSites(), Api.getGeoSitesStatus()];
 
   Promise.all(promises)
-    .then(([{ data: nodes }, { data: statuses }]) => {
-      const inflatedNodes = nodes.map((node) =>
+    .then(([{ data: sites }, { data: statuses }]) => {
+      const inflatedSites = sites.map((site) =>
         convertObjectPropsToCamelCase({
-          ...node,
-          ...statuses.find((status) => status.geo_node_id === node.id),
+          ...site,
+          // geo_node_id to be converted to geo_site_id in => https://gitlab.com/gitlab-org/gitlab/-/issues/369140
+          ...statuses.find((status) => status.geo_node_id === site.id),
         }),
       );
 
-      commit(types.RECEIVE_NODES_SUCCESS, inflatedNodes);
+      commit(types.RECEIVE_SITES_SUCCESS, inflatedSites);
     })
     .catch(() => {
       createAlert({ message: s__('Geo|There was an error fetching the Geo Sites') });
-      commit(types.RECEIVE_NODES_ERROR);
+      commit(types.RECEIVE_SITES_ERROR);
     });
 };
 
-export const prepNodeRemoval = ({ commit }, id) => {
-  commit(types.STAGE_NODE_REMOVAL, id);
+export const prepSiteRemoval = ({ commit }, id) => {
+  commit(types.STAGE_SITE_REMOVAL, id);
 };
 
-export const cancelNodeRemoval = ({ commit }) => {
-  commit(types.UNSTAGE_NODE_REMOVAL);
+export const cancelSiteRemoval = ({ commit }) => {
+  commit(types.UNSTAGE_SITE_REMOVAL);
 };
 
-export const removeNode = ({ commit, state }) => {
-  commit(types.REQUEST_NODE_REMOVAL);
+export const removeSite = ({ commit, state }) => {
+  commit(types.REQUEST_SITE_REMOVAL);
 
-  return Api.removeGeoNode(state.nodeToBeRemoved)
+  return Api.removeGeoSite(state.siteToBeRemoved)
     .then(() => {
-      commit(types.RECEIVE_NODE_REMOVAL_SUCCESS);
+      commit(types.RECEIVE_SITE_REMOVAL_SUCCESS);
     })
     .catch(() => {
       createAlert({ message: s__('Geo|There was an error deleting the Geo Site') });
-      commit(types.RECEIVE_NODE_REMOVAL_ERROR);
+      commit(types.RECEIVE_SITE_REMOVAL_ERROR);
     });
 };
 

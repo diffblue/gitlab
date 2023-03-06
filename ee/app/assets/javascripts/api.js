@@ -4,9 +4,10 @@ import { ContentTypeMultipartFormData } from '~/lib/utils/headers';
 
 export default {
   ...Api,
-  geoNodePath: '/api/:version/geo_nodes/:id',
-  geoNodesPath: '/api/:version/geo_nodes',
-  geoNodesStatusPath: '/api/:version/geo_nodes/status',
+  // geo_nodes API to be renamed geo_sites API => https://gitlab.com/gitlab-org/gitlab/-/issues/369140
+  geoSitePath: '/api/:version/geo_nodes/:id',
+  geoSitesPath: '/api/:version/geo_nodes',
+  geoSitesStatusPath: '/api/:version/geo_nodes/status',
   geoReplicationPath: '/api/:version/geo_replication/:replicable',
   ldapGroupsPath: '/api/:version/ldap/:provider/groups.json',
   subscriptionPath: '/api/:version/namespaces/:id/gitlab_subscription',
@@ -154,28 +155,28 @@ export default {
     return axios.post(url);
   },
 
-  getGeoNodes() {
-    const url = Api.buildUrl(this.geoNodesPath);
+  getGeoSites() {
+    const url = Api.buildUrl(this.geoSitesPath);
     return axios.get(url);
   },
 
-  getGeoNodesStatus() {
-    const url = Api.buildUrl(this.geoNodesStatusPath);
+  getGeoSitesStatus() {
+    const url = Api.buildUrl(this.geoSitesStatusPath);
     return axios.get(url);
   },
 
   createGeoNode(node) {
-    const url = Api.buildUrl(this.geoNodesPath);
+    const url = Api.buildUrl(this.geoSitesPath);
     return axios.post(url, node);
   },
 
   updateGeoNode(node) {
-    const url = Api.buildUrl(this.geoNodesPath);
+    const url = Api.buildUrl(this.geoSitesPath);
     return axios.put(`${url}/${node.id}`, node);
   },
 
-  removeGeoNode(id) {
-    const url = Api.buildUrl(this.geoNodePath).replace(':id', encodeURIComponent(id));
+  removeGeoSite(id) {
+    const url = Api.buildUrl(this.geoSitePath).replace(':id', encodeURIComponent(id));
     return axios.delete(url);
   },
 

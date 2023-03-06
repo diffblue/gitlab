@@ -43,19 +43,19 @@ export default {
     },
   },
   computed: {
-    ...mapState(['nodes', 'isLoading']),
-    ...mapGetters(['filteredNodes']),
+    ...mapState(['sites', 'isLoading']),
+    ...mapGetters(['filteredSites']),
     hasNodes() {
-      return this.nodes && this.nodes.length > 0;
+      return this.sites && this.sites.length > 0;
     },
     hasEmptyState() {
       return Object.keys(this.emptyState).length;
     },
     primaryNodes() {
-      return this.filteredNodes.filter((n) => n.primary);
+      return this.filteredSites.filter((n) => n.primary);
     },
     secondaryNodes() {
-      return this.filteredNodes.filter((n) => !n.primary);
+      return this.filteredSites.filter((n) => !n.primary);
     },
     emptyState() {
       // Geo isn't configured
@@ -66,7 +66,7 @@ export default {
           showLearnMoreButton: true,
         };
         // User has searched and returned nothing
-      } else if (this.filteredNodes.length === 0) {
+      } else if (this.filteredSites.length === 0) {
         return {
           title: this.$options.i18n.noResultsTitle,
           description: this.$options.i18n.noResultsDescription,
@@ -79,10 +79,10 @@ export default {
     },
   },
   created() {
-    this.fetchNodes();
+    this.fetchSites();
   },
   methods: {
-    ...mapActions(['fetchNodes', 'cancelNodeRemoval', 'removeNode']),
+    ...mapActions(['fetchSites', 'cancelSiteRemoval', 'removeSite']),
   },
   MODAL_PRIMARY_ACTION: {
     text: s__('Geo|Remove site'),
@@ -117,7 +117,7 @@ export default {
     <gl-loading-icon v-if="isLoading" size="xl" class="gl-mt-5" />
     <template v-if="!isLoading">
       <div v-if="hasNodes">
-        <geo-nodes-filters :total-nodes="nodes.length" />
+        <geo-nodes-filters :total-nodes="sites.length" />
         <h4 v-if="primaryNodes.length" class="gl-font-lg gl-my-5">
           {{ $options.i18n.primarySite }}
         </h4>
@@ -149,8 +149,8 @@ export default {
       :title="$options.i18n.modalTitle"
       :action-primary="$options.MODAL_PRIMARY_ACTION"
       :action-cancel="$options.MODAL_CANCEL_ACTION"
-      @primary="removeNode"
-      @cancel="cancelNodeRemoval"
+      @primary="removeSite"
+      @cancel="cancelSiteRemoval"
     >
       {{ $options.i18n.modalBody }}
     </gl-modal>

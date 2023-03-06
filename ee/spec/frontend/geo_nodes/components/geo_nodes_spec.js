@@ -3,13 +3,13 @@ import { nextTick } from 'vue';
 import GeoNodeDetails from 'ee/geo_nodes/components/details/geo_node_details.vue';
 import GeoNodes from 'ee/geo_nodes/components/geo_nodes.vue';
 import GeoNodeHeader from 'ee/geo_nodes/components/header/geo_node_header.vue';
-import { MOCK_PRIMARY_NODE } from '../mock_data';
+import { MOCK_PRIMARY_SITE } from '../mock_data';
 
 describe('GeoNodes', () => {
   let wrapper;
 
   const defaultProps = {
-    node: MOCK_PRIMARY_NODE,
+    node: MOCK_PRIMARY_SITE,
   };
 
   const createComponent = (props) => {

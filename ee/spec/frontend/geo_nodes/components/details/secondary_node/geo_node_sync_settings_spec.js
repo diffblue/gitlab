@@ -1,12 +1,12 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeSyncSettings from 'ee/geo_nodes/components/details/secondary_node/geo_node_sync_settings.vue';
-import { MOCK_SECONDARY_NODE } from 'ee_jest/geo_nodes/mock_data';
+import { MOCK_SECONDARY_SITE } from 'ee_jest/geo_nodes/mock_data';
 
 describe('GeoNodeSyncSettings', () => {
   let wrapper;
 
   const defaultProps = {
-    node: MOCK_SECONDARY_NODE,
+    node: MOCK_SECONDARY_SITE,
   };
 
   const createComponent = (props) => {
