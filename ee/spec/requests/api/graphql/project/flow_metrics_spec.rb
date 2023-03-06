@@ -17,7 +17,21 @@ RSpec.describe 'getting project flow metrics', feature_category: :value_stream_m
   let(:full_path) { project1.full_path }
   let(:context) { :project }
 
-  it_behaves_like 'value stream analytics flow metrics issueCount examples'
+  it_behaves_like 'value stream analytics flow metrics deploymentCount examples' do
+    let(:deployments) { [deployment1, deployment2, deployment3] }
 
-  it_behaves_like 'value stream analytics flow metrics deploymentCount examples'
+    before do
+      stub_licensed_features(cycle_analytics_for_projects: true)
+
+      deployments.each do |deployment|
+        Dora::DailyMetrics.refresh!(deployment.environment, deployment.finished_at.to_date)
+      end
+    end
+
+    it 'uses DORA data' do
+      expect(Dora::DailyMetrics).to receive(:for_environments).and_call_original
+
+      result
+    end
+  end
 end
