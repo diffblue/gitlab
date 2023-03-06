@@ -47,6 +47,8 @@ RSpec.describe Groups::HooksController, feature_category: :integrations do
           deployment_events: true,
           member_events: true,
           subgroup_events: true,
+          confidential_note_events: true,
+          feature_flag_events: true,
           # editable attributes
           enable_ssl_verification: true,
           token: 'TEST TOKEN',
