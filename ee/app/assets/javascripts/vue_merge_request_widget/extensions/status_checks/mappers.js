@@ -1,5 +1,5 @@
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
 import { PASSED, PENDING } from 'ee/ci/reports/status_checks_report/constants';
 
 export function getFailedChecksWithLoadingState(failedStatusChecks, statusCheckId) {
@@ -29,7 +29,8 @@ export function getFailedChecksWithLoadingState(failedStatusChecks, statusCheckI
 function mapStatusCheck(statusCheck, iconName) {
   return {
     id: statusCheck.id,
-    text: `${statusCheck.name}: ${statusCheck.external_url}`,
+    text: `${statusCheck.name}: %{small_start}${statusCheck.external_url}%{small_end}`,
+    subtext: `%{small_start}${s__('StatusCheck|Status Check ID')}: ${statusCheck.id}%{small_end}`,
     icon: { name: iconName },
   };
 }

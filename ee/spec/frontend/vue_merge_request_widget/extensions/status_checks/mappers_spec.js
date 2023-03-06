@@ -3,6 +3,17 @@ import {
   mapStatusCheckResponse,
 } from 'ee/vue_merge_request_widget/extensions/status_checks/mappers';
 
+const TEST_STATUS_RESPONSE = {
+  id: 1,
+  name: 'some check',
+  external_url: 'https://example.com',
+};
+const EXPECTATION_STATUS = {
+  id: 1,
+  text: 'some check: %{small_start}https://example.com%{small_end}',
+  subtext: '%{small_start}Status Check ID: 1%{small_end}',
+};
+
 describe('status checks widget extension mappers', () => {
   describe('getFailedChecksWithLoadingState', () => {
     it('should not modify other status checks', () => {
@@ -34,7 +45,7 @@ describe('status checks widget extension mappers', () => {
 
     function getMockResponse(status) {
       return {
-        data: [{ id: 1, status, name: 'some check', external_url: 'https://example.com' }],
+        data: [{ ...TEST_STATUS_RESPONSE, status }],
       };
     }
 
@@ -42,19 +53,17 @@ describe('status checks widget extension mappers', () => {
       const mockResponse = getMockResponse('passed');
       const options = { canRetry: true };
 
-      const { approved, pending, failed } = mapStatusCheckResponse(
-        mockResponse,
-        options,
-        mockRetryCb,
-      );
+      const result = mapStatusCheckResponse(mockResponse, options, mockRetryCb);
 
-      expect(pending).toHaveLength(0);
-      expect(failed).toHaveLength(0);
-      expect(approved).toHaveLength(1);
-      expect(approved[0]).toMatchObject({
-        id: 1,
-        text: 'some check: https://example.com',
-        icon: { name: 'success' },
+      expect(result).toEqual({
+        pending: [],
+        failed: [],
+        approved: [
+          {
+            ...EXPECTATION_STATUS,
+            icon: { name: 'success' },
+          },
+        ],
       });
     });
 
@@ -62,19 +71,17 @@ describe('status checks widget extension mappers', () => {
       const mockResponse = getMockResponse('pending');
       const options = { canRetry: true };
 
-      const { approved, pending, failed } = mapStatusCheckResponse(
-        mockResponse,
-        options,
-        mockRetryCb,
-      );
+      const result = mapStatusCheckResponse(mockResponse, options, mockRetryCb);
 
-      expect(approved).toHaveLength(0);
-      expect(failed).toHaveLength(0);
-      expect(pending).toHaveLength(1);
-      expect(pending[0]).toMatchObject({
-        id: 1,
-        text: 'some check: https://example.com',
-        icon: { name: 'neutral' },
+      expect(result).toEqual({
+        approved: [],
+        failed: [],
+        pending: [
+          {
+            ...EXPECTATION_STATUS,
+            icon: { name: 'neutral' },
+          },
+        ],
       });
     });
 
@@ -82,24 +89,23 @@ describe('status checks widget extension mappers', () => {
       const mockResponse = getMockResponse('failed');
       const options = { canRetry: true };
 
-      const { approved, pending, failed } = mapStatusCheckResponse(
-        mockResponse,
-        options,
-        mockRetryCb,
-      );
+      const result = mapStatusCheckResponse(mockResponse, options, mockRetryCb);
 
-      expect(approved).toHaveLength(0);
-      expect(pending).toHaveLength(0);
-      expect(failed).toHaveLength(1);
-      expect(failed[0]).toMatchObject({
-        id: 1,
-        text: 'some check: https://example.com',
-        icon: { name: 'failed' },
-        actions: [
-          expect.objectContaining({
-            icon: 'retry',
-            text: 'Retry',
-          }),
+      expect(result).toEqual({
+        approved: [],
+        pending: [],
+        failed: [
+          {
+            ...EXPECTATION_STATUS,
+            actions: [
+              {
+                icon: 'retry',
+                text: 'Retry',
+                onClick: expect.any(Function),
+              },
+            ],
+            icon: { name: 'failed' },
+          },
         ],
       });
     });
@@ -108,21 +114,18 @@ describe('status checks widget extension mappers', () => {
       const mockResponse = getMockResponse('failed');
       const options = { canRetry: false };
 
-      const { approved, pending, failed } = mapStatusCheckResponse(
-        mockResponse,
-        options,
-        mockRetryCb,
-      );
+      const result = mapStatusCheckResponse(mockResponse, options, mockRetryCb);
 
-      expect(approved).toHaveLength(0);
-      expect(pending).toHaveLength(0);
-      expect(failed).toHaveLength(1);
-      expect(failed[0]).toMatchObject({
-        id: 1,
-        text: 'some check: https://example.com',
-        icon: { name: 'failed' },
+      expect(result).toEqual({
+        approved: [],
+        pending: [],
+        failed: [
+          {
+            ...EXPECTATION_STATUS,
+            icon: { name: 'failed' },
+          },
+        ],
       });
-      expect(failed[0].actions).toBeUndefined();
     });
   });
 });
