@@ -503,7 +503,7 @@ gitlab-runner register
     --executor "shell" \
     --url "https://gitlab.com/" \
     --non-interactive \
-    --registration-token="grlt-2CR8_eVxiioB1QmzPZwa"
+    --registration-token="glrt-2CR8_eVxiioB1QmzPZwa"
 ```
 
 ### How does this change impact auto-scaling scenarios?
