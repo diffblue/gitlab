@@ -1,10 +1,12 @@
 import { GlDropdown, GlSearchBoxByType, GlLoadingIcon } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import FilterBody from 'ee/security_dashboard/components/shared/filters/filter_body.vue';
+import { stubComponent } from 'helpers/stub_component';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 
 describe('Filter Body component', () => {
   let wrapper;
+  const focusInputMock = jest.fn();
 
   const defaultProps = {
     name: 'Some Name',
@@ -12,8 +14,13 @@ describe('Filter Body component', () => {
   };
 
   const createComponent = (props, options) => {
-    wrapper = mount(FilterBody, {
+    wrapper = mountExtended(FilterBody, {
       propsData: { ...defaultProps, ...props },
+      stubs: {
+        GlSearchBoxByType: stubComponent(GlSearchBoxByType, {
+          methods: { focusInput: focusInputMock },
+        }),
+      },
       ...options,
     });
   };
@@ -21,15 +28,12 @@ describe('Filter Body component', () => {
   const dropdown = () => wrapper.findComponent(GlDropdown);
   const dropdownButton = () => wrapper.find('.dropdown-toggle');
   const searchBox = () => wrapper.findComponent(GlSearchBoxByType);
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
+  const findStrongText = () => wrapper.findByTestId('name');
 
   it('shows the correct label name and dropdown header name', () => {
     createComponent();
 
-    expect(wrapper.find('[data-testid="name"]').text()).toBe(defaultProps.name);
+    expect(findStrongText().text()).toBe(defaultProps.name);
     expect(dropdown().props('headerText')).toBe(defaultProps.name);
   });
 
@@ -50,16 +54,14 @@ describe('Filter Body component', () => {
   describe('dropdown button', () => {
     it('shows the selected option name if only one option is selected', () => {
       const option = { name: 'Some Selected Option' };
-      const props = { selectedOptions: [option] };
-      createComponent(props);
+      createComponent({ selectedOptions: [option] });
 
       expect(dropdownButton().text()).toBe(option.name);
     });
 
     it('shows the selected option name and "+x more" if more than one option is selected', () => {
       const options = [{ name: 'Option 1' }, { name: 'Option 2' }, { name: 'Option 3' }];
-      const props = { selectedOptions: options };
-      createComponent(props);
+      createComponent({ selectedOptions: options });
 
       expect(dropdownButton().text()).toMatchInterpolatedText('Option 1 +2 more');
     });
@@ -74,11 +76,10 @@ describe('Filter Body component', () => {
 
     it('is focused when the dropdown is opened', async () => {
       createComponent({ showSearchBox: true }, { attachTo: document.body });
-      const spy = jest.spyOn(searchBox().vm, 'focusInput');
       dropdown().vm.$emit('show');
       await nextTick();
 
-      expect(spy).toHaveBeenCalledTimes(1);
+      expect(focusInputMock).toHaveBeenCalledTimes(1);
     });
 
     it('emits input event on component when search box input is changed', async () => {
