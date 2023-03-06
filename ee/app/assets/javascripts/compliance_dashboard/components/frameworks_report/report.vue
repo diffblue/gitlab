@@ -5,16 +5,18 @@ import { GlAlert } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 
-import { DEFAULT_PAGINATION_CURSORS } from 'ee/compliance_dashboard/constants';
+import { DEFAULT_PAGINATION_CURSORS, GRAPHQL_PAGE_SIZE } from 'ee/compliance_dashboard/constants';
 import { buildDefaultFrameworkFilterParams } from '../../utils';
 import complianceFrameworksGroupProjects from '../../graphql/compliance_frameworks_group_projects.query.graphql';
 import { mapProjects } from '../../graphql/mappers';
 import ProjectsTable from './projects_table.vue';
+import Pagination from './pagination.vue';
 
 export default {
   name: 'ComplianceFrameworkReport',
   components: {
     GlAlert,
+    Pagination,
     ProjectsTable,
     UrlSync,
   },
@@ -64,6 +66,35 @@ export default {
     isLoading() {
       return Boolean(this.$apollo.queries.projects.loading);
     },
+    showPagination() {
+      const { hasPreviousPage, hasNextPage } = this.projects.pageInfo || {};
+      return hasPreviousPage || hasNextPage;
+    },
+    perPage() {
+      return this.paginationCursors.first || this.paginationCursors.last || GRAPHQL_PAGE_SIZE;
+    },
+  },
+  methods: {
+    loadPrevPage(startCursor) {
+      this.paginationCursors = {
+        before: startCursor,
+        after: null,
+        last: GRAPHQL_PAGE_SIZE,
+      };
+    },
+    loadNextPage(endCursor) {
+      this.paginationCursors = {
+        before: null,
+        after: endCursor,
+        first: GRAPHQL_PAGE_SIZE,
+      };
+    },
+    onPageSizeChange(perPage) {
+      this.paginationCursors = {
+        ...DEFAULT_PAGINATION_CURSORS,
+        first: perPage,
+      };
+    },
   },
   i18n: {
     queryError: s__(
@@ -80,6 +111,16 @@ export default {
     </gl-alert>
 
     <projects-table v-else :is-loading="isLoading" :projects="projects.list" />
+
+    <pagination
+      v-if="showPagination"
+      :is-loading="isLoading"
+      :page-info="projects.pageInfo"
+      :per-page="perPage"
+      @prev="loadPrevPage"
+      @next="loadNextPage"
+      @page-size-change="onPageSizeChange"
+    />
 
     <url-sync :query="urlQuery" url-params-update-strategy="set" />
   </section>

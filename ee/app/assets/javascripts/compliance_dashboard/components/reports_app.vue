@@ -57,9 +57,7 @@ export default {
   i18n: {
     frameworksTab: s__('Compliance Report|Frameworks'),
     heading: __('Compliance report'),
-    subheading: __(
-      'The compliance report shows the merge request violations merged in protected environments.',
-    ),
+    subheading: __('Compliance violations and compliance frameworks for the group.'),
     violationsTab: s__('Compliance Report|Violations'),
   },
   documentationPath: helpPagePath('user/compliance/compliance_report/index.md'),

@@ -1,12 +1,15 @@
 import { mount, shallowMount } from '@vue/test-utils';
 import { GlTabs } from '@gitlab/ui';
+
+import { __ } from '~/locale';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { stubComponent } from 'helpers/stub_component';
+
 import ComplianceReportsApp from 'ee/compliance_dashboard/components/reports_app.vue';
 import ReportHeader from 'ee/compliance_dashboard/components/shared/report_header.vue';
 import MergeCommitsExportButton from 'ee/compliance_dashboard/components/violations_report/shared/merge_commits_export_button.vue';
 import ViolationsReport from 'ee/compliance_dashboard/components/violations_report/report.vue';
-import { stubComponent } from 'helpers/stub_component';
-import { TABS, TAB_VIOLATIONS, TAB_FRAMEWORKS } from 'ee/compliance_dashboard/constants';
+import { TAB_FRAMEWORKS, TAB_VIOLATIONS, TABS } from 'ee/compliance_dashboard/constants';
 
 describe('ComplianceReportsApp component', () => {
   let wrapper;
@@ -54,9 +57,8 @@ describe('ComplianceReportsApp component', () => {
 
     it('passes the expected values to the header', () => {
       expect(findHeader().props()).toMatchObject({
-        heading: 'Compliance report',
-        subheading:
-          'The compliance report shows the merge request violations merged in protected environments.',
+        heading: __('Compliance report'),
+        subheading: __('Compliance violations and compliance frameworks for the group.'),
         documentationPath: '/help/user/compliance/compliance_report/index.md',
       });
     });
@@ -85,9 +87,8 @@ describe('ComplianceReportsApp component', () => {
 
     it('passes the expected values to the header', () => {
       expect(findHeader().props()).toMatchObject({
-        heading: 'Compliance report',
-        subheading:
-          'The compliance report shows the merge request violations merged in protected environments.',
+        heading: __('Compliance report'),
+        subheading: __('Compliance violations and compliance frameworks for the group.'),
         documentationPath: '/help/user/compliance/compliance_report/index.md',
       });
     });
