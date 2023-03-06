@@ -83,15 +83,15 @@ module QA
 
             api_post.tap { QA::Runtime::Logger.info("Successfully added license key. Details:\n#{license_info}") }
           rescue RuntimeError => e
-            if e.message.include?('Your password expired')
-              QA::Runtime::Logger.warn('Admin password must be reset before the default access token can be used. ' \
-                                       'Setting password now...')
+            raise e unless e.message.include?('Your password expired')
 
-              QA::Page::Main::Login.perform(&:sign_in_using_admin_credentials)
-              QA::Page::Main::Login.perform(&:set_up_new_admin_password_if_required)
+            QA::Runtime::Logger.warn('Admin password must be reset before the default access token can be used. ' \
+                                     'Setting password now...')
 
-              retry
-            end
+            QA::Page::Main::Login.perform(&:sign_in_using_admin_credentials)
+            QA::Page::Main::Login.perform(&:set_up_new_admin_password_if_required)
+
+            retry
           end
         end
 
