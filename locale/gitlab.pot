@@ -15388,6 +15388,9 @@ msgstr ""
 msgid "Edit merge requests"
 msgstr ""
 
+msgid "Edit project: %{project_name}"
+msgstr ""
+
 msgid "Edit public deploy key"
 msgstr ""
 
@@ -28035,6 +28038,9 @@ msgid "Namespaces"
 msgstr ""
 
 msgid "Namespaces to index"
+msgstr ""
+
+msgid "Naming"
 msgstr ""
 
 msgid "Naming, topics, avatar"
@@ -46164,6 +46170,9 @@ msgid "Update your bookmarked URLs as filtered/sorted branches URL has been chan
 msgstr ""
 
 msgid "Update your group name, description, avatar, and visibility."
+msgstr ""
+
+msgid "Update your project name and description."
 msgstr ""
 
 msgid "Update your project name, topics, description, and avatar."
