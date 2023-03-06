@@ -234,6 +234,10 @@ module EE
 
       scope :with_project_setting, -> { includes(:project_setting) }
 
+      scope :compliance_framework_id_in, -> (ids) do
+        joins(:compliance_framework_setting).where(compliance_framework_setting: { framework_id: ids })
+      end
+
       delegate :shared_runners_seconds, to: :statistics, allow_nil: true
 
       delegate :ci_minutes_usage, to: :shared_runners_limit_namespace
