@@ -20923,6 +20923,9 @@ msgstr ""
 msgid "Helps reduce request volume for protected paths."
 msgstr ""
 
+msgid "Hi %{user_name} (%{user_username})!"
+msgstr ""
+
 msgid "Hi %{username}!"
 msgstr ""
 
