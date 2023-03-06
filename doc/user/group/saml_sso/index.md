@@ -8,17 +8,15 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 > Introduced in GitLab 11.0.
 
-This page describes SAML for groups. For instance-wide SAML on self-managed GitLab instances, see [SAML SSO for self-managed GitLab instances](../../../integration/saml.md).
-[View the differences between SaaS and Self-Managed Authentication and Authorization Options](../../../administration/auth/index.md#saas-vs-self-managed-comparison).
+Users can sign in to GitLab through their SAML identity provider.
 
-SAML on GitLab.com allows users to sign in through their SAML identity provider. If the user is not already a member, the sign-in process automatically adds the user to the appropriate group.
+[SCIM](scim_setup.md) synchronizes users with the group on GitLab.com.
 
-User synchronization of SAML SSO groups is supported through [SCIM](scim_setup.md). SCIM supports adding and removing users from the GitLab group automatically.
-For example, if you remove a user from the SCIM app, SCIM removes that same user from the GitLab group.
+- When you add or remove a user from the SCIM app, SCIM adds or removes the user
+  from the GitLab group.
+- If the user is not already a group member, the user is added to the group as part of the sign-in process.
 
-SAML SSO is only configurable at the top-level group.
-
-If required, you can find [a glossary of common terms](../../../integration/saml.md#glossary-of-common-terms).
+You can configure SAML SSO for the top-level group only.
 
 ## Configure your identity provider
 
@@ -516,6 +514,17 @@ For information on automatically managing GitLab group membership, see [SAML Gro
 ## Passwords for users created via SAML SSO for Groups
 
 The [Generated passwords for users created through integrated authentication](../../../security/passwords_for_integrated_authentication_methods.md) guide provides an overview of how GitLab generates and sets passwords for users created via SAML SSO for Groups.
+
+## Related topics
+
+For more information on:
+
+- Setting up SAML on self-managed GitLab instances, see
+  [SAML SSO for self-managed GitLab instances](../../../integration/saml.md).
+- Commonly-used terms, see the
+  [glossary of common terms](../../../integration/saml.md#glossary-of-common-terms).
+- The differences between SaaS and self-managed authentication and authorization,
+  see the [SaaS vs. Self-Managed comparison](../../../administration/auth/index.md#saas-vs-self-managed-comparison).
 
 ## Troubleshooting
 
