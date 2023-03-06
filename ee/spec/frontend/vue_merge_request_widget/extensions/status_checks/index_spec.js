@@ -137,9 +137,13 @@ describe('Status checks extension', () => {
       const listItems = wrapper.findAll('[data-testid="extension-list-item"]');
 
       expect(listItems).toHaveLength(3);
-      expect(listItems.at(0).text()).toBe('Foo: http://foo');
-      expect(listItems.at(1).text()).toBe('<a class="test" data-test">Foo: http://foo');
-      expect(listItems.at(2).text()).toBe('Foo Bar: http://foobar');
+      expect(listItems.at(0).text()).toMatchInterpolatedText('Foo: http://foo Status Check ID: 1');
+      expect(listItems.at(1).text()).toMatchInterpolatedText(
+        '<a class="test" data-test">Foo: http://foo Status Check ID: 4',
+      );
+      expect(listItems.at(2).text()).toMatchInterpolatedText(
+        'Foo Bar: http://foobar Status Check ID: 2',
+      );
     });
   });
 

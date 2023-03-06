@@ -53,6 +53,7 @@ RSpec.describe 'Merge request > User sees status checks widget', :js, feature_ca
         within '[data-testid="widget-extension"]' do
           expect(page).to have_css(icon_class)
           expect(page).to have_content("#{check.name}: #{check.external_url}")
+          expect(page).to have_content("Status Check ID: #{check.id}")
         end
       end
     end

@@ -41517,6 +41517,9 @@ msgstr ""
 msgid "StatusCheck|Service name"
 msgstr ""
 
+msgid "StatusCheck|Status Check ID"
+msgstr ""
+
 msgid "StatusCheck|Status checks"
 msgstr ""
 
