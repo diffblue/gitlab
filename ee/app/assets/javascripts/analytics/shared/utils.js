@@ -145,7 +145,10 @@ export const buildCycleAnalyticsInitialData = ({
   createdBefore: createdBefore ? toLocalDate(createdBefore) : null,
   createdAfter: createdAfter ? toLocalDate(createdAfter) : null,
   selectedProjects: projects
-    ? buildProjectsFromJSON(projects).map(convertObjectPropsToCamelCase)
+    ? buildProjectsFromJSON(projects).map((proj) => ({
+        ...convertObjectPropsToCamelCase(proj),
+        fullPath: proj.path_with_namespace,
+      }))
     : null,
   labelsPath,
   milestonesPath,
