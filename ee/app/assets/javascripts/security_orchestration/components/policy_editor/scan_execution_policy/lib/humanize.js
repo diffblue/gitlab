@@ -1,7 +1,7 @@
 import cronstrue from 'cronstrue/i18n';
 import { getPreferredLocales, sprintf, s__ } from '~/locale';
 import { NO_RULE_MESSAGE } from '../../constants';
-import { convertScannersToTitleCase } from '../../utils';
+import { createHumanizedScanners } from '../../utils';
 
 /**
  * Create a human-readable list of runner tags, adding the necessary punctuation and conjunctions
@@ -159,7 +159,7 @@ export const humanizeActions = (actions) => {
   }, {});
 
   const humanizedActions = Object.entries(scanners).map(([scanner, tags]) => {
-    const humanizedScanner = convertScannersToTitleCase([scanner])[0];
+    const humanizedScanner = createHumanizedScanners([scanner])[0];
     return humanizeRunnerTags(humanizedScanner, tags);
   });
 

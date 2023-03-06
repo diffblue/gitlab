@@ -24,7 +24,7 @@ const singleValuedSecurityScannerRule = {
     vulnerability_states: ['newly_detected'],
   },
   humanized:
-    'Sast scanner finds a critical vulnerability in an open merge request targeting the main branch.',
+    'SAST scanner finds a critical vulnerability in an open merge request targeting the main branch.',
 };
 
 const multipleValuedSecurityScannerRule = {
@@ -37,7 +37,7 @@ const multipleValuedSecurityScannerRule = {
     vulnerability_states: ['resolved'],
   },
   humanized:
-    'Dast or Sast scanners find info or critical vulnerabilities in an open merge request targeting the staging or main branches.',
+    'DAST or SAST scanners find info or critical vulnerabilities in an open merge request targeting the staging or main branches.',
 };
 
 const allValuedSecurityScannerRule = {

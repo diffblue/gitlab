@@ -20,7 +20,7 @@ exports[`ScanExecutionPolicy component default policy renders the correct policy
       <p>
         Runs a 
         <strong>
-          Dast
+          DAST
         </strong>
          scan
       </p>
@@ -65,7 +65,7 @@ exports[`ScanExecutionPolicy component multiple action policy renders the correc
         </strong>
          and 
         <strong>
-          Sast
+          SAST
         </strong>
          scans
       </p>
@@ -135,7 +135,7 @@ exports[`ScanExecutionPolicy component policy with unsupported attributes render
       <p>
         Runs a 
         <strong>
-          Sast
+          SAST
         </strong>
          scan
       </p>

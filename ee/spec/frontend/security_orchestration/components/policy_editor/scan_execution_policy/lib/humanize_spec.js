@@ -64,12 +64,12 @@ describe('humanizeActions', () => {
   });
 
   it('returns a single action as human-readable string', () => {
-    expect(humanizeActions([mockActions[0]])).toStrictEqual(['%{scannerStart}Dast%{scannerEnd}']);
+    expect(humanizeActions([mockActions[0]])).toStrictEqual(['%{scannerStart}DAST%{scannerEnd}']);
   });
 
   it('returns multiple actions as human-readable strings', () => {
     expect(humanizeActions(mockActions)).toStrictEqual([
-      '%{scannerStart}Dast%{scannerEnd}',
+      '%{scannerStart}DAST%{scannerEnd}',
       '%{scannerStart}Secret Detection%{scannerEnd}',
       '%{scannerStart}Container Scanning%{scannerEnd}',
     ]);
@@ -84,7 +84,7 @@ describe('humanizeActions', () => {
 
     it.each`
       title                   | input                       | output
-      ${'one tag'}            | ${[mockActionsWithTags[0]]} | ${['%{scannerStart}Sast%{scannerEnd} on runners with the one-tag tag']}
+      ${'one tag'}            | ${[mockActionsWithTags[0]]} | ${['%{scannerStart}SAST%{scannerEnd} on runners with the one-tag tag']}
       ${'two tags'}           | ${[mockActionsWithTags[1]]} | ${['%{scannerStart}Secret Detection%{scannerEnd} on runners with the two-tag and three-tag tags']}
       ${'more than two tags'} | ${[mockActionsWithTags[2]]} | ${['%{scannerStart}Container Scanning%{scannerEnd} on runners with the four-tag, five-tag and six-tag tags']}
     `('$title', ({ input, output }) => {

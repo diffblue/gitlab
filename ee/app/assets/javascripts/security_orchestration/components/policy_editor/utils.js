@@ -1,10 +1,9 @@
 import { isValidCron } from 'cron-validator';
-import { convertToTitleCase, humanize } from '~/lib/utils/text_utility';
 import createPolicyProject from 'ee/security_orchestration/graphql/mutations/create_policy_project.mutation.graphql';
 import createScanExecutionPolicy from 'ee/security_orchestration/graphql/mutations/create_scan_execution_policy.mutation.graphql';
 import { gqClient } from 'ee/security_orchestration/utils';
 import createMergeRequestMutation from '~/graphql_shared/mutations/create_merge_request.mutation.graphql';
-import { DEFAULT_MR_TITLE, SECURITY_POLICY_ACTIONS } from './constants';
+import { DEFAULT_MR_TITLE, RULE_MODE_SCANNERS, SECURITY_POLICY_ACTIONS } from './constants';
 
 /**
  * Checks if an error exists and throws it if it does
@@ -131,9 +130,10 @@ export const assignSecurityPolicyProject = async (fullPath) => {
  * @param {Array} scanners (e.g. 'container_scanning', `dast`, etcetera)
  * @returns {Array} (e.g. 'Container Scanning', `Dast`, etcetera)
  */
-export const convertScannersToTitleCase = (scanners = []) =>
-  scanners.map((scanner) => convertToTitleCase(humanize(scanner)));
-
+export const createHumanizedScanners = (scanners = []) =>
+  scanners.map((scanner) => {
+    return RULE_MODE_SCANNERS[scanner] || scanner;
+  });
 /**
  * Checks for parameters unsupported by the policy "Rule Mode"
  * @param {Object} policy policy converted from YAML

@@ -1,4 +1,12 @@
 import { s__, __ } from '~/locale';
+import {
+  SAST_SHORT_NAME,
+  DAST_SHORT_NAME,
+  DEPENDENCY_SCANNING_NAME,
+  SECRET_DETECTION_NAME,
+  CONTAINER_SCANNING_NAME,
+  SAST_IAC_SHORT_NAME,
+} from '~/security_configuration/components/constants';
 
 export const EDITOR_MODE_RULE = 'rule';
 export const EDITOR_MODE_YAML = 'yaml';
@@ -64,3 +72,12 @@ export const RULE_OR_LABEL = __('or');
 
 export const ACTION_THEN_LABEL = __('then');
 export const ACTION_AND_LABEL = __('and');
+
+export const RULE_MODE_SCANNERS = {
+  sast: SAST_SHORT_NAME,
+  sast_iac: SAST_IAC_SHORT_NAME,
+  dast: DAST_SHORT_NAME,
+  secret_detection: SECRET_DETECTION_NAME,
+  container_scanning: CONTAINER_SCANNING_NAME,
+  dependency_scanning: DEPENDENCY_SCANNING_NAME,
+};

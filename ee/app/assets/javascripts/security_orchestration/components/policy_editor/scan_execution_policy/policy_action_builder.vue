@@ -11,13 +11,12 @@ import {
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { ACTION_THEN_LABEL, ACTION_AND_LABEL } from '../constants';
+import { ACTION_THEN_LABEL, ACTION_AND_LABEL, RULE_MODE_SCANNERS } from '../constants';
 import {
   DAST_HUMANIZED_TEMPLATE,
   DEFAULT_SCANNER,
   SCANNER_DAST,
   SCANNER_HUMANIZED_TEMPLATE,
-  RULE_MODE_SCANNERS,
 } from './constants';
 import RunnerTagsList from './runner_tags_list.vue';
 import { buildScannerAction } from './lib';
