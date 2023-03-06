@@ -17,6 +17,63 @@ RSpec.describe Namespaces::ProjectsFinder do
   subject(:projects) { finder.execute }
 
   describe '#execute' do
+    context 'when compliance framework is present' do
+      let_it_be(:framework) { create(:compliance_framework, namespace: namespace) }
+      let_it_be(:framework_settings) do
+        create(:compliance_framework_project_setting, project: project_1, compliance_management_framework: framework)
+      end
+
+      let_it_be(:other_namespace) { create(:group, :public) }
+      let_it_be(:other_project) { create(:project, :public, group: other_namespace) }
+      let_it_be(:other_framework) { create(:compliance_framework, namespace: other_namespace) }
+      let_it_be(:other_framework_settings) do
+        create(:compliance_framework_project_setting, project: other_project,
+          compliance_management_framework: other_framework)
+      end
+
+      context 'when no filters are present' do
+        it 'returns all projects' do
+          expect(projects).to contain_exactly(project_1, project_2)
+        end
+      end
+
+      context 'when compliance framework id is passed' do
+        let(:params) { { compliance_framework_filters: { id: framework_id } } }
+
+        context 'when compliance_framework_id is of valid framework' do
+          let(:framework_id) { framework.id }
+
+          it 'returns projects with compliance framework' do
+            expect(projects).to contain_exactly(project_1)
+          end
+        end
+
+        context 'when compliance_framework_id is of other namespace' do
+          let(:framework_id) { other_framework.id }
+
+          it 'returns no projects' do
+            expect(projects).to be_empty
+          end
+        end
+
+        context 'when provided with a bogus framework id' do
+          let(:framework_id) { non_existing_record_id }
+
+          it 'returns no projects' do
+            expect(projects).to be_empty
+          end
+        end
+
+        context 'when compliance_framework_id is nil ' do
+          let(:framework_id) { nil }
+
+          it 'returns all projects' do
+            expect(projects).to contain_exactly(project_1, project_2)
+          end
+        end
+      end
+    end
+
     context 'has_vulnerabilities' do
       before do
         project_1.project_setting.update!(has_vulnerabilities: true)

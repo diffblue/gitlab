@@ -533,6 +533,37 @@ RSpec.describe Project, feature_category: :projects do
         expect(project.association(:project_setting).loaded?).to eq(true)
       end
     end
+
+    context 'compliance framework scopes' do
+      let_it_be(:namespace) { create(:group) }
+      let_it_be(:project_with_framework_1) { create(:project, group: namespace) }
+      let_it_be(:project_with_framework_2) { create(:project, group: namespace) }
+      let_it_be(:project_without_framework) { create(:project, group: namespace) }
+      let_it_be(:framework_1) { create(:compliance_framework, namespace: namespace, name: 'Test1') }
+      let_it_be(:framework_2) { create(:compliance_framework, namespace: namespace, name: 'Test2') }
+      let_it_be(:framework_settings_1) { create(:compliance_framework_project_setting, project: project_with_framework_1, compliance_management_framework: framework_1) }
+      let_it_be(:framework_settings_2) { create(:compliance_framework_project_setting, project: project_with_framework_2, compliance_management_framework: framework_2) }
+
+      describe '.compliance_framework_id_in' do
+        context 'when correct framework id is passed' do
+          subject { described_class.compliance_framework_id_in(framework_1.id) }
+
+          it { is_expected.to eq([project_with_framework_1]) }
+        end
+
+        context 'when nil is passed as framework id' do
+          subject { described_class.compliance_framework_id_in(nil) }
+
+          it { is_expected.to be_empty }
+        end
+
+        context 'when the framework id passed is of non existing record' do
+          subject { described_class.compliance_framework_id_in(non_existing_record_id) }
+
+          it { is_expected.to be_empty }
+        end
+      end
+    end
   end
 
   describe 'validations' do

@@ -7,6 +7,10 @@ module EE
       extend ::Gitlab::Utils::Override
 
       prepended do
+        argument :compliance_framework_filters, ::Types::ComplianceManagement::ComplianceFrameworkFilterInputType,
+                 required: false,
+                 description: 'Filters applied when selecting a compliance framework.'
+
         argument :has_code_coverage, GraphQL::Types::Boolean,
                  required: false,
                  default_value: false,
@@ -24,8 +28,8 @@ module EE
       def finder_params(args)
         super(args).merge(
           has_vulnerabilities: args.dig(:has_vulnerabilities),
-          has_code_coverage: args.dig(:has_code_coverage)
-        )
+          has_code_coverage: args.dig(:has_code_coverage),
+          compliance_framework_filters: args.dig(:compliance_framework_filters))
       end
     end
   end

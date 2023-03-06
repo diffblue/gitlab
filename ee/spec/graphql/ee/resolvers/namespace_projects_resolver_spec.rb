@@ -20,6 +20,27 @@ RSpec.describe Resolvers::NamespaceProjectsResolver do
     end
 
     describe '#resolve' do
+      context 'compliance framework filtering' do
+        let(:framework) { create(:compliance_framework, namespace: group, name: 'Test1') }
+        let!(:framework_settings) do
+          create(:compliance_framework_project_setting, project: project_1, compliance_management_framework: framework)
+        end
+
+        context 'when compliance framework id is provided' do
+          it 'returns projects with compliance framework' do
+            expect(resolve_projects(compliance_framework_filters: {
+              id: framework.id
+            })).to contain_exactly(project_1)
+          end
+        end
+
+        context 'when compliance framework id is not provided' do
+          it 'returns all projects' do
+            expect(resolve_projects).to contain_exactly(project_1, project_2)
+          end
+        end
+      end
+
       context 'has_vulnerabilities' do
         subject(:projects) { resolve_projects(has_vulnerabilities: has_vulnerabilities) }
 
@@ -92,14 +113,17 @@ RSpec.describe Resolvers::NamespaceProjectsResolver do
     end
   end
 
-  def resolve_projects(has_vulnerabilities: false, sort: :similarity, ids: nil, has_code_coverage: false)
+  def resolve_projects(
+    has_vulnerabilities: false, sort: :similarity, ids: nil, has_code_coverage: false,
+    compliance_framework_filters: nil)
     args = {
       include_subgroups: false,
       has_vulnerabilities: has_vulnerabilities,
       sort: sort,
       search: nil,
       ids: nil,
-      has_code_coverage: has_code_coverage
+      has_code_coverage: has_code_coverage,
+      compliance_framework_filters: compliance_framework_filters
     }
 
     resolve(described_class, obj: group, args: args, ctx: { current_user: current_user }, arg_style: :internal)
