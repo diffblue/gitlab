@@ -7,13 +7,6 @@ import { mockTracking } from 'helpers/tracking_helper';
 import SubscriptionDetails from 'ee/subscriptions/new/components/checkout/subscription_details.vue';
 import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 
-const mockCreateAlert = {
-  dismiss: jest.fn(),
-};
-jest.mock('~/flash', () => ({
-  createAlert: jest.fn().mockImplementation(() => mockCreateAlert),
-}));
-
 Vue.use(Vuex);
 
 describe('Checkout', () => {

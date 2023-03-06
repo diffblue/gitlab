@@ -10,11 +10,11 @@ import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import { projectFilter, PROJECT_LOADING_ERROR_MESSAGE } from 'ee/security_dashboard/helpers';
 import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 
 Vue.use(VueApollo);
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 const projects = [
   { id: 1, name: 'Project 1' },

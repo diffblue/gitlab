@@ -27,9 +27,9 @@ import {
   mockNamespaces,
   mockInvoicePreviewWithDiscount,
 } from 'ee_jest/subscriptions/mock_data';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('Order Summary', () => {
   Vue.use(Vuex);

@@ -4,10 +4,10 @@ import ProjectList from 'ee/security_dashboard/components/instance/project_list.
 import ProjectManager from 'ee/security_dashboard/components/instance/project_manager.vue';
 import getProjects from 'ee/security_dashboard/graphql/queries/get_projects.query.graphql';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import ProjectSelector from '~/vue_shared/components/project_selector/project_selector.vue';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 const mockProject = { id: 1, name: 'Sample Project 1' };
 const singleProjectList = [mockProject];
@@ -152,7 +152,7 @@ describe('Project Manager component', () => {
       expect(spyMutate).toHaveBeenCalledTimes(1);
     });
 
-    it('adding projects only shows a flash message for failed projects', async () => {
+    it('adding projects only shows an alert message for failed projects', async () => {
       const mocks = {
         $apollo: {
           mutate: jest.fn().mockRejectedValueOnce().mockResolvedValueOnce({}),
@@ -169,7 +169,7 @@ describe('Project Manager component', () => {
       });
     });
 
-    it('adding many projects unsuccessfully shows a flash', () => {
+    it('adding many projects unsuccessfully shows an alert', () => {
       const mocks = {
         $apollo: {
           mutate: jest.fn().mockRejectedValue(),
@@ -194,7 +194,7 @@ describe('Project Manager component', () => {
       expect(spyMutate).toHaveBeenCalledTimes(1);
     });
 
-    it('removing a project unsuccessfully shows a flash', () => {
+    it('removing a project unsuccessfully shows an alert', () => {
       const mocks = {
         $apollo: {
           mutate: jest.fn().mockRejectedValue(),

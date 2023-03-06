@@ -2,7 +2,7 @@ import Api from 'ee/api';
 import * as SubscriptionsApi from 'ee/api/subscriptions_api';
 import { gitLabResolvers } from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
 import { ERROR_FETCHING_COUNTRIES, ERROR_FETCHING_STATES } from 'ee/subscriptions/constants';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 
 jest.mock('ee/api/subscriptions_api', () => {
   return {
@@ -10,7 +10,7 @@ jest.mock('ee/api/subscriptions_api', () => {
   };
 });
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 jest.mock('ee/api', () => {
   return {
@@ -85,7 +85,7 @@ describe('~/subscriptions/buy_addons_shared/graphql/resolvers', () => {
           Api.fetchCountries.mockRejectedValue();
         });
 
-        it('shows a flash message', async () => {
+        it('shows an alert message', async () => {
           await gitLabResolvers.Query.countries();
 
           expect(createAlert).toHaveBeenCalledWith({ message: ERROR_FETCHING_COUNTRIES });
@@ -112,7 +112,7 @@ describe('~/subscriptions/buy_addons_shared/graphql/resolvers', () => {
           Api.fetchStates.mockRejectedValue();
         });
 
-        it('shows a flash message', async () => {
+        it('shows an alert message', async () => {
           await gitLabResolvers.Query.states(null, { countryId: 1 });
 
           expect(createAlert).toHaveBeenCalledWith({ message: ERROR_FETCHING_STATES });

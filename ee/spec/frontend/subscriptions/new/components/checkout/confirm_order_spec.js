@@ -11,7 +11,7 @@ import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_
 import { mockInvoicePreviewBronze } from 'ee_jest/subscriptions/mock_data';
 import * as types from 'ee/subscriptions/new/store/mutation_types';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('Confirm Order', () => {
   Vue.use(Vuex);
