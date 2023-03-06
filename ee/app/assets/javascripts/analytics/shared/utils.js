@@ -96,8 +96,15 @@ export const toLocalDate = (date) => {
  */
 const buildProjectsFromJSON = (projects = '') => {
   if (!projects.length) return [];
-  return JSON.parse(projects);
+  return JSON.parse(projects).map(({ path_with_namespace: fullPath, ...rest }) => ({
+    ...rest,
+    full_path: fullPath,
+  }));
 };
+
+const extractFeatures = (gon) => ({
+  groupAnalyticsDashboardsPage: Boolean(gon?.features?.groupAnalyticsDashboardsPage),
+});
 
 /**
  * Builds the initial data object for Value Stream Analytics with data loaded from the backend
@@ -154,6 +161,7 @@ export const buildCycleAnalyticsInitialData = ({
     lastRunAt: aggregationLastRunAt,
     nextRunAt: aggregationNextRunAt,
   },
+  featureFlags: extractFeatures(gon),
 });
 
 /**

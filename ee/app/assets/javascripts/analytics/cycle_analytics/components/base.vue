@@ -3,6 +3,7 @@ import { mapActions, mapState, mapGetters } from 'vuex';
 import { GlEmptyState } from '@gitlab/ui';
 import { refreshCurrentPage } from '~/lib/utils/url_utility';
 import { VSA_METRICS_GROUPS } from '~/analytics/shared/constants';
+import { generateValueStreamsDashboardLink } from '~/analytics/shared/utils';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
 import PathNavigation from '~/analytics/cycle_analytics/components/path_navigation.vue';
 import StageTable from '~/analytics/cycle_analytics/components/stage_table.vue';
@@ -64,12 +65,14 @@ export default {
       'pagination',
       'aggregation',
       'isCreatingAggregation',
+      'featureFlags',
     ]),
     ...mapGetters([
       'hasNoAccessError',
       'currentGroupPath',
       'activeStages',
       'selectedProjectIds',
+      'selectedProjectFullPaths',
       'cycleAnalyticsRequestParams',
       'pathNavigationData',
       'isOverviewStageSelected',
@@ -127,6 +130,11 @@ export default {
     },
     stageCount() {
       return this.activeStages.length;
+    },
+    dashboardsPath() {
+      return this.featureFlags?.groupAnalyticsDashboardsPage
+        ? generateValueStreamsDashboardLink(this.currentGroupPath, this.selectedProjectFullPaths)
+        : null;
     },
   },
   methods: {
@@ -233,6 +241,7 @@ export default {
           :request-params="cycleAnalyticsRequestParams"
           :requests="$options.METRICS_REQUESTS"
           :group-by="$options.VSA_METRICS_GROUPS"
+          :dashboards-path="dashboardsPath"
         />
         <div :class="[isOverviewStageSelected ? 'gl-mt-2' : 'gl-mt-6']">
           <duration-chart class="gl-mb-6" :stages="activeStages" :selected-stage="selectedStage" />

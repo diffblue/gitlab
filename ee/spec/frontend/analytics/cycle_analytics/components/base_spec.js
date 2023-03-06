@@ -171,9 +171,10 @@ describe('EE Value Stream Analytics component', () => {
   const findAggregationStatus = () => wrapper.findComponent(ValueStreamAggregationStatus);
   const findPathNavigation = () => wrapper.findComponent(PathNavigation);
   const findStageTable = () => wrapper.findComponent(StageTable);
+  const findOverviewMetrics = () => wrapper.findComponent(ValueStreamMetrics);
 
   const displaysMetrics = (flag) => {
-    expect(wrapper.findComponent(ValueStreamMetrics).exists()).toBe(flag);
+    expect(findOverviewMetrics().exists()).toBe(flag);
   };
 
   const displaysStageTable = (flag) => {
@@ -326,6 +327,10 @@ describe('EE Value Stream Analytics component', () => {
     it('renders the aggregation status', () => {
       expect(findAggregationStatus().exists()).toBe(true);
       expect(findAggregationStatus().props('data')).toEqual(aggregationData);
+    });
+
+    it('does not render a link to the value streams dashboard', () => {
+      expect(findOverviewMetrics().props('dashboardsPath')).toBeNull();
     });
 
     describe('Without the overview stage selected', () => {
@@ -597,6 +602,28 @@ describe('EE Value Stream Analytics component', () => {
           stage_id: selectedStage.id,
         });
       });
+    });
+  });
+
+  describe('with`groupAnalyticsDashboardsPage=true`', () => {
+    beforeEach(async () => {
+      mock = new MockAdapter(axios);
+      mockRequiredRoutes(mock);
+      wrapper = await createComponent({
+        withStageSelected: true,
+        featureFlags: { groupAnalyticsDashboardsPage: true },
+      });
+    });
+
+    afterEach(() => {
+      mock.restore();
+    });
+
+    it('renders a link to the value streams dashboard', () => {
+      expect(findOverviewMetrics().props('dashboardsPath')).toBeDefined();
+      expect(findOverviewMetrics().props('dashboardsPath')).toBe(
+        '/groups/foo/-/analytics/dashboards',
+      );
     });
   });
 });
