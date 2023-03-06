@@ -32873,6 +32873,9 @@ msgstr ""
 msgid "ProductAnalytics|Viewport"
 msgstr ""
 
+msgid "ProductAnalytics|Visualization Designer"
+msgstr ""
+
 msgid "ProductAnalytics|Visualization Type"
 msgstr ""
 

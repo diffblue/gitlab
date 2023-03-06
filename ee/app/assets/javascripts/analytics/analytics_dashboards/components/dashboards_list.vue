@@ -1,5 +1,14 @@
 <script>
-import { GlDropdown, GlDropdownForm, GlLink, GlAvatar, GlIcon, GlLabel, GlAlert } from '@gitlab/ui';
+import {
+  GlDropdown,
+  GlDropdownForm,
+  GlLink,
+  GlAvatar,
+  GlIcon,
+  GlLabel,
+  GlAlert,
+  GlButton,
+} from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { visitUrl } from '~/lib/utils/url_utility';
 import AnalyticsClipboardInput from 'ee/product_analytics/shared/analytics_clipboard_input.vue';
@@ -16,6 +25,7 @@ import {
   I18N_DASHBOARD_LIST_SDK_DESCRIPTION,
   I18N_DASHBOARD_LIST_SDK_APP_ID,
   I18N_DASHBOARD_LIST_SDK_APP_ID_DESCRIPTION,
+  I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER,
   I18N_ALERT_NO_POINTER_TITLE,
   I18N_ALERT_NO_POINTER_BUTTON,
   I18N_ALERT_NO_POINTER_DESCRIPTION,
@@ -24,6 +34,7 @@ import {
 export default {
   name: 'DashboardsList',
   components: {
+    GlButton,
     GlDropdown,
     GlDropdownForm,
     GlAvatar,
@@ -109,6 +120,7 @@ export default {
   I18N_DASHBOARD_LIST_SDK_DESCRIPTION,
   I18N_DASHBOARD_LIST_SDK_APP_ID,
   I18N_DASHBOARD_LIST_SDK_APP_ID_DESCRIPTION,
+  I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER,
   I18N_ALERT_NO_POINTER_TITLE,
   I18N_ALERT_NO_POINTER_BUTTON,
   I18N_ALERT_NO_POINTER_DESCRIPTION,
@@ -120,9 +132,11 @@ export default {
 
 <template>
   <div>
-    <header class="gl-display-flex gl-justify-content-space-between gl-align-items-flex-start">
+    <header
+      class="gl-display-flex gl-justify-content-space-between gl-lg-flex-direction-row gl-flex-direction-column gl-align-items-flex-start gl-my-6"
+    >
       <div>
-        <h2 data-testid="title">{{ $options.I18N_DASHBOARD_LIST_TITLE }}</h2>
+        <h2 class="gl-mt-0" data-testid="title">{{ $options.I18N_DASHBOARD_LIST_TITLE }}</h2>
         <p data-testid="description">
           {{ $options.I18N_DASHBOARD_LIST_DESCRIPTION }}
           <gl-link data-testid="help-link" :href="$options.helpPageUrl">{{
@@ -130,31 +144,36 @@ export default {
           }}</gl-link>
         </p>
       </div>
-      <gl-dropdown
-        v-if="showInstrumentationDetailsButton"
-        class="gl-my-6"
-        data-testid="intrumentation-details-dropdown"
-        :text="$options.I18N_DASHBOARD_LIST_INSTRUMENTATION_DETAILS"
-        split-to="setup"
-        split
-        right
-      >
-        <gl-dropdown-form class="gl-px-4! gl-py-2!">
-          <analytics-clipboard-input
-            class="gl-mb-6 gl-w-full"
-            :label="$options.I18N_DASHBOARD_LIST_SDK_HOST"
-            :description="$options.I18N_DASHBOARD_LIST_SDK_DESCRIPTION"
-            :value="collectorHost"
-          />
+      <div>
+        <gl-button to="panel-designer" data-testid="visualization-designer-button">
+          {{ $options.I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER }}
+        </gl-button>
+        <gl-dropdown
+          v-if="showInstrumentationDetailsButton"
+          class="gl-my-6"
+          data-testid="intrumentation-details-dropdown"
+          :text="$options.I18N_DASHBOARD_LIST_INSTRUMENTATION_DETAILS"
+          split-to="setup"
+          split
+          right
+        >
+          <gl-dropdown-form class="gl-px-4! gl-py-2!">
+            <analytics-clipboard-input
+              class="gl-mb-6 gl-w-full"
+              :label="$options.I18N_DASHBOARD_LIST_SDK_HOST"
+              :description="$options.I18N_DASHBOARD_LIST_SDK_DESCRIPTION"
+              :value="collectorHost"
+            />
 
-          <analytics-clipboard-input
-            class="gl-w-full"
-            :label="$options.I18N_DASHBOARD_LIST_SDK_APP_ID"
-            :description="$options.I18N_DASHBOARD_LIST_SDK_APP_ID_DESCRIPTION"
-            :value="jitsuKey"
-          />
-        </gl-dropdown-form>
-      </gl-dropdown>
+            <analytics-clipboard-input
+              class="gl-w-full"
+              :label="$options.I18N_DASHBOARD_LIST_SDK_APP_ID"
+              :description="$options.I18N_DASHBOARD_LIST_SDK_APP_ID_DESCRIPTION"
+              :value="jitsuKey"
+            />
+          </gl-dropdown-form>
+        </gl-dropdown>
+      </div>
     </header>
     <gl-alert
       v-if="!customDashboardsProject"
