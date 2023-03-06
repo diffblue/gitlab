@@ -140,7 +140,7 @@ module EE
       end
 
       def link_reference_pattern
-        @link_reference_pattern ||= super("iterations", /(?<iteration>\d+)/)
+        @link_reference_pattern ||= compose_link_reference_pattern('iterations', /(?<iteration>\d+)/)
       end
 
       def filter_by_state(iterations, state)
