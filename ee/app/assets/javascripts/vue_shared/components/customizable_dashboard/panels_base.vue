@@ -1,6 +1,6 @@
 <script>
 import { GlLoadingIcon } from '@gitlab/ui';
-import dataSources from 'ee/product_analytics/dashboards/data_sources';
+import dataSources from 'ee/analytics/analytics_dashboards/data_sources';
 import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
 
 export default {
@@ -9,11 +9,11 @@ export default {
     GlLoadingIcon,
     TooltipOnTruncate,
     LineChart: () =>
-      import('ee/product_analytics/dashboards/components/visualizations/line_chart.vue'),
+      import('ee/analytics/analytics_dashboards/components/visualizations/line_chart.vue'),
     DataTable: () =>
-      import('ee/product_analytics/dashboards/components/visualizations/data_table.vue'),
+      import('ee/analytics/analytics_dashboards/components/visualizations/data_table.vue'),
     SingleStat: () =>
-      import('ee/product_analytics/dashboards/components/visualizations/single_stat.vue'),
+      import('ee/analytics/analytics_dashboards/components/visualizations/single_stat.vue'),
   },
   inject: ['projectId'],
   props: {

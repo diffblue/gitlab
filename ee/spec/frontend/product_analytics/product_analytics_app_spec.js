@@ -12,7 +12,7 @@ import {
 } from 'ee_jest/analytics/analytics_dashboards/mock_data';
 import { TEST_PROJECT_FULL_PATH, TEST_PROJECT_ID } from './mock_data';
 
-jest.mock('ee/product_analytics/dashboards/data_sources/cube_analytics', () => ({
+jest.mock('ee/analytics/analytics_dashboards/data_sources/cube_analytics', () => ({
   hasAnalyticsData: jest.fn(),
 }));
 jest.mock('~/flash');

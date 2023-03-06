@@ -3,7 +3,7 @@ import VueRouter from 'vue-router';
 import Vue, { nextTick } from 'vue';
 import DashboardsList from 'ee/analytics/analytics_dashboards/components/dashboards_list.vue';
 import AnalyticsDashboardsApp from 'ee/analytics/analytics_dashboards/dashboards_app.vue';
-import AnalyticsDashboard from 'ee/product_analytics/dashboards/components/analytics_dashboard.vue';
+import AnalyticsDashboard from 'ee/analytics/analytics_dashboards/components/analytics_dashboard.vue';
 import ProductAnalyticsOnboardingSetup from 'ee/product_analytics/onboarding/onboarding_setup.vue';
 import AnalyticsPanelDesigner from 'ee/product_analytics/dashboards/components/analytics_panel_designer.vue';
 import createRouter from 'ee/analytics/analytics_dashboards/router';

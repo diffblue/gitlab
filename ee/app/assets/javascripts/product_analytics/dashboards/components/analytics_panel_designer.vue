@@ -4,7 +4,7 @@ import { GlButton } from '@gitlab/ui';
 
 import { __ } from '~/locale';
 
-import { createCubeJsApi } from '../data_sources/cube_analytics';
+import { createCubeJsApi } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { PANEL_DISPLAY_TYPES } from '../constants';
 
 import MeasureSelector from './panel_designer/analytics_cube_query_measure_selector.vue';

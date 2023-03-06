@@ -1,7 +1,7 @@
 import { GlTableLite } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import DataTable from 'ee/product_analytics/dashboards/components/visualizations/data_table.vue';
+import DataTable from 'ee/analytics/analytics_dashboards/components/visualizations/data_table.vue';
 
 describe('DataTable Visualization', () => {
   let wrapper;

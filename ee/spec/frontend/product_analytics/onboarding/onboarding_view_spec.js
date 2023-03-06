@@ -1,12 +1,12 @@
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
 import { GlLoadingIcon } from '@gitlab/ui';
+import { hasAnalyticsData } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import ProductAnalyticsOnboardingView from 'ee/product_analytics/onboarding/onboarding_view.vue';
 import ProductAnalyticsOnboardingSetup from 'ee/product_analytics/onboarding/onboarding_setup.vue';
 import OnboardingEmptyState from 'ee/product_analytics/onboarding/components/onboarding_empty_state.vue';
 import initializeProductAnalyticsMutation from 'ee/product_analytics/graphql/mutations/initialize_product_analytics.mutation.graphql';
 import getProjectJitsuKeyQuery from 'ee/product_analytics/graphql/mutations/get_project_jitsu_key.query.graphql';
-import { hasAnalyticsData } from 'ee/product_analytics/dashboards/data_sources/cube_analytics';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { TEST_HOST } from 'spec/test_constants';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -31,7 +31,7 @@ import {
 
 Vue.use(VueApollo);
 
-jest.mock('ee/product_analytics/dashboards/data_sources/cube_analytics', () => ({
+jest.mock('ee/analytics/analytics_dashboards/data_sources/cube_analytics', () => ({
   hasAnalyticsData: jest.fn(),
 }));
 jest.mock('~/flash');

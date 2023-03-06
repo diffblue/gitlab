@@ -2,9 +2,9 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { createAlert } from '~/flash';
 import simplePoll from '~/lib/utils/simple_poll';
+import { hasAnalyticsData } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import initializeProductAnalyticsMutation from '../graphql/mutations/initialize_product_analytics.mutation.graphql';
 import getProjectJitsuKeyQuery from '../graphql/mutations/get_project_jitsu_key.query.graphql';
-import { hasAnalyticsData } from '../dashboards/data_sources/cube_analytics';
 import {
   JITSU_KEY_CHECK_DELAY,
   CUBE_DATA_CHECK_DELAY,

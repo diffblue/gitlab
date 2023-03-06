@@ -22,3 +22,6 @@ export const I18N_ALERT_NO_POINTER_BUTTON = s__('ProductAnalytics|Configure Dash
 export const I18N_ALERT_NO_POINTER_DESCRIPTION = s__(
   'ProductAnalytics|For being able to create your own dashboards please configure a special project to store your dashboards.',
 );
+
+export const VISUALIZATION_TYPE_FILE = 'yml';
+export const VISUALIZATION_TYPE_BUILT_IN = 'builtin';

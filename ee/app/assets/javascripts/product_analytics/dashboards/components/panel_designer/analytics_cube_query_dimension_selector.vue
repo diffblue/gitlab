@@ -1,6 +1,7 @@
 <script>
 import { GRANULARITIES } from '@cubejs-client/vue';
 import { GlLabel, GlButton, GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { DATE_RANGE_FILTER_DIMENSIONS } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { s__, sprintf } from '~/locale';
 
 import {
@@ -9,8 +10,6 @@ import {
   ANALYTICS_FIELD_CATEGORIES,
   ANALYTICS_FIELDS,
 } from '../../constants';
-
-import { DATE_RANGE_FILTER_DIMENSIONS } from '../../data_sources/cube_analytics';
 
 export default {
   name: 'AnalyticsQueryDesignerDimensionSelect',

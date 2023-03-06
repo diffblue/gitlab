@@ -1,5 +1,5 @@
 <script>
-import AnalyticsDashboard from 'ee/product_analytics/dashboards/components/analytics_dashboard.vue';
+import AnalyticsDashboard from './components/analytics_dashboard.vue';
 import DashboardsList from './components/dashboards_list.vue';
 
 export default {
