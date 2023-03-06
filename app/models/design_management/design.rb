@@ -47,7 +47,7 @@ module DesignManagement
 
     # Pre-fetching scope to include the data necessary to construct a
     # reference using `to_reference`.
-    scope :for_reference, -> { includes(issue: [{ project: [:route, :namespace] }]) }
+    scope :for_reference, -> { includes(issue: [{ namespace: :project }, { project: [:route, :namespace] }]) }
 
     # A design can be uniquely identified by issue_id and filename
     # Takes one or more sets of composite IDs of the form:
