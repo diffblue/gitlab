@@ -30,12 +30,9 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService, feature_category: :contin
         expect(namespace.namespace_statistics).to be_nil
       end
 
-      it 'does not update namespace monthly usage' do
-        expect { subject }.not_to change { Ci::Minutes::NamespaceMonthlyUsage.count }
-      end
-
-      it 'does not update project monthly usage' do
-        expect { subject }.not_to change { Ci::Minutes::ProjectMonthlyUsage.count }
+      it 'does not update monthly usages' do
+        expect { subject }.to not_change { Ci::Minutes::NamespaceMonthlyUsage.count }
+          .and not_change { Ci::Minutes::ProjectMonthlyUsage.count }
       end
 
       context 'when refactor_ci_minutes_consumption feature flag is disabled' do
@@ -43,12 +40,9 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService, feature_category: :contin
           stub_feature_flags(refactor_ci_minutes_consumption: false)
         end
 
-        it 'does not update namespace monthly usage' do
-          expect { subject }.not_to change { Ci::Minutes::NamespaceMonthlyUsage.count }
-        end
-
-        it 'does not update project monthly usage' do
-          expect { subject }.not_to change { Ci::Minutes::ProjectMonthlyUsage.count }
+        it 'does not update monthly usages' do
+          expect { subject }.to not_change { Ci::Minutes::NamespaceMonthlyUsage.count }
+            .and not_change { Ci::Minutes::ProjectMonthlyUsage.count }
         end
       end
     end
