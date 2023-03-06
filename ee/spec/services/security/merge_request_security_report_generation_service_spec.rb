@@ -95,12 +95,14 @@ RSpec.describe Security::MergeRequestSecurityReportGenerationService, feature_ca
                 'head_report_created_at' => '2023-01-18T11:30:01.035Z',
                 'added' => [
                   {
+                    'id' => nil,
                     'name' => 'Test vulnerability 1',
                     'uuid' => new_uuid,
                     'severity' => 'critical',
                     'state' => 'detected'
                   },
                   {
+                    'id' => nil,
                     'name' => 'Test vulnerability 2',
                     'uuid' => confirmed_uuid,
                     'severity' => 'critical',
@@ -109,6 +111,7 @@ RSpec.describe Security::MergeRequestSecurityReportGenerationService, feature_ca
                 ],
                 'fixed' => [
                   {
+                    'id' => nil,
                     'name' => 'Test vulnerability 3',
                     'uuid' => dismissed_uuid,
                     'severity' => 'low',
@@ -119,7 +122,7 @@ RSpec.describe Security::MergeRequestSecurityReportGenerationService, feature_ca
             }
           end
 
-          it 'returns `title`, `severity`, `uuid`, and `state` of the findings' do
+          it 'returns all the fields along with the calculated state of the findings' do
             expect(report).to eq(expected_report)
             expect(merge_request).to have_received(mr_report_method).with(nil)
           end

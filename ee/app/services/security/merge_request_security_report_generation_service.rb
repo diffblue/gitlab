@@ -5,7 +5,6 @@ module Security
     include Gitlab::Utils::StrongMemoize
 
     DEFAULT_FINDING_STATE = 'detected'
-    FINDING_KEYS = %w[name state severity uuid].freeze
 
     InvalidReportTypeError = Class.new(ArgumentError)
 
@@ -23,8 +22,6 @@ module Security
 
       set_states_of!(added_findings)
       set_states_of!(fixed_findings)
-      remove_redundant_keys_of!(added_findings)
-      remove_redundant_keys_of!(fixed_findings)
 
       report
     end
@@ -39,10 +36,6 @@ module Security
 
     def set_states_of!(findings)
       findings.each { |finding| finding['state'] = state_for(finding['uuid']) }
-    end
-
-    def remove_redundant_keys_of!(findings)
-      findings.each { |finding| finding.slice!(*FINDING_KEYS) }
     end
 
     def state_for(uuid)
