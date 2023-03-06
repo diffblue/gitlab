@@ -334,28 +334,6 @@ RSpec.describe BillingPlansHelper, :saas do
     end
   end
 
-  describe '#seats_data_last_update_info' do
-    before do
-      allow(UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker).to receive(:last_enqueue_time).and_return(enqueue_time)
-    end
-
-    context 'when last_enqueue_time from the worker is known' do
-      let(:enqueue_time) { Time.current }
-
-      it 'shows the last enqueue time' do
-        expect(helper.seats_data_last_update_info).to match("as of #{enqueue_time}")
-      end
-    end
-
-    context 'when last_enqueue_time from the worker is unknown' do
-      let(:enqueue_time) { nil }
-
-      it 'shows default message' do
-        expect(helper.seats_data_last_update_info).to match('is updated every day at 12:00pm UTC')
-      end
-    end
-  end
-
   describe '#plan_purchase_or_upgrade_url' do
     let(:plan) { double('Plan') }
 

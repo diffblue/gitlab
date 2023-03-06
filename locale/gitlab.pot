@@ -38320,12 +38320,6 @@ msgstr ""
 msgid "Seats owed"
 msgstr ""
 
-msgid "Seats usage data as of %{last_enqueue_time} (Updated daily)"
-msgstr ""
-
-msgid "Seats usage data is updated every day at 12:00pm UTC"
-msgstr ""
-
 msgid "Secondary email:"
 msgstr ""
 
