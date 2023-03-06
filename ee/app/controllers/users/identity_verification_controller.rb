@@ -89,9 +89,11 @@ module Users
     private
 
     def require_verification_user!
-      @user = User.find_by_id(session[:verification_user_id])
-
-      return if @user.present?
+      if verification_user_id = session[:verification_user_id]
+        User.sticking.stick_or_unstick_request(request.env, :user, verification_user_id)
+        @user = User.find_by_id(verification_user_id)
+        return if @user.present?
+      end
 
       log_verification_user_not_found
       redirect_to root_path
@@ -118,6 +120,7 @@ module Users
       Gitlab::AppLogger.info(
         message: category,
         event: event.to_s.titlecase,
+        action: action_name,
         username: user&.username,
         ip: request.ip,
         reason: reason.to_s,

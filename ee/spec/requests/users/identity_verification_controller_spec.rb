@@ -10,20 +10,28 @@ feature_category: :system_access do
   let_it_be(:confirmed_user) { create(:user, :arkose_verified) }
   let_it_be(:invalid_verification_user_id) { non_existing_record_id }
 
-  shared_examples 'it requires a valid verification_user_id' do
+  shared_examples 'it requires a valid verification_user_id' do |action|
     before do
       sign_in confirmed_user
       stub_session(verification_user_id: invalid_verification_user_id)
     end
 
-    it 'logs the error and redirects' do
+    it 'handles sticking, logs the error and redirects', :aggregate_failures do
+      expect(User.sticking)
+        .to receive(:stick_or_unstick_request)
+        .with(anything, :user, invalid_verification_user_id)
+
       expect(Gitlab::AppLogger).to receive(:info).with(
         hash_including(
           message: 'IdentityVerification::Error',
           event: 'Verification User Not Found',
+          action: action,
           username: confirmed_user.username,
           referer: nil,
-          reason: "signed_in: true, verification_user_id: #{invalid_verification_user_id}, state: {\"email\"=>true}, verified: true"  # rubocop:disable Layout/LineLength
+          reason: "signed_in: true, " \
+                  "verification_user_id: #{invalid_verification_user_id}, " \
+                  "state: {\"email\"=>true}, " \
+                  "verified: true"
         )
       )
 
@@ -85,7 +93,7 @@ feature_category: :system_access do
   describe '#show' do
     subject(:do_request) { get identity_verification_path }
 
-    it_behaves_like 'it requires a valid verification_user_id'
+    it_behaves_like 'it requires a valid verification_user_id', 'show'
     it_behaves_like 'it requires an unconfirmed user'
     it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
 
@@ -110,7 +118,7 @@ feature_category: :system_access do
       end
     end
 
-    it_behaves_like 'it requires a valid verification_user_id'
+    it_behaves_like 'it requires a valid verification_user_id', 'verify_email_code'
     it_behaves_like 'it requires an unconfirmed user'
     it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
 
@@ -199,7 +207,7 @@ feature_category: :system_access do
   describe '#resend_email_code' do
     subject(:do_request) { post resend_email_code_identity_verification_path }
 
-    it_behaves_like 'it requires a valid verification_user_id'
+    it_behaves_like 'it requires a valid verification_user_id', 'resend_email_code'
     it_behaves_like 'it requires an unconfirmed user'
     it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
 
@@ -290,7 +298,7 @@ feature_category: :system_access do
       stub_session(verification_user_id: unconfirmed_user.id)
     end
 
-    it_behaves_like 'it requires a valid verification_user_id'
+    it_behaves_like 'it requires a valid verification_user_id', 'send_phone_verification_code'
     it_behaves_like 'it requires an unconfirmed user'
     it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
 
@@ -368,7 +376,7 @@ feature_category: :system_access do
       stub_session(verification_user_id: unconfirmed_user.id)
     end
 
-    it_behaves_like 'it requires a valid verification_user_id'
+    it_behaves_like 'it requires a valid verification_user_id', 'verify_phone_verification_code'
     it_behaves_like 'it requires an unconfirmed user'
     it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
 
@@ -477,7 +485,7 @@ feature_category: :system_access do
     let(:params) { {} }
     let(:do_request) { post verify_arkose_labs_session_identity_verification_path, params: params }
 
-    it_behaves_like 'it requires a valid verification_user_id'
+    it_behaves_like 'it requires a valid verification_user_id', 'verify_arkose_labs_session'
     it_behaves_like 'it requires an unconfirmed user'
 
     shared_examples 'renders arkose_labs_challenge with the correct alert flash' do
@@ -531,7 +539,7 @@ feature_category: :system_access do
 
     let(:do_request) { get arkose_labs_challenge_identity_verification_path }
 
-    it_behaves_like 'it requires a valid verification_user_id'
+    it_behaves_like 'it requires a valid verification_user_id', 'arkose_labs_challenge'
     it_behaves_like 'it requires an unconfirmed user'
 
     it 'renders arkose_labs_challenge template' do

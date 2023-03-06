@@ -126,6 +126,19 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
           end
         end
 
+        describe 'handling sticking' do
+          it 'sticks or unsticks the request' do
+            allow(User.sticking).to receive(:stick_or_unstick_request)
+
+            create_user
+
+            user = User.find_by_username(user_attrs[:username])
+            expect(User.sticking)
+              .to have_received(:stick_or_unstick_request)
+              .with(request.env, :user, user.id)
+          end
+        end
+
         describe 'redirection' do
           it 'redirects to the `identity_verification_path`' do
             create_user
