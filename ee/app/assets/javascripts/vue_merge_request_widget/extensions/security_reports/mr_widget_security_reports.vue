@@ -189,13 +189,13 @@ export default {
       // TODO: check if gl.mrWidgetData can be safely removed after we migrate to the
       // widget extension.
       const endpoints = [
-        [this.mr.sastComparisonPath, 'SAST'],
-        [this.mr.dastComparisonPath, 'DAST'],
-        [this.mr.secretDetectionComparisonPath, 'SECRET_DETECTION'],
-        [this.mr.apiFuzzingComparisonPath, 'API_FUZZING'],
-        [this.mr.coverageFuzzingComparisonPath, 'COVERAGE_FUZZING'],
-        [this.mr.dependencyScanningComparisonPath, 'DEPENDENCY_SCANNING'],
-        [this.mr.containerScanningComparisonPath, 'CONTAINER_SCANNING'],
+        [this.mr.sastComparisonPathV2, 'SAST'],
+        [this.mr.dastComparisonPathV2, 'DAST'],
+        [this.mr.secretDetectionComparisonPathV2, 'SECRET_DETECTION'],
+        [this.mr.apiFuzzingComparisonPathV2, 'API_FUZZING'],
+        [this.mr.coverageFuzzingComparisonPathV2, 'COVERAGE_FUZZING'],
+        [this.mr.dependencyScanningComparisonPathV2, 'DEPENDENCY_SCANNING'],
+        [this.mr.containerScanningComparisonPathV2, 'CONTAINER_SCANNING'],
       ].filter(([endpoint, reportType]) => {
         const enabledReportsKeyName = convertToCamelCase(reportType.toLowerCase());
         return Boolean(endpoint) && this.mr.enabledReports[enabledReportsKeyName];
