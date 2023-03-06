@@ -121,11 +121,11 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
       end
     end
 
-    context 'with gitlab subscription', :saas do
+    context 'with gitlab subscription', :saas, :freeze_time do
       before do
         group1.add_guest(user)
 
-        create(:gitlab_subscription, namespace: group1, max_seats_used: 1, seats_in_use: 1)
+        create(:gitlab_subscription, namespace: group1, max_seats_used: 1, max_seats_used_changed_at: 1.week.ago, seats_in_use: 1)
       end
 
       # We seem to have some N+1 queries.
@@ -154,6 +154,12 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
         expect(json_response.first['max_seats_used']).to eq(1)
       end
 
+      it 'includes max_seats_used_changed_at' do
+        get api("/namespaces", user)
+
+        expect(Time.zone.parse(json_response.first['max_seats_used_changed_at'])).to eq(1.week.ago)
+      end
+
       it 'includes seats_in_use' do
         get api("/namespaces", user)
 
@@ -167,6 +173,14 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
 
         json_response.each do |resp|
           expect(resp.keys).not_to include('max_seats_used')
+        end
+      end
+
+      it 'does not include max_seats_used_changed_at' do
+        get api("/namespaces", user)
+
+        json_response.each do |resp|
+          expect(resp.keys).not_to include('max_seats_used_changed_at')
         end
       end
 

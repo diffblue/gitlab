@@ -24,6 +24,9 @@ module EE
           expose :max_seats_used, documentation: { type: 'integer', example: 100 }, if: has_gitlab_subscription do |namespace, _|
             namespace.gitlab_subscription.max_seats_used
           end
+          expose :max_seats_used_changed_at, documentation: { type: 'date', example: '2022-06-18' }, if: has_gitlab_subscription do |namespace, _|
+            namespace.gitlab_subscription.max_seats_used_changed_at
+          end
           expose :plan, documentation: { type: 'string', example: 'default' }, if: can_admin_namespace do |namespace, _|
             namespace.actual_plan_name
           end
