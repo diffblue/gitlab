@@ -35300,6 +35300,9 @@ msgstr ""
 msgid "ProtectedEnvironments|Number of approvals must be between 1 and 5"
 msgstr ""
 
+msgid "ProtectedEnvironments|Required approval count"
+msgstr ""
+
 msgid "ProtectedEnvironments|Save"
 msgstr ""
 
