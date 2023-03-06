@@ -29,14 +29,6 @@ module EE
         protected_branch
       end
 
-      def sync_scan_finding_approval_rules
-        return unless project_or_group.licensed_feature_available?(:security_orchestration_policies)
-
-        project_or_group.all_security_orchestration_policy_configurations.each do |configuration|
-          Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService.new(configuration).execute
-        end
-      end
-
       def sync_code_owner_approval_rules
         return if project_or_group.is_a?(Group) # Group-level MVC does not support this currently
         return unless project_or_group.feature_available?(:code_owners)

@@ -68,7 +68,7 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration do
 
         expect_next_instance_of(Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService,
           configuration) do |service|
-          expect(service).to receive(:execute)
+          expect(service).to receive(:execute).with(no_args)
         end
 
         freeze_time do
@@ -95,6 +95,7 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration do
       it 'does not execute process for any policy' do
         expect(Security::SecurityOrchestrationPolicies::ProcessRuleService).not_to receive(:new)
         expect(Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService).not_to receive(:new)
+        expect(Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesProjectService).not_to receive(:new)
 
         expect { subject }.to change(Security::OrchestrationPolicyRuleSchedule, :count).by(-1)
         expect(configuration.reload.configured_at).to be_like_time(Time.current)

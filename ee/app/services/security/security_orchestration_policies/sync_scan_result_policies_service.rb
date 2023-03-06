@@ -9,7 +9,9 @@ module Security
 
       def execute
         projects.find_each do |project|
-          Security::ProcessScanResultPolicyWorker.perform_async(project.id, configuration.id)
+          Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesProjectService
+            .new(configuration)
+            .execute(project.id)
         end
       end
 
