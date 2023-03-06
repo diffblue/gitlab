@@ -37,6 +37,7 @@ module EE
               projects/security/dast_site_profiles#edit
               projects/security/dast_scanner_profiles#new
               projects/security/dast_scanner_profiles#edit
+              projects/security/corpus_management#show
             ]
           end
 
