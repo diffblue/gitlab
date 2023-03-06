@@ -2,15 +2,20 @@
 
 require "spec_helper"
 
-RSpec.describe Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService do
+RSpec.describe Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService,
+               feature_category: :security_policy_management do
   let_it_be(:configuration, refind: true) { create(:security_orchestration_policy_configuration, configured_at: nil) }
 
   describe '#execute' do
     subject { described_class.new(configuration).execute }
 
     it 'triggers worker for the configuration' do
-      expect(Security::ProcessScanResultPolicyWorker).to receive(:perform_async).with(configuration.project_id,
-                                                                                      configuration.id)
+      expect_next_instance_of(
+        Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesProjectService,
+        configuration
+      ) do |sync_service|
+        expect(sync_service).to receive(:execute).with(configuration.project_id)
+      end
 
       subject
     end
@@ -22,8 +27,13 @@ RSpec.describe Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesSe
         create(:security_orchestration_policy_configuration, configured_at: nil, project: nil, namespace: namespace)
       end
 
-      it 'triggers worker for the configuration' do
-        expect(Security::ProcessScanResultPolicyWorker).to receive(:perform_async).with(project.id, configuration.id)
+      it 'triggers SyncScanResultPoliciesProjectService for the configuration and project_id' do
+        expect_next_instance_of(
+          Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesProjectService,
+          configuration
+        ) do |sync_service|
+          expect(sync_service).to receive(:execute).with(project.id)
+        end
 
         subject
       end

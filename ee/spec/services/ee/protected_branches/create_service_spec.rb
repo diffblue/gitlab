@@ -85,6 +85,7 @@ RSpec.describe ProtectedBranches::CreateService, feature_category: :compliance_m
 
       it 'does not sync scan_finding_approval_rules' do
         expect(Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService).not_to receive(:new)
+        expect(Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesProjectService).not_to receive(:new)
 
         service.execute
       end
@@ -99,10 +100,10 @@ RSpec.describe ProtectedBranches::CreateService, feature_category: :compliance_m
 
       it 'syncs scan_finding_approval_rules' do
         expect_next_instance_of(
-          Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService,
+          Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesProjectService,
           security_orchestration_policy_configuration
         ) do |sync_service|
-          expect(sync_service).to receive(:execute)
+          expect(sync_service).to receive(:execute).with(target_project.id)
         end
 
         service.execute
@@ -153,6 +154,10 @@ RSpec.describe ProtectedBranches::CreateService, feature_category: :compliance_m
   context 'when entity group' do
     let_it_be_with_reload(:entity) { create(:group) }
     let_it_be_with_reload(:user) { create(:user) }
+    let_it_be_with_reload(:security_orchestration_policy_configuration) do
+      create(:security_orchestration_policy_configuration, :namespace, namespace: entity)
+    end
+
     let(:service) { described_class.new(entity, user) }
 
     before do
@@ -171,6 +176,39 @@ RSpec.describe ProtectedBranches::CreateService, feature_category: :compliance_m
       expect(Onboarding::ProgressService).not_to receive(:new)
 
       service.execute
+    end
+
+    context 'when security_orchestration_policies is not licensed' do
+      before do
+        stub_licensed_features(security_orchestration_policies: false)
+        allow(entity).to receive(:all_security_orchestration_policy_configurations)
+          .and_return([security_orchestration_policy_configuration])
+      end
+
+      it 'does not sync scan_finding_approval_rules' do
+        expect(Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService).not_to receive(:new)
+
+        service.execute
+      end
+    end
+
+    context 'when security_orchestration_policies is licensed' do
+      before do
+        stub_licensed_features(security_orchestration_policies: true)
+        allow(entity).to receive(:all_security_orchestration_policy_configurations)
+          .and_return([security_orchestration_policy_configuration])
+      end
+
+      it 'syncs scan_finding_approval_rules' do
+        expect_next_instance_of(
+          Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService,
+          security_orchestration_policy_configuration
+        ) do |sync_service|
+          expect(sync_service).to receive(:execute).with(no_args)
+        end
+
+        service.execute
+      end
     end
   end
 end

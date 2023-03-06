@@ -28,6 +28,7 @@ RSpec.describe ProtectedBranches::DestroyService, feature_category: :compliance_
 
       it 'does not sync scan_finding_approval_rules' do
         expect(Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService).not_to receive(:new)
+        expect(Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesProjectService).not_to receive(:new)
 
         service.execute(protected_branch)
       end
@@ -42,10 +43,10 @@ RSpec.describe ProtectedBranches::DestroyService, feature_category: :compliance_
 
       it 'syncs scan_finding_approval_rules' do
         expect_next_instance_of(
-          Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService,
+          Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesProjectService,
           security_orchestration_policy_configuration
         ) do |sync_service|
-          expect(sync_service).to receive(:execute)
+          expect(sync_service).to receive(:execute).with(project.id)
         end
 
         service.execute(protected_branch)
