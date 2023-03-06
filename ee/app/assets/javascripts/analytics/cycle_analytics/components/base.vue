@@ -131,8 +131,14 @@ export default {
     stageCount() {
       return this.activeStages.length;
     },
+    showDashboardsLink() {
+      return Boolean(
+        this.featureFlags?.groupLevelAnalyticsDashboard &&
+          this.featureFlags?.groupAnalyticsDashboardsPage,
+      );
+    },
     dashboardsPath() {
-      return this.featureFlags?.groupAnalyticsDashboardsPage
+      return this.showDashboardsLink
         ? generateValueStreamsDashboardLink(this.currentGroupPath, this.selectedProjectFullPaths)
         : null;
     },

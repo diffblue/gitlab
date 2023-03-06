@@ -605,13 +605,13 @@ describe('EE Value Stream Analytics component', () => {
     });
   });
 
-  describe('with`groupAnalyticsDashboardsPage=true`', () => {
+  describe('with`groupAnalyticsDashboardsPage=true` and `groupLevelAnalyticsDashboard=true`', () => {
     beforeEach(async () => {
       mock = new MockAdapter(axios);
       mockRequiredRoutes(mock);
       wrapper = await createComponent({
         withStageSelected: true,
-        featureFlags: { groupAnalyticsDashboardsPage: true },
+        featureFlags: { groupAnalyticsDashboardsPage: true, groupLevelAnalyticsDashboard: true },
       });
     });
 

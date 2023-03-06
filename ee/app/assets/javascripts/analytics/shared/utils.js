@@ -104,6 +104,7 @@ const buildProjectsFromJSON = (projects = '') => {
 
 const extractFeatures = (gon) => ({
   groupAnalyticsDashboardsPage: Boolean(gon?.features?.groupAnalyticsDashboardsPage),
+  groupLevelAnalyticsDashboard: Boolean(gon?.licensed_features?.groupLevelAnalyticsDashboard),
 });
 
 /**
