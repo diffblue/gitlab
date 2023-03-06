@@ -8,7 +8,8 @@ RSpec.describe Emails::ServiceDesk, feature_category: :team_planning do
 
   include_context 'with service desk mailer'
 
-  let_it_be(:project) { build_stubbed(:project) }
+  let_it_be(:project_namespace) { build_stubbed(:project_namespace) }
+  let_it_be(:project) { build_stubbed(:project, project_namespace: project_namespace) }
   let_it_be(:issue) { build_stubbed(:issue, project: project) }
   let_it_be(:email) { 'someone@gitlab.com' }
   let_it_be(:custom_text) { 'this is some additional custom text' }
