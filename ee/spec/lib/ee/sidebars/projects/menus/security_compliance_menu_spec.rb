@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Sidebars::Projects::Menus::SecurityComplianceMenu do
+RSpec.describe Sidebars::Projects::Menus::SecurityComplianceMenu, feature_category: :navigation do
   let_it_be(:project) { create(:project) }
 
   let(:user) { project.first_owner }
@@ -62,11 +62,12 @@ RSpec.describe Sidebars::Projects::Menus::SecurityComplianceMenu do
             projects/security/dast_site_profiles#edit
             projects/security/dast_scanner_profiles#new
             projects/security/dast_scanner_profiles#edit
+            projects/security/corpus_management#show
           ]
         end
 
         it 'includes all the security configuration paths' do
-          expect(subject.active_routes[:path]).to eq expected_security_configuration_paths
+          expect(subject.active_routes[:path]).to match_array expected_security_configuration_paths
         end
       end
     end
