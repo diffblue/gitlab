@@ -112,8 +112,9 @@ module Security
       @remediations_proxy ||= RemediationsProxy.new(job_artifact&.file)
     end
 
-    def scanner
-      project.vulnerability_scanners.find_by_external_id(primary_scanner&.external_id)
+    def scanners
+      external_ids = security_report.scanners.keys
+      project.vulnerability_scanners.with_external_id(external_ids)
     end
 
     private
