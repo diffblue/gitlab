@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client, feature_category: :workflow_automation do
+  include AfterNextHelpers
+
   let(:stub_class) { Gitlab::AppliedMl::SuggestedReviewers::RecommenderServicesPb::Stub }
 
   let(:rpc_url) { 'example.org:1234' }
@@ -273,6 +275,80 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client, feature_category: 
         allow_next_instance_of(stub_class) do |stub|
           allow(stub).to receive(:register_project).and_return(register_project_response)
         end
+      end
+
+      it_behaves_like 'respecting environment configuration'
+    end
+  end
+
+  describe '#deregister_project' do
+    let(:response_class) { Gitlab::AppliedMl::SuggestedReviewers::RecommenderPb::DeregisterProjectRes }
+    let(:deregister_project_request) do
+      {
+        project_id: 42
+      }
+    end
+
+    let(:deregister_project_response) do
+      response_class.new(
+        {
+          project_id: 42,
+          deregistered_at: '2022-01-01 20:22'
+        }
+      )
+    end
+
+    subject do
+      client.deregister_project(**deregister_project_request)
+    end
+
+    before do
+      stub_env('SUGGESTED_REVIEWERS_SECRET', secret)
+    end
+
+    context 'when configuration and input is healthy' do
+      let(:client_arguments) { { rpc_url: rpc_url, certs: certs } }
+      let(:deregister_project_result) do
+        {
+          project_id: 42,
+          deregistered_at: '2022-01-01 20:22'
+        }
+      end
+
+      before do
+        allow_next(stub_class).to receive(:deregister_project).and_return(deregister_project_response)
+      end
+
+      it { is_expected.to eq(deregister_project_result) }
+
+      it_behaves_like 'respecting channel credentials'
+    end
+
+    context 'when a grpc already exists is received' do
+      before do
+        allow_next(stub_class).to receive(:deregister_project).and_raise(GRPC::FailedPrecondition)
+      end
+
+      it 'raises a new error' do
+        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ProjectAlreadyDeregistered)
+      end
+    end
+
+    context 'when a grpc bad status is received' do
+      before do
+        allow_next(stub_class).to receive(:deregister_project).and_raise(GRPC::Unavailable)
+      end
+
+      it 'raises a new error' do
+        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ResourceNotAvailable)
+      end
+    end
+
+    describe 'with gRPC configuration' do
+      let(:client_arguments) { {} }
+
+      before do
+        allow_next(stub_class).to receive(:deregister_project).and_return(deregister_project_response)
       end
 
       it_behaves_like 'respecting environment configuration'

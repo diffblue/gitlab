@@ -14,6 +14,7 @@ module Gitlab
 
           rpc :MergeRequestRecommendationsV2, MergeRequestRecommendationsReqV2, MergeRequestRecommendationsResV2
           rpc :RegisterProject, RegisterProjectReq, RegisterProjectRes
+          rpc :DeregisterProject, DeregisterProjectReq, DeregisterProjectRes
         end
 
         Stub = Service.rpc_stub_class

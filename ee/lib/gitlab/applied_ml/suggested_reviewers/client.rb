@@ -78,6 +78,22 @@ module Gitlab
           raise Errors::ResourceNotAvailable, e
         end
 
+        def deregister_project(project_id:)
+          deregistration_input = {
+            project_id: project_id
+          }
+          response = send_deregister_project(deregistration_input)
+
+          {
+            project_id: response.project_id,
+            deregistered_at: response.deregistered_at
+          }
+        rescue GRPC::FailedPrecondition => e
+          raise Errors::ProjectAlreadyDeregistered, e
+        rescue GRPC::BadStatus => e
+          raise Errors::ResourceNotAvailable, e
+        end
+
         private
 
         attr_reader :rpc_url, :certs, :secret
@@ -104,6 +120,12 @@ module Gitlab
           request = RegisterProjectReq.new(registration_input)
           client = Stub.new(rpc_url, credentials, timeout: DEFAULT_TIMEOUT)
           client.register_project(request)
+        end
+
+        def send_deregister_project(deregistration_input)
+          request = DeregisterProjectReq.new(deregistration_input)
+          client = Stub.new(rpc_url, credentials, timeout: DEFAULT_TIMEOUT)
+          client.deregister_project(request)
         end
 
         def credentials
