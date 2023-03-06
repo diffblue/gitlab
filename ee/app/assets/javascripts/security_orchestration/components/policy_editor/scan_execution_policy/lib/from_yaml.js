@@ -1,6 +1,6 @@
 import { safeLoad } from 'js-yaml';
 import { isValidPolicy, hasInvalidCron } from '../../utils';
-import { RULE_MODE_SCANNERS } from '../constants';
+import { RULE_MODE_SCANNERS } from '../../constants';
 
 /**
  * Checks if rule mode supports the inputted scanner

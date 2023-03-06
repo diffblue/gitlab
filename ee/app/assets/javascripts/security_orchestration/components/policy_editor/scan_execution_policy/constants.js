@@ -1,12 +1,4 @@
 import { __, s__ } from '~/locale';
-import {
-  SAST_SHORT_NAME,
-  DAST_SHORT_NAME,
-  DEPENDENCY_SCANNING_NAME,
-  SECRET_DETECTION_NAME,
-  CONTAINER_SCANNING_NAME,
-  SAST_IAC_SHORT_NAME,
-} from '~/security_configuration/components/constants';
 
 export const SCANNER_DAST = 'dast';
 export const DEFAULT_AGENT_NAME = '';
@@ -42,12 +34,3 @@ export const SCANNER_HUMANIZED_TEMPLATE = s__(
 export const DAST_HUMANIZED_TEMPLATE = s__(
   'ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require a %{scan} scan to run with site profile %{siteProfile} and scanner profile %{scannerProfile} with tags %{tags}',
 );
-
-export const RULE_MODE_SCANNERS = {
-  sast: SAST_SHORT_NAME,
-  sast_iac: SAST_IAC_SHORT_NAME,
-  dast: DAST_SHORT_NAME,
-  secret_detection: SECRET_DETECTION_NAME,
-  container_scanning: CONTAINER_SCANNING_NAME,
-  dependency_scanning: DEPENDENCY_SCANNING_NAME,
-};

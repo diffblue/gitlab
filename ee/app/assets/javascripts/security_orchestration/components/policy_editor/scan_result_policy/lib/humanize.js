@@ -1,6 +1,6 @@
 import { sprintf, s__ } from '~/locale';
 import { NO_RULE_MESSAGE, INVALID_PROTECTED_BRANCHES } from '../../constants';
-import { convertScannersToTitleCase } from '../../utils';
+import { createHumanizedScanners } from '../../utils';
 import { LICENSE_FINDING, LICENSE_STATES } from './rules';
 
 /**
@@ -157,7 +157,7 @@ const humanizeRule = (rule) => {
       'SecurityOrchestration|%{scanners} %{severities} in an open merge request targeting %{branches}.',
     ),
     {
-      scanners: humanizeScanners(convertScannersToTitleCase(rule.scanners)),
+      scanners: humanizeScanners(createHumanizedScanners(rule.scanners)),
       severities: humanizeItems({
         items: rule.severity_levels,
         singular: s__('SecurityOrchestration|vulnerability'),
