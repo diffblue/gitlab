@@ -9,6 +9,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
     stub_licensed_features(security_dashboard: true)
   end
 
+  let(:comment) { "wheee" }
   let_it_be(:user) { create(:user) }
 
   let(:project_vulnerabilities_path) { "/projects/#{project.id}/vulnerabilities" }
@@ -341,7 +342,12 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
     let(:vulnerability) { project.vulnerabilities.first }
     let(:vulnerability_id) { vulnerability.id }
 
-    subject(:confirm_vulnerability) { post api("/vulnerabilities/#{vulnerability_id}/confirm", user) }
+    subject(:confirm_vulnerability) do
+      post(
+        api("/vulnerabilities/#{vulnerability_id}/confirm", user),
+        params: { comment: comment }
+      )
+    end
 
     context 'with an authorized user with proper permissions' do
       before do
@@ -358,6 +364,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
           expect(vulnerability.reload).to(
             have_attributes(state: 'confirmed', confirmed_by: user, confirmed_at: be_like_time(Time.current)))
           expect(vulnerability.findings).to all have_attributes(state: 'confirmed')
+          expect(vulnerability.state_transitions.last.comment).to eq(comment)
         end
       end
 
@@ -399,14 +406,19 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
 
     let(:vulnerability_id) { vulnerability.id }
 
-    subject(:revert_vulnerability_to_detected) { post api("/vulnerabilities/#{vulnerability_id}/revert", user) }
+    subject(:revert_vulnerability_to_detected) do
+      post(
+        api("/vulnerabilities/#{vulnerability_id}/revert", user),
+        params: { comment: comment }
+      )
+    end
 
     context 'with an authorized user with proper permissions' do
       before do
         project.add_developer(user)
       end
 
-      it 'reverts a vulnerability and its associated findings to detected state' do
+      it 'reverts a vulnerability and its associated findings to detected state', :aggregate_failures do
         freeze_time do
           revert_vulnerability_to_detected
 
@@ -416,6 +428,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
           expect(vulnerability.reload).to(
             have_attributes(state: 'detected', dismissed_by: nil, dismissed_at: nil))
           expect(vulnerability.findings).to all not_have_vulnerability_dismissal_feedback
+          expect(vulnerability.state_transitions.last.comment).to eq(comment)
         end
       end
 
