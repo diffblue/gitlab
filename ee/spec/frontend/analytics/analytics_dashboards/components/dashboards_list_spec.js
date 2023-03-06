@@ -31,6 +31,8 @@ describe('DashboardsList', () => {
   const findPageTitle = () => wrapper.findByTestId('title');
   const findPageDescription = () => wrapper.findByTestId('description');
   const findHelpLink = () => wrapper.findByTestId('help-link');
+  const findVisualizationDesignerButton = () =>
+    wrapper.findByTestId('visualization-designer-button');
   const findInstrumentationDetailsDropdown = () =>
     wrapper.findByTestId('intrumentation-details-dropdown');
   const findKeyInputAt = (index) => wrapper.findAllComponents(AnalyticsClipboardInput).at(index);
@@ -73,6 +75,10 @@ describe('DashboardsList', () => {
 
     it('should render the page description', () => {
       expect(findPageDescription().text()).toContain(I18N_DASHBOARD_LIST_DESCRIPTION);
+    });
+
+    it('should render the visualization designer button', () => {
+      expect(findVisualizationDesignerButton().exists()).toBe(true);
     });
 
     it('should render the instrumentation details dropdown', () => {

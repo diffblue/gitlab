@@ -16,6 +16,9 @@ export const I18N_DASHBOARD_LIST_SDK_APP_ID = s__('ProductAnalytics|SDK App ID')
 export const I18N_DASHBOARD_LIST_SDK_APP_ID_DESCRIPTION = s__(
   'ProductAnalytics|Identifies the sender of tracking events',
 );
+export const I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER = s__(
+  'ProductAnalytics|Visualization Designer',
+);
 
 export const I18N_ALERT_NO_POINTER_TITLE = s__('ProductAnalytics|Custom dashboards');
 export const I18N_ALERT_NO_POINTER_BUTTON = s__('ProductAnalytics|Configure Dashboard Project');
