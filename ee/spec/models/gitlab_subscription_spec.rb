@@ -596,16 +596,26 @@ RSpec.describe GitlabSubscription, :saas, feature_category: :subscription_manage
         )
       end
 
-      it 'logs previous state to gitlab subscription history' do
-        gitlab_subscription.update!(max_seats_used: 32)
+      context 'when a tracked attribute is updated' do
+        it 'logs previous state to gitlab subscription history' do
+          gitlab_subscription.update!(max_seats_used: 32)
 
-        expect(GitlabSubscriptionHistory.count).to eq(1)
-        expect(GitlabSubscriptionHistory.last.attributes).to include(
-          'gitlab_subscription_id' => gitlab_subscription.id,
-          'change_type' => 'gitlab_subscription_updated',
-          'max_seats_used' => 42,
-          'seats' => 13
-        )
+          expect(GitlabSubscriptionHistory.count).to eq(1)
+          expect(GitlabSubscriptionHistory.last.attributes).to include(
+            'gitlab_subscription_id' => gitlab_subscription.id,
+            'change_type' => 'gitlab_subscription_updated',
+            'max_seats_used' => 42,
+            'seats' => 13
+          )
+        end
+      end
+
+      context 'when tracked attributes are not updated' do
+        it 'does not log previous state to gitlab subscription history' do
+          expect do
+            gitlab_subscription.update!(last_seat_refresh_at: Time.current)
+          end.to not_change(GitlabSubscriptionHistory, :count)
+        end
       end
 
       context 'when max_seats_used has changed' do
