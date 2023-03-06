@@ -25,7 +25,7 @@ module Security
       def execute
         finding_map_collection.each_slice(BATCH_SIZE)
           .flat_map { |slice| ingest_slice(slice) }
-          .tap { |ids| MarkAsResolvedService.execute(scanner, ids) }
+          .tap { |ids| mark_resolved_vulnerabilities(ids) }
       end
 
       private
@@ -33,7 +33,7 @@ module Security
       attr_reader :security_scan
       attr_accessor :errored
 
-      delegate :pipeline, :scanner, to: :security_scan, private: true
+      delegate :pipeline, :scanners, to: :security_scan, private: true
 
       def finding_map_collection
         @finding_map_collection ||= FindingMapCollection.new(security_scan)
@@ -59,6 +59,12 @@ module Security
 
         self.errored = true
         security_scan.add_processing_error!(SCAN_INGESTION_ERROR)
+      end
+
+      def mark_resolved_vulnerabilities(ingested_ids)
+        scanners.each do |scanner|
+          MarkAsResolvedService.execute(scanner, ingested_ids)
+        end
       end
     end
   end
