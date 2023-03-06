@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Gitlab::Checks::PushRuleCheck do
+RSpec.describe EE::Gitlab::Checks::PushRuleCheck, feature_category: :source_code_management do
   include_context 'changes access checks context'
 
   let(:push_rule) { create(:push_rule, :commit_message) }
@@ -54,7 +54,7 @@ RSpec.describe EE::Gitlab::Checks::PushRuleCheck do
       end
     end
 
-    context 'when tag name does not exists' do
+    context 'when branch name exists' do
       let(:changes) do
         [
           # Update of a branch.
@@ -67,6 +67,19 @@ RSpec.describe EE::Gitlab::Checks::PushRuleCheck do
           .not_to receive(:validate!)
         expect_any_instance_of(EE::Gitlab::Checks::PushRules::BranchCheck)
           .to receive(:validate!)
+
+        subject.validate!
+      end
+    end
+
+    context 'when changes are from notes ref' do
+      let(:changes) do
+        [{ oldrev: oldrev, newrev: newrev, ref: 'refs/notes/commits' }]
+      end
+
+      it 'validates branches push rules' do
+        expect_any_instance_of(EE::Gitlab::Checks::PushRules::TagCheck).not_to receive(:validate!)
+        expect_any_instance_of(EE::Gitlab::Checks::PushRules::BranchCheck).not_to receive(:validate!)
 
         subject.validate!
       end

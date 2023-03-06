@@ -20,9 +20,9 @@ module EE
         # @raise [Gitlab::GitAccess::ForbiddenError] if check fails
         def check_tag_or_branch!
           changes_access.single_change_accesses.each do |single_change_access|
-            if single_change_access.tag_name
+            if single_change_access.tag_ref?
               PushRules::TagCheck.new(single_change_access).validate!
-            else
+            elsif single_change_access.branch_ref?
               PushRules::BranchCheck.new(single_change_access).validate!
             end
           end
