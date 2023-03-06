@@ -1,5 +1,5 @@
 <script>
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import getClusterAgentsQuery from 'ee/security_dashboard/graphql/queries/cluster_agents.query.graphql';
 import { CLUSTER_FILTER_ERROR } from './constants';
 import SimpleFilter from './simple_filter.vue';

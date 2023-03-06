@@ -14,7 +14,7 @@ import {
   STORAGE_PER_PACK,
 } from 'ee/subscriptions/buy_addons_shared/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 
 const planCode = {
   CI_1000_MINUTES_PLAN: 'ci_minutes',
