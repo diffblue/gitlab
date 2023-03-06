@@ -26,31 +26,32 @@ export const decomposeApproversV2 = (existingApprovers) => {
   const GROUP_TYPE_UNIQ_KEY = 'full_name';
   const GROUP_TYPE_UNIQ_KEY_V2 = 'fullName';
 
-  return existingApprovers.reduce(
-    (acc, approver) => {
-      const approverKeys = Object.keys(approver);
+  return existingApprovers.reduce((acc, approver) => {
+    const approverKeys = Object.keys(approver);
 
-      let type = USER_TYPE;
-      let value = convertToGraphQLId(TYPENAME_USER, approver.id);
+    let type = USER_TYPE;
+    let value = convertToGraphQLId(TYPENAME_USER, approver.id);
 
-      if (
-        approverKeys.includes(GROUP_TYPE_UNIQ_KEY) ||
-        approverKeys.includes(GROUP_TYPE_UNIQ_KEY_V2)
-      ) {
-        type = GROUP_TYPE;
-        value = convertToGraphQLId(TYPENAME_GROUP, approver.id);
-      }
+    if (
+      approverKeys.includes(GROUP_TYPE_UNIQ_KEY) ||
+      approverKeys.includes(GROUP_TYPE_UNIQ_KEY_V2)
+    ) {
+      type = GROUP_TYPE;
+      value = convertToGraphQLId(TYPENAME_GROUP, approver.id);
+    }
 
-      acc[type].push({
-        ...approver,
-        type,
-        value,
-      });
+    if (acc[type] === undefined) {
+      acc[type] = [];
+    }
 
-      return acc;
-    },
-    { [GROUP_TYPE]: [], [USER_TYPE]: [] },
-  );
+    acc[type].push({
+      ...approver,
+      type,
+      value,
+    });
+
+    return acc;
+  }, {});
 };
 
 /**

@@ -84,7 +84,6 @@ describe('decomposeApproversV2', () => {
           value: convertToGraphQLId(TYPENAME_GROUP, groupApprover.id),
         },
       ],
-      [USER_TYPE]: [],
     });
   });
 
@@ -104,13 +103,11 @@ describe('decomposeApproversV2', () => {
           value: convertToGraphQLId(TYPENAME_GROUP, groupApprover.id),
         },
       ],
-      [USER_TYPE]: [],
     });
   });
 
   it('sets user as a type for user related approvers', () => {
     expect(decomposeApproversV2([userApprover])).toStrictEqual({
-      [GROUP_TYPE]: [],
       [USER_TYPE]: [
         {
           ...userApprover,
