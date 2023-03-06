@@ -1,6 +1,6 @@
 import { getTypeOfWorkTopLabels, getTypeOfWorkTasksByType } from 'ee/api/analytics_api';
 import { __ } from '~/locale';
-import { throwIfUserForbidden, checkForDataError, flashErrorIfStatusNotOk } from '../../../utils';
+import { throwIfUserForbidden, checkForDataError, alertErrorIfStatusNotOk } from '../../../utils';
 import * as types from './mutation_types';
 
 export const setLoading = ({ commit }, loading) => commit(types.SET_LOADING, loading);
@@ -11,7 +11,7 @@ export const receiveTopRankedGroupLabelsSuccess = ({ commit, dispatch }, data) =
 };
 
 export const receiveTopRankedGroupLabelsError = ({ commit }, error) => {
-  flashErrorIfStatusNotOk({
+  alertErrorIfStatusNotOk({
     error,
     message: __('There was an error fetching the top labels for the selected group'),
   });
@@ -51,7 +51,7 @@ export const fetchTopRankedGroupLabels = ({ dispatch, commit, state, rootGetters
 };
 
 export const receiveTasksByTypeDataError = ({ commit }, error) => {
-  flashErrorIfStatusNotOk({
+  alertErrorIfStatusNotOk({
     error,
     message: __('There was an error fetching data for the tasks by type chart'),
   });

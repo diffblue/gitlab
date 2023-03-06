@@ -9,7 +9,7 @@ import * as epicUtils from 'ee/roadmap/utils/epic_utils';
 import * as roadmapItemUtils from 'ee/roadmap/utils/roadmap_item_utils';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import testAction from 'helpers/vuex_action_helper';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import {
   mockGroupId,
@@ -32,7 +32,7 @@ import {
   mockPageInfo,
 } from '../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 const mockTimeframeMonths = getTimeframeForRangeType({
   timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
@@ -161,7 +161,7 @@ describe('Roadmap Vuex Actions', () => {
       );
     });
 
-    it('should show flash error', () => {
+    it('should show alert error', () => {
       actions.receiveEpicsFailure({ commit: () => {} });
 
       expect(createAlert).toHaveBeenCalledWith({
@@ -677,7 +677,7 @@ describe('Roadmap Vuex Actions', () => {
       );
     });
 
-    it('should show flash error', () => {
+    it('should show alert error', () => {
       actions.receiveMilestonesFailure({ commit: () => {} });
 
       expect(createAlert).toHaveBeenCalledWith({

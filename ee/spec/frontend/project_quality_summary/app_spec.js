@@ -4,7 +4,7 @@ import VueApollo from 'vue-apollo';
 import mockProjectQualityResponse from 'test_fixtures/graphql/project_quality_summary/graphql/queries/get_project_quality.query.graphql.json';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 
 import ProjectQualitySummary from 'ee/project_quality_summary/app.vue';
@@ -12,7 +12,7 @@ import FeedbackBanner from 'ee/project_quality_summary/components/feedback_banne
 import getProjectQuality from 'ee/project_quality_summary/graphql/queries/get_project_quality.query.graphql';
 import { i18n } from 'ee/project_quality_summary/constants';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 Vue.use(VueApollo);
 
@@ -67,7 +67,7 @@ describe('Project quality summary app component', () => {
       await waitForPromises();
     });
 
-    it('shows a flash message', () => {
+    it('shows a alert message', () => {
       expect(createAlert).toHaveBeenCalled();
     });
   });

@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlButton, GlSprintf } from '@gitlab/ui';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -15,7 +15,7 @@ import {
   mockFiltersOptions,
 } from '../../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 Vue.use(VueApollo);
 
 describe('StreamItem', () => {

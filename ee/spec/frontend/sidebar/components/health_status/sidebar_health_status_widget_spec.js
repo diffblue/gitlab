@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/browser';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
 import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
 import HealthStatusDropdown from 'ee/sidebar/components/health_status/health_status_dropdown.vue';
@@ -20,7 +20,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { getHealthStatusMutationResponse, getHealthStatusQueryResponse } from '../../mock_data';
 
 jest.mock('@sentry/browser');
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('SidebarHealthStatusWidget component', () => {
   let wrapper;

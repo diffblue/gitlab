@@ -5,13 +5,13 @@ import * as actions from 'ee/insights/stores/modules/insights/actions';
 import { TEST_HOST } from 'helpers/test_constants';
 import testAction from 'helpers/vuex_action_helper';
 
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 const ERROR_MESSAGE = 'TEST_ERROR_MESSAGE';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('Insights store actions', () => {
   const key = 'bugsPerTeam';

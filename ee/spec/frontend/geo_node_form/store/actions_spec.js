@@ -3,14 +3,14 @@ import * as actions from 'ee/geo_node_form/store/actions';
 import * as types from 'ee/geo_node_form/store/mutation_types';
 import createState from 'ee/geo_node_form/store/state';
 import testAction from 'helpers/vuex_action_helper';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { MOCK_SYNC_NAMESPACES, MOCK_NODE, MOCK_ERROR_MESSAGE, MOCK_NODES_PATH } from '../mock_data';
 
 jest.mock('~/helpers/help_page_helper');
-jest.mock('~/flash');
+jest.mock('~/alert');
 jest.mock('~/lib/utils/url_utility', () => ({
   visitUrl: jest.fn().mockName('visitUrlMock'),
   joinPaths: jest.fn(),
@@ -21,7 +21,7 @@ describe('GeoNodeForm Store Actions', () => {
   let mock;
 
   const noCallback = () => {};
-  const flashCallback = () => {
+  const alertCallback = () => {
     expect(createAlert).toHaveBeenCalledTimes(1);
     createAlert.mockClear();
   };
@@ -42,10 +42,10 @@ describe('GeoNodeForm Store Actions', () => {
     action                                  | data                               | mutationName                             | mutationCall                                                                      | callback
     ${actions.requestSyncNamespaces}        | ${null}                            | ${types.REQUEST_SYNC_NAMESPACES}         | ${{ type: types.REQUEST_SYNC_NAMESPACES }}                                        | ${noCallback}
     ${actions.receiveSyncNamespacesSuccess} | ${MOCK_SYNC_NAMESPACES}            | ${types.RECEIVE_SYNC_NAMESPACES_SUCCESS} | ${{ type: types.RECEIVE_SYNC_NAMESPACES_SUCCESS, payload: MOCK_SYNC_NAMESPACES }} | ${noCallback}
-    ${actions.receiveSyncNamespacesError}   | ${null}                            | ${types.RECEIVE_SYNC_NAMESPACES_ERROR}   | ${{ type: types.RECEIVE_SYNC_NAMESPACES_ERROR }}                                  | ${flashCallback}
+    ${actions.receiveSyncNamespacesError}   | ${null}                            | ${types.RECEIVE_SYNC_NAMESPACES_ERROR}   | ${{ type: types.RECEIVE_SYNC_NAMESPACES_ERROR }}                                  | ${alertCallback}
     ${actions.requestSaveGeoNode}           | ${null}                            | ${types.REQUEST_SAVE_GEO_NODE}           | ${{ type: types.REQUEST_SAVE_GEO_NODE }}                                          | ${noCallback}
     ${actions.receiveSaveGeoNodeSuccess}    | ${null}                            | ${types.RECEIVE_SAVE_GEO_NODE_COMPLETE}  | ${{ type: types.RECEIVE_SAVE_GEO_NODE_COMPLETE }}                                 | ${visitUrlCallback}
-    ${actions.receiveSaveGeoNodeError}      | ${{ message: MOCK_ERROR_MESSAGE }} | ${types.RECEIVE_SAVE_GEO_NODE_COMPLETE}  | ${{ type: types.RECEIVE_SAVE_GEO_NODE_COMPLETE }}                                 | ${flashCallback}
+    ${actions.receiveSaveGeoNodeError}      | ${{ message: MOCK_ERROR_MESSAGE }} | ${types.RECEIVE_SAVE_GEO_NODE_COMPLETE}  | ${{ type: types.RECEIVE_SAVE_GEO_NODE_COMPLETE }}                                 | ${alertCallback}
     ${actions.setError}                     | ${{ key: 'name', error: 'error' }} | ${types.SET_ERROR}                       | ${{ type: types.SET_ERROR, payload: { key: 'name', error: 'error' } }}            | ${noCallback}
   `(`non-axios calls`, ({ action, data, mutationName, mutationCall, callback }) => {
     describe(action.name, () => {

@@ -9,7 +9,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { preventDefault, stopPropagation } from 'ee_jest/admin/test_helpers';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
 import {
   issueNoWeightResponse,
@@ -19,7 +19,7 @@ import {
   mockIssueId,
 } from '../../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 Vue.use(VueApollo);
 
@@ -126,7 +126,7 @@ describe('Sidebar Weight Widget', () => {
     });
   });
 
-  it('displays a flash message when query is rejected', async () => {
+  it('displays a alert message when query is rejected', async () => {
     createComponent({
       weightQueryHandler: jest.fn().mockRejectedValue('Houston, we have a problem'),
     });

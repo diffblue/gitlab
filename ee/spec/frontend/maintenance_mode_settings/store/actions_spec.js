@@ -6,18 +6,18 @@ import {
 import * as actions from 'ee/maintenance_mode_settings/store/actions';
 import { createState } from 'ee/maintenance_mode_settings/store/state';
 import testAction from 'helpers/vuex_action_helper';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { ACTIONS_TEST_DATA } from '../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('MaintenanceModeSettings Store Actions', () => {
   let mock;
   let state;
 
   const noCallback = () => {};
-  const flashCallback = () => {
+  const alertCallback = () => {
     expect(createAlert).toHaveBeenCalledTimes(1);
     createAlert.mockClear();
   };
@@ -50,7 +50,7 @@ describe('MaintenanceModeSettings Store Actions', () => {
   describe.each`
     action                                   | axiosMock                                | type         | mutationCalls                               | callback
     ${actions.updateMaintenanceModeSettings} | ${ACTIONS_TEST_DATA.successfulAxiosCall} | ${'success'} | ${ACTIONS_TEST_DATA.updateSuccessMutations} | ${noCallback}
-    ${actions.updateMaintenanceModeSettings} | ${ACTIONS_TEST_DATA.errorAxiosCall}      | ${'error'}   | ${ACTIONS_TEST_DATA.updateErrorMutations}   | ${flashCallback}
+    ${actions.updateMaintenanceModeSettings} | ${ACTIONS_TEST_DATA.errorAxiosCall}      | ${'error'}   | ${ACTIONS_TEST_DATA.updateErrorMutations}   | ${alertCallback}
   `(`axios calls`, ({ action, axiosMock, type, mutationCalls, callback }) => {
     describe(action.name, () => {
       describe(`on ${type}`, () => {

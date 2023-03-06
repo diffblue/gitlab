@@ -1,5 +1,5 @@
 import { nextTick } from 'vue';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import DomElementListener from '~/vue_shared/components/dom_element_listener.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import SignUpArkoseApp from 'ee/arkose_labs/components/sign_up_arkose_app.vue';
@@ -10,7 +10,7 @@ import {
   VERIFICATION_TOKEN_INPUT_NAME,
 } from 'ee/arkose_labs/constants';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 jest.mock('ee/arkose_labs/init_arkose_labs_script');
 let onShown;
 let onCompleted;
