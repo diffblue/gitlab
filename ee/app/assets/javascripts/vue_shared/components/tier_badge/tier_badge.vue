@@ -9,7 +9,7 @@ export default {
     GlBadge,
     TierBadgePopover,
   },
-  mixins: [Tracking.mixin({ label: 'tier-badge' })],
+  mixins: [Tracking.mixin({ experiment: 'tier_badge', label: 'tier-badge' })],
   props: {
     tier: {
       type: String,

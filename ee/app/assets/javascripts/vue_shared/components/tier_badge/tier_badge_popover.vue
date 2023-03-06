@@ -11,7 +11,7 @@ export default {
     GlPopover,
     GlButton,
   },
-  mixins: [Tracking.mixin({ label: 'tier-badge' })],
+  mixins: [Tracking.mixin({ experiment: 'tier_badge', label: 'tier-badge' })],
   inject: ['primaryCtaLink', 'secondaryCtaLink', 'sourceType'],
   props: {
     popoverId: {
