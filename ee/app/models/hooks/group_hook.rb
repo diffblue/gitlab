@@ -25,7 +25,9 @@ class GroupHook < WebHook
     :deployment_hooks,
     :release_hooks,
     :member_hooks,
-    :subgroup_hooks
+    :subgroup_hooks,
+    :feature_flag_hooks,
+    :confidential_note_hooks
   ]
 
   belongs_to :group
