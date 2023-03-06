@@ -90,13 +90,6 @@ RSpec.describe ElasticIndexBulkCronWorker, feature_category: :global_search do
 
         worker.perform(shard_number)
       end
-
-      it 'does not requeue the worker if FF is disabled' do
-        stub_feature_flags(bulk_cron_worker_auto_requeue: false)
-        expect(described_class).not_to receive(:perform_in)
-
-        worker.perform(shard_number)
-      end
     end
 
     context 'when there are no records in the queue' do

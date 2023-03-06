@@ -1,8 +1,0 @@
----
-name: bulk_cron_worker_auto_requeue
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/104404
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/383076
-milestone: '15.7'
-type: development
-group: group::global search
-default_enabled: true
