@@ -46,10 +46,15 @@ module API
       desc 'Resolve a vulnerability' do
         success EE::API::Entities::Vulnerability
       end
+      params do
+        optional :comment,
+          type: String,
+          desc: 'Comment why vulnerability was reverted to detected (maximum 50,000 characters).'
+      end
       post ':id/resolve' do
         not_modified! if @vulnerability.resolved?
 
-        @vulnerability = ::Vulnerabilities::ResolveService.new(current_user, @vulnerability).execute
+        @vulnerability = ::Vulnerabilities::ResolveService.new(current_user, @vulnerability, params[:comment]).execute
         render_vulnerability(@vulnerability)
       end
 
