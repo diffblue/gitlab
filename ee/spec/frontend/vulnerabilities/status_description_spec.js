@@ -2,7 +2,11 @@ import { GlLink, GlSkeletonLoader, GlLoadingIcon } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { capitalize } from 'lodash';
 import StatusDescription from 'ee/vulnerabilities/components/status_description.vue';
-import { VULNERABILITY_STATE_OBJECTS, VULNERABILITY_STATES } from 'ee/vulnerabilities/constants';
+import {
+  VULNERABILITY_STATE_OBJECTS,
+  VULNERABILITY_STATES,
+  DISMISSAL_REASONS,
+} from 'ee/vulnerabilities/constants';
 import UsersMockHelper from 'helpers/user_mock_data_helper';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import UserAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link.vue';
@@ -28,7 +32,7 @@ describe('Vulnerability status description component', () => {
   // Create a date using the passed-in string, or just use the current time if nothing was passed in.
   const createDate = (value) => (value ? new Date(value) : new Date()).toISOString();
 
-  const createWrapper = (props = {}) => {
+  const createWrapper = (props = {}, dismissalReason = true) => {
     const vulnerability = props.vulnerability || { pipeline: {} };
     // Automatically create the ${v.state}_at property if it doesn't exist. Otherwise, every test would need to create
     // it manually for the component to mount properly.
@@ -39,15 +43,38 @@ describe('Vulnerability status description component', () => {
       vulnerability[propertyName] = vulnerability[propertyName] || createDate();
     }
 
-    wrapper = mount(StatusDescription, { propsData: { ...props, vulnerability } });
+    wrapper = mount(StatusDescription, {
+      propsData: { ...props, vulnerability },
+      provide: { glFeatures: { dismissalReason } },
+    });
   };
 
   describe('state text', () => {
+    // This also tests the dismissed state when no dismissalReason is provided
     it.each(ALL_STATES)('shows the correct string for the vulnerability state "%s"', (state) => {
       createWrapper({ vulnerability: { state, pipeline: {} } });
 
-      expect(wrapper.text()).toMatch(new RegExp(`^${capitalize(state)}`));
+      expect(statusEl().text()).toBe(`${capitalize(state)}`);
     });
+
+    it.each(Object.entries(DISMISSAL_REASONS))(
+      'shows the correct string for the dismissal reason "%s"',
+      (dismissalReason, translation) => {
+        createWrapper({
+          vulnerability: {
+            state: 'dismissed',
+            stateTransitions: [
+              {
+                dismissalReason,
+              },
+            ],
+            pipeline: {},
+          },
+        });
+
+        expect(statusEl().text()).toBe(`Dismissed: ${translation}`);
+      },
+    );
 
     it.each`
       description                          | isStatusBolded
@@ -60,6 +87,28 @@ describe('Vulnerability status description component', () => {
       });
 
       expect(statusEl().classes('gl-font-weight-bold')).toBe(isStatusBolded);
+    });
+  });
+
+  // Remove this test once dismissalReason feature flag is on by default
+  describe('when the "dismissalReason" feature flag is disabled', () => {
+    it('does not show the dismissal reason in the state text', () => {
+      createWrapper(
+        {
+          vulnerability: {
+            state: 'dismissed',
+            stateTransitions: [
+              {
+                dismissalReason: 'used_in_tests',
+              },
+            ],
+            pipeline: {},
+          },
+        },
+        false,
+      );
+
+      expect(statusEl().text()).toBe('Dismissed');
     });
   });
 

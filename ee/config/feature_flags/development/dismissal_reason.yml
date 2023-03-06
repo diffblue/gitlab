@@ -1,0 +1,8 @@
+---
+name: dismissal_reason
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/issues/296920
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/393005
+milestone: '15.10'
+type: development
+group: group::threat insights
+default_enabled: false
