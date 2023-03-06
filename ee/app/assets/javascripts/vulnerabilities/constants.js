@@ -7,6 +7,14 @@ import {
 
 const falsePositiveMessage = s__('VulnerabilityManagement|Will not fix or a false-positive');
 
+export const DISMISSAL_REASONS = {
+  acceptable_risk: s__('VulnerabilityDismissalReasons|Acceptable risk'),
+  false_positive: s__('VulnerabilityDismissalReasons|False positive'),
+  mitigating_control: s__('VulnerabilityDismissalReasons|Mitigating control'),
+  used_in_tests: s__('VulnerabilityDismissalReasons|Used in tests'),
+  not_applicable: s__('VulnerabilityDismissalReasons|Not applicable'),
+};
+
 export const VULNERABILITY_STATES = {
   detected: s__('VulnerabilityStatusTypes|Needs triage'),
   confirmed: s__('VulnerabilityStatusTypes|Confirmed'),

@@ -3,6 +3,8 @@ import { GlLink, GlSprintf, GlSkeletonLoader, GlLoadingIcon } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import UserAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link.vue';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { DISMISSAL_REASONS } from '../constants';
 
 export default {
   components: {
@@ -13,6 +15,8 @@ export default {
     GlLoadingIcon,
     UserAvatarLink,
   },
+
+  mixins: [glFeatureFlagsMixin()],
 
   props: {
     vulnerability: {
@@ -42,17 +46,18 @@ export default {
   },
 
   computed: {
+    state() {
+      return this.vulnerability.state;
+    },
+
     time() {
-      const { state } = this.vulnerability;
-      return state === 'detected'
+      return this.state === 'detected'
         ? this.vulnerability.pipeline?.createdAt
-        : this.vulnerability[`${this.vulnerability.state}At`];
+        : this.vulnerability[`${this.state}At`];
     },
 
     statusText() {
-      const { state } = this.vulnerability;
-
-      switch (state) {
+      switch (this.state) {
         case 'detected':
           return s__(
             'VulnerabilityManagement|%{statusStart}Detected%{statusEnd} %{timeago} in pipeline %{pipelineLink}',
@@ -73,6 +78,22 @@ export default {
           return '%timeago';
       }
     },
+
+    dismissalReason() {
+      return this.vulnerability.stateTransitions?.at(-1)?.dismissalReason;
+    },
+
+    hasDismissalReason() {
+      return this.state === 'dismissed' && Boolean(this.dismissalReason);
+    },
+
+    dismissalReasonText() {
+      return DISMISSAL_REASONS[this.dismissalReason];
+    },
+
+    shouldShowDismissalReason() {
+      return this.glFeatures.dismissalReason;
+    },
   },
 };
 </script>
@@ -84,7 +105,10 @@ export default {
     <gl-sprintf v-else-if="time" :message="statusText">
       <template #status="{ content }">
         <span :class="{ 'gl-font-weight-bold': isStatusBolded }" data-testid="status">
-          {{ content }}
+          <template v-if="shouldShowDismissalReason && hasDismissalReason">
+            {{ content }}: {{ dismissalReasonText }}
+          </template>
+          <template v-else>{{ content }}</template>
         </span>
       </template>
       <template #timeago>

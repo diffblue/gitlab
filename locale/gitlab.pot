@@ -47701,6 +47701,21 @@ msgstr ""
 msgid "VulnerabilityChart|Severity"
 msgstr ""
 
+msgid "VulnerabilityDismissalReasons|Acceptable risk"
+msgstr ""
+
+msgid "VulnerabilityDismissalReasons|False positive"
+msgstr ""
+
+msgid "VulnerabilityDismissalReasons|Mitigating control"
+msgstr ""
+
+msgid "VulnerabilityDismissalReasons|Not applicable"
+msgstr ""
+
+msgid "VulnerabilityDismissalReasons|Used in tests"
+msgstr ""
+
 msgid "VulnerabilityManagement|%{statusStart}Confirmed%{statusEnd} %{timeago} by %{user}"
 msgstr ""
 
