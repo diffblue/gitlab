@@ -73,8 +73,8 @@ module QA
           private_group.add_member(user_6)
           page.refresh
 
-          expect { page }
-            .to eventually_have_content(notifications(private_group, :limit_overage_preview_msg))
+          expect { page.text.squish }
+            .to eventually_include(notifications(private_group, :limit_overage_preview_msg))
                   .within(max_attempts: 5, sleep_interval: 2, reload_page: page)
         end
 
@@ -196,7 +196,9 @@ module QA
       def notifications(group, type)
         {
           limit_overage_preview_msg:
-            "Your top-level group #{group.path} is over the 5 user limit GitLab will enforce this limit in the future",
+            "Your top-level group #{group.path} will move to a read-only state soon
+             Because you are over the 5 user limit, your top-level group, including any subgroups
+             and projects, will be placed in a read-only state soon",
           limit_reached_enforcement_msg:
             "Your top-level group #{group.path} has reached the 5 user limit To invite more users,
             you can reduce the number of users in your top-level group to 5 users or less",
