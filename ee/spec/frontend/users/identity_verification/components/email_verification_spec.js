@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { s__ } from '~/locale';
-import { createAlert, VARIANT_SUCCESS } from '~/flash';
+import { createAlert, VARIANT_SUCCESS } from '~/alert';
 import { HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import EmailVerification from 'ee/users/identity_verification/components/email_verification.vue';
 import {
@@ -13,7 +13,7 @@ import {
   I18N_EMAIL_RESEND_SUCCESS,
 } from 'ee/users/identity_verification/constants';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('EmailVerification', () => {
   let wrapper;
@@ -127,7 +127,7 @@ describe('EmailVerification', () => {
         expect(findErrorMessage().exists()).toBe(false);
       });
 
-      it('captures the error and shows a flash message when the request failed', async () => {
+      it('captures the error and shows an alert message when the request failed', async () => {
         enterCode('123456');
 
         axiosMock.onPost(PROVIDE.email.verifyPath).replyOnce(HTTP_STATUS_OK, null);
@@ -142,7 +142,7 @@ describe('EmailVerification', () => {
         });
       });
 
-      it('captures the error and shows a flash message when the request undefined', async () => {
+      it('captures the error and shows an alert message when the request undefined', async () => {
         enterCode('123456');
 
         axiosMock.onPost(PROVIDE.email.verifyPath).reply(HTTP_STATUS_OK, { status: undefined });
@@ -166,7 +166,7 @@ describe('EmailVerification', () => {
       ${'there was a problem resending the code'} | ${HTTP_STATUS_OK}        | ${{ status: 'failure', message: 'Failure sending the code' }}
       ${'when the request is undefined'}          | ${HTTP_STATUS_OK}        | ${{ status: undefined }}
       ${'when the request failed'}                | ${HTTP_STATUS_NOT_FOUND} | ${null}
-    `(`shows a flash message when $scenario`, async ({ statusCode, response }) => {
+    `(`shows an alert message when $scenario`, async ({ statusCode, response }) => {
       enterCode('xxx');
 
       await submitForm();

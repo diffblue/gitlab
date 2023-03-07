@@ -3,11 +3,11 @@ import { mapApprovalRuleRequest, mapApprovalSettingsResponse } from 'ee/approval
 import * as types from 'ee/approvals/stores/modules/base/mutation_types';
 import * as actions from 'ee/approvals/stores/modules/project_settings/actions';
 import testAction from 'helpers/vuex_action_helper';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 const TEST_PROJECT_ID = 9;
 const TEST_RULE_ID = 7;
@@ -76,7 +76,7 @@ describe('EE approvals project settings module actions', () => {
   });
 
   describe('receiveRulesError', () => {
-    it('creates a flash', () => {
+    it('creates an alert', () => {
       expect(createAlert).not.toHaveBeenCalled();
 
       actions.receiveRulesError();
@@ -190,7 +190,7 @@ describe('EE approvals project settings module actions', () => {
   });
 
   describe('deleteRuleError', () => {
-    it('creates a flash', () => {
+    it('creates an alert', () => {
       expect(createAlert).not.toHaveBeenCalled();
 
       actions.deleteRuleError();

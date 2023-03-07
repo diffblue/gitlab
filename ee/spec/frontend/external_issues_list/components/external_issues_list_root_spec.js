@@ -26,7 +26,7 @@ import {
   mockJiraIssue4 as mockJiraIssueNoReference,
 } from '../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 jest.mock('~/vue_shared/issuable/list/constants', () => ({
   DEFAULT_PAGE_SIZE: 2,
   IssuableStates: jest.requireActual('~/vue_shared/issuable/list/constants').IssuableStates,

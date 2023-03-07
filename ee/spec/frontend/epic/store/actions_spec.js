@@ -5,7 +5,7 @@ import defaultState from 'ee/epic/store/state';
 import epicUtils from 'ee/epic/utils/epic_utils';
 
 import testAction from 'helpers/vuex_action_helper';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { EVENT_ISSUABLE_VUE_APP_CHANGE } from '~/issuable/constants';
 import { STATUS_CLOSED } from '~/issues/constants';
 import axios from '~/lib/utils/axios_utils';
@@ -13,7 +13,7 @@ import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/h
 
 import { mockEpicMeta, mockEpicData } from '../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('Epic Store Actions', () => {
   let state;
@@ -145,7 +145,7 @@ describe('Epic Store Actions', () => {
       await testAction(actions.requestEpicParticipantsFailure, {}, state, [], []);
     });
 
-    it('shows flash error', () => {
+    it('shows alert error', () => {
       actions.requestEpicParticipantsFailure({ commit: () => {} });
 
       expect(createAlert).toHaveBeenCalledWith({
@@ -189,7 +189,7 @@ describe('Epic Store Actions', () => {
       );
     });
 
-    it('should show flash error', () => {
+    it('should show alert error', () => {
       actions.requestEpicStatusChangeFailure({ commit: () => {} });
 
       expect(createAlert).toHaveBeenCalledWith({
@@ -377,7 +377,7 @@ describe('Epic Store Actions', () => {
       );
     });
 
-    it('Should show flash error with message "There was an error deleting the To Do." when `state.todoExists` is `true`', () => {
+    it('Should show alert error with message "There was an error deleting the To Do." when `state.todoExists` is `true`', () => {
       actions.requestEpicTodoToggleFailure(
         {
           commit: () => {},
@@ -391,7 +391,7 @@ describe('Epic Store Actions', () => {
       });
     });
 
-    it('Should show flash error with message "There was an error adding a To Do." when `state.todoExists` is `false`', () => {
+    it('Should show alert error with message "There was an error adding a To Do." when `state.todoExists` is `false`', () => {
       actions.requestEpicTodoToggleFailure(
         {
           commit: () => {},
@@ -577,7 +577,7 @@ describe('Epic Store Actions', () => {
       );
     });
 
-    it('should show flash error with message "Error creating epic."', () => {
+    it('should show alert error with message "Error creating epic."', () => {
       actions.requestEpicCreateFailure({
         commit: () => {},
       });

@@ -6,7 +6,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import Approvals from 'ee/vue_merge_request_widget/components/approvals/approvals.vue';
 import ApprovalsAuth from 'ee/vue_merge_request_widget/components/approvals/approvals_auth.vue';
 import ApprovalsFooter from 'ee/vue_merge_request_widget/components/approvals/approvals_footer.vue';
@@ -19,7 +19,7 @@ import { createCanApproveResponse } from 'jest/approvals/mock_data';
 Vue.use(VueApollo);
 
 const mockAlertDismiss = jest.fn();
-jest.mock('~/flash', () => ({
+jest.mock('~/alert', () => ({
   createAlert: jest.fn().mockImplementation(() => ({
     dismiss: mockAlertDismiss,
   })),
@@ -182,7 +182,7 @@ describe('MRWidget approvals', () => {
                 expect(findApprovalsAuth().props('hasError')).toBe(true);
               });
 
-              it('shows flash if general error', () => {
+              it('shows alert if general error', () => {
                 expect(createAlert).toHaveBeenCalledWith({ message: APPROVE_ERROR });
               });
             });

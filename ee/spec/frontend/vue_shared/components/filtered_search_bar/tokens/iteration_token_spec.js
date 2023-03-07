@@ -2,11 +2,11 @@ import { GlFilteredSearchToken, GlFilteredSearchTokenSegment } from '@gitlab/ui'
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import IterationToken from 'ee/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
 import { mockIterationToken } from '../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('IterationToken', () => {
   const id = '123';

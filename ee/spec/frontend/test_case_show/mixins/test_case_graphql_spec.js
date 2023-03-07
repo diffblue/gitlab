@@ -7,12 +7,12 @@ import updateTestCase from 'ee/test_case_show/queries/update_test_case.mutation.
 import { mockCurrentUserTodo } from 'jest/vue_shared/issuable/list/mock_data';
 
 import Api from '~/api';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { visitUrl } from '~/lib/utils/url_utility';
 
 import { mockProvide, mockTestCase } from '../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 jest.mock('~/lib/utils/url_utility');
 
 const createComponent = ({ testCase, testCaseQueryLoading = false } = {}) =>

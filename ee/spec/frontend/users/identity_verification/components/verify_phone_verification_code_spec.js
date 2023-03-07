@@ -9,7 +9,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
-import { createAlert, VARIANT_SUCCESS } from '~/flash';
+import { createAlert, VARIANT_SUCCESS } from '~/alert';
 
 import VerifyPhoneVerificationCode from 'ee/users/identity_verification/components/verify_phone_verification_code.vue';
 import {
@@ -17,7 +17,7 @@ import {
   I18N_VERIFICATION_CODE_BLANK_ERROR,
 } from 'ee/users/identity_verification/constants';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('Verify phone verification code input component', () => {
   let wrapper;

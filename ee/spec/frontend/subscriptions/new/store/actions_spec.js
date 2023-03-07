@@ -8,7 +8,7 @@ import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutati
 import { useMockLocationHelper } from 'helpers/mock_window_location_helper';
 import testAction from 'helpers/vuex_action_helper';
 import Tracking from '~/tracking';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import * as googleTagManager from '~/google_tag_manager';
@@ -21,7 +21,7 @@ const {
   confirmOrderPath,
 } = Api;
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('Subscriptions Actions', () => {
   let mock;
@@ -167,7 +167,7 @@ describe('Subscriptions Actions', () => {
   });
 
   describe('fetchCountriesError', () => {
-    it('creates a flash', async () => {
+    it('creates an alert', async () => {
       await testAction(actions.fetchCountriesError, null, {}, [], []);
       expect(createAlert).toHaveBeenCalledWith({
         message: 'Failed to load countries. Please try again.',
@@ -232,7 +232,7 @@ describe('Subscriptions Actions', () => {
   });
 
   describe('fetchStatesError', () => {
-    it('creates a flash', async () => {
+    it('creates an alert', async () => {
       await testAction(actions.fetchStatesError, null, {}, [], []);
       expect(createAlert).toHaveBeenCalledWith({
         message: 'Failed to load states. Please try again.',
@@ -406,7 +406,7 @@ describe('Subscriptions Actions', () => {
       );
     });
 
-    it('creates a flash when errors are present', async () => {
+    it('creates an alert when errors are present', async () => {
       await testAction(
         actions.fetchPaymentFormParamsSuccess,
         { errors: 'error message' },
@@ -421,7 +421,7 @@ describe('Subscriptions Actions', () => {
   });
 
   describe('fetchPaymentFormParamsError', () => {
-    it('creates a flash', async () => {
+    it('creates an alert', async () => {
       await testAction(actions.fetchPaymentFormParamsError, null, {}, [], []);
       expect(createAlert).toHaveBeenCalledWith({
         message: 'Credit card form failed to load. Please try again.',
@@ -480,7 +480,7 @@ describe('Subscriptions Actions', () => {
   });
 
   describe('paymentFormSubmittedError', () => {
-    it('creates a flash', async () => {
+    it('creates an alert', async () => {
       await testAction(
         actions.paymentFormSubmittedError,
         { errorCode: 'codeFromResponse', errorMessage: 'messageFromResponse' },
@@ -573,7 +573,7 @@ describe('Subscriptions Actions', () => {
   });
 
   describe('fetchPaymentMethodDetailsError', () => {
-    it('creates a flash', async () => {
+    it('creates an alert', async () => {
       await testAction(actions.fetchPaymentMethodDetailsError, null, {}, [], []);
       expect(createAlert).toHaveBeenCalledWith({
         message: 'Failed to register credit card. Please try again.',
@@ -687,7 +687,7 @@ describe('Subscriptions Actions', () => {
   });
 
   describe('confirmOrderError', () => {
-    it('creates a flash with a default message when no error given', async () => {
+    it('creates an alert with a default message when no error given', async () => {
       await testAction(
         actions.confirmOrderError,
         null,
@@ -700,7 +700,7 @@ describe('Subscriptions Actions', () => {
       });
     });
 
-    it('creates a flash with a the error message when an error is given', async () => {
+    it('creates an alert with a the error message when an error is given', async () => {
       await testAction(
         actions.confirmOrderError,
         '"Error"',
