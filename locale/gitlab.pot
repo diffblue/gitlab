@@ -48860,6 +48860,9 @@ msgstr ""
 msgid "WorkItem|Add to milestone"
 msgstr ""
 
+msgid "WorkItem|All activity"
+msgstr ""
+
 msgid "WorkItem|Are you sure you want to cancel editing?"
 msgstr ""
 
@@ -48881,6 +48884,9 @@ msgid "WorkItem|Child removed"
 msgstr ""
 
 msgid "WorkItem|Closed"
+msgstr ""
+
+msgid "WorkItem|Comments only"
 msgstr ""
 
 msgid "WorkItem|Convert to task"
@@ -48914,6 +48920,9 @@ msgid "WorkItem|Existing task"
 msgstr ""
 
 msgid "WorkItem|Health status"
+msgstr ""
+
+msgid "WorkItem|History only"
 msgstr ""
 
 msgid "WorkItem|Incident"
@@ -49073,6 +49082,9 @@ msgid "WorkItem|Work item"
 msgstr ""
 
 msgid "WorkItem|Work item not found"
+msgstr ""
+
+msgid "WorkItem|You're only seeing %{boldStart}other activity%{boldEnd} in the feed. To add a comment, switch to one of the following options."
 msgstr ""
 
 msgid "Would you like to create a new branch?"
