@@ -25,6 +25,27 @@ export const EpicFilterType = {
   none: 'None',
 };
 
+export const HealthStatusFilterType = {
+  any: 'Any',
+  none: 'None',
+};
+
+export const IterationFilterType = {
+  any: 'Any',
+  none: 'None',
+  current: 'Current',
+};
+
+export const MilestoneFilterType = {
+  any: 'Any',
+  none: 'None',
+};
+
+export const WeightFilterType = {
+  none: 'None',
+};
+/* eslint-enable @gitlab/require-i18n-strings */
+
 export const FilterFields = {
   [TYPE_ISSUE]: [
     ...FilterFieldsCE[TYPE_ISSUE],
@@ -38,17 +59,6 @@ export const FilterFields = {
     'healthStatusFilter',
   ],
   [TYPE_EPIC]: ['authorUsername', 'labelName', 'search', 'myReactionEmoji'],
-};
-
-export const IterationFilterType = {
-  any: 'Any',
-  none: 'None',
-  current: 'Current',
-};
-
-export const HealthStatusFilterType = {
-  any: 'Any',
-  none: 'None',
 };
 
 export const IterationIDs = {
@@ -76,11 +86,6 @@ export const CURRENT_ITERATION = {
 };
 
 export const IterationsPreset = [ANY_ITERATION, NO_ITERATION, CURRENT_ITERATION];
-
-export const MilestoneFilterType = {
-  any: 'Any',
-  none: 'None',
-};
 
 export const MilestoneIDs = {
   NONE: 0,
@@ -121,10 +126,6 @@ export const ANY_ASSIGNEE = {
   name: s__('BoardScope|Any assignee'),
 };
 export const AssigneesPreset = [ANY_ASSIGNEE];
-
-export const WeightFilterType = {
-  none: 'None',
-};
 
 export const WeightIDs = {
   NONE: -2,
