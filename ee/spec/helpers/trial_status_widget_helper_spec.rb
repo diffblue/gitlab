@@ -33,10 +33,6 @@ RSpec.describe TrialStatusWidgetHelper, :saas, feature_category: :experimentatio
       }
     end
 
-    before do
-      stub_experiments(group_contact_sales: :control)
-    end
-
     describe '#trial_status_popover_data_attrs' do
       let_it_be(:user) { create(:user) }
 
