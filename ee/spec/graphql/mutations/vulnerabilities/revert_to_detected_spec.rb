@@ -13,7 +13,14 @@ RSpec.describe Mutations::Vulnerabilities::RevertToDetected, feature_category: :
 
     let(:mutated_vulnerability) { subject[:vulnerability] }
 
-    subject { mutation.resolve(id: GitlabSchema.id_from_object(vulnerability).to_s, comment: comment) }
+    let(:params) do
+      {
+        id: GitlabSchema.id_from_object(vulnerability).to_s,
+        comment: comment
+      }
+    end
+
+    subject { mutation.resolve(**params) }
 
     context 'when the user can revert the vulnerability to detected' do
       before do
@@ -31,10 +38,22 @@ RSpec.describe Mutations::Vulnerabilities::RevertToDetected, feature_category: :
           vulnerability.project.add_developer(user)
         end
 
-        it 'returns the vulnerability back in detected state' do
+        context 'and no comment is provided' do
+          let(:params) { { id: GitlabSchema.id_from_object(vulnerability).to_s } }
+
+          it 'returns the vulnerability back in detected state', :aggregate_failures do
+            expect(mutated_vulnerability).to eq(vulnerability)
+            expect(mutated_vulnerability).to be_detected
+            expect(subject[:errors]).to be_empty
+            expect(vulnerability.state_transitions.last.comment).to be_nil
+          end
+        end
+
+        it 'returns the vulnerability back in detected state', :aggregate_failures do
           expect(mutated_vulnerability).to eq(vulnerability)
           expect(mutated_vulnerability).to be_detected
           expect(subject[:errors]).to be_empty
+          expect(vulnerability.state_transitions.last.comment).to eq(comment)
         end
       end
     end
