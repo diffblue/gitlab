@@ -13,6 +13,7 @@ exports[`AddEditScheduleForm renders form layout 1`] = `
     state="true"
   >
     <gl-form-input-stub
+      data-qa-selector="schedule_name_field"
       id="schedule-name"
       value="Test schedule from query"
     />
@@ -32,6 +33,7 @@ exports[`AddEditScheduleForm renders form layout 1`] = `
   </gl-form-group-stub>
    
   <gl-form-group-stub
+    data-qa-selector="schedule_timezone_container"
     description="Sets the default timezone for the schedule, for all participants"
     invalid-feedback="Can't be empty"
     label="Timezone"

@@ -265,6 +265,7 @@ export default {
                 class="rule-control"
                 :text="scheduleDropdownTitle"
                 data-testid="schedules-dropdown"
+                data-qa-selector="schedule_dropdown"
               >
                 <template #button-text>
                   <span :class="{ 'gl-text-gray-400': !oncallScheduleIid }">
