@@ -3,7 +3,7 @@ import VueApollo from 'vue-apollo';
 import { shallowMount } from '@vue/test-utils';
 import { GlTruncate } from '@gitlab/ui';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import ImageFilterDeprecated from 'ee/security_dashboard/components/shared/filters/image_filter_deprecated.vue';
 import { IMAGE_FILTER_ERROR } from 'ee/security_dashboard/components/shared/filters/constants';
@@ -13,7 +13,7 @@ import projectImagesQuery from 'ee/security_dashboard/graphql/queries/project_im
 import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
 import { agentVulnerabilityImages, projectVulnerabilityImages } from '../../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('Image Filter component (deprecated)', () => {
   let wrapper;

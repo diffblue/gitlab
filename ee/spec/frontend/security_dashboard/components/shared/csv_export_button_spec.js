@@ -4,7 +4,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
 import CsvExportButton from 'ee/security_dashboard/components/shared/csv_export_button.vue';
 import { TEST_HOST } from 'helpers/test_constants';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import downloader from '~/lib/utils/downloader';
@@ -14,7 +14,7 @@ import {
   HTTP_STATUS_OK,
 } from '~/lib/utils/http_status';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 jest.mock('~/lib/utils/downloader');
 
 const mockReportDate = formatDate(new Date(), 'isoDateTime');
@@ -72,7 +72,7 @@ describe('Csv Button Export', () => {
       });
     });
 
-    it('shows the flash error when the export job status is failed', async () => {
+    it('shows the alert error when the export job status is failed', async () => {
       mockCsvExportRequest('', 'failed');
 
       findCsvExportButton().vm.$emit('click');
@@ -84,7 +84,7 @@ describe('Csv Button Export', () => {
       });
     });
 
-    it('shows the flash error when backend fails to generate the export', async () => {
+    it('shows the alert error when backend fails to generate the export', async () => {
       mock.onPost(vulnerabilitiesExportEndpoint).reply(HTTP_STATUS_NOT_FOUND, {});
 
       findCsvExportButton().vm.$emit('click');

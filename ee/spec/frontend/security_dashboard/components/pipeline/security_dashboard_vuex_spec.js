@@ -26,7 +26,7 @@ const pipelineId = 123;
 const pipelineIid = 12;
 const vulnerabilitiesEndpoint = `${TEST_HOST}/vulnerabilities`;
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('Security Dashboard component', () => {
   let wrapper;

@@ -8,12 +8,12 @@ import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_i
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { ALL_ID } from 'ee/security_dashboard/components/shared/filters/constants';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import clusterAgents from 'ee/security_dashboard/graphql/queries/cluster_agents.query.graphql';
 import { projectClusters } from '../../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 Vue.use(VueApollo);
 
 describe('ClusterFilter component', () => {

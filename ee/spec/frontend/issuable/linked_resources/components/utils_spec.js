@@ -3,9 +3,9 @@ import {
   getLinkIcon,
   identifyLinkType,
 } from 'ee/linked_resources/components/utils';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('resource links utils', () => {
   describe('display and log error', () => {

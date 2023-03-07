@@ -20,7 +20,6 @@ import {
   mockDependencyProxyResponse,
 } from '../mock_data';
 
-jest.mock('~/flash');
 jest.mock('~/ci/runner/sentry_utils');
 
 Vue.use(VueApollo);

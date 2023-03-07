@@ -16,7 +16,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 Vue.use(VueApollo);
 

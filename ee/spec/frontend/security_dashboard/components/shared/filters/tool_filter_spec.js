@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import VueRouter from 'vue-router';
 import { cloneDeep } from 'lodash';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import ToolFilter from 'ee/security_dashboard/components/shared/filters/tool_filter.vue';
@@ -21,7 +21,7 @@ import {
   instanceVulnerabilityScanners,
 } from '../../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('Tool Filter component', () => {
   Vue.use(VueRouter);

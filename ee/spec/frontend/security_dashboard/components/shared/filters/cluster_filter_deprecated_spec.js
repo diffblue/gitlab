@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMount } from '@vue/test-utils';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import ClusterFilterDeprecated from 'ee/security_dashboard/components/shared/filters/cluster_filter_deprecated.vue';
 import { CLUSTER_FILTER_ERROR } from 'ee/security_dashboard/components/shared/filters/constants';
@@ -11,7 +11,7 @@ import clusterAgents from 'ee/security_dashboard/graphql/queries/cluster_agents.
 import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
 import { projectClusters } from '../../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('Cluster Filter component (deprecated)', () => {
   let wrapper;
