@@ -215,6 +215,7 @@ module EE
 
       def parse_security_artifact_blob(security_report, blob)
         report_clone = security_report.clone_as_blank
+        report_clone.pipeline = pipeline # We need to set the pipeline for child pipelines
         parse_raw_security_artifact_blob(report_clone, blob)
         security_report.merge!(report_clone)
       end

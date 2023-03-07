@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::CompareSecurityReportsService, feature_category: :continuous_integration do
+RSpec.describe Ci::CompareSecurityReportsService, feature_category: :vulnerability_management do
   let_it_be(:project) { create(:project, :repository) }
 
   let(:current_user) { project.owner }
@@ -15,6 +15,16 @@ RSpec.describe Ci::CompareSecurityReportsService, feature_category: :continuous_
   with_them do
     before do
       stub_licensed_features(vulnerability_finding_signatures: vulnerability_finding_signatures)
+    end
+
+    shared_examples_for 'serializes `found_by_pipeline` attribute' do
+      let(:first_added_finding) { subject.dig(:data, 'added').first }
+      let(:first_fixed_finding) { subject.dig(:data, 'fixed').first }
+
+      it 'sets correct `found_by_pipeline` attribute' do
+        expect(first_added_finding.dig('found_by_pipeline', 'iid')).to eq(head_pipeline.iid)
+        expect(first_fixed_finding.dig('found_by_pipeline', 'iid')).to eq(base_pipeline.iid)
+      end
     end
 
     describe '#execute DS' do
@@ -66,6 +76,8 @@ RSpec.describe Ci::CompareSecurityReportsService, feature_category: :continuous_
           expected_keys = %w(06565b64-486d-4326-b906-890d9915804d)
           expect(compare_keys).to match_array(expected_keys)
         end
+
+        it_behaves_like 'serializes `found_by_pipeline` attribute'
       end
 
       context 'when head pipeline has corrupted dependency scanning vulnerability reports' do
@@ -130,6 +142,8 @@ RSpec.describe Ci::CompareSecurityReportsService, feature_category: :continuous_
           expected_keys = %w(CVE-2017-16997 CVE-2017-18269 CVE-2018-1000001 CVE-2016-10228 CVE-2010-4052 CVE-2018-18520 CVE-2018-16869 CVE-2018-18311)
           expect(compare_keys).to match_array(expected_keys)
         end
+
+        it_behaves_like 'serializes `found_by_pipeline` attribute'
       end
     end
 
@@ -186,6 +200,8 @@ RSpec.describe Ci::CompareSecurityReportsService, feature_category: :continuous_
               })
           )
         end
+
+        it_behaves_like 'serializes `found_by_pipeline` attribute'
       end
     end
 
@@ -234,6 +250,8 @@ RSpec.describe Ci::CompareSecurityReportsService, feature_category: :continuous_
           expected_keys = %w(CIPHER_INTEGRITY)
           expect(compare_keys - expected_keys).to eq([])
         end
+
+        it_behaves_like 'serializes `found_by_pipeline` attribute'
       end
     end
 

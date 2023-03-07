@@ -51,7 +51,7 @@ module Vulnerabilities
     attribute :config_options, :ind_jsonb
 
     attr_writer :sha
-    attr_accessor :scan
+    attr_accessor :scan, :found_by_pipeline
 
     enum confidence: ::Enums::Vulnerability.confidence_levels, _prefix: :confidence
     enum report_type: ::Enums::Vulnerability.report_types

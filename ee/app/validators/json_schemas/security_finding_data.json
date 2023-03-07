@@ -52,6 +52,21 @@
           "end_byte"
         ]
       }
+    },
+    "false_positive?": {
+      "type": "boolean"
+    },
+    "location": {
+      "type": "object"
+    },
+    "evidence": {
+      "type": "object"
+    },
+    "assets": {
+      "type": "array"
+    },
+    "details": {
+      "type": "object"
     }
   }
 }

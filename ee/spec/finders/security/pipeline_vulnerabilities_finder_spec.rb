@@ -50,6 +50,10 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
         expect(subject.findings.map(&:sha).uniq).to eq([pipeline.sha])
       end
 
+      it 'assigns the found_by_pipeline to findings' do
+        expect(subject.findings.map(&:found_by_pipeline).uniq).to eq([pipeline])
+      end
+
       context 'by order' do
         let(:params) { { report_type: %w[sast] } }
         let!(:high_high) { build(:vulnerabilities_finding, confidence: :high, severity: :high) }
