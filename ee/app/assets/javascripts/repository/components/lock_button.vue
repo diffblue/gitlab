@@ -1,6 +1,6 @@
 <script>
 import { GlButton, GlModal } from '@gitlab/ui';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { sprintf, __ } from '~/locale';
 import lockPathMutation from '~/repository/mutations/lock_path.mutation.graphql';
 
