@@ -17,9 +17,8 @@ module Gitlab
           latest_sign_in = find_session
 
           return true unless latest_sign_in
-          return SsoEnforcer::DEFAULT_SESSION_TIMEOUT.ago > latest_sign_in if ::Feature.enabled?(:enforced_sso_expiry, group)
 
-          false
+          SsoEnforcer::DEFAULT_SESSION_TIMEOUT.ago > latest_sign_in
         end
 
         private

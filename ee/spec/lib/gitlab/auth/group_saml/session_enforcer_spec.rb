@@ -97,16 +97,6 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
           it_behaves_like 'not enforced'
         end
 
-        context 'without enforced_sso_expiry feature flag' do
-          let(:session_time) { 2.days.ago }
-
-          before do
-            stub_feature_flags(enforced_sso_expiry: false)
-          end
-
-          it_behaves_like 'not enforced'
-        end
-
         context 'without group' do
           let(:root_group) { nil }
 
