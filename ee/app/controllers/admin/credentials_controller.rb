@@ -3,18 +3,30 @@
 class Admin::CredentialsController < Admin::ApplicationController
   extend ::Gitlab::Utils::Override
   include CredentialsInventoryActions
-  include RedisTracking
+  include ProductAnalyticsTracking
 
   helper_method :credentials_inventory_path, :user_detail_path, :personal_access_token_revoke_path,
                 :ssh_key_delete_path, :gpg_keys_available?
 
   before_action :check_license_credentials_inventory_available!, only: [:index, :revoke, :destroy]
 
-  track_redis_hll_event :index, name: 'i_compliance_credential_inventory'
+  track_custom_event :index,
+    name: 'i_compliance_credential_inventory',
+    action: 'visit_compliance_credential_inventory',
+    label: 'redis_hll_counters.compliance.compliance_total_unique_counts_monthly',
+    destinations: [:redis_hll, :snowplow]
 
   feature_category :compliance_management
 
   private
+
+  def tracking_namespace_source
+    nil
+  end
+
+  def tracking_project_source
+    nil
+  end
 
   def check_license_credentials_inventory_available!
     render_404 unless credentials_inventory_feature_available?

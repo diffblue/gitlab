@@ -881,6 +881,19 @@ RSpec.describe API::Groups, feature_category: :subgroups do
             expect(response).to match_response_schema('public_api/v4/audit_events', dir: 'ee')
           end
         end
+
+        context 'Snowplow event tracking' do
+          it_behaves_like 'Snowplow event tracking with RedisHLL context' do
+            subject(:api_request) { get api(path, user) }
+
+            let(:category) { 'EE::API::Groups' }
+            let(:action) { 'group_audit_event_request' }
+            let(:project) { nil }
+            let(:namespace) { group }
+            let(:context) { [::Gitlab::Tracking::ServicePingContext.new(data_source: :redis_hll, event: 'a_compliance_audit_events_api').to_context] }
+            let(:feature_flag_name) { :route_hll_to_snowplow_phase4 }
+          end
+        end
       end
     end
   end
@@ -948,6 +961,19 @@ RSpec.describe API::Groups, feature_category: :subgroups do
               get api(path, user)
 
               expect(response).to match_response_schema('public_api/v4/audit_event', dir: 'ee')
+            end
+          end
+
+          context 'Snowplow event tracking' do
+            it_behaves_like 'Snowplow event tracking with RedisHLL context' do
+              subject(:api_request) { get api(path, user) }
+
+              let(:category) { 'EE::API::Groups' }
+              let(:action) { 'group_audit_event_request' }
+              let(:project) { nil }
+              let(:namespace) { group }
+              let(:context) { [::Gitlab::Tracking::ServicePingContext.new(data_source: :redis_hll, event: 'a_compliance_audit_events_api').to_context] }
+              let(:feature_flag_name) { :route_hll_to_snowplow_phase4 }
             end
           end
 

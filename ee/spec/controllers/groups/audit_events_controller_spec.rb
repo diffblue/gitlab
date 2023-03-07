@@ -132,6 +132,19 @@ RSpec.describe Groups::AuditEventsController, feature_category: :audit_events do
         )
       end
 
+      it_behaves_like 'Snowplow event tracking with RedisHLL context' do
+        subject(:controller_request) { request }
+
+        let(:category) { 'Groups::AuditEventsController' }
+        let(:action) { 'visit_group_compliance_audit_events' }
+        let(:label) { 'redis_hll_counters.compliance.compliance_total_unique_counts_monthly' }
+        let(:property) { 'g_compliance_audit_events' }
+        let(:user) { client }
+        let(:namespace) { group }
+        let(:context) { [::Gitlab::Tracking::ServicePingContext.new(data_source: :redis_hll, event: 'g_compliance_audit_events').to_context] }
+        let(:feature_flag_name) { :route_hll_to_snowplow_phase4 }
+      end
+
       context 'when invalid date' do
         where(:created_before, :created_after) do
           'invalid-date' | nil

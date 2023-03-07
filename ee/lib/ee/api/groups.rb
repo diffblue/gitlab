@@ -138,6 +138,20 @@ module EE
               authorize! :read_group_audit_events, user_group
               check_audit_events_available!(user_group)
               increment_unique_values('a_compliance_audit_events_api', current_user.id)
+
+              if ::Feature.enabled?(:route_hll_to_snowplow_phase4, user_group)
+                ::Gitlab::Tracking.event(
+                  'EE::API::Groups',
+                  'group_audit_event_request',
+                  user: current_user,
+                  namespace: user_group,
+                  context: [
+                    ::Gitlab::Tracking::ServicePingContext
+                      .new(data_source: :redis_hll, event: 'a_compliance_audit_events_api')
+                      .to_context
+                  ]
+                )
+              end
             end
 
             desc 'Get a list of audit events in this group.' do

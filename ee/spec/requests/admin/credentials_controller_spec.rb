@@ -36,6 +36,20 @@ RSpec.describe Admin::CredentialsController, type: :request, feature_category: :
           expect(response).to have_gitlab_http_status(:ok)
         end
 
+        it_behaves_like 'Snowplow event tracking with RedisHLL context' do
+          subject(:admin_credentials_request) { get admin_credentials_path }
+
+          let(:category) { 'Admin::CredentialsController' }
+          let(:action) { 'visit_compliance_credential_inventory' }
+          let(:label) { 'redis_hll_counters.compliance.compliance_total_unique_counts_monthly' }
+          let(:property) { 'i_compliance_credential_inventory' }
+          let(:user) { admin }
+          let(:project) { nil }
+          let(:namespace) { nil }
+          let(:context) { [::Gitlab::Tracking::ServicePingContext.new(data_source: :redis_hll, event: 'i_compliance_credential_inventory').to_context] }
+          let(:feature_flag_name) { :route_hll_to_snowplow_phase4 }
+        end
+
         describe 'filtering by type of credential' do
           let_it_be(:personal_access_tokens) { create_list(:personal_access_token, 2, user: user) }
 
