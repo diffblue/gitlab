@@ -4,5 +4,5 @@ introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/18710
 rollout_issue_url:
 milestone: '12.5'
 type: development
-group: group::pipeline insights
+group: group::pipeline execution
 default_enabled: false

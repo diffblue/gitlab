@@ -154,7 +154,7 @@ describe('Metrics extension', () => {
           { name: 'large_change', value: '100.1', previous_value: '0' },
           {
             name: 'non-numeric_change',
-            value: 'group::pipeline insights',
+            value: 'group::pipeline security',
             previous_value: 'group::testing',
           },
         ],
