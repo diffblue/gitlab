@@ -144,6 +144,7 @@ export default {
       >
         <gl-form-input
           id="escalation-policy-name"
+          data-qa-selector="escalation_policy_name_field"
           :value="form.name"
           @blur="
             $emit('update-escalation-policy-form', { field: 'name', value: $event.target.value })

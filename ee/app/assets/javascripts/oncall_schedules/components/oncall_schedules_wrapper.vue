@@ -176,7 +176,11 @@ export default {
         </gl-sprintf>
       </template>
       <template v-if="userCanCreateSchedule" #actions>
-        <gl-button v-gl-modal="$options.addScheduleModalId" variant="confirm">
+        <gl-button
+          v-gl-modal="$options.addScheduleModalId"
+          variant="confirm"
+          data-qa-selector="add_on_call_schedule_button"
+        >
           {{ $options.i18n.add.button }}
         </gl-button>
       </template>
