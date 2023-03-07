@@ -16210,6 +16210,9 @@ msgstr ""
 msgid "Epic actions"
 msgstr ""
 
+msgid "Epic boards"
+msgstr ""
+
 msgid "Epic cannot be found."
 msgstr ""
 
@@ -19906,6 +19909,9 @@ msgid "Group name (your organization)"
 msgstr ""
 
 msgid "Group navigation"
+msgstr ""
+
+msgid "Group overview"
 msgstr ""
 
 msgid "Group overview content"
@@ -23674,6 +23680,12 @@ msgid "Issue Type"
 msgstr ""
 
 msgid "Issue already promoted to epic."
+msgstr ""
+
+msgid "Issue board"
+msgstr ""
+
+msgid "Issue boards"
 msgstr ""
 
 msgid "Issue cannot be found."

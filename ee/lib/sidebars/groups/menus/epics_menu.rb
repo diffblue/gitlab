@@ -47,12 +47,24 @@ module Sidebars
           end
         end
 
+        override :serialize_as_menu_item_args
+        def serialize_as_menu_item_args
+          super.merge({
+            sprite_icon: sprite_icon,
+            pill_count: pill_count,
+            has_pill: has_pill?,
+            super_sidebar_parent: ::Sidebars::StaticMenu,
+            item_id: :group_epic_list
+          })
+        end
+
         private
 
         def epic_list_menu_item
           ::Sidebars::MenuItem.new(
             title: _('List'),
             link: group_epics_path(context.group),
+            super_sidebar_parent: ::Sidebars::NilMenuItem,
             active_routes: { path: 'epics#index' },
             container_html_options: { class: 'home' },
             item_id: :epic_list
@@ -61,8 +73,10 @@ module Sidebars
 
         def boards_menu_item
           ::Sidebars::MenuItem.new(
-            title: _('Boards'),
+            title: context.is_super_sidebar ? _('Epic boards') : _('Boards'),
             link: group_epic_boards_path(context.group),
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::PlanMenu,
+            super_sidebar_before: :milestones,
             active_routes: { path: %w[epic_boards#index epic_boards#show] },
             container_html_options: { class: 'home' },
             item_id: :boards
@@ -73,6 +87,8 @@ module Sidebars
           ::Sidebars::MenuItem.new(
             title: _('Roadmap'),
             link: group_roadmap_path(context.group),
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::PlanMenu,
+            super_sidebar_before: :wiki,
             active_routes: { path: 'roadmap#show' },
             container_html_options: { class: 'home' },
             item_id: :roadmap

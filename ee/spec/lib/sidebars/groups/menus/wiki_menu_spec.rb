@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Sidebars::Groups::Menus::WikiMenu do
+RSpec.describe Sidebars::Groups::Menus::WikiMenu, feature_category: :navigation do
   let_it_be(:owner) { create(:user) }
   let_it_be_with_refind(:group) do
     build(:group, :private).tap do |g|
@@ -37,6 +37,15 @@ RSpec.describe Sidebars::Groups::Menus::WikiMenu do
       let(:user) { nil }
 
       specify { is_expected.to be false }
+    end
+  end
+
+  it_behaves_like 'serializable as super_sidebar_menu_args' do
+    let(:extra_attrs) do
+      {
+        super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::PlanMenu,
+        item_id: :group_wiki
+      }
     end
   end
 end
