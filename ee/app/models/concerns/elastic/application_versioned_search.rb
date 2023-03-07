@@ -77,7 +77,10 @@ module Elastic
         association_name = dependant[:association_name]
         on_change = dependant[:on_change]
 
-        next nil unless updated_attributes.include?(on_change.to_s)
+        next if updated_attributes.exclude?(on_change.to_s)
+
+        next if dependant[:depends_on_finished_migration].present? &&
+          !::Elastic::DataMigrationService.migration_has_finished?(dependant[:depends_on_finished_migration])
 
         association_name.to_s
       end.compact.uniq
@@ -101,9 +104,9 @@ module Elastic
       # project.issues in the index when project.visibility_level is changed
       # then you can declare that as:
       #
-      # elastic_index_dependant_association :issues, on_change: :visibility_level
+      # elastic_index_dependant_association :issues, on_change: :visibility_level, depends_on_finished_migration: :test_migration
       #
-      def elastic_index_dependant_association(association_name, on_change:)
+      def elastic_index_dependant_association(association_name, on_change:, depends_on_finished_migration: nil)
         # This class is used for non ActiveRecord models but this method is not
         # applicable for that so we raise.
         raise "elastic_index_dependant_association is not applicable as this class is not an ActiveRecord model." unless self < ActiveRecord::Base
@@ -112,7 +115,7 @@ module Elastic
         # Sidekiq to avoid errors occuring when the job is picked up.
         raise "Invalid association to index. \"#{association_name}\" is either not a collection or not an association. Hint: You must declare the has_many before declaring elastic_index_dependant_association." unless reflect_on_association(association_name)&.collection?
 
-        elastic_index_dependants << { association_name: association_name, on_change: on_change }
+        elastic_index_dependants << { association_name: association_name, on_change: on_change, depends_on_finished_migration: depends_on_finished_migration }.compact
       end
 
       def elastic_index_dependants
