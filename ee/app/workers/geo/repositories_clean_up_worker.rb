@@ -46,9 +46,9 @@ module Geo
       job_id = ::Geo::RepositoryCleanupWorker.perform_async(project.id, project.name, project.disk_path, project.repository.storage)
 
       if job_id
-        log_info('Repository clean up scheduled', project_id: project.id, shard: project.repository.storage, disk_path: project.disk_path, job_id: job_id)
+        log_info('Repository clean up scheduled', project_id: project.id, shard_name: project.repository.storage, disk_path: project.disk_path, job_id: job_id)
       else
-        log_error('Could not schedule a repository clean up', project_id: project.id, shard: project.repository.storage, disk_path: project.disk_path)
+        log_error('Could not schedule a repository clean up', project_id: project.id, shard_name: project.repository.storage, disk_path: project.disk_path)
       end
     end
 

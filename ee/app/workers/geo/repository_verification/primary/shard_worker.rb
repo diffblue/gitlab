@@ -28,7 +28,7 @@ module Geo
         end
 
         def worker_metadata
-          { shard: shard_name }
+          { shard_name: shard_name }
         end
 
         def max_capacity

@@ -63,7 +63,7 @@ module Geo
     def update_registry!(checksum: nil, mismatch: nil, failure: nil, exception: nil)
       reverify, verification_retry_count =
         if mismatch || failure.present?
-          log_error(failure, exception, type: type)
+          log_error(failure, exception, repository_type: type)
           [true, registry.verification_retry_count(type) + 1]
         else
           [false, nil]
