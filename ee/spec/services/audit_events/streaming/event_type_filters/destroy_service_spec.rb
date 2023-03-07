@@ -2,10 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe AuditEvents::Streaming::EventTypeFilters::DestroyService do
+RSpec.describe AuditEvents::Streaming::EventTypeFilters::DestroyService, feature_category: :audit_events do
   let_it_be(:destination) { create(:external_audit_event_destination) }
+  let_it_be(:user) { create(:user) }
 
-  subject(:response) { described_class.new(destination: destination, event_type_filters: event_type_filters).execute }
+  subject(:response) do
+    described_class.new(destination: destination, event_type_filters: event_type_filters, current_user: user).execute
+  end
 
   describe '#execute' do
     context 'when event type filter is not already present' do
@@ -15,6 +18,10 @@ RSpec.describe AuditEvents::Streaming::EventTypeFilters::DestroyService do
       it 'does not delete event type filter', :aggregate_failures do
         expect { subject }.not_to change { destination.event_type_filters.count }
         expect(response.errors).to match_array(expected_error)
+      end
+
+      it 'does not create audit event' do
+        expect { subject }.not_to change { AuditEvent.count }
       end
     end
 
@@ -31,6 +38,21 @@ RSpec.describe AuditEvents::Streaming::EventTypeFilters::DestroyService do
         expect { subject }.to change { destination.event_type_filters.count }.by(-1)
         expect(response).to be_success
         expect(response.errors).to match_array(expected_error)
+      end
+
+      it 'creates audit event', :aggregate_failures do
+        audit_context = {
+          name: 'event_type_filters_deleted',
+          author: user,
+          scope: destination.group,
+          target: destination,
+          message: "Deleted audit event type filter(s): #{event_type_filter.audit_event_type}"
+        }
+
+        expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
+                                                           .and_call_original
+
+        expect { subject }.to change { AuditEvent.count }.by(1)
       end
     end
   end
