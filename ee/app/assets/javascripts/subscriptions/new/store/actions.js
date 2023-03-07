@@ -6,8 +6,9 @@ import Tracking from '~/tracking';
 import { addExperimentContext } from '~/tracking/utils';
 import { createAlert } from '~/flash';
 import { redirectTo } from '~/lib/utils/url_utility';
-import { sprintf, s__ } from '~/locale';
+import { s__, sprintf } from '~/locale';
 import { trackCheckout, trackTransaction } from '~/google_tag_manager';
+import { isInvalidPromoCodeError } from 'ee/subscriptions/new/utils';
 import defaultClient from '../graphql';
 import * as types from './mutation_types';
 
@@ -212,6 +213,14 @@ export const fetchPaymentMethodDetailsError = () => {
   });
 };
 
+const shouldShowErrorMessageOnly = (errors) => {
+  if (!errors?.message) {
+    return false;
+  }
+
+  return isInvalidPromoCodeError(errors);
+};
+
 export const confirmOrder = ({ getters, dispatch, commit }) => {
   commit(types.UPDATE_IS_CONFIRMING_ORDER, true);
 
@@ -233,9 +242,18 @@ export const confirmOrder = ({ getters, dispatch, commit }) => {
           location: data.location,
         });
       } else {
-        const errors = data.name
-          ? sprintf(s__('Checkout|Name: %{errors}'), { errors: data.name.join(', ') }, false)
-          : data.errors;
+        let errors;
+        if (data.name) {
+          errors = sprintf(
+            s__('Checkout|Name: %{errors}'),
+            { errors: data.name.join(', ') },
+            false,
+          );
+        } else if (shouldShowErrorMessageOnly(data.errors)) {
+          errors = data.errors?.message;
+        } else {
+          errors = data.errors;
+        }
 
         trackConfirmOrder(errors);
         dispatch('confirmOrderError', JSON.stringify(errors));
