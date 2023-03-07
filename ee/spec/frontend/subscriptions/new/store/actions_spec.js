@@ -651,6 +651,24 @@ describe('Subscriptions Actions', () => {
           [{ type: 'confirmOrderError', payload: '"Name: Error_1, Error \' 2"' }],
         );
       });
+
+      it('calls confirmOrderError with the error message for promo code error', async () => {
+        mock.onPost(confirmOrderPath).replyOnce(HTTP_STATUS_OK, {
+          errors: {
+            message: 'Promo code is invalid',
+            attributes: ['promo_code'],
+            code: 'INVALID',
+          },
+        });
+
+        await testAction(
+          actions.confirmOrder,
+          null,
+          {},
+          [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
+          [{ type: 'confirmOrderError', payload: '"Promo code is invalid"' }],
+        );
+      });
     });
 
     describe('on failure', () => {

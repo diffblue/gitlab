@@ -549,8 +549,9 @@ describe('Order Summary', () => {
 
     describe('when promo code is invalid', () => {
       let promoCodeInput;
+      let invoicePreviewSpy;
       beforeEach(async () => {
-        const invoicePreviewSpy = jest.fn().mockResolvedValue({
+        invoicePreviewSpy = jest.fn().mockResolvedValue({
           data: {},
           errors: [
             {
@@ -577,6 +578,10 @@ describe('Order Summary', () => {
 
       it('does not show price details', () => {
         assertEmptyPriceDetails();
+      });
+
+      it('requests invoice preview without promo code after an invalid promo code', () => {
+        expect(invoicePreviewSpy).toHaveBeenLastCalledWith({ planId: 'secondPlanId', quantity: 1 });
       });
     });
 

@@ -1,7 +1,7 @@
 <script>
 import { GlCard, GlLoadingIcon } from '@gitlab/ui';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { unescape } from 'lodash';
+import { unescape, isEmpty } from 'lodash';
 import { sprintf, s__ } from '~/locale';
 import { trackCheckout } from '~/google_tag_manager';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -13,10 +13,9 @@ import {
   VALIDATION_ERROR_CODE,
   INVALID_PROMO_CODE_ERROR_MESSAGE,
   PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE,
-  INVALID_PROMO_CODE_ERROR_CODE,
-  PROMO_CODE_ERROR_ATTRIBUTE,
 } from 'ee/subscriptions/new/constants';
 import { createAlert } from '~/flash';
+import { isInvalidPromoCodeError } from 'ee/subscriptions/new/utils';
 import formattingMixins from '../formatting_mixins';
 import PromoCodeInput from './promo_code_input.vue';
 
@@ -33,12 +32,10 @@ export default {
       client: CUSTOMERSDOT_CLIENT,
       query: invoicePreviewQuery,
       variables() {
-        const sendPromoCode = this.isEligibleToUsePromoCode && this.promoCode;
-
         return {
           planId: this.selectedPlan,
           quantity: this.numberOfUsers,
-          ...(sendPromoCode && { promoCode: this.promoCode }),
+          ...(this.sendPromoCodeToPreviewInvoice && { promoCode: this.promoCode }),
         };
       },
       update(data) {
@@ -103,11 +100,14 @@ export default {
         ],
       };
     },
+    sendPromoCodeToPreviewInvoice() {
+      return this.isEligibleToUsePromoCode && !isEmpty(this.promoCode) && !this.isPromoCodeInvalid;
+    },
     showPromoCode() {
       return this.isEligibleToUsePromoCode && this.glFeatures.useInvoicePreviewApiInSaasPurchase;
     },
     isApplyingPromoCode() {
-      return Boolean(this.promoCode) && this.isLoading && !this.hasDiscount;
+      return this.sendPromoCodeToPreviewInvoice && this.isLoading && !this.hasDiscount;
     },
     hasDiscount() {
       return Boolean(this.discountItem);
@@ -115,15 +115,18 @@ export default {
     showSuccessAlert() {
       return this.showAmount && this.hasDiscount;
     },
+    isPromoCodeInvalid() {
+      return this.promoCodeErrorMessage === INVALID_PROMO_CODE_ERROR_MESSAGE;
+    },
   },
   watch: {
     selectedPlan() {
-      this.promoCodeErrorMessage = '';
+      this.resetPromoCodeErrorMessage();
     },
     usersPresent(usersPresent) {
       // Clear promo code quantity error message when quantity is valid
       if (usersPresent && this.promoCodeErrorMessage === PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE) {
-        this.promoCodeErrorMessage = '';
+        this.resetPromoCodeErrorMessage();
       }
     },
     legacyInvoicePreview: {
@@ -139,7 +142,7 @@ export default {
     },
     invoicePreview(val) {
       if (val) {
-        this.clearError();
+        this.dismissErrorAlert();
       }
 
       this.updateInvoicePreview(val);
@@ -150,8 +153,7 @@ export default {
   },
   methods: {
     ...mapActions(['updateInvoicePreviewLoading', 'updateInvoicePreview', 'updatePromoCode']),
-    clearError() {
-      this.promoCodeErrorMessage = '';
+    dismissErrorAlert() {
       this.alert?.dismiss();
     },
     handleError(error) {
@@ -163,9 +165,9 @@ export default {
       let errorMessage = this.$options.i18n.errorMessageText;
 
       if (gqlErrorExtensions) {
-        const { code, attributes, message } = gqlErrorExtensions || {};
+        const { message } = gqlErrorExtensions || {};
 
-        if (this.isInvalidPromoCode(code, attributes)) {
+        if (isInvalidPromoCodeError(gqlErrorExtensions)) {
           this.promoCodeErrorMessage = INVALID_PROMO_CODE_ERROR_MESSAGE;
           return;
         }
@@ -191,19 +193,19 @@ export default {
       // `alert` is intentionally not in `data` to avoid making it unnecessarily reactive
       this.alert = createAlert({ message: errorMessage, error, captureError });
     },
-    isInvalidPromoCode(errorCode, errorAttributes = []) {
-      return (
-        errorAttributes.includes(PROMO_CODE_ERROR_ATTRIBUTE) &&
-        errorCode === INVALID_PROMO_CODE_ERROR_CODE
-      );
+    resetPromoCodeErrorMessage() {
+      this.promoCodeErrorMessage = undefined;
     },
     handlePromoCodeUpdate() {
       // reset promo code when updated until requested to apply to avoid
       // using previously entered values in preview/purchase API calls
       this.updatePromoCode('');
+      this.resetPromoCodeErrorMessage();
     },
     applyPromoCode(promoCode) {
       if (this.usersPresent) {
+        this.dismissErrorAlert();
+        this.resetPromoCodeErrorMessage();
         this.updatePromoCode(promoCode);
       } else {
         this.promoCodeErrorMessage = PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE;
