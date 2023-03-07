@@ -2,6 +2,7 @@ import { GlTokenSelector, GlAvatar, GlToken } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import UserSelect from 'ee/escalation_policies/components/user_select.vue';
+import { getParticipantsWithTokenStyles } from 'ee/escalation_policies/utils';
 
 const mockUsers = [
   { id: 1, name: 'User 1', avatarUrl: 'avatar.com/user1.png' },
@@ -18,6 +19,9 @@ describe('UserSelect', () => {
         return {
           users: mockUsers,
         };
+      },
+      propsData: {
+        mappedParticipants: getParticipantsWithTokenStyles([{ user: mockUsers[0] }]),
       },
       mocks: {
         $apollo: {
@@ -70,17 +74,20 @@ describe('UserSelect', () => {
     });
 
     it('shows selected user token with name and avatar', async () => {
-      const selectedUser = mockUsers[0];
+      const selectedUser = { ...mockUsers[0], ...wrapper.props('mappedParticipants')[0] };
       findTokenSelector().vm.$emit('input', [selectedUser]);
       await nextTick();
       const userToken = findSelectedUserToken();
       expect(userToken.exists()).toBe(true);
       expect(userToken.text()).toMatchInterpolatedText(selectedUser.name);
+      expect(userToken.classes(selectedUser.class)).toBe(true);
+      expect(userToken.attributes('style')).toContain('background-color:');
       const avatar = findAvatar();
       expect(avatar.exists()).toBe(true);
       expect(avatar.props('src')).toBe(selectedUser.avatarUrl);
     });
   });
+
   describe('On user deselected', () => {
     it('hides selected user token and avatar, shows token selector', async () => {
       // select user

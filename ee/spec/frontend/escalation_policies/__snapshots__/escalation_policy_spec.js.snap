@@ -81,7 +81,7 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
           </span>
         </div>
         <div
-          class="gl-display-flex gl-align-items-center escalation-rule-row"
+          class="gl-display-flex gl-align-items-center escalation-rule-row gl-mb-5"
         >
           <span
             class="rule-condition gl-md-w-full"
@@ -128,6 +128,8 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
                     email user
                    
               <gl-token-stub
+                class="gl-text-white"
+                style="background-color: rgb(97, 122, 226);"
                 variant="default"
                 viewonly="true"
               >
@@ -141,6 +143,74 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
                 />
                 
                       Lena
+                    
+              </gl-token-stub>
+            </span>
+          </span>
+        </div>
+        <div
+          class="gl-display-flex gl-align-items-center escalation-rule-row"
+        >
+          <span
+            class="rule-condition gl-md-w-full"
+          >
+            <gl-icon-stub
+              class="gl-mr-3"
+              name="clock"
+              size="16"
+            />
+             IF alert is not 
+                  resolved
+                 in 
+            <span
+              class="gl-font-weight-bold"
+            >
+              
+                    4 mins
+                  
+            </span>
+          </span>
+           
+          <span
+            class="right-arrow gl-relative gl-min-w-7 gl-bg-gray-900 gl-display-none gl-lg-display-block gl-flex-shrink-0 gl-mx-5"
+            style="width: 12%;"
+          >
+            <i
+              class="right-arrow-head gl-absolute gl-p-1 gl-border-solid"
+            />
+          </span>
+           
+          <span
+            class="gl-display-flex gl-align-items-center gl-min-w-0"
+          >
+            <span
+              class="gl-text-truncate"
+              title=" THEN email user Tim"
+            >
+              <gl-icon-stub
+                class="gl-mr-3"
+                name="notifications"
+                size="16"
+              />
+               THEN 
+                    email user
+                   
+              <gl-token-stub
+                class="gl-text-white"
+                style="background-color: rgb(201, 93, 46);"
+                variant="default"
+                viewonly="true"
+              >
+                <gl-avatar-stub
+                  alt="avatar"
+                  entityid="0"
+                  entityname=""
+                  shape="circle"
+                  size="16"
+                  src="avatar.com/tim.png"
+                />
+                
+                      Tim
                     
               </gl-token-stub>
             </span>

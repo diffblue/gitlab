@@ -20,6 +20,7 @@ import {
   editEscalationPolicyModalId,
   EMAIL_USER,
 } from '../constants';
+import { getParticipantsWithTokenStyles, getEscalationUserIndex } from '../utils';
 import EditEscalationPolicyModal from './add_edit_escalation_policy_modal.vue';
 import DeleteEscalationPolicyModal from './delete_escalation_policy_modal.vue';
 
@@ -94,6 +95,9 @@ export default {
     deletePolicyModalId() {
       return `${deleteEscalationPolicyModalId}-${this.policy.id}`;
     },
+    mappedParticipants() {
+      return getParticipantsWithTokenStyles(this.policy.rules);
+    },
   },
   methods: {
     hasEscalationSchedule(rule) {
@@ -101,6 +105,14 @@ export default {
     },
     hasEscalationUser(rule) {
       return rule.user?.username;
+    },
+    getBackgroundStyle(rule) {
+      const userIndex = getEscalationUserIndex(this.mappedParticipants, rule.user.username);
+      return this.mappedParticipants[userIndex].style;
+    },
+    getTextClass(rule) {
+      const userIndex = getEscalationUserIndex(this.mappedParticipants, rule.user.username);
+      return this.mappedParticipants[userIndex].class;
     },
     getActionName(rule) {
       return (this.hasEscalationSchedule(rule)
@@ -222,7 +234,12 @@ export default {
                       <span v-if="hasEscalationSchedule(rule)" class="gl-font-weight-bold">
                         {{ rule.oncallSchedule.name }}
                       </span>
-                      <gl-token v-else-if="hasEscalationUser(rule)" view-only>
+                      <gl-token
+                        v-else-if="hasEscalationUser(rule)"
+                        view-only
+                        :style="getBackgroundStyle(rule)"
+                        :class="getTextClass(rule)"
+                      >
                         <gl-avatar :src="rule.user.avatarUrl" :size="16" />
                         {{ rule.user.name }}
                       </gl-token>

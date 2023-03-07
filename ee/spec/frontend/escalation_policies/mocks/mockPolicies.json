@@ -22,6 +22,16 @@
           "name": "Lena",
           "avatarUrl": "avatar.com/lena.png"
         }
+      },
+      {
+        "id": "gid://gitlab/IncidentManagement::EscalationRule/24",
+        "status": "RESOLVED",
+        "elapsedTimeSeconds": 240,
+        "user": {
+          "username": "timtim",
+          "name": "Tim",
+          "avatarUrl": "avatar.com/tim.png"
+        }
       }
     ]
   },

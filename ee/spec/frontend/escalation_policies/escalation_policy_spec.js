@@ -1,4 +1,4 @@
-import { GlSprintf, GlIcon, GlCard, GlCollapse } from '@gitlab/ui';
+import { GlSprintf, GlIcon, GlCard, GlCollapse, GlToken } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { cloneDeep } from 'lodash';
 import { nextTick } from 'vue';
@@ -16,6 +16,7 @@ import mockPolicies from './mocks/mockPolicies.json';
 describe('EscalationPolicy', () => {
   let wrapper;
   const escalationPolicy = parsePolicy(cloneDeep(mockPolicies[0]));
+  const escalationPolicyWithoutUsers = parsePolicy(cloneDeep(mockPolicies[1]));
 
   const createComponent = (policy = escalationPolicy) => {
     wrapper = shallowMount(EscalationPolicy, {
@@ -42,6 +43,7 @@ describe('EscalationPolicy', () => {
   const findWarningIcon = () => wrapper.findComponent(GlIcon);
   const findGlCard = () => wrapper.findComponent(GlCard);
   const findGlCollapse = () => wrapper.findComponent(GlCollapse);
+  const findGlTokens = () => wrapper.findAllComponents(GlToken);
 
   it('renders a policy with rules', () => {
     expect(wrapper.element).toMatchSnapshot();
@@ -93,6 +95,29 @@ describe('EscalationPolicy', () => {
       findGlCollapse().vm.$emit('hidden');
       await nextTick();
       expect(findGlCard().props('bodyClass')).toBe('gl-p-0');
+    });
+  });
+
+  describe('User tokens', () => {
+    it('do not render when escalation rule has no assigned users', () => {
+      createComponent(escalationPolicyWithoutUsers);
+      expect(findGlTokens().length).toBe(0);
+    });
+
+    it('render for all mapped participants', () => {
+      expect(findGlTokens().length).toEqual(wrapper.vm.mappedParticipants.length);
+    });
+
+    it('have assigned style and class attributes from mapped participants', () => {
+      findGlTokens().wrappers.forEach((token) => {
+        expect(token.attributes('style')).toContain('background-color');
+        expect(token.attributes('class')).toContain('gl-text-white');
+      });
+    });
+
+    it('have distinctive color for each participant in a rule', () => {
+      const tokensStyleAttribute = findGlTokens().wrappers.map((w) => w.attributes('style'));
+      expect(tokensStyleAttribute[0]).not.toBe(tokensStyleAttribute[1]);
     });
   });
 });

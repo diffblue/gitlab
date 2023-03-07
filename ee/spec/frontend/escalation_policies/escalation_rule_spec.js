@@ -29,6 +29,7 @@ describe('EscalationRule', () => {
         rule: cloneDeep(DEFAULT_ESCALATION_RULE),
         schedules: mockSchedules,
         schedulesLoading: false,
+        mappedParticipants: [],
         index: 0,
         isValid: false,
         ...props,

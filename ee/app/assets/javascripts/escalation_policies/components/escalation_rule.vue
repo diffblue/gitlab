@@ -70,6 +70,10 @@ export default {
       required: true,
       default: true,
     },
+    mappedParticipants: {
+      type: Array,
+      required: true,
+    },
     index: {
       type: Number,
       required: true,
@@ -290,7 +294,12 @@ export default {
                 data-testid="no-schedules-info-icon"
               />
             </template>
-            <user-select v-else :selected-user-name="username" @select-user="setSelectedUser" />
+            <user-select
+              v-else
+              :selected-user-name="username"
+              :mapped-participants="mappedParticipants"
+              @select-user="setSelectedUser"
+            />
           </template>
         </gl-sprintf>
       </div>
