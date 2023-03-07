@@ -1,5 +1,5 @@
 import { find } from 'lodash';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import AccessDropdown from '~/projects/settings/access_dropdown';
 import { FAILED_TO_UPDATE_TAG_MESSAGE } from '~/protected_tags/constants';

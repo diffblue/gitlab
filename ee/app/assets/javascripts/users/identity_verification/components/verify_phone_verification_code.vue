@@ -2,7 +2,7 @@
 import { GlForm, GlFormGroup, GlFormInput, GlIcon, GlSprintf, GlLink, GlButton } from '@gitlab/ui';
 import { s__, sprintf } from '~/locale';
 
-import { createAlert, VARIANT_SUCCESS } from '~/flash';
+import { createAlert, VARIANT_SUCCESS } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 
 import { validateVerificationCode } from '../validations';

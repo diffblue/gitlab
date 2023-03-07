@@ -1,7 +1,7 @@
 <script>
 import { GlLink, GlForm, GlFormGroup, GlFormInput } from '@gitlab/ui';
 import { cloneDeep, uniqueId } from 'lodash';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { s__, __ } from '~/locale';
 import {
   EMAIL_ONCALL_SCHEDULE_USER,

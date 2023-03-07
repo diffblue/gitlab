@@ -1,6 +1,6 @@
 <script>
 import { GlButton, GlIcon, GlLink } from '@gitlab/ui';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { redirectTo } from '~/lib/utils/url_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
 

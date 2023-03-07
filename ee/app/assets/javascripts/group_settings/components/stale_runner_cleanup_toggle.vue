@@ -2,7 +2,7 @@
 import { GlToggle, GlSprintf } from '@gitlab/ui';
 import { duration } from '~/lib/utils/datetime/timeago_utility';
 import { s__, n__, sprintf } from '~/locale';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { ignoreWhilePending } from '~/lib/utils/ignore_while_pending';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import { helpPagePath } from '~/helpers/help_page_helper';

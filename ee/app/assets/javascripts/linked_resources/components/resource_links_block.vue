@@ -3,7 +3,7 @@ import { GlLink, GlIcon, GlButton, GlLoadingIcon, GlTooltipDirective } from '@gi
 import { produce } from 'immer';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_ISSUE } from '~/graphql_shared/constants';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { __, sprintf } from '~/locale';
 import { resourceLinksI18n } from '../constants';
 import { displayAndLogError, identifyLinkType } from './utils';

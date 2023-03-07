@@ -1,7 +1,7 @@
 <script>
 import { GlForm, GlFormGroup, GlFormInput, GlIcon, GlLink, GlSprintf, GlButton } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { createAlert, VARIANT_SUCCESS } from '~/flash';
+import { createAlert, VARIANT_SUCCESS } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import {
   I18N_EMAIL_EMPTY_CODE,
