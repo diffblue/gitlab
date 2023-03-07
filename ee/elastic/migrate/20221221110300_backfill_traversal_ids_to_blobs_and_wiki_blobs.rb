@@ -8,7 +8,7 @@ class BackfillTraversalIdsToBlobsAndWikiBlobs < Elastic::Migration
   BLOB_AND_WIKI_BLOB = %w[blob wiki_blob].freeze
   MAX_PROJECTS_TO_PROCESS = 50
 
-  batch_size 50_000
+  batch_size 10_000
   batched!
   throttle_delay 5.seconds
   retry_on_failure
