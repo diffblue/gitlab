@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import {
   DASHBOARD_LOADING_FAILURE,
   CHART_LOADING_FAILURE,
@@ -20,7 +20,7 @@ import {
 
 const mockProps = { name: 'Exec group', requestPath: 'exec-group', isProject: false };
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 jest.mock('~/analytics/shared/utils');
 
 describe('Comparison chart', () => {

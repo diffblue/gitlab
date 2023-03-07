@@ -9,13 +9,13 @@ import ConfirmOrder from 'ee/vue_shared/purchase_flow/components/checkout/confir
 import { stateData as initialStateData, subscriptionName } from 'ee_jest/subscriptions/mock_data';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import * as UrlUtility from '~/lib/utils/url_utility';
 import waitForPromises from 'helpers/wait_for_promises';
 import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 
 jest.mock('~/lib/utils/url_utility');
-jest.mock('~/flash');
+jest.mock('~/alert');
 jest.mock('ee/api.js');
 
 describe('Confirm Order', () => {

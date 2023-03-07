@@ -12,7 +12,7 @@ import {
   GRIDSTACK_MIN_ROW,
 } from 'ee/vue_shared/components/customizable_dashboard/constants';
 import { loadCSSFile } from '~/lib/utils/css_utils';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
   filtersToQueryParams,
@@ -21,7 +21,7 @@ import {
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
 import { dashboard, mockDateRangeFilterChangePayload } from './mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 jest.mock('gridstack', () => ({
   GridStack: {
     init: jest.fn(() => {

@@ -7,13 +7,13 @@ import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import updateStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/update_active_step.mutation.graphql';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { STEPS } from '../mock_data';
 import { createMockApolloProvider } from '../spec_helper';
 
 Vue.use(VueApollo);
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('Step', () => {
   let wrapper;

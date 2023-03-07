@@ -6,11 +6,11 @@ import { TEST_HOST } from 'helpers/test_constants';
 import { trimText } from 'helpers/text_helper';
 import { mountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 const ENDPOINT = `${TEST_HOST}/endpoint`;
 

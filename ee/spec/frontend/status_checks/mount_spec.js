@@ -2,10 +2,10 @@ import { createWrapper } from '@vue/test-utils';
 import mountStatusChecks from 'ee/status_checks/mount';
 import createStore from 'ee/status_checks/store';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 
 jest.mock('ee/status_checks/store');
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('mountStatusChecks', () => {
   const projectId = '12345';

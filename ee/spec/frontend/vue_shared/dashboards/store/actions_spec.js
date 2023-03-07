@@ -4,13 +4,13 @@ import createStore from 'ee/vue_shared/dashboards/store/index';
 import * as types from 'ee/vue_shared/dashboards/store/mutation_types';
 import { mockHeaders, mockText, mockProjectData } from 'ee_jest/vue_shared/dashboards/mock_data';
 import testAction from 'helpers/vuex_action_helper';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 import clearState from '../helpers';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('actions', () => {
   const mockAddEndpoint = 'mock-add_endpoint';

@@ -9,12 +9,12 @@ import HistoryComment from 'ee/vulnerabilities/components/history_comment.vue';
 import HistoryCommentEditor from 'ee/vulnerabilities/components/history_comment_editor.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { TYPENAME_DISCUSSION, TYPENAME_VULNERABILITY } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { generateNote } from './mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 Vue.use(VueApollo);
 
 const CREATE_NOTE = 'createNote';
@@ -249,7 +249,7 @@ describe('History Comment', () => {
         createWrapper({ propsData });
       });
 
-      it('shows flash', async () => {
+      it('shows alert', async () => {
         await editAndSaveNewContent('new comment');
         await waitForPromises();
 
@@ -266,7 +266,7 @@ describe('History Comment', () => {
         createWrapper({ propsData });
       });
 
-      it('shows flash', async () => {
+      it('shows alert', async () => {
         await editAndSaveNewContent('new comment');
         await waitForPromises();
 

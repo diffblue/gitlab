@@ -7,11 +7,11 @@ import waitForPromises from 'helpers/wait_for_promises';
 
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import ScimToken from 'ee/saml_sso/components/scim_token.vue';
 import InputCopyToggleVisibility from '~/vue_shared/components/form/input_copy_toggle_visibility.vue';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('ScimToken', () => {
   let wrapper;

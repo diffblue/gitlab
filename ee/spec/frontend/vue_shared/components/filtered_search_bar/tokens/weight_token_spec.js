@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils';
 import WeightToken from 'ee/vue_shared/components/filtered_search_bar/tokens/weight_token.vue';
 import { mockWeightToken } from '../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('WeightToken', () => {
   const weight = '3';

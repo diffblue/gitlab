@@ -4,9 +4,9 @@ import createInitialState from 'ee/pages/groups/saml_providers/saml_members/stor
 import testAction from 'helpers/vuex_action_helper';
 import Api from '~/api';
 
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 jest.mock('~/api', () => ({
   groupMembers: jest.fn(),
 }));
@@ -71,7 +71,7 @@ describe('saml_members actions', () => {
       );
     });
 
-    it('should show flash on wrong data', async () => {
+    it('should show alert on wrong data', async () => {
       Api.groupMembers.mockReturnValue(Promise.reject(new Error()));
       await testAction(fetchPage, undefined, state, [], []);
 
