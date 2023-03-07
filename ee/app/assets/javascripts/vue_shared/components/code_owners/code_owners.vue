@@ -1,7 +1,7 @@
 <script>
 import { GlIcon, GlLink, GlButton } from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import getRefMixin from '~/repository/mixins/get_ref';
 import codeOwnersInfoQuery from '../../../graphql_shared/queries/code_owners_info.query.graphql';

@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { createAlert, VARIANT_WARNING } from '~/flash';
+import { createAlert, VARIANT_WARNING } from '~/alert';
 import AccessorUtilities from '~/lib/utils/accessor';
 import { parseIntPagination, normalizeHeaders } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';

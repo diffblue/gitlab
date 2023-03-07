@@ -1,6 +1,6 @@
 import { memoize, uniqBy, uniqueId, flatten } from 'lodash';
 import Api from '~/api';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
 import { RULE_TYPE_ANY_APPROVER } from '../../../constants';

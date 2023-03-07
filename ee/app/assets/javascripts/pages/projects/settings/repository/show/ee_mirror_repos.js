@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { __ } from '~/locale';
 import MirrorRepos from '~/mirrors/mirror_repos';
 

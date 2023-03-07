@@ -1,7 +1,7 @@
 <script>
 import { GlFilteredSearchSuggestion } from '@gitlab/ui';
 import { pick } from 'lodash';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';

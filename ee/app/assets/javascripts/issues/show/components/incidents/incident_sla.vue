@@ -2,7 +2,7 @@
 import { GlIcon } from '@gitlab/ui';
 import { isValidSlaDueAt } from 'ee/vue_shared/components/incidents/utils';
 import ServiceLevelAgreement from 'ee_component/vue_shared/components/incidents/service_level_agreement.vue';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { s__ } from '~/locale';
 import getSlaIncidentDataQuery from './graphql/queries/get_sla_due_at.query.graphql';
 
