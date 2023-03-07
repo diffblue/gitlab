@@ -65,7 +65,7 @@ export const MOCK_DATA_TYPES = [
   },
 ];
 
-// This const is very specific, it is a hard coded filtered information from MOCK_NODES
+// This const is very specific, it is a hard coded filtered information from MOCK_SITES
 // Be sure if updating you follow the pattern else getters_spec.js will fail.
 export const MOCK_PRIMARY_VERIFICATION_INFO = [
   {
@@ -80,7 +80,7 @@ export const MOCK_PRIMARY_VERIFICATION_INFO = [
   },
 ];
 
-// This const is very specific, it is a hard coded filtered information from MOCK_NODES
+// This const is very specific, it is a hard coded filtered information from MOCK_SITES
 // Be sure if updating you follow the pattern else getters_spec.js will fail.
 export const MOCK_SECONDARY_VERIFICATION_INFO = [
   {
@@ -95,7 +95,7 @@ export const MOCK_SECONDARY_VERIFICATION_INFO = [
   },
 ];
 
-// This const is very specific, it is a hard coded filtered information from MOCK_NODES
+// This const is very specific, it is a hard coded filtered information from MOCK_SITES
 // Be sure if updating you follow the pattern else getters_spec.js will fail.
 export const MOCK_SECONDARY_SYNC_INFO = [
   {
@@ -150,16 +150,16 @@ export const MOCK_SECONDARY_SYNC_INFO = [
   },
 ];
 
-// This const is very specific, it is a hard coded camelCase version of MOCK_PRIMARY_NODE_RES and MOCK_PRIMARY_NODE_STATUSES_RES
+// This const is very specific, it is a hard coded camelCase version of MOCK_PRIMARY_SITE_RES and MOCK_PRIMARY_SITE_STATUSES_RES
 // Be sure if updating you follow the pattern else actions_spec.js will fail.
-export const MOCK_PRIMARY_NODE = {
+export const MOCK_PRIMARY_SITE = {
   id: 1,
   name: 'Test Site 1',
   url: 'http://127.0.0.1:3001/',
   primary: true,
   enabled: true,
   current: true,
-  geoNodeId: 1,
+  geoNodeId: 1, // geo_node_id to be converted to geo_site_id in => https://gitlab.com/gitlab-org/gitlab/-/issues/369140
   healthStatus: 'Healthy',
   repositoriesCount: 12,
   repositoriesChecksumTotalCount: 12,
@@ -173,16 +173,16 @@ export const MOCK_PRIMARY_NODE = {
   webEditUrl: 'http://127.0.0.1:3001/admin/geo/sites/1',
 };
 
-// This const is very specific, it is a hard coded camelCase version of MOCK_SECONDARY_NODE_RES and MOCK_SECONDARY_NODE_STATUSES_RES
+// This const is very specific, it is a hard coded camelCase version of MOCK_SECONDARY_SITE_RES and MOCK_SECONDARY_SITE_STATUSES_RES
 // Be sure if updating you follow the pattern else actions_spec.js will fail.
-export const MOCK_SECONDARY_NODE = {
+export const MOCK_SECONDARY_SITE = {
   id: 2,
   name: 'Test Site 2',
   url: 'http://127.0.0.1:3002/',
   primary: false,
   enabled: true,
   current: false,
-  geoNodeId: 2,
+  geoNodeId: 2, // geo_node_id to be converted to geo_site_id in => https://gitlab.com/gitlab-org/gitlab/-/issues/369140
   healthStatus: 'Healthy',
   repositoriesCount: 12,
   repositoriesFailedCount: 0,
@@ -214,9 +214,9 @@ export const MOCK_SECONDARY_NODE = {
   webGeoReplicationDetailsUrl: 'http://127.0.0.1:3002/admin/geo/sites/2/replication/lfs_objects',
 };
 
-export const MOCK_NODES = [MOCK_PRIMARY_NODE, MOCK_SECONDARY_NODE];
+export const MOCK_SITES = [MOCK_PRIMARY_SITE, MOCK_SECONDARY_SITE];
 
-export const MOCK_PRIMARY_NODE_RES = {
+export const MOCK_PRIMARY_SITE_RES = {
   id: 1,
   name: 'Test Site 1',
   url: 'http://127.0.0.1:3001/',
@@ -225,7 +225,7 @@ export const MOCK_PRIMARY_NODE_RES = {
   current: true,
 };
 
-export const MOCK_SECONDARY_NODE_RES = {
+export const MOCK_SECONDARY_SITE_RES = {
   id: 2,
   name: 'Test Site 2',
   url: 'http://127.0.0.1:3002/',
@@ -234,10 +234,10 @@ export const MOCK_SECONDARY_NODE_RES = {
   current: false,
 };
 
-export const MOCK_NODES_RES = [MOCK_PRIMARY_NODE_RES, MOCK_SECONDARY_NODE_RES];
+export const MOCK_SITES_RES = [MOCK_PRIMARY_SITE_RES, MOCK_SECONDARY_SITE_RES];
 
-export const MOCK_PRIMARY_NODE_STATUSES_RES = {
-  geo_node_id: 1,
+export const MOCK_PRIMARY_SITE_STATUSES_RES = {
+  geo_node_id: 1, // geo_node_id to be converted to geo_site_id in => https://gitlab.com/gitlab-org/gitlab/-/issues/369140
   health_status: 'Healthy',
   repositories_count: 12,
   repositories_checksum_total_count: 12,
@@ -251,8 +251,8 @@ export const MOCK_PRIMARY_NODE_STATUSES_RES = {
   web_edit_url: 'http://127.0.0.1:3001/admin/geo/sites/1',
 };
 
-export const MOCK_SECONDARY_NODE_STATUSES_RES = {
-  geo_node_id: 2,
+export const MOCK_SECONDARY_SITE_STATUSES_RES = {
+  geo_node_id: 2, // geo_node_id to be converted to geo_site_id in => https://gitlab.com/gitlab-org/gitlab/-/issues/369140
   health_status: 'Healthy',
   repositories_count: 12,
   repositories_failed_count: 0,
@@ -285,12 +285,12 @@ export const MOCK_SECONDARY_NODE_STATUSES_RES = {
     'http://127.0.0.1:3002/admin/geo/sites/2/replication/lfs_objects',
 };
 
-export const MOCK_NODE_STATUSES_RES = [
-  MOCK_PRIMARY_NODE_STATUSES_RES,
-  MOCK_SECONDARY_NODE_STATUSES_RES,
+export const MOCK_SITE_STATUSES_RES = [
+  MOCK_PRIMARY_SITE_STATUSES_RES,
+  MOCK_SECONDARY_SITE_STATUSES_RES,
 ];
 
-export const MOCK_FILTER_NODES = [
+export const MOCK_FILTER_SITES = [
   {
     name: 'healthy1',
     url: 'url/1',

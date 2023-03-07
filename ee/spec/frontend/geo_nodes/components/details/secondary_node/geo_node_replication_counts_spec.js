@@ -3,7 +3,7 @@ import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeReplicationCounts from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_counts.vue';
 import GeoNodeReplicationSyncPercentage from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_sync_percentage.vue';
-import { MOCK_SECONDARY_NODE, MOCK_REPLICATION_COUNTS } from 'ee_jest/geo_nodes/mock_data';
+import { MOCK_SECONDARY_SITE, MOCK_REPLICATION_COUNTS } from 'ee_jest/geo_nodes/mock_data';
 
 Vue.use(Vuex);
 
@@ -11,13 +11,13 @@ describe('GeoNodeReplicationCounts', () => {
   let wrapper;
 
   const defaultProps = {
-    nodeId: MOCK_SECONDARY_NODE.id,
+    nodeId: MOCK_SECONDARY_SITE.id,
   };
 
   const createComponent = (props, getters) => {
     const store = new Vuex.Store({
       getters: {
-        replicationCountsByDataTypeForNode: () => () => MOCK_REPLICATION_COUNTS,
+        replicationCountsByDataTypeForSite: () => () => MOCK_REPLICATION_COUNTS,
         ...getters,
       },
     });

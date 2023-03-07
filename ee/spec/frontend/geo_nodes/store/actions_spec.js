@@ -8,14 +8,14 @@ import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import {
   MOCK_REPLICABLE_TYPES,
-  MOCK_NODES,
-  MOCK_NODES_RES,
-  MOCK_NODE_STATUSES_RES,
+  MOCK_SITES,
+  MOCK_SITES_RES,
+  MOCK_SITE_STATUSES_RES,
 } from '../mock_data';
 
 jest.mock('~/alert');
 
-describe('GeoNodes Store Actions', () => {
+describe('GeoSites Store Actions', () => {
   let mock;
   let state;
 
@@ -31,23 +31,24 @@ describe('GeoNodes Store Actions', () => {
     mock.restore();
   });
 
-  describe('fetchNodes', () => {
+  describe('fetchSites', () => {
     describe('on success', () => {
       beforeEach(() => {
-        mock.onGet(/api\/(.*)\/geo_nodes/).replyOnce(HTTP_STATUS_OK, MOCK_NODES_RES);
+        // geo_nodes API to be renamed geo_sites API => https://gitlab.com/gitlab-org/gitlab/-/issues/369140
+        mock.onGet(/api\/(.*)\/geo_nodes/).replyOnce(HTTP_STATUS_OK, MOCK_SITES_RES);
         mock
           .onGet(/api\/(.*)\/geo_nodes\/status/)
-          .replyOnce(HTTP_STATUS_OK, MOCK_NODE_STATUSES_RES);
+          .replyOnce(HTTP_STATUS_OK, MOCK_SITE_STATUSES_RES);
       });
 
       it('should dispatch the correct mutations', () => {
         return testAction({
-          action: actions.fetchNodes,
+          action: actions.fetchSites,
           payload: null,
           state,
           expectedMutations: [
-            { type: types.REQUEST_NODES },
-            { type: types.RECEIVE_NODES_SUCCESS, payload: MOCK_NODES },
+            { type: types.REQUEST_SITES },
+            { type: types.RECEIVE_SITES_SUCCESS, payload: MOCK_SITES },
           ],
         });
       });
@@ -55,16 +56,17 @@ describe('GeoNodes Store Actions', () => {
 
     describe('on error', () => {
       beforeEach(() => {
+        // geo_nodes API to be renamed geo_sites API => https://gitlab.com/gitlab-org/gitlab/-/issues/369140
         mock.onGet(/api\/(.*)\/geo_nodes/).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
         mock.onGet(/api\/(.*)\/geo_nodes\/status/).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
       });
 
       it('should dispatch the correct mutations', () => {
         return testAction({
-          action: actions.fetchNodes,
+          action: actions.fetchSites,
           payload: null,
           state,
-          expectedMutations: [{ type: types.REQUEST_NODES }, { type: types.RECEIVE_NODES_ERROR }],
+          expectedMutations: [{ type: types.REQUEST_SITES }, { type: types.RECEIVE_SITES_ERROR }],
         }).then(() => {
           expect(createAlert).toHaveBeenCalledTimes(1);
           createAlert.mockClear();
@@ -73,20 +75,21 @@ describe('GeoNodes Store Actions', () => {
     });
   });
 
-  describe('removeNode', () => {
+  describe('removeSite', () => {
     describe('on success', () => {
       beforeEach(() => {
+        // geo_nodes API to be renamed geo_sites API => https://gitlab.com/gitlab-org/gitlab/-/issues/369140
         mock.onDelete(/api\/.*\/geo_nodes/).replyOnce(HTTP_STATUS_OK, {});
       });
 
       it('should dispatch the correct mutations', () => {
         return testAction({
-          action: actions.removeNode,
+          action: actions.removeSite,
           payload: null,
           state,
           expectedMutations: [
-            { type: types.REQUEST_NODE_REMOVAL },
-            { type: types.RECEIVE_NODE_REMOVAL_SUCCESS },
+            { type: types.REQUEST_SITE_REMOVAL },
+            { type: types.RECEIVE_SITE_REMOVAL_SUCCESS },
           ],
         });
       });
@@ -94,17 +97,18 @@ describe('GeoNodes Store Actions', () => {
 
     describe('on error', () => {
       beforeEach(() => {
+        // geo_nodes API to be renamed geo_sites API => https://gitlab.com/gitlab-org/gitlab/-/issues/369140
         mock.onDelete(/api\/(.*)\/geo_nodes/).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
       });
 
       it('should dispatch the correct mutations', () => {
         return testAction({
-          action: actions.removeNode,
+          action: actions.removeSite,
           payload: null,
           state,
           expectedMutations: [
-            { type: types.REQUEST_NODE_REMOVAL },
-            { type: types.RECEIVE_NODE_REMOVAL_ERROR },
+            { type: types.REQUEST_SITE_REMOVAL },
+            { type: types.RECEIVE_SITE_REMOVAL_ERROR },
           ],
         }).then(() => {
           expect(createAlert).toHaveBeenCalledTimes(1);
@@ -114,24 +118,24 @@ describe('GeoNodes Store Actions', () => {
     });
   });
 
-  describe('prepNodeRemoval', () => {
+  describe('prepSiteRemoval', () => {
     it('should dispatch the correct mutations', () => {
       return testAction({
-        action: actions.prepNodeRemoval,
+        action: actions.prepSiteRemoval,
         payload: 1,
         state,
-        expectedMutations: [{ type: types.STAGE_NODE_REMOVAL, payload: 1 }],
+        expectedMutations: [{ type: types.STAGE_SITE_REMOVAL, payload: 1 }],
       });
     });
   });
 
-  describe('cancelNodeRemoval', () => {
+  describe('cancelSiteRemoval', () => {
     it('should dispatch the correct mutations', () => {
       return testAction({
-        action: actions.cancelNodeRemoval,
+        action: actions.cancelSiteRemoval,
         payload: null,
         state,
-        expectedMutations: [{ type: types.UNSTAGE_NODE_REMOVAL }],
+        expectedMutations: [{ type: types.UNSTAGE_SITE_REMOVAL }],
       });
     });
   });

@@ -1,10 +1,10 @@
 import { convertToCamelCase } from '~/lib/utils/text_utility';
 
 export const verificationInfo = (state) => (id) => {
-  const node = state.nodes.find((n) => n.id === id);
+  const site = state.sites.find((n) => n.id === id);
   const variables = {};
 
-  if (node.primary) {
+  if (site.primary) {
     variables.total = 'ChecksumTotalCount';
     variables.success = 'ChecksummedCount';
     variables.failed = 'ChecksumFailedCount';
@@ -24,16 +24,16 @@ export const verificationInfo = (state) => (id) => {
         dataTypeTitle: replicable.dataTypeTitle,
         title: replicable.titlePlural,
         values: {
-          total: node[`${camelCaseName}${variables.total}`],
-          success: node[`${camelCaseName}${variables.success}`],
-          failed: node[`${camelCaseName}${variables.failed}`],
+          total: site[`${camelCaseName}${variables.total}`],
+          success: site[`${camelCaseName}${variables.success}`],
+          failed: site[`${camelCaseName}${variables.failed}`],
         },
       };
     });
 };
 
 export const syncInfo = (state) => (id) => {
-  const node = state.nodes.find((n) => n.id === id);
+  const site = state.sites.find((n) => n.id === id);
 
   return state.replicableTypes.map((replicable) => {
     const camelCaseName = convertToCamelCase(replicable.namePlural);
@@ -43,9 +43,9 @@ export const syncInfo = (state) => (id) => {
       dataTypeTitle: replicable.dataTypeTitle,
       title: replicable.titlePlural,
       values: {
-        total: node[`${camelCaseName}Count`],
-        success: node[`${camelCaseName}SyncedCount`],
-        failed: node[`${camelCaseName}FailedCount`],
+        total: site[`${camelCaseName}Count`],
+        success: site[`${camelCaseName}SyncedCount`],
+        failed: site[`${camelCaseName}FailedCount`],
       },
     };
   });
@@ -67,7 +67,7 @@ export const dataTypes = (state) => {
   }, []);
 };
 
-export const replicationCountsByDataTypeForNode = (_, getters) => (id) => {
+export const replicationCountsByDataTypeForSite = (_, getters) => (id) => {
   const syncInfoData = getters.syncInfo(id);
   const verificationInfoData = getters.verificationInfo(id);
 
@@ -84,10 +84,10 @@ export const replicationCountsByDataTypeForNode = (_, getters) => (id) => {
   });
 };
 
-export const canRemoveNode = (state) => (id) => {
-  const node = state.nodes.find((n) => n.id === id);
+export const canRemoveSite = (state) => (id) => {
+  const site = state.sites.find((n) => n.id === id);
 
-  return !node.primary || state.nodes.length === 1;
+  return !site.primary || state.sites.length === 1;
 };
 
 const filterByStatus = (status) => {
@@ -109,19 +109,19 @@ const filterBySearch = (search) => {
     n.url?.toLowerCase().includes(search.toLowerCase());
 };
 
-export const filteredNodes = (state) => {
-  return state.nodes
+export const filteredSites = (state) => {
+  return state.sites
     .filter(filterByStatus(state.statusFilter))
     .filter(filterBySearch(state.searchFilter));
 };
 
-export const countNodesForStatus = (state) => (status) => {
-  return state.nodes.filter(filterByStatus(status)).length;
+export const countSitesForStatus = (state) => (status) => {
+  return state.sites.filter(filterByStatus(status)).length;
 };
 
-export const nodeHasVersionMismatch = (state) => (id) => {
-  const node = state.nodes.find((n) => n.id === id);
-  const primaryNode = state.nodes.find((n) => n.primary);
+export const siteHasVersionMismatch = (state) => (id) => {
+  const site = state.sites.find((n) => n.id === id);
+  const primarySite = state.sites.find((n) => n.primary);
 
-  return node?.version !== primaryNode?.version || node?.revision !== primaryNode?.revision;
+  return site?.version !== primarySite?.version || site?.revision !== primarySite?.revision;
 };

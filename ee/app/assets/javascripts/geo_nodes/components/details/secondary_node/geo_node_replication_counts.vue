@@ -20,9 +20,9 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['replicationCountsByDataTypeForNode']),
+    ...mapGetters(['replicationCountsByDataTypeForSite']),
     replicationOverview() {
-      return this.replicationCountsByDataTypeForNode(this.nodeId);
+      return this.replicationCountsByDataTypeForSite(this.nodeId);
     },
   },
 };

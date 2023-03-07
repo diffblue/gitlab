@@ -5,7 +5,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeProgressBar from 'ee/geo_nodes/components/details/geo_node_progress_bar.vue';
 import GeoNodeVerificationInfo from 'ee/geo_nodes/components/details/primary_node/geo_node_verification_info.vue';
 import { HELP_INFO_URL } from 'ee/geo_nodes/constants';
-import { MOCK_PRIMARY_NODE, MOCK_PRIMARY_VERIFICATION_INFO } from 'ee_jest/geo_nodes/mock_data';
+import { MOCK_PRIMARY_SITE, MOCK_PRIMARY_VERIFICATION_INFO } from 'ee_jest/geo_nodes/mock_data';
 
 Vue.use(Vuex);
 
@@ -13,7 +13,7 @@ describe('GeoNodeVerificationInfo', () => {
   let wrapper;
 
   const defaultProps = {
-    node: MOCK_PRIMARY_NODE,
+    node: MOCK_PRIMARY_SITE,
   };
 
   const createComponent = (props) => {

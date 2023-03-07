@@ -2,14 +2,14 @@ import { GlCard } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeProgressBar from 'ee/geo_nodes/components/details/geo_node_progress_bar.vue';
 import GeoNodePrimaryOtherInfo from 'ee/geo_nodes/components/details/primary_node/geo_node_primary_other_info.vue';
-import { MOCK_PRIMARY_NODE, MOCK_SECONDARY_NODE } from 'ee_jest/geo_nodes/mock_data';
+import { MOCK_PRIMARY_SITE, MOCK_SECONDARY_SITE } from 'ee_jest/geo_nodes/mock_data';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 
 describe('GeoNodePrimaryOtherInfo', () => {
   let wrapper;
 
   const defaultProps = {
-    node: MOCK_PRIMARY_NODE,
+    node: MOCK_PRIMARY_SITE,
   };
 
   const createComponent = (props) => {
@@ -46,19 +46,19 @@ describe('GeoNodePrimaryOtherInfo', () => {
 
     describe('when replicationSlotWAL exists', () => {
       beforeEach(() => {
-        createComponent({ node: MOCK_PRIMARY_NODE });
+        createComponent({ node: MOCK_PRIMARY_SITE });
       });
 
       it('renders the replicationSlotWAL section correctly', () => {
         expect(findReplicationSlotWAL().text()).toBe(
-          numberToHumanSize(MOCK_PRIMARY_NODE.replicationSlotsMaxRetainedWalBytes),
+          numberToHumanSize(MOCK_PRIMARY_SITE.replicationSlotsMaxRetainedWalBytes),
         );
       });
     });
 
     describe('when replicationSlotWAL is 0', () => {
       beforeEach(() => {
-        createComponent({ node: { ...MOCK_PRIMARY_NODE, replicationSlotsMaxRetainedWalBytes: 0 } });
+        createComponent({ node: { ...MOCK_PRIMARY_SITE, replicationSlotsMaxRetainedWalBytes: 0 } });
       });
 
       it('renders 0 bytes', () => {
@@ -68,7 +68,7 @@ describe('GeoNodePrimaryOtherInfo', () => {
 
     describe('when replicationSlotWAL is null', () => {
       beforeEach(() => {
-        createComponent({ node: MOCK_SECONDARY_NODE });
+        createComponent({ node: MOCK_SECONDARY_SITE });
       });
 
       it('renders Unknown', () => {

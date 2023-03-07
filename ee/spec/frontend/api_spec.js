@@ -213,17 +213,18 @@ describe('Api', () => {
     });
   });
 
-  describe('GeoNode', () => {
+  describe('GeoSite', () => {
     let expectedUrl;
-    let mockNode;
+    let mockSite;
 
     beforeEach(() => {
+      // geo_nodes API to be renamed geo_sites API => https://gitlab.com/gitlab-org/gitlab/-/issues/369140
       expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/geo_nodes`;
     });
 
     describe('createGeoNode', () => {
       it('POSTs with correct action', () => {
-        mockNode = {
+        mockSite = {
           name: 'Mock Node',
           url: 'https://mock_node.gitlab.com',
           primary: false,
@@ -231,18 +232,18 @@ describe('Api', () => {
 
         jest.spyOn(Api, 'buildUrl').mockReturnValue(expectedUrl);
         jest.spyOn(axios, 'post');
-        mock.onPost(expectedUrl).replyOnce(HTTP_STATUS_CREATED, mockNode);
+        mock.onPost(expectedUrl).replyOnce(HTTP_STATUS_CREATED, mockSite);
 
-        return Api.createGeoNode(mockNode).then(({ data }) => {
-          expect(data).toEqual(mockNode);
-          expect(axios.post).toHaveBeenCalledWith(expectedUrl, mockNode);
+        return Api.createGeoNode(mockSite).then(({ data }) => {
+          expect(data).toEqual(mockSite);
+          expect(axios.post).toHaveBeenCalledWith(expectedUrl, mockSite);
         });
       });
     });
 
     describe('updateGeoNode', () => {
       it('PUTs with correct action', () => {
-        mockNode = {
+        mockSite = {
           id: 1,
           name: 'Mock Node',
           url: 'https://mock_node.gitlab.com',
@@ -251,27 +252,27 @@ describe('Api', () => {
 
         jest.spyOn(Api, 'buildUrl').mockReturnValue(expectedUrl);
         jest.spyOn(axios, 'put');
-        mock.onPut(`${expectedUrl}/${mockNode.id}`).replyOnce(HTTP_STATUS_CREATED, mockNode);
+        mock.onPut(`${expectedUrl}/${mockSite.id}`).replyOnce(HTTP_STATUS_CREATED, mockSite);
 
-        return Api.updateGeoNode(mockNode).then(({ data }) => {
-          expect(data).toEqual(mockNode);
-          expect(axios.put).toHaveBeenCalledWith(`${expectedUrl}/${mockNode.id}`, mockNode);
+        return Api.updateGeoNode(mockSite).then(({ data }) => {
+          expect(data).toEqual(mockSite);
+          expect(axios.put).toHaveBeenCalledWith(`${expectedUrl}/${mockSite.id}`, mockSite);
         });
       });
     });
 
-    describe('removeGeoNode', () => {
+    describe('removeGeoSite', () => {
       it('DELETES with correct ID', () => {
-        mockNode = {
+        mockSite = {
           id: 1,
         };
 
-        jest.spyOn(Api, 'buildUrl').mockReturnValue(`${expectedUrl}/${mockNode.id}`);
+        jest.spyOn(Api, 'buildUrl').mockReturnValue(`${expectedUrl}/${mockSite.id}`);
         jest.spyOn(axios, 'delete');
-        mock.onDelete(`${expectedUrl}/${mockNode.id}`).replyOnce(HTTP_STATUS_OK, {});
+        mock.onDelete(`${expectedUrl}/${mockSite.id}`).replyOnce(HTTP_STATUS_OK, {});
 
-        return Api.removeGeoNode(mockNode.id).then(() => {
-          expect(axios.delete).toHaveBeenCalledWith(`${expectedUrl}/${mockNode.id}`);
+        return Api.removeGeoSite(mockSite.id).then(() => {
+          expect(axios.delete).toHaveBeenCalledWith(`${expectedUrl}/${mockSite.id}`);
         });
       });
     });

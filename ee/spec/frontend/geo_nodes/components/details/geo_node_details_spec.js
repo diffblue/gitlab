@@ -6,13 +6,13 @@ import GeoNodeVerificationInfo from 'ee/geo_nodes/components/details/primary_nod
 import GeoNodeReplicationDetails from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_details.vue';
 import GeoNodeReplicationSummary from 'ee/geo_nodes/components/details/secondary_node/geo_node_replication_summary.vue';
 import GeoNodeSecondaryOtherInfo from 'ee/geo_nodes/components/details/secondary_node/geo_node_secondary_other_info.vue';
-import { MOCK_PRIMARY_NODE, MOCK_SECONDARY_NODE } from 'ee_jest/geo_nodes/mock_data';
+import { MOCK_PRIMARY_SITE, MOCK_SECONDARY_SITE } from 'ee_jest/geo_nodes/mock_data';
 
 describe('GeoNodeDetails', () => {
   let wrapper;
 
   const defaultProps = {
-    node: MOCK_PRIMARY_NODE,
+    node: MOCK_PRIMARY_SITE,
   };
 
   const createComponent = (props) => {
@@ -46,8 +46,8 @@ describe('GeoNodeDetails', () => {
 
     describe.each`
       node                   | showPrimaryComponent | showSecondaryComponent
-      ${MOCK_PRIMARY_NODE}   | ${true}              | ${false}
-      ${MOCK_SECONDARY_NODE} | ${false}             | ${true}
+      ${MOCK_PRIMARY_SITE}   | ${true}              | ${false}
+      ${MOCK_SECONDARY_SITE} | ${false}             | ${true}
     `(`conditionally`, ({ node, showPrimaryComponent, showSecondaryComponent }) => {
       beforeEach(() => {
         createComponent({ node });

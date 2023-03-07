@@ -22,7 +22,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['nodeHasVersionMismatch']),
+    ...mapGetters(['siteHasVersionMismatch']),
     nodeVersion() {
       if (!this.node.version || !this.node.revision) {
         return this.$options.i18n.unknown;
@@ -30,7 +30,7 @@ export default {
       return `${this.node.version} (${this.node.revision})`;
     },
     hasMismatchVersion() {
-      return this.nodeHasVersionMismatch(this.node.id);
+      return this.siteHasVersionMismatch(this.node.id);
     },
   },
 };

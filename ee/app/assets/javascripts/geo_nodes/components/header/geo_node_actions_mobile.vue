@@ -21,9 +21,9 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['canRemoveNode']),
+    ...mapGetters(['canRemoveSite']),
     dropdownRemoveClass() {
-      return this.canRemoveNode(this.node.id) ? 'gl-text-red-500' : 'gl-text-gray-400';
+      return this.canRemoveSite(this.node.id) ? 'gl-text-red-500' : 'gl-text-gray-400';
     },
   },
 };
@@ -36,7 +36,7 @@ export default {
     </template>
     <gl-dropdown-item :href="node.webEditUrl">{{ $options.i18n.editButtonLabel }}</gl-dropdown-item>
     <gl-dropdown-item
-      :disabled="!canRemoveNode(node.id)"
+      :disabled="!canRemoveSite(node.id)"
       data-testid="geo-mobile-remove-action"
       @click="$emit('remove')"
     >

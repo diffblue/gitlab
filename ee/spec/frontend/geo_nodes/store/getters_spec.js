@@ -2,17 +2,17 @@ import * as getters from 'ee/geo_nodes/store/getters';
 import createState from 'ee/geo_nodes/store/state';
 import {
   MOCK_REPLICABLE_TYPES,
-  MOCK_NODES,
+  MOCK_SITES,
   MOCK_PRIMARY_VERIFICATION_INFO,
   MOCK_SECONDARY_VERIFICATION_INFO,
   MOCK_SECONDARY_SYNC_INFO,
-  MOCK_FILTER_NODES,
-  MOCK_PRIMARY_NODE,
-  MOCK_SECONDARY_NODE,
+  MOCK_FILTER_SITES,
+  MOCK_PRIMARY_SITE,
+  MOCK_SECONDARY_SITE,
   MOCK_DATA_TYPES,
 } from '../mock_data';
 
-describe('GeoNodes Store Getters', () => {
+describe('GeoSites Store Getters', () => {
   let state;
 
   beforeEach(() => {
@@ -23,20 +23,20 @@ describe('GeoNodes Store Getters', () => {
 
   describe('verificationInfo', () => {
     beforeEach(() => {
-      state.nodes = MOCK_NODES;
+      state.sites = MOCK_SITES;
     });
 
-    describe('on primary node', () => {
+    describe('on primary site', () => {
       it('returns only replicable types that have checksum data', () => {
-        expect(getters.verificationInfo(state)(MOCK_PRIMARY_NODE.id)).toStrictEqual(
+        expect(getters.verificationInfo(state)(MOCK_PRIMARY_SITE.id)).toStrictEqual(
           MOCK_PRIMARY_VERIFICATION_INFO,
         );
       });
     });
 
-    describe('on secondary node', () => {
+    describe('on secondary site', () => {
       it('returns only replicable types that have verification data', () => {
-        expect(getters.verificationInfo(state)(MOCK_SECONDARY_NODE.id)).toStrictEqual(
+        expect(getters.verificationInfo(state)(MOCK_SECONDARY_SITE.id)).toStrictEqual(
           MOCK_SECONDARY_VERIFICATION_INFO,
         );
       });
@@ -45,59 +45,59 @@ describe('GeoNodes Store Getters', () => {
 
   describe('syncInfo', () => {
     beforeEach(() => {
-      state.nodes = MOCK_NODES;
+      state.sites = MOCK_SITES;
     });
 
-    it('returns the nodes sync information', () => {
-      expect(getters.syncInfo(state)(MOCK_SECONDARY_NODE.id)).toStrictEqual(
+    it('returns the sites sync information', () => {
+      expect(getters.syncInfo(state)(MOCK_SECONDARY_SITE.id)).toStrictEqual(
         MOCK_SECONDARY_SYNC_INFO,
       );
     });
   });
 
   describe.each`
-    nodeToRemove           | nodes                    | canRemove
-    ${MOCK_PRIMARY_NODE}   | ${[MOCK_PRIMARY_NODE]}   | ${true}
-    ${MOCK_PRIMARY_NODE}   | ${MOCK_NODES}            | ${false}
-    ${MOCK_SECONDARY_NODE} | ${[MOCK_SECONDARY_NODE]} | ${true}
-    ${MOCK_SECONDARY_NODE} | ${MOCK_NODES}            | ${true}
-  `(`canRemoveNode`, ({ nodeToRemove, nodes, canRemove }) => {
-    describe(`when node.primary ${nodeToRemove.primary} and total nodes is ${nodes.length}`, () => {
+    siteToRemove           | sites                    | canRemove
+    ${MOCK_PRIMARY_SITE}   | ${[MOCK_PRIMARY_SITE]}   | ${true}
+    ${MOCK_PRIMARY_SITE}   | ${MOCK_SITES}            | ${false}
+    ${MOCK_SECONDARY_SITE} | ${[MOCK_SECONDARY_SITE]} | ${true}
+    ${MOCK_SECONDARY_SITE} | ${MOCK_SITES}            | ${true}
+  `(`canRemoveSite`, ({ siteToRemove, sites, canRemove }) => {
+    describe(`when site.primary ${siteToRemove.primary} and total sites is ${sites.length}`, () => {
       beforeEach(() => {
-        state.nodes = nodes;
+        state.sites = sites;
       });
 
       it(`should return ${canRemove}`, () => {
-        expect(getters.canRemoveNode(state)(nodeToRemove.id)).toBe(canRemove);
+        expect(getters.canRemoveSite(state)(siteToRemove.id)).toBe(canRemove);
       });
     });
   });
 
   describe.each`
-    status         | search                                     | expectedNodes
-    ${null}        | ${''}                                      | ${MOCK_FILTER_NODES}
-    ${'healthy'}   | ${''}                                      | ${[MOCK_FILTER_NODES[0], MOCK_FILTER_NODES[1]]}
-    ${'unhealthy'} | ${''}                                      | ${[MOCK_FILTER_NODES[2]]}
-    ${'disabled'}  | ${''}                                      | ${[MOCK_FILTER_NODES[3]]}
-    ${'offline'}   | ${''}                                      | ${[MOCK_FILTER_NODES[4]]}
-    ${'unknown'}   | ${''}                                      | ${[MOCK_FILTER_NODES[5]]}
-    ${null}        | ${MOCK_FILTER_NODES[1].name}               | ${[MOCK_FILTER_NODES[1]]}
-    ${null}        | ${MOCK_FILTER_NODES[3].url}                | ${[MOCK_FILTER_NODES[3]]}
-    ${'healthy'}   | ${MOCK_FILTER_NODES[0].name}               | ${[MOCK_FILTER_NODES[0]]}
-    ${'healthy'}   | ${MOCK_FILTER_NODES[0].name.toUpperCase()} | ${[MOCK_FILTER_NODES[0]]}
-    ${'unhealthy'} | ${MOCK_FILTER_NODES[2].url}                | ${[MOCK_FILTER_NODES[2]]}
-    ${'unhealthy'} | ${MOCK_FILTER_NODES[2].url.toUpperCase()}  | ${[MOCK_FILTER_NODES[2]]}
+    status         | search                                     | expectedSites
+    ${null}        | ${''}                                      | ${MOCK_FILTER_SITES}
+    ${'healthy'}   | ${''}                                      | ${[MOCK_FILTER_SITES[0], MOCK_FILTER_SITES[1]]}
+    ${'unhealthy'} | ${''}                                      | ${[MOCK_FILTER_SITES[2]]}
+    ${'disabled'}  | ${''}                                      | ${[MOCK_FILTER_SITES[3]]}
+    ${'offline'}   | ${''}                                      | ${[MOCK_FILTER_SITES[4]]}
+    ${'unknown'}   | ${''}                                      | ${[MOCK_FILTER_SITES[5]]}
+    ${null}        | ${MOCK_FILTER_SITES[1].name}               | ${[MOCK_FILTER_SITES[1]]}
+    ${null}        | ${MOCK_FILTER_SITES[3].url}                | ${[MOCK_FILTER_SITES[3]]}
+    ${'healthy'}   | ${MOCK_FILTER_SITES[0].name}               | ${[MOCK_FILTER_SITES[0]]}
+    ${'healthy'}   | ${MOCK_FILTER_SITES[0].name.toUpperCase()} | ${[MOCK_FILTER_SITES[0]]}
+    ${'unhealthy'} | ${MOCK_FILTER_SITES[2].url}                | ${[MOCK_FILTER_SITES[2]]}
+    ${'unhealthy'} | ${MOCK_FILTER_SITES[2].url.toUpperCase()}  | ${[MOCK_FILTER_SITES[2]]}
     ${'offline'}   | ${'NOT A MATCH'}                           | ${[]}
-  `('filteredNodes', ({ status, search, expectedNodes }) => {
+  `('filteredSites', ({ status, search, expectedSites }) => {
     describe(`when status is ${status} and search is ${search}`, () => {
       beforeEach(() => {
-        state.nodes = MOCK_FILTER_NODES;
+        state.sites = MOCK_FILTER_SITES;
         state.statusFilter = status;
         state.searchFilter = search;
       });
 
       it('should return the correct filtered array', () => {
-        expect(getters.filteredNodes(state)).toStrictEqual(expectedNodes);
+        expect(getters.filteredSites(state)).toStrictEqual(expectedSites);
       });
     });
   });
@@ -109,14 +109,14 @@ describe('GeoNodes Store Getters', () => {
     ${'offline'}   | ${1}
     ${'disabled'}  | ${1}
     ${'unknown'}   | ${1}
-  `('countNodesForStatus', ({ status, expectedCount }) => {
+  `('countSitesForStatus', ({ status, expectedCount }) => {
     describe(`when status is ${status}`, () => {
       beforeEach(() => {
-        state.nodes = MOCK_FILTER_NODES;
+        state.sites = MOCK_FILTER_SITES;
       });
 
       it(`should return ${expectedCount}`, () => {
-        expect(getters.countNodesForStatus(state)(status)).toBe(expectedCount);
+        expect(getters.countSitesForStatus(state)(status)).toBe(expectedCount);
       });
     });
   });
@@ -127,7 +127,7 @@ describe('GeoNodes Store Getters', () => {
     });
   });
 
-  describe('replicationCountsByDataTypeForNode', () => {
+  describe('replicationCountsByDataTypeForSite', () => {
     const mockDataType1 = { dataType: 'type_1', dataTypeTitle: 'Type 1' };
     const mockDataType2 = { data_type: 'type_2', dataTypeTitle: 'Type 2' };
     const mockValues = { total: 100, success: 100 };
@@ -149,56 +149,56 @@ describe('GeoNodes Store Getters', () => {
         };
 
         expect(
-          getters.replicationCountsByDataTypeForNode(state, mockGetters)(MOCK_PRIMARY_NODE.id),
+          getters.replicationCountsByDataTypeForSite(state, mockGetters)(MOCK_PRIMARY_SITE.id),
         ).toStrictEqual(expectedResponse);
       },
     );
   });
 
-  describe('nodeHasVersionMismatch', () => {
-    const NODE_ID = '9';
+  describe('siteHasVersionMismatch', () => {
+    const SITE_ID = '9';
 
     describe.each`
-      node                                                                                         | nodeHasVersionMismatch
-      ${{ id: NODE_ID, version: '1.0.0', revision: 'asdf' }}                                       | ${true}
-      ${{ id: NODE_ID, version: MOCK_PRIMARY_NODE.version, revision: 'asdf' }}                     | ${true}
-      ${{ id: NODE_ID, version: '1.0.0', revision: MOCK_PRIMARY_NODE.revision }}                   | ${true}
-      ${{ id: NODE_ID, version: MOCK_PRIMARY_NODE.version, revision: MOCK_PRIMARY_NODE.revision }} | ${false}
-    `('when primary site exists', ({ node, nodeHasVersionMismatch }) => {
-      describe(`when node version: ${node.version} (${node.revision}) and primary node version: ${MOCK_PRIMARY_NODE.version} (${MOCK_PRIMARY_NODE.revision}) version mismatch is ${nodeHasVersionMismatch}`, () => {
+      site                                                                                         | siteHasVersionMismatch
+      ${{ id: SITE_ID, version: '1.0.0', revision: 'asdf' }}                                       | ${true}
+      ${{ id: SITE_ID, version: MOCK_PRIMARY_SITE.version, revision: 'asdf' }}                     | ${true}
+      ${{ id: SITE_ID, version: '1.0.0', revision: MOCK_PRIMARY_SITE.revision }}                   | ${true}
+      ${{ id: SITE_ID, version: MOCK_PRIMARY_SITE.version, revision: MOCK_PRIMARY_SITE.revision }} | ${false}
+    `('when primary site exists', ({ site, siteHasVersionMismatch }) => {
+      describe(`when site version: ${site.version} (${site.revision}) and primary site version: ${MOCK_PRIMARY_SITE.version} (${MOCK_PRIMARY_SITE.revision}) version mismatch is ${siteHasVersionMismatch}`, () => {
         beforeEach(() => {
-          state.nodes = [node, MOCK_PRIMARY_NODE];
+          state.sites = [site, MOCK_PRIMARY_SITE];
         });
 
-        it(`should return ${nodeHasVersionMismatch}`, () => {
-          expect(getters.nodeHasVersionMismatch(state)(NODE_ID)).toBe(nodeHasVersionMismatch);
+        it(`should return ${siteHasVersionMismatch}`, () => {
+          expect(getters.siteHasVersionMismatch(state)(SITE_ID)).toBe(siteHasVersionMismatch);
         });
       });
     });
 
     describe('when passed in site does not exist', () => {
       beforeEach(() => {
-        state.nodes = [MOCK_PRIMARY_NODE];
+        state.sites = [MOCK_PRIMARY_SITE];
       });
 
       it('should return true', () => {
-        expect(getters.nodeHasVersionMismatch(state)(NODE_ID)).toBe(true);
+        expect(getters.siteHasVersionMismatch(state)(SITE_ID)).toBe(true);
       });
     });
 
     describe('when primary site does not exist', () => {
-      const node = {
-        id: NODE_ID,
-        version: MOCK_PRIMARY_NODE.version,
-        revision: MOCK_PRIMARY_NODE.revision,
+      const site = {
+        id: SITE_ID,
+        version: MOCK_PRIMARY_SITE.version,
+        revision: MOCK_PRIMARY_SITE.revision,
       };
 
       beforeEach(() => {
-        state.nodes = [node];
+        state.sites = [site];
       });
 
       it('should return true', () => {
-        expect(getters.nodeHasVersionMismatch(state)(NODE_ID)).toBe(true);
+        expect(getters.siteHasVersionMismatch(state)(SITE_ID)).toBe(true);
       });
     });
   });

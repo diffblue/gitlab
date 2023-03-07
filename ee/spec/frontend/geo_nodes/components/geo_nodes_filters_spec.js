@@ -31,7 +31,7 @@ describe('GeoNodesFilters', () => {
       },
       actions: actionSpies,
       getters: {
-        countNodesForStatus: () => () => 0,
+        countSitesForStatus: () => () => 0,
         ...getters,
       },
     });
@@ -83,7 +83,7 @@ describe('GeoNodesFilters', () => {
           createComponent(
             null,
             { totalNodes: MOCK_TAB_COUNT },
-            { countNodesForStatus: () => () => MOCK_TAB_COUNT },
+            { countSitesForStatus: () => () => MOCK_TAB_COUNT },
           );
         });
 
@@ -110,7 +110,7 @@ describe('GeoNodesFilters', () => {
           createComponent(
             null,
             { totalNodes: MOCK_TAB_COUNT },
-            { countNodesForStatus: MOCK_COUNTER_GETTER },
+            { countSitesForStatus: MOCK_COUNTER_GETTER },
           );
         });
 
@@ -140,7 +140,7 @@ describe('GeoNodesFilters', () => {
         createComponent(
           null,
           { totalNodes: MOCK_TAB_COUNT },
-          { countNodesForStatus: () => () => MOCK_TAB_COUNT },
+          { countSitesForStatus: () => () => MOCK_TAB_COUNT },
         );
       });
 

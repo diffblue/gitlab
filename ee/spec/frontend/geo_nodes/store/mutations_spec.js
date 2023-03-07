@@ -1,9 +1,9 @@
 import * as types from 'ee/geo_nodes/store/mutation_types';
 import mutations from 'ee/geo_nodes/store/mutations';
 import createState from 'ee/geo_nodes/store/state';
-import { MOCK_REPLICABLE_TYPES, MOCK_NODES } from '../mock_data';
+import { MOCK_REPLICABLE_TYPES, MOCK_SITES } from '../mock_data';
 
-describe('GeoNodes Store Mutations', () => {
+describe('GeoSites Store Mutations', () => {
   let state;
   beforeEach(() => {
     state = createState({
@@ -11,96 +11,96 @@ describe('GeoNodes Store Mutations', () => {
     });
   });
 
-  describe('REQUEST_NODES', () => {
+  describe('REQUEST_SITES', () => {
     it('sets isLoading to true', () => {
-      mutations[types.REQUEST_NODES](state);
+      mutations[types.REQUEST_SITES](state);
 
       expect(state.isLoading).toBe(true);
     });
   });
 
-  describe('RECEIVE_NODES_SUCCESS', () => {
+  describe('RECEIVE_SITES_SUCCESS', () => {
     beforeEach(() => {
       state.isLoading = true;
     });
 
-    it('sets nodes and ends loading', () => {
-      mutations[types.RECEIVE_NODES_SUCCESS](state, MOCK_NODES);
+    it('sets sites and ends loading', () => {
+      mutations[types.RECEIVE_SITES_SUCCESS](state, MOCK_SITES);
 
       expect(state.isLoading).toBe(false);
-      expect(state.nodes).toEqual(MOCK_NODES);
+      expect(state.sites).toEqual(MOCK_SITES);
     });
   });
 
-  describe('RECEIVE_NODES_ERROR', () => {
+  describe('RECEIVE_SITES_ERROR', () => {
     beforeEach(() => {
       state.isLoading = true;
-      state.nodes = MOCK_NODES;
+      state.sites = MOCK_SITES;
     });
 
     it('resets state', () => {
-      mutations[types.RECEIVE_NODES_ERROR](state);
+      mutations[types.RECEIVE_SITES_ERROR](state);
 
       expect(state.isLoading).toBe(false);
-      expect(state.nodes).toEqual([]);
+      expect(state.sites).toEqual([]);
     });
   });
 
-  describe('STAGE_NODE_REMOVAL', () => {
-    it('sets nodeToBeRemoved to node id', () => {
-      mutations[types.STAGE_NODE_REMOVAL](state, 1);
+  describe('STAGE_SITE_REMOVAL', () => {
+    it('sets siteToBeRemoved to site id', () => {
+      mutations[types.STAGE_SITE_REMOVAL](state, 1);
 
-      expect(state.nodeToBeRemoved).toBe(1);
+      expect(state.siteToBeRemoved).toBe(1);
     });
   });
 
-  describe('UNSTAGE_NODE_REMOVAL', () => {
+  describe('UNSTAGE_SITE_REMOVAL', () => {
     beforeEach(() => {
-      state.nodeToBeRemoved = 1;
+      state.siteToBeRemoved = 1;
     });
 
-    it('sets nodeToBeRemoved to null', () => {
-      mutations[types.UNSTAGE_NODE_REMOVAL](state);
+    it('sets siteToBeRemoved to null', () => {
+      mutations[types.UNSTAGE_SITE_REMOVAL](state);
 
-      expect(state.nodeToBeRemoved).toBe(null);
+      expect(state.siteToBeRemoved).toBe(null);
     });
   });
 
-  describe('REQUEST_NODE_REMOVAL', () => {
+  describe('REQUEST_SITE_REMOVAL', () => {
     it('sets isLoading to true', () => {
-      mutations[types.REQUEST_NODE_REMOVAL](state);
+      mutations[types.REQUEST_SITE_REMOVAL](state);
 
       expect(state.isLoading).toBe(true);
     });
   });
 
-  describe('RECEIVE_NODE_REMOVAL_SUCCESS', () => {
+  describe('RECEIVE_SITE_REMOVAL_SUCCESS', () => {
     beforeEach(() => {
       state.isLoading = true;
-      state.nodes = [{ id: 1 }, { id: 2 }];
-      state.nodeToBeRemoved = 1;
+      state.sites = [{ id: 1 }, { id: 2 }];
+      state.siteToBeRemoved = 1;
     });
 
-    it('removes node, clears nodeToBeRemoved, and ends loading', () => {
-      mutations[types.RECEIVE_NODE_REMOVAL_SUCCESS](state);
+    it('removes site, clears siteToBeRemoved, and ends loading', () => {
+      mutations[types.RECEIVE_SITE_REMOVAL_SUCCESS](state);
 
       expect(state.isLoading).toBe(false);
-      expect(state.nodes).toEqual([{ id: 2 }]);
-      expect(state.nodeToBeRemoved).toEqual(null);
+      expect(state.sites).toEqual([{ id: 2 }]);
+      expect(state.siteToBeRemoved).toEqual(null);
     });
   });
 
-  describe('RECEIVE_NODE_REMOVAL_ERROR', () => {
+  describe('RECEIVE_SITE_REMOVAL_ERROR', () => {
     beforeEach(() => {
       state.isLoading = true;
-      state.nodeToBeRemoved = 1;
+      state.siteToBeRemoved = 1;
     });
 
     it('resets state', () => {
-      mutations[types.RECEIVE_NODE_REMOVAL_ERROR](state);
+      mutations[types.RECEIVE_SITE_REMOVAL_ERROR](state);
 
       expect(state.isLoading).toBe(false);
-      expect(state.nodeToBeRemoved).toEqual(null);
+      expect(state.siteToBeRemoved).toEqual(null);
     });
   });
 

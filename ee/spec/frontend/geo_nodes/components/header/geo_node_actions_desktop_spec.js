@@ -3,7 +3,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoNodeActionsDesktop from 'ee/geo_nodes/components/header/geo_node_actions_desktop.vue';
-import { MOCK_PRIMARY_NODE } from 'ee_jest/geo_nodes/mock_data';
+import { MOCK_PRIMARY_SITE } from 'ee_jest/geo_nodes/mock_data';
 
 Vue.use(Vuex);
 
@@ -11,13 +11,13 @@ describe('GeoNodeActionsDesktop', () => {
   let wrapper;
 
   const defaultProps = {
-    node: MOCK_PRIMARY_NODE,
+    node: MOCK_PRIMARY_SITE,
   };
 
   const createComponent = (props, getters) => {
     const store = new Vuex.Store({
       getters: {
-        canRemoveNode: () => () => true,
+        canRemoveSite: () => () => true,
         ...getters,
       },
     });
@@ -49,7 +49,7 @@ describe('GeoNodeActionsDesktop', () => {
 
       it('renders edit link correctly', () => {
         expect(findGeoDesktopActionsButtons().at(0).attributes('href')).toBe(
-          MOCK_PRIMARY_NODE.webEditUrl,
+          MOCK_PRIMARY_SITE.webEditUrl,
         );
       });
 
@@ -61,16 +61,16 @@ describe('GeoNodeActionsDesktop', () => {
     });
 
     describe.each`
-      canRemoveNode | disabled
+      canRemoveSite | disabled
       ${false}      | ${'true'}
       ${true}       | ${undefined}
-    `(`conditionally`, ({ canRemoveNode, disabled }) => {
+    `(`conditionally`, ({ canRemoveSite, disabled }) => {
       beforeEach(() => {
-        createComponent({}, { canRemoveNode: () => () => canRemoveNode });
+        createComponent({}, { canRemoveSite: () => () => canRemoveSite });
       });
 
-      describe(`when canRemoveNode is ${canRemoveNode}`, () => {
-        it(`does ${canRemoveNode ? 'not ' : ''}disable the Desktop Remove button`, () => {
+      describe(`when canRemoveSite is ${canRemoveSite}`, () => {
+        it(`does ${canRemoveSite ? 'not ' : ''}disable the Desktop Remove button`, () => {
           expect(findGeoDesktopActionsRemoveButton().attributes('disabled')).toBe(disabled);
         });
       });
@@ -83,7 +83,7 @@ describe('GeoNodeActionsDesktop', () => {
     `('action tooltips', ({ primary, editTooltip, removeTooltip }) => {
       describe(`when node is ${primary ? '' : ' not'} a primary node`, () => {
         beforeEach(() => {
-          createComponent({ node: { ...MOCK_PRIMARY_NODE, primary } });
+          createComponent({ node: { ...MOCK_PRIMARY_SITE, primary } });
         });
 
         it(`sets edit tooltip to ${editTooltip}`, () => {

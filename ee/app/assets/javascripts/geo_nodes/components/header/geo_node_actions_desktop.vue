@@ -22,7 +22,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['canRemoveNode']),
+    ...mapGetters(['canRemoveSite']),
     nodeType() {
       return this.node.primary ? s__('Geo|primary') : s__('Geo|secondary');
     },
@@ -66,7 +66,7 @@ export default {
         ) /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */
       "
       icon="remove"
-      :disabled="!canRemoveNode(node.id)"
+      :disabled="!canRemoveSite(node.id)"
       data-testid="geo-desktop-remove-action"
       @click="$emit('remove')"
     />

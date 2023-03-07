@@ -6,9 +6,9 @@ import GeoNodes from 'ee/geo_nodes/components/geo_nodes.vue';
 import GeoNodesEmptyState from 'ee/geo_nodes/components/geo_nodes_empty_state.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
-  MOCK_PRIMARY_NODE,
-  MOCK_SECONDARY_NODE,
-  MOCK_NODES,
+  MOCK_PRIMARY_SITE,
+  MOCK_SECONDARY_SITE,
+  MOCK_SITES,
   MOCK_NEW_NODE_URL,
   MOCK_NOT_CONFIGURED_EMPTY_STATE,
   MOCK_NO_RESULTS_EMPTY_STATE,
@@ -20,9 +20,9 @@ describe('GeoNodesApp', () => {
   let wrapper;
 
   const actionSpies = {
-    fetchNodes: jest.fn(),
-    removeNode: jest.fn(),
-    cancelNodeRemoval: jest.fn(),
+    fetchSites: jest.fn(),
+    removeSite: jest.fn(),
+    cancelSiteRemoval: jest.fn(),
   };
 
   const defaultProps = {
@@ -36,7 +36,7 @@ describe('GeoNodesApp', () => {
       },
       actions: actionSpies,
       getters: {
-        filteredNodes: () => [],
+        filteredSites: () => [],
         ...getters,
       },
     });
@@ -73,19 +73,19 @@ describe('GeoNodesApp', () => {
     });
 
     describe.each`
-      isLoading | nodes         | showLoadingIcon | showNodes | showEmptyState | showAddButton
+      isLoading | sites         | showLoadingIcon | showNodes | showEmptyState | showAddButton
       ${true}   | ${[]}         | ${true}         | ${false}  | ${false}       | ${false}
-      ${true}   | ${MOCK_NODES} | ${true}         | ${false}  | ${false}       | ${true}
+      ${true}   | ${MOCK_SITES} | ${true}         | ${false}  | ${false}       | ${true}
       ${false}  | ${[]}         | ${false}        | ${false}  | ${true}        | ${false}
-      ${false}  | ${MOCK_NODES} | ${false}        | ${true}   | ${false}       | ${true}
+      ${false}  | ${MOCK_SITES} | ${false}        | ${true}   | ${false}       | ${true}
     `(
       `conditionally`,
-      ({ isLoading, nodes, showLoadingIcon, showNodes, showEmptyState, showAddButton }) => {
+      ({ isLoading, sites, showLoadingIcon, showNodes, showEmptyState, showAddButton }) => {
         beforeEach(() => {
-          createComponent({ isLoading, nodes }, null, { filteredNodes: () => nodes });
+          createComponent({ isLoading, sites }, null, { filteredSites: () => sites });
         });
 
-        describe(`when isLoading is ${isLoading} & nodes length ${nodes.length}`, () => {
+        describe(`when isLoading is ${isLoading} & sites length ${sites.length}`, () => {
           it(`does ${showLoadingIcon ? '' : 'not '}render GlLoadingIcon`, () => {
             expect(findGlLoadingIcon().exists()).toBe(showLoadingIcon);
           });
@@ -107,8 +107,8 @@ describe('GeoNodesApp', () => {
 
     describe('with Geo Nodes', () => {
       beforeEach(() => {
-        createComponent({ nodes: [MOCK_PRIMARY_NODE, MOCK_SECONDARY_NODE] }, null, {
-          filteredNodes: () => MOCK_NODES,
+        createComponent({ sites: [MOCK_PRIMARY_SITE, MOCK_SECONDARY_SITE] }, null, {
+          filteredSites: () => MOCK_SITES,
         });
       });
 
@@ -119,15 +119,15 @@ describe('GeoNodesApp', () => {
     });
 
     describe.each`
-      description                                | nodes                    | primaryTitle | secondaryTitle
-      ${'with both primary and secondary nodes'} | ${MOCK_NODES}            | ${true}      | ${true}
-      ${'with only primary nodes'}               | ${[MOCK_PRIMARY_NODE]}   | ${true}      | ${false}
-      ${'with only secondary nodes'}             | ${[MOCK_SECONDARY_NODE]} | ${false}     | ${true}
+      description                                | sites                    | primaryTitle | secondaryTitle
+      ${'with both primary and secondary nodes'} | ${MOCK_SITES}            | ${true}      | ${true}
+      ${'with only primary nodes'}               | ${[MOCK_PRIMARY_SITE]}   | ${true}      | ${false}
+      ${'with only secondary nodes'}             | ${[MOCK_SECONDARY_SITE]} | ${false}     | ${true}
       ${'with no nodes'}                         | ${[]}                    | ${false}     | ${false}
-    `('Site Titles', ({ description, nodes, primaryTitle, secondaryTitle }) => {
+    `('Site Titles', ({ description, sites, primaryTitle, secondaryTitle }) => {
       describe(`${description}`, () => {
         beforeEach(() => {
-          createComponent({ nodes }, null, { filteredNodes: () => nodes });
+          createComponent({ sites }, null, { filteredSites: () => sites });
         });
 
         it(`should ${primaryTitle ? '' : 'not '}render the Primary Site Title`, () => {
@@ -142,14 +142,14 @@ describe('GeoNodesApp', () => {
 
     describe('Empty state', () => {
       describe.each`
-        description                                                      | nodes         | filteredNodes          | renderEmptyState | emptyStateProps
+        description                                                      | sites         | filteredSites          | renderEmptyState | emptyStateProps
         ${'with no nodes configured'}                                    | ${[]}         | ${[]}                  | ${true}          | ${MOCK_NOT_CONFIGURED_EMPTY_STATE}
-        ${'with nodes configured and no user filter'}                    | ${MOCK_NODES} | ${MOCK_NODES}          | ${false}         | ${null}
-        ${'with nodes configured and user filters returning results'}    | ${MOCK_NODES} | ${[MOCK_PRIMARY_NODE]} | ${false}         | ${null}
-        ${'with nodes configured and user filters returning no results'} | ${MOCK_NODES} | ${[]}                  | ${true}          | ${MOCK_NO_RESULTS_EMPTY_STATE}
-      `('$description', ({ nodes, filteredNodes, renderEmptyState, emptyStateProps }) => {
+        ${'with nodes configured and no user filter'}                    | ${MOCK_SITES} | ${MOCK_SITES}          | ${false}         | ${null}
+        ${'with nodes configured and user filters returning results'}    | ${MOCK_SITES} | ${[MOCK_PRIMARY_SITE]} | ${false}         | ${null}
+        ${'with nodes configured and user filters returning no results'} | ${MOCK_SITES} | ${[]}                  | ${true}          | ${MOCK_NO_RESULTS_EMPTY_STATE}
+      `('$description', ({ sites, filteredSites, renderEmptyState, emptyStateProps }) => {
         beforeEach(() => {
-          createComponent({ nodes }, null, { filteredNodes: () => filteredNodes });
+          createComponent({ sites }, null, { filteredSites: () => filteredSites });
         });
 
         it(`should ${renderEmptyState ? '' : 'not '}render the Geo Empty State`, () => {
@@ -168,8 +168,8 @@ describe('GeoNodesApp', () => {
       createComponent();
     });
 
-    it('calls fetchNodes', () => {
-      expect(actionSpies.fetchNodes).toHaveBeenCalledTimes(1);
+    it('calls fetchSites', () => {
+      expect(actionSpies.fetchSites).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -178,16 +178,16 @@ describe('GeoNodesApp', () => {
       createComponent();
     });
 
-    it('calls removeNode when modal primary button clicked', () => {
+    it('calls removeSite when modal primary button clicked', () => {
       findGlModal().vm.$emit('primary');
 
-      expect(actionSpies.removeNode).toHaveBeenCalled();
+      expect(actionSpies.removeSite).toHaveBeenCalled();
     });
 
-    it('calls cancelNodeRemoval when modal cancel button clicked', () => {
+    it('calls cancelSiteRemoval when modal cancel button clicked', () => {
       findGlModal().vm.$emit('cancel');
 
-      expect(actionSpies.cancelNodeRemoval).toHaveBeenCalled();
+      expect(actionSpies.cancelSiteRemoval).toHaveBeenCalled();
     });
   });
 });
