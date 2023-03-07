@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::UpdateService, '#execute' do
+RSpec.describe Projects::UpdateService, '#execute', feature_category: :projects do
   include EE::GeoHelpers
 
   let_it_be(:user) { create(:user) }
@@ -625,6 +625,92 @@ RSpec.describe Projects::UpdateService, '#execute' do
         it 'does not set the setting' do
           expect { update_project(project, user, opts) }.not_to change { project.reload.suggested_reviewers_enabled }
         end
+      end
+    end
+  end
+
+  context 'when triggering suggested reviewers project deregistrations' do
+    let_it_be_with_reload(:project) { create(:project) }
+
+    let(:opts) { { project_setting_attributes: { suggested_reviewers_enabled: '0' } } }
+
+    before_all do
+      project.add_maintainer(user)
+    end
+
+    shared_examples 'calling deregistration worker' do
+      it 'calls perform_async' do
+        expect(::Projects::DeregisterSuggestedReviewersProjectWorker)
+          .to receive(:perform_async).with(project.id, user.id)
+
+        update_project(project, user, opts)
+      end
+
+      it 'changes the setting' do
+        expect { update_project(project, user, opts) }
+          .to change { project.reload.suggested_reviewers_enabled }.from(true).to(false)
+      end
+    end
+
+    shared_examples 'not calling deregistration worker' do
+      it 'does not call perform_async' do
+        expect(::Projects::DeregisterSuggestedReviewersProjectWorker).not_to receive(:perform_async)
+
+        update_project(project, user, opts)
+      end
+
+      it 'does not change the setting' do
+        expect { update_project(project, user, opts) }.not_to change { project.reload.suggested_reviewers_enabled }
+      end
+    end
+
+    context 'when available' do
+      before do
+        allow(project).to receive(:suggested_reviewers_available?).and_return(true)
+      end
+
+      context 'when not enabled' do
+        before do
+          project.project_setting.update!(suggested_reviewers_enabled: false)
+        end
+
+        it_behaves_like 'not calling deregistration worker'
+      end
+
+      context 'when enabled', :saas do
+        before do
+          project.project_setting.update!(suggested_reviewers_enabled: true)
+        end
+
+        it_behaves_like 'calling deregistration worker'
+
+        context 'when form param is set to true' do
+          let(:opts) { { project_setting_attributes: { suggested_reviewers_enabled: '1' } } }
+
+          it_behaves_like 'not calling deregistration worker'
+        end
+      end
+    end
+
+    context 'when not available' do
+      before do
+        allow(project).to receive(:suggested_reviewers_available?).and_return(false)
+      end
+
+      context 'when not enabled' do
+        before do
+          project.project_setting.update!(suggested_reviewers_enabled: false)
+        end
+
+        it_behaves_like 'not calling deregistration worker'
+      end
+
+      context 'when enabled' do
+        before do
+          project.project_setting.update!(suggested_reviewers_enabled: true)
+        end
+
+        it_behaves_like 'not calling deregistration worker'
       end
     end
   end

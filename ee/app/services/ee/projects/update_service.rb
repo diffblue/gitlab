@@ -31,7 +31,7 @@ module EE
 
         if params[:project_setting_attributes].present?
           suggested_reviewers_already_enabled = project.suggested_reviewers_enabled
-          unless can_update_suggested_reviewers_setting?
+          unless project.suggested_reviewers_available?
             params[:project_setting_attributes].delete(:suggested_reviewers_enabled)
           end
         end
@@ -51,7 +51,12 @@ module EE
           sync_wiki_on_enable if !wiki_was_enabled && project.wiki_enabled?
           project.import_state.force_import_job! if params[:mirror].present? && project.mirror?
           project.remove_import_data if project.previous_changes.include?('mirror') && !project.mirror?
-          trigger_project_registration unless suggested_reviewers_already_enabled
+
+          if suggested_reviewers_already_enabled
+            trigger_project_deregistration
+          else
+            trigger_project_registration
+          end
         end
 
         result
@@ -75,6 +80,15 @@ module EE
         return unless can_update_suggested_reviewers_setting?
 
         ::Projects::RegisterSuggestedReviewersProjectWorker.perform_async(project.id, current_user.id)
+      end
+
+      def trigger_project_deregistration
+        return unless params[:project_setting_attributes].present? &&
+          params[:project_setting_attributes][:suggested_reviewers_enabled] == '0'
+
+        return unless project.suggested_reviewers_available?
+
+        ::Projects::DeregisterSuggestedReviewersProjectWorker.perform_async(project.id, current_user.id)
       end
 
       def can_update_suggested_reviewers_setting?
