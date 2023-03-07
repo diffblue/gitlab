@@ -17,7 +17,7 @@ module QA
             def go_to_repository_locked_files
               hover_repository do
                 within_submenu do
-                  click_element(:sidebar_menu_item_link, menu_item: 'Locked Files')
+                  click_element(:sidebar_menu_item_link, menu_item: 'Locked files')
                 end
               end
             end

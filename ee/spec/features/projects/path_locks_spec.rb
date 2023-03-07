@@ -72,7 +72,7 @@ RSpec.describe 'Path Locks', :js, feature_category: :source_code_management do
   it 'managing of lock list' do
     create :path_lock, path: 'encoding', user: user, project: project
 
-    click_link "Locked Files"
+    click_link "Locked files"
 
     within '.locks' do
       expect(page).to have_content('encoding')
