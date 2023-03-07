@@ -146,6 +146,11 @@ RSpec.describe Issue, :elastic, feature_category: :global_search do
       set_elasticsearch_migration_to :add_hidden_to_issues, including: false
       expect(issue.__elasticsearch__.as_indexed_json).to eq(expected_hash)
     end
+
+    it 'does not return label_ids and schema_version if migration is not finished' do
+      set_elasticsearch_migration_to :add_label_ids_and_schema_version_to_issues_mapping, including: false
+      expect(issue.__elasticsearch__.as_indexed_json).to eq(expected_hash.except('label_ids', 'schema_version'))
+    end
   end
 
   it 'handles a project missing project_feature', :aggregate_failures do
