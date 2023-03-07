@@ -5,16 +5,6 @@ module EE
     module TransferService
       extend ::Gitlab::Utils::Override
 
-      # TODO: Remove this method and lost_groups as well as
-      # Epic#nullify_lost_group_parents and Epic#schedule_parent_cache_update when
-      # `child_epics_from_different_hierarchies` feature flag is removed:
-      # https://gitlab.com/gitlab-org/gitlab/-/issues/382719
-      def update_group_attributes
-        ::Epic.nullify_lost_group_parents(group.self_and_descendants, lost_groups) unless cross_group_epics_enabled?
-
-        super
-      end
-
       override :ensure_allowed_transfer
       def ensure_allowed_transfer
         super
@@ -46,16 +36,6 @@ module EE
         ::ProjectSetting.for_projects(updated_project_ids).update_all(legacy_open_source_license_available: false)
       end
 
-      def lost_groups
-        ancestors = group.ancestors
-
-        if ancestors.include?(new_parent_group)
-          group.ancestors_upto(new_parent_group)
-        else
-          ancestors
-        end
-      end
-
       def update_elasticsearch_hooks
         # When a group is moved to a new group, there is no way to know whether the group was using Elasticsearch
         # before the transfer. If Elasticsearch limit indexing is enabled, the group and each project has the ES cache
@@ -67,11 +47,6 @@ module EE
           project.invalidate_elasticsearch_indexes_cache! if ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
           ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(project) if project.maintaining_elasticsearch?
         end
-      end
-
-      def cross_group_epics_enabled?
-        ::Feature.enabled?(:child_epics_from_different_hierarchies, group) &&
-          ::Feature.enabled?(:child_epics_from_different_hierarchies, new_parent_group)
       end
     end
   end

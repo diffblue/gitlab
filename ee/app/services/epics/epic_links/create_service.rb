@@ -105,12 +105,7 @@ module Epics
 
       def can_link_epic?(epic)
         return true if issuable.group == epic.group
-
-        cross_group_children_disabled = [issuable.group, epic.group].all? do |group|
-          ::Feature.disabled?(:child_epics_from_different_hierarchies, group)
-        end
-
-        return true if cross_group_children_disabled || can?(current_user, :admin_epic_tree_relation, epic)
+        return true if can?(current_user, :admin_epic_tree_relation, epic)
 
         epic.errors.add(:parent, _("This epic cannot be added. You don't have access to perform this action."))
 

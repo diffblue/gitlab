@@ -82,33 +82,6 @@ RSpec.describe 'Resolvers::Epics::ChildrenResolver' do
           end
         end
       end
-
-      context 'when child_epics_from_different_hierarchies is disabled' do
-        before do
-          stub_feature_flags(child_epics_from_different_hierarchies: false)
-        end
-
-        it 'returns children from the original group hierarchy' do
-          expect(resolve_children(base_epic)).to contain_exactly(child1)
-        end
-
-        it 'returns confidential children from the original group hierarchy' do
-          expect(resolve_children(confidential_base_epic))
-            .to contain_exactly(confidential_child1)
-        end
-
-        it 'calls the correct finder' do
-          allow_next_instance_of(EpicsFinder) do |finder|
-            allow(finder).to receive(:execute).and_call_original
-          end
-
-          resolve_children(base_epic)
-
-          expect_any_instance_of(EpicsFinder) do |finder|
-            expect(finder).to receive(:execute)
-          end
-        end
-      end
     end
 
     context 'when user is a guest in the base epic group' do

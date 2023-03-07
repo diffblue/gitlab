@@ -104,24 +104,6 @@ RSpec.describe API::EpicLinks, feature_category: :portfolio_management do
           # See https://gitlab.com/gitlab-org/gitlab/-/issues/382164
           expect { get_epics }.not_to exceed_all_query_limit(control).with_threshold(2)
         end
-
-        context 'when child_epics_from_different_hierarchies is disabled' do
-          before do
-            stub_feature_flags(child_epics_from_different_hierarchies: false)
-          end
-
-          it 'only returns children from group and subgroups within the same hierarchy' do
-            subject
-
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(response).to match_response_schema('public_api/v4/epics', dir: 'ee')
-            expect(json_response.map { |epic| epic["id"] }).to contain_exactly(
-              child_epic2.id,
-              child_epic1.id,
-              subgroup_child.id
-            )
-          end
-        end
       end
     end
   end
@@ -402,18 +384,6 @@ RSpec.describe API::EpicLinks, feature_category: :portfolio_management do
             expect(response).to have_gitlab_http_status(:ok)
             expect(response).to match_response_schema('public_api/v4/epic', dir: 'ee')
             expect(epic.reload.children).not_to include(child_epic)
-          end
-
-          context 'when child_epics_from_different_hierarchies is disabled' do
-            before do
-              stub_feature_flags(child_epics_from_different_hierarchies: false)
-            end
-
-            it 'returns 404 status' do
-              subject
-
-              expect(response).to have_gitlab_http_status(:not_found)
-            end
           end
         end
       end

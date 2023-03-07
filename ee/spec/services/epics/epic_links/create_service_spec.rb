@@ -124,45 +124,6 @@ RSpec.describe Epics::EpicLinks::CreateService, feature_category: :portfolio_man
 
                 include_examples 'returns an error'
               end
-
-              context 'when child_epics_from_different_hierarchies feature flag is disabled' do
-                let(:expected_code) { 409 }
-                let(:expected_error) do
-                  'This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic.'
-                end
-
-                before do
-                  other_group.add_guest(user)
-                  stub_feature_flags(child_epics_from_different_hierarchies: false)
-                  epic_to_add.update!(group: other_group)
-                end
-
-                include_examples 'returns an error'
-              end
-            end
-
-            context 'when an epic from an ancestor group is given' do
-              let(:expected_code) { 409 }
-              let(:expected_error) do
-                'This epic cannot be added. An epic cannot belong to an ancestor group of its parent epic.'
-              end
-
-              before do
-                ancestor.add_guest(user)
-                epic_to_add.update!(group: ancestor)
-              end
-
-              context 'when child_epics_from_different_hierarchies feature flag is disabled' do
-                let(:expected_error) do
-                  'This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic.'
-                end
-
-                before do
-                  stub_feature_flags(child_epics_from_different_hierarchies: false)
-                end
-
-                include_examples 'returns an error'
-              end
             end
 
             context 'when hierarchy is cyclic' do
@@ -322,16 +283,6 @@ RSpec.describe Epics::EpicLinks::CreateService, feature_category: :portfolio_man
 
                   allow(group).to receive(:licensed_feature_available?).and_return(true)
                   allow(other_group).to receive(:licensed_feature_available?).with(:subepics).and_return(false)
-                end
-
-                include_examples 'returns an error'
-              end
-
-              context 'when child_epics_from_different_hierarchies feature flag is disabled' do
-                before do
-                  stub_feature_flags(child_epics_from_different_hierarchies: false)
-                  other_group.add_guest(user)
-                  epic_to_add.update!(group: other_group)
                 end
 
                 include_examples 'returns an error'

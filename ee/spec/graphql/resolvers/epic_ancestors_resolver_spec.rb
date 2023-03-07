@@ -85,14 +85,6 @@ RSpec.describe 'Resolvers::EpicAncestorsResolver' do
 
   it_behaves_like 'same hierarchy epic ancestors resolver'
 
-  context 'when child_epics_from_different_hierarchies is disabled' do
-    before do
-      stub_feature_flags(child_epics_from_different_hierarchies: false)
-    end
-
-    it_behaves_like 'same hierarchy epic ancestors resolver'
-  end
-
   context 'when there is a cross-hierarchy ancestor' do
     let_it_be(:cross_group) { create(:group, :private) }
     let_it_be(:cross_epic1) { create(:epic, group: cross_group, parent: epic1) }
@@ -107,16 +99,6 @@ RSpec.describe 'Resolvers::EpicAncestorsResolver' do
       expect(resolve_ancestors(subepic2, args)).to contain_exactly(subepic1)
     end
 
-    context 'when child_epics_from_different_hierarchies is disabled' do
-      before do
-        stub_feature_flags(child_epics_from_different_hierarchies: false)
-      end
-
-      it 'returns only accessible ancestors from the original group hierarchy' do
-        expect(resolve_ancestors(subepic2, args)).to eq([epic1, subepic1])
-      end
-    end
-
     context 'when user can access also cross-hierarchy ancestor' do
       before do
         cross_group.add_developer(current_user)
@@ -124,16 +106,6 @@ RSpec.describe 'Resolvers::EpicAncestorsResolver' do
 
       it 'returns all ancestors' do
         expect(resolve_ancestors(subepic2, args)).to eq([epic1, cross_epic1, subepic1])
-      end
-
-      context 'when child_epics_from_different_hierarchies is disabled' do
-        before do
-          stub_feature_flags(child_epics_from_different_hierarchies: false)
-        end
-
-        it 'returns only accessible ancestors from the original group hierarchy' do
-          expect(resolve_ancestors(subepic2, args)).to eq([epic1, subepic1])
-        end
       end
     end
   end

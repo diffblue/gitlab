@@ -11,8 +11,6 @@ module Resolvers
                default_value: true
 
       def find_epics(args)
-        return super unless cross_hierarchy_children_enabled?
-
         apply_lookahead(
           ::Epics::CrossHierarchyChildrenFinder.new(context[:current_user], args).execute
         )
@@ -21,14 +19,9 @@ module Resolvers
       private
 
       def relative_param
-        return super unless cross_hierarchy_children_enabled?
         return {} unless parent
 
         { parent: parent }
-      end
-
-      def cross_hierarchy_children_enabled?
-        ::Feature.enabled?(:child_epics_from_different_hierarchies, parent&.group)
       end
     end
   end

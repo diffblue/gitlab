@@ -16,22 +16,12 @@ module Resolvers
     private
 
     def find_epics(args)
-      return offset_pagination(super) unless Feature.enabled?(:child_epics_from_different_hierarchies, epic.group)
-
       items = apply_lookahead(::Epics::CrossHierarchyAncestorsFinder.new(context[:current_user], args).execute)
       accessible_ancestors(items).reverse!
     end
 
     def relative_param
-      if Feature.enabled?(:child_epics_from_different_hierarchies, epic.group)
-        { child: epic }
-      else
-        # TODO: when removing usage of child_id, it can be removed also from finder
-        # as this is the only place where it's used.
-        # Can be removed with removal of child_epics_from_different_hierarchies flag:
-        # https://gitlab.com/gitlab-org/gitlab/-/issues/375622
-        { child_id: epic.id, hierarchy_order: :desc }
-      end
+      { child: epic }
     end
 
     def accessible_ancestors(ancestors)
