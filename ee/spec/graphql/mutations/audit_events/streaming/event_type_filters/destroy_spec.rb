@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Mutations::AuditEvents::Streaming::EventTypeFilters::Destroy do
+RSpec.describe Mutations::AuditEvents::Streaming::EventTypeFilters::Destroy, feature_category: :audit_events do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:event_type_filter) { create(:audit_events_streaming_event_type_filter, audit_event_type: 'filter_1') }
 

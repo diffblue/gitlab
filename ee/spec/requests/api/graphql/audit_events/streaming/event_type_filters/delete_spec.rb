@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Create an audit event type filter', feature_category: :audit_events do
+RSpec.describe 'Delete an audit event type filter', feature_category: :audit_events do
   include GraphqlHelpers
 
   let_it_be(:destination) { create(:external_audit_event_destination) }
@@ -15,10 +15,10 @@ RSpec.describe 'Create an audit event type filter', feature_category: :audit_eve
 
   let(:current_user) { user }
   let(:group) { destination.group }
-  let(:mutation_name) { :audit_events_streaming_destination_events_add }
+  let(:mutation_name) { :audit_events_streaming_destination_events_remove }
   let(:mutation) { graphql_mutation(mutation_name, input) }
   let(:mutation_response) { graphql_mutation_response(mutation_name) }
-  let(:input) { { destinationId: destination.to_gid, eventTypeFilters: ['filter_2'] } }
+  let(:input) { { destinationId: destination.to_gid, eventTypeFilters: ['filter_1'] } }
 
   context 'when unlicensed' do
     subject { post_graphql_mutation(mutation, current_user: user) }
@@ -31,7 +31,7 @@ RSpec.describe 'Create an audit event type filter', feature_category: :audit_eve
   end
 
   context 'when licensed' do
-    subject { post_graphql_mutation(mutation, current_user: user) }
+    subject(:mutate) { post_graphql_mutation(mutation, current_user: user) }
 
     before do
       stub_licensed_features(external_audit_events: true)
@@ -69,19 +69,17 @@ RSpec.describe 'Create an audit event type filter', feature_category: :audit_eve
         group.add_owner(user)
       end
 
-      it 'returns success response', :aggregate_failures do
-        subject
+      it 'returns success response' do
+        mutate
 
-        response = mutation_response
-        expect(response["errors"]).to be_empty
-        expect(response["eventTypeFilters"]).to eq(destination.event_type_filters.pluck(:audit_event_type))
+        expect(mutation_response["errors"]).to be_empty
       end
 
       context 'when event type filters in input is empty' do
         let(:input) { { destinationId: destination.to_gid, eventTypeFilters: [] } }
 
         it 'returns graphql error' do
-          subject
+          mutate
 
           expect(graphql_errors).to include(a_hash_including('message' => 'event type filters must be present'))
         end
