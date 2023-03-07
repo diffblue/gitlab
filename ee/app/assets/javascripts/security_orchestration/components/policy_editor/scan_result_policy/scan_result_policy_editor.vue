@@ -33,6 +33,7 @@ import {
   securityScanBuildRule,
   emptyBuildRule,
   approversOutOfSync,
+  approversOutOfSyncV2,
   invalidScanners,
   humanizeInvalidBranchesError,
 } from './lib';
@@ -270,6 +271,12 @@ export default {
       this.existingApprovers = values;
     },
     invalidForRuleMode() {
+      if (this.glFeatures.scanResultRoleAction) {
+        return (
+          approversOutOfSyncV2(this.policy.actions[0], this.existingApprovers) ||
+          invalidScanners(this.policy.rules)
+        );
+      }
       return (
         approversOutOfSync(this.policy.actions[0], this.existingApprovers) ||
         invalidScanners(this.policy.rules)

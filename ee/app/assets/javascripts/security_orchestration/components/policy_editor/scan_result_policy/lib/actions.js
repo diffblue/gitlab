@@ -96,6 +96,7 @@ export const createActionFromApprovers = ({ type, approvals_required }, approver
   Check if users are present in approvers
 */
 function usersOutOfSync(action, approvers) {
+  // TODO delete this filter as part of the clean up for the `:scan_result_role_action` feature
   const users = approvers.filter((approver) => approver.type === USER_TYPE);
   const usersIDs =
     action?.user_approvers_ids?.some((id) => !users.find((approver) => approver.id === id)) ||
@@ -114,6 +115,7 @@ function usersOutOfSync(action, approvers) {
   Check if groups are present in approvers
 */
 function groupsOutOfSync(action, approvers) {
+  // TODO delete this filter as part of the clean up for the `:scan_result_role_action` feature
   const groups = approvers.filter((approver) => approver.type === GROUP_TYPE);
   const groupsIDs =
     action?.group_approvers_ids?.some((id) => !groups.find((approver) => approver.id === id)) ||
@@ -126,6 +128,13 @@ function groupsOutOfSync(action, approvers) {
     (action?.group_approvers?.length || 0) + (action?.group_approvers_ids?.length || 0);
 
   return groupsIDs || groupsPaths || groupLength !== groups.length;
+}
+
+/*
+  Check if yaml is out of sync with available approvers
+*/
+export function approversOutOfSyncV2(action, { user = [], group = [] }) {
+  return usersOutOfSync(action, user) || groupsOutOfSync(action, group);
 }
 
 /*

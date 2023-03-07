@@ -15,6 +15,7 @@ import ScanResultPolicyEditor from 'ee/security_orchestration/components/policy_
 import {
   DEFAULT_ASSIGNED_POLICY_PROJECT,
   NAMESPACE_TYPES,
+  USER_TYPE,
 } from 'ee/security_orchestration/constants';
 import {
   mockDefaultBranchesScanResultManifest,
@@ -417,5 +418,38 @@ describe('ScanResultPolicyEditor', () => {
     await waitForPromises();
 
     expect(Api.projectProtectedBranch).not.toHaveBeenCalled();
+  });
+
+  describe('scanResultRoleAction feature flag turned on', () => {
+    const existingPolicyWithUserId = {
+      actions: [{ type: 'require_approval', approvals_required: 1, user_approvers_ids: [1] }],
+    };
+    const existingUserApprover = {
+      user: [{ id: 1, username: 'the.one', state: 'active', type: USER_TYPE }],
+    };
+    const nonExistingUserApprover = {
+      user: [{ id: 2, username: 'the.two', state: 'active', type: USER_TYPE }],
+    };
+
+    it.each`
+      title         | policy                      | approver                   | output
+      ${'does not'} | ${{}}                       | ${existingUserApprover}    | ${false}
+      ${'does'}     | ${{}}                       | ${nonExistingUserApprover} | ${true}
+      ${'does not'} | ${existingPolicyWithUserId} | ${existingUserApprover}    | ${false}
+      ${'does'}     | ${existingPolicyWithUserId} | ${nonExistingUserApprover} | ${true}
+    `(
+      '$title create an error when policy does not match existing approvers',
+      async ({ policy, approver, output }) => {
+        factoryWithExistingPolicy(policy, {
+          glFeatures: {
+            scanResultRoleAction: true,
+          },
+          scanResultPolicyApprovers: approver,
+        });
+        await nextTick();
+        await changesToRuleMode();
+        expect(findPolicyEditorLayout().props('hasParsingError')).toBe(output);
+      },
+    );
   });
 });
