@@ -20538,6 +20538,9 @@ msgstr ""
 msgid "GroupsNew|GitLab source instance URL"
 msgstr ""
 
+msgid "GroupsNew|Groups"
+msgstr ""
+
 msgid "GroupsNew|Groups can also be nested by creating %{linkStart}subgroups%{linkEnd}."
 msgstr ""
 
@@ -34527,6 +34530,9 @@ msgid "ProjectsNew|Project Configuration"
 msgstr ""
 
 msgid "ProjectsNew|Project description %{tag_start}(optional)%{tag_end}"
+msgstr ""
+
+msgid "ProjectsNew|Projects"
 msgstr ""
 
 msgid "ProjectsNew|Recommended if you're new to GitLab"
