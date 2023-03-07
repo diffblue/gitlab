@@ -20,21 +20,19 @@ module EE
         class MergeRequest < ::ApplicationRecord
           self.table_name = 'merge_requests'
           has_one :metrics,
-            class_name: '::EE::Gitlab::BackgroundMigration::BackfillComplianceViolations::MergeRequest::Metrics',
+            class_name: '::EE::Gitlab::BackgroundMigration::BackfillComplianceViolations::Metrics',
             inverse_of: :merge_request
-          has_many :compliance_violations,
-            class_name: '::EE::Gitlab::BackgroundMigration::BackfillComplianceViolations::MergeRequests::ComplianceViolation' # rubocop:disable Layout/LineLength
         end
 
         # Migration only version of `merge_requests_compliance_violations` table
-        class MergeRequests::ComplianceViolation < ::ApplicationRecord # rubocop:disable Style/ClassAndModuleChildren
+        class ComplianceViolation < ::ApplicationRecord
           self.table_name = 'merge_requests_compliance_violations'
           belongs_to :merge_request,
             class_name: '::EE::Gitlab::BackgroundMigration::BackfillComplianceViolations::MergeRequest'
         end
 
         # Migration only version of `merge_request_metrics` table
-        class MergeRequest::Metrics < ::ApplicationRecord # rubocop:disable Style/ClassAndModuleChildren
+        class Metrics < ::ApplicationRecord
           self.table_name = 'merge_request_metrics'
           belongs_to :merge_request,
             class_name: '::EE::Gitlab::BackgroundMigration::BackfillComplianceViolations::MergeRequest',
@@ -49,7 +47,7 @@ module EE
         end
 
         def update_compliance_violations(batch)
-          MergeRequests::ComplianceViolation.id_in(batch.pluck(:id)).includes(merge_request: [:metrics]).each do |violation| # rubocop:disable Layout/LineLength
+          ComplianceViolation.id_in(batch.pluck(:id)).includes(merge_request: [:metrics]).each do |violation|
             merge_request = violation.merge_request
             violation.assign_attributes(
               {
