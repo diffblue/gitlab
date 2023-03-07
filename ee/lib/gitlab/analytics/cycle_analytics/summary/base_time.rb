@@ -17,8 +17,12 @@ module Gitlab
             assign_stage_metadata
           end
 
+          def raw_value
+            data_collector.median.days&.round(1)
+          end
+
           def value
-            @value ||= Gitlab::CycleAnalytics::Summary::Value::PrettyNumeric.new(data_collector.median.days&.round(1))
+            @value ||= Gitlab::CycleAnalytics::Summary::Value::PrettyNumeric.new(raw_value)
           end
 
           def unit

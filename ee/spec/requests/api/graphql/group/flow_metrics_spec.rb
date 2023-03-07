@@ -16,11 +16,11 @@ RSpec.describe 'getting group flow metrics', feature_category: :value_stream_man
   let(:full_path) { group.full_path }
   let(:context) { :group }
 
-  it_behaves_like 'value stream analytics flow metrics issueCount examples' do
-    before do
-      stub_licensed_features(cycle_analytics_for_groups: true)
-    end
+  before do
+    stub_licensed_features(cycle_analytics_for_groups: true)
+  end
 
+  it_behaves_like 'value stream analytics flow metrics issueCount examples' do
     context 'when filtering the project ids' do
       let(:query) do
         <<~QUERY
@@ -119,6 +119,88 @@ RSpec.describe 'getting group flow metrics', feature_category: :value_stream_man
         other_group.add_developer(current_user)
 
         expect(result).to match(a_hash_including({ 'value' => 0 }))
+      end
+    end
+  end
+
+  it_behaves_like 'value stream analytics flow metrics leadTime examples' do
+    context 'when filtering the project ids' do
+      let(:query) do
+        <<~QUERY
+          query($path: ID!, $projectIds: [ID!], $from: Time!, $to: Time!) {
+            group(fullPath: $path) {
+              flowMetrics {
+                leadTime(projectIds: $projectIds, from: $from, to: $to) {
+                  value
+                }
+              }
+            }
+          }
+        QUERY
+      end
+
+      let(:variables) do
+        {
+          path: full_path,
+          from: 16.days.ago.iso8601,
+          to: 10.days.ago.iso8601,
+          projectIds: [project1.id]
+        }
+      end
+
+      it 'returns the correct count' do
+        expect(result).to eq({ 'value' => 4 })
+      end
+    end
+
+    context 'when cycle analytics is not licensed' do
+      before do
+        stub_licensed_features(cycle_analytics_for_groups: false)
+      end
+
+      it 'returns nil' do
+        expect(result).to eq(nil)
+      end
+    end
+  end
+
+  it_behaves_like 'value stream analytics flow metrics cycleTime examples' do
+    context 'when filtering the project ids' do
+      let(:query) do
+        <<~QUERY
+          query($path: ID!, $projectIds: [ID!], $from: Time!, $to: Time!) {
+            group(fullPath: $path) {
+              flowMetrics {
+                cycleTime(projectIds: $projectIds, from: $from, to: $to) {
+                  value
+                }
+              }
+            }
+          }
+        QUERY
+      end
+
+      let(:variables) do
+        {
+          path: full_path,
+          from: 16.days.ago.iso8601,
+          to: 10.days.ago.iso8601,
+          projectIds: [project1.id]
+        }
+      end
+
+      it 'returns the correct count' do
+        expect(result).to eq({ 'value' => 4 })
+      end
+    end
+
+    context 'when cycle analytics is not licensed' do
+      before do
+        stub_licensed_features(cycle_analytics_for_groups: false)
+      end
+
+      it 'returns nil' do
+        expect(result).to eq(nil)
       end
     end
   end
