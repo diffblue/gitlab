@@ -11,7 +11,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { TEST_HOST } from 'spec/test_constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import {
   NO_INSTANCE_DATA,
   CUBE_DATA_CHECK_DELAY,
@@ -34,7 +34,7 @@ Vue.use(VueApollo);
 jest.mock('ee/analytics/analytics_dashboards/data_sources/cube_analytics', () => ({
   hasAnalyticsData: jest.fn(),
 }));
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('ProductAnalyticsOnboardingView', () => {
   let resolveHasAnalyticsData;

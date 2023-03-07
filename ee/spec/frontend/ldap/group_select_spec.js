@@ -1,6 +1,6 @@
 import { nextTick } from 'vue';
 import { GlCollapsibleListbox } from '@gitlab/ui';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import Api from 'ee/api';
@@ -12,7 +12,7 @@ jest.mock('ee/api', () => ({
 }));
 
 const mockAlertDismiss = jest.fn();
-jest.mock('~/flash', () => ({
+jest.mock('~/alert', () => ({
   createAlert: jest.fn().mockImplementation(() => ({
     dismiss: mockAlertDismiss,
   })),

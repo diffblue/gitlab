@@ -8,11 +8,11 @@ import last180DaysData from 'test_fixtures/api/dora/metrics/daily_time_to_restor
 import { useFixturesFakeDate } from 'helpers/fake_date';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 const makeMockCiCdAnalyticsCharts = ({ selectedChart = 0 } = {}) => ({
   render() {
@@ -100,7 +100,7 @@ describe('time_to_restore_service_charts.vue', () => {
       expect(mock.history.get).toHaveLength(4);
     });
 
-    it('does not show a flash message', () => {
+    it('does not show an alert message', () => {
       expect(createAlert).not.toHaveBeenCalled();
     });
 
@@ -150,7 +150,7 @@ describe('time_to_restore_service_charts.vue', () => {
       captureExceptionSpy.mockRestore();
     });
 
-    it('shows a flash message', () => {
+    it('shows an alert message', () => {
       expect(createAlert).toHaveBeenCalledTimes(1);
       expect(createAlert).toHaveBeenCalledWith({
         message: 'Something went wrong while getting time to restore service data.',
@@ -234,7 +234,7 @@ describe('time_to_restore_service_charts.vue', () => {
         await axios.waitForAll();
       });
 
-      it('throws an error (which shows a flash message)', () => {
+      it('throws an error (which shows an alert message)', () => {
         expect(createAlert).toHaveBeenCalled();
       });
     });
@@ -248,7 +248,7 @@ describe('time_to_restore_service_charts.vue', () => {
         await axios.waitForAll();
       });
 
-      it('throws an error (which shows a flash message)', () => {
+      it('throws an error (which shows an alert message)', () => {
         expect(createAlert).toHaveBeenCalled();
       });
     });

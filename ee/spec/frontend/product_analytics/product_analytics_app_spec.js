@@ -15,7 +15,6 @@ import { TEST_PROJECT_FULL_PATH, TEST_PROJECT_ID } from './mock_data';
 jest.mock('ee/analytics/analytics_dashboards/data_sources/cube_analytics', () => ({
   hasAnalyticsData: jest.fn(),
 }));
-jest.mock('~/flash');
 
 describe('ProductAnalyticsApp', () => {
   let wrapper;

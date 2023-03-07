@@ -3,7 +3,7 @@ import { GlCard } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import AxiosMockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import mutations from 'ee/admin/subscriptions/show/store/mutations';
 import * as types from 'ee/admin/subscriptions/show/store/mutation_types';
 import createState from 'ee/admin/subscriptions/show/store/state';
@@ -30,7 +30,7 @@ import axios from '~/lib/utils/axios_utils';
 import * as initialStore from 'ee/admin/subscriptions/show/store/';
 import { license, subscriptionPastHistory, subscriptionFutureHistory } from '../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('Subscription Breakdown', () => {
   let axiosMock;

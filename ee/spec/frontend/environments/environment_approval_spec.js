@@ -11,12 +11,12 @@ import MultipleApprovalRulesTable from 'ee/environments/components/multiple_appr
 import deploymentApprovalQuery from 'ee/environments/graphql/queries/deployment.query.graphql';
 import Api from 'ee/api';
 import { __, s__, sprintf } from '~/locale';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { environment as mockEnvironment } from './mock_data';
 
 jest.mock('ee/api.js');
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 Vue.use(VueApollo);
 

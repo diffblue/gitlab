@@ -7,10 +7,10 @@ import ProtectedEnvironmentEdit, {
   i18n,
 } from 'ee/protected_environments/protected_environment_edit.vue';
 import { ACCESS_LEVELS, LEVEL_TYPES } from 'ee/protected_environments/constants';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 const $toast = {
   show: jest.fn(),
 };

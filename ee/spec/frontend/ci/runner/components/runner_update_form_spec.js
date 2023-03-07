@@ -6,7 +6,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { runnerFormData } from 'jest/ci/runner/mock_data';
-import { VARIANT_SUCCESS } from '~/flash';
+import { VARIANT_SUCCESS } from '~/alert';
 import { redirectTo } from '~/lib/utils/url_utility';
 import { saveAlertToLocalStorage } from '~/ci/runner/local_storage_alert/save_alert_to_local_storage';
 import RunnerUpdateForm from '~/ci/runner/components/runner_update_form.vue';

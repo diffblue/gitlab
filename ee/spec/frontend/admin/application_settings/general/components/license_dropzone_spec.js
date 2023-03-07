@@ -3,10 +3,10 @@ import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import LicenseDropzone from 'ee/admin/application_settings/general/components/license_dropzone.vue';
 import { FILE_UPLOAD_ERROR_MESSAGE } from 'ee/admin/application_settings/general/constants';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import UploadDropzone from '~/vue_shared/components/upload_dropzone/upload_dropzone.vue';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('Upload dropzone component', () => {
   let wrapper;
