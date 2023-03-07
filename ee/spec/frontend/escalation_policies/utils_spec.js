@@ -1,6 +1,14 @@
 import { EMAIL_ONCALL_SCHEDULE_USER, EMAIL_USER } from 'ee/escalation_policies/constants';
 import * as utils from 'ee/escalation_policies/utils';
 
+const userObject = { username: 'user2' };
+const rulesMock = [
+  { elapsedTimeMinutes: 0, status: 'Resolved', oncallScheduleId: null, username: 'user' },
+  { elapsedTimeMinutes: 20, status: 'Resolved', oncallSchedule: { iid: '2' }, username: null },
+  { elapsedTimeMinutes: 40, status: 'Resolved', oncallScheduleId: null, user: userObject },
+];
+const participantsWithTokenStyles = utils.getParticipantsWithTokenStyles(rulesMock);
+
 describe('Escalation policies utility functions', () => {
   describe('isNameFieldValid', () => {
     it('should return `true` when name is valid', () => {
@@ -54,6 +62,37 @@ describe('Escalation policies utility functions', () => {
       ${[{ elapsedTimeMinutes: 40, status: 'Resolved', oncallScheduleId: null, user: { username: 'user2' } }]} | ${[{ elapsedTimeMinutes: 40, status: 'Resolved', username: 'user2' }]}
     `('transforms the rules', ({ rules, transformedRules }) => {
       expect(utils.getRules(rules)).toEqual(transformedRules);
+    });
+  });
+
+  describe('getParticipantsWithTokenStyles', () => {
+    it('retrieves all participants from escalation rules and assigns them token styles', () => {
+      const expectedStyles = [
+        {
+          class: 'gl-text-white',
+          style: { backgroundColor: '#617ae2' },
+        },
+        {
+          class: 'gl-text-white',
+          style: { backgroundColor: '#c95d2e' },
+        },
+      ];
+
+      expect(participantsWithTokenStyles.length).toBe(
+        rulesMock.filter((rule) => rule.user || rule.username).length,
+      );
+      participantsWithTokenStyles.forEach((participant, index) => {
+        expect(participant.style).toEqual(expectedStyles[index].style);
+        expect(participant.class).toBe(expectedStyles[index].class);
+      });
+    });
+  });
+
+  describe('getEscalationUserIndex', () => {
+    it('finds user index in mappedParticipants array', () => {
+      expect(utils.getEscalationUserIndex(participantsWithTokenStyles, userObject.username)).toBe(
+        1,
+      );
     });
   });
 });

@@ -2,6 +2,7 @@
 import { GlTokenSelector, GlAvatar, GlAvatarLabeled, GlToken } from '@gitlab/ui';
 import searchProjectMembersQuery from '~/graphql_shared/queries/project_user_members_search.query.graphql';
 import { s__, __ } from '~/locale';
+import { getEscalationUserIndex } from '../utils';
 
 export default {
   components: {
@@ -21,6 +22,10 @@ export default {
       type: String,
       required: false,
       default: null,
+    },
+    mappedParticipants: {
+      type: Array,
+      required: true,
     },
   },
   apollo: {
@@ -61,6 +66,14 @@ export default {
     user() {
       return this.selectedUsers[0];
     },
+    backgroundStyle() {
+      const userIndex = getEscalationUserIndex(this.mappedParticipants, this.user.username);
+      return this.mappedParticipants[userIndex].style;
+    },
+    textClass() {
+      const userIndex = getEscalationUserIndex(this.mappedParticipants, this.user.username);
+      return this.mappedParticipants[userIndex].class;
+    },
   },
   methods: {
     filterUsers(searchTerm) {
@@ -87,7 +100,7 @@ export default {
     v-if="selectedUsers.length"
     class="gl-inset-border-1-gray-400 gl-px-3 gl-py-2 gl-rounded-base rule-control"
   >
-    <gl-token @close="clearSelectedUsers">
+    <gl-token :style="backgroundStyle" :class="textClass" @close="clearSelectedUsers">
       <gl-avatar :src="user.avatarUrl" :size="16" />
       {{ user.name }}
     </gl-token>

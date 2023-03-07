@@ -10,6 +10,7 @@ import {
   MAX_RULES_LENGTH,
 } from '../constants';
 import getOncallSchedulesQuery from '../graphql/queries/get_oncall_schedules.query.graphql';
+import { getParticipantsWithTokenStyles } from '../utils';
 import EscalationRule from './escalation_rule.vue';
 
 export const i18n = {
@@ -60,6 +61,7 @@ export default {
     return {
       schedules: [],
       rules: [],
+      mappedParticipants: [],
     };
   },
   apollo: {
@@ -101,6 +103,8 @@ export default {
       };
     });
 
+    this.mappedParticipants = getParticipantsWithTokenStyles(this.rules);
+
     if (!this.rules.length) {
       this.addRule();
     }
@@ -112,6 +116,7 @@ export default {
     updateEscalationRules({ rule, index }) {
       const { key } = this.rules[index];
       this.rules[index] = { key, ...rule };
+      this.mappedParticipants = getParticipantsWithTokenStyles(this.rules);
       this.emitRulesUpdate();
     },
     removeEscalationRule(index) {
@@ -172,6 +177,7 @@ export default {
         :key="rule.key"
         :rule="rule"
         :index="index"
+        :mapped-participants="mappedParticipants"
         :schedules="schedules"
         :schedules-loading="schedulesLoading"
         :validation-state="validationState.rules[index]"

@@ -1,4 +1,5 @@
 import { pickBy, isNull, isNaN } from 'lodash';
+import { formatParticipantsForTokenSelector } from 'ee/oncall_schedules/utils/common_utils';
 import { EMAIL_ONCALL_SCHEDULE_USER, EMAIL_USER } from './constants';
 
 /**
@@ -82,3 +83,27 @@ export const getRules = (rules) => {
     },
   );
 };
+
+/**
+ * Mapps participants of policy and assign token styles
+ * @param {Array} rules
+ *
+ * @returns {Array}
+ */
+export const getParticipantsWithTokenStyles = (rules) => {
+  const participants = rules
+    .filter((rule) => rule.user || rule.username)
+    .map((rule, index) => ({ username: rule.user ? rule.user.username : rule.username, index }));
+
+  return formatParticipantsForTokenSelector(participants);
+};
+
+/**
+ * Finds user's index within the view of all escalation rules
+ * @param {Array} mappedParticipants
+ * @param {string} username
+ *
+ * @returns {Number}
+ */
+export const getEscalationUserIndex = (mappedParticipants, username) =>
+  mappedParticipants.findIndex((participant) => participant.username === username);
