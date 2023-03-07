@@ -83,6 +83,7 @@ module Security
         finding.vulnerability = vulnerabilities[finding.uuid]
         finding.project = pipeline.project
         finding.sha = pipeline.sha
+        finding.found_by_pipeline = report_finding.found_by_pipeline
         finding.scanner = scanner_for_report_finding(report_finding)
         finding.finding_links = report_finding.links.map do |link|
           Vulnerabilities::FindingLink.new(link.to_hash)

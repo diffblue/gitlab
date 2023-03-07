@@ -63,6 +63,10 @@ class Vulnerabilities::FindingEntity < Grape::Entity
     occurrence.present(presenter_class: Vulnerabilities::FindingPresenter).blob_path
   end
 
+  expose :found_by_pipeline, if: -> (finding, _) { finding.respond_to?(:found_by_pipeline) } do
+    expose(:iid) { |finding| finding.found_by_pipeline&.iid }
+  end
+
   alias_method :occurrence, :object
 
   def current_user
