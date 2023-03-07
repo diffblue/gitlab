@@ -15394,6 +15394,9 @@ msgstr ""
 msgid "Edit public deploy key"
 msgstr ""
 
+msgid "Edit saved reply"
+msgstr ""
+
 msgid "Edit sidebar"
 msgstr ""
 
@@ -45849,6 +45852,9 @@ msgid "Unable to fetch upstream and downstream pipelines."
 msgstr ""
 
 msgid "Unable to find Jira project to import data from."
+msgstr ""
+
+msgid "Unable to find saved reply"
 msgstr ""
 
 msgid "Unable to fully load the default commit message. You can still apply this suggestion and the commit message will be correct."
