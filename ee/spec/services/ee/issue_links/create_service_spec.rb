@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IssueLinks::CreateService do
+RSpec.describe IssueLinks::CreateService, feature_category: :team_planning do
   describe '#execute' do
     let(:namespace) { create :namespace }
     let(:project) { create :project, namespace: namespace }

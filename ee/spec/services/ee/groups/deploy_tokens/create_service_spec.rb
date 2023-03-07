@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::DeployTokens::CreateService do
+RSpec.describe Groups::DeployTokens::CreateService, feature_category: :subgroups do
   let_it_be(:entity) { create(:group) }
   let_it_be(:destination) { create(:external_audit_event_destination, group: entity) }
   let_it_be(:user) { create(:user) }

@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::EpicsCountService, :use_clean_rails_memory_store_caching do
+RSpec.describe Groups::EpicsCountService, :use_clean_rails_memory_store_caching,
+  feature_category: :portfolio_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:epic) { create(:epic, group: group) }

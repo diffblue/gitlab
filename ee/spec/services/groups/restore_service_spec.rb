@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::RestoreService do
+RSpec.describe Groups::RestoreService, feature_category: :subgroups do
   let(:user) { create(:user) }
   let(:group) do
     create(:group_with_deletion_schedule,

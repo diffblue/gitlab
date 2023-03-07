@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModalClosedService do
+RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModalClosedService,
+  feature_category: :integrations do
   describe '#execute' do
     let_it_be(:request_body) do
       {

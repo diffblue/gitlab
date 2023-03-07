@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IncidentManagement::PendingEscalations::CreateService do
+RSpec.describe IncidentManagement::PendingEscalations::CreateService, feature_category: :incident_management do
   let_it_be(:project) { create(:project) }
   let_it_be(:rule_count) { 2 }
 

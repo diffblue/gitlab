@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe IncidentManagement::IssuableEscalationStatuses::PrepareUpdateService do
+RSpec.describe IncidentManagement::IssuableEscalationStatuses::PrepareUpdateService,
+  feature_category: :incident_management do
   let_it_be(:escalation_status, reload: true) { create(:incident_management_issuable_escalation_status, :triggered) }
   let_it_be(:policy) { create(:incident_management_escalation_policy, project: escalation_status.issue.project) }
   let_it_be(:user_with_permissions) { create(:user) }

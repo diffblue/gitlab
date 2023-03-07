@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IncidentManagement::PendingEscalations::ProcessService do
+RSpec.describe IncidentManagement::PendingEscalations::ProcessService, feature_category: :incident_management do
   let_it_be(:project) { create(:project) }
   let_it_be(:schedule_1) { create(:incident_management_oncall_schedule, :with_rotation, project: project) }
   let_it_be(:schedule_1_users) { schedule_1.participants.map(&:user) }

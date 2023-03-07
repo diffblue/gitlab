@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Integrations::SlackEvents::AppHomeOpenedService do
+RSpec.describe Integrations::SlackEvents::AppHomeOpenedService, feature_category: :integrations do
   describe '#execute' do
     let_it_be(:slack_installation) { create(:slack_integration) }
 

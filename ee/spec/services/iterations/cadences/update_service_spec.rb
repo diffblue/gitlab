@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Iterations::Cadences::UpdateService do
+RSpec.describe Iterations::Cadences::UpdateService, feature_category: :team_planning do
   subject(:results) { described_class.new(iteration_cadence, user, params).execute }
 
   let_it_be(:group, refind: true) { create(:group) }

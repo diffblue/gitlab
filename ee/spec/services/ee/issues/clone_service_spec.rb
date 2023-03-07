@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Issues::CloneService do
+RSpec.describe Issues::CloneService, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:old_project) { create(:project, group: group) }

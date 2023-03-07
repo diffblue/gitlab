@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Jira::Requests::Issues::ListService do
+RSpec.describe Jira::Requests::Issues::ListService, feature_category: :integrations do
   include AfterNextHelpers
 
   let(:jira_integration) { create(:jira_integration) }

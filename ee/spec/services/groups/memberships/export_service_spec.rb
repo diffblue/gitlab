@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Memberships::ExportService do
+RSpec.describe Groups::Memberships::ExportService, feature_category: :subgroups do
   let(:group) { create(:group) }
   let(:owner_member) { create(:group_member, :owner, group: group) }
   let(:current_user) { owner_member.user }

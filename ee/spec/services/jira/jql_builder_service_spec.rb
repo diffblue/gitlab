@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Jira::JqlBuilderService do
+RSpec.describe Jira::JqlBuilderService, feature_category: :integrations do
   describe '#execute' do
     subject { described_class.new('PROJECT_KEY', params).execute }
 

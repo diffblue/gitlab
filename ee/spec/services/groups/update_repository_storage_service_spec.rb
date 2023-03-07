@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::UpdateRepositoryStorageService do
+RSpec.describe Groups::UpdateRepositoryStorageService, feature_category: :subgroups do
   subject { described_class.new(repository_storage_move) }
 
   describe "#execute" do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Members::AwaitService, :saas do
+RSpec.describe Members::AwaitService, :saas, feature_category: :subgroups do
   describe '#execute' do
     let_it_be(:current_user) { create(:user) }
     let_it_be(:user) { create(:user) }

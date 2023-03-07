@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Labels::CreateService do
+RSpec.describe Labels::CreateService, feature_category: :team_planning do
   describe '#execute' do
     let_it_be(:project) { create(:project) }
     let_it_be(:namespace) { create(:group) }
