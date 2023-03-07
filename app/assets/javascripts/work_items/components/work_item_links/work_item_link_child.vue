@@ -171,7 +171,7 @@ export default {
 <template>
   <div>
     <div
-      class="gl-display-flex gl-align-items-flex-start gl-mb-3"
+      class="gl-display-flex gl-align-items-flex-start"
       :class="{ 'gl-ml-6': canHaveChildren && !hasChildren && hasIndirectChildren }"
     >
       <gl-button
@@ -181,18 +181,20 @@ export default {
         :aria-label="chevronTooltip"
         :icon="chevronType"
         category="tertiary"
+        size="small"
         :loading="isLoadingChildren"
         class="gl-px-0! gl-py-3! gl-mr-3"
         data-testid="expand-child"
         @click="toggleItem"
       />
       <div
-        class="gl-relative gl-display-flex gl-flex-grow-1 gl-overflow-break-word gl-min-w-0 gl-bg-white gl-py-3 gl-px-4 gl-border gl-border-gray-100 gl-rounded-base gl-line-height-32"
+        class="work-item-link-child gl-relative gl-display-flex gl-flex-grow-1 gl-overflow-break-word gl-min-w-0 gl-pl-3 gl-pr-2 gl-rounded-base"
+        :class="[hasMetadata ? 'gl-py-3' : 'gl-py-0']"
         data-testid="links-child"
       >
         <span
           :id="`stateIcon-${childItem.id}`"
-          class="gl-mr-3"
+          class="gl-cursor-help gl-mr-3 gl-line-height-32"
           :class="{ 'gl-display-flex': hasMetadata }"
           data-testid="item-status-icon"
         >
@@ -239,7 +241,7 @@ export default {
           <work-item-link-child-metadata
             v-if="hasMetadata"
             :metadata-widgets="metadataWidgets"
-            class="gl-mt-3"
+            class="gl-mt-1"
           />
         </div>
         <div

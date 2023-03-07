@@ -57,7 +57,7 @@ export default {
       data-testid="item-progress"
     >
       <gl-icon name="progress" />
-      <span class="gl-text-primary gl-ml-2">{{ progress }}%</span>
+      <span class="gl-font-sm gl-text-primary gl-ml-2">{{ progress }}%</span>
     </div>
     <gl-badge
       v-if="hasHealthStatus"

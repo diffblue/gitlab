@@ -147,6 +147,8 @@ describe('WorkItemLinkChild', () => {
       expect(metadataEl.props()).toMatchObject({
         metadataWidgets: workItemObjectiveMetadataWidgets,
       });
+
+      expect(wrapper.find('[data-testid="links-child"]').classes()).toContain('gl-py-3');
     });
 
     it('does not render item metadata component when item has no metadata present', () => {
@@ -156,6 +158,8 @@ describe('WorkItemLinkChild', () => {
       });
 
       expect(findMetadataComponent().exists()).toBe(false);
+
+      expect(wrapper.find('[data-testid="links-child"]').classes()).toContain('gl-py-0');
     });
   });
 
