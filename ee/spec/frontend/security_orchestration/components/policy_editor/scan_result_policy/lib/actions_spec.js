@@ -4,7 +4,9 @@ import {
   groupApprovers,
   decomposeApprovers,
   approversOutOfSync,
+  approversOutOfSyncV2,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/actions';
+import { GROUP_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
 
 // As returned by endpoints based on API::Entities::UserBasic
 const userApprover = {
@@ -302,6 +304,202 @@ describe('approversOutOfSync', () => {
           group_approvers: groupPaths,
         };
         expect(approversOutOfSync(action, approvers)).toBe(result);
+      },
+    );
+  });
+});
+
+describe('approversOutOfSyncV2', () => {
+  const userApproverV2 = {
+    avatar_url: null,
+    id: 1,
+    name: null,
+    state: null,
+    type: USER_TYPE,
+    username: 'user name',
+    web_url: null,
+  };
+
+  const groupApproverV2 = {
+    avatar_url: null,
+    id: 2,
+    name: null,
+    full_name: null,
+    full_path: 'path/to/group',
+    type: GROUP_TYPE,
+    web_url: null,
+  };
+
+  const noExistingApprovers = {};
+  const existingUserApprover = { user: [userApproverV2] };
+  const existingGroupApprover = { group: [groupApproverV2] };
+  const existingMixedApprovers = { ...existingUserApprover, ...existingGroupApprover };
+
+  describe('with user_approvers_ids only', () => {
+    it.each`
+      ids                       | approvers               | result
+      ${[userApproverV2.id]}    | ${existingUserApprover} | ${false}
+      ${[]}                     | ${noExistingApprovers}  | ${false}
+      ${[]}                     | ${existingUserApprover} | ${true}
+      ${[userApproverV2.id]}    | ${noExistingApprovers}  | ${true}
+      ${[userApproverV2.id, 3]} | ${existingUserApprover} | ${true}
+      ${[3]}                    | ${noExistingApprovers}  | ${true}
+      ${[3]}                    | ${existingUserApprover} | ${true}
+    `(
+      'return $result when ids and approvers length equal to $ids and $approvers.length',
+      ({ ids, approvers, result }) => {
+        const action = {
+          approvals_required: 1,
+          type: 'require_approval',
+          user_approvers_ids: ids,
+        };
+        expect(approversOutOfSyncV2(action, approvers)).toBe(result);
+      },
+    );
+  });
+  describe('with user_approvers only', () => {
+    it.each`
+      usernames                                   | approvers               | result
+      ${[userApproverV2.username]}                | ${existingUserApprover} | ${false}
+      ${[]}                                       | ${noExistingApprovers}  | ${false}
+      ${[]}                                       | ${existingUserApprover} | ${true}
+      ${[userApproverV2.username]}                | ${noExistingApprovers}  | ${true}
+      ${[userApproverV2.username, 'not present']} | ${existingUserApprover} | ${true}
+      ${['not present']}                          | ${noExistingApprovers}  | ${true}
+      ${['not present']}                          | ${existingUserApprover} | ${true}
+    `(
+      'return $result when usernames and approvers length equal to $usernames and $approvers.length',
+      ({ usernames, approvers, result }) => {
+        const action = {
+          approvals_required: 1,
+          type: 'require_approval',
+          user_approvers: usernames,
+        };
+        expect(approversOutOfSyncV2(action, approvers)).toBe(result);
+      },
+    );
+  });
+  describe('with user_approvers and user_approvers_ids', () => {
+    it.each`
+      ids                    | usernames                    | approvers               | result
+      ${[]}                  | ${[userApproverV2.username]} | ${existingUserApprover} | ${false}
+      ${[userApproverV2.id]} | ${[]}                        | ${existingUserApprover} | ${false}
+      ${[]}                  | ${[]}                        | ${noExistingApprovers}  | ${false}
+      ${[userApproverV2.id]} | ${[userApproverV2.username]} | ${existingUserApprover} | ${true}
+      ${[userApproverV2.id]} | ${['not present']}           | ${existingUserApprover} | ${true}
+      ${[3]}                 | ${[userApproverV2.username]} | ${existingUserApprover} | ${true}
+    `(
+      'return $result when ids, usernames and approvers length equal to $ids, $usernames and $approvers.length',
+      ({ ids, usernames, approvers, result }) => {
+        const action = {
+          approvals_required: 1,
+          type: 'require_approval',
+          user_approvers: usernames,
+          user_approvers_ids: ids,
+        };
+        expect(approversOutOfSyncV2(action, approvers)).toBe(result);
+      },
+    );
+  });
+  describe('with group_approvers_ids only', () => {
+    it.each`
+      ids                        | approvers                | result
+      ${[groupApproverV2.id]}    | ${existingGroupApprover} | ${false}
+      ${[]}                      | ${noExistingApprovers}   | ${false}
+      ${[]}                      | ${existingGroupApprover} | ${true}
+      ${[groupApproverV2.id]}    | ${noExistingApprovers}   | ${true}
+      ${[groupApproverV2.id, 3]} | ${existingGroupApprover} | ${true}
+      ${[3]}                     | ${noExistingApprovers}   | ${true}
+      ${[3]}                     | ${existingGroupApprover} | ${true}
+    `(
+      'return $result when ids and approvers length equal to $ids and $approvers.length',
+      ({ ids, approvers, result }) => {
+        const action = {
+          approvals_required: 1,
+          type: 'require_approval',
+          group_approvers_ids: ids,
+        };
+        expect(approversOutOfSyncV2(action, approvers)).toBe(result);
+      },
+    );
+  });
+  describe('with user_approvers, user_approvers_ids and group_approvers_ids', () => {
+    it.each`
+      userApproversIds       | usernames                    | groupApproversIds       | approvers                 | result
+      ${[]}                  | ${[userApproverV2.username]} | ${[groupApproverV2.id]} | ${existingMixedApprovers} | ${false}
+      ${[userApproverV2.id]} | ${[]}                        | ${[groupApproverV2.id]} | ${existingMixedApprovers} | ${false}
+      ${[]}                  | ${[]}                        | ${[]}                   | ${noExistingApprovers}    | ${false}
+      ${[userApproverV2.id]} | ${[userApproverV2.username]} | ${[groupApproverV2.id]} | ${existingMixedApprovers} | ${true}
+      ${[]}                  | ${[userApproverV2.username]} | ${[3]}                  | ${existingMixedApprovers} | ${true}
+      ${[userApproverV2.id]} | ${[]}                        | ${[3]}                  | ${existingMixedApprovers} | ${true}
+      ${[]}                  | ${[]}                        | ${[groupApproverV2.id]} | ${existingGroupApprover}  | ${false}
+      ${[userApproverV2.id]} | ${[]}                        | ${[groupApproverV2.id]} | ${existingGroupApprover}  | ${true}
+      ${[]}                  | ${[userApproverV2.username]} | ${[groupApproverV2.id]} | ${existingGroupApprover}  | ${true}
+      ${[]}                  | ${[userApproverV2.username]} | ${[]}                   | ${existingUserApprover}   | ${false}
+      ${[userApproverV2.id]} | ${[]}                        | ${[]}                   | ${existingUserApprover}   | ${false}
+      ${[userApproverV2.id]} | ${[]}                        | ${[groupApproverV2.id]} | ${existingUserApprover}   | ${true}
+    `(
+      'return $result when user_ids, usernames, group_ids and approvers length equal to $userApproversIds, $usernames, $groupApproversIds and $approvers.length',
+      ({ userApproversIds, usernames, groupApproversIds, approvers, result }) => {
+        const action = {
+          approvals_required: 1,
+          type: 'require_approval',
+          user_approvers: usernames,
+          user_approvers_ids: userApproversIds,
+          group_approvers_ids: groupApproversIds,
+        };
+        expect(approversOutOfSyncV2(action, approvers)).toBe(result);
+      },
+    );
+  });
+  describe('with group_approvers only', () => {
+    it.each`
+      fullPath                                      | approvers                | result
+      ${[groupApproverV2.full_path]}                | ${existingGroupApprover} | ${false}
+      ${[]}                                         | ${noExistingApprovers}   | ${false}
+      ${[]}                                         | ${existingGroupApprover} | ${true}
+      ${[groupApproverV2.full_path]}                | ${noExistingApprovers}   | ${true}
+      ${[groupApproverV2.full_path, 'not present']} | ${existingGroupApprover} | ${true}
+      ${['not present']}                            | ${noExistingApprovers}   | ${true}
+      ${['not present']}                            | ${existingGroupApprover} | ${true}
+    `(
+      'return $result when full_path and approvers length equal to $full_path and $approvers.length',
+      ({ fullPath, approvers, result }) => {
+        const action = {
+          approvals_required: 1,
+          type: 'require_approval',
+          group_approvers: fullPath,
+        };
+        expect(approversOutOfSyncV2(action, approvers)).toBe(result);
+      },
+    );
+  });
+  describe('with user_approvers, user_approvers_ids, group_approvers_ids and group_approvers', () => {
+    it.each`
+      userApproversIds       | usernames                    | groupApproversIds       | groupPaths                     | approvers                 | result
+      ${[]}                  | ${[userApproverV2.username]} | ${[groupApproverV2.id]} | ${[]}                          | ${existingMixedApprovers} | ${false}
+      ${[userApproverV2.id]} | ${[]}                        | ${[groupApproverV2.id]} | ${[]}                          | ${existingMixedApprovers} | ${false}
+      ${[userApproverV2.id]} | ${[]}                        | ${[]}                   | ${[groupApproverV2.full_path]} | ${existingMixedApprovers} | ${false}
+      ${[]}                  | ${[userApproverV2.username]} | ${[]}                   | ${[groupApproverV2.full_path]} | ${existingMixedApprovers} | ${false}
+      ${[]}                  | ${[]}                        | ${[]}                   | ${[]}                          | ${noExistingApprovers}    | ${false}
+      ${[]}                  | ${[userApproverV2.username]} | ${[3]}                  | ${[]}                          | ${existingMixedApprovers} | ${true}
+      ${[userApproverV2.id]} | ${[]}                        | ${[3]}                  | ${[]}                          | ${existingMixedApprovers} | ${true}
+      ${[userApproverV2.id]} | ${[]}                        | ${[]}                   | ${['not present']}             | ${existingMixedApprovers} | ${true}
+      ${[]}                  | ${[userApproverV2.username]} | ${[]}                   | ${['not present']}             | ${existingMixedApprovers} | ${true}
+      ${[userApproverV2.id]} | ${[]}                        | ${[]}                   | ${[groupApproverV2.full_path]} | ${existingGroupApprover}  | ${true}
+      ${[]}                  | ${[userApproverV2.username]} | ${[]}                   | ${[groupApproverV2.full_path]} | ${existingGroupApprover}  | ${true}
+    `(
+      'return $result when user_ids, usernames, group_ids, group_paths and approvers length equal to $userApproversIds, $usernames, $groupApproversIds, $groupPaths and $approvers.length',
+      ({ userApproversIds, usernames, groupApproversIds, groupPaths, approvers, result }) => {
+        const action = {
+          approvals_required: 1,
+          type: 'require_approval',
+          user_approvers: usernames,
+          user_approvers_ids: userApproversIds,
+          group_approvers_ids: groupApproversIds,
+          group_approvers: groupPaths,
+        };
+        expect(approversOutOfSyncV2(action, approvers)).toBe(result);
       },
     );
   });

@@ -10,7 +10,12 @@ export {
   SCAN_FINDING,
   LICENSE_FINDING,
 } from './rules';
-export { approversOutOfSync, APPROVER_TYPE_DICT, APPROVER_TYPE_LIST_ITEMS } from './actions';
+export {
+  approversOutOfSync,
+  approversOutOfSyncV2,
+  APPROVER_TYPE_DICT,
+  APPROVER_TYPE_LIST_ITEMS,
+} from './actions';
 export * from './humanize';
 
 export const DEFAULT_SCAN_RESULT_POLICY = `type: scan_result_policy
