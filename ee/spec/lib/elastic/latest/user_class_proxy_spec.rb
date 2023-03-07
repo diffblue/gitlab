@@ -46,18 +46,6 @@ RSpec.describe Elastic::Latest::UserClassProxy, feature_category: :global_search
 
           elastic_search
         end
-
-        context 'with the user_search_simple_query_string feature flag disabled' do
-          before do
-            stub_feature_flags(user_search_simple_query_string: false)
-          end
-
-          it 'calls fuzzy_query_hash' do
-            expect(subject).to receive(:fuzzy_query_hash).and_call_original.once
-
-            elastic_search
-          end
-        end
       end
     end
 

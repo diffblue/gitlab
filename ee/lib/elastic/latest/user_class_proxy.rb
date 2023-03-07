@@ -6,7 +6,7 @@ module Elastic
       SEARCH_FIELDS = %w[name username email public_email].freeze
 
       def elastic_search(query, options: {})
-        query_hash = if use_simple_query_string?(query, options)
+        query_hash = if simple_query_string_syntax?(query)
                        basic_query_hash(valid_fields(options), query, options)
                      else
                        fuzzy_query_hash(valid_fields(options), query, options)
@@ -102,11 +102,6 @@ module Elastic
       # rubocop: enable CodeReuse/ActiveRecord
 
       private
-
-      def use_simple_query_string?(query, options)
-        ::Feature.enabled?(:user_search_simple_query_string, options[:current_user]) &&
-          simple_query_string_syntax?(query)
-      end
 
       def simple_query_string_syntax?(query)
         query.match?(/[+\-|*()~"]/)
