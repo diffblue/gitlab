@@ -21,7 +21,7 @@ module Mutations
                required: false,
                description: 'Comment why vulnerability was reverted to detected (max. 50 000 characters).'
 
-      def resolve(id:, comment:)
+      def resolve(id:, comment: nil)
         vulnerability = authorized_find!(id: id)
         result = ::Vulnerabilities::RevertToDetectedService.new(current_user, vulnerability, comment).execute
 
