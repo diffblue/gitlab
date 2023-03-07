@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlIcon } from '@gitlab/ui';
 import RuleView from 'ee/projects/settings/branch_rules/components/view/index.vue';
 import branchRulesQuery from 'ee/projects/settings/branch_rules/queries/branch_rules_details.query.graphql';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -77,7 +76,7 @@ describe('View branch rules in enterprise edition', () => {
   const findBranchProtections = () => wrapper.findAllComponents(Protection);
   const findApprovalsTitle = () => wrapper.findByText(I18N.approvalsTitle);
   const findStatusChecksTitle = () => wrapper.findByText(I18N.statusChecksTitle);
-  const findCodeOwnerApprovalIcon = () => wrapper.findComponent(GlIcon);
+  const findCodeOwnerApprovalIcon = () => wrapper.findByTestId('code-owners-icon');
   const findCodeOwnerApprovalTitle = (title) => wrapper.findByText(title);
   const findCodeOwnerApprovalDescription = (description) => wrapper.findByText(description);
 
