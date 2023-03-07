@@ -27,20 +27,21 @@ module Security
         inverse_of: :security_orchestration_policy_configuration
 
       def delete_scan_finding_rules
-        approval_merge_request_rules.each_batch { |batch| delete_batch(batch) }
-        approval_project_rules.each_batch { |batch| delete_batch(batch) }
+        delete_in_batches(approval_merge_request_rules)
+        delete_in_batches(approval_project_rules)
       end
 
       def delete_scan_result_policy_reads
-        scan_result_policy_reads.each_batch { |batch| delete_batch(batch) }
+        delete_in_batches(scan_result_policy_reads)
       end
 
       def delete_scan_finding_rules_for_project(project_id)
-        approval_project_rules.where(project_id: project_id).each_batch { |batch| delete_batch(batch) }
-        approval_merge_request_rules
-          .joins(:merge_request)
-          .where(merge_request: { target_project_id: project_id })
-          .each_batch { |batch| delete_batch(batch) }
+        delete_in_batches(approval_project_rules.where(project_id: project_id))
+        delete_in_batches(
+          approval_merge_request_rules
+            .joins(:merge_request)
+            .where(merge_request: { target_project_id: project_id })
+        )
       end
 
       def active_scan_result_policies
@@ -49,6 +50,12 @@ module Security
 
       def scan_result_policies
         policy_by_type(:scan_result_policy)
+      end
+
+      def delete_in_batches(relation)
+        relation.each_batch(order_hint: :updated_at) do |batch|
+          delete_batch(batch)
+        end
       end
 
       def delete_batch(batch)
