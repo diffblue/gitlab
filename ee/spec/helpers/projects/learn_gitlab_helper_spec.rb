@@ -11,7 +11,7 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
 
   describe '#learn_gitlab_data' do
     let_it_be(:namespace) { create(:group) }
-    let_it_be(:project) { build_stubbed(:project, name: Onboarding::LearnGitlab::PROJECT_NAME, namespace: namespace) }
+    let_it_be(:project) { build_stubbed(:project, namespace: namespace) }
     let(:onboarding_actions_data) { Gitlab::Json.parse(learn_gitlab_data[:actions]).deep_symbolize_keys }
     let(:onboarding_sections_data) { Gitlab::Json.parse(learn_gitlab_data[:sections], symbolize_names: true) }
     let(:onboarding_project_data) { Gitlab::Json.parse(learn_gitlab_data[:project]).deep_symbolize_keys }
@@ -75,12 +75,12 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
     context 'with security_actions_continuous_onboarding experiment' do
       let(:base_paths) do
         {
-          trial_started: a_hash_including(url: %r{/learn_gitlab/-/project_members\z}),
-          pipeline_created: a_hash_including(url: %r{/learn_gitlab/-/pipelines\z}),
-          issue_created: a_hash_including(url: %r{/learn_gitlab/-/issues\z}),
-          git_write: a_hash_including(url: %r{/learn_gitlab\z}),
+          trial_started: a_hash_including(url: %r{/#{project.name}/-/project_members\z}),
+          pipeline_created: a_hash_including(url: %r{/#{project.name}/-/pipelines\z}),
+          issue_created: a_hash_including(url: %r{/#{project.name}/-/issues\z}),
+          git_write: a_hash_including(url: %r{/#{project.name}\z}),
           user_added: a_hash_including(url: %r{#\z}),
-          merge_request_created: a_hash_including(url: %r{/learn_gitlab/-/merge_requests\z}),
+          merge_request_created: a_hash_including(url: %r{/#{project.name}/-/merge_requests\z}),
           code_added: a_hash_including(url: %r{/-/ide/project/#{project.full_path}/edit\?learn_gitlab_source=true\z}),
           code_owners_enabled: a_hash_including(url: %r{/user/project/code_owners#set-up-code-owners\z}),
           required_mr_approvals_enabled: a_hash_including(
@@ -97,7 +97,7 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
         it 'sets correct paths' do
           result = base_paths.merge(
             security_scan_enabled: a_hash_including(
-              url: %r{/learn_gitlab/-/security/configuration\z}
+              url: %r{/#{project.name}/-/security/configuration\z}
             )
           )
 
@@ -223,22 +223,6 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
           expect(onboarding_actions_data).to include(result)
         end
       end
-    end
-  end
-
-  describe '#learn_gitlab_onboarding_available?' do
-    let(:namespace) { build(:group) }
-
-    it 'is not available' do
-      expect(helper.learn_gitlab_onboarding_available?(namespace)).to eq(false)
-    end
-
-    it 'is available' do
-      allow_next_instance_of(Onboarding::LearnGitlab, user) do |instance|
-        allow(instance).to receive(:onboarding_and_available?).with(namespace).and_return(true)
-      end
-
-      expect(helper.learn_gitlab_onboarding_available?(namespace)).to eq(true)
     end
   end
 end

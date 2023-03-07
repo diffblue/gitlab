@@ -9,7 +9,7 @@ module EE
       super.merge({
         show_promotions: show_promotions?(user),
         show_discover_project_security: show_discover_project_security?(project),
-        learn_gitlab_enabled: Onboarding::LearnGitlab.new(user).onboarding_and_available?(project.namespace)
+        learn_gitlab_enabled: Onboarding::LearnGitlab.available?(project.namespace, user)
       })
     end
 

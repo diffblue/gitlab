@@ -30,7 +30,7 @@ module Projects
     private
 
     def verify_learn_gitlab_available!
-      access_denied! unless Onboarding::LearnGitlab.new(current_user).onboarding_and_available?(project.namespace)
+      access_denied! unless Onboarding::LearnGitlab.available?(project.namespace, current_user)
     end
 
     def owner_access!

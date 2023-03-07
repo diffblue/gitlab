@@ -16,9 +16,7 @@ RSpec.describe 'layouts/nav/sidebar/_project', feature_category: :navigation do
   describe 'Learn GitLab' do
     it 'has a link to the learn GitLab' do
       allow(view).to receive(:current_user).and_return(user)
-      allow_next_instance_of(Onboarding::LearnGitlab, user) do |instance|
-        allow(instance).to receive(:onboarding_and_available?).with(project.namespace).and_return(true)
-      end
+      allow(Onboarding::LearnGitlab).to receive(:available?).with(project.namespace, user).and_return(true)
       allow_next_instance_of(Onboarding::Completion) do |onboarding|
         expect(onboarding).to receive(:percentage).and_return(20)
       end
