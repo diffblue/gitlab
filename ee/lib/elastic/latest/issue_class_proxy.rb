@@ -46,6 +46,9 @@ module Elastic
           query_hash = context.name(:authorized) { authorization_filter(query_hash, options) }
           query_hash = context.name(:confidentiality) { confidentiality_filter(query_hash, options) }
           query_hash = context.name(:match) { state_filter(query_hash, options) }
+          unless options[:current_user]&.can_admin_all_resources?
+            query_hash = context.name(:hidden) { hidden_filter(query_hash) }
+          end
         end
 
         if options[:aggregation]
@@ -200,6 +203,13 @@ module Elastic
         end
 
         query_hash[:query][:bool][:filter] << filter
+        query_hash
+      end
+
+      def hidden_filter(query_hash)
+        return query_hash unless ::Elastic::DataMigrationService.migration_has_finished?(:backfill_hidden_on_issues)
+
+        query_hash[:query][:bool][:filter] << { term: { hidden: { _name: context.name(:non_hidden), value: false } } }
         query_hash
       end
     end

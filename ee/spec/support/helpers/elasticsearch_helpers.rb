@@ -68,4 +68,8 @@ module ElasticsearchHelpers
   def es_helper
     Gitlab::Elastic::Helper.default
   end
+
+  def elasticsearch_hit_ids(result)
+    result.response['hits']['hits'].map(&:_source).map(&:id)
+  end
 end
