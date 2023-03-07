@@ -1,7 +1,16 @@
 <script>
-import { GlButton, GlFormGroup, GlFormInputGroup, GlFormInput, GlAlert } from '@gitlab/ui';
+import {
+  GlButton,
+  GlFormGroup,
+  GlFormInputGroup,
+  GlFormInput,
+  GlAlert,
+  GlSprintf,
+  GlLink,
+} from '@gitlab/ui';
 import isEmpty from 'lodash/isEmpty';
 import { s__, __ } from '~/locale';
+import { PROMO_CODE_TERMS_LINK, PROMO_CODE_SUCCESS_MESSAGE } from 'ee/subscriptions/new/constants';
 
 const i18n = Object.freeze({
   label: s__('Checkout|Coupon code (optional)'),
@@ -10,22 +19,22 @@ const i18n = Object.freeze({
 
 export default {
   name: 'PromoCodeInput',
-  components: { GlButton, GlFormGroup, GlFormInputGroup, GlFormInput, GlAlert },
+  components: { GlButton, GlFormGroup, GlFormInputGroup, GlFormInput, GlAlert, GlSprintf, GlLink },
   props: {
-    canShowSuccessAlert: {
+    showSuccessAlert: {
       type: Boolean,
       required: false,
       default: false,
     },
-    applyingPromoCode: {
+    isParentFormLoading: {
       type: Boolean,
       required: false,
       default: false,
     },
-    successMessage: {
-      type: String,
+    isApplyingPromoCode: {
+      type: Boolean,
       required: false,
-      default: '',
+      default: false,
     },
     errorMessage: {
       type: String,
@@ -40,23 +49,17 @@ export default {
     };
   },
   computed: {
-    promoCodeSuccessful() {
-      return !isEmpty(this.successMessage);
-    },
     disablePromoCodeInput() {
-      return this.applyingPromoCode || this.promoCodeSuccessful;
+      return this.isParentFormLoading || this.showSuccessAlert;
     },
     disablePromoCodeApplyBtn() {
       return this.disablePromoCodeInput || isEmpty(this.promoCode);
     },
     isPromoCodeValid() {
-      return this.applyingPromoCode || isEmpty(this.errorMessage);
-    },
-    showSuccessAlert() {
-      return this.canShowSuccessAlert && Boolean(this.successMessage);
+      return isEmpty(this.promoCodeError);
     },
     promoCodeError() {
-      return this.applyingPromoCode ? '' : this.errorMessage;
+      return this.isParentFormLoading ? '' : this.errorMessage;
     },
   },
   methods: {
@@ -67,6 +70,8 @@ export default {
       this.$emit('promo-code-updated');
     },
   },
+  PROMO_CODE_TERMS_LINK,
+  PROMO_CODE_SUCCESS_MESSAGE,
 };
 </script>
 
@@ -88,7 +93,7 @@ export default {
         <template #append>
           <gl-button
             category="secondary"
-            :loading="applyingPromoCode"
+            :loading="isApplyingPromoCode"
             :disabled="disablePromoCodeApplyBtn"
             @click="applyPromoCode"
           >
@@ -98,7 +103,16 @@ export default {
       </gl-form-input-group>
     </gl-form-group>
     <gl-alert v-if="showSuccessAlert" variant="success" :dismissible="false">
-      {{ successMessage }}
+      <gl-sprintf :message="$options.PROMO_CODE_SUCCESS_MESSAGE">
+        <template #link="{ content }">
+          <gl-link
+            class="gl-text-decoration-none!"
+            :href="$options.PROMO_CODE_TERMS_LINK"
+            target="_blank"
+            >{{ content }}</gl-link
+          >
+        </template>
+      </gl-sprintf>
     </gl-alert>
   </div>
 </template>

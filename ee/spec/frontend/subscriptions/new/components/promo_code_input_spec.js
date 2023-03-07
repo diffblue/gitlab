@@ -1,7 +1,8 @@
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import { GlButton, GlFormInput, GlFormGroup, GlLoadingIcon, GlAlert } from '@gitlab/ui';
+import { GlButton, GlFormInput, GlFormGroup, GlLoadingIcon, GlAlert, GlLink } from '@gitlab/ui';
 import PromoCodeInput from 'ee/subscriptions/new/components//promo_code_input.vue';
+import { PROMO_CODE_TERMS_LINK } from 'ee/subscriptions/new/constants';
 
 describe('PromoCodeInput', () => {
   let wrapper;
@@ -56,14 +57,28 @@ describe('PromoCodeInput', () => {
     expect(wrapper.emitted('apply-promo-code')).toEqual([[samplePromoCode]]);
   });
 
-  describe('when in loading state', () => {
+  describe('when parent form is in loading state', () => {
     it('renders the correct state', async () => {
       enterPromoCode();
-      wrapper.setProps({ applyingPromoCode: true });
+      wrapper.setProps({ isParentFormLoading: true, isApplyingPromoCode: false });
 
       await nextTick();
 
       assertDisabledState();
+      expect(findLoadingIcon().exists()).toBe(false);
+      expect(findSuccessAlert().exists()).toBe(false);
+    });
+  });
+
+  describe('when applying promo code', () => {
+    it('renders the correct state', async () => {
+      enterPromoCode();
+      wrapper.setProps({ isParentFormLoading: true, isApplyingPromoCode: true });
+
+      await nextTick();
+
+      assertDisabledState();
+
       expect(findLoadingIcon().exists()).toBe(true);
       expect(findSuccessAlert().exists()).toBe(false);
     });
@@ -72,19 +87,33 @@ describe('PromoCodeInput', () => {
   describe('when promo code is successful', () => {
     it('renders the correct state', async () => {
       enterPromoCode();
-      wrapper.setProps({ successMessage: 'Success :D', canShowSuccessAlert: true });
+      wrapper.setProps({ showSuccessAlert: true });
 
       await nextTick();
 
       assertDisabledState();
       expect(findLoadingIcon().exists()).toBe(false);
     });
+
+    it('shows success alert', async () => {
+      enterPromoCode();
+      wrapper.setProps({ showSuccessAlert: true });
+
+      await nextTick();
+
+      const successAlert = findSuccessAlert();
+      expect(successAlert.exists()).toBe(true);
+      expect(successAlert.text()).toBe(
+        'Coupon has been applied and by continuing with your purchase, you accept and agree to the Coupon Terms.',
+      );
+      expect(successAlert.findComponent(GlLink).attributes('href')).toBe(PROMO_CODE_TERMS_LINK);
+    });
   });
 
   describe('when promo code is successful and cannot show the success alert', () => {
     it('does not show success alert', async () => {
       enterPromoCode();
-      wrapper.setProps({ successMessage: 'Success :D', canShowSuccessAlert: false });
+      wrapper.setProps({ showSuccessAlert: false });
 
       await nextTick();
 
@@ -109,7 +138,11 @@ describe('PromoCodeInput', () => {
     it(`doesn't show the error message when in loading state`, async () => {
       enterPromoCode();
 
-      wrapper.setProps({ errorMessage: 'Error :(', applyingPromoCode: true });
+      wrapper.setProps({
+        errorMessage: 'Error :(',
+        isParentFormLoading: true,
+        isApplyingPromoCode: true,
+      });
       await nextTick();
 
       assertDisabledState();

@@ -1,7 +1,7 @@
 <script>
 import { GlCard, GlLoadingIcon } from '@gitlab/ui';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { unescape, isEmpty } from 'lodash';
+import { unescape } from 'lodash';
 import { sprintf, s__ } from '~/locale';
 import { trackCheckout } from '~/google_tag_manager';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -12,7 +12,6 @@ import {
   CHARGE_PROCESSING_TYPE,
   VALIDATION_ERROR_CODE,
   INVALID_PROMO_CODE_ERROR_MESSAGE,
-  PROMO_CODE_SUCCESS_MESSAGE,
   PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE,
   INVALID_PROMO_CODE_ERROR_CODE,
   PROMO_CODE_ERROR_ATTRIBUTE,
@@ -108,10 +107,13 @@ export default {
       return this.isEligibleToUsePromoCode && this.glFeatures.useInvoicePreviewApiInSaasPurchase;
     },
     isApplyingPromoCode() {
-      return Boolean(this.promoCode) && this.isLoading && isEmpty(this.promoCodeSuccessMessage);
+      return Boolean(this.promoCode) && this.isLoading && !this.hasDiscount;
     },
-    promoCodeSuccessMessage() {
-      return this.discountItem ? PROMO_CODE_SUCCESS_MESSAGE : undefined;
+    hasDiscount() {
+      return Boolean(this.discountItem);
+    },
+    showSuccessAlert() {
+      return this.showAmount && this.hasDiscount;
     },
   },
   watch: {
@@ -232,9 +234,9 @@ export default {
       <summary-details class="gl-mt-6">
         <template v-if="showPromoCode" #promo-code>
           <promo-code-input
-            :can-show-success-alert="showAmount"
-            :applying-promo-code="isApplyingPromoCode"
-            :success-message="promoCodeSuccessMessage"
+            :show-success-alert="showSuccessAlert"
+            :is-parent-form-loading="isLoading"
+            :is-applying-promo-code="isApplyingPromoCode"
             :error-message="promoCodeErrorMessage"
             @promo-code-updated="handlePromoCodeUpdate"
             @apply-promo-code="applyPromoCode"
@@ -247,9 +249,9 @@ export default {
       <summary-details class="gl-mt-6">
         <template v-if="showPromoCode" #promo-code>
           <promo-code-input
-            :can-show-success-alert="showAmount"
-            :applying-promo-code="isApplyingPromoCode"
-            :success-message="promoCodeSuccessMessage"
+            :show-success-alert="showSuccessAlert"
+            :is-parent-form-loading="isLoading"
+            :is-applying-promo-code="isApplyingPromoCode"
             :error-message="promoCodeErrorMessage"
             @promo-code-updated="handlePromoCodeUpdate"
             @apply-promo-code="applyPromoCode"

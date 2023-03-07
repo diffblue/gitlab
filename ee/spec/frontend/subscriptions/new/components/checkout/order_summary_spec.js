@@ -17,7 +17,6 @@ import {
   INVALID_PROMO_CODE_ERROR_CODE,
   PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE,
   INVALID_PROMO_CODE_ERROR_MESSAGE,
-  PROMO_CODE_SUCCESS_MESSAGE,
 } from 'ee/subscriptions/new/constants';
 import {
   mockDiscountItem,
@@ -513,8 +512,7 @@ describe('Order Summary', () => {
       it('shows success message for promo code', () => {
         expect(promoCodeInput.props()).toMatchObject({
           errorMessage: '',
-          successMessage: PROMO_CODE_SUCCESS_MESSAGE,
-          canShowSuccessAlert: true,
+          showSuccessAlert: true,
         });
       });
 
@@ -543,8 +541,8 @@ describe('Order Summary', () => {
         await store.commit(types.UPDATE_NUMBER_OF_USERS, 0);
 
         expect(promoCodeInput.props()).toMatchObject({
-          successMessage: PROMO_CODE_SUCCESS_MESSAGE,
-          canShowSuccessAlert: false,
+          errorMessage: '',
+          showSuccessAlert: false,
         });
       });
     });
