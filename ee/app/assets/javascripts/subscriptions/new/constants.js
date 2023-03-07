@@ -38,7 +38,10 @@ export const INVALID_PROMO_CODE_ERROR_CODE = 'INVALID';
 export const INVALID_PROMO_CODE_ERROR_MESSAGE = s__(
   'Checkout|Invalid coupon code. Enter a valid coupon code.',
 );
-export const PROMO_CODE_SUCCESS_MESSAGE = s__(`Checkout|Coupon has been applied to your purchase`);
+export const PROMO_CODE_SUCCESS_MESSAGE = s__(
+  `Checkout|Coupon has been applied and by continuing with your purchase, you accept and agree to the %{linkStart}Coupon Terms%{linkEnd}.`,
+);
 export const PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE = s__(
   'Checkout|Add active users before adding a coupon.',
 );
+export const PROMO_CODE_TERMS_LINK = 'https://about.gitlab.com/pricing/terms/';
