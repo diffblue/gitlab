@@ -281,6 +281,20 @@ module EE
       end
     end
 
+    def proxied_site
+      ::Gitlab::Geo.proxied_site(request.env)
+    end
+
+    override :http_clone_url_to_repo
+    def http_clone_url_to_repo(project)
+      ::Gitlab::Geo.proxied_request?(request.env) ? geo_proxied_http_url_to_repo(proxied_site, project) : super
+    end
+
+    override :ssh_clone_url_to_repo
+    def ssh_clone_url_to_repo(project)
+      ::Gitlab::Geo.proxied_request?(request.env) ? geo_proxied_ssh_url_to_repo(proxied_site, project) : super
+    end
+
     private
 
     def remove_message_data(project)

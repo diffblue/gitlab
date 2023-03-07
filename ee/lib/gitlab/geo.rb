@@ -184,10 +184,14 @@ module Gitlab
       return unless ::Gitlab::Geo.primary?
       return unless proxied_request?(env) && env[GEO_PROXIED_EXTRA_DATA_HEADER].present?
 
-      signed_data = Gitlab::Geo::SignedData.new
-      signed_data.decode_data(env[GEO_PROXIED_EXTRA_DATA_HEADER])
+      # Note: The env argument is not needed after the first call within a request context.
+      #       All subsequent calls within a request should return the same GeoNode record.
+      strong_memoize(:proxied_site) do
+        signed_data = Gitlab::Geo::SignedData.new
+        signed_data.decode_data(env[GEO_PROXIED_EXTRA_DATA_HEADER])
 
-      signed_data.geo_node
+        signed_data.geo_node
+      end
     end
 
     def self.license_allows?

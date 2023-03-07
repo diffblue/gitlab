@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe ProjectsHelper do
+  include ::EE::GeoHelpers
+
   let_it_be_with_refind(:project) { create(:project) }
 
   before do
@@ -578,5 +580,35 @@ RSpec.describe ProjectsHelper do
         expect(helper.remote_mirror_setting_enabled?).to be_falsey
       end
     end
+  end
+
+  describe '#http_clone_url_to_repo' do
+    let(:geo_url) { 'http://localhost/geonode_url' }
+    let(:geo_node) { instance_double(GeoNode, url: geo_url) }
+
+    subject { helper.http_clone_url_to_repo(project) }
+
+    before do
+      stub_proxied_site(geo_node)
+
+      allow(helper).to receive(:geo_proxied_http_url_to_repo).with(geo_node, project).and_return(geo_url)
+    end
+
+    it { expect(subject).to eq geo_url }
+  end
+
+  describe '#ssh_clone_url_to_repo' do
+    let(:geo_url) { 'git@localhost/geonode_url' }
+    let(:geo_node) { instance_double(GeoNode, url: geo_url) }
+
+    subject { helper.ssh_clone_url_to_repo(project) }
+
+    before do
+      stub_proxied_site(geo_node)
+
+      allow(helper).to receive(:geo_proxied_ssh_url_to_repo).with(geo_node, project).and_return(geo_url)
+    end
+
+    it { expect(subject).to eq geo_url }
   end
 end

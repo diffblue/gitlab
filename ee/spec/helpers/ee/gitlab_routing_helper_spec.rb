@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe EE::GitlabRoutingHelper do
   include ProjectsHelper
   include ApplicationSettingsHelper
+  include EE::GeoHelpers
 
   let_it_be(:primary, reload: true) do
     create(
@@ -50,6 +51,51 @@ RSpec.describe EE::GitlabRoutingHelper do
 
         expect(result).to eq('http://internal:321/relative/foo/bar.wiki')
       end
+    end
+  end
+
+  describe '#geo_proxied_http_url_to_repo' do
+    subject { helper.geo_proxied_http_url_to_repo(primary, repo) }
+
+    let(:repo) { project }
+
+    it { is_expected.to eq('http://localhost:123/relative/foo/bar.git') }
+  end
+
+  describe '#geo_proxied_ssh_url_to_repo' do
+    subject { helper.geo_proxied_ssh_url_to_repo(proxied_site, primary_container) }
+
+    let(:proxied_site) { instance_double(GeoNode, uri: URI::HTTP.build(host: 'proxied-host', port: 5678)) }
+    let(:primary_container) { instance_double(Project, ssh_url_to_repo: ssh_url_to_repo) }
+
+    context 'with default gitlab shell ssh_port' do
+      let(:ssh_url_to_repo) { 'git@primary:bar.git' }
+
+      before do
+        stub_config(
+          gitlab_shell: {
+            ssh_port: 22,
+            ssh_host: 'primary'
+          }
+        )
+      end
+
+      it { is_expected.to eq('git@proxied-host:bar.git') }
+    end
+
+    context 'with custom gitlab shell ssh_port' do
+      let(:ssh_url_to_repo) { 'ssh://git@primary:123/bar.git' }
+
+      before do
+        stub_config(
+          gitlab_shell: {
+            ssh_port: 123,
+            ssh_host: 'primary'
+          }
+        )
+      end
+
+      it { is_expected.to eq('ssh://git@proxied-host:123/bar.git') }
     end
   end
 
