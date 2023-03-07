@@ -7,13 +7,14 @@ RSpec.describe 'Adding a Note to an Epic', feature_category: :portfolio_manageme
 
   let_it_be(:current_user) { create(:user) }
   let_it_be(:group) { create(:group, :private) }
-  let_it_be(:epic) { create(:epic, group: group) }
+  let_it_be(:noteable) { create(:epic, group: group) }
 
+  let(:body) { 'Body text' }
   let(:variables_extra) { {} }
   let(:variables) do
     {
-      noteable_id: GitlabSchema.id_from_object(epic).to_s,
-      body: 'Body text'
+      noteable_id: GitlabSchema.id_from_object(noteable).to_s,
+      body: body
     }.merge(variables_extra)
   end
 
@@ -48,6 +49,22 @@ RSpec.describe 'Adding a Note to an Epic', feature_category: :portfolio_manageme
       let(:variables_extra) { { confidential: true } }
 
       it_behaves_like 'a Note mutation with confidential notes'
+    end
+
+    context 'when body contains quick actions' do
+      let_it_be(:project) { create(:project, group: group) }
+      let_it_be(:noteable) { create(:work_item, project: project) }
+
+      let(:variables_extra) { {} }
+
+      before do
+        stub_licensed_features(issuable_health_status: true, issue_weights: true)
+      end
+
+      it_behaves_like 'work item supports weights widget updates via quick actions'
+      it_behaves_like 'work item does not support weights widget updates via quick actions'
+      it_behaves_like 'work item supports health status widget updates via quick actions'
+      it_behaves_like 'work item does not support health status widget updates via quick actions'
     end
   end
 end
