@@ -153,6 +153,30 @@ RSpec.describe MergeRequests::ExternalStatusCheck, type: :model do
     context 'when a rule has no status check response' do
       it { is_expected.to eq('pending') }
     end
+
+    context 'when a rule has already been retried' do
+      let_it_be(:status_check_response) { create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: merge_request.source_branch_sha, status: 'failed', retried_at: Time.current) }
+
+      it { is_expected.to eq('pending') }
+    end
+  end
+
+  describe 'response_for' do
+    let_it_be(:rule) { create(:external_status_check) }
+    let_it_be(:merge_request) { create(:merge_request) }
+    let_it_be(:first_response) { create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: merge_request.source_branch_sha) }
+    let_it_be(:second_response) { create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: merge_request.source_branch_sha, status: 'failed') }
+
+    let(:project) { merge_request.source_project }
+
+    subject { rule.response_for(merge_request, merge_request.source_branch_sha) }
+
+    before do
+      first_response
+      second_response
+    end
+
+    it { is_expected.to eq(second_response) }
   end
 
   describe 'callbacks', :request_store do

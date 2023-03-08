@@ -173,18 +173,20 @@ module API
             requires :external_status_check_id, type: Integer, desc: 'ID of a failed external status check'
           end
           post ':external_status_check_id/retry' do
-            merge_request = find_merge_request_with_access(params[:merge_request_iid], :approve_merge_request)
-
-            not_found! unless current_user.can?(:retry_failed_status_checks, merge_request)
-
+            merge_request = find_merge_request_with_access(params[:merge_request_iid], :retry_failed_status_checks)
             status_check = merge_request.project.external_status_checks.find(params[:external_status_check_id])
+            service = ::ExternalStatusChecks::RetryService.new(
+              container: user_project,
+              current_user: current_user,
+              params: { merge_request: merge_request }
+            )
 
-            if status_check.failed?(merge_request)
-              data = merge_request.to_hook_data(current_user)
-              status_check.async_execute(data)
+            response = service.execute(status_check)
+
+            if response.success?
               accepted!
             else
-              unprocessable_entity!("External status check must be failed")
+              render_api_error!(response.payload[:errors], response.reason)
             end
           end
         end

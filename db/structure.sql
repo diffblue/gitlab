@@ -22865,7 +22865,8 @@ CREATE TABLE status_check_responses (
     external_approval_rule_id bigint,
     sha bytea NOT NULL,
     external_status_check_id bigint NOT NULL,
-    status smallint DEFAULT 0 NOT NULL
+    status smallint DEFAULT 0 NOT NULL,
+    retried_at timestamp with time zone
 );
 
 CREATE SEQUENCE status_check_responses_id_seq
