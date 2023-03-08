@@ -14349,6 +14349,9 @@ msgstr ""
 msgid "Deprecated API rate limits"
 msgstr ""
 
+msgid "Deprecation notice"
+msgstr ""
+
 msgid "Deprecations|For information on a possible replacement %{epicStart} learn more about Opstrace %{epicEnd}."
 msgstr ""
 
@@ -39693,6 +39696,9 @@ msgid "Self-monitoring project has been successfully deleted"
 msgstr ""
 
 msgid "Self-monitoring project was not deleted. Please check logs for any error messages"
+msgstr ""
+
+msgid "Self-monitoring was %{deprecation}deprecated%{link_end} in GitLab 14.9, and is %{removal}scheduled for removal%{link_end} in GitLab 16.0. For information on a possible replacement, %{opstrace}learn more about Opstrace%{link_end}."
 msgstr ""
 
 msgid "SelfMonitoring|Activate or deactivate instance self-monitoring."
