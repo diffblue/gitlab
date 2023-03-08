@@ -12,7 +12,7 @@ module AppSec
           return ServiceResponse.error(message: error_message(verification_step)) unless verification_step.persisted?
 
           ServiceResponse.success(payload: { verification_step: verification_step })
-        rescue ActiveRecord::StatementInvalid
+        rescue ArgumentError
           ServiceResponse.error(message: format_error_message("#{step} is not a valid pre step name"))
         end
       end
