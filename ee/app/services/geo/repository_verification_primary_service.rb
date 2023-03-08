@@ -21,7 +21,7 @@ module Geo
       checksum = calculate_checksum(repository)
       update_repository_state!(type, checksum: checksum)
     rescue StandardError => e
-      log_error("Error calculating the #{type} checksum", e, type: type)
+      log_error("Error calculating the #{type} checksum", e, repository_type: type)
       update_repository_state!(type, failure: e.message)
     end
 

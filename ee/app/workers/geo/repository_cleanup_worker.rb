@@ -19,9 +19,19 @@ module Geo
       if can_clean_up?(project_id)
         Geo::RepositoryDestroyService.new(project_id, name, disk_path, storage_name).execute
 
-        log_info('Repositories cleaned up', project_id: project_id, shard: storage_name, disk_path: disk_path)
+        log_info(
+          'Repositories cleaned up',
+          project_id: project_id,
+          shard_name: storage_name,
+          disk_path: disk_path
+        )
       else
-        log_info('Skipping repositories clean up', project_id: project_id, shard: storage_name, disk_path: disk_path)
+        log_info(
+          'Skipping repositories clean up',
+          project_id: project_id,
+          shard_name: storage_name,
+          disk_path: disk_path
+        )
       end
     end
 

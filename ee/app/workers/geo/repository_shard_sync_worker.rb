@@ -25,7 +25,7 @@ module Geo
     end
 
     def worker_metadata
-      { shard: shard_name }
+      { shard_name: shard_name }
     end
 
     # We need a custom key here since we are running one worker per shard
