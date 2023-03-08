@@ -608,10 +608,6 @@ module EE
       levels.merge(::Gitlab::Access::MINIMAL_ACCESS_HASH)
     end
 
-    def last_billed_user_created_at
-      billed_group_and_projects_members.reverse_order.pick(:created_at)
-    end
-
     override :users_count
     def users_count
       return all_group_members.count if minimal_access_role_allowed?
@@ -823,15 +819,6 @@ module EE
       strong_memoize(:billed_user_ids_including_guests) do
         ::Namespaces::BilledUsersFinder.new(self).execute
       end
-    end
-
-    def billed_group_and_projects_members
-      ::Member
-        .in_hierarchy(self)
-        .active
-        .non_guests
-        .non_invite
-        .order(:created_at)
     end
 
     def invited_or_shared_group_members(groups, exclude_guests: false)
