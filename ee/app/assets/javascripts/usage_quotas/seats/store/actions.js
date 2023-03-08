@@ -1,6 +1,6 @@
 import * as GroupsApi from 'ee/api/groups_api';
 import Api from 'ee/api';
-import { createAlert, VARIANT_SUCCESS } from '~/flash';
+import { createAlert, VARIANT_SUCCESS } from '~/alert';
 import { s__ } from '~/locale';
 import Tracking from '~/tracking';
 import * as types from './mutation_types';

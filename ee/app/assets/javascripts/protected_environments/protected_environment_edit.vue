@@ -1,7 +1,7 @@
 <script>
 import { GlButton, GlLink, GlFormSelect } from '@gitlab/ui';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { __, s__, sprintf } from '~/locale';
 import { ACCESS_LEVELS, LEVEL_TYPES } from './constants';
@@ -98,7 +98,7 @@ export default {
           }
         })
         .catch(() => {
-          this.flash();
+          this.alert();
         });
     },
     updateApprovalCount(count) {
@@ -113,7 +113,7 @@ export default {
           }
         })
         .catch(() => {
-          this.flash();
+          this.alert();
         });
     },
     patchEnvironment(data) {
@@ -122,7 +122,7 @@ export default {
         return response;
       });
     },
-    flash() {
+    alert() {
       createAlert({
         message: i18n.failureMessage,
         parent: this.parentContainer,

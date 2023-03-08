@@ -7,7 +7,7 @@ import searchGroupUsers from '~/graphql_shared/queries/group_users_search.query.
 import { getIdFromGraphQLId, convertToGraphQLIds } from '~/graphql_shared/utils';
 import { TYPENAME_USER } from '~/graphql_shared/constants';
 
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 
 import { SEARCH_USERS, LOAD_ERROR_MESSAGE, SEARCH_TERM_TOO_SHORT, NO_RESULTS } from '../constants';

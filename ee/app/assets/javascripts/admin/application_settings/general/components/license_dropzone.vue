@@ -1,7 +1,7 @@
 <script>
 import { GlLink, GlSprintf } from '@gitlab/ui';
 import UploadDropzone from '~/vue_shared/components/upload_dropzone/upload_dropzone.vue';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import {
   DROPZONE_DESCRIPTION_TEXT,
   FILE_UPLOAD_ERROR_MESSAGE,

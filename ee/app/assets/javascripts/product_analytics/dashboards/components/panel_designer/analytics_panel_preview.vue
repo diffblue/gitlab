@@ -1,7 +1,7 @@
 <script>
 import { GlButton, GlButtonGroup, GlLoadingIcon } from '@gitlab/ui';
 import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { s__, sprintf } from '~/locale';
 
 import DataTable from 'ee/analytics/analytics_dashboards/components/visualizations/data_table.vue';

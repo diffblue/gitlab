@@ -3,7 +3,7 @@ import { mapState, mapActions } from 'vuex';
 import { GlButton, GlModalDirective, GlModal } from '@gitlab/ui';
 import { uniqueId } from 'lodash';
 import SafeHtml from '~/vue_shared/directives/safe_html';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { __, sprintf } from '~/locale';
 import UserCalloutDismisser from '~/vue_shared/components/user_callout_dismisser.vue';
 import SubscriptionDetailsHistory from 'jh_else_ee/admin/subscriptions/show/components/subscription_details_history.vue';

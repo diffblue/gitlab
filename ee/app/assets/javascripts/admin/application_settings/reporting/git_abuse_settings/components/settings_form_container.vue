@@ -1,5 +1,5 @@
 <script>
-import { createAlert, VARIANT_INFO } from '~/flash';
+import { createAlert, VARIANT_INFO } from '~/alert';
 import Api from 'ee/api';
 import { SUCCESS_MESSAGE, SAVE_ERROR_MESSAGE } from '../constants';
 import SettingsForm from './settings_form.vue';

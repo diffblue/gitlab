@@ -1,7 +1,7 @@
 <script>
 import { GlPagination, GlAlert } from '@gitlab/ui';
 import Api from '~/api';
-import { createAlert, VARIANT_INFO } from '~/flash';
+import { createAlert, VARIANT_INFO } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { updateHistory, setUrlParams, queryToObject } from '~/lib/utils/url_utility';
 import { __, sprintf } from '~/locale';
