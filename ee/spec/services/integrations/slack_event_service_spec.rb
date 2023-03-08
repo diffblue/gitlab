@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Integrations::SlackEventService do
+RSpec.describe Integrations::SlackEventService, feature_category: :integrations do
   describe '#execute' do
     subject(:execute) { described_class.new(params).execute }
 

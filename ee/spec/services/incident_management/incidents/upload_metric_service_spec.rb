@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IncidentManagement::Incidents::UploadMetricService do
+RSpec.describe IncidentManagement::Incidents::UploadMetricService, feature_category: :incident_management do
   subject(:service) { described_class.new(issuable, current_user, params) }
 
   let_it_be_with_refind(:project) { create(:project) }

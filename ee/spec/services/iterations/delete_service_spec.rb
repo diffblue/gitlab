@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Iterations::DeleteService do
+RSpec.describe Iterations::DeleteService, feature_category: :team_planning do
   subject(:results) { described_class.new(iteration_to_delete, user).execute }
 
   let_it_be(:group, refind: true) { create(:group) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Integrations::Test::ProjectService do
+RSpec.describe ::Integrations::Test::ProjectService, feature_category: :integrations do
   describe '#execute' do
     let(:project) { create(:project) }
     let(:user) { project.first_owner }

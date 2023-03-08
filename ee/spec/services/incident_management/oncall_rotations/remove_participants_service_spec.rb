@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IncidentManagement::OncallRotations::RemoveParticipantsService do
+RSpec.describe IncidentManagement::OncallRotations::RemoveParticipantsService, feature_category: :incident_management do
   let!(:user) { instance_double(User) }
   let!(:rotation) { instance_double(IncidentManagement::OncallRotation) }
   let!(:rotation_2) { instance_double(IncidentManagement::OncallRotation) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::IpRestrictions::UpdateService do
+RSpec.describe EE::IpRestrictions::UpdateService, feature_category: :application_performance do
   subject(:service) { described_class.new(current_user, group, comma_separated_ranges) }
 
   let(:group) { create(:group) }

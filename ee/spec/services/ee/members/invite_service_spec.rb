@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Members::InviteService, :aggregate_failures, :saas do
+RSpec.describe Members::InviteService, :aggregate_failures, :saas, feature_category: :subgroups do
   let_it_be(:user) { create(:user) }
   let_it_be(:root_ancestor) { create(:group) }
   let_it_be(:project, reload: true) { create(:project, group: root_ancestor) }

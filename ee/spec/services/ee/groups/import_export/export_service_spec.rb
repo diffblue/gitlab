@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::ImportExport::ExportService do
+RSpec.describe Groups::ImportExport::ExportService, feature_category: :importers do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) do
     create(:group).tap do |g|

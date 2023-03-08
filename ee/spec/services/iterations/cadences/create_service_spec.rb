@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Iterations::Cadences::CreateService do
+RSpec.describe Iterations::Cadences::CreateService, feature_category: :team_planning do
   let_it_be(:group, refind: true) { create(:group) }
   let_it_be(:user) { create(:user) }
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IncidentManagement::IssuableResourceLinks::ZoomLinkService do
+RSpec.describe IncidentManagement::IssuableResourceLinks::ZoomLinkService, feature_category: :incident_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:issue) { create(:incident) }
 

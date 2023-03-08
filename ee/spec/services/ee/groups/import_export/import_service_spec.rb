@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::ImportExport::ImportService do
+RSpec.describe Groups::ImportExport::ImportService, feature_category: :importers do
   let_it_be(:import_file) { fixture_file_upload('ee/spec/fixtures/group_export_with_wikis.tar.gz') }
   let_it_be(:user) { create(:user) }
   let_it_be_with_reload(:group) do

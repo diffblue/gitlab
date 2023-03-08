@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
+RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:manual_cadence) { build(:iterations_cadence, group: group, active: true, automatic: false, start_date: 2.weeks.ago).tap { |cadence| cadence.save!(validate: false) } }

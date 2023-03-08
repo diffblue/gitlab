@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Issues::MoveService do
+RSpec.describe Issues::MoveService, feature_category: :team_planning do
   let(:user) { create(:user) }
   let(:group) { create(:group) }
   let(:old_project) { create(:project, group: group) }

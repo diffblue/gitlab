@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::ParticipantsService do
+RSpec.describe Groups::ParticipantsService, feature_category: :subgroups do
   let(:group) { create(:group, avatar: fixture_file_upload('spec/fixtures/dk.png')) }
   let(:user) { create(:user) }
   let(:epic) { create(:epic, group: group, author: user) }

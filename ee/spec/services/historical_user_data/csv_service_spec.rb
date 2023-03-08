@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe HistoricalUserData::CsvService do
+RSpec.describe HistoricalUserData::CsvService, feature_category: :user_management do
   subject(:csv) { CSV.parse(csv_service.generate) }
 
   let_it_be(:csv_service) { described_class.new(HistoricalData.all) }

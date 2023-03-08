@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IncidentManagement::EscalationRules::DestroyService do
+RSpec.describe IncidentManagement::EscalationRules::DestroyService, feature_category: :incident_management do
   let!(:user) { create(:user) }
   let(:project) { create(:project) }
   let(:policy) { create(:incident_management_escalation_policy, project: project) }

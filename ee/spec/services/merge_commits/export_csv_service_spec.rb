@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeCommits::ExportCsvService do
+RSpec.describe MergeCommits::ExportCsvService, feature_category: :source_code_management do
   let(:service) { described_class.new(user, group) }
 
   let_it_be(:group) { create(:group, name: 'Kombucha lovers') }

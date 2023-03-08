@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IncidentManagement::OncallRotations::RemoveParticipantService do
+RSpec.describe IncidentManagement::OncallRotations::RemoveParticipantService, feature_category: :incident_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be(:schedule) { create(:incident_management_oncall_schedule, project: project) }

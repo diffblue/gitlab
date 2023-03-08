@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Members::UpdateService do
+RSpec.describe Members::UpdateService, feature_category: :subgroups do
   let(:project) { create(:project, :public) }
   let(:group) { create(:group, :public) }
   let(:current_user) { create(:user) }

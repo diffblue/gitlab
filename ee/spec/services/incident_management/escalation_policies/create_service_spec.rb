@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IncidentManagement::EscalationPolicies::CreateService do
+RSpec.describe IncidentManagement::EscalationPolicies::CreateService, feature_category: :incident_management do
   let_it_be_with_refind(:project) { create(:project) }
   let_it_be(:user_with_permissions) { create(:user) }
   let_it_be(:oncall_schedule) { create(:incident_management_oncall_schedule, project: project) }
