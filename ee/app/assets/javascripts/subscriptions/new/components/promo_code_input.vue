@@ -87,12 +87,14 @@ export default {
         <gl-form-input
           v-model="promoCode"
           size="md"
+          data-qa-selector="promo_code"
           :disabled="disablePromoCodeInput"
           @change="updatePromoCode"
         />
         <template #append>
           <gl-button
             category="secondary"
+            data-qa-selector="apply_promo_code"
             :loading="isApplyingPromoCode"
             :disabled="disablePromoCodeApplyBtn"
             @click="applyPromoCode"
@@ -102,7 +104,12 @@ export default {
         </template>
       </gl-form-input-group>
     </gl-form-group>
-    <gl-alert v-if="showSuccessAlert" variant="success" :dismissible="false">
+    <gl-alert
+      v-if="showSuccessAlert"
+      variant="success"
+      :dismissible="false"
+      data-qa-selector="promo_alert"
+    >
       <gl-sprintf :message="$options.PROMO_CODE_SUCCESS_MESSAGE">
         <template #link="{ content }">
           <gl-link
