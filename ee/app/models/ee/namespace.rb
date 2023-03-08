@@ -22,6 +22,7 @@ module EE
 
     prepended do
       include EachBatch
+      include Elastic::NamespaceUpdate
 
       has_one :namespace_limit, inverse_of: :namespace
       has_one :gitlab_subscription
