@@ -48858,6 +48858,9 @@ msgstr ""
 msgid "WorkItem|Existing task"
 msgstr ""
 
+msgid "WorkItem|Failed to award emoji"
+msgstr ""
+
 msgid "WorkItem|Health status"
 msgstr ""
 
