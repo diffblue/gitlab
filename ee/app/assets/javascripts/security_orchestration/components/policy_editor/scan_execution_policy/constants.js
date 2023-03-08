@@ -4,9 +4,12 @@ export const SCANNER_DAST = 'dast';
 export const DEFAULT_AGENT_NAME = '';
 export const AGENT_KEY = 'agents';
 
+export const SCAN_EXECUTION_RULES_PIPELINE_KEY = 'pipeline';
+export const SCAN_EXECUTION_RULES_SCHEDULE_KEY = 'schedule';
+
 export const SCAN_EXECUTION_RULES_LABELS = {
-  pipeline: s__('ScanExecutionPolicy|A pipeline is run'),
-  schedule: s__('ScanExecutionPolicy|Schedule'),
+  [SCAN_EXECUTION_RULES_PIPELINE_KEY]: s__('ScanExecutionPolicy|A pipeline is run'),
+  [SCAN_EXECUTION_RULES_SCHEDULE_KEY]: s__('ScanExecutionPolicy|Schedule'),
 };
 
 export const ADD_CONDITION_LABEL = s__('ScanExecutionPolicy|Add condition');

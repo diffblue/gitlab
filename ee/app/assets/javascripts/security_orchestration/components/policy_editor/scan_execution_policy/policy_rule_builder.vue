@@ -8,10 +8,12 @@ import {
   SCAN_EXECUTION_PIPELINE_RULE,
   SCAN_EXECUTION_SCHEDULE_RULE,
   SCAN_EXECUTION_RULES_LABELS,
+  SCAN_EXECUTION_RULES_PIPELINE_KEY,
 } from './constants';
 
 export default {
   SCAN_EXECUTION_RULES_LABELS,
+  SCAN_EXECUTION_RULES_PIPELINE_KEY,
   name: 'PolicyRuleBuilder',
   RULE_IF_LABEL,
   RULE_OR_LABEL,
@@ -56,7 +58,7 @@ export default {
   <div>
     <base-rule-component
       v-if="isPipelineRule"
-      :default-selected-rule="$options.SCAN_EXECUTION_RULES_LABELS.pipeline"
+      :default-selected-rule="$options.SCAN_EXECUTION_RULES_PIPELINE_KEY"
       :init-rule="initRule"
       :rule-label="ruleLabel"
       v-on="$listeners"

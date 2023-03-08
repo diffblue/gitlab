@@ -1,13 +1,14 @@
 import { nextTick } from 'vue';
-import { GlDropdownItem } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import BaseRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/base_rule_component.vue';
 import {
   SCAN_EXECUTION_SCHEDULE_RULE,
   SCAN_EXECUTION_RULES_LABELS,
   SCAN_EXECUTION_PIPELINE_RULE,
+  SCAN_EXECUTION_RULES_PIPELINE_KEY,
+  SCAN_EXECUTION_RULES_SCHEDULE_KEY,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
 
 describe('BaseRuleComponent', () => {
@@ -19,19 +20,20 @@ describe('BaseRuleComponent', () => {
   };
 
   const createComponent = (options = {}) => {
-    wrapper = mountExtended(BaseRuleComponent, {
+    wrapper = shallowMountExtended(BaseRuleComponent, {
       propsData: {
         initRule,
         ruleLabel,
         ...options,
       },
+      stubs: {
+        GlSprintf,
+      },
     });
   };
 
-  const findTypeDropDownItem = () => wrapper.findComponent(GlDropdownItem);
   const findDeleteButton = () => wrapper.findByTestId('remove-rule');
-  const findRuleTypeDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
-  const findRuleTypeDropDown = () => wrapper.findByTestId('rule-component-type');
+  const findRuleTypeDropDown = () => wrapper.findComponent(GlCollapsibleListbox);
   const findRuleLabel = () => wrapper.findByTestId('rule-component-label');
   const findBranchesInputField = () => wrapper.findByTestId('rule-branches');
   const findBranchesLabel = () => wrapper.findByTestId('rule-branches-label');
@@ -48,19 +50,17 @@ describe('BaseRuleComponent', () => {
 
     it('should render pipeline rule by default', () => {
       expect(findRuleLabel().text()).toEqual(ruleLabel);
-      expect(findRuleTypeDropDown().props('text')).toEqual(
-        capitalizeFirstCharacter(SCAN_EXECUTION_RULES_LABELS.pipeline),
-      );
+      expect(findRuleTypeDropDown().props('selected')).toBe(SCAN_EXECUTION_RULES_PIPELINE_KEY);
     });
 
     it('should render pipeline rule component by default', () => {
       expect(findRuleLabel().text()).toEqual(ruleLabel);
-      expect(findRuleTypeDropDown().props('text')).toEqual(SCAN_EXECUTION_RULES_LABELS.pipeline);
-      expect(findBranchesInputField().element.value).toEqual('');
+      expect(findRuleTypeDropDown().props('selected')).toBe(SCAN_EXECUTION_RULES_PIPELINE_KEY);
+      expect(findBranchesInputField().attributes('value')).toBe('');
     });
 
     it('should select pipeline rule', async () => {
-      findRuleTypeDropdownItems().at(1).vm.$emit('click');
+      findRuleTypeDropDown().vm.$emit('select', SCAN_EXECUTION_RULES_SCHEDULE_KEY);
       await nextTick();
       const [eventPayload] = wrapper.emitted()['select-rule'];
 
@@ -108,7 +108,7 @@ describe('BaseRuleComponent', () => {
     });
 
     it('should select correct rule', async () => {
-      findTypeDropDownItem().vm.$emit('click');
+      findRuleTypeDropDown().vm.$emit('select', SCAN_EXECUTION_RULES_PIPELINE_KEY);
 
       await nextTick();
 
