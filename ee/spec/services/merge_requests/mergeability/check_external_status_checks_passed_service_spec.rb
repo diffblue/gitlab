@@ -2,7 +2,8 @@
 
 require "spec_helper"
 
-RSpec.describe MergeRequests::Mergeability::CheckExternalStatusChecksPassedService do
+RSpec.describe MergeRequests::Mergeability::CheckExternalStatusChecksPassedService,
+  feature_category: :code_review_workflow do
   using RSpec::Parameterized::TableSyntax
 
   subject(:check_external_status_checks_passed_service) do

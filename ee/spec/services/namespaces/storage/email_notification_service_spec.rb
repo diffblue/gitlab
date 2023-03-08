@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::Storage::EmailNotificationService do
+RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: :purchase do
   include NamespaceStorageHelpers
   using RSpec::Parameterized::TableSyntax
 

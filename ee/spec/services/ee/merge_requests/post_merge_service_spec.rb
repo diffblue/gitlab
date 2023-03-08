@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequests::PostMergeService do
+RSpec.describe MergeRequests::PostMergeService, feature_category: :code_review_workflow do
   let_it_be(:project) { create(:project, :repository) }
   # Works around https://gitlab.com/gitlab-org/gitlab/-/issues/335054
   let_it_be_with_refind(:merge_request) { create(:merge_request, source_project: project, target_project: project) }

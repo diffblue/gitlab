@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeTrains::CheckStatusService do
+RSpec.describe MergeTrains::CheckStatusService, feature_category: :merge_trains do
   let_it_be(:project) { create(:project, :repository, merge_pipelines_enabled: true, merge_trains_enabled: true) }
   let_it_be(:maintainer) { create(:user).tap { |u| project.add_maintainer(u) } }
 

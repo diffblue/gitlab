@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequests::UpdateReviewersService do
+RSpec.describe MergeRequests::UpdateReviewersService, feature_category: :code_review_workflow do
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, :private, :repository, group: group) }
   let_it_be(:user) { create(:user) }

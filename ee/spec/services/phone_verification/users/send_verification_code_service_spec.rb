@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PhoneVerification::Users::SendVerificationCodeService do
+RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_category: :system_access do
   let_it_be_with_reload(:user) { create(:user) }
   let(:params) { { country: 'US', international_dial_code: 1, phone_number: '555' } }
 

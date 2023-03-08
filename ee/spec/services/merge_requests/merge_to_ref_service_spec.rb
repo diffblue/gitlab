@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequests::MergeToRefService do
+RSpec.describe MergeRequests::MergeToRefService, feature_category: :source_code_management do
   let(:user) { create(:user) }
   let(:merge_request) { create(:merge_request, :simple) }
   let(:project) { merge_request.project }

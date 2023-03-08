@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequestApprovalSettings::UpdateService do
+RSpec.describe MergeRequestApprovalSettings::UpdateService, feature_category: :code_review_workflow do
   let!(:group) { create(:group) }
   let!(:project) { create(:project, merge_requests_author_approval: true) }
   let_it_be(:user) { create(:user) }

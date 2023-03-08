@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PhoneVerification::TelesignClient::SendVerificationCodeService do
+RSpec.describe PhoneVerification::TelesignClient::SendVerificationCodeService, feature_category: :system_access do
   let(:telesign_customer_xid) { 'foo' }
   let(:telesign_api_key) { 'bar' }
 

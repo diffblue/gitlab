@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PersonalAccessTokens::CreateService do
+RSpec.describe PersonalAccessTokens::CreateService, feature_category: :system_access do
   describe '#execute' do
     let_it_be(:user) { create(:user) }
 

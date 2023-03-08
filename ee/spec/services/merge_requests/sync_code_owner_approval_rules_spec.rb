@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequests::SyncCodeOwnerApprovalRules do
+RSpec.describe MergeRequests::SyncCodeOwnerApprovalRules, feature_category: :code_review_workflow do
   let_it_be(:merge_request) { create(:merge_request) }
   let_it_be(:rb_owners) { create_list(:user, 2) }
   let_it_be(:doc_owners) { create_list(:user, 2) }

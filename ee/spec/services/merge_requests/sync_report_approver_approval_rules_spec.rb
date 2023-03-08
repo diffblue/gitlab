@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequests::SyncReportApproverApprovalRules do
+RSpec.describe MergeRequests::SyncReportApproverApprovalRules, feature_category: :code_review_workflow do
   subject(:service) { described_class.new(merge_request, current_user) }
 
   let(:merge_request) { create(:merge_request) }
