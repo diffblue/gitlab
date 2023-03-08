@@ -83,6 +83,19 @@ describe('ProjectList', () => {
           expect(storageTypeWarning.props('content')).toBe(content);
         });
       });
+
+      it.each`
+        project        | projectUrlWithUsageQuotas
+        ${projects[0]} | ${'http://localhost/frontend-fixtures/twitter/-/usage_quotas'}
+        ${projects[1]} | ${'http://localhost/frontend-fixtures/dummy-project/-/usage_quotas'}
+        ${projects[2]} | ${'http://localhost/frontend-fixtures/html5-boilerplate/-/usage_quotas'}
+      `('renders project link as usage_quotas URL', ({ project, projectUrlWithUsageQuotas }) => {
+        createComponent({ props: { projects: [project] } });
+
+        expect(wrapper.findByTestId('project-link').attributes('href')).toBe(
+          projectUrlWithUsageQuotas,
+        );
+      });
     });
 
     describe('Empty state', () => {
