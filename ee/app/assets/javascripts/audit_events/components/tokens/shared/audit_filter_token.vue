@@ -6,7 +6,7 @@ import {
   GlAvatar,
 } from '@gitlab/ui';
 import { debounce } from 'lodash';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 import { sprintf, s__, __ } from '~/locale';
 
