@@ -458,9 +458,7 @@ class ProjectPolicy < BasePolicy
     enable :create_release
     enable :update_release
     enable :destroy_release
-    enable :create_metrics_dashboard_annotation
-    enable :delete_metrics_dashboard_annotation
-    enable :update_metrics_dashboard_annotation
+    enable :admin_metrics_dashboard_annotation
     enable :read_alert_management_alert
     enable :update_alert_management_alert
     enable :create_design
