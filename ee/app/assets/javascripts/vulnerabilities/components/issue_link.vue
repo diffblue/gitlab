@@ -1,5 +1,5 @@
 <script>
-import jiraLogo from '@gitlab/svgs/dist/illustrations/logos/jira.svg?raw';
+import jiraLogo from '@gitlab/svgs/dist/illustrations/logos/jira.svg';
 import { GlIcon, GlLink, GlTooltipDirective, GlSprintf } from '@gitlab/ui';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 

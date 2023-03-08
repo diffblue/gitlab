@@ -1,5 +1,5 @@
 <script>
-import emptySvg from '@gitlab/svgs/dist/illustrations/security-dashboard-empty-state.svg?raw';
+import emptySvg from '@gitlab/svgs/dist/illustrations/security-dashboard-empty-state.svg';
 import { GlEmptyState } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { logError } from '~/lib/logger';
