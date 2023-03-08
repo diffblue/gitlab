@@ -36,7 +36,7 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Config::Content, feature_category:
       expect(pipeline.config_source).to eq 'compliance_source'
       expect(pipeline.pipeline_config.content).to eq(content_result)
       expect(command.config_content).to eq(content_result)
-      expect(command.pipeline_config.contains_internal_include?).to eq(true)
+      expect(command.pipeline_config.internal_include_prepended?).to eq(true)
     end
   end
 
