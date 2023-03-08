@@ -14,12 +14,6 @@ describe('ApprovalSettingsCheckbox', () => {
     wrapper = mountFn(ApprovalSettingsCheckbox, {
       propsData: { label, lockedText, ...props },
       slots,
-      stubs: {
-        GlFormCheckbox: {
-          ...GlFormCheckbox,
-          props: ['checked', 'disabled'],
-        },
-      },
     });
   };
 
@@ -44,13 +38,13 @@ describe('ApprovalSettingsCheckbox', () => {
     it('defaults to false when no checked value is given', () => {
       createWrapper();
 
-      expect(findCheckbox().props('checked')).toBe(false);
+      expect(findCheckbox().attributes('checked')).toBeUndefined();
     });
 
-    it('sets the checkbox to `true` when checked is `true`', () => {
+    it('sets the checkbox to truthy value when checked is `true`', () => {
       createWrapper({ props: { checked: true } });
 
-      expect(findCheckbox().props('checked')).toBe(true);
+      expect(findCheckbox().attributes('checked')).toBeDefined();
     });
 
     it('emits an input event when the checkbox is changed', async () => {
@@ -83,7 +77,7 @@ describe('ApprovalSettingsCheckbox', () => {
       });
 
       it('disables the input', () => {
-        expect(findCheckbox().props('disabled')).toBe(true);
+        expect(findCheckbox().attributes('disabled')).toBeDefined();
       });
 
       it('renders locked_icon', () => {
