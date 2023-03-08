@@ -19,9 +19,16 @@ module EE
     end
 
     class_methods do
-      # override
+      extend ::Gitlab::Utils::Override
+
+      override :use_separate_indices?
       def use_separate_indices?
         true
+      end
+
+      override :with_web_entity_associations
+      def with_web_entity_associations
+        super.preload(project: [:group, { namespace: :route }])
       end
     end
 
