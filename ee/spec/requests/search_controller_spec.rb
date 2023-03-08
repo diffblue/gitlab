@@ -48,8 +48,8 @@ RSpec.describe SearchController, type: :request, feature_category: :global_searc
 
       context 'for issues scope' do
         let(:object) { :issue }
-        let(:creation_args) { { project: project } }
-        let(:params) { { search: '*', scope: 'issues' } }
+        let(:creation_args) { { project: project, title: 'foo' } }
+        let(:params) { { search: 'foo', scope: 'issues' } }
         # some N+1 queries still exist
         # each issue runs an extra query for project routes
         let(:threshold) { 4 }
@@ -60,8 +60,8 @@ RSpec.describe SearchController, type: :request, feature_category: :global_searc
       context 'for merge_request scope' do
         let(:creation_traits) { [:unique_branches] }
         let(:object) { :merge_request }
-        let(:creation_args) { { source_project: project } }
-        let(:params) { { search: '*', scope: 'merge_requests' } }
+        let(:creation_args) { { source_project: project, title: 'foo' } }
+        let(:params) { { search: 'foo', scope: 'merge_requests' } }
         # some N+1 queries still exist
         # each merge request runs an extra query for project routes
         let(:threshold) { 4 }
@@ -72,8 +72,8 @@ RSpec.describe SearchController, type: :request, feature_category: :global_searc
       context 'for project scope' do
         let(:creation_traits) { [:public] }
         let(:object) { :project }
-        let(:creation_args) { {} }
-        let(:params) { { search: '*', scope: 'projects' } }
+        let(:creation_args) { { name: 'foo' } }
+        let(:params) { { search: 'foo', scope: 'projects' } }
         # some N+1 queries still exist
         # each project requires 3 extra queries
         #   - one count for forks
@@ -90,11 +90,9 @@ RSpec.describe SearchController, type: :request, feature_category: :global_searc
       context 'for notes scope' do
         let(:creation_traits) { [:on_commit] }
         let(:object) { :note }
-        let(:creation_args) { { project: project } }
-        let(:params) { { search: '*', scope: 'notes' } }
-        # some N+1 still exist
-        # each project makes and extra call to get the namespace routes
-        let(:threshold) { 6 }
+        let(:creation_args) { { project: project, note: 'foo' } }
+        let(:params) { { search: 'foo', scope: 'notes' } }
+        let(:threshold) { 0 }
 
         it_behaves_like 'an efficient database result'
       end
@@ -102,7 +100,7 @@ RSpec.describe SearchController, type: :request, feature_category: :global_searc
       context 'for milestones scope' do
         let(:object) { :milestone }
         let(:creation_args) { { project: project } }
-        let(:params) { { search: '*', scope: 'milestones' } }
+        let(:params) { { search: 'title', scope: 'milestones' } }
         let(:threshold) { 0 }
 
         it_behaves_like 'an efficient database result'
