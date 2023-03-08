@@ -114,7 +114,7 @@ RSpec.describe 'layouts/nav/sidebar/_project', feature_category: :navigation do
   end
 
   describe 'CI/CD' do
-    describe 'Test Cases' do
+    describe 'Test cases' do
       let(:license_feature_status) { true }
 
       before do
@@ -125,7 +125,7 @@ RSpec.describe 'layouts/nav/sidebar/_project', feature_category: :navigation do
       it 'has a link to the test cases page' do
         render
 
-        expect(rendered).to have_link('Test Cases', href: project_quality_test_cases_path(project))
+        expect(rendered).to have_link('Test cases', href: project_quality_test_cases_path(project))
       end
 
       context 'when license feature :quality_management is not enabled' do
@@ -134,7 +134,7 @@ RSpec.describe 'layouts/nav/sidebar/_project', feature_category: :navigation do
         it 'does not have a link to the test cases page' do
           render
 
-          expect(rendered).not_to have_link('Test Cases', href: project_quality_test_cases_path(project))
+          expect(rendered).not_to have_link('Test cases', href: project_quality_test_cases_path(project))
         end
       end
     end

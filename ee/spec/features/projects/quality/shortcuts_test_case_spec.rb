@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe "Test Case shortcuts", :js, feature_category: :quality_management do
+RSpec.describe "Test case shortcuts", :js, feature_category: :quality_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:label_bug) { create(:label, project: project, title: 'bug') }

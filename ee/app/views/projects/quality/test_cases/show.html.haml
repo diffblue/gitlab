@@ -1,8 +1,8 @@
 - @content_class = "limit-container-width" unless fluid_layout
-- add_to_breadcrumbs _('Test Cases'), project_quality_test_cases_path(@project)
+- add_to_breadcrumbs _('Test cases'), project_quality_test_cases_path(@project)
 - breadcrumb_title @test_case.to_reference
 
-- page_title           "#{@test_case.title} (#{@test_case.to_reference})", _('Test Cases')
+- page_title           "#{@test_case.title} (#{@test_case.to_reference})", _('Test cases')
 - page_description     @test_case.description
 
 #js-issuable-app{ data: { initial: issuable_initial_data(@test_case).to_json,

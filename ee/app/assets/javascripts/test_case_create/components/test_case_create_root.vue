@@ -77,7 +77,7 @@ export default {
     :labels-manage-path="labelsManagePath"
   >
     <template #title>
-      <h1 class="page-title gl-font-size-h-display">{{ s__('TestCases|New Test Case') }}</h1>
+      <h1 class="page-title gl-font-size-h-display">{{ s__('TestCases|New test case') }}</h1>
     </template>
     <template #actions="issuableMeta">
       <gl-button
