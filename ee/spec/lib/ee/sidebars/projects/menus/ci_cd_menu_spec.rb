@@ -7,7 +7,7 @@ RSpec.describe Sidebars::Projects::Menus::CiCdMenu do
   let(:user) { project.first_owner }
   let(:context) { Sidebars::Projects::Context.new(current_user: user, current_ref: 'main', container: project, can_view_pipeline_editor: true) }
 
-  describe 'Test Cases' do
+  describe 'Test cases' do
     subject { described_class.new(context).renderable_items.index { |e| e.item_id == :test_cases } }
 
     context 'when licensed feature quality_management is not enabled' do
