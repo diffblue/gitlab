@@ -28,12 +28,25 @@ export const SCAN_EXECUTION_RULE_PERIOD_TYPE = {
   weekly: __('weekly'),
 };
 
+export const POLICY_ACTION_TAG_MODE_SPECIFIC_TAG_KEY = 'specific_tag';
+export const POLICY_ACTION_TAG_MODE_SELECTED_AUTOMATICALLY_KEY = 'selected_automatically';
+export const TAGS_MODE_SELECTED_ITEMS = [
+  {
+    text: s__('ScanExecutionPolicy|has specific tag'),
+    value: POLICY_ACTION_TAG_MODE_SPECIFIC_TAG_KEY,
+  },
+  {
+    text: s__('ScanExecutionPolicy|selected automatically'),
+    value: POLICY_ACTION_TAG_MODE_SELECTED_AUTOMATICALLY_KEY,
+  },
+];
+
 export const DEFAULT_SCANNER = SCANNER_DAST;
 
 export const SCANNER_HUMANIZED_TEMPLATE = s__(
-  'ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require a %{scan} scan to run with tags %{tags}',
+  'ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require a %{scan} scan on runner that %{tags}',
 );
 
 export const DAST_HUMANIZED_TEMPLATE = s__(
-  'ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require a %{scan} scan to run with site profile %{siteProfile} and scanner profile %{scannerProfile} with tags %{tags}',
+  'ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require a %{scan} scan to run with site profile %{siteProfile} and scanner profile %{scannerProfile} on runner that %{tags}',
 );

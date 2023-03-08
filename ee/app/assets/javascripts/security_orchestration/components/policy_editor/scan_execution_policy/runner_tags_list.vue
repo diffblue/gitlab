@@ -7,8 +7,14 @@ import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import projectRunnerTags from 'ee/security_orchestration/graphql/queries/get_project_runner_tags.query.graphql';
 import groupRunnerTags from 'ee/security_orchestration/graphql/queries/get_group_runner_tags.query.graphql';
 import { getUniqueTagListFromEdges } from 'ee/on_demand_scans_form/utils';
+import {
+  TAGS_MODE_SELECTED_ITEMS,
+  POLICY_ACTION_TAG_MODE_SPECIFIC_TAG_KEY,
+  POLICY_ACTION_TAG_MODE_SELECTED_AUTOMATICALLY_KEY,
+} from './constants';
 
 export default {
+  TAGS_MODES: TAGS_MODE_SELECTED_ITEMS,
   name: 'RunnerTagsList',
   i18n: {
     runnerEmptyStateText: s__('SecurityOrchestration|No matching results'),
@@ -72,9 +78,17 @@ export default {
       search: '',
       tags: [],
       selected: [],
+      selectedTagsText: this.$options.TAGS_MODES[0].text,
+      selectedTagsMode: POLICY_ACTION_TAG_MODE_SPECIFIC_TAG_KEY,
     };
   },
   computed: {
+    isSpecificTagMode() {
+      return this.selectedTagsMode === POLICY_ACTION_TAG_MODE_SPECIFIC_TAG_KEY;
+    },
+    isTagsListVisible() {
+      return this.isSpecificTagMode && !this.isTagListEmpty;
+    },
     loading() {
       return this.$apollo.queries.tagList.loading;
     },
@@ -117,6 +131,10 @@ export default {
       return this.selected?.includes(tag);
     },
     selectExistingTags() {
+      if (this.isTagListEmpty) {
+        this.setSelectedTagsMode(POLICY_ACTION_TAG_MODE_SELECTED_AUTOMATICALLY_KEY);
+      }
+
       if (this.value.length > 0) {
         const nonExistingTags = this.value.filter((tag) => !this.doesTagExist(tag));
 
@@ -138,29 +156,50 @@ export default {
     sortTags() {
       this.tags.sort((a) => (this.isTagSelected(a) ? -1 : 1));
     },
+    setSelectedTagsMode(key) {
+      this.selectedTagsText = this.$options.TAGS_MODES.find(({ value }) => value === key)?.text;
+      this.selectedTagsMode = key;
+
+      if (key === POLICY_ACTION_TAG_MODE_SELECTED_AUTOMATICALLY_KEY) {
+        this.setSelection([]);
+      }
+    },
   },
 };
 </script>
 
 <template>
-  <gl-collapsible-listbox
-    v-gl-tooltip
-    multiple
-    searchable
-    toggle-class="gl-max-w-80"
-    :disabled="isTagListEmpty"
-    :items="filteredUnselectedItems"
-    :loading="loading"
-    :header-text="$options.i18n.runnerSearchHeader"
-    :no-caret="isTagListEmpty"
-    :no-results-text="$options.i18n.runnerEmptyStateText"
-    :selected="selected"
-    :reset-button-label="$options.i18n.resetButtonLabel"
-    :toggle-text="text"
-    :title="tooltipTitle"
-    @hidden="sortTags"
-    @reset="setSelection([])"
-    @search="debouncedSearchKeyUpdate"
-    @select="setSelection"
-  />
+  <div>
+    <gl-collapsible-listbox
+      v-gl-tooltip
+      data-testid="runner-tags-switcher"
+      :disabled="isTagListEmpty"
+      :items="$options.TAGS_MODES"
+      :loading="loading"
+      :selected="selectedTagsMode"
+      :toggle-text="selectedTagsText"
+      :title="tooltipTitle"
+      @select="setSelectedTagsMode"
+    />
+
+    <gl-collapsible-listbox
+      v-if="isTagsListVisible"
+      multiple
+      searchable
+      data-testid="runner-tags-list"
+      toggle-class="gl-max-w-62 gl-ml-2"
+      :items="filteredUnselectedItems"
+      :loading="loading"
+      :header-text="$options.i18n.runnerSearchHeader"
+      :no-caret="isTagListEmpty"
+      :no-results-text="$options.i18n.runnerEmptyStateText"
+      :selected="selected"
+      :reset-button-label="$options.i18n.resetButtonLabel"
+      :toggle-text="text"
+      @hidden="sortTags"
+      @reset="setSelection([])"
+      @search="debouncedSearchKeyUpdate"
+      @select="setSelection"
+    />
+  </div>
 </template>
