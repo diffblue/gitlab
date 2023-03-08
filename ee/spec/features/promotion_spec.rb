@@ -251,25 +251,6 @@ RSpec.describe 'Promotions', :js do
     end
   end
 
-  describe 'for issue templates', :js, feature_category: :team_planning do
-    before do
-      allow(License).to receive(:current).and_return(nil)
-      stub_application_setting(check_namespace_plan: false)
-
-      project.add_maintainer(user)
-      sign_in(user)
-    end
-
-    it 'appears on the page', :js do
-      visit new_project_issue_path(project)
-      wait_for_requests
-
-      find('#promotion-issue-template-link').click
-
-      expect(find('.promotion-issue-template-message')).to have_content 'Description templates allow you to define context-specific templates for issue and merge request description fields for your project.'
-    end
-  end
-
   describe 'for project audit events', :js, feature_category: :audit_events do
     before do
       allow(License).to receive(:current).and_return(nil)

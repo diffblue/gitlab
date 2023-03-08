@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe ApplicationHelper do
   include EE::GeoHelpers
+  include Devise::Test::ControllerHelpers
 
   describe '#read_only_message', :geo do
     let(:default_maintenance_mode_message) { 'GitLab is undergoing maintenance' }
@@ -301,7 +302,7 @@ RSpec.describe ApplicationHelper do
   end
 
   context 'when both CE and EE has partials with the same name' do
-    let(:partial) { 'shared/issuable/form/default_templates' }
+    let(:partial) { 'projects/settings/archive' }
     let(:view) { 'projects/merge_requests/show' }
     let(:project) { build_stubbed(:project) }
 
@@ -309,13 +310,13 @@ RSpec.describe ApplicationHelper do
       before do
         helper.instance_variable_set(:@project, project)
 
-        allow(project).to receive(:feature_available?)
+        allow(project).to receive(:marked_for_deletion?)
       end
 
       it 'renders the CE partial' do
         helper.render_ce(partial)
 
-        expect(project).not_to receive(:feature_available?)
+        expect(project).not_to receive(:marked_for_deletion?)
       end
     end
 
