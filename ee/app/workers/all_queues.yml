@@ -1218,6 +1218,15 @@
   :weight: 1
   :idempotent: false
   :tags: []
+- :name: elastic_namespace_update
+  :worker_name: Elastic::NamespaceUpdateWorker
+  :feature_category: :global_search
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: false
+  :tags: []
 - :name: elastic_project_transfer
   :worker_name: Elastic::ProjectTransferWorker
   :feature_category: :global_search

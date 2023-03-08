@@ -433,6 +433,12 @@ RSpec.describe Namespace do
     end
   end
 
+  describe 'keeping elasticsearch up to date' do
+    it 'includes Elastic::NamespaceUpdate concern' do
+      expect(described_class).to include_module(Elastic::NamespaceUpdate)
+    end
+  end
+
   describe 'after_commit :sync_name_with_customers_dot' do
     let(:owner) { create(:user) }
     let(:namespace) { create(:group) }
