@@ -1,6 +1,6 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlButton, GlCollapsibleListbox, GlListboxItem } from '@gitlab/ui';
+import { GlButton, GlListboxItem } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import createApolloProvider from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -8,6 +8,10 @@ import RunnerTagsList from 'ee/security_orchestration/components/policy_editor/s
 import projectRunnerTags from 'ee/security_orchestration/graphql/queries/get_project_runner_tags.query.graphql';
 import groupRunnerTags from 'ee/security_orchestration/graphql/queries/get_group_runner_tags.query.graphql';
 import { getUniqueTagListFromEdges } from 'ee/on_demand_scans_form/utils';
+import {
+  POLICY_ACTION_TAG_MODE_SPECIFIC_TAG_KEY,
+  POLICY_ACTION_TAG_MODE_SELECTED_AUTOMATICALLY_KEY,
+} from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
 import { RUNNER_TAG_LIST_MOCK } from '../../../../on_demand_scans/mocks';
 
 describe('RunnerTagsList', () => {
@@ -47,12 +51,13 @@ describe('RunnerTagsList', () => {
     });
   };
 
-  const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
-  const findDropdownItems = () => wrapper.findAllComponents(GlListboxItem);
+  const findTagsModeSwitcher = () => wrapper.findByTestId('runner-tags-switcher');
+  const findTagsList = () => wrapper.findByTestId('runner-tags-list');
+  const findDropdownItems = () => findTagsList().findAllComponents(GlListboxItem);
   const findSearchBox = () => wrapper.findByTestId('listbox-search-input');
 
   const toggleDropdown = (event = 'shown') => {
-    findDropdown().vm.$emit(event);
+    findTagsList().vm.$emit(event);
   };
 
   beforeEach(async () => {
@@ -66,7 +71,7 @@ describe('RunnerTagsList', () => {
   });
 
   it('should select tags', async () => {
-    expect(findDropdown().props('toggleText')).toBe('Select runner tags');
+    expect(findTagsList().props('toggleText')).toBe('Select runner tags');
 
     toggleDropdown();
     await waitForPromises();
@@ -76,7 +81,7 @@ describe('RunnerTagsList', () => {
     findDropdownItems().at(2).vm.$emit('select', ['docker']);
     await nextTick();
 
-    expect(findDropdown().props('toggleText')).toBe('macos, docker');
+    expect(findTagsList().props('toggleText')).toBe('macos, docker');
     expect(wrapper.emitted('input')).toHaveLength(2);
   });
 
@@ -165,6 +170,48 @@ describe('RunnerTagsList', () => {
     });
   });
 
+  describe('switch mode', () => {
+    beforeEach(async () => {
+      createComponent();
+      await waitForPromises();
+    });
+
+    it('should have specific tag mode by default', () => {
+      expect(findTagsModeSwitcher().props('selected')).toBe(
+        POLICY_ACTION_TAG_MODE_SPECIFIC_TAG_KEY,
+      );
+      expect(findTagsModeSwitcher().props('toggleText')).toBe('has specific tag');
+      expect(findTagsList().exists()).toBe(true);
+    });
+
+    it('should hide tags list for automatic mode', async () => {
+      await findTagsModeSwitcher().vm.$emit(
+        'select',
+        POLICY_ACTION_TAG_MODE_SELECTED_AUTOMATICALLY_KEY,
+      );
+
+      expect(findTagsModeSwitcher().props('selected')).toBe(
+        POLICY_ACTION_TAG_MODE_SELECTED_AUTOMATICALLY_KEY,
+      );
+      expect(findTagsModeSwitcher().props('toggleText')).toBe('selected automatically');
+      expect(findTagsList().exists()).toBe(false);
+    });
+
+    it('resets selected tags when switched to automatically mode', async () => {
+      createComponent({ value: ['macos'] });
+      await waitForPromises();
+
+      expect(findTagsList().props('selected')).toMatchObject(['macos']);
+
+      await findTagsModeSwitcher().vm.$emit(
+        'select',
+        POLICY_ACTION_TAG_MODE_SELECTED_AUTOMATICALLY_KEY,
+      );
+
+      expect(wrapper.emitted('input')).toMatchObject([[[]]]);
+    });
+  });
+
   describe('No runners', () => {
     beforeEach(async () => {
       const savedOnBackendTags = ['docker', 'node'];
@@ -188,12 +235,13 @@ describe('RunnerTagsList', () => {
     });
 
     it('should have disabled listbox', () => {
-      expect(findDropdown().props('disabled')).toBe(true);
+      expect(findTagsList().exists()).toBe(false);
     });
 
     it('should have default label text and title', () => {
-      expect(findDropdown().findComponent(GlButton).text()).toBe('Selected automatically');
-      expect(findDropdown().attributes('title')).toBe(
+      expect(findTagsModeSwitcher().props('disabled')).toBe(true);
+      expect(findTagsModeSwitcher().findComponent(GlButton).text()).toBe('selected automatically');
+      expect(findTagsModeSwitcher().attributes('title')).toBe(
         'Scan will automatically choose a runner to run on because there are no tags exist on runners',
       );
     });
