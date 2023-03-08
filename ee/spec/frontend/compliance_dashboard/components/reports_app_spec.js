@@ -3,13 +3,11 @@ import { GlTabs } from '@gitlab/ui';
 
 import { __ } from '~/locale';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import { stubComponent } from 'helpers/stub_component';
-
 import ComplianceReportsApp from 'ee/compliance_dashboard/components/reports_app.vue';
 import ReportHeader from 'ee/compliance_dashboard/components/shared/report_header.vue';
 import MergeCommitsExportButton from 'ee/compliance_dashboard/components/violations_report/shared/merge_commits_export_button.vue';
-import ViolationsReport from 'ee/compliance_dashboard/components/violations_report/report.vue';
-import { TAB_FRAMEWORKS, TAB_VIOLATIONS, TABS } from 'ee/compliance_dashboard/constants';
+import { stubComponent } from 'helpers/stub_component';
+import { ROUTE_FRAMEWORKS, ROUTE_VIOLATIONS, TABS } from 'ee/compliance_dashboard/constants';
 
 describe('ComplianceReportsApp component', () => {
   let wrapper;
@@ -25,6 +23,7 @@ describe('ComplianceReportsApp component', () => {
   const findViolationsTab = () => wrapper.findByTestId('violations-tab');
 
   const createComponent = (props = {}, mountFn = shallowMount) => {
+    const featureFlags = { complianceFrameworksReport: true };
     return extendedWrapper(
       mountFn(ComplianceReportsApp, {
         propsData: {
@@ -32,10 +31,15 @@ describe('ComplianceReportsApp component', () => {
           ...props,
         },
         provide: {
-          glFeatures: { complianceFrameworksReport: true },
+          glFeatures: featureFlags,
+        },
+        mocks: {
+          $route: {
+            name: ROUTE_VIOLATIONS,
+          },
         },
         stubs: {
-          ViolationsReport: stubComponent(ViolationsReport),
+          'router-view': stubComponent({}),
         },
       }),
     );
@@ -48,7 +52,7 @@ describe('ComplianceReportsApp component', () => {
   describe('violations report', () => {
     beforeEach(() => {
       wrapper = createComponent(defaultProps, mount);
-      findTabs().vm.$emit('input', TABS.indexOf(TAB_VIOLATIONS));
+      findTabs().vm.$emit('input', TABS.indexOf(ROUTE_VIOLATIONS));
     });
 
     it('renders the violations report tab', () => {
@@ -69,7 +73,7 @@ describe('ComplianceReportsApp component', () => {
 
     it('does not render the merge commit export button when there is no CSV path', async () => {
       wrapper = createComponent({ mergeCommitsCsvExportPath: null }, mount);
-      findTabs().vm.$emit('input', TABS.indexOf(TAB_VIOLATIONS));
+      findTabs().vm.$emit('input', TABS.indexOf(ROUTE_VIOLATIONS));
 
       expect(findMergeCommitsExportButton().exists()).toBe(false);
     });
@@ -78,7 +82,7 @@ describe('ComplianceReportsApp component', () => {
   describe('frameworks report', () => {
     beforeEach(async () => {
       wrapper = createComponent();
-      findTabs().vm.$emit('input', TABS.indexOf(TAB_FRAMEWORKS));
+      findTabs().vm.$emit('input', TABS.indexOf(ROUTE_FRAMEWORKS));
     });
 
     it('renders the frameworks report tab', () => {

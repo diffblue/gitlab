@@ -6,15 +6,12 @@ import { GlAlert } from '@gitlab/ui';
 
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import setWindowLocation from 'helpers/set_window_location_helper';
-import { TEST_HOST } from 'spec/test_constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createComplianceFrameworksResponse } from 'ee_jest/compliance_dashboard/mock_data';
-import UrlSync, { URL_SET_PARAMS_STRATEGY } from '~/vue_shared/components/url_sync.vue';
 
 import ComplianceFrameworksReport from 'ee/compliance_dashboard/components/frameworks_report/report.vue';
 import complianceFrameworksGroupProjects from 'ee/compliance_dashboard/graphql/compliance_frameworks_group_projects.query.graphql';
-import { DEFAULT_PAGINATION_CURSORS, GRAPHQL_PAGE_SIZE } from 'ee/compliance_dashboard/constants';
+import { ROUTE_FRAMEWORKS } from 'ee/compliance_dashboard/constants';
 import ProjectsTable from 'ee/compliance_dashboard/components/frameworks_report/projects_table.vue';
 import Pagination from 'ee/compliance_dashboard/components/frameworks_report/pagination.vue';
 
@@ -23,7 +20,7 @@ Vue.use(VueApollo);
 describe('ComplianceFrameworksReport component', () => {
   let wrapper;
   const groupPath = 'group-path';
-  const defaultQueryParams = `?tab=frameworks`;
+  let $router;
 
   const sentryError = new Error('GraphQL networkError');
   const projectsResponse = createComplianceFrameworksResponse();
@@ -34,13 +31,20 @@ describe('ComplianceFrameworksReport component', () => {
   const findErrorMessage = () => wrapper.findComponent(GlAlert);
   const findProjectsTable = () => wrapper.findComponent(ProjectsTable);
   const findPagination = () => wrapper.findComponent(Pagination);
-  const findUrlSync = () => wrapper.findComponent(UrlSync);
 
   function createMockApolloProvider(resolverMock) {
     return createMockApollo([[complianceFrameworksGroupProjects, resolverMock]]);
   }
 
-  function createComponent(mountFn = shallowMount, props = {}, resolverMock = mockGraphQlLoading) {
+  function createComponent(
+    mountFn = shallowMount,
+    props = {},
+    resolverMock = mockGraphQlLoading,
+    queryParams = {},
+  ) {
+    $router = {
+      push: jest.fn(),
+    };
     return extendedWrapper(
       mountFn(ComplianceFrameworksReport, {
         apolloProvider: createMockApolloProvider(resolverMock),
@@ -48,28 +52,29 @@ describe('ComplianceFrameworksReport component', () => {
           groupPath,
           ...props,
         },
+        mocks: {
+          $router,
+          $route: {
+            name: ROUTE_FRAMEWORKS,
+            query: queryParams,
+          },
+        },
       }),
     );
   }
 
   describe('default behavior', () => {
     beforeEach(() => {
-      setWindowLocation(TEST_HOST + defaultQueryParams);
       wrapper = createComponent();
     });
 
     it('does not render an error message', () => {
       expect(findErrorMessage().exists()).toBe(false);
     });
-
-    it('syncs the URL query with "set" strategy', () => {
-      expect(findUrlSync().props('urlParamsUpdateStrategy')).toBe(URL_SET_PARAMS_STRATEGY);
-    });
   });
 
   describe('when initializing', () => {
     beforeEach(() => {
-      setWindowLocation(TEST_HOST + defaultQueryParams);
       wrapper = createComponent(mount, {}, mockGraphQlLoading);
     });
 
@@ -82,14 +87,27 @@ describe('ComplianceFrameworksReport component', () => {
       expect(mockGraphQlLoading).toHaveBeenCalledTimes(1);
       expect(mockGraphQlLoading).toHaveBeenCalledWith({
         groupPath,
-        ...DEFAULT_PAGINATION_CURSORS,
+        after: undefined,
+        first: 20,
+      });
+    });
+
+    it('passes the url query params when fetching projects', () => {
+      wrapper = createComponent(mount, {}, mockGraphQlLoading, {
+        perPage: 99,
+        after: 'fgfgfg-after',
+      });
+
+      expect(mockGraphQlLoading).toHaveBeenCalledWith({
+        groupPath,
+        after: 'fgfgfg-after',
+        first: 99,
       });
     });
   });
 
   describe('when the query fails', () => {
     beforeEach(() => {
-      setWindowLocation(TEST_HOST + defaultQueryParams);
       jest.spyOn(Sentry, 'captureException');
       wrapper = createComponent(shallowMount, {}, mockGraphQlError);
     });
@@ -107,7 +125,6 @@ describe('ComplianceFrameworksReport component', () => {
 
   describe('when there are projects', () => {
     beforeEach(async () => {
-      setWindowLocation(TEST_HOST + defaultQueryParams);
       wrapper = createComponent(mount, {}, mockGraphQlSuccess);
       await waitForPromises();
     });
@@ -166,41 +183,28 @@ describe('ComplianceFrameworksReport component', () => {
         findPagination().vm.$emit('page-size-change', 99);
         await waitForPromises();
 
-        expect(findPagination().props('perPage')).toBe(99);
+        expect($router.push).toHaveBeenCalledWith(
+          expect.objectContaining({
+            query: {
+              perPage: 99,
+            },
+          }),
+        );
       });
 
-      it('fetches more projects', async () => {
+      it('resets to first page when page size is changed', async () => {
         findPagination().vm.$emit('page-size-change', 99);
         await waitForPromises();
 
-        expect(mockResolver).toHaveBeenCalledTimes(2);
-        expect(mockResolver).toHaveBeenNthCalledWith(2, {
-          groupPath,
-          ...DEFAULT_PAGINATION_CURSORS,
-          first: 99,
-        });
+        expect($router.push).toHaveBeenCalledWith(
+          expect.objectContaining({
+            query: expect.objectContaining({
+              before: undefined,
+              after: undefined,
+            }),
+          }),
+        );
       });
-
-      it.each`
-        event     | after    | before   | first                | last
-        ${'next'} | ${'foo'} | ${null}  | ${GRAPHQL_PAGE_SIZE} | ${undefined}
-        ${'prev'} | ${null}  | ${'foo'} | ${undefined}         | ${GRAPHQL_PAGE_SIZE}
-      `(
-        'fetches the $event page when the pagination emits "$event"',
-        async ({ event, after, before, first, last }) => {
-          await findPagination().vm.$emit(event, after ?? before);
-          await waitForPromises();
-
-          expect(mockResolver).toHaveBeenCalledTimes(2);
-          expect(mockResolver).toHaveBeenNthCalledWith(2, {
-            groupPath,
-            after,
-            before,
-            first,
-            last,
-          });
-        },
-      );
     });
 
     describe('when there is only one page of projects', () => {
@@ -225,7 +229,6 @@ describe('ComplianceFrameworksReport component', () => {
 
   describe('when there are no projects', () => {
     beforeEach(async () => {
-      setWindowLocation(TEST_HOST + defaultQueryParams);
       const emptyProjectsResponse = createComplianceFrameworksResponse({ count: 0 });
       const mockResolver = jest.fn().mockResolvedValue(emptyProjectsResponse);
       wrapper = createComponent(mount, {}, mockResolver);

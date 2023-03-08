@@ -167,7 +167,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
     namespace :security do
       resource :dashboard, only: [:show], controller: :dashboard
       resources :vulnerabilities, only: [:index]
-      resource :compliance_dashboard, only: [:show]
+      resource :compliance_dashboard, path: 'compliance_dashboard(/*vueroute)', only: [:show]
       resource :discover, only: [:show], controller: :discover
       resources :credentials, only: [:index, :destroy] do
         member do

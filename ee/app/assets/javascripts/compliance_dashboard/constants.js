@@ -39,6 +39,6 @@ export const FRAMEWORK_BADGE_SIZE_SM = 'sm';
 export const FRAMEWORK_BADGE_SIZE_MD = 'md';
 export const FRAMEWORK_BADGE_SIZES = [FRAMEWORK_BADGE_SIZE_SM, FRAMEWORK_BADGE_SIZE_MD];
 
-export const TAB_VIOLATIONS = 'violations';
-export const TAB_FRAMEWORKS = 'frameworks';
-export const TABS = [TAB_VIOLATIONS, TAB_FRAMEWORKS];
+export const ROUTE_VIOLATIONS = 'violations';
+export const ROUTE_FRAMEWORKS = 'frameworks';
+export const TABS = [ROUTE_VIOLATIONS, ROUTE_FRAMEWORKS];
