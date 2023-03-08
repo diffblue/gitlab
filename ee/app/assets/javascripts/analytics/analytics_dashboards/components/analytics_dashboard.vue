@@ -154,6 +154,7 @@ export default {
         :available-visualizations="availableVisualizations"
         :default-filters="defaultFilters"
         :is-saving="isSaving"
+        :date-range-limit="0"
         show-date-range-filter
         sync-url-filters
         @save="saveDashboard"

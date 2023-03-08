@@ -39,6 +39,11 @@ export default {
       type: Array,
       required: true,
     },
+    dateRangeLimit: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
     showDateRangeFilter: {
       type: Boolean,
       required: false,
@@ -289,6 +294,7 @@ export default {
           :default-option="filters.dateRangeOption"
           :start-date="filters.startDate"
           :end-date="filters.endDate"
+          :date-range-limit="dateRangeLimit"
           @change="setDateRangeFilter"
         />
       </section>

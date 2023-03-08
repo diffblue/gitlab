@@ -1,7 +1,5 @@
-import { __, sprintf } from '~/locale';
+import { __, n__, sprintf } from '~/locale';
 import { getDateInPast } from '~/lib/utils/datetime_utility';
-
-export const MAX_DATE_RANGE = 31;
 
 export const TODAY = new Date();
 
@@ -45,12 +43,9 @@ export const DATE_RANGE_OPTIONS = [
   },
 ];
 
-export const DATE_RANGE_FILTER_I18N = {
-  tooltip: sprintf(__('Date range limited to %{number} days'), {
-    number: MAX_DATE_RANGE,
-  }),
-  to: __('To'),
-  from: __('From'),
-};
+export const I18N_DATE_RANGE_FILTER_TOOLTIP = (dateRangeLimit = 0) =>
+  n__('Date range limited to %d day', 'Date range limited to %d days', dateRangeLimit);
+export const I18N_DATE_RANGE_FILTER_TO = __('To');
+export const I18N_DATE_RANGE_FILTER_FROM = __('From');
 
 export const DEFAULT_SELECTED_OPTION_INDEX = 1;

@@ -265,35 +265,57 @@ describe('CustomizableDashboard', () => {
   describe('when the date range filter is enabled and configured', () => {
     const defaultFilters = buildDefaultDashboardFilters('');
 
-    beforeEach(() => {
-      loadCSSFile.mockResolvedValue();
+    describe('by default', () => {
+      beforeEach(() => {
+        loadCSSFile.mockResolvedValue();
 
-      createWrapper({ showDateRangeFilter: true, syncUrlFilters: true, defaultFilters });
-    });
+        createWrapper({ showDateRangeFilter: true, syncUrlFilters: true, defaultFilters });
+      });
 
-    it('shows the date range filter and passes the default options and filters', () => {
-      expect(findDateRangeFilter().props()).toMatchObject({
-        startDate: defaultFilters.startDate,
-        endDate: defaultFilters.endDate,
-        defaultOption: defaultFilters.dateRangeOption,
+      it('shows the date range filter and passes the default options and filters', () => {
+        expect(findDateRangeFilter().props()).toMatchObject({
+          startDate: defaultFilters.startDate,
+          endDate: defaultFilters.endDate,
+          defaultOption: defaultFilters.dateRangeOption,
+          dateRangeLimit: 0,
+        });
+      });
+
+      it('synchronizes the filters with the URL', () => {
+        expect(findUrlSync().props()).toMatchObject({
+          historyUpdateMethod: HISTORY_REPLACE_UPDATE_METHOD,
+          query: filtersToQueryParams(defaultFilters),
+        });
+      });
+
+      it('sets the panel filters to the default date range', () => {
+        expect(findPanels().at(0).props().filters).toStrictEqual(defaultFilters);
+      });
+
+      it('updates the panel filters when the date range is changed', async () => {
+        await findDateRangeFilter().vm.$emit('change', mockDateRangeFilterChangePayload);
+
+        expect(findPanels().at(0).props().filters).toStrictEqual(mockDateRangeFilterChangePayload);
       });
     });
 
-    it('syncronizes the filters with the URL', () => {
-      expect(findUrlSync().props()).toMatchObject({
-        historyUpdateMethod: HISTORY_REPLACE_UPDATE_METHOD,
-        query: filtersToQueryParams(defaultFilters),
+    describe.each([0, 12, 31])('when given a date range limit of %d', (dateRangeLimit) => {
+      beforeEach(() => {
+        loadCSSFile.mockResolvedValue();
+
+        createWrapper({
+          showDateRangeFilter: true,
+          syncUrlFilters: true,
+          defaultFilters,
+          dateRangeLimit,
+        });
       });
-    });
 
-    it('sets the panel filters to the default date range', () => {
-      expect(findPanels().at(0).props().filters).toStrictEqual(defaultFilters);
-    });
-
-    it('updates the panel filters when the date range is changed', async () => {
-      await findDateRangeFilter().vm.$emit('change', mockDateRangeFilterChangePayload);
-
-      expect(findPanels().at(0).props().filters).toStrictEqual(mockDateRangeFilterChangePayload);
+      it('passes the date range limit to the date range filter', async () => {
+        expect(findDateRangeFilter().props()).toMatchObject({
+          dateRangeLimit,
+        });
+      });
     });
   });
 });
