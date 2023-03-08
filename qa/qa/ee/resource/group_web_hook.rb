@@ -3,35 +3,18 @@
 module QA
   module EE
     module Resource
-      class GroupWebHook < QA::Resource::Base
-        EVENT_TRIGGERS = %i[
-          push
-          issues
-          confidential_issues
-          merge_requests
-          tag_push
-          note
-          confidential_note
-          job
-          pipeline
-          wiki_page
-          deployment
-          releases
-          subgroup
-          member
-        ].freeze
+      class GroupWebHook < QA::Resource::WebHookBase
+        extend QA::Resource::Integrations::WebHook::Smockerable
 
-        attr_accessor :url, :enable_ssl, :id, :token
-
-        attribute :id
-        attribute :alert_status
-        attribute :disabled_until
+        attributes :alert_status, :disabled_until
 
         attribute :group do
           QA::Resource::Group.fabricate_via_api! do |resource|
             resource.name = "group-with-webhooks-#{SecureRandom.hex(4)}"
           end
         end
+
+        EVENT_TRIGGERS = QA::Resource::ProjectWebHook::EVENT_TRIGGERS + %i[subgroup]
 
         EVENT_TRIGGERS.each do |trigger|
           attribute "#{trigger}_events".to_sym do
@@ -40,20 +23,9 @@ module QA
         end
 
         def initialize
-          @id = nil
-          @enable_ssl = false
-          @url = nil
+          super
+
           @push_events_branch_filter = []
-          @alert_status = nil
-          @disabled_until = nil
-        end
-
-        def fabricate_via_api!
-          resource_web_url = super
-
-          @id = api_response[:id]
-
-          resource_web_url
         end
 
         def add_push_event_branch_filter(branch)
@@ -76,7 +48,7 @@ module QA
           body = {
             id: group.id,
             url: url,
-            enable_ssl_verification: enable_ssl,
+            enable_ssl_verification: enable_ssl_verification,
             token: token,
             push_events_branch_filter: @push_events_branch_filter.join(',')
           }

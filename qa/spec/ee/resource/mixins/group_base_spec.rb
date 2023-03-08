@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe QA::EE::Resource::GroupBase, :sean do
+RSpec.describe QA::EE::Resource::GroupBase do
   let(:klass) do
     Class.new do
       prepend QA::EE::Resource::GroupBase # rubocop:disable Cop/InjectEnterpriseEditionModule
