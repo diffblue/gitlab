@@ -157,6 +157,24 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService do
         end
       end
 
+      context 'when runtime limit is reached' do
+        it 'finishes with limit_reached reason' do
+          first_monotonic_time = 100
+          second_monotonic_time = first_monotonic_time + Analytics::CycleAnalytics::RuntimeLimiter::DEFAULT_MAX_RUNTIME.to_i + 10
+
+          # 1. when initializing the runtime limiter
+          # 2. when start the processing
+          # 3. when calling over_time? within the rate limiter
+          # 4. when calculating the aggregation duration
+          expect(Gitlab::Metrics::System).to receive(:monotonic_time).and_return(first_monotonic_time, first_monotonic_time, second_monotonic_time, second_monotonic_time)
+
+          service_response = described_class.new(group: top_level_group, model: MergeRequest).execute
+
+          expect(service_response).to be_success
+          expect(service_response.payload[:reason]).to eq(:limit_reached)
+        end
+      end
+
       context 'when cursor is given' do
         it 'continues processing the records from the cursor' do
           stub_const('Analytics::CycleAnalytics::DataLoaderService::MAX_UPSERT_COUNT', 1)

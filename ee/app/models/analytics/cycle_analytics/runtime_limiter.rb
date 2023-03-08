@@ -5,9 +5,11 @@ module Analytics
     class RuntimeLimiter
       delegate :monotonic_time, to: :'Gitlab::Metrics::System'
 
+      DEFAULT_MAX_RUNTIME = 200.seconds
+
       attr_reader :max_runtime, :start_time
 
-      def initialize(max_runtime)
+      def initialize(max_runtime = DEFAULT_MAX_RUNTIME)
         @start_time = monotonic_time
         @max_runtime = max_runtime
       end

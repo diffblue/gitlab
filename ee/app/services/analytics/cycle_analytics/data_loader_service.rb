@@ -41,7 +41,7 @@ module Analytics
           context.processed_records += loaded_records.size
           context.cursor = cursor_for_node(loaded_records.last)
 
-          if upsert_count >= MAX_UPSERT_COUNT
+          if upsert_count >= MAX_UPSERT_COUNT || context.over_time?
             response = success(:limit_reached, context: context)
             break
           end

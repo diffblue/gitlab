@@ -15,11 +15,9 @@ module Analytics
       data_consistency :always
       feature_category :value_stream_management
 
-      MAX_RUNTIME = 200.seconds
-
       def perform
         current_time = Time.current
-        runtime_limiter = Analytics::CycleAnalytics::RuntimeLimiter.new(MAX_RUNTIME)
+        runtime_limiter = Analytics::CycleAnalytics::RuntimeLimiter.new
         over_time = false
 
         loop do
@@ -27,7 +25,8 @@ module Analytics
           break if batch.empty?
 
           batch.each do |aggregation|
-            Analytics::CycleAnalytics::AggregatorService.new(aggregation: aggregation, mode: :incremental).execute
+            Analytics::CycleAnalytics::AggregatorService.new(aggregation: aggregation, mode: :incremental,
+              runtime_limiter: runtime_limiter).execute
 
             if runtime_limiter.over_time?
               over_time = true
