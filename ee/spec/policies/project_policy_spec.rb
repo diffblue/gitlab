@@ -1772,32 +1772,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
   end
 
-  describe ':read_ci_minutes_usage' do
-    using RSpec::Parameterized::TableSyntax
-
-    let(:policy) { :read_ci_minutes_usage }
-
-    where(:role, :admin_mode, :allowed) do
-      :guest      | nil   | false
-      :reporter   | nil   | false
-      :developer  | nil   | false
-      :maintainer | nil   | false
-      :owner      | nil   | true
-      :admin      | false | false
-      :admin      | true  | true
-    end
-
-    with_them do
-      let(:current_user) { public_send(role) }
-
-      before do
-        enable_admin_mode!(current_user) if admin_mode
-      end
-
-      it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
-    end
-  end
-
   describe 'Incident Management on-call schedules' do
     using RSpec::Parameterized::TableSyntax
 

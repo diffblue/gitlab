@@ -267,10 +267,6 @@ module EE
         enable :read_project_audit_events
       end
 
-      rule { can?(:owner_access) }.policy do
-        enable :read_ci_minutes_usage
-      end
-
       rule { can?(:reporter_access) & iterations_available }.policy do
         enable :create_iteration
         enable :admin_iteration

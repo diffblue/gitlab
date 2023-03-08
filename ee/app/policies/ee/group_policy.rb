@@ -429,7 +429,7 @@ module EE
         enable :read_group_compliance_dashboard
         enable :read_group_credentials_inventory
         enable :admin_group_credentials_inventory
-        enable :read_ci_minutes_usage
+        enable :admin_ci_minutes
       end
 
       rule { (admin | owner) & group_merge_request_approval_settings_enabled }.policy do
