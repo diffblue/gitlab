@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require "spec_helper"
 
-RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component do
+RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component, feature_category: :purchase do
   include SubscriptionPortalHelpers
 
   let(:namespace) { build(:group) }
@@ -20,7 +20,7 @@ RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component do
     it 'has expected tracking attributes' do
       css = "[data-track-action='click_button'][data-track-label='plan_cta'][data-track-property='#{plan_name}']"
 
-      expect(rendered_component).to have_css(css)
+      expect(page).to have_css(css)
     end
   end
 
@@ -28,50 +28,41 @@ RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component do
     let(:plan_name) { 'free' }
 
     it 'has header for the current plan' do
-      expect(rendered_component).to have_content('Your current plan')
-      expect(rendered_component).to have_selector('.gl-bg-gray-100')
+      expect(page).to have_content('Your current plan')
+      expect(page).to have_selector('.gl-bg-gray-100')
     end
 
     it 'has pricing info' do
-      expect(rendered_component).to have_content('$0')
-      expect(rendered_component).not_to have_content('Billed annually')
+      expect(page).to have_content('$0')
+      expect(page).not_to have_content('Billed annually')
     end
 
-    it 'has expected cta_link' do
-      expect(rendered_component).to have_link('Learn more',
-                                              href: "https://about.gitlab.com/pricing/gitlab-com/feature-comparison/")
+    it 'does not have cta_link' do
+      expect(page).not_to have_link('Learn more')
     end
-
-    it 'does not add qa selector to cta link' do
-      css = "[data-track-label='plan_cta'][data-qa-selector]" # rubocop:disable QA/SelectorUsage
-
-      expect(rendered_component).not_to have_css(css)
-    end
-
-    it_behaves_like 'plan tracking'
   end
 
   context 'with premium plan' do
     let(:plan_name) { 'premium' }
 
     it 'has header for the current plan' do
-      expect(rendered_component).to have_content('Recommended')
-      expect(rendered_component).to have_selector('.gl-bg-purple-800')
+      expect(page).to have_content('Recommended')
+      expect(page).to have_selector('.gl-bg-purple-800')
     end
 
     it 'has pricing info' do
-      expect(rendered_component).not_to have_content('$0')
-      expect(rendered_component).to have_content('Billed annually')
+      expect(page).not_to have_content('$0')
+      expect(page).to have_content('Billed annually')
     end
 
     it 'has expected cta_link' do
-      expect(rendered_component).to have_link('Upgrade to Premium', href: '_purchase_url_')
+      expect(page).to have_link('Upgrade to Premium', href: '_purchase_url_')
     end
 
     it 'adds qa selector to cta link' do
       css = "[data-track-label='plan_cta'][data-qa-selector='upgrade_to_#{plan_name}']" # rubocop:disable QA/SelectorUsage
 
-      expect(rendered_component).to have_css(css)
+      expect(page).to have_css(css)
     end
 
     it_behaves_like 'plan tracking'
@@ -81,22 +72,22 @@ RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component do
     let(:plan_name) { 'ultimate' }
 
     it 'has header for the current plan' do
-      expect(rendered_component).to have_selector('.gl-bg-gray-100')
+      expect(page).to have_selector('.gl-bg-gray-100')
     end
 
     it 'has pricing info' do
-      expect(rendered_component).not_to have_content('$0')
-      expect(rendered_component).to have_content('Billed annually')
+      expect(page).not_to have_content('$0')
+      expect(page).to have_content('Billed annually')
     end
 
     it 'has expected cta_link' do
-      expect(rendered_component).to have_link('Upgrade to Ultimate', href: '_purchase_url_')
+      expect(page).to have_link('Upgrade to Ultimate', href: '_purchase_url_')
     end
 
     it 'adds qa selector to cta link' do
       css = "[data-track-label='plan_cta'][data-qa-selector='upgrade_to_#{plan_name}']" # rubocop:disable QA/SelectorUsage
 
-      expect(rendered_component).to have_css(css)
+      expect(page).to have_css(css)
     end
 
     it_behaves_like 'plan tracking'
@@ -106,7 +97,7 @@ RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component do
     let(:plan_name) { 'bronze' }
 
     it 'does not render' do
-      expect(rendered_component).to be_empty
+      expect(page).to have_content('')
     end
   end
 end

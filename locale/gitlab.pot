@@ -6485,9 +6485,6 @@ msgstr ""
 msgid "BillingPlans|Includes free static websites"
 msgstr ""
 
-msgid "BillingPlans|Learn more"
-msgstr ""
-
 msgid "BillingPlans|Learn more about each plan by reading our %{faq_link}, or start a free 30-day trial of GitLab.com Ultimate."
 msgstr ""
 
