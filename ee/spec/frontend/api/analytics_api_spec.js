@@ -8,7 +8,7 @@ import {
   getGroupLabels,
   getDurationChart,
   getStageEvents,
-  getGroupStagesAndEvents,
+  getStagesAndEvents,
   createValueStream,
   updateValueStream,
   deleteValueStream,
@@ -29,10 +29,10 @@ let mock;
 describe('ValueStreamAnalyticsApi', () => {
   const createdBefore = '2019-11-18';
   const createdAfter = '2019-08-18';
-  const groupId = 'counting-54321';
+  const namespacePath = 'groups/counting-54321';
   const stageId = 'thursday';
   const valueStreamId = 'a-city-by-the-light-divided';
-  const dummyValueStreamAnalyticsUrlRoot = `${dummyUrlRoot}/groups/${groupId}/-/analytics/value_stream_analytics`;
+  const dummyValueStreamAnalyticsUrlRoot = `${dummyUrlRoot}/${namespacePath}/-/analytics/value_stream_analytics`;
   const defaultParams = {
     created_after: createdAfter,
     created_before: createdBefore,
@@ -93,7 +93,7 @@ describe('ValueStreamAnalyticsApi', () => {
       const {
         data,
         config: { params: reqParams },
-      } = await getTypeOfWorkTasksByType(groupId, params);
+      } = await getTypeOfWorkTasksByType(namespacePath, params);
       expect(data).toEqual(tasksByTypeResponse);
       expect(reqParams).toEqual(params);
     });
@@ -114,7 +114,7 @@ describe('ValueStreamAnalyticsApi', () => {
       const {
         data,
         config: { url, params: reqParams },
-      } = await getTypeOfWorkTopLabels(groupId, params);
+      } = await getTypeOfWorkTopLabels(namespacePath, params);
       expect(data).toEqual(response);
       expect(url).toMatch(expectedUrl);
       expect(reqParams).toEqual(params);
@@ -127,7 +127,7 @@ describe('ValueStreamAnalyticsApi', () => {
       const expectedUrl = valueStreamBaseUrl({ resource: 'value_streams' });
       mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
 
-      const responseObj = await getValueStreams(groupId);
+      const responseObj = await getValueStreams(namespacePath);
       expectRequestWithCorrectParameters(responseObj, {
         response,
         expectedUrl,
@@ -145,7 +145,7 @@ describe('ValueStreamAnalyticsApi', () => {
       const {
         data,
         config: { data: reqData, url },
-      } = await createValueStream(groupId, customValueStream);
+      } = await createValueStream(namespacePath, customValueStream);
       expect(data).toEqual(response);
       expect(JSON.parse(reqData)).toMatchObject(customValueStream);
       expect(url).toEqual(expectedUrl);
@@ -163,7 +163,7 @@ describe('ValueStreamAnalyticsApi', () => {
         data,
         config: { data: reqData, url },
       } = await updateValueStream({
-        groupId,
+        namespacePath,
         valueStreamId,
         data: customValueStream,
       });
@@ -182,25 +182,25 @@ describe('ValueStreamAnalyticsApi', () => {
       const {
         data,
         config: { url },
-      } = await deleteValueStream(groupId, valueStreamId);
+      } = await deleteValueStream(namespacePath, valueStreamId);
       expect(data).toEqual(response);
       expect(url).toEqual(expectedUrl);
     });
   });
 
-  describe('getGroupStagesAndEvents', () => {
+  describe('getStagesAndEvents', () => {
     it('fetches custom stage events and all stages', async () => {
       const response = { events: [], stages: [] };
       const params = {
-        group_id: groupId,
+        group_id: namespacePath,
         'cycle_analytics[created_after]': createdAfter,
         'cycle_analytics[created_before]': createdBefore,
       };
       const expectedUrl = valueStreamBaseUrl({ id: valueStreamId, resource: 'stages' });
       mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
 
-      const responseObj = await getGroupStagesAndEvents({
-        groupId,
+      const responseObj = await getStagesAndEvents({
+        namespacePath,
         valueStreamId,
         params,
       });
@@ -223,7 +223,7 @@ describe('ValueStreamAnalyticsApi', () => {
       mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
 
       const responseObj = await getStageEvents({
-        groupId,
+        namespacePath,
         valueStreamId,
         stageId,
         params,
@@ -247,7 +247,7 @@ describe('ValueStreamAnalyticsApi', () => {
       mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
 
       const responseObj = await getDurationChart({
-        groupId,
+        namespacePath,
         valueStreamId,
         stageId,
         params,
@@ -263,14 +263,14 @@ describe('ValueStreamAnalyticsApi', () => {
   describe('getGroupLabels', () => {
     it('fetches group level labels', async () => {
       const response = [];
-      const expectedUrl = `${dummyUrlRoot}/groups/${groupId}/-/labels.json`;
+      const expectedUrl = `${dummyUrlRoot}/${namespacePath}/-/labels.json`;
 
       mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
 
       const {
         data,
         config: { url },
-      } = await getGroupLabels(groupId);
+      } = await getGroupLabels(namespacePath);
       expect(data).toEqual(response);
       expect(url).toEqual(expectedUrl);
     });

@@ -1,8 +1,8 @@
 import {
-  getGroupValueStreamStageMedian,
+  getValueStreamStageMedian,
   getStageEvents,
   getStageCount,
-  getGroupStagesAndEvents,
+  getStagesAndEvents,
 } from 'ee/api/analytics_api';
 import {
   I18N_VSA_ERROR_STAGES,
@@ -38,7 +38,7 @@ export const fetchStageData = ({ dispatch, getters, commit }, stageId) => {
   dispatch('requestStageData');
 
   return getStageEvents({
-    groupId: currentGroupPath,
+    namespacePath: currentGroupPath,
     valueStreamId: currentValueStreamId,
     stageId,
     params: {
@@ -62,8 +62,8 @@ export const receiveStageMedianValuesError = ({ commit }, error) => {
   createAlert({ message: I18N_VSA_ERROR_STAGE_MEDIAN });
 };
 
-const fetchStageMedian = ({ groupId, valueStreamId, stageId, params }) =>
-  getGroupValueStreamStageMedian({ groupId, valueStreamId, stageId }, params).then(({ data }) => {
+const fetchStageMedian = ({ namespacePath, valueStreamId, stageId, params }) =>
+  getValueStreamStageMedian({ namespacePath, valueStreamId, stageId }, params).then(({ data }) => {
     return {
       id: stageId,
       ...(data?.error
@@ -88,7 +88,7 @@ export const fetchStageMedianValues = ({ dispatch, commit, getters }) => {
   return Promise.all(
     stageIds.map((stageId) =>
       fetchStageMedian({
-        groupId: currentGroupPath,
+        namespacePath: currentGroupPath,
         valueStreamId: currentValueStreamId,
         stageId,
         params: cycleAnalyticsRequestParams,
@@ -99,8 +99,8 @@ export const fetchStageMedianValues = ({ dispatch, commit, getters }) => {
     .catch((error) => dispatch('receiveStageMedianValuesError', error));
 };
 
-const fetchStageCount = ({ groupId, valueStreamId, stageId, params }) =>
-  getStageCount({ groupId, valueStreamId, stageId, params }).then(({ data }) => {
+const fetchStageCount = ({ namespacePath, valueStreamId, stageId, params }) =>
+  getStageCount({ namespacePath, valueStreamId, stageId, params }).then(({ data }) => {
     return {
       id: stageId,
       ...(data?.error
@@ -125,7 +125,7 @@ export const fetchStageCountValues = ({ commit, getters }) => {
   return Promise.all(
     stageIds.map((stageId) =>
       fetchStageCount({
-        groupId: currentGroupPath,
+        namespacePath: currentGroupPath,
         valueStreamId: currentValueStreamId,
         stageId,
         params: cycleAnalyticsRequestParams,
@@ -149,15 +149,15 @@ export const receiveGroupStagesSuccess = ({ commit }, stages) =>
 export const fetchGroupStagesAndEvents = ({ dispatch, commit, getters }) => {
   const {
     currentValueStreamId: valueStreamId,
-    currentGroupPath: groupId,
+    currentGroupPath: namespacePath,
     cycleAnalyticsRequestParams: { created_after: createdAfter, project_ids },
   } = getters;
 
   dispatch('requestGroupStages');
   commit(types.SET_STAGE_EVENTS, []);
 
-  return getGroupStagesAndEvents({
-    groupId,
+  return getStagesAndEvents({
+    namespacePath,
     valueStreamId,
     params: {
       start_date: createdAfter,

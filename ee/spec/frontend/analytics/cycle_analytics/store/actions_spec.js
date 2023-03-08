@@ -33,7 +33,7 @@ const activeStages = stages.filter(({ hidden }) => !hidden);
 const [selectedValueStream] = valueStreams;
 
 const mockGetters = {
-  currentGroupPath: () => currentGroup.fullPath,
+  currentGroupPath: () => `groups/${currentGroup.fullPath}`,
   currentValueStreamId: () => selectedValueStream.id,
 };
 
