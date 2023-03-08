@@ -65,11 +65,7 @@ module Billing
     end
 
     def cta_url
-      if free?
-        plan.purchase_link.href
-      else
-        plan_purchase_url(namespace, plan)
-      end
+      plan_purchase_url(namespace, plan)
     end
 
     def cta_classes
@@ -86,10 +82,6 @@ module Billing
 
     def features
       plan.features || [] # features can be nil
-    end
-
-    def purchase_link
-      "https://about.gitlab.com/pricing/gitlab-com/feature-comparison/"
     end
 
     def plans_data
@@ -120,11 +112,7 @@ module Billing
             {
               "title": s_("BillingPlans|5 users per namespace")
             }
-          ],
-          "cta_text": s_("BillingPlans|Learn more"),
-          "purchase_link": {
-            "href": purchase_link
-          }
+          ]
         },
         'premium' => {
           "card_border_classes": "gl-border-purple-700",

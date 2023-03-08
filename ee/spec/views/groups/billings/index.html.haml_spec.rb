@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'groups/billings/index', :saas, :aggregate_failures do
+RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_category: :purchase do
   include SubscriptionPortalHelpers
 
   let_it_be(:user) { create(:user) }
@@ -33,7 +33,6 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures do
         expect(scoped_node).to have_content('Your current plan')
         expect(scoped_node).to have_content('Free')
         expect(scoped_node).to have_content('Free forever features for individual users')
-        expect(scoped_node).to have_link('Learn more')
 
         # premium
         scoped_node = page.find("[data-testid='plan-card-premium']")

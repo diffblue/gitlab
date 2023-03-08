@@ -16,7 +16,8 @@
       - unless free?
         .gl-font-sm.gl-mt-0.gl-mx-4.gl-text-gray-700
           = annual_price_text
-    = link_to cta_text, cta_url, class: cta_classes, data: cta_data
+    - unless free?
+      = link_to cta_text, cta_url, class: cta_classes, data: cta_data
     %ul.gl-pl-6.gl-pr-0
       - features.each do |feature|
         %li.gl-text-left.gl-font-sm.gl-text-gray-700.gl-line-height-normal
