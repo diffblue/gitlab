@@ -9,7 +9,7 @@ module EE
     prepended do
       include Arkose::ContentSecurityPolicy
 
-      skip_before_action :check_captcha, if: -> { ::Arkose::Settings.enabled_for_signup? }
+      skip_before_action :check_captcha, if: -> { arkose_labs_enabled? }
       before_action only: [:new, :create] do
         push_frontend_feature_flag(:arkose_labs_signup_challenge)
       end
@@ -120,6 +120,7 @@ module EE
       ).execute
     end
 
+    override :arkose_labs_enabled?
     def arkose_labs_enabled?
       ::Arkose::Settings.enabled_for_signup?
     end

@@ -19,11 +19,6 @@ module EE
       }
     end
 
-    override :arkose_labs_challenge_enabled?
-    def arkose_labs_challenge_enabled?
-      ::Arkose::Settings.enabled_for_signup?
-    end
-
     def arkose_labs_data
       {
         api_key: Arkose::Settings.arkose_public_api_key,
