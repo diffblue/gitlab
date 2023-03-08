@@ -179,7 +179,6 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
 
   context 'with fetch by iid' do
     before do
-      stub_feature_flags(use_iid_in_work_items_path: true)
       visit project_work_items_path(project, objective.iid, iid_path: true)
       wait_for_all_requests
     end
@@ -194,26 +193,6 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       create_okr('key result', 'KR 2')
 
       expect(find('[data-testid="work-item-tree"]')).to have_content('KR 2')
-    end
-  end
-
-  context 'without fetch by iid' do
-    before do
-      stub_feature_flags(use_iid_in_work_items_path: false)
-      visit project_work_items_path(project, work_items_path: objective.id)
-      wait_for_all_requests
-    end
-
-    it 'creates objective' do
-      create_okr('objective', 'Objective 1')
-
-      expect(find('[data-testid="work-item-tree"]')).to have_content('Objective 1')
-    end
-
-    it 'creates key result' do
-      create_okr('key result', 'KR 1')
-
-      expect(find('[data-testid="work-item-tree"]')).to have_content('KR 1')
     end
   end
 

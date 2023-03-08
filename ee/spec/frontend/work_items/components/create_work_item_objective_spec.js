@@ -34,7 +34,6 @@ describe('Create work item Objective component', () => {
     props = {},
     queryHandler = querySuccessHandler,
     mutationHandler = createWorkItemSuccessHandler,
-    fetchByIid = false,
   } = {}) => {
     fakeApollo = createMockApollo(
       [
@@ -61,9 +60,6 @@ describe('Create work item Objective component', () => {
       },
       provide: {
         fullPath: 'full-path',
-        glFeatures: {
-          useIidInWorkItemsPath: fetchByIid,
-        },
       },
     });
   };
