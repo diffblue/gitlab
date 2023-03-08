@@ -3,16 +3,34 @@
 module EE
   module ContainerRepository
     extend ActiveSupport::Concern
+    include ::Gitlab::Utils::StrongMemoize
 
     GITLAB_ORG_NAMESPACE = 'gitlab-org'
     EE_SEARCHABLE_ATTRIBUTES = %i[name].freeze
 
     prepended do
       include ::Geo::ReplicableModel
+      include ::Geo::VerifiableModel
+
+      delegate(*::Geo::VerificationState::VERIFICATION_METHODS, to: :container_repository_state)
 
       with_replicator ::Geo::ContainerRepositoryReplicator
 
       scope :project_id_in, ->(ids) { joins(:project).merge(::Project.id_in(ids)) }
+
+      has_one :container_repository_state, autosave: false, inverse_of: :container_repository, class_name: 'Geo::ContainerRepositoryState'
+
+      after_save :save_verification_details
+
+      scope :with_verification_state, ->(state) { joins(:container_repository_state).where(container_repository_states: { verification_state: verification_state_value(state) }) }
+      scope :checksummed, -> { joins(:container_repository_state).where.not(container_repository_states: { verification_checksum: nil }) }
+      scope :not_checksummed, -> { joins(:container_repository_state).where(container_repository_states: { verification_checksum: nil }) }
+
+      scope :available_verifiables, -> { joins(:container_repository_state) }
+
+      def verification_state_object
+        container_repository_state
+      end
     end
 
     class_methods do
@@ -55,6 +73,15 @@ module EE
           where(migration_plan: ::ContainerRegistry::Migration.target_plans)
         end
       end
+
+      override :verification_state_table_class
+      def verification_state_table_class
+        ::Geo::ContainerRepositoryState
+      end
+    end
+
+    def container_repository_state
+      super || build_container_repository_state
     end
 
     def push_blob(digest, blob_io, size)
@@ -68,5 +95,18 @@ module EE
     def blob_exists?(digest)
       client.blob_exists?(path, digest)
     end
+
+    # @return [String] a checksum value used for verifying correct replication
+    def tag_list_digest
+      tag_list = tags.map do |tag|
+        [tag.name, tag.digest]
+      end
+
+      tag_list.sort_by!(&:first)
+      tag_list_str = tag_list.map(&:join).join
+
+      ::Digest::SHA256.hexdigest(tag_list_str)
+    end
+    strong_memoize_attr :tag_list_digest
   end
 end

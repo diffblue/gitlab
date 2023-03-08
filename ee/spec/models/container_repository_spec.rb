@@ -3,6 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe ContainerRepository, :saas do
+  include_examples 'a replicable model with a separate table for verification state' do
+    let(:verifiable_model_record) { build(:container_repository) }
+    let(:skip_unverifiable_model_record_tests) { true }
+  end
+
   describe '.with_target_import_tier' do
     let_it_be(:valid_container_repository) { create(:container_repository, migration_plan: 'free') }
 

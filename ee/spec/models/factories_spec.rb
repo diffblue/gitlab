@@ -64,6 +64,7 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     [:geo_pages_deployment_state, any],
     [:geo_upload_state, any],
     [:geo_ci_secure_file_state, any],
+    [:geo_container_repository_state, any],
     [:lfs_object, :checksum_failure],
     [:lfs_object, :checksummed],
     [:merge_request, :blocked],
@@ -75,7 +76,8 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     [:scan_execution_policy, :with_schedule_and_agent],
     [:vulnerability, :with_cluster_image_scanning_finding],
     [:vulnerability, :with_findings],
-    [:vulnerability_export, :finished]
+    [:vulnerability_export, :finished],
+    [:container_repository, :remote_store]
   ].freeze
 
   shared_examples 'factory' do |factory|

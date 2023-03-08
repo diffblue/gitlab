@@ -3,6 +3,7 @@
 class Geo::ContainerRepositoryRegistry < Geo::BaseRegistry
   include ::Delay
   include ::Geo::ReplicableRegistry
+  include ::Geo::VerifiableRegistry
   extend ::Gitlab::Utils::Override
 
   MODEL_CLASS = ::ContainerRepository

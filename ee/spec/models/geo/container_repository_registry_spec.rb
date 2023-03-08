@@ -226,5 +226,8 @@ RSpec.describe Geo::ContainerRepositoryRegistry, :geo, type: :model, feature_cat
   end
 
   include_examples 'a Geo framework registry'
+
   include_examples 'a Geo searchable registry'
+
+  include_examples 'a Geo verifiable registry'
 end
