@@ -188,6 +188,7 @@ module Ci
     scope :order_token_expires_at_asc, -> { order(token_expires_at: :asc) }
     scope :order_token_expires_at_desc, -> { order(token_expires_at: :desc) }
     scope :with_tags, -> { preload(:tags) }
+    scope :with_creator, -> { preload(:creator) }
 
     validate :tag_constraints
     validates :access_level, presence: true
