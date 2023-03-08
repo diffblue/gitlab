@@ -5,6 +5,8 @@ import { trimText } from 'helpers/text_helper';
 describe('MergeTrainFailedPipelineConfirmationDialog', () => {
   let wrapper;
 
+  const hideDropdown = jest.fn();
+
   const GlModal = {
     template: `
       <div>
@@ -13,7 +15,7 @@ describe('MergeTrainFailedPipelineConfirmationDialog', () => {
       </div>
     `,
     methods: {
-      hide: jest.fn(),
+      hide: hideDropdown,
     },
   };
 
@@ -54,12 +56,10 @@ describe('MergeTrainFailedPipelineConfirmationDialog', () => {
   });
 
   it('when the cancel button is clicked should emit cancel and call hide', () => {
-    jest.spyOn(findModal().vm, 'hide');
-
     findCancelBtn().vm.$emit('click');
 
     expect(wrapper.emitted('cancel')).toHaveLength(1);
-    expect(findModal().vm.hide).toHaveBeenCalled();
+    expect(hideDropdown).toHaveBeenCalled();
   });
 
   it('should emit cancel when the hide event is emitted', () => {
