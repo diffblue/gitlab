@@ -1,8 +1,8 @@
 <script>
-import { GlButton, GlFormInput, GlSprintf, GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlButton, GlFormInput, GlSprintf, GlCollapsibleListbox } from '@gitlab/ui';
 import { s__, n__ } from '~/locale';
 import { slugifyToArray } from '../utils';
-import { SCAN_EXECUTION_RULES_LABELS } from './constants';
+import { SCAN_EXECUTION_RULES_LABELS, SCAN_EXECUTION_RULES_PIPELINE_KEY } from './constants';
 
 export default {
   SCAN_EXECUTION_RULES_LABELS,
@@ -15,8 +15,7 @@ export default {
   name: 'BaseRuleComponent',
   components: {
     GlButton,
-    GlDropdown,
-    GlDropdownItem,
+    GlCollapsibleListbox,
     GlFormInput,
     GlSprintf,
   },
@@ -32,7 +31,7 @@ export default {
     defaultSelectedRule: {
       type: String,
       required: false,
-      default: SCAN_EXECUTION_RULES_LABELS.pipeline,
+      default: SCAN_EXECUTION_RULES_PIPELINE_KEY,
     },
     isBranchScope: {
       type: Boolean,
@@ -42,7 +41,8 @@ export default {
   },
   data() {
     return {
-      selectedRule: this.defaultSelectedRule,
+      selectedRule: this.defaultSelectedRule[this.selectedKey],
+      selectedKey: this.defaultSelectedRule,
     };
   },
   computed: {
@@ -54,6 +54,12 @@ export default {
       return this.initRule.branches.some((branch) => branch.includes('*'))
         ? s__('SecurityOrchestration|branches')
         : n__('branch', 'branches', this.initRule.branches.length);
+    },
+    rulesListBoxItems() {
+      return Object.entries(this.$options.SCAN_EXECUTION_RULES_LABELS).map(([value, text]) => ({
+        value,
+        text,
+      }));
     },
     branchesToAdd: {
       get() {
@@ -68,11 +74,9 @@ export default {
     },
   },
   methods: {
-    isSelectedRule(key) {
-      return this.selectedRule === this.$options.SCAN_EXECUTION_RULES_LABELS[key];
-    },
     setSelectedRule(key) {
       this.selectedRule = this.$options.SCAN_EXECUTION_RULES_LABELS[key];
+      this.selectedKey = key;
       this.$emit('select-rule', key);
     },
   },
@@ -98,17 +102,13 @@ export default {
           </template>
 
           <template #rules>
-            <gl-dropdown :text="selectedRule" data-testid="rule-component-type">
-              <gl-dropdown-item
-                v-for="(label, key) in $options.SCAN_EXECUTION_RULES_LABELS"
-                :key="key"
-                is-check-item
-                :is-checked="isSelectedRule(key)"
-                @click="setSelectedRule(key)"
-              >
-                {{ label }}
-              </gl-dropdown-item>
-            </gl-dropdown>
+            <gl-collapsible-listbox
+              data-testid="rule-component-type"
+              :items="rulesListBoxItems"
+              :selected="selectedKey"
+              :toggle-text="selectedRule"
+              @select="setSelectedRule"
+            />
           </template>
 
           <template #branches>

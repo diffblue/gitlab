@@ -17,6 +17,7 @@ import {
   SCAN_EXECUTION_RULES_LABELS,
   SCAN_EXECUTION_RULE_SCOPE_TYPE,
   SCAN_EXECUTION_RULE_PERIOD_TYPE,
+  SCAN_EXECUTION_RULES_SCHEDULE_KEY,
 } from './constants';
 import BaseRuleComponent from './base_rule_component.vue';
 
@@ -24,6 +25,7 @@ export default {
   SCAN_EXECUTION_RULES_LABELS,
   SCAN_EXECUTION_RULE_SCOPE_TYPE,
   SCAN_EXECUTION_RULE_PERIOD_TYPE,
+  SCAN_EXECUTION_RULES_SCHEDULE_KEY,
   HOUR_MINUTE_LIST,
   DAYS,
   i18n: {
@@ -161,7 +163,7 @@ export default {
 
 <template>
   <base-rule-component
-    :default-selected-rule="$options.SCAN_EXECUTION_RULES_LABELS.schedule"
+    :default-selected-rule="$options.SCAN_EXECUTION_RULES_SCHEDULE_KEY"
     :init-rule="initRule"
     :rule-label="ruleLabel"
     :is-branch-scope="isBranchScope"
