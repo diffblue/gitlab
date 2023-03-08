@@ -3,116 +3,117 @@ import { buildApiUrl } from '~/api/api_utils';
 import axios from '~/lib/utils/axios_utils';
 import { joinPaths } from '~/lib/utils/url_utility';
 
-const GROUP_PATH = '/groups/:id';
-const GROUP_ANALYTICS_PATH = `${GROUP_PATH}/-/analytics`;
-const GROUP_VALUE_STREAMS_PATH = `${GROUP_ANALYTICS_PATH}/value_stream_analytics/value_streams`;
-const GROUP_SELECTED_VALUE_STREAM_PATH = `${GROUP_VALUE_STREAMS_PATH}/:value_stream_id`;
-const GROUP_VALUE_STREAM_STAGE_PATH = `${GROUP_SELECTED_VALUE_STREAM_PATH}/stages/:stage_id`;
+const NAMESPACE_PATH = '/:namespace_path';
+const NAMESPACE_ANALYTICS_PATH = `${NAMESPACE_PATH}/-/analytics`;
+const NAMESPACE_VALUE_STREAMS_PATH = `${NAMESPACE_ANALYTICS_PATH}/value_stream_analytics/value_streams`;
+const NAMESPACE_SELECTED_VALUE_STREAM_PATH = `${NAMESPACE_VALUE_STREAMS_PATH}/:value_stream_id`;
+const NAMESPACE_VALUE_STREAM_STAGE_PATH = `${NAMESPACE_SELECTED_VALUE_STREAM_PATH}/stages/:stage_id`;
 
-const buildGroupPath = ({ groupId }) => buildApiUrl(GROUP_PATH).replace(':id', groupId);
+const buildPath = ({ namespacePath }) =>
+  buildApiUrl(NAMESPACE_PATH).replace(':namespace_path', namespacePath);
 
-const buildGroupAnalyticsPath = ({ groupId }) =>
-  buildApiUrl(GROUP_ANALYTICS_PATH).replace(':id', groupId);
+const buildAnalyticsPath = ({ namespacePath }) =>
+  buildApiUrl(NAMESPACE_ANALYTICS_PATH).replace(':namespace_path', namespacePath);
 
-const buildGroupValueStreamRootPath = ({ groupId }) =>
-  buildApiUrl(GROUP_VALUE_STREAMS_PATH).replace(':id', groupId);
+const buildValueStreamRootPath = ({ namespacePath }) =>
+  buildApiUrl(NAMESPACE_VALUE_STREAMS_PATH).replace(':namespace_path', namespacePath);
 
-const buildGroupValueStreamPath = ({ groupId, valueStreamId = null }) =>
-  buildApiUrl(GROUP_SELECTED_VALUE_STREAM_PATH)
-    .replace(':id', groupId)
+const buildValueStreamPath = ({ namespacePath, valueStreamId = null }) =>
+  buildApiUrl(NAMESPACE_SELECTED_VALUE_STREAM_PATH)
+    .replace(':namespace_path', namespacePath)
     .replace(':value_stream_id', valueStreamId);
 
-const buildGroupValueStreamStagePath = ({ groupId, valueStreamId = null, stageId = null }) =>
-  buildApiUrl(GROUP_VALUE_STREAM_STAGE_PATH)
-    .replace(':id', groupId)
+const buildValueStreamStagePath = ({ namespacePath, valueStreamId = null, stageId = null }) =>
+  buildApiUrl(NAMESPACE_VALUE_STREAM_STAGE_PATH)
+    .replace(':namespace_path', namespacePath)
     .replace(':value_stream_id', valueStreamId)
     .replace(':stage_id', stageId);
 
-export const getGroupValueStreamStageMedian = (
-  { groupId, valueStreamId, stageId },
+export const getValueStreamStageMedian = (
+  { namespacePath, valueStreamId, stageId },
   params = {},
 ) => {
-  const stageBase = buildGroupValueStreamStagePath({ groupId, valueStreamId, stageId });
+  const stageBase = buildValueStreamStagePath({ namespacePath, valueStreamId, stageId });
   return axios.get(`${stageBase}/median`, { params });
 };
 
-export const getGroupValueStreamMetrics = ({
+export const getValueStreamMetrics = ({
   endpoint = METRIC_TYPE_SUMMARY,
-  requestPath: groupId,
+  requestPath: namespacePath,
   params = {},
 }) =>
-  axios.get(joinPaths(buildGroupAnalyticsPath({ groupId }), 'value_stream_analytics', endpoint), {
+  axios.get(joinPaths(buildAnalyticsPath({ namespacePath }), 'value_stream_analytics', endpoint), {
     params,
   });
 
-export const getTypeOfWorkTasksByType = (groupId, params = {}) => {
+export const getTypeOfWorkTasksByType = (namespacePath, params = {}) => {
   const endpoint = '/type_of_work/tasks_by_type';
-  const url = joinPaths(buildGroupAnalyticsPath({ groupId }), endpoint);
+  const url = joinPaths(buildAnalyticsPath({ namespacePath }), endpoint);
 
   return axios.get(url, { params });
 };
 
-export const getTypeOfWorkTopLabels = (groupId, params = {}) => {
+export const getTypeOfWorkTopLabels = (namespacePath, params = {}) => {
   const endpoint = '/type_of_work/tasks_by_type/top_labels';
-  const url = joinPaths(buildGroupAnalyticsPath({ groupId }), endpoint);
+  const url = joinPaths(buildAnalyticsPath({ namespacePath }), endpoint);
 
   return axios.get(url, { params });
 };
 
-export const getGroupStagesAndEvents = ({ groupId, valueStreamId, params = {} }) => {
+export const getStagesAndEvents = ({ namespacePath, valueStreamId, params = {} }) => {
   const endpoint = '/stages';
-  const url = joinPaths(buildGroupValueStreamPath({ groupId, valueStreamId }), endpoint);
+  const url = joinPaths(buildValueStreamPath({ namespacePath, valueStreamId }), endpoint);
 
   return axios.get(url, { params });
 };
 
-const stageUrl = ({ groupId, valueStreamId, stageId }) => {
-  return buildGroupValueStreamStagePath({ groupId, valueStreamId, stageId });
+const stageUrl = ({ namespacePath, valueStreamId, stageId }) => {
+  return buildValueStreamStagePath({ namespacePath, valueStreamId, stageId });
 };
 
-export const getStageEvents = ({ groupId, valueStreamId, stageId, params = {} }) => {
-  const stageBase = stageUrl({ groupId, valueStreamId, stageId });
+export const getStageEvents = ({ namespacePath, valueStreamId, stageId, params = {} }) => {
+  const stageBase = stageUrl({ namespacePath, valueStreamId, stageId });
   const url = `${stageBase}/records`;
   return axios.get(url, { params });
 };
 
-export const getStageCount = ({ groupId, valueStreamId, stageId, params = {} }) => {
-  const stageBase = stageUrl({ groupId, valueStreamId, stageId });
+export const getStageCount = ({ namespacePath, valueStreamId, stageId, params = {} }) => {
+  const stageBase = stageUrl({ namespacePath, valueStreamId, stageId });
   const url = `${stageBase}/count`;
   return axios.get(url, { params });
 };
 
-export const createValueStream = (groupId, data) => {
-  const url = buildGroupValueStreamRootPath({ groupId });
+export const createValueStream = (namespacePath, data) => {
+  const url = buildValueStreamRootPath({ namespacePath });
   return axios.post(url, data);
 };
 
-export const updateValueStream = ({ groupId, valueStreamId, data }) => {
-  const url = buildGroupValueStreamPath({ groupId, valueStreamId });
+export const updateValueStream = ({ namespacePath, valueStreamId, data }) => {
+  const url = buildValueStreamPath({ namespacePath, valueStreamId });
   return axios.put(url, data);
 };
 
-export const deleteValueStream = (groupId, valueStreamId) => {
-  const url = buildGroupValueStreamPath({ groupId, valueStreamId });
+export const deleteValueStream = (namespacePath, valueStreamId) => {
+  const url = buildValueStreamPath({ namespacePath, valueStreamId });
   return axios.delete(url);
 };
 
-export const getValueStreams = (groupId, data) => {
-  const url = buildGroupValueStreamRootPath({ groupId });
+export const getValueStreams = (namespacePath, data) => {
+  const url = buildValueStreamRootPath({ namespacePath });
   return axios.get(url, data);
 };
 
-export const getDurationChart = ({ groupId, valueStreamId, stageId, params = {} }) => {
-  const stageBase = stageUrl({ groupId, valueStreamId, stageId });
+export const getDurationChart = ({ namespacePath, valueStreamId, stageId, params = {} }) => {
+  const stageBase = stageUrl({ namespacePath, valueStreamId, stageId });
   const url = `${stageBase}/average_duration_chart`;
   return axios.get(url, { params });
 };
 
-export const getGroupLabels = (groupId, params = { search: null }) => {
+export const getGroupLabels = (namespacePath, params = { search: null }) => {
   // TODO: This can be removed when we resolve the labels endpoint
   // https://gitlab.com/gitlab-org/gitlab/-/merge_requests/25746
   const endpoint = '/-/labels.json';
-  const url = joinPaths(buildGroupPath({ groupId }), endpoint);
+  const url = joinPaths(buildPath({ namespacePath }), endpoint);
 
   return axios.get(url, {
     params,

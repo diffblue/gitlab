@@ -28,7 +28,7 @@ export const fetchDurationData = ({ dispatch, commit, rootGetters }) => {
       const { id } = stage;
 
       return getDurationChart({
-        groupId: currentGroupPath,
+        namespacePath: currentGroupPath,
         valueStreamId: currentValueStreamId,
         stageId: id,
         params: cycleAnalyticsRequestParams,

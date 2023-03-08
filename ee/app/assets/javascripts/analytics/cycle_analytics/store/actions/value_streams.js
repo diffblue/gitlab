@@ -31,7 +31,7 @@ export const updateValueStream = (
   const { currentGroupPath } = getters;
   commit(types.REQUEST_UPDATE_VALUE_STREAM);
 
-  return apiUpdateValueStream({ groupId: currentGroupPath, valueStreamId, data })
+  return apiUpdateValueStream({ namespacePath: currentGroupPath, valueStreamId, data })
     .then(({ data: newValueStream }) => {
       commit(types.RECEIVE_UPDATE_VALUE_STREAM_SUCCESS, newValueStream);
       return dispatch('fetchCycleAnalyticsData');

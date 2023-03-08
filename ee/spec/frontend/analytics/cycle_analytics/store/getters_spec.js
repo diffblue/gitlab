@@ -79,7 +79,7 @@ describe('Value Stream Analytics getters', () => {
           },
         };
 
-        expect(getters.currentGroupPath(state)).toEqual(fullPath);
+        expect(getters.currentGroupPath(state)).toEqual(`groups/${fullPath}`);
       });
     });
 

@@ -200,8 +200,7 @@ export default {
       <value-stream-filters
         v-if="!shouldRenderAggregationWarning"
         class="gl-mb-6"
-        :group-id="currentGroup.id"
-        :group-path="currentGroupPath"
+        :group-path="currentGroup.fullPath"
         :selected-projects="selectedProjects"
         :start-date="createdAfter"
         :end-date="createdBefore"
