@@ -55,7 +55,7 @@ module Gitlab
 
       def add_records_with_unknown_licenses(records_with_licenses)
         components.each do |component|
-          key = File.join(component.name, component.version, component.purl_type)
+          key = File.join(component.name || '', component.version || '', component.purl_type || '')
           next if records_with_licenses[key]
 
           # return unknown license if the license data for the component wasn't found in the db

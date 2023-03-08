@@ -118,6 +118,24 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :lice
       end
     end
 
+    context 'when component lacks of attributes' do
+      let_it_be(:components_to_fetch) do
+        [
+          Hashie::Mash.new({ name: "jstom", version: "11.12.0" }),
+          Hashie::Mash.new({ version: "11.12.0", purl_type: "npm" }),
+          Hashie::Mash.new({})
+        ]
+      end
+
+      it 'returns all the items that matched the fetched components with unknown licenses' do
+        expect(fetch).to match_array([
+          have_attributes(name: "jstom", purl_type: nil, version: "11.12.0", licenses: ["unknown"]),
+          have_attributes(name: nil, purl_type: "npm", version: "11.12.0", licenses: ["unknown"]),
+          have_attributes(name: nil, purl_type: nil, version: nil, licenses: ["unknown"])
+        ])
+      end
+    end
+
     context 'when no packages match the given criteria' do
       using RSpec::Parameterized::TableSyntax
 
