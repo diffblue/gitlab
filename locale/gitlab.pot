@@ -29710,6 +29710,9 @@ msgstr ""
 msgid "OnDemandScans|Only project owners and maintainers can select runner tags."
 msgstr ""
 
+msgid "OnDemandScans|Pre-scan verification for %{profile_name} completed with"
+msgstr ""
+
 msgid "OnDemandScans|Repeats"
 msgstr ""
 
