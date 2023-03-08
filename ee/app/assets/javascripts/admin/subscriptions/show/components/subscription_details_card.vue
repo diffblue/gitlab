@@ -54,7 +54,7 @@ export default {
     <template v-if="headerText" #header>
       <h6 class="gl-m-0">{{ headerText }}</h6>
     </template>
-    <subscription-details-table :details="details" />
+    <subscription-details-table :details="details" :subscription-type="subscription.type" />
     <template #footer>
       <slot name="footer"></slot>
     </template>

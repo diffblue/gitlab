@@ -1,4 +1,4 @@
-import { GlSkeletonLoader, GlBadge } from '@gitlab/ui';
+import { GlSkeletonLoader } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import Vuex from 'vuex';
 import SubscriptionDetailsTable from 'ee/admin/subscriptions/show/components/subscription_details_table.vue';
@@ -8,16 +8,10 @@ import * as initialStore from 'ee/admin/subscriptions/show/store/';
 import createState from 'ee/admin/subscriptions/show/store/state';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
-import { getLicenseTypeLabel } from 'ee/admin/subscriptions/show/utils';
 
 const syncDetails = {
   detail: 'lastSync',
   value: 'A date',
-};
-
-const typeDetails = {
-  detail: 'type',
-  value: getLicenseTypeLabel(subscriptionTypes.ONLINE_CLOUD),
 };
 
 const licenseDetails = [
@@ -32,7 +26,6 @@ const licenseDetails = [
   {
     detail: 'email',
   },
-  typeDetails,
 ];
 
 const hasFontWeightBold = (wrapper) => wrapper.classes('gl-font-weight-bold');
@@ -45,7 +38,6 @@ describe('Subscription Details Table', () => {
   const findLabelCells = () => wrapper.findAllByTestId('details-label');
   const findLastSyncRow = () => wrapper.findByTestId('row-lastsync');
   const findClipboardButton = () => wrapper.findComponent(ClipboardButton);
-  const findTypeBadge = () => wrapper.findComponent(GlBadge);
   const findSyncButton = () => wrapper.findComponent(SubscriptionSyncButton);
 
   const hasClass = (className) => (w) => w.classes(className);
@@ -71,7 +63,11 @@ describe('Subscription Details Table', () => {
     wrapper = extendedWrapper(
       mount(SubscriptionDetailsTable, {
         store,
-        propsData: { details: licenseDetails, ...props },
+        propsData: {
+          details: licenseDetails,
+          subscriptionType: subscriptionTypes.ONLINE_CLOUD,
+          ...props,
+        },
         provide: { subscriptionSyncPath: '' },
       }),
     );
@@ -104,14 +100,6 @@ describe('Subscription Details Table', () => {
       expect(findClipboardButton().exists()).toBe(false);
     });
 
-    it('shows a subscription type badge', () => {
-      expect(findTypeBadge().exists()).toBe(true);
-    });
-
-    it('displays the correct text for type badge', () => {
-      expect(findTypeBadge().text()).toBe('Online license');
-    });
-
     it('shows the default row color', () => {
       expect(findLastSyncRow().classes('gl-text-gray-800')).toBe(true);
     });
@@ -122,7 +110,7 @@ describe('Subscription Details Table', () => {
     });
   });
 
-  describe('with sync detail and no type detail', () => {
+  describe('with sync detail', () => {
     beforeEach(() => {
       createComponent({
         props: {
@@ -161,20 +149,15 @@ describe('Subscription Details Table', () => {
 
   describe('with lastSync detail', () => {
     it('shows the subscription sync button', () => {
-      createComponent({ props: { details: [syncDetails, typeDetails] } });
+      createComponent({ props: { details: [syncDetails] } });
       expect(findSyncButton().exists()).toBe(true);
     });
 
     it('hides the subscription sync button for offline cloud license', () => {
       createComponent({
         props: {
-          details: [
-            syncDetails,
-            {
-              detail: 'type',
-              value: getLicenseTypeLabel(subscriptionTypes.OFFLINE_CLOUD),
-            },
-          ],
+          details: [syncDetails],
+          subscriptionType: subscriptionTypes.OFFLINE_CLOUD,
         },
       });
 
@@ -184,13 +167,8 @@ describe('Subscription Details Table', () => {
     it('hides the subscription sync button for legacy license', () => {
       createComponent({
         props: {
-          details: [
-            syncDetails,
-            {
-              detail: 'type',
-              value: getLicenseTypeLabel(subscriptionTypes.LEGACY_LICENSE),
-            },
-          ],
+          details: [syncDetails],
+          subscriptionType: subscriptionTypes.LEGACY_LICENSE,
         },
       });
 
