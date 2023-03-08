@@ -3,7 +3,7 @@ import { GlDropdown } from '@gitlab/ui';
 import { xor } from 'lodash';
 import { s__ } from '~/locale';
 import getClusterAgentsQuery from 'ee/security_dashboard/graphql/queries/cluster_agents.query.graphql';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import FilterItem from './filter_item.vue';
 import QuerystringSync from './querystring_sync.vue';
 import DropdownButtonText from './dropdown_button_text.vue';

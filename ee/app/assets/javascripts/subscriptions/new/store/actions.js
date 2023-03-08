@@ -4,7 +4,7 @@ import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
 import Tracking from '~/tracking';
 import { addExperimentContext } from '~/tracking/utils';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { redirectTo } from '~/lib/utils/url_utility';
 import { s__, sprintf } from '~/locale';
 import { trackCheckout, trackTransaction } from '~/google_tag_manager';

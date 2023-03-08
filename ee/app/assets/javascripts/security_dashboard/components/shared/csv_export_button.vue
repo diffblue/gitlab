@@ -1,6 +1,6 @@
 <script>
 import { GlButton, GlTooltipDirective } from '@gitlab/ui';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import download from '~/lib/utils/downloader';

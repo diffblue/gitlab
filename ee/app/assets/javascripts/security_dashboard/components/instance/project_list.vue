@@ -2,7 +2,7 @@
 import { GlBadge, GlButton, GlLoadingIcon, GlTooltipDirective } from '@gitlab/ui';
 import projectsQuery from 'ee/security_dashboard/graphql/queries/instance_projects.query.graphql';
 import { PROJECT_LOADING_ERROR_MESSAGE } from 'ee/security_dashboard/helpers';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { s__ } from '~/locale';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 

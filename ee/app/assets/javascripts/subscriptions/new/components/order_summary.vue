@@ -14,7 +14,7 @@ import {
   INVALID_PROMO_CODE_ERROR_MESSAGE,
   PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE,
 } from 'ee/subscriptions/new/constants';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { isInvalidPromoCodeError } from 'ee/subscriptions/new/utils';
 import formattingMixins from '../formatting_mixins';
 import PromoCodeInput from './promo_code_input.vue';

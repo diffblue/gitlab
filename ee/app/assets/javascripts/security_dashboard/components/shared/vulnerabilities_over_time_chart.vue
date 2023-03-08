@@ -12,7 +12,7 @@ import {
 } from '~/lib/utils/datetime_utility';
 import { formattedChangeInPercent } from '~/lib/utils/number_utils';
 import { s__, sprintf } from '~/locale';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import SecurityDashboardCard from './security_dashboard_card.vue';
 import ChartButtons from './vulnerabilities_over_time_chart_buttons.vue';
 

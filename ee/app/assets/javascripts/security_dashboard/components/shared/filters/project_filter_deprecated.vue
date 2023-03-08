@@ -8,7 +8,7 @@ import {
 import { escapeRegExp, has, xorBy } from 'lodash';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { convertToGraphQLIds, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __, s__ } from '~/locale';
 import groupProjectsQuery from '../../../graphql/queries/group_projects.query.graphql';

@@ -1,5 +1,5 @@
 <script>
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import projectScannersQuery from 'ee/security_dashboard/graphql/queries/project_specific_scanners.query.graphql';
 import groupScannersQuery from 'ee/security_dashboard/graphql/queries/group_specific_scanners.query.graphql';
 import instanceScannersQuery from 'ee/security_dashboard/graphql/queries/instance_specific_scanners.query.graphql';
