@@ -37,35 +37,5 @@ RSpec.describe Gitlab::UrlBuilder do
         expect(subject.build(object, only_path: true)).to eq(path)
       end
     end
-
-    context 'when use_iid_in_work_items_path feature flag is disabled' do
-      before do
-        stub_feature_flags(use_iid_in_work_items_path: false)
-      end
-
-      context 'when a objective issue is passed' do
-        it 'returns a path using the work item\'s ID and no query params' do
-          objective = create(:work_item, :objective)
-
-          expect(subject.build(objective, only_path: true)).to eq("/#{objective.project.full_path}/-/work_items/#{objective.id}")
-        end
-      end
-
-      context 'when a key_result issue is passed' do
-        it 'returns a path using the work item\'s ID and no query params' do
-          key_result = create(:work_item, :key_result)
-
-          expect(subject.build(key_result, only_path: true)).to eq("/#{key_result.project.full_path}/-/work_items/#{key_result.id}")
-        end
-      end
-
-      context 'when a work item is passed' do
-        it 'returns a path using the work item\'s ID and no query params' do
-          work_item = create(:work_item)
-
-          expect(subject.build(work_item, only_path: true)).to eq("/#{work_item.project.full_path}/-/work_items/#{work_item.id}")
-        end
-      end
-    end
   end
 end

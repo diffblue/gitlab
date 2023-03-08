@@ -60,7 +60,7 @@ export default {
       return this.workItemTypes[0]?.id;
     },
     fetchByIid() {
-      return this.glFeatures.useIidInWorkItemsPath;
+      return true;
     },
   },
   methods: {
