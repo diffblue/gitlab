@@ -12,7 +12,7 @@ import {
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 jest.mock('ee/test_case_list/constants', () => ({
   DEFAULT_PAGE_SIZE: 2,
   TestCaseTabs: jest.requireActual('ee/test_case_list/constants').TestCaseTabs,

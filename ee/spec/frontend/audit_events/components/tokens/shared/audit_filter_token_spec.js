@@ -3,10 +3,10 @@ import { GlLoadingIcon, GlAvatar } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import AuditFilterToken from 'ee/audit_events/components/tokens/shared/audit_filter_token.vue';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('AuditFilterToken', () => {
   let wrapper;
@@ -139,7 +139,7 @@ describe('AuditFilterToken', () => {
         initComponent({ value, fetchItem });
       });
 
-      it('shows a flash error message', () => {
+      it('shows a alert error message', () => {
         expect(createAlert).toHaveBeenCalledWith({
           message: 'Failed to find foo bar. Please search for another foo bar.',
         });
@@ -200,7 +200,7 @@ describe('AuditFilterToken', () => {
     });
 
     describe('when fetching the suggestions failed', () => {
-      it('shows a flash error message', async () => {
+      it('shows a alert error message', async () => {
         const fetchSuggestions = jest.fn().mockRejectedValue(mockResponseFailed);
         initComponent({ fetchSuggestions });
 

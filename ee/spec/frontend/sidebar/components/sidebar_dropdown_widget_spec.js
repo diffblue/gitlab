@@ -12,7 +12,7 @@ import projectIssueEpicQuery from 'ee/sidebar/queries/project_issue_epic.query.g
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { TYPE_ISSUE } from '~/issues/constants';
 import { clickEdit, search } from '../helpers';
 
@@ -26,7 +26,7 @@ import {
   mockNoPermissionEpicResponse,
 } from '../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('SidebarDropdownWidget', () => {
   let wrapper;

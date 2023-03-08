@@ -5,7 +5,7 @@ import { dateFormats } from '~/analytics/shared/constants';
 import { toYmd } from '~/analytics/shared/utils';
 import { OVERVIEW_STAGE_ID } from '~/analytics/cycle_analytics/constants';
 import { medianTimeToParsedSeconds } from '~/analytics/cycle_analytics/utils';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { newDate, dayAfter, secondsToDays, getDatesInRange } from '~/lib/utils/datetime_utility';
 import { isNumeric } from '~/lib/utils/number_utils';
@@ -315,10 +315,11 @@ const buildDataError = ({ status = HTTP_STATUS_INTERNAL_SERVER_ERROR, error }) =
 /**
  * Flashes an error message if the status code is not 200
  *
- * @param {Object} error - Axios error object
- * @param {String} errorMessage - Error message to display
+ * @param {Object} arg
+ * @param {Object} arg.error - Axios error object
+ * @param {String} arg.message - Error message to display
  */
-export const flashErrorIfStatusNotOk = ({ error, message }) => {
+export const alertErrorIfStatusNotOk = ({ error, message }) => {
   if (error?.errorCode !== HTTP_STATUS_OK) {
     createAlert({
       message,

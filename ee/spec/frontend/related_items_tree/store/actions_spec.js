@@ -16,7 +16,7 @@ import Tracking from '~/tracking';
 
 import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { TYPE_EPIC } from '~/issues/constants';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
@@ -35,7 +35,7 @@ import {
   mockDefaultProjectForIssueCreation,
 } from '../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('RelatedItemTree', () => {
   afterEach(() => {
@@ -338,7 +338,7 @@ describe('RelatedItemTree', () => {
           );
         });
 
-        it('should show flash error with message "Something went wrong while fetching child epics."', () => {
+        it('should show alert error with message "Something went wrong while fetching child epics."', () => {
           const message = 'Something went wrong while fetching child epics.';
           actions.receiveItemsFailure(
             {
@@ -552,7 +552,7 @@ describe('RelatedItemTree', () => {
       });
 
       describe('receiveNextPageItemsFailure', () => {
-        it('should show flash error with message "Something went wrong while fetching child epics."', () => {
+        it('should show alert error with message "Something went wrong while fetching child epics."', () => {
           const message = 'Something went wrong while fetching child epics.';
           actions.receiveNextPageItemsFailure(
             {
@@ -756,7 +756,7 @@ describe('RelatedItemTree', () => {
           );
         });
 
-        it('should show flash error with message "An error occurred while removing epics."', () => {
+        it('should show alert error with message "An error occurred while removing epics."', () => {
           actions.receiveRemoveItemFailure(
             {
               commit: () => {},
@@ -1161,7 +1161,7 @@ describe('RelatedItemTree', () => {
           );
         });
 
-        it('should show flash error with message "Something went wrong while creating child epics."', () => {
+        it('should show alert error with message "Something went wrong while creating child epics."', () => {
           const message = 'Something went wrong while creating child epics.';
           actions.receiveCreateItemFailure(
             {
@@ -1253,7 +1253,7 @@ describe('RelatedItemTree', () => {
           );
         });
 
-        it('should show flash error with message "Something went wrong while ordering item."', () => {
+        it('should show alert error with message "Something went wrong while ordering item."', () => {
           const message = 'Something went wrong while ordering item.';
           actions.receiveReorderItemFailure(
             {
@@ -1400,7 +1400,7 @@ describe('RelatedItemTree', () => {
           );
         });
 
-        it('should show flash error with message "Something went wrong while ordering item."', () => {
+        it('should show alert error with message "Something went wrong while ordering item."', () => {
           const message = 'Something went wrong while moving item.';
           actions.receiveMoveItemFailure(
             {
@@ -1599,7 +1599,7 @@ describe('RelatedItemTree', () => {
           );
         });
 
-        it('should show flash error with message "Something went wrong while creating issue."', () => {
+        it('should show alert error with message "Something went wrong while creating issue."', () => {
           const message = 'Something went wrong while creating issue.';
           actions.receiveCreateIssueFailure(
             {
@@ -1708,7 +1708,7 @@ describe('RelatedItemTree', () => {
             requestSpy.mockReturnValue([HTTP_STATUS_INTERNAL_SERVER_ERROR, '']);
           });
 
-          it('fails and shows flash message', async () => {
+          it('fails and shows alert message', async () => {
             await expect(actions.createNewIssue(context, payload)).rejects.toEqual(
               new Error('Request failed with status code 500'),
             );
@@ -1753,7 +1753,7 @@ describe('RelatedItemTree', () => {
           );
         });
 
-        it('should show flash error with message "Something went wrong while fetching projects."', () => {
+        it('should show alert error with message "Something went wrong while fetching projects."', () => {
           const message = 'Something went wrong while fetching projects.';
           actions.receiveProjectsFailure(
             {

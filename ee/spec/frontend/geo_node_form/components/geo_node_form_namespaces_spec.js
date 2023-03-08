@@ -7,8 +7,6 @@ import { MOCK_SYNC_NAMESPACES } from '../mock_data';
 
 Vue.use(Vuex);
 
-jest.mock('~/flash');
-
 describe('GeoNodeFormNamespaces', () => {
   let wrapper;
 

@@ -9,10 +9,10 @@ import {
   I18N_VSA_ERROR_STAGE_MEDIAN,
   I18N_VSA_ERROR_SELECTED_STAGE,
 } from '~/analytics/cycle_analytics/constants';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { normalizeHeaders, parseIntPagination } from '~/lib/utils/common_utils';
 import { OVERVIEW_STAGE_CONFIG } from '../../constants';
-import { checkForDataError, flashErrorIfStatusNotOk, throwIfUserForbidden } from '../../utils';
+import { checkForDataError, alertErrorIfStatusNotOk, throwIfUserForbidden } from '../../utils';
 import * as types from '../mutation_types';
 
 export const setSelectedStage = ({ commit }, stage) => commit(types.SET_SELECTED_STAGE, stage);
@@ -24,7 +24,7 @@ export const requestStageData = ({ commit }) => commit(types.REQUEST_STAGE_DATA)
 
 export const receiveStageDataError = ({ commit }, error) => {
   const { message = '' } = error;
-  flashErrorIfStatusNotOk({ error, message: I18N_VSA_ERROR_SELECTED_STAGE });
+  alertErrorIfStatusNotOk({ error, message: I18N_VSA_ERROR_SELECTED_STAGE });
   commit(types.RECEIVE_STAGE_DATA_ERROR, message);
 };
 

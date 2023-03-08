@@ -1,7 +1,7 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlAlert, GlButton, GlLoadingIcon } from '@gitlab/ui';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -18,7 +18,7 @@ import StreamItem from 'ee/audit_events/components/stream/stream_item.vue';
 import StreamEmptyState from 'ee/audit_events/components/stream/stream_empty_state.vue';
 import { mockExternalDestinations, groupPath, destinationDataPopulator } from '../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 Vue.use(VueApollo);
 
 describe('AuditEventsStream', () => {

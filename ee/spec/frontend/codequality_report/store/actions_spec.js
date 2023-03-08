@@ -6,13 +6,13 @@ import * as types from 'ee/codequality_report/store/mutation_types';
 import { TEST_HOST } from 'helpers/test_constants';
 import testAction from 'helpers/vuex_action_helper';
 import Api from '~/api';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { unparsedIssues, parsedIssues } from '../mock_data';
 
 jest.mock('~/api.js');
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('Codequality report actions', () => {
   let mock;
@@ -91,7 +91,7 @@ describe('Codequality report actions', () => {
       );
     });
 
-    it('shows a flash message when there is an error', async () => {
+    it('shows a alert message when there is an error', async () => {
       await testAction(
         actions.fetchReport,
         'error',

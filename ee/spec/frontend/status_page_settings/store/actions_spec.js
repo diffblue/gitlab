@@ -2,12 +2,12 @@ import MockAdapter from 'axios-mock-adapter';
 import * as actions from 'ee/status_page_settings/store/actions';
 import * as types from 'ee/status_page_settings/store/mutation_types';
 import testAction from 'helpers/vuex_action_helper';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { refreshCurrentPage } from '~/lib/utils/url_utility';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 jest.mock('~/lib/utils/url_utility');
 
 let mock;
