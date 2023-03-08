@@ -1,11 +1,14 @@
 <script>
-import { s__, __, sprintf } from '~/locale';
-import ApprovalCheckPopover from 'ee/approvals/components/approval_check_popover.vue';
-import { INVALID_RULES_DOCS_PATH } from '~/vue_merge_request_widget/constants';
+import { GlIcon, GlPopover, GlLink, GlSprintf } from '@gitlab/ui';
+import { __, sprintf } from '~/locale';
+import { helpPagePath } from '~/helpers/help_page_helper';
 
 export default {
   components: {
-    ApprovalCheckPopover,
+    GlIcon,
+    GlPopover,
+    GlLink,
+    GlSprintf,
   },
   props: {
     rule: {
@@ -19,11 +22,11 @@ export default {
   },
   computed: {
     pendingApprovalsText() {
-      if (!this.rule.approvalsRequired) {
-        return __('Optional');
-      }
       if (this.hasInvalidRules) {
         return __('Invalid');
+      }
+      if (!this.rule.approvalsRequired) {
+        return __('Optional');
       }
       return sprintf(__('%{count} of %{total}'), {
         count: this.rule.approvedBy.nodes.length,
@@ -34,26 +37,61 @@ export default {
       return this.invalidApproversRules.some((invalidRule) => invalidRule.id === this.rule.id);
     },
   },
-  i18n: {
-    learnMore: __('Learn more.'),
-    title: __('Invalid rule'),
-    text: s__("mrWidget|No users match the rule's criteria."),
-  },
-  documentationLink: INVALID_RULES_DOCS_PATH,
+  rulesDocsPath: helpPagePath('user/project/merge_requests/approvals/rules.html', {
+    anchor: 'eligible-approvers',
+  }),
+  settingsDocsPath: helpPagePath('user/project/merge_requests/approvals/settings.html', {
+    anchor: 'approval-settings',
+  }),
 };
 </script>
 
 <template>
   <span>
     <span data-testid="approvals-text">{{ pendingApprovalsText }}</span>
-    <approval-check-popover
-      v-if="hasInvalidRules"
-      :popover-id="rule.name"
-      icon-name="question-o"
-      :title="$options.i18n.title"
-      :text="$options.i18n.text"
-      :documentation-link="$options.documentationLink"
-      :documentation-text="$options.i18n.learnMore"
-    />
+    <span v-if="hasInvalidRules" class="gl-vertical-align-middle gl-text-gray-600 js-help gl-ml-3">
+      <gl-icon
+        :id="rule.name"
+        name="question"
+        class="author-link gl-cursor-help"
+        :aria-label="__('help')"
+        :size="14"
+        data-testid="icon2"
+      />
+      <gl-popover :target="rule.name" placement="top" :title="__('Why is this rule invalid?')">
+        {{
+          __('This rule is invalid because no one can approve it for one or more of these reasons:')
+        }}
+        <ul class="gl-my-2 gl-ml-6 gl-pl-0">
+          <li>
+            <gl-sprintf
+              :message="__('It doesn\'t have any %{linkStart}eligible approvers%{linkEnd}.')"
+            >
+              <template #link="{ content }">
+                <gl-link :href="$options.rulesDocsPath" class="gl-font-sm" target="_blank">
+                  {{ content }}
+                </gl-link>
+              </template>
+            </gl-sprintf>
+          </li>
+          <li>
+            <gl-sprintf
+              :message="
+                __(
+                  '%{linkStart}Approval settings%{linkEnd} prevent approvals by its eligible approvers.',
+                )
+              "
+            >
+              <template #link="{ content }">
+                <gl-link :href="$options.settingsDocsPath" class="gl-font-sm" target="_blank">
+                  {{ content }}
+                </gl-link>
+              </template>
+            </gl-sprintf>
+          </li>
+        </ul>
+        {{ __('Invalid rules are automatically approved to unblock the merge request.') }}
+      </gl-popover>
+    </span>
   </span>
 </template>

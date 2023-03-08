@@ -1,6 +1,6 @@
+import { GlPopover } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import NumberOfApprovals from 'ee/vue_merge_request_widget/components/approvals/number_of_approvals.vue';
-import ApprovalCheckPopover from 'ee/approvals/components/approval_check_popover.vue';
 
 describe('EE Number of approvals', () => {
   let wrapper;
@@ -14,7 +14,7 @@ describe('EE Number of approvals', () => {
     });
   };
 
-  const findApprovalCheckPopover = () => wrapper.findComponent(ApprovalCheckPopover);
+  const findApprovalCheckPopover = () => wrapper.findComponent(GlPopover);
   const findApprovalText = () => wrapper.find("[data-testid='approvals-text']");
 
   beforeEach(() => {
