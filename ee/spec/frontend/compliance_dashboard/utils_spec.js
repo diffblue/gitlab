@@ -79,30 +79,4 @@ describe('compliance report utils', () => {
       });
     });
   });
-
-  describe('buildDefaultFrameworkFilterParams', () => {
-    it('returns the tab parameter', () => {
-      const queryString = 'tab=frameworks';
-
-      expect(utils.buildDefaultFrameworkFilterParams(queryString)).toStrictEqual({
-        tab: 'frameworks',
-      });
-    });
-
-    it('returns a default value when no tab query parameter is provided', () => {
-      const queryString = '';
-
-      expect(utils.buildDefaultFrameworkFilterParams(queryString)).toStrictEqual({
-        tab: 'frameworks',
-      });
-    });
-
-    it('does not return unknown parameters', () => {
-      const queryString = 'tab=frameworks&foo=bar&ding=wow';
-
-      expect(utils.buildDefaultFrameworkFilterParams(queryString)).toStrictEqual({
-        tab: 'frameworks',
-      });
-    });
-  });
 });

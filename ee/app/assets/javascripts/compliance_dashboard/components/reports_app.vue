@@ -5,21 +5,17 @@ import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
-import { TABS, TAB_VIOLATIONS } from '../constants';
+import { ROUTE_FRAMEWORKS, ROUTE_VIOLATIONS, TABS } from '../constants';
 import MergeCommitsExportButton from './violations_report/shared/merge_commits_export_button.vue';
-import ViolationsReport from './violations_report/report.vue';
-import FrameworksReport from './frameworks_report/report.vue';
 import ReportHeader from './shared/report_header.vue';
 
 export default {
   name: 'ComplianceReportsApp',
   components: {
-    FrameworksReport,
     GlTabs,
     GlTab,
     MergeCommitsExportButton,
     ReportHeader,
-    ViolationsReport,
   },
   mixins: [glFeatureFlagMixin()],
   props: {
@@ -28,17 +24,11 @@ export default {
       required: false,
       default: '',
     },
-    groupPath: {
-      type: String,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      isViolationsReport: true,
-    };
   },
   computed: {
+    isViolationsReport() {
+      return this.$route.name === ROUTE_VIOLATIONS;
+    },
     hasMergeCommitsCsvExportPath() {
       return Boolean(this.mergeCommitsCsvExportPath);
     },
@@ -48,12 +38,19 @@ export default {
     showTabs() {
       return Boolean(this.glFeatures?.complianceFrameworksReport);
     },
-  },
-  methods: {
-    onTabChange(tabIndex) {
-      this.isViolationsReport = tabIndex === TABS.indexOf(TAB_VIOLATIONS);
+    tabIndex() {
+      return TABS.indexOf(this.$route.name);
     },
   },
+  methods: {
+    goTo(name) {
+      if (this.$route.name !== name) {
+        this.$router.push({ name });
+      }
+    },
+  },
+  ROUTE_VIOLATIONS,
+  ROUTE_FRAMEWORKS,
   i18n: {
     frameworksTab: s__('Compliance Report|Frameworks'),
     heading: __('Compliance report'),
@@ -78,36 +75,18 @@ export default {
       </template>
     </report-header>
 
-    <gl-tabs
-      v-if="showTabs"
-      content-class="gl-pt-5"
-      :sync-active-tab-with-query-params="true"
-      lazy
-      @input="onTabChange"
-    >
+    <gl-tabs v-if="showTabs" :value="tabIndex" content-class="gl-pt-5" lazy>
       <gl-tab
         :title="$options.i18n.violationsTab"
-        query-param-value="violations"
         data-testid="violations-tab"
-      >
-        <violations-report
-          :merge-commits-csv-export-path="mergeCommitsCsvExportPath"
-          :group-path="groupPath"
-        />
-      </gl-tab>
+        @click="goTo($options.ROUTE_VIOLATIONS)"
+      />
       <gl-tab
         :title="$options.i18n.frameworksTab"
-        query-param-value="frameworks"
         data-testid="frameworks-tab"
-      >
-        <frameworks-report :group-path="groupPath" />
-      </gl-tab>
+        @click="goTo($options.ROUTE_FRAMEWORKS)"
+      />
     </gl-tabs>
-    <!-- This additional violations-report element will be removed in a subsequent MR once tabs are always shown -->
-    <violations-report
-      v-else
-      :merge-commits-csv-export-path="mergeCommitsCsvExportPath"
-      :group-path="groupPath"
-    />
+    <router-view />
   </div>
 </template>

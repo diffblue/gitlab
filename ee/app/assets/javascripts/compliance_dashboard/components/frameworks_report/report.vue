@@ -3,10 +3,8 @@ import * as Sentry from '@sentry/browser';
 import { GlAlert } from '@gitlab/ui';
 
 import { s__ } from '~/locale';
-import UrlSync from '~/vue_shared/components/url_sync.vue';
 
-import { DEFAULT_PAGINATION_CURSORS, GRAPHQL_PAGE_SIZE } from 'ee/compliance_dashboard/constants';
-import { buildDefaultFrameworkFilterParams } from '../../utils';
+import { GRAPHQL_PAGE_SIZE } from 'ee/compliance_dashboard/constants';
 import complianceFrameworksGroupProjects from '../../graphql/compliance_frameworks_group_projects.query.graphql';
 import { mapProjects } from '../../graphql/mappers';
 import ProjectsTable from './projects_table.vue';
@@ -18,7 +16,6 @@ export default {
     GlAlert,
     Pagination,
     ProjectsTable,
-    UrlSync,
   },
   props: {
     groupPath: {
@@ -27,16 +24,11 @@ export default {
     },
   },
   data() {
-    const urlQuery = buildDefaultFrameworkFilterParams(window.location.search);
     return {
-      urlQuery,
       hasQueryError: false,
       projects: {
         list: [],
         pageInfo: {},
-      },
-      paginationCursors: {
-        ...DEFAULT_PAGINATION_CURSORS,
       },
     };
   },
@@ -70,30 +62,53 @@ export default {
       const { hasPreviousPage, hasNextPage } = this.projects.pageInfo || {};
       return hasPreviousPage || hasNextPage;
     },
+    paginationCursors() {
+      const { before, after } = this.$route.query;
+
+      if (before) {
+        return {
+          before,
+          last: this.perPage,
+        };
+      }
+
+      return {
+        after,
+        first: this.perPage,
+      };
+    },
     perPage() {
-      return this.paginationCursors.first || this.paginationCursors.last || GRAPHQL_PAGE_SIZE;
+      return parseInt(this.$route.query.perPage || GRAPHQL_PAGE_SIZE, 10);
     },
   },
   methods: {
-    loadPrevPage(startCursor) {
-      this.paginationCursors = {
-        before: startCursor,
-        after: null,
-        last: GRAPHQL_PAGE_SIZE,
-      };
+    loadPrevPage(previousCursor) {
+      this.$router.push({
+        query: {
+          ...this.$route.query,
+          before: previousCursor,
+          after: undefined,
+        },
+      });
     },
-    loadNextPage(endCursor) {
-      this.paginationCursors = {
-        before: null,
-        after: endCursor,
-        first: GRAPHQL_PAGE_SIZE,
-      };
+    loadNextPage(nextCursor) {
+      this.$router.push({
+        query: {
+          ...this.$route.query,
+          before: undefined,
+          after: nextCursor,
+        },
+      });
     },
     onPageSizeChange(perPage) {
-      this.paginationCursors = {
-        ...DEFAULT_PAGINATION_CURSORS,
-        first: perPage,
-      };
+      this.$router.push({
+        query: {
+          ...this.$route.query,
+          before: undefined,
+          after: undefined,
+          perPage,
+        },
+      });
     },
   },
   i18n: {
@@ -121,7 +136,5 @@ export default {
       @next="loadNextPage"
       @page-size-change="onPageSizeChange"
     />
-
-    <url-sync :query="urlQuery" url-params-update-strategy="set" />
   </section>
 </template>

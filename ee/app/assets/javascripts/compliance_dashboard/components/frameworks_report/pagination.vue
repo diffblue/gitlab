@@ -4,6 +4,7 @@ import { GlKeysetPagination } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { NEXT, PREV } from '~/vue_shared/components/pagination/constants';
 import PageSizeSelector from '~/vue_shared/components/page_size_selector.vue';
+import { setUrlParams } from '~/lib/utils/url_utility';
 
 export default {
   components: {
@@ -29,15 +30,30 @@ export default {
       pageSizes: [20, 50, 100],
     };
   },
-  methods: {
-    loadPrevPage(cursor) {
-      this.$emit('prev', cursor);
+  computed: {
+    previousLink() {
+      return setUrlParams({ before: this.pageInfo.startCursor, after: null }, window.location.href);
     },
-    loadNextPage(cursor) {
-      this.$emit('next', cursor);
+    nextLink() {
+      return setUrlParams({ before: null, after: this.pageInfo.endCursor }, window.location.href);
+    },
+  },
+  methods: {
+    loadPrevPage(previousCursor) {
+      this.$emit('prev', previousCursor);
+    },
+    loadNextPage(nextCursor) {
+      this.$emit('next', nextCursor);
     },
     onPageSizeChange(size) {
       this.$emit('page-size-change', size);
+    },
+    onPaginationClick(event) {
+      // this check here is to ensure the proper default behaviour when a user ctrl/cmd + clicks the link
+      if (event.shiftKey || event.ctrlKey || event.altKey || event.metaKey) {
+        return;
+      }
+      event.preventDefault();
     },
   },
   i18n: {
@@ -51,7 +67,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-md-display-flex gl-justify-content-space-between">
+  <div v-if="pageInfo" class="gl-md-display-flex gl-justify-content-space-between">
     <div class="gl-display-none gl-md-display-flex gl-flex-basis-0 gl-flex-grow-1"></div>
     <div
       class="gl-float-left gl-md-display-flex gl-flex-basis-0 gl-flex-grow-1 gl-justify-content-center"
@@ -61,8 +77,11 @@ export default {
         :disabled="isLoading"
         :prev-text="$options.i18n.prev"
         :next-text="$options.i18n.next"
+        :prev-button-link="previousLink"
+        :next-button-link="nextLink"
         @prev="loadPrevPage"
         @next="loadNextPage"
+        @click="onPaginationClick"
       />
     </div>
     <div
