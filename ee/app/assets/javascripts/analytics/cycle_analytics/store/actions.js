@@ -1,6 +1,6 @@
 import { getGroupLabels } from 'ee/api/analytics_api';
 import { removeFlash } from '~/analytics/shared/utils';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { HTTP_STATUS_FORBIDDEN, HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import { __ } from '~/locale';
 import * as types from './mutation_types';

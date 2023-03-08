@@ -6,7 +6,7 @@ import vulnerabilityDiscussionsQuery from 'ee/security_dashboard/graphql/queries
 import MergeRequestNote from 'ee/vue_shared/security_reports/components/merge_request_note.vue';
 import SolutionCard from 'ee/vue_shared/security_reports/components/solution_card.vue';
 import { VULNERABILITY_STATE_OBJECTS } from 'ee/vulnerabilities/constants';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { TYPENAME_VULNERABILITY } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { s__ } from '~/locale';

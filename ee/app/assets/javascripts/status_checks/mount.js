@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { s__ } from '~/locale';
 import StatusChecks from './components/status_checks.vue';
 import createStore from './store';

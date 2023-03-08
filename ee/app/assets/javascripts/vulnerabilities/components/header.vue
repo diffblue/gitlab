@@ -3,7 +3,7 @@ import { GlLoadingIcon, GlButton } from '@gitlab/ui';
 import vulnerabilityStateMutations from 'ee/security_dashboard/graphql/mutate_vulnerability_state';
 import SplitButton from 'ee/vue_shared/security_reports/components/split_button.vue';
 import StatusBadge from 'ee/vue_shared/security_reports/components/status_badge.vue';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_VULNERABILITY } from '~/graphql_shared/constants';
 import axios from '~/lib/utils/axios_utils';

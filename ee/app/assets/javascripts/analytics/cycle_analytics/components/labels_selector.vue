@@ -11,7 +11,7 @@ import { debounce } from 'lodash';
 import { mapGetters, mapState } from 'vuex';
 import { getGroupLabels } from 'ee/api/analytics_api';
 import { removeFlash } from '~/analytics/shared/utils';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { __ } from '~/locale';
 import { DATA_REFETCH_DELAY } from '../../shared/constants';
 

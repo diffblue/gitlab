@@ -1,7 +1,7 @@
 <script>
 import { GlModal, GlModalDirective, GlSprintf } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { __, s__, sprintf } from '~/locale';
 
 const i18n = {

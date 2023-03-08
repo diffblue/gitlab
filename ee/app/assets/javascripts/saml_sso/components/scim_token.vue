@@ -2,7 +2,7 @@
 import { GlSprintf, GlButton, GlLoadingIcon, GlModal } from '@gitlab/ui';
 
 import axios from '~/lib/utils/axios_utils';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import InputCopyToggleVisibility from '~/vue_shared/components/form/input_copy_toggle_visibility.vue';
 import { s__, __ } from '~/locale';
 

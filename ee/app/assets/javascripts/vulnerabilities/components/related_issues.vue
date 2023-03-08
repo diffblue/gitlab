@@ -1,7 +1,7 @@
 <script>
 import { GlButton } from '@gitlab/ui';
 import axios from 'axios';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { TYPE_ISSUE } from '~/issues/constants';
 import { joinPaths, redirectTo } from '~/lib/utils/url_utility';
 import { sprintf, __, s__ } from '~/locale';

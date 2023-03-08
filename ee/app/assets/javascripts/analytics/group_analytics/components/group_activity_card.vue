@@ -2,7 +2,7 @@
 import { GlSkeletonLoader, GlTooltipDirective } from '@gitlab/ui';
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
 import Api from 'ee/api';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { sprintf, __, s__ } from '~/locale';
 import Tracking from '~/tracking';
 

@@ -1,5 +1,5 @@
 import API from 'ee/api';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { normalizeHeaders, parseIntPagination } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
 import { filterToQueryObject } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';

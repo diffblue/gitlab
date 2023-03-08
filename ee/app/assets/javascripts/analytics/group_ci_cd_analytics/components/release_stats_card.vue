@@ -1,6 +1,6 @@
 <script>
 import { GlCard, GlSkeletonLoader } from '@gitlab/ui';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { sprintf, n__, s__ } from '~/locale';
 import { STAT_ERROR_PLACEHOLDER } from '../constants';
 import groupReleaseStatsQuery from '../graphql/group_release_stats.query.graphql';
