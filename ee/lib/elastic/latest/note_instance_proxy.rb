@@ -26,6 +26,10 @@ module Elastic
           data['internal'] = safely_read_attribute_for_elasticsearch(:internal)
         end
 
+        if ::Elastic::DataMigrationService.migration_has_finished?(:add_hashed_root_namespace_id_to_notes)
+          data['hashed_root_namespace_id'] = target&.project&.namespace&.hashed_root_namespace_id
+        end
+
         if noteable.is_a?(Issue)
           data['issue'] = {
             'assignee_id' => noteable.assignee_ids,

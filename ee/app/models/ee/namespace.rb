@@ -434,6 +434,10 @@ module EE
       self_and_ancestor_ids(hierarchy_order: :desc).join(separator) + separator
     end
 
+    def hashed_root_namespace_id
+      ::Search.hash_namespace_id(root_ancestor.id)
+    end
+
     def enable_temporary_storage_increase!
       update(temporary_storage_increase_ends_on: TEMPORARY_STORAGE_INCREASE_DAYS.days.from_now)
     end

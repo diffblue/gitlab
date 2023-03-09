@@ -109,6 +109,7 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state, feature_categor
                   'author_id' => issue.author_id,
                   'confidential' => issue.confidential
                 },
+                'hashed_root_namespace_id' => project.namespace.hashed_root_namespace_id,
                 'type' => note.es_type,
                 'visibility_level' => project.visibility_level,
                 'issues_access_level' => project.issues_access_level
@@ -126,6 +127,19 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state, feature_categor
         note = create(:note_on_issue)
 
         expect(note.__elasticsearch__.as_indexed_json.keys).not_to include('internal')
+      end
+    end
+
+    context 'when hashed root namespace id note migration has not been finished' do
+      before do
+        set_elasticsearch_migration_to(:add_hashed_root_namespace_id_to_notes, including: false)
+      end
+
+      it 'does not include the search.hashed_root_namespace_id' do
+        note = create(:note_on_issue)
+        payload = note.__elasticsearch__.as_indexed_json
+
+        expect(payload).not_to include('hashed_root_namespace_id')
       end
     end
 

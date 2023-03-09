@@ -132,6 +132,13 @@ RSpec.describe Namespace do
     end
   end
 
+  describe '#hashed_root_namespace_id', feature_category: :global_search do
+    it 'delegates to Search.hash_namespace_id' do
+      expect(::Search).to receive(:hash_namespace_id).with(namespace.root_ancestor.id).and_return 8_675_309
+      expect(namespace.hashed_root_namespace_id).to eq(8_675_309)
+    end
+  end
+
   describe '#invalidate_elasticsearch_indexes_cache!' do
     let(:namespace) { create :namespace }
 
