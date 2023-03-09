@@ -24,6 +24,8 @@ class ImportSoftwareLicensesWorker # rubocop:disable Scalability/IdempotentWorke
         )
       end
     end
+
+    Rails.cache.delete(SoftwareLicense::ALL_LICENSE_NAMES_CACHE_KEY)
   end
 
   private

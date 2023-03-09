@@ -29,6 +29,12 @@ RSpec.describe ImportSoftwareLicensesWorker do
       it { expect(SoftwareLicense.count).to eq(3) }
       it { expect(SoftwareLicense.pluck(:spdx_identifier)).to contain_exactly(spdx_apache_license.id, spdx_mit_license.id, spdx_bsd_license.id) }
       it { expect(SoftwareLicense.pluck(:name)).to contain_exactly(spdx_apache_license.name, spdx_mit_license.name, spdx_bsd_license.name) }
+
+      it 'deletes the software licenses from cache' do
+        expect(Rails.cache).to receive(:delete).with(SoftwareLicense::ALL_LICENSE_NAMES_CACHE_KEY)
+
+        subject.perform
+      end
     end
 
     context 'when run multiple times' do
