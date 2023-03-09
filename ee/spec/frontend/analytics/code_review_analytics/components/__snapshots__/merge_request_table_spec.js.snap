@@ -2,10 +2,9 @@
 
 exports[`MergeRequestTable component template matches the snapshot 1`] = `
 <table
-  aria-busy="false"
+  aria-busy=""
   aria-colcount="7"
-  aria-describedby="__BVID__36__caption_"
-  class="table b-table gl-table my-3 b-table-stacked-sm"
+  class="table b-table my-3 gl-table b-table-stacked-sm"
   id="__BVID__36"
   role="table"
 >
