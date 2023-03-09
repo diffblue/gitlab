@@ -5,7 +5,7 @@ import {
   GlFormInput,
   GlFormTextarea,
   GlButton,
-  GlListbox,
+  GlCollapsibleListbox,
   GlAlert,
 } from '@gitlab/ui';
 import { debounce } from 'lodash';
@@ -23,7 +23,15 @@ const feedbackMap = {
 };
 
 export default {
-  components: { GlForm, GlFormGroup, GlFormInput, GlFormTextarea, GlButton, GlListbox, GlAlert },
+  components: {
+    GlForm,
+    GlFormGroup,
+    GlFormInput,
+    GlFormTextarea,
+    GlButton,
+    GlCollapsibleListbox,
+    GlAlert,
+  },
   directives: {
     validation: validation(feedbackMap),
   },
@@ -237,7 +245,7 @@ export default {
         :value="recipientsValue"
         required
       />
-      <gl-listbox
+      <gl-collapsible-listbox
         v-model="form.fields.recipients.value"
         searchable
         :loading="recipientsLoading"

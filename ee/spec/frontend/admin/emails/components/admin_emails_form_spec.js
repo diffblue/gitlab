@@ -1,4 +1,4 @@
-import { GlAlert, GlForm, GlListbox } from '@gitlab/ui';
+import { GlAlert, GlForm, GlCollapsibleListbox } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import AdminEmailsForm from 'ee/admin/emails/components/admin_emails_form.vue';
@@ -44,7 +44,7 @@ describe('AdminEmailsForm', () => {
   };
   const findSubmitButton = () =>
     wrapper.findByRole('button', { name: AdminEmailsForm.i18n.submitButton });
-  const findGlListbox = () => wrapper.findComponent(GlListbox);
+  const findGlListbox = () => wrapper.findComponent(GlCollapsibleListbox);
   const showGlListbox = async () => {
     findGlListbox().vm.$emit('shown');
     await nextTick();
