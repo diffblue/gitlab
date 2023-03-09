@@ -13,6 +13,7 @@ import {
 } from '@gitlab/ui';
 
 import { createAlert } from '~/flash';
+import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { getDayDifference } from '~/lib/utils/datetime_utility';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { mergeUrlParams } from '~/lib/utils/url_utility';
@@ -119,8 +120,8 @@ export default {
       variables() {
         return {
           fullPath: this.fullPath,
-          isGroup: this.type === 'group',
-          isProject: this.type === 'project',
+          isGroup: this.type === WORKSPACE_GROUP,
+          isProject: this.type === WORKSPACE_PROJECT,
         };
       },
       update(data) {
