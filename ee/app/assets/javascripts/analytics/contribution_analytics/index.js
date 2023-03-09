@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import * as Sentry from '@sentry/browser';
 import createDefaultClient from '~/lib/graphql';
 import LegacyApp from './legacy_components/app.vue';
 import App from './components/app.vue';
@@ -27,12 +28,22 @@ export default (el) => {
     memberContributionsPath,
   } = el.dataset;
 
+  let analyticsDataParsed = {};
+
+  if (!gon.features?.contributionAnalyticsGraphql) {
+    try {
+      analyticsDataParsed = JSON.parse(analyticsData);
+    } catch (e) {
+      Sentry.captureException(e);
+    }
+  }
+
   const {
     labels,
     push,
     merge_requests_created: mergeRequestsCreated,
     issues_closed: issuesClosed,
-  } = JSON.parse(analyticsData);
+  } = analyticsDataParsed;
 
   return new Vue({
     el,

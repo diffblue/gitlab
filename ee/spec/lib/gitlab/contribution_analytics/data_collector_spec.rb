@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::ContributionAnalytics::DataCollector do
+RSpec.describe Gitlab::ContributionAnalytics::DataCollector, feature_category: :value_stream_management do
   let_it_be(:group) { create(:group) }
   let_it_be(:project1) { create(:project, group: group) }
   let_it_be(:project2) { create(:project, group: group) }
@@ -134,6 +134,39 @@ RSpec.describe Gitlab::ContributionAnalytics::DataCollector do
         expect(data_collector.total_merge_requests_approved_count).to eq(0)
         expect(data_collector.total_issues_closed_count).to eq(0)
       end
+    end
+  end
+
+  describe '#legacy_page_data' do
+    subject { described_class.new(group: group).legacy_page_data }
+
+    context 'when contribution_analytics_graphql feature flag is enabled' do
+      before do
+        stub_feature_flags(contribution_analytics_graphql: true)
+      end
+
+      it { is_expected.to eq({}) }
+    end
+
+    context 'when contribution_analytics_graphql feature flag is not enabled' do
+      before do
+        stub_feature_flags(contribution_analytics_graphql: false)
+      end
+
+      it {
+        is_expected.to include(
+          :analytics_data,
+          :total_push_count,
+          :total_commit_count,
+          :total_push_author_count,
+          :total_merge_requests_closed_count,
+          :total_merge_requests_created_count,
+          :total_merge_requests_merged_count,
+          :total_issues_created_count,
+          :total_issues_closed_count,
+          :member_contributions_path
+        )
+      }
     end
   end
 end

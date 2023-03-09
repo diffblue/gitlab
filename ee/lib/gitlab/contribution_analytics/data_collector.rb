@@ -130,6 +130,23 @@ module Gitlab
         }
       end
 
+      def legacy_page_data
+        return {} if Feature.enabled?(:contribution_analytics_graphql, group)
+
+        {
+          analytics_data: group_member_contributions_table_data.to_json.html_safe,
+          total_push_count: total_push_count,
+          total_commit_count: total_commit_count,
+          total_push_author_count: total_push_author_count,
+          total_merge_requests_closed_count: total_merge_requests_closed_count,
+          total_merge_requests_created_count: total_merge_requests_created_count,
+          total_merge_requests_merged_count: total_merge_requests_merged_count,
+          total_issues_created_count: total_issues_created_count,
+          total_issues_closed_count: total_issues_closed_count,
+          member_contributions_path: ::Gitlab::Routing.url_helpers.group_contribution_analytics_path(group, { start_date: from, format: :json })
+        }
+      end
+
       # rubocop: disable CodeReuse/ActiveRecord
       def base_query
         cte = Gitlab::SQL::CTE.new(:project_ids,
