@@ -23,8 +23,8 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
 
   subject(:indexer) { described_class.new(project, force: force_reindexing) }
 
-  context 'empty project', :elastic, :clean_gitlab_redis_shared_state do
-    let(:project) { create(:project) }
+  context 'empty project', :elastic do
+    let_it_be_with_reload(:project) { create(:project, :empty_repo) }
 
     it 'updates the index status without running the indexing command' do
       expect_popen.never
@@ -34,7 +34,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
       expect_index_status(Gitlab::Git::BLANK_SHA)
     end
 
-    context 'when indexing an unborn head', :elastic, :clean_gitlab_redis_shared_state do
+    context 'when indexing a project with no repository' do
       it 'updates the index status without running the indexing command' do
         allow(project.repository).to receive(:exists?).and_return(false)
         expect_popen.never
@@ -47,7 +47,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
   end
 
   describe '.timeout' do
-    context 'when feature flag is enabled' do
+    context 'when advanced_search_decrease_indexing_timeout feature flag is enabled' do
       before do
         stub_feature_flags(advanced_search_decrease_indexing_timeout: true)
       end
@@ -57,7 +57,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
       end
     end
 
-    context 'when feature flag is disabled' do
+    context 'when advanced_search_decrease_indexing_timeout feature flag is disabled' do
       before do
         stub_feature_flags(advanced_search_decrease_indexing_timeout: false)
       end
@@ -98,7 +98,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
     end
   end
 
-  context 'with an indexed project', :elastic, :clean_gitlab_redis_shared_state do
+  context 'with an indexed project', :elastic do
     let(:to_sha) { project.repository.commit.sha }
 
     before do
@@ -123,7 +123,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
       end
     end
 
-    context 'when indexing a HEAD commit', :elastic, :clean_gitlab_redis_shared_state do
+    context 'when indexing a HEAD commit', :elastic do
       it_behaves_like 'index up to the specified commit'
 
       context 'when search curation is disabled' do
@@ -251,7 +251,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
       end
     end
 
-    context 'when indexing a non-HEAD commit', :elastic, :clean_gitlab_redis_shared_state do
+    context 'when indexing a non-HEAD commit', :elastic do
       let(:to_sha) { project.repository.commit('HEAD~1').sha }
 
       it_behaves_like 'index up to the specified commit'
@@ -322,8 +322,9 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
       end
     end
 
-    context "when indexing a project's wiki", :elastic, :clean_gitlab_redis_shared_state do
-      let(:project) { create(:project, :wiki_repo) }
+    context "when indexing a project's wiki", :elastic do
+      let_it_be_with_reload(:project) { create(:project, :wiki_repo) }
+
       let(:indexer) { described_class.new(project, wiki: true) }
       let(:to_sha) { project.wiki.repository.commit('master').sha }
 
@@ -511,9 +512,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
     end
   end
 
-  context 'when a file is larger than elasticsearch_indexed_file_size_limit_kb', :elastic, :clean_gitlab_redis_shared_state do
-    let(:project) { create(:project, :repository) }
-
+  context 'when a file is larger than elasticsearch_indexed_file_size_limit_kb', :elastic do
     before do
       stub_ee_application_setting(elasticsearch_indexed_file_size_limit_kb: 1) # 1 KiB limit
 
@@ -535,7 +534,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
     end
   end
 
-  context 'when a file path is larger than elasticsearch max size of 512 bytes', :elastic, :clean_gitlab_redis_shared_state do
+  context 'when a file path is larger than elasticsearch max size of 512 bytes', :elastic do
     let(:long_path) { "#{'a' * 1000}_file.txt" }
 
     before do
@@ -551,7 +550,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
   end
 
   context 'when project no longer exists in database' do
-    let!(:logger_double) { instance_double(Gitlab::Elasticsearch::Logger) }
+    let(:logger_double) { instance_double(Gitlab::Elasticsearch::Logger) }
 
     before do
       allow(Gitlab::Elasticsearch::Logger).to receive(:build).and_return(logger_double)
@@ -560,13 +559,41 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
       allow(logger_double).to receive(:debug)
     end
 
-    it 'does not raises an exception and prints log message' do
+    it 'does not raise an exception and prints log message' do
       expect(logger_double).to receive(:debug).with(
-        message: 'Index status could not be updated as the project does not exist',
-        project_id: project.id,
-        index_wiki: false
+        {
+          'class' => 'Gitlab::Elastic::Indexer',
+          'message' => 'Index status not updated. The project does not exist.',
+          'project_id' => project.id,
+          'index_wiki' => false
+        }
       )
       expect(IndexStatus).not_to receive(:safe_find_or_create_by!).with(project_id: project.id)
+      expect { indexer.run }.not_to raise_error
+    end
+  end
+
+  context 'when IndexStatus.safe_find_or_create_by! throws an InvalidForeignKey exception' do
+    let(:logger_double) { instance_double(Gitlab::Elasticsearch::Logger) }
+
+    before do
+      allow(Gitlab::Elasticsearch::Logger).to receive(:build).and_return(logger_double)
+      allow(indexer).to receive(:run_indexer!)
+      allow(indexer).to receive(:purge_unreachable_commits_from_index?).and_return(false)
+      allow(logger_double).to receive(:debug)
+    end
+
+    it 'does not raise an exception and prints a log message' do
+      expect(logger_double).to receive(:debug).with(
+        {
+          'class' => 'Gitlab::Elastic::Indexer',
+          'message' => 'Index status not created, project not found',
+          'project_id' => project.id
+        }
+      )
+
+      allow(IndexStatus).to receive(:safe_find_or_create_by!).and_raise(ActiveRecord::InvalidForeignKey)
+
       expect { indexer.run }.not_to raise_error
     end
   end

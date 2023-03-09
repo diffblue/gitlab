@@ -7,6 +7,7 @@ module Gitlab
   module Elastic
     class Indexer
       include Gitlab::Utils::StrongMemoize
+      include Gitlab::Loggable
 
       Error = Class.new(StandardError)
 
@@ -48,11 +49,13 @@ module Gitlab
         return update_index_status(Gitlab::Git::BLANK_SHA) unless commit
 
         repository.__elasticsearch__.elastic_writing_targets.each do |target|
-          logger.debug(message: "indexing_commit_range",
-                       project_id: project.id,
-                       from_sha: from_sha,
-                       to_sha: commit.sha,
-                       index_wiki: index_wiki?)
+          logger.debug(build_structured_payload(message: 'indexing_commit_range',
+                                                project_id: project.id,
+                                                from_sha: from_sha,
+                                                to_sha: commit.sha,
+                                                index_wiki: index_wiki?
+                                               )
+                      )
 
           # This might happen when default branch has been reset or rebased.
           base_sha = if purge_unreachable_commits_from_index?(commit.sha)
@@ -119,14 +122,14 @@ module Gitlab
 
         return unless status.present?
 
-        payload = {
+        payload = build_structured_payload(
           message: output,
           status: status,
           project_id: project.id,
           from_sha: base_sha,
           to_sha: to_sha,
           index_wiki: index_wiki?
-        }
+        )
 
         if status == 0
           logger.info(payload)
@@ -243,11 +246,11 @@ module Gitlab
       # rubocop: disable CodeReuse/ActiveRecord
       def update_index_status(to_sha)
         unless Project.exists?(id: project.id)
-          logger.debug(
-            message: 'Index status could not be updated as the project does not exist',
-            project_id: project.id,
-            index_wiki: index_wiki?
-          )
+          logger.debug(build_structured_payload(message: 'Index status not updated. The project does not exist.',
+                                                project_id: project.id,
+                                                index_wiki: index_wiki?
+                                               )
+                      )
           return false
         end
 
@@ -267,6 +270,9 @@ module Gitlab
         @index_status.update!(attributes)
 
         project.reload_index_status
+      rescue ActiveRecord::InvalidForeignKey
+        logger.debug(build_structured_payload(message: 'Index status not created, project not found',
+                                              project_id: project.id))
       end
       # rubocop: enable CodeReuse/ActiveRecord
 
