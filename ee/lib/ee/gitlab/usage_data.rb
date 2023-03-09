@@ -328,7 +328,6 @@ module EE
 
         # Omitted because no user, creator or author associated: `boards`, `labels`, `milestones`, `uploads`
         # Omitted because too expensive: `epics_deepest_relationship_level`
-        # Omitted because of encrypted properties: `projects_jira_cloud_active`, `projects_jira_server_active`
         override :usage_activity_by_stage_plan
         def usage_activity_by_stage_plan(time_period)
           super.merge({
