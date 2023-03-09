@@ -14,25 +14,6 @@ RSpec.describe MarkupHelper do
     allow(helper).to receive(:current_user).and_return(user)
   end
 
-  describe '#first_line_in_markdown' do
-    context 'with scoped label references' do
-      let(:label) { create(:label, title: 'key::some name', project: project) }
-
-      before do
-        stub_licensed_features(scoped_labels: true)
-      end
-
-      it 'shows proper tooltip' do
-        note = build(:note, note: label.to_reference, project: project)
-
-        result = helper.first_line_in_markdown(note, :note, 100, is_todo: true, project: project)
-        doc = Nokogiri::HTML.parse(result)
-
-        expect(doc.css('.gl-label-link')[0].attr('data-html')).to eq('true')
-      end
-    end
-  end
-
   describe '#render_wiki_content' do
     subject { helper.render_wiki_content(wiki_page) }
 
