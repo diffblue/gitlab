@@ -12,7 +12,7 @@ module LicenseHelper
   end
 
   def current_license_title
-    License.current&.plan&.titleize || _('Free')
+    License.current&.plan&.titleize || _('BillingPlans|Free')
   end
 
   def has_active_license?
