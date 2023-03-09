@@ -87,25 +87,32 @@ module EE
       enabled = project.nil? || ref.blank? || ref == project.default_branch
 
       tags = {}
-      tags[:doc_link_start], tags[:doc_link_end] = tag.a(PLACEHOLDER,
-                                                         href: help_page_path('user/search/advanced_search'),
-                                                         rel: :noopener,
-                                                         target: '_blank')
-                                                     .split(PLACEHOLDER)
+      tags[:doc_link_start], tags[:doc_link_end] = tag.a(
+        PLACEHOLDER,
+        href: help_page_path('user/search/advanced_search'),
+        rel: :noopener,
+        target: '_blank'
+      ).split(PLACEHOLDER)
 
       unless enabled
         tags[:ref_elem] = tag.a(href: '#', class: 'ref-truncated has-tooltip', data: { title: ref }) do
           tag.code(ref, class: 'gl-white-space-nowrap')
         end
+
         tags[:default_branch] = tag.code(project.default_branch)
-        tags[:default_branch_link_start], tags[:default_branch_link_end] = link_to(PLACEHOLDER,
-                                                                                   search_path(safe_params.except(:repository_ref)),
-                                                                                   data: { testid: 'es-search-default-branch' })
-                                                                             .split(PLACEHOLDER)
-        tags[:docs_link] = link_to(_('Learn more.'),
-                                   help_page_path('user/search/advanced_search', anchor: 'use-the-advanced-search-syntax'),
-                                   target: '_blank',
-                                   rel: 'noopener noreferrer')
+
+        tags[:default_branch_link_start], tags[:default_branch_link_end] = link_to(
+          PLACEHOLDER,
+          search_path(safe_params.except(:repository_ref)),
+          data: { testid: 'es-search-default-branch' }
+        ).split(PLACEHOLDER)
+
+        tags[:docs_link] = link_to(
+          _('Learn more.'),
+          help_page_path('user/search/advanced_search', anchor: 'use-the-advanced-search-syntax'),
+          target: '_blank',
+          rel: 'noopener noreferrer'
+        )
       end
 
       # making sure all the tags are marked `html_safe`
