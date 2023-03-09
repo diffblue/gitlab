@@ -31604,6 +31604,9 @@ msgstr ""
 msgid "Pipelines|GitLab Runner is an application that works with GitLab CI/CD to run jobs in a pipeline. There are active runners available to run your jobs right now. If you prefer, you can %{settingsLinkStart}configure your runners%{settingsLinkEnd} or %{docsLinkStart}learn more%{docsLinkEnd} about runners."
 msgstr ""
 
+msgid "Pipelines|Go to the pipeline editor"
+msgstr ""
+
 msgid "Pipelines|If you are unsure, ask a project maintainer to review it for you."
 msgstr ""
 
@@ -31740,6 +31743,9 @@ msgid "Pipelines|Trigger user has insufficient permissions to project"
 msgstr ""
 
 msgid "Pipelines|Try test template"
+msgstr ""
+
+msgid "Pipelines|Unable to create pipeline"
 msgstr ""
 
 msgid "Pipelines|Unable to validate CI/CD configuration. See the %{linkStart}GitLab CI/CD troubleshooting guide%{linkEnd} for more details."
