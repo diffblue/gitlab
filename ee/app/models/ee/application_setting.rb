@@ -149,7 +149,7 @@ module EE
                 inclusion: { in: [true, false], message: 'must be a boolean value' }
 
       validates :cube_api_base_url,
-                addressable_url: { allow_localhost: true },
+                addressable_url: ::ApplicationSetting::ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ allow_localhost: true }),
                 presence: true,
                 if: :product_analytics_enabled
 
@@ -158,7 +158,7 @@ module EE
                 allow_blank: true
 
       validates :jitsu_host,
-                addressable_url: { allow_localhost: true },
+                addressable_url: ::ApplicationSetting::ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ allow_localhost: true }),
                 presence: true,
                 if: :product_analytics_enabled
 
