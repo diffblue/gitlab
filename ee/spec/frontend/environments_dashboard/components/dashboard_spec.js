@@ -57,7 +57,6 @@ describe('dashboard', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     store.replaceState(state());
   });
 

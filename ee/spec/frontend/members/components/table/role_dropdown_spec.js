@@ -30,10 +30,6 @@ describe('RoleDropdown', () => {
 
   const findDropdown = () => wrapper.findComponent(GlDropdown);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when member has `canOverride` permissions', () => {
     describe('when member is overridden', () => {
       it('renders LDAP dropdown item', async () => {

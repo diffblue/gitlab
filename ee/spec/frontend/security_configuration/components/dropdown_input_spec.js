@@ -43,11 +43,6 @@ describe('DropdownInput component', () => {
   const findRestoreDefaultLink = () => wrapper.findComponent(GlLink);
   const findSectionHeader = () => wrapper.findByTestId('dropdown-input-section-header');
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('label', () => {
     describe('with a description', () => {
       beforeEach(() => {

@@ -33,7 +33,6 @@ describe('GeoReplicable', () => {
   };
 
   afterEach(() => {
-    wrapper.destroy();
     store = null;
   });
 

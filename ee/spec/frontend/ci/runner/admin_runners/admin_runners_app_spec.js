@@ -73,7 +73,6 @@ describe('AdminRunnersApp', () => {
   afterEach(() => {
     mockRunnersHandler.mockReset();
     mockRunnersCountHandler.mockReset();
-    wrapper.destroy();
   });
 
   describe('upgrade icons', () => {

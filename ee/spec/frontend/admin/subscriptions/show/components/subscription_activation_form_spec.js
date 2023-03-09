@@ -65,10 +65,6 @@ describe('SubscriptionActivationForm', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('component setup', () => {
     beforeEach(() => createComponentWithApollo());
 

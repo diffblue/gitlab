@@ -30,10 +30,6 @@ describe('WeeksHeaderItemComponent', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('timeline header label', () => {
     it('is string containing Year, Month and Date for first timeframe item of the entire timeframe', () => {
       createComponent({});

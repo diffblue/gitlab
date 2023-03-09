@@ -23,10 +23,6 @@ describe('ProjectsTable component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default behavior', () => {
     it('renders the loading indicator while loading', () => {
       wrapper = createComponent({ projects: [], isLoading: true });

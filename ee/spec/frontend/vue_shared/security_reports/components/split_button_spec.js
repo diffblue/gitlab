@@ -32,11 +32,6 @@ describe('Split Button', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   it('does not render dropdown if buttons array is empty', () => {
     createComponent({
       buttons: [],

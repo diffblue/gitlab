@@ -29,11 +29,6 @@ describe('FormInput component', () => {
   const findInputComponent = () => wrapper.findComponent(GlFormInput);
   const findRestoreDefaultLink = () => wrapper.findComponent(GlLink);
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('label', () => {
     beforeEach(() => {
       createComponent({

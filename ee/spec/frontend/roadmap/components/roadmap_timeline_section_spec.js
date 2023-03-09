@@ -31,10 +31,6 @@ describe('RoadmapTimelineSectionComponent', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('section container styles', () => {
     it('`width` value based on epic details cell width, timeline cell width and timeframe length', () => {
       createComponent();

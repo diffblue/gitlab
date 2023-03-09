@@ -47,10 +47,6 @@ describe('Modal update', () => {
     createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findModal = () => wrapper.findComponent(SharedModal);
 
   describe('Modal', () => {

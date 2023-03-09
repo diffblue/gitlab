@@ -23,10 +23,6 @@ describe('MergeRequestTableRow component', () => {
   const findMrMetrics = () => wrapper.find('.js-mr-metrics');
   const findMetricColumns = () => findMrMetrics().findAllComponents(MetricColumn);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('on creation', () => {
     beforeEach(() => {
       factory();

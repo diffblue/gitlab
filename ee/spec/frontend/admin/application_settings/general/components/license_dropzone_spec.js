@@ -26,11 +26,6 @@ describe('Upload dropzone component', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   it('displays an error when upload-dropzone emits an error', async () => {
     findUploadDropzone().vm.$emit('error');
 

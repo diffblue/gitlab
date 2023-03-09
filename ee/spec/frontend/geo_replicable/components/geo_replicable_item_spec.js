@@ -42,10 +42,6 @@ describe('GeoReplicableItem', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findReplicableItemHeader = () => wrapper.findByTestId('replicable-item-header');
   const findReplicableItemSyncStatus = () =>
     findReplicableItemHeader().findComponent(GeoReplicableStatus);

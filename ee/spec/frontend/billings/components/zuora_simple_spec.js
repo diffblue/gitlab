@@ -76,7 +76,6 @@ describe('Zuora', () => {
   afterEach(() => {
     delete window.Z;
     unmockTracking();
-    wrapper.destroy();
   });
 
   describe('initial state', () => {

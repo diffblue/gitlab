@@ -19,10 +19,6 @@ describe('ReportHeader component', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default behavior', () => {
     beforeEach(() => {
       wrapper = createComponent({

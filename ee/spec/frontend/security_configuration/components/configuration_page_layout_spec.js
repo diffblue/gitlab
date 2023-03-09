@@ -21,10 +21,6 @@ describe('Security Configuration Page Layout component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('matches the snapshot', () => {
     createComponent();
     expect(wrapper.element).toMatchSnapshot();

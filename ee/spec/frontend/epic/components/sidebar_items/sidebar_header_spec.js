@@ -18,10 +18,6 @@ describe('SidebarHeaderComponent', () => {
     });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('template', () => {
     it('renders component container element with classes `block` & `issuable-sidebar-header`', () => {
       expect(wrapper.classes('block')).toBe(true);

@@ -25,10 +25,6 @@ describe('ee/vulnerabilities/components/generic_report/types/value.vue', () => {
       wrapper = createWrapper();
     });
 
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
     it(`renders ${fieldType} type`, () => {
       expect(wrapper.text()).toBe(value.toString());
     });

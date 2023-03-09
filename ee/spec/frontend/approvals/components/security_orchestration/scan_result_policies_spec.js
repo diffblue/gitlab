@@ -49,10 +49,6 @@ describe('ScanResultPolicies', () => {
     store = { modules: { securityOrchestrationModule: securityOrchestrationModule() } };
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when no policy is available', () => {
     beforeEach(() => {
       jest.spyOn(gqClient, 'query').mockResolvedValue(emptyQueryResponse);

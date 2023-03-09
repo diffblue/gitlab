@@ -49,7 +49,6 @@ describe('Edit feature flag form', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     mock.restore();
   });
 

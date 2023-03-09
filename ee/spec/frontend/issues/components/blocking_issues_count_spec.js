@@ -19,10 +19,6 @@ describe('BlockingIssuesCount component', () => {
       provide: { hasBlockedIssuesFeature },
     });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('with blocked_issues license', () => {
     describe('when blocking issues count is positive', () => {
       beforeEach(() => {

@@ -49,10 +49,6 @@ describe('RelatedItemsTree', () => {
 
     const findEpicsIssuesSplitButton = () => wrapper.findComponent(EpicActionsSplitButton);
 
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
     describe('Count popover', () => {
       beforeEach(() => {
         wrapper = createComponent();

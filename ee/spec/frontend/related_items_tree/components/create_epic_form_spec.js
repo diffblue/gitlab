@@ -37,8 +37,9 @@ describe('RelatedItemsTree', () => {
     });
 
     afterEach(() => {
-      wrapper.destroy();
       mock.restore();
+      // eslint-disable-next-line @gitlab/vtu-no-explicit-wrapper-destroy
+      wrapper.destroy();
     });
 
     describe('computed', () => {

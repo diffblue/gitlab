@@ -30,10 +30,6 @@ describe('Status checks', () => {
     wrapper.vm.$refs.updateModal.show = jest.fn();
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findCreateModal = () => wrapper.findComponent(ModalCreate);
   const findDeleteModal = () => wrapper.findComponent(ModalDelete);
   const findUpdateModal = () => wrapper.findComponent(ModalUpdate);

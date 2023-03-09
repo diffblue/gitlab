@@ -48,10 +48,6 @@ describe('Incidents Service Level Agreement', () => {
     });
   }
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('Incident SLA field', () => {
     it('displays the column when the feature is available', () => {
       mountComponent({ slaFeatureAvailable: true });

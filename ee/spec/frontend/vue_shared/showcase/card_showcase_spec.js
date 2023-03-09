@@ -17,11 +17,6 @@ describe('Card Showcase component', () => {
   const findPrimaryButton = () => wrapper.findByTestId('primary-button');
   const findSecondaryButton = () => wrapper.findByTestId('secondary-button');
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const createWrapper = () => {
     wrapper = shallowMountExtended(CardShowcase, {
       propsData: {

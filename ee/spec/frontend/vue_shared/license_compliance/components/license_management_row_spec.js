@@ -6,10 +6,6 @@ import { allowedLicense, deniedLicense } from 'ee_jest/vue_shared/license_compli
 let wrapper;
 
 describe('LicenseManagementRow', () => {
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('allowed license', () => {
     beforeEach(() => {
       const props = { license: allowedLicense };

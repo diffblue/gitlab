@@ -40,10 +40,6 @@ describe('Payment Method', () => {
     wrapper = createComponent({ apolloProvider: mockApollo });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('validations', () => {
     const isStepValid = () => wrapper.findComponent(Step).props('isValid');
 

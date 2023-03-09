@@ -28,10 +28,6 @@ describe('ee/vulnerabilities/components/generic_report/types/list_graphql.vue', 
   const findListItems = () => wrapper.findAllByTestId('generic-report-type-list-item');
   const findReportItems = () => wrapper.findAllByTestId('report-item');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders a list', () => {
     wrapper = createWrapper();
     expect(findList().exists()).toBe(true);

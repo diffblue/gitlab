@@ -35,10 +35,6 @@ describe('SummaryDetails', () => {
   const findVatInfoLine = () => wrapper.findByTestId('vat-info-line');
   const findToolip = () => wrapper.findComponent(GlIcon);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('rendering', () => {
     beforeEach(() => {
       wrapper = createComponent();

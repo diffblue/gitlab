@@ -43,10 +43,6 @@ describe('UserSelect', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findTokenSelector = () => wrapper.findComponent(GlTokenSelector);
   const findSelectedUserToken = () => wrapper.findComponent(GlToken);
   const findAvatar = () => wrapper.findComponent(GlAvatar);

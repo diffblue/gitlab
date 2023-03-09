@@ -57,7 +57,6 @@ describe('IssuesAnalyticsTable', () => {
 
   afterEach(() => {
     fakeApollo = null;
-    wrapper.destroy();
   });
 
   describe('while fetching data', () => {

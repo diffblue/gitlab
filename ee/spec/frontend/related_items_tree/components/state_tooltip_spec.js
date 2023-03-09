@@ -43,10 +43,6 @@ describe('RelatedItemsTree', () => {
       wrapper = createComponent({});
     });
 
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
     describe('computed', () => {
       describe('stateText', () => {
         it('returns string `Created` when `isOpen` prop is true', async () => {

@@ -49,10 +49,6 @@ describe('RotationAssignee', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('rotation assignee token', () => {
     it('should render an assignee name and avatar', () => {
       const LARGE_SHIFT_WIDTH = 150;

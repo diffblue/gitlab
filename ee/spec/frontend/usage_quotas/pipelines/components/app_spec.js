@@ -71,10 +71,6 @@ describe('PipelineUsageApp', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('Buy additional minutes Button', () => {
     const mockApollo = createMockApolloProvider();
 

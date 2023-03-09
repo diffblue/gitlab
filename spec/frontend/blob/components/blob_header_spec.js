@@ -26,10 +26,6 @@ describe('Blob Header Default Actions', () => {
     });
   }
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('rendering', () => {
     const findDefaultActions = () => wrapper.findComponent(DefaultActions);
 

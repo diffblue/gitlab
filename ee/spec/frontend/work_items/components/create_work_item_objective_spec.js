@@ -69,7 +69,6 @@ describe('Create work item Objective component', () => {
   };
 
   afterEach(() => {
-    wrapper.destroy();
     fakeApollo = null;
   });
 

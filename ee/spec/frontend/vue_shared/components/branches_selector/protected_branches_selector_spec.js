@@ -39,10 +39,6 @@ describe('Protected Branches Selector', () => {
       .mockReturnValue(Promise.resolve(TEST_PROTECTED_BRANCHES));
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('Initialization', () => {
     it('renders dropdown', async () => {
       createComponent();

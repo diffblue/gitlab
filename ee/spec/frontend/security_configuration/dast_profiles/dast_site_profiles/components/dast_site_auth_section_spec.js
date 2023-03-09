@@ -28,10 +28,6 @@ describe('DastSiteAuthSection', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const inputFieldsWithValues = {
     url: 'http://www.gitlab.com',
     username: 'foo',

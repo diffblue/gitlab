@@ -24,10 +24,6 @@ describe('ee/vulnerabilities/components/generic_report/types/diff.vue', () => {
     wrapper = createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findButton = (type) => wrapper.findByTestId(`${type}Button`);
   const findDiffOutput = () => wrapper.find('.code').text();
   const findDiffLines = () => wrapper.findAllByTestId('diffLine');

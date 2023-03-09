@@ -15,10 +15,6 @@ describe('Insights chart error component', () => {
     });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders the component', () => {
     expect(wrapper.find('.content-title').text()).toBe(`${title}: "${chartName}"`);
 

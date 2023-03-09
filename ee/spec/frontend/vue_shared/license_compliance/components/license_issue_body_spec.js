@@ -29,10 +29,6 @@ describe('LicenseIssueBody', () => {
     createComponent({ issue: licenseReport[0] });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('on load', () => {
     it('renders license issue body', () => {
       expect(findLicenseIssueBody().exists()).toBe(true);

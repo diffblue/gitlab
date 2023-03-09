@@ -85,10 +85,6 @@ describe('RoadmapFilters', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('watch', () => {
     describe('urlParams', () => {
       it('updates window URL based on presence of props for state, filtered search and sort criteria', async () => {

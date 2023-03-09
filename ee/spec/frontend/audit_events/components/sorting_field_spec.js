@@ -18,11 +18,6 @@ describe('SortingField component', () => {
     initComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('when initialized', () => {
     it('should have sorting options', () => {
       expect(wrapper.findAllComponents(GlDropdownItem)).toHaveLength(2);

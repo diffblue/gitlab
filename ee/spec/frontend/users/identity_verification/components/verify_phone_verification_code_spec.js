@@ -71,7 +71,6 @@ describe('Verify phone verification code input component', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     axiosMock.restore();
     createAlert.mockClear();
   });

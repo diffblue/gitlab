@@ -51,10 +51,6 @@ describe('JiraIssueCreationVulnerabilities', () => {
   const setEnableJiraVulnerabilitiesChecked = (isChecked) =>
     findEnableJiraVulnerabilities().vm.$emit('input', isChecked);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('content', () => {
     beforeEach(() => {
       wrapper = createFullComponent();

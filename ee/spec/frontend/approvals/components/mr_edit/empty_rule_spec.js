@@ -14,11 +14,6 @@ describe('Empty Rule', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('multiple rules', () => {
     it('does not display "Add approval rule" button', () => {
       createComponent({

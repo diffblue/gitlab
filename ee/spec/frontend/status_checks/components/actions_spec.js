@@ -27,10 +27,6 @@ describe('Status checks actions', () => {
     createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findEditBtn = () => wrapper.findByTestId('edit-btn');
   const findRemoveBtn = () => wrapper.findByTestId('remove-btn');
 

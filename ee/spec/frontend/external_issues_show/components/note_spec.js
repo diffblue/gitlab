@@ -27,10 +27,6 @@ describe('JiraIssuesNote', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('template', () => {
     it('renders note', () => {
       createComponent();

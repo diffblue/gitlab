@@ -65,10 +65,6 @@ describe('TestCaseShowRoot', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('computed', () => {
     describe.each`
       state       | isTestCaseOpen | statusIcon              | statusBadgeText | testCaseActionTitle

@@ -109,10 +109,6 @@ describe('EE Approvals RuleForm', () => {
     ({ actions } = store.modules.approvals);
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when allow multiple rules', () => {
     beforeEach(() => {
       store.state.settings.allowMultiRule = true;

@@ -16,10 +16,6 @@ describe('DastScannerProfileSummary', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders properly', () => {
     createWrapper();
 

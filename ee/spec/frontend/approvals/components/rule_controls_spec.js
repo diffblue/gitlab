@@ -40,10 +40,6 @@ describe('EE Approvals RuleControls', () => {
     );
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when allow multi rule', () => {
     beforeEach(() => {
       store.state.settings.allowMultiRule = true;

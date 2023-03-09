@@ -53,10 +53,6 @@ describe('AddEditsEscalationPolicyModal', () => {
     wrapper.vm.$refs.addUpdateEscalationPolicyModal.hide = mockHideModal;
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findModal = () => wrapper.findComponent(GlModal);
   const findEscalationPolicyForm = () => wrapper.findComponent(AddEscalationPolicyForm);
   const findAlert = () => wrapper.findComponent(GlAlert);

@@ -71,10 +71,6 @@ describe('DastScannerProfileForm', () => {
   const createShallowComponent = createComponentFactory(shallowMountExtended);
   const createComponent = createComponentFactory();
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('form renders properly', () => {
     createComponent();
     expect(findForm().exists()).toBe(true);

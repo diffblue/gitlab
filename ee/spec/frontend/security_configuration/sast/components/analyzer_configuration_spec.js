@@ -22,10 +22,6 @@ describe('AnalyzerConfiguration component', () => {
     [entity] = makeAnalyzerEntities(1);
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('label', () => {
     beforeEach(() => {
       createComponent({

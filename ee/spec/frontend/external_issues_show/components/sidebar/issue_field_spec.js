@@ -31,10 +31,6 @@ describe('IssueField', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findEditableItem = () => wrapper.findComponent(SidebarEditableItem);
   const findEditButton = () => wrapper.findComponent(GlButton);
   const findFieldCollapsed = () => wrapper.findByTestId('field-collapsed');

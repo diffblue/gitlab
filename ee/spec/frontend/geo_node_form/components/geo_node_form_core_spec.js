@@ -39,10 +39,6 @@ describe('GeoNodeFormCore', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findGeoNodeFormNameField = () => wrapper.find('#node-name-field');
   const findGeoNodeFormUrlField = () => wrapper.find('#node-url-field');
   const findGeoNodeInternalUrlField = () => wrapper.find('#node-internal-url-field');

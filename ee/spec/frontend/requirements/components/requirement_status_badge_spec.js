@@ -40,10 +40,6 @@ describe('RequirementStatusBadge', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('computed', () => {
     describe('testReportBadge', () => {
       it('returns object containing variant, icon, text and tooltipTitle when status is "PASSED"', () => {

@@ -10,10 +10,6 @@ describe('project pipeline component', () => {
       propsData,
     });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('current pipeline only', () => {
     it('should render success badge', () => {
       wrapper = mountComponent({

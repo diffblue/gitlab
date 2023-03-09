@@ -73,10 +73,6 @@ describe('EE DiffLineNoteForm', () => {
     storeOptions = createStoreOptions();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const submitNoteAddToReview = () =>
     wrapper.findComponent(NoteForm).vm.$emit('handleFormUpdateAddToReview', note);
   const saveDraftCommitId = () => saveDraft.mock.calls[0][1].data.note.commit_id;

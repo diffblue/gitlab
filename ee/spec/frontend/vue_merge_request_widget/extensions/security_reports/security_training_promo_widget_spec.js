@@ -35,10 +35,6 @@ describe('Security training promo widget component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findSecurityTrainingPromo = () => wrapper.findComponent(SecurityTrainingPromo);
   const findIcon = () => wrapper.findComponent(GlIcon);
   const findEnableButton = () => wrapper.findByTestId('enableButton');

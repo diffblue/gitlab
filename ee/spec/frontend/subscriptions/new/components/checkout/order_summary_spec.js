@@ -120,7 +120,6 @@ describe('Order Summary', () => {
 
   afterEach(() => {
     unmockTracking();
-    wrapper.destroy();
     invoicePreviewQuerySpy.mockClear();
     createAlert.mockClear();
   });

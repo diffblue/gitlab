@@ -73,10 +73,6 @@ describe('CodeReviewAnalyticsApp component', () => {
     fetchMergeRequests = jest.fn();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findFilterBar = () => wrapper.findComponent(FilterBar);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);

@@ -74,7 +74,6 @@ describe('CreateIssueForm', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     delete gon.current_username;
   });
 

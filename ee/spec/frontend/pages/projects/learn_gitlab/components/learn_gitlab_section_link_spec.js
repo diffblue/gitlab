@@ -25,11 +25,6 @@ const openInNewTabProps = {
 describe('Learn GitLab Section Link', () => {
   let wrapper;
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const createWrapper = (action = defaultAction, props = {}) => {
     wrapper = extendedWrapper(
       mount(LearnGitlabSectionLink, {

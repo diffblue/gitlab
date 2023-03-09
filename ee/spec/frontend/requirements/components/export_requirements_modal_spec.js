@@ -18,10 +18,6 @@ describe('ExportRequirementsModal', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('methods', () => {
     describe('handleExport', () => {
       it('emits `export` event', () => {

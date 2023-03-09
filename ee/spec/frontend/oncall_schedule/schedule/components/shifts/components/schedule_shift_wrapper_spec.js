@@ -40,10 +40,6 @@ describe('ee/oncall_schedules/components/schedule/components/shifts/components/s
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findShiftItems = () => wrapper.findAllComponents(ShiftItem);
   const updateShifts = (startsAt, endsAt) =>
     mockRotations[0].shifts.nodes.map((el) => ({ ...el, startsAt, endsAt }));

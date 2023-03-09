@@ -24,10 +24,6 @@ describe('ee/vulnerabilities/components/generic_report/types/file_location.vue',
       wrapper = createWrapper();
     });
 
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
     it(`renders ${fileName} file location`, () => {
       expect(wrapper.text()).toBe(value.toString());
     });

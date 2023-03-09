@@ -37,10 +37,6 @@ describe('GeoNodeForm', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findGeoNodeFormCoreField = () => wrapper.findComponent(GeoNodeFormCore);
   const findGeoNodeFormSelectiveSyncField = () => wrapper.findComponent(GeoNodeFormSelectiveSync);
   const findGeoNodeFormCapacitiesField = () => wrapper.findComponent(GeoNodeFormCapacities);

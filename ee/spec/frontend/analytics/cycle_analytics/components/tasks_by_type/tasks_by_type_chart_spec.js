@@ -24,10 +24,6 @@ function createComponent({ props = {}, shallow = true, stubs = {} }) {
 describe('TasksByTypeChart', () => {
   let wrapper = null;
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('with data available', () => {
     beforeEach(() => {
       wrapper = createComponent({});

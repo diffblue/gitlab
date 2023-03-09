@@ -77,7 +77,6 @@ describe('TasksByTypeFilters', () => {
 
   afterEach(() => {
     mock.restore();
-    wrapper.destroy();
   });
 
   describe('labels', () => {

@@ -53,10 +53,6 @@ describe('diffs/components/app', () => {
     mock.onGet(TEST_ENDPOINT).reply(HTTP_STATUS_OK, {});
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('EE codequality diff', () => {
     it('fetches code quality data when endpoint is provided', () => {
       createComponent();

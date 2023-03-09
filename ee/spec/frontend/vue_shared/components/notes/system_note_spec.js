@@ -68,7 +68,6 @@ describe('system note component', () => {
 
   afterEach(() => {
     mock.restore();
-    wrapper.destroy();
   });
 
   it('should display button to toggle description diff, description version does not display', () => {

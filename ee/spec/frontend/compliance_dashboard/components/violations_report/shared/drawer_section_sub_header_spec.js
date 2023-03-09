@@ -15,10 +15,6 @@ describe('DrawerSectionSubHeader component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders the header when not empty', () => {
     wrapper = createComponent({ isEmpty: false });
 

@@ -84,7 +84,6 @@ describe('Tool Filter component', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     router = null;
   });
 

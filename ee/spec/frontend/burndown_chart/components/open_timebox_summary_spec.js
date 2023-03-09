@@ -2,7 +2,6 @@ import { shallowMount } from '@vue/test-utils';
 import OpenTimeboxSummary from 'ee/burndown_chart/components/open_timebox_summary.vue';
 
 describe('Iterations report summary', () => {
-  let wrapper;
   let slotSpy;
 
   const id = 3;
@@ -14,7 +13,7 @@ describe('Iterations report summary', () => {
   const mountComponent = ({ props = defaultProps, loading = false, data = {} } = {}) => {
     slotSpy = jest.fn();
 
-    wrapper = shallowMount(OpenTimeboxSummary, {
+    shallowMount(OpenTimeboxSummary, {
       propsData: props,
       data() {
         return data;
@@ -29,11 +28,6 @@ describe('Iterations report summary', () => {
       },
     });
   };
-
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
 
   describe('with valid totals', () => {
     beforeEach(() => {

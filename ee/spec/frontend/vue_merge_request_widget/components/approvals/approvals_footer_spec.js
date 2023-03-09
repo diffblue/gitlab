@@ -36,11 +36,6 @@ describe('EE MRWidget approvals footer', () => {
   const findList = () => wrapper.findComponent(ApprovalsList);
   const findAvatars = () => wrapper.findComponent(UserAvatarList);
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('when expanded', () => {
     describe('and has rules', () => {
       beforeEach(async () => {

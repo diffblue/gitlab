@@ -21,10 +21,6 @@ describe('Environments', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders an empty state if no deployments are found', () => {
     createComponent({ environments: [] });
 

@@ -69,10 +69,6 @@ describe('TypeOfWorkCharts', () => {
   const findTasksByTypeChart = (_wrapper) => _wrapper.findComponent(TasksByTypeChart);
   const findLoader = (_wrapper) => _wrapper.findComponent(ChartSkeletonLoader);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('with data', () => {
     beforeEach(() => {
       wrapper = createComponent();

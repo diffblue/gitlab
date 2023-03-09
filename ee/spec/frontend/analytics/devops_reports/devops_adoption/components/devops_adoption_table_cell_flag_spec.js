@@ -18,11 +18,6 @@ describe('DevopsAdoptionTableCellFlag', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('enabled', () => {
     beforeEach(() => createComponent());
 

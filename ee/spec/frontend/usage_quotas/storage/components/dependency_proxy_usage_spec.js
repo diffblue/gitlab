@@ -30,10 +30,6 @@ describe('Dependency proxy usage component', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('displays the total size section when prop is provided', () => {
     expect(findTotalSizeSection().text()).toBe(defaultProps.dependencyProxyTotalSize);
   });

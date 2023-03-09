@@ -18,10 +18,6 @@ describe('Environment table', () => {
     await jest.runOnlyPendingTimers();
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('should render the alert if there is one', async () => {
     const mockItem = {
       name: 'review',

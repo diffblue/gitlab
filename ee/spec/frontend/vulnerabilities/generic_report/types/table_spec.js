@@ -38,10 +38,6 @@ describe('ee/vulnerabilities/components/generic_report/types/table.vue', () => {
     wrapper = createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders a table', () => {
     expect(findTable().exists()).toBe(true);
   });

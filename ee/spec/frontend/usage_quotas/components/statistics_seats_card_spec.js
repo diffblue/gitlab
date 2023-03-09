@@ -21,10 +21,6 @@ describe('StatisticsSeatsCard', () => {
   const findSeatsOwedBlock = () => wrapper.findByTestId('seats-owed-block');
   const findPurchaseButton = () => wrapper.findByTestId('purchase-button');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('seats used block', () => {
     it('renders seats used block if seatsUsed is passed', () => {
       createComponent();

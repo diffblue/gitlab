@@ -44,10 +44,6 @@ describe('BoardScope', () => {
     mountComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findLabelSelect = () => wrapper.findComponent(BoardLabelsSelect);
 
   describe('BoardScope', () => {

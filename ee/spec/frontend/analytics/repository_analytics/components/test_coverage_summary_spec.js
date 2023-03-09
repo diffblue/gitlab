@@ -49,11 +49,6 @@ describe('Test coverage table component', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   it('renders test coverage header', () => {
     createComponent();
 

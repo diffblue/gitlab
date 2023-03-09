@@ -29,10 +29,6 @@ describe('Move project to group modal', () => {
       createComponent();
     });
 
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
     it('renders component properly', () => {
       expect(moveProjectModal().exists()).toBe(true);
     });

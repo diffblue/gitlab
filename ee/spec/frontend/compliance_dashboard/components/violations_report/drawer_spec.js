@@ -50,10 +50,6 @@ describe('MergeRequestDrawer component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default behaviour', () => {
     const mockHeaderHeight = '50px';
 

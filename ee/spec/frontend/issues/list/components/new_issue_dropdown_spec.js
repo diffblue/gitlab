@@ -27,10 +27,6 @@ describe('NewIssueDropdown component', () => {
     wrapper = mountComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders a split dropdown with newIssue label', () => {
     expect(findDropdown().props('split')).toBe(true);
     expect(findDropdown().props('text')).toBe(NewIssueDropdown.i18n.newIssueLabel);

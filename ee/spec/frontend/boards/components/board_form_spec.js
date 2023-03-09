@@ -99,8 +99,6 @@ describe('BoardForm', () => {
   };
 
   afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
     mutate = null;
     store = null;
   });

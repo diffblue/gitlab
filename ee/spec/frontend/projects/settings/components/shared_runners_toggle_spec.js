@@ -44,10 +44,6 @@ describe('projects/settings/components/shared_runners', () => {
     mockAxios.onPost(TEST_UPDATE_PATH).reply(HTTP_STATUS_OK);
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('with credit card validation required and shared runners DISABLED', () => {
     beforeEach(() => {
       window.gon = {

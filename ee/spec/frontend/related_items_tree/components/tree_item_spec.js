@@ -69,12 +69,6 @@ describe('RelatedItemsTree', () => {
       });
     });
 
-    afterEach(() => {
-      wrapper.destroy();
-      wrapperExpanded.destroy();
-      wrapperCollapsed.destroy();
-    });
-
     describe('computed', () => {
       describe('itemReference', () => {
         it('returns value of `item.reference`', () => {

@@ -59,10 +59,6 @@ describe('RelatedItemsTree', () => {
       wrapper = createComponent();
     });
 
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
     describe('template', () => {
       it('renders modal component', () => {
         const modal = wrapper.findComponent(GlModal);

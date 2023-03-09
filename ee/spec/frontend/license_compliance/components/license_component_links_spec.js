@@ -39,10 +39,6 @@ describe('LicenseComponentLinks component', () => {
   const findModalItem = () => wrapper.findAll('.js-component-links-modal-item');
   const findModalTrigger = () => wrapper.find('.js-component-links-modal-trigger');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it("renders components' name and version", () => {
     factory({ numComponents: 2, numComponentsWithUrl: 1 });
     const text = wrapper.text();

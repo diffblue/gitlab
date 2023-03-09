@@ -23,10 +23,6 @@ describe('EscalationStatus', () => {
     });
   }
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findDropdownHeaderComponent = () => wrapper.findComponent(GlDropdownSectionHeader);
   const findPopover = () => wrapper.findComponent(GlPopover);
   const findLearnMoreLink = () => wrapper.findComponent(GlLink);

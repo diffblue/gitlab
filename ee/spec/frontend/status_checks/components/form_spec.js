@@ -53,10 +53,6 @@ describe('Status checks form', () => {
   ];
   const inputsAreValid = () => findValidations().every((x) => x.props('state'));
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('initialization', () => {
     it('shows empty inputs when no initial data is given', () => {
       createWrapper();

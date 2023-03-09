@@ -18,10 +18,6 @@ describe('Verification page', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('on creation', () => {
     beforeEach(() => {
       createComponent();

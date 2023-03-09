@@ -18,10 +18,6 @@ describe('ExpirationDatepicker', () => {
 
   const findDatepicker = () => wrapper.findComponent(GlDatepicker);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it.each`
     canOverride | isOverridden | expected
     ${true}     | ${true}      | ${false}

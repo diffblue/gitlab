@@ -88,10 +88,6 @@ describe('BoardAddNewColumn', () => {
     }
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findForm = () => wrapper.findComponent(BoardAddNewColumnForm);
   const cancelButton = () => wrapper.findByTestId('cancelAddNewColumn');
   const submitButton = () => wrapper.findByTestId('addNewColumnButton');

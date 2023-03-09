@@ -15,11 +15,6 @@ describe('DynamicFields component', () => {
 
   const findFields = () => wrapper.findAllComponents({ ref: 'fields' });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe.each`
     context                                     | entities
     ${'no entities'}                            | ${[]}

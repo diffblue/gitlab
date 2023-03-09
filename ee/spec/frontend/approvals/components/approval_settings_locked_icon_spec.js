@@ -22,10 +22,6 @@ describe('ApprovalSettingsLockedIcon', () => {
   const findPopover = () => wrapper.findComponent(GlPopover);
   const findLockIcon = () => wrapper.findByTestId('lock-icon');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('rendering', () => {
     beforeEach(() => {
       createWrapper();

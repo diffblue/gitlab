@@ -74,11 +74,6 @@ const createComponent = ({ state, getters, props, actionMocks, isAdmin, options,
 };
 
 describe('License Management', () => {
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('common functionality', () => {
     describe.each`
       desc                | isAdmin

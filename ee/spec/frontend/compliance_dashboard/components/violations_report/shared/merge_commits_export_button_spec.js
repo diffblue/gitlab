@@ -26,10 +26,6 @@ describe('MergeCommitsExportButton component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('Merge commit CSV export all button', () => {
     beforeEach(() => {
       wrapper = createComponent({ mountFn: mount });

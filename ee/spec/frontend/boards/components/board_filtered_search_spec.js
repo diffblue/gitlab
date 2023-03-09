@@ -27,10 +27,6 @@ describe('ee/BoardFilteredSearch', () => {
 
   const findFilteredSearch = () => wrapper.findComponent(BoardFilteredSearchCe);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when boardScopeConfig watcher is triggered', () => {
     beforeEach(async () => {
       store = createStore();

@@ -36,10 +36,6 @@ describe('Browser performance extension', () => {
     mock = new MockAdapter(axios);
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('summary', () => {
     it('should render loading text', async () => {
       mock

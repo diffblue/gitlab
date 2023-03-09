@@ -48,10 +48,6 @@ describe('EE - ApiFuzzingConfigurationApp', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('shows a loading spinner while fetching the configuration from the API', () => {
     createWrapper({
       apolloProvider: createMockApolloProvider(pendingHandler),

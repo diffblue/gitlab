@@ -10,10 +10,6 @@ describe('Status checks branch', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findBranch = () => wrapper.find('span');
 
   it('renders "All branches" if no branch is given', () => {

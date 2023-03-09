@@ -31,10 +31,6 @@ describe('QuartersHeaderItemComponent', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('timeline header label', () => {
     it('contains Year and Quarter for current timeline header item', () => {
       createComponent({});

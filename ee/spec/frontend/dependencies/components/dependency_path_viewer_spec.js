@@ -10,10 +10,6 @@ describe('DependencyPathViewer component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it.each`
     dependencies                                                                  | path
     ${[]}                                                                         | ${''}

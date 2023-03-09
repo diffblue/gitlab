@@ -46,7 +46,6 @@ describe('CreditCardValidationRequiredAlert', () => {
 
   afterEach(() => {
     unmockTracking();
-    wrapper.destroy();
   });
 
   it('renders title', () => {

@@ -24,11 +24,6 @@ describe('LicensesTableRow component', () => {
     license = makeLicense();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe.each`
     desc                      | props
     ${'when passed no props'} | ${{}}

@@ -22,10 +22,6 @@ describe('ee/vulnerabilities/components/generic_report/report_item_graphql.vue',
 
   const findReportComponent = () => wrapper.findByTestId('reportComponent');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe.each(GRAPHQL_TYPENAMES)('with report type "%s"', (reportType) => {
     const testData = Object.values(vulnerabilityDetails).find((item) => item.type === reportType);
     const reportItem = { type: reportType, ...testData };

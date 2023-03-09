@@ -35,10 +35,6 @@ describe('DevopsAdoptionTable', () => {
     localStorage.clear();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findTable = () => wrapper.findComponent(GlTable);
 
   const findCol = (testId) => findTable().find(`[data-testid="${testId}"]`);

@@ -34,10 +34,6 @@ describe('EscalationPolicy', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findDeleteModal = () => wrapper.findComponent(DeleteEscalationPolicyModal);
   const findEditModal = () => wrapper.findComponent(EditEscalationPolicyModal);
   const findWarningIcon = () => wrapper.findComponent(GlIcon);

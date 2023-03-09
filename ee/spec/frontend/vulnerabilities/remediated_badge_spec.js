@@ -19,8 +19,6 @@ describe('Remediated badge component', () => {
     wrapper = createWrapper();
   });
 
-  afterEach(() => wrapper.destroy());
-
   it('should display the correct icon', () => {
     expect(findBadge().props('icon')).toBe('check-circle-dashed');
   });

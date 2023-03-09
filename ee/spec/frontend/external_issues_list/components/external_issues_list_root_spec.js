@@ -101,7 +101,6 @@ describe('ExternalIssuesListRoot', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     mock.restore();
   });
 

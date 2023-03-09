@@ -36,10 +36,6 @@ describe('MergeRequestTable component', () => {
     factory();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('matches the snapshot', () => {
     expect(wrapper.element).toMatchSnapshot();
   });

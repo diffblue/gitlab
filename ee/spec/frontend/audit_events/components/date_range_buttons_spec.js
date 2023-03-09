@@ -22,10 +22,6 @@ describe('DateRangeButtons component', () => {
   const findTwoWeeksAgoButton = () => wrapper.findByTestId('date_range_button_last_14_days');
   const findThisMonthButton = () => wrapper.findByTestId('date_range_button_this_month');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when the last 7 days is selected', () => {
     beforeEach(() => {
       createComponent({

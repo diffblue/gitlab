@@ -30,11 +30,6 @@ describe('Filter component', () => {
     setupStore(store);
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('severity', () => {
     beforeEach(() => {
       createWrapper();

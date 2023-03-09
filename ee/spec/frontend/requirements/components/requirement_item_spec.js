@@ -31,11 +31,6 @@ describe('RequirementItem', () => {
     wrapperArchived = createComponent(requirementArchived);
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapperArchived.destroy();
-  });
-
   describe('methods', () => {
     describe('handleArchiveClick', () => {
       it('emits `archiveClick` event on component with object containing `requirement.iid` & `state` as "ARCHIVED" as param', async () => {

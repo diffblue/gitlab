@@ -32,10 +32,6 @@ describe('Project Header', () => {
     });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('matches the snapshot', () => {
     expect(wrapper.element).toMatchSnapshot();
   });

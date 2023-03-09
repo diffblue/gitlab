@@ -24,10 +24,6 @@ describe('SubscriptionPurchaseCard', () => {
       createComponent();
     });
 
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
     it('renders card description', () => {
       expect(wrapper.text()).toContain(buySubscriptionCard.description);
     });

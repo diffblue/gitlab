@@ -131,6 +131,7 @@ describe('DevopsAdoptionApp', () => {
   const findOverviewTab = () => wrapper.findByTestId('devops-overview-tab');
 
   afterEach(() => {
+    // eslint-disable-next-line @gitlab/vtu-no-explicit-wrapper-destroy
     wrapper.destroy();
   });
 

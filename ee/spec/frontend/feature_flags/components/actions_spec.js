@@ -6,10 +6,6 @@ import { s__ } from '~/locale';
 describe('ee/feature_flags/components/actions.vue', () => {
   let wrapper;
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const createWrapper = (provide = { searchPath: '/search' }) =>
     mountExtended(FeatureFlagsActions, { provide });
 

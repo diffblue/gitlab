@@ -29,11 +29,6 @@ describe('Approvals HiddenGroupsItem', () => {
     factory();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   it('contains the correct text', () => {
     expect(wrapper.text()).toContain('Private group(s)');
   });

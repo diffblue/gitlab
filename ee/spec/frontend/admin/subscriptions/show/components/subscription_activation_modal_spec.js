@@ -36,10 +36,6 @@ describe('SubscriptionActivationModal', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('idle state', () => {
     beforeEach(() => {
       createComponent();

@@ -57,10 +57,6 @@ describe('Iterations report issues', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('shows spinner while loading', () => {
     mountComponent({
       loading: true,

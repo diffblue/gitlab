@@ -34,10 +34,6 @@ describe('RoadmapEpicsState', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('template', () => {
     it('renders form group', () => {
       expect(findFormGroup().exists()).toBe(true);

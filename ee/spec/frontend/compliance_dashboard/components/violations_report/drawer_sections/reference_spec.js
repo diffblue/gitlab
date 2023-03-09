@@ -17,10 +17,6 @@ describe('Reference component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('rendering', () => {
     beforeEach(() => {
       wrapper = createComponent();

@@ -35,10 +35,6 @@ describe('IterationToken', () => {
       stubs,
     });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders iteration value', async () => {
     wrapper = createComponent({ value: { data: id } });
 

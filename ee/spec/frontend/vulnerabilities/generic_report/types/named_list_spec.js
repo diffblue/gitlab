@@ -34,10 +34,6 @@ describe('ee/vulnerabilities/components/generic_report/types/named_list.vue', ()
     wrapper = createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders a list element', () => {
     expect(findList().exists()).toBe(true);
   });

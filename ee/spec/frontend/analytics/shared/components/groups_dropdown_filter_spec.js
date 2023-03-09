@@ -35,10 +35,6 @@ describe('GroupsDropdownFilter component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   beforeEach(() => {
     Api.groups.mockImplementation(() => Promise.resolve(groups));
   });

@@ -32,9 +32,4 @@ describe('MergeImmediatelyConfirmationDialog', () => {
     expect(docsLink.attributes('href')).toBe(docsUrl);
     expect(trimText(docsLink.text())).toBe('documentation');
   });
-
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
 });

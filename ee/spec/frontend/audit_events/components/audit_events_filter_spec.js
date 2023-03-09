@@ -22,11 +22,6 @@ describe('AuditEventsFilter', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe.each`
     type         | title
     ${'project'} | ${'Project Events'}

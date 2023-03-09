@@ -29,10 +29,6 @@ describe('Security Dashboard Table', () => {
     store.state.vulnerabilities.vulnerabilitiesEndpoint = vulnerabilitiesEndpoint;
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findCheckbox = () => wrapper.findComponent(GlFormCheckbox);
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);

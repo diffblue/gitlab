@@ -41,10 +41,6 @@ describe('IssueNoteGraphql GraphQL', () => {
   const findIssueLink = () => wrapper.findByTestId('issue-link');
   const findProjectLink = () => wrapper.findByTestId('project-link');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('should not render if no issueLinks', () => {
     createWrapper({ propsData: { issueLinks: [] } });
 

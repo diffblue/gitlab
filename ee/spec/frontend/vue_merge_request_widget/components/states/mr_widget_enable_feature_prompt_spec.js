@@ -26,10 +26,6 @@ describe('MrWidgetEnableFeaturePrompt', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when the experiment is not enabled', () => {
     it('renders nothing', () => {
       stubExperiments({ [FEATURE]: 'control' });

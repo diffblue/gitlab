@@ -51,10 +51,6 @@ describe('EpicsListBulkEditSidebar', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders gl-form with labels-select-widget', () => {
     expect(wrapper.findComponent(GlForm).attributes('id')).toBe('epics-list-bulk-edit');
     expect(wrapper.findComponent(GlFormGroup).attributes('label')).toBe('Labels');

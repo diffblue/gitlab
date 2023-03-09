@@ -46,7 +46,6 @@ describe('JiraIssuesShow', () => {
 
   afterEach(() => {
     mockAxios.restore();
-    wrapper.destroy();
   });
 
   describe('when issue is loading', () => {

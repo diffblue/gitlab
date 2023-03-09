@@ -16,10 +16,6 @@ describe('ThroughputStats', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default behaviour', () => {
     beforeEach(() => {
       wrapper = createWrapper();

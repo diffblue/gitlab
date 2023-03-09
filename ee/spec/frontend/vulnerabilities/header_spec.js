@@ -112,7 +112,6 @@ describe('Vulnerability Header', () => {
   };
 
   afterEach(() => {
-    wrapper.destroy();
     mockAxios.reset();
     createAlert.mockReset();
   });

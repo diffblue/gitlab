@@ -46,10 +46,6 @@ describe('Project Pipeline Status Component', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default state', () => {
     beforeEach(() => {
       createWrapper();

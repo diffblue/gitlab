@@ -37,10 +37,6 @@ describe('CiTemplateDropdown', () => {
     expect(findDropdownHeaders().wrappers.map((h) => h.text())).toEqual(Object.keys(MOCK_CI_YMLS));
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('renders', () => {
     beforeEach(() => {
       createComponent();

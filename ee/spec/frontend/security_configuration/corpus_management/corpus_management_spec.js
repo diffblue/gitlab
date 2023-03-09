@@ -91,10 +91,6 @@ describe('EE - CorpusManagement', () => {
 
   const createComponent = createComponentFactory();
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('corpus management', () => {
     describe('when loaded', () => {
       it('bootstraps and renders the component', async () => {

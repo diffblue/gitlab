@@ -68,11 +68,6 @@ describe('MemberList', () => {
       `[data-label="${tableCellLabel}"][role="cell"]`,
     );
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('fields', () => {
     describe('"Actions" field', () => {
       const memberCanOverride = {

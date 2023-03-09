@@ -35,8 +35,6 @@ describe('Learn GitLab', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
     sidebar.remove();
   });
 

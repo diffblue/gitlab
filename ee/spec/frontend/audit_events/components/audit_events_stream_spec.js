@@ -46,7 +46,6 @@ describe('AuditEventsStream', () => {
   const findStreamItems = () => wrapper.findAllComponents(StreamItem);
 
   afterEach(() => {
-    wrapper.destroy();
     createAlert.mockClear();
     externalDestinationsQuerySpy.mockClear();
   });

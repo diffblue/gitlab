@@ -11,10 +11,6 @@ describe('MergeTrainPositionIndicator', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('computed', () => {
     describe('template', () => {
       it('should render the correct message', () => {

@@ -33,10 +33,6 @@ describe('Corpus table', () => {
 
   const createComponent = createComponentFactory();
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('corpus management', () => {
     beforeEach(() => {
       createComponent();

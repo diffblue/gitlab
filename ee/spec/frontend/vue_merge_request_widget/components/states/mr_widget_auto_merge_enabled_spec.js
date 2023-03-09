@@ -79,11 +79,6 @@ describe('MRWidgetAutoMergeEnabled', () => {
     };
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('computed', () => {
     describe('status', () => {
       it('should return "to start a merge train..." if MTWPS is selected and there is no existing merge train', () => {

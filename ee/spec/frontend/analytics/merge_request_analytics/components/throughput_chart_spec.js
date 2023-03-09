@@ -57,11 +57,6 @@ describe('ThroughputChart', () => {
     });
   }
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('default state', () => {
     beforeEach(() => {
       wrapper = createComponent();

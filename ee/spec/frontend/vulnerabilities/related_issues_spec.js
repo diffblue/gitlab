@@ -61,7 +61,6 @@ describe('Vulnerability related issues component', () => {
   const findCreateIssueButton = () => wrapper.findComponent({ ref: 'createIssue' });
 
   afterEach(() => {
-    wrapper.destroy();
     mockAxios.reset();
   });
 

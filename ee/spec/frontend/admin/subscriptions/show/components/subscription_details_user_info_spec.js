@@ -36,10 +36,6 @@ describe('Subscription Details User Info', () => {
   const findUsersInSubscriptionDesc = () =>
     findUsersInSubscriptionCard().findComponent('[data-testid="users-in-subscription-desc"]');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe.each`
     testId                  | info   | title                              | text                              | link
     ${'billable-users'}     | ${'8'} | ${i18n.billableUsersTitle}         | ${i18n.billableUsersText}         | ${billableUsersURL}

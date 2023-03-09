@@ -46,7 +46,6 @@ describe('TestCaseSidebar', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     resetHTMLFixture();
   });
 

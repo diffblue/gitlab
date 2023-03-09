@@ -55,8 +55,6 @@ describe('Project List component', () => {
   const getFirstRemoveButton = () => getFirstProjectItem().find('.js-projects-list-project-remove');
   const getLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 
-  afterEach(() => wrapper.destroy());
-
   it('shows an empty state if there are no projects', async () => {
     createWrapper({ projects: [] });
     await waitForPromises();

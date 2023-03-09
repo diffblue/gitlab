@@ -68,7 +68,6 @@ describe('EpicToken', () => {
 
   afterEach(() => {
     mock.restore();
-    wrapper.destroy();
   });
 
   describe('methods', () => {

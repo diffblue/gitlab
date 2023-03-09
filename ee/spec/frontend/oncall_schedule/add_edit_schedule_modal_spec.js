@@ -94,10 +94,6 @@ describe('AddScheduleModal', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findModal = () => wrapper.findComponent(GlModal);
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findModalForm = () => wrapper.findComponent(AddEditScheduleForm);

@@ -54,10 +54,6 @@ describe('AuditEventsLog', () => {
     });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when initialized', () => {
     beforeEach(() => {
       initComponent();

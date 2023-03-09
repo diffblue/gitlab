@@ -31,11 +31,6 @@ describe('NoteHeader component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   it.each`
     props                                                   | expected | message1            | message2
     ${{ author: { ...author, is_gitlab_employee: true } }}  | ${true}  | ${'renders'}        | ${'true'}

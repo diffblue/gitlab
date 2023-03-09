@@ -30,8 +30,6 @@ describe('MrWidgetPipelineContainer', () => {
 
   afterEach(() => {
     mock.restore();
-    wrapper.destroy();
-    wrapper = null;
   });
 
   describe('merge train indicator', () => {

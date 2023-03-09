@@ -47,7 +47,6 @@ describe('ee/BoardContent', () => {
 
   afterEach(() => {
     window.gon.licensed_features = {};
-    wrapper.destroy();
   });
 
   describe.each`

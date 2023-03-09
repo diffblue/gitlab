@@ -125,10 +125,6 @@ describe('AddEditRotationModal', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findModal = () => wrapper.findComponent(GlModal);
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findForm = () => wrapper.findComponent(AddEditRotationForm);

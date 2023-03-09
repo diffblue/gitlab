@@ -16,10 +16,6 @@ describe('Reviewers component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('rendering', () => {
     beforeEach(() => {
       wrapper = createComponent();

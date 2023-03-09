@@ -17,10 +17,6 @@ describe('SiteProfileSelector', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findSelectProfileBtn = () => wrapper.findByTestId('select-profile-action-btn');
 
   it('renders properly with no profiles', () => {

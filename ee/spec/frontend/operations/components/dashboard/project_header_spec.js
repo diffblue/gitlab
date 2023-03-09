@@ -22,10 +22,6 @@ describe('project header component', () => {
     factory();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders project name with namespace', () => {
     const namespace = wrapper.findByTestId('project-namespace').text();
     const name = wrapper.findByTestId('project-name').text();

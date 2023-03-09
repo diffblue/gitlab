@@ -103,10 +103,6 @@ describe('EE - DAST Configuration Form', () => {
   const createComponent = createComponentFactory();
   const createFullComponent = createComponentFactory(mount);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('form renders properly', () => {
     beforeEach(() => {
       createComponent();

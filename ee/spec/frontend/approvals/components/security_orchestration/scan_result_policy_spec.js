@@ -39,10 +39,6 @@ describe('ScanResultPolicy', () => {
     factory();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders policy name, branches and the number of approvals required', () => {
     const text = wrapper.text();
 

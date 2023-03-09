@@ -24,10 +24,6 @@ describe('BranchDetails component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('with branch details', () => {
     describe('and no branch URIs', () => {
       beforeEach(() => {

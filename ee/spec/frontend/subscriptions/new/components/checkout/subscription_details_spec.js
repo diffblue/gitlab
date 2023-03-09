@@ -72,10 +72,6 @@ describe('Subscription Details', () => {
   const findQsrOverageMessage = () => wrapper.findByTestId('qsr-overage-message');
   const findNumberOfUsersFormGroup = () => wrapper.findByTestId('number-of-users-field');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when rendering', () => {
     beforeEach(() => {
       const mockApollo = createMockApolloProvider(STEPS, 1, {}, []);

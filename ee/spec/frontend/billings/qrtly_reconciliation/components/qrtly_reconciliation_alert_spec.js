@@ -24,10 +24,6 @@ describe('Qrtly Reconciliation Alert', () => {
 
   const findAlert = () => wrapper.findComponent(GlAlert);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('Rendering', () => {
     beforeEach(() => {
       wrapper = createComponent();

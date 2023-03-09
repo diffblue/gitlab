@@ -32,10 +32,6 @@ describe('Form group component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('Heading', () => {
     beforeEach(() => {
       createComponent();

@@ -65,7 +65,6 @@ describe('ValueStreamSelect', () => {
 
   afterEach(() => {
     unmockTracking();
-    wrapper.destroy();
   });
 
   describe('with value streams available', () => {

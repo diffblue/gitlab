@@ -35,10 +35,6 @@ describe('RequirementsLoading', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('computed', () => {
     describe('lastPage', () => {
       it('returns number representing last page of the list', () => {

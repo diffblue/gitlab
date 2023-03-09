@@ -51,11 +51,6 @@ describe('Select projects dropdown component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('when selecting all project', () => {
     const initialData = { groupProjects: [{ id: 1, name: '1', isSelected: true }] };
 

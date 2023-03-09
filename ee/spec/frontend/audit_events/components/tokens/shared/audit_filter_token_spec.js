@@ -62,10 +62,6 @@ describe('AuditFilterToken', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('passes the config correctly', () => {
     const config = {
       icon: 'user',

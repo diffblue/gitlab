@@ -20,10 +20,6 @@ describe('GeoNodeFormShards', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findGlDropdown = () => wrapper.findComponent(GlDropdown);
   const findDropdownItems = () => findGlDropdown().findAll('li');
 

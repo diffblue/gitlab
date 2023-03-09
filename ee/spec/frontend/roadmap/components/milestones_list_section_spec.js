@@ -80,11 +80,6 @@ describe('MilestonesListSectionComponent', () => {
     createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('data', () => {
     it('returns default data props', () => {
       expect(wrapper.vm.offsetLeft).toBe(0);

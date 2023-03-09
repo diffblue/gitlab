@@ -50,10 +50,6 @@ describe('StatusToken', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('template', () => {
     it('renders gl-filtered-search-token component', () => {
       const token = wrapper.findComponent(GlFilteredSearchToken);

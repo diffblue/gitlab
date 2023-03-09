@@ -132,10 +132,6 @@ describe('Subscription Seats', () => {
     return tableWrapper.findAll('tbody tr').wrappers.map(serializeTableRow);
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('actions', () => {
     beforeEach(() => {
       wrapper = createComponent();

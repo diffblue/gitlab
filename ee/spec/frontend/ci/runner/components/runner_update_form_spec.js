@@ -84,10 +84,6 @@ describe('RunnerUpdateForm', () => {
     });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('Cost factor fields', () => {
     describe('When on .com', () => {
       beforeEach(() => {

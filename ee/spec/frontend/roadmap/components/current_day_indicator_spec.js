@@ -38,10 +38,6 @@ describe('CurrentDayIndicator', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('data', () => {
     it('initializes currentDate and indicatorStyles props with default values', () => {
       const currentDate = new Date();

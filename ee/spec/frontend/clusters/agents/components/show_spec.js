@@ -29,10 +29,6 @@ describe('ClusterAgentShow', () => {
   const findAgentVulnerabilityReport = () => wrapper.findComponent(AgentVulnerabilityReport);
   const findTab = () => wrapper.findComponent(GlTab);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when a user does have permission', () => {
     beforeEach(() => {
       createWrapper();

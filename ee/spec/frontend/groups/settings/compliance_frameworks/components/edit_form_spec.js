@@ -75,10 +75,6 @@ describe('EditForm', () => {
     await waitForPromises();
   }
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('loading', () => {
     beforeEach(() => {
       wrapper = createComponent([[getComplianceFrameworkQuery, fetchLoading]]);

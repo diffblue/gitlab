@@ -55,7 +55,6 @@ describe('TrialStatusPopover component', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     unmockTracking();
   });
 

@@ -37,10 +37,6 @@ describe('GeoReplicableEmptyState', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findGlEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findGlLink = () => wrapper.findComponent(GlLink);
 

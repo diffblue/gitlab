@@ -54,7 +54,6 @@ describe('BoardSettingsWipLimit', () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
-    wrapper.destroy();
   });
 
   describe('when activeList is present', () => {

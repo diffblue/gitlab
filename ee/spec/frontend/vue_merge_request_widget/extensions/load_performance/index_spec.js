@@ -36,10 +36,6 @@ describe('Load performance extension', () => {
     mock = new MockAdapter(axios);
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('summary', () => {
     it('should render loading text', async () => {
       mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(HTTP_STATUS_OK, headLoadPerformance);

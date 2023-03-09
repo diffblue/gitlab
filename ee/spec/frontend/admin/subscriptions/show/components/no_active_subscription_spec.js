@@ -40,10 +40,6 @@ describe('NoActiveSubscription', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('without future subscriptions/licenses', () => {
     beforeEach(() => {
       createComponent({

@@ -89,11 +89,6 @@ describe('EEInviteModalBase', () => {
     listenerSpy = jest.fn();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const findCEBase = () => wrapper.findComponent(CEInviteModalBase);
   const findModal = () => wrapper.findComponent(GlModal);
   const findInitialModalContent = () => wrapper.findByTestId('invite-modal-initial-content');

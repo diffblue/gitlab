@@ -16,10 +16,6 @@ describe('Approval auth component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findInput = () => wrapper.find('input[type=password]');
   const findErrorMessage = () => wrapper.find('.gl-field-error');
 

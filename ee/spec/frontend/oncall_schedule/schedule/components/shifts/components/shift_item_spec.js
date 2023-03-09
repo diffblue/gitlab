@@ -37,10 +37,6 @@ describe('ee/oncall_schedules/components/schedule/components/shifts/components/s
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findRotationAssignee = () => wrapper.findComponent(RotationsAssignee);
 
   it('should render a rotation assignee child component', () => {

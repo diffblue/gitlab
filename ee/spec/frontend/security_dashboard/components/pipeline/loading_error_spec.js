@@ -20,11 +20,6 @@ describe('LoadingError component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe.each([HTTP_STATUS_UNAUTHORIZED, HTTP_STATUS_FORBIDDEN])(
     'with error code %s',
     (errorCode) => {

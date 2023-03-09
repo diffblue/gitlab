@@ -16,10 +16,6 @@ describe('TableHeaderComponent', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const firstColumnName = 'fullname';
 
   it('renders table column header with sort order icon', () => {

@@ -25,10 +25,6 @@ describe('UserAvatar component', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('sets the correct attributes to the avatar', () => {
     expect(findAvatar().props()).toMatchObject({
       src: user.avatarUrl,

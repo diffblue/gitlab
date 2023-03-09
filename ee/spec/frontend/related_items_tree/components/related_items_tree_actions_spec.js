@@ -27,10 +27,6 @@ describe('RelatedItemsTree', () => {
   describe('RelatedItemsTreeActions', () => {
     let wrapper;
 
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
     describe('template', () => {
       beforeEach(() => {
         wrapper = createComponent();

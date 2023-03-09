@@ -41,8 +41,6 @@ describe('Selection Summary', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
     mock.restore();
   });
 

@@ -69,10 +69,6 @@ describe('BaseDastProfileForm', () => {
     requestHandler = jest.fn().mockResolvedValue(dastSiteProfileCreate());
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders default slot', () => {
     const testId = 'default-slot-content';
     createComponent({

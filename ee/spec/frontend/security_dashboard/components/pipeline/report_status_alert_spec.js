@@ -24,10 +24,6 @@ describe('ee/security_dashboard/components/report_status_alert.vue', () => {
     wrapper = createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders the component correctly', () => {
     expect(wrapper).toMatchSnapshot();
   });

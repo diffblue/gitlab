@@ -105,10 +105,6 @@ describe('RelatedItemsTree', () => {
       wrapper = createComponent();
     });
 
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
     describe('computed', () => {
       describe('itemReference', () => {
         it('returns value of `item.reference` prop', () => {

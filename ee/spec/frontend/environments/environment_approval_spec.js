@@ -35,10 +35,6 @@ describe('ee/environments/components/environment_approval.vue', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findModal = () => extendedWrapper(wrapper.findComponent(GlModal));
   const findButton = () => extendedWrapper(wrapper.findComponent(GlButton));
 

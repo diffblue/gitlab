@@ -47,10 +47,6 @@ describe('SharedForm', () => {
     gon.suggested_label_colors = suggestedLabelColors;
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('Fields', () => {
     it('shows the correct input and button fields', () => {
       wrapper = createComponent();

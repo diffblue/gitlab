@@ -43,10 +43,6 @@ describe('SubscriptionSeatDetails', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('on created', () => {
     beforeEach(() => {
       createComponent();

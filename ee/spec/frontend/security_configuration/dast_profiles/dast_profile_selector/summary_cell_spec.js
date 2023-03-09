@@ -10,10 +10,6 @@ describe('DastProfileSummaryCell', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders properly', () => {
     createFullComponent({
       label: 'Row Label',

@@ -45,10 +45,6 @@ describe('ComplianceReportsApp component', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('violations report', () => {
     beforeEach(() => {
       wrapper = createComponent(defaultProps, mount);

@@ -37,10 +37,6 @@ describe('AuditEventsTable component', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('Table behaviour', () => {
     it('should show', () => {
       expect(getCell(0, 1).text()).toBe('User');

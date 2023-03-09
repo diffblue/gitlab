@@ -53,7 +53,6 @@ describe('ZentaoIssuesShow', () => {
 
   afterEach(() => {
     mockAxios.restore();
-    wrapper.destroy();
   });
 
   describe('when issue is loading', () => {

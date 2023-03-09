@@ -90,11 +90,6 @@ describe('ThroughputTable', () => {
 
   const findNext = () => findPagination().findAll('.page-item').at(1);
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('default state', () => {
     beforeEach(() => {
       wrapper = createComponent();

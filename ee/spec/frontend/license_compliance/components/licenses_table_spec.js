@@ -15,10 +15,6 @@ describe('LicensesTable component', () => {
   const findTableRowHeader = () => wrapper.find('.table-row-header');
   const findRows = () => wrapper.findAllComponents(LicensesTableRow);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('given an empty list of licenses', () => {
     beforeEach(() => {
       factory({

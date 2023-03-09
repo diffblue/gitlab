@@ -26,10 +26,6 @@ describe('Approvals ProjectSettings App', () => {
     factory();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('initial state', () => {
     it('renders all the main components', () => {
       expect(findApp().exists()).toBe(true);

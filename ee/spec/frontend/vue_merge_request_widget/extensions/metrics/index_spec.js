@@ -50,7 +50,6 @@ describe('Metrics extension', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     mock.restore();
   });
 

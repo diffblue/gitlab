@@ -51,11 +51,6 @@ describe('Project Manager component', () => {
   const findProjectList = () => wrapper.findComponent(ProjectList);
   const findProjectSelector = () => wrapper.findComponent(ProjectSelector);
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('it renders', () => {
     beforeEach(() => createWrapper({}));
 

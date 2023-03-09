@@ -27,7 +27,6 @@ describe('Security Dashboard', () => {
     if (vm) {
       vm.$destroy();
     }
-    vm = null;
     root.remove();
   });
 

@@ -43,10 +43,6 @@ describe('DetectedLicenesTable component', () => {
     await nextTick();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('passes the correct props to the licenses table', () => {
     expectComponentWithProps(LicensesTable, {
       licenses: mockLicensesResponse.licenses.map(toLicenseObject),

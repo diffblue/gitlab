@@ -29,11 +29,6 @@ describe('Iterations report summary cards', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const findCompleteCard = () => wrapper.findAllComponents(GlCard).at(0).text();
   const findIncompleteCard = () => wrapper.findAllComponents(GlCard).at(1).text();
   const findUnstartedCard = () => wrapper.findAllComponents(GlCard).at(2).text();

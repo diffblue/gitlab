@@ -111,7 +111,6 @@ describe('Iteration Breadcrumb', () => {
     });
 
     afterEach(() => {
-      wrapper.destroy();
       router = null;
     });
 

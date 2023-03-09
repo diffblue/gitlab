@@ -71,11 +71,6 @@ describe('HandRaiseLeadButton', () => {
     return nextTick();
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('rendering', () => {
     beforeEach(() => {
       wrapper = createComponent();

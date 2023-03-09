@@ -38,10 +38,6 @@ describe('GeoReplicableApp', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findGeoReplicableContainer = () => wrapper.find('.geo-replicable-container');
   const findGlLoadingIcon = () => findGeoReplicableContainer().findComponent(GlLoadingIcon);
   const findGeoReplicable = () => findGeoReplicableContainer().findComponent(GeoReplicable);

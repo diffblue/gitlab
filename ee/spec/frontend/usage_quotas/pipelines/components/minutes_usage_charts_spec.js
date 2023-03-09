@@ -23,10 +23,6 @@ describe('MinutesUsageCharts', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findNoMinutesAlert = () => wrapper.findComponent(NoMinutesAlert);
   const findMinutesByNamespace = () => wrapper.findByTestId('minutes-by-namespace');
   const findSharedRunnerByNamespace = () => wrapper.findByTestId('shared-runner-by-namespace');

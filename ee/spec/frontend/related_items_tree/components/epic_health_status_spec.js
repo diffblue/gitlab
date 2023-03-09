@@ -20,10 +20,6 @@ describe('EpicHealthStatus', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when no statuses are assigned', () => {
     it('hasHealthStatus computed property returns false', () => {
       expect(wrapper.vm.hasHealthStatus).toBe(false);

@@ -44,11 +44,6 @@ describe('QuartersPresetMixin', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('methods', () => {
     describe('hasStartDateForQuarter', () => {
       it('returns true when Epic.startDate falls within timeframeItem', () => {

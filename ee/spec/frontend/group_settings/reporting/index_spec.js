@@ -38,7 +38,6 @@ describe('initSettingsForm', () => {
     });
 
     afterEach(() => {
-      wrapper.destroy();
       el = null;
     });
 

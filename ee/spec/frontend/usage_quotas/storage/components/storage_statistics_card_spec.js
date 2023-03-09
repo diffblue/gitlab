@@ -23,10 +23,6 @@ describe('StorageStatisticsCard', () => {
   const findProgressBar = () => wrapper.findComponent(GlProgressBar);
   const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('denominator block', () => {
     it('renders denominator block with all elements when all props are passed', () => {
       createComponent();

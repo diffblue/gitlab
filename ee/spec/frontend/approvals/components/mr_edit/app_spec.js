@@ -36,7 +36,6 @@ describe('EE Approvals MREditApp', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     axiosMock.restore();
   });
 

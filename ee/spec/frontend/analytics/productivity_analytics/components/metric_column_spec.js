@@ -16,10 +16,6 @@ describe('MetricColumn component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findTimeContainer = () => wrapper.find('.time');
 
   describe('on creation', () => {

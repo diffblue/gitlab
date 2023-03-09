@@ -34,10 +34,6 @@ describe('ee/vulnerabilities/components/generic_report/types/list.vue', () => {
     wrapper = createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders a list', () => {
     expect(screen.getByRole('list')).toBeInstanceOf(HTMLElement);
   });

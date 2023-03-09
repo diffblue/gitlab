@@ -104,10 +104,6 @@ describe('ComplianceViolationsReport component', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default behavior', () => {
     beforeEach(() => {
       setWindowLocation(TEST_HOST + defaultQueryParams);

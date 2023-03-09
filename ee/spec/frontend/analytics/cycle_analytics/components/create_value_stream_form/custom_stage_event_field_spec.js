@@ -52,10 +52,6 @@ describe('CustomStageEventField', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('Event dropdown', () => {
     it('renders the event dropdown', () => {
       expect(findEventField().exists()).toBe(true);

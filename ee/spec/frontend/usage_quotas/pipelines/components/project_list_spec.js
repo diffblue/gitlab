@@ -28,10 +28,6 @@ describe('ProjectCIMinutesList', () => {
   const findTable = () => wrapper.findComponent(GlTableLite);
   const findTableRows = () => findTable().find('tbody').findAll('tr');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('with projects', () => {
     beforeEach(() => {
       createComponent();

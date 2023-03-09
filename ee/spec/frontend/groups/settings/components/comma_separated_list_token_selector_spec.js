@@ -63,8 +63,6 @@ describe('CommaSeparatedListTokenSelector', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
     div.remove();
     input.remove();
   });

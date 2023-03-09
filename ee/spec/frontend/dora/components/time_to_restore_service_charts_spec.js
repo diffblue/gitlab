@@ -1,10 +1,10 @@
 import * as Sentry from '@sentry/browser';
 import { shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
+import last180DaysData from 'test_fixtures/api/dora/metrics/daily_time_to_restore_service_for_last_180_days.json';
 import lastWeekData from 'test_fixtures/api/dora/metrics/daily_time_to_restore_service_for_last_week.json';
 import lastMonthData from 'test_fixtures/api/dora/metrics/daily_time_to_restore_service_for_last_month.json';
 import last90DaysData from 'test_fixtures/api/dora/metrics/daily_time_to_restore_service_for_last_90_days.json';
-import last180DaysData from 'test_fixtures/api/dora/metrics/daily_time_to_restore_service_for_last_180_days.json';
 import { useFixturesFakeDate } from 'helpers/fake_date';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
@@ -66,7 +66,6 @@ describe('time_to_restore_service_charts.vue', () => {
   const findValueStreamMetrics = () => wrapper.findComponent(ValueStreamMetrics);
 
   afterEach(() => {
-    wrapper.destroy();
     mock.restore();
   });
 

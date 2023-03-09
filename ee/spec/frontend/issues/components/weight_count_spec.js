@@ -15,10 +15,6 @@ describe('WeightCount component', () => {
       provide: { hasIssueWeightsFeature },
     });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('with issue_weights license', () => {
     describe.each([1, 0])('when weight is %d', (i) => {
       beforeEach(() => {

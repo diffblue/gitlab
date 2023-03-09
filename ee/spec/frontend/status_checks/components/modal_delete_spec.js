@@ -60,10 +60,6 @@ describe('Modal delete', () => {
     createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findModal = () => wrapper.findComponent(GlModal);
 
   const clickModalOk = async () => {

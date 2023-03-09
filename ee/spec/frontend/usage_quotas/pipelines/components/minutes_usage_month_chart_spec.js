@@ -29,10 +29,6 @@ describe('Minutes usage by month chart component', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders an area chart component', () => {
     expect(findAreaChart().exists()).toBe(true);
   });

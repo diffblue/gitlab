@@ -68,8 +68,6 @@ describe('Value Stream Analytics LabelsSelector', () => {
 
     afterEach(() => {
       mock.restore();
-      wrapper.destroy();
-      wrapper = null;
     });
 
     it('will render the label selector', () => {
@@ -142,10 +140,6 @@ describe('Value Stream Analytics LabelsSelector', () => {
       return waitForPromises();
     });
 
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
     it('will render the label selector', () => {
       expect(wrapper.html()).toMatchSnapshot();
     });
@@ -162,10 +156,6 @@ describe('Value Stream Analytics LabelsSelector', () => {
     beforeEach(() => {
       mock = mockGroupLabelsRequest();
       wrapper = createComponent({ props: { initialData: groupLabels } });
-    });
-
-    afterEach(() => {
-      wrapper.destroy();
     });
 
     it('will not fetch the labels', () => {

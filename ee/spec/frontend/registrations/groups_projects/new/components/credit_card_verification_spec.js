@@ -41,7 +41,6 @@ describe('CreditCardVerification', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     resetHTMLFixture();
   });
 

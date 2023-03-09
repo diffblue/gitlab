@@ -41,11 +41,6 @@ describe('RelatedIssuableItem', () => {
     mountComponent({ props, slots });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   it('renders weight component with correct weight', () => {
     expect(wrapper.findComponent(IssueWeight).props('weight')).toBe(props.weight);
   });

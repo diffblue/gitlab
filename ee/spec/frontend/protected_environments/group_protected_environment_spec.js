@@ -21,10 +21,6 @@ describe('ee/protected_environments/group_protected_environment.vue', () => {
     avatar_url: `/group/${id}.jpg`,
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const createComponent = async ({
     project = '',
     environment = '',

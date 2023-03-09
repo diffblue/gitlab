@@ -47,7 +47,6 @@ describe('MemberToken', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     Api.groupMembers.mockClear();
     Api.projectUsers.mockClear();
   });

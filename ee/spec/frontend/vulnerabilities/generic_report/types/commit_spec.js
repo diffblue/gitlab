@@ -27,10 +27,6 @@ describe('ee/vulnerabilities/components/generic_report/types/commit.vue', () => 
     wrapper = createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('links to the given commit hash', () => {
     expect(findLink().attributes('href')).toBe(
       `${TEST_COMMIT_PATH_BASE}/${TEST_DATA.value}/${TEST_COMMIT_PATH_PARAMETERS}`,

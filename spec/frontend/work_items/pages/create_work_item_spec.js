@@ -74,7 +74,6 @@ describe('Create work item component', () => {
   };
 
   afterEach(() => {
-    wrapper.destroy();
     fakeApollo = null;
   });
 

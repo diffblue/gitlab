@@ -27,11 +27,6 @@ describe('TrialStatusWidget component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('interpolated strings', () => {
     it('correctly interpolates them all', () => {
       wrapper = createComponent();

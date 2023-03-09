@@ -80,11 +80,6 @@ describe('IterationDropdown', () => {
     });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const waitForDebounce = async () => {
     await nextTick();
     jest.runOnlyPendingTimers();

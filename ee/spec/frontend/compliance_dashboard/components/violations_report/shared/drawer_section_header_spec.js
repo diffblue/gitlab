@@ -18,10 +18,6 @@ describe('DrawerSectionHeader component', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders the header text', () => {
     expect(wrapper.text()).toBe(headerText);
   });

@@ -136,7 +136,6 @@ describe('ScimToken', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     axiosMock.restore();
   });
 

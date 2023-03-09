@@ -18,10 +18,6 @@ describe('dashboard has no vulnerabilities empty state', () => {
     wrapper = createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('passes expected props to the GlEmptyState', () => {
     expect(wrapper.findComponent(GlEmptyState).props()).toMatchObject({
       title: DashboardHasNoVulnerabilities.i18n.title,

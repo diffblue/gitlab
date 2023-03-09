@@ -17,11 +17,6 @@ describe('Remediated badge component', () => {
     return shallowMount(IssuesBadge, { propsData, stubs: { GlPopover, GlBadge } });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('when there are multiple issues', () => {
     beforeEach(() => {
       wrapper = createWrapper({ propsData: { issues, externalIssues: [] } });

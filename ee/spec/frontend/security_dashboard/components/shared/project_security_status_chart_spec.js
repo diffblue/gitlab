@@ -67,10 +67,6 @@ describe('Vulnerability Severity component', () => {
     wrapper.findComponent({ ref: `accordionItem${grade}` });
   const findProjectName = (accordion) => accordion.findAllComponents(GlLink);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when loading the project severity component for group level dashboard', () => {
     beforeEach(async () => {
       wrapper = createComponent({

@@ -34,10 +34,6 @@ describe('PanelsBase', () => {
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findPanelTitle = () => wrapper.findComponent(TooltipOnTruncate);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default behaviour', () => {
     beforeEach(() => {
       createWrapper();

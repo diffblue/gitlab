@@ -17,10 +17,6 @@ describe('Progress Bar', () => {
     createComponent({ currentStep: 'b', steps: ['a', 'b'] });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('current', () => {
     it('step 1 is not current', () => {
       expect(firstStep().classes()).not.toContain('current');

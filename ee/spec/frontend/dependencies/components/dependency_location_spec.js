@@ -21,10 +21,6 @@ describe('Dependency Location component', () => {
   const findPathLink = () => wrapper.findComponent(GlLink);
   const findPopover = () => wrapper.findComponent(GlPopover);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it.each`
     name                      | location                    | path
     ${'container image path'} | ${Paths.containerImagePath} | ${Paths.containerImagePath.image}

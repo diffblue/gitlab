@@ -43,10 +43,6 @@ describe('Modal create', () => {
     createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findAddBtn = () => wrapper.findComponent(GlButton);
   const findModal = () => wrapper.findComponent(SharedModal);
 

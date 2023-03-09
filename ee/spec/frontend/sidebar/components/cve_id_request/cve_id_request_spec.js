@@ -30,11 +30,6 @@ describe('CveIdRequest', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   it('Renders the main "Request CVE ID" button', () => {
     expect(getByTestId('request-button').exists()).toBe(true);
   });

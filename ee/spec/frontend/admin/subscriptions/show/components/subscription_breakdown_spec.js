@@ -130,7 +130,6 @@ describe('Subscription Breakdown', () => {
 
   afterEach(() => {
     axiosMock.restore();
-    wrapper.destroy();
   });
 
   describe('with subscription data', () => {

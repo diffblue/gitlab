@@ -62,10 +62,6 @@ describe('SidebarIterationWidget', () => {
     await waitForPromises();
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when showing the current iteration (dropdown is closed)', () => {
     it('renders cadence title', async () => {
       await createComponentWithApollo({ iterationCadences: true });

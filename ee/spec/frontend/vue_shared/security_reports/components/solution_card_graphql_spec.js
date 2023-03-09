@@ -18,10 +18,6 @@ describe('Solution Card GraphQL', () => {
   const findSolutionText = () => wrapper.findByTestId('solution-text');
   const findMergeRequestSolution = () => wrapper.findByTestId('merge-request-solution');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('does not render component when there is no solution', () => {
     createWrapper();
     expect(findGlCard().exists()).toBe(false);

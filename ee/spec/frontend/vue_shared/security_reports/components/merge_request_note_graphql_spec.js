@@ -35,10 +35,6 @@ describe('MergeRequestNoteGraphQL', () => {
   const findMergeRequestLink = () => wrapper.findByTestId('merge-request-link');
   const findProjectLink = () => wrapper.findByTestId('project-link');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('should not render if no merge request', () => {
     createWrapper({ propsData: { mergeRequest: null } });
 

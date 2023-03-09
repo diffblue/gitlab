@@ -20,10 +20,6 @@ describe('TableBodyComponent', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders row item element', () => {
     const rowEl = wrapper.find('tr');
 

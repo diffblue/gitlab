@@ -55,7 +55,6 @@ describe('RelatedItemsTreeApp', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     axiosMock.restore();
   });
 

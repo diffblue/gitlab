@@ -33,7 +33,6 @@ describe('Account verification modal', () => {
 
   afterEach(() => {
     window.gon = originalGon;
-    wrapper.destroy();
   });
 
   describe('on creation', () => {

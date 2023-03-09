@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { merge, cloneDeep } from 'lodash';
-import scheduledDastProfilesMock from 'test_fixtures/graphql/on_demand_scans/graphql/scheduled_dast_profiles.query.graphql.json';
 import mockTimezones from 'test_fixtures/timezones/abbr.json';
+import scheduledDastProfilesMock from 'test_fixtures/graphql/on_demand_scans/graphql/scheduled_dast_profiles.query.graphql.json';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ScheduledTab from 'ee/on_demand_scans/components/tabs/scheduled.vue';
 import BaseTab from 'ee/on_demand_scans/components/tabs/base_tab.vue';
@@ -78,7 +78,6 @@ describe('Scheduled tab', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     router = null;
     requestHandler = null;
   });

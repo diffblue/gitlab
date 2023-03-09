@@ -48,7 +48,6 @@ describe('dashboard component', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     mockAxios.restore();
   });
 

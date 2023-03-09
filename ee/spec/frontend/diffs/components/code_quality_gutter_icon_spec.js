@@ -40,10 +40,6 @@ const createComponent = (props = {}, flag = false) => {
 };
 
 describe('EE CodeQualityGutterIcon with flag off', () => {
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it.each(['info', 'minor', 'major', 'critical', 'blocker', 'unknown'])(
     'shows icon for %s degradation',
     (severity) => {
@@ -211,10 +207,6 @@ describe('EE CodeQualityGutterIcon with flag on', () => {
           expect(wrapper.findComponent(GlIcon).props().name).toBe('collapse');
         });
       });
-    });
-
-    afterEach(() => {
-      wrapper.destroy();
     });
   });
 });

@@ -51,11 +51,6 @@ const getEpicBar = (wrapper) => wrapper.find('.epic-bar');
 describe('EpicItemTimelineComponent', () => {
   let wrapper;
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('epic bar', () => {
     beforeEach(() => {
       wrapper = createComponent();

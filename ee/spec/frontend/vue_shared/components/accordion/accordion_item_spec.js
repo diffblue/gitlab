@@ -51,10 +51,6 @@ describe('AccordionItem component', () => {
   const content = () => wrapper.findByTestId('content');
   const namespacedCloseOtherAccordionItemsEvent = `${accordionId}.closeOtherAccordionItems`;
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('rendering options', () => {
     it('does not show a loading indicator if the "isLoading" prop is set to "false"', () => {
       factory({ propsData: { isLoading: false } });

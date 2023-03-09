@@ -42,10 +42,6 @@ describe('AddEscalationPolicyForm', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findRules = () => wrapper.findAllComponents(EscalationRule);
   const findAddRuleLink = () => wrapper.findComponent(GlLink);
   const findMaxRulesText = () => wrapper.findByTestId('max-rules-text');

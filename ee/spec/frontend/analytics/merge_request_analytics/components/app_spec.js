@@ -22,11 +22,6 @@ describe('MergeRequestAnalyticsApp', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   it('displays the page title', () => {
     const pageTitle = wrapper.find('[data-testid="pageTitle"').text();
 

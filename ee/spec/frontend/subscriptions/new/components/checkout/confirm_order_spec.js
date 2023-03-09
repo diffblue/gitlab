@@ -33,10 +33,6 @@ describe('Confirm Order', () => {
   const findConfirmButton = () => wrapper.findComponent(GlButton);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('Active', () => {
     describe('when receiving proper step data', () => {
       beforeEach(async () => {

@@ -16,10 +16,6 @@ const mockTimeframeMonths = getTimeframeForRangeType({
 describe('MilestoneTimelineComponent', () => {
   let wrapper;
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const createWrapper = (props = {}) => {
     wrapper = shallowMount(MilestoneTimelineComponent, {
       propsData: {

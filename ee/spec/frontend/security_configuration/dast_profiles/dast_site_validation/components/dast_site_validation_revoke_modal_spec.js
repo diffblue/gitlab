@@ -64,10 +64,6 @@ describe('DastSiteValidationRevokeModal', () => {
   const findByTestId = (id) => wrapper.find(`[data-testid="${id}"`);
   const findRevokeButton = () => findByTestId('revoke-validation-button');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it("calls GlModal's show method when own show method is called", () => {
     const showMock = jest.fn();
     createComponent({

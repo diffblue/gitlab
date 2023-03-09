@@ -49,10 +49,6 @@ describe('Epic boards new epic form', () => {
     await nextTick();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders board-new-item component', () => {
     const boardNewItem = findBoardNewItem();
     expect(boardNewItem.exists()).toBe(true);

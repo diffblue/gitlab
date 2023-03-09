@@ -61,10 +61,6 @@ describe('DevopsAdoptionDeleteModal', () => {
   const actionButtonLoadingState = () => findModal().props('actionPrimary').attributes[0].loading;
   const findAlert = () => findModal().findComponent(GlAlert);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default display', () => {
     beforeEach(() => createComponent());
 

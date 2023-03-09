@@ -73,11 +73,6 @@ describe('DurationChart', () => {
   const findDurationChart = (_wrapper) => _wrapper.findComponent(GlLineChart);
   const findLoader = (_wrapper) => _wrapper.findComponent(ChartSkeletonLoader);
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('with the overiew stage selected', () => {
     beforeEach(() => {
       wrapper = createComponent({});

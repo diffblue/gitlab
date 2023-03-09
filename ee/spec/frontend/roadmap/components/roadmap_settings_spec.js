@@ -27,10 +27,6 @@ describe('RoadmapSettings', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('template', () => {
     it('renders drawer and title', () => {
       expect(findSettingsDrawer().exists()).toBe(true);

@@ -35,10 +35,6 @@ describe('CloudLicenseApp', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('shows a form', () => {
     expect(findSubscriptionActivationForm().exists()).toBe(true);
   });

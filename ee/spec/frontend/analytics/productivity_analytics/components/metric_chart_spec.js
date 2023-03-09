@@ -33,10 +33,6 @@ describe('MetricChart component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findLoadingIndicator = () => wrapper.findComponent(GlLoadingIcon);
   const findInfoMessage = () => wrapper.findComponent(GlAlert);
   const findMetricDropdown = () => wrapper.findComponent(GlDropdown);

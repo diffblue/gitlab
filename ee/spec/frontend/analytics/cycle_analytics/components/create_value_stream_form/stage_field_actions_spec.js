@@ -27,11 +27,6 @@ describe('StageFieldActions', () => {
     wrapper = createComponent({});
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   it('will render the move up action', () => {
     expect(findMoveUpBtn().exists()).toBe(true);
   });

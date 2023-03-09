@@ -99,10 +99,6 @@ describe('DeleteScheduleModal', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders delete schedule modal layout', () => {
     expect(wrapper.element).toMatchSnapshot();
   });

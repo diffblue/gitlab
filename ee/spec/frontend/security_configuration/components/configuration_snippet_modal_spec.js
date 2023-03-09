@@ -65,10 +65,6 @@ describe('EE - SecurityConfigurationSnippetModal', () => {
     createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders the YAML snippet', () => {
     expect(findEditor().exists()).toBe(true);
   });

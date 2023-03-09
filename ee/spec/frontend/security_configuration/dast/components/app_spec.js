@@ -30,10 +30,6 @@ describe('EE - DAST Configuration App', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('mounts', () => {
     expect(wrapper.exists()).toBe(true);
   });

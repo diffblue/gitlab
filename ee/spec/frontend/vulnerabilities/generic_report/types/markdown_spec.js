@@ -50,7 +50,6 @@ describe('ee/vulnerabilities/components/generic_report/types/markdown.vue', () =
 
   afterEach(() => {
     mock.restore();
-    wrapper.destroy();
   });
 
   describe('when loading', () => {

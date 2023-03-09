@@ -48,8 +48,6 @@ describe('Code owners component', () => {
 
   beforeEach(() => createComponent());
 
-  afterEach(() => wrapper.destroy());
-
   describe('help link', () => {
     it('renders a GlLink component', () => {
       expect(findLink().exists()).toBe(true);

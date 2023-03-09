@@ -9,10 +9,6 @@ describe('alerts component', () => {
       propsData,
     });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders multiple alert count when multiple alerts are present', () => {
     wrapper = mount({
       count: 2,

@@ -29,10 +29,6 @@ describe('Insights chart component', () => {
       stubs: { 'gl-column-chart': true, 'insights-chart-error': true },
     });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when chart is loading', () => {
     it('displays the chart loader in the container', () => {
       wrapper = factory(DEFAULT_PROPS);

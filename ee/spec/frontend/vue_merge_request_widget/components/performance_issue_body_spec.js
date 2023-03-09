@@ -27,11 +27,6 @@ describe('performance issue body', () => {
         });
       });
 
-      afterEach(() => {
-        wrapper.destroy();
-        wrapper = null;
-      });
-
       it('renders issue name', () => {
         expect(wrapper.text()).toContain(name);
       });

@@ -118,11 +118,6 @@ describe('ValueStreamFormContent', () => {
   const expectStageTransitionKeys = (stages) =>
     stages.forEach((stage) => expect(stage.transitionKey).toContain('stage-'));
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('default state', () => {
     beforeEach(() => {
       wrapper = createComponent({ state: { defaultGroupLabels: null } });
@@ -407,7 +402,6 @@ describe('ValueStreamFormContent', () => {
 
         afterEach(() => {
           unmockTracking();
-          wrapper.destroy();
         });
 
         describe('form submitted successfully', () => {
@@ -486,7 +480,6 @@ describe('ValueStreamFormContent', () => {
 
     afterEach(() => {
       unmockTracking();
-      wrapper.destroy();
     });
 
     describe('form submitted successfully', () => {

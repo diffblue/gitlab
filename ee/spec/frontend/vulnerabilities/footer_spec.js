@@ -92,10 +92,6 @@ describe('Vulnerability Footer', () => {
     };
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('discussions', () => {
     const createWrapperAndFetchDiscussions = async ({ discussions, errors, success }) => {
       createWrapper({ queryHandler: discussionsHandler({ discussions, errors, success }) });

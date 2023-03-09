@@ -48,7 +48,6 @@ describe('Shared Survey Banner component', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     localStorage.removeItem(TEST_LOCAL_STORAGE_KEY);
   });
 

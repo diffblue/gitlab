@@ -16,11 +16,6 @@ describe('IssueDueDate', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const findDueDateCollapsed = () => wrapper.findByTestId('due-date-collapsed');
   const findDueDateValue = () => wrapper.findByTestId('due-date-value');
 

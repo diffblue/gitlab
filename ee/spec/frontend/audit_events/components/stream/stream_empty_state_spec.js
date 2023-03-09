@@ -18,10 +18,6 @@ describe('StreamEmptyState', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('should render correctly', () => {
     expect(wrapper.element).toMatchSnapshot();
   });

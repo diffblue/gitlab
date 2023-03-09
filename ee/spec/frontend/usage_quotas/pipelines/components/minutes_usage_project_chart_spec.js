@@ -32,10 +32,6 @@ describe('Minutes usage by project chart component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('ci/cd minutes usage', () => {
     beforeEach(() => {
       createComponent();

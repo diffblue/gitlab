@@ -35,10 +35,6 @@ describe('Modal open name', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders the issue name', () => {
     expect(wrapper.text()).toEqual('Issue');
   });

@@ -35,11 +35,6 @@ describe('UnconfiguredSecurityRule component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe.each`
     rule                 | ruleName                  | descriptionText
     ${licenseCheckRule}  | ${licenseCheckRule.name}  | ${licenseCheckRule.description}

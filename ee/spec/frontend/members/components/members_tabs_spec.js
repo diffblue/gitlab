@@ -56,10 +56,6 @@ describe('MembersTabs', () => {
   const findTabByText = (text) => findTabs().find((tab) => tab.text().includes(text));
   const findActiveTab = () => wrapper.findByRole('tab', { selected: true });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when tabs have a count', () => {
     it('renders tabs with count', async () => {
       await createComponent();

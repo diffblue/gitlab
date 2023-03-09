@@ -47,7 +47,6 @@ describe('FreeTierPromo component', () => {
   const findTryNow = () => findCollapse().findComponent(GlButton);
 
   afterEach(() => {
-    wrapper.destroy();
     unmockTracking();
     localStorage.clear();
   });

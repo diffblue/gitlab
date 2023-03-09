@@ -84,8 +84,6 @@ describe('StaleRunnerCleanupToggle', () => {
     pruningQueryHandler.mockReset();
     pruningMutationHandler.mockReset();
     confirmAction.mockReset();
-
-    wrapper.destroy();
   });
 
   it('Displays a toggle in loading state', async () => {

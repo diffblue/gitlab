@@ -20,10 +20,6 @@ describe('ExternalIssueAlert', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('template', () => {
     describe.each`
       issueTrackerName

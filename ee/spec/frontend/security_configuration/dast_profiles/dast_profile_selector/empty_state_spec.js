@@ -13,10 +13,6 @@ describe('DastProfileSelectorEmptyState', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders properly', () => {
     createComponent();
     expect(wrapper.element).toMatchSnapshot();

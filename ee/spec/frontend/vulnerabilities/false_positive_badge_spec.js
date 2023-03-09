@@ -18,8 +18,6 @@ describe('False positive badge component', () => {
     });
   };
 
-  afterEach(() => wrapper.destroy());
-
   it('should render the alert badge', () => {
     wrapper = createWrapper();
 

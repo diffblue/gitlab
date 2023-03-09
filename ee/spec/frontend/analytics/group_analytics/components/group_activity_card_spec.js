@@ -56,7 +56,6 @@ describe('GroupActivity component', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     mock.restore();
   });
 

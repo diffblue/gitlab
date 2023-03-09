@@ -51,10 +51,6 @@ describe('TestCaseGraphQL Mixin', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('updateTestCase', () => {
     it('calls `$apollo.mutate` with updateTestCase mutation and updateTestCaseInput variables', () => {
       jest.spyOn(wrapper.vm.$apollo, 'mutate').mockResolvedValue({

@@ -25,10 +25,6 @@ describe('Password Checkbox Group', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('Signup Checkbox', () => {
     beforeEach(() => {
       mountComponent();

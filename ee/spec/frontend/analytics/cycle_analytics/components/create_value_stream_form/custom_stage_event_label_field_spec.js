@@ -45,10 +45,6 @@ describe('CustomStageEventLabelField', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('Label dropdown', () => {
     it('renders the event dropdown', () => {
       expect(findEventLabelField().exists()).toBe(true);

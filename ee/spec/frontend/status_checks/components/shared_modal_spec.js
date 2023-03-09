@@ -68,10 +68,6 @@ describe('Shared modal', () => {
     wrapper.vm.$refs.form.submit = jest.fn();
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findModal = () => wrapper.findComponent(GlModal);
   const findForm = () => wrapper.findComponent(Form);
 

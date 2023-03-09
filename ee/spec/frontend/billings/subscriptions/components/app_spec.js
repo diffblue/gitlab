@@ -8,7 +8,6 @@ Vue.use(Vuex);
 
 describe('SubscriptionApp component', () => {
   let store;
-  let wrapper;
 
   const providedFields = {
     namespaceId: '42',
@@ -21,17 +20,13 @@ describe('SubscriptionApp component', () => {
     store = new Vuex.Store(initialStore());
     jest.spyOn(store, 'dispatch').mockImplementation();
 
-    wrapper = shallowMount(SubscriptionApp, {
+    shallowMount(SubscriptionApp, {
       store,
       provide: {
         ...providedFields,
       },
     });
   };
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   describe('on creation', () => {
     beforeEach(() => {

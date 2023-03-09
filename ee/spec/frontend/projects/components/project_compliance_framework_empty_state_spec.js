@@ -23,10 +23,6 @@ describe('Project compliance framework empty state', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it.each`
     addFrameworkPath | description
     ${undefined}     | ${'undefined'}

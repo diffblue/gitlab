@@ -119,10 +119,6 @@ describe('ConfigurationForm component', () => {
     pendingPromiseResolvers = [];
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe.each`
     type          | expectedPosition
     ${'global'}   | ${0}

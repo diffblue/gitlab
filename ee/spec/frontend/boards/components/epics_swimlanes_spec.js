@@ -88,10 +88,6 @@ describe('EpicsSwimlanes', () => {
     jest.spyOn(BoardUtils, 'calculateSwimlanesBufferSize').mockReturnValue(bufferSize);
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('calls fetchIssuesForEpic on mounted', () => {
     createComponent();
     expect(fetchIssuesForEpicSpy).toHaveBeenCalled();

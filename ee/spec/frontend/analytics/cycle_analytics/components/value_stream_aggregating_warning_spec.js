@@ -27,10 +27,6 @@ describe('ValueStreamAggregatingWarning', () => {
   const findSecondaryButtonTxt = () => findAlert().attributes('secondarybuttontext');
   const findSecondaryButtonLink = () => findAlert().attributes('secondarybuttonlink');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default state', () => {
     beforeEach(() => {
       wrapper = createComponent();

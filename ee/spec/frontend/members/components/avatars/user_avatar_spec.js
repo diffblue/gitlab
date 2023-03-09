@@ -18,10 +18,6 @@ describe('UserAvatar', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('badges', () => {
     it.each`
       member                                          | badgeText

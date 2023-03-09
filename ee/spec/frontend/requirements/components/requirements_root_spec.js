@@ -154,7 +154,6 @@ describe('RequirementsRoot', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     unmockTracking();
   });
 

@@ -35,10 +35,6 @@ describe('ValueStreamEmptyState', () => {
   const findPrimaryAction = () => wrapper.findByTestId('create-value-stream-button');
   const findSecondaryAction = () => wrapper.findByTestId('learn-more-link');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default state', () => {
     beforeEach(() => {
       wrapper = createComponent();

@@ -31,10 +31,6 @@ describe('MonthsHeaderItemComponent', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findTimelineHeader = () => wrapper.find('.item-label');
   describe('timeline header label', () => {
     it('is string containing Year and Month for current timeline header item', () => {

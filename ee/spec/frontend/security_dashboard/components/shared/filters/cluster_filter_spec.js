@@ -46,10 +46,6 @@ describe('ClusterFilter component', () => {
     expect(checkedItems).toEqual(ids);
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('basic structure', () => {
     beforeEach(async () => {
       createWrapper();

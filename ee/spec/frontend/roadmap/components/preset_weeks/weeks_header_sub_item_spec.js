@@ -27,10 +27,6 @@ describe('MonthsHeaderSubItemComponent', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('header subitems', () => {
     it('is array of dates containing days of week from timeframeItem', () => {
       createComponent();

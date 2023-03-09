@@ -32,10 +32,6 @@ describe('Subscription Details History', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('with data', () => {
     beforeEach(() => {
       createComponent();

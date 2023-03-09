@@ -32,11 +32,6 @@ describe('Security Dashboard Table Row', () => {
     jest.spyOn(store, 'dispatch');
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const findLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findContent = (i) => wrapper.findAll('.table-mobile-content').at(i);
   const findAllIssueCreated = () => wrapper.findAll('[data-testid="issues-icon"]');

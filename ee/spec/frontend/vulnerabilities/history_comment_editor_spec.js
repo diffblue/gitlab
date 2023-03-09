@@ -16,8 +16,6 @@ describe('History Comment Editor', () => {
   const saveButton = () => wrapper.findComponent({ ref: 'saveButton' });
   const cancelButton = () => wrapper.findComponent({ ref: 'cancelButton' });
 
-  afterEach(() => wrapper.destroy());
-
   it('shows the placeholder text when there is no comment', () => {
     createWrapper();
     expect(textarea().props('value')).toBe('');

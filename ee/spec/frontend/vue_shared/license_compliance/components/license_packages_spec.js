@@ -12,10 +12,6 @@ describe('LicensePackages', () => {
     wrapper = mount(LicensePackages, { propsData: { packages } });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findShowAllPackagesButton = () => wrapper.find('.btn-show-all-packages');
   const findLicenseDependecies = () => wrapper.find('.js-license-dependencies');
 

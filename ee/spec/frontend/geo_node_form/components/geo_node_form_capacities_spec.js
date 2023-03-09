@@ -44,10 +44,6 @@ describe('GeoNodeFormCapacities', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findGeoNodeFormCapcitiesSectionDescription = () => wrapper.find('p');
   const findGeoNodeFormCapacitiesMoreInfoLink = () => wrapper.findComponent(GlLink);
   const findGeoNodeFormRepositoryCapacityField = () =>

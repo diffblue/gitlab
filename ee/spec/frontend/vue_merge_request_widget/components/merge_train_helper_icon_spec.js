@@ -19,10 +19,6 @@ describe('MergeTrainHelperIcon', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('displays the correct icon', () => {
     expect(findIcon().props('name')).toBe('question-o');
   });

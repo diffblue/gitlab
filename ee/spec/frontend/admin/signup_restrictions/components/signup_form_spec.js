@@ -21,10 +21,6 @@ describe('Signup Form', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('form data', () => {
     beforeEach(() => {
       mountComponent();

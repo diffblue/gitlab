@@ -33,10 +33,6 @@ describe('GeoReplicableFilterBar', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findNavContainer = () => wrapper.find('nav');
   const findGlDropdown = () => findNavContainer().findComponent(GlDropdown);
   const findGlDropdownItems = () => findNavContainer().findAllComponents(GlDropdownItem);

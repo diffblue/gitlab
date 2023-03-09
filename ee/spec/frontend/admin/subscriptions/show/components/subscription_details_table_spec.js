@@ -77,10 +77,6 @@ describe('Subscription Details Table', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('with content', () => {
     beforeEach(() => {
       createComponent();

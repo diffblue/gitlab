@@ -52,10 +52,6 @@ describe('AdminLicenseManagementRow', () => {
   const findDropdownToggle = () => wrapper.findComponent(GlDropdown);
   const findRemoveButton = () => wrapper.findComponent(GlButton);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('allowed license', () => {
     beforeEach(() => {
       createComponent({

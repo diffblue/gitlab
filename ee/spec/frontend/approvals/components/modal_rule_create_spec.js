@@ -52,10 +52,6 @@ describe('Approvals ModalRuleCreate', () => {
     createModalState = {};
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('without data', () => {
     beforeEach(() => {
       createModalState.data = null;

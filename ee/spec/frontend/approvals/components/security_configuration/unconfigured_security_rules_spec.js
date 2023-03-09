@@ -34,11 +34,6 @@ describe('UnconfiguredSecurityRules component', () => {
     jest.spyOn(store, 'dispatch');
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('when created', () => {
     beforeEach(() => {
       createWrapper();

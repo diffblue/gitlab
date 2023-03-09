@@ -74,7 +74,6 @@ describe('BoardTopBar', () => {
   };
 
   afterEach(() => {
-    wrapper.destroy();
     mockApollo = null;
   });
 

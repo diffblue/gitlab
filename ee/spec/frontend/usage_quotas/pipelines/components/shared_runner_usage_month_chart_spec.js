@@ -28,10 +28,6 @@ describe('Shared runner usage month chart component', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders a area chart component with axis legends', () => {
     expect(findAreaChart().exists()).toBe(true);
     expect(findAreaChart().props('option').xAxis.name).toBe('Month');

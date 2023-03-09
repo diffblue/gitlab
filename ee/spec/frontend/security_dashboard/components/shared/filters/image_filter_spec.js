@@ -75,10 +75,6 @@ describe('ImageFilter component', () => {
     expect(truncate.props()).toMatchObject({ text: name, position: 'middle' });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('basic structure', () => {
     beforeEach(async () => {
       createWrapper();

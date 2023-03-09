@@ -27,10 +27,6 @@ describe('VerificationStep', () => {
   const findTitle = () => wrapper.findByText(DEFAULT_PROPS.title);
   const findStep = () => wrapper.findComponent(StepComponent);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('Default: completed: false, inactive: false', () => {
     beforeEach(() => {
       createComponent();

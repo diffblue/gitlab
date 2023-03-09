@@ -15,10 +15,6 @@ describe('Target', () => {
 
   const createComponent = createComponentFactory();
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('component', () => {
     it('renders target', () => {
       createComponent();

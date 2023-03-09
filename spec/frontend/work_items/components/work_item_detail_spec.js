@@ -149,7 +149,6 @@ describe('WorkItemDetail component', () => {
   };
 
   afterEach(() => {
-    wrapper.destroy();
     setWindowLocation('');
   });
 

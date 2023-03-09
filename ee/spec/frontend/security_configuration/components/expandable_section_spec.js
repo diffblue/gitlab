@@ -16,10 +16,6 @@ describe('ExpandableSection component', () => {
   const findSubHeading = () => wrapper.find('[data-testid="sub-heading"]');
   const findContent = () => wrapper.find('[data-testid="content"]');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('headingTag', () => {
     it('defaults to h3', () => {
       createComponent();

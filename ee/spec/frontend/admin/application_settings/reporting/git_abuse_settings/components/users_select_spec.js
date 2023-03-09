@@ -66,7 +66,6 @@ describe('Users Select component', () => {
   };
 
   afterEach(() => {
-    wrapper.destroy();
     fakeApollo = null;
   });
 

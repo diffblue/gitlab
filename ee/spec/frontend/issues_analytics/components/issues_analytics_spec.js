@@ -55,7 +55,6 @@ describe('Issue Analytics component', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     axiosMock.restore();
 
     resetHTMLFixture();

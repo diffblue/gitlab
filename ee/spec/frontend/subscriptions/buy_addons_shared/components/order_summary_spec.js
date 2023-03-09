@@ -59,10 +59,6 @@ describe('Order Summary', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('the default plan', () => {
     beforeEach(() => {
       const apolloProvider = createMockApolloProvider({ subscription: { quantity: 1 } });
