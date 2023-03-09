@@ -5,6 +5,10 @@ require 'spec_helper'
 RSpec.describe Ci::RunnerMachine, feature_category: :runner_fleet, type: :model do
   it_behaves_like 'having unique enum values'
 
+  it_behaves_like 'it has loose foreign keys' do
+    let(:factory_name) { :ci_runner_machine }
+  end
+
   it { is_expected.to belong_to(:runner) }
   it { is_expected.to belong_to(:runner_version).with_foreign_key(:version) }
   it { is_expected.to have_many(:runner_machine_builds) }
