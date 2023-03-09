@@ -441,3 +441,42 @@ export const emptyResponse = () => ({
   added: [],
   fixed: [],
 });
+
+export const findingQueryMockData = () =>
+  jest.fn().mockResolvedValue({
+    data: {
+      project: {
+        id: 'gid://gitlab/Project/11',
+        pipeline: {
+          id: 'gid://gitlab/Ci::Pipeline/13',
+          securityReportFinding: {
+            id: 'b58fadc9-e4af-5404-ba6b-e4ee14801c6f',
+            stateComment: null,
+            dismissedAt: null,
+            dismissedBy: null,
+            mergeRequest: null,
+            issueLinks: {
+              nodes: [
+                {
+                  id: 'git://gitlab/IssueLink/1',
+                  linkType: 'CREATED',
+                  issue: {
+                    id: 'gid://gitlab/Issue/2',
+                    iid: '2',
+                    webUrl: 'http://gdk.test:3000/root/security-reports-v2/-/issues/2',
+                    createdAt: '2023-03-07T10:50:09Z',
+                    author: {
+                      id: 'gid://gitlab/User/1',
+                      name: 'Administrator',
+                      username: 'root',
+                      webUrl: 'http://gdk.test:3000/root',
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+      },
+    },
+  });

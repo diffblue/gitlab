@@ -11,6 +11,7 @@ import { visitUrl } from '~/lib/utils/url_utility';
 import { s__, sprintf } from '~/locale';
 import FindingModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
+import findingQuery from 'ee/security_dashboard/graphql/queries/mr_widget_finding.graphql';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
 import { capitalizeFirstCharacter, convertToCamelCase } from '~/lib/utils/text_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -56,6 +57,42 @@ export default {
       },
     };
   },
+
+  apollo: {
+    securityReportFinding: {
+      manual: true,
+      query: findingQuery,
+      variables() {
+        return {
+          fullPath: this.mr.sourceProjectFullPath,
+          pipelineId: this.modalData.vulnerability.found_by_pipeline?.iid,
+          uuid: this.modalData.vulnerability.uuid,
+        };
+      },
+      error() {
+        this.modalData.error = this.$options.i18n.findingLoadingError;
+      },
+      result({ data }) {
+        const issue = data.project.pipeline.securityReportFinding.issueLinks.nodes.find(
+          (x) => x.linkType === 'CREATED',
+        )?.issue;
+
+        if (issue) {
+          this.$set(this.modalData.vulnerability, 'hasIssue', true);
+          this.$set(this.modalData.vulnerability, 'issue_feedback', {
+            author: issue.author,
+            created_at: issue.createdAt,
+            issue_url: issue.webUrl,
+            issue_iid: issue.iid,
+          });
+        }
+      },
+      skip() {
+        return !this.modalData;
+      },
+    },
+  },
+
   computed: {
     helpPopovers() {
       return {

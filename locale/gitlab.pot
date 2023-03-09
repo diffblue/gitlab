@@ -50902,6 +50902,9 @@ msgstr ""
 msgid "ciReport|Solution"
 msgstr ""
 
+msgid "ciReport|Something went wrong while fetching the finding. Please try again later."
+msgstr ""
+
 msgid "ciReport|Static Application Security Testing (SAST)"
 msgstr ""
 
