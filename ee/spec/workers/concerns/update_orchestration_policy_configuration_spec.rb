@@ -2,19 +2,24 @@
 
 require 'spec_helper'
 
-RSpec.describe UpdateOrchestrationPolicyConfiguration do
-  let_it_be(:configuration, refind: true) { create(:security_orchestration_policy_configuration, configured_at: nil) }
-  let!(:schedule) do
-    create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: configuration)
+RSpec.describe UpdateOrchestrationPolicyConfiguration, feature_category: :security_policy_management do
+  let_it_be(:project) { create(:project) }
+  let_it_be(:configuration, refind: true) do
+    create(:security_orchestration_policy_configuration, configured_at: nil, project: project)
   end
 
-  let_it_be(:namespace) { create(:namespace) }
+  let!(:schedule) do
+    create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: configuration,
+           owner: project.owner)
+  end
 
   before do
     allow_next_instance_of(Repository) do |repository|
       allow(repository).to receive(:blob_data_at).and_return(active_policies.to_yaml)
       allow(repository).to receive(:last_commit_for_path)
     end
+
+    allow(configuration).to receive(:policy_last_updated_by).and_return(project.owner)
   end
 
   let(:worker) do
@@ -57,7 +62,20 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration do
         }
       end
 
-      it 'executes process services for all policies' do
+      it 'updates configuration.configured_at to the current time', :freeze_time do
+        expect { subject }.to change { configuration.configured_at }.from(nil).to(Time.current)
+      end
+
+      it 'executes SyncScanResultPoliciesService' do
+        expect_next_instance_of(Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService,
+                                configuration) do |service|
+          expect(service).to receive(:execute).with(no_args)
+        end
+
+        subject
+      end
+
+      it 'executes ProcessRuleService for each policy' do
         active_policies[:scan_execution_policy].each_with_index do |policy, policy_index|
           expect_next_instance_of(Security::SecurityOrchestrationPolicies::ProcessRuleService,
                                   policy_configuration: configuration,
@@ -66,16 +84,35 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration do
           end
         end
 
-        expect_next_instance_of(Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService,
-          configuration) do |service|
-          expect(service).to receive(:execute).with(no_args)
+        subject
+      end
+
+      shared_examples 'creates new rule schedules' do |expected_schedules:|
+        it 'creates a rule schedule for each schedule rule in the scan execution policies' do
+          expect { subject }.to change(Security::OrchestrationPolicyRuleSchedule, :count).from(1).to(expected_schedules)
         end
 
-        freeze_time do
-          expect(configuration.configured_at).to be_nil
-          expect { subject }.not_to change(Security::OrchestrationPolicyRuleSchedule, :count)
-          expect(configuration.reload.configured_at).to be_like_time(Time.current)
+        it 'deletes existing rule schedules', :freeze_time do
+          subject
+
+          Security::OrchestrationPolicyRuleSchedule.all.each do |rule_schedule|
+            expect(rule_schedule.created_at).to eq(Time.current)
+          end
         end
+      end
+
+      context 'with one schedule rule per policy' do
+        include_examples 'creates new rule schedules', expected_schedules: 2
+      end
+
+      context 'with multiple schedule rules per policy' do
+        before do
+          active_policies[:scan_execution_policy].each do |policy|
+            policy[:rules] << { type: 'schedule', branches: %w[staging], cadence: '*/20 * * * *' }
+          end
+        end
+
+        include_examples 'creates new rule schedules', expected_schedules: 4
       end
     end
 

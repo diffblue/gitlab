@@ -2,9 +2,9 @@
 
 module UpdateOrchestrationPolicyConfiguration
   def update_policy_configuration(configuration)
-    unless configuration.policy_configuration_valid?
-      configuration.delete_all_schedules
+    configuration.delete_all_schedules
 
+    unless configuration.policy_configuration_valid?
       configuration.delete_scan_finding_rules
 
       configuration.update!(configured_at: Time.current)
