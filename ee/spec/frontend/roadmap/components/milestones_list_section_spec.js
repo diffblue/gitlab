@@ -120,7 +120,7 @@ describe('MilestonesListSectionComponent', () => {
     });
 
     describe('handleEpicsListScroll', () => {
-      it('toggles value of `showBottomShadow` based on provided `scrollTop`, `clientHeight` & `scrollHeight`', () => {
+      it('toggles value of `showBottomShadow` based on provided `scrollTop`, `clientHeight` & `scrollHeight`', async () => {
         wrapper.vm.handleEpicsListScroll({
           scrollTop: 5,
           clientHeight: 5,
@@ -129,6 +129,8 @@ describe('MilestonesListSectionComponent', () => {
 
         // Math.ceil(scrollTop) + clientHeight < scrollHeight
         expect(wrapper.vm.showBottomShadow).toBe(true);
+        await nextTick();
+        expect(wrapper.find('.scroll-bottom-shadow').isVisible()).toBe(true);
 
         wrapper.vm.handleEpicsListScroll({
           scrollTop: 15,
@@ -138,6 +140,8 @@ describe('MilestonesListSectionComponent', () => {
 
         // Math.ceil(scrollTop) + clientHeight < scrollHeight
         expect(wrapper.vm.showBottomShadow).toBe(false);
+        await nextTick();
+        expect(wrapper.find('.scroll-bottom-shadow').isVisible()).toBe(false);
       });
     });
   });
@@ -158,16 +162,6 @@ describe('MilestonesListSectionComponent', () => {
 
       expect(listItems.exists()).toBe(true);
       expect(listItems.findComponent(MilestoneTimeline).exists()).toBe(true);
-    });
-
-    it('renders bottom shadow element when `showBottomShadow` prop is true', () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        showBottomShadow: true,
-      });
-
-      expect(wrapper.find('.scroll-bottom-shadow').exists()).toBe(true);
     });
 
     it('show the correct count of milestones', () => {
