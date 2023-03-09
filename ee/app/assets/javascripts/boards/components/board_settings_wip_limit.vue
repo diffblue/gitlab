@@ -7,7 +7,7 @@ import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
 export default {
   i18n: {
     wipLimitText: __('Work in progress limit'),
-    editLinkText: __('Edit'),
+    editButtonText: __('Edit'),
     noneText: __('None'),
     inputPlaceholderText: __('Enter number of issues'),
     removeLimitText: __('Remove limit'),
@@ -108,10 +108,11 @@ export default {
       <label class="m-0">{{ $options.i18n.wipLimitText }}</label>
       <gl-button
         class="gl-h-full gl-border-0 text-dark"
-        variant="link"
+        category="tertiary"
+        size="small"
         data-testid="edit-button"
         @click="showInput"
-        >{{ $options.i18n.editLinkText }}</gl-button
+        >{{ $options.i18n.editButtonText }}</gl-button
       >
     </div>
     <gl-form-input
@@ -134,7 +135,8 @@ export default {
         <span class="m-1">-</span>
         <gl-button
           class="gl-h-full gl-border-0 text-secondary"
-          variant="link"
+          category="tertiary"
+          size="small"
           data-testid="remove-limit"
           @click="clearWipLimit"
           >{{ $options.i18n.removeLimitText }}</gl-button
