@@ -8,7 +8,6 @@
 - secret_files_link_url = help_page_path('user/project/repository/push_rules', anchor: 'prevent-pushing-secrets-to-the-repository')
 - secret_files_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: secret_files_link_url }
 
-
 = f.gitlab_ui_checkbox_component :deny_delete_tag,
     s_("PushRules|Do not allow users to remove Git tags with %{code_block_start}git push%{code_block_end}").html_safe % { code_block_start: '<code>'.html_safe, code_block_end: '</code>'.html_safe },
     checkbox_options: { data: { qa_selector: 'deny_delete_tag_checkbox' } },
@@ -41,6 +40,11 @@
   = f.text_field :branch_name_regex, class: "form-control", placeholder: _('Example: (feature|hotfix)\/*'), data: { qa_selector: 'branch_name_field' }
   .form-text.text-muted
     = s_("PushRules|All branch names must match this %{wiki_syntax_link_start}regular expression%{wiki_syntax_link_end}. If empty, any branch name is allowed.").html_safe % { wiki_syntax_link_start: wiki_syntax_link_start, wiki_syntax_link_end: '</a>'.html_safe }
+  - if context.is_a?(Project)
+    - link_push_rules_url = project_settings_repository_path(context, anchor: 'branch-defaults-settings')
+    - link_push_rules_start = '<a href="%{url}" rel="noopener noreferrer">'.html_safe % { url: link_push_rules_url }
+    .form-text.text-muted
+      = s_('PushRules|Check %{link_start}Branch defaults &gt; Branch name templates%{link_end} for potential conflicts.').html_safe % { link_start: link_push_rules_start, link_end: '</a>'.html_safe }
 
 .form-group
   = f.label :author_email_regex, s_("PushRules|Commit author's email"), class: "label-bold"
