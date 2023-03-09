@@ -9,14 +9,7 @@ module Gitlab
         end
 
         def apply
-          if Feature.enabled?(:audit_log_group_level, @group)
-            projects = ::Project.for_group_and_its_subgroups(@group)
-
-            AuditEvent.by_entity('Group', @group)
-              .or(AuditEvent.by_entity('Project', projects))
-          else
-            AuditEvent.by_entity('Group', @group)
-          end
+          AuditEvent.by_entity('Group', @group)
         end
       end
     end

@@ -1,8 +1,0 @@
----
-name: audit_log_group_level
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/27785
-rollout_issue_url: 
-milestone: '12.10'
-type: development
-group: group::compliance
-default_enabled: false
