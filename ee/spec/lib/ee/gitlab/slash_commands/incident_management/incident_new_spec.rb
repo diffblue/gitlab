@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::SlashCommands::IncidentManagement::IncidentNew do
   let_it_be(:project) { create(:project) }
-  let_it_be(:user) { create(:user, developer_projects: [project]) }
+  let_it_be(:user) { create(:user) }
   let_it_be(:chat_name) { create(:chat_name, user: user) }
   let_it_be(:regex_match) { described_class.match('incident declare') }
 
@@ -34,10 +34,8 @@ RSpec.describe Gitlab::SlashCommands::IncidentManagement::IncidentNew do
   end
 
   describe '#allowed?' do
-    context 'when user has permissions' do
-      it 'returns true' do
-        expect(described_class).to be_allowed(project, user)
-      end
+    it 'returns true' do
+      expect(described_class).to be_allowed(project, user)
     end
 
     context 'when feature flag is disabled' do
