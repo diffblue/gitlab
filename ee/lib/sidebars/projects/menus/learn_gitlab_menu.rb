@@ -55,6 +55,17 @@ module Sidebars
         def render?
           context.learn_gitlab_enabled
         end
+
+        override :serialize_as_menu_item_args
+        def serialize_as_menu_item_args
+          super.merge({
+            sprite_icon: sprite_icon,
+            pill_count: pill_count,
+            has_pill: has_pill?,
+            super_sidebar_parent: ::Sidebars::StaticMenu,
+            item_id: :learn_gitlab
+          })
+        end
       end
     end
   end
