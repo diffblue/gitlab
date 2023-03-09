@@ -19,8 +19,7 @@ export const setPaths = ({ dispatch }, options) => {
   });
 };
 
-export const setFeatureFlags = ({ commit }, featureFlags) =>
-  commit(types.SET_FEATURE_FLAGS, featureFlags);
+export const setFeatures = ({ commit }, features) => commit(types.SET_FEATURES, features);
 
 export const fetchGroupLabels = ({ commit, getters: { currentGroupPath } }) => {
   commit(types.REQUEST_GROUP_LABELS);
@@ -70,7 +69,7 @@ export const initializeCycleAnalytics = ({ dispatch, commit }, initialData = {})
   commit(types.INITIALIZE_VSA, initialData);
 
   const {
-    featureFlags = {},
+    features = {},
     milestonesPath,
     labelsPath,
     selectedAuthor,
@@ -80,7 +79,7 @@ export const initializeCycleAnalytics = ({ dispatch, commit }, initialData = {})
     stage: selectedStage,
     group,
   } = initialData;
-  commit(types.SET_FEATURE_FLAGS, featureFlags);
+  commit(types.SET_FEATURES, features);
 
   if (group?.fullPath) {
     return Promise.all([

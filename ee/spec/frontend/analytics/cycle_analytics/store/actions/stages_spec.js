@@ -57,7 +57,7 @@ describe('Value Stream Analytics actions / stages', () => {
       createdAfter,
       createdBefore,
       stages: [],
-      featureFlags: {},
+      features: {},
       activeStages,
       selectedValueStream,
       ...mockGetters,
@@ -327,7 +327,7 @@ describe('Value Stream Analytics actions / stages', () => {
         ...state,
         stages,
         currentGroup,
-        featureFlags: state.featureFlags,
+        features: state.features,
       };
       mock = new MockAdapter(axios);
       mock.onGet(endpoints.stageCount).reply(HTTP_STATUS_OK, { events: [] });

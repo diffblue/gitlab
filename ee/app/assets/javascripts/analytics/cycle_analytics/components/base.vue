@@ -65,7 +65,7 @@ export default {
       'pagination',
       'aggregation',
       'isCreatingAggregation',
-      'featureFlags',
+      'features',
     ]),
     ...mapGetters([
       'hasNoAccessError',
@@ -133,8 +133,7 @@ export default {
     },
     showDashboardsLink() {
       return Boolean(
-        this.featureFlags?.groupLevelAnalyticsDashboard &&
-          this.featureFlags?.groupAnalyticsDashboardsPage,
+        this.features?.groupLevelAnalyticsDashboard && this.features?.groupAnalyticsDashboardsPage,
       );
     },
     dashboardsPath() {

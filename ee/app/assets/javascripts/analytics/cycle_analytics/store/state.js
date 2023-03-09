@@ -4,7 +4,7 @@ import {
 } from '~/analytics/cycle_analytics/constants';
 
 export default () => ({
-  featureFlags: {},
+  features: {},
   defaultStageConfig: [],
   defaultGroupLabels: null,
 
