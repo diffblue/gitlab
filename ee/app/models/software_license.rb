@@ -5,6 +5,8 @@
 class SoftwareLicense < ApplicationRecord
   include Presentable
 
+  ALL_LICENSE_NAMES_CACHE_KEY = [name, 'all_license_names'].freeze
+
   validates :name, presence: true, uniqueness: true
   validates :spdx_identifier, length: { maximum: 255 }
 
@@ -21,7 +23,9 @@ class SoftwareLicense < ApplicationRecord
   end
 
   def self.all_license_names
-    spdx.ordered.unreachable_limit.pluck_names
+    Rails.cache.fetch(ALL_LICENSE_NAMES_CACHE_KEY, expires_in: 7.days) do
+      spdx.ordered.unreachable_limit.pluck_names
+    end
   end
 
   def self.pluck_names

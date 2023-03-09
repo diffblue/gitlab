@@ -130,5 +130,11 @@ RSpec.describe SoftwareLicense, feature_category: :security_policy_management do
     it 'returns ordered list of license names from the SPDX catalogue' do
       expect(subject.to_a).to eql([apache_license.name, mit_license.name])
     end
+
+    it 'caches the license names' do
+      expect(Rails.cache).to receive(:fetch).with(SoftwareLicense::ALL_LICENSE_NAMES_CACHE_KEY, expires_in: 7.days)
+
+      subject
+    end
   end
 end
