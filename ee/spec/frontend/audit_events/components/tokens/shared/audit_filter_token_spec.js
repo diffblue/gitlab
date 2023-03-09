@@ -135,7 +135,7 @@ describe('AuditFilterToken', () => {
         initComponent({ value, fetchItem });
       });
 
-      it('shows a alert error message', () => {
+      it('shows an alert error message', () => {
         expect(createAlert).toHaveBeenCalledWith({
           message: 'Failed to find foo bar. Please search for another foo bar.',
         });
@@ -196,7 +196,7 @@ describe('AuditFilterToken', () => {
     });
 
     describe('when fetching the suggestions failed', () => {
-      it('shows a alert error message', async () => {
+      it('shows an alert error message', async () => {
         const fetchSuggestions = jest.fn().mockRejectedValue(mockResponseFailed);
         initComponent({ fetchSuggestions });
 

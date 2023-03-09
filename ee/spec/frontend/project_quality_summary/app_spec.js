@@ -63,7 +63,7 @@ describe('Project quality summary app component', () => {
       await waitForPromises();
     });
 
-    it('shows a alert message', () => {
+    it('shows an alert message', () => {
       expect(createAlert).toHaveBeenCalled();
     });
   });
