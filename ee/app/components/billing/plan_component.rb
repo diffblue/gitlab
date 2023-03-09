@@ -41,7 +41,8 @@ module Billing
     end
 
     def name
-      plan.code.capitalize
+      plan_name = "BillingPlans|#{plan.code.capitalize}"
+      s_(plan_name)
     end
 
     def elevator_pitch
