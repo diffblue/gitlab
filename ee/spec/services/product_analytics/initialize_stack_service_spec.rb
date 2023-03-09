@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_shared_state do
+RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_shared_state,
+  feature_category: :product_analytics do
   let_it_be(:project) { create(:project) }
 
   shared_examples 'no job is enqueued' do

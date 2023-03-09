@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PathLocks::UnlockService do
+RSpec.describe PathLocks::UnlockService, feature_category: :source_code_management do
   let(:path_lock)    { create :path_lock }
   let(:current_user) { path_lock.user }
   let(:project)      { path_lock.project }

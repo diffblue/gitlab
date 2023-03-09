@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::NamespaceSettings::UpdateService do
+RSpec.describe EE::NamespaceSettings::UpdateService, feature_category: :subgroups do
   let(:group) { create(:group) }
   let(:user) { create(:user) }
 

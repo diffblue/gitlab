@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe MergeRequests::Mergeability::CheckBlockedByOtherMrsService do
+RSpec.describe MergeRequests::Mergeability::CheckBlockedByOtherMrsService, feature_category: :code_review_workflow do
   subject(:check_blocked_by_other_mrs) { described_class.new(merge_request: merge_request, params: {}) }
 
   let(:merge_request) { build(:merge_request) }

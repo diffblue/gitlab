@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PathLocks::LockService do
+RSpec.describe PathLocks::LockService, feature_category: :source_code_management do
   let(:current_user) { create(:user) }
   let(:project)      { create(:project) }
   let(:path)         { 'app/models' }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PersonalAccessTokens::RevokeService do
+RSpec.describe PersonalAccessTokens::RevokeService, feature_category: :system_access do
   describe '#execute' do
     subject { service.execute }
 

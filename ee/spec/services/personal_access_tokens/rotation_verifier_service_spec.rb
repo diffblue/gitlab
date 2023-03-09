@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PersonalAccessTokens::RotationVerifierService do
+RSpec.describe PersonalAccessTokens::RotationVerifierService, feature_category: :system_access do
   let_it_be(:user) { create(:user) }
   let_it_be(:no_pat_user) { create(:user) }
   let_it_be(:active_pat) { create(:personal_access_token, user: user, expires_at: 2.months.from_now, created_at: 1.month.ago) }

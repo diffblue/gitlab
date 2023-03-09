@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeTrains::RefreshService do
+RSpec.describe MergeTrains::RefreshService, feature_category: :merge_trains do
   include ExclusiveLeaseHelpers
 
   let(:project) { create(:project) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeTrains::RefreshMergeRequestService do
+RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :source_code_management do
   let_it_be(:project) { create(:project, :repository, merge_pipelines_enabled: true, merge_trains_enabled: true) }
   let_it_be(:maintainer) { create(:user) }
 

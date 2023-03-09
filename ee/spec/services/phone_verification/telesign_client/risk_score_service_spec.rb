@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PhoneVerification::TelesignClient::RiskScoreService do
+RSpec.describe PhoneVerification::TelesignClient::RiskScoreService, feature_category: :system_access do
   let(:telesign_customer_xid) { 'foo' }
   let(:telesign_api_key) { 'bar' }
 

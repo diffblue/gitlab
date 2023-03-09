@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PhoneVerification::TelesignClient::BaseService do
+RSpec.describe PhoneVerification::TelesignClient::BaseService, feature_category: :system_access do
   subject(:service) { described_class.new }
 
   describe '#execute' do

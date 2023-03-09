@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::InProductMarketingEmailsService, '#execute', :saas do
+RSpec.describe Namespaces::InProductMarketingEmailsService, '#execute', :saas, feature_category: :purchase do
   let(:frozen_time) { Time.zone.parse('23 Mar 2021 10:14:40 UTC') }
 
   let_it_be(:user) { create(:user, email_opted_in: true) }
