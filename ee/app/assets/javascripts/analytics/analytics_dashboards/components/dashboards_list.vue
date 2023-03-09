@@ -145,7 +145,7 @@ export default {
         </p>
       </div>
       <div>
-        <gl-button to="panel-designer" data-testid="visualization-designer-button">
+        <gl-button to="visualization-designer" data-testid="visualization-designer-button">
           {{ $options.I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER }}
         </gl-button>
         <gl-dropdown

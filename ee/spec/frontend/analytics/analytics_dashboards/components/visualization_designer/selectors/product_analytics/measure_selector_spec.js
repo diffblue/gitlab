@@ -1,13 +1,13 @@
 import { nextTick } from 'vue';
 import { GlLabel } from '@gitlab/ui';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import AnalyticsMeasureSelector from 'ee/product_analytics/dashboards/components/panel_designer/analytics_cube_query_measure_selector.vue';
 import {
   EVENTS_DB_TABLE_NAME,
   SESSIONS_TABLE_NAME,
-} from 'ee/product_analytics/dashboards/constants';
+} from 'ee/analytics/analytics_dashboards/constants';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import ProductAnalyticsMeasureSelector from 'ee/analytics/analytics_dashboards/components/visualization_designer/selectors/product_analytics/measure_selector.vue';
 
-describe('AnalyticsQueryMeasureSelector', () => {
+describe('ProductAnalyticsMeasureSelector', () => {
   let wrapper;
 
   const findMeasureSummary = () => wrapper.findByTestId('measure-summary');
@@ -20,7 +20,7 @@ describe('AnalyticsQueryMeasureSelector', () => {
   const addFilters = jest.fn();
 
   const createWrapper = () => {
-    wrapper = shallowMountExtended(AnalyticsMeasureSelector, {
+    wrapper = shallowMountExtended(ProductAnalyticsMeasureSelector, {
       propsData: {
         measures: [],
         setMeasures,

@@ -5,11 +5,11 @@ import {
   SESSIONS_TABLE_NAME,
   MEASURE_COLOR,
   isTrackedEvent,
-} from '../../constants';
-import VisualizationDesignerListOption from './visualization_designer_list_option.vue';
+} from 'ee/analytics/analytics_dashboards/constants';
+import VisualizationDesignerListOption from '../../visualization_designer_list_option.vue';
 
 export default {
-  name: 'AnalyticsQueryDesignerMeasureSelect',
+  name: 'ProductAnalyticsMeasureSelector',
   MEASURE_COLOR,
   components: {
     GlLabel,
@@ -115,7 +115,7 @@ export default {
           <visualization-designer-list-option
             icon="bulb"
             data-testid="feature-button"
-            :title="s__('ProductAnalytics|Feature usage')"
+            :title="s__('ProductAnalytics|Feature Usages')"
             :description="s__('ProductAnalytics|Track specific features')"
             @click="selectMeasure('featureUsages')"
           />
@@ -159,9 +159,9 @@ export default {
         <ul class="content-list">
           <visualization-designer-list-option
             data-testid="pageviews-all-button"
-            :title="s__('ProductAnalytics|All pages')"
+            :title="s__('ProductAnalytics|All Pages')"
             :description="
-              s__('ProductAnalytics|Compares pageviews of all pages against each other')
+              s__('ProductAnalytics|Compares page views of all pages against each other')
             "
             @click="selectMeasure('pageViews', 'all')"
           />
@@ -169,11 +169,11 @@ export default {
       </div>
 
       <div v-else-if="measureType === 'featureUsages'">
-        <h3 class="gl-font-lg">{{ s__('ProductAnalytics|Feature Usage') }}</h3>
+        <h3 class="gl-font-lg">{{ s__('ProductAnalytics|Feature Usages') }}</h3>
         <ul class="content-list">
           <visualization-designer-list-option
             data-testid="feature-all-button"
-            :title="s__('ProductAnalytics|All features')"
+            :title="s__('ProductAnalytics|All Features')"
             :description="
               s__('ProductAnalytics|Compares feature usage of all features against each other')
             "
@@ -186,7 +186,7 @@ export default {
         <ul class="content-list">
           <visualization-designer-list-option
             data-testid="clickevents-all-button"
-            :title="s__('ProductAnalytics|All clicks compared')"
+            :title="s__('ProductAnalytics|All Clicks Compared')"
             :description="s__('ProductAnalytics|Compares click events against each other')"
             @click="selectMeasure('clickEvents', 'all')"
           />
@@ -197,7 +197,7 @@ export default {
         <ul class="content-list">
           <visualization-designer-list-option
             data-testid="events-all-button"
-            :title="s__('ProductAnalytics|All events compared')"
+            :title="s__('ProductAnalytics|All Events Compared')"
             :description="s__('ProductAnalytics|Compares all events against each other')"
             @click="selectMeasure('events', 'all')"
           />
@@ -208,7 +208,7 @@ export default {
         <ul class="content-list">
           <visualization-designer-list-option
             data-testid="sessions-count-button"
-            :title="s__('ProductAnalytics|All sessions compared')"
+            :title="s__('ProductAnalytics|All Sessions Compared')"
             :description="s__('ProductAnalytics|Compares all user sessions against each other')"
             @click="selectMeasure('sessions', 'count')"
           />
@@ -220,14 +220,14 @@ export default {
           />
           <visualization-designer-list-option
             data-testid="sessions-avgperuser-button"
-            :title="s__('ProductAnalytics|Average per User')"
+            :title="s__('ProductAnalytics|Average Per User')"
             :description="s__('ProductAnalytics|How many sessions a user has')"
             @click="selectMeasure('sessions', 'averagePerUser')"
           />
           <visualization-designer-list-option
             data-testid="sessions-repeat-button"
-            :title="s__('ProductAnalytics|Repeat Visit percentage')"
-            :description="s__('ProductAnalytics|How often sesions are repeated')"
+            :title="s__('ProductAnalytics|Repeat Visit Percentage')"
+            :description="s__('ProductAnalytics|How often sessions are repeated')"
             @click="selectMeasure('sessions', 'repeatPercent')"
           />
         </ul>

@@ -7,20 +7,20 @@ import { __ } from '~/locale';
 import { createCubeJsApi } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { PANEL_DISPLAY_TYPES } from '../constants';
 
-import MeasureSelector from './panel_designer/analytics_cube_query_measure_selector.vue';
-import DimensionSelector from './panel_designer/analytics_cube_query_dimension_selector.vue';
-import PanelPreview from './panel_designer/analytics_panel_preview.vue';
-import VisualizationInspector from './panel_designer/analytics_visualization_inspector.vue';
+import MeasureSelector from './visualization_designer/selectors/product_analytics/measure_selector.vue';
+import DimensionSelector from './visualization_designer/selectors/product_analytics/dimension_selector.vue';
+import VisualizationPreview from './visualization_designer/analytics_visualization_preview.vue';
+import VisualizationInspector from './visualization_designer/analytics_visualization_inspector.vue';
 
 export default {
-  name: 'AnalyticsPanelDesigner',
+  name: 'AnalyticsVisualizationDesigner',
   components: {
     QueryBuilder,
     GlButton,
     MeasureSelector,
     DimensionSelector,
     VisualizationInspector,
-    PanelPreview,
+    VisualizationPreview,
   },
   data() {
     const query = {
@@ -41,7 +41,7 @@ export default {
     };
   },
   computed: {
-    resultPanel() {
+    resultVisualization() {
       const newCubeQuery = this.$refs.builder.$children[0].resultSet.query();
 
       // Weird behaviour as the API says its malformed if we send it again
@@ -81,7 +81,7 @@ export default {
       this.selectedDisplayType = newType;
     },
     selectVisualizationType(newType) {
-      this.selectDisplayType(PANEL_DISPLAY_TYPES.PANEL);
+      this.selectDisplayType(PANEL_DISPLAY_TYPES.VISUALIZATION);
       this.selectedVisualizationType = newType;
 
       if (this.selectedVisualizationType === 'LineChart') {
@@ -113,7 +113,7 @@ export default {
           v-model="defaultTitle"
           dir="auto"
           type="text"
-          :placeholder="s__('ProductAnalytics|New Analytics Panel Title')"
+          :placeholder="s__('Analytics|New Analytics Visualization Title')"
           :aria-label="__('Title')"
           class="form-control gl-border-gray-200"
           data-testid="panel-title-tba"
@@ -121,7 +121,7 @@ export default {
       </div>
       <div class="gl-ml-2">
         <gl-button category="primary" @click="addToDashboard">{{
-          s__('ProductAnalytics|Add to Dashboard')
+          s__('Analytics|Add to Dashboard')
         }}</gl-button>
       </div>
     </div>
@@ -179,13 +179,13 @@ export default {
           <div
             class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-bg-gray-10 gl-overflow-auto gl-border-l gl-border-r"
           >
-            <panel-preview
+            <visualization-preview
               :selected-visualization-type="selectedVisualizationType"
               :display-type="selectedDisplayType"
               :is-query-present="isQueryPresent ? isQueryPresent : false"
               :loading="loading"
               :result-set="resultSet ? resultSet : null"
-              :result-panel="resultSet && isQueryPresent ? resultPanel : null"
+              :result-visualization="resultSet && isQueryPresent ? resultVisualization : null"
               @selectedDisplayType="selectDisplayType"
             />
           </div>

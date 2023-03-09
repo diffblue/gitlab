@@ -1,19 +1,19 @@
+import AnalyticsVisualizationPreview from 'ee/analytics/analytics_dashboards/components/visualization_designer/analytics_visualization_preview.vue';
+
+import { PANEL_DISPLAY_TYPES } from 'ee/analytics/analytics_dashboards/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import AnalyticsPanelPreview from 'ee/product_analytics/dashboards/components/panel_designer/analytics_panel_preview.vue';
 
-import { PANEL_DISPLAY_TYPES } from 'ee/product_analytics/dashboards/constants';
-
-describe('AnalyticsPanelPreview', () => {
+describe('AnalyticsVisualizationPreview', () => {
   let wrapper;
 
   const findDataButton = () => wrapper.findByTestId('select-data-button');
-  const findPanelButton = () => wrapper.findByTestId('select-panel-button');
+  const findVisualizationButton = () => wrapper.findByTestId('select-visualization-button');
   const findCodeButton = () => wrapper.findByTestId('select-code-button');
 
   const selectDisplayType = jest.fn();
 
   const createWrapper = (props = {}) => {
-    wrapper = shallowMountExtended(AnalyticsPanelPreview, {
+    wrapper = shallowMountExtended(AnalyticsVisualizationPreview, {
       propsData: {
         selectedVisualizationType: '',
         displayType: '',
@@ -21,7 +21,7 @@ describe('AnalyticsPanelPreview', () => {
         isQueryPresent: false,
         loading: false,
         resultSet: { tablePivot: () => {} },
-        resultPanel: {},
+        resultVisualization: {},
         ...props,
       },
     });
@@ -56,7 +56,7 @@ describe('AnalyticsPanelPreview', () => {
 
     it('should render overview buttons', () => {
       expect(findDataButton().exists()).toBe(true);
-      expect(findPanelButton().exists()).toBe(true);
+      expect(findVisualizationButton().exists()).toBe(true);
       expect(findCodeButton().exists()).toBe(true);
     });
 
@@ -65,9 +65,9 @@ describe('AnalyticsPanelPreview', () => {
       expect(wrapper.emitted('selectedDisplayType')).toEqual([[PANEL_DISPLAY_TYPES.DATA]]);
     });
 
-    it('should be able to select panel section', () => {
-      findPanelButton().vm.$emit('click');
-      expect(wrapper.emitted('selectedDisplayType')).toEqual([[PANEL_DISPLAY_TYPES.PANEL]]);
+    it('should be able to select visualization section', () => {
+      findVisualizationButton().vm.$emit('click');
+      expect(wrapper.emitted('selectedDisplayType')).toEqual([[PANEL_DISPLAY_TYPES.VISUALIZATION]]);
     });
 
     it('should be able to select code section', () => {
@@ -89,17 +89,17 @@ describe('AnalyticsPanelPreview', () => {
     });
   });
 
-  describe('resultSet and panel is selected', () => {
+  describe('resultSet and visualization is selected', () => {
     beforeEach(() => {
       createWrapper({
         isQueryPresent: true,
-        displayType: PANEL_DISPLAY_TYPES.PANEL,
+        displayType: PANEL_DISPLAY_TYPES.VISUALIZATION,
         selectedVisualizationType: 'LineChart',
       });
     });
 
-    it('should render panel', () => {
-      expect(wrapper.findByTestId('preview-panel').exists()).toBe(true);
+    it('should render visualization', () => {
+      expect(wrapper.findByTestId('preview-visualization').exists()).toBe(true);
     });
   });
 

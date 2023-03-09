@@ -16,15 +16,135 @@ export const I18N_DASHBOARD_LIST_SDK_APP_ID = s__('ProductAnalytics|SDK App ID')
 export const I18N_DASHBOARD_LIST_SDK_APP_ID_DESCRIPTION = s__(
   'ProductAnalytics|Identifies the sender of tracking events',
 );
-export const I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER = s__(
-  'ProductAnalytics|Visualization Designer',
-);
+export const I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER = s__('Analytics|Visualization Designer');
 
-export const I18N_ALERT_NO_POINTER_TITLE = s__('ProductAnalytics|Custom dashboards');
-export const I18N_ALERT_NO_POINTER_BUTTON = s__('ProductAnalytics|Configure Dashboard Project');
+export const I18N_ALERT_NO_POINTER_TITLE = s__('Analytics|Custom dashboards');
+export const I18N_ALERT_NO_POINTER_BUTTON = s__('Analytics|Configure Dashboard Project');
 export const I18N_ALERT_NO_POINTER_DESCRIPTION = s__(
-  'ProductAnalytics|For being able to create your own dashboards please configure a special project to store your dashboards.',
+  'Analytics|For being able to create your own dashboards please configure a special project to store your dashboards.',
 );
 
 export const VISUALIZATION_TYPE_FILE = 'yml';
 export const VISUALIZATION_TYPE_BUILT_IN = 'builtin';
+
+export const EVENTS_TYPES = ['pageViews', 'featureUsages', 'clickEvents', 'events'];
+
+export function isTrackedEvent(eventType) {
+  return EVENTS_TYPES.includes(eventType);
+}
+
+export const PANEL_DISPLAY_TYPES = {
+  DATA: 'data',
+  VISUALIZATION: 'visualization',
+  CODE: 'code',
+};
+
+export const PANEL_DISPLAY_TYPE_ITEMS = [
+  {
+    type: PANEL_DISPLAY_TYPES.DATA,
+    icon: 'table',
+    title: s__('Analytics|Data'),
+  },
+  {
+    type: PANEL_DISPLAY_TYPES.VISUALIZATION,
+    icon: 'chart',
+    title: s__('Analytics|Visualization'),
+  },
+  {
+    type: PANEL_DISPLAY_TYPES.CODE,
+    icon: 'code',
+    title: s__('Analytics|Code'),
+  },
+];
+
+export const MEASURE_COLOR = '#00b140';
+export const DIMENSION_COLOR = '#c3e6cd';
+
+export const EVENTS_DB_TABLE_NAME = 'TrackedEvents';
+export const SESSIONS_TABLE_NAME = 'Sessions';
+
+export const ANALYTICS_FIELD_CATEGORIES = [
+  {
+    name: s__('Analytics|Pages'),
+    category: 'pages',
+  },
+  {
+    name: s__('Analytics|Users'),
+    category: 'users',
+  },
+];
+
+export const ANALYTICS_FIELDS = [
+  {
+    name: s__('Analytics|URL'),
+    category: 'pages',
+    dbField: 'url',
+    icon: 'documents',
+  },
+  {
+    name: s__('Analytics|Page Path'),
+    category: 'pages',
+    dbField: 'docPath',
+    icon: 'documents',
+  },
+  {
+    name: s__('Analytics|Page Title'),
+    category: 'pages',
+    dbField: 'pageTitle',
+    icon: 'documents',
+  },
+  {
+    name: s__('Analytics|Page Language'),
+    category: 'pages',
+    dbField: 'docEncoding',
+    icon: 'documents',
+  },
+  {
+    name: s__('Analytics|Host'),
+    category: 'pages',
+    dbField: 'docHost',
+    icon: 'documents',
+  },
+  {
+    name: s__('Analytics|Referer'),
+    category: 'users',
+    dbField: 'referer',
+    icon: 'user',
+  },
+  {
+    name: s__('Analytics|Language'),
+    category: 'users',
+    dbField: 'userLanguage',
+    icon: 'user',
+  },
+  {
+    name: s__('Analytics|Viewport'),
+    category: 'users',
+    dbField: 'vpSize',
+    icon: 'user',
+  },
+  {
+    name: s__('Analytics|Browser Family'),
+    category: 'users',
+    dbField: 'parsedUaUaFamily',
+    icon: 'user',
+  },
+  {
+    name: s__('Analytics|Browser'),
+    category: 'users',
+    dbField: ['parsedUaUaFamily', 'parsedUaUaVersion'],
+    icon: 'user',
+  },
+  {
+    name: s__('Analytics|OS'),
+    category: 'users',
+    dbField: 'parsedUaOsFamily',
+    icon: 'user',
+  },
+  {
+    name: s__('Analytics|OS Version'),
+    category: 'users',
+    dbField: ['parsedUaOsFamily', 'parsedUaOsVersion'],
+    icon: 'user',
+  },
+];
