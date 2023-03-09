@@ -6,7 +6,7 @@ import * as getters from 'ee/analytics/cycle_analytics/store/modules/duration_ch
 import * as types from 'ee/analytics/cycle_analytics/store/modules/duration_chart/mutation_types';
 import testAction from 'helpers/vuex_action_helper';
 import { createdAfter, createdBefore, group } from 'jest/analytics/cycle_analytics/mock_data';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import {
   allowedStages as activeStages,
@@ -15,7 +15,7 @@ import {
   valueStreams,
 } from '../../../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 const selectedGroup = { fullPath: group.path };
 const hiddenStage = { ...activeStages[0], hidden: true, id: 3, slug: 3 };
 const [selectedValueStream] = valueStreams;
@@ -182,7 +182,7 @@ describe('DurationChart actions', () => {
       );
     });
 
-    it('will flash an error', () => {
+    it('will alert an error', () => {
       actions.receiveDurationDataError({
         commit: () => {},
       });

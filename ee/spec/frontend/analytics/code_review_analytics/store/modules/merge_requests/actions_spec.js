@@ -4,11 +4,11 @@ import * as actions from 'ee/analytics/code_review_analytics/store/modules/merge
 import * as types from 'ee/analytics/code_review_analytics/store/modules/merge_requests/mutation_types';
 import getInitialState from 'ee/analytics/code_review_analytics/store/modules/merge_requests/state';
 import testAction from 'helpers/vuex_action_helper';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { mockMergeRequests } from '../../../mock_data';
 
-jest.mock('~/flash');
+jest.mock('~/alert');
 
 describe('Code review analytics mergeRequests actions', () => {
   let state;
