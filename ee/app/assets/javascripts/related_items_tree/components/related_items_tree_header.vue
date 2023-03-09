@@ -147,21 +147,24 @@ export default {
           </gl-popover>
           <div
             ref="countBadge"
-            class="issue-count-badge gl-display-inline-flex gl-text-secondary gl-p-0 gl-pr-5"
+            class="issue-count-badge gl-display-inline-flex gl-text-gray-500 gl-p-0 gl-pr-5"
           >
-            <span v-if="allowSubEpics" class="gl-display-inline-flex gl-align-items-center">
+            <span
+              v-if="allowSubEpics"
+              class="gl-display-inline-flex gl-align-items-center gl-font-weight-bold"
+            >
               <gl-icon name="epic" class="gl-mr-2" />
               {{ totalEpicsCount }}
             </span>
             <span
-              class="gl-display-inline-flex gl-align-items-center"
+              class="gl-display-inline-flex gl-align-items-center gl-font-weight-bold"
               :class="{ 'gl-ml-3': allowSubEpics }"
             >
               <gl-icon name="issues" class="gl-mr-2" />
               {{ totalIssuesCount }}
             </span>
             <span
-              class="gl-display-inline-flex gl-align-items-center"
+              class="gl-display-inline-flex gl-align-items-center gl-font-weight-bold"
               :class="{ 'gl-ml-3': allowSubEpics }"
             >
               <gl-icon name="weight" class="gl-mr-2" />
