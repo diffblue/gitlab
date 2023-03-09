@@ -66,10 +66,13 @@ module API
       desc 'Confirm a vulnerability' do
         success EE::API::Entities::Vulnerability
       end
+      params do
+        optional :comment, type: String
+      end
       post ':id/confirm' do
         not_modified! if @vulnerability.confirmed?
 
-        @vulnerability = ::Vulnerabilities::ConfirmService.new(current_user, @vulnerability).execute
+        @vulnerability = ::Vulnerabilities::ConfirmService.new(current_user, @vulnerability, params[:comment]).execute
         render_vulnerability(@vulnerability)
       end
 

@@ -16,9 +16,14 @@ module Mutations
                required: true,
                description: 'ID of the vulnerability to be confirmed.'
 
-      def resolve(id:)
+      argument :comment,
+               GraphQL::Types::String,
+               required: false,
+               description: 'Comment why vulnerability was marked as confirmed (max. 50 000 characters).'
+
+      def resolve(id:, comment: nil)
         vulnerability = authorized_find!(id: id)
-        result = confirm_vulnerability(vulnerability)
+        result = confirm_vulnerability(vulnerability, comment)
 
         {
           vulnerability: result,
@@ -28,8 +33,8 @@ module Mutations
 
       private
 
-      def confirm_vulnerability(vulnerability)
-        ::Vulnerabilities::ConfirmService.new(current_user, vulnerability).execute
+      def confirm_vulnerability(vulnerability, comment)
+        ::Vulnerabilities::ConfirmService.new(current_user, vulnerability, comment).execute
       end
 
       def find_object(id:)

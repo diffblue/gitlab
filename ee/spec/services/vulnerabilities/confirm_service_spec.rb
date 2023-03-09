@@ -10,10 +10,12 @@ RSpec.describe Vulnerabilities::ConfirmService, feature_category: :vulnerability
   end
 
   let_it_be(:user) { create(:user) }
+  let_it_be(:comment) { "It's really there, I swear." }
 
   let(:project) { create(:project) } # cannot use let_it_be here: caching causes problems with permission-related tests
   let(:vulnerability) { create(:vulnerability, :with_findings, project: project) }
-  let(:service) { described_class.new(user, vulnerability) }
+  let(:service) { described_class.new(user, vulnerability, comment) }
+  let(:created_state_transition) { ::Vulnerabilities::StateTransition.last }
 
   subject(:confirm_vulnerability) { service.execute }
 
@@ -32,7 +34,12 @@ RSpec.describe Vulnerabilities::ConfirmService, feature_category: :vulnerability
           confirm_vulnerability
 
           expect(vulnerability.reload).to(
-            have_attributes(state: 'confirmed', confirmed_by: user, confirmed_at: be_like_time(Time.current)))
+            have_attributes(
+              state: 'confirmed',
+              confirmed_by: user,
+              confirmed_at: be_like_time(Time.current)
+            )
+          )
         end
       end
 
@@ -42,13 +49,14 @@ RSpec.describe Vulnerabilities::ConfirmService, feature_category: :vulnerability
         confirm_vulnerability
       end
 
-      it 'creates state transition entry to `confirmed`' do
+      it 'creates state transition entry to `confirmed`', :aggregate_failures do
         expect { confirm_vulnerability }.to change { ::Vulnerabilities::StateTransition.count }
           .from(0)
           .to(1)
-        expect(::Vulnerabilities::StateTransition.last.vulnerability_id).to eq(vulnerability.id)
-        expect(::Vulnerabilities::StateTransition.last.to_state).to eq('confirmed')
-        expect(::Vulnerabilities::StateTransition.last.author).to eq(user)
+        expect(created_state_transition.vulnerability_id).to eq(vulnerability.id)
+        expect(created_state_transition.to_state).to eq('confirmed')
+        expect(created_state_transition.author).to eq(user)
+        expect(created_state_transition.comment).to eq(comment)
       end
 
       context 'when security dashboard feature is disabled' do
