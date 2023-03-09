@@ -30,6 +30,9 @@ export const i18n = {
   ),
   noNewVulnerabilities: s__('ciReport|%{scanner} detected no new potential vulnerabilities'),
   newVulnerabilities: s__('ciReport|%{scanner} detected %{number} new potential %{vulnStr}'),
+  findingLoadingError: s__(
+    'ciReport|Something went wrong while fetching the finding. Please try again later.',
+  ),
 };
 
 export const popovers = {

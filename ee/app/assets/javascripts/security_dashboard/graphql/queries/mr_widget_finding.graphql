@@ -1,0 +1,38 @@
+query pipelineFinding($fullPath: ID!, $pipelineId: ID!, $uuid: String!) {
+  project(fullPath: $fullPath) {
+    id
+    pipeline(iid: $pipelineId) {
+      id
+      securityReportFinding(uuid: $uuid) {
+        id: uuid
+        stateComment
+        dismissedAt
+        dismissedBy {
+          id
+        }
+        mergeRequest {
+          id
+          webUrl
+        }
+        issueLinks {
+          nodes {
+            id
+            linkType
+            issue {
+              id
+              iid
+              webUrl
+              createdAt
+              author {
+                id
+                name
+                username
+                webUrl
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

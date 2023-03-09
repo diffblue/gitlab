@@ -1,12 +1,15 @@
 import { GlBadge } from '@gitlab/ui';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import MockAdapter from 'axios-mock-adapter';
 import waitForPromises from 'helpers/wait_for_promises';
 import MRSecurityWidget from 'ee/vue_merge_request_widget/extensions/security_reports/mr_widget_security_reports.vue';
 import FindingModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import SummaryText from 'ee/vue_merge_request_widget/extensions/security_reports/summary_text.vue';
 import SummaryHighlights from 'ee/vue_merge_request_widget/extensions/security_reports/summary_highlights.vue';
+import findingQuery from 'ee/security_dashboard/graphql/queries/mr_widget_finding.graphql';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import Widget from '~/vue_merge_request_widget/components/widget/widget.vue';
 import toast from '~/vue_shared/plugins/global_toast';
 import download from '~/lib/utils/downloader';
@@ -15,10 +18,13 @@ import * as urlUtils from '~/lib/utils/url_utility';
 import { BV_HIDE_MODAL } from '~/lib/utils/constants';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
+import { findingQueryMockData } from './mock_data';
 
 jest.mock('~/vue_shared/components/user_callout_dismisser.vue', () => ({ render: () => {} }));
 jest.mock('~/vue_shared/plugins/global_toast');
 jest.mock('~/lib/utils/downloader');
+
+Vue.use(VueApollo);
 
 describe('MR Widget Security Reports', () => {
   let wrapper;
@@ -51,6 +57,7 @@ describe('MR Widget Security Reports', () => {
 
   const createComponent = ({ propsData, mountFn = shallowMountExtended } = {}) => {
     wrapper = mountFn(MRSecurityWidget, {
+      apolloProvider: createMockApollo([[findingQuery, findingQueryMockData()]]),
       propsData: {
         ...propsData,
         mr: {
@@ -362,7 +369,17 @@ describe('MR Widget Security Reports', () => {
     const mockWithData = (props) => {
       Object.keys(reportEndpoints).forEach((key, i) => {
         mockAxios.onGet(reportEndpoints[key]).replyOnce(HTTP_STATUS_OK, {
-          added: [{ uuid: i, severity: 'critical', name: 'Password leak', ...props }],
+          added: [
+            {
+              uuid: i.toString(),
+              severity: 'critical',
+              name: 'Password leak',
+              found_by_pipeline: {
+                iid: 1,
+              },
+              ...props,
+            },
+          ],
         });
       });
     };
@@ -395,15 +412,27 @@ describe('MR Widget Security Reports', () => {
 
       expect(modal.props('canCreateIssue')).toBe(false);
       expect(modal.props('isDismissingVulnerability')).toBe(false);
-      expect(modal.props('modal')).toEqual({
+
+      await waitForPromises();
+
+      expect(modal.props('modal')).toMatchObject({
         title: 'Password leak',
         error: null,
         isShowingDeleteButtons: false,
         vulnerability: {
-          uuid: 0,
+          uuid: '0',
           severity: 'critical',
           name: 'Password leak',
           isDismissed: false,
+          issue_feedback: {
+            author: {
+              name: 'Administrator',
+              username: 'root',
+            },
+            created_at: '2023-03-07T10:50:09Z',
+            issue_iid: '2',
+            issue_url: 'http://gdk.test:3000/root/security-reports-v2/-/issues/2',
+          },
         },
       });
     });
