@@ -90,7 +90,11 @@ module Users
 
     def require_verification_user!
       @user = User.find_by_id(session[:verification_user_id])
-      redirect_to root_path unless @user
+
+      return if @user.present?
+
+      log_verification_user_not_found
+      redirect_to root_path
     end
 
     def require_unverified_user!
@@ -106,18 +110,32 @@ module Users
     end
 
     def log_identity_verification(method, event, reason = nil)
-      return unless %w[Email Phone].include?(method)
+      return unless %w[Email Phone Error].include?(method)
 
       category = "IdentityVerification::#{method}"
+      user = @user || current_user
 
       Gitlab::AppLogger.info(
         message: category,
         event: event.to_s.titlecase,
-        username: @user.username,
+        username: user&.username,
         ip: request.ip,
-        reason: reason.to_s
+        reason: reason.to_s,
+        referer: request.referer
       )
-      ::Gitlab::Tracking.event(category, event.to_s, property: reason.to_s, user: @user)
+      ::Gitlab::Tracking.event(category, event.to_s, property: reason.to_s, user: user)
+    end
+
+    def log_verification_user_not_found
+      reason = ["signed_in: #{user_signed_in?}"]
+      reason << "verification_user_id: #{session[:verification_user_id]}" if session[:verification_user_id].present?
+
+      if user_signed_in?
+        reason << "state: #{current_user.identity_verification_state}"
+        reason << "verified: #{current_user.identity_verified?}"
+      end
+
+      log_identity_verification('Error', :verification_user_not_found, reason.join(', '))
     end
 
     def verify_token
