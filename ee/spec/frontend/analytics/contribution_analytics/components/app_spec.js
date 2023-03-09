@@ -6,15 +6,17 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import App from 'ee/analytics/contribution_analytics/components/app.vue';
 import contributionsQuery from 'ee/analytics/contribution_analytics/graphql/contributions.query.graphql';
+import { MOCK_CONTRIBUTIONS_RESPONSE } from '../mock_data';
 
 Vue.use(VueApollo);
 
 describe('Contribution Analytics App', () => {
   let wrapper;
 
+  const mockContributionsHandler = jest.fn();
   const createMockApolloProvider = (contributionsQueryResolver) =>
     createMockApollo([
-      [contributionsQuery, jest.fn().mockResolvedValue(contributionsQueryResolver)],
+      [contributionsQuery, mockContributionsHandler.mockResolvedValue(contributionsQueryResolver)],
     ]);
 
   const createWrapper = ({ mockApollo }) => {
@@ -47,5 +49,16 @@ describe('Contribution Analytics App', () => {
 
     expect(findErrorAlert().exists()).toBe(true);
     expect(findErrorAlert().text()).toEqual(wrapper.vm.$options.i18n.error);
+  });
+
+  it('fetches paginated data', async () => {
+    const mockApollo = createMockApolloProvider(MOCK_CONTRIBUTIONS_RESPONSE);
+    createWrapper({ mockApollo });
+    await waitForPromises();
+
+    expect(mockContributionsHandler).toHaveBeenCalledWith({
+      ...wrapper.props(),
+      nextPageCursor: '',
+    });
   });
 });
