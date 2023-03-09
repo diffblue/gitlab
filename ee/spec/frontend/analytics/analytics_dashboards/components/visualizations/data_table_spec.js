@@ -43,7 +43,6 @@ describe('DataTable Visualization', () => {
 
       ['Field One', 'Field Two'].forEach((headerText, idx) => {
         expect(headers.at(idx).text()).toBe(headerText);
-        expect(headers.at(idx).classes()).toContain('gl-bg-transparent!');
       });
     });
 

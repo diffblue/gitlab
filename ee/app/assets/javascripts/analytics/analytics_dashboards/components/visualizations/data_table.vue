@@ -29,7 +29,6 @@ export default {
       return Object.keys(this.data[0]).map((key) => ({
         key,
         tdClass: 'gl-text-truncate gl-max-w-0',
-        thClass: 'gl-bg-transparent!',
       }));
     },
   },
