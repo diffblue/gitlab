@@ -1,7 +1,12 @@
-query getContributionsData($fullPath: ID!, $startDate: ISO8601Date!, $endDate: ISO8601Date!) {
+query getContributionsData(
+  $fullPath: ID!
+  $startDate: ISO8601Date!
+  $endDate: ISO8601Date!
+  $nextPageCursor: String = ""
+) {
   group(fullPath: $fullPath) {
     id
-    contributions(from: $startDate, to: $endDate) {
+    contributions(from: $startDate, to: $endDate, after: $nextPageCursor) {
       nodes {
         repoPushed
         mergeRequestsCreated
@@ -16,6 +21,10 @@ query getContributionsData($fullPath: ID!, $startDate: ISO8601Date!, $endDate: I
           name
           webUrl
         }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
       }
     }
   }

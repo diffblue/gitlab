@@ -2,6 +2,7 @@
 import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { filterIssues, filterMergeRequests, filterPushes } from '../utils';
+import { MAX_REQUEST_COUNT } from '../constants';
 import contributionsQuery from '../graphql/contributions.query.graphql';
 import PushesChart from './pushes_chart.vue';
 import MergeRequestsChart from './merge_requests_chart.vue';
@@ -40,32 +41,11 @@ export default {
     return {
       contributions: [],
       loadError: false,
+      isLoading: false,
+      requestCount: 0,
     };
   },
-  apollo: {
-    // TODO: This query should paginate until there are no results.
-    // Currently it only loads the first 100 users due to GraphQL limits.
-    contributions: {
-      query: contributionsQuery,
-      variables() {
-        return {
-          fullPath: this.fullPath,
-          startDate: this.startDate,
-          endDate: this.endDate,
-        };
-      },
-      update(data) {
-        return data.group?.contributions.nodes || [];
-      },
-      error() {
-        this.loadError = true;
-      },
-    },
-  },
   computed: {
-    loading() {
-      return Boolean(this.$apollo.queries.contributions?.loading);
-    },
     pushes() {
       return filterPushes(this.contributions);
     },
@@ -76,11 +56,47 @@ export default {
       return filterIssues(this.contributions);
     },
   },
+  async created() {
+    await this.fetchContributions();
+  },
+  methods: {
+    handleError() {
+      this.loadError = true;
+    },
+    async fetchContributions(endCursor = '') {
+      this.isLoading = true;
+
+      try {
+        const { data } = await this.$apollo.query({
+          query: contributionsQuery,
+          variables: {
+            fullPath: this.fullPath,
+            startDate: this.startDate,
+            endDate: this.endDate,
+            nextPageCursor: endCursor,
+          },
+        });
+
+        const { nodes = [], pageInfo } = data.group?.contributions || {};
+
+        this.contributions = [...this.contributions, ...nodes];
+        this.requestCount += 1;
+
+        if (this.requestCount < MAX_REQUEST_COUNT && pageInfo?.hasNextPage) {
+          await this.fetchContributions(pageInfo.endCursor);
+        }
+      } catch {
+        this.handleError();
+      } finally {
+        this.isLoading = false;
+      }
+    },
+  },
 };
 </script>
 <template>
   <div>
-    <gl-loading-icon v-if="loading" :label="$options.i18n.loading" size="lg" />
+    <gl-loading-icon v-if="isLoading" :label="$options.i18n.loading" size="lg" />
 
     <gl-alert v-else-if="loadError" variant="danger" :dismissible="false">
       {{ $options.i18n.error }}
