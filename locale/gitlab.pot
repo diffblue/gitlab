@@ -29928,6 +29928,9 @@ msgstr ""
 msgid "Open Selection"
 msgstr ""
 
+msgid "Open color picker"
+msgstr ""
+
 msgid "Open errors"
 msgstr ""
 
@@ -39592,6 +39595,9 @@ msgid "Select branch or create wildcard"
 msgstr ""
 
 msgid "Select branches"
+msgstr ""
+
+msgid "Select color"
 msgstr ""
 
 msgid "Select default branch"
