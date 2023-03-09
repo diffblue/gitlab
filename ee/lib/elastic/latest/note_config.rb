@@ -44,6 +44,8 @@ module Elastic
           indexes :author_id, type: :integer
           indexes :confidential, type: :boolean
         end
+
+        indexes :hashed_root_namespace_id, type: :integer
       end
     end
   end
