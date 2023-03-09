@@ -5,6 +5,8 @@ require 'spec_helper'
 RSpec.describe FilterableByTestReports do
   let(:test_class) do
     Class.new(ApplicationRecord) do
+      self.table_name = 'issues'
+
       include FilterableByTestReports
     end
   end
