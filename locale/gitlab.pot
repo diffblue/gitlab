@@ -28228,10 +28228,16 @@ msgstr ""
 msgid "Navigation|Context navigation"
 msgstr ""
 
-msgid "Navigation|Recent groups"
+msgid "Navigation|FREQUENT GROUPS"
 msgstr ""
 
-msgid "Navigation|Recent projects"
+msgid "Navigation|FREQUENT PROJECTS"
+msgstr ""
+
+msgid "Navigation|Groups you visit often will appear here."
+msgstr ""
+
+msgid "Navigation|Projects you visit often will appear here."
 msgstr ""
 
 msgid "Navigation|Switch to..."
