@@ -13,9 +13,9 @@ import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import { waitForMutation, mountExtended } from 'helpers/vue_test_utils_helper';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
-import { mrStates } from '~/issuable/popover/constants';
 import GroupedIssuesList from '~/ci/reports/components/grouped_issues_list.vue';
 import ReportSection from '~/ci/reports/components/report_section.vue';
+import { STATUS_CLOSED, STATUS_MERGED, STATUS_OPEN } from '~/issues/constants';
 import MergeRequestArtifactDownload from '~/vue_shared/security_reports/components/artifact_downloads/merge_request_artifact_download.vue';
 import {
   sastDiffSuccessMock,
@@ -781,7 +781,7 @@ describe('Grouped security reports app', () => {
 
     describe('with active MR and base report is out of date', () => {
       beforeEach(() => {
-        return createComponent({ mrState: mrStates.open, baseReportOutOfDate: true });
+        return createComponent({ mrState: STATUS_OPEN, baseReportOutOfDate: true });
       });
 
       it('should display out of date message', () => {
@@ -793,7 +793,7 @@ describe('Grouped security reports app', () => {
 
     describe('with active MR and diverged commit', () => {
       beforeEach(() => {
-        return createComponent({ mrState: mrStates.open, divergedCommitsCount: 1 });
+        return createComponent({ mrState: STATUS_OPEN, divergedCommitsCount: 1 });
       });
 
       it('should display out of date message', () => {
@@ -806,7 +806,7 @@ describe('Grouped security reports app', () => {
     describe('with active MR, base report out of date and diverged commit', () => {
       beforeEach(() => {
         return createComponent({
-          mrState: mrStates.open,
+          mrState: STATUS_OPEN,
           divergedCommitsCount: 1,
           baseReportOutOfDate: true,
         });
@@ -821,7 +821,7 @@ describe('Grouped security reports app', () => {
 
     describe('with active MR', () => {
       beforeEach(() => {
-        return createComponent({ mrState: mrStates.open });
+        return createComponent({ mrState: STATUS_OPEN });
       });
 
       it('should not display out of date message', () => {
@@ -832,7 +832,7 @@ describe('Grouped security reports app', () => {
     describe('with closed MR', () => {
       beforeEach(() => {
         return createComponent({
-          mrState: mrStates.closed,
+          mrState: STATUS_CLOSED,
           divergedCommitsCount: 1,
           baseReportOutOfDate: true,
         });
@@ -846,7 +846,7 @@ describe('Grouped security reports app', () => {
     describe('with merged MR', () => {
       beforeEach(() => {
         return createComponent({
-          mrState: mrStates.merged,
+          mrState: STATUS_MERGED,
           divergedCommitsCount: 1,
           baseReportOutOfDate: true,
         });

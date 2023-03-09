@@ -13,11 +13,6 @@ export const ChildType = {
   Issue: 'Issue',
 };
 
-export const ChildState = {
-  Open: 'opened',
-  Closed: 'closed',
-};
-
 export const idProp = {
   Epic: 'id',
   Issue: 'epicIssueId',

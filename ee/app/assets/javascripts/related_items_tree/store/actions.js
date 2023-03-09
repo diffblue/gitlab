@@ -1,5 +1,6 @@
 import Api from 'ee/api';
 import { createAlert } from '~/alert';
+import { STATUS_OPEN } from '~/issues/constants';
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
@@ -14,7 +15,6 @@ import epicChildren from '../queries/epic_children.query.graphql';
 
 import {
   ChildType,
-  ChildState,
   idProp,
   relativePositions,
   trackingAddedIssue,
@@ -426,7 +426,7 @@ export const createItem = ({ state, dispatch }, { itemTitle, groupFullPath }) =>
         // TODO: API response is missing these 3 keys.
         // Once support is added, we need to remove it from here.
         path: data.url ? `/groups/${data.url.split('/groups/').pop()}` : '',
-        state: ChildState.Open,
+        state: STATUS_OPEN,
         created_at: '',
       });
 

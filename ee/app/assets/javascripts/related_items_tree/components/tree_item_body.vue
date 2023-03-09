@@ -18,8 +18,9 @@ import { isScopedLabel } from '~/lib/utils/common_utils';
 
 import ItemAssignees from '~/issuable/components/issue_assignees.vue';
 import ItemMilestone from '~/issuable/components/issue_milestone.vue';
+import { STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
 
-import { ChildType, ChildState, itemRemoveModalId } from '../constants';
+import { ChildType, itemRemoveModalId } from '../constants';
 import EpicHealthStatus from './epic_health_status.vue';
 import IssueHealthStatus from './issue_health_status.vue';
 
@@ -81,13 +82,13 @@ export default {
       return this.item.path || this.item.webPath;
     },
     isOpen() {
-      return this.item.state === ChildState.Open;
+      return this.item.state === STATUS_OPEN;
     },
     isBlocked() {
       return this.item.blocked;
     },
     isClosed() {
-      return this.item.state === ChildState.Closed;
+      return this.item.state === STATUS_CLOSED;
     },
     hasMilestone() {
       return !isEmpty(this.item.milestone);

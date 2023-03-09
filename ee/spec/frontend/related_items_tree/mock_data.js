@@ -1,4 +1,4 @@
-import { ChildState } from 'ee/related_items_tree/constants';
+import { STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
 import { TEST_HOST } from 'spec/test_constants';
 
 export const mockInitialConfig = {
@@ -91,7 +91,7 @@ export const mockEpic1 = {
   id: 'gid://gitlab/Epic/4',
   iid: '4',
   title: 'Quo ea ipsa enim perferendis at omnis officia.',
-  state: ChildState.Open,
+  state: STATUS_OPEN,
   webPath: '/groups/gitlab-org/-/epics/4',
   reference: '&4',
   relationPath: '/groups/gitlab-org/-/epics/1/links/4',
@@ -127,7 +127,7 @@ export const mockEpic2 = {
   id: 'gid://gitlab/Epic/3',
   iid: '3',
   title: 'A nisi mollitia explicabo quam soluta dolor hic.',
-  state: ChildState.Closed,
+  state: STATUS_CLOSED,
   webPath: '/groups/gitlab-org/-/epics/3',
   reference: '&3',
   relationPath: '/groups/gitlab-org/-/epics/1/links/3',
@@ -214,7 +214,7 @@ export const mockIssue1 = {
   epicIssueId: 'gid://gitlab/EpicIssue/3',
   title: 'Nostrum cum mollitia quia recusandae fugit deleniti voluptatem delectus.',
   closedAt: null,
-  state: ChildState.Open,
+  state: STATUS_OPEN,
   createdAt: '2019-02-18T14:06:41Z',
   confidential: true,
   dueDate: '2019-06-14',
@@ -258,7 +258,7 @@ export const mockIssue2 = {
   epicIssueId: 'gid://gitlab/EpicIssue/4',
   title: 'Dismiss Cipher with no integrity',
   closedAt: null,
-  state: ChildState.Open,
+  state: STATUS_OPEN,
   createdAt: '2019-02-18T14:13:05Z',
   confidential: false,
   dueDate: null,
@@ -281,7 +281,7 @@ export const mockClosedIssue = {
   epicIssueId: 'gid://gitlab/EpicIssue/5',
   title: 'View closed issues in epic',
   closedAt: null,
-  state: ChildState.Closed,
+  state: STATUS_CLOSED,
   createdAt: '2019-02-18T14:13:05Z',
   confidential: false,
   dueDate: null,
