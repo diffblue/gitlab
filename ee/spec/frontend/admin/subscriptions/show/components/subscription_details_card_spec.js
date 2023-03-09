@@ -73,6 +73,12 @@ describe('Subscription Details Card', () => {
         },
       ]);
     });
+
+    it('passes the subscription type to the table component', () => {
+      expect(findSubscriptionDetailsTable().props('subscriptionType')).toEqual(
+        license.ULTIMATE.type,
+      );
+    });
   });
 
   describe('with no title', () => {

@@ -1,15 +1,10 @@
 <script>
-import { GlSkeletonLoader, GlTableLite, GlBadge } from '@gitlab/ui';
+import { GlSkeletonLoader, GlTableLite } from '@gitlab/ui';
 import { mapGetters } from 'vuex';
 import { slugifyWithUnderscore } from '~/lib/utils/text_utility';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import SubscriptionSyncButton from 'ee/admin/subscriptions/show/components/subscription_sync_button.vue';
-import {
-  copySubscriptionIdButtonText,
-  detailsLabels,
-  offlineCloudLicenseText,
-  licenseFileText,
-} from '../constants';
+import { copySubscriptionIdButtonText, detailsLabels, subscriptionTypes } from '../constants';
 
 const placeholderHeightFactor = 32;
 const placeholderWidth = 180;
@@ -38,12 +33,15 @@ export default {
     ClipboardButton,
     GlSkeletonLoader,
     GlTableLite,
-    GlBadge,
     SubscriptionSyncButton,
   },
   props: {
     details: {
       type: Array,
+      required: true,
+    },
+    subscriptionType: {
+      type: String,
       required: true,
     },
   },
@@ -60,9 +58,6 @@ export default {
     },
     placeHolderHeight() {
       return placeholderHeightFactor / 2;
-    },
-    subscrioptionType() {
-      return this.details.find(({ detail }) => detail === 'type')?.value;
     },
   },
   methods: {
@@ -86,14 +81,11 @@ export default {
     rowLabel({ detail }) {
       return this.$options.detailsLabels[detail];
     },
-    shouldShowDetail(detail, defaultValue = false) {
-      if (detail !== 'lastSync') {
-        return defaultValue;
-      }
-
+    shouldShowDetail(detail) {
       return (
-        this.subscrioptionType !== offlineCloudLicenseText &&
-        this.subscrioptionType !== licenseFileText
+        detail === 'lastSync' &&
+        this.subscriptionType !== subscriptionTypes.OFFLINE_CLOUD &&
+        this.subscriptionType !== subscriptionTypes.LEGACY_LICENSE
       );
     },
   },
@@ -111,13 +103,7 @@ export default {
     :tbody-tr-class="rowClass"
   >
     <template #cell(label)="{ item }">
-      <p
-        v-if="shouldShowDetail(item.detail, true)"
-        class="gl-font-weight-bold"
-        data-testid="details-label"
-      >
-        {{ rowLabel(item) }}:
-      </p>
+      <p class="gl-font-weight-bold" data-testid="details-label">{{ rowLabel(item) }}:</p>
     </template>
 
     <template #cell(value)="{ item, value }">
@@ -126,12 +112,7 @@ export default {
         data-testid="details-content"
         :data-qa-selector="qaSelectorValue(item)"
       >
-        <gl-badge v-if="item.detail === 'type'" size="md" variant="info">
-          {{ value }}
-        </gl-badge>
-        <span v-else-if="shouldShowDetail(item.detail, true)">
-          {{ value }}
-        </span>
+        {{ value }}
         <clipboard-button
           v-if="item.detail === 'id'"
           :text="value"
