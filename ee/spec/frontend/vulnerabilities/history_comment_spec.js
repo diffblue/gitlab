@@ -121,7 +121,6 @@ describe('History Comment', () => {
   };
 
   afterEach(() => {
-    wrapper.destroy();
     createAlert.mockReset();
   });
 

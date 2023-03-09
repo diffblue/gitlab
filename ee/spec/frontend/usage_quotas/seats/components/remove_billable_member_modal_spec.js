@@ -40,10 +40,6 @@ describe('RemoveBillableMemberModal', () => {
     return nextTick();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('on rendering', () => {
     it('renders the submit button disabled', () => {
       expect(wrapper.attributes('ok-disabled')).toBe('true');

@@ -16,10 +16,6 @@ describe('DependencyListJobFailedAlert component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('matches the snapshot', () => {
     factory({ propsData: { jobPath: '/jobs/foo/3210' }, stubs: { GlSprintf } });
     expect(wrapper.element).toMatchSnapshot();

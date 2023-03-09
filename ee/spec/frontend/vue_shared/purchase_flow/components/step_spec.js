@@ -47,7 +47,6 @@ describe('Step', () => {
   }
 
   afterEach(() => {
-    wrapper.destroy();
     createAlert.mockClear();
   });
 

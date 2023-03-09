@@ -67,10 +67,6 @@ describe('RelatedItemsTree', () => {
       wrapper = createComponent();
     });
 
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
     describe('mixins', () => {
       describe('TreeDragAndDropMixin', () => {
         const containedDragClassOriginally = document.body.classList.contains('is-dragging');

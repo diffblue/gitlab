@@ -66,11 +66,6 @@ describe('LdapOverrideConfirmationModal', () => {
   const getEditPermissionsButton = () =>
     getByText('Edit permissions', { selector: 'button > span' });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('when modal is open', () => {
     beforeEach(async () => {
       createComponent();

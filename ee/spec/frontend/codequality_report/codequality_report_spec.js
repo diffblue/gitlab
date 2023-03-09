@@ -39,10 +39,6 @@ describe('Codequality report app', () => {
   const findReportSection = () => wrapper.findComponent(ReportSection);
   const findInfiniteScroll = () => wrapper.findComponent(GlInfiniteScroll);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when loading', () => {
     beforeEach(() => {
       createComponent(jest.fn().mockReturnValueOnce(new Promise(() => {})));

@@ -59,10 +59,6 @@ describe('EpicLane', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('mounted', () => {
     beforeEach(() => {
       createComponent();

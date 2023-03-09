@@ -84,10 +84,6 @@ describe('DastSiteValidationModal', () => {
   const enableValidationMethod = async (validationMethod) =>
     createWrapper(findRadioInputForValidationMethod(validationMethod)).setChecked(true);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it("calls GlModal's show method when own show method is called", () => {
     const showMock = jest.fn();
     createComponent({

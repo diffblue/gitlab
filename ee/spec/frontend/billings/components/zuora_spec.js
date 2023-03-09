@@ -27,9 +27,6 @@ describe('Zuora', () => {
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findAlert = () => wrapper.findComponent(GlAlert);
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   describe('on creation', () => {
     beforeEach(() => {

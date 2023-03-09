@@ -210,9 +210,7 @@ describe('EE Value Stream Analytics component', () => {
     });
 
     afterEach(() => {
-      wrapper.destroy();
       mock.restore();
-      wrapper = null;
     });
 
     it('displays an empty state', () => {
@@ -291,9 +289,7 @@ describe('EE Value Stream Analytics component', () => {
     });
 
     afterEach(() => {
-      wrapper.destroy();
       mock.restore();
-      wrapper = null;
     });
 
     it('hides the empty state', () => {
@@ -383,9 +379,7 @@ describe('EE Value Stream Analytics component', () => {
     });
 
     afterEach(() => {
-      wrapper.destroy();
       mock.restore();
-      wrapper = null;
     });
 
     it('will display an error if the fetchGroupStagesAndEvents request fails', async () => {
@@ -480,9 +474,7 @@ describe('EE Value Stream Analytics component', () => {
     });
 
     afterEach(() => {
-      wrapper.destroy();
       mock.restore();
-      wrapper = null;
     });
 
     it('when a stage is selected', () => {
@@ -529,9 +521,7 @@ describe('EE Value Stream Analytics component', () => {
     });
 
     afterEach(() => {
-      wrapper.destroy();
       mock.restore();
-      wrapper = null;
     });
 
     describe('with minimal parameters set', () => {

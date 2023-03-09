@@ -25,10 +25,6 @@ describe('GeoReplicableStatus', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findStatusWrapper = () => wrapper.findByTestId('replicable-item-status');
   const findStatusIcon = () => findStatusWrapper().findComponent(GlIcon);
   const findStatusText = () => findStatusWrapper().find('span');

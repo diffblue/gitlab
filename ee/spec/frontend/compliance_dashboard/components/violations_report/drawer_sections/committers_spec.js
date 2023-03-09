@@ -16,10 +16,6 @@ describe('Committers component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('rendering', () => {
     const committersList = createApprovers(2);
 

@@ -73,11 +73,6 @@ describe('SubscriptionTable component', () => {
     await nextTick();
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('when created', () => {
     beforeEach(() => {
       createComponentWithStore({

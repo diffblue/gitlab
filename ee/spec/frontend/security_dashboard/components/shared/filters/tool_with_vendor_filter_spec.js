@@ -70,10 +70,6 @@ describe('Tool With Vendor Filter component', () => {
     expect(checkedItems.sort()).toEqual(ids.sort());
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default', () => {
     beforeEach(() => {
       createWrapper();

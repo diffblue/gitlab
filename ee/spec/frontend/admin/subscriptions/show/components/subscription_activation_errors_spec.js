@@ -50,10 +50,6 @@ describe('SubscriptionActivationErrors', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('with no error', () => {
     beforeEach(() => {
       createComponent();

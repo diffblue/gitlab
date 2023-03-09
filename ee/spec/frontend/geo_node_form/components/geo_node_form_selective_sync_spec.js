@@ -25,10 +25,6 @@ describe('GeoNodeFormSelectiveSync', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findGeoNodeFormSyncContainer = () =>
     wrapper.findComponent({ ref: 'geoNodeFormSelectiveSyncContainer' });
 

@@ -26,10 +26,6 @@ describe('Corpus upload modal', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('corpus modal', () => {
     describe('initial state', () => {
       beforeEach(() => {

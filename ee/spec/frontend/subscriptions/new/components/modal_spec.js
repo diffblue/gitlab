@@ -34,7 +34,6 @@ describe('Modal component', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     unmockTracking();
   });
 

@@ -42,10 +42,6 @@ describe('Csv Button Export', () => {
     mock.onGet('status/url').reply(HTTP_STATUS_OK, { _links: { download }, status });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when the user sees the button for the first time', () => {
     beforeEach(() => {
       mock = new MockAdapter(axios);

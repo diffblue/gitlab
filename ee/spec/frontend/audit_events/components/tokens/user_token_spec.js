@@ -40,10 +40,6 @@ describe('UserToken', () => {
     initComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('binds to value, config and token methods to the filter token', () => {
     expect(findAuditFilterToken().props()).toMatchObject({
       value,

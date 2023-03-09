@@ -77,10 +77,6 @@ describe('Table', () => {
     );
   }
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('loading', () => {
     beforeEach(() => {
       wrapper = createComponentWithApollo(fetchLoading);

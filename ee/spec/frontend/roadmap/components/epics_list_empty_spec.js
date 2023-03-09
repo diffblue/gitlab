@@ -57,10 +57,6 @@ describe('ee/roadmap/components/epics_list_empty.vue', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findComponent = () => wrapper.findComponent(GlEmptyState);
   const findTitle = () => findComponent().props('title');
   const findSubTitle = () => wrapper.findByTestId('sub-title');

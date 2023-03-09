@@ -58,8 +58,6 @@ describe('Sidebar Escalation Policy Widget', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
     mockApollo = null;
     propsData = null;
     provide = null;

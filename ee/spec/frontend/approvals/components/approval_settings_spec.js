@@ -73,7 +73,6 @@ describe('ApprovalSettings', () => {
   const findSelectiveCodeOwnersRadio = () => wrapper.findByTestId('selective-code-owner-removals');
 
   afterEach(() => {
-    wrapper.destroy();
     store = null;
   });
 

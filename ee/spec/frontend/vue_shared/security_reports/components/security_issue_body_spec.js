@@ -34,11 +34,6 @@ describe('Security Issue Body', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe.each([
     ['SAST', sastParsedIssues[0], true, HIGH],
     ['DAST', parsedDast[0], false, LOW],

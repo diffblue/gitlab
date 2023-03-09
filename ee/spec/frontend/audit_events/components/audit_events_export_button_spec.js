@@ -23,10 +23,6 @@ describe('AuditEventsExportButton component', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('Audit Events CSV export button', () => {
     it('matches the snapshot', () => {
       expect(wrapper.element).toMatchSnapshot();

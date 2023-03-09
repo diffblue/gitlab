@@ -17,7 +17,6 @@ describe('Querystring Sync component', () => {
   };
 
   afterEach(() => {
-    wrapper.destroy();
     // Clear out the querystring if one exists, it persists between tests.
     if (router.currentRoute.query.values) {
       router.replace({ query: undefined });

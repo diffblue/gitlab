@@ -15,8 +15,6 @@ describe('Vulnerability list component', () => {
   const findAlert = () => wrapper.findComponent(GlAlert);
 
   afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
     Cookies.remove(COOKIE_NAME);
   });
 

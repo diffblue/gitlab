@@ -143,10 +143,6 @@ describe('DependenciesApp component', () => {
     expect(findHeader().exists()).toBe(true);
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('on creation', () => {
     beforeEach(() => {
       factory();

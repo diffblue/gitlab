@@ -19,10 +19,6 @@ describe('Security Dashboard Layout component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('shows the expected components', () => {
     createWrapper();
 

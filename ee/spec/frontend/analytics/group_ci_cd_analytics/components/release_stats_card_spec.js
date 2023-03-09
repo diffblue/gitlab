@@ -23,11 +23,6 @@ describe('Release stats card', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const findLoadingIndicators = () => wrapper.findAllComponents(GlSkeletonLoader);
   const findStats = () => wrapper.find('[data-testid="stats-container"]');
 

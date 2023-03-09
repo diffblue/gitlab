@@ -26,7 +26,6 @@ describe('CreditCardVerification', () => {
   };
 
   afterEach(() => {
-    wrapper.destroy();
     unmockTracking();
   });
 

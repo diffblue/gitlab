@@ -34,10 +34,6 @@ describe('Subscription Details Card', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('with data', () => {
     beforeEach(() => {
       createComponent({

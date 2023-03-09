@@ -17,10 +17,6 @@ describe('Vulnerability Chart Buttons', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it.each(TEST_DAYS)('should display a button for "%s" days', (day) => {
     const isMultipleDays = day > 1;
     createWrapper();

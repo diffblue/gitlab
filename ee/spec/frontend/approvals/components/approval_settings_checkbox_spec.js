@@ -26,10 +26,6 @@ describe('ApprovalSettingsCheckbox', () => {
   const findCheckbox = () => wrapper.findComponent(GlFormCheckbox);
   const findLockedIcon = () => wrapper.findComponent(ApprovalSettingsLockedIcon);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('rendering', () => {
     beforeEach(() => {
       createWrapper();

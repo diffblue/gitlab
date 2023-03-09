@@ -29,10 +29,6 @@ describe('Project component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('by default', () => {
     beforeEach(() => {
       wrapper = createComponent();

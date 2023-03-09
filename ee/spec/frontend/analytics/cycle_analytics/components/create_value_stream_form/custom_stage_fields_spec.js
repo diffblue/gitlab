@@ -77,11 +77,6 @@ describe('CustomStageFields', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe.each([
     ['Name', findNameField, undefined],
     ['Start event', findStartEventField, undefined],

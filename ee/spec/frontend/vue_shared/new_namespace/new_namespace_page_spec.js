@@ -34,10 +34,6 @@ describe('Experimental new project creation app', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('does not show verification page', () => {
     createComponent();
     expect(findVerificationPage().exists()).toBe(false);

@@ -57,10 +57,6 @@ describe('PendingMembersApp', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders page title', () => {
     expect(wrapper.find('h1').text()).toBe(PENDING_MEMBERS_TITLE);
   });

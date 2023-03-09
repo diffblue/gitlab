@@ -44,10 +44,6 @@ describe('Subscription Sync Notifications', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('idle state', () => {
     it('displays no alert', () => {
       createComponent();

@@ -16,10 +16,6 @@ describe('Solution Card', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('with solution', () => {
     beforeEach(createComponent);
 

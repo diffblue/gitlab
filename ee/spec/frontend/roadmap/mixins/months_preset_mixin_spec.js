@@ -44,11 +44,6 @@ describe('MonthsPresetMixin', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('methods', () => {
     describe('hasStartDateForMonth', () => {
       it('returns true when Epic.startDate falls within timeframeItem', () => {

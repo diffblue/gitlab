@@ -95,10 +95,6 @@ describe('SubscriptionManagementApp', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when subscription fetch is successful', () => {
     beforeEach(() => {
       currentSubscriptionResolver = jest.fn().mockResolvedValue(currentResponseWithData);

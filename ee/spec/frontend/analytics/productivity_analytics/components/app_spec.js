@@ -95,7 +95,6 @@ describe('ProductivityApp component', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     mock.restore();
   });
 

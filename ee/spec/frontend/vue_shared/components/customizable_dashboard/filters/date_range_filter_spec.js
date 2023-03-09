@@ -32,10 +32,6 @@ describe('DateRangeFilter', () => {
   const findDropdown = () => wrapper.findComponent(GlDropdown);
   const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default behaviour', () => {
     beforeEach(() => {
       createWrapper();

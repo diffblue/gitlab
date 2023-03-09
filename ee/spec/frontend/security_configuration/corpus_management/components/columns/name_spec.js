@@ -21,10 +21,6 @@ describe('Name', () => {
 
   const createComponent = createComponentFactory();
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('component', () => {
     it('renders name with correct file size', () => {
       createComponent();

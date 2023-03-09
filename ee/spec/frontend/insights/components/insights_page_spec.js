@@ -55,11 +55,6 @@ describe('Insights page component', () => {
     jest.spyOn(store, 'dispatch').mockImplementation(() => {});
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('no chart config available', () => {
     beforeEach(() => {
       createComponent();

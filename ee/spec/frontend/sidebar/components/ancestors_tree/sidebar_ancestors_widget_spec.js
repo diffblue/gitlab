@@ -32,7 +32,6 @@ describe('Sidebar Ancestors Widget', () => {
   };
 
   afterEach(() => {
-    wrapper.destroy();
     fakeApollo = null;
   });
 

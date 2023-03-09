@@ -38,8 +38,6 @@ describe('createComplianceFrameworksFormApp', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
     el.remove();
     el = null;
   });

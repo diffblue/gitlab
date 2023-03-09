@@ -22,10 +22,6 @@ describe('ChartTooltipText', () => {
 
   const findTooltipValue = () => wrapper.findByTestId('tooltip-value');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('with tooltipValue data', () => {
     beforeEach(() => {
       wrapper = createComponent();

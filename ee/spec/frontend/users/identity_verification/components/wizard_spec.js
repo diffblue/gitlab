@@ -32,10 +32,6 @@ describe('IdentityVerificationWizard', () => {
   const findHeader = () => wrapper.find('h2');
   const findDescription = () => wrapper.find('p');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('Default', () => {
     beforeEach(() => {
       createComponent({

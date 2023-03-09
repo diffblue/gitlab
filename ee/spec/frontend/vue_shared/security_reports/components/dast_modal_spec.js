@@ -29,11 +29,6 @@ describe('DAST Modal', () => {
     createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   it('has the download button with required attrs', () => {
     const downloadLink = findDownloadLink();
 

@@ -51,10 +51,6 @@ describe('Billing Address', () => {
     wrapper = createComponent({ store, apolloProvider: mockApolloProvider });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('mounted', () => {
     it('should load the countries', () => {
       expect(actionMocks.fetchCountries).toHaveBeenCalled();

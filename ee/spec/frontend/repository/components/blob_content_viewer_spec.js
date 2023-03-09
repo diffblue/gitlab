@@ -93,7 +93,6 @@ describe('Blob content viewer component', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     mockAxios.reset();
   });
 

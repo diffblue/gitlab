@@ -46,10 +46,6 @@ describe('LdapDropdownItem', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when dropdown item is clicked', () => {
     beforeEach(() => {
       createComponent();

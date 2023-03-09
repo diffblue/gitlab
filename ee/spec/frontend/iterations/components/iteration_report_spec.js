@@ -150,10 +150,6 @@ describe('Iterations report', () => {
     );
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('delete iteration', () => {
     it('does not show delete option when iteration belongs to automatic cadence', async () => {
       mountComponent({ mockQueryResponse: createMockGroupIterations(mockIterationNode) });

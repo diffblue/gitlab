@@ -38,10 +38,6 @@ describe('Environment Alert', () => {
     alertResolver = jest.fn();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('has alert', () => {
     beforeEach(async () => {
       alertResolver.mockResolvedValue({

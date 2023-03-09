@@ -84,7 +84,6 @@ describe('On-call schedule', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     fakeApollo = null;
   });
 

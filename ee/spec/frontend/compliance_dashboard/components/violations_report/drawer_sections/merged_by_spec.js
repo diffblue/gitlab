@@ -19,10 +19,6 @@ describe('MergedBy component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('without the merged by user', () => {
     beforeEach(() => {
       wrapper = createComponent();

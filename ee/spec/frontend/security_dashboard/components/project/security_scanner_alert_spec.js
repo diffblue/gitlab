@@ -6,10 +6,6 @@ import { DOC_PATH_APPLICATION_SECURITY } from 'ee/security_dashboard/constants';
 describe('EE Vulnerability Security Scanner Alert', () => {
   let wrapper;
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const createWrapper = ({ props = {}, provide = {} } = {}) => {
     wrapper = mount(SecurityScannerAlert, {
       propsData: {

@@ -50,10 +50,6 @@ describe('Payment Method', () => {
     });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('payment method step', () => {
     it('is valid when paymentMethodId is defined', () => {
       expect(isStepValid()).toBe(true);

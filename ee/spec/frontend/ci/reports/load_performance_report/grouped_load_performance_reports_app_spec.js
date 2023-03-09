@@ -26,11 +26,6 @@ describe('Grouped load performance reports app', () => {
     mountComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('service ping events', () => {
     it('tracks an event when the widget is expanded', () => {
       wrapper.find('[data-testid="report-section-expand-button"]').trigger('click');

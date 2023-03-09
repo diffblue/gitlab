@@ -17,10 +17,6 @@ describe('EE - DastSavedScansList', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders branch information if it exists', () => {
     const { branch, editPath } = scanWithExistingBranch;
     createWrapper({ branch, editPath });

@@ -21,10 +21,6 @@ describe('IssueFieldDropdown', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findAllGlDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
   const findGlLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 

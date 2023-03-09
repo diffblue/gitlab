@@ -77,7 +77,6 @@ describe('International Phone input component', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     axiosMock.restore();
     createAlert.mockClear();
   });

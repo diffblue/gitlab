@@ -30,11 +30,6 @@ describe('IssueLink component', () => {
   const findIssueLink = () => wrapper.findComponent(GlLink);
   const findIcon = () => wrapper.findComponent(GlIcon);
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe.each([true, false])('internal and Jira issues with "isJira" set to "%s"', (isJira) => {
     const issue = createIssue();
 

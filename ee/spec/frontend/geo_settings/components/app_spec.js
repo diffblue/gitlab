@@ -25,10 +25,6 @@ describe('GeoSettingsApp', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findGeoSettingsContainer = () => wrapper.find('[data-testid="geoSettingsContainer"]');
   const containsGeoSettingsForm = () => wrapper.findComponent(GeoSettingsForm).exists();
   const containsGlLoadingIcon = () => wrapper.findComponent(GlLoadingIcon).exists();

@@ -18,10 +18,6 @@ describe('ImportRequirementsModal', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('computed', () => {
     describe('importDisabled', () => {
       it('returns true when file is absent', () => {

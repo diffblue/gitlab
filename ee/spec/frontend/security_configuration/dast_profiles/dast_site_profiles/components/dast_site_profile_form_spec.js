@@ -107,10 +107,6 @@ describe('DastSiteProfileForm', () => {
   const createShallowComponent = createComponentFactory(shallowMountExtended);
   const createComponent = createComponentFactory();
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders properly', () => {
     createComponent();
     expect(findForm().exists()).toBe(true);

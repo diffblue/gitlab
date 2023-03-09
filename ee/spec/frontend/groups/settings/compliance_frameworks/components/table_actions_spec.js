@@ -37,10 +37,6 @@ describe('TableActions', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const displaysTheButton = (button, icon, ariaLabel) => {
     expect(button.props('icon')).toBe(icon);
     expect(button.props('disabled')).toBe(false);

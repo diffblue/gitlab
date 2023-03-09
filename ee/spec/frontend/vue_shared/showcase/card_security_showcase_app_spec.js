@@ -4,11 +4,6 @@ import CardSecurityShowcaseApp from 'ee/vue_shared/showcase/card_security_showca
 describe('Card Security Showcase App', () => {
   let wrapper;
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const createWrapper = () => {
     wrapper = shallowMount(CardSecurityShowcaseApp, {
       provide: {

@@ -33,10 +33,6 @@ describe('ExternalIssuesListEmptyState', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('computed', () => {
     describe('hasIssues', () => {
       it('returns false when total of opened and closed issues within `issuesCount` is 0', () => {

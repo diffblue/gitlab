@@ -71,7 +71,6 @@ describe('License Compliance extension', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     mock.restore();
   });
 

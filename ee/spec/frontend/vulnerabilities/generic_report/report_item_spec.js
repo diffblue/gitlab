@@ -57,10 +57,6 @@ describe('ee/vulnerabilities/components/generic_report/report_item.vue', () => {
 
   const findReportComponent = () => wrapper.findByTestId('reportComponent');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe.each(Object.values(REPORT_TYPES))('with report type "%s"', (reportType) => {
     const reportItem = { type: reportType, ...TEST_DATA[reportType] };
 

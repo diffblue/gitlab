@@ -55,10 +55,6 @@ describe('ScanSchedule', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default state', () => {
     beforeEach(() => {
       createComponent();

@@ -45,11 +45,6 @@ describe('ee/epic/components/epic_form.vue', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const findForm = () => wrapper.findComponent(GlForm);
   const findLabels = () => wrapper.findComponent(LabelsSelectWidget);
   const findColor = () => wrapper.findComponent(ColorSelectDropdown);

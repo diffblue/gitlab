@@ -39,10 +39,6 @@ describe('Project Security Dashboard component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when query is loading', () => {
     it('should only show the loading icon', () => {
       createWrapper();

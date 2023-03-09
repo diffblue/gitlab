@@ -28,10 +28,6 @@ describe('RoadmapLabels', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('template', () => {
     it('renders toggle', () => {
       expect(findToggle().exists()).toBe(true);

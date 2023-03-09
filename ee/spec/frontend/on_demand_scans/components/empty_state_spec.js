@@ -21,10 +21,6 @@ describe('EmptyState', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders properly', () => {
     createComponent();
 

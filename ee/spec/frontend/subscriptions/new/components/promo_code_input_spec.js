@@ -33,10 +33,6 @@ describe('PromoCodeInput', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders promo code input', () => {
     expect(findPromoCodeFormGroup().exists()).toBe(true);
     expect(findApplyButton().exists()).toBe(true);

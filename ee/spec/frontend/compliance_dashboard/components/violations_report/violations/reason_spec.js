@@ -16,10 +16,6 @@ describe('ViolationReason component', () => {
     wrapper = shallowMount(ViolationReason, { propsData });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('violation message', () => {
     it.each(reasons)('renders the violation message for the reason %s', (reason) => {
       createComponent({ reason });

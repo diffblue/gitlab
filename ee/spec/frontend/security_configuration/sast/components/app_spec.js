@@ -52,11 +52,6 @@ describe('SAST Configuration App', () => {
   const findErrorAlert = () => wrapper.findByTestId('error-alert');
   const findFeedbackAlert = () => wrapper.findByTestId('configuration-page-alert');
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('feedback alert', () => {
     beforeEach(() => {
       createComponent({

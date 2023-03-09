@@ -141,7 +141,6 @@ describe('Iteration cadence list item', () => {
     wrapper.findByRole('button', { text: cadence.title }).trigger('click');
 
   afterEach(() => {
-    wrapper.destroy();
     apolloProvider = null;
   });
 

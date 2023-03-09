@@ -31,9 +31,6 @@ describe('RelatedItemsTree', () => {
       beforeEach(() => {
         wrapper = createComponent();
       });
-      afterEach(() => {
-        wrapper.destroy();
-      });
 
       it('renders html', () => {
         expect(wrapper.element).toMatchSnapshot();
@@ -55,19 +52,15 @@ describe('RelatedItemsTree', () => {
     });
 
     describe('initRoadmap', () => {
-      let wrapper = null;
       let initRoadmap = null;
       beforeEach(() => {
         initRoadmap = jest
           .spyOn(RelatedItemsRoadmapApp.methods, 'initRoadmap')
           .mockReturnValue(Promise.resolve());
       });
-      afterEach(() => {
-        wrapper.destroy();
-      });
 
       it('does not load roadmap', () => {
-        wrapper = createComponent({
+        createComponent({
           initialConfig: {
             allowSubEpics: false,
           },
@@ -76,7 +69,7 @@ describe('RelatedItemsTree', () => {
       });
 
       it('loads roadmap', () => {
-        wrapper = createComponent({});
+        createComponent({});
         expect(initRoadmap).toHaveBeenCalled();
       });
     });

@@ -19,10 +19,6 @@ describe('filters produced no results empty state', () => {
     wrapper = createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('contains a GlEmptyState', () => {
     expect(findGlEmptyState().exists()).toBe(true);
     expect(findGlEmptyState().props('svgPath')).toBe(noVulnerabilitiesSvgPath);

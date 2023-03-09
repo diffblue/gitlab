@@ -48,10 +48,6 @@ describe('Card security discover app', () => {
       createComponent();
     });
 
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
     it('renders component properly', () => {
       expect(wrapper.findComponent(CardSecurityDiscoverApp).exists()).toBe(true);
     });
@@ -139,10 +135,6 @@ describe('Card security discover app', () => {
       createComponent({ extraPropsData: { project: { ...project, isPersonal: true } } });
     });
 
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
     it('renders the MovePersonalProjectToGroupModal properly', () => {
       expect(wrapper.findComponent(MovePersonalProjectToGroupModal).exists()).toBe(true);
     });
@@ -164,7 +156,6 @@ describe('Card security discover app', () => {
     });
 
     afterEach(() => {
-      wrapper.destroy();
       [window.gon, window.gl] = originalObjects;
     });
 

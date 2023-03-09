@@ -16,10 +16,6 @@ const mockWithData = jest.fn().mockResolvedValue(namespaceWithSnapotsData);
 describe('DevopsAdoptionOverviewChart', () => {
   let wrapper;
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const createComponent = ({ stubs = {}, mockSnapshotsQuery = mockWithData, data = {} } = {}) => {
     const handlers = [[getSnapshotsQuery, mockSnapshotsQuery]];
 

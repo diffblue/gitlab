@@ -18,8 +18,6 @@ describe('False positive alert component', () => {
     });
   };
 
-  afterEach(() => wrapper.destroy());
-
   it('should render the alert message', () => {
     wrapper = createWrapper();
 

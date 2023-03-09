@@ -114,10 +114,6 @@ describe('ResourceLinksBlock', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('with defaults', () => {
     beforeEach(() => {
       mountComponent();

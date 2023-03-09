@@ -127,7 +127,6 @@ describe('Filter bar', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     mock.restore();
   });
 

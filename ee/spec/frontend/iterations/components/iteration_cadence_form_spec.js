@@ -105,10 +105,6 @@ describe('Iteration cadence form', () => {
     );
   }
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findTitleGroup = () => wrapper.findAllComponents(GlFormGroup).at(0);
   const findStartDateGroup = () => wrapper.findAllComponents(GlFormGroup).at(2);
   const findDurationGroup = () => wrapper.findAllComponents(GlFormGroup).at(3);

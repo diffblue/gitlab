@@ -50,10 +50,6 @@ describe('DeleteConfirmationModal', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('modal', () => {
     it('should be loaded', () => {
       expect(findModal().exists()).toBe(true);

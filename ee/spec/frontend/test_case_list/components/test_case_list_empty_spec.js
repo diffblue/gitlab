@@ -32,10 +32,6 @@ describe('TestCaseListEmptyState', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('computed', () => {
     describe('emptyStateTitle', () => {
       it('returns string "There are no open test cases" when value of `currentState` prop is "opened" and project has some test cases', async () => {

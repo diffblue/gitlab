@@ -19,10 +19,6 @@ describe('EpicBodyComponent', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders an issuable body component', () => {
     createComponent();
 

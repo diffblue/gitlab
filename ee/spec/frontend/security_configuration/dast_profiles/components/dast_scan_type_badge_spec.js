@@ -13,10 +13,6 @@ describe('EE - DastScanTypeBadge', () => {
   };
   const createComponent = wrapperFactory();
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it.each`
     scanType             | variant
     ${SCAN_TYPE.ACTIVE}  | ${'warning'}

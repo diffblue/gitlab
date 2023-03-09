@@ -35,10 +35,6 @@ describe('GitlabSlackApplication', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findGlButton = () => wrapper.findComponent(GlButton);
   const findGlLink = () => wrapper.findComponent(GlLink);
   const findProjectsDropdown = () => wrapper.findComponent(ProjectsDropdown);

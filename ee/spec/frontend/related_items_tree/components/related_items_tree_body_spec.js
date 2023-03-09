@@ -23,10 +23,6 @@ describe('RelatedItemsTree', () => {
       wrapper = createComponent();
     });
 
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
     describe('template', () => {
       it('renders component container element with class `related-items-tree-body`', () => {
         expect(wrapper.classes('related-items-tree-body')).toBe(true);

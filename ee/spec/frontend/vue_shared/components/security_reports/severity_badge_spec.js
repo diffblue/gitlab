@@ -21,11 +21,6 @@ describe('Severity Badge', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const findIcon = () => wrapper.findComponent(GlIcon);
   const findTooltip = () => getBinding(findIcon().element, 'tooltip').value;
 

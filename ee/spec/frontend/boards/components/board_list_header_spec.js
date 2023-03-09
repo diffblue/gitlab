@@ -41,7 +41,6 @@ describe('Board List Header Component', () => {
   const setFullBoardIssuesCountSpy = jest.fn();
 
   afterEach(() => {
-    wrapper.destroy();
     fakeApollo = null;
 
     localStorage.clear();
@@ -124,8 +123,6 @@ describe('Board List Header Component', () => {
   const findSettingsButton = () => wrapper.findByTestId(listSettingsTestId);
 
   afterEach(() => {
-    wrapper.destroy();
-
     localStorage.clear();
   });
 

@@ -29,10 +29,6 @@ describe('UsageOverview', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders the minutes title properly', () => {
     expect(findMinutesTitle().text()).toBe(defaultUsageOverviewProps.minutesTitle);
   });

@@ -44,11 +44,6 @@ describe('WeeksPresetMixin', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('methods', () => {
     describe('hasStartDateForWeek', () => {
       it('returns true when Epic.startDate falls within timeframeItem', () => {
@@ -97,7 +92,7 @@ describe('WeeksPresetMixin', () => {
             For example, the item 2017-12-17 represents -
             the timeframe representing the week starting on Dec 17, 2017
 
-          mockTimeframeWeeks = 
+          mockTimeframeWeeks =
           [
             2017-12-17, <- the epic starting on Jan 3, 2018 is in this timeframe
             2017-12-24,
@@ -119,7 +114,7 @@ describe('WeeksPresetMixin', () => {
         /*
           Visual illustration of the example spec:
 
-          mockTimeframeWeeks = 
+          mockTimeframeWeeks =
           [
             2017-12-17, <- the epic starting on Jan 3, 2018 is in this timeframe
             2017-12-24,
@@ -195,17 +190,17 @@ describe('WeeksPresetMixin', () => {
 
         /*
           Visual illustration of the example spec:
-          
+
           - Each timeframe is 180px wide.
           - The timebar width should be approximately 540px + 154.3px + 154.3px or 849px.
           - In the below, [2017-12-31] is understood as a timeframe that covers -
             the week starting on Dec 31, 2017 (ending on Jan 6, 2018).
 
-          mockTimeframeWeeks = 
+          mockTimeframeWeeks =
              Epic start date                                  Epic end date
              Jan 1, 2018                                      Feb 2, 2018
                .                                                   .
-               .                                                   .                           
+               .                                                   .
           [ [2017-12-31][2018-01-07][2018-01-14][2018-01-21][2018-01-28] ]
                <--------------- timeline bar width ---------------->
                <--   --><---- 180px * 3 frames = 540px ----><--  -->

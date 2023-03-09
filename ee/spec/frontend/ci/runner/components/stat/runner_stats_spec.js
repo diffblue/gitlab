@@ -30,10 +30,6 @@ describe('RunnerStats', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('Displays upgrade status stats', async () => {
     createComponent({ props: { variables: { paused: true } } });
 

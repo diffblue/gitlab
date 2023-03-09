@@ -25,10 +25,6 @@ describe('Executive dashboard app', () => {
   const findComparisonCharts = () => wrapper.findAllComponents(ComparisonChart);
   const findAlert = () => wrapper.findComponent(GlAlert);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('data requests', () => {
     beforeEach(async () => {
       wrapper = await createComponent();

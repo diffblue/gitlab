@@ -26,10 +26,6 @@ describe('ApproversList', () => {
     propsData = {};
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when empty', () => {
     beforeEach(() => {
       propsData.value = [];

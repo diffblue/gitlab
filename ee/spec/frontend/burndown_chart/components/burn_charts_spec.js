@@ -75,7 +75,6 @@ describe('burndown_chart', () => {
 
   afterEach(() => {
     mock.restore();
-    wrapper.destroy();
   });
 
   it('passes loading=true through to charts', () => {

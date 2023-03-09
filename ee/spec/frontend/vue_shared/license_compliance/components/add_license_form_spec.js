@@ -28,7 +28,6 @@ describe('AddLicenseForm', () => {
 
   afterEach(() => {
     vm = undefined;
-    wrapper.destroy();
   });
 
   describe('interaction', () => {

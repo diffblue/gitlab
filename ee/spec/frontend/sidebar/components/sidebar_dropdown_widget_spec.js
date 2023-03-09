@@ -81,10 +81,6 @@ describe('SidebarDropdownWidget', () => {
     await waitForPromises();
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('with mock apollo', () => {
     let error;
 

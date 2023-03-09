@@ -27,10 +27,6 @@ describe('GeoSettingsForm', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findGeoSettingsTimeoutField = () => wrapper.find('#settings-timeout-field');
   const findGeoSettingsAllowedIpField = () => wrapper.find('#settings-allowed-ip-field');
   const findGeoSettingsSaveButton = () => wrapper.find('[data-testid="settingsSaveButton"]');

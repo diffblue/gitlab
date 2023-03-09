@@ -27,10 +27,6 @@ describe('Issue Popover', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when loaded', () => {
     beforeEach(async () => {
       mountComponent();

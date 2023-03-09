@@ -16,10 +16,6 @@ describe('DependencVulnerabilities component', () => {
   const findVulnerabilities = () => wrapper.findAllComponents(DependencyVulnerability);
   const findExcessMessage = () => wrapper.findComponent({ ref: 'excessMessage' });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('given no vulnerabilities', () => {
     beforeEach(() => {
       factory({ vulnerabilities: [] });

@@ -58,10 +58,6 @@ describe('The Pipeline Tabs', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('lazy loads all tabs', () => {
     createComponent({
       stubs: {

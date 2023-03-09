@@ -35,10 +35,6 @@ describe('Confirm Order', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when rendering', () => {
     describe('when receiving proper step data', () => {
       beforeEach(() => {

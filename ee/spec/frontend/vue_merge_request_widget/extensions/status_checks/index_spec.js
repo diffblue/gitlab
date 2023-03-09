@@ -61,10 +61,6 @@ describe('Status checks extension', () => {
     mock = new MockAdapter(axios);
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('summary', () => {
     describe('when loading', () => {
       beforeEach(async () => {

@@ -66,10 +66,6 @@ describe('EE - DastFailedSiteValidations', () => {
     withinComponent().getAllByRole('button', { name: /dismiss/i })[0];
   const findValidationModal = () => wrapper.findByTestId('validation-modal');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('with failed site validations', () => {
     beforeEach(async () => {
       createFullComponent(

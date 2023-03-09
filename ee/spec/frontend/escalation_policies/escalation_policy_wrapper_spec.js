@@ -58,10 +58,6 @@ describe('Escalation Policies Wrapper', () => {
     mountComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findLoader = () => wrapper.findComponent(GlLoadingIcon);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findEscalationPolicies = () => wrapper.findAllComponents(EscalationPolicy);

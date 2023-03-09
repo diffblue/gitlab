@@ -31,10 +31,6 @@ describe('TimelineSectionComponent', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders component container element with class `timeline-section`', () => {
     expect(wrapper.html()).toContain('timeline-section');
   });

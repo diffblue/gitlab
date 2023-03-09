@@ -45,10 +45,6 @@ describe('Approvals ProjectRules', () => {
     store.modules.approvals.state.rules = TEST_RULES;
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when allow multiple rules', () => {
     beforeEach(() => {
       store.state.settings.allowMultiRule = true;

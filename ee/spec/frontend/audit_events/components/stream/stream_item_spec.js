@@ -49,7 +49,6 @@ describe('StreamItem', () => {
   const findFilterBadge = () => wrapper.findByTestId('filter-badge');
 
   afterEach(() => {
-    wrapper.destroy();
     createAlert.mockClear();
   });
 

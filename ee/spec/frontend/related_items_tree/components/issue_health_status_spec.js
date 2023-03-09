@@ -28,10 +28,6 @@ describe('IssueHealthStatus', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders health status text', () => {
     const expectedValue = issueHealthStatus[healthStatus];
 

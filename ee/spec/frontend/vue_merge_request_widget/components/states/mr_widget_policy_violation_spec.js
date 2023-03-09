@@ -13,11 +13,6 @@ describe('EE MrWidgetPolicyViolation', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   beforeEach(() => {
     createComponent();
   });

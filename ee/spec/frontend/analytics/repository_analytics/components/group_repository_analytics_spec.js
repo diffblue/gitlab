@@ -16,10 +16,6 @@ describe('Group repository analytics app', () => {
     wrapper = shallowMount(GroupRepositoryAnalytics, { provide: { glFeatures } });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('test coverage', () => {
     beforeEach(() => {
       createComponent();

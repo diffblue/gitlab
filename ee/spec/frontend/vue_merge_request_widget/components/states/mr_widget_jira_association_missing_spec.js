@@ -18,11 +18,6 @@ describe('MrWidgetJiraAssociationMissing', () => {
     });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   it('shows failed status', () => {
     expect(wrapper.findComponent(StateContainer).exists()).toBe(true);
     expect(wrapper.findComponent(StateContainer).props().status).toBe('failed');

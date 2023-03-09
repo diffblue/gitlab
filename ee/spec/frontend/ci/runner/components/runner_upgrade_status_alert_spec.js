@@ -32,10 +32,6 @@ describe('RunnerUpgradeStatusAlert', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('When no feature is enabled', () => {
     beforeEach(() => {
       glFeatures = {};

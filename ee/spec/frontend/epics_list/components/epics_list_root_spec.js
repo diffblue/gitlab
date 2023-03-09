@@ -123,10 +123,6 @@ const createComponent = ({ provide = mockProvide, initialFilterParams = {} } = {
 describe('EpicsListRoot', () => {
   const getIssuableList = () => wrapper.findComponent(IssuableList);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('methods', () => {
     beforeEach(() => {
       createComponent();

@@ -21,10 +21,6 @@ describe('ExitLink', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when the component is mounted', () => {
     it('displays a link', () => {
       expect(findLink().exists()).toBe(true);

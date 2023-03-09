@@ -13,7 +13,6 @@ describe('DismissalCommentModalFooter', () => {
 
   afterEach(() => {
     document.body.dataset.page = origPage;
-    wrapper.destroy();
   });
 
   beforeEach(() => {

@@ -98,10 +98,6 @@ describe('OnDemandScans', () => {
     router = createRouter();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders an empty state when there is no data', () => {
     createComponent({
       propsData: {

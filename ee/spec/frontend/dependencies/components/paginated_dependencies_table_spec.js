@@ -40,10 +40,6 @@ describe('PaginatedDependenciesTable component', () => {
     await nextTick();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('passes the correct props to the dependencies table', () => {
     expectComponentWithProps(DependenciesTable, {
       dependencies: mockDependenciesResponse.dependencies,

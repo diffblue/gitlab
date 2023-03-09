@@ -36,10 +36,6 @@ describe('Activity Filter component (deprecated)', () => {
     createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders the header text for each group', () => {
     GROUPS.forEach((group) => {
       const header = findHeader(group.header.name);

@@ -49,11 +49,6 @@ describe('EE Approvals LicenseCompliance', () => {
     jest.spyOn(store.modules.approvalsModal.actions, 'open');
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const findByHrefAttribute = (href) => wrapper.find(`[href="${href}"]`);
   const findOpenModalButton = () => wrapper.find('button');
   const findLoadingIndicator = () => wrapper.findComponent(GlSkeletonLoader);

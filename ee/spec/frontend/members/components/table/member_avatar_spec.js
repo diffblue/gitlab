@@ -13,10 +13,6 @@ describe('MemberAvatar', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders UserAvatar', () => {
     createComponent({ memberType: MEMBER_TYPES.banned, member: bannedMember });
 

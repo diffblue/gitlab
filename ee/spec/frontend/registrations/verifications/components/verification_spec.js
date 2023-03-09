@@ -58,7 +58,6 @@ describe('Verification', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     unmockTracking();
     window.gon = {};
   });

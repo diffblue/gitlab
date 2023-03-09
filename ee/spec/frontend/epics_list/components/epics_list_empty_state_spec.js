@@ -27,10 +27,6 @@ describe('EpicsListEmptyState', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('template', () => {
     it('renders gl-empty-state component', () => {
       const emptyStateEl = wrapper.findComponent(GlEmptyState);

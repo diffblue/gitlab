@@ -23,10 +23,6 @@ describe('ActionButton', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders a button with a tooltip attached', () => {
     createComponent();
     const button = findButton();

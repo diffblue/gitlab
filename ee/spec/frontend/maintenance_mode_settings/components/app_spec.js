@@ -30,11 +30,6 @@ describe('MaintenanceModeSettingsApp', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const findMaintenanceModeSettingsForm = () => wrapper.findComponent(GlForm);
   const findGlLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findGlToggle = () => wrapper.findComponent(GlToggle);

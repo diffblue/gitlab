@@ -85,10 +85,6 @@ describe('Project Filter Deprecated component', () => {
     await waitForPromises();
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('before dropdown is opened', () => {
     it('does not run the projects query', () => {
       createWrapper();

@@ -76,10 +76,6 @@ describe('EE - ApiFuzzingConfigurationForm', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('includes a link to API fuzzing authentication documentation', () => {
     createWrapper();
 

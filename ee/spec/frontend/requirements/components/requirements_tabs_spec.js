@@ -33,10 +33,6 @@ describe('RequirementsTabs', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('template', () => {
     it('renders "Open" tab', () => {
       const tabEl = wrapper.findAllComponents(GlTab).at(0);

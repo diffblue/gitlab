@@ -112,10 +112,6 @@ describe('EE IssuesListApp component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('template', () => {
     beforeEach(async () => {
       wrapper = mountComponent();

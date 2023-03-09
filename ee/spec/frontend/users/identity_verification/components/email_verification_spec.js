@@ -47,7 +47,6 @@ describe('EmailVerification', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     createAlert.mockClear();
     axiosMock.restore();
   });

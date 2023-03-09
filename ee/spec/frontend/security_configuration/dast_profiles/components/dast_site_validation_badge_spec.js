@@ -13,10 +13,6 @@ describe('EE - DastSiteValidationBadge', () => {
   };
   const createComponent = wrapperFactory();
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it.each`
     status               | variant      | label
     ${STATUS.NONE}       | ${'neutral'} | ${'Not validated'}

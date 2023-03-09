@@ -48,7 +48,6 @@ describe('Password requirement list component', () => {
 
   afterEach(() => {
     resetHTMLFixture();
-    wrapper.destroy();
   });
 
   describe('when empty password is not allowed', () => {

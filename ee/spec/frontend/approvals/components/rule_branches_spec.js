@@ -21,11 +21,6 @@ describe('Rule Branches', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const findBranch = () => wrapper.find('div');
 
   it('displays "All branches" if there are no protected branches', () => {

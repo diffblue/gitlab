@@ -57,7 +57,6 @@ describe('Image Filter component (deprecated)', () => {
 
   afterEach(() => {
     createAlert.mockClear();
-    wrapper.destroy();
   });
 
   describe('project page', () => {

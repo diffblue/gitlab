@@ -8,11 +8,6 @@ const testImage = 'workspace.svg';
 describe('Learn GitLab Section Card', () => {
   let wrapper;
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const createWrapper = () => {
     wrapper = shallowMount(LearnGitlabSectionCard, {
       propsData: { section: defaultSection, actions: testActions, svg: testImage },

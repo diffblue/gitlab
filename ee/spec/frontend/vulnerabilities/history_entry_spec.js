@@ -40,8 +40,6 @@ describe('History Entry', () => {
   const existingComments = () => wrapper.findAllComponents({ ref: 'existingComment' });
   const commentAt = (index) => existingComments().at(index);
 
-  afterEach(() => wrapper.destroy());
-
   it('passes the expected values to the event item component', () => {
     createWrapper(systemNote);
 

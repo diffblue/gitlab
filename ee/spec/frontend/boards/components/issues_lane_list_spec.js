@@ -41,11 +41,6 @@ describe('IssuesLaneList', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('if list is expanded', () => {
     beforeEach(() => {
       store = createStore();

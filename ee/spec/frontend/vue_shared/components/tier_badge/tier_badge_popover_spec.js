@@ -33,10 +33,6 @@ describe('TierBadgePopover', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('with title and content', () => {
     describe('when sourceType is provided', () => {
       it('renders the title and correct content for `Group`', () => {

@@ -99,10 +99,6 @@ describe('DeleteEscalationPolicyModal', () => {
     localWrapper.findComponent(GlModal).vm.$emit('primary', { preventDefault: jest.fn() });
   }
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('layout', () => {
     beforeEach(() => {
       createComponent();

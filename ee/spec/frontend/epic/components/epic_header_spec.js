@@ -26,11 +26,6 @@ describe('EpicHeaderComponent', () => {
     });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const modalId = 'delete-modal-id';
 
   const findModal = () => wrapper.findComponent(DeleteIssueModal);

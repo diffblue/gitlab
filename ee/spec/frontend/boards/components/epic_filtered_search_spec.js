@@ -31,10 +31,6 @@ describe('EpicFilteredSearch', () => {
     current_user_fullname: 'Admin',
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default', () => {
     beforeEach(() => {
       createComponent();

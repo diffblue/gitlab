@@ -23,10 +23,6 @@ describe('Filter Item component', () => {
 
   const dropdownItem = () => wrapper.findComponent(GlDropdownItem);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('text', () => {
     it('shows the given text when the "text" prop is passed in', () => {
       const text = 'some name';

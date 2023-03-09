@@ -52,10 +52,6 @@ describe('ViolationFilter component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('component behavior', () => {
     beforeEach(() => {
       createComponent();

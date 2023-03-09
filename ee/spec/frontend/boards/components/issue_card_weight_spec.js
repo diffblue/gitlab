@@ -10,10 +10,6 @@ function mountIssueCardWeight(propsData) {
 describe('IssueCardWeight', () => {
   let wrapper;
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('weight text', () => {
     it('shows 0 when weight is 0', () => {
       wrapper = mountIssueCardWeight({

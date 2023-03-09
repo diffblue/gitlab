@@ -27,10 +27,6 @@ describe('MonthsHeaderSubItemComponent', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('header sub items', () => {
     it('lists dates containing Sundays from timeframeItem', () => {
       createComponent();

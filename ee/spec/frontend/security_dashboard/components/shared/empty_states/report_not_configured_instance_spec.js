@@ -20,10 +20,6 @@ describe('Instance report not configured component', () => {
     wrapper = createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('passes expected props to the GlEmptyState', () => {
     expect(wrapper.findComponent(GlEmptyState).props()).toMatchObject({
       title: ReportNotConfiguredInstance.i18n.title,

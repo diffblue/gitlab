@@ -44,10 +44,6 @@ describe('ee/BoardSettingsSidebar', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('confirms we render BoardSettingsSidebarWipLimit', () => {
     createComponent({ list: mockLabelList, isWipLimitsOn: true });
 

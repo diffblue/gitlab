@@ -37,10 +37,6 @@ describe('Grouped metrics reports app', () => {
     mountComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('while loading', () => {
     beforeEach(() => {
       mockStore.state.isLoading = true;

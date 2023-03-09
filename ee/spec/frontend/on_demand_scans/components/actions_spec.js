@@ -65,7 +65,6 @@ describe('Actions', () => {
   };
 
   afterEach(() => {
-    wrapper.destroy();
     requestHandler = null;
     apolloProvider = null;
   });

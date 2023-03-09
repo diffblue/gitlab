@@ -71,10 +71,6 @@ describe('RoadmapApp', () => {
     });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe.each`
     testLabel         | epicList | showLoading | showRoadmapShell | showEpicsListEmpty
     ${'is loading'}   | ${null}  | ${true}     | ${false}         | ${false}

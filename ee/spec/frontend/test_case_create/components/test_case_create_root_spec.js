@@ -75,10 +75,6 @@ describe('TestCaseCreateRoot', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders disabled `Submit test case` button if no title is entered', () => {
     createComponent();
 

@@ -10,10 +10,6 @@ describe('Iterations title', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('shows empty state', () => {
     createComponent({ title: 'abc' });
 

@@ -56,11 +56,6 @@ describe('RequirementForm', () => {
     });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapperWithRequirement.destroy();
-  });
-
   describe('computed', () => {
     describe('isCreate', () => {
       it('returns true when `requirement` prop is null', () => {

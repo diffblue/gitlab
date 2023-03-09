@@ -35,7 +35,6 @@ describe('Vulnerability Report', () => {
 
   afterEach(() => {
     vm.$destroy();
-    vm = null;
     container = null;
     resetHTMLFixture();
   });

@@ -25,10 +25,6 @@ describe('Tooltip Icon', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders icon correctly', () => {
     expect(findIcon().exists()).toBe(true);
   });

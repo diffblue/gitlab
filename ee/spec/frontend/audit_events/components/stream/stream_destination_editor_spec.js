@@ -112,10 +112,6 @@ describe('StreamDestinationEditor', () => {
     await setHeaderValueInput(trIdx, value);
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when initialized', () => {
     describe('destinations URL', () => {
       beforeEach(() => {

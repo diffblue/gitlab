@@ -14,10 +14,6 @@ import { STATUS_FAILED, STATUS_SUCCESS } from '~/ci/reports/constants';
 describe('Report issues', () => {
   let wrapper;
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('for codequality issues', () => {
     describe('resolved issues', () => {
       beforeEach(() => {

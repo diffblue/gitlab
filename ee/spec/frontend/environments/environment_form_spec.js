@@ -23,10 +23,6 @@ describe('~/environments/components/form.vue', () => {
       },
     });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when an existing environment is being edited', () => {
     beforeEach(() => {
       wrapper = createWrapper({

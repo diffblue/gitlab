@@ -35,10 +35,6 @@ describe('SubscriptionActivationBanner', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('provides the correct props to the banner', () => {
     expect(findBanner().props()).toMatchObject({
       buttonText: addActivationCode,

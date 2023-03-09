@@ -29,10 +29,6 @@ describe('Phone Verification component', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('When component loads', () => {
     it('should display InternationalPhoneInput component', () => {
       expect(findInternationalPhoneInput().exists()).toBe(true);

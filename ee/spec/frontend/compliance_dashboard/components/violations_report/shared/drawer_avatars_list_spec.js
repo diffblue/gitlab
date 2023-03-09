@@ -24,10 +24,6 @@ describe('DrawerAvatarsList component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('header', () => {
     it('does not render the header if it is not given', () => {
       wrapper = createComponent();

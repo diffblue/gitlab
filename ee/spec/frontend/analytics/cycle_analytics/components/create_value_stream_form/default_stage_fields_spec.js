@@ -48,11 +48,6 @@ describe('DefaultStageFields', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   it('renders the stage field name', () => {
     expect(findStageFieldNameInput().exists()).toBe(true);
     expect(findStageFieldNameInput().html()).toContain(defaultStage.name);

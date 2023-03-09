@@ -33,10 +33,6 @@ describe('Event Item', () => {
       mountComponent({ propsData, slots });
     });
 
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
     it('passes the expected values to the note header component', () => {
       expect(noteHeader().props()).toMatchObject({
         noteId: propsData.id,
@@ -81,10 +77,6 @@ describe('Event Item', () => {
         },
       ],
     };
-
-    afterEach(() => {
-      wrapper.destroy();
-    });
 
     beforeEach(() => {
       mountComponent({ propsData }, mountExtended);

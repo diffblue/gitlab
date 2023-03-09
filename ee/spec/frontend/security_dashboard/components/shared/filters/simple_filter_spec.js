@@ -63,7 +63,6 @@ describe('Simple Filter component', () => {
   };
 
   afterEach(() => {
-    wrapper.destroy();
     // Clear out the querystring if one exists, it persists between tests.
     if (router.currentRoute.query[filter.id]) {
       wrapper.vm.$router.push('/');

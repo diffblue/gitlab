@@ -19,10 +19,6 @@ describe('RequirementMeta Mixin', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('computed', () => {
     describe('titleHtml', () => {
       it('returns value of `requirement.titleHtml`', () => {

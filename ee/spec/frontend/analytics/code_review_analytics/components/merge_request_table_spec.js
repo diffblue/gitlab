@@ -35,10 +35,6 @@ describe('MergeRequestTable component', () => {
     wrapper = createComponent(vuexStore);
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findTable = () => wrapper.findComponent(GlTableLite);
   const findTableRow = (index) => findTable().findAll('tbody tr').at(index);
   const findReviewTimeCol = (rowIndex) => findTableRow(rowIndex).findAll('td').at(1);

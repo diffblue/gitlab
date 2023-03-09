@@ -35,7 +35,6 @@ describe('Cluster Filter component (deprecated)', () => {
 
   afterEach(() => {
     createAlert.mockClear();
-    wrapper.destroy();
   });
 
   it('retrieves the options', async () => {

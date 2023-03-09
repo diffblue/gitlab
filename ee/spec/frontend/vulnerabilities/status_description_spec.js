@@ -18,10 +18,6 @@ const ALL_STATES = Object.keys(VULNERABILITY_STATES);
 describe('Vulnerability status description component', () => {
   let wrapper;
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const timeAgo = () => wrapper.findComponent(TimeAgoTooltip);
   const pipelineLink = () => wrapper.findComponent(GlLink);
   const userAvatar = () => wrapper.findComponent(UserAvatarLink);

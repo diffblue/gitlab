@@ -23,10 +23,6 @@ describe('ee/vulnerabilities/components/generic_report/types/code.vue', () => {
     wrapper = createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders a code-block', () => {
     expect(findCodeBlock().exists()).toBe(true);
   });

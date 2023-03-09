@@ -35,10 +35,6 @@ describe('Security training promo banner component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findSecurityTrainingPromo = () => wrapper.findComponent(SecurityTrainingPromo);
   const findBanner = () => wrapper.findComponent(GlBanner);
 

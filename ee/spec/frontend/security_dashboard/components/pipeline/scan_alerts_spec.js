@@ -54,10 +54,6 @@ describe('ee/security_dashboard/components/pipeline_scan_alerts.vue', () => {
   const findErrorList = () => wrapper.findByRole('list');
   const findHelpPageLink = () => wrapper.findComponent(GlButton);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   beforeEach(() => {
     wrapper = createWrapper();
   });

@@ -33,10 +33,6 @@ describe('DependencyLicenseLinks component', () => {
   const findModalItem = () => wrapper.findAll(jsTestClassSelector('modal-item'));
   const findModalTrigger = () => wrapper.find(jsTestClassSelector('modal-trigger'));
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('intersperses the list of licenses correctly', () => {
     factory();
 

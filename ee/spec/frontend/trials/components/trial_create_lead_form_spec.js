@@ -29,10 +29,6 @@ describe('TrialCreateLeadForm', () => {
   const findButton = () => wrapper.findComponent(GlButton);
   const findFormInput = (testId) => wrapper.findByTestId(testId);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('rendering', () => {
     beforeEach(() => {
       wrapper = createComponent();

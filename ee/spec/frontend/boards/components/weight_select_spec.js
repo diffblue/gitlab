@@ -27,10 +27,6 @@ describe('WeightSelect', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when no weight has been selected', () => {
     beforeEach(() => {
       createComponent();

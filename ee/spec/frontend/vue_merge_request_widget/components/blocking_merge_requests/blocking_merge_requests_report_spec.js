@@ -33,10 +33,6 @@ describe('BlockingMergeRequestsReport', () => {
     };
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const createComponent = (propsData = props) => {
     wrapper = shallowMount(BlockingMergeRequestsReport, {
       propsData,

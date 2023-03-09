@@ -71,8 +71,6 @@ describe('View branch rules in enterprise edition', () => {
 
   beforeEach(() => createComponent());
 
-  afterEach(() => wrapper.destroy());
-
   const findBranchProtections = () => wrapper.findAllComponents(Protection);
   const findApprovalsTitle = () => wrapper.findByText(I18N.approvalsTitle);
   const findStatusChecksTitle = () => wrapper.findByText(I18N.statusChecksTitle);

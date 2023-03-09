@@ -30,10 +30,6 @@ describe('ExternalIssuesSidebarAssignee', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('with assignee', () => {
     beforeEach(() => {
       createComponent({ assignee: mockAssignee });

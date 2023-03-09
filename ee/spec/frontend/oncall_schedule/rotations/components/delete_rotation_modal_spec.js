@@ -103,10 +103,6 @@ describe('DeleteRotationModal', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders delete rotation modal layout', () => {
     expect(wrapper.element).toMatchSnapshot();
   });

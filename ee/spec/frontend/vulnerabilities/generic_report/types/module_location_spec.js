@@ -23,10 +23,6 @@ describe('ee/vulnerabilities/components/generic_report/types/module_location.vue
       wrapper = createWrapper();
     });
 
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
     it(`renders ${moduleName} module`, () => {
       expect(wrapper.text()).toBe(value.toString());
     });

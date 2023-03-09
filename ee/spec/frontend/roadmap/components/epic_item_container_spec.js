@@ -57,10 +57,6 @@ describe('EpicItemContainer', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('template', () => {
     it('renders epic list container', () => {
       expect(wrapper.classes('epic-list-item-container')).toBe(true);

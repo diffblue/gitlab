@@ -56,7 +56,6 @@ describe('Zuora', () => {
 
   afterEach(() => {
     delete window.Z;
-    wrapper.destroy();
   });
 
   describe('mounted', () => {

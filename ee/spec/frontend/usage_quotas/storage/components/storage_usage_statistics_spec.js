@@ -34,10 +34,6 @@ describe('StorageUsageStatistics', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findNamespaceStorageCard = () => wrapper.findByTestId('namespace-usage-card');
   const findPurchasedStorageCard = () => wrapper.findByTestId('purchased-usage-card');
 
@@ -97,10 +93,6 @@ describe('StorageUsageStatistics', () => {
   describe('purchased storage card', () => {
     beforeEach(() => {
       createComponent();
-    });
-
-    afterEach(() => {
-      wrapper.destroy();
     });
 
     it('passes the correct props when storageLimitEnforced is true', () => {

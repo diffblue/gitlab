@@ -42,11 +42,6 @@ describe('EE Approvlas MRRulesHiddenInputs', () => {
     };
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const findHiddenInputs = () =>
     wrapper.findAll('input[type=hidden]').wrappers.map((x) => ({
       name: x.attributes('name'),

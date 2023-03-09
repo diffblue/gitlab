@@ -75,8 +75,6 @@ describe('EE RelatedJiraIssues Component', () => {
     wrapper.findByTestId('create-jira-issue-error-alert');
   const findCreateJiraIssueComponent = () => wrapper.findComponent(createJiraIssue);
   afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
     mockAxios.reset();
   });
 

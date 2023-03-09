@@ -124,7 +124,6 @@ describe('Grouped security reports app', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     mock.restore();
   });
 

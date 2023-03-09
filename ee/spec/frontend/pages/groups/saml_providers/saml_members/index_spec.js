@@ -28,11 +28,6 @@ describe('SAML providers members app', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   beforeEach(() => {
     fetchPageMock = jest.fn();
   });

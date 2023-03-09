@@ -25,7 +25,6 @@ describe('SidebarTodoComponent', () => {
 
   afterEach(() => {
     gon.current_user_id = null;
-    wrapper.destroy();
   });
 
   describe('when `isUserSignedIn` & `sidebarCollapsed` is `true`', () => {

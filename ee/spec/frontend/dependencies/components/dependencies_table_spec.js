@@ -18,10 +18,6 @@ describe('DependenciesTable component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findTableRows = () => wrapper.findAll('tbody > tr');
   const findRowToggleButtons = () => wrapper.findAllComponents(GlButton);
   const findDependencyVulnerabilities = () => wrapper.findComponent(DependencyVulnerabilities);

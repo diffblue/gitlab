@@ -39,10 +39,6 @@ describe('Security training promo component', () => {
   const callDismissSlotProp = () => defaultScopedSlotSpy.mock.calls[0][0].dismiss();
   const callTrackCTAClickSlotProp = () => defaultScopedSlotSpy.mock.calls[0][0].trackCTAClick();
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('slot', () => {
     it('passes expected slot props to child', () => {
       createComponent();

@@ -41,10 +41,6 @@ describe('DependenciesActions component', () => {
     await nextTick();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('dispatches the right setSortField action on clicking each item in the dropdown', () => {
     const sortingItems = wrapper.findAllComponents(GlSortingItem).wrappers;
 

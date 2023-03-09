@@ -49,10 +49,6 @@ describe('create_jira_issue', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('should render button with correct text in default variant', () => {
     createComponent();
 

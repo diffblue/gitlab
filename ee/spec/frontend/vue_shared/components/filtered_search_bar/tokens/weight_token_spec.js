@@ -24,10 +24,6 @@ describe('WeightToken', () => {
       },
     });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders weight value', () => {
     wrapper = createComponent({ value: { data: weight } });
 

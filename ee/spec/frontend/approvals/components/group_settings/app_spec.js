@@ -52,7 +52,6 @@ describe('EE Approvals Group Settings App', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     store = null;
   });
 

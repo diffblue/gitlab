@@ -64,11 +64,6 @@ describe('EE MRWidget approvals list', () => {
   const findRowElement = (row, name) => row.find(`.js-${name}`);
   const findRowIcon = (row) => row.findComponent(ApprovedIcon);
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('when multiple rules', () => {
     beforeEach(async () => {
       createComponent();

@@ -96,10 +96,6 @@ describe('Iteration Form', () => {
     });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findPageTitle = () => wrapper.findComponent({ ref: 'pageTitle' });
   const findTitle = () => wrapper.findByLabelText('Title');
   const findDescription = () => wrapper.findByLabelText('Description');

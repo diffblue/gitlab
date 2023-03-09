@@ -17,10 +17,6 @@ import { STATUS_FAILED, STATUS_SUCCESS, STATUS_NEUTRAL } from '~/ci/reports/cons
 describe('Report issue', () => {
   let wrapper;
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('for codequality issue', () => {
     describe('resolved issue', () => {
       beforeEach(() => {

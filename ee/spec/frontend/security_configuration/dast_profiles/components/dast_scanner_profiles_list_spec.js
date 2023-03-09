@@ -35,10 +35,6 @@ describe('EE - DastScannerProfileList', () => {
 
   const findProfileList = () => wrapper.findComponent(ProfilesList);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders profile list properly', () => {
     createFullComponent({
       propsData: { profiles: scannerProfiles },

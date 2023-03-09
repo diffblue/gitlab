@@ -63,11 +63,6 @@ describe('EE - DastProfilesList', () => {
   const getModal = () => wrapper.findComponent(GlModal);
   const getDeleteTooltip = () => wrapper.find('[data-testid="dast-profile-delete-tooltip"');
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('when loading', () => {
     const profilesPerPage = 10;
 

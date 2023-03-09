@@ -23,10 +23,6 @@ describe('GroupItemComponent', () => {
 
   const findComplianceFrameworkLabel = () => wrapper.findComponent(GlLabel);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('Compliance framework label', () => {
     it('does not render if the item does not have a compliance framework', async () => {
       wrapper = createComponent({ group: mockChildren[0] });

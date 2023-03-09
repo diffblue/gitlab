@@ -23,10 +23,6 @@ describe('ee/vulnerabilities/components/generic_report/types/url.vue', () => {
     wrapper = createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders a link', () => {
     expect(findLink().exists()).toBe(true);
   });

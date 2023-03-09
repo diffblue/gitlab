@@ -23,11 +23,6 @@ describe('EpicItemDetails', () => {
     store = createStore();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const createWrapper = (props = {}) => {
     wrapper = extendedWrapper(
       shallowMount(EpicItemDetails, {

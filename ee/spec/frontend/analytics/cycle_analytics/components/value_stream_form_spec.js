@@ -40,10 +40,6 @@ describe('ValueStreamForm', () => {
   const findForm = () => wrapper.findComponent(ValueStreamFormContent);
   const findFormProps = () => findForm().props();
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default state', () => {
     beforeEach(() => {
       wrapper = createComponent();

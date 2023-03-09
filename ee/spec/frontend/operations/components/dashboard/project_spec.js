@@ -30,10 +30,6 @@ describe('project component', () => {
 
   const findDashboardCard = () => wrapper.find('[data-testid="dashboard-card-body"]');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('with unlicensed project', () => {
     let project;
 

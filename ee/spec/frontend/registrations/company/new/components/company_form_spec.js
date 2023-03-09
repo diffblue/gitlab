@@ -27,10 +27,6 @@ describe('RegistrationForm', () => {
   const findFormInput = (testId) => wrapper.findByTestId(testId);
   const findToggle = () => wrapper.findComponent(GlToggle);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when trial is true', () => {
     beforeEach(() => {
       wrapper = createComponent({ propsData: { trial: true } });

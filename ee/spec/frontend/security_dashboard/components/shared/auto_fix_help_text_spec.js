@@ -22,11 +22,6 @@ describe('AutoFix Help Text component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   beforeEach(() => {
     wrapper = createWrapper();
   });

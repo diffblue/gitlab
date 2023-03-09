@@ -57,10 +57,6 @@ describe('subscription table row', () => {
     jest.spyOn(store, 'dispatch').mockImplementation();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findHeaderCell = () => wrapper.find('[data-testid="header-cell"]');
   const findContentCells = () => wrapper.findAll('[data-testid="content-cell"]');
   const findHeaderIcon = () => findHeaderCell().findComponent(GlIcon);

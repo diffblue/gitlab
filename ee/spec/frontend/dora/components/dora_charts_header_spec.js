@@ -23,10 +23,6 @@ describe('dora_chart_header.vue', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders the header text', () => {
     const actualText = wrapper.find('h4').text();
 

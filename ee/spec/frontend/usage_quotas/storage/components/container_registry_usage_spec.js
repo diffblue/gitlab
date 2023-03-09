@@ -31,10 +31,6 @@ describe('Container registry usage component', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('displays the total size section when prop is provided', () => {
     const expectedValue = numberToHumanSize(defaultProps.containerRegistrySize, 1);
 

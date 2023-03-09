@@ -32,10 +32,6 @@ describe('HealthToken', () => {
       },
     });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders health value', () => {
     wrapper = createComponent({ value: { data: healthStatus.value } });
 

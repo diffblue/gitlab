@@ -19,10 +19,6 @@ describe('Corpus Upload', () => {
 
   const createComponent = createComponentFactory();
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('component', () => {
     it('renders total size', () => {
       createComponent();

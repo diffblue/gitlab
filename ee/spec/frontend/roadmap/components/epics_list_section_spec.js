@@ -86,11 +86,6 @@ describe('EpicsListSectionComponent', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('data', () => {
     it('returns default data props', () => {
       // Destroy the existing wrapper, and create a new one. This works around

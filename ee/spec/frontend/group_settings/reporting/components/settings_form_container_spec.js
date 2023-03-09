@@ -45,10 +45,6 @@ describe('SettingsFormContainer', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders SettingsForm with the correct props', () => {
     expect(wrapper.findComponent(SettingsForm).exists()).toEqual(true);
     expect(wrapper.findComponent(SettingsForm).props()).toMatchObject({

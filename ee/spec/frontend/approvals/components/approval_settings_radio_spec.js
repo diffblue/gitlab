@@ -30,10 +30,6 @@ describe('ApprovalSettingsRadio', () => {
   const findRadio = () => wrapper.findComponent(GlFormRadio);
   const findLockedIcon = () => wrapper.findComponent(ApprovalSettingsLockedIcon);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('rendering', () => {
     beforeEach(() => {
       createWrapper();

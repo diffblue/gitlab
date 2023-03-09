@@ -17,10 +17,6 @@ describe('TableEmptyState', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('has the correct props', () => {
     createComponent();
 

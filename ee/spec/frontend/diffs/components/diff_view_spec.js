@@ -53,10 +53,6 @@ function createComponent({ withCodequality = true, provide = {} }) {
 describe('EE DiffView', () => {
   let wrapper;
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when there is diff data for the file', () => {
     beforeEach(() => {
       ({ wrapper } = createComponent({

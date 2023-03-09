@@ -62,10 +62,6 @@ describe('CreateForm', () => {
     await waitForPromises();
   }
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('initialized', () => {
     beforeEach(() => {
       wrapper = createComponent();

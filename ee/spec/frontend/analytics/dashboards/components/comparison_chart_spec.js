@@ -57,10 +57,6 @@ describe('Comparison chart', () => {
     );
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('data requests', () => {
     it('will request the metrics for the table data', async () => {
       utils.fetchMetricsData.mockReturnValueOnce({});

@@ -14,11 +14,6 @@ describe('Accordion component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   it('contains a default slot', () => {
     const defaultSlot = `<span class="content"></span>`;
 

@@ -77,10 +77,6 @@ describe('EpicItemComponent', () => {
     wrapper = createComponent({});
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('startDate', () => {
     it('returns Epic.startDate when start date is within range', () => {
       expect(wrapper.vm.startDate).toBe(mockEpic.startDate);

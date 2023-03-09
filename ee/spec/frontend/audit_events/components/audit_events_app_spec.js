@@ -19,10 +19,6 @@ describe('AuditEventsApp', () => {
     jest.spyOn(Tracking, 'event');
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('tabs', () => {
     it.each`
       isProject | showStreams | showTabs

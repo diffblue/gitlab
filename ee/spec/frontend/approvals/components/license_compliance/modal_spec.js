@@ -67,11 +67,6 @@ describe('EE Approvals LicenseCompliance Modal', () => {
     createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const findByHref = (href) => wrapper.find(`[href="${href}"`);
   const findModal = () => wrapper.findComponent(GlModalVuex);
   const findRuleForm = () => wrapper.findComponent(mocks.RuleForm);

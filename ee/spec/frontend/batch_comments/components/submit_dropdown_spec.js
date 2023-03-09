@@ -43,10 +43,6 @@ function factory({ canApprove = true, requirePasswordToApprove = true } = {}) {
 }
 
 describe('Batch comments submit dropdown', () => {
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it.each`
     requirePasswordToApprove | exists   | existsText
     ${true}                  | ${true}  | ${'shows'}

@@ -35,10 +35,6 @@ describe('Activity Filter component', () => {
     createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders the dropdown text', () => {
     expect(wrapper.findComponent(DropdownButtonText).props()).toMatchObject({
       items: wrapper.vm.selectedItemNames,

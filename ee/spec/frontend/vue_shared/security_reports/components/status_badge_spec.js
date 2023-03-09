@@ -16,10 +16,6 @@ describe('StatusBadge', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it.each(Object.entries(VARIANTS))(
     'the vulnerability state badge has the correct style for the %s state',
     (state, variant) => {

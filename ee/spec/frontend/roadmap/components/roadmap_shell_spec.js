@@ -78,8 +78,6 @@ describe('RoadmapShell', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
     store = null;
   });
 

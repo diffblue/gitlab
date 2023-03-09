@@ -131,7 +131,6 @@ describe('Iteration cadences list', () => {
   const findPagination = () => wrapper.findComponent(GlKeysetPagination);
 
   afterEach(() => {
-    wrapper.destroy();
     apolloProvider = null;
   });
 

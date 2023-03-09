@@ -21,11 +21,6 @@ describe('User invites', () => {
   const inputs = () => wrapper.findAllComponents(GlFormInput);
   const addButton = () => wrapper.findComponent(GlButton);
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('Default state', () => {
     beforeEach(() => {
       createComponent();

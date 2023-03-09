@@ -65,8 +65,6 @@ describe('Security Dashboard component', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
     mock.restore();
   });
 

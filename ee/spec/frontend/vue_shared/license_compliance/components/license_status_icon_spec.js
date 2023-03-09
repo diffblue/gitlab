@@ -13,10 +13,6 @@ describe('LicenseStatusIcon', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it.each([STATUS_SUCCESS, STATUS_NEUTRAL, STATUS_FAILED])(
     'renders "%s" state correctly',
     (status) => {

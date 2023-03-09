@@ -68,10 +68,6 @@ describe('TestCaseListRoot', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('passes a correct loading state to Issuables List', () => {
     it.each`
       testCasesLoading | returnValue

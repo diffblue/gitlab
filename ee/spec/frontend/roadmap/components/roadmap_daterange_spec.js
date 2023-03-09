@@ -34,10 +34,6 @@ describe('RoadmapDaterange', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('template', () => {
     it('renders labels', () => {
       expect(wrapper.find('label').exists()).toBe(true);

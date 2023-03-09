@@ -55,7 +55,6 @@ describe('VerificationReminder', () => {
   afterEach(() => {
     window.gon = {};
     unmockTracking();
-    wrapper.destroy();
   });
 
   describe('when the component is mounted', () => {

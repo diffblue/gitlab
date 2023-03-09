@@ -37,11 +37,6 @@ describe('Group PathNavigation', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('popovers', () => {
     beforeEach(() => {
       wrapper = createComponent({ stages: transformedStagePathData });

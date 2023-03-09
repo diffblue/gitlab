@@ -28,10 +28,6 @@ describe('DevopsAdoptionEmptyState', () => {
 
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('contains the correct svg', () => {
     wrapper = createComponent();
 

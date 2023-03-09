@@ -17,10 +17,6 @@ describe('Environment Header', () => {
     };
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('renders name and link to app', () => {
     beforeEach(() => {
       wrapper = mount(component, {

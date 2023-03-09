@@ -35,11 +35,6 @@ describe('Project delayed delete modal', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('initialized', () => {
     beforeEach(() => {
       createComponent();

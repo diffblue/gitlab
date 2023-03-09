@@ -26,10 +26,6 @@ describe('Action buttons', () => {
 
   const createComponent = createComponentFactory();
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('corpus management with read and destroy enabled', () => {
     it('renders the action buttons', () => {
       createComponent();

@@ -20,10 +20,6 @@ describe('EE IssueCardTimeInfo component', () => {
       propsData: { issue },
     });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('weight', () => {
     it('renders', () => {
       wrapper = mountComponent();

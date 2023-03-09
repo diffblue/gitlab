@@ -30,10 +30,6 @@ describe('GeoReplicableTimeAgo', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findReplicableTimeAgo = () => wrapper.findByTestId('replicable-time-ago');
 
   describe.each`

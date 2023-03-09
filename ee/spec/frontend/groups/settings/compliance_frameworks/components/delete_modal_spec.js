@@ -55,10 +55,6 @@ describe('DeleteModal', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('component layout', () => {
     beforeEach(() => {
       createComponent();

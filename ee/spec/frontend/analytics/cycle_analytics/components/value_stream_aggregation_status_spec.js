@@ -30,10 +30,6 @@ describe('ValueStreamAggregationStatus', () => {
   const findLastUpdated = () => wrapper.findByTestId('vsa-data-refresh-last');
   const findNextUpdate = () => wrapper.findByTestId('vsa-data-refresh-next');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default state', () => {
     beforeEach(() => {
       wrapper = createComponent();

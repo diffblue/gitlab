@@ -27,10 +27,6 @@ describe('QuartersHeaderSubItemComponent', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('sub items', () => {
     it('is array of dates containing Months from timeframeItem', () => {
       createComponent();

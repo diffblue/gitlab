@@ -21,10 +21,6 @@ describe('EE - DastScanSchedule', () => {
   };
   const createComponent = wrapperFactory();
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it.each`
     description                | schedule
     ${'scan is not scheduled'} | ${null}

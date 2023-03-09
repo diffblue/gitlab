@@ -18,10 +18,6 @@ describe('Environment', () => {
     });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('matchs the snapshot', () => {
     expect(wrapper.element).toMatchSnapshot();
   });

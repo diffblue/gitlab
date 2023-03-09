@@ -29,7 +29,6 @@ describe('ProjectApprovalSettings', () => {
   };
 
   afterEach(() => {
-    wrapper.destroy();
     store = null;
   });
 

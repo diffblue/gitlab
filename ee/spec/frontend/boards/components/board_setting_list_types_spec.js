@@ -21,10 +21,6 @@ describe('BoardSettingsListType', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('when list type is "milestone"', () => {
     it('renders the correct milestone text', () => {
       createComponent({ activeId: 1, boardListType: 'milestone' });
@@ -54,10 +50,6 @@ describe('BoardSettingsListType', () => {
   });
 
   describe('when list type is "assignee"', () => {
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
     it('renders gl-avatar-link with correct href', () => {
       createComponent({ activeId: 1, boardListType: 'assignee' });
 

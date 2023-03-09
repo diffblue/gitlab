@@ -18,10 +18,6 @@ describe('ErrorAlert', () => {
     createComponent({ errors });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('shows an alert', () => {
     expect(findAlert().exists()).toBe(true);
   });

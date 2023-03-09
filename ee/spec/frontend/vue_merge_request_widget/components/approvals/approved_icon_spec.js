@@ -16,11 +16,6 @@ describe('EE MRWidget approved icon', () => {
   const findIcon = () => wrapper.findComponent(GlIcon);
   const findSquare = () => wrapper.find('.square');
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('when approved', () => {
     beforeEach(() => {
       createComponent({ isApproved: true });

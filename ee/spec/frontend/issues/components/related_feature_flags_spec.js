@@ -54,8 +54,6 @@ describe('ee/issues/components/related_feature_flags.vue', () => {
 
   afterEach(() => {
     mock.restore();
-
-    wrapper.destroy();
   });
 
   beforeEach(() => {

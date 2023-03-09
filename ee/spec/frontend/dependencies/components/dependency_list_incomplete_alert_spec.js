@@ -11,10 +11,6 @@ describe('DependencyListIncompleteAlert component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('matches the snapshot', () => {
     factory();
     expect(wrapper.element).toMatchSnapshot();

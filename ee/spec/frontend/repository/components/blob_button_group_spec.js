@@ -43,10 +43,6 @@ describe('EE BlobButtonGroup component', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders component', () => {
     const { name, path } = DEFAULT_PROPS;
 

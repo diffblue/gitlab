@@ -27,10 +27,6 @@ describe('ZentaoIssuesSidebar', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findLabelsSelect = () => wrapper.findComponent(LabelsSelect);
   const findAssignee = () => wrapper.findComponent(Assignee);
   const findIssueDueDate = () => wrapper.findComponent(IssueDueDate);

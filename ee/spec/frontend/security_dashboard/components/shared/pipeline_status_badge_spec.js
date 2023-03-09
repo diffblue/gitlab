@@ -18,11 +18,6 @@ describe('Pipeline status badge', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe.each`
     failedCount | expectedMessage
     ${7}        | ${'7 failed security jobs'}

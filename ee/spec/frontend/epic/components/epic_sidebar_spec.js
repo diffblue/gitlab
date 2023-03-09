@@ -44,10 +44,6 @@ describe('EpicSidebarComponent', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('template', () => {
     beforeAll(() => {
       gon.current_user_id = 1;

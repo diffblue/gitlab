@@ -38,7 +38,6 @@ describe('Protected Environment Edit', () => {
   afterEach(() => {
     window.gon = originalGon;
     mockAxios.restore();
-    wrapper.destroy();
   });
 
   const createComponent = ({

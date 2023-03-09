@@ -14,10 +14,6 @@ describe('TierBadge', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('tracking', () => {
     it('tracks render on mount', async () => {
       const trackingSpy = mockTracking(undefined, undefined, jest.spyOn);

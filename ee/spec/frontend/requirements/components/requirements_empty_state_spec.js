@@ -28,10 +28,6 @@ describe('RequirementsEmptyState', () => {
     wrapper = createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('computed', () => {
     describe('emptyStateTitle', () => {
       it('returns string "There are no open requirements" when value of `filterBy` prop is "OPENED" and project has some requirements', async () => {

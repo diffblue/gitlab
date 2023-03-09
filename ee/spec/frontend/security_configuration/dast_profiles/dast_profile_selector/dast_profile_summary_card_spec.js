@@ -32,10 +32,6 @@ describe('DastProfileSummaryCard', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders properly', () => {
     expect(wrapper.element).toMatchSnapshot();
   });

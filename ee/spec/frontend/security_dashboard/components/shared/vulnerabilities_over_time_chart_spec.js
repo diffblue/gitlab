@@ -57,10 +57,6 @@ describe('Vulnerabilities Over Time Chart Component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('header', () => {
     it.each`
       dayRange | expectedStartDate

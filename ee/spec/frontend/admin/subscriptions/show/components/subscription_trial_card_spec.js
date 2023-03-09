@@ -24,10 +24,6 @@ describe('SubscriptionTrialCard', () => {
       createComponent();
     });
 
-    afterEach(() => {
-      wrapper.destroy();
-    });
-
     it('renders card description', () => {
       expect(wrapper.text()).toContain(trialCard.description);
     });

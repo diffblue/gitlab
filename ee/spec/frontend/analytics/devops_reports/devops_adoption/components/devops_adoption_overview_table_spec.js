@@ -37,10 +37,6 @@ describe('DevopsAdoptionOverviewTable', () => {
     localStorage.clear();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const findCol = (testId) => wrapper.findByTestId(testId);
 
   const findColRowChild = (col, row, child) =>

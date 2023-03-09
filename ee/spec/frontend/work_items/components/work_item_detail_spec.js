@@ -92,10 +92,6 @@ describe('WorkItemDetail component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('iteration widget', () => {
     describe.each`
       description                               | iterationWidgetPresent | exists

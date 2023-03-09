@@ -28,11 +28,6 @@ describe('Reset pipeline minutes button', () => {
     mock = new MockAdapter(axios);
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   const findResetButton = () => wrapper.findComponent(GlButton);
 
   it('should contain a button with the "Reset pipeline minutes" text', () => {

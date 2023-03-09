@@ -26,10 +26,6 @@ describe('Project quality summary feedback banner', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('is displayed with the correct props', () => {
     createComponent();
 

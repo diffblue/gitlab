@@ -91,11 +91,6 @@ describe('License Report MR Widget', () => {
 
   const findAllReportItems = () => wrapper.findAllComponents(ReportItem);
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('computed', () => {
     describe('hasLicenseReportIssues', () => {
       it('should be false, if the report is empty', () => {

@@ -73,10 +73,6 @@ describe('Pipeline Security Dashboard component', () => {
     factory({ apolloProvider: createMockApollo(requestHandlers) });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('on creation', () => {
     beforeEach(() => {
       factory();

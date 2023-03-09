@@ -10,10 +10,6 @@ describe('EpicAppComponent', () => {
     wrapper = shallowMount(EpicApp);
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('renders epic header and epic body', () => {
     createComponent();
 

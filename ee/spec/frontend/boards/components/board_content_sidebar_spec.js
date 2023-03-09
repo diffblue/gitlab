@@ -90,10 +90,6 @@ describe('ee/BoardContentSidebar', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('issue sidebar', () => {
     beforeEach(() => {
       createStore();

@@ -33,10 +33,6 @@ describe('LockButton component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('lock button', () => {
     let lockMutationMock;
     const mockEvent = { preventDefault: jest.fn() };

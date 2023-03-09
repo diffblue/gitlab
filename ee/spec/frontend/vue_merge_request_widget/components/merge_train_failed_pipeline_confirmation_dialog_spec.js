@@ -39,10 +39,6 @@ describe('MergeTrainFailedPipelineConfirmationDialog', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('should render informational text explaining why merging immediately can be dangerous', () => {
     expect(trimText(wrapper.text())).toContain(
       'The latest pipeline for this merge request has failed. Are you sure you want to attempt to merge?',

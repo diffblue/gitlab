@@ -27,11 +27,6 @@ describe('DateRangeField component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
-  });
-
   describe('default behaviour', () => {
     it('sets the max date range on the date picker', () => {
       createComponent();

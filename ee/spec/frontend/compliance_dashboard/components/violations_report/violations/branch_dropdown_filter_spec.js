@@ -26,10 +26,6 @@ describe('BranchDropdownFilter component', () => {
     });
   };
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('default behavior', () => {
     beforeEach(() => {
       createComponent();

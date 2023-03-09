@@ -59,7 +59,6 @@ describe('Sidebar Weight Widget', () => {
   };
 
   afterEach(() => {
-    wrapper.destroy();
     fakeApollo = null;
   });
 

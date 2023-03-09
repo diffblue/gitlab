@@ -67,7 +67,6 @@ describe('Insights component', () => {
   afterEach(() => {
     mock.restore();
     vuexStore.dispatch.mockReset();
-    wrapper.destroy();
   });
 
   it('fetches config data when mounted', () => {

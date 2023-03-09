@@ -18,10 +18,6 @@ describe('Group report not configured component', () => {
     wrapper = createWrapper();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('passes expected props to the GlEmptyState', () => {
     expect(wrapper.findComponent(GlEmptyState).props()).toMatchObject({
       title: ReportNotConfiguredGroup.i18n.title,
