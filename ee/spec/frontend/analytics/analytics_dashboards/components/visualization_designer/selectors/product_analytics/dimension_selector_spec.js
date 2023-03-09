@@ -1,13 +1,13 @@
 import { nextTick } from 'vue';
 import { GlLabel, GlDropdownItem } from '@gitlab/ui';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import AnalyticsDimensionSelector from 'ee/product_analytics/dashboards/components/panel_designer/analytics_cube_query_dimension_selector.vue';
 import {
   EVENTS_DB_TABLE_NAME,
   SESSIONS_TABLE_NAME,
-} from 'ee/product_analytics/dashboards/constants';
+} from 'ee/analytics/analytics_dashboards/constants';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import ProductAnalyticsDimensionSelector from 'ee/analytics/analytics_dashboards/components/visualization_designer/selectors/product_analytics/dimension_selector.vue';
 
-describe('AnalyticsQueryDimensionSelector', () => {
+describe('ProductAnalyticsDimensionSelector', () => {
   let wrapper;
 
   const findDimensionSummary = () => wrapper.findByTestId('dimension-summary');
@@ -20,7 +20,7 @@ describe('AnalyticsQueryDimensionSelector', () => {
   const removeTimeDimension = jest.fn();
 
   const createWrapper = ({ measureType = '', dimensions = [], timeDimensions = [] } = {}) => {
-    wrapper = shallowMountExtended(AnalyticsDimensionSelector, {
+    wrapper = shallowMountExtended(ProductAnalyticsDimensionSelector, {
       propsData: {
         dimensions,
         timeDimensions,

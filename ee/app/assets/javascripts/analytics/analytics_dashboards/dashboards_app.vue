@@ -12,10 +12,12 @@ export default {
         component: DashboardsList,
       },
       {
-        name: 'panel-designer',
-        path: '/panel-designer',
+        name: 'visualization-designer',
+        path: '/visualization-designer',
         component: () =>
-          import('ee/product_analytics/dashboards/components/analytics_panel_designer.vue'),
+          import(
+            'ee/analytics/analytics_dashboards/components/analytics_visualization_designer.vue'
+          ),
       },
       {
         name: 'instrumentation-detail',

@@ -25,7 +25,7 @@ export default {
 <template>
   <div class="gl-pt-4">
     <label id="label" class="gl-font-weight-bold gl-mb-2">{{
-      s__('ProductAnalytics|Visualization Type')
+      s__('Analytics|Visualization Type')
     }}</label>
     <div v-if="!selectedVisualizationType">
       <div>
@@ -36,7 +36,7 @@ export default {
           block
           data-testid="linechart-button"
           @click="selectVisualizationType('LineChart')"
-          >{{ s__('ProductAnalytics|Line Chart') }}</gl-button
+          >{{ s__('Analytics|Line Chart') }}</gl-button
         >
         <gl-button
           :selected="selectedVisualizationType === 'DataTable'"
@@ -45,7 +45,7 @@ export default {
           block
           data-testid="datatable-button"
           @click="selectVisualizationType('DataTable')"
-          >{{ s__('ProductAnalytics|Data Table') }}</gl-button
+          >{{ s__('Analytics|Data Table') }}</gl-button
         >
         <gl-button
           :selected="selectedVisualizationType === 'SingleStat'"
@@ -54,7 +54,7 @@ export default {
           block
           data-testid="singlestat-button"
           @click="selectVisualizationType('SingleStat')"
-          >{{ s__('ProductAnalytics|Single Statistic') }}</gl-button
+          >{{ s__('Analytics|Single Statistic') }}</gl-button
         >
       </div>
     </div>
@@ -71,19 +71,19 @@ export default {
           icon-name="chart"
           data-testid="linechart-dd-item"
           @click="selectVisualizationType('LineChart')"
-          >{{ s__('ProductAnalytics|Line Chart') }}</gl-dropdown-item
+          >{{ s__('Analytics|Line Chart') }}</gl-dropdown-item
         >
         <gl-dropdown-item
           icon-name="table"
           data-testid="datatable-dd-item"
           @click="selectVisualizationType('DataTable')"
-          >{{ s__('ProductAnalytics|Data Table') }}</gl-dropdown-item
+          >{{ s__('Analytics|Data Table') }}</gl-dropdown-item
         >
         <gl-dropdown-item
           icon-name="table"
           data-testid="singlestat-dd-item"
           @click="selectVisualizationType('SingleStat')"
-          >{{ s__('ProductAnalytics|Single Statistic') }}</gl-dropdown-item
+          >{{ s__('Analytics|Single Statistic') }}</gl-dropdown-item
         >
       </gl-dropdown>
     </div>

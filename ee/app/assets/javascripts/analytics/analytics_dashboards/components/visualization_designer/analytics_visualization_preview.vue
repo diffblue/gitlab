@@ -9,8 +9,7 @@ import DataTable from 'ee/analytics/analytics_dashboards/components/visualizatio
 import { PANEL_DISPLAY_TYPES, PANEL_DISPLAY_TYPE_ITEMS } from '../../constants';
 
 export default {
-  name: 'AnalyticsPanelPreview',
-
+  name: 'AnalyticsVisualizationPreview',
   PANEL_DISPLAY_TYPES,
   PANEL_DISPLAY_TYPE_ITEMS,
   components: {
@@ -42,18 +41,18 @@ export default {
       required: false,
       default: null,
     },
-    resultPanel: {
+    resultVisualization: {
       type: Object,
       required: false,
       default: null,
     },
   },
   methods: {
-    handlePanelError(panelTitle, error) {
+    handleVisualizationError(visualizationTitle, error) {
       createAlert({
         message: sprintf(
-          s__('ProductAnalytics|An error occured while loading the %{panelTitle} panel.'),
-          { panelTitle },
+          s__('Analytics|An error occurred while loading the %{visualizationTitle} visualization.'),
+          { visualizationTitle },
         ),
         error,
         captureError: true,
@@ -69,7 +68,7 @@ export default {
       <div class="col-12 gl-mt-4">
         <div class="text-content text-center gl-text-gray-400">
           <h3 v-if="!isQueryPresent" data-testid="measurement-hl" class="gl-text-gray-400">
-            {{ s__('ProductAnalytics|Choose a measurement to start') }}
+            {{ s__('Analytics|Choose a measurement to start') }}
           </h3>
           <gl-loading-icon
             v-else-if="loading"
@@ -106,34 +105,34 @@ export default {
         <div
           class="grid-stack-item-content gl-shadow gl-rounded-base gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
         >
-          <strong class="gl-mb-2">{{ s__('ProductAnalytics|Resulting Data') }}</strong>
+          <strong class="gl-mb-2">{{ s__('Analytics|Resulting Data') }}</strong>
           <div class="gl-overflow-y-auto gl-h-full">
             <!-- Using Datatable specifically for data preview here -->
             <data-table
               :data="resultSet.tablePivot()"
               data-testid="preview-datatable"
-              @error="(error) => handlePanelError('TITLE', error)"
+              @error="(error) => handleVisualizationError('TITLE', error)"
             />
           </div>
         </div>
       </div>
 
       <div
-        v-if="displayType === $options.PANEL_DISPLAY_TYPES.PANEL"
+        v-if="displayType === $options.PANEL_DISPLAY_TYPES.VISUALIZATION"
         class="grid-stack-item gl-m-5"
-        data-testid="grid-stack-panel"
+        data-testid="grid-stack-visualization"
       >
         <panels-base
           v-if="selectedVisualizationType"
-          :title="resultPanel.title"
-          :visualization="resultPanel"
-          data-testid="preview-panel"
-          @error="(error) => handlePanelError('TITLE', error)"
+          :title="resultVisualization.title"
+          :visualization="resultVisualization"
+          data-testid="preview-visualization"
+          @error="(error) => handleVisualizationError('TITLE', error)"
         />
         <div v-else class="col-12 gl-mt-4">
           <div class="text-content text-center gl-text-gray-400">
             <h3 class="gl-text-gray-400">
-              {{ s__('ProductAnalytics|Choose a chart type on the right') }}
+              {{ s__('Analytics|Choose a chart type on the right') }}
             </h3>
           </div>
         </div>
@@ -143,7 +142,7 @@ export default {
         <pre
           class="code highlight gl-display-flex gl-bg-white"
           data-testid="preview-code"
-        ><code>{{ resultPanel }}</code></pre>
+        ><code>{{ resultVisualization }}</code></pre>
       </div>
     </div>
   </div>

@@ -5,7 +5,7 @@ import DashboardsList from 'ee/analytics/analytics_dashboards/components/dashboa
 import AnalyticsDashboardsApp from 'ee/analytics/analytics_dashboards/dashboards_app.vue';
 import AnalyticsDashboard from 'ee/analytics/analytics_dashboards/components/analytics_dashboard.vue';
 import ProductAnalyticsOnboardingSetup from 'ee/product_analytics/onboarding/onboarding_setup.vue';
-import AnalyticsPanelDesigner from 'ee/product_analytics/dashboards/components/analytics_panel_designer.vue';
+import AnalyticsVisualizationDesigner from 'ee/analytics/analytics_dashboards/components/analytics_visualization_designer.vue';
 import createRouter from 'ee/analytics/analytics_dashboards/router';
 
 describe('AnalyticsDashboardsApp', () => {
@@ -34,12 +34,12 @@ describe('AnalyticsDashboardsApp', () => {
 
     describe('router', () => {
       it.each`
-        path                   | component
-        ${'/'}                 | ${DashboardsList}
-        ${'/panel-designer'}   | ${AnalyticsPanelDesigner}
-        ${'/setup'}            | ${ProductAnalyticsOnboardingSetup}
-        ${'/test-dashboard-1'} | ${AnalyticsDashboard}
-        ${'/test-dashboard-2'} | ${AnalyticsDashboard}
+        path                         | component
+        ${'/'}                       | ${DashboardsList}
+        ${'/visualization-designer'} | ${AnalyticsVisualizationDesigner}
+        ${'/setup'}                  | ${ProductAnalyticsOnboardingSetup}
+        ${'/test-dashboard-1'}       | ${AnalyticsDashboard}
+        ${'/test-dashboard-2'}       | ${AnalyticsDashboard}
       `('sets component as $component.name for path "$path"', async ({ path, component }) => {
         if (path !== '/') {
           router.push(path);
