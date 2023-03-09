@@ -1,7 +1,7 @@
 import epicDetailsQuery from 'shared_queries/epic/epic_details.query.graphql';
 import { createAlert } from '~/alert';
 import { EVENT_ISSUABLE_VUE_APP_CHANGE } from '~/issuable/constants';
-import { STATUS_CLOSED } from '~/issues/constants';
+import { STATUS_CLOSED, TYPE_EPIC } from '~/issues/constants';
 
 import axios from '~/lib/utils/axios_utils';
 import { visitUrl } from '~/lib/utils/url_utility';
@@ -134,7 +134,7 @@ export const toggleTodo = ({ state, dispatch }) => {
   if (!state.todoExists) {
     reqPromise = axios.post(state.todoPath, {
       issuable_id: state.epicId,
-      issuable_type: 'epic',
+      issuable_type: TYPE_EPIC,
     });
   } else {
     reqPromise = axios.delete(state.todoDeletePath);
