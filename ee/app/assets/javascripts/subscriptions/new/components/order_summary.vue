@@ -1,4 +1,5 @@
 <script>
+import * as Sentry from '@sentry/browser';
 import { GlCard, GlLoadingIcon } from '@gitlab/ui';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { unescape, isEmpty } from 'lodash';
@@ -13,8 +14,8 @@ import {
   VALIDATION_ERROR_CODE,
   INVALID_PROMO_CODE_ERROR_MESSAGE,
   PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE,
+  PurchaseEvent,
 } from 'ee/subscriptions/new/constants';
-import { createAlert } from '~/alert';
 import { isInvalidPromoCodeError } from 'ee/subscriptions/new/utils';
 import formattingMixins from '../formatting_mixins';
 import PromoCodeInput from './promo_code_input.vue';
@@ -142,7 +143,7 @@ export default {
     },
     invoicePreview(val) {
       if (val) {
-        this.dismissErrorAlert();
+        this.clearError();
       }
 
       this.updateInvoicePreview(val);
@@ -153,8 +154,8 @@ export default {
   },
   methods: {
     ...mapActions(['updateInvoicePreviewLoading', 'updateInvoicePreview', 'updatePromoCode']),
-    dismissErrorAlert() {
-      this.alert?.dismiss();
+    clearError() {
+      this.$emit(PurchaseEvent.ERROR_RESET);
     },
     handleError(error) {
       this.invoicePreview = null;
@@ -184,14 +185,11 @@ export default {
         errorMessage = unescape(message);
       }
 
-      let captureError = true;
-
-      if (gqlError?.extensions?.code === VALIDATION_ERROR_CODE) {
-        captureError = false;
+      if (gqlError?.extensions?.code !== VALIDATION_ERROR_CODE) {
+        Sentry.captureException(error);
       }
 
-      // `alert` is intentionally not in `data` to avoid making it unnecessarily reactive
-      this.alert = createAlert({ message: errorMessage, error, captureError });
+      this.$emit(PurchaseEvent.ERROR, new Error(errorMessage));
     },
     resetPromoCodeErrorMessage() {
       this.promoCodeErrorMessage = undefined;
@@ -204,7 +202,7 @@ export default {
     },
     applyPromoCode(promoCode) {
       if (this.usersPresent) {
-        this.dismissErrorAlert();
+        this.clearError();
         this.resetPromoCodeErrorMessage();
         this.updatePromoCode(promoCode);
       } else {

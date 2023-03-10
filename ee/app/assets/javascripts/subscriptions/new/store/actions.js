@@ -1,10 +1,8 @@
 import Api from 'ee/api';
 import { PAYMENT_FORM_ID } from 'ee/subscriptions/constants';
-import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
 import Tracking from '~/tracking';
 import { addExperimentContext } from '~/tracking/utils';
-import { createAlert } from '~/alert';
 import { redirectTo } from '~/lib/utils/url_utility';
 import { s__, sprintf } from '~/locale';
 import { trackCheckout, trackTransaction } from '~/google_tag_manager';
@@ -61,10 +59,8 @@ export const fetchCountriesSuccess = ({ commit }, data = []) => {
   commit(types.UPDATE_COUNTRY_OPTIONS, countries);
 };
 
-export const fetchCountriesError = () => {
-  createAlert({
-    message: s__('Checkout|Failed to load countries. Please try again.'),
-  });
+export const fetchCountriesError = ({ dispatch }) => {
+  dispatch('confirmOrderError', s__('Checkout|Failed to load countries. Please try again.'));
 };
 
 export const fetchStates = ({ state, dispatch }) => {
@@ -85,10 +81,8 @@ export const fetchStatesSuccess = ({ commit }, data = {}) => {
   commit(types.UPDATE_STATE_OPTIONS, states);
 };
 
-export const fetchStatesError = () => {
-  createAlert({
-    message: s__('Checkout|Failed to load states. Please try again.'),
-  });
+export const fetchStatesError = ({ dispatch }) => {
+  dispatch('confirmOrderError', s__('Checkout|Failed to load states. Please try again.'));
 };
 
 export const resetStates = ({ commit }) => {
@@ -136,26 +130,23 @@ export const fetchPaymentFormParams = ({ dispatch }) =>
     .then(({ data }) => dispatch('fetchPaymentFormParamsSuccess', data))
     .catch(() => dispatch('fetchPaymentFormParamsError'));
 
-export const fetchPaymentFormParamsSuccess = ({ commit }, data) => {
+export const fetchPaymentFormParamsSuccess = ({ commit, dispatch }, data) => {
   if (data.errors) {
-    createAlert({
-      message: sprintf(
-        s__('Checkout|Credit card form failed to load: %{message}'),
-        {
-          message: data.errors,
-        },
-        false,
-      ),
-    });
+    const message = sprintf(
+      s__('Checkout|Credit card form failed to load: %{message}'),
+      {
+        message: data.errors,
+      },
+      false,
+    );
+    dispatch('confirmOrderError', message);
   } else {
     commit(types.UPDATE_PAYMENT_FORM_PARAMS, data);
   }
 };
 
-export const fetchPaymentFormParamsError = () => {
-  createAlert({
-    message: s__('Checkout|Credit card form failed to load. Please try again.'),
-  });
+export const fetchPaymentFormParamsError = ({ dispatch }) => {
+  dispatch('confirmOrderError', s__('Checkout|Credit card form failed to load. Please try again.'));
 };
 
 export const zuoraIframeRendered = ({ commit }) =>
@@ -177,16 +168,13 @@ export const paymentFormSubmittedSuccess = ({ commit, dispatch }, paymentMethodI
   dispatch('fetchPaymentMethodDetails');
 };
 
-export const paymentFormSubmittedError = (_, response) => {
-  createAlert({
-    message: sprintf(
-      s__(
-        'Checkout|Submitting the credit card form failed with code %{errorCode}: %{errorMessage}',
-      ),
-      response,
-      false,
-    ),
-  });
+export const paymentFormSubmittedError = ({ dispatch }, response) => {
+  const message = sprintf(
+    s__('Checkout|Submitting the credit card form failed with code %{errorCode}: %{errorMessage}'),
+    response,
+    false,
+  );
+  dispatch('confirmOrderError', message);
 };
 
 export const fetchPaymentMethodDetails = ({ state, dispatch, commit }) =>
@@ -195,7 +183,7 @@ export const fetchPaymentMethodDetails = ({ state, dispatch, commit }) =>
     .catch(() => dispatch('fetchPaymentMethodDetailsError'))
     .finally(() => commit(types.UPDATE_IS_LOADING_PAYMENT_METHOD, false));
 
-export const fetchPaymentMethodDetailsSuccess = ({ commit }, creditCardDetails) => {
+export const fetchPaymentMethodDetailsSuccess = ({ commit, dispatch }, creditCardDetails) => {
   commit(types.UPDATE_CREDIT_CARD_DETAILS, creditCardDetails);
 
   defaultClient
@@ -203,14 +191,12 @@ export const fetchPaymentMethodDetailsSuccess = ({ commit }, creditCardDetails) 
       mutation: activateNextStepMutation,
     })
     .catch((error) => {
-      createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+      dispatch('confirmOrderError', error.message);
     });
 };
 
-export const fetchPaymentMethodDetailsError = () => {
-  createAlert({
-    message: s__('Checkout|Failed to register credit card. Please try again.'),
-  });
+export const fetchPaymentMethodDetailsError = ({ dispatch }) => {
+  dispatch('confirmOrderError', s__('Checkout|Failed to register credit card. Please try again.'));
 };
 
 const shouldShowErrorMessageOnly = (errors) => {
@@ -259,9 +245,9 @@ export const confirmOrder = ({ getters, dispatch, commit }) => {
         dispatch('confirmOrderError', JSON.stringify(errors));
       }
     })
-    .catch((e) => {
-      trackConfirmOrder(e.message);
-      dispatch('confirmOrderError');
+    .catch(({ message }) => {
+      trackConfirmOrder(message);
+      dispatch('confirmOrderError', message);
     });
 };
 
@@ -269,14 +255,6 @@ export const confirmOrderSuccess = (_, { location }) => {
   redirectTo(location);
 };
 
-export const confirmOrderError = ({ commit }, message = null) => {
+export const confirmOrderError = ({ commit }) => {
   commit(types.UPDATE_IS_CONFIRMING_ORDER, false);
-
-  const errorString = message
-    ? s__('Checkout|Failed to confirm your order: %{message}. Please try again.')
-    : s__('Checkout|Failed to confirm your order! Please try again.');
-
-  createAlert({
-    message: sprintf(errorString, { message }, false),
-  });
 };

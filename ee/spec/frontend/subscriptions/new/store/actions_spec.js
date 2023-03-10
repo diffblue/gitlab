@@ -3,12 +3,10 @@ import Api from 'ee/api';
 import * as constants from 'ee/subscriptions/constants';
 import defaultClient from 'ee/subscriptions/new/graphql';
 import * as actions from 'ee/subscriptions/new/store/actions';
-import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
 import { useMockLocationHelper } from 'helpers/mock_window_location_helper';
 import testAction from 'helpers/vuex_action_helper';
 import Tracking from '~/tracking';
-import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import * as googleTagManager from '~/google_tag_manager';
@@ -167,11 +165,14 @@ describe('Subscriptions Actions', () => {
   });
 
   describe('fetchCountriesError', () => {
-    it('creates an alert', async () => {
-      await testAction(actions.fetchCountriesError, null, {}, [], []);
-      expect(createAlert).toHaveBeenCalledWith({
-        message: 'Failed to load countries. Please try again.',
-      });
+    it(`dispatches 'confirmOrderError'`, () => {
+      return testAction(
+        actions.fetchCountriesError,
+        null,
+        {},
+        [],
+        [{ type: 'confirmOrderError', payload: 'Failed to load countries. Please try again.' }],
+      );
     });
   });
 
@@ -232,11 +233,14 @@ describe('Subscriptions Actions', () => {
   });
 
   describe('fetchStatesError', () => {
-    it('creates an alert', async () => {
-      await testAction(actions.fetchStatesError, null, {}, [], []);
-      expect(createAlert).toHaveBeenCalledWith({
-        message: 'Failed to load states. Please try again.',
-      });
+    it(`dispatches 'confirmOrderError'`, () => {
+      return testAction(
+        actions.fetchStatesError,
+        null,
+        {},
+        [],
+        [{ type: 'confirmOrderError', payload: 'Failed to load states. Please try again.' }],
+      );
     });
   });
 
@@ -406,26 +410,31 @@ describe('Subscriptions Actions', () => {
       );
     });
 
-    it('creates an alert when errors are present', async () => {
-      await testAction(
+    it(`dispatches 'confirmOrderError'`, () => {
+      return testAction(
         actions.fetchPaymentFormParamsSuccess,
         { errors: 'error message' },
         {},
         [],
-        [],
+        [{ type: 'confirmOrderError', payload: 'Credit card form failed to load: error message' }],
       );
-      expect(createAlert).toHaveBeenCalledWith({
-        message: 'Credit card form failed to load: error message',
-      });
     });
   });
 
   describe('fetchPaymentFormParamsError', () => {
-    it('creates an alert', async () => {
-      await testAction(actions.fetchPaymentFormParamsError, null, {}, [], []);
-      expect(createAlert).toHaveBeenCalledWith({
-        message: 'Credit card form failed to load. Please try again.',
-      });
+    it(`dispatches 'confirmOrderError'`, () => {
+      return testAction(
+        actions.fetchPaymentFormParamsError,
+        null,
+        {},
+        [],
+        [
+          {
+            type: 'confirmOrderError',
+            payload: 'Credit card form failed to load. Please try again.',
+          },
+        ],
+      );
     });
   });
 
@@ -480,18 +489,20 @@ describe('Subscriptions Actions', () => {
   });
 
   describe('paymentFormSubmittedError', () => {
-    it('creates an alert', async () => {
-      await testAction(
+    it(`dispatches 'confirmOrderError'`, () => {
+      return testAction(
         actions.paymentFormSubmittedError,
         { errorCode: 'codeFromResponse', errorMessage: 'messageFromResponse' },
         {},
         [],
-        [],
+        [
+          {
+            type: 'confirmOrderError',
+            payload:
+              'Submitting the credit card form failed with code codeFromResponse: messageFromResponse',
+          },
+        ],
       );
-      expect(createAlert).toHaveBeenCalledWith({
-        message:
-          'Submitting the credit card form failed with code codeFromResponse: messageFromResponse',
-      });
     });
   });
 
@@ -549,10 +560,11 @@ describe('Subscriptions Actions', () => {
       });
     });
 
-    it('displays an error if activateNextStepMutation fails', async () => {
+    it(`dispatches 'confirmOrderError'`, () => {
       const error = new Error('An error happened!');
       jest.spyOn(defaultClient, 'mutate').mockRejectedValue(error);
-      await testAction(
+
+      return testAction(
         actions.fetchPaymentMethodDetailsSuccess,
         creditCardDetails,
         {},
@@ -562,22 +574,25 @@ describe('Subscriptions Actions', () => {
             payload: creditCardDetails,
           },
         ],
-        [],
+        [{ type: 'confirmOrderError', payload: error.message }],
       );
-      expect(createAlert).toHaveBeenCalledWith({
-        message: GENERAL_ERROR_MESSAGE,
-        error,
-        captureError: true,
-      });
     });
   });
 
   describe('fetchPaymentMethodDetailsError', () => {
-    it('creates an alert', async () => {
-      await testAction(actions.fetchPaymentMethodDetailsError, null, {}, [], []);
-      expect(createAlert).toHaveBeenCalledWith({
-        message: 'Failed to register credit card. Please try again.',
-      });
+    it(`dispatches 'confirmOrderError'`, () => {
+      return testAction(
+        actions.fetchPaymentMethodDetailsError,
+        null,
+        {},
+        [],
+        [
+          {
+            type: 'confirmOrderError',
+            payload: 'Failed to register credit card. Please try again.',
+          },
+        ],
+      );
     });
   });
 
@@ -682,7 +697,7 @@ describe('Subscriptions Actions', () => {
           null,
           {},
           [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
-          [{ type: 'confirmOrderError' }],
+          [{ type: 'confirmOrderError', payload: 'Request failed with status code 500' }],
         );
 
         expect(spy).toHaveBeenCalledWith('default', 'click_button', {
@@ -705,30 +720,14 @@ describe('Subscriptions Actions', () => {
   });
 
   describe('confirmOrderError', () => {
-    it('creates an alert with a default message when no error given', async () => {
-      await testAction(
+    it(`commits 'UPDATE_IS_CONFIRMING_ORDER'`, () => {
+      return testAction(
         actions.confirmOrderError,
         null,
         {},
         [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: false }],
         [],
       );
-      expect(createAlert).toHaveBeenCalledWith({
-        message: 'Failed to confirm your order! Please try again.',
-      });
-    });
-
-    it('creates an alert with a the error message when an error is given', async () => {
-      await testAction(
-        actions.confirmOrderError,
-        '"Error"',
-        {},
-        [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: false }],
-        [],
-      );
-      expect(createAlert).toHaveBeenCalledWith({
-        message: 'Failed to confirm your order: "Error". Please try again.',
-      });
     });
   });
 });
