@@ -115,6 +115,15 @@ export default {
         : this.vulnerability.mergeRequestFeedback;
     },
   },
+  watch: {
+    'vulnerability.state': {
+      handler(newStatus, oldStatus) {
+        if (newStatus !== oldStatus) {
+          this.fetchDiscussions();
+        }
+      },
+    },
+  },
   beforeDestroy() {
     this.stopPolling();
     this.unbindVisibilityListener();
@@ -175,13 +184,9 @@ export default {
 
       this.lastFetchedDiscussionIndex = lastItemIndex;
     },
-    async fetchDiscussions(callback) {
+    async fetchDiscussions() {
       try {
         await this.$apollo.queries.discussions.refetch();
-
-        if (typeof callback === 'function') {
-          callback();
-        }
       } catch {
         this.showGraphQLError();
       }
