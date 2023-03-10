@@ -124,7 +124,7 @@ describe('EE Value Stream Analytics component', () => {
       },
       shallow = true,
       withStageSelected = false,
-      featureFlags = {},
+      features = {},
       initialState = initialCycleAnalyticsState,
       props = {},
       selectedStage = null,
@@ -133,8 +133,8 @@ describe('EE Value Stream Analytics component', () => {
     store = createStore();
     await store.dispatch('initializeCycleAnalytics', {
       ...initialState,
-      featureFlags: {
-        ...featureFlags,
+      features: {
+        ...features,
       },
     });
 
@@ -149,7 +149,7 @@ describe('EE Value Stream Analytics component', () => {
       },
       provide: {
         glFeatures: {
-          ...featureFlags,
+          ...features,
         },
       },
       mocks,
@@ -595,13 +595,13 @@ describe('EE Value Stream Analytics component', () => {
     });
   });
 
-  describe('with`groupAnalyticsDashboardsPage=true`', () => {
+  describe('with`groupAnalyticsDashboardsPage=true` and `groupLevelAnalyticsDashboard=true`', () => {
     beforeEach(async () => {
       mock = new MockAdapter(axios);
       mockRequiredRoutes(mock);
       wrapper = await createComponent({
         withStageSelected: true,
-        featureFlags: { groupAnalyticsDashboardsPage: true },
+        features: { groupAnalyticsDashboardsPage: true, groupLevelAnalyticsDashboard: true },
       });
     });
 

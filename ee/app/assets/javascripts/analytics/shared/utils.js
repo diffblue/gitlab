@@ -103,7 +103,10 @@ const buildProjectsFromJSON = (projects = '') => {
 };
 
 const extractFeatures = (gon) => ({
+  // feature flags
   groupAnalyticsDashboardsPage: Boolean(gon?.features?.groupAnalyticsDashboardsPage),
+  // licensed feature toggles
+  groupLevelAnalyticsDashboard: Boolean(gon?.licensed_features?.groupLevelAnalyticsDashboard),
 });
 
 /**
@@ -164,7 +167,7 @@ export const buildCycleAnalyticsInitialData = ({
     lastRunAt: aggregationLastRunAt,
     nextRunAt: aggregationNextRunAt,
   },
-  featureFlags: extractFeatures(gon),
+  features: extractFeatures(gon),
 });
 
 /**

@@ -27,7 +27,7 @@ const rootState = {
   stages: [...activeStages, hiddenStage],
   selectedGroup,
   selectedValueStream,
-  featureFlags: {},
+  features: {},
 };
 
 describe('DurationChart actions', () => {

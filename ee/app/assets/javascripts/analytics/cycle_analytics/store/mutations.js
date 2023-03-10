@@ -8,8 +8,8 @@ import { transformRawStages, prepareStageErrors, formatMedianValuesWithOverview 
 import * as types from './mutation_types';
 
 export default {
-  [types.SET_FEATURE_FLAGS](state, featureFlags) {
-    state.featureFlags = featureFlags;
+  [types.SET_FEATURES](state, features) {
+    state.features = features;
   },
   [types.SET_SELECTED_PROJECTS](state, projects) {
     state.selectedProjects = projects;

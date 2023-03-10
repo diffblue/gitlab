@@ -262,8 +262,8 @@ describe('Value Stream Analytics actions / value streams', () => {
         ...state,
         stages: [{ slug: selectedStageSlug }],
         currentGroup,
-        featureFlags: {
-          ...state.featureFlags,
+        features: {
+          ...state.features,
         },
         ...mockGetters,
       };
@@ -377,8 +377,8 @@ describe('Value Stream Analytics actions / value streams', () => {
         ...state,
         stages: [{ slug: selectedStageSlug }],
         currentGroup,
-        featureFlags: {
-          ...state.featureFlags,
+        features: {
+          ...state.features,
         },
       };
       mock = new MockAdapter(axios);

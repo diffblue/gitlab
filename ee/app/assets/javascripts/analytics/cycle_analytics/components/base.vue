@@ -65,7 +65,7 @@ export default {
       'pagination',
       'aggregation',
       'isCreatingAggregation',
-      'featureFlags',
+      'features',
     ]),
     ...mapGetters([
       'hasNoAccessError',
@@ -131,8 +131,13 @@ export default {
     stageCount() {
       return this.activeStages.length;
     },
+    showDashboardsLink() {
+      return Boolean(
+        this.features?.groupLevelAnalyticsDashboard && this.features?.groupAnalyticsDashboardsPage,
+      );
+    },
     dashboardsPath() {
-      return this.featureFlags?.groupAnalyticsDashboardsPage
+      return this.showDashboardsLink
         ? generateValueStreamsDashboardLink(this.currentGroupPath, this.selectedProjectFullPaths)
         : null;
     },
