@@ -267,7 +267,6 @@ and [Helm Chart deployments](https://docs.gitlab.com/charts/). They come with ap
 ### 15.9.0
 
 - There is a [database migration bug in GitLab 15.9.x](#user-profile-data-loss-bug-in-159x) that can cause data to be lost from the user profile fields. This bug affects all currently available 15.9.x releases. Until a bug fix is released, you should upgrade to 15.6.x, 15.7.x, or 15.8.x first.
-- This version removes `SanitizeConfidentialTodos` background migration [added](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/87908/diffs) in 15.6, which removed any user inaccessible to-do items. Make sure that this migration is finished before upgrading to 15.9.
 - As part of the [CI Partitioning effort](../architecture/blueprints/ci_data_decay/pipeline_partitioning.md), a [new Foreign Key](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/107547) was added to `ci_builds_needs`. On GitLab instances with large CI tables, adding this constraint can take longer than usual. Make sure that this migration is finished before upgrading to 15.9.
 - Praefect's metadata verifier's [invalid metadata deletion behavior](../administration/gitaly/praefect.md#enable-deletions) is now enabled by default.
 
