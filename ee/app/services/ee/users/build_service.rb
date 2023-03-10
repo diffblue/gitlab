@@ -50,9 +50,27 @@ module EE
         ]
       end
 
+      # rubocop:disable Gitlab/ModuleWithInstanceVariables
+      override :assign_common_user_params
+      def assign_common_user_params
+        super
+
+        @user_params.delete(:provisioned_by_group_id) unless service_account?
+      end
+      # rubocop:enable Gitlab/ModuleWithInstanceVariables
+
+      override :allowed_user_type?
+      def allowed_user_type?
+        super || service_account?
+      end
+
+      def service_account?
+        user_params[:user_type]&.to_sym == :service_account
+      end
+
       override :admin_create_params
       def admin_create_params
-        super + [:auditor]
+        super + [:auditor, :provisioned_by_group_id]
       end
 
       override :identity_attributes

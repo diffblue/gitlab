@@ -2616,4 +2616,30 @@ RSpec.describe GroupPolicy, feature_category: :subgroups do
       it { is_expected.to be_disallowed(:admin_container_image) }
     end
   end
+
+  describe 'admin_service_accounts' do
+    context 'when the feature is not enabled' do
+      let(:current_user) { owner }
+
+      it { is_expected.to be_disallowed(:admin_service_accounts) }
+    end
+
+    context 'when feature is enabled' do
+      before do
+        stub_licensed_features(service_accounts: true)
+      end
+
+      context 'when the user is a maintainer' do
+        let(:current_user) { maintainer }
+
+        it { is_expected.to be_disallowed(:admin_service_accounts) }
+      end
+
+      context 'when the user is an owner' do
+        let(:current_user) { owner }
+
+        it { is_expected.to be_allowed(:admin_service_accounts) }
+      end
+    end
+  end
 end

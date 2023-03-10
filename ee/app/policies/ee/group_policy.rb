@@ -176,6 +176,10 @@ module EE
         @subject.feature_available?(:group_level_compliance_dashboard)
       end
 
+      condition(:service_accounts_available, scope: :subject) do
+        @subject.feature_available?(:service_accounts)
+      end
+
       condition(:user_banned_from_group) do
         next unless @user.is_a?(User)
 
@@ -396,6 +400,10 @@ module EE
         prevent :admin_group_member
         prevent :update_group_member
         prevent :override_group_member
+      end
+
+      rule { owner & service_accounts_available }.policy do
+        enable :admin_service_accounts
       end
 
       rule { memberships_locked_to_saml & saml_group_links_enabled & ~admin }.policy do

@@ -13,22 +13,19 @@ RSpec.describe Users::BuildService do
 
       let(:service) { described_class.new(admin_user, ActionController::Parameters.new(params).permit!) }
 
-      context 'allowed params' do
+      context 'with identity' do
         let_it_be(:provider) { create(:saml_provider) }
-
         let(:identity_params) { { extern_uid: 'uid', provider: 'group_saml', saml_provider_id: provider.id } }
 
         before do
           params.merge!(identity_params)
         end
 
-        context 'with identity' do
-          it 'sets all allowed attributes' do
-            expect(Identity).to receive(:new).with(hash_including(identity_params)).and_call_original
-            expect(ScimIdentity).not_to receive(:new)
+        it 'sets all allowed attributes' do
+          expect(Identity).to receive(:new).with(hash_including(identity_params)).and_call_original
+          expect(ScimIdentity).not_to receive(:new)
 
-            service.execute
-          end
+          service.execute
         end
 
         context 'with scim identity' do
@@ -64,14 +61,38 @@ RSpec.describe Users::BuildService do
             expect(service.execute.provisioned_by_group_at).to be_nil
           end
         end
+      end
 
-        context 'with auditor as allowed params' do
-          let(:params) { super().merge(auditor: 1) }
+      context 'with auditor as allowed params' do
+        let(:params) { super().merge(auditor: 1) }
 
-          it 'sets auditor to true' do
+        it 'sets auditor to true' do
+          user = service.execute
+
+          expect(user.auditor).to eq(true)
+        end
+      end
+
+      context 'with provisioned by group param' do
+        let(:group) { create(:group) }
+        let(:params) { super().merge(provisioned_by_group_id: group.id) }
+
+        it 'does not set provisioned by group' do
+          user = service.execute
+
+          expect(user.provisioned_by_group_id).to eq(nil)
+        end
+
+        context 'with service account user type' do
+          before do
+            params.merge!(user_type: 'service_account')
+          end
+
+          it 'allows provisioned by group id to be set' do
             user = service.execute
 
-            expect(user.auditor).to eq(true)
+            expect(user.provisioned_by_group_id).to eq(group.id)
+            expect(user.user_type).to eq('service_account')
           end
         end
       end
