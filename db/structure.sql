@@ -22181,6 +22181,18 @@ CREATE TABLE serverless_domain_cluster (
     certificate text
 );
 
+CREATE TABLE service_desk_custom_email_verifications (
+    project_id bigint NOT NULL,
+    triggerer_id bigint,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    triggered_at timestamp with time zone,
+    state smallint DEFAULT 0 NOT NULL,
+    error smallint,
+    encrypted_token bytea,
+    encrypted_token_iv bytea
+);
+
 CREATE TABLE service_desk_settings (
     project_id bigint NOT NULL,
     issue_template_key character varying(255),
@@ -27611,6 +27623,9 @@ ALTER TABLE ONLY sprints
 ALTER TABLE ONLY serverless_domain_cluster
     ADD CONSTRAINT serverless_domain_cluster_pkey PRIMARY KEY (uuid);
 
+ALTER TABLE ONLY service_desk_custom_email_verifications
+    ADD CONSTRAINT service_desk_custom_email_verifications_pkey PRIMARY KEY (project_id);
+
 ALTER TABLE ONLY service_desk_settings
     ADD CONSTRAINT service_desk_settings_pkey PRIMARY KEY (project_id);
 
@@ -31837,6 +31852,8 @@ CREATE INDEX index_serverless_domain_cluster_on_creator_id ON serverless_domain_
 
 CREATE INDEX index_serverless_domain_cluster_on_pages_domain_id ON serverless_domain_cluster USING btree (pages_domain_id);
 
+CREATE INDEX index_service_desk_custom_email_verifications_on_triggerer_id ON service_desk_custom_email_verifications USING btree (triggerer_id);
+
 CREATE INDEX index_service_desk_enabled_projects_on_id_creator_id_created_at ON projects USING btree (id, creator_id, created_at) WHERE (service_desk_enabled = true);
 
 CREATE INDEX index_service_desk_settings_on_file_template_project_id ON service_desk_settings USING btree (file_template_project_id);
@@ -35110,6 +35127,9 @@ ALTER TABLE ONLY diff_note_positions
 ALTER TABLE ONLY analytics_cycle_analytics_aggregations
     ADD CONSTRAINT fk_rails_13c8374c7a FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY service_desk_custom_email_verifications
+    ADD CONSTRAINT fk_rails_14dcaf4c92 FOREIGN KEY (triggerer_id) REFERENCES users(id) ON DELETE SET NULL;
+
 ALTER TABLE ONLY namespaces_storage_limit_exclusions
     ADD CONSTRAINT fk_rails_14e8f7b0e0 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
@@ -36462,6 +36482,9 @@ ALTER TABLE ONLY dast_scanner_profiles_tags
 
 ALTER TABLE ONLY vulnerability_feedback
     ADD CONSTRAINT fk_rails_debd54e456 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY service_desk_custom_email_verifications
+    ADD CONSTRAINT fk_rails_debe4c4acc FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY packages_debian_project_distributions
     ADD CONSTRAINT fk_rails_df44271a30 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE RESTRICT;
