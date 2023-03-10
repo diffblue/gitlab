@@ -24,22 +24,20 @@ module EE
       include EachBatch
       include Elastic::NamespaceUpdate
 
-      has_one :namespace_limit, inverse_of: :namespace
-      has_one :gitlab_subscription
       has_one :elasticsearch_indexed_namespace
-      has_one :upcoming_reconciliation, inverse_of: :namespace, class_name: "GitlabSubscriptions::UpcomingReconciliation"
+      has_one :gitlab_subscription
+      has_one :namespace_limit, inverse_of: :namespace
       has_one :storage_limit_exclusion, class_name: 'Namespaces::Storage::LimitExclusion'
-
-      has_many :compliance_management_frameworks, class_name: "ComplianceManagement::Framework"
-
-      has_many :ci_minutes_additional_packs, class_name: "Ci::Minutes::AdditionalPack"
-
-      has_many :automation_rules, class_name: '::Automation::Rule'
-
       has_one :security_orchestration_policy_configuration,
               class_name: 'Security::OrchestrationPolicyConfiguration',
               foreign_key: :namespace_id,
               inverse_of: :namespace
+      has_one :upcoming_reconciliation, inverse_of: :namespace, class_name: "GitlabSubscriptions::UpcomingReconciliation"
+
+      has_many :automation_rules, class_name: '::Automation::Rule'
+      has_many :ci_minutes_additional_packs, class_name: "Ci::Minutes::AdditionalPack"
+      has_many :compliance_management_frameworks, class_name: "ComplianceManagement::Framework"
+      has_many :member_roles
 
       accepts_nested_attributes_for :gitlab_subscription, update_only: true
       accepts_nested_attributes_for :namespace_limit

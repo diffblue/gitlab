@@ -21,10 +21,10 @@ RSpec.describe MemberRole, feature_category: :system_access do
           member_role.members << create(:project_member)
 
           expect(member_role).not_to be_valid
-          expect(member_role.errors.messages[:base]).to include(
-            s_("MemberRole|cannot be changed because it is already assigned to a user. "\
-              "Please create a new Member Role instead")
-          )
+          expect(member_role.errors.messages[:base]).to include(s_(
+            "MemberRole|cannot be changed because it is already assigned to a user. " \
+            "Please create a new Member Role instead"
+          ))
         end
       end
 
@@ -122,8 +122,10 @@ RSpec.describe MemberRole, feature_category: :system_access do
         expect(destroy_member_role).to be_falsey
         expect(member_role.errors.messages[:base])
           .to(
-            include(s_("MemberRole|cannot be deleted because it is already assigned to a user. "\
-                       "Please disassociate the member role from all users before deletion."))
+            include(s_(
+              "MemberRole|cannot be deleted because it is already assigned to a user. " \
+              "Please disassociate the member role from all users before deletion."
+            ))
           )
       end
     end
