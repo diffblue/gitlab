@@ -9,6 +9,10 @@ module EE
       include CrudPolicyHelpers
 
       condition(:ldap_synced, scope: :subject) { @subject.ldap_synced? }
+      condition(:saml_group_links_enabled, scope: :subject) do
+        @subject.root_ancestor.saml_group_links_enabled?
+      end
+
       condition(:epics_available, scope: :subject) { @subject.feature_available?(:epics) }
       condition(:iterations_available, scope: :subject) { @subject.feature_available?(:iterations) }
       condition(:subepics_available, scope: :subject) { @subject.feature_available?(:subepics) }
@@ -70,6 +74,10 @@ module EE
 
       condition(:memberships_locked_to_ldap, scope: :global) do
         ::Gitlab::CurrentSettings.lock_memberships_to_ldap?
+      end
+
+      condition(:memberships_locked_to_saml, scope: :global) do
+        ::Gitlab::CurrentSettings.lock_memberships_to_saml
       end
 
       condition(:owners_bypass_ldap_lock) do
@@ -388,6 +396,10 @@ module EE
         prevent :admin_group_member
         prevent :update_group_member
         prevent :override_group_member
+      end
+
+      rule { memberships_locked_to_saml & saml_group_links_enabled & ~admin }.policy do
+        prevent :admin_group_member
       end
 
       rule { developer }.policy do

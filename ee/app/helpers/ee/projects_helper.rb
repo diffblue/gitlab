@@ -163,7 +163,9 @@ module EE
 
       return false unless group
 
-      group.membership_lock? || ::Gitlab::CurrentSettings.lock_memberships_to_ldap?
+      group.membership_lock? ||
+        ::Gitlab::CurrentSettings.lock_memberships_to_ldap? ||
+        ::Gitlab::CurrentSettings.lock_memberships_to_saml?
     end
 
     def group_project_templates_count(group_id)

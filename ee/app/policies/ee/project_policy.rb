@@ -160,7 +160,10 @@ module EE
 
       with_scope :subject
       condition(:membership_locked_via_parent_group) do
-        @subject.group && (@subject.group.membership_lock? || ::Gitlab::CurrentSettings.lock_memberships_to_ldap?)
+        @subject.group && (
+          @subject.group.membership_lock? ||
+          ::Gitlab::CurrentSettings.lock_memberships_to_ldap? ||
+          ::Gitlab::CurrentSettings.lock_memberships_to_saml)
       end
 
       with_scope :subject

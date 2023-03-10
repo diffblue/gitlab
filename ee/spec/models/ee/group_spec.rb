@@ -1680,6 +1680,32 @@ RSpec.describe Group, feature_category: :subgroups do
     end
   end
 
+  describe '#saml_group_links_enabled?' do
+    subject { group.saml_group_links_enabled? }
+
+    context 'with group saml disabled' do
+      it { is_expected.to eq(false) }
+    end
+
+    context 'with group saml enabled' do
+      before do
+        create(:saml_provider, group: group)
+      end
+
+      context "without saml group links" do
+        it { is_expected.to eq(false) }
+      end
+
+      context 'with saml group links' do
+        before do
+          create(:saml_group_link, group: group)
+        end
+
+        it { is_expected.to eq(true) }
+      end
+    end
+  end
+
   describe "#insights_config" do
     context 'when group has no Insights project configured' do
       it 'returns the default config' do

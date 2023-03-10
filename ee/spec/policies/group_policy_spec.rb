@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GroupPolicy do
+RSpec.describe GroupPolicy, feature_category: :subgroups do
   include AdminModeHelper
 
   include_context 'GroupPolicy context'
@@ -869,6 +869,138 @@ RSpec.describe GroupPolicy do
         it { is_expected.to be_disallowed(:override_group_member) }
         it { is_expected.to be_disallowed(:admin_ldap_group_links) }
         it { is_expected.to be_disallowed(:admin_ldap_group_settings) }
+      end
+    end
+  end
+
+  context 'when memberships locked to SAML' do
+    context 'when group is a root group' do
+      before do
+        stub_application_setting(lock_memberships_to_saml: true)
+      end
+
+      context 'when SAML group link sync is enabled' do
+        before do
+          allow(group).to receive(:saml_group_links_enabled?).and_return(true)
+        end
+
+        context 'admin' do
+          let(:current_user) { admin }
+
+          context 'when admin mode is enabled', :enable_admin_mode do
+            it { is_expected.to be_allowed(:admin_group_member) }
+          end
+
+          context 'when admin mode is disabled' do
+            it { is_expected.not_to be_allowed(:admin_group_member) }
+          end
+        end
+
+        context 'owner' do
+          let(:current_user) { owner }
+
+          it { is_expected.not_to be_allowed(:admin_group_member) }
+        end
+
+        context 'maintainer' do
+          let(:current_user) { maintainer }
+
+          it { is_expected.not_to be_allowed(:admin_group_member) }
+        end
+      end
+
+      context 'when no SAML sync is enabled' do
+        before do
+          allow(group).to receive(:saml_group_links_enabled?).and_return(false)
+        end
+
+        context 'admin' do
+          let(:current_user) { admin }
+
+          it { is_expected.not_to be_allowed(:admin_group_member) }
+        end
+
+        context 'owner' do
+          let(:current_user) { owner }
+
+          it { is_expected.to be_allowed(:admin_group_member) }
+        end
+      end
+    end
+
+    context 'when group is not a root group' do
+      let(:parent_group) { create(:group) }
+      let(:group) { create(:group, :private, parent: parent_group) }
+
+      before do
+        group.add_owner(owner)
+        parent_group.add_owner(owner)
+        stub_application_setting(lock_memberships_to_saml: true)
+      end
+
+      context 'when SAML group link sync is enabled' do
+        before do
+          allow(group.root_ancestor).to receive(:saml_group_links_enabled?).and_return(true)
+        end
+
+        context 'admin' do
+          let(:current_user) { admin }
+
+          context 'when admin mode is enabled', :enable_admin_mode do
+            it { is_expected.to be_allowed(:admin_group_member) }
+          end
+
+          context 'when admin mode is disabled' do
+            it { is_expected.not_to be_allowed(:admin_group_member) }
+          end
+        end
+
+        context 'owner' do
+          let(:current_user) { owner }
+
+          it { is_expected.not_to be_allowed(:admin_group_member) }
+        end
+
+        context 'maintainer' do
+          let(:current_user) { maintainer }
+
+          it { is_expected.not_to be_allowed(:admin_group_member) }
+        end
+
+        context 'when child group has different owner than parent group' do
+          let(:sub_group_owner) { create(:user) }
+          let(:current_user) { sub_group_owner }
+
+          before do
+            group.add_owner(sub_group_owner)
+          end
+
+          it { is_expected.not_to be_allowed(:admin_group_member) }
+        end
+      end
+
+      context 'when no SAML group link sync is enabled' do
+        before do
+          allow(group).to receive(:saml_group_links_enabled?).and_return(false)
+        end
+
+        context 'admin' do
+          let(:current_user) { admin }
+
+          it { is_expected.to be_disallowed(:admin_group_member) }
+        end
+
+        context 'owner' do
+          let(:current_user) { owner }
+
+          it { is_expected.to be_allowed(:admin_group_member) }
+        end
+
+        context 'maintainer' do
+          let(:current_user) { maintainer }
+
+          it { is_expected.to be_disallowed(:admin_group_member) }
+        end
       end
     end
   end

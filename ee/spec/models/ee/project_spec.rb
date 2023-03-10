@@ -2988,6 +2988,46 @@ RSpec.describe Project, feature_category: :projects do
 
         it { is_expected.not_to be_allowed_to_share_with_group }
       end
+
+      context 'with lock_memberships_to_saml group setting enabled' do
+        let(:group) { build_stubbed(:group) }
+
+        before do
+          stub_application_setting(lock_memberships_to_saml: true)
+        end
+
+        context 'with lock for ldap membership disabled' do
+          it { is_expected.not_to be_allowed_to_share_with_group }
+        end
+
+        context 'with lock for ldap membership enabled' do
+          before do
+            stub_application_setting(lock_memberships_to_ldap: true)
+          end
+
+          it { is_expected.not_to be_allowed_to_share_with_group }
+        end
+      end
+
+      context 'with lock_memberships_to_saml group setting disabled' do
+        let(:group) { build_stubbed(:group) }
+
+        before do
+          stub_application_setting(lock_memberships_to_saml: false)
+        end
+
+        context 'with lock for ldap membership disabled' do
+          it { is_expected.to be_allowed_to_share_with_group }
+        end
+
+        context 'with lock for ldap membership enabled' do
+          before do
+            stub_application_setting(lock_memberships_to_ldap: true)
+          end
+
+          it { is_expected.not_to be_allowed_to_share_with_group }
+        end
+      end
     end
 
     context 'personal project' do

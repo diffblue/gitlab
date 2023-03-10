@@ -1,0 +1,11 @@
+- return unless group_saml_enabled?
+
+- form = local_assigns.fetch(:form)
+
+.form-group
+  %h5= _('SAML group membership settings')
+  - help_text_lock = _('If checked, new group memberships and permissions can only be added via SAML Group Links synchronization')
+  - help_link_lock = link_to sprite_icon('question-o'), help_page_path('user/group/saml_sso/group_sync.md', anchor: 'global-saml-group-memberships-lock'), title: _('Global SAML group membership lock'), 'aria-label' => _('Global SAML group membership lock')
+  = form.gitlab_ui_checkbox_component :lock_memberships_to_saml,
+    _('Lock memberships to SAML Group Links synchronization'),
+    help_text: '%{help_text} %{help_link}'.html_safe % { help_text: help_text_lock, help_link: help_link_lock }

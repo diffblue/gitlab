@@ -604,7 +604,7 @@ module EE
 
     override :allowed_to_share_with_group?
     def allowed_to_share_with_group?
-      super && !(group && ::Gitlab::CurrentSettings.lock_memberships_to_ldap?)
+      super && !(group && lock_memberships_to_ldap_or_saml?)
     end
 
     override :membership_locked?
@@ -1074,6 +1074,11 @@ module EE
     end
 
     private
+
+    def lock_memberships_to_ldap_or_saml?
+      ::Gitlab::CurrentSettings.lock_memberships_to_ldap? ||
+        ::Gitlab::CurrentSettings.lock_memberships_to_saml?
+    end
 
     def update_legacy_open_source_license_available
       project_setting.legacy_open_source_license_available = false
