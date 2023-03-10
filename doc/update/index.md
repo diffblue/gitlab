@@ -196,11 +196,11 @@ accordingly, while also consulting the
 
 NOTE:
 When not explicitly specified, upgrade GitLab to the latest available patch
-release rather than the first patch release, for example `13.8.8` instead of `13.8.0`.
-This includes versions you must stop at on the upgrade path as there may
+release of the `major`.`minor` release rather than the first patch release, for example `13.8.8` instead of `13.8.0`.
+This includes `major`.`minor` versions you must stop at on the upgrade path as there may
 be fixes for issues relating to the upgrade process.
 Specifically around a [major version](#upgrading-to-a-new-major-version),
-crucial database schema and migration patches are included in the latest patch releases.
+crucial database schema and migration patches may be included in the latest patch releases.
 
 ## Upgrading between editions
 
