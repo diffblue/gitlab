@@ -23,10 +23,20 @@ export default {
       error: null,
     };
   },
+  mounted() {
+    this.$store.subscribeAction({
+      after: this.handleVuexActionDispatch,
+    });
+  },
   methods: {
     handleError(error) {
       this.error = error;
       Sentry.captureException(error);
+    },
+    handleVuexActionDispatch(action) {
+      if (action.type === 'confirmOrderError') {
+        this.handleError(new Error(action.payload));
+      }
     },
     hideError() {
       this.error = null;
@@ -52,7 +62,7 @@ export default {
         />
       </template>
       <template #order-summary>
-        <order-summary />
+        <order-summary @error="handleError" @error-reset="hideError" />
         <confirm-order
           class="gl-display-block gl-lg-display-none!"
           data-testid="confirm-order-mobile"

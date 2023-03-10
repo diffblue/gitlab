@@ -8716,12 +8716,6 @@ msgstr ""
 msgid "Checkout|Exp %{expirationMonth}/%{expirationYear}"
 msgstr ""
 
-msgid "Checkout|Failed to confirm your order! Please try again."
-msgstr ""
-
-msgid "Checkout|Failed to confirm your order: %{message}. Please try again."
-msgstr ""
-
 msgid "Checkout|Failed to load countries. Please try again."
 msgstr ""
 

@@ -5,7 +5,7 @@ import SubscriptionSyncNotifications, {
   i18n,
 } from 'ee/admin/subscriptions/show/components/subscription_sync_notifications.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import * as initialStore from 'ee/admin/subscriptions/show/store/';
+import * as initialStore from 'ee/admin/subscriptions/show/store';
 
 describe('Subscription Sync Notifications', () => {
   let wrapper;

@@ -17,6 +17,7 @@ import {
   INVALID_PROMO_CODE_ERROR_CODE,
   PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE,
   INVALID_PROMO_CODE_ERROR_MESSAGE,
+  PurchaseEvent,
 } from 'ee/subscriptions/new/constants';
 import {
   mockDiscountItem,
@@ -26,7 +27,6 @@ import {
   mockNamespaces,
   mockInvoicePreviewWithDiscount,
 } from 'ee_jest/subscriptions/mock_data';
-import { createAlert } from '~/alert';
 
 jest.mock('~/alert');
 
@@ -91,7 +91,7 @@ describe('Order Summary', () => {
 
   const invoicePreviewQuerySpy = jest.fn().mockResolvedValue(mockInvoicePreviewUltimate);
 
-  const createComponent = async (
+  const createComponent = (
     invoicePreviewSpy = invoicePreviewQuerySpy,
     useInvoicePreviewApiInSaasPurchase = true,
   ) => {
@@ -109,7 +109,7 @@ describe('Order Summary', () => {
         glFeatures: { useInvoicePreviewApiInSaasPurchase },
       },
     });
-    await waitForPromises();
+    return waitForPromises();
   };
 
   beforeEach(() => {
@@ -121,7 +121,6 @@ describe('Order Summary', () => {
   afterEach(() => {
     unmockTracking();
     invoicePreviewQuerySpy.mockClear();
-    createAlert.mockClear();
   });
 
   describe('Changing the company name', () => {
@@ -211,6 +210,10 @@ describe('Order Summary', () => {
           planId: 'firstPlanId',
           quantity: 1,
         });
+      });
+
+      it('emits `error-reset` event', () => {
+        expect(wrapper.emitted(PurchaseEvent.ERROR_RESET)).toHaveLength(2);
       });
     });
   });
@@ -375,17 +378,16 @@ describe('Order Summary', () => {
     const errorMessage = 'I failed!';
 
     describe('when API has errors in the response', () => {
-      it('creates an alert with received error message', async () => {
+      it('emits an error with received error message', async () => {
         const invoicePreviewSpy = jest
           .fn()
           .mockResolvedValue({ data: {}, errors: [{ extensions: { message: errorMessage } }] });
         await createComponent(invoicePreviewSpy);
 
-        expect(createAlert).toHaveBeenCalledWith({
-          message: errorMessage,
-          captureError: true,
-          error: expect.any(Object),
-        });
+        expect(wrapper.emitted(PurchaseEvent.ERROR)).toStrictEqual([
+          [new Error(errorMessage)],
+          [new Error(errorMessage)],
+        ]);
       });
 
       it('does not show price details', async () => {
@@ -404,11 +406,10 @@ describe('Order Summary', () => {
         });
         await createComponent(invoicePreviewSpy);
 
-        expect(createAlert).toHaveBeenCalledWith({
-          message: errorMessage,
-          captureError: false,
-          error: expect.any(Object),
-        });
+        expect(wrapper.emitted(PurchaseEvent.ERROR)).toStrictEqual([
+          [new Error(errorMessage)],
+          [new Error(errorMessage)],
+        ]);
       });
 
       it('captures exception on Sentry for non-validation errors', async () => {
@@ -417,11 +418,10 @@ describe('Order Summary', () => {
           .mockResolvedValue({ data: {}, errors: [{ extensions: { message: errorMessage } }] });
         await createComponent(invoicePreviewSpy);
 
-        expect(createAlert).toHaveBeenCalledWith({
-          message: errorMessage,
-          captureError: true,
-          error: expect.any(Object),
-        });
+        expect(wrapper.emitted(PurchaseEvent.ERROR)).toStrictEqual([
+          [new Error(errorMessage)],
+          [new Error(errorMessage)],
+        ]);
       });
     });
 
@@ -433,12 +433,11 @@ describe('Order Summary', () => {
         return createComponent(invoicePreviewSpy);
       });
 
-      it('creates an alert', () => {
-        expect(createAlert).toHaveBeenCalledWith({
-          message: 'Something went wrong while loading price details.',
-          captureError: true,
-          error: expect.any(Object),
-        });
+      it('emits an error', () => {
+        expect(wrapper.emitted(PurchaseEvent.ERROR)).toStrictEqual([
+          [new Error('Something went wrong while loading price details.')],
+          [new Error('Something went wrong while loading price details.')],
+        ]);
       });
 
       it('does not show price details', () => {
@@ -452,12 +451,10 @@ describe('Order Summary', () => {
         return createComponent(invoicePreviewSpy);
       });
 
-      it('creates an alert', () => {
-        expect(createAlert).toHaveBeenCalledWith({
-          message: 'Network Error: Error',
-          captureError: true,
-          error: expect.any(Object),
-        });
+      it('emits an error', () => {
+        expect(wrapper.emitted(PurchaseEvent.ERROR)).toStrictEqual([
+          [new Error('Network Error: Error')],
+        ]);
       });
 
       it('does not show price details', () => {
