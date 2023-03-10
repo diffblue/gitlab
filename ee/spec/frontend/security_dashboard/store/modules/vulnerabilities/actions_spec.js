@@ -5,6 +5,7 @@ import initialState from 'ee/security_dashboard/store/modules/vulnerabilities/st
 import { DISMISSAL_STATES } from 'ee/security_dashboard/store/modules/filters/constants';
 import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
+import waitForPromises from 'helpers/wait_for_promises';
 
 import axios from '~/lib/utils/axios_utils';
 import {
@@ -64,7 +65,6 @@ describe('vulnerabilities count actions', () => {
 describe('vulnerabilities actions', () => {
   const data = mockDataVulnerabilities;
   const params = { filters: { severity: ['critical'] } };
-  const filteredData = mockDataVulnerabilities.filter((vuln) => vuln.severity === 'critical');
   const pageInfo = {
     page: 1,
     nextPage: 2,
@@ -101,11 +101,7 @@ describe('vulnerabilities actions', () => {
 
     describe('on success', () => {
       beforeEach(() => {
-        mock
-          .onGet(state.vulnerabilitiesEndpoint, { params })
-          .replyOnce(HTTP_STATUS_OK, filteredData, headers)
-          .onGet(state.vulnerabilitiesEndpoint)
-          .replyOnce(HTTP_STATUS_OK, data, headers);
+        mock.onGet(state.vulnerabilitiesEndpoint).replyOnce(HTTP_STATUS_OK, data, headers);
       });
 
       it('should dispatch the request and success actions', () => {
@@ -124,20 +120,19 @@ describe('vulnerabilities actions', () => {
         );
       });
 
-      it('should pass through the filters', () => {
-        return testAction(
-          actions.fetchVulnerabilities,
-          params,
-          state,
-          [],
-          [
-            { type: 'requestVulnerabilities' },
-            {
-              type: 'receiveVulnerabilitiesSuccess',
-              payload: { data: filteredData, headers },
-            },
-          ],
-        );
+      it('should pass the filters to the Axios request', async () => {
+        const getMock = mock
+          .onGet(state.vulnerabilitiesEndpoint)
+          .reply(HTTP_STATUS_OK, data, headers);
+
+        actions.fetchVulnerabilities({ state, dispatch: jest.fn() }, params);
+        await waitForPromises();
+
+        expect(getMock.history.get).toHaveLength(1);
+        expect(getMock.history.get[0].params).toMatchObject({
+          ...params,
+          t: expect.any(Number),
+        });
       });
     });
 

@@ -52,12 +52,12 @@ export const fetchVulnerabilities = ({ state, dispatch }, params = {}) => {
 
   vulnerabilitiesSource = axios.CancelToken.source();
 
-  axios({
-    method: 'GET',
-    url: state.vulnerabilitiesEndpoint,
-    cancelToken: vulnerabilitiesSource.token,
-    params,
-  })
+  axios
+    .get(state.vulnerabilitiesEndpoint, {
+      cancelToken: vulnerabilitiesSource.token,
+      // Add a cache-busting 't' querystring so that the request is always made.
+      params: { ...params, t: Date.now() },
+    })
     .then((response) => {
       const { headers, data } = response;
       dispatch('receiveVulnerabilitiesSuccess', { headers, data });

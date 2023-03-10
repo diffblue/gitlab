@@ -3,7 +3,8 @@ import { mount, shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import IssueNote from 'ee/vue_shared/security_reports/components/issue_note.vue';
 import MergeRequestNote from 'ee/vue_shared/security_reports/components/merge_request_note.vue';
-import component from 'ee/vue_shared/security_reports/components/modal.vue';
+import Modal from 'ee/vue_shared/security_reports/components/modal.vue';
+import ModalFooter from 'ee/vue_shared/security_reports/components/modal_footer.vue';
 import SolutionCard from 'ee/vue_shared/security_reports/components/solution_card_vuex.vue';
 import createState from 'ee/vue_shared/security_reports/store/state';
 
@@ -11,8 +12,12 @@ describe('Security Reports modal', () => {
   let wrapper;
   let modal;
 
-  const mountComponent = (propsData, mountFn = shallowMount) => {
-    wrapper = mountFn(component, {
+  const mountComponent = (
+    propsData,
+    mountFn = shallowMount,
+    { deprecateVulnerabilitiesFeedback = true } = {},
+  ) => {
+    wrapper = mountFn(Modal, {
       attrs: {
         static: true,
         visible: true,
@@ -23,9 +28,13 @@ describe('Security Reports modal', () => {
         isCreatingMergeRequest: false,
         ...propsData,
       },
+      provide: { glFeatures: { deprecateVulnerabilitiesFeedback } },
+      stubs: { GlModal },
     });
     modal = wrapper.findComponent(GlModal);
   };
+
+  const findModalFooter = () => wrapper.findComponent(ModalFooter);
 
   describe('modal', () => {
     const findAlert = () => wrapper.findComponent(GlAlert);
@@ -112,45 +121,34 @@ describe('Security Reports modal', () => {
       });
     });
 
-    describe('with merge request available', () => {
+    describe('with auto remediation available', () => {
+      let modalData;
+
       beforeEach(() => {
-        const propsData = {
-          modal: createState().modal,
-          canCreateIssue: true,
-          canCreateMergeRequest: true,
-        };
-        const summary = 'Upgrade to 123';
-        const diff = 'abc123';
-        propsData.modal.vulnerability.remediations = [{ summary, diff }];
-        mountComponent(propsData, mount);
+        modalData = createState().modal;
+        modalData.vulnerability.remediations = [{}];
       });
 
-      it('renders create merge request and issue button as a split button', () => {
-        expect(wrapper.find('.js-split-button').exists()).toBe(true);
-        expect(wrapper.find('.js-split-button').text()).toContain('Resolve with merge request');
-        expect(wrapper.find('.js-split-button').text()).toContain('Create issue');
+      it('can create merge request when there is no existing merge request', () => {
+        mountComponent({ modal: modalData });
+
+        expect(findModalFooter().props('canCreateMergeRequest')).toBe(true);
       });
 
-      describe('with merge request created', () => {
-        const findActionButton = () => wrapper.find('[data-testid=create-issue-button]');
+      it(`can't create merge request when there is an existing merge request`, () => {
+        modalData.vulnerability.merge_request_links = [{}];
+        mountComponent({ modal: modalData });
 
-        it('renders the issue button as a single button', async () => {
-          const propsData = {
-            modal: createState().modal,
-            canCreateIssue: true,
-            canCreateMergeRequest: true,
-          };
+        expect(findModalFooter().props('canCreateMergeRequest')).toBe(false);
+      });
 
-          propsData.modal.vulnerability.hasMergeRequest = true;
-
-          wrapper.setProps(propsData);
-
-          await nextTick();
-          expect(wrapper.find('.js-split-button').exists()).toBe(false);
-          expect(findActionButton().exists()).toBe(true);
-          expect(findActionButton().text()).not.toContain('Resolve with merge request');
-          expect(findActionButton().text()).toContain('Create issue');
+      it(`can't create merge request when there is an existing merge request - deprecateVulnerabilitiesFeedback feature flag off`, () => {
+        modalData.vulnerability.merge_request_feedback = {};
+        mountComponent({ modal: modalData }, shallowMount, {
+          deprecateVulnerabilitiesFeedback: false,
         });
+
+        expect(findModalFooter().props('canCreateMergeRequest')).toBe(false);
       });
     });
 
@@ -173,7 +171,6 @@ describe('Security Reports modal', () => {
         const propsData = {
           modal: createState().modal,
           canCreateIssue: true,
-          canCreateMergeRequest: true,
           canDismissVulnerability: true,
         };
         propsData.modal.vulnerability.remediations = [{ diff: '123' }];
@@ -182,7 +179,7 @@ describe('Security Reports modal', () => {
       });
 
       it('disallows any actions in the footer', () => {
-        expect(wrapper.findComponent({ ref: 'footer' }).props()).toMatchObject({
+        expect(findModalFooter().props()).toMatchObject({
           canCreateIssue: false,
           canCreateMergeRequest: false,
           canDownloadPatch: false,
@@ -247,41 +244,42 @@ describe('Security Reports modal', () => {
     });
   });
 
-  describe('related merge request read access', () => {
-    describe('with permission to read', () => {
-      beforeEach(() => {
-        const propsData = {
-          modal: createState().modal,
-        };
+  describe('merge request note', () => {
+    const mergeRequest = { merge_request_path: 'path' };
 
-        propsData.modal.vulnerability.merge_request_feedback = {
-          merge_request_path: 'http://mr.url',
-        };
-        mountComponent(propsData);
-      });
+    it.each`
+      mergeRequestLinks | isShown
+      ${[mergeRequest]} | ${true}
+      ${[]}             | ${false}
+      ${null}           | ${false}
+    `(
+      'shows the merge request note? $isShown when mergeRequestLinks is $mergeRequestLinks',
+      ({ mergeRequestLinks, isShown }) => {
+        const modalData = createState().modal;
+        modalData.vulnerability.merge_request_links = mergeRequestLinks;
+        mountComponent({ modal: modalData });
 
-      it('displays a link to the merge request', () => {
-        expect(wrapper.findComponent(MergeRequestNote).exists()).toBe(true);
-      });
-    });
+        expect(wrapper.findComponent(MergeRequestNote).exists()).toBe(isShown);
+      },
+    );
 
-    describe('without permission to read', () => {
-      beforeEach(() => {
-        const propsData = {
-          modal: createState().modal,
-        };
+    it.each`
+      mergeRequestFeedback | isShown
+      ${mergeRequest}      | ${true}
+      ${{}}                | ${false}
+      ${null}              | ${false}
+    `(
+      'shows the merge request note? $isShown when mergeRequestFeedback is $mergeRequestFeedback, deprecateVulnerabilitiesFeedback feature flag disabled',
+      ({ mergeRequestFeedback, isShown }) => {
+        const modalData = createState().modal;
+        modalData.vulnerability.merge_request_feedback = mergeRequestFeedback;
+        mountComponent({ modal: modalData }, shallowMount, {
+          deprecateVulnerabilitiesFeedback: false,
+        });
 
-        propsData.modal.vulnerability.merge_request_feedback = {
-          merge_request_path: null,
-        };
-        mountComponent(propsData);
-      });
-
-      it('hides the link to the merge request', () => {
-        const note = wrapper.findComponent(MergeRequestNote);
-        expect(note.exists()).toBe(false);
-      });
-    });
+        expect(wrapper.findComponent(MergeRequestNote).exists()).toBe(isShown);
+      },
+    );
   });
 
   describe('with a resolved issue', () => {
