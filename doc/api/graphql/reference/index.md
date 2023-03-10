@@ -11858,7 +11858,7 @@ CI/CD variables for a project.
 | <a id="cirunnerjobcount"></a>`jobCount` | [`Int`](#int) | Number of jobs processed by the runner (limited to 1000, plus one to indicate that more items exist). |
 | <a id="cirunnerjobexecutionstatus"></a>`jobExecutionStatus` **{warning-solid}** | [`CiRunnerJobExecutionStatus`](#cirunnerjobexecutionstatus) | **Introduced** in 15.7. This feature is in Alpha. It can be changed or removed at any time. Job execution status of the runner. |
 | <a id="cirunnerlocked"></a>`locked` | [`Boolean`](#boolean) | Indicates the runner is locked. |
-| <a id="cirunnermachines"></a>`machines` | [`CiRunnerMachineConnection`](#cirunnermachineconnection) | Machines associated with the runner configuration. (see [Connections](#connections)) |
+| <a id="cirunnermachines"></a>`machines` **{warning-solid}** | [`CiRunnerMachineConnection`](#cirunnermachineconnection) | **Introduced** in 15.10. This feature is in Alpha. It can be changed or removed at any time. Machines associated with the runner configuration. |
 | <a id="cirunnermaintenancenote"></a>`maintenanceNote` | [`String`](#string) | Runner's maintenance notes. |
 | <a id="cirunnermaintenancenotehtml"></a>`maintenanceNoteHtml` | [`String`](#string) | GitLab Flavored Markdown rendering of `maintenance_note`. |
 | <a id="cirunnermaximumtimeout"></a>`maximumTimeout` | [`Int`](#int) | Maximum timeout (in seconds) for jobs processed by the runner. |

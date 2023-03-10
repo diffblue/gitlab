@@ -67,7 +67,8 @@ module Types
                                               description: 'Indicates the runner is locked.'
       field :machines, ::Types::Ci::RunnerMachineType.connection_type, null: true,
             description: 'Machines associated with the runner configuration.',
-            method: :runner_machines
+            method: :runner_machines,
+            deprecated: { milestone: '15.10', reason: :alpha }
       field :maintenance_note, GraphQL::Types::String, null: true,
                                                        description: 'Runner\'s maintenance notes.'
       field :maximum_timeout, GraphQL::Types::Int, null: true,
