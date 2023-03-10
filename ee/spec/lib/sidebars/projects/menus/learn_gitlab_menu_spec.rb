@@ -75,4 +75,17 @@ RSpec.describe Sidebars::Projects::Menus::LearnGitlabMenu, feature_category: :on
       expect(subject.pill_count).to eq '20%'
     end
   end
+
+  it_behaves_like 'serializable as super_sidebar_menu_args' do
+    let(:menu) { subject }
+    let(:extra_attrs) do
+      {
+        item_id: :learn_gitlab,
+        sprite_icon: 'bulb',
+        pill_count: menu.pill_count,
+        has_pill: menu.has_pill?,
+        super_sidebar_parent: ::Sidebars::StaticMenu
+      }
+    end
+  end
 end
