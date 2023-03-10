@@ -26,6 +26,7 @@ export const fromYaml = (manifest) => {
     'group_approvers',
     'user_approvers_ids',
     'group_approvers_ids',
+    'role_approvers',
   ];
 
   return isValidPolicy({ policy, primaryKeys, rulesKeys, actionsKeys }) ? policy : { error: true };

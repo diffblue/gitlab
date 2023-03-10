@@ -31,6 +31,8 @@ actions:
       - o.lecia.conner
     group_approvers_ids:
       - 343
+    role_approvers:
+      - owner
 `;
 
 const invalidPrimaryKeys = `type: scan_result_policy
@@ -108,6 +110,7 @@ describe('fromYaml', () => {
         {
           approvals_required: 1,
           group_approvers_ids: [343],
+          role_approvers: ['owner'],
           type: 'require_approval',
           user_approvers: ['o.lecia.conner'],
         },
