@@ -43,6 +43,7 @@ module EE
         :geo_status_timeout,
         :help_text,
         :lock_memberships_to_ldap,
+        :lock_memberships_to_saml,
         :max_personal_access_token_lifetime,
         :max_ssh_key_lifetime,
         :repository_size_limit,

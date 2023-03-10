@@ -397,6 +397,10 @@ module EE
       saml_provider.persisted? && saml_provider.enabled?
     end
 
+    def saml_group_links_enabled?
+      group_saml_enabled? && saml_group_links.exists?
+    end
+
     def global_saml_enabled?
       ::Gitlab::Auth::Saml::Config.enabled?
     end

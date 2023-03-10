@@ -120,6 +120,18 @@ RSpec.describe ProjectsHelper do
         end
       end
     end
+
+    context 'with SAML membership lock enabled and group membership_lock disabled' do
+      before do
+        stub_application_setting(lock_memberships_to_saml: true)
+      end
+
+      let(:group) { build_stubbed(:group, membership_lock: false) }
+
+      it 'is true' do
+        expect(helper).to be_membership_locked
+      end
+    end
   end
 
   describe '#group_project_templates_count' do

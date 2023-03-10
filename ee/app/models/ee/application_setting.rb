@@ -232,6 +232,7 @@ module EE
           globally_allowed_ips: '',
           license_usage_data_exported: false,
           lock_memberships_to_ldap: false,
+          lock_memberships_to_saml: false,
           maintenance_mode: false,
           max_personal_access_token_lifetime: nil,
           max_ssh_key_lifetime: nil,

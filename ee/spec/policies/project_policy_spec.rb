@@ -2383,6 +2383,14 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
           it { is_expected.to be_disallowed(:import_project_members_from_another_project) }
         end
+
+        context 'via SAML' do
+          before do
+            stub_application_setting(lock_memberships_to_saml: true)
+          end
+
+          it { is_expected.to be_disallowed(:import_project_members_from_another_project) }
+        end
       end
     end
   end
