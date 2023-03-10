@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::GeoTasks do
+RSpec.describe Gitlab::Geo::GeoTasks, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   describe '.set_primary_geo_node' do

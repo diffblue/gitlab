@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::JwtRequestDecoder do
+RSpec.describe Gitlab::Geo::JwtRequestDecoder, feature_category: :geo_replication do
   include EE::GeoHelpers
 
   let!(:primary_node) { FactoryBot.create(:geo_node, :primary) }

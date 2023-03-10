@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::Replicator do
+RSpec.describe Gitlab::Geo::Replicator, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   let_it_be(:primary_node) { create(:geo_node, :primary) }

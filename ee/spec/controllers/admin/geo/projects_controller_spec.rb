@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::Geo::ProjectsController, :geo do
+RSpec.describe Admin::Geo::ProjectsController, :geo, feature_category: :geo_replication do
   include EE::GeoHelpers
 
   let_it_be(:admin) { create(:admin) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['MergeRequestDiffRegistry'] do
+RSpec.describe GitlabSchema.types['MergeRequestDiffRegistry'], feature_category: :geo_replication do
   it_behaves_like 'a Geo registry type'
 
   it 'has the expected fields (other than those included in RegistryType)' do

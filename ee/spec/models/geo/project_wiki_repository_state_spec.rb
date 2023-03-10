@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::ProjectWikiRepositoryState, type: :model do
+RSpec.describe Geo::ProjectWikiRepositoryState, type: :model, feature_category: :geo_replication do
   subject { described_class.new(project: build(:project)) }
 
   describe 'associations' do

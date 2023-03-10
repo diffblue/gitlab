@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::Oauth::Session, :geo do
+RSpec.describe Gitlab::Geo::Oauth::Session, :geo, feature_category: :geo_replication do
   include EE::GeoHelpers
 
   # This spec doesn't work with a relative_url_root https://gitlab.com/gitlab-org/gitlab/issues/11261

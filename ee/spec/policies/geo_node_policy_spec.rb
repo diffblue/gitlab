@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GeoNodePolicy do
+RSpec.describe GeoNodePolicy, feature_category: :geo_replication do
   let_it_be(:geo_node) { create(:geo_node) }
 
   subject(:policy) { described_class.new(current_user, geo_node) }

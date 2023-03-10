@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::ProjectRegistryFinder, :geo do
+RSpec.describe Geo::ProjectRegistryFinder, :geo, feature_category: :geo_replication do
   let_it_be(:project_1) { create(:project) }
   let_it_be(:project_2) { create(:project) }
   let_it_be(:project_3) { create(:project) }

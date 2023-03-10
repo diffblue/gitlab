@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::Replication::BlobRetriever, :aggregate_failures do
+RSpec.describe Gitlab::Geo::Replication::BlobRetriever, :aggregate_failures, feature_category: :geo_replication do
   let(:package_file) { create(:package_file, :npm) }
   let(:package_checksum) { package_file.class.sha256_hexdigest(package_file.file.path) }
   let(:replicator_class) { Geo::PackageFileReplicator }

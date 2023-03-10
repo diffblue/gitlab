@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::Oauth::LoginState do
+RSpec.describe Gitlab::Geo::Oauth::LoginState, feature_category: :geo_replication do
   let(:salt) { 'b9653b6aa2ff6b54' }
   let(:token) { 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InJldHVybl90byI6Ii9wcm9qZWN0L3Rlc3Q_Zm9vPWJhciN6b28ifSwianRpIjoiODdjZDQ2M2MtOTgyNC00ZjliLWI5NDMtOGFkMjJmY2E2MmZhIiwiaWF0IjoxNTQ5ODI1MjAwLCJuYmYiOjE1NDk4MjUxOTUsImV4cCI6MTU0OTgyNTI2MH0.qZE6kuoeW6BK1URuIl8l8MiCfGjtTTXixVdMCE80gVA' }
   let(:return_to) { 'http://fake-secondary.com:3000/project/test?foo=bar#zoo' }

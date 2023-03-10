@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::Replication::BlobDownloader do
+RSpec.describe Gitlab::Geo::Replication::BlobDownloader, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   let_it_be(:primary) { create(:geo_node, :primary) }

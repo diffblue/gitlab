@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::SnippetRepositoryReplicator do
+RSpec.describe Geo::SnippetRepositoryReplicator, feature_category: :geo_replication do
   let(:snippet) { create(:snippet, :repository) }
   let(:model_record) { snippet.snippet_repository }
 

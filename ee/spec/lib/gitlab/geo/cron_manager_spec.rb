@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::CronManager, :geo do
+RSpec.describe Gitlab::Geo::CronManager, :geo, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   jobs = %w[

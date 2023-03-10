@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::EventLog, type: :model do
+RSpec.describe Geo::EventLog, type: :model, feature_category: :geo_replication do
   describe 'relationships' do
     it { is_expected.to belong_to(:cache_invalidation_event).class_name('Geo::CacheInvalidationEvent').with_foreign_key('cache_invalidation_event_id') }
     it { is_expected.to belong_to(:repositories_changed_event).class_name('Geo::RepositoriesChangedEvent').with_foreign_key('repositories_changed_event_id') }

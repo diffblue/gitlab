@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::VerificationState do
+RSpec.describe Geo::VerificationState, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   let_it_be(:primary_node) { create(:geo_node, :primary) }

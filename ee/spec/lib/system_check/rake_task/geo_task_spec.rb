@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SystemCheck::RakeTask::GeoTask do
+RSpec.describe SystemCheck::RakeTask::GeoTask, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   let(:common_checks) do

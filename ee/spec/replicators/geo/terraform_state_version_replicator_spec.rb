@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::TerraformStateVersionReplicator do
+RSpec.describe Geo::TerraformStateVersionReplicator, feature_category: :geo_replication do
   let_it_be(:ci_build) { create(:ci_build) }
   let_it_be(:terraform_state) { create(:terraform_state, project: ci_build.project) }
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::ResetChecksumEvent, type: :model do
+RSpec.describe Geo::ResetChecksumEvent, type: :model, feature_category: :geo_replication do
   describe 'relationships' do
     it { is_expected.to belong_to(:project) }
   end

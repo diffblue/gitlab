@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::LogHelpers do
+RSpec.describe Gitlab::Geo::LogHelpers, feature_category: :geo_replication do
   before do
     stub_const('FakeLogHelpersConsumer', Class.new)
 

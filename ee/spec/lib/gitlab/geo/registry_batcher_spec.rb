@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::RegistryBatcher, :geo, :use_clean_rails_memory_store_caching do
+RSpec.describe Gitlab::Geo::RegistryBatcher,
+  :use_clean_rails_memory_store_caching,
+  feature_category: :geo_replication do
   include EE::GeoHelpers
 
   let(:source_class) { LfsObject }

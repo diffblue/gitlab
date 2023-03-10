@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::GitPushHttp, :geo, :use_clean_rails_memory_store_caching do
+RSpec.describe Gitlab::Geo::GitPushHttp,
+  :use_clean_rails_memory_store_caching,
+  feature_category: :geo_replication do
   include EE::GeoHelpers
 
   let(:gl_id) { 'user-1234' }

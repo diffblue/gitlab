@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::BaseRequest, :geo do
+RSpec.describe Gitlab::Geo::BaseRequest,
+  feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   let(:geo_node) { create(:geo_node) }

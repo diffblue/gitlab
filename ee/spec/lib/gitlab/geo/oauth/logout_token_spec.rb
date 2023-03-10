@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::Oauth::LogoutToken do
+RSpec.describe Gitlab::Geo::Oauth::LogoutToken, feature_category: :geo_replication do
   let(:user) { create(:user) }
   let(:node) { create(:geo_node) }
   let(:access_token) { create(:doorkeeper_access_token, resource_owner_id: user.id, application_id: node.oauth_application_id) }

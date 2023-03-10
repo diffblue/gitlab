@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::SignedData do
+RSpec.describe Gitlab::Geo::SignedData, feature_category: :geo_replication do
   using RSpec::Parameterized::TableSyntax
   include EE::GeoHelpers
 

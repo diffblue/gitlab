@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Geo::DesignRegistryFinder, :geo do
+RSpec.describe Geo::DesignRegistryFinder, :geo, feature_category: :geo_replication do
   it_behaves_like 'a registry finder' do
     before do
       stub_registry_replication_config(enabled: true)

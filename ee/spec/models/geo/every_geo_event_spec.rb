@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Every Geo event' do
+RSpec.describe 'Every Geo event', feature_category: :geo_replication do
   subject { events }
 
   it 'includes Geo::Eventable' do
