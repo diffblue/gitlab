@@ -131,6 +131,31 @@ describe('Vulnerability Footer', () => {
       });
     });
 
+    it.each`
+      description                       | updateVulnerabilityState
+      ${'should fetch discussions'}     | ${true}
+      ${'should not fetch discussions'} | ${false}
+    `(
+      `$description when the passed-in vulnerability's state is "$updateVulnerabilityState"`,
+      async ({ updateVulnerabilityState }) => {
+        const queryHandler = discussionsHandler({ discussions: [] });
+        createWrapper({ queryHandler });
+        await waitForPromises();
+
+        expect(queryHandler).toHaveBeenCalledTimes(1);
+
+        await wrapper.setProps({
+          vulnerability: {
+            ...vulnerability,
+            state: updateVulnerabilityState ? 'newState' : vulnerability.state,
+          },
+        });
+
+        const expectedQueryCalls = updateVulnerabilityState ? 2 : 1;
+        expect(queryHandler).toHaveBeenCalledTimes(expectedQueryCalls);
+      },
+    );
+
     it('shows an error the discussions could not be retrieved', async () => {
       await createWrapperAndFetchDiscussions({
         errors: [{ message: 'Something went wrong' }],
