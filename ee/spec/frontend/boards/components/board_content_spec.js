@@ -13,6 +13,7 @@ describe('ee/BoardContent', () => {
     issuableType = 'issue',
     isIssueBoard = true,
     isEpicBoard = false,
+    isSwimlanesOn = false,
   }) => {
     wrapper = shallowMount(BoardContent, {
       store,
@@ -34,6 +35,7 @@ describe('ee/BoardContent', () => {
         lists: [],
         boardId: 'gid://gitlab/Board/1',
         filterParams: {},
+        isSwimlanesOn,
       },
       stubs: {
         'board-content-sidebar': BoardContentSidebar,
@@ -50,22 +52,24 @@ describe('ee/BoardContent', () => {
   });
 
   describe.each`
-    state                                 | isIssueBoard | isEpicBoard | resultIssue | resultEpic
-    ${{ isShowingEpicsSwimlanes: true }}  | ${true}      | ${false}    | ${true}     | ${false}
-    ${{ isShowingEpicsSwimlanes: false }} | ${true}      | ${false}    | ${true}     | ${false}
-    ${{ isShowingEpicsSwimlanes: false }} | ${false}     | ${true}     | ${false}    | ${true}
-  `('with state=$state', ({ state, isIssueBoard, isEpicBoard, resultIssue, resultEpic }) => {
-    beforeEach(() => {
-      Object.assign(store.state, state);
-      createComponent({ isIssueBoard, isEpicBoard });
-    });
+    isSwimlanesOn | isIssueBoard | isEpicBoard | resultIssue | resultEpic
+    ${true}       | ${true}      | ${false}    | ${true}     | ${false}
+    ${false}      | ${true}      | ${false}    | ${true}     | ${false}
+    ${false}      | ${false}     | ${true}     | ${false}    | ${true}
+  `(
+    'with isSwimlanesOn=$isSwimlanesOn',
+    ({ isSwimlanesOn, isIssueBoard, isEpicBoard, resultIssue, resultEpic }) => {
+      beforeEach(() => {
+        createComponent({ isIssueBoard, isEpicBoard, isSwimlanesOn });
+      });
 
-    it(`renders BoardContentSidebar = ${resultIssue}`, () => {
-      expect(wrapper.findComponent(BoardContentSidebar).exists()).toBe(resultIssue);
-    });
+      it(`renders BoardContentSidebar = ${resultIssue}`, () => {
+        expect(wrapper.findComponent(BoardContentSidebar).exists()).toBe(resultIssue);
+      });
 
-    it(`renders EpicBoardContentSidebar = ${resultEpic}`, () => {
-      expect(wrapper.findComponent(EpicBoardContentSidebar).exists()).toBe(resultEpic);
-    });
-  });
+      it(`renders EpicBoardContentSidebar = ${resultEpic}`, () => {
+        expect(wrapper.findComponent(EpicBoardContentSidebar).exists()).toBe(resultEpic);
+      });
+    },
+  );
 });

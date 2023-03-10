@@ -19,6 +19,10 @@ export const DRAGGABLE_TAG = 'div';
 
 export const EPIC_LANE_BASE_HEIGHT = 40;
 
+export const GroupByParamType = {
+  epic: 'epic',
+};
+
 /* eslint-disable @gitlab/require-i18n-strings */
 export const EpicFilterType = {
   any: 'Any',
