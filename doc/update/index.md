@@ -237,7 +237,7 @@ possible.
 
 ## Version-specific upgrading instructions
 
-Each month, major, minor, or patch releases of GitLab are published along with a
+Each month, major or minor as well as possibly patch releases of GitLab are published along with a
 [release post](https://about.gitlab.com/releases/categories/releases/).
 You should read the release posts for all versions you're passing over.
 At the end of major and minor release posts, there are three sections to look for specifically:
