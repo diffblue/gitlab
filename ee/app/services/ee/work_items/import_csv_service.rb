@@ -17,8 +17,7 @@ module EE
       end
 
       def can_create_requirements?
-        project.licensed_feature_available?(:requirements) &&
-          Ability.allowed?(user, :create_requirement, project)
+        Ability.allowed?(user, :create_requirement, project)
       end
     end
   end
