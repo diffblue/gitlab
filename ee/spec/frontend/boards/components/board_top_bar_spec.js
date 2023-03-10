@@ -50,8 +50,9 @@ describe('BoardTopBar', () => {
     wrapper = shallowMount(BoardTopBar, {
       store,
       apolloProvider: mockApollo,
-      props: {
+      propsData: {
         boardId: 'gid://gitlab/Board/1',
+        isSwimlanesOn: false,
       },
       provide: {
         swimlanesFeatureAvailable: false,
@@ -69,7 +70,7 @@ describe('BoardTopBar', () => {
         isApolloBoard: false,
         ...provide,
       },
-      stubs: { IssueBoardFilteredSearch, EpicBoardFilteredSearch },
+      stubs: { IssueBoardFilteredSearch, EpicBoardFilteredSearch, ToggleLabels },
     });
   };
 

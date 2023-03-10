@@ -1,8 +1,11 @@
 <script>
+import { mapActions } from 'vuex';
 import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
-import { mapState, mapActions } from 'vuex';
 import { __ } from '~/locale';
 import Tracking from '~/tracking';
+import { historyPushState } from '~/lib/utils/common_utils';
+import { mergeUrlParams, removeParams } from '~/lib/utils/url_utility';
+import { GroupByParamType } from 'ee_else_ce/boards/constants';
 
 const trackingMixin = Tracking.mixin();
 
@@ -12,9 +15,14 @@ export default {
     GlDropdownItem,
   },
   mixins: [trackingMixin],
+  inject: ['isApolloBoard'],
+  props: {
+    isSwimlanesOn: {
+      type: Boolean,
+      required: true,
+    },
+  },
   computed: {
-    ...mapState(['isShowingEpicsSwimlanes']),
-
     groupByEpicLabel() {
       return __('Epic');
     },
@@ -22,21 +30,37 @@ export default {
       return __('No grouping');
     },
     dropdownLabel() {
-      return this.isShowingEpicsSwimlanes ? this.groupByEpicLabel : __('None');
+      return this.isSwimlanesOn ? this.groupByEpicLabel : __('None');
     },
   },
   methods: {
-    ...mapActions(['toggleEpicSwimlanes']),
-
+    ...mapActions(['fetchEpicsSwimlanes', 'fetchLists']),
+    toggleEpicSwimlanes() {
+      if (this.isSwimlanesOn) {
+        historyPushState(removeParams(['group_by']), window.location.href, true);
+        this.$emit('toggleSwimlanes', false);
+      } else {
+        historyPushState(
+          mergeUrlParams({ group_by: GroupByParamType.epic }, window.location.href, {
+            spreadArrays: true,
+          }),
+        );
+        this.$emit('toggleSwimlanes', true);
+        if (!this.isApolloBoard) {
+          this.fetchEpicsSwimlanes();
+          this.fetchLists();
+        }
+      }
+    },
     onToggle() {
       // Track toggle event
       this.track('click_toggle_swimlanes_button', {
         label: 'toggle_swimlanes',
-        property: this.isShowingEpicsSwimlanes ? 'off' : 'on',
+        property: this.isSwimlanesOn ? 'off' : 'on',
       });
 
       // Track if the board has swimlane active
-      if (!this.isShowingEpicsSwimlanes) {
+      if (!this.isSwimlanesOn) {
         this.track('click_toggle_swimlanes_button', {
           label: 'swimlanes_active',
         });
@@ -60,10 +84,10 @@ export default {
       {{ __('Group by') }}
     </span>
     <gl-dropdown right :text="dropdownLabel" class="gl-ml-3" toggle-class="gl-line-height-normal!">
-      <gl-dropdown-item is-check-item :is-checked="!isShowingEpicsSwimlanes" @click="onToggle()">{{
+      <gl-dropdown-item is-check-item :is-checked="!isSwimlanesOn" @click="onToggle">{{
         groupByNoneLabel
       }}</gl-dropdown-item>
-      <gl-dropdown-item is-check-item :is-checked="isShowingEpicsSwimlanes" @click="onToggle()">{{
+      <gl-dropdown-item is-check-item :is-checked="isSwimlanesOn" @click="onToggle">{{
         groupByEpicLabel
       }}</gl-dropdown-item>
     </gl-dropdown>
