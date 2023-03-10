@@ -454,7 +454,18 @@ export const findingQueryMockData = () =>
             stateComment: null,
             dismissedAt: null,
             dismissedBy: null,
-            mergeRequest: null,
+            mergeRequest: {
+              id: 'git://gitlab/MergeRequest/7',
+              iid: 7,
+              webUrl: 'http://gdk.test:3000/root/security-reports-v2/-/merge_requests/7',
+              createdAt: '2023-03-07T10:50:09Z',
+              author: {
+                id: 'gid://gitlab/User/1',
+                name: 'Administrator',
+                username: 'root',
+                webUrl: 'http://gdk.test:3000/root',
+              },
+            },
             issueLinks: {
               nodes: [
                 {

@@ -12,7 +12,15 @@ query pipelineFinding($fullPath: ID!, $pipelineId: ID!, $uuid: String!) {
         }
         mergeRequest {
           id
+          iid
           webUrl
+          createdAt
+          author {
+            id
+            name
+            username
+            webUrl
+          }
         }
         issueLinks {
           nodes {

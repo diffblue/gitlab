@@ -424,6 +424,14 @@ describe('MR Widget Security Reports', () => {
           severity: 'critical',
           name: 'Password leak',
           isDismissed: false,
+          merge_request_feedback: {
+            author: {
+              name: 'Administrator',
+              username: 'root',
+            },
+            created_at: '2023-03-07T10:50:09Z',
+            merge_request_iid: 7,
+          },
           issue_feedback: {
             author: {
               name: 'Administrator',

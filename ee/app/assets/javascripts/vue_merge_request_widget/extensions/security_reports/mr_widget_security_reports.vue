@@ -77,6 +77,18 @@ export default {
           (x) => x.linkType === 'CREATED',
         )?.issue;
 
+        const { mergeRequest } = data.project.pipeline.securityReportFinding;
+
+        if (mergeRequest) {
+          this.$set(this.modalData.vulnerability, 'hasMergeRequest', true);
+          this.$set(this.modalData.vulnerability, 'merge_request_feedback', {
+            author: mergeRequest.author,
+            merge_request_path: mergeRequest.webUrl,
+            created_at: mergeRequest.createdAt,
+            merge_request_iid: mergeRequest.iid,
+          });
+        }
+
         if (issue) {
           this.$set(this.modalData.vulnerability, 'hasIssue', true);
           this.$set(this.modalData.vulnerability, 'issue_feedback', {
