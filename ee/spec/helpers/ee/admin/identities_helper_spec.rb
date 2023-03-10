@@ -18,6 +18,10 @@ RSpec.describe Admin::IdentitiesHelper do
     create(:scim_identity, group: group, extern_uid: 'scim-uid')
   end
 
+  let_it_be(:instance_scim_identity) do
+    create(:scim_identity, group: nil, extern_uid: 'scim-uid')
+  end
+
   let_it_be(:user_with_scim_identities) { scim_identity.user }
 
   describe '#provider_id_cell_testid' do
@@ -93,6 +97,20 @@ RSpec.describe Admin::IdentitiesHelper do
   describe '#scim_identities_collection' do
     it 'returns SCIM identities' do
       expect(helper.scim_identities_collection(user_with_scim_identities)).to match_array [scim_identity]
+    end
+  end
+
+  describe '#scim_group_link' do
+    context 'when SCIM identity does not belong to group' do
+      it 'shows no link to SCIM group' do
+        expect(helper.scim_group_link(instance_scim_identity)).to eq '-'
+      end
+    end
+
+    context 'when SCIM identity belongs to group' do
+      it 'shows link to SCIM group' do
+        expect(helper.scim_group_link(scim_identity)).to eq "<a href=\"/#{group.path}\">#{group.path}</a>"
+      end
     end
   end
 end
