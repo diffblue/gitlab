@@ -29,14 +29,15 @@ module Security
 
     belongs_to :scan, inverse_of: :findings, optional: false
     belongs_to :scanner, class_name: 'Vulnerabilities::Scanner', inverse_of: :security_findings, optional: false
-    belongs_to :vulnerability_read,
-               class_name: 'Vulnerabilities::Read',
+
+    belongs_to :vulnerability_finding,
+               class_name: 'Vulnerabilities::Finding',
                primary_key: :uuid,
                foreign_key: :uuid,
                inverse_of: :security_findings
 
     has_one :build, through: :scan, disable_joins: true
-    has_one :vulnerability, through: :vulnerability_read
+    has_one :vulnerability, through: :vulnerability_finding
 
     has_many :state_transitions, through: :vulnerability
     has_many :issue_links, through: :vulnerability
