@@ -5099,10 +5099,16 @@ msgstr ""
 msgid "ApplicationSettings|See %{linkStart}password policy guidelines%{linkEnd}."
 msgstr ""
 
+msgid "ApplicationSettings|Send a confirmation email during sign up. New users can log in immediately, but must confirm their email within three days."
+msgstr ""
+
 msgid "ApplicationSettings|Send a confirmation email during sign up. New users must confirm their email address before they can log in."
 msgstr ""
 
 msgid "ApplicationSettings|Sign-up enabled"
+msgstr ""
+
+msgid "ApplicationSettings|Soft"
 msgstr ""
 
 msgid "ApplicationSettings|Text shown after a user signs up. Markdown enabled."

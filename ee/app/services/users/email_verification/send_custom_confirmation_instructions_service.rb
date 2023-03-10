@@ -46,9 +46,8 @@ module Users
       strong_memoize_attr :enabled?
 
       def self.identity_verification_enabled?(email)
-        return false if ::Feature.enabled?(:soft_email_confirmation)
+        return false unless ::Gitlab::CurrentSettings.email_confirmation_setting_hard?
         return false if ::Gitlab::CurrentSettings.require_admin_approval_after_user_signup
-        return false if ::Gitlab::CurrentSettings.email_confirmation_setting_off?
 
         # Since we might not have a persisted user yet, we cannot scope the feature flag on the user,
         # but since we do have an email, use this wrapper that implements `flipper_id` for email addresses.

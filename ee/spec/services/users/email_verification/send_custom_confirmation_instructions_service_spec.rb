@@ -121,30 +121,25 @@ feature_category: :system_access do
   end
 
   describe '.identity_verification_enabled?' do
-    where(:identity_verification, :soft_email_confirmation,
+    where(:identity_verification,
       :require_admin_approval_after_user_signup, :email_confirmation_setting, :enabled?) do
-      true  | true  | true  | 'hard' | false
-      true  | true  | true  | 'off'  | false
-      true  | true  | false | 'hard' | false
-      true  | true  | false | 'off'  | false
-      true  | false | true  | 'hard' | false
-      true  | false | true  | 'off'  | false
-      true  | false | false | 'hard' | true
-      true  | false | false | 'off'  | false
-      false | true  | true  | 'hard' | false
-      false | true  | true  | 'off'  | false
-      false | true  | false | 'hard' | false
-      false | true  | false | 'off'  | false
-      false | false | true  | 'hard' | false
-      false | false | true  | 'off'  | false
-      false | false | false | 'hard' | false
-      false | false | false | 'off'  | false
+      true  | true  | 'hard' | false
+      true  | true  | 'off'  | false
+      true  | true  | 'soft' | false
+      true  | false | 'hard' | true
+      true  | false | 'off'  | false
+      true  | false | 'soft' | false
+      false | true  | 'hard' | false
+      false | true  | 'off'  | false
+      false | true  | 'soft' | false
+      false | false | 'hard' | false
+      false | false | 'off'  | false
+      false | false | 'soft' | false
     end
 
     with_them do
       before do
         stub_feature_flags(identity_verification: identity_verification)
-        stub_feature_flags(soft_email_confirmation: soft_email_confirmation)
         stub_application_setting(require_admin_approval_after_user_signup: require_admin_approval_after_user_signup)
         stub_application_setting_enum('email_confirmation_setting', email_confirmation_setting)
       end

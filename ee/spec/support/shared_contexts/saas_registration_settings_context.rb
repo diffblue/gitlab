@@ -15,14 +15,12 @@ RSpec.shared_context 'with saas settings for registration flows', shared_context
     # Saas doesn't require admin approval.
     stub_application_setting(require_admin_approval_after_user_signup: false)
 
-    # SaaS always requires confirmation
+    # SaaS always requires confirmation, since the default is set to `off` we want to ensure SaaS is set to `hard`
     stub_application_setting_enum('email_confirmation_setting', 'hard')
 
     stub_feature_flags(
       # our focus isn't around arkose/signup challenges, so we'll omit those
       arkose_labs_signup_challenge: false,
-      # Saas will always need emails confirmed
-      soft_email_confirmation: false,
       # currently being rolled out, not yet on in prod
       identity_verification: false
     )
