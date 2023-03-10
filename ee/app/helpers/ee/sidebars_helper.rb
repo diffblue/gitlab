@@ -21,15 +21,11 @@ module EE
       )
     end
 
-    override :super_sidebar_nav_panel
-    def super_sidebar_nav_panel(nav: nil, project: nil, user: nil, group: nil, current_ref: nil, ref_type: nil)
-      if nav == 'security'
-        context = ::Sidebars::Context.new(current_user: user, container: nil,
-          route_is_active: method(:active_nav_link?))
-        ::Sidebars::Security::Panel.new(context)
-      else
-        super
-      end
+    override :your_work_context_data
+    def your_work_context_data(user)
+      super.merge({
+        show_security_dashboard: security_dashboard_available?
+      })
     end
 
     override :super_sidebar_context

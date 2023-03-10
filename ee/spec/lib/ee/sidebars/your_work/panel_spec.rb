@@ -17,6 +17,10 @@ RSpec.describe Sidebars::YourWork::Panel, feature_category: :navigation do
     expect(contains_menu?(::Sidebars::YourWork::Menus::OperationsDashboardMenu)).to be(true)
   end
 
+  it 'renders Security menu' do
+    expect(contains_menu?(::Sidebars::YourWork::Menus::SecurityDashboardMenu)).to be(true)
+  end
+
   def contains_menu?(menu)
     panel.instance_variable_get(:@menus).any?(menu)
   end

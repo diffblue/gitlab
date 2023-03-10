@@ -38514,9 +38514,6 @@ msgstr ""
 msgid "Security dashboard"
 msgstr ""
 
-msgid "Security navigation"
-msgstr ""
-
 msgid "Security report is out of date. Please update your branch with the latest changes from the target branch (%{targetBranchName})"
 msgstr ""
 
