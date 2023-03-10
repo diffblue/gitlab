@@ -115,7 +115,6 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
       before do
         stub_application_setting_enum('email_confirmation_setting', 'hard')
         stub_application_setting(require_admin_approval_after_user_signup: false)
-        stub_feature_flags(soft_email_confirmation: false)
         allow(::Arkose::Settings).to receive(:enabled_for_signup?).and_return(false)
       end
 

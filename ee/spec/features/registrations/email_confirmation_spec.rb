@@ -12,7 +12,6 @@ RSpec.describe 'Email Confirmation', feature_category: :onboarding do
   let(:user) { User.find_by_username(new_user.username) }
 
   where(identity_verification: [true, false],
-        soft_email_confirmation: [true, false],
         require_admin_approval_after_user_signup: [true, false],
         email_confirmation_setting: %w[off soft hard])
 
@@ -22,7 +21,6 @@ RSpec.describe 'Email Confirmation', feature_category: :onboarding do
       stub_feature_flags(identity_verification_credit_card: false)
 
       stub_feature_flags(identity_verification: identity_verification)
-      stub_feature_flags(soft_email_confirmation: soft_email_confirmation)
       stub_application_setting(require_admin_approval_after_user_signup: require_admin_approval_after_user_signup)
       stub_application_setting_enum('email_confirmation_setting', email_confirmation_setting)
 
@@ -34,7 +32,7 @@ quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/393330' do
       expect_required_approval_and_sign_in if require_admin_approval_after_user_signup
 
       unless Gitlab::CurrentSettings.email_confirmation_setting_off?
-        if soft_email_confirmation
+        if Gitlab::CurrentSettings.email_confirmation_setting_soft?
           expect_successful_sign_in_and_confirmation_banner
           expect_successful_resend_instructions(from_banner: true)
           expect_successful_devise_confirmation
@@ -64,6 +62,7 @@ quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/393330' do
     let(:user) { create(:omniauth_user, :unconfirmed, extern_uid: external_uid, provider: 'saml') }
 
     before do
+      stub_application_setting_enum('email_confirmation_setting', 'soft')
       stub_feature_flags(identity_verification: true)
       stub_omniauth_saml_config(enabled: true, auto_link_saml_user: true)
       gitlab_sign_in_via('saml', user, external_uid)
@@ -125,8 +124,6 @@ quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/393330' do
 
     perform_enqueued_jobs { Users::ApproveService.new(admin).execute(user) }
 
-    # This is temporary as `soft_email_confirmation` is being removed and conflicts with the new
-    # `email_confirmation_setting` enum which will encompass `soft_email_confirmation`
     number_of_emails = email_confirmation_setting == 'off' ? 1 : 2
 
     should_email(user, times: number_of_emails) # welcome email and optional confirmation email

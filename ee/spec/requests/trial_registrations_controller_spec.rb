@@ -67,14 +67,15 @@ RSpec.describe TrialRegistrationsController, :saas, feature_category: :purchase 
         before do
           stub_application_setting(require_admin_approval_after_user_signup: false)
           stub_feature_flags(identity_verification: false)
-          stub_application_setting_enum('email_confirmation_setting', 'hard')
           allow(User).to receive(:allow_unconfirmed_access_for).and_return 0
         end
 
-        context 'when soft email confirmation is enabled' do
-          it 'does not track an almost there redirect' do
-            stub_feature_flags(soft_email_confirmation: true)
+        context 'when email confirmation settings is set to `soft`' do
+          before do
+            stub_application_setting_enum('email_confirmation_setting', 'soft')
+          end
 
+          it 'does not track an almost there redirect' do
             post_create
 
             expect_no_snowplow_event(
@@ -85,10 +86,12 @@ RSpec.describe TrialRegistrationsController, :saas, feature_category: :purchase 
           end
         end
 
-        context 'when soft email confirmation is not enabled' do
-          it 'tracks an almost there redirect' do
-            stub_feature_flags(soft_email_confirmation: false)
+        context 'when email confirmation settings is not set to `soft`' do
+          before do
+            stub_application_setting_enum('email_confirmation_setting', 'hard')
+          end
 
+          it 'tracks an almost there redirect' do
             post_create
 
             expect_snowplow_event(

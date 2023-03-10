@@ -163,7 +163,7 @@ RSpec.describe Groups::GroupMembersController, feature_category: :subgroups do
 
     context 'when users with unconfirmed emails are allowed to log-in' do
       before do
-        stub_feature_flags(soft_email_confirmation: true)
+        stub_application_setting_enum('email_confirmation_setting', 'soft')
       end
 
       context 'when group has email domain feature enabled' do
@@ -213,7 +213,7 @@ RSpec.describe Groups::GroupMembersController, feature_category: :subgroups do
 
     context 'when users with unconfirmed emails are not allowed to log-in' do
       before do
-        stub_feature_flags(soft_email_confirmation: false)
+        stub_application_setting_enum('email_confirmation_setting', 'hard')
       end
 
       shared_examples_for 'does not create a new access request due to user pending confirmation' do
