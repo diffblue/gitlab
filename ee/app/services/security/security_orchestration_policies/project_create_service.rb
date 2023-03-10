@@ -7,8 +7,8 @@ module Security
       README_TEMPLATE_PATH = Rails.root.join('ee', 'app', 'views', 'projects', 'security', 'policies', 'readme.md.tt')
 
       def execute
-        return error('User does not have permission to create a Security Policy project.') unless can_create_projects_in_container?
-        return error('Security Policy project already exists.') if container.security_orchestration_policy_configuration.present?
+        return error(s_('User does not have permission to create a Security Policy project.')) unless can_create_projects_in_container?
+        return error(s_('Security Policy project already exists.')) if container.security_orchestration_policy_configuration.present?
 
         policy_project = ::Projects::CreateService.new(current_user, create_project_params).execute
 
@@ -18,7 +18,7 @@ module Security
           members = add_members(policy_project)
           errors = members.flat_map { |member| member.errors.full_messages }
 
-          return error('Project was created and assigned as security policy project, but failed adding users to the project.') if errors.any?
+          return error(s_('Project was created and assigned as security policy project, but failed adding users to the project.')) if errors.any?
         end
 
         success(policy_project: policy_project)
