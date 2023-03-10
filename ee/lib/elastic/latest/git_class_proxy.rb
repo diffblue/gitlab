@@ -255,13 +255,15 @@ module Elastic
       end
 
       # rubocop:disable Metrics/AbcSize
+      # rubocop:disable Metrics/PerceivedComplexity
+      # rubocop:disable Metrics/CyclomaticComplexity
       def blob_query(query, type: 'blob', page: 1, per: 20, options: {})
         aggregation = options[:aggregation]
         count_only = options[:count_only]
 
         query = ::Gitlab::Search::Query.new(query) do
           filter :filename, field: :file_name
-          filter :path, parser: ->(input) { "*#{input.downcase}*" }
+          filter :path, parser: ->(input) { "#{input.downcase}*" }
 
           if Feature.enabled?(:elastic_file_name_reverse_optimization)
             filter :extension, field: 'file_name.reverse', type: :prefix, parser: ->(input) { input.downcase.reverse + '.' }
@@ -351,6 +353,8 @@ module Elastic
         [query_hash, options]
       end
       # rubocop:enable Metrics/AbcSize
+      # rubocop:enable Metrics/PerceivedComplexity
+      # rubocop:enable Metrics/CyclomaticComplexity
     end
   end
 end

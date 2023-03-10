@@ -40,6 +40,28 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, feature_category: :glob
 
         expect(paths).to contain_exactly('files/ruby/regex.rb', 'files/ruby/popen.rb', 'files/ruby/version_info.rb')
       end
+
+      context 'when part of the path is used ' do
+        let(:query) { 'def extension:rb path:files' }
+
+        it 'returns the same results as when the full path is used', :sidekiq_inline do
+          results = subject.elastic_search_as_found_blob(query)
+          paths = results.map(&:path)
+
+          expect(paths).to contain_exactly('files/ruby/regex.rb', 'files/ruby/popen.rb', 'files/ruby/version_info.rb')
+        end
+
+        context 'when the path query is in the middle of the file path' do
+          let(:query) { 'def extension:rb path:ruby' }
+
+          it 'returns the same results as when the full path is used', :sidekiq_inline do
+            results = subject.elastic_search_as_found_blob(query)
+            paths = results.map(&:path)
+
+            expect(paths).to contain_exactly('files/ruby/regex.rb', 'files/ruby/popen.rb', 'files/ruby/version_info.rb')
+          end
+        end
+      end
     end
   end
 
