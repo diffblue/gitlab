@@ -97,7 +97,8 @@ export default {
       <gl-button
         v-if="!fetchInProgress"
         class="d-inline-block mb-2"
-        variant="link"
+        category="tertiary"
+        variant="info"
         @click="handleShowMoreClick($event)"
         >{{ __('Show more') }}</gl-button
       >
