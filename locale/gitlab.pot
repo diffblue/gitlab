@@ -39821,6 +39821,9 @@ msgstr ""
 msgid "SelfMonitoring|Deactivating self-monitoring deletes the self-monitoring project. Are you sure you want to deactivate self-monitoring and delete the project?"
 msgstr ""
 
+msgid "SelfMonitoring|Deprecation notice"
+msgstr ""
+
 msgid "SelfMonitoring|Self-monitoring"
 msgstr ""
 
@@ -39831,6 +39834,9 @@ msgid "SelfMonitoring|Self-monitoring project successfully created."
 msgstr ""
 
 msgid "SelfMonitoring|Self-monitoring project successfully deleted."
+msgstr ""
+
+msgid "SelfMonitoring|Self-monitoring was %{deprecation}deprecated%{link_end} in GitLab 14.9, and is %{removal}scheduled for removal%{link_end} in GitLab 16.0. For information on a possible replacement, %{opstrace}learn more about Opstrace%{link_end}."
 msgstr ""
 
 msgid "Send"
