@@ -1,6 +1,6 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlButton, GlListboxItem } from '@gitlab/ui';
+import { GlButton, GlListboxItem, GlPopover, GlLink } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import createApolloProvider from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -8,6 +8,7 @@ import RunnerTagsList from 'ee/security_orchestration/components/policy_editor/s
 import projectRunnerTags from 'ee/security_orchestration/graphql/queries/get_project_runner_tags.query.graphql';
 import groupRunnerTags from 'ee/security_orchestration/graphql/queries/get_group_runner_tags.query.graphql';
 import { getUniqueTagListFromEdges } from 'ee/on_demand_scans_form/utils';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
   POLICY_ACTION_TAG_MODE_SPECIFIC_TAG_KEY,
   POLICY_ACTION_TAG_MODE_SELECTED_AUTOMATICALLY_KEY,
@@ -55,6 +56,8 @@ describe('RunnerTagsList', () => {
   const findTagsList = () => wrapper.findByTestId('runner-tags-list');
   const findDropdownItems = () => findTagsList().findAllComponents(GlListboxItem);
   const findSearchBox = () => wrapper.findByTestId('listbox-search-input');
+  const findPopover = () => wrapper.findComponent(GlPopover);
+  const findPopoverLink = () => wrapper.findComponent(GlPopover).findComponent(GlLink);
 
   const toggleDropdown = (event = 'shown') => {
     findTagsList().vm.$emit(event);
@@ -241,8 +244,42 @@ describe('RunnerTagsList', () => {
     it('should have default label text and title', () => {
       expect(findTagsModeSwitcher().props('disabled')).toBe(true);
       expect(findTagsModeSwitcher().findComponent(GlButton).text()).toBe('selected automatically');
-      expect(findTagsModeSwitcher().attributes('title')).toBe(
-        'Scan will automatically choose a runner to run on because there are no tags exist on runners',
+    });
+  });
+
+  describe('popover', () => {
+    it('should not have popover if runner tags exist', () => {
+      expect(findPopover().exists()).toBe(false);
+    });
+
+    it.each`
+      namespaceType              | expectedLink
+      ${NAMESPACE_TYPES.PROJECT} | ${'http://test.host/gitlab-org/testPath/-/runners'}
+      ${NAMESPACE_TYPES.GROUP}   | ${'http://test.host/groups/gitlab-org/testPath/-/runners'}
+    `('popover should exist when no tags exist', async ({ namespaceType, expectedLink }) => {
+      createComponent(
+        {
+          namespaceType,
+        },
+        jest.fn().mockResolvedValue({
+          data: {
+            project: {
+              id: projectId,
+              runners: {
+                nodes: [],
+              },
+            },
+          },
+        }),
+      );
+
+      expect(findPopover().exists()).toBe(true);
+      expect(findPopoverLink().attributes('href')).toBe(expectedLink);
+      expect(findPopover().props('title')).toBe(
+        RunnerTagsList.i18n.runnersDisabledStatePopoverTitle,
+      );
+      expect(findPopover().text()).toMatchInterpolatedText(
+        RunnerTagsList.i18n.runnersDisabledStatePopoverContent,
       );
     });
   });

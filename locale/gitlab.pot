@@ -38936,6 +38936,9 @@ msgstr ""
 msgid "SecurityOrchestration|No rules defined - policy will not run."
 msgstr ""
 
+msgid "SecurityOrchestration|No tags available"
+msgstr ""
+
 msgid "SecurityOrchestration|Non-existing tags have been detected in the policy yaml. As a result, rule mode has been disabled. To enable rule mode, remove those non-existing tags from the policy yaml."
 msgstr ""
 
@@ -39029,7 +39032,7 @@ msgstr ""
 msgid "SecurityOrchestration|Scan to be performed on every pipeline on the %{branches}"
 msgstr ""
 
-msgid "SecurityOrchestration|Scan will automatically choose a runner to run on because there are no tags exist on runners"
+msgid "SecurityOrchestration|Scan will automatically choose a runner to run on because there are no tags exist on runners. You can %{linkStart}create a new tag in settings%{linkEnd}."
 msgstr ""
 
 msgid "SecurityOrchestration|Security Approvals"
