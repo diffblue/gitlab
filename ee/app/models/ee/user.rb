@@ -526,7 +526,7 @@ module EE
 
     override :password_required?
     def password_required?(*)
-      return false if group_managed_account?
+      return false if service_account? || group_managed_account?
 
       super
     end

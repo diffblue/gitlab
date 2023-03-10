@@ -17,6 +17,11 @@ module EE
 
       private
 
+      override :signup_params
+      def signup_params
+        super + [:provisioned_by_group_id]
+      end
+
       def group
         return unless params[:group_id]
 

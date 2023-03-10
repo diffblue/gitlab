@@ -795,15 +795,25 @@ RSpec.describe User, feature_category: :system_access do
   end
 
   describe '#password_required?' do
+    shared_examples 'does not require password to be present' do
+      it { expect(user).not_to validate_presence_of(:password) }
+      it { expect(user).not_to validate_presence_of(:password_confirmation) }
+    end
+
     context 'when user has managing group linked' do
       before do
         user.managing_group = Group.new
       end
 
-      it 'does not require password to be present' do
-        expect(user).not_to validate_presence_of(:password)
-        expect(user).not_to validate_presence_of(:password_confirmation)
+      it_behaves_like 'does not require password to be present'
+    end
+
+    context 'when user is a service account user' do
+      before do
+        user.user_type = 'service_account'
       end
+
+      it_behaves_like 'does not require password to be present'
     end
   end
 

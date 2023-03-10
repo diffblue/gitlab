@@ -152,6 +152,7 @@ module GitlabSubscriptions
       reject_non_dco_commits
       reject_unsigned_commits
       saml_group_sync
+      service_accounts
       scoped_labels
       smartcard_auth
       swimlanes

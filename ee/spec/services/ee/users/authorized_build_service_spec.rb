@@ -26,6 +26,30 @@ RSpec.describe Users::AuthorizedBuildService do
           expect(user).to be_active
         end
       end
+
+      context 'when setting provisioned_by_group_id' do
+        let(:namespace) { create(:namespace) }
+        let(:params) do
+          {
+            name: 'Service account user',
+            email: 'service_account_user@noreply.gitlab.example.com',
+            username: 'service_account',
+            user_type: :service_account,
+            skip_confirmation: true,
+            provisioned_by_group_id: namespace.id
+          }
+        end
+
+        it 'creates the user and sets provisioned_by_group_id' do
+          service = described_class.new(non_admin, params)
+          user = service.execute
+
+          expect(user).to be_present
+          expect(user).to be_confirmed
+
+          expect(user.provisioned_by_group_id).to eq(namespace.id)
+        end
+      end
     end
 
     context 'with a nil user' do

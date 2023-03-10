@@ -37,6 +37,10 @@ module EE
         ::License.feature_available?(:runner_jobs_statistics)
       end
 
+      condition(:service_accounts_available) do
+        ::License.feature_available?(:service_accounts)
+      end
+
       rule { ~anonymous & operations_dashboard_available }.enable :read_operations_dashboard
 
       rule { admin & instance_devops_adoption_available }.policy do
@@ -54,6 +58,8 @@ module EE
       rule { admin & pages_size_limit_available }.enable :update_max_pages_size
 
       rule { admin & runner_jobs_statistics_available }.enable :read_jobs_statistics
+
+      rule { admin & service_accounts_available }.enable :admin_service_accounts
 
       rule { ~anonymous }.policy do
         enable :view_productivity_analytics

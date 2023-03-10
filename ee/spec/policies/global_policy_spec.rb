@@ -363,4 +363,24 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
       end
     end
   end
+
+  describe 'admin_service_accounts' do
+    subject { described_class.new(admin, [user]) }
+
+    it { is_expected.to be_disallowed(:admin_service_accounts) }
+
+    context 'when feature is enabled' do
+      before do
+        stub_licensed_features(service_accounts: true)
+      end
+
+      context 'when admin mode enabled', :enable_admin_mode do
+        it { is_expected.to be_allowed(:admin_service_accounts) }
+      end
+
+      context 'when admin mode disabled' do
+        it { is_expected.to be_disallowed(:admin_service_accounts) }
+      end
+    end
+  end
 end
