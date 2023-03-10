@@ -2,6 +2,8 @@
 
 module Elastic
   class MigrationRecord
+    include Gitlab::Loggable
+
     attr_reader :version, :name, :filename
 
     ELASTICSEARCH_SIZE = 1000
@@ -34,7 +36,7 @@ module Elastic
     def load_from_index
       client.get(index: index_name, id: version)
     rescue StandardError => e
-      logger.error("[#{self.class.name}]: #{e.class}: #{e.message}")
+      logger.error(build_structured_payload(message: "[#{self.class.name}]: #{e.class}: #{e.message}"))
       nil
     end
 
