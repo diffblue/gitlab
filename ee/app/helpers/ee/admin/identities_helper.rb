@@ -40,6 +40,12 @@ module EE
       def scim_identities_collection(user)
         user.scim_identities
       end
+
+      def scim_group_link(scim_identity)
+        return '-' unless scim_identity.group
+
+        link_to scim_identity.group.path, scim_identity.group
+      end
     end
   end
 end
