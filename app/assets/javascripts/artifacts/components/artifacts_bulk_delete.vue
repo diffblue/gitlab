@@ -1,6 +1,6 @@
 <script>
-import { GlButton, GlModalDirective, GlModal, GlSprintf } from '@gitlab/ui';
-import { createAlert } from '~/flash';
+import { GlButton, GlModal, GlSprintf } from '@gitlab/ui';
+import { createAlert } from '~/alert';
 import getJobArtifactsQuery from '../graphql/queries/get_job_artifacts.query.graphql';
 import bulkDestroyJobArtifactsMutation from '../graphql/mutations/bulk_destroy_job_artifacts.mutation.graphql';
 import { removeArtifactFromStore } from '../graphql/cache_update';
@@ -38,6 +38,7 @@ export default {
   },
   data() {
     return {
+      isModalVisible: false,
       isDeleting: false,
     };
   },
@@ -64,12 +65,9 @@ export default {
     },
   },
   methods: {
-    onClearChecked() {
-      this.$emit('clearSelectedArtifacts');
-    },
-    async onConfirmDelete(e) {
+    async onConfirmDelete() {
       this.isDeleting = true;
-      e.preventDefault(); // don't close modal until deletion is complete
+
       try {
         await this.$apollo.mutate({
           mutation: bulkDestroyJobArtifactsMutation,
@@ -103,7 +101,7 @@ export default {
         this.onError(error);
       } finally {
         this.isDeleting = false;
-        this.$refs.modal.hide();
+        this.isModalVisible = false;
       }
     },
     onError(error) {
@@ -112,6 +110,15 @@ export default {
         captureError: true,
         error,
       });
+    },
+    handleClearSelection() {
+      this.$emit('clearSelectedArtifacts');
+    },
+    handleModalShow() {
+      this.isModalVisible = true;
+    },
+    handleModalHide() {
+      this.isModalVisible = false;
     },
   },
   i18n: {
@@ -135,24 +142,36 @@ export default {
         </gl-sprintf>
       </div>
       <div class="gl-ml-auto">
-        <gl-button variant="default" @click="onClearChecked">
+        <gl-button
+          variant="default"
+          data-testid="bulk-delete-clear-button"
+          @click="handleClearSelection"
+        >
           {{ $options.i18n.clearSelection }}
         </gl-button>
-        <gl-button v-gl-modal="$options.BULK_DELETE_MODAL_ID" variant="danger">
+        <gl-button
+          variant="danger"
+          data-testid="bulk-delete-delete-button"
+          @click="handleModalShow"
+        >
           {{ $options.i18n.deleteSelected }}
         </gl-button>
       </div>
     </div>
     <gl-modal
-      ref="modal"
       size="sm"
       :modal-id="$options.BULK_DELETE_MODAL_ID"
+      :visible="isModalVisible"
       :title="$options.i18n.modalTitle(checkedCount)"
       :action-primary="modalActionPrimary"
       :action-cancel="modalActionCancel"
+      @hide="handleModalHide"
       @primary="onConfirmDelete"
     >
-      <gl-sprintf :message="$options.i18n.modalBody(checkedCount)" />
+      <gl-sprintf
+        data-testid="bulk-delete-modal-content"
+        :message="$options.i18n.modalBody(checkedCount)"
+      />
     </gl-modal>
   </div>
 </template>
