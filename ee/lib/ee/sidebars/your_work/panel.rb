@@ -12,6 +12,7 @@ module EE
 
           add_menu(environments_dashboard_menu)
           add_menu(operations_dashboard_menu)
+          add_menu(security_dashboard_menu)
 
           true
         end
@@ -24,6 +25,10 @@ module EE
 
         def operations_dashboard_menu
           ::Sidebars::YourWork::Menus::OperationsDashboardMenu.new(context)
+        end
+
+        def security_dashboard_menu
+          ::Sidebars::YourWork::Menus::SecurityDashboardMenu.new(context)
         end
       end
     end

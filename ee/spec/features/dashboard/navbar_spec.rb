@@ -34,4 +34,27 @@ RSpec.describe '"Your work" navbar', feature_category: :navigation do
 
     it_behaves_like 'verified navigation bar'
   end
+
+  context 'when security dashboard is available' do
+    before do
+      stub_licensed_features(security_dashboard: true)
+      sign_in(user)
+
+      insert_after_nav_item(
+        _('Activity'),
+        new_nav_item: {
+          nav_item: _("Security"),
+          nav_sub_items: [
+            _('Security dashboard'),
+            _('Vulnerability report'),
+            _('Settings')
+          ]
+        }
+      )
+
+      visit root_path
+    end
+
+    it_behaves_like 'verified navigation bar'
+  end
 end

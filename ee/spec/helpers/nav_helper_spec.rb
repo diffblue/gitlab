@@ -16,7 +16,7 @@ RSpec.describe NavHelper, feature_category: :navigation do
     end
 
     context 'when nav is supported' do
-      %w[your_work project group security].each do |context_nav|
+      %w[your_work project group].each do |context_nav|
         let(:nav) { context_nav }
 
         it 'returns true' do
