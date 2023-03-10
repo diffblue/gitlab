@@ -5,14 +5,13 @@
       "title": "Audience",
       "description": "Understand your audience",
       "icon": "users",
-      "labels": [
-        "Audience"
-      ]
+      "labels": ["By GitLab"]
     },
     {
       "id": "dashboard_behavior",
       "title": "Behavior",
-      "description": "All insights on user activity"
+      "description": "All insights on user activity",
+      "labels": ["By GitLab"]
     }
   ]
 }

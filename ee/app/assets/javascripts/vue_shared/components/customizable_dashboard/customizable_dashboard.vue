@@ -3,6 +3,7 @@ import { GridStack } from 'gridstack';
 import * as Sentry from '@sentry/browser';
 import { GlButton } from '@gitlab/ui';
 import { loadCSSFile } from '~/lib/utils/css_utils';
+import { slugify } from '~/lib/utils/text_utility';
 import { createAlert } from '~/alert';
 import { s__, sprintf } from '~/locale';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
@@ -52,6 +53,11 @@ export default {
       type: Boolean,
       required: false,
       default: () => {},
+    },
+    isSaving: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -158,8 +164,15 @@ export default {
       }
     },
     async saveEdit() {
-      // Only showing code until we can actually save
-      this.toggleCodeDisplay();
+      if (!this.dashboard.id) {
+        this.dashboard.id = this.$route?.params.id || slugify(this.dashboard.title, '_');
+      }
+
+      // Copying over to our original dashboard object
+      // as the main one was hydrated during load with other file
+      this.dashboard.default.id = this.dashboard.id;
+      this.dashboard.default.title = this.dashboard.title;
+      this.$emit('save', this.dashboard.id, this.dashboard.default);
     },
     cancelEdit() {
       this.editing = false;
@@ -213,23 +226,43 @@ export default {
 <template>
   <div>
     <section class="gl-display-flex gl-align-items-center gl-py-5">
-      <h3 class="gl-my-0 flex-fill">{{ dashboard.title }}</h3>
+      <h3 v-if="!editing" class="gl-my-0 flex-fill">{{ dashboard.title }}</h3>
+      <input
+        v-if="editing"
+        v-model="dashboard.title"
+        dir="auto"
+        type="text"
+        :placeholder="s__('Analytics|Dashboard Title')"
+        :aria-label="s__('Analytics|Dashboard Title')"
+        class="form-control gl-mr-4 gl-border-gray-200"
+        data-testid="dashboard-title-tb"
+      />
       <gl-button
-        v-if="!editing"
+        v-if="!editing && !dashboard.builtin"
         icon="pencil"
         class="gl-mr-2"
         data-testid="dashboard-edit-btn"
         @click="startEdit"
-        >{{ s__('ProductAnalytics|Edit') }}</gl-button
+        >{{ s__('Analytics|Edit') }}</gl-button
       >
       <gl-button
         v-if="editing"
+        :loading="isSaving"
+        class="gl-mr-2"
+        category="primary"
+        variant="confirm"
+        data-testid="dashboard-save-btn"
+        @click="saveEdit"
+        >{{ s__('Analytics|Save') }}</gl-button
+      >
+      <gl-button
+        v-if="editing || dashboard.builtin"
         :variant="showCodeVariant"
         icon="code"
         class="gl-mr-2"
         data-testid="dashboard-code-btn"
         @click="toggleCodeDisplay"
-        >{{ s__('ProductAnalytics|Code') }}</gl-button
+        >{{ s__('Analytics|Code') }}</gl-button
       >
       <gl-button
         v-if="editing"

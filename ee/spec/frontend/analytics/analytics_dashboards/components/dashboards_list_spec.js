@@ -135,9 +135,9 @@ describe('DashboardsList', () => {
       expect(findRouterIcons().at(0).props('name')).toBe('project');
     });
 
-    it('should render label', () => {
-      expect(findRouterLabels()).toHaveLength(1);
-      expect(findRouterLabels().at(0).props('title')).toBe('Audience');
+    it('should render builtin labels', () => {
+      expect(findRouterLabels()).toHaveLength(2);
+      expect(findRouterLabels().at(0).props('title')).toBe('By GitLab');
     });
 
     it('should route to the dashboard when a list item is clicked', async () => {

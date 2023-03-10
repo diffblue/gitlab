@@ -1,6 +1,10 @@
 <script>
+import Vue from 'vue';
+import { GlToast } from '@gitlab/ui';
 import AnalyticsDashboard from './components/analytics_dashboard.vue';
 import DashboardsList from './components/dashboards_list.vue';
+
+Vue.use(GlToast);
 
 export default {
   name: 'DashboardsApp',
