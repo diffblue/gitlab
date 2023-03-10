@@ -18,11 +18,7 @@ module Gitlab
         end
 
         def active_session?
-          if ::Feature.enabled?(:enforced_sso_expiry, group)
-            SsoState.new(saml_provider.id).active_since?(DEFAULT_SESSION_TIMEOUT.ago)
-          else
-            SsoState.new(saml_provider.id).active?
-          end
+          SsoState.new(saml_provider.id).active_since?(DEFAULT_SESSION_TIMEOUT.ago)
         end
 
         def access_restricted?
