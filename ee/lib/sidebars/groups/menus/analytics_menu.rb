@@ -14,7 +14,6 @@ module Sidebars
           add_item(devops_adoption_menu_item)
           add_item(insights_analytics_menu_item)
           add_item(issues_analytics_menu_item)
-          add_item(merge_request_analytics_menu_item)
           add_item(productivity_analytics_menu_item)
           add_item(repository_analytics_menu_item)
 
@@ -126,26 +125,6 @@ module Sidebars
             active_routes: { path: 'issues_analytics#show' },
             item_id: :issues_analytics
           )
-        end
-
-        def merge_request_analytics_menu_item
-          unless show_merge_requests_analytics?
-            return ::Sidebars::NilMenuItem.new(item_id: :merge_requests_analytics)
-          end
-
-          ::Sidebars::MenuItem.new(
-            title: _('Merge request'),
-            link: group_analytics_merge_request_analytics_path(context.group),
-            active_routes: { path: 'groups/analytics/merge_request_analytics#show' },
-            item_id: :merge_requests_analytics
-          )
-        end
-
-        # Currently an empty page, so don't show it on the navbar for now
-        def show_merge_requests_analytics?
-          return false
-
-          can?(context.current_user, :read_group_merge_request_analytics, context.group) # rubocop:disable Lint/UnreachableCode
         end
 
         def productivity_analytics_menu_item
