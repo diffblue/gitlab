@@ -198,7 +198,6 @@ export default {
       :loading="isDependencyProxyStorageQueryLoading"
     />
     <template v-if="namespace.rootStorageStatistics">
-      <hr class="gl-my-2" />
       <container-registry-usage
         :container-registry-size="namespace.rootStorageStatistics.containerRegistrySize"
       />

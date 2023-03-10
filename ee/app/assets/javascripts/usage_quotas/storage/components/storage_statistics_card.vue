@@ -1,10 +1,10 @@
 <script>
-import { GlProgressBar, GlSkeletonLoader } from '@gitlab/ui';
+import { GlCard, GlProgressBar, GlSkeletonLoader } from '@gitlab/ui';
 import { formatSizeAndSplit } from 'ee/usage_quotas/storage/utils';
 
 export default {
   name: 'StorageStatisticsCard',
-  components: { GlProgressBar, GlSkeletonLoader },
+  components: { GlCard, GlProgressBar, GlSkeletonLoader },
   props: {
     totalStorage: {
       type: Number,
@@ -71,10 +71,7 @@ export default {
 </script>
 
 <template>
-  <div
-    class="gl-bg-white gl-border-1 gl-border-gray-100 gl-border-solid gl-p-5 gl-rounded-base"
-    data-testid="container"
-  >
+  <gl-card>
     <gl-skeleton-loader v-if="loading" :height="64">
       <rect width="140" height="30" x="5" y="0" rx="4" />
       <rect width="240" height="10" x="5" y="40" rx="4" />
@@ -97,10 +94,10 @@ export default {
           <slot name="actions"></slot>
         </div>
       </div>
-      <p class="gl-font-weight-bold" data-testid="description">
+      <p class="gl-font-weight-bold gl-mb-0" data-testid="description">
         <slot name="description"></slot>
       </p>
-      <gl-progress-bar v-if="shouldShowProgressBar" :value="percentage" />
+      <gl-progress-bar v-if="shouldShowProgressBar" :value="percentage" class="gl-mt-4" />
     </div>
-  </div>
+  </gl-card>
 </template>
