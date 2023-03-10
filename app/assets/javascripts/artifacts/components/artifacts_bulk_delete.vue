@@ -25,12 +25,14 @@ export default {
     GlModal,
     GlSprintf,
   },
-  directives: {
-    GlModal: GlModalDirective,
-  },
+  inject: ['projectId'],
   props: {
     selectedArtifacts: {
       type: Array,
+      required: true,
+    },
+    queryVariables: {
+      type: Object,
       required: true,
     },
   },
@@ -72,12 +74,11 @@ export default {
         await this.$apollo.mutate({
           mutation: bulkDestroyJobArtifactsMutation,
           variables: {
-            input: {
-              ids: this.selectedArtifacts,
-            },
+            projectId: `gid://gitlab/Project/${this.projectId}`,
+            ids: this.selectedArtifacts,
           },
           update: (store, { data }) => {
-            const { errors, deletedCount, deletedIds } = data.bulkDestroyJobArtifacts;
+            const { errors, destroyedCount, destroyedIds } = data.bulkDestroyJobArtifacts;
             if (errors?.length) {
               createAlert({
                 message: I18N_BULK_DELETE_PARTIAL_ERROR,
@@ -85,14 +86,16 @@ export default {
                 error: new Error(errors.join(' ')),
               });
             }
-            if (deletedIds?.length) {
-              this.$toast.show(I18N_BULK_DELETE_CONFIRMATION_TOAST(deletedCount));
+            if (destroyedIds?.length) {
+              this.$toast.show(I18N_BULK_DELETE_CONFIRMATION_TOAST(destroyedCount));
 
               // Remove deleted artifacts from the cache
-              deletedIds.forEach((id) => {
+              destroyedIds.forEach((id) => {
                 removeArtifactFromStore(store, id, getJobArtifactsQuery, this.queryVariables);
               });
               store.gc();
+
+              this.$emit('clearSelectedArtifacts');
             }
           },
         });

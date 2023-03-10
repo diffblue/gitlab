@@ -17,13 +17,19 @@ export const initArtifactsTable = () => {
     return false;
   }
 
-  const { projectPath, canDestroyArtifacts, artifactsManagementFeedbackImagePath } = el.dataset;
+  const {
+    projectPath,
+    projectId,
+    canDestroyArtifacts,
+    artifactsManagementFeedbackImagePath,
+  } = el.dataset;
 
   return new Vue({
     el,
     apolloProvider,
     provide: {
       projectPath,
+      projectId,
       canDestroyArtifacts: parseBoolean(canDestroyArtifacts),
       artifactsManagementFeedbackImagePath,
     },

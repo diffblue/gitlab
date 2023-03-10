@@ -255,6 +255,7 @@ export default {
     <artifacts-bulk-delete
       v-if="canBulkDestroyArtifacts && anyArtifactsSelected"
       :selected-artifacts="selectedArtifacts"
+      :query-variables="queryVariables"
       @clearSelectedArtifacts="clearSelectedArtifacts"
     />
     <gl-table
