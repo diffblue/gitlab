@@ -96,7 +96,6 @@ export default () => ({
     vulnerability: {
       isDismissed: false,
       hasIssue: false,
-      hasMergeRequest: false,
     },
 
     isShowingDeleteButtons: false,

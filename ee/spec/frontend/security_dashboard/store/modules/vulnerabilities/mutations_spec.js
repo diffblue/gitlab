@@ -222,11 +222,22 @@ describe('vulnerabilities module mutations', () => {
   });
 
   describe('RECEIVE_CREATE_MERGE_REQUEST_SUCCESS', () => {
-    it('should fire the visitUrl function on the merge request URL', () => {
-      const payload = { merge_request_path: 'fakepath.html' };
+    it('should visit the merge request URL', () => {
+      gon.features = { deprecateVulnerabilitiesFeedback: true };
+      const path = 'fakepath.html';
+      const payload = { merge_request_links: [{ merge_request_path: path }] };
       mutations[types.RECEIVE_CREATE_MERGE_REQUEST_SUCCESS](state, payload);
 
-      expect(visitUrl).toHaveBeenCalledWith(payload.merge_request_path);
+      expect(visitUrl).toHaveBeenCalledWith(path);
+    });
+
+    it('should visit the merge request URL - deprecateVulnerabilitiesFeedback feature flag disabled', () => {
+      gon.features = { deprecateVulnerabilitiesFeedback: false };
+      const path = 'fakepath.html';
+      const payload = { merge_request_path: path };
+      mutations[types.RECEIVE_CREATE_MERGE_REQUEST_SUCCESS](state, payload);
+
+      expect(visitUrl).toHaveBeenCalledWith(path);
     });
   });
 

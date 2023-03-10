@@ -47,14 +47,6 @@ export default {
       'hasIssue',
       Boolean(vulnerability.issue_feedback && vulnerability.issue_feedback.issue_iid),
     );
-    Vue.set(
-      state.modal.vulnerability,
-      'hasMergeRequest',
-      Boolean(
-        vulnerability.merge_request_feedback &&
-          vulnerability.merge_request_feedback.merge_request_iid,
-      ),
-    );
     Vue.set(state.modal.vulnerability, 'isDismissed', Boolean(vulnerability.dismissal_feedback));
     Vue.set(state.modal, 'error', null);
     Vue.set(state.modal, 'isCommentingOnDismissal', false);
@@ -185,8 +177,11 @@ export default {
     Vue.set(state.modal, 'error', null);
   },
   [types.RECEIVE_CREATE_MERGE_REQUEST_SUCCESS](state, payload) {
+    const url = gon.features.deprecateVulnerabilitiesFeedback
+      ? payload.merge_request_links.at(-1).merge_request_path
+      : payload.merge_request_path;
     // We don't cancel the loading state here because we're navigating away from the page
-    visitUrl(payload.merge_request_path);
+    visitUrl(url);
   },
   [types.RECEIVE_CREATE_MERGE_REQUEST_ERROR](state) {
     state.isCreatingIssue = false;

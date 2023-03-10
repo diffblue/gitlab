@@ -9,6 +9,7 @@ import ModalFooter from 'ee/vue_shared/security_reports/components/modal_footer.
 import SolutionCard from 'ee/vue_shared/security_reports/components/solution_card_vuex.vue';
 import VulnerabilityDetails from 'ee/vue_shared/security_reports/components/vulnerability_details.vue';
 import { __ } from '~/locale';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { VULNERABILITY_MODAL_ID } from './constants';
 
 export default {
@@ -25,6 +26,7 @@ export default {
     SolutionCard,
     VulnerabilityDetails,
   },
+  mixins: [glFeatureFlagMixin()],
   props: {
     modal: {
       type: Object,
@@ -64,17 +66,14 @@ export default {
       return Boolean(!this.isResolved && !this.vulnerability.hasIssue && this.canCreateIssue);
     },
     canCreateMergeRequestForThisVulnerability() {
-      return Boolean(!this.isResolved && !this.vulnerability.hasMergeRequest && this.remediation);
+      return Boolean(!this.isResolved && !this.mergeRequestData && this.remediation);
     },
     canDismissThisVulnerability() {
       return Boolean(!this.isResolved && this.canDismissVulnerability);
     },
     canDownloadPatchForThisVulnerability() {
       return Boolean(
-        !this.isResolved &&
-          this.remediation?.diff?.length > 0 &&
-          !this.vulnerability.hasMergeRequest &&
-          this.remediation,
+        !this.isResolved && this.remediation?.diff?.length > 0 && !this.mergeRequestData,
       );
     },
     isResolved() {
@@ -95,14 +94,10 @@ export default {
     issueFeedback() {
       return this.vulnerability?.issue_feedback;
     },
-    canReadIssueFeedback() {
-      return this.issueFeedback?.issue_url;
-    },
-    mergeRequestFeedback() {
-      return this.vulnerability?.merge_request_feedback;
-    },
-    canReadMergeRequestFeedback() {
-      return this.mergeRequestFeedback?.merge_request_path;
+    mergeRequestData() {
+      return this.glFeatures.deprecateVulnerabilitiesFeedback
+        ? this.vulnerability?.merge_request_links?.at(-1)
+        : this.vulnerability?.merge_request_feedback;
     },
     dismissalFeedback() {
       // grouped security reports are populating `dismissalFeedback` and the dashboards `dismissal_feedback`
@@ -140,10 +135,7 @@ export default {
       return this.dismissalFeedback?.comment_details?.comment;
     },
     showFeedbackNotes() {
-      return (
-        (this.canReadIssueFeedback || this.canReadMergeRequestFeedback) &&
-        (this.issueFeedback || this.mergeRequestFeedback)
-      );
+      return Boolean(this.issueFeedback?.issue_url || this.mergeRequestData?.merge_request_path);
     },
     showDismissalCard() {
       return this.dismissalFeedback || this.modal.isCommentingOnDismissal;
@@ -205,7 +197,7 @@ export default {
       <solution-card
         :solution="solution"
         :remediation="remediation"
-        :has-mr="vulnerability.hasMergeRequest"
+        :has-mr="Boolean(mergeRequestData)"
         :has-download="canDownloadPatchForThisVulnerability"
       />
 
@@ -217,8 +209,8 @@ export default {
           class="card-body"
         />
         <merge-request-note
-          v-if="mergeRequestFeedback"
-          :feedback="mergeRequestFeedback"
+          v-if="mergeRequestData"
+          :feedback="mergeRequestData"
           :project="project"
           class="card-body"
         />
