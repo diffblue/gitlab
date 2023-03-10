@@ -32,8 +32,13 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     return unless namespace
     return if namespace.member_roles.count < MAX_COUNT_PER_GROUP_HIERARCHY
 
-    errors.add(:namespace, s_("MemberRole|maximum number of Member Roles are already in use by the group hierarchy. "\
-                              "Please delete an existing Member Role."))
+    errors.add(
+      :namespace,
+      s_(
+        "MemberRole|maximum number of Member Roles are already in use by the group hierarchy. " \
+        "Please delete an existing Member Role."
+      )
+    )
   end
 
   def validate_namespace_locked
@@ -45,15 +50,25 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   def attributes_locked_after_member_associated
     return unless members.present?
 
-    errors.add(:base, s_("MemberRole|cannot be changed because it is already assigned to a user. "\
-      "Please create a new Member Role instead"))
+    errors.add(
+      :base,
+      s_(
+        "MemberRole|cannot be changed because it is already assigned to a user. " \
+        "Please create a new Member Role instead"
+      )
+    )
   end
 
   def prevent_delete_after_member_associated
     return unless members.present?
 
-    errors.add(:base, s_("MemberRole|cannot be deleted because it is already assigned to a user. "\
-      "Please disassociate the member role from all users before deletion."))
+    errors.add(
+      :base,
+      s_(
+        "MemberRole|cannot be deleted because it is already assigned to a user. " \
+        "Please disassociate the member role from all users before deletion."
+      )
+    )
 
     throw :abort # rubocop:disable Cop/BanCatchThrow
   end

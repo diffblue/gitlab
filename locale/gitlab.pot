@@ -50647,6 +50647,9 @@ msgstr ""
 msgid "can only have one escalation policy"
 msgstr ""
 
+msgid "can't be blank"
+msgstr ""
+
 msgid "can't be enabled when delayed group deletion is disabled"
 msgstr ""
 
