@@ -91,6 +91,58 @@ module API
             present merge_train, with: EE::API::Entities::MergeTrain
           end
         end
+
+        desc 'Add a merge request to a merge train' do
+          detail 'This feature was introduced in GitLab 15.6'
+          success [
+            { code: 201, model: EE::API::Entities::MergeTrain },
+            { code: 202, model: EE::API::Entities::MergeTrain }
+          ]
+          failure [
+            { code: 400, message: 'Failed to merge' },
+            { code: 401, message: 'Unauthorized' },
+            { code: 404, message: 'Not found' }
+          ]
+        end
+        params do
+          optional :sha, type: String, desc: 'If present, then the SHA must match the HEAD of the source `\
+                                       `branch, otherwise the merge fails.'
+          optional :squash, type: Grape::API::Boolean,
+                            desc: 'When true, the commits will be squashed into a single commit on merge'
+          optional :when_pipeline_succeeds, type: Boolean,
+                                                  desc: 'When true, this merge request will be merged when `\
+                                                  `the pipeline succeeds'
+        end
+        post 'merge_requests/:merge_request_iid', requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
+          merge_request = find_project_merge_request(params[:merge_request_iid])
+
+          check_sha_param!(params, merge_request)
+
+          response = ::MergeTrains::AddMergeRequestService.new(
+            merge_request,
+            current_user,
+            params.slice(:sha, :squash, :when_pipeline_succeeds)
+          ).execute
+
+          if response.success?
+            whole_merge_train = ::MergeTrainsFinder
+              .new(user_project, current_user, { target_branch: merge_request.target_branch })
+              .execute
+              .preload_api_entities
+
+            if merge_request.merge_train
+              status 201
+            else
+              status 202
+            end
+
+            present paginate(whole_merge_train), with: EE::API::Entities::MergeTrain
+          elsif response.reason == :forbidden
+            unauthorized!
+          else
+            bad_request!(response.message)
+          end
+        end
       end
     end
 
