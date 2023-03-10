@@ -13,7 +13,7 @@ module Projects
       push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
     end
 
-    feature_category :user_profile
+    feature_category :onboarding
     urgency :low, [:show]
 
     def show; end
