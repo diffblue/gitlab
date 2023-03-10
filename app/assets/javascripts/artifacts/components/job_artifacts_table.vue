@@ -36,6 +36,7 @@ import {
   JOBS_PER_PAGE,
   INITIAL_LAST_PAGE_SIZE,
   BULK_DELETE_FEATURE_FLAG,
+  I18N_BULK_DELETE_CONFIRMATION_TOAST,
 } from '../constants';
 import JobCheckbox from './job_checkbox.vue';
 import ArtifactsBulkDelete from './artifacts_bulk_delete.vue';
@@ -193,6 +194,9 @@ export default {
     clearSelectedArtifacts() {
       this.selectedArtifacts = [];
     },
+    showDeletedToast(deletedCount) {
+      this.$toast.show(I18N_BULK_DELETE_CONFIRMATION_TOAST(deletedCount));
+    },
     downloadPath(job) {
       return job.archive?.downloadPath;
     },
@@ -257,6 +261,7 @@ export default {
       :selected-artifacts="selectedArtifacts"
       :query-variables="queryVariables"
       @clearSelectedArtifacts="clearSelectedArtifacts"
+      @deleted="showDeletedToast"
     />
     <gl-table
       :items="jobArtifacts"

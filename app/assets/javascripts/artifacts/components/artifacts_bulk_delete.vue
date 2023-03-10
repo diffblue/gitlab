@@ -11,7 +11,6 @@ import {
   I18N_BULK_DELETE_MODAL_TITLE,
   I18N_BULK_DELETE_BODY,
   I18N_BULK_DELETE_ACTION,
-  I18N_BULK_DELETE_CONFIRMATION_TOAST,
   I18N_BULK_DELETE_PARTIAL_ERROR,
   I18N_BULK_DELETE_ERROR,
   I18N_MODAL_CANCEL,
@@ -65,7 +64,11 @@ export default {
     },
   },
   methods: {
-    async onConfirmDelete() {
+    async onConfirmDelete(e) {
+      // don't close modal until deletion is complete
+      if (e) {
+        e.preventDefault();
+      }
       this.isDeleting = true;
 
       try {
@@ -85,7 +88,7 @@ export default {
               });
             }
             if (destroyedIds?.length) {
-              this.$toast.show(I18N_BULK_DELETE_CONFIRMATION_TOAST(destroyedCount));
+              this.$emit('deleted', destroyedCount);
 
               // Remove deleted artifacts from the cache
               destroyedIds.forEach((id) => {
