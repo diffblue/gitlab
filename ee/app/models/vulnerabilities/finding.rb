@@ -48,6 +48,12 @@ module Vulnerabilities
 
     has_one :finding_evidence, class_name: 'Vulnerabilities::Finding::Evidence', inverse_of: :finding, foreign_key: 'vulnerability_occurrence_id'
 
+    has_many :security_findings,
+      class_name: 'Security::Finding',
+      primary_key: :uuid,
+      foreign_key: :uuid,
+      inverse_of: :vulnerability_finding
+
     attribute :config_options, :ind_jsonb
 
     attr_writer :sha

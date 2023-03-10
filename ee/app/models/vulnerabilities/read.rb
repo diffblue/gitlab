@@ -12,12 +12,6 @@ module Vulnerabilities
     belongs_to :project
     belongs_to :scanner, class_name: 'Vulnerabilities::Scanner'
 
-    has_many :security_findings,
-             class_name: 'Security::Finding',
-             primary_key: :uuid,
-             foreign_key: :uuid,
-             inverse_of: :vulnerability_read
-
     validates :vulnerability_id, uniqueness: true, presence: true
     validates :project_id, presence: true
     validates :scanner_id, presence: true

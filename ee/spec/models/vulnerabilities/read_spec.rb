@@ -9,7 +9,6 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
     it { is_expected.to belong_to(:vulnerability) }
     it { is_expected.to belong_to(:project) }
     it { is_expected.to belong_to(:scanner).class_name('Vulnerabilities::Scanner') }
-    it { is_expected.to have_many(:security_findings).class_name('Security::Finding') }
   end
 
   describe 'validations' do
