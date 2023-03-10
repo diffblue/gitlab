@@ -1,5 +1,8 @@
 <script>
 import { GlLoadingIcon } from '@gitlab/ui';
+import { s__ } from '~/locale';
+import { createAlert } from '~/alert';
+import { HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import { buildDefaultDashboardFilters } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import { isValidConfigFileName, configFileNameToID } from 'ee/analytics/analytics_dashboards/utils';
@@ -7,8 +10,9 @@ import {
   getCustomDashboard,
   getProductAnalyticsVisualizationList,
   getProductAnalyticsVisualization,
+  saveCustomDashboard,
 } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
-import { inbuiltDashboards, inbuiltVisualizations } from '../gl_dashboards';
+import { builtinDashboards, builtinVisualizations } from '../gl_dashboards';
 import { VISUALIZATION_TYPE_FILE } from '../constants';
 
 export default {
@@ -28,14 +32,16 @@ export default {
       dashboard: null,
       availableVisualizations: [],
       defaultFilters: buildDefaultDashboardFilters(window.location.search),
+      isSaving: false,
     };
   },
   async created() {
     let loadedDashboard;
 
-    if (inbuiltDashboards[this.$route?.params.id]) {
+    if (builtinDashboards[this.$route?.params.id]) {
       // Getting a GitLab pre-defined dashboard
-      loadedDashboard = await inbuiltDashboards[this.$route.params.id]();
+      loadedDashboard = await builtinDashboards[this.$route.params.id]();
+      loadedDashboard.builtin = true;
       this.dashboard = await this.importDashboardDependencies(loadedDashboard);
     } else if (this.customDashboardsProject) {
       // Load custom dashboard from file
@@ -79,8 +85,8 @@ export default {
       const isFileVisualization =
         visualizationType === VISUALIZATION_TYPE_FILE || visualizationType === undefined;
 
-      if (isFileVisualization && inbuiltVisualizations[visualization]) {
-        const module = await inbuiltVisualizations[visualization]();
+      if (isFileVisualization && builtinVisualizations[visualization]) {
+        const module = await builtinVisualizations[visualization]();
         return { ...module };
       }
 
@@ -110,6 +116,31 @@ export default {
           : [],
       };
     },
+    async saveDashboard(dashboardId, dashboardCode) {
+      try {
+        this.isSaving = true;
+        const saveResult = await saveCustomDashboard(
+          dashboardId,
+          dashboardCode,
+          this.customDashboardsProject,
+        );
+        if (saveResult?.status === HTTP_STATUS_CREATED) {
+          this.$toast.show(s__('Analytics|Dashboard was saved successfully'));
+        } else {
+          createAlert({
+            message: s__('Analytics|Error while saving Dashboard!'),
+          });
+        }
+        this.isSaving = false;
+      } catch (error) {
+        this.isSaving = false;
+        createAlert({
+          message: s__('Analytics|Error while saving Dashboard!'),
+          error,
+          reportError: true,
+        });
+      }
+    },
   },
 };
 </script>
@@ -122,8 +153,10 @@ export default {
         :get-visualization="importVisualization"
         :available-visualizations="availableVisualizations"
         :default-filters="defaultFilters"
+        :is-saving="isSaving"
         show-date-range-filter
         sync-url-filters
+        @save="saveDashboard"
       />
     </template>
     <gl-loading-icon v-else size="lg" class="gl-my-7" />

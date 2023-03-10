@@ -1,9 +1,13 @@
 import MockAdapter from 'axios-mock-adapter';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
+
+import service from '~/ide/services/';
+
 import {
   getCustomDashboards,
   getCustomDashboard,
+  saveCustomDashboard,
   getProductAnalyticsVisualizationList,
   getProductAnalyticsVisualization,
   CUSTOM_DASHBOARDS_PATH,
@@ -63,6 +67,38 @@ describe('AnalyticsDashboard', () => {
       expect(axios.get).toHaveBeenCalledWith(expectedUrl, {
         params: { cb: dummyRandom },
       });
+    });
+  });
+
+  describe('dashboard save functions', () => {
+    beforeEach(() => {
+      jest.spyOn(service, 'commit').mockResolvedValue({ data: {} });
+    });
+
+    it('save an existing dashboard', async () => {
+      const dashboardId = 'abc';
+      await saveCustomDashboard(dashboardId, { id: 'test' }, TEST_CUSTOM_DASHBOARDS_PROJECT);
+
+      const callPayload = {
+        branch: 'main',
+        commit_message: 'Updating dashboard abc',
+        actions: [
+          {
+            action: 'update',
+            file_path: `${CUSTOM_DASHBOARDS_PATH}${dashboardId}.yml`,
+            previous_path: undefined,
+            content: 'id: test\n',
+            encoding: 'text',
+            last_commit_id: undefined,
+          },
+        ],
+        start_sha: undefined,
+      };
+
+      expect(service.commit).toHaveBeenCalledWith(
+        TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+        callPayload,
+      );
     });
   });
 

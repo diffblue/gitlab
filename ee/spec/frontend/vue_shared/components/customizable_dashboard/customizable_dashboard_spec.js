@@ -19,7 +19,7 @@ import {
   buildDefaultDashboardFilters,
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
-import { dashboard, mockDateRangeFilterChangePayload } from './mock_data';
+import { dashboard, builtinDashboard, mockDateRangeFilterChangePayload } from './mock_data';
 
 jest.mock('~/alert');
 jest.mock('gridstack', () => ({
@@ -42,12 +42,13 @@ describe('CustomizableDashboard', () => {
 
   const sentryError = new Error('Network error');
 
-  const createWrapper = (props = {}) => {
-    dashboard.default = { ...dashboard };
+  const createWrapper = (props = {}, loadedDashboard = dashboard) => {
+    const loadDashboard = { ...loadedDashboard };
+    loadDashboard.default = { ...loadDashboard };
 
     wrapper = shallowMountExtended(CustomizableDashboard, {
       propsData: {
-        initialDashboard: dashboard,
+        initialDashboard: loadDashboard,
         availableVisualizations: [],
         ...props,
       },
@@ -60,6 +61,8 @@ describe('CustomizableDashboard', () => {
   const findGridStackPanels = () => wrapper.findAllByTestId('grid-stack-panel');
   const findPanels = () => wrapper.findAllComponents(PanelsBase);
   const findEditButton = () => wrapper.findByTestId('dashboard-edit-btn');
+  const findDashboardTB = () => wrapper.findByTestId('dashboard-title-tb');
+  const findSaveButton = () => wrapper.findByTestId('dashboard-save-btn');
   const findCancelEditButton = () => wrapper.findByTestId('dashboard-cancel-edit-btn');
   const findCodeButton = () => wrapper.findByTestId('dashboard-code-btn');
   const findFilters = () => wrapper.findByTestId('dashboard-filters');
@@ -163,7 +166,7 @@ describe('CustomizableDashboard', () => {
       });
     });
 
-    it('shows Edit Button', () => {
+    it('shows Edit Button for a custom dashboard', () => {
       expect(findEditButton().exists()).toBe(true);
     });
 
@@ -173,6 +176,22 @@ describe('CustomizableDashboard', () => {
 
     it('does not sync filters with the URL', () => {
       expect(findUrlSync().exists()).toBe(false);
+    });
+  });
+
+  describe('when builtin Dashboard is loaded', () => {
+    beforeEach(() => {
+      loadCSSFile.mockResolvedValue();
+
+      createWrapper({}, builtinDashboard);
+    });
+
+    it('shows no Edit Button for a builtin dashboard', () => {
+      expect(findEditButton().exists()).toBe(false);
+    });
+
+    it('shows Code Button', () => {
+      expect(findCodeButton().exists()).toBe(true);
     });
   });
 
@@ -200,6 +219,23 @@ describe('CustomizableDashboard', () => {
         'gs-x': '10',
         'gs-y': '20',
       });
+    });
+
+    it('shows title box and sets title in object', async () => {
+      const textinput = findDashboardTB();
+      expect(textinput.exists()).toBe(true);
+      expect(textinput.element.value).toBe('Analytics Overview');
+
+      textinput.setValue('New Title');
+      textinput.trigger('input');
+
+      expect(textinput.element.value).toBe('New Title');
+    });
+
+    it('clicking Save Button will call correctly emit', async () => {
+      jest.spyOn(wrapper.vm, '$emit');
+      await findSaveButton().vm.$emit('click');
+      expect(wrapper.vm.$emit).toHaveBeenCalledWith('save', dashboard.id, dashboard);
     });
 
     it('clicking Code Button will show code', async () => {
