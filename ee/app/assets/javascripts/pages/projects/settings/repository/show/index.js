@@ -1,4 +1,5 @@
 /* eslint-disable no-new */
+import 'bootstrap/js/dist/collapse';
 import ProtectedBranchEditList from 'ee/protected_branches/protected_branch_edit_list';
 import ProtectedTagCreate from 'ee/protected_tags/protected_tag_create';
 import ProtectedTagEditList from 'ee/protected_tags/protected_tag_edit_list';
