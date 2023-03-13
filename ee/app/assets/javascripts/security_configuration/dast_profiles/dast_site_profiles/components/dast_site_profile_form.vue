@@ -394,14 +394,11 @@ export default {
           <template #label>
             {{ $options.i18n.requestHeaders.label }}
             <gl-icon
-              ref="requestHeadersInfo"
+              id="request-headers-info"
               name="information-o"
               class="gl-vertical-align-text-bottom gl-text-gray-400 gl-ml-2"
             />
-            <gl-popover
-              :target="() => $refs.requestHeadersInfo.$el"
-              placement="top"
-              triggers="focus hover"
+            <gl-popover target="request-headers-info" placement="top" triggers="focus hover"
               ><gl-sprintf :message="$options.i18n.requestHeaders.tooltip">
                 <template #link="{ content }">
                   <gl-link

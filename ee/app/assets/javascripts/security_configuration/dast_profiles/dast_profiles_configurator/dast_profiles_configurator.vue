@@ -1,6 +1,5 @@
 <script>
 import { GlSprintf, GlLink } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
 import ProfileConflictAlert from 'ee/on_demand_scans_form/components/profile_selector/profile_conflict_alert.vue';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { queryToObject } from '~/lib/utils/url_utility';
@@ -19,39 +18,7 @@ import {
   DRAWER_VIEW_MODE,
 } from 'ee/on_demand_scans/constants';
 import SectionLayout from '~/vue_shared/security_configuration/components/section_layout.vue';
-import {
-  ERROR_MESSAGES,
-  ERROR_FETCH_SCANNER_PROFILES,
-  ERROR_FETCH_SITE_PROFILES,
-  SCANNER_PROFILES_QUERY,
-  SITE_PROFILES_QUERY,
-} from 'ee/on_demand_scans_form/settings';
-
-const createProfilesApolloOptions = (name, field, savedField, { fetchQuery, fetchError }) => ({
-  query: fetchQuery,
-  variables() {
-    return {
-      fullPath: this.fullPath,
-    };
-  },
-  update(data) {
-    const nodes = data?.project?.[name]?.nodes ?? [];
-    if (nodes.length === 1) {
-      this[field] = nodes[0].id;
-    }
-
-    if (this[savedField] && nodes.length > 1) {
-      this[field] = this.findSavedProfileId(nodes, this[savedField]);
-    }
-
-    return nodes;
-  },
-  error(e) {
-    Sentry.captureException(e);
-    this.$emit('error', ERROR_MESSAGES[fetchError]);
-    this.errorType = fetchError;
-  },
-});
+import { ERROR_MESSAGES } from 'ee/on_demand_scans_form/settings';
 
 export default {
   SCANNER_TYPE,
@@ -74,43 +41,9 @@ export default {
     SectionLayout,
     ProfileConflictAlert,
   },
-  apollo: {
-    scannerProfiles: createProfilesApolloOptions(
-      'scannerProfiles',
-      'selectedScannerProfileId',
-      'savedScannerProfileName',
-      SCANNER_PROFILES_QUERY,
-    ),
-    siteProfiles: createProfilesApolloOptions(
-      'siteProfiles',
-      'selectedSiteProfileId',
-      'savedSiteProfileName',
-      SITE_PROFILES_QUERY,
-    ),
-  },
   mixins: [dastProfileConfiguratorMixin()],
   props: {
     configurationHeader: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    savedProfiles: {
-      type: Object,
-      required: false,
-      default: null,
-    },
-    savedScannerProfileName: {
-      type: String,
-      required: false,
-      default: null,
-    },
-    savedSiteProfileName: {
-      type: String,
-      required: false,
-      default: null,
-    },
-    fullPath: {
       type: String,
       required: false,
       default: '',
@@ -133,56 +66,18 @@ export default {
   },
   data() {
     return {
-      scannerProfiles: [],
-      siteProfiles: [],
-      errorType: null,
-      isSideDrawerOpen: false,
       activeProfile: undefined,
-      selectedScannerProfileId: this.savedProfiles?.dastScannerProfile.id || null,
-      selectedSiteProfileId: this.savedProfiles?.dastSiteProfile.id || null,
     };
   },
   computed: {
     errorMessage() {
       return ERROR_MESSAGES[this.errorType] || null;
     },
-    failedToLoadProfiles() {
-      return [ERROR_FETCH_SCANNER_PROFILES, ERROR_FETCH_SITE_PROFILES].includes(this.errorType);
-    },
-    isLoadingProfiles() {
-      return ['scannerProfiles', 'siteProfiles'].some((name) => this.$apollo.queries[name].loading);
-    },
-    isScannerProfile() {
-      return this.profileType === SCANNER_TYPE;
-    },
     profileIdInUse() {
       return this.isScannerProfile ? this.savedScannerProfileId : this.savedSiteProfileId;
     },
-    savedScannerProfileId() {
-      return this.savedScannerProfileName
-        ? this.findSavedProfileId(this.scannerProfiles, this.savedScannerProfileName)
-        : this.savedProfiles?.dastScannerProfile.id;
-    },
-    savedSiteProfileId() {
-      return this.savedSiteProfileName
-        ? this.findSavedProfileId(this.siteProfiles, this.savedSiteProfileName)
-        : this.savedProfiles?.dastSiteProfile.id;
-    },
-    selectedScannerProfile() {
-      return this.selectedScannerProfileId
-        ? this.scannerProfiles.find(({ id }) => id === this.selectedScannerProfileId)
-        : null;
-    },
-    selectedSiteProfile() {
-      return this.selectedSiteProfileId
-        ? this.siteProfiles.find(({ id }) => id === this.selectedSiteProfileId)
-        : null;
-    },
     selectedProfileId() {
       return this.isScannerProfile ? this.selectedScannerProfileId : this.selectedSiteProfileId;
-    },
-    selectedProfiles() {
-      return this.isScannerProfile ? this.scannerProfiles : this.siteProfiles;
     },
     libraryLink() {
       return this.isScannerProfile ? this.scannerProfilesLibraryPath : this.siteProfilesLibraryPath;
@@ -222,9 +117,6 @@ export default {
       : this.selectedScannerProfileId;
   },
   methods: {
-    findSavedProfileId(profiles, name) {
-      return profiles.find(({ profileName }) => name === profileName)?.id || null;
-    },
     enableEditingMode({ profileType }) {
       this.resetActiveProfile();
 
@@ -233,71 +125,15 @@ export default {
         this.openProfileDrawer({ profileType, mode: DRAWER_VIEW_MODE.EDITING_MODE });
       });
     },
-    reopenProfileDrawer() {
-      this.isSideDrawerOpen = false;
-      this.$nextTick(() => {
-        this.isSideDrawerOpen = true;
-      });
-    },
-    async openProfileDrawer({ profileType, mode }) {
-      if (this.sharedData.formTouched) {
-        this.toggleModal({ showModal: true });
-        await this.setCachedPayload({ profileType, mode });
-
-        return;
-      }
-
-      await this.goFirstStep({ profileType, mode });
-
-      this.isSideDrawerOpen = false;
-      this.$nextTick(() => {
-        this.isSideDrawerOpen = true;
-        this.$emit('open-drawer');
-      });
-    },
-    closeProfileDrawer() {
-      this.isSideDrawerOpen = false;
-      this.activeProfile = {};
-    },
     selectActiveProfile(type) {
       this.activeProfile =
         type === SCANNER_TYPE ? this.selectedScannerProfile : this.selectedSiteProfile;
-    },
-    async selectProfile(payload) {
-      this.updateProfileFromSelector(payload);
-      await this.goBack();
-
-      this.closeProfileDrawer();
-    },
-    isNewProfile(id) {
-      return this.selectedProfiles.every((profile) => profile.id !== id);
     },
     updateProfiles() {
       this.$emit('profiles-selected', {
         scannerProfile: this.selectedScannerProfile,
         siteProfile: this.selectedSiteProfile,
       });
-    },
-    updateProfileFromSelector({ profile: { id }, profileType }) {
-      if (profileType === SCANNER_TYPE) {
-        this.selectedScannerProfileId = id;
-      } else {
-        this.selectedSiteProfileId = id;
-      }
-      this.closeProfileDrawer();
-    },
-    onScannerProfileCreated({ profile, profileType }) {
-      /**
-       * TODO remove refetch method
-       * after feature is complete
-       * substitute with cache update flow
-       */
-      if (this.isNewProfile(profile.id)) {
-        this.updateProfileFromSelector({ profile, profileType });
-      }
-
-      const type = `${profileType}Profiles`;
-      this.$apollo.queries[type].refetch();
     },
     resetActiveProfile() {
       this.activeProfile = undefined;

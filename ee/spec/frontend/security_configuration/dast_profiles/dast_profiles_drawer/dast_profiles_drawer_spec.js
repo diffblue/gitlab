@@ -1,9 +1,6 @@
 import { GlDrawer, GlLink } from '@gitlab/ui';
-import Vue from 'vue';
-import VueApollo from 'vue-apollo';
 import { __ } from '~/locale';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
-import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import DastProfilesDrawer from 'ee/security_configuration/dast_profiles/dast_profiles_drawer/dast_profiles_drawer.vue';
 import DastProfilesLoader from 'ee/security_configuration/dast_profiles/components/dast_profiles_loader.vue';
@@ -11,23 +8,18 @@ import {
   scannerProfiles,
   mockSharedData,
 } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
-import { SCANNER_TYPE, DRAWER_VIEW_MODE } from 'ee/on_demand_scans/constants';
 import resolvers from 'ee/vue_shared/security_configuration/graphql/resolvers/resolvers';
-import { typePolicies } from 'ee/vue_shared/security_configuration/graphql/provider';
+import { SCANNER_TYPE, DRAWER_VIEW_MODE } from 'ee/on_demand_scans/constants';
+import { createMockApolloProvider } from '../graphql/create_mock_apollo_provider';
 
 describe('DastProfilesDrawer', () => {
   let wrapper;
-  let fakeApollo;
   const projectPath = 'projectPath';
   const libraryLink = 'libraryLink';
 
-  Vue.use(VueApollo);
-
   const createComponent = (options = {}) => {
-    fakeApollo = createMockApollo([], resolvers, { typePolicies });
-
     wrapper = mountExtended(DastProfilesDrawer, {
-      apolloProvider: fakeApollo,
+      apolloProvider: createMockApolloProvider(),
       propsData: {
         ...options,
       },
