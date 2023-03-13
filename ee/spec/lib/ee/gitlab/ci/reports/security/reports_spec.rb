@@ -4,21 +4,21 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Ci::Reports::Security::Reports do
   let_it_be(:pipeline) { create(:ci_pipeline) }
-  let_it_be(:artifact) { create(:ci_job_artifact, :sast) }
+  let_it_be(:sast_artifact) { create(:ci_job_artifact, :sast) }
 
   let(:security_reports) { described_class.new(pipeline) }
 
   describe "#violates_default_policy_against?" do
-    let(:high_severity_dast) { build(:ci_reports_security_finding, severity: 'high', report_type: :dast) }
+    let(:high_severity_sast) { build(:ci_reports_security_finding, severity: 'high', report_type: :sast) }
     let(:vulnerabilities_allowed) { 0 }
     let(:severity_levels) { %w(critical high) }
     let(:vulnerability_states) { %w(newly_detected) }
     let(:report_types) { [] }
 
-    subject { security_reports.violates_default_policy_against?(target_reports, vulnerabilities_allowed, severity_levels, vulnerability_states, report_types) }
+    subject(:reports_violate_policy?) { security_reports.violates_default_policy_against?(target_reports, vulnerabilities_allowed, severity_levels, vulnerability_states, report_types) }
 
     before do
-      security_reports.get_report('sast', artifact).add_finding(high_severity_dast)
+      security_reports.get_report('sast', sast_artifact).add_finding(high_severity_sast)
     end
 
     context 'when the target_reports is `nil`' do
@@ -27,7 +27,7 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
       it { is_expected.to be(true) }
 
       context 'with existing vulnerabilities' do
-        let!(:finding) { create(:vulnerabilities_finding, :detected, report_type: :sast, project: pipeline.project, uuid: high_severity_dast.uuid) }
+        let!(:finding) { create(:vulnerabilities_finding, :detected, report_type: :sast, project: pipeline.project, uuid: high_severity_sast.uuid) }
 
         it { is_expected.to be(true) }
 
@@ -68,13 +68,13 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
 
       context "when none of the reports have a new unsafe vulnerability" do
         before do
-          target_reports.get_report('sast', artifact).add_finding(high_severity_dast)
+          target_reports.get_report('sast', sast_artifact).add_finding(high_severity_sast)
         end
 
         it { is_expected.to be(false) }
 
         context 'with existing vulnerabilities' do
-          let!(:finding) { create(:vulnerabilities_finding, :detected, report_type: :sast, project: pipeline.project, uuid: high_severity_dast.uuid) }
+          let!(:finding) { create(:vulnerabilities_finding, :detected, report_type: :sast, project: pipeline.project, uuid: high_severity_sast.uuid) }
 
           it { is_expected.to be(false) }
 
@@ -110,7 +110,7 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
         subject { without_reports.violates_default_policy_against?(target_reports, vulnerabilities_allowed, severity_levels, vulnerability_states) }
 
         before do
-          target_reports.get_report('sast', artifact).add_finding(high_severity_dast)
+          target_reports.get_report('sast', sast_artifact).add_finding(high_severity_sast)
         end
 
         it { is_expected.to be(true) }
@@ -125,7 +125,24 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
           create(:vulnerabilities_finding, :detected, report_type: :sast, project: pipeline.project,
                                                       uuid: sast_finding.uuid)
 
-          target_reports.get_report('sast', artifact).add_finding(sast_finding)
+          target_reports.get_report('sast', sast_artifact).add_finding(sast_finding)
+        end
+
+        shared_examples_for 'count operation with uuid and state filter' do |number_of_batches:|
+          before do
+            stub_const("::Gitlab::Ci::Reports::Security::Concerns::ScanFinding::COUNT_BATCH_SIZE", 1)
+
+            another_sast_finding = build(:ci_reports_security_finding, severity: 'high', report_type: :sast)
+
+            security_reports.get_report('sast', sast_artifact).add_finding(another_sast_finding)
+          end
+
+          it 'runs in batches' do
+            expect(::Vulnerability).to receive(
+              :with_findings_by_uuid_and_state).exactly(number_of_batches).times.and_call_original
+
+            reports_violate_policy?
+          end
         end
 
         context "with feature disabled" do
@@ -134,14 +151,17 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
           end
 
           it { is_expected.to be(false) }
+
+          # 2 inviolating sast findings for the source security_reports branch pipeline.
+          it_behaves_like 'count operation with uuid and state filter', number_of_batches: 2
         end
 
         context "with feature enabled" do
-          before do
-            stub_feature_flags(enforce_scan_result_policies_for_preexisting_vulnerabilities: pipeline.project)
-          end
-
           it { is_expected.to be(true) }
+
+          # 2 inviolating sast findings for the source branch security_reports pipeline.
+          # 1 violating sast finding for the default target branch target_reports pipeline.
+          it_behaves_like 'count operation with uuid and state filter', number_of_batches: 3
         end
       end
     end

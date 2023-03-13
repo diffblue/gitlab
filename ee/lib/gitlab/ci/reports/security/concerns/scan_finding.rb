@@ -8,6 +8,8 @@ module Gitlab
           module ScanFinding
             extend ActiveSupport::Concern
 
+            COUNT_BATCH_SIZE = 50
+
             def violates_default_policy_against?(
               target_reports, vulnerabilities_allowed, severity_levels, vulnerability_states, report_types = [])
               return true if scan_removed?(target_reports)
@@ -52,11 +54,13 @@ module Gitlab
             def count_by_uuid(uuids, states)
               states_without_newly_detected = states.reject { |state| ApprovalProjectRule::NEWLY_DETECTED == state }
 
-              pipeline
-                .project
-                .vulnerabilities
-                .with_findings_by_uuid_and_state(uuids, states_without_newly_detected)
-                .count
+              uuids.each_slice(COUNT_BATCH_SIZE).sum do |uuids_batch|
+                pipeline
+                  .project
+                  .vulnerabilities
+                  .with_findings_by_uuid_and_state(uuids_batch, states_without_newly_detected)
+                  .count
+              end
             end
 
             def scan_removed?(target_reports)
