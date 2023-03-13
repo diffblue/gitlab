@@ -456,7 +456,7 @@
 - :name: cronjob:package_metadata_sync
   :worker_name: PackageMetadata::SyncWorker
   :feature_category: :license_compliance
-  :has_external_dependencies: false
+  :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1

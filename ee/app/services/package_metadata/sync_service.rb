@@ -5,10 +5,12 @@ module PackageMetadata
     UnknownAdapterError = Class.new(StandardError)
     INGEST_SLICE_SIZE = 1000
 
-    def self.execute
+    def self.execute(signal)
       SyncConfiguration.all.each do |config|
+        break if signal.stop?
+
         connector = connector_for(config)
-        new(connector, config.version_format, config.purl_type).execute
+        new(connector, config.version_format, config.purl_type, signal).execute
       end
     end
 
@@ -24,24 +26,33 @@ module PackageMetadata
       end
     end
 
-    def initialize(connector, version_format, purl_type)
+    def initialize(connector, version_format, purl_type, signal)
       @connector = connector
       @version_format = version_format
       @purl_type = purl_type
+      @signal = signal
     end
 
     def execute
       connector.data_after(checkpoint).each do |csv_file|
+        Gitlab::AppJsonLogger.debug(class: self.class.name,
+          message: "Evaluating data for #{purl_type}/#{version_format}/#{csv_file.sequence}/#{csv_file.chunk}")
+
         csv_file.each_slice(INGEST_SLICE_SIZE) do |data_objects|
           ingest(data_objects)
         end
         checkpoint.update(sequence: csv_file.sequence, chunk: csv_file.chunk)
+
+        if signal.stop?
+          return Gitlab::AppJsonLogger.debug(class: self.class.name,
+            message: "Stopping #{purl_type} sync after checkpointing")
+        end
       end
     end
 
     private
 
-    attr_accessor :connector, :version_format, :purl_type
+    attr_accessor :connector, :version_format, :purl_type, :signal
 
     def ingest(data)
       Ingestion::IngestionService.execute(data)
