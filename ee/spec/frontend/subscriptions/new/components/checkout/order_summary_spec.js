@@ -523,6 +523,18 @@ describe('Order Summary', () => {
           promoCode: 'promoCode',
         });
       });
+
+      it('tracks events for successfully applying a promo code', () => {
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_button', {
+          label: 'apply_coupon_code_saas',
+        });
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'success_response', {
+          label: 'apply_coupon_code_success_saas',
+        });
+        expect(trackingSpy).not.toHaveBeenCalledWith(undefined, 'failure_response', {
+          label: 'apply_coupon_code_failure_saas',
+        });
+      });
     });
 
     describe('when promo code is valid but price is not shown', () => {
@@ -578,6 +590,18 @@ describe('Order Summary', () => {
 
       it('requests invoice preview without promo code after an invalid promo code', () => {
         expect(invoicePreviewSpy).toHaveBeenLastCalledWith({ planId: 'secondPlanId', quantity: 1 });
+      });
+
+      it('tracks events for failing to apply a promo code', () => {
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_button', {
+          label: 'apply_coupon_code_saas',
+        });
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'failure_response', {
+          label: 'apply_coupon_code_failure_saas',
+        });
+        expect(trackingSpy).not.toHaveBeenCalledWith(undefined, 'success_response', {
+          label: 'apply_coupon_code_success_saas',
+        });
       });
     });
 
