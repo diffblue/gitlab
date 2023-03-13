@@ -108,7 +108,7 @@ RSpec.describe Sidebars::Projects::Menus::AnalyticsMenu, feature_category: :navi
 
       before do
         stub_feature_flags(combined_analytics_dashboards: true)
-        stub_licensed_features(product_analytics: true)
+        stub_licensed_features(combined_project_analytics_dashboards: true)
       end
 
       specify { is_expected.not_to be_nil }
@@ -140,7 +140,7 @@ RSpec.describe Sidebars::Projects::Menus::AnalyticsMenu, feature_category: :navi
 
       describe 'when the license does not support the feature' do
         before do
-          stub_licensed_features(product_analytics: false)
+          stub_licensed_features(combined_project_analytics_dashboards: false)
         end
 
         specify { is_expected.to be_nil }

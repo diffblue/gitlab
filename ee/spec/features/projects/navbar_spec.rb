@@ -136,7 +136,7 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
   context 'when analytics dashboards is available' do
     before do
       stub_feature_flags(combined_analytics_dashboards: true)
-      stub_licensed_features(product_analytics: true)
+      stub_licensed_features(combined_project_analytics_dashboards: true)
 
       insert_before_sub_nav_item(
         _('Value stream'),
