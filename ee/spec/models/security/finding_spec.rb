@@ -437,6 +437,18 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
     end
   end
 
+  describe 'finding_details delegated to `finding_data` details' do
+    let(:finding) { build(:security_finding) }
+
+    subject { finding.finding_details }
+
+    before do
+      finding.finding_data['details'] = [{ name: 'Test Detail' }]
+    end
+
+    it { is_expected.to eq([{ name: 'Test Detail' }]) }
+  end
+
   describe '#remediations', :aggregate_failures do
     let(:finding) { create(:security_finding, finding_data: finding_data) }
     let(:mock_remediations) { [Object.new] }

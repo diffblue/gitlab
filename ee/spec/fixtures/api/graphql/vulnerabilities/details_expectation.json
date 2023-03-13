@@ -1,0 +1,305 @@
+[
+  {
+    "__typename": "VulnerabilityDetailUrl",
+    "description": null,
+    "fieldName": "url",
+    "href": "https://gitlab.com",
+    "name": "GitLab URL",
+    "text": "URL to GitLab.com"
+  },
+  {
+    "__typename": "VulnerabilityDetailCode",
+    "fieldName": "code",
+    "lang": "javascript",
+    "name": "Truthy Code",
+    "value": "function isTrue(value) { value ? true : false }"
+  },
+  {
+    "__typename": "VulnerabilityDetailDiff",
+    "after": "Hello there\nHello Wooorld\nanew line\nhello again\nhello again",
+    "before": "Hello there\nHello world\nhello again",
+    "description": "How the data was modified",
+    "fieldName": "diff",
+    "name": "Modified data"
+  },
+  {
+    "__typename": "VulnerabilityDetailText",
+    "description": null,
+    "fieldName": "text",
+    "name": "Text with more info",
+    "value": "More info about this vulnerability"
+  },
+  {
+    "__typename": "VulnerabilityDetailList",
+    "description": "The list of URLs in this report",
+    "fieldName": "urls",
+    "items": [
+      {
+        "__typename": "VulnerabilityDetailUrl",
+        "description": null,
+        "fieldName": null,
+        "href": "https://gitlab.com",
+        "name": null,
+        "text": null
+      },
+      {
+        "__typename": "VulnerabilityDetailUrl",
+        "description": null,
+        "fieldName": null,
+        "href": "https://gitlab.com",
+        "name": null,
+        "text": null
+      },
+      {
+        "__typename": "VulnerabilityDetailUrl",
+        "description": null,
+        "fieldName": null,
+        "href": "https://gitlab.com",
+        "name": null,
+        "text": null
+      }
+    ],
+    "name": "URLs"
+  },
+  {
+    "__typename": "VulnerabilityDetailCommit",
+    "description": "Commit where the vulnerability was identified",
+    "fieldName": "commit",
+    "name": "The Commit",
+    "value": "41df7b7eb3be2b5be2c406c2f6d28cd6631eeb19"
+  },
+  {
+    "__typename": "VulnerabilityDetailFileLocation",
+    "description": "The first location",
+    "fieldName": "location1",
+    "fileName": "new_file.c",
+    "lineEnd": 6,
+    "lineStart": 5,
+    "name": "Location 1"
+  },
+  {
+    "__typename": "VulnerabilityDetailMarkdown",
+    "description": "GFM-flavored markdown",
+    "fieldName": "marked_up",
+    "name": "Marked Data",
+    "value": "Here is markdown `inline code` #1 [test](gitlab.com)\n\n![GitLab Logo](https://about.gitlab.com/images/press/logo/preview/gitlab-logo-white-preview.png)"
+  },
+  {
+    "__typename": "VulnerabilityDetailCode",
+    "fieldName": "code_block",
+    "lang": null,
+    "name": "Code Block",
+    "value": "Here\nis\ncode"
+  },
+  {
+    "__typename": "VulnerabilityDetailList",
+    "description": null,
+    "fieldName": "named_list",
+    "items": [
+      {
+        "__typename": "VulnerabilityDetailText",
+        "description": "The description for field 1",
+        "fieldName": "field1",
+        "name": "Field 1",
+        "value": "Text"
+      },
+      {
+        "__typename": "VulnerabilityDetailText",
+        "description": "The description for field 2",
+        "fieldName": "field2",
+        "name": "Field 2",
+        "value": "Text"
+      },
+      {
+        "__typename": "VulnerabilityDetailList"
+      }
+    ],
+    "name": "A Named List"
+  },
+  {
+    "__typename": "VulnerabilityDetailTable",
+    "description": null,
+    "fieldName": "table_data",
+    "name": "Registers",
+    "headers": [
+      {
+        "__typename": "VulnerabilityDetailText",
+        "description": null,
+        "fieldName": null,
+        "name": null,
+        "value": "Register"
+      },
+      {
+        "__typename": "VulnerabilityDetailText",
+        "description": null,
+        "fieldName": null,
+        "name": null,
+        "value": "Value"
+      },
+      {
+        "__typename": "VulnerabilityDetailText",
+        "description": null,
+        "fieldName": null,
+        "name": null,
+        "value": "Note"
+      }
+    ],
+    "rows": [
+      {
+        "row": [
+          {
+            "__typename": "VulnerabilityDetailText",
+            "description": null,
+            "fieldName": null,
+            "name": null,
+            "value": "eax"
+          },
+          {
+            "__typename": "VulnerabilityDetailInt",
+            "description": null,
+            "fieldName": null,
+            "name": null,
+            "value": 1336
+          },
+          {
+            "__typename": "VulnerabilityDetailText",
+            "description": null,
+            "fieldName": null,
+            "name": null,
+            "value": "A note for eax"
+          }
+        ]
+      },
+      {
+        "row": [
+          {
+            "__typename": "VulnerabilityDetailText",
+            "description": null,
+            "fieldName": null,
+            "name": null,
+            "value": "ebx"
+          },
+          {
+            "__typename": "VulnerabilityDetailInt",
+            "description": null,
+            "fieldName": null,
+            "name": null,
+            "value": 1337
+          },
+          {
+            "__typename": "VulnerabilityDetailBoolean",
+            "description": null,
+            "fieldName": null,
+            "name": null,
+            "value": true
+          }
+        ]
+      },
+      {
+        "row": [
+          {
+            "__typename": "VulnerabilityDetailText",
+            "description": null,
+            "fieldName": null,
+            "name": null,
+            "value": "ecx"
+          },
+          {
+            "__typename": "VulnerabilityDetailInt",
+            "description": null,
+            "fieldName": null,
+            "name": null,
+            "value": 1338
+          },
+          {
+            "__typename": "VulnerabilityDetailText",
+            "description": null,
+            "fieldName": null,
+            "name": null,
+            "value": "A note for ecx"
+          }
+        ]
+      },
+      {
+        "row": [
+          {
+            "__typename": "VulnerabilityDetailText",
+            "description": null,
+            "fieldName": null,
+            "name": null,
+            "value": "edx"
+          },
+          {
+            "__typename": "VulnerabilityDetailInt",
+            "description": null,
+            "fieldName": null,
+            "name": null,
+            "value": 1339
+          },
+          {
+            "__typename": "VulnerabilityDetailText",
+            "description": null,
+            "fieldName": null,
+            "name": null,
+            "value": "A note for edx"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "__typename": "VulnerabilityDetailText",
+    "description": "The actual description of the description",
+    "fieldName": "description",
+    "name": "Description",
+    "value": "Text value"
+  },
+  {
+    "__typename": "VulnerabilityDetailList",
+    "description": null,
+    "fieldName": "stack_trace",
+    "items": [
+      {
+        "__typename": "VulnerabilityDetailModuleLocation",
+        "description": null,
+        "fieldName": null,
+        "moduleName": "compiled_binary",
+        "name": null,
+        "offset": 100
+      },
+      {
+        "__typename": "VulnerabilityDetailModuleLocation",
+        "description": null,
+        "fieldName": null,
+        "moduleName": "compiled_binary",
+        "name": null,
+        "offset": 500
+      },
+      {
+        "__typename": "VulnerabilityDetailModuleLocation",
+        "description": null,
+        "fieldName": null,
+        "moduleName": "compiled_binary",
+        "name": null,
+        "offset": 700
+      },
+      {
+        "__typename": "VulnerabilityDetailModuleLocation",
+        "description": null,
+        "fieldName": null,
+        "moduleName": "compiled_binary",
+        "name": null,
+        "offset": 1000
+      }
+    ],
+    "name": "Stack Trace"
+  },
+  {
+    "__typename": "VulnerabilityDetailModuleLocation",
+    "description": "The first location",
+    "fieldName": "module_location1",
+    "moduleName": "gitlab.h",
+    "name": "Module Location 1",
+    "offset": 100
+  }
+]

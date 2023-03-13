@@ -21619,6 +21619,19 @@ Represents the vulnerability details location within a file in the project.
 | <a id="vulnerabilitydetailmodulelocationname"></a>`name` | [`String`](#string) | Name of the field. |
 | <a id="vulnerabilitydetailmodulelocationoffset"></a>`offset` | [`Int!`](#int) | Offset of the module location. |
 
+### `VulnerabilityDetailRow`
+
+Represents an individual row in a table.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="vulnerabilitydetailrowdescription"></a>`description` | [`String`](#string) | Description of the field. |
+| <a id="vulnerabilitydetailrowfieldname"></a>`fieldName` | [`String`](#string) | Name of the field. |
+| <a id="vulnerabilitydetailrowname"></a>`name` | [`String`](#string) | Name of the field. |
+| <a id="vulnerabilitydetailrowrow"></a>`row` | [`[VulnerabilityDetail!]!`](#vulnerabilitydetail) | Value of the field. |
+
 ### `VulnerabilityDetailTable`
 
 Represents the vulnerability details table value.
@@ -21631,7 +21644,7 @@ Represents the vulnerability details table value.
 | <a id="vulnerabilitydetailtablefieldname"></a>`fieldName` | [`String`](#string) | Name of the field. |
 | <a id="vulnerabilitydetailtableheaders"></a>`headers` | [`[VulnerabilityDetail!]!`](#vulnerabilitydetail) | Table headers. |
 | <a id="vulnerabilitydetailtablename"></a>`name` | [`String`](#string) | Name of the field. |
-| <a id="vulnerabilitydetailtablerows"></a>`rows` | [`[VulnerabilityDetail!]!`](#vulnerabilitydetail) | Table rows. |
+| <a id="vulnerabilitydetailtablerows"></a>`rows` | [`[VulnerabilityDetailRow!]!`](#vulnerabilitydetailrow) | Table rows. |
 
 ### `VulnerabilityDetailText`
 
