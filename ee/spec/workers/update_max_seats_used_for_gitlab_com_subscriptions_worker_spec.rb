@@ -28,6 +28,8 @@ RSpec.describe UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker, :saas do
     before do
       allow(Gitlab::Database).to receive(:read_only?) { db_is_read_only }
       allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?) { true }
+
+      stub_feature_flags(disable_update_max_seats_worker: false)
     end
 
     def perform_and_reload
@@ -64,6 +66,14 @@ RSpec.describe UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker, :saas do
           .and change(gitlab_subscription_2, :seats_owed).from(0).to(12)
           .and change(gitlab_subscription_2, :max_seats_used_changed_at).to(be_like_time(Time.current))
       end
+    end
+
+    context 'when disable_update_max_seats_worker is enabled' do
+      before do
+        stub_feature_flags(disable_update_max_seats_worker: true)
+      end
+
+      include_examples 'updates nothing'
     end
 
     context 'where the DB is read-only' do

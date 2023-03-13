@@ -12,6 +12,7 @@ class UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker # rubocop:disable Scalab
 
   # rubocop: disable CodeReuse/ActiveRecord
   def perform
+    return if Feature.enabled?(:disable_update_max_seats_worker)
     return if ::Gitlab::Database.read_only?
     return unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
 
