@@ -1,12 +1,6 @@
 import { merge } from 'lodash';
 import { GlLink } from '@gitlab/ui';
-import Vue from 'vue';
-import VueApollo from 'vue-apollo';
 import { mount, shallowMount } from '@vue/test-utils';
-import siteProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql.basic.json';
-import scannerProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql.basic.json';
-import dastSiteValidationsQuery from 'ee/security_configuration/dast_site_validation/graphql/dast_site_validations.query.graphql';
-import * as responses from 'ee_jest/security_configuration/dast_profiles/mocks/apollo_mock';
 import ProfileConflictAlert from 'ee/on_demand_scans_form/components/profile_selector/profile_conflict_alert.vue';
 import { s__ } from '~/locale';
 import DastProfilesConfigurator from 'ee/security_configuration/dast_profiles/dast_profiles_configurator/dast_profiles_configurator.vue';
@@ -19,12 +13,7 @@ import DastProfilesDrawerList from 'ee/security_configuration/dast_profiles/dast
 import DastProfilesDrawerForm from 'ee/security_configuration/dast_profiles/dast_profiles_drawer/dast_profiles_drawer_form.vue';
 import SectionLayout from '~/vue_shared/security_configuration/components/section_layout.vue';
 import SectionLoader from '~/vue_shared/security_configuration/components/section_loader.vue';
-import dastScannerProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql';
-import dastSiteProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql';
-import resolvers from 'ee/vue_shared/security_configuration/graphql/resolvers/resolvers';
-import { typePolicies } from 'ee/vue_shared/security_configuration/graphql/provider';
 import waitForPromises from 'helpers/wait_for_promises';
-import createApolloProvider from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import {
   siteProfiles,
@@ -34,31 +23,11 @@ import {
   passiveScannerProfile,
   activeScannerProfile,
 } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
+import { createMockApolloProvider } from '../graphql/create_mock_apollo_provider';
 
 describe('DastProfilesConfigurator', () => {
   let wrapper;
-  let requestHandlers;
   const projectPath = 'projectPath';
-
-  const createMockApolloProvider = () => {
-    Vue.use(VueApollo);
-
-    requestHandlers = {
-      dastScannerProfiles: jest.fn().mockResolvedValue(scannerProfilesFixtures),
-      dastSiteProfiles: jest.fn().mockResolvedValue(siteProfilesFixtures),
-      validations: jest.fn().mockResolvedValue(responses.dastSiteValidations()),
-    };
-
-    return createApolloProvider(
-      [
-        [dastScannerProfilesQuery, requestHandlers.dastScannerProfiles],
-        [dastSiteProfilesQuery, requestHandlers.dastSiteProfiles],
-        [dastSiteValidationsQuery, requestHandlers.validations],
-      ],
-      resolvers,
-      { typePolicies },
-    );
-  };
 
   const findModal = () => wrapper.findByTestId('dast-profile-form-cancel-modal');
   const findProfileNameInput = () => wrapper.findByTestId('profile-name-input');
