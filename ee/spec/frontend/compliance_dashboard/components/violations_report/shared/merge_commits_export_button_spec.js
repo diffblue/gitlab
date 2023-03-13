@@ -54,7 +54,7 @@ describe('MergeCommitsExportButton component', () => {
     });
 
     it('renders the input label', () => {
-      expect(findCommitInputGroup().attributes('label')).toBe('Merge commit SHA');
+      expect(findCommitInputGroup().attributes('label')).toBe('Commit SHA');
     });
 
     it('sets the input debounce time', () => {

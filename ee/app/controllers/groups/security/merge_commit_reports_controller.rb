@@ -7,7 +7,7 @@ class Groups::Security::MergeCommitReportsController < Groups::ApplicationContro
   feature_category :compliance_management
 
   def index
-    MergeCommits::ExportCsvService.new(
+    Groups::ComplianceReportCsvService.new(
       current_user,
       group,
       filter_params
@@ -18,10 +18,6 @@ class Groups::Security::MergeCommitReportsController < Groups::ApplicationContro
   end
 
   private
-
-  def merge_commits_csv_filename
-    "#{group.id}-merge-commits-#{Time.current.to_i}.csv"
-  end
 
   def filter_params
     params.permit(:commit_sha)

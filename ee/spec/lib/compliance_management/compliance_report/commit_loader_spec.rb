@@ -139,6 +139,61 @@ RSpec.describe ::ComplianceManagement::ComplianceReport::CommitLoader, feature_c
         expect(commits).to eq([])
       end
     end
+
+    context 'when given a commit sha to filter by' do
+      subject(:loader) { described_class.new(group, user, commit_sha: filter_sha) }
+
+      context 'when the sha is a merge commit sha' do
+        subject(:loaded_commit_shas) { [] }
+
+        let(:filter_sha) { mr_sha }
+        let(:mr_sha) { create_commit(project1, "merge commit 1") }
+        let(:mr_params) do
+          {
+            source_project: project1,
+            target_project: project1,
+            merge_commit_sha: mr_sha
+          }
+        end
+
+        before do
+          create_commit(project1, "commit")
+          create(:merge_request_with_diffs, :with_merged_metrics, **mr_params)
+          create(
+            :merge_request_with_diffs,
+            :with_merged_metrics,
+            source_project: project1,
+            target_project: project1,
+            merge_commit_sha: create_commit(project1, "merge commit 2")
+          )
+          loader.find_each { |r| loaded_commit_shas << r.merge_commit }
+        end
+
+        it { expect(loaded_commit_shas.uniq).to match_array [mr_sha] }
+      end
+
+      context 'when the commit is a non-merge commit' do
+        subject(:loaded_commit_shas) { [] }
+
+        let(:filter_sha) { create_commit(project1, "child commit") }
+        let(:mr_sha) { create_commit(project1, "merge commit 1") }
+        let(:mr_params) do
+          {
+            source_project: project1,
+            target_project: project1,
+            merge_commit_sha: mr_sha
+          }
+        end
+
+        before do
+          filter_sha
+          create(:merge_request_with_diffs, :with_merged_metrics, **mr_params)
+          loader.find_each { |r| loaded_commit_shas << r.sha }
+        end
+
+        it { expect(loaded_commit_shas.uniq).to match_array [filter_sha] }
+      end
+    end
   end
 
   def create_commit(project, message = 'commit message')
