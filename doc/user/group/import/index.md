@@ -27,13 +27,10 @@ If you migrate from GitLab.com to self-managed GitLab, an administrator can crea
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/267945) in GitLab 14.4 for project resources [with a flag](../../feature_flags.md) named `bulk_import_projects`. Disabled by default.
 > - [Enabled on GitLab.com](https://gitlab.com/gitlab-org/gitlab/-/issues/339941) in GitLab 15.6.
 > - New application setting `bulk_import_enabled` [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/383268) in GitLab 15.8. `bulk_import` feature flag removed.
+> - `bulk_import_projects` feature flag [removed](https://gitlab.com/gitlab-org/gitlab/-/issues/339941) in GitLab 15.10.
 
-FLAG:
 On self-managed GitLab, by default [migrating group items](#migrated-group-items) is not available. To show the
 feature, ask an administrator to [enable it in application settings](../../admin_area/settings/visibility_and_access_controls.md#enable-migration-of-groups-and-projects-by-direct-transfer).
-Also on self-managed GitLab, by default [migrating project items](#migrated-project-items-beta) is not available. To show
-this feature, ask an administrator to [enable the feature flag](../../../administration/feature_flags.md) named
-`bulk_import_projects`. The feature is not ready for production use. On GitLab.com, migration of both groups and projects is available.
 
 Migrating groups by direct transfer copies the groups from one place to another. You can:
 
@@ -46,7 +43,6 @@ Migrating groups by direct transfer copies the groups from one place to another.
 - Copy groups with projects (in [beta](../../../policy/alpha-beta-support.md#beta-features) and not ready for production
   use) or without projects. Copying projects with groups is available:
   - On GitLab.com by default.
-  - On self-managed GitLab instances after an administrator first [enables the feature flag](../../../administration/feature_flags.md) named `bulk_import_projects`.
 
 Not all group and project resources are copied. See list of copied resources below:
 
@@ -149,7 +145,6 @@ role.
 1. Next to the groups you want to import, select either:
    - **Import with projects**. Importing groups with projects is in [Beta](../../../policy/alpha-beta-support.md#beta-features). This feature is not ready for production use.
    - **Import without projects**.
-   - **Import** on self-managed GitLab, when the `bulk_import_projects` feature flag is disabled and the feature is not available.
 1. The **Status** column shows the import status of each group. If you leave the page open, it updates in real-time.
 1. After a group has been imported, select its GitLab path to open its GitLab URL.
 
@@ -221,11 +216,7 @@ Group items that are migrated to the destination GitLab instance include:
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/267945) in GitLab 14.4 [with a flag](../../feature_flags.md) named `bulk_import_projects`. Disabled by default.
 > - [Enabled on GitLab.com](https://gitlab.com/gitlab-org/gitlab/-/issues/339941) in GitLab 15.6.
-
-FLAG:
-On self-managed GitLab, migrating project resources when migrating groups is not available by default.
-To make it available ask an administrator to [enable the feature flag](../../../administration/feature_flags.md) named
-`bulk_import_projects`. On GitLab.com, groups are migrated with all their projects by default.
+> - `bulk_import_projects` feature flag [removed](https://gitlab.com/gitlab-org/gitlab/-/issues/339941) in GitLab 15.10.
 
 The project items that are migrated depends on the version of GitLab you use on the destination. To determine if a
 specific project item is migrated:
