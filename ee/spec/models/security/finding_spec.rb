@@ -422,6 +422,7 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
       :evidence                 | {}
       :details                  | []
       :remediation_byte_offsets | { start_byte: 0, end_byte: 1 }
+      :raw_source_code_extract  | 'AES/ECB/NoPadding'
     end
 
     with_them do

@@ -3,45 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_management do
-  let_it_be(:secret_detection_scan_1) { create(:security_scan, scan_type: :secret_detection) }
-  let_it_be(:secret_detection_scan_2) { create(:security_scan, scan_type: :secret_detection) }
-  let_it_be(:secret_detection_pipeline) { secret_detection_scan_2.pipeline }
-
-  describe '#secret_detection_vulnerability_found?' do
-    before do
-      finding = create(:vulnerabilities_finding, :with_secret_detection, project: secret_detection_pipeline.project)
-      create(:vulnerabilities_finding_pipeline, finding: finding, pipeline: secret_detection_pipeline)
-    end
-
-    specify { expect(described_class.new.send(:secret_detection_vulnerability_found?, secret_detection_pipeline)).to be(true) }
-  end
-
-  describe '#revoke_secret_detection_token?' do
-    using RSpec::Parameterized::TableSyntax
-
-    where(:visibility, :token_revocation_enabled, :secret_detection_vulnerability_found) do
-      booleans = [true, true, false, false].permutation(2).to_a.uniq
-      [:public, :private, nil].flat_map do |vis|
-        booleans.map { |bools| [vis, *bools] }
-      end
-    end
-
-    with_them do
-      let(:pipeline) { build(:ee_ci_pipeline, project: build(:project, :repository, visibility)) if visibility }
-      let(:expected_result) { [visibility, token_revocation_enabled, secret_detection_vulnerability_found] == [:public, true, true] }
-
-      before do
-        stub_application_setting(secret_detection_token_revocation_enabled: token_revocation_enabled)
-
-        allow_next_instance_of(described_class) do |store_scans_worker|
-          allow(store_scans_worker).to receive(:secret_detection_vulnerability_found?) { secret_detection_vulnerability_found }
-        end
-      end
-
-      specify { expect(described_class.new.send(:revoke_secret_detection_token?, pipeline)).to eql(expected_result) }
-    end
-  end
-
   describe '#perform' do
     let(:group)   { create(:group) }
     let(:project) { create(:project, namespace: group) }
@@ -49,9 +10,6 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
 
     before do
       allow(::ScanSecurityReportSecretsWorker).to receive(:perform_async).and_return(nil)
-      allow_next_instance_of(described_class) do |store_scans_worker|
-        allow(store_scans_worker).to receive(:revoke_secret_detection_token?) { true }
-      end
     end
 
     context 'when there is no pipeline with the given ID' do
@@ -68,12 +26,6 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
       with_them do
         before do
           stub_licensed_features(report_type => true)
-        end
-
-        it 'scans security reports for token revocation' do
-          expect(::ScanSecurityReportSecretsWorker).to receive(:perform_async)
-
-          described_class.new.perform(pipeline.id)
         end
 
         it 'executes IngestReportsService for given pipeline' do
