@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe GroupHook, feature_category: :integrations do
-  include_examples 'a hook that does not get automatically disabled on failure' do
+  include_examples 'a hook that gets automatically disabled on failure' do
     let_it_be(:group) { create(:group) }
 
     let(:hook) { build(:group_hook, group: group) }
