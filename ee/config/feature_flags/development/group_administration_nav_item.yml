@@ -1,8 +1,0 @@
----
-name: group_administration_nav_item
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/29084
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/209020
-milestone: '12.10'
-type: development
-group: group::workspace
-default_enabled: false

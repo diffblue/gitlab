@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Manage', :group_saml, :orchestrated, requires_admin: 'for various user admin functions', feature_flag: {
-    name: :group_administration_nav_item,
-    scope: :global
-  } do
+  RSpec.describe 'Manage', :group_saml, :orchestrated, requires_admin: 'for various user admin functions' do
     describe 'Group SAML SSO - Enforced SSO', product_group: :system_access do
       include Support::API
 
@@ -118,8 +115,6 @@ module QA
 
       after do
         Flow::Saml.remove_saml_idp_service(saml_idp_service)
-
-        Runtime::Feature.remove(:group_administration_nav_item)
 
         group.remove_via_api!
 

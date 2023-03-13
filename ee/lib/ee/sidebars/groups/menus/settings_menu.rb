@@ -6,7 +6,6 @@ module EE
       module Menus
         module SettingsMenu
           extend ::Gitlab::Utils::Override
-          include ::Gitlab::Utils::StrongMemoize
 
           override :configure_menu_items
           def configure_menu_items
@@ -69,8 +68,7 @@ module EE
           end
 
           def saml_sso_enabled?
-            can?(context.current_user, :admin_group_saml, context.group) &&
-              administration_nav_item_disabled?
+            can?(context.current_user, :admin_group_saml, context.group)
           end
 
           def saml_group_links_menu_item
@@ -119,11 +117,6 @@ module EE
               context.show_promotions
           end
 
-          override :usage_quotas_menu_enabled?
-          def usage_quotas_menu_enabled?
-            super && administration_nav_item_disabled?
-          end
-
           def billing_menu_item
             unless billing_enabled?
               return ::Sidebars::NilMenuItem.new(item_id: :billing)
@@ -138,14 +131,7 @@ module EE
           end
 
           def billing_enabled?
-            ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
-              administration_nav_item_disabled?
-          end
-
-          def administration_nav_item_disabled?
-            strong_memoize(:administration_nav_item_disabled) do
-              ::Feature.disabled?(:group_administration_nav_item, context.group)
-            end
+            ::Gitlab::CurrentSettings.should_check_namespace_plan?
           end
 
           def reporting_menu_item

@@ -3627,9 +3627,6 @@ msgstr ""
 msgid "AdminUsers|user cap"
 msgstr ""
 
-msgid "Administration"
-msgstr ""
-
 msgid "Administrators"
 msgstr ""
 

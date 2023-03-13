@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Manage', :group_saml, :orchestrated, requires_admin: 'creates a user via API',
-                                                       feature_flag: { name: 'group_administration_nav_item', scope: :global } do
+  RSpec.describe 'Manage', :group_saml, :orchestrated, requires_admin: 'creates a user via API' do
     describe 'Group SAML SSO - Non enforced SSO', product_group: :system_access do
       include Support::API
 
@@ -12,8 +11,6 @@ module QA
         @group = Resource::Sandbox.fabricate_via_api! do |sandbox_group|
           sandbox_group.path = "saml_sso_group_#{SecureRandom.hex(8)}"
         end
-
-        Runtime::Feature.enable(:group_administration_nav_item)
 
         @saml_idp_service = Flow::Saml.run_saml_idp_service(@group.path)
       end
@@ -102,8 +99,6 @@ module QA
 
       after(:all) do
         @group.remove_via_api!
-
-        Runtime::Feature.remove(:group_administration_nav_item)
 
         page.visit Runtime::Scenario.gitlab_address
         Page::Main::Menu.perform(&:sign_out_if_signed_in)

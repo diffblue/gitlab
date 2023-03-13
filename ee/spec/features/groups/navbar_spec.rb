@@ -221,7 +221,6 @@ RSpec.describe 'Group navbar', feature_category: :subgroups do
       before do
         insert_after_nav_item(_('Security and Compliance'), new_nav_item: ci_cd_nav_item)
         insert_after_nav_item(_('Analytics'), new_nav_item: settings_nav_item)
-        insert_after_nav_item(_('Settings'), new_nav_item: administration_nav_item)
 
         visit group_path(group)
       end
@@ -235,15 +234,10 @@ RSpec.describe 'Group navbar', feature_category: :subgroups do
 
         insert_after_nav_item(_('Security and Compliance'), new_nav_item: ci_cd_nav_item)
         insert_after_nav_item(_('Analytics'), new_nav_item: settings_nav_item)
-        insert_after_nav_item(
-          _('Settings'),
-          new_nav_item: {
-            nav_item: _('Administration'),
-            nav_sub_items: [
-              _('SAML SSO'),
-              s_('UsageQuota|Usage Quotas')
-            ]
-          }
+        insert_after_sub_nav_item(
+          s_('UsageQuota|Usage Quotas'),
+          within: _('Settings'),
+          new_sub_nav_item_name: _('SAML SSO')
         )
 
         visit group_path(group)
@@ -274,7 +268,6 @@ RSpec.describe 'Group navbar', feature_category: :subgroups do
 
         insert_after_nav_item(_('Security and Compliance'), new_nav_item: ci_cd_nav_item)
         insert_after_nav_item(_('Analytics'), new_nav_item: settings_nav_item)
-        insert_after_nav_item(_('Settings'), new_nav_item: administration_nav_item)
 
         visit group_path(group)
       end

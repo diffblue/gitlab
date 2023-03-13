@@ -53,11 +53,9 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
 
       describe 'SAML SSO menu' do
         let(:item_id) { :saml_sso }
-        let(:group_admin_nav_enabled) { false }
         let(:saml_enabled) { true }
 
         before do
-          stub_feature_flags(group_administration_nav_item: group_admin_nav_enabled)
           stub_licensed_features(group_saml: saml_enabled)
           allow(::Gitlab::Auth::GroupSaml::Config).to receive(:enabled?).and_return(saml_enabled)
         end
@@ -69,18 +67,10 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
         end
 
         context 'when SAML is enabled' do
-          context 'when :group_administration_nav_item feature is disabled' do
-            it { is_expected.to be_present }
+          it { is_expected.to be_present }
 
-            context 'when user cannot admin group SAML' do
-              let(:user) { nil }
-
-              it { is_expected.not_to be_present }
-            end
-          end
-
-          context 'when :group_administration_nav_item feature is enabled' do
-            let(:group_admin_nav_enabled) { true }
+          context 'when user cannot admin group SAML' do
+            let(:user) { nil }
 
             it { is_expected.not_to be_present }
           end
@@ -166,24 +156,16 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
 
       describe 'Usage quotas menu' do
         let(:item_id) { :usage_quotas }
-        let(:group_admin_nav_enabled) { false }
         let(:usage_quotas_enabled) { true }
 
         before do
           stub_feature_flags(
-            group_administration_nav_item: group_admin_nav_enabled,
             usage_quotas_for_all_editions: false
           )
           stub_licensed_features(usage_quotas: usage_quotas_enabled)
         end
 
         it { is_expected.to be_present }
-
-        context 'when feature flag :group_administration_nav_item is enabled' do
-          let(:group_admin_nav_enabled) { true }
-
-          it { is_expected.not_to be_present }
-        end
 
         context 'when usage_quotas licensed feature is not enabled' do
           let(:usage_quotas_enabled) { false }
@@ -194,21 +176,13 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
 
       describe 'Billing menu' do
         let(:item_id) { :billing }
-        let(:group_admin_nav_enabled) { false }
         let(:check_billing) { true }
 
         before do
-          stub_feature_flags(group_administration_nav_item: group_admin_nav_enabled)
           allow(::Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(check_billing)
         end
 
         it { is_expected.to be_present }
-
-        context 'when feature flag :group_administration_nav_item is enabled' do
-          let(:group_admin_nav_enabled) { true }
-
-          it { is_expected.not_to be_present }
-        end
 
         context 'when group billing does not apply' do
           let(:check_billing) { false }
@@ -242,11 +216,9 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
 
       describe 'Billing menu item' do
         let(:item_id) { :billing }
-        let(:group_admin_nav_enabled) { false }
         let(:check_billing) { true }
 
         before do
-          stub_feature_flags(group_administration_nav_item: group_admin_nav_enabled)
           stub_feature_flags(auditor_billing_page_access: group)
           allow(::Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(check_billing)
         end

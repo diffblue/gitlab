@@ -524,7 +524,6 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
         saml_group_sync: true,
         ldap_group_sync: true
       )
-      stub_feature_flags(group_administration_nav_item: false)
       allow(view).to receive(:current_user).and_return(user)
     end
 
