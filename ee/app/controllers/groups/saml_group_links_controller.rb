@@ -9,10 +9,11 @@ module Groups
     feature_category :system_access
 
     def create
-      response = ::GroupSaml::SamlGroupLinks::CreateService.new(current_user: current_user,
-                                                                group: group,
-                                                                params: saml_group_link_params)
-                                                           .execute
+      response = ::GroupSaml::SamlGroupLinks::CreateService.new(
+        current_user: current_user,
+        group: group,
+        params: saml_group_link_params
+      ).execute
 
       if response.success?
         flash[:notice] = s_('GroupSAML|New SAML group link saved.')
@@ -27,8 +28,8 @@ module Groups
       ::GroupSaml::SamlGroupLinks::DestroyService.new(
         current_user: current_user,
         group: group,
-        saml_group_link: group.saml_group_links.find(params[:id]))
-      .execute
+        saml_group_link: group.saml_group_links.find(params[:id])
+      ).execute
 
       redirect_to group_saml_group_links_path(@group), status: :found, notice: s_('GroupSAML|SAML group link was successfully removed.')
     end

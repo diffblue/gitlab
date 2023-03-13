@@ -112,9 +112,10 @@ class TrialsController < ApplicationController
   end
 
   def hand_raise_lead_params
-    params.permit(:first_name, :last_name, :company_name, :company_size, :phone_number, :country,
-                  :state, :namespace_id, :comment, :glm_content)
-          .merge(hand_raise_lead_extra_params)
+    params.permit(
+      :first_name, :last_name, :company_name, :company_size, :phone_number, :country,
+      :state, :namespace_id, :comment, :glm_content
+    ).merge(hand_raise_lead_extra_params)
   end
 
   def hand_raise_lead_extra_params
@@ -128,8 +129,10 @@ class TrialsController < ApplicationController
   end
 
   def company_params
-    params.permit(:company_name, :company_size, :first_name, :last_name, :phone_number,
-                  :country, :state, :website_url, :glm_content, :glm_source).merge(extra_params)
+    params.permit(
+      :company_name, :company_size, :first_name, :last_name, :phone_number,
+      :country, :state, :website_url, :glm_content, :glm_source
+    ).merge(extra_params)
   end
 
   def extra_params

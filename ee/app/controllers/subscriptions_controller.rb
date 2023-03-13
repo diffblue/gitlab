@@ -122,11 +122,13 @@ class SubscriptionsController < ApplicationController
   private
 
   def track_purchase(message:, namespace: nil)
-    Gitlab::Tracking.event(self.class.name, 'click_button',
-                           label: 'confirm_purchase',
-                           property: message,
-                           user: current_user,
-                           namespace: namespace
+    Gitlab::Tracking.event(
+      self.class.name,
+      'click_button',
+      label: 'confirm_purchase',
+      property: message,
+      user: current_user,
+      namespace: namespace
     )
   end
 

@@ -63,8 +63,7 @@ module EE
       result = ::Groups::RestoreService.new(group, current_user).execute
 
       if result[:status] == :success
-        redirect_to edit_group_path(group),
-        notice: "Group '#{group.name}' has been successfully restored."
+        redirect_to edit_group_path(group), notice: "Group '#{group.name}' has been successfully restored."
       else
         redirect_to edit_group_path(group), alert: result[:message]
       end

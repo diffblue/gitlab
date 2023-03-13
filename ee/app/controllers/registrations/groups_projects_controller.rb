@@ -11,8 +11,8 @@ module Registrations
     before_action :check_if_gl_com_or_dev
     before_action :authorize_create_group!, only: :new
     before_action :require_verification,
-                  only: [:create, :import],
-                  if: -> { current_user.requires_credit_card_verification }
+      only: [:create, :import],
+      if: -> { current_user.requires_credit_card_verification }
     before_action only: [:new] do
       push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
     end
