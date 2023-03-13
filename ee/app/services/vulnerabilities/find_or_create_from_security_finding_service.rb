@@ -37,7 +37,13 @@ module Vulnerabilities
         ).execute
       else
         vulnerability = Vulnerability.find(vulnerability_finding.vulnerability_id)
-        update_state_for(vulnerability) if vulnerability.state != @state.to_s
+
+        if vulnerability.state != @state.to_s
+          update_state_for(vulnerability)
+        elsif vulnerability.dismissed? # We only update when vulnerability is in dismissed state
+          update_existing_state_transition(vulnerability)
+        end
+
         vulnerability
       end
     end
@@ -58,6 +64,11 @@ module Vulnerabilities
 
         vulnerability.update!(state: @state)
       end
+    end
+
+    def update_existing_state_transition(vulnerability)
+      state_transition = vulnerability.state_transitions.by_to_states(:dismissed).last
+      state_transition.update!(comment: params[:comment].presence) if state_transition
     end
 
     def with_vulnerability_finding

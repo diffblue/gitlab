@@ -81,6 +81,7 @@ module Resolvers
         has_solutions: { vulnerability: { findings: :remediations } },
         merge_request: { vulnerability: :merge_requests },
         state_comment: { vulnerability: :state_transitions },
+        state_transitions: { vulnerability: :state_transitions },
         false_positive: { vulnerability: { findings: :vulnerability_flags } }
       }
     end
