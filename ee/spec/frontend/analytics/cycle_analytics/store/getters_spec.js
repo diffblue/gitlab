@@ -4,6 +4,7 @@ import {
   createdAfter,
   createdBefore,
   selectedProjects,
+  groupNamespace as namespace,
 } from 'jest/analytics/cycle_analytics/mock_data';
 import {
   filterMilestones,
@@ -31,6 +32,7 @@ const selectedUserParams = getFilterParams(filterUsers, { prop: 'name' });
 const milestoneValues = getFilterValues(filterMilestones);
 const labelValues = getFilterValues(filterLabels);
 const userValues = getFilterValues(filterUsers, { prop: 'name' });
+const { fullPath } = namespace;
 
 describe('Value Stream Analytics getters', () => {
   describe('hasNoAccessError', () => {
@@ -69,35 +71,29 @@ describe('Value Stream Analytics getters', () => {
     });
   });
 
-  describe('currentGroupPath', () => {
-    describe('with currentGroup set', () => {
+  describe('namespacePath', () => {
+    describe('with namespace set', () => {
       it('returns the `fullPath` value of the group', () => {
-        const fullPath = 'cool-beans';
         state = {
-          currentGroup: {
-            fullPath,
-          },
+          namespace,
         };
 
-        expect(getters.currentGroupPath(state)).toEqual(`groups/${fullPath}`);
+        expect(getters.namespacePath(state)).toEqual(fullPath);
       });
     });
 
-    describe('without a currentGroup set', () => {
+    describe('without a namespace set', () => {
       it.each([[''], [{}], [null]])('given "%s" will return null', (value) => {
-        state = { currentGroup: value };
-        expect(getters.currentGroupPath(state)).toEqual(null);
+        state = { namespace: value };
+        expect(getters.namespacePath(state)).toEqual(null);
       });
     });
   });
 
   describe('cycleAnalyticsRequestParams', () => {
     beforeEach(() => {
-      const fullPath = 'cool-beans';
       state = {
-        currentGroup: {
-          fullPath,
-        },
+        namespace,
         createdAfter,
         createdBefore,
         selectedProjects,

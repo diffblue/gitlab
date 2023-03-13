@@ -7,7 +7,7 @@ import testAction from 'helpers/vuex_action_helper';
 import {
   createdAfter,
   createdBefore,
-  currentGroup,
+  groupNamespace as namespace,
 } from 'jest/analytics/cycle_analytics/mock_data';
 import {
   I18N_VSA_ERROR_STAGES,
@@ -22,9 +22,8 @@ import {
 } from '~/lib/utils/http_status';
 import { allowedStages as stages, valueStreams, endpoints, groupLabels } from '../mock_data';
 
-const group = { fullPath: 'fake_group_full_path' };
-const milestonesPath = 'fake_milestones_path.json';
-const labelsPath = 'fake_labels_path.json';
+const milestonesPath = `/${namespace.fullPath}/-/milestones.json`;
+const labelsPath = `/${namespace.fullPath}/-/labels.json`;
 
 const alertErrorMessage = 'There was an error while fetching value stream analytics data.';
 
@@ -33,7 +32,7 @@ const activeStages = stages.filter(({ hidden }) => !hidden);
 const [selectedValueStream] = valueStreams;
 
 const mockGetters = {
-  currentGroupPath: () => `groups/${currentGroup.fullPath}`,
+  namespacePath: () => namespace.fullPath,
   currentValueStreamId: () => selectedValueStream.id,
 };
 
@@ -58,7 +57,7 @@ describe('Value Stream Analytics actions', () => {
 
   afterEach(() => {
     mock.restore();
-    state = { ...state, currentGroup: null };
+    state = { ...state, namespace: null };
   });
 
   it.each`
@@ -83,14 +82,14 @@ describe('Value Stream Analytics actions', () => {
     it('dispatches the filters/setEndpoints action with enpoints', () => {
       return testAction(
         actions.setPaths,
-        { groupPath: group.fullPath, milestonesPath, labelsPath },
-        state,
+        {},
+        { ...state, namespace },
         [],
         [
           {
             type: 'filters/setEndpoints',
             payload: {
-              groupEndpoint: 'fake_group_full_path',
+              groupEndpoint: namespace.fullPath,
               labelsEndpoint: labelsPath,
               milestonesEndpoint: milestonesPath,
             },
@@ -123,7 +122,7 @@ describe('Value Stream Analytics actions', () => {
     }
 
     beforeEach(() => {
-      state = { ...state, currentGroup, createdAfter, createdBefore };
+      state = { ...state, namespace, createdAfter, createdBefore };
     });
 
     it(`dispatches actions for required value stream analytics analytics data`, () => {
@@ -262,7 +261,7 @@ describe('Value Stream Analytics actions', () => {
     const selectedAssigneeList = ['nchom'];
     const selectedLabelList = ['label 1', 'label 2'];
     const initialData = {
-      group: currentGroup,
+      namespace,
       projectIds: [1, 2],
       milestonesPath,
       labelsPath,
@@ -283,14 +282,14 @@ describe('Value Stream Analytics actions', () => {
       };
     });
 
-    describe('with only group in initialData', () => {
+    describe('with only namespace in initialData', () => {
       it('commits "INITIALIZE_VSA"', async () => {
-        await actions.initializeCycleAnalytics(store, { group });
-        expect(mockCommit).toHaveBeenCalledWith('INITIALIZE_VSA', { group });
+        await actions.initializeCycleAnalytics(store, { namespace });
+        expect(mockCommit).toHaveBeenCalledWith('INITIALIZE_VSA', { namespace });
       });
 
       it('dispatches "fetchCycleAnalyticsData" and "initializeCycleAnalyticsSuccess"', async () => {
-        await actions.initializeCycleAnalytics(store, { group });
+        await actions.initializeCycleAnalytics(store, { namespace });
         expect(mockDispatch).toHaveBeenCalledWith('fetchCycleAnalyticsData');
       });
     });
@@ -298,7 +297,7 @@ describe('Value Stream Analytics actions', () => {
     describe('with initialData', () => {
       it.each`
         action                        | args
-        ${'setPaths'}                 | ${{ milestonesPath, labelsPath, groupPath: currentGroup.fullPath }}
+        ${'setPaths'}                 | ${{ namespacePath: namespace.fullPath }}
         ${'filters/initialize'}       | ${{ selectedAuthor, selectedMilestone, selectedAssigneeList, selectedLabelList }}
         ${'durationChart/setLoading'} | ${true}
         ${'typeOfWork/setLoading'}    | ${true}

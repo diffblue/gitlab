@@ -14,6 +14,7 @@ import createStore from 'ee/analytics/cycle_analytics/store';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
   currentGroup,
+  groupNamespace as namespace,
   createdBefore,
   createdAfter,
   selectedProjects,
@@ -77,6 +78,7 @@ const initialCycleAnalyticsState = {
   group: currentGroup,
   stage,
   aggregation: aggregationData,
+  namespace,
 };
 
 const mocks = {

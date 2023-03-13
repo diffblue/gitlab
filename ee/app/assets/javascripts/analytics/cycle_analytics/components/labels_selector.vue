@@ -91,11 +91,11 @@ export default {
     }
   },
   methods: {
-    ...mapGetters(['currentGroupPath']),
+    ...mapGetters(['namespacePath']),
     fetchData() {
       removeFlash();
       this.loading = true;
-      return getGroupLabels(this.currentGroupPath, {
+      return getGroupLabels(this.namespacePath, {
         search: this.searchTerm,
         only_group_labels: true,
       })
