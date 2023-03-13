@@ -1,3 +1,4 @@
+import { KeyMod, KeyCode } from 'monaco-editor';
 import { getModifierKey } from '~/constants';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { s__, __, sprintf } from '~/locale';
@@ -70,7 +71,8 @@ export const EXTENSION_MARKDOWN_BUTTONS = [
     }),
     data: {
       mdTag: '**',
-      mdShortcuts: '["mod+b"]',
+      // eslint-disable-next-line no-bitwise
+      mdShortcuts: [KeyMod.CtrlCmd | KeyCode.KeyB],
     },
   },
   {
@@ -80,7 +82,8 @@ export const EXTENSION_MARKDOWN_BUTTONS = [
     }),
     data: {
       mdTag: '_',
-      mdShortcuts: '["mod+i"]',
+      // eslint-disable-next-line no-bitwise
+      mdShortcuts: [KeyMod.CtrlCmd | KeyCode.KeyI],
     },
   },
   {
@@ -90,7 +93,8 @@ export const EXTENSION_MARKDOWN_BUTTONS = [
     }),
     data: {
       mdTag: '~~',
-      mdShortcuts: '["mod+shift+x]',
+      // eslint-disable-next-line no-bitwise
+      mdShortcuts: [KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyX],
     },
   },
   {
@@ -117,7 +121,8 @@ export const EXTENSION_MARKDOWN_BUTTONS = [
     data: {
       mdTag: '[{text}](url)',
       mdSelect: 'url',
-      mdShortcuts: '["mod+k"]',
+      // eslint-disable-next-line no-bitwise
+      mdShortcuts: [KeyMod.CtrlCmd | KeyCode.KeyK],
     },
   },
   {
