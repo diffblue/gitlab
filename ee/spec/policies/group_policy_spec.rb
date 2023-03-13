@@ -667,14 +667,10 @@ RSpec.describe GroupPolicy, feature_category: :subgroups do
         end
       end
 
-      context 'with transparent SSO', feature_category: :system_access do
+      context 'without SSO enforcement enabled', feature_category: :system_access do
         let(:current_user) { guest }
 
         let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: false) }
-
-        before do
-          stub_feature_flags(transparent_sso_enforcement_override: false)
-        end
 
         context 'when the session has been set globally' do
           around do |example|
@@ -698,12 +694,6 @@ RSpec.describe GroupPolicy, feature_category: :subgroups do
 
             it 'allows access with a SAML session' do
               Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
-
-              is_expected.to be_allowed(:read_group)
-            end
-
-            it 'allows access when the feature flag is disabled' do
-              stub_feature_flags(transparent_sso_enforcement: false)
 
               is_expected.to be_allowed(:read_group)
             end

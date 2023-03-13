@@ -531,10 +531,9 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       end
     end
 
-    context 'with transparent SSO', feature_category: :system_access do
+    context 'without SSO enforcement enabled', feature_category: :system_access do
       before do
         stub_licensed_features(group_saml: true)
-        stub_feature_flags(transparent_sso_enforcement_override: false)
       end
 
       around do |example|
@@ -570,12 +569,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
           it 'allows access with a SAML session' do
             Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
-
-            is_expected.to be_allowed(:read_project)
-          end
-
-          it 'allows access when the feature flag is disabled' do
-            stub_feature_flags(transparent_sso_enforcement: false)
 
             is_expected.to be_allowed(:read_project)
           end
