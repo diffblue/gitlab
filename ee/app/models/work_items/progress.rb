@@ -5,6 +5,7 @@ module WorkItems
     self.table_name = 'work_item_progresses'
 
     validates :progress, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }
+    validates :start_value, :current_value, :end_value, presence: true
 
     belongs_to :work_item, foreign_key: 'issue_id', inverse_of: :progress
 

@@ -11,6 +11,12 @@ RSpec.describe WorkItems::Progress do
       is_expected.to validate_numericality_of(:progress).only_integer.is_greater_than_or_equal_to(0)
                         .is_less_than_or_equal_to(100)
     end
+
+    %w[start_value end_value current_value].each do |attribute|
+      it "ensures presence of #{attribute}" do
+        is_expected.to validate_presence_of(attribute.to_sym)
+      end
+    end
   end
 
   describe '#update_all_parent_objectives_progress' do

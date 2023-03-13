@@ -24431,7 +24431,10 @@ CREATE TABLE work_item_progresses (
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     issue_id bigint NOT NULL,
-    progress smallint DEFAULT 0 NOT NULL
+    progress smallint DEFAULT 0 NOT NULL,
+    start_value double precision DEFAULT 0.0 NOT NULL,
+    end_value double precision DEFAULT 100.0 NOT NULL,
+    current_value double precision DEFAULT 0.0 NOT NULL
 );
 
 CREATE TABLE work_item_types (
