@@ -1,4 +1,3 @@
-import { GlButton } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import Api from 'ee/api';
@@ -51,7 +50,7 @@ describe('PolicyRuleBuilder', () => {
   const findSeverities = () => wrapper.findByTestId('severities-select');
   const findVulnStates = () => wrapper.findByTestId('vulnerability-states-select');
   const findVulnAllowed = () => wrapper.findByTestId('vulnerabilities-allowed-input');
-  const findDeleteBtn = () => wrapper.findComponent(GlButton);
+  const findDeleteBtn = () => wrapper.findByTestId('remove-rule');
   const findAllPolicyRuleMultiSelect = () => wrapper.findAllComponents(PolicyRuleMultiSelect);
 
   beforeEach(() => {

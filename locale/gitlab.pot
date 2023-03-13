@@ -32455,6 +32455,9 @@ msgstr ""
 msgid "PolicyRuleMultiSelect|All %{itemTypeName}"
 msgstr ""
 
+msgid "PolicyRuleMultiSelect|Clear all"
+msgstr ""
+
 msgid "PolicyRuleMultiSelect|Select %{itemTypeName}"
 msgstr ""
 
