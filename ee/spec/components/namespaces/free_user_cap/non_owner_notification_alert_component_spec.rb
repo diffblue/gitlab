@@ -7,7 +7,7 @@ RSpec.describe Namespaces::FreeUserCap::NonOwnerNotificationAlertComponent, :saa
   let_it_be(:content_class) { '_content_class_' }
   let(:notification_free_user_cap_over?) { true }
   let(:title) do
-    "Your top-level group #{namespace.name} is over the #{::Namespaces::FreeUserCap.dashboard_limit} user limit"
+    format(_("Your top-level group %{name} will move to a read-only state soon"), name: namespace.name)
   end
 
   subject(:component) { described_class.new(namespace: namespace, user: user, content_class: content_class) }
