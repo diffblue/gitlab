@@ -6,6 +6,8 @@ import { unescape, isEmpty } from 'lodash';
 import { sprintf, s__ } from '~/locale';
 import { trackCheckout } from '~/google_tag_manager';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import Tracking from '~/tracking';
+
 import SummaryDetails from 'jh_else_ee/subscriptions/new/components/order_summary/summary_details.vue';
 import invoicePreviewQuery from 'ee/subscriptions/graphql/queries/new_subscription_invoice_preview.customer.query.graphql';
 import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constants';
@@ -20,6 +22,8 @@ import { isInvalidPromoCodeError } from 'ee/subscriptions/new/utils';
 import formattingMixins from '../formatting_mixins';
 import PromoCodeInput from './promo_code_input.vue';
 
+const trackingMixin = Tracking.mixin();
+
 export default {
   components: {
     PromoCodeInput,
@@ -27,7 +31,7 @@ export default {
     GlCard,
     GlLoadingIcon,
   },
-  mixins: [formattingMixins, glFeatureFlagsMixin()],
+  mixins: [formattingMixins, glFeatureFlagsMixin(), trackingMixin],
   apollo: {
     invoicePreview: {
       client: CUSTOMERSDOT_CLIENT,
@@ -40,6 +44,10 @@ export default {
         };
       },
       update(data) {
+        if (this.sendPromoCodeToPreviewInvoice) {
+          this.track('success_response', { label: 'apply_coupon_code_success_saas' });
+        }
+
         return data?.invoicePreview;
       },
       error(error) {
@@ -170,6 +178,7 @@ export default {
 
         if (isInvalidPromoCodeError(gqlErrorExtensions)) {
           this.promoCodeErrorMessage = INVALID_PROMO_CODE_ERROR_MESSAGE;
+          this.track('failure_response', { label: 'apply_coupon_code_failure_saas' });
           return;
         }
         if (gqlError.message) {
@@ -205,6 +214,10 @@ export default {
         this.clearError();
         this.resetPromoCodeErrorMessage();
         this.updatePromoCode(promoCode);
+
+        if (this.sendPromoCodeToPreviewInvoice) {
+          this.track('click_button', { label: 'apply_coupon_code_saas' });
+        }
       } else {
         this.promoCodeErrorMessage = PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE;
       }
