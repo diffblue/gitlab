@@ -1,0 +1,13 @@
+#import "./epic.fragment.graphql"
+
+subscription issuableEpicUpdated($issuableId: IssuableID!) {
+  issuableEpicUpdated(issuableId: $issuableId) {
+    ... on Issue {
+      id
+      hasEpic
+      attribute: epic {
+        ...EpicFragment
+      }
+    }
+  }
+}

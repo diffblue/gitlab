@@ -16,6 +16,12 @@ module EE
       def self.issuable_health_status_updated(issuable)
         ::GitlabSchema.subscriptions.trigger('issuableHealthStatusUpdated', { issuable_id: issuable.to_gid }, issuable)
       end
+
+      def self.issuable_epic_updated(issuable)
+        return unless ::Feature.enabled?(:real_time_issue_epic_links, issuable.project)
+
+        ::GitlabSchema.subscriptions.trigger('issuableEpicUpdated', { issuable_id: issuable.to_gid }, issuable)
+      end
     end
   end
 end

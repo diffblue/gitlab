@@ -25,6 +25,7 @@ import updateIssueWeightMutation from './queries/update_issue_weight.mutation.gr
 import issueEscalationPolicyQuery from './queries/issue_escalation_policy.query.graphql';
 import issueEscalationPolicyMutation from './queries/issue_escalation_policy.mutation.graphql';
 import projectEscalationPoliciesQuery from './queries/project_escalation_policies.query.graphql';
+import issuableEpicSubscription from './queries/issuable_epic.subscription.graphql';
 
 export { Tracking, defaultEpicSort, epicIidPattern };
 
@@ -185,6 +186,7 @@ export const issuableAttributesQueries = {
   [IssuableAttributeType.Epic]: {
     current: issuableEpicQueries,
     list: epicsQueries,
+    subscription: issuableEpicSubscription,
   },
   [IssuableAttributeType.EscalationPolicy]: {
     current: issuableEscalationPolicyQueries,

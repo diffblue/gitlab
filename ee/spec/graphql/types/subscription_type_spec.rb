@@ -8,6 +8,7 @@ RSpec.describe GitlabSchema.types['Subscription'] do
       issuable_weight_updated
       issuable_iteration_updated
       issuable_health_status_updated
+      issuable_epic_updated
     ]
 
     expect(described_class).to include_graphql_fields(*expected_fields)

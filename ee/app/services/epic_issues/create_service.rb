@@ -21,6 +21,8 @@ module EpicIssues
 
       link.save
 
+      ::GraphqlTriggers.issuable_epic_updated(referenced_issue)
+
       link
     end
     # rubocop: enable CodeReuse/ActiveRecord
