@@ -53,7 +53,7 @@ export default {
   },
   strings: {
     listMergeCommitsButtonText: __('List of all commits'),
-    mergeCommitInputLabel: __('Merge commit SHA'),
+    mergeCommitInputLabel: __('Commit SHA'),
     mergeCommitInvalidMessage: __('Invalid hash'),
     mergeCommitButtonText: __('Export commit custody report'),
     exportAsCsv: __('Export as CSV'),

@@ -26,27 +26,6 @@ RSpec.describe ComplianceManagement::ChainOfCustodyReportWorker, feature_categor
       expect(described_class.get_deduplicate_strategy).to eq(:until_executed)
     end
 
-    context 'when a commit_sha filter is present' do
-      let(:job_args) { super().merge(commit_sha: 'foo-bar') }
-      let(:filter) { { commit_sha: job_args[:commit_sha] } }
-      let(:service) { instance_double(::MergeCommits::ExportCsvService, csv_data: 'data') }
-
-      before do
-        allow(::MergeCommits::ExportCsvService).to receive(:new)
-                                                     .with(user, group, filter)
-                                                     .and_return(service)
-        allow(service).to receive(:csv_data).and_return(service_response)
-      end
-
-      it 'calls the proper service for the csv data' do
-        worker.perform(job_args)
-
-        expect(Groups::ComplianceReportCsvService).not_to have_received(:new)
-        expect(::MergeCommits::ExportCsvService).to have_received(:new)
-        expect(service).to have_received(:csv_data)
-      end
-    end
-
     context 'when the params are valid' do
       it 'calls the service' do
         worker.perform(job_args)

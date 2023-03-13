@@ -3,7 +3,7 @@
 require 'spec_helper'
 require 'email_spec'
 
-RSpec.describe Emails::MergeCommits do
+RSpec.describe Emails::MergeCommits, feature_category: :compliance_management do
   include EmailSpec::Matchers
 
   include_context 'gitlab email notification'
@@ -19,10 +19,16 @@ RSpec.describe Emails::MergeCommits do
   describe '#merge_requests_csv_email' do
     let(:frozen_time) { Time.current }
     let(:filename) { "#{group.id}-merge-commits-#{frozen_time.to_i}.csv" }
-    let(:csv_data) { MergeCommits::ExportCsvService.new(current_user, group).csv_data.payload }
     let(:group_url) { Gitlab::Routing.url_helpers.group_url(group) }
     let(:expected_text) do
       "Your Chain of Custody CSV export for the group %{group_name} has been added to this email as an attachment."
+    end
+
+    let(:csv_data) do
+      Groups::ComplianceReportCsvService.new(
+        current_user,
+        group
+      ).csv_data.payload
     end
 
     let(:expected_plain_text) { format(expected_text, group_name: group.name) }

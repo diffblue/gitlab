@@ -20,7 +20,7 @@ RSpec.describe Groups::Security::MergeCommitReportsController, feature_category:
     context 'when feature is enabled' do
       context 'when user has access to dashboard' do
         let(:export_csv_service) do
-          instance_spy(MergeCommits::ExportCsvService)
+          instance_spy(Groups::ComplianceReportCsvService)
         end
 
         before_all do
@@ -29,7 +29,7 @@ RSpec.describe Groups::Security::MergeCommitReportsController, feature_category:
 
         before do
           stub_licensed_features(group_level_compliance_dashboard: true)
-          allow(MergeCommits::ExportCsvService).to receive(:new).and_return(export_csv_service)
+          allow(Groups::ComplianceReportCsvService).to receive(:new).and_return(export_csv_service)
         end
 
         it "tells the service to enqueue a job" do

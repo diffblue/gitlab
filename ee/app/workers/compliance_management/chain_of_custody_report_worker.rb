@@ -36,17 +36,11 @@ module ComplianceManagement
     private
 
     def csv_response
-      # currently the commit sha filter still uses the original code
-      # path, once that is migrated to
-      # Groups::ComplianceReportCsvService the below
-      # @filter_params.blank? can be removed
-      if @filter_params.blank?
-        Groups::ComplianceReportCsvService.new(
-          @user, @group, @filter_params
-        ).csv_data
-      else
-        ::MergeCommits::ExportCsvService.new(@user, @group, @filter_params).csv_data
-      end
+      Groups::ComplianceReportCsvService.new(
+        @user,
+        @group,
+        @filter_params
+      ).csv_data
     end
 
     def merge_commits_csv_filename

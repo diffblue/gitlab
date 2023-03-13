@@ -95,13 +95,19 @@ module ComplianceManagement
       end
 
       def batch_of_commits_for_project(project, offset, limit)
-        project.repository.commits(
-          nil,
-          after: filters[:from] || 1.month.ago,
-          before: filters[:to] || Time.current,
-          offset: offset,
-          limit: limit
-        )
+        if filters[:commit_sha].present?
+          [
+            project.repository.commit_by(oid: filters[:commit_sha])
+          ].compact
+        else
+          project.repository.commits(
+            nil,
+            offset: offset,
+            limit: limit,
+            after: from,
+            before: to
+          )
+        end
       rescue ::Gitlab::Git::Repository::NoRepository
         []
       end
