@@ -2559,9 +2559,8 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       )
     end
 
-    context 'customizable_roles feature flag and license enabled' do
+    context 'custom_roles license enabled' do
       before do
-        stub_feature_flags(customizable_roles: [project.group])
         stub_licensed_features(custom_roles: true)
       end
 
@@ -2610,16 +2609,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         # allows read code if any of the custom roles allow it
         it { is_expected.to be_allowed(:read_code) }
       end
-    end
-
-    context 'without customizable_roles feature enabled' do
-      before do
-        stub_feature_flags(customizable_roles: false)
-        stub_licensed_features(custom_roles: true)
-        member_role_read_code_true.members << project_member
-      end
-
-      it { is_expected.to be_disallowed(:read_code) }
     end
 
     context 'without custom_roles license enabled' do

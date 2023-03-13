@@ -37,28 +37,12 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
 
   let_it_be(:group_id) { group_with_member_roles.id }
 
-  shared_examples 'customizable_roles feature flag required' do
-    context 'without feature flag' do
-      let(:current_user) { owner }
-
-      it "returns not found error" do
-        stub_feature_flags(customizable_roles: false)
-        stub_licensed_features(custom_roles: true)
-
-        subject
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-  end
-
   shared_examples 'custom_roles license required' do
     context 'without a valid license' do
       let(:current_user) { owner }
 
       it "returns not found error" do
         stub_licensed_features(custom_roles: false)
-        stub_feature_flags(customizable_roles: true)
 
         subject
 
@@ -71,7 +55,6 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
     subject { get api("/groups/#{group_id}/member_roles", current_user) }
 
     it_behaves_like "custom_roles license required"
-    it_behaves_like "customizable_roles feature flag required"
 
     context "when custom_roles license is enabled" do
       before do
@@ -152,7 +135,6 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
     subject { post api("/groups/#{group_id}/member_roles", current_user), params: params }
 
     it_behaves_like "custom_roles license required"
-    it_behaves_like "customizable_roles feature flag required"
 
     context "when custom_roles license is enabled" do
       before do
@@ -242,7 +224,6 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
     subject { delete api("/groups/#{group_id}/member_roles/#{member_role_id}", current_user) }
 
     it_behaves_like "custom_roles license required"
-    it_behaves_like "customizable_roles feature flag required"
 
     context "when custom_roles license is enabled" do
       before do

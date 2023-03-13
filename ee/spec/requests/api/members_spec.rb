@@ -268,22 +268,6 @@ RSpec.describe API::Members, feature_category: :subgroups do
           end
         end
 
-        context "when customizable_roles feature flag is disabled" do
-          before do
-            stub_licensed_features(custom_roles: true)
-            stub_feature_flags(customizable_roles: false)
-          end
-
-          it "ignores the member_role_id param" do
-            put_member
-
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(json_response['id']).to eq(member.user_id)
-            expect(json_response['access_level']).to eq(Member::GUEST)
-            expect(json_response['member_role']).to eq(nil)
-          end
-        end
-
         context "when custom roles license is disabled" do
           before do
             stub_licensed_features(custom_roles: false)
