@@ -210,5 +210,9 @@ module Security
       symbolized_finding_data[:remediation_byte_offsets].map { |offset| offset.values_at(:start_byte, :end_byte) }
                                                         .then { remediations_proxy.by_byte_offsets(_1) }
     end
+
+    def finding_details
+      finding_data['details']
+    end
   end
 end
