@@ -193,21 +193,21 @@ Any other group items are **not** migrated.
 
 Group items that are migrated to the destination GitLab instance include:
 
-| Group item            | Introduced in                                                               |
-|:----------------------|:----------------------------------------------------------------------------|
-| Badges                | [GitLab 13.11](https://gitlab.com/gitlab-org/gitlab/-/issues/292431)        |
-| Boards                | [GitLab 13.7](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/18938)  |
-| Board lists           | [GitLab 13.7](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/24863)  |
-| Epics <sup>1</sup>    | [GitLab 13.7](https://gitlab.com/gitlab-org/gitlab/-/issues/250281)         |
-| Group labels          | [GitLab 13.9](https://gitlab.com/gitlab-org/gitlab/-/issues/292429)         |
-| Iterations            | [GitLab 13.10](https://gitlab.com/gitlab-org/gitlab/-/issues/292428)        |
-| Iteration cadences    | [GitLab 15.4](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96570)  |
-| Members <sup>2</sup>  | [GitLab 13.9](https://gitlab.com/gitlab-org/gitlab/-/issues/299415)         |
-| Group milestones      | [GitLab 13.10](https://gitlab.com/gitlab-org/gitlab/-/issues/292427)        |
-| Namespace settings    | [GitLab 14.10](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/85128) |
-| Release milestones    | [GitLab 15.0](https://gitlab.com/gitlab-org/gitlab/-/issues/339422)         |
-| Subgroups             | [GitLab 13.7](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/18938)  |
-| Uploads               | [GitLab 13.7](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/18938)  |
+| Group item           | Introduced in                                                               |
+|:---------------------|:----------------------------------------------------------------------------|
+| Badges               | [GitLab 13.11](https://gitlab.com/gitlab-org/gitlab/-/issues/292431)        |
+| Boards               | [GitLab 13.7](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/18938)  |
+| Board lists          | [GitLab 13.7](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/24863)  |
+| Epics <sup>1</sup>   | [GitLab 13.7](https://gitlab.com/gitlab-org/gitlab/-/issues/250281)         |
+| Group labels         | [GitLab 13.9](https://gitlab.com/gitlab-org/gitlab/-/issues/292429)         |
+| Iterations           | [GitLab 13.10](https://gitlab.com/gitlab-org/gitlab/-/issues/292428)        |
+| Iteration cadences   | [GitLab 15.4](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96570)  |
+| Members <sup>2</sup> | [GitLab 13.9](https://gitlab.com/gitlab-org/gitlab/-/issues/299415)         |
+| Group milestones     | [GitLab 13.10](https://gitlab.com/gitlab-org/gitlab/-/issues/292427)        |
+| Namespace settings   | [GitLab 14.10](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/85128) |
+| Release milestones   | [GitLab 15.0](https://gitlab.com/gitlab-org/gitlab/-/issues/339422)         |
+| Subgroups            | [GitLab 13.7](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/18938)  |
+| Uploads              | [GitLab 13.7](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/18938)  |
 
 1. Epic resource state events [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/291983) in GitLab 15.4, label
    associations [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/62074) in GitLab 13.12, state and
@@ -250,52 +250,77 @@ and is not ready for production use.
 
 Project items that are migrated to the destination GitLab instance include:
 
-- Projects ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/267945) in GitLab 14.4)
-  - Auto DevOps ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339410) in GitLab 14.6)
-  - Badges ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/75029) in GitLab 14.6)
-  - Branches (including protected branches) ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339414) in GitLab 14.7)
-  - CI Pipelines ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339407) in GitLab 14.6)
-  - Designs ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339421) in GitLab 15.1)
-  - Issues ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/267946) in GitLab 14.4)
-    - Issue iteration ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96184) in 15.4)
-    - Issue resource state events ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/291983) in GitLab 15.4)
-    - Issue resource milestone events ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/291983) in GitLab 15.4)
-    - Issue resource iteration events ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/291983) in GitLab 15.4)
-    - Merge request URL references ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/267947) in GitLab 15.6)
-    - Time Tracking ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/267946) in GitLab 14.4)
-  - Issue boards ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/71661) in GitLab 14.4)
-  - Labels ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339419) in GitLab 14.4)
-  - LFS Objects ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339405) in GitLab 14.8)
-  - Members ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/341886) in GitLab 14.8)
-  - Merge Requests ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339403) in GitLab 14.5)
-    - Multiple merge request assignees ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339520) in GitLab 15.3)
-    - Merge request reviewers ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339520) in GitLab 15.3)
-    - Merge request approvers ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339520) in GitLab 15.3)
-    - Merge request resource state events ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/291983) in GitLab 15.4)
-    - Merge request resource milestone events ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/291983) in GitLab 15.4)
-    - Issue URL references ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/267947) in GitLab 15.6)
-    - Time Tracking ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339403) in GitLab 14.5)
-  - Push Rules ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339403) in GitLab 14.6)
-  - Milestones ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339417) in GitLab 14.5)
-  - External Pull Requests ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339409) in GitLab 14.5)
-  - Pipeline History ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339412) in GitLab 14.6)
-  - Pipeline Schedules ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339408) in GitLab 14.8)
-  - Project Features ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/74722) in GitLab 14.6)
-  - Releases ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339422) in GitLab 15.1)
-  - Release Evidences ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/360567) in GitLab 15.1)
-  - Repositories ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/267945) in GitLab 14.4)
-  - Snippets ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/343438) in GitLab 14.6)
-  - Settings ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339416) in GitLab 14.6)
-    - Avatar ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/75249) in GitLab 14.6)
-    - Container Expiration Policy ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/75653) in GitLab 14.6)
-    - Project Properties ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/75898) in GitLab 14.6)
-    - Service Desk ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/75653) in GitLab 14.6)
-  - Uploads ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/339401) in GitLab 14.5)
-  - Wikis ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/345923) in GitLab 14.6)
+| Project item                            | Introduced in                                                              |
+|:----------------------------------------|:---------------------------------------------------------------------------|
+| Projects                                | [GitLab 14.4](https://gitlab.com/gitlab-org/gitlab/-/issues/267945)        |
+| Auto DevOps                             | [GitLab 14.6](https://gitlab.com/gitlab-org/gitlab/-/issues/339410)        |
+| Badges                                  | [GitLab 14.6](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/75029) |
+| Branches (including protected branches) | [GitLab 14.7](https://gitlab.com/gitlab-org/gitlab/-/issues/339414)        |
+| CI Pipelines                            | [GitLab 14.6](https://gitlab.com/gitlab-org/gitlab/-/issues/339407)        |
+| Designs                                 | [GitLab 15.1](https://gitlab.com/gitlab-org/gitlab/-/issues/339421)        |
+| Issues                                  | [GitLab 14.4](https://gitlab.com/gitlab-org/gitlab/-/issues/267946)        |
+| Issue boards                            | [GitLab 14.4](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/71661) |
+| Labels                                  | [GitLab 14.4](https://gitlab.com/gitlab-org/gitlab/-/issues/339419)        |
+| LFS Objects                             | [GitLab 14.8](https://gitlab.com/gitlab-org/gitlab/-/issues/339405)        |
+| Members                                 | [GitLab 14.8](https://gitlab.com/gitlab-org/gitlab/-/issues/341886)        |
+| Merge requests                          | [GitLab 14.5](https://gitlab.com/gitlab-org/gitlab/-/issues/339403)        |
+| Push rules                              | [GitLab 14.6](https://gitlab.com/gitlab-org/gitlab/-/issues/339403)        |
+| Milestones                              | [GitLab 14.5](https://gitlab.com/gitlab-org/gitlab/-/issues/339417)        |
+| External pull requests                  | [GitLab 14.5](https://gitlab.com/gitlab-org/gitlab/-/issues/339409)        |
+| Pipeline history                        | [GitLab 14.6](https://gitlab.com/gitlab-org/gitlab/-/issues/339412)        |
+| Pipeline schedules                      | [GitLab 14.8](https://gitlab.com/gitlab-org/gitlab/-/issues/339408)        |
+| Project features                        | [GitLab 14.6](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/74722) |
+| Releases                                | [GitLab 15.1](https://gitlab.com/gitlab-org/gitlab/-/issues/339422)        |
+| Release evidences                       | [GitLab 15.1](https://gitlab.com/gitlab-org/gitlab/-/issues/360567)        |
+| Repositories                            | [GitLab 14.4](https://gitlab.com/gitlab-org/gitlab/-/issues/267945)        |
+| Snippets                                | [GitLab 14.6](https://gitlab.com/gitlab-org/gitlab/-/issues/343438)        |
+| Settings                                | [GitLab 14.6](https://gitlab.com/gitlab-org/gitlab/-/issues/339416)        |
+| Uploads                                 | [GitLab 14.5](https://gitlab.com/gitlab-org/gitlab/-/issues/339401)        |
+| Wikis                                   | [GitLab 14.6](https://gitlab.com/gitlab-org/gitlab/-/issues/345923)        |
 
-Items excluded from migration, because they contain sensitive information:
+#### Issue-related items
 
-- Pipeline Triggers.
+Issue-related project items that are migrated to the destination GitLab instance include:
+
+| Issue-related project item      | Introduced in                                                              |
+|:--------------------------------|:---------------------------------------------------------------------------|
+| Issue iterations                | [GitLab 15.4](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96184) |
+| Issue resource state events     | [GitLab 15.4](https://gitlab.com/gitlab-org/gitlab/-/issues/291983)        |
+| Issue resource milestone events | [GitLab 15.4](https://gitlab.com/gitlab-org/gitlab/-/issues/291983)        |
+| Issue resource iteration events | [GitLab 15.4](https://gitlab.com/gitlab-org/gitlab/-/issues/291983)        |
+| Merge request URL references    | [GitLab 15.6](https://gitlab.com/gitlab-org/gitlab/-/issues/267947)        |
+| Time tracking                   | [GitLab 14.4](https://gitlab.com/gitlab-org/gitlab/-/issues/267946)        |
+
+#### Merge request-related items
+
+Merge request-related project items that are migrated to the destination GitLab instance include:
+
+| Merge request-related project item      | Introduced in                                                       |
+|:----------------------------------------|:--------------------------------------------------------------------|
+| Multiple merge request assignees        | [GitLab 15.3](https://gitlab.com/gitlab-org/gitlab/-/issues/339520) |
+| Merge request reviewers                 | [GitLab 15.3](https://gitlab.com/gitlab-org/gitlab/-/issues/339520) |
+| Merge request approvers                 | [GitLab 15.3](https://gitlab.com/gitlab-org/gitlab/-/issues/339520) |
+| Merge request resource state events     | [GitLab 15.4](https://gitlab.com/gitlab-org/gitlab/-/issues/291983) |
+| Merge request resource milestone events | [GitLab 15.4](https://gitlab.com/gitlab-org/gitlab/-/issues/291983) |
+| Issue URL references                    | [GitLab 15.6](https://gitlab.com/gitlab-org/gitlab/-/issues/267947) |
+| Time tracking                           | [GitLab 14.5](https://gitlab.com/gitlab-org/gitlab/-/issues/339403) |
+
+#### Setting-related items
+
+Setting-related project items that are migrated to the destination GitLab instance include:
+
+| Setting-related project item | Introduced in                                                              |
+|:-----------------------------|:---------------------------------------------------------------------------|
+| Avatar                       | [GitLab 14.6](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/75249) |
+| Container expiration policy  | [GitLab 14.6](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/75653) |
+| Project properties           | [GitLab 14.6](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/75898) |
+| Service Desk                 | [GitLab 14.6](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/75653) |
+
+#### Excluded items
+
+Project items excluded from migration because they contain sensitive information:
+
+- Pipeline triggers.
 
 ### Troubleshooting
 
