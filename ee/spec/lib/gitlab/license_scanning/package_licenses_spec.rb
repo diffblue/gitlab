@@ -81,6 +81,15 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :lice
           ])
         end
       end
+
+      context 'with load balancing enabled', :db_load_balancing do
+        it 'uses the replica' do
+          expect(Gitlab::Database::LoadBalancing::Session.current).to receive(:use_replicas_for_read_queries)
+            .and_call_original
+
+          fetch
+        end
+      end
     end
 
     context 'when passing additional components to fetch' do
