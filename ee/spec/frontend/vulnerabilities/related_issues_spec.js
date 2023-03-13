@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { GlCard } from '@gitlab/ui';
 import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
 import RelatedIssues from 'ee/vulnerabilities/components/related_issues.vue';
@@ -46,7 +47,10 @@ describe('Vulnerability related issues component', () => {
         permissionsHelpPath,
         ...provide,
       },
-      stubs,
+      stubs: {
+        GlCard,
+        ...stubs,
+      },
     });
     // Need this special check because RelatedIssues creates the store and uses its state in the data function, so we
     // need to set the state of the store, not replace the state property.

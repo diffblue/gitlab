@@ -49,7 +49,7 @@ RSpec.describe 'Related Epics', :js, feature_category: :portfolio_management do
         card_body = page.find('.linked-issues-card-body ')
         expect(card_title).to have_content('Linked epics')
         expect(card_body).to have_link('', href: '/help/user/group/epics/linked_epics')
-        card = page.find('.card')
+        card = page.find('.gl-card')
         expect(card).to have_selector('button', text: 'Add')
       end
     end
