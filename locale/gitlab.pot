@@ -33139,6 +33139,9 @@ msgstr ""
 msgid "Profiles|Connected Accounts"
 msgstr ""
 
+msgid "Profiles|Created %{time_ago}"
+msgstr ""
+
 msgid "Profiles|Created%{time_ago}"
 msgstr ""
 
