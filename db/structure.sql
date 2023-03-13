@@ -14470,12 +14470,12 @@ ALTER SEQUENCE clusters_kubernetes_namespaces_id_seq OWNED BY clusters_kubernete
 
 CREATE TABLE commit_user_mentions (
     id bigint NOT NULL,
-    note_id integer NOT NULL,
+    note_id_convert_to_bigint integer DEFAULT 0 NOT NULL,
     mentioned_users_ids integer[],
     mentioned_projects_ids integer[],
     mentioned_groups_ids integer[],
     commit_id character varying NOT NULL,
-    note_id_convert_to_bigint bigint DEFAULT 0 NOT NULL
+    note_id bigint NOT NULL
 );
 
 CREATE SEQUENCE commit_user_mentions_id_seq
