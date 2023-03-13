@@ -179,10 +179,10 @@ module Types
     def merge_request
       BatchLoader::GraphQL.for(object.uuid).batch do |uuids, loader|
         ::Vulnerabilities::Feedback
-          .all_preloaded.by_finding_uuid(uuids)
-          .with_feedback_type('merge_request').each do |feedback|
-          loader.call(feedback.finding_uuid, feedback.merge_request)
-        end
+          .by_finding_uuid(uuids)
+          .with_feedback_type('merge_request')
+          .with_merge_request
+          .each { |feedback| loader.call(feedback.finding_uuid, feedback.merge_request) }
       end
     end
 

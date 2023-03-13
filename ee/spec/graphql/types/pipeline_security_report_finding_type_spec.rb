@@ -320,29 +320,82 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
       it 'returns the merge request for the security findings' do
         expect(mr_description).to eq(mr_feedback.merge_request.description)
       end
+    end
 
-      it 'avoids N+1 queries' do
+    context 'when multiple findings are detected' do
+      let(:query_for_test) do
+        %(
+          uuid
+          mergeRequest {
+            targetBranch
+          }
+        )
+      end
+
+      let_it_be(:existing_feedback) do
+        create(
+          :vulnerability_feedback,
+          :merge_request,
+          project: project,
+          finding: create(:vulnerabilities_finding, project: project, uuid: sast_findings.first.uuid),
+          merge_request: create(
+            :merge_request,
+            :unique_author,
+            source_project: project,
+            target_branch: "example-#{sast_findings.first.id}"
+          )
+        )
+      end
+
+      let!(:initial_query) do
         # Warm up table schema and other data (e.g. SAML providers, license)
         run_with_clean_state(sast_query, context: { current_user: user })
 
-        initial_query =
-          ActiveRecord::QueryRecorder.new { run_with_clean_state(sast_query, context: { current_user: user }) }
+        ActiveRecord::QueryRecorder.new do
+          run_with_clean_state(sast_query, context: { current_user: user })
+        end
+      end
 
-        expect(get_merge_requests_from_query.count).to eq(1)
+      before do
+        sast_findings[1..].each do |sast_finding|
+          create(
+            :vulnerability_feedback,
+            :merge_request,
+            project: project,
+            finding: create(:vulnerabilities_finding, project: project, uuid: sast_finding.uuid),
+            merge_request: create(
+              :merge_request,
+              :unique_author,
+              source_project: project,
+              target_branch: "example-#{sast_finding.id}"
+            )
+          )
+        end
+      end
 
-        merge_request = create(:merge_request, source_project: project, target_branch: 'feature2')
-        new_vulnerability_finding = create(:vulnerabilities_finding, project: project, uuid: sast_findings.second.uuid)
-        create(:vulnerability_feedback,
-               :merge_request,
-               project: project,
-               finding_uuid: new_vulnerability_finding.uuid,
-               merge_request: merge_request)
+      subject(:results) { run_with_clean_state(sast_query, context: { current_user: user }) }
 
-        expect { run_with_clean_state(sast_query, context: { current_user: user }) }
-          .not_to exceed_query_limit(initial_query)
+      it 'avoids N+1 queries' do
+        expect { results }.not_to exceed_query_limit(initial_query)
+      end
 
-        # We test the data here to ensure we are pulling more data with the same number of queries
-        expect(get_merge_requests_from_query.count).to eq(2)
+      it 'loads the minimum amount of data' do
+        query = ActiveRecord::QueryRecorder.new { results }
+        expect(query.occurrences_starting_with("SELECT \"merge_requests\"").values.sum).to eq(1)
+      end
+
+      it 'loads each merge request' do
+        branches = results
+          .dig('data', 'project', 'pipeline', 'securityReportFindings', 'nodes')
+          .map { |node| node.dig('mergeRequest', 'targetBranch') }
+        expect(branches).to match_array(sast_findings.map { |x| "example-#{x.id}" })
+      end
+
+      it 'loads each finding id' do
+        finding_ids = results
+          .dig('data', 'project', 'pipeline', 'securityReportFindings', 'nodes')
+          .pluck('uuid')
+        expect(finding_ids).to match_array(sast_findings.map(&:uuid))
       end
     end
   end
