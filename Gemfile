@@ -454,7 +454,7 @@ group :test do
   gem 'rspec-retry', '~> 0.6.1'
   gem 'rspec_profiling', '~> 0.0.6'
   gem 'rspec-benchmark', '~> 0.6.0'
-  gem 'rspec-parameterized', require: false
+  gem 'rspec-parameterized', '~> 1.0', require: false
 
   gem 'capybara', '~> 3.35.3'
   gem 'capybara-screenshot', '~> 1.0.22'
