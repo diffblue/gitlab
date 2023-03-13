@@ -7,5 +7,6 @@
     %strong= _('This group has been scheduled for permanent removal on %{date}') %{ date: date }
   %p
     = _("Restoring the group will prevent the group, its subgroups and projects from being removed on this date.")
-    = form_tag(group_restore_path(group), method: :post) do
-      = button_to _('Restore group'), '#', class: "gl-button btn btn-default"
+  %p
+    = render Pajamas::ButtonComponent.new(method: :post, href: group_restore_path(group)) do
+      = _('Restore group')
