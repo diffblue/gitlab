@@ -74,8 +74,8 @@ RSpec.shared_examples_for 'over the free user limit alert' do
 
     def expect_to_see_non_owner_alert
       page.within('[data-testid="user-over-limit-free-plan-alert"]') do
-        expect(page).to have_content('is over the')
-        expect(page).to have_content('user limit')
+        expect(page).to have_content('will move to a')
+        expect(page).to have_content('read-only state soon')
         expect(page).to have_content(non_owner_text)
         expect(page).not_to have_css(dismiss_button)
       end

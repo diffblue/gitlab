@@ -15,7 +15,7 @@ module Namespaces
         {
           title: Kernel.format(
             _(
-              'Your top-level group %{namespace_name} is over the %{free_user_limit} user limit'
+              'Your top-level group %{namespace_name} will move to a read-only state soon'
             ),
             namespace_name: namespace.name,
             free_user_limit: free_user_limit
