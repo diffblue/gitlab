@@ -386,7 +386,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService, f
         it 'does not include the compliance definition' do
           subject
 
-          yaml = YAML.safe_load(pipeline_scan_pipeline.pipeline_config.content, [Symbol])
+          yaml = YAML.safe_load(pipeline_scan_pipeline.pipeline_config.content, permitted_classes: [Symbol])
           expect(yaml).not_to eq("include" => [{ "file" => ".compliance-gitlab-ci.yml", "project" => "compliance/hippa" }])
         end
       end
