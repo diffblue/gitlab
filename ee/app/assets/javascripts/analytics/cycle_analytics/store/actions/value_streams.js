@@ -13,10 +13,10 @@ export const receiveCreateValueStreamSuccess = ({ commit }, valueStream = {}) =>
 };
 
 export const createValueStream = ({ commit, dispatch, getters }, data) => {
-  const { currentGroupPath } = getters;
+  const { namespacePath } = getters;
   commit(types.REQUEST_CREATE_VALUE_STREAM);
 
-  return apiCreateValueStream(currentGroupPath, data)
+  return apiCreateValueStream(namespacePath, data)
     .then(({ data: newValueStream }) => dispatch('receiveCreateValueStreamSuccess', newValueStream))
     .catch(({ response } = {}) => {
       const { data: { message, payload: { errors } } = null } = response;
@@ -28,10 +28,10 @@ export const updateValueStream = (
   { commit, dispatch, getters },
   { id: valueStreamId, ...data },
 ) => {
-  const { currentGroupPath } = getters;
+  const { namespacePath } = getters;
   commit(types.REQUEST_UPDATE_VALUE_STREAM);
 
-  return apiUpdateValueStream({ namespacePath: currentGroupPath, valueStreamId, data })
+  return apiUpdateValueStream({ namespacePath, valueStreamId, data })
     .then(({ data: newValueStream }) => {
       commit(types.RECEIVE_UPDATE_VALUE_STREAM_SUCCESS, newValueStream);
       return dispatch('fetchCycleAnalyticsData');
@@ -43,10 +43,10 @@ export const updateValueStream = (
 };
 
 export const deleteValueStream = ({ commit, dispatch, getters }, valueStreamId) => {
-  const { currentGroupPath } = getters;
+  const { namespacePath } = getters;
   commit(types.REQUEST_DELETE_VALUE_STREAM);
 
-  return apiDeleteValueStream(currentGroupPath, valueStreamId)
+  return apiDeleteValueStream(namespacePath, valueStreamId)
     .then(() => commit(types.RECEIVE_DELETE_VALUE_STREAM_SUCCESS))
     .then(() => dispatch('fetchCycleAnalyticsData'))
     .catch(({ response } = {}) => {
@@ -89,11 +89,11 @@ export const receiveValueStreamsSuccess = (
 };
 
 export const fetchValueStreams = ({ commit, dispatch, getters }) => {
-  const { currentGroupPath } = getters;
+  const { namespacePath } = getters;
 
   commit(types.REQUEST_VALUE_STREAMS);
 
-  return getValueStreams(currentGroupPath)
+  return getValueStreams(namespacePath)
     .then(({ data }) => dispatch('receiveValueStreamsSuccess', data))
     .catch((error) => {
       const {

@@ -110,6 +110,7 @@ export default {
       defaultStageConfig = [],
       pagination = {},
       aggregation = {},
+      namespace = {},
     } = {},
   ) {
     state.isLoading = true;
@@ -119,6 +120,7 @@ export default {
     state.createdBefore = createdBefore;
     state.createdAfter = createdAfter;
     state.defaultStageConfig = defaultStageConfig;
+    state.namespace = namespace;
 
     Vue.set(state, 'aggregation', aggregation);
 

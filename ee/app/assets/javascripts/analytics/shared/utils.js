@@ -132,6 +132,8 @@ export const buildCycleAnalyticsInitialData = ({
   aggregationEnabled = false,
   aggregationLastRunAt = null,
   aggregationNextRunAt = null,
+  namespaceName = null,
+  namespaceFullPath = null,
 } = {}) => ({
   selectedValueStream: buildValueStreamFromJson(valueStream),
   group: groupId
@@ -168,6 +170,10 @@ export const buildCycleAnalyticsInitialData = ({
     nextRunAt: aggregationNextRunAt,
   },
   features: extractFeatures(gon),
+  namespace: {
+    name: namespaceName,
+    fullPath: namespaceFullPath,
+  },
 });
 
 /**

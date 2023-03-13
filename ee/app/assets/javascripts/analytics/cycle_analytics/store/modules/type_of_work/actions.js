@@ -21,7 +21,7 @@ export const receiveTopRankedGroupLabelsError = ({ commit }, error) => {
 export const fetchTopRankedGroupLabels = ({ dispatch, commit, state, rootGetters }) => {
   commit(types.REQUEST_TOP_RANKED_GROUP_LABELS);
   const {
-    currentGroupPath,
+    namespacePath,
     cycleAnalyticsRequestParams: {
       project_ids,
       created_after,
@@ -33,7 +33,7 @@ export const fetchTopRankedGroupLabels = ({ dispatch, commit, state, rootGetters
   } = rootGetters;
   const { subject } = state;
 
-  return getTypeOfWorkTopLabels(currentGroupPath, {
+  return getTypeOfWorkTopLabels(namespacePath, {
     subject,
     project_ids,
     created_after,
@@ -59,7 +59,7 @@ export const receiveTasksByTypeDataError = ({ commit }, error) => {
 };
 
 export const fetchTasksByTypeData = ({ dispatch, commit, state, rootGetters, getters }) => {
-  const { currentGroupPath, cycleAnalyticsRequestParams } = rootGetters;
+  const { namespacePath, cycleAnalyticsRequestParams } = rootGetters;
   const { subject } = state;
   const { selectedLabelNames } = getters;
 
@@ -77,7 +77,7 @@ export const fetchTasksByTypeData = ({ dispatch, commit, state, rootGetters, get
 
   // dont request if we have no labels selected...for now
   if (selectedLabelNames.length) {
-    return getTypeOfWorkTasksByType(currentGroupPath, {
+    return getTypeOfWorkTasksByType(namespacePath, {
       project_ids,
       created_after,
       created_before,

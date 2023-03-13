@@ -20,6 +20,7 @@ export default () => ({
   selectedProjects: [],
   selectedStage: null,
   selectedValueStream: null,
+  namespace: { name: null, fullPath: null },
 
   selectedStageEvents: [],
 

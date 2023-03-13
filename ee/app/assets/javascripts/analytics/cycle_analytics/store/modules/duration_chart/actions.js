@@ -20,7 +20,7 @@ export const fetchDurationData = ({ dispatch, commit, rootGetters }) => {
   const {
     cycleAnalyticsRequestParams,
     activeStages,
-    currentGroupPath,
+    namespacePath,
     currentValueStreamId,
   } = rootGetters;
   return Promise.all(
@@ -28,7 +28,7 @@ export const fetchDurationData = ({ dispatch, commit, rootGetters }) => {
       const { id } = stage;
 
       return getDurationChart({
-        namespacePath: currentGroupPath,
+        namespacePath,
         valueStreamId: currentValueStreamId,
         stageId: id,
         params: cycleAnalyticsRequestParams,

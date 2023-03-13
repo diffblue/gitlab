@@ -69,7 +69,7 @@ export default {
     ]),
     ...mapGetters([
       'hasNoAccessError',
-      'currentGroupPath',
+      'namespacePath',
       'activeStages',
       'selectedProjectIds',
       'selectedProjectFullPaths',
@@ -138,7 +138,7 @@ export default {
     },
     dashboardsPath() {
       return this.showDashboardsLink
-        ? generateValueStreamsDashboardLink(this.currentGroupPath, this.selectedProjectFullPaths)
+        ? generateValueStreamsDashboardLink(this.namespacePath, this.selectedProjectFullPaths)
         : null;
     },
   },
@@ -241,7 +241,7 @@ export default {
       <template v-else>
         <value-stream-metrics
           v-if="isOverviewStageSelected"
-          :request-path="currentGroupPath"
+          :request-path="namespacePath"
           :request-params="cycleAnalyticsRequestParams"
           :requests="$options.METRICS_REQUESTS"
           :group-by="$options.VSA_METRICS_GROUPS"
