@@ -27841,7 +27841,13 @@ msgstr ""
 msgid "MlExperimentTracking|Artifacts"
 msgstr ""
 
+msgid "MlExperimentTracking|Author"
+msgstr ""
+
 msgid "MlExperimentTracking|Create a new experiment"
+msgstr ""
+
+msgid "MlExperimentTracking|Create new candidates"
 msgstr ""
 
 msgid "MlExperimentTracking|Created at"
@@ -27851,9 +27857,6 @@ msgid "MlExperimentTracking|Details"
 msgstr ""
 
 msgid "MlExperimentTracking|Experiment"
-msgstr ""
-
-msgid "MlExperimentTracking|Experiment candidates"
 msgstr ""
 
 msgid "MlExperimentTracking|Filter candidates"
@@ -27871,16 +27874,22 @@ msgstr ""
 msgid "MlExperimentTracking|Name"
 msgstr ""
 
-msgid "MlExperimentTracking|No candidates to display"
+msgid "MlExperimentTracking|No artifacts"
+msgstr ""
+
+msgid "MlExperimentTracking|No candidates"
+msgstr ""
+
+msgid "MlExperimentTracking|No candidates logged for the query. Create new candidates using the MLflow client."
 msgstr ""
 
 msgid "MlExperimentTracking|No experiments"
 msgstr ""
 
-msgid "MlExperimentTracking|There are no logged experiments for this project. Create a new experiment using the MLflow client."
+msgid "MlExperimentTracking|No name"
 msgstr ""
 
-msgid "MlExperimentTracking|User"
+msgid "MlExperimentTracking|There are no logged experiments for this project. Create a new experiment using the MLflow client."
 msgstr ""
 
 msgid "Modal updated"
