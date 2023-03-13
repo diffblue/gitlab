@@ -15,7 +15,9 @@ RSpec.describe API::PypiPackages, feature_category: :package_registry do
   let_it_be(:package) { create(:pypi_package, project: project, name: package_name, version: '1.0.0') }
 
   let(:headers) { basic_auth_header(user.username, personal_access_token.token) }
-  let(:snowplow_gitlab_standard_context) { { project: project, namespace: group, property: 'i_package_pypi_user' } }
+  let(:snowplow_gitlab_standard_context) do
+    { project: project, namespace: group, property: 'i_package_pypi_user', user: user }
+  end
 
   subject { get api(url), headers: headers }
 
