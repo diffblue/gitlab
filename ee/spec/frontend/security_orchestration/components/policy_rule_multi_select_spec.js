@@ -1,23 +1,26 @@
-import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { GlCollapsibleListbox, GlListboxItem } from '@gitlab/ui';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
 
 const items = { start: 'Start now', middle: 'Almost there', end: 'Done' };
 const itemsKeys = Object.keys(items);
 const itemsLength = itemsKeys.length;
-const itemsLengthIncludingSelectAll = itemsLength + 1;
-// +1 due to the item Select all
+const itemsLengthIncludingSelectAll = itemsLength;
 
 describe('Policy Rule Multi Select', () => {
   let wrapper;
 
   const createComponent = (props = {}) => {
-    wrapper = shallowMount(PolicyRuleMultiSelect, {
+    wrapper = shallowMountExtended(PolicyRuleMultiSelect, {
       propsData: {
         itemTypeName: 'demo items',
         items,
         value: [],
         ...props,
+      },
+      stubs: {
+        GlCollapsibleListbox,
+        GlListboxItem,
       },
     });
   };
@@ -26,9 +29,9 @@ describe('Policy Rule Multi Select', () => {
     createComponent();
   });
 
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
-  const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
-  const findAllSelectedItem = () => wrapper.find('[data-testid="all-items-selected"]');
+  const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
+  const findDropdownItems = () => wrapper.findAllComponents(GlListboxItem);
+  const findAllSelectedItem = () => wrapper.findByTestId('all-items-selected');
 
   describe('Initialization', () => {
     it('renders dropdown', () => {
@@ -36,7 +39,7 @@ describe('Policy Rule Multi Select', () => {
     });
 
     it('renders text based on itemTypeName property', () => {
-      expect(findDropdown().props('text')).toBe('Select demo items');
+      expect(findDropdown().props('toggleText')).toBe('Select demo items');
     });
 
     describe('Without any selected item', () => {
@@ -45,11 +48,7 @@ describe('Policy Rule Multi Select', () => {
       });
 
       it('displays text related to the performing of a selection', () => {
-        expect(findDropdown().props('text')).toBe('Select demo items');
-      });
-
-      it('does not have select all item selected', () => {
-        expect(findAllSelectedItem().props('isChecked')).toBe(false);
+        expect(findDropdown().props('toggleText')).toBe('Select demo items');
       });
     });
 
@@ -62,15 +61,13 @@ describe('Policy Rule Multi Select', () => {
       });
 
       it('has one item selected', () => {
-        expect(findDropdownItems().filter((element) => element.props('isChecked'))).toHaveLength(1);
+        expect(findDropdownItems().filter((element) => element.props('isSelected'))).toHaveLength(
+          1,
+        );
       });
 
       it('displays text related to the selected item', () => {
-        expect(findDropdown().props('text')).toBe(expectedValue);
-      });
-
-      it('does not have select all item selected', () => {
-        expect(findAllSelectedItem().props('isChecked')).toBe(false);
+        expect(findDropdown().props('toggleText')).toBe(expectedValue);
       });
     });
 
@@ -84,17 +81,13 @@ describe('Policy Rule Multi Select', () => {
       });
 
       it('has multiple items selected', () => {
-        expect(findDropdownItems().filter((element) => element.props('isChecked'))).toHaveLength(
+        expect(findDropdownItems().filter((element) => element.props('isSelected'))).toHaveLength(
           expectedLength,
         );
       });
 
       it('displays text related to the first selected item followed by the number of additional items', () => {
-        expect(findDropdown().props('text')).toBe(expectedValue);
-      });
-
-      it('does not have select all item selected', () => {
-        expect(findAllSelectedItem().props('isChecked')).toBe(false);
+        expect(findDropdown().props('toggleText')).toBe(expectedValue);
       });
     });
 
@@ -106,17 +99,17 @@ describe('Policy Rule Multi Select', () => {
       });
 
       it('has all items selected', () => {
-        expect(findDropdownItems().filter((element) => element.props('isChecked'))).toHaveLength(
+        expect(findDropdownItems().filter((element) => element.props('isSelected'))).toHaveLength(
           itemsLengthIncludingSelectAll,
         );
       });
 
       it('displays text related to all items being selected', () => {
-        expect(findDropdown().props('text')).toBe(expectedValue);
+        expect(findDropdown().props('toggleText')).toBe(expectedValue);
       });
 
       it('has select all item selected', () => {
-        expect(findAllSelectedItem().props('isChecked')).toBe(true);
+        expect(findAllSelectedItem().exists()).toBe(true);
       });
     });
   });
@@ -125,11 +118,11 @@ describe('Policy Rule Multi Select', () => {
     const allSelectItem = findAllSelectedItem();
     const allDropdownItems = findDropdownItems();
 
-    expect(allDropdownItems.filter((element) => element.props('isChecked'))).toHaveLength(0);
+    expect(allDropdownItems.filter((element) => element.props('isSelected'))).toHaveLength(0);
 
-    await allSelectItem.trigger('click');
+    await allSelectItem.vm.$emit('click');
 
-    expect(allDropdownItems.filter((element) => element.props('isChecked'))).toHaveLength(
+    expect(allDropdownItems.filter((element) => element.props('isSelected'))).toHaveLength(
       itemsLengthIncludingSelectAll,
     );
     expect(wrapper.emitted().input).toEqual([[itemsKeys]]);
@@ -137,16 +130,15 @@ describe('Policy Rule Multi Select', () => {
 
   it('has all items unselected after select all is unchecked', async () => {
     createComponent({ value: itemsKeys });
-    const allSelectItem = findAllSelectedItem();
     const allDropdownItems = findDropdownItems();
 
-    expect(allDropdownItems.filter((element) => element.props('isChecked'))).toHaveLength(
+    expect(allDropdownItems.filter((element) => element.props('isSelected'))).toHaveLength(
       itemsLengthIncludingSelectAll,
     );
 
-    await allSelectItem.trigger('click');
+    await findDropdown().vm.$emit('reset');
 
-    expect(allDropdownItems.filter((element) => element.props('isChecked'))).toHaveLength(0);
+    expect(allDropdownItems.filter((element) => element.props('isSelected'))).toHaveLength(0);
     expect(wrapper.emitted().input).toEqual([[[]]]);
   });
 
@@ -157,11 +149,11 @@ describe('Policy Rule Multi Select', () => {
       element.html().includes(expectedValue),
     );
 
-    expect(dropdownItemsWithDone.filter((element) => element.props('isChecked'))).toHaveLength(0);
+    expect(dropdownItemsWithDone.filter((element) => element.props('isSelected'))).toHaveLength(0);
 
-    await dropdownItemsWithDone.at(0).trigger('click');
+    await findDropdown().vm.$emit('select', [expectedKey]);
 
-    expect(dropdownItemsWithDone.filter((element) => element.props('isChecked'))).toHaveLength(1);
+    expect(dropdownItemsWithDone.filter((element) => element.props('isSelected'))).toHaveLength(1);
     expect(wrapper.emitted().input).toEqual([[[expectedKey]]]);
   });
 
@@ -173,11 +165,11 @@ describe('Policy Rule Multi Select', () => {
       element.html().includes(expectedValue),
     );
 
-    expect(dropdownItemsWithDone.filter((element) => element.props('isChecked'))).toHaveLength(1);
+    expect(dropdownItemsWithDone.filter((element) => element.props('isSelected'))).toHaveLength(1);
 
-    await dropdownItemsWithDone.at(0).trigger('click');
+    await findDropdown().vm.$emit('select', []);
 
-    expect(dropdownItemsWithDone.filter((element) => element.props('isChecked'))).toHaveLength(0);
+    expect(dropdownItemsWithDone.filter((element) => element.props('isSelected'))).toHaveLength(0);
     expect(wrapper.emitted().input).toEqual([[[]]]);
   });
 
