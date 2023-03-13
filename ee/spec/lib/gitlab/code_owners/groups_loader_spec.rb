@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::CodeOwners::GroupsLoader do
+RSpec.describe Gitlab::CodeOwners::GroupsLoader, feature_category: :source_code_management do
   let(:text) do
     <<~TXT
     This is a long text that mentions some groups.
