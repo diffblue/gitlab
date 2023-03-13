@@ -92,7 +92,7 @@ Example:
 - `gitlab-org` is a `top-level namespace`; the root for all groups and projects of an organization
 - `gitlab` is a `project`; a project of the organization.
 
-Top-level namespaces may [be replaced by workspaces](https://gitlab.com/gitlab-org/gitlab/-/issues/368237#high-level-goals). This proposal only uses the term top-level namespaces as the workspace definition is ongoing.
+Top-level namespaces may [be replaced by organizations](https://gitlab.com/gitlab-org/gitlab/-/issues/368237#high-level-goals). This proposal only uses the term top-level namespaces as the organization definition is ongoing.
 
 Discouraged synonyms: Root-level namespace
 
@@ -179,29 +179,29 @@ Cells is a fundamental architecture change that impacts other sections and stage
 Based on discussions with other groups the net impact of introducing Cells and a new entity called organizations is mostly neutral. It may slow down development in some areas. We did not discover major blockers for other teams.
 
 1. We need to resolve naming conflicts (proposal is TBD)
-1. Cells requires introducing Organizations. Organizations are a new entity **above** top-level groups. Because this is a new entity, it may impact the ability to consolidate settings for Group Workspace and influence their decision on [how to approach introducing a workspace](https://gitlab.com/gitlab-org/gitlab/-/issues/376285#approach-2-workspace-is-built-on-top-of-top-level-groups)
+1. Cells requires introducing Organizations. Organizations are a new entity **above** top-level groups. Because this is a new entity, it may impact the ability to consolidate settings for Group::Organization and influence their decision on [how to approach introducing a an organization](https://gitlab.com/gitlab-org/gitlab/-/issues/376285#approach-2-workspace-is-built-on-top-of-top-level-groups)
 1. Organizations may make it slightly easier for Fulfillment to realize their billing plans.
 
-### Impact on Group Manage Workspace
+### Impact on Group::Organization
 
-We synced with the Workspace PM and Designer ([recording](https://youtu.be/b5Opn9cFWFk)) and discussed the similarities and differences between the Cells and Workspace proposal ([presentation](https://docs.google.com/presentation/d/1FsUi22Up15b_tu6p2m-yLML3hCZ3rgrZrmzJAxUsNmU/edit?usp=sharing)).
+We synced with the Organization PM and Designer ([recording](https://youtu.be/b5Opn9cFWFk)) and discussed the similarities and differences between the Cells and Organization proposal ([presentation](https://docs.google.com/presentation/d/1FsUi22Up15b_tu6p2m-yLML3hCZ3rgrZrmzJAxUsNmU/edit?usp=sharing)).
 
-#### Goals of Group Manage Workspace
+#### Goals of Group::Organization
 
-As defined in the [workspace documentation](../../../user/workspace/index.md):
+As defined in the [organization documentation](../../../user/organization/index.md):
 
 1. Create an entity to manage everything you do as a GitLab administrator, including:
    1. Defining and applying settings to all of your groups, subgroups, and projects.
    1. Aggregating data from all your groups, subgroups, and projects.
 1. Reach feature parity between SaaS and self-managed installations, with all Admin Area settings moving to groups (?). Hardware controls remain on the instance level.
 
-The [workspace roadmap outlines](https://gitlab.com/gitlab-org/gitlab/-/issues/368237#high-level-goals) the current goals in detail.
+The [organization roadmap outlines](https://gitlab.com/gitlab-org/gitlab/-/issues/368237#high-level-goals) the current goals in detail.
 
 #### Potential conflicts with Cells
 
-- Workspace and Organization are different terms for the same entity. Both define a new entity as the primary organizational object for groups and projects. This is mainly a semantic difference and **we need to decide on a name** following [user research to decide if workspace](https://gitlab.com/gitlab-org/ux-research/-/issues/2147). This is also driven by the fact that the Remote Development team is looking at better names and [are considering the term Workspace as well](https://gitlab.com/gitlab-com/Product/-/issues/4812).
+- Organization defines a new entity as the primary organizational object for groups and projects. 
 - We will only introduce one entity
-- Group workspace highlighted the need to further validate the key assumption that users only care about what happens within their organization.
+- Group::Organization highlighted the need to further validate the key assumption that users only care about what happens within their organization.
 
 ### Impact on Fulfillment
 
@@ -248,7 +248,7 @@ Organizations solve the following problems:
     1. `https://gitlab.com/gitlab-org/`
     1. `https://gitlab.com/gitlab-com/`
 1. We can isolate organizations from each other. Top-level namespaces of the same organization can interact within organizations but are not allowed to interact with other namespaces in other organizations. This is useful for customers because it means an organization provides clear boundaries - similar to a self-managed instance. This means we don't have to aggregate user dashboards across everything and can locally scope them to organizations.
-1. We don't need to define hierarchies inside an organization. It is a container that could be filled with whatever hierarchy / entity set makes sense (workspaces, top-level namespaces etc.)
+1. We don't need to define hierarchies inside an organization. It is a container that could be filled with whatever hierarchy / entity set makes sense (organization, top-level namespaces etc.)
 1. Self-managed instances would set a default organization.
 1. Organizations can control user-profiles in a central way. This could be achieved by having an organization specific user-profile. Such a profile makes it possible for the organization administrators to control the user role in a company, enforce user emails, or show a graphical indicator of a user being part of the organization. An example would be a "GitLab Employee stamp" on comments.
 
