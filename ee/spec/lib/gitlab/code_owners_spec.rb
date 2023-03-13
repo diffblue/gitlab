@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::CodeOwners do
+RSpec.describe Gitlab::CodeOwners, feature_category: :source_code_management do
   include FakeBlobHelpers
 
   let_it_be(:code_owner) { create(:user, username: 'owner-1') }
