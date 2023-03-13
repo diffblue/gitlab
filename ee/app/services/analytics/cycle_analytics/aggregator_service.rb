@@ -4,7 +4,7 @@ module Analytics
     class AggregatorService
       SUPPORTED_MODES = %I[incremental full].to_set
 
-      def initialize(aggregation:, mode: :incremental)
+      def initialize(aggregation:, mode: :incremental, runtime_limiter: Analytics::CycleAnalytics::RuntimeLimiter.new)
         raise "Only :incremental and :full modes are supported" unless SUPPORTED_MODES.include?(mode)
 
         @aggregation = aggregation
@@ -12,6 +12,7 @@ module Analytics
         @runtime = 0
         @processed_records = 0
         @aggregation_finished = true
+        @runtime_limiter = runtime_limiter
       end
 
       def execute
@@ -38,13 +39,14 @@ module Analytics
         aggregation.save!
       end
 
-      attr_reader :aggregation, :mode, :update_params, :runtime, :processed_records
+      attr_reader :aggregation, :mode, :update_params, :runtime, :processed_records, :runtime_limiter
 
       def run_aggregation(model)
         response = Analytics::CycleAnalytics::DataLoaderService.new(
           group: aggregation.namespace,
           model: model,
-          context: Analytics::CycleAnalytics::AggregationContext.new(cursor: aggregation.cursor_for(mode, model))
+          context: Analytics::CycleAnalytics::AggregationContext.new(cursor: aggregation.cursor_for(mode, model),
+            runtime_limiter: runtime_limiter)
         ).execute
 
         handle_response(model, response)

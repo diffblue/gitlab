@@ -5,9 +5,12 @@ module Analytics
     class AggregationContext
       attr_accessor :cursor, :processed_records
 
-      def initialize(cursor: {})
+      delegate :over_time?, to: :@runtime_limiter
+
+      def initialize(cursor: {}, runtime_limiter: Analytics::CycleAnalytics::RuntimeLimiter.new)
         @processed_records = 0
         @cursor = cursor.compact
+        @runtime_limiter = runtime_limiter
       end
 
       def processing_start!
