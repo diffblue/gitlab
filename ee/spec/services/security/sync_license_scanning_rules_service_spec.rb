@@ -102,15 +102,21 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
       end
 
       context 'when license_scanning_policies is enabled' do
-        let(:case1) { [] }
-        let(:case2) { [['GPL v3', 'A']] }
-        let(:case3) { [['GPL v3', 'A'], ['MIT', 'B']] }
-        let(:case4) { [['GPL v3', 'A'], ['MIT', 'B'], ['GPL v3', 'C']] }
         let(:case5) { [['GPL v3', 'A'], ['MIT', 'B'], ['GPL v3', 'C'], ['Apache 2', 'D']] }
+        let(:case4) { [['GPL v3', 'A'], ['MIT', 'B'], ['GPL v3', 'C']] }
+        let(:case3) { [['GPL v3', 'A'], ['MIT', 'B']] }
+        let(:case2) { [['GPL v3', 'A']] }
+        let(:case1) { [] }
+
+        context 'when target branch pipeline is empty' do
+          it 'does not require approval' do
+            expect { subject }.to change { license_finding_rule.reload.approvals_required }.from(1).to(0)
+          end
+        end
 
         using RSpec::Parameterized::TableSyntax
 
-        where(:default_branch, :pipeline_branch, :states, :policy_license, :policy_state, :result) do
+        where(:target_branch, :pipeline_branch, :states, :policy_license, :policy_state, :result) do
           ref(:case1) | ref(:case2) | ['newly_detected'] | 'GPL v3' | :denied  | true
           ref(:case2) | ref(:case3) | ['newly_detected'] | 'GPL v3' | :denied  | false
           ref(:case3) | ref(:case4) | ['newly_detected'] | 'GPL v3' | :denied  | true
@@ -132,7 +138,7 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
 
         with_them do
           let(:match_on_inclusion) { policy_state == :denied }
-          let(:default_branch_report) { create(:ci_reports_license_scanning_report) }
+          let(:target_branch_report) { create(:ci_reports_license_scanning_report) }
           let(:pipeline_report) { create(:ci_reports_license_scanning_report) }
           let(:license_states) { states }
           let(:license) { create(:software_license, name: policy_license) }
@@ -140,8 +146,8 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
           before do
             stub_feature_flags(license_scanning_policies: true)
 
-            default_branch.each do |ld|
-              default_branch_report.add_license(id: nil, name: ld[0]).add_dependency(name: ld[1])
+            target_branch.each do |ld|
+              target_branch_report.add_license(id: nil, name: ld[0]).add_dependency(name: ld[1])
             end
 
             pipeline_branch.each do |ld|
@@ -155,7 +161,7 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
             )
 
             allow(service).to receive(:report).and_return(pipeline_report)
-            allow(service).to receive(:default_branch_report).and_return(default_branch_report)
+            allow(service).to receive(:target_branch_report).and_return(target_branch_report)
           end
 
           it 'sync approvals_required' do

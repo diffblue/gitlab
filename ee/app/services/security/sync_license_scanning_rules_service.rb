@@ -39,16 +39,22 @@ module Security
     end
 
     def sync_license_finding_rules(merge_requests)
-      license_approval_rules = ApprovalMergeRequestRule
+      merge_requests.each do |merge_request|
+        remove_required_license_finding_approval(merge_request)
+      end
+    end
+
+    def remove_required_license_finding_approval(merge_request)
+      license_approval_rules = merge_request
+        .approval_rules
         .report_approver
         .license_scanning
         .with_scan_result_policy_read
         .including_scan_result_policy_read
-        .for_unmerged_merge_requests(merge_requests)
 
       return if license_approval_rules.empty?
 
-      denied_rules = license_approval_rules.reject { |rule| violates_policy?(rule) }
+      denied_rules = license_approval_rules.reject { |rule| violates_policy?(merge_request, rule) }
       ApprovalMergeRequestRule.remove_required_approved(denied_rules)
     end
 
@@ -57,11 +63,12 @@ module Security
     ##     with license type violating the policy.
     ##   - If match_on_inclusion is false, any detected licenses that does not match
     ##     the licenses from `license_types` should require approval
-    def violates_policy?(rule)
+    def violates_policy?(merge_request, rule)
       scan_result_policy_read = rule.scan_result_policy_read
       check_denied_licenses = scan_result_policy_read.match_on_inclusion
+      target_branch_report = target_branch_report(merge_request)
 
-      license_ids, license_names = licenses_to_check(scan_result_policy_read)
+      license_ids, license_names = licenses_to_check(target_branch_report, scan_result_policy_read)
       license_policies = project
         .software_license_policies
         .including_license
@@ -78,24 +85,25 @@ module Security
         violates_license_policy = (license_names_from_ids - license_names_from_policy).present?
       end
 
-      return true if scan_result_policy_read.newly_detected? && new_dependency_with_denied_license?(denied_licenses)
+      return true if scan_result_policy_read.newly_detected? &&
+        new_dependency_with_denied_license?(target_branch_report, denied_licenses)
 
       violates_license_policy
     end
 
-    def licenses_to_check(scan_result_policy_read)
+    def licenses_to_check(target_branch_report, scan_result_policy_read)
       only_newly_detected = scan_result_policy_read.license_states == [ApprovalProjectRule::NEWLY_DETECTED]
 
       if only_newly_detected
-        diff = default_branch_report.diff_with(report)
+        diff = target_branch_report.diff_with(report)
         license_names = diff[:added].map(&:name)
         license_ids = diff[:added].filter_map(&:id)
       elsif scan_result_policy_read.newly_detected?
         license_names = report.license_names
         license_ids = report.licenses.filter_map(&:id)
       else
-        license_names = default_branch_report.license_names
-        license_ids = default_branch_report.licenses.filter_map(&:id)
+        license_names = target_branch_report.license_names
+        license_ids = target_branch_report.licenses.filter_map(&:id)
       end
 
       [license_ids, license_names]
@@ -112,28 +120,26 @@ module Security
       ids.concat(names).compact.uniq
     end
 
-    def new_dependency_with_denied_license?(denied_licenses)
+    def new_dependency_with_denied_license?(target_branch_report, denied_licenses)
       dependencies_with_denied_licenses = report.licenses
         .select { |license| denied_licenses.include?(license.name) || denied_licenses.include?(license.id) }
         .flat_map(&:dependencies).map(&:name)
 
-      (dependencies_with_denied_licenses & new_dependency_names).present?
+      (dependencies_with_denied_licenses & new_dependency_names(target_branch_report)).present?
+    end
+
+    def target_branch_report(merge_request)
+      project.license_compliance(merge_request.latest_pipeline_for_target_branch).license_scanning_report
+    end
+
+    def new_dependency_names(target_branch_report)
+      report.dependency_names - target_branch_report.dependency_names
     end
 
     def report
       project.license_compliance(pipeline).license_scanning_report
     end
     strong_memoize_attr :report
-
-    def default_branch_report
-      project.license_compliance.license_scanning_report
-    end
-    strong_memoize_attr :default_branch_report
-
-    def new_dependency_names
-      report.dependency_names - default_branch_report.dependency_names
-    end
-    strong_memoize_attr :new_dependency_names
 
     def license_names_from_report
       report.license_names.concat(report.licenses.filter_map(&:id)).compact.uniq
