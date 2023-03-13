@@ -31526,12 +31526,6 @@ msgstr ""
 msgid "Pipelines|\"Hello world\" with GitLab CI"
 msgstr ""
 
-msgid "Pipelines|%{jobs} %{ref_text} in %{duration}"
-msgstr ""
-
-msgid "Pipelines|(queued for %{queued_duration})"
-msgstr ""
-
 msgid "Pipelines|1. Set up a runner"
 msgstr ""
 
@@ -51338,6 +51332,12 @@ msgid "import flow"
 msgstr ""
 
 msgid "in"
+msgstr ""
+
+msgid "in %{duration} and was queued for %{queued_duration}"
+msgstr ""
+
+msgid "in %{duration}, using %{compute_credits} compute credits, and was queued for %{queued_duration}"
 msgstr ""
 
 msgid "in group %{link_to_group}"
