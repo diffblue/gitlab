@@ -22,9 +22,9 @@ describe('Crone time', () => {
   describe('parseCronTime', () => {
     it.each`
       croneString      | expectedResult
-      ${'0 0 * * *'}   | ${{ day: DAYS[0], time: HOUR_MINUTE_LIST[0] }}
-      ${'0 1 * * 4'}   | ${{ day: DAYS[4], time: HOUR_MINUTE_LIST[1] }}
-      ${'0 a * * sas'} | ${{ day: DAYS[0], time: HOUR_MINUTE_LIST[0] }}
+      ${'0 0 * * *'}   | ${{ day: DAYS[0], dayIndex: 0, time: HOUR_MINUTE_LIST[0], timeIndex: '0' }}
+      ${'0 1 * * 4'}   | ${{ day: DAYS[4], dayIndex: '4', time: HOUR_MINUTE_LIST[1], timeIndex: '1' }}
+      ${'0 a * * sas'} | ${{ day: DAYS[0], dayIndex: 0, time: HOUR_MINUTE_LIST[0], timeIndex: 0 }}
     `('should parse cron string correctly', ({ croneString, expectedResult }) => {
       expect(parseCronTime(croneString)).toEqual(expectedResult);
     });

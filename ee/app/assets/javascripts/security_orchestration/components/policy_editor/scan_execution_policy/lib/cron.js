@@ -67,7 +67,9 @@ export const parseCronTime = (cronString) => {
   const isTimeNumber = !Number.isNaN(Number(numberInTimePlaceholder));
 
   return {
+    dayIndex: isDayNumber ? cronString[cronString.length - 1] : 0,
     day: isDayNumber ? DAYS[cronString[cronString.length - 1]] || DAYS[0] : DAYS[0],
+    timeIndex: isTimeNumber ? numberInTimePlaceholder || 0 : 0,
     time: isTimeNumber
       ? HOUR_MINUTE_LIST[numberInTimePlaceholder] || HOUR_MINUTE_LIST[0]
       : HOUR_MINUTE_LIST[0],

@@ -1,19 +1,17 @@
-import { GlDropdownItem } from '@gitlab/ui';
+import { GlSprintf } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { s__ } from '~/locale';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import BaseRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/base_rule_component.vue';
 import ScheduleRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/schedule_rule_component.vue';
 import {
   DEFAULT_AGENT_NAME,
   SCAN_EXECUTION_SCHEDULE_RULE,
-  SCAN_EXECUTION_RULE_SCOPE_TYPE,
-  SCAN_EXECUTION_RULE_PERIOD_TYPE,
+  SCAN_EXECUTION_RULE_SCOPE_AGENT_KEY,
+  SCAN_EXECUTION_RULE_PERIOD_WEEKLY_KEY,
+  SCAN_EXECUTION_RULE_SCOPE_BRANCH_KEY,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
-import {
-  CRON_DEFAULT_TIME,
-  DAYS,
-  HOUR_MINUTE_LIST,
-} from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib';
+import { CRON_DEFAULT_TIME } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib';
 
 describe('ScheduleRuleComponent', () => {
   let wrapper;
@@ -25,29 +23,26 @@ describe('ScheduleRuleComponent', () => {
   };
 
   const createComponent = (options = {}) => {
-    wrapper = mountExtended(ScheduleRuleComponent, {
+    wrapper = shallowMountExtended(ScheduleRuleComponent, {
       propsData: {
         initRule,
         ruleLabel,
         ...options,
       },
-      stubs: { GlDropdownItem: true },
+      stubs: {
+        BaseRuleComponent,
+        GlSprintf,
+      },
     });
   };
 
   const findScheduleRuleScopeDropDown = () => wrapper.findByTestId('rule-component-scope');
-  const findScheduleRuleScopeDropDownItem = () =>
-    findScheduleRuleScopeDropDown().findAllComponents(GlDropdownItem);
   const findScheduleRuleTypeDropDown = () => wrapper.findByTestId('rule-component-type');
   const findScheduleRulePeriodDropDown = () => wrapper.findByTestId('rule-component-period');
   const findScheduleRuleAgentInput = () => wrapper.findByTestId('pipeline-rule-agent');
   const findScheduleRuleNamespacesInput = () => wrapper.findByTestId('pipeline-rule-namespaces');
-  const findScheduleRulePeriodWeeklyItem = () =>
-    findScheduleRulePeriodDropDown().findAllComponents(GlDropdownItem).at(1);
   const findScheduleRuleTimeDropDown = () => wrapper.findByTestId('rule-component-time');
   const findScheduleRuleDayDropDown = () => wrapper.findByTestId('rule-component-day');
-  const findScheduleRuleDayDropDownItem = () =>
-    findScheduleRuleDayDropDown().findAllComponents(GlDropdownItem);
 
   describe('select branch scope', () => {
     beforeEach(() => {
@@ -62,7 +57,7 @@ describe('ScheduleRuleComponent', () => {
 
     it('should set default agent name if no name was provided', async () => {
       const agentName = 'other-then-default';
-      findScheduleRuleScopeDropDownItem().at(1).vm.$emit('click');
+      findScheduleRuleScopeDropDown().vm.$emit('select', SCAN_EXECUTION_RULE_SCOPE_AGENT_KEY);
       await nextTick();
 
       findScheduleRuleAgentInput().vm.$emit('update', agentName);
@@ -87,7 +82,7 @@ describe('ScheduleRuleComponent', () => {
       const agent = 'cube-agent';
       const namespaces = 'namespace1,namespace2,namespace3';
 
-      findScheduleRuleScopeDropDownItem().at(1).vm.$emit('click');
+      findScheduleRuleScopeDropDown().vm.$emit('select', SCAN_EXECUTION_RULE_SCOPE_AGENT_KEY);
       await nextTick();
 
       findScheduleRuleAgentInput().vm.$emit('update', agent);
@@ -113,7 +108,7 @@ describe('ScheduleRuleComponent', () => {
     });
 
     it('should select correct time', () => {
-      findScheduleRuleTimeDropDown().findAllComponents(GlDropdownItem).at(1).vm.$emit('click');
+      findScheduleRuleTimeDropDown().vm.$emit('select', '1');
 
       const [eventPayload] = wrapper.emitted().changed[0];
       expect(eventPayload).toEqual({
@@ -124,11 +119,11 @@ describe('ScheduleRuleComponent', () => {
     });
 
     it('should select correct time and day', async () => {
-      findScheduleRulePeriodWeeklyItem().vm.$emit('click');
+      findScheduleRulePeriodDropDown().vm.$emit('select', SCAN_EXECUTION_RULE_PERIOD_WEEKLY_KEY);
       await nextTick();
 
-      findScheduleRuleTimeDropDown().findAllComponents(GlDropdownItem).at(2).vm.$emit('click');
-      findScheduleRuleDayDropDownItem().at(2).vm.$emit('click');
+      findScheduleRuleTimeDropDown().vm.$emit('select', '2');
+      findScheduleRuleDayDropDown().vm.$emit('select', '2');
 
       await nextTick();
 
@@ -153,14 +148,14 @@ describe('ScheduleRuleComponent', () => {
 
       expect(findScheduleRuleTypeDropDown().props('selected')).toBe(initRule.type);
 
-      expect(findScheduleRuleScopeDropDown().props('text')).toEqual(
-        SCAN_EXECUTION_RULE_SCOPE_TYPE.branch,
+      expect(findScheduleRuleScopeDropDown().props('selected')).toBe(
+        SCAN_EXECUTION_RULE_SCOPE_BRANCH_KEY,
       );
 
-      expect(findScheduleRuleTimeDropDown().props('text')).toEqual(HOUR_MINUTE_LIST[9]);
-      expect(findScheduleRuleDayDropDown().props('text')).toEqual(DAYS[4]);
-      expect(findScheduleRulePeriodDropDown().props('text')).toEqual(
-        SCAN_EXECUTION_RULE_PERIOD_TYPE.weekly,
+      expect(findScheduleRuleTimeDropDown().props('selected')).toBe('9');
+      expect(findScheduleRuleDayDropDown().props('selected')).toBe('4');
+      expect(findScheduleRulePeriodDropDown().props('selected')).toBe(
+        SCAN_EXECUTION_RULE_PERIOD_WEEKLY_KEY,
       );
     });
   });

@@ -18,14 +18,18 @@ export const CONDITIONS_LABEL = s__('ScanExecutionPolicy|Conditions');
 export const SCAN_EXECUTION_PIPELINE_RULE = 'pipeline';
 export const SCAN_EXECUTION_SCHEDULE_RULE = 'schedule';
 
+export const SCAN_EXECUTION_RULE_SCOPE_BRANCH_KEY = 'branch';
+export const SCAN_EXECUTION_RULE_SCOPE_AGENT_KEY = 'agent';
 export const SCAN_EXECUTION_RULE_SCOPE_TYPE = {
-  branch: s__('ScanExecutionPolicy|branch'),
-  agent: s__('ScanExecutionPolicy|agent'),
+  [SCAN_EXECUTION_RULE_SCOPE_BRANCH_KEY]: s__('ScanExecutionPolicy|branch'),
+  [SCAN_EXECUTION_RULE_SCOPE_AGENT_KEY]: s__('ScanExecutionPolicy|agent'),
 };
 
+export const SCAN_EXECUTION_RULE_PERIOD_DAILY_KEY = 'daily';
+export const SCAN_EXECUTION_RULE_PERIOD_WEEKLY_KEY = 'weekly';
 export const SCAN_EXECUTION_RULE_PERIOD_TYPE = {
-  daily: __('daily'),
-  weekly: __('weekly'),
+  [SCAN_EXECUTION_RULE_PERIOD_DAILY_KEY]: __('daily'),
+  [SCAN_EXECUTION_RULE_PERIOD_WEEKLY_KEY]: __('weekly'),
 };
 
 export const POLICY_ACTION_TAG_MODE_SPECIFIC_TAG_KEY = 'specific_tag';
