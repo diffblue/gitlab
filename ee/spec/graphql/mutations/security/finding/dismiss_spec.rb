@@ -13,6 +13,7 @@ RSpec.describe Mutations::Security::Finding::Dismiss do
 
     let(:comment) { 'Dismissal Feedback' }
     let(:mutated_finding_uuid) { subject[:uuid] }
+    let(:mutated_finding) { subject[:security_finding] }
 
     subject { mutation.resolve(uuid: finding_uuid, comment: comment, dismissal_reason: 'used_in_tests') }
 
@@ -46,6 +47,11 @@ RSpec.describe Mutations::Security::Finding::Dismiss do
             expect(mutated_finding_uuid).to eq(finding_uuid)
             expect(subject[:errors]).to be_empty
           end
+
+          it 'returns the dismissed security finding' do
+            expect(mutated_finding).to eq(security_finding)
+            expect(subject[:errors]).to be_empty
+          end
         end
 
         context 'when the dismissal fails' do
@@ -61,6 +67,11 @@ RSpec.describe Mutations::Security::Finding::Dismiss do
 
           it 'raises an error and no uuid is returned' do
             expect(mutated_finding_uuid).to be_nil
+            expect(subject[:errors]).to match_array(['error'])
+          end
+
+          it 'raises an error and no security finding is returned' do
+            expect(mutated_finding).to be_nil
             expect(subject[:errors]).to match_array(['error'])
           end
         end

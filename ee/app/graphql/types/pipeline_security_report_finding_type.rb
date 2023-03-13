@@ -162,7 +162,8 @@ module Types
 
     def vulnerability
       BatchLoader::GraphQL.for(object.uuid).batch do |uuids, loader|
-        ::Vulnerability.with_findings_by_uuid(uuids).each do |vulnerability|
+        ::Vulnerability.with_findings_by_uuid(uuids)
+          .with_state_transitions.each do |vulnerability|
           loader.call(vulnerability.finding.uuid, vulnerability)
         end
       end

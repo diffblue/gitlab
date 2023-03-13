@@ -12,6 +12,11 @@ module Mutations
               null: true,
               description: 'UUID of dismissed finding.'
 
+        field :security_finding,
+              ::Types::PipelineSecurityReportFindingType,
+              null: true,
+              description: 'Dismissed finding.'
+
         argument :uuid,
                 GraphQL::Types::String,
                 required: true,
@@ -33,6 +38,7 @@ module Mutations
 
           {
             uuid: result.success? ? result.payload[:security_finding][:uuid] : nil,
+            security_finding: result.success? ? result.payload[:security_finding] : nil,
             errors: Array(result.message)
           }
         end

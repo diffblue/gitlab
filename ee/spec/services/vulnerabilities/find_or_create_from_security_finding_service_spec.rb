@@ -49,7 +49,7 @@ feature_category: :vulnerability_management do
   it 'matches an expected checksum' do
     code_file_path = Rails.root.join("ee/app/services/vulnerabilities/find_or_create_from_security_finding_service.rb")
     code_definition = File.read(code_file_path)
-    expected_checksum = "607625f9434aca06e505da03296dd93cb34543908f77e51c37af5618c58d8222"
+    expected_checksum = "6cbf54411beb5c5ca363242939b5b366e66fa001f5d6bcce825186688c388eb4"
     expect(Digest::SHA256.hexdigest(code_definition)).to eq(expected_checksum)
   end
 
@@ -117,6 +117,27 @@ feature_category: :vulnerability_management do
 
       it 'does not create a state transition entry' do
         expect { subject }.not_to change(Vulnerabilities::StateTransition, :count)
+      end
+
+      context 'when vulnerability state is dismissed' do
+        let!(:state_transition) do
+          create(:vulnerability_state_transitions,
+            :from_detected,
+            :to_dismissed,
+            vulnerability: vulnerability,
+            comment: nil)
+        end
+
+        let(:comment) { "Dismissal comment" }
+
+        before do
+          params.merge!({ comment: comment })
+        end
+
+        it 'updates the existing state transition with comment' do
+          state_transition = Vulnerabilities::StateTransition.last
+          expect { subject }.to change { state_transition.reload.comment }.from(nil).to(comment)
+        end
       end
     end
   end
