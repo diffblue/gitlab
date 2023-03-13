@@ -127,6 +127,51 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
         end
       end
     end
+
+    describe 'pipeline stats text' do
+      let_it_be_with_reload(:finished_pipeline) do
+        create(:ci_pipeline, :success, project: project,
+          ref: 'master', sha: project.commit.id, user: user)
+      end
+
+      before do
+        finished_pipeline.update!(started_at: "2023-01-01 01:01:05", created_at: "2023-01-01 01:01:01",
+          finished_at: "2023-01-01 01:01:10", duration: 9)
+      end
+
+      context 'pipeline has finished' do
+        it 'shows pipeline stats with flag on' do
+          visit project_pipeline_path(project, finished_pipeline)
+
+          within '.pipeline-info' do
+            expect(page).to have_content("in #{finished_pipeline.duration} seconds, " \
+                                         "using #{finished_pipeline.total_ci_minutes_consumed} compute credits, " \
+                                         "and was queued for #{finished_pipeline.queued_duration} seconds")
+          end
+        end
+
+        it 'shows pipeline stats with flag off' do
+          stub_feature_flags(refactor_ci_minutes_consumption: false)
+
+          visit project_pipeline_path(project, finished_pipeline)
+
+          within '.pipeline-info' do
+            expect(page).to have_content("in #{finished_pipeline.duration} seconds " \
+                                         "and was queued for #{finished_pipeline.queued_duration} seconds")
+          end
+        end
+      end
+
+      context 'pipeline has not finished' do
+        it 'does not show pipeline stats' do
+          subject
+
+          within '.pipeline-info' do
+            expect(page).not_to have_selector('[data-testid="pipeline-stats-text"]')
+          end
+        end
+      end
+    end
   end
 
   describe 'GET /:project/-/pipelines/:id/security' do
