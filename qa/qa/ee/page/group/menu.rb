@@ -32,7 +32,7 @@ module QA
           end
 
           def go_to_saml_sso_group_settings
-            hover_group_administration do
+            hover_group_settings do
               within_submenu do
                 click_element(:sidebar_menu_item_link, menu_item: 'SAML SSO')
               end
@@ -139,15 +139,6 @@ module QA
             within_sidebar do
               scroll_to_element(:sidebar_menu_link, menu_item: 'Analytics')
               find_element(:sidebar_menu_link, menu_item: 'Analytics').hover
-
-              yield
-            end
-          end
-
-          def hover_group_administration
-            within_sidebar do
-              scroll_to_element(:sidebar_menu_link, menu_item: 'Administration')
-              find_element(:sidebar_menu_link, menu_item: 'Administration').hover
 
               yield
             end
