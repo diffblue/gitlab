@@ -46366,9 +46366,6 @@ msgstr ""
 msgid "Update it"
 msgstr ""
 
-msgid "Update milestone"
-msgstr ""
-
 msgid "Update now"
 msgstr ""
 
