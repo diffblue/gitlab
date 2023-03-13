@@ -3,10 +3,11 @@ import { GlDaterangePicker, GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { dateRangeOptionToFilter, getDateRangeOption } from '../utils';
 import {
   TODAY,
-  MAX_DATE_RANGE,
   DATE_RANGE_OPTIONS,
   DEFAULT_SELECTED_OPTION_INDEX,
-  DATE_RANGE_FILTER_I18N,
+  I18N_DATE_RANGE_FILTER_TOOLTIP,
+  I18N_DATE_RANGE_FILTER_TO,
+  I18N_DATE_RANGE_FILTER_FROM,
 } from './constants';
 
 export default {
@@ -32,6 +33,11 @@ export default {
       required: false,
       default: null,
     },
+    dateRangeLimit: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
   },
   data() {
     return {
@@ -54,6 +60,13 @@ export default {
         );
       },
     },
+    dateRangeTooltip() {
+      if (this.dateRangeLimit) {
+        return I18N_DATE_RANGE_FILTER_TOOLTIP(this.dateRangeLimit);
+      }
+
+      return null;
+    },
   },
   methods: {
     selectOption(option) {
@@ -68,9 +81,9 @@ export default {
       this.showDateRangePicker = showDateRangePicker;
     },
   },
-  DATE_RANGE_FILTER_I18N,
+  I18N_DATE_RANGE_FILTER_TO,
+  I18N_DATE_RANGE_FILTER_FROM,
   DATE_RANGE_OPTIONS,
-  MAX_DATE_RANGE,
   TODAY,
 };
 </script>
@@ -94,10 +107,10 @@ export default {
       :default-start-date="dateRange.startDate"
       :default-end-date="dateRange.endDate"
       :default-max-date="$options.TODAY"
-      :max-date-range="$options.MAX_DATE_RANGE"
-      :to-label="$options.DATE_RANGE_FILTER_I18N.to"
-      :from-label="$options.DATE_RANGE_FILTER_I18N.from"
-      :tooltip="$options.DATE_RANGE_FILTER_I18N.tooltip"
+      :max-date-range="dateRangeLimit"
+      :to-label="$options.I18N_DATE_RANGE_FILTER_TO"
+      :from-label="$options.I18N_DATE_RANGE_FILTER_FROM"
+      :tooltip="dateRangeTooltip"
       same-day-selection
     />
   </div>

@@ -5,8 +5,9 @@ import {
   DATE_RANGE_OPTIONS,
   DEFAULT_SELECTED_OPTION_INDEX,
   TODAY,
-  MAX_DATE_RANGE,
-  DATE_RANGE_FILTER_I18N,
+  I18N_DATE_RANGE_FILTER_TOOLTIP,
+  I18N_DATE_RANGE_FILTER_TO,
+  I18N_DATE_RANGE_FILTER_FROM,
 } from 'ee/vue_shared/components/customizable_dashboard/filters/constants';
 import { dateRangeOptionToFilter } from 'ee/vue_shared/components/customizable_dashboard/utils';
 
@@ -71,35 +72,54 @@ describe('DateRangeFilter', () => {
   });
 
   describe('date range picker', () => {
-    const { startDate, endDate } = DATE_RANGE_OPTIONS[DEFAULT_SELECTED_OPTION_INDEX];
+    describe('by default', () => {
+      const { startDate, endDate } = DATE_RANGE_OPTIONS[DEFAULT_SELECTED_OPTION_INDEX];
 
-    beforeEach(() => {
-      createWrapper({ startDate, endDate });
+      beforeEach(() => {
+        createWrapper({ startDate, endDate });
+      });
+
+      it('does not emit a new date range when the option shows the date range picker', async () => {
+        await findDropdownItems().at(customRangeOptionIndex).vm.$emit('click');
+
+        expect(wrapper.emitted('change')).toBeUndefined();
+      });
+
+      it('shows the date range picker with the provided date range when the option enables it', async () => {
+        expect(findDateRangePicker().exists()).toBe(false);
+
+        await findDropdownItems().at(customRangeOptionIndex).vm.$emit('click');
+
+        expect(findDateRangePicker().props()).toMatchObject({
+          toLabel: I18N_DATE_RANGE_FILTER_TO,
+          fromLabel: I18N_DATE_RANGE_FILTER_FROM,
+          tooltip: null,
+          defaultMaxDate: TODAY,
+          maxDateRange: 0,
+          value: {
+            startDate,
+            endDate,
+          },
+          defaultStartDate: startDate,
+          defaultEndDate: endDate,
+        });
+      });
     });
 
-    it('does not emit a new date range when the option shows the date range picker', async () => {
-      await findDropdownItems().at(customRangeOptionIndex).vm.$emit('click');
+    describe.each([0, 12, 31])('when given a date range limit of %d', (dateRangeLimit) => {
+      beforeEach(() => {
+        createWrapper({ dateRangeLimit });
+      });
 
-      expect(wrapper.emitted('change')).toBeUndefined();
-    });
+      it('shows the date range picker with date range limit applied', async () => {
+        expect(findDateRangePicker().exists()).toBe(false);
 
-    it('shows the date range picker with the provided date range when the option enables it', async () => {
-      expect(findDateRangePicker().exists()).toBe(false);
+        await findDropdownItems().at(customRangeOptionIndex).vm.$emit('click');
 
-      await findDropdownItems().at(customRangeOptionIndex).vm.$emit('click');
-
-      expect(findDateRangePicker().props()).toMatchObject({
-        toLabel: DATE_RANGE_FILTER_I18N.to,
-        fromLabel: DATE_RANGE_FILTER_I18N.from,
-        tooltip: DATE_RANGE_FILTER_I18N.tooltip,
-        defaultMaxDate: TODAY,
-        maxDateRange: MAX_DATE_RANGE,
-        value: {
-          startDate,
-          endDate,
-        },
-        defaultStartDate: startDate,
-        defaultEndDate: endDate,
+        expect(findDateRangePicker().props()).toMatchObject({
+          tooltip: dateRangeLimit ? I18N_DATE_RANGE_FILTER_TOOLTIP(dateRangeLimit) : null,
+          maxDateRange: dateRangeLimit,
+        });
       });
     });
   });

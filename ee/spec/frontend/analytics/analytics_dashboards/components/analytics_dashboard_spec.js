@@ -82,6 +82,7 @@ describe('AnalyticsDashboard', () => {
       expect(findDashboard().props()).toMatchObject({
         initialDashboard: dashboard,
         defaultFilters: buildDefaultDashboardFilters(''),
+        dateRangeLimit: 0,
         showDateRangeFilter: true,
         syncUrlFilters: true,
       });
