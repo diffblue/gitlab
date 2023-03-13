@@ -6365,6 +6365,7 @@ Input type: `VulnerabilityResolveInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationvulnerabilityresolveclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationvulnerabilityresolvecomment"></a>`comment` | [`String`](#string) | Comment why vulnerability was reverted to detected (max. 50 000 characters). |
 | <a id="mutationvulnerabilityresolveid"></a>`id` | [`VulnerabilityID!`](#vulnerabilityid) | ID of the vulnerability to be resolved. |
 
 #### Fields

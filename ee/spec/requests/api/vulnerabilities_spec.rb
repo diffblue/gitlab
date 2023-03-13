@@ -304,6 +304,23 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
         end
       end
 
+      context 'with a comment' do
+        let(:comment) { 'Vulnerability Resolved' }
+
+        subject(:resolve_vulnerability) do
+          post api("/vulnerabilities/#{vulnerability_id}/resolve", user), params: { comment: comment }
+        end
+
+        it 'adds the comment to the vulnerability state transition' do
+          resolve_vulnerability
+
+          expect(response).to have_gitlab_http_status(:created)
+          expect(response).to match_response_schema('public_api/v4/vulnerability', dir: 'ee')
+
+          expect(vulnerability.reload.state_transitions.last.comment).to eq comment
+        end
+      end
+
       it_behaves_like 'responds with "not found" for an unknown vulnerability ID'
 
       context 'when the vulnerability is already resolved' do

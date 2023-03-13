@@ -10,10 +10,12 @@ RSpec.describe Vulnerabilities::ResolveService, feature_category: :vulnerability
   end
 
   let_it_be(:user) { create(:user) }
+  let(:comment) { "resolve vulnerability comment" }
 
   let(:project) { create(:project) } # cannot use let_it_be here: caching causes problems with permission-related tests
   let(:vulnerability) { create(:vulnerability, project: project) }
-  let(:service) { described_class.new(user, vulnerability) }
+  let(:last_state_transition) { vulnerability.state_transitions.last }
+  let(:service) { described_class.new(user, vulnerability, comment) }
 
   subject(:resolve_vulnerability) { service.execute }
 
@@ -42,13 +44,14 @@ RSpec.describe Vulnerabilities::ResolveService, feature_category: :vulnerability
         resolve_vulnerability
       end
 
-      it 'creates state transition entry to `resolved`' do
+      it 'creates state transition entry to `resolved`', :aggregate_failures do
         expect { resolve_vulnerability }.to change { ::Vulnerabilities::StateTransition.count }
           .from(0)
           .to(1)
-        expect(::Vulnerabilities::StateTransition.last.vulnerability_id).to eq(vulnerability.id)
-        expect(::Vulnerabilities::StateTransition.last.to_state).to eq('resolved')
-        expect(::Vulnerabilities::StateTransition.last.author).to eq(user)
+        expect(last_state_transition.vulnerability_id).to eq(vulnerability.id)
+        expect(last_state_transition.to_state).to eq('resolved')
+        expect(last_state_transition.author).to eq(user)
+        expect(last_state_transition.comment).to eq(comment)
       end
 
       context 'when security dashboard feature is disabled' do

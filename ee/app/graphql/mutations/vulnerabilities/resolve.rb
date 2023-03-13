@@ -16,9 +16,14 @@ module Mutations
                required: true,
                description: 'ID of the vulnerability to be resolved.'
 
-      def resolve(id:)
+      argument :comment,
+               GraphQL::Types::String,
+               required: false,
+               description: 'Comment why vulnerability was reverted to detected (max. 50 000 characters).'
+
+      def resolve(id:, comment: nil)
         vulnerability = authorized_find!(id: id)
-        result = resolve_vulnerability(vulnerability)
+        result = resolve_vulnerability(vulnerability, comment)
 
         {
           vulnerability: result,
@@ -28,8 +33,8 @@ module Mutations
 
       private
 
-      def resolve_vulnerability(vulnerability)
-        ::Vulnerabilities::ResolveService.new(current_user, vulnerability).execute
+      def resolve_vulnerability(vulnerability, comment)
+        ::Vulnerabilities::ResolveService.new(current_user, vulnerability, comment).execute
       end
 
       def find_object(id:)
