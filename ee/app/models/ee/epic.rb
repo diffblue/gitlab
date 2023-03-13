@@ -300,22 +300,6 @@ module EE
         ::Group
       end
 
-      def nullify_lost_group_parents(groups, lost_groups)
-        epics_to_update = in_selected_groups(groups).where(parent: in_selected_groups(lost_groups))
-        schedule_parent_cache_update(epics_to_update)
-        epics_to_update.update_all(parent_id: nil)
-      end
-
-      # rubocop:disable Scalability/BulkPerformWithContext
-      def schedule_parent_cache_update(epics)
-        parent_ids = epics.distinct.pluck(:parent_id)
-        ::Epics::UpdateCachedMetadataWorker.bulk_perform_in(
-          1.minute,
-          parent_ids.each_slice(::Epics::UpdateCachedMetadataWorker::BATCH_SIZE).map { |ids| [ids] }
-        )
-      end
-      # rubocop:enable Scalability/BulkPerformWithContext
-
       # Return the deepest relation level for an epic.
       # Example 1:
       # epic1 - parent: nil
@@ -535,9 +519,6 @@ module EE
       return unless parent
 
       validate_parent_epic
-      return if errors.any?
-
-      validate_parent_epic_group
     end
 
     def issues_readable_by(current_user, preload: nil)
@@ -723,22 +704,6 @@ module EE
             _('This epic cannot be added. One or more epics would exceed the maximum '\
               "depth (%{max_depth}) from its most distant ancestor."),
               max_depth: MAX_HIERARCHY_DEPTH
-          )
-        )
-      end
-    end
-
-    def validate_parent_epic_group
-      return if self.group_id == parent.group_id
-
-      return if ::Feature.enabled?(:child_epics_from_different_hierarchies, group) &&
-        ::Feature.enabled?(:child_epics_from_different_hierarchies, parent.group)
-
-      unless group.ancestors.include?(parent.group)
-        errors.add(:parent,
-          _(
-            'This epic cannot be added. An epic must belong to the ' \
-            'same group or subgroup as its parent epic.'
           )
         )
       end

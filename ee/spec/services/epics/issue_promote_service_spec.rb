@@ -227,14 +227,6 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures, feature_category
             end
 
             it_behaves_like 'successfully promotes issue to epic'
-
-            context 'when child_epics_from_different_hierarchies feature flag is disabled' do
-              before do
-                stub_feature_flags(child_epics_from_different_hierarchies: false)
-              end
-
-              it_behaves_like 'fails to promote issue'
-            end
           end
 
           context 'when promoting issue to a different group in the same hierarchy' do
@@ -256,14 +248,6 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures, feature_category
               end
 
               it_behaves_like 'successfully promotes issue to epic'
-
-              context 'when child_epics_from_different_hierarchies feature flag is disabled' do
-                before do
-                  stub_feature_flags(child_epics_from_different_hierarchies: false)
-                end
-
-                it_behaves_like 'fails to promote issue'
-              end
             end
           end
 

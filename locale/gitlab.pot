@@ -44331,9 +44331,6 @@ msgstr ""
 msgid "This epic cannot be added. An epic cannot be added to itself."
 msgstr ""
 
-msgid "This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic."
-msgstr ""
-
 msgid "This epic cannot be added. It is already an ancestor of the parent epic."
 msgstr ""
 

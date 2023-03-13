@@ -172,14 +172,6 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
               end
 
               it_behaves_like 'assigning a valid parent epic'
-
-              context 'when child_epics_from_different_hierarchies feature flag is disabled' do
-                before do
-                  stub_feature_flags(child_epics_from_different_hierarchies: false)
-                end
-
-                it_behaves_like 'assigning an invalid parent epic'
-              end
             end
 
             context 'when parent is in a different group hierarchy' do
@@ -192,14 +184,6 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
                 end
 
                 it_behaves_like 'assigning a valid parent epic'
-
-                context 'when child_epics_from_different_hierarchies feature flag is disabled' do
-                  before do
-                    stub_feature_flags(child_epics_from_different_hierarchies: false)
-                  end
-
-                  it_behaves_like 'assigning an invalid parent epic'
-                end
               end
 
               context 'when user does not have access to the group' do

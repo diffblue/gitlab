@@ -182,18 +182,6 @@ RSpec.describe 'getting epics information', feature_category: :portfolio_managem
 
         expect_epics_response([parent_epic1, parent_epic2, parent_epic3], node_path: node_path)
       end
-
-      context 'when child_epics_from_different_hierarchies is disabled' do
-        before do
-          stub_feature_flags(child_epics_from_different_hierarchies: false)
-        end
-
-        it 'returns only accessible ancestors from the same hierarchy' do
-          query_epic_with_ancestors(epic.iid)
-
-          expect_epics_response([parent_epic1, parent_epic3], node_path: node_path)
-        end
-      end
     end
   end
 

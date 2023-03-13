@@ -273,15 +273,6 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
                 it 'does not return errors' do
                   expect(subject[:message]).to be_nil
                 end
-
-                context 'when child_epics_from_different_hierarchies feature flag is disabled' do
-                  before do
-                    stub_feature_flags(child_epics_from_different_hierarchies: false)
-                  end
-
-                  it_behaves_like 'error for the tree update',
-                                  "This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic."
-                end
               end
 
               context 'when the new parent is in a new group hierarchy' do

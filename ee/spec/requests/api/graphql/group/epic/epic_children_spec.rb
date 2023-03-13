@@ -153,22 +153,6 @@ RSpec.describe 'Getting children of an epic', feature_category: :portfolio_manag
         end.not_to exceed_query_limit(control_count).with_threshold(extra_queries)
         expect(graphql_errors).to be_nil
       end
-
-      context 'when child_epics_from_different_hierarchies is disabled' do
-        before do
-          stub_feature_flags(child_epics_from_different_hierarchies: false)
-        end
-
-        it "returns child epics from parent's group hierarchy" do
-          run_query
-
-          expect(epic_node_array('children'))
-            .to include({ 'edges' =>
-              [{ 'node' => { 'id' => descendant_group_child.to_gid.to_s } },
-               { 'node' => { 'id' => ancestor_group_child.to_gid.to_s } },
-               { 'node' => { 'id' => group_child.to_gid.to_s } }] })
-        end
-      end
     end
   end
 

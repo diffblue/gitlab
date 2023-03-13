@@ -16,33 +16,15 @@ module API
     helpers do
       def child_epic
         strong_memoize(:child_epic) do
-          if cross_group_child_epics_enabled?
-            find_epics(finder_params: { parent: epic }, children_only: true)
-              .find_by_id(declared_params[:child_epic_id])
-          else
-            find_epics(finder_params: { group_id: user_group.id })
-              .find_by_id(declared_params[:child_epic_id])
-          end
+          find_epics(finder_params: { parent: epic }, children_only: true)
+            .find_by_id(declared_params[:child_epic_id])
         end
       end
 
       def child_epics
-        if cross_group_child_epics_enabled?
-          ::Epics::CrossHierarchyChildrenFinder.new(current_user, {
-            parent: epic,
-            sort: 'relative_position'
-          }).execute.with_child_api_entity_associations
-        else
-          EpicsFinder.new(current_user, {
-            parent_id: epic.id,
-            group_id: user_group.id,
-            sort: 'relative_position'
-          }).execute
-        end
-      end
-
-      def cross_group_child_epics_enabled?
-        ::Feature.enabled?(:child_epics_from_different_hierarchies, user_group)
+        ::Epics::CrossHierarchyChildrenFinder.new(current_user,
+          { parent: epic, sort: 'relative_position' }
+        ).execute.with_child_api_entity_associations
       end
 
       params :child_epic_id do

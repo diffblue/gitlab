@@ -36,24 +36,6 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
 
     subject { get group_epic_links_path(group_id: group, epic_id: parent_epic.to_param) }
 
-    shared_examples 'avoids N+1 queries' do |threshold: 0, with_new_group: false|
-      it 'executes same number of queries plus threshold', :use_sql_query_cache do
-        # When with_new_group is false, the new child belong to the same group as the parent
-        # When true, the new child is created in a new group
-        epics_group = with_new_group ? create(:group) : group
-
-        def get_epics
-          get group_epic_links_path(group_id: group, epic_id: parent_epic.to_param, format: :json)
-        end
-
-        control = ActiveRecord::QueryRecorder.new(skip_cached: false) { get_epics }
-
-        create(:epic, group: epics_group, parent: parent_epic)
-
-        expect { get_epics }.not_to exceed_all_query_limit(control).with_threshold(threshold)
-      end
-    end
-
     it_behaves_like 'unlicensed subepics action'
 
     context 'when epics are enabled' do
@@ -80,25 +62,23 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
             create_list(:epic, 3, group: group, parent: parent_epic)
           end
 
-          # Executes 3 extra queries to fetch the new group
-          #   SELECT "saml_providers"
-          #   SELECT "namespaces"
-          #   SELECT "routes"
-          # Executes 2 extra queries per the child to fetch its issues and epics
-          # See: https://gitlab.com/gitlab-org/gitlab/-/issues/382056
-          it_behaves_like 'avoids N+1 queries', threshold: 5, with_new_group: true
+          it 'executes same number of queries plus threshold', :use_sql_query_cache do
+            epics_group = create(:group)
 
-          context 'when child_epics_from_different_hierarchies is disabled' do
-            before do
-              stub_feature_flags(child_epics_from_different_hierarchies: false)
+            def get_epics
+              get group_epic_links_path(group_id: group, epic_id: parent_epic.to_param, format: :json)
             end
 
-            # Executes 2 extra queries to fetch group
+            control = ActiveRecord::QueryRecorder.new(skip_cached: false) { get_epics }
+            create(:epic, group: epics_group, parent: parent_epic)
+
+            # Executes 3 extra queries to fetch the new group
+            #   SELECT "saml_providers"
             #   SELECT "namespaces"
             #   SELECT "routes"
             # Executes 2 extra queries per the child to fetch its issues and epics
             # See: https://gitlab.com/gitlab-org/gitlab/-/issues/382056
-            it_behaves_like 'avoids N+1 queries', threshold: 4
+            expect { get_epics }.not_to exceed_all_query_limit(control).with_threshold(5)
           end
         end
       end
@@ -147,14 +127,6 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
         context 'when user has no access to the other group' do
           before do
             other_group.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
-          end
-
-          it_behaves_like 'returns correct response', children_count: 1
-        end
-
-        context 'when child_epics_from_different_hierarchies is disabled' do
-          before do
-            stub_feature_flags(child_epics_from_different_hierarchies: false)
           end
 
           it_behaves_like 'returns correct response', children_count: 1

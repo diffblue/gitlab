@@ -374,18 +374,6 @@ RSpec.describe Epic, feature_category: :portfolio_management do
 
           expect(epic.valid_parent?).to be_truthy
         end
-
-        context 'when child_epics_from_different_hierarchies feature flag is disabled' do
-          before do
-            stub_feature_flags(child_epics_from_different_hierarchies: false)
-          end
-
-          it 'returns false' do
-            epic.parent = parent_epic
-
-            expect(epic.valid_parent?).to be_falsey
-          end
-        end
       end
 
       context 'with parent from a different group hierarchy' do
@@ -396,18 +384,6 @@ RSpec.describe Epic, feature_category: :portfolio_management do
           epic.parent = other_epic
 
           expect(epic.valid_parent?).to be_truthy
-        end
-
-        context 'when child_epics_from_different_hierarchies feature flag is disabled' do
-          before do
-            stub_feature_flags(child_epics_from_different_hierarchies: false)
-          end
-
-          it 'returns false' do
-            epic.parent = other_epic
-
-            expect(epic.valid_parent?).to be_falsey
-          end
         end
       end
     end
