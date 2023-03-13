@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Vulnerabilities::StateTransitionPolicy, feature_category: :vulnerability_management do
   describe 'read_security_resource' do
     let(:user) { create(:user) }
-    let(:state_transition) { create(:vulnerability_state_transitions) }
+    let(:state_transition) { create(:vulnerability_state_transition) }
 
     subject { described_class.new(user, state_transition) }
 

@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Vulnerabilities::StateTransition, type: :model, feature_category: :vulnerability_management do
   let_it_be(:vulnerability) { create(:vulnerability) }
 
-  subject { create(:vulnerability_state_transitions, vulnerability: vulnerability) }
+  subject { create(:vulnerability_state_transition, vulnerability: vulnerability) }
 
   it_behaves_like 'a BulkInsertSafe model', described_class do
     let(:vulnerability) { create(:vulnerability) }
@@ -13,7 +13,7 @@ RSpec.describe Vulnerabilities::StateTransition, type: :model, feature_category:
 
     let(:valid_items_for_bulk_insertion) do
       build_list(
-        :vulnerability_state_transitions, 10,
+        :vulnerability_state_transition, 10,
         vulnerability: vulnerability,
         created_at: current_time,
         updated_at: current_time)
@@ -60,14 +60,14 @@ RSpec.describe Vulnerabilities::StateTransition, type: :model, feature_category:
 
   describe '.by_to_states' do
     let!(:dismissed_state_transition) do
-      create(:vulnerability_state_transitions,
+      create(:vulnerability_state_transition,
              vulnerability: vulnerability,
              from_state: :detected,
              to_state: :dismissed)
     end
 
     let!(:resolved_state_transition) do
-      create(:vulnerability_state_transitions,
+      create(:vulnerability_state_transition,
              vulnerability: vulnerability,
              from_state: :detected,
              to_state: :resolved)
@@ -85,7 +85,7 @@ RSpec.describe Vulnerabilities::StateTransition, type: :model, feature_category:
   context 'when loose foreign key on vulnerability_state_transitions.state_changed_at_pipeline_id' do
     it_behaves_like 'cleanup by a loose foreign key' do
       let!(:parent) { create(:ci_pipeline) }
-      let!(:model) { create(:vulnerability_state_transitions, pipeline: parent) }
+      let!(:model) { create(:vulnerability_state_transition, pipeline: parent) }
     end
   end
 end
