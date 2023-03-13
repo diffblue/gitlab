@@ -2221,7 +2221,7 @@
     - <<: *if-default-refs
       changes: *code-backstage-patterns
 
-.setup:rules:rails-production-environment:
+.setup:rules:rails-production-server-boot:
   rules:
     - <<: *if-default-refs
       changes: *code-patterns
