@@ -1,5 +1,4 @@
-import { GlSprintf, GlCollapse } from '@gitlab/ui';
-import { nextTick } from 'vue';
+import { GlSprintf } from '@gitlab/ui';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import SecurityReportsSummary from 'ee/security_dashboard/components/pipeline/security_reports_summary.vue';
 import Modal from 'ee/vue_shared/security_reports/components/dast_modal.vue';
@@ -32,7 +31,6 @@ describe('Security reports summary component', () => {
 
   const findToggleButton = () => wrapper.findByTestId('collapse-button');
   const findModalButton = () => wrapper.findByTestId('modal-button');
-  const findCollapse = () => wrapper.findComponent(GlCollapse);
   const findDownloadDropdown = () => wrapper.findComponent(SecurityReportDownloadDropdown);
   const findDownloadDropdownForScanType = (scanType) =>
     wrapper
@@ -153,8 +151,7 @@ describe('Security reports summary component', () => {
       });
 
       it('set local storage item to 1 when summary is hidden', async () => {
-        findCollapse().vm.$emit('input', false);
-        await nextTick();
+        await findToggleButton().vm.$emit('click');
 
         expect(localStorage.setItem).toHaveBeenCalledWith(LOCAL_STORAGE_KEY, '1');
       });
@@ -171,7 +168,8 @@ describe('Security reports summary component', () => {
       });
 
       it('removes local storage item when summary is shown', async () => {
-        await findCollapse().vm.$emit('input', true);
+        await findToggleButton().vm.$emit('click');
+
         expect(localStorage.removeItem).toHaveBeenCalledWith(LOCAL_STORAGE_KEY);
       });
 

@@ -2,7 +2,6 @@
 import {
   GlButton,
   GlCard,
-  GlCollapse,
   GlCollapseToggleDirective,
   GlSprintf,
   GlModalDirective,
@@ -25,7 +24,6 @@ export default {
   components: {
     GlButton,
     GlCard,
-    GlCollapse,
     GlSprintf,
     Modal,
     SecurityReportDownloadDropdown,
@@ -118,41 +116,41 @@ export default {
 
       return [...this.findArtifacts(SECURITY_REPORT_TYPE_ENUM_DAST), csvArtifact];
     },
+    toggleCollapse() {
+      this.isVisible = !this.isVisible;
+    },
   },
 };
 </script>
 
 <template>
-  <gl-card body-class="gl-py-0" header-class="gl-border-b-0">
+  <gl-card
+    body-class="gl-py-0"
+    :header-class="`gl-display-flex gl-align-items-center gl-justify-content-space-between gl-py-4 gl-pr-4 ${
+      isVisible ? 'gl-border-b-1' : 'gl-border-b-0 gl-rounded-base'
+    }`"
+  >
     <template #header>
-      <div class="row">
-        <div class="col-7">
-          <strong>{{ $options.i18n.scanDetails }}</strong>
-        </div>
-        <div v-if="localStorageUsable" class="col-5 gl-text-right">
-          <gl-button
-            v-collapse-toggle.security-reports-summary-details
-            data-testid="collapse-button"
-          >
-            {{ collapseButtonLabel }}
-          </gl-button>
-        </div>
+      <strong>{{ $options.i18n.scanDetails }}</strong>
+      <div v-if="localStorageUsable">
+        <gl-button data-testid="collapse-button" @click="toggleCollapse">
+          {{ collapseButtonLabel }}
+        </gl-button>
       </div>
     </template>
-    <gl-collapse
-      id="security-reports-summary-details"
-      v-model="isVisible"
-      data-testid="security-reports-summary-details"
-      class="gl-pb-3"
-    >
-      <div v-for="[scanType, scanSummary] in formattedSummary" :key="scanType" class="row gl-my-3">
-        <div class="col-4">
+    <template v-if="isVisible">
+      <div
+        v-for="[scanType, scanSummary] in formattedSummary"
+        :key="scanType"
+        class="gl-display-flex gl-flex-wrap gl-align-items-center gl-gap-3 gl-my-3"
+      >
+        <div class="gl-flex-grow-1 gl-flex-basis-0">
           {{ scanType }}
         </div>
-        <div class="col-4">
+        <div class="gl-flex-grow-1 gl-flex-basis-0">
           <gl-sprintf :message="$options.i18n.vulnerabilities(scanSummary.vulnerabilitiesCount)" />
         </div>
-        <div class="col-4" :data-testid="`artifact-download-${normalizeScanType(scanType)}`">
+        <div :data-testid="`artifact-download-${normalizeScanType(scanType)}`">
           <template v-if="scanSummary.scannedResourcesCount !== undefined">
             <gl-button
               v-if="hasScannedResources(scanSummary)"
@@ -193,6 +191,6 @@ export default {
           />
         </div>
       </div>
-    </gl-collapse>
+    </template>
   </gl-card>
 </template>
