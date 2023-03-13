@@ -47215,6 +47215,9 @@ msgstr ""
 msgid "UserProfile|User ID: %{id}"
 msgstr ""
 
+msgid "UserProfile|User profile navigation"
+msgstr ""
+
 msgid "UserProfile|View all"
 msgstr ""
 
