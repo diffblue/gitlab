@@ -3,6 +3,7 @@
 module MergeRequests
   class ComplianceViolation < ApplicationRecord
     include BulkInsertSafe
+    include EachBatch
 
     self.table_name = 'merge_requests_compliance_violations'
 
