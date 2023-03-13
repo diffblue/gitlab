@@ -95,7 +95,8 @@ module EE
         params_ee << :max_personal_access_token_lifetime if current_group&.personal_access_token_expiration_policy_available?
         params_ee << :prevent_forking_outside_group if can_change_prevent_forking?(current_user, current_group)
 
-        if current_group&.feature_available?(:adjourned_deletion_for_projects_and_groups)
+        if current_group&.feature_available?(:adjourned_deletion_for_projects_and_groups) &&
+            ::Feature.disabled?(:always_perform_delayed_deletion)
           params_ee << :delayed_project_removal
           params_ee << :lock_delayed_project_removal
         end
