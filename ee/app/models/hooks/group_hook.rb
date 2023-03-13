@@ -3,7 +3,6 @@
 class GroupHook < WebHook
   include CustomModelNaming
   include TriggerableHooks
-  include WebHooks::Unstoppable
   include Presentable
   include Limitable
   extend ::Gitlab::Utils::Override

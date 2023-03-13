@@ -650,8 +650,8 @@ module EE
 
     override :any_hook_failed?
     def any_hook_failed?
-      # morally `hooks.disabled.exists?`, but since the GroupHook model includes
-      # WebHooks::Unstoppable, we simply return `false`.
+      # Normally `hooks.disabled.exists?`, but since the GroupHook model does not support autodisabling
+      # we simply return `false`.
       false
     end
 
