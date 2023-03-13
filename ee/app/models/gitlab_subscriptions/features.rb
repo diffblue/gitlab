@@ -179,6 +179,7 @@ module GitlabSubscriptions
       no_code_automation
       cluster_image_scanning
       external_status_checks
+      combined_project_analytics_dashboards
       container_scanning
       coverage_fuzzing
       credentials_inventory

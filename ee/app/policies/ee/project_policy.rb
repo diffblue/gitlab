@@ -130,6 +130,11 @@ module EE
         @subject.feature_available?(:issues_analytics, @user)
       end
 
+      with_scope :subject
+      condition(:combined_project_analytics_dashboards_enabled) do
+        @subject.feature_available?(:combined_project_analytics_dashboards, @user)
+      end
+
       condition(:status_page_available) do
         @subject.feature_available?(:status_page, @user)
       end
@@ -517,6 +522,8 @@ module EE
 
       rule { (admin | reporter) & project_merge_request_analytics_available }
         .enable :read_project_merge_request_analytics
+
+      rule { combined_project_analytics_dashboards_enabled }.enable :read_combined_project_analytics_dashboards
 
       rule { can?(:read_project) & requirements_available }.enable :read_requirement
 

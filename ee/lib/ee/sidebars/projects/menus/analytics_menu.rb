@@ -86,16 +86,16 @@ module EE
 
           def dashboards_analytics_menu_item
             unless ::Feature.enabled?(:combined_analytics_dashboards, context.project) &&
-                context.project.licensed_feature_available?(:product_analytics) &&
-                can?(context.current_user, :read_product_analytics, context.project)
+                context.project.licensed_feature_available?(:combined_project_analytics_dashboards) &&
+                can?(context.current_user, :read_combined_project_analytics_dashboards, context.project)
               return ::Sidebars::NilMenuItem.new(item_id: :dashboards_analytics)
             end
 
             ::Sidebars::MenuItem.new(
               title: _('Dashboards'),
-              link: project_product_analytics_dashboards_path(context.project),
+              link: project_analytics_dashboards_path(context.project),
               container_html_options: { class: 'shortcuts-project-dashboards-analytics' },
-              active_routes: { controller: :product_analytics },
+              active_routes: { path: 'projects/analytics/dashboards#index' },
               item_id: :dashboards_analytics
             )
           end
