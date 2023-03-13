@@ -1,6 +1,5 @@
 import { GlLoadingIcon, GlDropdown, GlDropdownItem, GlAlert, GlIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import { nextTick } from 'vue';
 import MetricChart from 'ee/analytics/productivity_analytics/components/metric_chart.vue';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 
@@ -114,6 +113,13 @@ describe('MetricChart component', () => {
         });
       });
 
+      describe('and chartData is empty (object)', () => {
+        it('does not show the slot for the chart', () => {
+          factory({ isLoading, chartData: {} });
+          expect(findChartSlot().exists()).toBe(false);
+        });
+      });
+
       describe('and chartData is not empty', () => {
         const chartData = [[0, 1]];
 
@@ -135,20 +141,37 @@ describe('MetricChart component', () => {
           });
 
           it('should emit `metricTypeChange` event when dropdown item gets clicked', () => {
-            jest.spyOn(wrapper.vm, '$emit');
-
             findMetricDropdownItems().at(0).vm.$emit('click');
 
-            expect(wrapper.vm.$emit).toHaveBeenCalledWith('metricTypeChange', 'time_to_merge');
+            expect(wrapper.emitted('metricTypeChange')).toEqual([['time_to_merge']]);
           });
 
-          it('should set the `invisible` class on the icon of the first dropdown item', async () => {
-            wrapper.setProps({ selectedMetric: 'time_to_last_commit' });
+          it('should render the default dropdown label', () => {
+            expect(findMetricDropdown().attributes('text')).toContain('Please select a metric');
+          });
 
-            await nextTick();
-            expect(findMetricDropdownItems().at(0).findComponent(GlIcon).classes()).toContain(
-              'invisible',
-            );
+          describe('and a metric is selected', () => {
+            beforeEach(async () => {
+              await wrapper.setProps({ selectedMetric: 'time_to_last_commit' });
+            });
+
+            it('should set the `invisible` class on the icon of the first dropdown item', async () => {
+              expect(findMetricDropdownItems().at(0).findComponent(GlIcon).classes()).toContain(
+                'invisible',
+              );
+            });
+
+            it('should not set the `invisible` class on the icon of the second dropdown item', async () => {
+              expect(findMetricDropdownItems().at(1).findComponent(GlIcon).classes()).not.toContain(
+                'invisible',
+              );
+            });
+
+            it('renders the correct text in the dropdown', () => {
+              expect(findMetricDropdown().attributes('text')).toContain(
+                'Time from first comment to last commit',
+              );
+            });
           });
         });
 
@@ -164,70 +187,12 @@ describe('MetricChart component', () => {
           expect(findChartSlot().text()).toBe(mockChart);
         });
       });
-    });
-  });
 
-  describe('computed', () => {
-    describe('hasMetricTypes', () => {
-      it('returns true if metricTypes exist', () => {
-        factory({ metricTypes });
-        expect(wrapper.vm.hasMetricTypes).toBe(2);
-      });
-
-      it('returns true if no metricTypes exist', () => {
-        factory();
-        expect(wrapper.vm.hasMetricTypes).toBe(0);
-      });
-    });
-
-    describe('metricDropdownLabel', () => {
-      describe('when a metric is selected', () => {
-        it('returns the label of the currently selected metric', () => {
-          factory({ metricTypes, selectedMetric: 'time_to_merge' });
-          expect(wrapper.vm.metricDropdownLabel).toBe('Time from last commit to merge');
+      describe('and chartData is not empty (object)', () => {
+        it('contains chart from slot', () => {
+          factory({ isLoading, chartData: { 1: 0 } });
+          expect(findChartSlot().text()).toBe(mockChart);
         });
-      });
-
-      describe('when no metric is selected', () => {
-        it('returns the default dropdown label', () => {
-          factory({ metricTypes });
-          expect(wrapper.vm.metricDropdownLabel).toBe('Please select a metric');
-        });
-      });
-    });
-
-    describe('hasChartData', () => {
-      describe('when chartData is an object', () => {
-        it('returns true if chartData is not empty', () => {
-          factory({ chartData: { 1: 0 } });
-          expect(wrapper.vm.hasChartData).toBe(true);
-        });
-
-        it('returns false if chartData is empty', () => {
-          factory({ chartData: {} });
-          expect(wrapper.vm.hasChartData).toBe(false);
-        });
-      });
-
-      describe('when chartData is an array', () => {
-        it('returns true if chartData is not empty', () => {
-          factory({ chartData: [[1, 0]] });
-          expect(wrapper.vm.hasChartData).toBe(true);
-        });
-
-        it('returns false if chartData is empty', () => {
-          factory({ chartData: [] });
-          expect(wrapper.vm.hasChartData).toBe(false);
-        });
-      });
-    });
-  });
-
-  describe('methods', () => {
-    describe('isSelectedMetric', () => {
-      it('returns true if the given key matches the selectedMetric prop', () => {
-        factory({ selectedMetric: 'time_to_merge' });
-        expect(wrapper.vm.isSelectedMetric('time_to_merge')).toBe(true);
       });
     });
   });
