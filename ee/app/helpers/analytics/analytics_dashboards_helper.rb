@@ -9,6 +9,7 @@ module Analytics
         jitsu_key: project.project_setting.jitsu_key,
         collector_host: get_collector_host,
         chart_empty_state_illustration_path: image_path('illustrations/chart-empty-state.svg'),
+        dashboard_empty_state_illustration_path: image_path('illustrations/security-dashboard-empty-state.svg'),
         project_full_path: project.full_path,
         features: {
           product_analytics: product_analytics_enabled?(project)

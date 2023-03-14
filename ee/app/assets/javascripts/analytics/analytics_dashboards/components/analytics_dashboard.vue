@@ -1,8 +1,8 @@
 <script>
-import { GlLoadingIcon } from '@gitlab/ui';
+import { GlLoadingIcon, GlEmptyState } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
-import { HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
+import { HTTP_STATUS_CREATED, HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import { buildDefaultDashboardFilters } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import { isValidConfigFileName, configFileNameToID } from 'ee/analytics/analytics_dashboards/utils';
@@ -13,26 +13,37 @@ import {
   saveCustomDashboard,
 } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import { builtinDashboards, builtinVisualizations } from '../gl_dashboards';
-import { VISUALIZATION_TYPE_FILE } from '../constants';
+import {
+  VISUALIZATION_TYPE_FILE,
+  I18N_DASHBOARD_NOT_FOUND_TITLE,
+  I18N_DASHBOARD_NOT_FOUND_DESCRIPTION,
+  I18N_DASHBOARD_NOT_FOUND_ACTION,
+} from '../constants';
 
 export default {
   name: 'AnalyticsDashboard',
   components: {
     GlLoadingIcon,
     CustomizableDashboard,
+    GlEmptyState,
   },
   inject: {
     customDashboardsProject: {
       type: Object,
       default: null,
     },
+    dashboardEmptyStateIllustrationPath: {
+      type: String,
+    },
   },
   data() {
     return {
       dashboard: null,
+      showEmptyState: false,
       availableVisualizations: [],
       defaultFilters: buildDefaultDashboardFilters(window.location.search),
       isSaving: false,
+      backUrl: this.$router.resolve('/').href,
     };
   },
   async created() {
@@ -45,13 +56,25 @@ export default {
       this.dashboard = await this.importDashboardDependencies(loadedDashboard);
     } else if (this.customDashboardsProject) {
       // Load custom dashboard from file
-      loadedDashboard = await getCustomDashboard(
-        this.$route?.params.id,
-        this.customDashboardsProject,
-      );
+      try {
+        loadedDashboard = await getCustomDashboard(
+          this.$route?.params.id,
+          this.customDashboardsProject,
+        );
+      } catch (error) {
+        if (error?.response?.status === HTTP_STATUS_NOT_FOUND) {
+          this.showEmptyState = true;
+          return;
+        }
+        // TODO: Show user friendly errors when request fails
+        // https://gitlab.com/gitlab-org/gitlab/-/issues/395788
+        throw error;
+      }
+
       loadedDashboard.default = { ...loadedDashboard };
       this.dashboard = await this.importDashboardDependencies(loadedDashboard);
     } else {
+      this.showEmptyState = true;
       return;
     }
 
@@ -142,6 +165,11 @@ export default {
       }
     },
   },
+  i18n: {
+    emptyTitle: I18N_DASHBOARD_NOT_FOUND_TITLE,
+    emptyDescription: I18N_DASHBOARD_NOT_FOUND_DESCRIPTION,
+    emptyAction: I18N_DASHBOARD_NOT_FOUND_ACTION,
+  },
 };
 </script>
 
@@ -160,6 +188,14 @@ export default {
         @save="saveDashboard"
       />
     </template>
+    <gl-empty-state
+      v-else-if="showEmptyState"
+      :svg-path="dashboardEmptyStateIllustrationPath"
+      :title="$options.i18n.emptyTitle"
+      :description="$options.i18n.emptyDescription"
+      :primary-button-text="$options.i18n.emptyAction"
+      :primary-button-link="backUrl"
+    />
     <gl-loading-icon v-else size="lg" class="gl-my-7" />
   </div>
 </template>
