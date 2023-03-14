@@ -70,17 +70,21 @@ RSpec.describe Ci::PipelinePresenter do
 
       context 'when all features are available' do
         before do
-          stub_licensed_features(dependency_scanning: true, secret_detection: true, sast: true, container_scanning: true,
-                                 cluster_image_scanning: true, dast: true, coverage_fuzzing: true, api_fuzzing: true,
-                                 license_scanning: true, security_dashboard: true)
+          stub_licensed_features(
+            dependency_scanning: true, secret_detection: true, sast: true, container_scanning: true,
+            cluster_image_scanning: true, dast: true, coverage_fuzzing: true, api_fuzzing: true,
+            license_scanning: true, security_dashboard: true
+          )
         end
 
         it 'does not increase the number of queries' do
           all_features_query_count = count_ci_artifacts_queries
 
-          stub_licensed_features(dependency_scanning: true, secret_detection: true, sast: true, container_scanning: true,
-                                 cluster_image_scanning: false, dast: false, coverage_fuzzing: false, api_fuzzing: false,
-                                 license_scanning: true, security_dashboard: true)
+          stub_licensed_features(
+            dependency_scanning: true, secret_detection: true, sast: true, container_scanning: true,
+            cluster_image_scanning: false, dast: false, coverage_fuzzing: false, api_fuzzing: false,
+            license_scanning: true, security_dashboard: true
+          )
 
           less_features_query_count = count_ci_artifacts_queries
 
