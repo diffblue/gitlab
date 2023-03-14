@@ -7,7 +7,7 @@ module EE
     def group_sso?
       return false unless member.user.present?
 
-      member.user.group_sso?(source)
+      member.user.group_sso?(source.root_ancestor)
     end
 
     def group_managed_account?

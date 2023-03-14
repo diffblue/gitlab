@@ -5,27 +5,43 @@ require 'spec_helper'
 RSpec.describe GroupMemberPresenter do
   using RSpec::Parameterized::TableSyntax
 
-  let(:user) { double(:user) }
+  let_it_be(:user) { build_stubbed(:user) }
   let(:group) { double(:group) }
   let(:group_member) { double(:group_member, source: group, user: user) }
   let(:presenter) { described_class.new(group_member, current_user: user) }
 
   describe '#group_sso?' do
-    let(:saml_provider) { double(:saml_provider) }
-    let(:group) { double(:group) }
+    let(:saml_provider) { build_stubbed(:saml_provider) }
+    let(:group) { saml_provider.group }
 
     context 'when member does not have a user (invited member)' do
-      let(:group_member) { build(:group_member, :invited) }
+      let(:group_member) { build_stubbed(:group_member, :invited) }
 
       it 'returns `false`' do
         expect(presenter.group_sso?).to eq false
       end
     end
 
-    it 'calls through to User#group_sso?' do
-      expect(user).to receive(:group_sso?).with(group).and_return(true)
+    context 'when group is a root group' do
+      it 'calls through to User#group_sso?' do
+        expect(user).to receive(:group_sso?).with(group).and_return(true)
 
-      expect(presenter.group_sso?).to eq true
+        expect(presenter.group_sso?).to eq true
+      end
+    end
+
+    context 'when group is a child group' do
+      let(:parent_group) { build_stubbed(:group) }
+
+      before do
+        allow(group).to receive(:root_ancestor).and_return(parent_group)
+      end
+
+      it 'calls through to User#group_sso? with root group' do
+        expect(user).to receive(:group_sso?).with(parent_group).and_return(true)
+
+        expect(presenter.group_sso?).to eq true
+      end
     end
   end
 
