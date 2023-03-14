@@ -17174,9 +17174,6 @@ msgstr ""
 msgid "Explore GitLab"
 msgstr ""
 
-msgid "Explore Groups"
-msgstr ""
-
 msgid "Explore groups"
 msgstr ""
 
@@ -17186,13 +17183,13 @@ msgstr ""
 msgid "Explore projects"
 msgstr ""
 
-msgid "Explore public groups"
-msgstr ""
-
 msgid "Explore public projects"
 msgstr ""
 
 msgid "Explore snippets"
+msgstr ""
+
+msgid "Explore topics"
 msgstr ""
 
 msgid "Export"
@@ -27982,7 +27979,7 @@ msgstr ""
 msgid "Most relevant"
 msgstr ""
 
-msgid "Most stars"
+msgid "Most starred"
 msgstr ""
 
 msgid "Move"
@@ -28279,6 +28276,9 @@ msgid "NavigationTheme|Red"
 msgstr ""
 
 msgid "Navigation|Context navigation"
+msgstr ""
+
+msgid "Navigation|Explore"
 msgstr ""
 
 msgid "Navigation|FREQUENT GROUPS"
@@ -33693,13 +33693,7 @@ msgstr ""
 msgid "ProjectLastActivity|Never"
 msgstr ""
 
-msgid "ProjectList|Explore"
-msgstr ""
-
 msgid "ProjectList|Starred"
-msgstr ""
-
-msgid "ProjectList|Topics"
 msgstr ""
 
 msgid "ProjectList|Yours"
@@ -50338,9 +50332,6 @@ msgid_plural "Your free group is now limited to %d members"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "Your groups"
-msgstr ""
-
 msgid "Your instance has %{remaining_user_count} users remaining of the %{total_user_count} included in your subscription. You can add more users than the number included in your license, and we will include the overage in your next bill."
 msgstr ""
 
@@ -50441,9 +50432,6 @@ msgid "Your search timed out"
 msgstr ""
 
 msgid "Your sign-in page is %{url}."
-msgstr ""
-
-msgid "Your snippets"
 msgstr ""
 
 msgid "Your subscription expired!"
