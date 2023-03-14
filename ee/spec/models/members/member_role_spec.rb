@@ -130,4 +130,37 @@ RSpec.describe MemberRole, feature_category: :system_access do
       end
     end
   end
+
+  describe 'scopes' do
+    describe '.elevating' do
+      it 'creates proper query' do
+        stub_const("#{described_class.name}::ALL_CUSTOMIZABLE_PERMISSIONS", { read_code: 'Permission to read code',
+                                                                              see_code: 'Test permission' })
+
+        expect(described_class.elevating.to_sql).to include('WHERE (see_code = true)')
+      end
+
+      it 'creates proper query with multiple permissions' do
+        stub_const("#{described_class.name}::ALL_CUSTOMIZABLE_PERMISSIONS", { read_code: 'Permission to read code',
+                                                                              see_code: 'Test permission',
+                                                                              remove_code: 'Test second permission' })
+
+        expect(described_class.elevating.to_sql).to include('WHERE (see_code = true OR remove_code = true)')
+      end
+
+      it 'returns nothing when there are no elevating permissions' do
+        create(:member_role)
+
+        expect(described_class.elevating).to be_empty
+      end
+    end
+  end
+
+  describe 'covering all permissions columns' do
+    it 'has all attributes listed in the member_roles table' do
+      expect(described_class.attribute_names.map(&:to_sym))
+        .to contain_exactly(*described_class::ALL_CUSTOMIZABLE_PERMISSIONS.keys,
+          *described_class::NON_PERMISSION_COLUMNS)
+    end
+  end
 end

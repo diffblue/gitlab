@@ -5,6 +5,9 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   ignore_column :download_code, remove_with: '15.9', remove_after: '2023-01-22'
 
   MAX_COUNT_PER_GROUP_HIERARCHY = 10
+  ALL_CUSTOMIZABLE_PERMISSIONS = { read_code: 'Permission to read code' }.freeze
+  CUSTOMIZABLE_PERMISSIONS_EXEMPT_FROM_CONSUMING_SEAT = [:read_code].freeze
+  NON_PERMISSION_COLUMNS = [:id, :namespace_id, :created_at, :updated_at, :base_access_level].freeze
 
   has_many :members
   belongs_to :namespace
@@ -18,7 +21,20 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
 
   validates_associated :members
 
+  scope :elevating, -> do
+    return none if elevating_permissions.empty?
+
+    query = elevating_permissions.map { |permission| "#{permission} = true" }
+                                 .join(" OR ")
+    where(query)
+  end
+
   before_destroy :prevent_delete_after_member_associated
+  class << self
+    def elevating_permissions
+      ALL_CUSTOMIZABLE_PERMISSIONS.keys - CUSTOMIZABLE_PERMISSIONS_EXEMPT_FROM_CONSUMING_SEAT
+    end
+  end
 
   private
 

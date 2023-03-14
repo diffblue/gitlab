@@ -12,7 +12,10 @@ module EE
                            description: 'Access level. Valid values are 10 (Guest), 20 (Reporter), 30 (Developer) \
       , 40 (Maintainer), and 50 (Owner).',
                            values: [10, 20, 30, 40, 50] }
-        expose :read_code, documentation: { type: 'boolean' }
+
+        ::MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS.each_key do |permission_name|
+          expose permission_name, documentation: { type: 'boolean' }
+        end
       end
     end
   end

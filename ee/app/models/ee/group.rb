@@ -735,7 +735,7 @@ module EE
         source_id: self_and_descendants
       )
 
-      members = members.non_guests if exclude_guests
+      members = members.with_elevated_guests if exclude_guests
 
       users_without_bots(members)
     end
@@ -744,7 +744,7 @@ module EE
     def billed_project_users(exclude_guests: false)
       members = ::ProjectMember.without_invites_and_requests
 
-      members = members.non_guests if exclude_guests
+      members = members.with_elevated_guests if exclude_guests
 
       members = members.where(
         source_id: ::Project.joins(:group).where(namespace: self_and_descendants)
