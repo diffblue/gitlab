@@ -17126,9 +17126,6 @@ msgstr ""
 msgid "Expected documents: %{expected_documents}"
 msgstr ""
 
-msgid "Experiment"
-msgstr ""
-
 msgid "Experiments"
 msgstr ""
 
@@ -22837,9 +22834,6 @@ msgstr ""
 msgid "Indicates whether this runner can pick jobs without tags"
 msgstr ""
 
-msgid "Info"
-msgstr ""
-
 msgid "Inform users without uploaded SSH keys that they can't push over SSH until one is added"
 msgstr ""
 
@@ -27174,9 +27168,6 @@ msgstr ""
 msgid "Messages"
 msgstr ""
 
-msgid "Metadata"
-msgstr ""
-
 msgid "Method"
 msgstr ""
 
@@ -27859,10 +27850,25 @@ msgstr ""
 msgid "MlExperimentTracking|Filter candidates"
 msgstr ""
 
+msgid "MlExperimentTracking|ID"
+msgstr ""
+
+msgid "MlExperimentTracking|Info"
+msgstr ""
+
 msgid "MlExperimentTracking|Logged candidates for experiment"
 msgstr ""
 
 msgid "MlExperimentTracking|Machine learning experiment tracking"
+msgstr ""
+
+msgid "MlExperimentTracking|Metadata"
+msgstr ""
+
+msgid "MlExperimentTracking|Metrics"
+msgstr ""
+
+msgid "MlExperimentTracking|Model candidate details"
 msgstr ""
 
 msgid "MlExperimentTracking|Model experiments"
@@ -27886,6 +27892,12 @@ msgstr ""
 msgid "MlExperimentTracking|No name"
 msgstr ""
 
+msgid "MlExperimentTracking|Parameters"
+msgstr ""
+
+msgid "MlExperimentTracking|Status"
+msgstr ""
+
 msgid "MlExperimentTracking|There are no logged experiments for this project. Create a new experiment using the MLflow client."
 msgstr ""
 
@@ -27896,9 +27908,6 @@ msgid "ModalButton|Add projects"
 msgstr ""
 
 msgid "Modal|Close"
-msgstr ""
-
-msgid "Model candidate details"
 msgstr ""
 
 msgid "Modified"
@@ -30934,9 +30943,6 @@ msgid "Parameter"
 msgstr ""
 
 msgid "Parameter \"job_id\" cannot exceed length of %{job_id_max_size}"
-msgstr ""
-
-msgid "Parameters"
 msgstr ""
 
 msgid "Parent"
