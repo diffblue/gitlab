@@ -2,8 +2,8 @@
 import { GlIcon, GlLoadingIcon, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { createAlert } from '~/alert';
+import { STATUS_OPEN, STATUS_REOPENED } from '~/issues/constants';
 import { s__, sprintf } from '~/locale';
-import { OPENED, REOPENED } from '~/notes/constants';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
 import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
 import Tracking from '~/tracking';
@@ -93,7 +93,7 @@ export default {
       return this.$apollo.queries.issuable.loading || this.isUpdating;
     },
     isOpen() {
-      return this.issuable?.state === OPENED || this.issuable?.state === REOPENED;
+      return this.issuable?.state === STATUS_OPEN || this.issuable?.state === STATUS_REOPENED;
     },
   },
   methods: {
