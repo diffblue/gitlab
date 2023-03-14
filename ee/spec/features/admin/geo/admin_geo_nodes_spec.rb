@@ -2,17 +2,17 @@
 
 require 'spec_helper'
 
-RSpec.describe 'admin Geo Nodes', :js, :geo, feature_category: :geo_replication do
-  let!(:geo_node) { create(:geo_node) }
+RSpec.describe 'Admin Geo Sites', :js, :geo, feature_category: :geo_replication do
+  let!(:geo_site) { create(:geo_node) }
 
-  def expect_fields(node_fields)
-    node_fields.each do |field|
+  def expect_fields(site_fields)
+    site_fields.each do |field|
       expect(page).to have_field(field)
     end
   end
 
-  def expect_no_fields(node_fields)
-    node_fields.each do |field|
+  def expect_no_fields(site_fields)
+    site_fields.each do |field|
       expect(page).not_to have_field(field)
     end
   end
@@ -38,10 +38,10 @@ RSpec.describe 'admin Geo Nodes', :js, :geo, feature_category: :geo_replication 
       wait_for_requests
     end
 
-    it 'shows all public Geo Nodes and Add site link' do
+    it 'shows all public Geo Sites and Add site link' do
       expect(page).to have_link('Add site', href: new_admin_geo_node_path)
       page.within(find('.geo-node-core-details-grid-columns', match: :first)) do
-        expect(page).to have_content(geo_node.url)
+        expect(page).to have_content(geo_site.url)
       end
     end
 
@@ -119,62 +119,62 @@ RSpec.describe 'admin Geo Nodes', :js, :geo, feature_category: :geo_replication 
     end
   end
 
-  describe 'node form fields' do
-    primary_only_fields = %w(node-reverification-interval-field)
-    secondary_only_fields = %w(node-selective-synchronization-field node-repository-capacity-field node-file-capacity-field node-object-storage-field)
+  describe 'site form fields' do
+    primary_only_fields = %w(site-reverification-interval-field)
+    secondary_only_fields = %w(site-selective-synchronization-field site-repository-capacity-field site-file-capacity-field site-object-storage-field)
 
     it 'when primary renders only primary fields' do
-      geo_node.update!(primary: true)
-      visit edit_admin_geo_node_path(geo_node)
+      geo_site.update!(primary: true)
+      visit edit_admin_geo_node_path(geo_site)
 
       expect_fields(primary_only_fields)
       expect_no_fields(secondary_only_fields)
     end
 
     it 'when secondary renders only secondary fields' do
-      geo_node.update!(primary: false)
-      visit edit_admin_geo_node_path(geo_node)
+      geo_site.update!(primary: false)
+      visit edit_admin_geo_node_path(geo_site)
 
       expect_no_fields(primary_only_fields)
       expect_fields(secondary_only_fields)
     end
   end
 
-  describe 'create a new Geo Node' do
+  describe 'create a new Geo Site' do
     let(:new_ssh_key) { attributes_for(:key)[:key] }
 
     before do
       visit new_admin_geo_node_path
     end
 
-    it 'creates a new Geo Node' do
-      fill_in 'node-name-field', with: 'a node name'
-      fill_in 'node-url-field', with: 'https://test.gitlab.com'
+    it 'creates a new Geo Site' do
+      fill_in 'site-name-field', with: 'a site name'
+      fill_in 'site-url-field', with: 'https://test.gitlab.com'
       click_button 'Save'
 
       wait_for_requests
       expect(page).to have_current_path admin_geo_nodes_path, ignore_query: true
 
       page.within(find('.geo-node-core-details-grid-columns', match: :first)) do
-        expect(page).to have_content(geo_node.url)
+        expect(page).to have_content(geo_site.url)
       end
     end
 
-    it 'includes Geo Nodes in breadcrumbs' do
+    it 'includes Geo Sites in breadcrumbs' do
       expect_breadcrumb('Add New Site')
     end
   end
 
-  describe 'update an existing Geo Node' do
+  describe 'update an existing Geo Site' do
     before do
-      geo_node.update!(primary: true)
+      geo_site.update!(primary: true)
 
-      visit edit_admin_geo_node_path(geo_node)
+      visit edit_admin_geo_node_path(geo_site)
     end
 
-    it 'updates an existing Geo Node' do
-      fill_in 'node-url-field', with: 'http://newsite.com'
-      fill_in 'node-internal-url-field', with: 'http://internal-url.com'
+    it 'updates an existing Geo Site' do
+      fill_in 'site-url-field', with: 'http://newsite.com'
+      fill_in 'site-internal-url-field', with: 'http://internal-url.com'
       click_button 'Save changes'
 
       wait_for_requests
@@ -185,18 +185,18 @@ RSpec.describe 'admin Geo Nodes', :js, :geo, feature_category: :geo_replication 
       end
     end
 
-    it 'includes Geo Nodes in breadcrumbs' do
+    it 'includes Geo Sites in breadcrumbs' do
       expect_breadcrumb('Edit Geo Site')
     end
   end
 
-  describe 'remove an existing Geo Node' do
+  describe 'remove an existing Geo Site' do
     before do
       visit admin_geo_nodes_path
       wait_for_requests
     end
 
-    it 'removes an existing Geo Node' do
+    it 'removes an existing Geo Site' do
       page.click_button('Remove')
 
       page.within('.gl-modal') do
@@ -209,14 +209,14 @@ RSpec.describe 'admin Geo Nodes', :js, :geo, feature_category: :geo_replication 
     end
   end
 
-  describe 'with no Geo Nodes' do
+  describe 'with no Geo Sites' do
     before do
-      geo_node.delete
+      geo_site.delete
       visit admin_geo_nodes_path
       wait_for_requests
     end
 
-    it 'hides the New Node button' do
+    it 'hides the New Site button' do
       expect(page).not_to have_link('Add site', href: new_admin_geo_node_path)
     end
 
@@ -225,19 +225,19 @@ RSpec.describe 'admin Geo Nodes', :js, :geo, feature_category: :geo_replication 
     end
   end
 
-  describe 'Geo node form routes' do
+  describe 'Geo Site form routes' do
     routes = []
 
     before do
-      routes = [{ path: new_admin_geo_node_path, slug: '/new' }, { path: edit_admin_geo_node_path(geo_node), slug: '/edit' }]
+      routes = [{ path: new_admin_geo_node_path, slug: '/new' }, { path: edit_admin_geo_node_path(geo_site), slug: '/edit' }]
     end
 
     routes.each do |route|
       it "#{route.slug} renders the geo form" do
         visit route.path
 
-        expect(page).to have_css(".geo-node-form-container")
-        expect(page).not_to have_css(".js-geo-node-form")
+        expect(page).to have_css(".geo-site-form-container")
+        expect(page).not_to have_css(".js-geo-site-form")
       end
     end
   end

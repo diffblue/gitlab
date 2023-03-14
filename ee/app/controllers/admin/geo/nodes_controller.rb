@@ -58,6 +58,6 @@ class Admin::Geo::NodesController < Admin::Geo::ApplicationController
 
   def load_node
     @node = GeoNode.find(params[:id])
-    @serialized_node = GeoNodeSerializer.new.represent(@node).to_json
+    @serialized_site = GeoNodeSerializer.new.represent(@node).to_json
   end
 end

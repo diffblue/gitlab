@@ -7,25 +7,25 @@ module QA
         module Geo
           module Nodes
             class New < QA::Page::Base
-              view 'ee/app/assets/javascripts/geo_node_form/components/geo_node_form_core.vue' do
-                element :node_name_field
-                element :node_url_field
+              view 'ee/app/assets/javascripts/geo_site_form/components/geo_site_form_core.vue' do
+                element :site_name_field
+                element :site_url_field
               end
 
-              view 'ee/app/assets/javascripts/geo_node_form/components/geo_node_form.vue' do
-                element :add_node_button
+              view 'ee/app/assets/javascripts/geo_site_form/components/geo_site_form.vue' do
+                element :add_site_button
               end
 
-              def set_node_name(name)
-                fill_element :node_name_field, name
+              def set_site_name(name)
+                fill_element :site_name_field, name
               end
 
-              def set_node_address(address)
-                fill_element :node_url_field, address
+              def set_site_address(address)
+                fill_element :site_url_field, address
               end
 
-              def add_node!
-                click_element :add_node_button
+              def add_site!
+                click_element :add_site_button
               end
             end
           end
