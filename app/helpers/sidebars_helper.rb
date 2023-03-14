@@ -107,6 +107,8 @@ module SidebarsHelper
     when 'user_profile'
       context = Sidebars::Context.new(current_user: user, container: viewed_user, **context_adds)
       Sidebars::UserProfile::Panel.new(context)
+    when 'explore'
+      Sidebars::Explore::Panel.new(Sidebars::Context.new(current_user: user, container: nil, **context_adds))
     else
       context = your_work_sidebar_context(user, **context_adds)
       Sidebars::YourWork::Panel.new(context)
