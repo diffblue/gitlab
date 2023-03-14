@@ -35,16 +35,21 @@ RSpec.describe 'Project', :js, feature_category: :projects do
     let(:project) { create(:project, group: group) }
     let(:user) { create(:user) }
 
-    where(:feature_available_on_instance, :delayed_project_removal, :shows_adjourned_delete) do
-      true  | nil  | false
-      true  | true | true
-      false | true | false
-      false | nil  | false
+    where(:feature_available_on_instance, :delayed_project_removal, :always_perform_delayed_deletion, :shows_adjourned_delete) do
+      true  | nil  | true  | true
+      true  | true | true  | true
+      false | true | true  | false
+      false | nil  | true  | false
+      true  | nil  | false | false
+      true  | true | false | true
+      false | true | false | false
+      false | nil  | false | false
     end
 
     before do
       stub_application_setting(deletion_adjourned_period: 7)
       stub_licensed_features(adjourned_deletion_for_projects_and_groups: feature_available_on_instance)
+      stub_feature_flags(always_perform_delayed_deletion: always_perform_delayed_deletion)
       group.add_member(user, Gitlab::Access::OWNER)
 
       sign_in user

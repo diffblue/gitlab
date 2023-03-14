@@ -128,7 +128,17 @@ RSpec.describe GroupsHelper do
           stub_application_setting(delayed_group_deletion: false)
         end
 
-        it_behaves_like 'permanent deletion message'
+        context 'when `always_perform_delayed_deletion` is disabled' do
+          before do
+            stub_feature_flags(always_perform_delayed_deletion: false)
+          end
+
+          it_behaves_like 'permanent deletion message'
+        end
+
+        context 'when `always_perform_delayed_deletion` is enabled' do
+          it_behaves_like 'delayed deletion message'
+        end
       end
 
       context 'when group delay deletion is enabled and adjourned deletion period is 0' do

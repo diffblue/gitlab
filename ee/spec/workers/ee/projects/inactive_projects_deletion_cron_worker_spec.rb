@@ -107,12 +107,8 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker do
         stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
       end
 
-      context 'when adjourned_deletion_configured is not configured for the project' do
-        before do
-          group.namespace_settings.update!(delayed_project_removal: false)
-        end
-
-        it 'invokes Projects::DestroyService if adjourned_deletion_configured not configured for the project' do
+      shared_examples_for 'invokes Projects::DestroyService' do
+        it 'invokes Projects::DestroyService' do
           Gitlab::Redis::SharedState.with do |redis|
             redis.hset('inactive_projects_deletion_warning_email_notified', "project:#{inactive_large_project.id}",
                        15.months.ago.to_date.to_s)
@@ -135,12 +131,8 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker do
         end
       end
 
-      context 'when adjourned_deletion_configured is configured for the project' do
-        before do
-          group.namespace_settings.update!(delayed_project_removal: true)
-        end
-
-        it 'invokes Projects::MarkForDeletionService for projects that are inactive even after being notified' do
+      shared_examples_for 'invokes Projects::MarkForDeletionService' do
+        it 'invokes Projects::MarkForDeletionService' do
           Gitlab::Redis::SharedState.with do |redis|
             redis.hset('inactive_projects_deletion_warning_email_notified', "project:#{inactive_large_project.id}",
                        15.months.ago.to_date.to_s)
@@ -159,6 +151,42 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker do
             expect(redis.hget('inactive_projects_deletion_warning_email_notified',
                               "project:#{inactive_large_project.id}")).to be_nil
           end
+        end
+      end
+
+      context 'when adjourned_deletion_configured is not configured for the project' do
+        before do
+          group.namespace_settings.update!(delayed_project_removal: false)
+        end
+
+        context 'when `always_perform_delayed_deletion` is disabled' do
+          before do
+            stub_feature_flags(always_perform_delayed_deletion: false)
+          end
+
+          it_behaves_like 'invokes Projects::DestroyService'
+        end
+
+        context 'when `always_perform_delayed_deletion` is enabled' do
+          it_behaves_like 'invokes Projects::MarkForDeletionService'
+        end
+      end
+
+      context 'when adjourned_deletion_configured is configured for the project' do
+        before do
+          group.namespace_settings.update!(delayed_project_removal: true)
+        end
+
+        context 'when `always_perform_delayed_deletion` is disabled' do
+          before do
+            stub_feature_flags(always_perform_delayed_deletion: false)
+          end
+
+          it_behaves_like 'invokes Projects::MarkForDeletionService'
+        end
+
+        context 'when `always_perform_delayed_deletion` is enabled' do
+          it_behaves_like 'invokes Projects::MarkForDeletionService'
         end
       end
     end

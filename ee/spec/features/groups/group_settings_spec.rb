@@ -177,6 +177,7 @@ RSpec.describe 'Edit group settings', feature_category: :subgroups do
 
       before do
         stub_env('IN_MEMORY_APPLICATION_SETTINGS', 'false')
+        stub_feature_flags(always_perform_delayed_deletion: false)
         gitlab_enable_admin_mode_sign_in(user)
 
         visit general_admin_application_settings_path
