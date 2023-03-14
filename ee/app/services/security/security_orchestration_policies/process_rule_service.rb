@@ -10,7 +10,6 @@ module Security
       end
 
       def execute
-        policy_configuration.delete_all_schedules
         create_new_schedule_rules
       end
 
