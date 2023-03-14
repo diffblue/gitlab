@@ -6,20 +6,23 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
   let_it_be(:developer) { create(:user) }
   let_it_be(:guest) { create(:user) }
   let_it_be(:other_project) { create(:project, :repository) }
+  let_it_be(:maintainer) { create(:user) }
+  let_it_be(:reporter) { create(:user) }
 
   let(:user) { developer }
 
   before do
     stub_feature_flags(disable_merge_trains: false)
     stub_licensed_features(merge_pipelines: true, merge_trains: true)
-
-    project.update!(merge_pipelines_enabled: true, merge_trains_enabled: true)
   end
 
   before_all do
+    project.ci_cd_settings.update!(merge_pipelines_enabled: true, merge_trains_enabled: true)
     project.add_developer(developer)
     project.add_guest(guest)
     other_project.add_developer(developer)
+    project.add_maintainer(maintainer)
+    project.add_reporter(reporter)
   end
 
   describe 'GET /projects/:id/merge_trains' do
@@ -233,6 +236,158 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
         subject
 
         expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+  end
+
+  describe 'POST /projects/:id/merge_trains/merge_requests/:merge_request_iid' do
+    let(:merge_request) do
+      create(:merge_request,
+             source_project: project, source_branch: 'feature',
+             target_project: project, target_branch: 'master',
+             merge_status: 'unchecked')
+    end
+
+    let(:params) { {} }
+    let(:pipeline_status) { :success }
+    let(:user) { maintainer }
+    let(:merge_request_iid) { merge_request.iid }
+
+    let(:ci_yaml) do
+      { test: { stage: 'test', script: 'echo', only: ['merge_requests'] } }
+    end
+
+    subject do
+      post api("/projects/#{project.id}/merge_trains/merge_requests/#{merge_request_iid}", user),
+        params: params
+    end
+
+    before do
+      create(:ci_pipeline, pipeline_status, ref: merge_request.source_branch,
+                                            sha: merge_request.diff_head_sha,
+                                            project: merge_request.source_project)
+
+      merge_request.update_head_pipeline
+    end
+
+    shared_examples 'succeeds to add to merge train' do
+      it 'succeeds to add to merge train' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:created)
+      end
+    end
+
+    context 'with valid merge request iid' do
+      let(:merge_request_iid) { merge_request.iid }
+
+      it_behaves_like 'succeeds to add to merge train'
+    end
+
+    context 'with invalid merge request iid' do
+      let(:merge_request_iid) { 12345 }
+
+      it 'exits with invalid return code' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'with no params' do
+      let(:params) { {} }
+
+      it_behaves_like 'succeeds to add to merge train'
+    end
+
+    context 'with valid parameters' do
+      let(:params) { { sha: merge_request.diff_head_sha, squash: true, when_pipeline_succeeds: false } }
+
+      it_behaves_like 'succeeds to add to merge train'
+    end
+
+    context 'with invalid parameters' do
+      let(:params) { { sha: 123, squash: 'yes', when_pipeline_succeeds: 'yes' } }
+
+      it 'errors out before calling service' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:conflict)
+      end
+    end
+
+    context 'with extra parameters' do
+      let(:params) { { extra_param: true } }
+
+      it 'ignores the param and continues' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:created)
+      end
+    end
+
+    context 'with when_pipeline_succeeds enabled' do
+      let(:params) { { when_pipeline_succeeds: true } }
+
+      context 'when pipeilie is not completed' do
+        let(:pipeline_status) { :running }
+
+        it 'returns status accepted' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:accepted)
+        end
+      end
+    end
+
+    context 'when sha is provided and matches' do
+      let(:params) { { sha: merge_request.diff_head_sha } }
+
+      it_behaves_like 'succeeds to add to merge train'
+    end
+
+    context 'when sha is provided and doesn\'t match' do
+      let(:params) { { sha: 'SomeFakeSha' } }
+
+      it 'returns status conflict' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:conflict)
+      end
+    end
+
+    context 'when user is guest' do
+      let(:user) { guest }
+
+      it 'returns forbidden before reaching the api endpoint' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context 'when the service object fails' do
+      let(:user) { reporter }
+
+      it 'returns status unauthorized' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:unauthorized)
+      end
+    end
+
+    context 'when the service object returns an unexpected response' do
+      it 'returns bad request' do
+        expect_next_instance_of(::MergeTrains::AddMergeRequestService) do |service|
+          expect(service).to receive(:execute).and_return(
+            ServiceResponse.error(
+              message: "Unexpected service response"
+            ))
+        end
+
+        subject
+
+        expect(response).to have_gitlab_http_status(:bad_request)
       end
     end
   end
