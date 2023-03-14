@@ -47,14 +47,6 @@ module QA
 
           Flow::Saml.login_to_idp_if_required(idp_user.username, idp_user.password)
 
-          expect(page).to have_text("Please confirm your email address")
-
-          QA::Flow::User.confirm_user(user)
-
-          visit_group_sso_url
-
-          EE::Page::Group::SamlSSOSignIn.perform(&:click_sign_in)
-
           expect(page).to have_text("Signed in with SAML")
 
           Page::Group::Show.perform(&:leave_group)
@@ -89,7 +81,7 @@ module QA
 
           Flow::Saml.login_to_idp_if_required(idp_user.username, idp_user.password)
 
-          expect(page).to have_text("Please confirm your email address")
+          expect(page).to have_text("Signed in with SAML")
         end
       end
 
