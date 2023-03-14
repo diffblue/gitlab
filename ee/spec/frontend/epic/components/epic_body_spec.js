@@ -27,7 +27,6 @@ describe('EpicBodyComponent', () => {
       endpoint: 'http://test.host',
       updateEndpoint: '/groups/frontend-fixtures-group/-/epics/1.json',
       canUpdate: true,
-      showInlineEditButton: true,
       enableAutocomplete: true,
       zoomMeetingUrl: '',
       publishedIncidentUrl: '',

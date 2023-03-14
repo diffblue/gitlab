@@ -29,7 +29,7 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
     it 'does not show the Edit button' do
       visit group_epic_path(group, epic)
 
-      expect(page).not_to have_selector('.btn-edit')
+      expect(page).not_to have_selector('.js-issuable-edit')
     end
   end
 
@@ -42,7 +42,7 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
 
     context 'update form' do
       before do
-        find('.btn-edit').click
+        find('.js-issuable-edit').click
       end
 
       it 'updates the epic' do
@@ -74,7 +74,7 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
         page.driver.browser.switch_to.alert.accept
 
         wait_for_requests
-        find('.btn-edit').click
+        find('.js-issuable-edit').click
 
         page.within('.detail-page-description') do
           click_link('Preview')

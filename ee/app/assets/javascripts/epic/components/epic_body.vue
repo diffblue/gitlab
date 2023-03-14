@@ -56,7 +56,6 @@ export default {
         :initial-description-text="initialDescriptionText"
         :issuable-status="state"
         :is-confidential="confidential"
-        :show-inline-edit-button="true"
         :enable-autocomplete="true"
         project-namespace
         issuable-ref

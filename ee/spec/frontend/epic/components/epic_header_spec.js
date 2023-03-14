@@ -1,4 +1,4 @@
-import { GlIcon } from '@gitlab/ui';
+import { GlIcon, GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
 import { nextTick } from 'vue';
@@ -9,8 +9,11 @@ import createStore from 'ee/epic/store';
 import waitForPromises from 'helpers/wait_for_promises';
 import TimeagoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import UserAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link.vue';
+import issuesEventHub from '~/issues/show/event_hub';
 
 import { mockEpicMeta, mockEpicData } from '../mock_data';
+
+jest.mock('~/issues/show/event_hub', () => ({ $emit: jest.fn() }));
 
 describe('EpicHeaderComponent', () => {
   let wrapper;
@@ -23,6 +26,9 @@ describe('EpicHeaderComponent', () => {
 
     wrapper = shallowMount(EpicHeader, {
       store,
+      stubs: {
+        GlButton,
+      },
     });
   });
 
@@ -36,6 +42,7 @@ describe('EpicHeaderComponent', () => {
   const findAuthorDetails = () => wrapper.find('[data-testid="author-details"]');
   const findActionButtons = () => wrapper.find('[data-testid="action-buttons"]');
   const findToggleStatusButton = () => wrapper.find('[data-testid="toggle-status-button"]');
+  const findEditButton = () => wrapper.find('[data-testid="edit-button"]');
   const findNewEpicButton = () => wrapper.find('[data-testid="new-epic-button"]');
   const findDeleteEpicButton = () => wrapper.find('[data-testid="delete-epic-button"]');
   const findSidebarToggle = () => wrapper.find('[data-testid="sidebar-toggle"]');
@@ -201,6 +208,18 @@ describe('EpicHeaderComponent', () => {
           title: 'Delete epic',
         });
       });
+    });
+  });
+
+  describe('edit button', () => {
+    it('shows the edit button', () => {
+      expect(findEditButton().exists()).toBe(true);
+    });
+
+    it('should trigger "open.form" event when clicked', async () => {
+      expect(issuesEventHub.$emit).not.toHaveBeenCalled();
+      await findEditButton().trigger('click');
+      expect(issuesEventHub.$emit).toHaveBeenCalledWith('open.form');
     });
   });
 });
