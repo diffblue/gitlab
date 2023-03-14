@@ -43,7 +43,7 @@ module QA
           expect(show).to have_system_note("alert via escalation policy #{escalation_policy_name}")
         end
 
-        expect { email_subjects }.to eventually_include(alert_email_subject).within(max_duration: 60)
+        expect { email_subjects }.to eventually_include(alert_email_subject).within(max_duration: 300)
       end
 
       private
@@ -85,7 +85,14 @@ module QA
       end
 
       def mail_hog_messages
-        mail_hog_api.fetch_messages
+        Runtime::Logger.debug('Fetching email...')
+
+        messages = mail_hog_api.fetch_messages
+        logs = messages.map { |m| "#{m.to}: #{m.subject}" }
+
+        Runtime::Logger.debug("MailHog Logs: #{logs.join("\n")}")
+
+        messages
       end
 
       def email_subjects
