@@ -81,10 +81,6 @@ module Mutations
 
         private
 
-        def find_object(id:)
-          GitlabSchema.find_by_gid(id)
-        end
-
         def move_epic(board, epic, move_params)
           service = ::Boards::Epics::MoveService.new(board.resource_parent, current_user, move_params)
 

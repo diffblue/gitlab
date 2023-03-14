@@ -6,8 +6,6 @@ module Mutations
       class Run < BaseMutation
         graphql_name 'DastProfileRun'
 
-        include FindsProject
-
         ProfileID = ::Types::GlobalIDType[::Dast::Profile]
 
         field :pipeline_url, GraphQL::Types::String,
@@ -26,7 +24,7 @@ module Mutations
         authorize :create_on_demand_dast_scan
 
         def resolve(id:, full_path: nil)
-          dast_profile = authorized_find!(id)
+          dast_profile = authorized_find!(id: id)
 
           response = create_on_demand_dast_scan(dast_profile)
 
@@ -36,10 +34,6 @@ module Mutations
         end
 
         private
-
-        def find_object(id)
-          GitlabSchema.find_by_gid(id)
-        end
 
         def create_on_demand_dast_scan(dast_profile)
           ::AppSec::Dast::Scans::CreateService.new(

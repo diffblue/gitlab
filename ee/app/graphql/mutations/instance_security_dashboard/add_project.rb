@@ -28,10 +28,6 @@ module Mutations
 
       private
 
-      def find_object(id:)
-        GitlabSchema.find_by_gid(id)
-      end
-
       def add_project(project)
         Dashboard::Projects::CreateService
           .new(current_user, current_user.security_dashboard_projects, ability: :read_security_resource)

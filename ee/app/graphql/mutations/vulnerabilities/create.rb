@@ -93,10 +93,6 @@ module Mutations
 
       private
 
-      def find_object(id:)
-        GitlabSchema.find_by_gid(id)
-      end
-
       def build_vulnerability_params(params)
         vulnerability_params = params.slice(
           *%i[
