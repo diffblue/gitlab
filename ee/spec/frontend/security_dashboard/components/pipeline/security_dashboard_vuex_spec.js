@@ -140,7 +140,7 @@ describe('Security Dashboard component', () => {
   describe('issue modal', () => {
     it.each`
       givenState                                                                               | expectedProps
-      ${{ modal: { vulnerability: 'foo' } }}                                                   | ${{ modal: { vulnerability: 'foo' }, canCreateIssue: false, canDismissVulnerability: false, isCreatingIssue: false, isDismissingVulnerability: false, isCreatingMergeRequest: false }}
+      ${{ modal: { vulnerability: 'foo' } }}                                                   | ${{ modal: { vulnerability: 'foo' }, canCreateIssue: false, canDismissVulnerability: false, isCreatingIssue: false, isDismissingVulnerability: false, isCreatingMergeRequest: false, isLoadingAdditionalInfo: false }}
       ${{ modal: { vulnerability: { create_vulnerability_feedback_issue_path: 'foo' } } }}     | ${expect.objectContaining({ canCreateIssue: true })}
       ${{ modal: { vulnerability: { create_jira_issue_url: 'foo' } } }}                        | ${expect.objectContaining({ canCreateIssue: true })}
       ${{ modal: { vulnerability: { create_vulnerability_feedback_dismissal_path: 'foo' } } }} | ${expect.objectContaining({ canDismissVulnerability: true })}

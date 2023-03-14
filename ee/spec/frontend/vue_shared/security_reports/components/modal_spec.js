@@ -1,4 +1,4 @@
-import { GlModal, GlAlert } from '@gitlab/ui';
+import { GlModal, GlAlert, GlLoadingIcon } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import IssueNote from 'ee/vue_shared/security_reports/components/issue_note.vue';
@@ -38,11 +38,20 @@ describe('Security Reports modal', () => {
 
   describe('modal', () => {
     const findAlert = () => wrapper.findComponent(GlAlert);
+    const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 
     it('renders a large modal', () => {
       mountComponent({ modal: createState().modal }, mount);
       expect(modal.props('size')).toBe('lg');
     });
+
+    it.each([true, false])(
+      'shows/hides loading icon when isLoadingAdditionalInfo prop is %s',
+      (isLoadingAdditionalInfo) => {
+        mountComponent({ modal: createState().modal, isLoadingAdditionalInfo }, shallowMount);
+        expect(findLoadingIcon().exists()).toBe(isLoadingAdditionalInfo);
+      },
+    );
 
     it('does not render the error message the modal has no error', () => {
       mountComponent({ modal: createState().modal });
