@@ -11,16 +11,25 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
 
     subject { service.execute(actions) }
 
-    shared_examples 'creates scan jobs' do |pipeline_scan_jobs: [], on_demand_jobs: [], template_count: nil|
+    shared_examples 'creates scan jobs' do |on_demand_jobs: [], pipeline_scan_job_templates: []|
       it 'returns created jobs' do
         expect(::Security::SecurityOrchestrationPolicies::CiConfigurationService).to receive(:new)
-                                                                                       .exactly(template_count || pipeline_scan_jobs.count)
+                                                                                       .exactly(pipeline_scan_job_templates.size)
                                                                                        .times
                                                                                        .and_call_original
         expect(::Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConfigurationService).to receive(:new)
                                                                                                          .exactly(on_demand_jobs.count)
                                                                                                          .times
                                                                                                          .and_call_original
+        pipeline_scan_jobs = []
+
+        pipeline_scan_job_templates.each_with_index do |job_template, index|
+          template = ::TemplateFinder.build(:gitlab_ci_ymls, nil, name: job_template).execute
+          jobs = Gitlab::Ci::Config.new(template.content).jobs.keys
+          jobs.each do |job|
+            pipeline_scan_jobs.append("#{job.to_s.tr('_', '-')}-#{index}".to_sym)
+          end
+        end
 
         expect(pipeline_scan_config.keys).to eq(pipeline_scan_jobs)
         expect(on_demand_config.keys).to eq(on_demand_jobs)
@@ -43,7 +52,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
     context 'when there is only one action' do
       let(:actions) { [{ scan: 'secret_detection' }] }
 
-      it_behaves_like 'creates scan jobs', pipeline_scan_jobs: %i[secret-detection-0]
+      it_behaves_like 'creates scan jobs', pipeline_scan_job_templates: %w[Jobs/Secret-Detection]
     end
 
     context 'when action contains variables' do
@@ -71,13 +80,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
       end
 
       it_behaves_like 'creates scan jobs',
-                      pipeline_scan_jobs: %i[secret-detection-0 container-scanning-1
-                                              sast-2 bandit-sast-2 brakeman-sast-2 eslint-sast-2 flawfinder-sast-2
-                                              kubesec-sast-2 gosec-sast-2 mobsf-android-sast-2 mobsf-ios-sast-2
-                                              nodejs-scan-sast-2 phpcs-security-audit-sast-2 pmd-apex-sast-2
-                                              security-code-scan-sast-2 semgrep-sast-2 sobelow-sast-2 spotbugs-sast-2],
                       on_demand_jobs: %i[dast-on-demand-0],
-                      template_count: 3
+                      pipeline_scan_job_templates: %w[Jobs/Secret-Detection Jobs/Container-Scanning Jobs/SAST]
     end
 
     context 'when there are valid and invalid actions' do
@@ -88,7 +92,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
         ]
       end
 
-      it_behaves_like 'creates scan jobs', pipeline_scan_jobs: %i[secret-detection-0]
+      it_behaves_like 'creates scan jobs', pipeline_scan_job_templates: %w[Jobs/Secret-Detection]
     end
   end
 end
