@@ -31,6 +31,9 @@ export default {
       row.columns.forEach((col) => {
         if (Object.prototype.hasOwnProperty.call(usage, col.id)) {
           Vue.set(col, 'value', usage[col.id]);
+          if (tableKey === TABLE_TYPE_DEFAULT) {
+            Vue.set(col, 'type', tableKey);
+          }
         } else if (Object.prototype.hasOwnProperty.call(billing, col.id)) {
           Vue.set(col, 'value', billing[col.id]);
         }

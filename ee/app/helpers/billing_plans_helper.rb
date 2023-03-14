@@ -54,7 +54,8 @@ module BillingPlansHelper
       customer_portal_url: EE::SUBSCRIPTIONS_MANAGE_URL,
       billable_seats_href: billable_seats_href(namespace),
       plan_name: plan&.name,
-      read_only: read_only.to_s
+      read_only: read_only.to_s,
+      seats_last_updated: seats_last_updated_value(namespace)
     }.tap do |attrs|
       if Feature.enabled?(:refresh_billings_seats, type: :ops)
         attrs[:refresh_seats_href] = refresh_seats_group_billings_url(namespace)
@@ -215,6 +216,12 @@ module BillingPlansHelper
   end
 
   private
+
+  # once https://gitlab.com/gitlab-org/gitlab/-/issues/382725 is rolled out, this method won't
+  # be necessary and can be replaced with just `namespace.gitlab_subscription.last_seat_refresh_at`
+  def seats_last_updated_value(namespace)
+    (namespace.gitlab_subscription&.last_seat_refresh_at || UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker.last_enqueue_time)&.utc&.strftime('%H:%M:%S')
+  end
 
   def add_seats_url(group)
     return unless group

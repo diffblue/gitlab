@@ -77,7 +77,7 @@ describe('EE billings subscription module mutations', () => {
         expect(state.billing).toEqual(billing);
       });
 
-      it(`it updates table ${tableKey} with subscription plan`, () => {
+      it(`updates table ${tableKey} with subscription plan`, () => {
         expect(getStateTableValues(tableKey)).toMatchSnapshot();
       });
     });

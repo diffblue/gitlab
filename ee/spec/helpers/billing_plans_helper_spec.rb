@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe BillingPlansHelper, :saas do
+RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_management do
   include Devise::Test::ControllerHelpers
 
   describe '#subscription_plan_data_attributes' do
@@ -28,7 +28,8 @@ RSpec.describe BillingPlansHelper, :saas do
           customer_portal_url: customer_portal_url,
           billable_seats_href: billable_seats_href,
           plan_name: plan.name,
-          read_only: read_only.to_s
+          read_only: read_only.to_s,
+          seats_last_updated: nil
         }
       end
 
@@ -69,7 +70,8 @@ RSpec.describe BillingPlansHelper, :saas do
           namespace_name: group.name,
           plan_renew_href: plan_renew_href,
           plan_name: nil,
-          read_only: read_only.to_s
+          read_only: read_only.to_s,
+          seats_last_updated: nil
         }
       end
 
@@ -102,7 +104,8 @@ RSpec.describe BillingPlansHelper, :saas do
           add_seats_href: add_seats_href,
           plan_renew_href: plan_renew_href,
           plan_name: plan.name,
-          read_only: read_only.to_s
+          read_only: read_only.to_s,
+          seats_last_updated: nil
         }
       end
 
@@ -140,6 +143,36 @@ RSpec.describe BillingPlansHelper, :saas do
         it 'returns billable_seats_href for group' do
           expect(subject).to include(billable_seats_href: helper.group_usage_quotas_path(namespace, anchor: 'seats-quota-tab'))
         end
+      end
+    end
+
+    context 'when seats_last_updated is being assigned' do
+      let(:enqueue_time) { Time.new(2023, 2, 21, 12, 13, 14, "+00:00") }
+
+      subject(:seats_last_updated) { helper.subscription_plan_data_attributes(group, plan, read_only: read_only)[:seats_last_updated] }
+
+      context 'when the subscription has a last_seat_refresh_at' do
+        let(:gitlab_subscription) { build(:gitlab_subscription, namespace: group, last_seat_refresh_at: enqueue_time) }
+
+        before do
+          allow(group).to receive(:gitlab_subscription).and_return(gitlab_subscription)
+        end
+
+        it { is_expected.to eq '12:13:14' }
+      end
+
+      context 'when the subscription does not have a last_seat_refresh_at' do
+        before do
+          allow(UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker).to receive(:last_enqueue_time).and_return(enqueue_time)
+        end
+
+        it 'returns the cron worker last_enqueue_time' do
+          expect(seats_last_updated).to eq '12:13:14'
+        end
+      end
+
+      context 'when neither are available' do
+        it { is_expected.to be nil }
       end
     end
   end

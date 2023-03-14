@@ -1,5 +1,6 @@
 <script>
 import { GlIcon, GlButton } from '@gitlab/ui';
+import { TABLE_TYPE_DEFAULT } from 'ee/billings/constants';
 import { dateInWords } from '~/lib/utils/datetime_utility';
 import Popover from '~/vue_shared/components/help_popover.vue';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
@@ -13,6 +14,9 @@ export default {
   },
   inject: {
     billableSeatsHref: {
+      default: '',
+    },
+    seatsLastUpdated: {
       default: '',
     },
   },
@@ -70,6 +74,7 @@ export default {
       return convertToSnakeCase(col?.label ?? '');
     },
   },
+  TABLE_TYPE_DEFAULT,
 };
 </script>
 
@@ -87,15 +92,17 @@ export default {
     <template v-for="(col, i) in columns">
       <div
         :key="`subscription-col-${i}`"
-        class="grid-cell"
+        class="grid-cell gl-display-flex gl-flex-direction-column gl-align-items-baseline"
         data-testid="content-cell"
         :class="[col.hideContent ? 'no-value' : '']"
       >
-        <span data-testid="property-label" class="property-label"> {{ col.label }} </span>
-        <popover v-if="col.popover" :options="getPopoverOptions(col)" />
+        <span>
+          <span data-testid="property-label" class="property-label">{{ col.label }}</span>
+          <popover v-if="col.popover" :options="getPopoverOptions(col)" />
+        </span>
         <p
           data-testid="property-value"
-          class="property-value gl-mt-2 gl-mb-0"
+          class="property-value gl-mt-2 gl-mb-0 gl-flex-grow-1"
           :data-qa-selector="qaSelectorValue(col)"
           :class="[col.colClass ? col.colClass : '']"
         >
@@ -110,6 +117,22 @@ export default {
           class="gl-mt-3"
           >{{ s__('SubscriptionTable|See usage') }}</gl-button
         >
+        <p
+          v-if="seatsLastUpdated && col.type === $options.TABLE_TYPE_DEFAULT"
+          class="gl-mb-0 gl-pt-3 gl-font-sm gl-text-secondary"
+          data-testid="seats-last-updated"
+        >
+          <template v-if="col.id === 'seatsInSubscription'">
+            {{ s__('SubscriptionTable|Up to date') }}
+          </template>
+          <template v-else>
+            {{
+              sprintf(s__('SubscriptionTable|Last updated at %{seatsLastUpdated} UTC'), {
+                seatsLastUpdated,
+              })
+            }}
+          </template>
+        </p>
       </div>
     </template>
   </div>
