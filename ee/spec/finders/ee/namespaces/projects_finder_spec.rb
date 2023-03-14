@@ -18,9 +18,14 @@ RSpec.describe Namespaces::ProjectsFinder do
 
   describe '#execute' do
     context 'when compliance framework is present' do
-      let_it_be(:framework) { create(:compliance_framework, namespace: namespace) }
-      let_it_be(:framework_settings) do
-        create(:compliance_framework_project_setting, project: project_1, compliance_management_framework: framework)
+      let_it_be(:framework_1) { create(:compliance_framework, namespace: namespace, name: "Test1") }
+      let_it_be(:framework_settings_1) do
+        create(:compliance_framework_project_setting, project: project_1, compliance_management_framework: framework_1)
+      end
+
+      let_it_be(:framework_2) { create(:compliance_framework, namespace: namespace, name: "Test2") }
+      let_it_be(:framework_settings_2) do
+        create(:compliance_framework_project_setting, project: project_2, compliance_management_framework: framework_2)
       end
 
       let_it_be(:other_namespace) { create(:group, :public) }
@@ -41,7 +46,7 @@ RSpec.describe Namespaces::ProjectsFinder do
         let(:params) { { compliance_framework_filters: { id: framework_id } } }
 
         context 'when compliance_framework_id is of valid framework' do
-          let(:framework_id) { framework.id }
+          let(:framework_id) { framework_1.id }
 
           it 'returns projects with compliance framework' do
             expect(projects).to contain_exactly(project_1)
@@ -56,7 +61,7 @@ RSpec.describe Namespaces::ProjectsFinder do
           end
         end
 
-        context 'when provided with a bogus framework id' do
+        context 'when provided with a non existing framework id' do
           let(:framework_id) { non_existing_record_id }
 
           it 'returns no projects' do
@@ -69,6 +74,64 @@ RSpec.describe Namespaces::ProjectsFinder do
 
           it 'returns all projects' do
             expect(projects).to contain_exactly(project_1, project_2)
+          end
+        end
+      end
+
+      context 'when negated compliance framework id param is passed' do
+        let(:params) { { compliance_framework_filters: { not: { id: framework_id } } } }
+
+        context 'when compliance_framework_id is of valid framework' do
+          let(:framework_id) { framework_1.id }
+
+          it "returns projects where compliance framework id is not framework's id or nil" do
+            expect(projects).to contain_exactly(project_2)
+          end
+        end
+
+        context 'when compliance_framework_id is of other namespace' do
+          let(:framework_id) { other_framework.id }
+
+          it 'returns all projects' do
+            expect(projects).to contain_exactly(project_1, project_2)
+          end
+        end
+
+        context 'when provided with a non existing framework id' do
+          let(:framework_id) { non_existing_record_id }
+
+          it 'returns all projects' do
+            expect(projects).to contain_exactly(project_1, project_2)
+          end
+        end
+
+        context 'when compliance_framework_id is nil ' do
+          let(:framework_id) { nil }
+
+          it 'returns all projects' do
+            expect(projects).to contain_exactly(project_1, project_2)
+          end
+        end
+      end
+
+      context 'when both framework id and negated compliance framework id is passed' do
+        let(:params) { { compliance_framework_filters: { id: framework_id, not: { id: not_framework_id } } } }
+
+        context 'when both ids are same' do
+          let(:framework_id) { framework_1.id }
+          let(:not_framework_id) { framework_1.id }
+
+          it 'returns projects with other compliance framework' do
+            expect(projects).to be_empty
+          end
+        end
+
+        context 'when both ids are different' do
+          let(:framework_id) { framework_1.id }
+          let(:not_framework_id) { framework_2.id }
+
+          it 'returns projects with other compliance framework' do
+            expect(projects).to contain_exactly(project_1)
           end
         end
       end

@@ -238,6 +238,11 @@ module EE
         joins(:compliance_framework_setting).where(compliance_framework_setting: { framework_id: ids })
       end
 
+      scope :compliance_framework_id_not_in, -> (ids) do
+        left_outer_joins(:compliance_framework_setting).where.not(compliance_framework_setting: { framework_id: ids }).or(
+          left_outer_joins(:compliance_framework_setting).where(compliance_framework_setting: { framework_id: nil }))
+      end
+
       delegate :shared_runners_seconds, to: :statistics, allow_nil: true
 
       delegate :ci_minutes_usage, to: :shared_runners_limit_namespace

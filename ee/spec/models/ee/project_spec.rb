@@ -563,6 +563,26 @@ RSpec.describe Project, feature_category: :projects do
           it { is_expected.to be_empty }
         end
       end
+
+      describe '.compliance_framework_id_not_in' do
+        context 'when a valid framework id is passed' do
+          subject { described_class.compliance_framework_id_not_in(framework_1.id) }
+
+          it { is_expected.to eq([project_with_framework_2, project_without_framework]) }
+        end
+
+        context 'when nil is passed as framework id' do
+          subject { described_class.compliance_framework_id_not_in(nil) }
+
+          it { is_expected.to eq([project_with_framework_1, project_with_framework_2, project_without_framework]) }
+        end
+
+        context 'when the framework id passed is of non existing record' do
+          subject { described_class.compliance_framework_id_not_in(non_existing_record_id) }
+
+          it { is_expected.to eq([project_with_framework_1, project_with_framework_2, project_without_framework]) }
+        end
+      end
     end
   end
 
