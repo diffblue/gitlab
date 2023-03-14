@@ -77,7 +77,7 @@ RSpec.describe EE::Gitlab::Checks::PushRuleCheck, feature_category: :source_code
         [{ oldrev: oldrev, newrev: newrev, ref: 'refs/notes/commits' }]
       end
 
-      it 'validates branches push rules' do
+      it 'does not validate push rules for tags or branches' do
         expect_any_instance_of(EE::Gitlab::Checks::PushRules::TagCheck).not_to receive(:validate!)
         expect_any_instance_of(EE::Gitlab::Checks::PushRules::BranchCheck).not_to receive(:validate!)
 
