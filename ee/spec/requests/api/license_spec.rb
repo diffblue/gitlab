@@ -146,6 +146,54 @@ RSpec.describe API::License, api: true, feature_category: :sm_provisioning do
     end
   end
 
+  describe 'PUT /license/:id/refresh_billable_users', :aggregate_failures do
+    let(:license) { create(:license) }
+    let(:endpoint) { "/license/#{license.id}/refresh_billable_users" }
+
+    before do
+      allow(::Analytics::UsageTrends::CounterJobWorker).to receive(:perform_async)
+    end
+
+    context 'when user is an admin' do
+      it 'schedules a refresh of billable_users' do
+        put api(endpoint, admin)
+
+        expect(::Analytics::UsageTrends::CounterJobWorker).to have_received(:perform_async).once
+        expect(response).to have_gitlab_http_status(:created)
+      end
+
+      context "when license doesn't exist" do
+        it "returns 404" do
+          put api("/license/#{non_existing_record_id}/refresh_billable_users", admin)
+
+          expect(::Analytics::UsageTrends::CounterJobWorker).not_to have_received(:perform_async)
+          expect(response).to have_gitlab_http_status(:not_found)
+          expect(json_response['message']).to eq('404 Not Found')
+        end
+      end
+    end
+
+    context 'when user is not an admin' do
+      it 'returns 403' do
+        put api(endpoint, user)
+
+        expect(::Analytics::UsageTrends::CounterJobWorker).not_to have_received(:perform_async)
+        expect(response).to have_gitlab_http_status(:forbidden)
+        expect(json_response['message']).to eq('403 Forbidden')
+      end
+    end
+
+    context 'when user is unavailable' do
+      it "returns 401" do
+        put api("/license/#{license.id}/refresh_billable_users", nil)
+
+        expect(::Analytics::UsageTrends::CounterJobWorker).not_to have_received(:perform_async)
+        expect(response).to have_gitlab_http_status(:unauthorized)
+        expect(json_response['message']).to eq('401 Unauthorized')
+      end
+    end
+  end
+
   describe 'GET /licenses' do
     let(:endpoint) { '/licenses' }
     let(:gl_licenses) do
