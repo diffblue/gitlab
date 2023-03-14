@@ -49,6 +49,7 @@ module SidebarsHelper
       avatar_url: user.avatar_url,
       has_link_to_profile: current_user_menu?(:profile),
       link_to_profile: user_url(user),
+      logo_url: current_appearance&.header_logo_path,
       status: {
         can_update: can?(current_user, :update_user_status, current_user),
         busy: user.status&.busy?,
