@@ -239,8 +239,8 @@ export default {
 
           <div class="gl-display-inline-flex">
             <div class="gl-display-inline-flex gl-mx-3">
-              <span class="gl-display-inline-flex gl-align-items-center">
-                <gl-icon name="link" class="gl-mr-2 gl-text-gray-500" />
+              <span class="gl-display-inline-flex gl-align-items-center gl-text-gray-500">
+                <gl-icon name="link" class="gl-mr-2" />
                 {{ badgeLabel }}
               </span>
             </div>
@@ -273,10 +273,10 @@ export default {
         v-if="isOpen"
         class="gl-bg-gray-10"
         :class="{
-          'linked-issues-card-body gl-p-5': isFormVisible,
+          'linked-issues-card-body': isFormVisible,
         }"
       >
-        <div v-show="isFormVisible" class="card-body bordered-box gl-bg-white gl-mb-4">
+        <div v-show="isFormVisible" class="card-body bordered-box gl-bg-white gl-mt-4 gl-mx-4">
           <add-issuable-resource-link-form
             ref="resourceLinkForm"
             :is-submitting="isSubmitting"
@@ -284,11 +284,11 @@ export default {
             @create-resource-link="onCreateResourceLink"
           />
         </div>
-        <div v-if="isFetching" class="gl-mb-2">
+        <div v-if="isFetching" class="gl-border-t-1 gl-border-t-solid gl-border-t-gray-100">
           <gl-loading-icon
             size="sm"
             :label="$options.i18n.fetchingLinkedResourcesText"
-            class="gl-mt-2"
+            class="gl-py-4"
           />
         </div>
         <template v-if="hasResourceLinks">
