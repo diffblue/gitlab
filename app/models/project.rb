@@ -111,7 +111,8 @@ class Project < ApplicationRecord
 
   add_authentication_token_field :runners_token,
                                  encrypted: -> { Feature.enabled?(:projects_tokens_optional_encryption) ? :optional : :required },
-                                 prefix: RunnersTokenPrefixable::RUNNERS_TOKEN_PREFIX
+                                 format_with_prefix: :runners_token_prefix,
+                                 ensure_prefix: true
 
   # Storage specific hooks
   after_initialize :use_hashed_storage
@@ -878,7 +879,7 @@ class Project < ApplicationRecord
     def reference_pattern
       %r{
         (?<!#{Gitlab::PathRegex::PATH_START_CHAR})
-        ((?<namespace>#{Gitlab::PathRegex::FULL_NAMESPACE_FORMAT_REGEX})\/)?
+        ((?<namespace>#{Gitlab::PathRegex::FULL_NAMESPACE_FORMAT_REGEX})/)?
         (?<project>#{Gitlab::PathRegex::PROJECT_PATH_FORMAT_REGEX})
       }xo
     end
@@ -2107,11 +2108,6 @@ class Project < ApplicationRecord
 
   def runners_token
     ensure_runners_token!
-  end
-
-  override :format_runners_token
-  def format_runners_token(token)
-    "#{RunnersTokenPrefixable::RUNNERS_TOKEN_PREFIX}#{token}"
   end
 
   def pages_deployed?
@@ -3424,6 +3420,10 @@ class Project < ApplicationRecord
     elsif project_setting
       project_setting.emails_enabled = !emails_disabled
     end
+  end
+
+  def runners_token_prefix
+    RunnersTokenPrefixable::RUNNERS_TOKEN_PREFIX
   end
 end
 
