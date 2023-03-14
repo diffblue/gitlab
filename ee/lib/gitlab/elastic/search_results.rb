@@ -179,7 +179,7 @@ module Gitlab
 
       def self.parse_search_result(result, project)
         ref = result["_source"]["blob"]["commit_sha"]
-        path = result["_source"]["blob"]["path"]
+        path = result["_source"]["blob"]["path"] || ''
         basename = File.join(File.dirname(path), File.basename(path, '.*'))
         content = result["_source"]["blob"]["content"]
         project_id = result['_source']['project_id'].to_i
