@@ -138,30 +138,36 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyWorker, feature_category: :
 
     group = create(:group)
     stage = create(:cycle_analytics_stage, namespace: group)
-    event1 = create(:cycle_analytics_merge_request_stage_event,
-                    merge_request_id: 1,
-                    stage_event_hash_id: stage.stage_event_hash_id,
-                    group_id: group.id,
-                    start_event_timestamp: 3.years.ago,
-                    end_event_timestamp: 2.years.ago)
+    event1 = create(
+      :cycle_analytics_merge_request_stage_event,
+      merge_request_id: 1,
+      stage_event_hash_id: stage.stage_event_hash_id,
+      group_id: group.id,
+      start_event_timestamp: 3.years.ago,
+      end_event_timestamp: 2.years.ago
+    )
 
-    create(:cycle_analytics_merge_request_stage_event,
-                    merge_request_id: 2,
-                    stage_event_hash_id: stage.stage_event_hash_id,
-                    group_id: group.id,
-                    start_event_timestamp: 2.years.ago,
-                    end_event_timestamp: 1.year.ago)
+    create(
+      :cycle_analytics_merge_request_stage_event,
+      merge_request_id: 2,
+      stage_event_hash_id: stage.stage_event_hash_id,
+      group_id: group.id,
+      start_event_timestamp: 2.years.ago,
+      end_event_timestamp: 1.year.ago
+    )
 
     aggregation = Analytics::CycleAnalytics::Aggregation.find(group.id)
-    aggregation.update!(last_consistency_check_updated_at: 30.minutes.ago,
-                        last_consistency_check_issues_stage_event_hash_id: -1,
-                        last_consistency_check_issues_start_event_timestamp: 1.year.ago,
-                        last_consistency_check_issues_end_event_timestamp: 1.year.ago,
-                        last_consistency_check_issues_issuable_id: -1,
-                        last_consistency_check_merge_requests_stage_event_hash_id: event1.stage_event_hash_id,
-                        last_consistency_check_merge_requests_start_event_timestamp: event1.start_event_timestamp,
-                        last_consistency_check_merge_requests_end_event_timestamp: event1.end_event_timestamp,
-                        last_consistency_check_merge_requests_issuable_id: event1.merge_request_id)
+    aggregation.update!(
+      last_consistency_check_updated_at: 30.minutes.ago,
+      last_consistency_check_issues_stage_event_hash_id: -1,
+      last_consistency_check_issues_start_event_timestamp: 1.year.ago,
+      last_consistency_check_issues_end_event_timestamp: 1.year.ago,
+      last_consistency_check_issues_issuable_id: -1,
+      last_consistency_check_merge_requests_stage_event_hash_id: event1.stage_event_hash_id,
+      last_consistency_check_merge_requests_start_event_timestamp: event1.start_event_timestamp,
+      last_consistency_check_merge_requests_end_event_timestamp: event1.end_event_timestamp,
+      last_consistency_check_merge_requests_issuable_id: event1.merge_request_id
+    )
 
     worker.perform
 

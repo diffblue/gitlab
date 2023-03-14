@@ -6,10 +6,12 @@ RSpec.describe CreateGithubWebhookWorker, feature_category: :integrations do
   include GrapePathHelpers::NamedRouteMatcher
 
   let(:project) do
-    create(:project,
-           import_source: 'foo/bar',
-           import_type: 'github',
-           import_data_attributes: { credentials: { user: 'gh_token' } })
+    create(
+      :project,
+      import_source: 'foo/bar',
+      import_type: 'github',
+      import_data_attributes: { credentials: { user: 'gh_token' } }
+    )
   end
 
   subject do

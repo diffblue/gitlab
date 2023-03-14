@@ -96,12 +96,21 @@ RSpec.describe Epics::UpdateCachedMetadataWorker, feature_category: :portfolio_m
       it 'obtains exclusive lock for each epic' do
         uuid = 'uuid'
 
-        expect_to_obtain_exclusive_lease("#{described_class.name.underscore}-#{epic.id}", uuid,
-                                         timeout: described_class::LEASE_TIMEOUT)
-        expect_to_obtain_exclusive_lease("#{described_class.name.underscore}-#{parent_epic.id}", uuid,
-                                         timeout: described_class::LEASE_TIMEOUT)
-        expect_to_obtain_exclusive_lease("#{described_class.name.underscore}-#{other_epic.id}", uuid,
-                                         timeout: described_class::LEASE_TIMEOUT)
+        expect_to_obtain_exclusive_lease(
+          "#{described_class.name.underscore}-#{epic.id}",
+          uuid,
+          timeout: described_class::LEASE_TIMEOUT
+        )
+        expect_to_obtain_exclusive_lease(
+          "#{described_class.name.underscore}-#{parent_epic.id}",
+          uuid,
+          timeout: described_class::LEASE_TIMEOUT
+        )
+        expect_to_obtain_exclusive_lease(
+          "#{described_class.name.underscore}-#{other_epic.id}",
+          uuid,
+          timeout: described_class::LEASE_TIMEOUT
+        )
         expect_to_cancel_exclusive_lease("#{described_class.name.underscore}-#{epic.id}", uuid)
         expect_to_cancel_exclusive_lease("#{described_class.name.underscore}-#{parent_epic.id}", uuid)
         expect_to_cancel_exclusive_lease("#{described_class.name.underscore}-#{other_epic.id}", uuid)
@@ -111,8 +120,10 @@ RSpec.describe Epics::UpdateCachedMetadataWorker, feature_category: :portfolio_m
 
       context 'when some epics are locked' do
         before do
-          stub_exclusive_lease_taken("#{described_class.name.underscore}-#{epic.id}",
-                                     timeout: described_class::LEASE_TIMEOUT)
+          stub_exclusive_lease_taken(
+            "#{described_class.name.underscore}-#{epic.id}",
+            timeout: described_class::LEASE_TIMEOUT
+          )
         end
 
         it 're-schedules the job for locked epics' do

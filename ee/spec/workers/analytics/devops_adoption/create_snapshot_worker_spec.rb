@@ -9,17 +9,21 @@ RSpec.describe Analytics::DevopsAdoption::CreateSnapshotWorker, feature_category
     let!(:enabled_namespace) { create :devops_adoption_enabled_namespace }
 
     let!(:pending_snapshot) do
-      create(:devops_adoption_snapshot,
-             namespace: enabled_namespace.namespace,
-             end_time: DateTime.parse('2020-10-01').end_of_month,
-             recorded_at: DateTime.parse('2020-10-20')).reload
+      create(
+        :devops_adoption_snapshot,
+        namespace: enabled_namespace.namespace,
+        end_time: DateTime.parse('2020-10-01').end_of_month,
+        recorded_at: DateTime.parse('2020-10-20')
+      ).reload
     end
 
     let!(:finalized_snapshot) do
-      create(:devops_adoption_snapshot,
-             namespace: enabled_namespace.namespace,
-             end_time: DateTime.parse('2020-09-01').end_of_month,
-             recorded_at: DateTime.parse('2020-10-20')).reload
+      create(
+        :devops_adoption_snapshot,
+        namespace: enabled_namespace.namespace,
+        end_time: DateTime.parse('2020-09-01').end_of_month,
+        recorded_at: DateTime.parse('2020-10-20')
+      ).reload
     end
 
     let(:service_mock) { instance_double('Analytics::DevopsAdoption::Snapshots::CalculateAndSaveService', execute: true) }

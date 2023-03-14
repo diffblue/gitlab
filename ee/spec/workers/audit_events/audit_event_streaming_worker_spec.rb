@@ -98,11 +98,11 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
 
         it 'sends correct id in request body' do
           if event.id.present?
-            expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String),
-                                                        hash_including(body: a_string_including("id\":#{event.id}")))
+            expect(Gitlab::HTTP).to receive(:post)
+              .with(an_instance_of(String), hash_including(body: a_string_including("id\":#{event.id}")))
           else
-            expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String),
-                                                        hash_including(body: a_string_including("id\":\"randomtoken\"")))
+            expect(Gitlab::HTTP).to receive(:post)
+              .with(an_instance_of(String), hash_including(body: a_string_including("id\":\"randomtoken\"")))
           end
 
           subject
@@ -162,9 +162,11 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
 
       context 'when audit_operation streaming event type filter is not present' do
         before do
-          create(:audit_events_streaming_event_type_filter,
-                 external_audit_event_destination: group.external_audit_event_destinations.last,
-                 audit_event_type: 'some_audit_operation')
+          create(
+            :audit_events_streaming_event_type_filter,
+            external_audit_event_destination: group.external_audit_event_destinations.last,
+            audit_event_type: 'some_audit_operation'
+          )
         end
 
         it 'does not make HTTP call' do
@@ -176,12 +178,16 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
 
       context 'when audit_operation streaming event type filter is present' do
         before do
-          create(:audit_events_streaming_event_type_filter,
-                 external_audit_event_destination: group.external_audit_event_destinations.last,
-                 audit_event_type: 'audit_operation')
-          create(:audit_events_streaming_event_type_filter,
-                 external_audit_event_destination: group.external_audit_event_destinations.last,
-                 audit_event_type: 'some_audit_operation')
+          create(
+            :audit_events_streaming_event_type_filter,
+            external_audit_event_destination: group.external_audit_event_destinations.last,
+            audit_event_type: 'audit_operation'
+          )
+          create(
+            :audit_events_streaming_event_type_filter,
+            external_audit_event_destination: group.external_audit_event_destinations.last,
+            audit_event_type: 'some_audit_operation'
+          )
         end
 
         it 'makes one HTTP call' do
