@@ -412,9 +412,11 @@ describe('MR Widget Security Reports', () => {
 
       expect(modal.props('canCreateIssue')).toBe(false);
       expect(modal.props('isDismissingVulnerability')).toBe(false);
+      expect(modal.props('isLoadingAdditionalInfo')).toBe(true);
 
       await waitForPromises();
 
+      expect(modal.props('isLoadingAdditionalInfo')).toBe(false);
       expect(modal.props('modal')).toMatchObject({
         title: 'Password leak',
         error: null,

@@ -1,5 +1,5 @@
 <script>
-import { GlModal, GlAlert } from '@gitlab/ui';
+import { GlModal, GlAlert, GlLoadingIcon } from '@gitlab/ui';
 import DismissalCommentBoxToggle from 'ee/vue_shared/security_reports/components/dismissal_comment_box_toggle.vue';
 import DismissalCommentModalFooter from 'ee/vue_shared/security_reports/components/dismissal_comment_modal_footer.vue';
 import DismissalNote from 'ee/vue_shared/security_reports/components/dismissal_note.vue';
@@ -22,6 +22,7 @@ export default {
     MergeRequestNote,
     GlAlert,
     GlModal,
+    GlLoadingIcon,
     ModalFooter,
     SolutionCard,
     VulnerabilityDetails,
@@ -53,6 +54,11 @@ export default {
     isCreatingMergeRequest: {
       type: Boolean,
       required: true,
+    },
+    isLoadingAdditionalInfo: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -200,6 +206,8 @@ export default {
         :has-mr="Boolean(mergeRequestData)"
         :has-download="canDownloadPatchForThisVulnerability"
       />
+
+      <gl-loading-icon v-if="isLoadingAdditionalInfo" />
 
       <div v-if="showFeedbackNotes" class="card my-4">
         <issue-note

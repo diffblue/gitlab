@@ -581,6 +581,7 @@ export default {
         :is-dismissing-vulnerability="isDismissingFinding"
         :is-creating-merge-request="isCreatingMergeRequest"
         :is-creating-issue="isCreatingIssue"
+        :is-loading-additional-info="$apollo.queries.securityReportFinding.loading"
         :can-create-issue="canCreateIssue"
         :can-dismiss-vulnerability="canDismissFinding"
         @addDismissalComment="addDismissalComment"
