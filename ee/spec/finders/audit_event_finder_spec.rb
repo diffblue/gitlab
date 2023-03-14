@@ -38,28 +38,10 @@ RSpec.describe AuditEventFinder do
       end
 
       context 'when group level' do
-        context 'when audit_log_group_level feature enabled' do
-          before do
-            stub_feature_flags(audit_log_group_level: true)
-          end
+        let(:level) { Gitlab::Audit::Levels::Group.new(group: group) }
 
-          let(:level) { Gitlab::Audit::Levels::Group.new(group: group) }
-
-          it 'finds all group and project events' do
-            expect(subject).to contain_exactly(project_audit_event, subproject_audit_event, group_audit_event)
-          end
-        end
-
-        context 'when audit_log_group_level feature disabled' do
-          before do
-            stub_feature_flags(audit_log_group_level: false)
-          end
-
-          let(:level) { Gitlab::Audit::Levels::Group.new(group: group) }
-
-          it 'finds all group events' do
-            expect(subject).to contain_exactly(group_audit_event)
-          end
+        it 'finds all group events' do
+          expect(subject).to contain_exactly(group_audit_event)
         end
       end
 
@@ -212,11 +194,6 @@ RSpec.describe AuditEventFinder do
         let(:level) { Gitlab::Audit::Levels::Group.new(group: group) }
         let(:params) { { author_id: group_audit_event.author_id } }
 
-        before do
-          # Only looking for group event, with this on it tests Group and Project events
-          stub_feature_flags(audit_log_group_level: false)
-        end
-
         it_behaves_like 'finds the right event' do
           let(:entity_type) { 'Group' }
           let(:audit_event) { group_audit_event }
@@ -323,11 +300,6 @@ RSpec.describe AuditEventFinder do
       context 'Group Event' do
         let(:level) { Gitlab::Audit::Levels::Group.new(group: group) }
         let(:params) { { author_username: user.username } }
-
-        before do
-          # Only looking for group event, with this on it tests Group and Project events
-          stub_feature_flags(audit_log_group_level: false)
-        end
 
         it_behaves_like 'finds the right event' do
           let(:entity_type) { 'Group' }
