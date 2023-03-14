@@ -166,7 +166,7 @@ export default {
       this.showDropdown = true;
       this.$emit('expandSearchBar', true);
 
-      Tracking.event(undefined, 'focusin_input', {
+      Tracking.event(undefined, 'focus_input', {
         label: 'global_search',
         property: 'navigation_top',
       });
@@ -179,7 +179,7 @@ export default {
       this.closeDropdown();
       this.$emit('collapseSearchBar');
 
-      Tracking.event(undefined, 'focusout_input', {
+      Tracking.event(undefined, 'blur_input', {
         label: 'global_search',
         property: 'navigation_top',
       });
@@ -218,7 +218,6 @@ export default {
 
 <template>
   <form
-    v-outside="closeDropdown"
     role="search"
     :aria-label="$options.i18n.searchGitlab"
     class="header-search gl-relative gl-rounded-base gl-w-full"

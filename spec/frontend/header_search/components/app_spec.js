@@ -369,7 +369,7 @@ describe('HeaderSearchApp', () => {
           await nextTick();
 
           expect(findHeaderSearchDropdown().exists()).toBe(true);
-          expect(trackingSpy).toHaveBeenCalledWith(undefined, 'focusin_input', {
+          expect(trackingSpy).toHaveBeenCalledWith(undefined, 'focus_input', {
             label: 'global_search',
             property: 'navigation_top',
           });
@@ -382,7 +382,7 @@ describe('HeaderSearchApp', () => {
           await nextTick();
 
           expect(findHeaderSearchDropdown().exists()).toBe(false);
-          expect(trackingSpy).toHaveBeenCalledWith(undefined, 'focusout_input', {
+          expect(trackingSpy).toHaveBeenCalledWith(undefined, 'blur_input', {
             label: 'global_search',
             property: 'navigation_top',
           });
