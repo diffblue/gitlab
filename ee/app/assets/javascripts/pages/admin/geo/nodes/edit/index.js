@@ -1,3 +1,3 @@
-import initGeoNodeForm from 'ee/geo_node_form';
+import initGeoSiteForm from 'ee/geo_site_form';
 
-initGeoNodeForm();
+initGeoSiteForm();

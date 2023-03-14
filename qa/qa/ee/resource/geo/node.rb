@@ -17,9 +17,9 @@ module QA
             EE::Page::Admin::Geo::Nodes::New.perform do |new_page|
               raise ArgumentError if @name.nil? || @address.nil?
 
-              new_page.set_node_name(@name)
-              new_page.set_node_address(@address)
-              new_page.add_node!
+              new_page.set_site_name(@name)
+              new_page.set_site_address(@address)
+              new_page.add_site!
             end
 
             QA::Page::Main::Menu.perform(&:sign_out)

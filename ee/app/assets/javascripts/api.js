@@ -165,14 +165,14 @@ export default {
     return axios.get(url);
   },
 
-  createGeoNode(node) {
+  createGeoSite(site) {
     const url = Api.buildUrl(this.geoSitesPath);
-    return axios.post(url, node);
+    return axios.post(url, site);
   },
 
-  updateGeoNode(node) {
+  updateGeoSite(site) {
     const url = Api.buildUrl(this.geoSitesPath);
-    return axios.put(`${url}/${node.id}`, node);
+    return axios.put(`${url}/${site.id}`, site);
   },
 
   removeGeoSite(id) {
