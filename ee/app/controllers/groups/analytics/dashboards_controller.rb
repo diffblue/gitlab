@@ -10,6 +10,12 @@ module Groups
       MAX_ALLOWED_PATHS = 4
 
       def index
+        # Value streams dashboard has been moved into another action,
+        # this is a temporary redirect to keep current bookmarks healthy.
+        redirect_to(value_streams_dashboard_group_analytics_dashboards_path(@group, query: params[:query]))
+      end
+
+      def value_streams_dashboard
         @namespaces =
           if params[:query].present?
             paths_array = params[:query].split(",").first(MAX_ALLOWED_PATHS)

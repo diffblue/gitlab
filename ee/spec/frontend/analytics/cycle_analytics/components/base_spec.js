@@ -614,7 +614,7 @@ describe('EE Value Stream Analytics component', () => {
     it('renders a link to the value streams dashboard', () => {
       expect(findOverviewMetrics().props('dashboardsPath')).toBeDefined();
       expect(findOverviewMetrics().props('dashboardsPath')).toBe(
-        '/groups/foo/-/analytics/dashboards',
+        '/groups/foo/-/analytics/dashboards/value_streams_dashboard',
       );
     });
   });

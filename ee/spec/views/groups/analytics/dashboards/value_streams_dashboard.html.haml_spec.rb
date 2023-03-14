@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'groups/analytics/dashboards/index', :aggregate_failures do
+RSpec.describe 'groups/analytics/dashboards/value_streams_dashboard',
+  :aggregate_failures, feature_category: :value_stream_management do
   let_it_be(:group) { build(:group) }
   let_it_be(:another_group) { build(:group) }
   let_it_be(:subgroup) { build(:group, parent: group) }

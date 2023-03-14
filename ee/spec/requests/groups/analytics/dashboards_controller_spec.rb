@@ -12,8 +12,6 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :subgr
     end
   end
 
-  let(:request) { get(group_analytics_dashboards_path(group)) }
-
   shared_examples 'forbidden response' do
     it 'returns forbidden response' do
       request
@@ -23,6 +21,38 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :subgr
   end
 
   describe 'GET index' do
+    let(:request) { get(group_analytics_dashboards_path(group)) }
+
+    before do
+      stub_licensed_features(group_level_analytics_dashboard: true)
+      stub_feature_flags(group_analytics_dashboards_page: true)
+    end
+
+    context 'when user is not logged in' do
+      it 'redirects the user to the login page' do
+        request
+
+        expect(response).to redirect_to new_user_session_path
+      end
+    end
+
+    context 'when user is logged in' do
+      before do
+        sign_in(user)
+      end
+
+      it 'redirects to value stream dashboards' do
+        request
+
+        expect(response)
+          .to redirect_to(value_streams_dashboard_group_analytics_dashboards_path(group))
+      end
+    end
+  end
+
+  describe 'GET value_streams_dashboard' do
+    let(:request) { get(value_streams_dashboard_group_analytics_dashboards_path(group)) }
+
     context 'when user is not logged in' do
       before do
         stub_licensed_features(group_level_analytics_dashboard: true)
@@ -107,7 +137,10 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :subgr
           it 'can accept a `query` params' do
             project = projects.first
 
-            get build_dashboard_path(group_analytics_dashboards_path(group), [another_group, subgroup, project])
+            get build_dashboard_path(
+              value_streams_dashboard_group_analytics_dashboards_path(group),
+              [another_group, subgroup, project]
+            )
 
             expect(response).to be_successful
 
@@ -118,7 +151,10 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :subgr
           end
 
           it 'will only return the first 4 namespaces' do
-            get build_dashboard_path(group_analytics_dashboards_path(group), [].concat(projects, [subgroup]))
+            get build_dashboard_path(
+              value_streams_dashboard_group_analytics_dashboards_path(group),
+              [].concat(projects, [subgroup])
+            )
 
             expect(response).to be_successful
             expect(response.body).not_to include(parsed_response(subgroup, false))
@@ -132,7 +168,7 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :subgr
             first_parent_project = projects.first
             params = [].concat(subgroup_projects, [subgroup], [first_parent_project])
 
-            get build_dashboard_path(group_analytics_dashboards_path(group), params)
+            get build_dashboard_path(value_streams_dashboard_group_analytics_dashboards_path(group), params)
 
             expect(response).to be_successful
             expect(response.body).to include(parsed_response(subgroup, false))
@@ -144,7 +180,7 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :subgr
           end
 
           context 'when the feature is not enabled for that group' do
-            let(:request) { get(group_analytics_dashboards_path(another_group)) }
+            let(:request) { get(value_streams_dashboard_group_analytics_dashboards_path(another_group)) }
 
             it_behaves_like 'forbidden response'
           end
