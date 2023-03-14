@@ -7,15 +7,13 @@ module QA
 
       def perform_before_hooks
         QA::CE::Strategy.perform_before_hooks
-        return unless ENV['EE_LICENSE'].present?
+        return unless QA::Runtime::Env.ee_license.present?
 
         QA::Runtime::Logger.info("Performing initial license fabrication!")
-        QA::Support::Retrier.retry_on_exception do
-          QA::Page::Main::Menu.perform(&:sign_out_if_signed_in)
+        QA::Page::Main::Menu.perform(&:sign_out_if_signed_in)
 
-          EE::Resource::License.fabricate! do |resource|
-            resource.license = ENV['EE_LICENSE']
-          end
+        EE::Resource::License.fabricate! do |resource|
+          resource.license = QA::Runtime::Env.ee_license
         end
       end
     end
