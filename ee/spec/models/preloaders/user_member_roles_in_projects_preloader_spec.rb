@@ -11,19 +11,6 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
 
   subject(:result) { described_class.new(projects: project_list, user: user).execute }
 
-  before do
-    stub_licensed_features(custom_roles: true)
-  end
-
-  context 'when customizable_roles feature is not enabled on project root ancestor' do
-    it 'skips preload' do
-      stub_feature_flags(customizable_roles: false)
-      create(:member_role, :guest, read_code: true, members: [project_member], namespace: project.group)
-
-      expect(result).to eq({})
-    end
-  end
-
   context 'when custom_roles license is not enabled on project root ancestor' do
     it 'skips preload' do
       stub_licensed_features(custom_roles: false)
@@ -33,7 +20,11 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
     end
   end
 
-  context 'when customizable_roles feature is enabled on project root ancestor' do
+  context 'when custom_roles license is enabled on project root ancestor' do
+    before do
+      stub_licensed_features(custom_roles: true)
+    end
+
     context 'when project has custom role' do
       let_it_be(:member_role) do
         create(:member_role, :guest, members: [project_member], namespace: project.group, read_code: true)
