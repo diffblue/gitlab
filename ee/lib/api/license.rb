@@ -79,6 +79,36 @@ module API
 
         no_content!
       end
+
+      desc 'Refresh licence billable users' do
+        detail 'Triggers refresh of billable users count for licence'
+        success code: 201
+        failure [
+          { code: 404, message: 'Not found' },
+          { code: 403, message: 'Forbidden' },
+          { code: 401, message: 'Unauthorized' }
+        ]
+        tags LICENSES_TAGS
+      end
+      params do
+        requires :id, type: Integer, desc: 'ID of the GitLab license'
+      end
+      put ':id/refresh_billable_users' do
+        license = LicensesFinder.new(current_user, id: params[:id]).execute.first
+
+        not_found! unless license
+
+        billable_user_identifier = ::Analytics::UsageTrends::Measurement.identifiers[:billable_users]
+
+        ::Analytics::UsageTrends::CounterJobWorker.perform_async( # rubocop:disable CodeReuse/Worker
+          billable_user_identifier,
+          User.minimum(:id),
+          User.maximum(:id),
+          Time.zone.now
+        )
+
+        status :created
+      end
     end
 
     resource :licenses do
