@@ -40,6 +40,9 @@ export default {
     getHeaderSlotName(key) {
       return `head(${key})`;
     },
+    getUsageQuotasUrl(projectUrl) {
+      return `${projectUrl}/-/usage_quotas`;
+    },
   },
   fields: [
     { key: 'name', label: __('Project') },
@@ -96,9 +99,12 @@ export default {
         class="gl-display-inline-block gl-mr-2 gl-text-center!"
       />
 
-      <gl-link :href="project.webUrl" class="gl-text-gray-900! js-project-link">{{
-        project.nameWithNamespace
-      }}</gl-link>
+      <gl-link
+        :href="getUsageQuotasUrl(project.webUrl)"
+        class="gl-text-gray-900! js-project-link"
+        data-testid="project-link"
+        >{{ project.nameWithNamespace }}</gl-link
+      >
     </template>
 
     <template #cell(storage)="{ item: project }">
