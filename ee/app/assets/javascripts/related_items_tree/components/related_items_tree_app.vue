@@ -181,7 +181,7 @@ export default {
 <template>
   <div class="related-items-tree-container">
     <div
-      class="related-items-tree card card-slim gl-mt-4 gl-mb-0"
+      class="related-items-tree card card-slim gl-mt-4 gl-mb-0 gl-bg-gray-10"
       :class="{
         'disabled-content': disableContents,
         'overflow-auto': directChildren.length > $options.OVERFLOW_AFTER,
@@ -215,7 +215,7 @@ export default {
         :active-slot-names="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
           visibleForm,
         ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
-        class="card-body add-item-form-container"
+        class="card-body add-item-form-container gl-m-4 gl-mb-1 gl-bg-white gl-border-1 gl-border-solid gl-border-gray-100 gl-rounded-base"
         :class="{
           'border-bottom-0': itemsFetchResultEmpty,
           'gl-show-field-errors': itemAddFailure,
@@ -256,8 +256,8 @@ export default {
           />
         </template>
       </slot-switch>
-      <div v-if="itemsFetchInProgress" class="gl-p-3">
-        <gl-loading-icon size="lg" />
+      <div v-if="itemsFetchInProgress" class="gl-px-3 gl-py-4">
+        <gl-loading-icon size="sm" />
       </div>
       <div
         v-else-if="!itemsFetchResultEmpty && showRelatedItems"

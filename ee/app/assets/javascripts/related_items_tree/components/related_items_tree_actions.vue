@@ -20,17 +20,13 @@ export default {
   },
   computed: {
     ...mapState(['allowSubEpics']),
-    additionalHeaderClasses() {
-      return this.allowSubEpics ? 'gl-pt-4' : 'gl-pt-3 gl-pb-0';
-    },
   },
 };
 </script>
 
 <template>
   <div
-    class="card-header gl-display-flex gl-px-5 gl-flex-direction-column gl-sm-flex-direction-row gl-border-bottom-0 gl-bg-gray-10"
-    :class="additionalHeaderClasses"
+    class="card-header gl-display-flex gl-px-4 gl-py-3 gl-flex-direction-column gl-sm-flex-direction-row gl-border-bottom-0 gl-bg-gray-10"
   >
     <div>
       <gl-button-group

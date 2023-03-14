@@ -200,17 +200,15 @@ export default {
 </script>
 
 <template>
-  <div class="card card-slim sortable-row gl-flex-grow-1">
+  <div class="sortable-row gl-flex-grow-1">
     <div
-      class="item-body card-body gl-display-flex gl-align-items-center gl-pr-2 gl-pl-3 gl-py-2"
+      class="item-body gl-display-flex gl-align-items-center gl-pl-3 gl-pr-2 gl-py-2 gl-mx-n2"
       :class="{
         'item-logged-out': !userSignedIn,
         'item-closed': isClosed,
       }"
     >
-      <div
-        class="item-contents gl-display-flex gl-align-items-center gl-flex-wrap gl-flex-grow-1 flex-xl-nowrap"
-      >
+      <div class="gl-display-flex gl-align-items-center gl-flex-wrap gl-flex-grow-1 flex-xl-nowrap">
         <div class="item-title-wrapper gl-flex-grow-1 gl-mr-3">
           <div class="item-title gl-display-flex gl-mb-0 gl-pt-2 gl-pb-2">
             <gl-icon
@@ -246,8 +244,10 @@ export default {
             >
           </div>
 
-          <div class="item-meta gl-display-flex gl-flex-wrap mt-xl-0 gl-align-items-center gl-ml-6">
-            <span class="gl-mr-5 gl-mb-3">{{ itemHierarchy }}</span>
+          <div
+            class="item-meta gl-display-flex gl-flex-wrap mt-xl-0 gl-align-items-center gl-font-sm gl-ml-6"
+          >
+            <span class="gl-mr-4 gl-mb-1">{{ itemHierarchy }}</span>
             <gl-tooltip v-if="isEpic" :target="() => $refs.countBadge">
               <p v-if="allowSubEpics" class="gl-font-weight-bold gl-m-0">
                 {{ __('Epics') }} &#8226;
@@ -280,12 +280,12 @@ export default {
             >
               <span
                 v-if="allowSubEpics"
-                class="gl-display-inline-flex gl-align-items-center gl-mr-5 gl-mb-3"
+                class="gl-display-inline-flex gl-align-items-center gl-mr-4 gl-mb-1"
               >
                 <gl-icon name="epic" class="gl-mr-2" />
                 {{ totalEpicsCount }}
               </span>
-              <span class="gl-display-inline-flex gl-align-items-center gl-mr-5 gl-mb-3">
+              <span class="gl-display-inline-flex gl-align-items-center gl-mr-4 gl-mb-1">
                 <gl-icon name="issues" class="gl-mr-2" />
                 {{ totalIssuesCount }}
               </span>
@@ -294,7 +294,7 @@ export default {
             <item-milestone
               v-if="hasMilestone"
               :milestone="item.milestone"
-              class="item-milestone gl-display-flex gl-align-items-center gl-mr-5 gl-mb-3"
+              class="item-milestone gl-display-flex gl-align-items-center gl-mr-4 gl-mb-1"
             />
 
             <item-due-date
@@ -302,33 +302,33 @@ export default {
               :date="item.dueDate"
               :closed="Boolean(item.closedAt)"
               tooltip-placement="top"
-              css-class="item-due-date gl-display-flex gl-align-items-center gl-mr-5! gl-mb-3"
+              css-class="item-due-date gl-display-flex gl-align-items-center gl-mr-4! gl-mb-1"
             />
 
             <item-weight
               v-if="hasWeight"
               :weight="item.weight"
-              class="item-weight gl-display-flex gl-align-items-center gl-mr-5! gl-mb-3"
+              class="item-weight gl-display-flex gl-align-items-center gl-mr-4! gl-mb-1"
               tag-name="span"
             />
 
             <item-assignees
               v-if="hasAssignees"
               :assignees="item.assignees"
-              class="item-assignees gl-display-inline-flex gl-align-items-center gl-mr-5 gl-mb-3 flex-xl-grow-0"
+              class="item-assignees gl-display-inline-flex gl-align-items-center gl-mr-4 gl-mb-1 flex-xl-grow-0"
             />
 
             <epic-health-status
               v-if="showEpicHealthStatus"
               :health-status="item.healthStatus"
               data-testid="epic-health-status"
-              class="gl-mr-5 gl-mb-3"
+              class="gl-mr-4 gl-mb-1"
             />
             <issue-health-status
               v-if="showIssueHealthStatus"
               :health-status="item.healthStatus"
               data-testid="issue-health-status"
-              class="gl-mr-5 gl-mb-3"
+              class="gl-mr-4 gl-mb-1"
             />
 
             <template v-if="showLabels">
@@ -340,7 +340,7 @@ export default {
                 :scoped="showScopedLabel(label)"
                 :target="labelFilterUrl(label)"
                 :title="label.title"
-                class="gl-mr-3 gl-mb-3 gl-label-sm"
+                class="gl-mr-2 gl-mb-1 gl-label-sm"
                 tooltip-placement="top"
               />
             </template>
@@ -352,6 +352,7 @@ export default {
           v-gl-tooltip.hover
           v-gl-modal-directive="$options.itemRemoveModalId"
           category="tertiary"
+          size="small"
           :title="__('Remove')"
           :aria-label="__('Remove')"
           :disabled="itemActionInProgress"
