@@ -83,7 +83,10 @@ module QA
 
             api_post.tap { QA::Runtime::Logger.info("Successfully added license key. Details:\n#{license_info}") }
           rescue RuntimeError => e
-            raise e unless e.message.include?('Your password expired')
+            unless e.message.include?('Your password expired')
+              QA::Runtime::Logger.error("Following license fabrication failed: #{base_license_info}")
+              raise(e)
+            end
 
             QA::Runtime::Logger.warn('Admin password must be reset before the default access token can be used. ' \
                                      'Setting password now...')

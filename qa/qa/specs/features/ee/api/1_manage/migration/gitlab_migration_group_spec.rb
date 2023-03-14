@@ -30,7 +30,7 @@ module QA
 
         before do
           EE::Resource::License.fabricate! do |resource|
-            resource.license = ENV['EE_LICENSE']
+            resource.license = Runtime::Env.ee_license
             resource.api_client = source_admin_api_client
           end
 
