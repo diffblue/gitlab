@@ -2,6 +2,7 @@ query EpicBoardListEE($id: BoardsEpicListID!, $filters: EpicFilters) {
   epicBoardList(id: $id, epicFilters: $filters) {
     id
     metadata {
+      epicsCount
       totalWeight
     }
   }

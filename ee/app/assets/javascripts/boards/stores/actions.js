@@ -600,6 +600,7 @@ export default {
                 id: movingList.epicBoardList.id,
                 metadata: {
                   __typename: 'EpicListMetadata',
+                  epicsCount: movingList.epicBoardList.metadata.epicsCount,
                   totalWeight: summationFunction(
                     movingList.epicBoardList.metadata.totalWeight,
                     Number(

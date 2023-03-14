@@ -8,6 +8,7 @@ fragment EpicBoardListFragment on EpicList {
   collapsed
   metadata {
     epicsCount
+    totalWeight
   }
   label {
     ...Label
