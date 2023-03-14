@@ -505,6 +505,32 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
 
         it_behaves_like 'custom Value Stream Analytics Stage'
       end
+
+      context 'between merge request label added time and MR merged time' do
+        let(:start_event_identifier) { :merge_request_label_added }
+        let(:end_event_identifier) { :merge_request_merged }
+        let(:start_event_label) { label }
+
+        def create_data_for_start_event(example_class)
+          mr = create(:merge_request, source_project: example_class.project, allow_broken: true)
+
+          Sidekiq::Worker.skipping_transaction_check do
+            MergeRequests::UpdateService.new(
+              project: example_class.project,
+              current_user: user,
+              params: { label_ids: [label.id] }
+            ).execute(mr)
+          end
+
+          mr
+        end
+
+        def create_data_for_end_event(mr, example_class)
+          mr.metrics.update!(merged_at: Time.current)
+        end
+
+        it_behaves_like 'custom Value Stream Analytics Stage'
+      end
     end
   end
 
