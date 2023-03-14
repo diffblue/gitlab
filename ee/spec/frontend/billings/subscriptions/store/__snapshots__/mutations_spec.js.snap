@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`EE billings subscription module mutations RECEIVE_SUBSCRIPTION_SUCCESS with Free plan it updates table free with subscription plan 1`] = `
+exports[`EE billings subscription module mutations RECEIVE_SUBSCRIPTION_SUCCESS with Free plan updates table free with subscription plan 1`] = `
 Array [
   Object {
     "seatsInUse": 0,
@@ -9,7 +9,7 @@ Array [
 ]
 `;
 
-exports[`EE billings subscription module mutations RECEIVE_SUBSCRIPTION_SUCCESS with Ultimate subscription it updates table default with subscription plan 1`] = `
+exports[`EE billings subscription module mutations RECEIVE_SUBSCRIPTION_SUCCESS with Ultimate subscription updates table default with subscription plan 1`] = `
 Array [
   Object {
     "maxSeatsUsed": 104,
@@ -26,7 +26,7 @@ Array [
 ]
 `;
 
-exports[`EE billings subscription module mutations RECEIVE_SUBSCRIPTION_SUCCESS with Ultimate trial it updates table trial with subscription plan 1`] = `
+exports[`EE billings subscription module mutations RECEIVE_SUBSCRIPTION_SUCCESS with Ultimate trial updates table trial with subscription plan 1`] = `
 Array [
   Object {
     "seatsInUse": 1,

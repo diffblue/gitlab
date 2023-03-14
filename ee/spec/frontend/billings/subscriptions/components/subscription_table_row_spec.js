@@ -4,6 +4,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import SubscriptionTableRow from 'ee/billings/subscriptions/components/subscription_table_row.vue';
 import initialStore from 'ee/billings/subscriptions/store';
+import { TABLE_TYPE_DEFAULT } from 'ee/billings/constants';
 import { dateInWords } from '~/lib/utils/datetime_utility';
 import Popover from '~/vue_shared/components/help_popover.vue';
 
@@ -39,7 +40,11 @@ describe('subscription table row', () => {
 
   const defaultProps = { header: HEADER, columns: COLUMNS };
 
-  const createComponent = ({ props = {}, billableSeatsHref = BILLABLE_SEATS_URL } = {}) => {
+  const createComponent = ({
+    props = {},
+    billableSeatsHref = BILLABLE_SEATS_URL,
+    seatsLastUpdated = '12:13:14',
+  } = {}) => {
     wrapper = shallowMount(SubscriptionTableRow, {
       propsData: {
         ...defaultProps,
@@ -47,6 +52,7 @@ describe('subscription table row', () => {
       },
       provide: {
         billableSeatsHref,
+        seatsLastUpdated,
       },
       store,
     });
@@ -117,6 +123,77 @@ describe('subscription table row', () => {
       const currentCol = findContentCells().at(1);
 
       expect(currentCol.findComponent(Popover).exists()).toBe(true);
+    });
+  });
+
+  describe('seats last updated time', () => {
+    it.each([
+      {
+        columns: [
+          {
+            id: 'seatsInSubscription',
+            label: 'Column A',
+            value: 100,
+            colClass: 'number',
+            type: TABLE_TYPE_DEFAULT,
+          },
+        ],
+        description: 'type is default and column id is seatsInSubscription',
+        expected: 'Up to date',
+      },
+      {
+        columns: [
+          {
+            id: 'a',
+            label: 'Column A',
+            value: 100,
+            colClass: 'number',
+            type: TABLE_TYPE_DEFAULT,
+          },
+        ],
+        description: 'type is default and column id is not seatsInSubscription',
+        expected: 'Last updated at 12:13:14 UTC',
+      },
+    ])('renders seats last updated time when $description', ({ columns, expected }) => {
+      createComponent({ props: { columns } });
+
+      expect(wrapper.find('[data-testid="seats-last-updated"]').text()).toBe(expected);
+    });
+
+    it('does not render seats last updated block when table type is not default', () => {
+      createComponent({
+        seatsLastUpdated: '',
+        props: {
+          columns: [
+            {
+              id: 'seatsInSubscription',
+              label: 'Column A',
+              value: 100,
+              colClass: 'number',
+              type: TABLE_TYPE_DEFAULT,
+            },
+          ],
+        },
+      });
+
+      expect(wrapper.find('[data-testid="seats-last-updated"]').exists()).toBe(false);
+    });
+
+    it('does not render seats last updated block when seatsLastUpdated is not available', () => {
+      createComponent({
+        props: {
+          columns: [
+            {
+              id: 'a',
+              label: 'Column A',
+              value: 100,
+              colClass: 'number',
+            },
+          ],
+        },
+      });
+
+      expect(wrapper.find('[data-testid="seats-last-updated"]').exists()).toBe(false);
     });
   });
 

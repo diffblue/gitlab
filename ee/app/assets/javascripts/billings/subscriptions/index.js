@@ -24,6 +24,7 @@ export default (containerId = 'js-billing-plans') => {
     planName,
     refreshSeatsHref,
     readOnly,
+    seatsLastUpdated,
   } = containerEl.dataset;
 
   return new Vue({
@@ -40,6 +41,7 @@ export default (containerId = 'js-billing-plans') => {
       planName,
       refreshSeatsHref,
       readOnly: parseBoolean(readOnly),
+      seatsLastUpdated,
     },
     render(createElement) {
       return createElement(SubscriptionApp);
