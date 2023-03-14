@@ -26,6 +26,21 @@ RSpec.describe 'Groups > Members > List members', feature_category: :subgroups d
 
       expect(second_row).to have_content('SAML')
     end
+
+    context 'when group is a sub group and member is a direct member' do
+      let(:sub_group) { create(:group, parent: group) }
+
+      before do
+        # adding user2 as developer will make it a direct member to subgroup
+        sub_group.add_developer(user2)
+      end
+
+      it 'shows user with SSO status badge for direct member', :js do
+        visit group_group_members_path(sub_group)
+
+        expect(second_row).to have_content('SAML')
+      end
+    end
   end
 
   context 'when user has a "Group Managed Account"' do
