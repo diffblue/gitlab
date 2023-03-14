@@ -1,9 +1,16 @@
 <script>
-import { GlLink, GlIcon, GlTooltipDirective, GlButton, GlProgressBar } from '@gitlab/ui';
+import {
+  GlLink,
+  GlIcon,
+  GlTooltipDirective,
+  GlButton,
+  GlProgressBar,
+  GlSkeletonLoader,
+} from '@gitlab/ui';
 
 export default {
   name: 'StatisticsCard',
-  components: { GlLink, GlIcon, GlButton, GlProgressBar },
+  components: { GlLink, GlIcon, GlButton, GlProgressBar, GlSkeletonLoader },
   directives: {
     GlTooltip: GlTooltipDirective,
   },
@@ -68,6 +75,11 @@ export default {
       required: false,
       default: null,
     },
+    loading: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
 };
 </script>
@@ -78,51 +90,58 @@ export default {
     data-testid="container"
     :class="cssClass"
   >
-    <div class="gl-display-flex gl-justify-content-space-between">
-      <p
-        v-if="usageValue"
-        class="gl-font-size-h-display gl-font-weight-bold gl-mb-3"
-        data-testid="denominator"
-      >
-        {{ usageValue }}
-        <span v-if="usageUnit" data-testid="denominator-usage-unit" class="gl-font-lg">{{
-          usageUnit
-        }}</span>
-        <span v-if="totalValue" data-testid="denominator-total">
-          /
-          {{ totalValue }}
-          <span v-if="totalUnit" class="gl-font-lg" data-testid="denominator-total-unit">{{
-            totalUnit
-          }}</span>
-        </span>
-      </p>
-
-      <div>
-        <gl-button
-          v-if="purchaseButtonLink && purchaseButtonText"
-          :href="purchaseButtonLink"
-          category="primary"
-          variant="confirm"
-        >
-          {{ purchaseButtonText }}
-        </gl-button>
-      </div>
+    <div v-if="loading" class="gl-lg-w-half">
+      <gl-skeleton-loader :height="50">
+        <rect width="140" height="30" x="5" y="0" rx="4" />
+        <rect width="240" height="10" x="5" y="40" rx="4" />
+      </gl-skeleton-loader>
     </div>
-    <p v-if="description" class="gl-font-weight-bold" data-testid="description">
-      {{ description }}
-      <gl-link
-        v-if="helpLink"
-        v-gl-tooltip
-        :href="helpLink"
-        target="_blank"
-        rel="noopener noreferrer nofollow"
-        class="gl-ml-2"
-        :title="helpTooltip"
-        :aria-label="helpLabel"
-      >
-        <gl-icon name="question-o" />
-      </gl-link>
-    </p>
-    <gl-progress-bar v-if="percentage !== null" :value="percentage" />
+    <template v-else>
+      <div class="gl-display-flex gl-justify-content-space-between">
+        <p
+          v-if="usageValue"
+          class="gl-font-size-h-display gl-font-weight-bold gl-mb-3"
+          data-testid="denominator"
+        >
+          {{ usageValue }}
+          <span v-if="usageUnit" data-testid="denominator-usage-unit" class="gl-font-lg">{{
+            usageUnit
+          }}</span>
+          <span v-if="totalValue" data-testid="denominator-total">
+            /
+            {{ totalValue }}
+            <span v-if="totalUnit" class="gl-font-lg" data-testid="denominator-total-unit">{{
+              totalUnit
+            }}</span>
+          </span>
+        </p>
+
+        <div>
+          <gl-button
+            v-if="purchaseButtonLink && purchaseButtonText"
+            :href="purchaseButtonLink"
+            category="primary"
+            variant="confirm"
+          >
+            {{ purchaseButtonText }}
+          </gl-button>
+        </div>
+      </div>
+      <p v-if="description" class="gl-font-weight-bold gl-mb-0" data-testid="description">
+        {{ description }}
+        <gl-link
+          v-if="helpLink"
+          v-gl-tooltip
+          :href="helpLink"
+          target="_blank"
+          class="gl-ml-2"
+          :title="helpTooltip"
+          :aria-label="helpLabel"
+        >
+          <gl-icon name="question-o" />
+        </gl-link>
+      </p>
+      <gl-progress-bar v-if="percentage !== null" class="gl-mt-5" :value="percentage" />
+    </template>
   </div>
 </template>
