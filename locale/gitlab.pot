@@ -4768,6 +4768,9 @@ msgstr ""
 msgid "Analytics|Dashboard Title"
 msgstr ""
 
+msgid "Analytics|Dashboard not found"
+msgstr ""
+
 msgid "Analytics|Dashboard was saved successfully"
 msgstr ""
 
@@ -4799,6 +4802,9 @@ msgid "Analytics|Line Chart"
 msgstr ""
 
 msgid "Analytics|New Analytics Visualization Title"
+msgstr ""
+
+msgid "Analytics|No dashboard matches the specified URL path."
 msgstr ""
 
 msgid "Analytics|OS"
@@ -4838,6 +4844,9 @@ msgid "Analytics|Updating dashboard %{dashboardId}"
 msgstr ""
 
 msgid "Analytics|Users"
+msgstr ""
+
+msgid "Analytics|View available dashboards"
 msgstr ""
 
 msgid "Analytics|Viewport"

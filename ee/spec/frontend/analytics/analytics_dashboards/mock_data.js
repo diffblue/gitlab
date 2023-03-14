@@ -4,6 +4,10 @@ export const TEST_JITSU_KEY = 'gid://gitlab/Project/2';
 
 export const TEST_COLLECTOR_HOST = TEST_HOST;
 
+export const TEST_EMPTY_DASHBOARD_SVG_PATH = 'illustration/empty-dashboard';
+
+export const TEST_ROUTER_BACK_HREF = 'go-back';
+
 export const TEST_CUSTOM_DASHBOARDS_PROJECT = {
   fullPath: 'test/test-dashboards',
   id: 123,

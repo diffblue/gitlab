@@ -24,6 +24,12 @@ export const I18N_ALERT_NO_POINTER_DESCRIPTION = s__(
   'Analytics|For being able to create your own dashboards please configure a special project to store your dashboards.',
 );
 
+export const I18N_DASHBOARD_NOT_FOUND_TITLE = s__('Analytics|Dashboard not found');
+export const I18N_DASHBOARD_NOT_FOUND_DESCRIPTION = s__(
+  'Analytics|No dashboard matches the specified URL path.',
+);
+export const I18N_DASHBOARD_NOT_FOUND_ACTION = s__('Analytics|View available dashboards');
+
 export const VISUALIZATION_TYPE_FILE = 'yml';
 export const VISUALIZATION_TYPE_BUILT_IN = 'builtin';
 

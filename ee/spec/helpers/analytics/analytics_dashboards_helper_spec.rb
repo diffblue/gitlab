@@ -65,6 +65,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           jitsu_key: jitsu_key,
           collector_host: collector_host,
           chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
+          dashboard_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
           project_full_path: project.full_path,
           features: {
             product_analytics: enabled
