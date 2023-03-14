@@ -133,14 +133,23 @@ RSpec.describe SearchController, type: :request, feature_category: :global_searc
         let(:params_for_one) { { search: 'test', project_id: project.id, scope: 'blobs', per_page: 1 } }
         let(:params_for_many) { { search: 'test', project_id: project.id, scope: 'blobs', per_page: 5 } }
 
-        it 'avoids N+1 database queries' do
+        before do
           project.repository.index_commits_and_blobs
           ensure_elasticsearch_index!
+        end
 
+        it 'avoids N+1 database queries' do
           control = ActiveRecord::QueryRecorder.new { send_search_request(params_for_one) }
           expect(response.body).to include('search-results') # Confirm search results to prevent false positives
 
           expect { send_search_request(params_for_many) }.not_to exceed_query_limit(control.count)
+          expect(response.body).to include('search-results') # Confirm search results to prevent false positives
+        end
+
+        it 'does not raise an exeption when blob.path is nil' do
+          update_by_query(project.id, "ctx._source['blob']['path'] = null")
+
+          send_search_request(params_for_many)
           expect(response.body).to include('search-results') # Confirm search results to prevent false positives
         end
       end
@@ -161,5 +170,34 @@ RSpec.describe SearchController, type: :request, feature_category: :global_searc
         end
       end
     end
+  end
+
+  def update_by_query(project_id, script)
+    client = Repository.__elasticsearch__.client
+    index_name = Repository.__elasticsearch__.index_name
+    client.update_by_query({
+      index: index_name,
+      wait_for_completion: true,
+      refresh: true,
+      body: {
+        script: script,
+        query: {
+          bool: {
+            must: [
+              {
+                term: {
+                  type: 'blob'
+                }
+              },
+              {
+                term: {
+                  project_id: project_id
+                }
+              }
+            ]
+          }
+        }
+      }
+    })
   end
 end
