@@ -49,6 +49,18 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics, feature_category: :planning_an
 
       it { is_expected.to eq(outcome) }
     end
+
+    context 'when on SaaS', :saas do
+      it 'succeeds' do
+        stub_licensed_features(cycle_analytics_for_projects: true)
+        stub_ee_application_setting(should_check_namespace_plan: true)
+
+        group = create(:group_with_plan, plan: :ultimate_plan)
+        project_namespace = create(:project, group: group).reload.project_namespace
+
+        expect(described_class).to be_licensed(project_namespace)
+      end
+    end
   end
 
   describe '.allowed?' do
