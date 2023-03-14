@@ -21,7 +21,8 @@ module Ci
 
       return false unless merge_request
 
-      merge_request.approval_rules.license_compliance.any? && has_denied_licenses?
+      (merge_request.approval_rules.license_compliance.any? ||
+        merge_request.approval_rules.scan_finding.any?) && has_denied_licenses?
     end
 
     def has_denied_licenses?

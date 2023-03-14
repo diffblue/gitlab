@@ -2,12 +2,13 @@
 
 require "spec_helper"
 
-RSpec.describe SCA::LicensePolicy do
-  subject { described_class.new(license, policy) }
+RSpec.describe SCA::LicensePolicy, feature_category: :license_compliance do
+  subject { described_class.new(license, policy, approval_status) }
 
   let(:license) { build(:license_scanning_license, :mit) }
   let(:policy) { build(:software_license_policy, software_license: software_license) }
   let(:software_license) { build(:software_license, :mit) }
+  let(:approval_status) { nil }
 
   describe "#id" do
     context "when a software_policy is provided" do
@@ -87,6 +88,13 @@ RSpec.describe SCA::LicensePolicy do
       let(:policy) { nil }
 
       it { expect(subject.classification).to eq("unclassified") }
+    end
+
+    context 'when approval_status is not nil' do
+      let(:policy) { nil }
+      let(:approval_status) { 'denied' }
+
+      it { expect(subject.classification).to eq("denied") }
     end
   end
 
