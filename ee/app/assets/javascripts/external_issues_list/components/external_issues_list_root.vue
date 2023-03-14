@@ -5,11 +5,11 @@ import SafeHtml from '~/vue_shared/directives/safe_html';
 
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 import {
-  IssuableStates,
   IssuableListTabs,
   AvailableSortOptions,
   DEFAULT_PAGE_SIZE,
 } from '~/vue_shared/issuable/list/constants';
+import { STATUS_ALL, STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
 import { i18n } from '~/issues/list/constants';
 import {
   FILTERED_SEARCH_TERM,
@@ -68,9 +68,9 @@ export default {
       sortedBy: this.initialSortBy,
       currentPage: this.page,
       issuesCount: {
-        [IssuableStates.Opened]: 0,
-        [IssuableStates.Closed]: 0,
-        [IssuableStates.All]: 0,
+        [STATUS_OPEN]: 0,
+        [STATUS_CLOSED]: 0,
+        [STATUS_ALL]: 0,
       },
       errorMessage: null,
     };

@@ -4,7 +4,7 @@ import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import ExternalIssuesListEmptyState from 'ee/external_issues_list/components/external_issues_list_empty_state.vue';
 import { externalIssuesListEmptyStateI18n } from 'ee/external_issues_list/constants';
-import { IssuableStates } from '~/vue_shared/issuable/list/constants';
+import { STATUS_ALL, STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
 
 import { mockProvide } from '../mock_data';
 
@@ -14,9 +14,9 @@ const createComponent = (props = {}) =>
     propsData: {
       currentState: 'opened',
       issuesCount: {
-        [IssuableStates.Opened]: 0,
-        [IssuableStates.Closed]: 0,
-        [IssuableStates.All]: 0,
+        [STATUS_OPEN]: 0,
+        [STATUS_CLOSED]: 0,
+        [STATUS_ALL]: 0,
       },
       hasFiltersApplied: false,
       ...props,
@@ -42,8 +42,8 @@ describe('ExternalIssuesListEmptyState', () => {
       it('returns true when total of opened and closed issues within `issuesCount` is more than 0', async () => {
         wrapper.setProps({
           issuesCount: {
-            [IssuableStates.Opened]: 1,
-            [IssuableStates.Closed]: 1,
+            [STATUS_OPEN]: 1,
+            [STATUS_CLOSED]: 1,
           },
         });
 
@@ -70,15 +70,15 @@ describe('ExternalIssuesListEmptyState', () => {
         wrapper.setProps({
           hasFiltersApplied: false,
           issuesCount: {
-            [IssuableStates.Opened]: 1,
-            [IssuableStates.Closed]: 1,
+            [STATUS_OPEN]: 1,
+            [STATUS_CLOSED]: 1,
           },
         });
 
         await nextTick();
 
         expect(findEmptyState().props('title')).toBe(
-          externalIssuesListEmptyStateI18n.filterStateEmptyMessage[IssuableStates.Opened],
+          externalIssuesListEmptyStateI18n.filterStateEmptyMessage[STATUS_OPEN],
         );
       });
 
@@ -122,8 +122,8 @@ describe('ExternalIssuesListEmptyState', () => {
         wrapper.setProps({
           hasFiltersApplied: false,
           issuesCount: {
-            [IssuableStates.Opened]: 1,
-            [IssuableStates.Closed]: 1,
+            [STATUS_OPEN]: 1,
+            [STATUS_CLOSED]: 1,
           },
         });
 
@@ -158,15 +158,15 @@ describe('ExternalIssuesListEmptyState', () => {
       wrapper.setProps({
         hasFiltersApplied: false,
         issuesCount: {
-          [IssuableStates.Opened]: 1,
-          [IssuableStates.Closed]: 1,
+          [STATUS_OPEN]: 1,
+          [STATUS_CLOSED]: 1,
         },
       });
 
       await nextTick();
 
       expect(emptyStateEl.props('title')).toBe(
-        externalIssuesListEmptyStateI18n.filterStateEmptyMessage[IssuableStates.Opened],
+        externalIssuesListEmptyStateI18n.filterStateEmptyMessage[STATUS_OPEN],
       );
     });
 
@@ -182,8 +182,8 @@ describe('ExternalIssuesListEmptyState', () => {
     it('does not render empty state description when issues are present', async () => {
       wrapper.setProps({
         issuesCount: {
-          [IssuableStates.Opened]: 1,
-          [IssuableStates.Closed]: 1,
+          [STATUS_OPEN]: 1,
+          [STATUS_CLOSED]: 1,
         },
       });
 

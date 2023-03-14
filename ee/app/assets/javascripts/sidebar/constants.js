@@ -95,8 +95,6 @@ export const placeholderEpic = {
   title: __('Select epic'),
 };
 
-export const iterationDisplayState = 'opened';
-
 export const SIDEBAR_ESCALATION_POLICY_TITLE = __('Escalation policy');
 
 export const MAX_DISPLAY_WEIGHT = 99999;

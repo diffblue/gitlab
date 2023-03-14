@@ -10,8 +10,9 @@ import {
 } from '@gitlab/ui';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import { groupByIterationCadences, getIterationPeriod } from 'ee/iterations/utils';
+import { STATUS_OPEN } from '~/issues/constants';
 import { __ } from '~/locale';
-import { iterationSelectTextMap, iterationDisplayState } from '../../constants';
+import { iterationSelectTextMap } from '../../constants';
 import groupIterationsQuery from '../../queries/group_iterations.query.graphql';
 
 export default {
@@ -38,7 +39,7 @@ export default {
         return {
           fullPath: this.fullPath,
           title: search,
-          state: iterationDisplayState,
+          state: STATUS_OPEN,
         };
       },
       update(data) {

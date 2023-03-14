@@ -1,9 +1,8 @@
 <script>
 import { GlFormGroup, GlFormRadioGroup } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
-
+import { STATUS_ALL, STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
 import { __ } from '~/locale';
-import { EPICS_STATES } from '../constants';
 
 export default {
   components: {
@@ -13,9 +12,9 @@ export default {
   computed: {
     ...mapState(['epicsState']),
     availableStates() {
-      const all = { text: __('Show all epics'), value: EPICS_STATES.ALL };
-      const opened = { text: __('Show open epics'), value: EPICS_STATES.OPENED };
-      const closed = { text: __('Show closed epics'), value: EPICS_STATES.CLOSED };
+      const all = { text: __('Show all epics'), value: STATUS_ALL };
+      const opened = { text: __('Show open epics'), value: STATUS_OPEN };
+      const closed = { text: __('Show closed epics'), value: STATUS_CLOSED };
 
       return [all, opened, closed];
     },

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-import { IssuableStates } from '~/vue_shared/issuable/list/constants';
+import { STATUS_OPEN } from '~/issues/constants';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { queryToObject } from '~/lib/utils/url_utility';
 
@@ -28,7 +28,7 @@ export default function externalIssuesListFactory({
 
     const {
       page = 1,
-      initialState = IssuableStates.Opened,
+      initialState = STATUS_OPEN,
       initialSortBy = 'created_desc',
     } = mountPointEl.dataset;
 

@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 
-import { IssuableStates } from '~/vue_shared/issuable/list/constants';
+import { STATUS_OPEN } from '~/issues/constants';
 import createDefaultClient from '~/lib/graphql';
 import { parseBoolean, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { queryToObject } from '~/lib/utils/url_utility';
@@ -25,7 +25,7 @@ export default function initEpicsList({ mountPointSelector }) {
     page = 1,
     prev = '',
     next = '',
-    initialState = IssuableStates.Opened,
+    initialState = STATUS_OPEN,
     initialSortBy = 'start_date_desc',
     canCreateEpic,
     canBulkEditEpics,

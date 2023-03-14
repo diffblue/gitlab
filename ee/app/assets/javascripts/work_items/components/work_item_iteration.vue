@@ -21,7 +21,7 @@ import {
   TRACKING_CATEGORY_SHOW,
   I18N_WORK_ITEM_FETCH_ITERATIONS_ERROR,
 } from '~/work_items/constants';
-import { iterationDisplayState } from 'ee/sidebar/constants';
+import { STATUS_OPEN } from '~/issues/constants';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import projectIterationsQuery from 'ee/work_items/graphql/project_iterations.query.graphql';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
@@ -169,7 +169,7 @@ export default {
         return {
           fullPath: this.fullPath,
           title: search,
-          state: iterationDisplayState,
+          state: STATUS_OPEN,
         };
       },
       update(data) {

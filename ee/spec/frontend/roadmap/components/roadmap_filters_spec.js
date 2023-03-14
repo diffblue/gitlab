@@ -2,13 +2,7 @@ import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import RoadmapFilters from 'ee/roadmap/components/roadmap_filters.vue';
-import {
-  PRESET_TYPES,
-  EPICS_STATES,
-  DATE_RANGES,
-  PROGRESS_WEIGHT,
-  MILESTONES_ALL,
-} from 'ee/roadmap/constants';
+import { PRESET_TYPES, DATE_RANGES, PROGRESS_WEIGHT, MILESTONES_ALL } from 'ee/roadmap/constants';
 import createStore from 'ee/roadmap/store';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import {
@@ -25,6 +19,7 @@ import {
 
 import { TEST_HOST } from 'helpers/test_constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { STATUS_ALL, STATUS_CLOSED } from '~/issues/constants';
 import { updateHistory } from '~/lib/utils/url_utility';
 import {
   TOKEN_TYPE_AUTHOR,
@@ -44,7 +39,7 @@ Vue.use(Vuex);
 
 const createComponent = ({
   presetType = PRESET_TYPES.MONTHS,
-  epicsState = EPICS_STATES.ALL,
+  epicsState = STATUS_ALL,
   sortedBy = mockSortedBy,
   groupFullPath = 'gitlab-org',
   groupMilestonesPath = '/groups/gitlab-org/-/milestones.json',
@@ -88,7 +83,7 @@ describe('RoadmapFilters', () => {
   describe('watch', () => {
     describe('urlParams', () => {
       it('updates window URL based on presence of props for state, filtered search and sort criteria', async () => {
-        wrapper.vm.$store.dispatch('setEpicsState', EPICS_STATES.CLOSED);
+        wrapper.vm.$store.dispatch('setEpicsState', STATUS_CLOSED);
         wrapper.vm.$store.dispatch('setFilterParams', {
           authorUsername: 'root',
           labelName: ['Bug'],
@@ -104,7 +99,7 @@ describe('RoadmapFilters', () => {
         await nextTick();
 
         expect(global.window.location.href).toBe(
-          `${TEST_HOST}/?state=${EPICS_STATES.CLOSED}&sort=end_date_asc&layout=MONTHS&timeframe_range_type=CURRENT_YEAR&author_username=root&label_name[]=Bug&milestone_title=4.0&confidential=true&progress=WEIGHT&show_progress=true&show_milestones=true&milestones_type=ALL&show_labels=false`,
+          `${TEST_HOST}/?state=${STATUS_CLOSED}&sort=end_date_asc&layout=MONTHS&timeframe_range_type=CURRENT_YEAR&author_username=root&label_name[]=Bug&milestone_title=4.0&confidential=true&progress=WEIGHT&show_progress=true&show_milestones=true&milestones_type=ALL&show_labels=false`,
         );
       });
     });

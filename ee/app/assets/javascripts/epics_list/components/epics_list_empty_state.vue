@@ -1,6 +1,6 @@
 <script>
 import { GlEmptyState } from '@gitlab/ui';
-import { IssuableStates } from '~/vue_shared/issuable/list/constants';
+import { STATUS_ALL } from '~/issues/constants';
 import { __ } from '~/locale';
 
 import { FilterStateEmptyMessage } from '../constants';
@@ -22,14 +22,14 @@ export default {
   },
   computed: {
     emptyStateTitle() {
-      return this.epicsCount[IssuableStates.All]
+      return this.epicsCount[STATUS_ALL]
         ? FilterStateEmptyMessage[this.currentState]
         : __(
             'Epics let you manage your portfolio of projects more efficiently and with less effort',
           );
     },
     showDescription() {
-      return !this.epicsCount[IssuableStates.All];
+      return !this.epicsCount[STATUS_ALL];
     },
   },
 };
