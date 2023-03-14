@@ -4,6 +4,7 @@ import {
   GlLink,
   GlLoadingIcon,
   GlTruncate,
+  GlCard,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
 import { createAlert } from '~/alert';
@@ -11,7 +12,7 @@ import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
 
 export default {
-  components: { GlIcon, GlLink, GlLoadingIcon, GlTruncate },
+  components: { GlIcon, GlLink, GlLoadingIcon, GlTruncate, GlCard },
   directives: {
     GlTooltip,
   },
@@ -72,15 +73,14 @@ export default {
 };
 </script>
 <template>
-  <div
+  <gl-card
     v-if="shouldShowRelatedFeatureFlags"
     id="related-feature-flags"
-    class="card card-slim gl-overflow-hidden gl-mt-5 gl-mb-0"
+    class="gl-overflow-hidden gl-mt-5 gl-mb-0"
+    header-class="card-header"
+    body-class="gl-p-0 gl-mx-5"
   >
-    <div
-      :class="cardHeaderClass"
-      class="card-header gl-display-flex gl-justify-content-start gl-align-items-center"
-    >
+    <template #header>
       <h3 class="card-title gl-my-0 gl-display-flex gl-align-items-center gl-w-full gl-relative h5">
         <gl-link
           id="user-content-related-feature-flags"
@@ -92,7 +92,7 @@ export default {
         <gl-icon class="text-secondary gl-mr-2" name="feature-flag" />
         <span class="h5">{{ numberOfFeatureFlags }}</span>
       </h3>
-    </div>
+    </template>
     <gl-loading-icon v-if="loading" size="sm" class="gl-my-3" />
     <ul v-else class="content-list related-items-list">
       <li
@@ -127,5 +127,5 @@ export default {
         </span>
       </li>
     </ul>
-  </div>
+  </gl-card>
 </template>
