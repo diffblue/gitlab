@@ -377,6 +377,48 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
       end
 
       it { is_expected.to eq(["property '/scan_execution_policy/0/rules/0/branches' is not of type: array"]) }
+
+      context 'when the agent key is invalid' do
+        let(:policy_yaml) do
+          build(
+            :orchestration_policy_yaml,
+            scan_execution_policy: [
+              build(
+                :scan_execution_policy,
+                rules: [
+                  {
+                    type: 'schedule',
+                    cadence: '0 10 * * *',
+                    additional_property: 'value',
+                    agents: {
+                      'my agent' => {
+                        namespaces: [
+                          'default'
+                        ]
+                      }
+                    },
+                    clusters: {
+                      'my cluster' => {
+                        namespaces: [
+                          'default'
+                        ]
+                      }
+                    }
+                  }
+                ]
+              )
+            ]
+          )
+        end
+
+        it 'has errors for the agent and additional property field' do
+          is_expected.to contain_exactly(
+            "property '/scan_execution_policy/0/rules/0/agents/my agent' is invalid: error_type=schema",
+            "property '/scan_execution_policy/0/rules/0/additional_property' is invalid: error_type=schema",
+            "property '/scan_execution_policy/0/rules/0/clusters/my cluster' is invalid: error_type=schema"
+          )
+        end
+      end
     end
 
     context 'when file is valid' do
