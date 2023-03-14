@@ -68,6 +68,13 @@ module EE
                   required: true,
                   description: 'Global ID of the Vulnerability.'
               end
+
+        field :ci_catalog_resources,
+              ::Types::Ci::Catalog::ResourceType.connection_type,
+              null: true,
+              alpha: { milestone: '15.11' },
+              description: 'CI Catalog resources visible to the current user',
+              resolver: ::Resolvers::Ci::Catalog::ResourcesResolver
       end
 
       def vulnerability(id:)

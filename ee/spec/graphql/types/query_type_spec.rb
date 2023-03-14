@@ -7,6 +7,7 @@ RSpec.describe GitlabSchema.types['Query'], feature_category: :shared do
 
   specify do
     expected_ee_fields = [
+      :ci_catalog_resources,
       :ci_minutes_usage,
       :current_license,
       :devops_adoption_enabled_namespaces,
