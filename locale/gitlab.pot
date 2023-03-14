@@ -37260,6 +37260,9 @@ msgstr ""
 msgid "Runners|Add tags for the types of jobs the runner processes to ensure that the runner only runs jobs that you intend it to. %{helpLinkStart}Learn more.%{helpLinkEnd}"
 msgstr ""
 
+msgid "Runners|Admin area › Runners"
+msgstr ""
+
 msgid "Runners|Administrator"
 msgstr ""
 
@@ -37553,9 +37556,6 @@ msgstr ""
 msgid "Runners|Operating systems"
 msgstr ""
 
-msgid "Runners|Optional. Step 3"
-msgstr ""
-
 msgid "Runners|Owner"
 msgstr ""
 
@@ -37780,6 +37780,9 @@ msgstr ""
 msgid "Runners|Step 2"
 msgstr ""
 
+msgid "Runners|Step 3 (optional)"
+msgstr ""
+
 msgid "Runners|Stop the runner from accepting new jobs."
 msgstr ""
 
@@ -37831,6 +37834,9 @@ msgid "Runners|To install Runner in a container follow the instructions describe
 msgstr ""
 
 msgid "Runners|To register them, go to the %{link_start}group's Runners page%{link_end}."
+msgstr ""
+
+msgid "Runners|To view the runner, go to %{runnerListName}."
 msgstr ""
 
 msgid "Runners|Token expiry"
@@ -37900,6 +37906,9 @@ msgid "Runners|You can set up a project runner to be used by multiple projects b
 msgstr ""
 
 msgid "Runners|You have used %{quotaUsed} out of %{quotaLimit} of your shared Runners pipeline minutes."
+msgstr ""
+
+msgid "Runners|You've created a new runner!"
 msgstr ""
 
 msgid "Runners|active"
