@@ -22,19 +22,24 @@ module EE
         collection = with_vulnerabilities(collection)
         collection = with_code_coverage(collection)
         collection = with_compliance_framework(collection)
+        collection = by_negated_compliance_framework_filters(collection)
         by_storage(collection)
       end
 
       def with_compliance_framework(collection)
-        return collection if params[:compliance_framework_filters].nil?
-
         filter_id = params.dig(:compliance_framework_filters, :id)
 
-        if filter_id.present?
-          collection.compliance_framework_id_in(filter_id)
-        else
-          collection
-        end
+        return collection if filter_id.nil?
+
+        collection.compliance_framework_id_in(filter_id)
+      end
+
+      def by_negated_compliance_framework_filters(collection)
+        filter_id = params.dig(:compliance_framework_filters, :not, :id)
+
+        return collection if filter_id.nil?
+
+        collection.compliance_framework_id_not_in(filter_id)
       end
 
       def by_storage(items)
