@@ -13,9 +13,7 @@ RSpec.describe Gitlab::HookData::UserBuilder do
         let(:user) { create(:user, name: 'John Doe', username: 'johndoe', email: 'john@example.com') }
 
         before do
-          expect(Gitlab).to receive(:com?).and_return(true).twice
-          # for the user callback: namespace_move_dir_allowed
-          allow(ContainerRegistry::GitlabApiClient).to receive(:one_project_with_container_registry_tag)
+          expect(Gitlab).to receive(:com?).and_return(true)
         end
 
         it 'returns correct email_opted_in data' do
