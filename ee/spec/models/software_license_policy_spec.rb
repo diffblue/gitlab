@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SoftwareLicensePolicy do
+RSpec.describe SoftwareLicensePolicy, feature_category: :license_compliance do
   subject { build(:software_license_policy) }
 
   describe 'validations' do
@@ -51,6 +51,17 @@ RSpec.describe SoftwareLicensePolicy do
     let!(:mit_policy2) { create(:software_license_policy, software_license: mit) }
 
     it { expect(described_class.count_for_software_license(mit.id)).to eq(2) }
+  end
+
+  describe '.exclusion_allowed' do
+    let_it_be(:mit) { create(:software_license, :mit) }
+    let_it_be(:scan_result_policy_read_with_inclusion) { create(:scan_result_policy_read, match_on_inclusion: true) }
+    let_it_be(:scan_result_policy_read_without_inclusion) { create(:scan_result_policy_read, match_on_inclusion: false) }
+    let!(:mit_policy) { create(:software_license_policy, software_license: mit) }
+    let!(:mit_policy_with_inclusion) { create(:software_license_policy, software_license: mit, scan_result_policy_read: scan_result_policy_read_with_inclusion) }
+    let!(:mit_policy_without_inclusion) { create(:software_license_policy, software_license: mit, scan_result_policy_read: scan_result_policy_read_without_inclusion) }
+
+    it { expect(described_class.exclusion_allowed).to eq([mit_policy_without_inclusion]) }
   end
 
   describe "#name" do

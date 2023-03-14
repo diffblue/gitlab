@@ -15,6 +15,91 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :license_compliance do
   end
 
   describe "#policies" do
+    context 'when license policies are configured with scan result policies' do
+      subject(:policies) { license_compliance.policies }
+
+      let(:pipeline) { create(:ci_pipeline, :success, project: project, builds: []) }
+
+      let(:license_check_and_scan_result_policies) do
+        [
+          { id: 'MIT', name: 'MIT', classification: 'allowed', scan_result_policy: false },
+          { id: 'AML', name: 'Apple MIT License', classification: 'denied', scan_result_policy: false },
+          { id: 'MS-PL', name: 'Microsoft Public License', classification: 'denied', scan_result_policy: true },
+          { id: 'Apache-2.0', name: 'Apache-2.0 License', classification: 'allowed', scan_result_policy: true }
+        ]
+      end
+
+      let(:denied_scan_result_policies) do
+        [
+          { id: 'MIT', name: 'MIT', classification: 'allowed', scan_result_policy: false },
+          { id: 'AML', name: 'Apple MIT License', classification: 'denied', scan_result_policy: false },
+          { id: 'MS-PL', name: 'Microsoft Public License', classification: 'denied', scan_result_policy: true }
+        ]
+      end
+
+      let(:only_license_check_policies) do
+        [
+          { id: 'MIT', name: 'MIT', classification: 'allowed', scan_result_policy: false },
+          { id: 'AML', name: 'Apple MIT License', classification: 'denied', scan_result_policy: false }
+        ]
+      end
+
+      let(:only_scan_result_policies) do
+        [
+          { id: 'Apache-2.0', name: 'Apache-2.0 License', classification: 'allowed', scan_result_policy: true },
+          { id: 'MS-PL', name: 'Microsoft Public License', classification: 'denied', scan_result_policy: true }
+        ]
+      end
+
+      let(:license_map) do
+        {
+          'MIT' => create(:software_license, name: 'MIT', spdx_identifier: 'MIT'),
+          'AML' => create(:software_license, name: 'Apple MIT License', spdx_identifier: 'AML'),
+          'MS-PL' => create(:software_license, name: 'Microsoft Public License', spdx_identifier: 'MS-PL'),
+          'Apache-2.0' => create(:software_license, name: 'Apache-2.0 License', spdx_identifier: 'Apache-2.0'),
+          'GPL-3-Clause' => create(:software_license, name: 'GPL-3-Clause', spdx_identifier: 'GPL-3-Clause'),
+          'unknown' => create(:software_license, name: 'unknown', spdx_identifier: 'unknown')
+        }
+      end
+
+      using RSpec::Parameterized::TableSyntax
+
+      where(:input, :result) do
+        ref(:license_check_and_scan_result_policies) | %w[denied allowed denied allowed denied denied]
+        ref(:denied_scan_result_policies) | %w[denied unclassified unclassified allowed denied unclassified]
+        ref(:only_license_check_policies) | %w[denied unclassified unclassified allowed unclassified unclassified]
+        ref(:only_scan_result_policies) | %w[denied allowed denied denied denied denied]
+      end
+
+      with_them do
+        let(:report) { create(:ci_reports_license_scanning_report) }
+
+        before do
+          report.add_license(id: 'MIT', name: 'MIT')
+          report.add_license(id: 'AML', name: 'Apple MIT License')
+          report.add_license(id: 'MS-PL', name: 'Microsoft Public License')
+          report.add_license(id: 'Apache-2.0', name: 'Apache-2.0 License')
+          report.add_license(id: 'GPL-3-Clause', name: 'GPL-3-Clause')
+          report.add_license(id: 'unknown', name: 'unknown')
+
+          allow(license_compliance).to receive(:license_scanning_report).and_return(report)
+
+          input.each do |policy|
+            scan_result_policy_read = policy[:scan_result_policy] ? create(:scan_result_policy_read, match_on_inclusion: policy[:classification] == 'denied') : nil
+            create(:software_license_policy, policy[:classification],
+              project: project,
+              software_license: license_map[policy[:id]],
+              scan_result_policy_read: scan_result_policy_read
+            )
+          end
+        end
+
+        it 'sets classification based on policies' do
+          expect(policies.map(&:classification)).to eq(result)
+        end
+      end
+    end
+
     context "when the license_scanning_sbom_scanner feature flag is disabled" do
       subject(:policies) { license_compliance.policies }
 
@@ -38,28 +123,6 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :license_compliance do
             expect(policies[0].classification).to eq("denied")
             expect(policies[0].spdx_identifier).to eq(mit.spdx_identifier)
           end
-        end
-      end
-
-      context "when some policies has scan_result_policy" do
-        let(:pipeline) { nil }
-
-        let!(:mit_policy) { create(:software_license_policy, :denied, software_license: mit, project: project) }
-        let!(:scan_result_policy) do
-          create(:software_license_policy, :denied,
-            software_license: mit,
-            project: project,
-            scan_result_policy_read: create(:scan_result_policy_read)
-          )
-        end
-
-        it "includes policy without scan_result_policy_read" do
-          expect(policies.count).to eq(1)
-          expect(policies[0].id).to eq(mit_policy.id)
-          expect(policies[0].name).to eq(mit.name)
-          expect(policies[0].url).to be_nil
-          expect(policies[0].classification).to eq("denied")
-          expect(policies[0].spdx_identifier).to eq(mit.spdx_identifier)
         end
       end
 
@@ -747,6 +810,57 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :license_compliance do
   end
 
   describe "#diff_with" do
+    context 'when license policies are configured with scan result policies' do
+      subject(:diff) { license_compliance.diff_with(base_compliance) }
+
+      let(:mit) { create(:software_license, name: 'MIT', spdx_identifier: 'MIT') }
+      let(:aml) { create(:software_license, name: 'Apple MIT License', spdx_identifier: 'AML') }
+      let(:mspl) { create(:software_license, name: 'Microsoft Public License', spdx_identifier: 'MS-PL') }
+      let(:apache_2) { create(:software_license, name: 'Apache-2.0 License', spdx_identifier: 'Apache-2.0') }
+
+      let(:pipeline) { create(:ci_pipeline, :success, project: project, builds: []) }
+      let(:base_pipeline) { create(:ci_pipeline, :success, project: project) }
+      let(:base_compliance) { project.license_compliance(base_pipeline) }
+
+      let(:base_report) { create(:ci_reports_license_scanning_report) }
+      let(:report) { create(:ci_reports_license_scanning_report) }
+
+      let(:scan_result_policy_read_with_inclusion) { create(:scan_result_policy_read, match_on_inclusion: true) }
+      let(:scan_result_policy_read_without_inclusion) { create(:scan_result_policy_read, match_on_inclusion: false) }
+
+      context 'when base_report has new denied licenses' do
+        before do
+          report.add_license(id: 'MIT', name: 'MIT')
+          base_report.add_license(id: 'MIT', name: 'MIT')
+          base_report.add_license(id: 'AML', name: 'Apple MIT License')
+          base_report.add_license(id: 'MS-PL', name: 'Microsoft Public License')
+
+          allow(license_compliance).to receive(:license_scanning_report).and_return(report)
+          allow(base_compliance).to receive(:license_scanning_report).and_return(base_report)
+
+          create(:software_license_policy, :allowed,
+            project: project,
+            software_license: mit,
+            scan_result_policy_read: scan_result_policy_read_without_inclusion
+          )
+          create(:software_license_policy, :denied,
+            project: project,
+            software_license: aml,
+            scan_result_policy_read: scan_result_policy_read_with_inclusion
+          )
+        end
+
+        it 'returns differences with denied status' do
+          added = diff[:added]
+
+          expect(added[0].spdx_identifier).to eq('AML')
+          expect(added[0].classification).to eq('denied')
+          expect(added[1].spdx_identifier).to eq('MS-PL')
+          expect(added[1].classification).to eq('denied')
+        end
+      end
+    end
+
     context "when the license_scanning_sbom_scanner feature flag is disabled" do
       before do
         stub_feature_flags(license_scanning_sbom_scanner: false)
