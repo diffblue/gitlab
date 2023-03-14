@@ -5,3 +5,5 @@ module Security
     layout 'instance_security'
   end
 end
+
+Security::DashboardController.prepend_mod
