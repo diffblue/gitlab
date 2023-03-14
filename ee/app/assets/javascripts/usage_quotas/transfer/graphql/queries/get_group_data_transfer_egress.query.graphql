@@ -1,0 +1,12 @@
+query getGroupDataTransferEgress($fullPath: ID!) {
+  group(fullPath: $fullPath) {
+    id
+    dataTransfer {
+      egressNodes {
+        nodes {
+          totalEgress
+        }
+      }
+    }
+  }
+}

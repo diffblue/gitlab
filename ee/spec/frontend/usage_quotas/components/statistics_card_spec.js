@@ -1,4 +1,4 @@
-import { GlLink, GlButton, GlProgressBar } from '@gitlab/ui';
+import { GlLink, GlButton, GlProgressBar, GlSkeletonLoader } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
 
@@ -156,6 +156,16 @@ describe('StatisticsCard', () => {
 
       expect(findProgressBar().exists()).toBe(true);
       expect(findProgressBar().attributes('value')).toBe(String(percentage));
+    });
+  });
+
+  describe('when `loading` prop is `true`', () => {
+    beforeEach(() => {
+      createComponent({ ...defaultProps, loading: true });
+    });
+
+    it('renders `GlSkeletonLoader`', () => {
+      expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(true);
     });
   });
 });
