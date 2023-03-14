@@ -1,6 +1,7 @@
 <script>
 import { GlTooltipDirective } from '@gitlab/ui';
 import getIncidentStateQuery from 'ee/graphql_shared/queries/get_incident_state.query.graphql';
+import { STATUS_CLOSED } from '~/issues/constants';
 import { formatTime, calculateRemainingMilliseconds } from '~/lib/utils/datetime_utility';
 import { s__, sprintf } from '~/locale';
 import { isValidSlaDueAt } from './utils';
@@ -60,7 +61,7 @@ export default {
       return this.remainingTime === 0;
     },
     isClosed() {
-      return this.issueState === 'closed';
+      return this.issueState === STATUS_CLOSED;
     },
     remainingTime() {
       return this.clientRemainingTime ?? calculateRemainingMilliseconds(this.slaDueAt);

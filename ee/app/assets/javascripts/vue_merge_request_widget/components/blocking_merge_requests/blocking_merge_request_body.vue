@@ -2,6 +2,7 @@
 import { GlIcon } from '@gitlab/ui';
 import { n__ } from '~/locale';
 import RelatedIssuableItem from '~/issuable/components/related_issuable_item.vue';
+import { STATUS_MERGED } from '~/issues/constants';
 
 export default {
   name: 'BlockingMergeRequestsBody',
@@ -28,6 +29,9 @@ export default {
         this.issue.hiddenCount,
       );
     },
+    isMerged() {
+      return this.issue.state === STATUS_MERGED;
+    },
   },
 };
 </script>
@@ -52,7 +56,7 @@ export default {
     :is-merge-request="true"
     :pipeline-status="issue.head_pipeline && issue.head_pipeline.detailed_status"
     path-id-separator="!"
-    :class="{ 'mr-merged': issue.state === 'merged' }"
+    :class="{ 'mr-merged': isMerged }"
     :grey-link-when-merged="true"
     class="w-100 p-xl-3"
   />

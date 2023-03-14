@@ -5,6 +5,7 @@ import { mapState, mapActions } from 'vuex';
 import BoardCard from '~/boards/components/board_card.vue';
 import BoardNewIssue from '~/boards/components/board_new_issue.vue';
 import eventHub from '~/boards/eventhub';
+import { STATUS_CLOSED } from '~/issues/constants';
 import { defaultSortableOptions } from '~/sortable/constants';
 
 export default {
@@ -85,6 +86,9 @@ export default {
         this.list.maxIssueCount > 0 &&
         this.fullBoardIssuesCount[this.list.id] > this.list.maxIssueCount
       );
+    },
+    showNewIssue() {
+      return this.list.type !== STATUS_CLOSED && this.showIssueForm && this.isUnassignedIssuesLane;
     },
   },
   watch: {
@@ -180,10 +184,7 @@ export default {
     :class="{ 'is-collapsed gl-w-10': list.collapsed }"
   >
     <div class="board-inner gl-rounded-base gl-relative gl-w-full gl-bg-gray-50">
-      <board-new-issue
-        v-if="list.type !== 'closed' && showIssueForm && isUnassignedIssuesLane"
-        :list="list"
-      />
+      <board-new-issue v-if="showNewIssue" :list="list" />
       <component
         :is="treeRootWrapper"
         v-if="!list.collapsed"

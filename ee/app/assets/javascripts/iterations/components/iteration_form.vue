@@ -1,6 +1,7 @@
 <script>
 import { GlAlert, GlButton, GlDatepicker, GlForm, GlFormGroup, GlFormInput } from '@gitlab/ui';
 import { createAlert } from '~/alert';
+import { STATUS_ALL } from '~/issues/constants';
 import { dayAfter, formatDate, parsePikadayDate } from '~/lib/utils/datetime_utility';
 import { TYPENAME_ITERATION, TYPENAME_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
@@ -146,7 +147,7 @@ export default {
           fullPath: this.fullPath,
           iterationCadenceId: convertToGraphQLId(TYPENAME_ITERATIONS_CADENCE, this.cadenceId),
           lastPageSize: 1,
-          state: 'all',
+          state: STATUS_ALL,
         },
       });
       const iteration = data.workspace.iterations?.nodes[0];

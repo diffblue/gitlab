@@ -1,6 +1,7 @@
 <script>
 import jiraLogo from '@gitlab/svgs/dist/illustrations/logos/jira.svg';
 import { GlIcon, GlLink, GlTooltipDirective, GlSprintf } from '@gitlab/ui';
+import { STATUS_CLOSED } from '~/issues/constants';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 
 export default {
@@ -28,7 +29,7 @@ export default {
       return this.issueIsClosed ? 'issue-closed' : 'issues';
     },
     issueIsClosed() {
-      return this.issue.state === 'closed';
+      return this.issue.state === STATUS_CLOSED;
     },
   },
   jiraLogo,

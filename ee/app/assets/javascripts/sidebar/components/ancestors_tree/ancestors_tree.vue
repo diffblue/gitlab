@@ -1,6 +1,7 @@
 <script>
 import { GlLoadingIcon, GlLink, GlTooltip, GlIcon } from '@gitlab/ui';
 import { escape } from 'lodash';
+import { STATUS_OPEN } from '~/issues/constants';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 
 import { __ } from '~/locale';
@@ -57,10 +58,10 @@ export default {
   },
   methods: {
     getIcon(ancestor) {
-      return ancestor.state === 'opened' ? 'issue-open-m' : 'issue-close';
+      return ancestor.state === STATUS_OPEN ? 'issue-open-m' : 'issue-close';
     },
     getTimelineClass(ancestor) {
-      return ancestor.state === 'opened' ? 'opened' : 'closed';
+      return ancestor.state === STATUS_OPEN ? 'opened' : 'closed';
     },
   },
 };
