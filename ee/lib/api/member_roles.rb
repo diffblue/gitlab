@@ -41,7 +41,10 @@ module API
           desc: 'Base Access Level for the configured role',
           documentation: { example: 10 }
         )
-        optional 'read_code', type: Boolean, desc: 'Permission to read code'
+
+        ::MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS.each do |permission_name, permission_description|
+          optional permission_name.to_s, type: Boolean, desc: permission_description
+        end
       end
 
       post ":id/member_roles" do

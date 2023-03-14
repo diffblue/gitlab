@@ -1240,6 +1240,16 @@ RSpec.describe Group, feature_category: :subgroups do
         expect(group.billed_group_users(exclude_guests: true)).to match_array([developer, sub_developer])
       end
     end
+
+    context 'with member roles' do
+      let_it_be(:member_role_elevating) { create(:member_role, :guest, namespace: group) }
+      let_it_be(:guest_with_role) { (create :group_member, :guest, source: group, member_role: member_role_elevating).user }
+
+      it 'includes guests with elevating role assigned' do
+        expect(MemberRole).to receive(:elevating).at_least(:once).and_return(MemberRole.where(id: member_role_elevating.id))
+        expect(group.billed_group_users(exclude_guests: true)).to match_array([developer, sub_developer, guest_with_role])
+      end
+    end
   end
 
   describe '#billed_project_users' do
@@ -1276,6 +1286,16 @@ RSpec.describe Group, feature_category: :subgroups do
     context 'without guests' do
       it 'includes active users' do
         expect(group.billed_project_users(exclude_guests: true)).to match_array([developer, sub_developer])
+      end
+    end
+
+    context 'with member roles' do
+      let_it_be(:member_role_elevating) { create(:member_role, :guest, namespace: group) }
+      let_it_be(:guest_with_role) { (create :project_member, :guest, source: project, member_role: member_role_elevating).user }
+
+      it 'includes guests with elevating role assigned' do
+        expect(MemberRole).to receive(:elevating).at_least(:once).and_return(MemberRole.where(id: member_role_elevating.id))
+        expect(group.billed_project_users(exclude_guests: true)).to match_array([developer, sub_developer, guest_with_role])
       end
     end
   end

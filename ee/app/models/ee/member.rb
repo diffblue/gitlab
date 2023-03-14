@@ -33,6 +33,12 @@ module EE
         joins(sanitize_sql_array([sql, namespace.id]))
       end
 
+      scope :with_elevated_guests, -> do
+        elevated_guests = guests.joins(:member_role).merge(MemberRole.elevating)
+
+        from_union([non_guests, elevated_guests])
+      end
+
       before_create :set_membership_activation
 
       scope :with_csv_entity_associations, -> do

@@ -654,4 +654,20 @@ RSpec.describe Member, type: :model do
       expect(described_class.banned_from(group).map(&:user_id)).to match_array([member1.user_id])
     end
   end
+
+  describe '.with_elevated_guests scope' do
+    let(:group) { create(:group) }
+    let(:member_role_elevating) { create(:member_role, :guest, namespace: group) }
+    let(:member_role_basic) { create(:member_role, :guest, namespace: group) }
+    let!(:member1) { create(:group_member, :developer, source: group) }
+    let!(:member2) { create(:group_member, :guest, source: group, member_role: member_role_elevating) }
+    let!(:member3) { create(:group_member, :guest, source: group, member_role: member_role_basic) }
+
+    it 'returns only members above guest or guests with elevated role' do
+      expect(MemberRole).to receive(:elevating).at_least(:once).and_return(MemberRole.where(id: member_role_elevating.id))
+
+      expect(described_class.with_elevated_guests).to match_array([member1, member2])
+      expect(described_class.with_elevated_guests).not_to include(member3)
+    end
+  end
 end
