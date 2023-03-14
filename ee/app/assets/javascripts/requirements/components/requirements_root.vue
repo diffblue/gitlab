@@ -18,13 +18,13 @@ import {
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import UserToken from '~/vue_shared/components/filtered_search_bar/tokens/user_token.vue';
+import { DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
 
 import {
   FilterState,
   AvailableSortOptions,
   TestReportStatus,
   TestReportStatusToValue,
-  DEFAULT_PAGE_SIZE,
 } from '../constants';
 import createRequirement from '../queries/create_requirement.mutation.graphql';
 import exportRequirement from '../queries/export_requirements.mutation.graphql';

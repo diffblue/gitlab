@@ -52,7 +52,3 @@ export const I18N_LEGACY_REFERENCE_DEPRECATION_NOTE_POPOVER = s__(
 export const I18N_LEGACY_REFERENCE_DEPRECATION_NOTE_DETAIL = s__(
   `Requirement|Requirements have become work items and the legacy requirement IDs are being deprecated. Update your links to reference this item's new ID %{id}. %{linkStart}Learn more%{linkEnd}.`,
 );
-
-export const DEFAULT_PAGE_SIZE = 20;
-
-export const MAX_TITLE_LENGTH = 255;

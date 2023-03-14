@@ -49,12 +49,10 @@ import {
   mockProjectRequirementPassed,
 } from '../mock_data';
 
-jest.mock('ee/requirements/constants', () => ({
-  ...jest.requireActual('ee/requirements/constants'),
+jest.mock('~/alert');
+jest.mock('~/vue_shared/issuable/list/constants', () => ({
   DEFAULT_PAGE_SIZE: 2,
 }));
-
-jest.mock('~/alert');
 
 const $toast = {
   show: jest.fn(),

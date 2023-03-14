@@ -18,8 +18,9 @@ import {
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import UserToken from '~/vue_shared/components/filtered_search_bar/tokens/user_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
+import { DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
 
-import { TestCaseTabs, AvailableSortOptions, DEFAULT_PAGE_SIZE } from '../constants';
+import { TestCaseTabs, AvailableSortOptions } from '../constants';
 import projectTestCases from '../queries/project_test_cases.query.graphql';
 import TestCaseListEmptyState from './test_case_list_empty_state.vue';
 
