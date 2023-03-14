@@ -1,27 +1,22 @@
+import { STATUS_ALL, STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
 import { __ } from '~/locale';
-
-export const TestCaseStates = {
-  Opened: 'opened',
-  Closed: 'closed', // Change this to `archived` once supported
-  All: 'all',
-};
 
 export const TestCaseTabs = [
   {
     id: 'state-opened',
-    name: TestCaseStates.Opened,
+    name: STATUS_OPEN,
     title: __('Open'),
     titleTooltip: __('Filter by test cases that are currently open.'),
   },
   {
     id: 'state-archived',
-    name: TestCaseStates.Closed, // Change this to `Archived` once supported
+    name: STATUS_CLOSED, // Change this to `Archived` once supported
     title: __('Archived'),
     titleTooltip: __('Filter by test cases that are currently archived.'),
   },
   {
     id: 'state-all',
-    name: TestCaseStates.All,
+    name: STATUS_ALL,
     title: __('All'),
     titleTooltip: __('Show all test cases.'),
   },

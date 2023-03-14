@@ -13,18 +13,13 @@ import {
 } from '@gitlab/ui';
 import { kebabCase } from 'lodash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
+import { STATUS_OPEN, WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { isScopedLabel } from '~/lib/utils/common_utils';
 import { __, n__, sprintf } from '~/locale';
 import iterationIssuesQuery from '../queries/iteration_issues.query.graphql';
 import iterationIssuesWithLabelFilterQuery from '../queries/iteration_issues_with_label_filter.query.graphql';
 
 const skeletonLoaderLimit = 5;
-
-const states = {
-  opened: 'opened',
-  closed: 'closed',
-};
 
 export default {
   skeletonLoaderLimit,
@@ -198,10 +193,10 @@ export default {
       });
     },
     issueState(state, assigneeCount) {
-      if (state === states.opened && assigneeCount === 0) {
+      if (state === STATUS_OPEN && assigneeCount === 0) {
         return __('Open');
       }
-      if (state === states.opened && assigneeCount > 0) {
+      if (state === STATUS_OPEN && assigneeCount > 0) {
         return __('In progress');
       }
       return __('Closed');

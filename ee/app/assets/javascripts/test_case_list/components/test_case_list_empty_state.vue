@@ -1,8 +1,9 @@
 <script>
 import { GlEmptyState, GlButton } from '@gitlab/ui';
+import { STATUS_ALL } from '~/issues/constants';
 import { __ } from '~/locale';
 
-import { TestCaseStates, FilterStateEmptyMessage } from '../constants';
+import { FilterStateEmptyMessage } from '../constants';
 
 export default {
   components: {
@@ -22,12 +23,12 @@ export default {
   },
   computed: {
     emptyStateTitle() {
-      return this.testCasesCount[TestCaseStates.All]
+      return this.testCasesCount[STATUS_ALL]
         ? FilterStateEmptyMessage[this.currentState]
         : __('Improve quality with test cases');
     },
     showDescription() {
-      return !this.testCasesCount[TestCaseStates.All];
+      return !this.testCasesCount[STATUS_ALL];
     },
   },
 };

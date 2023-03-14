@@ -29,7 +29,6 @@ import {
 jest.mock('~/alert');
 jest.mock('~/vue_shared/issuable/list/constants', () => ({
   DEFAULT_PAGE_SIZE: 2,
-  IssuableStates: jest.requireActual('~/vue_shared/issuable/list/constants').IssuableStates,
   IssuableListTabs: jest.requireActual('~/vue_shared/issuable/list/constants').IssuableListTabs,
   AvailableSortOptions: jest.requireActual('~/vue_shared/issuable/list/constants')
     .AvailableSortOptions,

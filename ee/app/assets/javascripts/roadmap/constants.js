@@ -35,12 +35,6 @@ export const PRESET_TYPES = {
   WEEKS: 'WEEKS',
 };
 
-export const EPICS_STATES = {
-  ALL: 'all',
-  OPENED: 'opened',
-  CLOSED: 'closed',
-};
-
 export const emptyStateDefault = s__(
   'GroupRoadmap|To view the roadmap, add a start or due date to one of your epics in this group or its subgroups; from %{startDate} to %{endDate}.',
 );

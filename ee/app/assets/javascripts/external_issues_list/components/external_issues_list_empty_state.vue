@@ -1,7 +1,7 @@
 <script>
 import { GlEmptyState, GlButton, GlIcon, GlSprintf } from '@gitlab/ui';
 import { externalIssuesListEmptyStateI18n as i18n } from 'ee/external_issues_list/constants';
-import { IssuableStates } from '~/vue_shared/issuable/list/constants';
+import { STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
 
 export default {
   components: {
@@ -29,7 +29,7 @@ export default {
   },
   computed: {
     hasIssues() {
-      return this.issuesCount[IssuableStates.Opened] + this.issuesCount[IssuableStates.Closed] > 0;
+      return this.issuesCount[STATUS_OPEN] + this.issuesCount[STATUS_CLOSED] > 0;
     },
     emptyStateTitle() {
       const { titleWhenFilters, filterStateEmptyMessage } = i18n;

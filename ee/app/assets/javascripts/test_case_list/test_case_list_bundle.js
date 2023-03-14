@@ -1,13 +1,12 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 
+import { STATUS_OPEN } from '~/issues/constants';
 import createDefaultClient from '~/lib/graphql';
 import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
 import { queryToObject } from '~/lib/utils/url_utility';
 
 import TestCaseListApp from './components/test_case_list_root.vue';
-
-import { TestCaseStates } from './constants';
 
 Vue.use(VueApollo);
 
@@ -28,7 +27,7 @@ const initTestCaseList = ({ mountPointSelector }) => {
     page = 1,
     prev = '',
     next = '',
-    initialState = TestCaseStates.Opened,
+    initialState = STATUS_OPEN,
     initialSortBy = 'created_desc',
   } = mountPointEl.dataset;
 
