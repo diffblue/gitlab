@@ -17,7 +17,7 @@ module QA
       end
 
       before do
-        install_agentk(cluster, agent_token)
+        cluster.install_kubernetes_agent(agent_token.token)
 
         creates_agent_config(project)
       end
@@ -44,16 +44,6 @@ module QA
           'kubectl get namespace --no-headers --ignore-not-found galatic-empire',
           /galatic-empire   Active/, sleep_interval: 5
         )
-      end
-
-      def install_agentk(cluster, agent_token)
-        cluster.create_secret(agent_token.token, 'gitlab-agent-token')
-
-        kas_wss_address = "wss://kas.staging.gitlab.com"
-        agent_manifest_template = read_agent_fixture('agentk-manifest.yaml.erb')
-        agent_manifest_yaml = ERB.new(agent_manifest_template).result(binding)
-
-        cluster.apply_manifest(agent_manifest_yaml)
       end
 
       def read_agent_fixture(file_name)
