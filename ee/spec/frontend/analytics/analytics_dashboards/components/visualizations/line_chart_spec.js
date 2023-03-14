@@ -29,6 +29,7 @@ describe('LineChart Visualization', () => {
       expect(findLineChart().props()).toMatchObject({
         data: [{ name: 'foo' }],
         option: { yAxis: {}, xAxis: {} },
+        height: 'auto',
       });
       expect(findLineChart().attributes('responsive')).toBe('');
     });
