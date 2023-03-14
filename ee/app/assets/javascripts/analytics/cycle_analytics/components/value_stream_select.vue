@@ -172,7 +172,7 @@ export default {
       :title="__('Delete Value Stream')"
       :action-primary="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
         text: $options.i18n.DELETE,
-        attributes: [{ variant: 'danger' }, { loading: isDeleting }],
+        attributes: { variant: 'danger', loading: isDeleting },
       } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
       :action-cancel="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
         text: $options.i18n.CANCEL,

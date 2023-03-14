@@ -43,7 +43,7 @@ export default {
     primaryProps() {
       return {
         text: this.$options.i18n.deleteSchedule,
-        attributes: [{ category: 'primary' }, { variant: 'danger' }, { loading: this.loading }],
+        attributes: { category: 'primary', variant: 'danger', loading: this.loading },
       };
     },
     cancelProps() {

@@ -117,11 +117,7 @@ export default {
       return {
         primary: {
           text: this.primaryBtnText,
-          attributes: [
-            { variant: 'confirm' },
-            { loading: this.loading },
-            { disabled: !this.isFormValid },
-          ],
+          attributes: { variant: 'confirm', loading: this.loading, disabled: !this.isFormValid },
         },
         cancel: {
           text: this.$options.i18n.cancel,

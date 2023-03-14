@@ -92,7 +92,7 @@ export default {
   buttonProps: {
     primary: {
       text: s__('ComplianceFrameworks|Delete framework'),
-      attributes: [{ category: 'primary' }, { variant: 'danger' }],
+      attributes: { category: 'primary', variant: 'danger' },
     },
     cancel: {
       text: __('Cancel'),

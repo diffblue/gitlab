@@ -73,7 +73,7 @@ describe('Modal delete', () => {
       expect(findModal().props()).toMatchObject({
         actionPrimary: {
           text: 'Remove status check',
-          attributes: [{ variant: 'danger', loading: false }],
+          attributes: { variant: 'danger', loading: false },
         },
         actionCancel: { text: 'Cancel' },
         modalId,

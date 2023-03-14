@@ -99,14 +99,14 @@ describe('SubscriptionActivationModal', () => {
         firePrimaryEvent();
         // Wait for submit to emit event
         await nextTick();
-        expect(findGlModal().props('actionPrimary').attributes[0].loading).toEqual(true);
+        expect(findGlModal().props('actionPrimary').attributes.loading).toEqual(true);
       });
 
       it('stops loading in the button', async () => {
         firePrimaryEvent();
         // Wait for submit to emit event
         await nextTick();
-        expect(findGlModal().props('actionPrimary').attributes[0].loading).toEqual(false);
+        expect(findGlModal().props('actionPrimary').attributes.loading).toEqual(false);
       });
     });
 

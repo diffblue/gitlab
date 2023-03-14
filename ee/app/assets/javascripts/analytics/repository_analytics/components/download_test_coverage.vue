@@ -70,14 +70,14 @@ export default {
     downloadCSVModalButton() {
       return {
         text: this.$options.i18n.downloadCSVModalButton,
-        attributes: [
-          { variant: 'confirm' },
-          { href: this.csvReportPath },
-          { rel: 'nofollow' },
-          { download: '' },
-          { disabled: this.isDownloadButtonDisabled },
-          { 'data-testid': 'group-code-coverage-download-button' },
-        ],
+        attributes: {
+          variant: 'confirm',
+          href: this.csvReportPath,
+          rel: 'nofollow',
+          download: '',
+          disabled: this.isDownloadButtonDisabled,
+          'data-testid': 'group-code-coverage-download-button',
+        },
       };
     },
     isDownloadButtonDisabled() {

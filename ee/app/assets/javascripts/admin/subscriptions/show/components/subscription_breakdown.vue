@@ -129,7 +129,7 @@ export default {
     },
     actionPrimary: {
       text: i18n.removeLicense,
-      attributes: [{ variant: 'danger', 'data-qa-selector': 'confirm_remove_license' }],
+      attributes: { variant: 'danger', 'data-qa-selector': 'confirm_remove_license' },
     },
   },
   isDotCom: gon.dot_com,

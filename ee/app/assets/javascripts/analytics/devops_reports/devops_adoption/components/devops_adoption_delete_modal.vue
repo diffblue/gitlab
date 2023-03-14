@@ -40,18 +40,16 @@ export default {
     cancelOptions() {
       return {
         text: this.$options.i18n.cancel,
-        attributes: [{ disabled: this.loading }],
+        attributes: { disabled: this.loading },
       };
     },
     primaryOptions() {
       return {
         text: this.$options.i18n.confirm,
-        attributes: [
-          {
-            variant: 'danger',
-            loading: this.loading,
-          },
-        ],
+        attributes: {
+          variant: 'danger',
+          loading: this.loading,
+        },
       };
     },
     displayError() {

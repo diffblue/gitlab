@@ -79,7 +79,7 @@ describe('Approvals ModalRuleRemove', () => {
         modalId: TEST_MODAL_ID,
         actionPrimary: {
           text: 'Remove approvers',
-          attributes: [{ variant: 'danger' }],
+          attributes: { variant: 'danger' },
         },
         actionCancel: { text: 'Cancel' },
       }),
