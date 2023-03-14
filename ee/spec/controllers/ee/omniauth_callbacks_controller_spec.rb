@@ -39,6 +39,70 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
     end
   end
 
+  describe '#openid_connect' do
+    let(:user) { create(:omniauth_user, extern_uid: extern_uid, provider: provider) }
+    let(:extern_uid) { 'my-uid' }
+    let(:provider) { 'openid_connect' }
+
+    before do
+      prepare_provider_route('openid_connect')
+
+      allow(Gitlab::Auth::OAuth::Provider).to(
+        receive_messages({ providers: [:openid_connect],
+                           config_for: openid_connect_config })
+      )
+      stub_omniauth_setting(
+        { enabled: true,
+          allow_single_sign_on: ['openid_connect'],
+          providers: [openid_connect_config] }
+      )
+
+      request.env['devise.mapping'] = Devise.mappings[:user]
+      request.env['omniauth.auth'] = Rails.application.env_config['omniauth.auth']
+    end
+
+    context 'when auth hash is missing required groups' do
+      let(:openid_connect_config) do
+        {
+          'name' => 'openid_connect',
+          'args' => {
+            'name' => 'openid_connect',
+            'client_options' => {
+              'identifier' => 'gitlab-test-client',
+              'gitlab' => {
+                'required_groups' => ['Owls']
+              }
+            }
+          }
+        }
+      end
+
+      before do
+        mock_auth_hash(provider.to_s, extern_uid, user.email, additional_info: {})
+      end
+
+      context 'when licensed feature is available' do
+        before do
+          stub_licensed_features(oidc_client_groups_claim: true)
+        end
+
+        it 'prevents sign in' do
+          post provider
+
+          expect(request.env['warden']).not_to be_authenticated
+        end
+      end
+
+      context 'when licensed feature is not available' do
+        it 'allows sign in' do
+          post provider
+
+          expect(request.env['warden']).to be_authenticated
+        end
+      end
+    end
+  end
+
   describe 'identity verification', feature_category: :insider_threat do
     subject(:oauth_request) { post :saml }
 

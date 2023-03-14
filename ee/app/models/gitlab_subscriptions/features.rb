@@ -169,6 +169,7 @@ module GitlabSubscriptions
       issuable_resource_links
       group_protected_branches
       group_level_merge_checks_setting
+      oidc_client_groups_claim
     ].freeze
 
     ULTIMATE_FEATURES = %i[

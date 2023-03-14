@@ -4,6 +4,15 @@ module EE
   module OmniauthCallbacksController
     extend ::Gitlab::Utils::Override
 
+    override :openid_connect
+    def openid_connect
+      if License.feature_available?(:oidc_client_groups_claim)
+        omniauth_flow(::Gitlab::Auth::Oidc)
+      else
+        super
+      end
+    end
+
     private
 
     override :log_failed_login
