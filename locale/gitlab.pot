@@ -4254,7 +4254,7 @@ msgstr ""
 msgid "Already blocked"
 msgstr ""
 
-msgid "Already have login and password?"
+msgid "Already have an account?"
 msgstr ""
 
 msgid "Also called \"Issuer\" or \"Relying party trust identifier\""
