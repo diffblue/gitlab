@@ -123,6 +123,12 @@ describe('MetricChart component', () => {
       describe('and chartData is not empty', () => {
         const chartData = [[0, 1]];
 
+        it('does not render a metric dropdown', () => {
+          factory({ isLoading, chartData });
+
+          expect(findMetricDropdown().exists()).toBe(false);
+        });
+
         describe('and metricTypes exist', () => {
           beforeEach(() => {
             factory({ isLoading, metricTypes, chartData });
@@ -155,20 +161,16 @@ describe('MetricChart component', () => {
               await wrapper.setProps({ selectedMetric: 'time_to_last_commit' });
             });
 
-            it('should set the `invisible` class on the icon of the first dropdown item', async () => {
-              expect(findMetricDropdownItems().at(0).findComponent(GlIcon).classes()).toContain(
-                'invisible',
+            it('should only set `invisible` class on the icon of first dropdown item', async () => {
+              const iconInvisibility = findMetricDropdownItems().wrappers.map((item) =>
+                item.findComponent(GlIcon).classes('invisible'),
               );
-            });
 
-            it('should not set the `invisible` class on the icon of the second dropdown item', async () => {
-              expect(findMetricDropdownItems().at(1).findComponent(GlIcon).classes()).not.toContain(
-                'invisible',
-              );
+              expect(iconInvisibility).toEqual([true, false]);
             });
 
             it('renders the correct text in the dropdown', () => {
-              expect(findMetricDropdown().attributes('text')).toContain(
+              expect(findMetricDropdown().attributes('text')).toBe(
                 'Time from first comment to last commit',
               );
             });
