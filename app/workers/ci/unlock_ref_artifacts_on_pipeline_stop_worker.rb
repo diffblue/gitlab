@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 module Ci
-  # TODO: Clean up this worker in a subsequent release.
-  # The process to unlock job artifacts have been moved to
-  # be triggered by the pipeline state transitions and
-  # to use UnlockRefArtifactsOnPipelineStopWorker.
-  class PipelineSuccessUnlockArtifactsWorker
+  # This worker is triggered when the pipeline state
+  # changes into one of the stopped statuses
+  # `Ci::Pipeline.stopped_statuses`.
+  # It unlocks the previous pipelines on the same ref
+  # as the pipeline that has just completed
+  # using `Ci::UnlockArtifactsService`.
+  class UnlockRefArtifactsOnPipelineStopWorker
     include ApplicationWorker
 
     data_consistency :always
@@ -17,10 +19,6 @@ module Ci
 
     def perform(pipeline_id)
       ::Ci::Pipeline.find_by_id(pipeline_id).try do |pipeline|
-        # TODO: Move this check inside the Ci::UnlockArtifactsService
-        # once the feature flags in it have been removed.
-        break unless pipeline.has_erasable_artifacts?
-
         results = ::Ci::UnlockArtifactsService
           .new(pipeline.project, pipeline.user)
           .execute(pipeline.ci_ref, pipeline)

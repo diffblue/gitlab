@@ -170,6 +170,7 @@ RSpec.describe 'Every Sidekiq worker', feature_category: :shared do
         'Ci::ResourceGroups::AssignResourceFromResourceGroupWorker' => 3,
         'Ci::TestFailureHistoryWorker' => 3,
         'Ci::TriggerDownstreamSubscriptionsWorker' => 3,
+        'Ci::UnlockRefArtifactsOnPipelineStopWorker' => 3,
         'Ci::SyncReportsToReportApprovalRulesWorker' => 3,
         'CleanupContainerRepositoryWorker' => 3,
         'ClusterConfigureIstioWorker' => 3,
