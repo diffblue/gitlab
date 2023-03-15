@@ -2,6 +2,7 @@
 class ProtectedEnvironment < ApplicationRecord
   include ::Gitlab::Utils::StrongMemoize
   include FromUnion
+  include EachBatch
 
   belongs_to :project
   belongs_to :group, inverse_of: :protected_environments
