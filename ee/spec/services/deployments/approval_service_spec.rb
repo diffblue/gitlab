@@ -31,6 +31,8 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
 
   shared_examples_for 'error' do |message:|
     it 'returns an error' do
+      expect(deployment).not_to receive(:invalidate_cache)
+
       expect(subject[:status]).to eq(:error)
       expect(subject[:message]).to eq(message)
     end
@@ -38,6 +40,8 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
 
   shared_examples_for 'reject' do
     it 'rejects the deployment', :aggregate_failures do
+      expect(deployment).to receive(:invalidate_cache).and_call_original
+
       expect(subject[:status]).to eq(:success)
       expect(subject[:approval].status).to eq('rejected')
       expect(subject[:approval].user).to eq(user)
@@ -49,6 +53,8 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
 
   shared_examples_for 'approve' do
     it 'approves the deployment', :aggregate_failures do
+      expect(deployment).to receive(:invalidate_cache).and_call_original
+
       expect(subject[:status]).to eq(:success)
       expect(subject[:approval].status).to eq('approved')
       expect(subject[:approval].user).to eq(user)
