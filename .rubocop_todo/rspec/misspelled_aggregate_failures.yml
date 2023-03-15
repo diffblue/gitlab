@@ -1,0 +1,29 @@
+---
+# Cop supports --autocorrect.
+RSpec/MisspelledAggregateFailures:
+  Details: grace period
+  Exclude:
+    - 'ee/spec/lib/audit/changes_spec.rb'
+    - 'ee/spec/lib/bulk_imports/groups/pipelines/iterations_cadences_pipeline_spec.rb'
+    - 'ee/spec/lib/ee/gitlab/import_export/group/tree_restorer_spec.rb'
+    - 'ee/spec/lib/ee/gitlab/import_export/group/tree_saver_spec.rb'
+    - 'ee/spec/lib/ee/gitlab/import_export/repo_restorer_spec.rb'
+    - 'ee/spec/lib/gitlab/graphql/aggregations/epics/epic_node_spec.rb'
+    - 'ee/spec/models/ee/group_spec.rb'
+    - 'ee/spec/requests/api/graphql/project/code_coverage_summary_spec.rb'
+    - 'spec/lib/api/github/entities_spec.rb'
+    - 'spec/lib/gitlab/redis/multi_store_spec.rb'
+    - 'spec/lib/gitlab/sidekiq_logging/structured_logger_spec.rb'
+    - 'spec/lib/gitlab/usage_data_counters/hll_redis_counter_spec.rb'
+    - 'spec/lib/gitlab/usage_data_spec.rb'
+    - 'spec/lib/gitlab/utils/measuring_spec.rb'
+    - 'spec/migrations/schedule_recalculate_vulnerability_finding_signatures_for_findings_spec.rb'
+    - 'spec/requests/api/graphql/jobs_query_spec.rb'
+    - 'spec/requests/api/graphql/mutations/ci/job/play_spec.rb'
+    - 'spec/requests/api/projects_spec.rb'
+    - 'spec/requests/api/search_spec.rb'
+    - 'spec/requests/api/tags_spec.rb'
+    - 'spec/services/ci/delete_objects_service_spec.rb'
+    - 'spec/services/work_items/widgets/hierarchy_service/update_service_spec.rb'
+    - 'spec/support_specs/matchers/event_store_spec.rb'
+    - 'spec/workers/concerns/cronjob_queue_spec.rb'
