@@ -44,6 +44,7 @@ module.exports = (path, options = {}) => {
     Object.assign(globals, {
       'vue-jest': {
         experimentalCSSCompile: false,
+        compiler: require.resolve('./config/vue3migration/compiler'),
         compilerOptions: {
           compatConfig: {
             MODE: 2,
