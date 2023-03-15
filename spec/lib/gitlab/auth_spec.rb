@@ -21,6 +21,10 @@ RSpec.describe Gitlab::Auth, :use_clean_rails_memory_store_caching, feature_cate
       expect(subject::REPOSITORY_SCOPES).to match_array %i[read_repository write_repository]
     end
 
+    it 'OBSERVABILITY_SCOPES contains all scopes for Observability access' do
+      expect(subject::OBSERVABILITY_SCOPES).to match_array %i[read_observability write_observability]
+    end
+
     it 'OPENID_SCOPES contains all scopes for OpenID Connect' do
       expect(subject::OPENID_SCOPES).to match_array [:openid]
     end
@@ -34,27 +38,27 @@ RSpec.describe Gitlab::Auth, :use_clean_rails_memory_store_caching, feature_cate
     it 'contains all non-default scopes' do
       stub_container_registry_config(enabled: true)
 
-      expect(subject.all_available_scopes).to match_array %i[api read_user read_api read_repository write_repository read_registry write_registry sudo admin_mode]
+      expect(subject.all_available_scopes).to match_array %i[api read_user read_api read_repository write_repository read_registry write_registry sudo admin_mode read_observability write_observability]
     end
 
     it 'contains for non-admin user all non-default scopes without ADMIN access' do
       stub_container_registry_config(enabled: true)
       user = create(:user, admin: false)
 
-      expect(subject.available_scopes_for(user)).to match_array %i[api read_user read_api read_repository write_repository read_registry write_registry]
+      expect(subject.available_scopes_for(user)).to match_array %i[api read_user read_api read_repository write_repository read_registry write_registry read_observability write_observability]
     end
 
     it 'contains for admin user all non-default scopes with ADMIN access' do
       stub_container_registry_config(enabled: true)
       user = create(:user, admin: true)
 
-      expect(subject.available_scopes_for(user)).to match_array %i[api read_user read_api read_repository write_repository read_registry write_registry sudo admin_mode]
+      expect(subject.available_scopes_for(user)).to match_array %i[api read_user read_api read_repository write_repository read_registry write_registry sudo admin_mode read_observability write_observability]
     end
 
     it 'optional_scopes contains all non-default scopes' do
       stub_container_registry_config(enabled: true)
 
-      expect(subject.optional_scopes).to match_array %i[read_user read_api read_repository write_repository read_registry write_registry sudo admin_mode openid profile email]
+      expect(subject.optional_scopes).to match_array %i[read_user read_api read_repository write_repository read_registry write_registry sudo admin_mode openid profile email read_observability write_observability]
     end
 
     context 'with feature flag disabled' do
@@ -65,20 +69,20 @@ RSpec.describe Gitlab::Auth, :use_clean_rails_memory_store_caching, feature_cate
       it 'contains all non-default scopes' do
         stub_container_registry_config(enabled: true)
 
-        expect(subject.all_available_scopes).to match_array %i[api read_user read_api read_repository write_repository read_registry write_registry sudo admin_mode]
+        expect(subject.all_available_scopes).to match_array %i[api read_user read_api read_repository write_repository read_registry write_registry sudo admin_mode read_observability write_observability]
       end
 
       it 'contains for admin user all non-default scopes with ADMIN access' do
         stub_container_registry_config(enabled: true)
         user = create(:user, admin: true)
 
-        expect(subject.available_scopes_for(user)).to match_array %i[api read_user read_api read_repository write_repository read_registry write_registry sudo]
+        expect(subject.available_scopes_for(user)).to match_array %i[api read_user read_api read_repository write_repository read_registry write_registry sudo read_observability write_observability]
       end
 
       it 'optional_scopes contains all non-default scopes' do
         stub_container_registry_config(enabled: true)
 
-        expect(subject.optional_scopes).to match_array %i[read_user read_api read_repository write_repository read_registry write_registry sudo admin_mode openid profile email]
+        expect(subject.optional_scopes).to match_array %i[read_user read_api read_repository write_repository read_registry write_registry sudo admin_mode openid profile email read_observability write_observability]
       end
     end
 
@@ -314,15 +318,17 @@ RSpec.describe Gitlab::Auth, :use_clean_rails_memory_store_caching, feature_cate
         using RSpec::Parameterized::TableSyntax
 
         where(:scopes, :abilities) do
-          'api' | described_class.full_authentication_abilities
-          'read_api' | described_class.read_only_authentication_abilities
-          'read_repository' | [:download_code]
-          'write_repository' | [:download_code, :push_code]
-          'read_user' | []
-          'sudo' | []
-          'openid' | []
-          'profile' | []
-          'email' | []
+          'api'                 | described_class.full_authentication_abilities
+          'read_api'            | described_class.read_only_authentication_abilities
+          'read_repository'     | [:download_code]
+          'write_repository'    | [:download_code, :push_code]
+          'read_user'           | []
+          'sudo'                | []
+          'openid'              | []
+          'profile'             | []
+          'email'               | []
+          'read_observability'  | []
+          'write_observability' | []
         end
 
         with_them do
@@ -1024,6 +1030,7 @@ RSpec.describe Gitlab::Auth, :use_clean_rails_memory_store_caching, feature_cate
     it { is_expected.to include(*described_class::API_SCOPES - [:read_user]) }
     it { is_expected.to include(*described_class::REPOSITORY_SCOPES) }
     it { is_expected.to include(*described_class.registry_scopes) }
+    it { is_expected.to include(*described_class::OBSERVABILITY_SCOPES) }
   end
 
   private
