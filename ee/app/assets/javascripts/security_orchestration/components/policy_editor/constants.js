@@ -19,6 +19,10 @@ export const RUNNER_TAGS_PARSING_ERROR = s__(
   'SecurityOrchestration|Non-existing tags have been detected in the policy yaml. As a result, rule mode has been disabled. To enable rule mode, remove those non-existing tags from the policy yaml.',
 );
 
+export const DAST_SCANNERS_PARSING_ERROR = s__(
+  'SecurityOrchestration|Non-existing DAST profiles have been detected in the policy yaml. As a result, rule mode has been disabled. To enable rule mode, remove those non-existing profiles from the policy yaml.',
+);
+
 export const EDITOR_MODES = [
   { value: EDITOR_MODE_RULE, text: s__('SecurityOrchestration|Rule mode') },
   { value: EDITOR_MODE_YAML, text: s__('SecurityOrchestration|.yaml mode') },

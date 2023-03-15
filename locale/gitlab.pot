@@ -38118,7 +38118,7 @@ msgstr ""
 msgid "ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require a %{scan} scan on runner that %{tags}"
 msgstr ""
 
-msgid "ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require a %{scan} scan to run with site profile %{siteProfile} and scanner profile %{scannerProfile} on runner that %{tags}"
+msgid "ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require a %{scan} scan to run %{dastProfiles} with tags %{tags}"
 msgstr ""
 
 msgid "ScanExecutionPolicy|A pipeline is run"
@@ -38173,6 +38173,9 @@ msgid "ScanExecutionPolicy|has specific tag"
 msgstr ""
 
 msgid "ScanExecutionPolicy|in namespaces"
+msgstr ""
+
+msgid "ScanExecutionPolicy|scanner profile %{scannerProfile} and site profile %{siteProfile}"
 msgstr ""
 
 msgid "ScanExecutionPolicy|selected automatically"
@@ -38996,6 +38999,9 @@ msgid "SecurityOrchestration|No rules defined - policy will not run."
 msgstr ""
 
 msgid "SecurityOrchestration|No tags available"
+msgstr ""
+
+msgid "SecurityOrchestration|Non-existing DAST profiles have been detected in the policy yaml. As a result, rule mode has been disabled. To enable rule mode, remove those non-existing profiles from the policy yaml."
 msgstr ""
 
 msgid "SecurityOrchestration|Non-existing tags have been detected in the policy yaml. As a result, rule mode has been disabled. To enable rule mode, remove those non-existing tags from the policy yaml."
