@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Ingestion::Tasks::HooksExecution do
+RSpec.describe Security::Ingestion::Tasks::HooksExecution, feature_category: :vulnerability_management do
   describe '#execute' do
     let_it_be(:pipeline) { create(:ci_pipeline) }
 

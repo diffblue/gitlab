@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::AutoFixLabelService do
+RSpec.describe Security::AutoFixLabelService, feature_category: :vulnerability_management do
   describe '#execute' do
     subject(:execute) { described_class.new(container: project, current_user: bot).execute }
 

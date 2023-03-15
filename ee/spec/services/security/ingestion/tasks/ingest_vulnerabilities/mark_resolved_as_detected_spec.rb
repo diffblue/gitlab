@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities::MarkResolvedAsDetected do
+RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities::MarkResolvedAsDetected, feature_category: :vulnerability_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:pipeline) { create(:ci_pipeline, user: user) }
   let_it_be(:identifier) { create(:vulnerabilities_identifier) }

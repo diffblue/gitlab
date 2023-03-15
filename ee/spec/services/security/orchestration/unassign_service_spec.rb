@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Orchestration::UnassignService do
+RSpec.describe Security::Orchestration::UnassignService, feature_category: :security_policy_management do
   describe '#execute' do
     subject(:result) { service.execute }
 

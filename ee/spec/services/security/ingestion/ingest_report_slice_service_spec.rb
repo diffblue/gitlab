@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Ingestion::IngestReportSliceService do
+RSpec.describe Security::Ingestion::IngestReportSliceService, feature_category: :vulnerability_management do
   let(:service_object) { described_class.new(pipeline, finding_maps) }
   let(:pipeline) { create(:ci_pipeline) }
   let(:finding_maps) { [create(:finding_map)] }

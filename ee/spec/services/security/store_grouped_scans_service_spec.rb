@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::StoreGroupedScansService do
+RSpec.describe Security::StoreGroupedScansService, feature_category: :vulnerability_management do
   let_it_be(:report_type) { :dast }
   let_it_be(:build_1) { create(:ee_ci_build) }
   let_it_be(:build_2) { create(:ee_ci_build) }

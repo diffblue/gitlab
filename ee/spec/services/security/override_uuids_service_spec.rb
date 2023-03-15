@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::OverrideUuidsService do
+RSpec.describe Security::OverrideUuidsService, feature_category: :vulnerability_management do
   describe '#execute' do
     let(:vulnerability_finding_uuid_1) { SecureRandom.uuid }
     let(:vulnerability_finding_uuid_2) { SecureRandom.uuid }

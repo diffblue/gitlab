@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::TokenRevocationService, '#execute' do
+RSpec.describe Security::TokenRevocationService, '#execute', feature_category: :security_policy_management do
   let_it_be(:revocation_token_types_url) { 'https://myhost.com/api/v1/token_types' }
   let_it_be(:token_revocation_url) { 'https://myhost.com/api/v1/revoke' }
 

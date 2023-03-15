@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::StoreScanService do
+RSpec.describe Security::StoreScanService, feature_category: :vulnerability_management do
   let_it_be_with_refind(:artifact) { create(:ee_ci_job_artifact, :sast) }
 
   let(:known_keys) { Set.new }

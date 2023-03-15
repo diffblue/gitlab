@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe StatusPage::PublishAttachmentsService do
+RSpec.describe StatusPage::PublishAttachmentsService, feature_category: :incident_management do
   RSpec.shared_context 'second file' do
     # Setup second file
     let(:upload_secret_2) { '9cb61a79ce884d5b681dd42728d3c159' }

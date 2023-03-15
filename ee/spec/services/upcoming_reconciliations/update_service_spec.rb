@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe UpcomingReconciliations::UpdateService do
+RSpec.describe UpcomingReconciliations::UpdateService, feature_category: :source_code_management do
   let_it_be(:existing_upcoming_reconciliation) { create(:upcoming_reconciliation, :saas) }
   let_it_be(:namespace) { create(:namespace) }
 

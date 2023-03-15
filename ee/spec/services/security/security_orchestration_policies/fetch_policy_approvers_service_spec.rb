@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversService do
+RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversService, feature_category: :security_policy_management do
   describe '#execute' do
     let_it_be(:group) { create(:group) }
     let_it_be(:project) { create(:project, :public, namespace: group) }

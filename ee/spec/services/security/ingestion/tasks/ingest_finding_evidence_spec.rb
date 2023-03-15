@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Ingestion::Tasks::IngestFindingEvidence do
+RSpec.describe Security::Ingestion::Tasks::IngestFindingEvidence, feature_category: :vulnerability_management do
   describe '#execute' do
     let(:pipeline) { create(:ci_pipeline) }
     let(:finding_evidence) { create(:ci_reports_security_evidence) }

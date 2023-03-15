@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService do
+RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, feature_category: :security_policy_management do
   describe '#execute' do
     let(:service) { described_class.new(container: container, params: { policy: policy }) }
     let(:enabled) { true }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::StoreFindingsService do
+RSpec.describe Security::StoreFindingsService, feature_category: :vulnerability_management do
   let_it_be(:findings_partition_number) { Security::Finding.active_partition_number }
   let_it_be(:security_scan) { create(:security_scan, findings_partition_number: findings_partition_number) }
   let_it_be(:project) { security_scan.project }

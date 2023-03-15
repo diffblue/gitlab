@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::TrackScanService do
+RSpec.describe Security::TrackScanService, feature_category: :security_policy_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :public) }
   let_it_be(:pipeline) { create(:ci_pipeline, project: project, user: user) }

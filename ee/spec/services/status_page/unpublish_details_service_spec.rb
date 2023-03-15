@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe StatusPage::UnpublishDetailsService do
+RSpec.describe StatusPage::UnpublishDetailsService, feature_category: :incident_management do
   let_it_be(:project, refind: true) { create(:project) }
 
   let(:issue) { instance_double(Issue, iid: incident_id) }

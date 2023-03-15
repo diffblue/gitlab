@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Releases::CreateEvidenceService do
+RSpec.describe Releases::CreateEvidenceService, feature_category: :release_evidence do
   include Gitlab::Routing
 
   let(:project) { create(:project) }

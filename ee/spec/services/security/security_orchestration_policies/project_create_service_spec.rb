@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService do
+RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService, feature_category: :security_policy_management do
   describe '#execute' do
     let_it_be_with_refind(:project) { create(:project) }
     let_it_be(:group) { create(:group) }

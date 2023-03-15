@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::DeployTokens::CreateService do
+RSpec.describe Projects::DeployTokens::CreateService, feature_category: :continuous_delivery do
   let_it_be(:group) { create :group }
   let_it_be(:entity) { create(:project, group: group) }
   let_it_be(:user) { create(:user) }

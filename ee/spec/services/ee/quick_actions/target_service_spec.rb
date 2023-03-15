@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe QuickActions::TargetService do
+RSpec.describe QuickActions::TargetService, feature_category: :team_planning do
   let(:group) { create(:group) }
   let(:project) { create(:project, group: group) }
   let(:user) { create(:user) }

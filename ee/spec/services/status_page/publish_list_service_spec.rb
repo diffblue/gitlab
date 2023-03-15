@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe StatusPage::PublishListService do
+RSpec.describe StatusPage::PublishListService, feature_category: :incident_management do
   let_it_be(:project, refind: true) { create(:project) }
 
   let(:issues) { [instance_double(Issue)] }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService do
+RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService, feature_category: :security_policy_management do
   describe '#execute' do
     let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration) }
 

@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConfigurationService do
+RSpec.describe Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConfigurationService,
+  feature_category: :security_policy_management do
   describe '#execute' do
     let_it_be_with_reload(:project) { create(:project, :repository) }
 

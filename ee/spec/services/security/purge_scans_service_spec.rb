@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::PurgeScansService do
+RSpec.describe Security::PurgeScansService, feature_category: :vulnerability_management do
   describe 'class interface' do
     describe '.purge_stale_records' do
       let(:stale_scan) { create(:security_scan, created_at: 91.days.ago) }
