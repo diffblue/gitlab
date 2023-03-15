@@ -60,11 +60,7 @@ module Security
       end
 
       def rule_params(rule, rule_index, action_info, scan_result_policy_read)
-        protected_branch_ids = if ::Feature.enabled?(:group_protected_branches)
-                                 project.all_protected_branches.get_ids_by_name(rule[:branches])
-                               else
-                                 project.protected_branches.get_ids_by_name(rule[:branches])
-                               end
+        protected_branch_ids = project.all_protected_branches.get_ids_by_name(rule[:branches])
 
         rule_params = {
           skip_authorization: true,

@@ -5,7 +5,7 @@ module EE
     extend ::Gitlab::Utils::Override
 
     def can_admin_group_protected_branches?(group)
-      ::Feature.enabled?(:group_protected_branches) &&
+      ::Feature.enabled?(:group_protected_branches, group) &&
         ::License.feature_available?(:group_protected_branches) &&
         can?(current_user, :admin_group, group) &&
         group.root?

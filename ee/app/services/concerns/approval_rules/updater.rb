@@ -60,7 +60,7 @@ module ApprovalRules
           .id_in(protected_branch_ids)
           .for_project(project)
 
-      return unless ::Feature.enabled?(:group_protected_branches) && project.root_namespace.is_a?(Group)
+      return unless ::Feature.enabled?(:group_protected_branches, project.group) && project.root_namespace.is_a?(Group)
 
       params[:protected_branches] +=
         ProtectedBranch.id_in(protected_branch_ids).for_group(project.root_namespace)
