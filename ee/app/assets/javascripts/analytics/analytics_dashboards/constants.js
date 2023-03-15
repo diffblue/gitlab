@@ -21,7 +21,7 @@ export const I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER = s__('Analytics|Visuali
 export const I18N_ALERT_NO_POINTER_TITLE = s__('Analytics|Custom dashboards');
 export const I18N_ALERT_NO_POINTER_BUTTON = s__('Analytics|Configure Dashboard Project');
 export const I18N_ALERT_NO_POINTER_DESCRIPTION = s__(
-  'Analytics|For being able to create your own dashboards please configure a special project to store your dashboards.',
+  'Analytics|To create your own dashboards, first configure a project to store your dashboards.',
 );
 
 export const I18N_DASHBOARD_NOT_FOUND_TITLE = s__('Analytics|Dashboard not found');
