@@ -1,6 +1,9 @@
 import AnalyticsVisualizationPreview from 'ee/analytics/analytics_dashboards/components/visualization_designer/analytics_visualization_preview.vue';
 
-import { PANEL_DISPLAY_TYPES } from 'ee/analytics/analytics_dashboards/constants';
+import {
+  PANEL_DISPLAY_TYPES,
+  PANEL_VISUALIZATION_HEIGHT,
+} from 'ee/analytics/analytics_dashboards/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 describe('AnalyticsVisualizationPreview', () => {
@@ -99,7 +102,9 @@ describe('AnalyticsVisualizationPreview', () => {
     });
 
     it('should render visualization', () => {
-      expect(wrapper.findByTestId('preview-visualization').exists()).toBe(true);
+      expect(wrapper.findByTestId('preview-visualization').attributes('style')).toBe(
+        `height: ${PANEL_VISUALIZATION_HEIGHT};`,
+      );
     });
   });
 

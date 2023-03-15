@@ -39,6 +39,8 @@ export function isTrackedEvent(eventType) {
   return EVENTS_TYPES.includes(eventType);
 }
 
+export const PANEL_VISUALIZATION_HEIGHT = '600px';
+
 export const PANEL_DISPLAY_TYPES = {
   DATA: 'data',
   VISUALIZATION: 'visualization',

@@ -6,7 +6,11 @@ import { s__, sprintf } from '~/locale';
 
 import DataTable from 'ee/analytics/analytics_dashboards/components/visualizations/data_table.vue';
 
-import { PANEL_DISPLAY_TYPES, PANEL_DISPLAY_TYPE_ITEMS } from '../../constants';
+import {
+  PANEL_DISPLAY_TYPES,
+  PANEL_DISPLAY_TYPE_ITEMS,
+  PANEL_VISUALIZATION_HEIGHT,
+} from '../../constants';
 
 export default {
   name: 'AnalyticsVisualizationPreview',
@@ -59,6 +63,7 @@ export default {
       });
     },
   },
+  PANEL_VISUALIZATION_HEIGHT,
 };
 </script>
 
@@ -126,6 +131,7 @@ export default {
           v-if="selectedVisualizationType"
           :title="resultVisualization.title"
           :visualization="resultVisualization"
+          :style="{ height: $options.PANEL_VISUALIZATION_HEIGHT }"
           data-testid="preview-visualization"
           @error="(error) => handleVisualizationError('TITLE', error)"
         />
