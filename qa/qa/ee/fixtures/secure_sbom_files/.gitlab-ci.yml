@@ -1,0 +1,10 @@
+include:
+  template: Dependency-Scanning.gitlab-ci.yml
+
+sbom:
+  tags: [secure_sbom]
+  script:
+    - echo "Skipped"
+  artifacts:
+    reports:
+      cyclonedx: gl-sbom-npm-npm.cdx.json

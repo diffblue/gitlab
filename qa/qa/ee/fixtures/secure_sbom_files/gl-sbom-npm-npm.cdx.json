@@ -1,0 +1,40 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:aec33827-20ae-40d0-ae83-18ee846364d2",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2022-02-23T08:01:37Z",
+    "tools": [
+      {
+        "vendor": "GitLab",
+        "name": "Gemnasium",
+        "version": "2.34.0"
+      }
+    ],
+    "authors": [
+      {
+        "name": "GitLab",
+        "email": "support@gitlab.com"
+      }
+    ],
+    "properties": [
+      {
+        "name": "gitlab:dependency_scanning:input_file",
+        "value": "package-lock.json"
+      },
+      {
+        "name": "gitlab:dependency_scanning:package_manager",
+        "value": "npm"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "dragselect",
+      "version": "1.3.6",
+      "purl": "pkg:npm/dragselect@1.3.6",
+      "type": "library"
+    }
+  ]
+}
