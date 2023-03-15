@@ -384,13 +384,6 @@ RSpec.configure do |config|
       ./spec/support/shared_examples/requests/api/status_shared_examples.rb
       ./spec/support/shared_examples/requests/clusters/certificate_based_clusters_feature_flag_shared_examples.rb
       ./spec/support/shared_examples/requests/snippet_shared_examples.rb
-      ./ee/spec/requests/api/audit_events_spec.rb
-      ./ee/spec/requests/api/ci/minutes_spec.rb
-      ./ee/spec/requests/api/elasticsearch_indexed_namespaces_spec.rb
-      ./ee/spec/requests/api/epics_spec.rb
-      ./ee/spec/requests/api/geo_nodes_spec.rb
-      ./ee/spec/requests/api/geo_replication_spec.rb
-      ./ee/spec/requests/api/geo_spec.rb
       ./ee/spec/requests/api/group_push_rule_spec.rb
       ./ee/spec/requests/api/group_repository_storage_moves_spec.rb
       ./ee/spec/requests/api/groups_spec.rb
