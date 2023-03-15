@@ -1,7 +1,6 @@
 <script>
 import {
   GlSearchBoxByType,
-  GlOutsideDirective as Outside,
   GlIcon,
   GlToken,
   GlTooltipDirective,
@@ -55,7 +54,7 @@ export default {
       false,
     ),
   },
-  directives: { Outside, GlTooltip: GlTooltipDirective, GlResizeObserverDirective },
+  directives: { GlTooltip: GlTooltipDirective, GlResizeObserverDirective },
   components: {
     GlSearchBoxByType,
     HeaderSearchDefaultItems,
@@ -67,7 +66,6 @@ export default {
   },
   data() {
     return {
-      showDropdown: false,
       isFocused: false,
       currentFocusIndex: SEARCH_BOX_INDEX,
     };
@@ -93,7 +91,7 @@ export default {
       return Boolean(gon?.current_username);
     },
     showSearchDropdown() {
-      if (!this.showDropdown || !this.isLoggedIn) {
+      if (!this.isFocused || !this.isLoggedIn) {
         return false;
       }
       return this.searchOptions?.length > 0;
@@ -110,7 +108,6 @@ export default {
       }
       return FIRST_DROPDOWN_INDEX;
     },
-
     searchInputDescribeBy() {
       if (this.isLoggedIn) {
         return this.$options.i18n.searchInputDescribeByWithDropdown;
@@ -163,8 +160,7 @@ export default {
     ...mapActions(['setSearch', 'fetchAutocompleteOptions', 'clearAutocomplete']),
     openDropdown() {
       this.isFocused = true;
-      this.showDropdown = true;
-      this.$emit('expandSearchBar', true);
+      this.$emit('expandSearchBar');
 
       Tracking.event(undefined, 'focus_input', {
         label: 'global_search',
@@ -173,7 +169,6 @@ export default {
     },
     closeDropdown() {
       this.isFocused = false;
-      this.showDropdown = false;
     },
     collapseAndCloseSearchBar() {
       this.closeDropdown();
