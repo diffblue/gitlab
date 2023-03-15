@@ -141,6 +141,10 @@
   }
 }
 
+.super-sidebar-skip-to {
+  z-index: $super-sidebar-z-index;
+}
+
 .super-sidebar-overlay {
   display: none;
 }
