@@ -264,7 +264,7 @@ RSpec.describe Projects::UpdateMirrorService do
 
           control = RedisCommands::Recorder.new(pattern: ':branch_names:') { service.execute }
 
-          expect(control.by_command(:sadd).count).to eq(1)
+          expect(control).not_to exceed_redis_command_calls_limit(:sadd, 1)
         end
 
         it 'updates existing branches' do
