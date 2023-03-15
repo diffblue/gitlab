@@ -245,6 +245,9 @@ export default {
           });
         });
     },
+    hasDateSet({ startDate, dueDate }) {
+      return Boolean(startDate || dueDate);
+    },
   },
 };
 </script>
@@ -324,7 +327,7 @@ export default {
       <span class="issuable-reference">{{ epicReference(issuable) }}</span>
     </template>
     <template #timeframe="{ issuable }">
-      <gl-icon name="calendar" />
+      <gl-icon v-if="hasDateSet(issuable)" name="calendar" />
       {{ epicTimeframe(issuable) }}
     </template>
     <template #statistics="{ issuable = {} }">
