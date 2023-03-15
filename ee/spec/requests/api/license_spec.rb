@@ -159,7 +159,8 @@ RSpec.describe API::License, api: true, feature_category: :sm_provisioning do
         put api(endpoint, admin)
 
         expect(::Analytics::UsageTrends::CounterJobWorker).to have_received(:perform_async).once
-        expect(response).to have_gitlab_http_status(:created)
+        expect(response).to have_gitlab_http_status(:accepted)
+        expect(json_response['success']).to be true
       end
 
       context "when license doesn't exist" do
