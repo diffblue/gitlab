@@ -301,12 +301,15 @@ if (WEBPACK_USE_ESBUILD_LOADER) {
 }
 
 const vueLoaderOptions = {
+  ident: 'vue-loader-options',
+
   cacheDirectory: path.join(CACHE_PATH, 'vue-loader'),
   cacheIdentifier: [
     process.env.NODE_ENV || 'development',
     webpack.version,
     VUE_VERSION,
     VUE_LOADER_VERSION,
+    EXPLICIT_VUE_VERSION,
   ].join('|'),
 };
 
@@ -334,6 +337,8 @@ if (USE_VUE3) {
   Object.assign(alias, {
     vue: '@vue/compat',
   });
+
+  vueLoaderOptions.compiler = require.resolve('./vue3migration/compiler');
 }
 
 module.exports = {
