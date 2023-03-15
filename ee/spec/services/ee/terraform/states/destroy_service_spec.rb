@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Terraform::States::DestroyService, :geo do
+RSpec.describe Terraform::States::DestroyService, :geo, feature_category: :infrastructure_as_code do
   let_it_be(:state) { create(:terraform_state, :with_version, :deletion_in_progress) }
   let_it_be(:version) { state.versions.first }
 

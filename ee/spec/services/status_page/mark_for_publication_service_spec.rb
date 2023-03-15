@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe StatusPage::MarkForPublicationService do
+RSpec.describe StatusPage::MarkForPublicationService, feature_category: :incident_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project, refind: true) { create(:project, group: group) }

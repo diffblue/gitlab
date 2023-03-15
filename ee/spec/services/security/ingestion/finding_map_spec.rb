@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Ingestion::FindingMap do
+RSpec.describe Security::Ingestion::FindingMap, feature_category: :vulnerability_management do
   let(:security_finding) { build(:security_finding) }
   let(:identifier) { build(:ci_reports_security_identifier) }
   let(:report_finding) { build(:ci_reports_security_finding, identifiers: [identifier]) }

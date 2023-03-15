@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Search::SnippetService do
+RSpec.describe Search::SnippetService, feature_category: :global_search do
   include SearchResultHelpers
   include ProjectHelpers
   include AdminModeHelper

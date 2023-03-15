@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ResourceEvents::ChangeLabelsService do
+RSpec.describe ResourceEvents::ChangeLabelsService, feature_category: :team_planning do
   let_it_be(:group) { create(:group) }
   let_it_be(:user)  { create(:user) }
   let_it_be(:labels) { create_list(:group_label, 2, group: group) }

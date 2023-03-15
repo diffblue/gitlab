@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ProtectedBranches::UpdateService do
+RSpec.describe ProtectedBranches::UpdateService, feature_category: :compliance_management do
   let(:branch_name) { 'feature' }
   let(:protected_branch) { create(:protected_branch, name: branch_name) }
   let(:project) { protected_branch.project }

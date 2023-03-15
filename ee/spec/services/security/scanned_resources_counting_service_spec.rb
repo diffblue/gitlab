@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::ScannedResourcesCountingService, '#execute' do
+RSpec.describe Security::ScannedResourcesCountingService, '#execute', feature_category: :vulnerability_management do
   before do
     stub_licensed_features(sast: true, dependency_scanning: true, container_scanning: true, dast: true)
   end

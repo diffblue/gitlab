@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SoftwareLicensePolicies::UpdateService do
+RSpec.describe SoftwareLicensePolicies::UpdateService, feature_category: :security_policy_management do
   let(:project) { create(:project) }
 
   let(:user) do

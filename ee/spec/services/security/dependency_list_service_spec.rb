@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::DependencyListService do
+RSpec.describe Security::DependencyListService, feature_category: :vulnerability_management do
   describe '#execute' do
     let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_dependency_list_report) }
     let_it_be(:nokogiri_finding) { create(:vulnerabilities_finding, :detected, :with_dependency_scanning_metadata, :with_pipeline, raw_severity: 'High') }

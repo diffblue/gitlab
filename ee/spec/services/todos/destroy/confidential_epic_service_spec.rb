@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Todos::Destroy::ConfidentialEpicService do
+RSpec.describe Todos::Destroy::ConfidentialEpicService, feature_category: :team_planning do
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:user) { create(:user) }
   let_it_be(:author) { create(:user) }

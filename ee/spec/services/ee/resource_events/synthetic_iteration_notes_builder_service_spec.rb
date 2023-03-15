@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::ResourceEvents::SyntheticIterationNotesBuilderService do
+RSpec.describe EE::ResourceEvents::SyntheticIterationNotesBuilderService, feature_category: :team_planning do
   describe '#execute' do
     let_it_be(:user) { create(:user) }
     let_it_be(:issue) { create(:issue, author: user) }

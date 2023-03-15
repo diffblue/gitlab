@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::ReportSummaryService, '#execute' do
+RSpec.describe Security::ReportSummaryService, '#execute', feature_category: :vulnerability_management do
   let_it_be(:pipeline) { create(:ci_pipeline, :success) }
 
   let_it_be(:build_ds) { create(:ci_build, :success, name: 'dependency_scanning', pipeline: pipeline) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ResourceEvents::ChangeIterationService do
+RSpec.describe ResourceEvents::ChangeIterationService, feature_category: :team_planning do
   let_it_be(:timebox) { create(:iteration) }
 
   let(:created_at_time) { Time.utc(2019, 12, 30) }

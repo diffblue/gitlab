@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Orchestration::AssignService do
+RSpec.describe Security::Orchestration::AssignService, feature_category: :security_policy_management do
   let_it_be(:project, reload: true) { create(:project) }
   let_it_be(:another_project) { create(:project) }
   let_it_be(:current_user) { create(:user) }

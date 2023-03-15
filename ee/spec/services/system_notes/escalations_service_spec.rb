@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SystemNotes::EscalationsService do
+RSpec.describe SystemNotes::EscalationsService, feature_category: :incident_management do
   include Gitlab::Routing
 
   let_it_be(:project) { create(:project) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
+RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, feature_category: :security_policy_management do
   describe '#execute' do
     let(:project) { create(:project, :repository) }
     let(:current_user) { project.users.first }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SystemNotes::VulnerabilitiesService do
+RSpec.describe SystemNotes::VulnerabilitiesService, feature_category: :vulnerability_management do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:author) { create(:user) }
 

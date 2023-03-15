@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::SecurityOrchestrationPolicies::OperationalVulnerabilitiesConfigurationService do
+RSpec.describe Security::SecurityOrchestrationPolicies::OperationalVulnerabilitiesConfigurationService,
+  feature_category: :security_policy_management do
   let_it_be(:group) { create(:group) }
   let_it_be(:object) { create(:project, group: group) }
 

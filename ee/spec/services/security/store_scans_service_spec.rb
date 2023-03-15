@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::StoreScansService do
+RSpec.describe Security::StoreScansService, feature_category: :vulnerability_management do
   let_it_be(:pipeline) { create(:ci_pipeline) }
 
   describe '.execute' do

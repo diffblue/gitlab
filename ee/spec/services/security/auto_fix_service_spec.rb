@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::AutoFixService do
+RSpec.describe Security::AutoFixService, feature_category: :vulnerability_management do
   describe '#execute' do
     subject(:execute_service) { described_class.new(project, pipeline).execute }
 

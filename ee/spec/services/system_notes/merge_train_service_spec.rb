@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SystemNotes::MergeTrainService do
+RSpec.describe SystemNotes::MergeTrainService, feature_category: :merge_trains do
   let_it_be(:author) { create(:user) }
   let_it_be(:project) { create(:project) }
 

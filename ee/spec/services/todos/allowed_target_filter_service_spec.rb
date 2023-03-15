@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Todos::AllowedTargetFilterService do
+RSpec.describe Todos::AllowedTargetFilterService, feature_category: :team_planning do
   let_it_be(:authorized_group) { create(:group, :private) }
   let_it_be(:authorized_project) { create(:project, group: authorized_group) }
   let_it_be(:unauthorized_group) { create(:group, :private) }

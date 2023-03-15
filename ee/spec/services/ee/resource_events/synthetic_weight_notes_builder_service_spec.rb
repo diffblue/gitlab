@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::ResourceEvents::SyntheticWeightNotesBuilderService do
+RSpec.describe EE::ResourceEvents::SyntheticWeightNotesBuilderService, feature_category: :team_planning do
   describe '#execute' do
     let_it_be(:user) { create(:user) }
 

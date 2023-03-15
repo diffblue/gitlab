@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SystemNotes::EpicsService do
+RSpec.describe SystemNotes::EpicsService, feature_category: :portfolio_management do
   let_it_be(:group)   { create(:group) }
   let_it_be(:project) { create(:project, :repository, group: group) }
   let_it_be(:author)  { create(:user) }

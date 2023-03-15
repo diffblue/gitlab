@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::SecurityOrchestrationPolicies::PolicyConfigurationValidationService do
+RSpec.describe Security::SecurityOrchestrationPolicies::PolicyConfigurationValidationService,
+  feature_category: :security_policy_management do
   describe '#execute' do
     let(:project) { create(:project) }
     let(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }

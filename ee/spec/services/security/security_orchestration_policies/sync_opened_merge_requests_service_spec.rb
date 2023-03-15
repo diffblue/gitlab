@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService do
+RSpec.describe Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService, feature_category: :security_policy_management do
   let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration) }
   let_it_be(:project) { policy_configuration.project }
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::MergeReportsService, '#execute' do
+RSpec.describe Security::MergeReportsService, '#execute', feature_category: :vulnerability_management do
   let(:scanner_2) { build(:ci_reports_security_scanner, external_id: 'scanner-2', name: 'Scanner 2') }
   let(:identifier_cwe) { build(:ci_reports_security_identifier, external_id: '789', external_type: 'cwe') }
   let(:identifier_2_primary) { build(:ci_reports_security_identifier, external_id: 'VULN-2', external_type: 'scanner-2') }
