@@ -131,11 +131,11 @@ module QA
             project.name = Runtime::Env.auto_devops_project_name || 'project-with-secure'
             project.description = 'Project with Secure'
           end
-          Runtime::Feature.enable(:license_scanning_sbom_scanner, @project)
+          Runtime::Feature.enable(:license_scanning_sbom_scanner, project: @project)
         end
 
         after(:all) do
-          Runtime::Feature.disable(:license_scanning_sbom_scanner, @project)
+          Runtime::Feature.disable(:license_scanning_sbom_scanner, project: @project)
           @project&.remove_via_api! if @project
         end
 
