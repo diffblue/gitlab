@@ -16,9 +16,6 @@ const mockTimeframeMonths = getTimeframeForRangeType({
   initialDate: mockTimeframeInitialDate,
 });
 const getDateString = (date) => date.toISOString().split('T')[0];
-window.gon = {
-  first_day_of_week: 0,
-};
 
 describe('getWeeksForDates', () => {
   it('returns weeks for given dates', () => {
@@ -31,11 +28,8 @@ describe('getWeeksForDates', () => {
   });
 
   describe('when different first day of week', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       window.gon.first_day_of_week = 1;
-    });
-    afterAll(() => {
-      window.gon.first_day_of_week = 0;
     });
 
     it('returns correct weeks', () => {

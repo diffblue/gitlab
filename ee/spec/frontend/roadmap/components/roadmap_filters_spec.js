@@ -265,11 +265,14 @@ describe('RoadmapFilters', () => {
       });
 
       describe('when user is logged in', () => {
-        beforeAll(() => {
+        beforeEach(() => {
           gon.current_user_id = 1;
           gon.current_user_fullname = 'Administrator';
           gon.current_username = 'root';
           gon.current_user_avatar_url = 'avatar/url';
+
+          wrapper = createComponent();
+          filteredSearchBar = wrapper.findComponent(FilteredSearchBar);
         });
 
         it('includes `Author`, `Milestone`, `Confidential`, `Epic`, `Group`, `Label` and `My-Reaction` tokens', () => {

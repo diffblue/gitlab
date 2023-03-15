@@ -173,7 +173,7 @@ describe('ee/environments/components/environment_approval.vue', () => {
     });
 
     describe('permissions', () => {
-      beforeAll(() => {
+      beforeEach(() => {
         gon.current_username = 'root';
       });
 

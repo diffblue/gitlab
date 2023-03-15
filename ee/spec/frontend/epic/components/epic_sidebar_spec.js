@@ -40,17 +40,11 @@ describe('EpicSidebarComponent', () => {
     });
   };
 
-  beforeEach(() => {
-    wrapper = createComponent();
-  });
-
   describe('template', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       gon.current_user_id = 1;
-    });
 
-    afterAll(() => {
-      gon.current_user_id = null;
+      wrapper = createComponent();
     });
 
     it('renders component container element with classes `right-sidebar-expanded`, `right-sidebar` & `epic-sidebar`', async () => {
@@ -147,7 +141,7 @@ describe('EpicSidebarComponent', () => {
 
   describe('when user is not signed in', () => {
     beforeEach(() => {
-      gon.current_user_id = null;
+      wrapper = createComponent();
     });
 
     it('does not render SidebarTodoWidget', () => {
@@ -156,6 +150,10 @@ describe('EpicSidebarComponent', () => {
   });
 
   describe('mounted', () => {
+    beforeEach(() => {
+      wrapper = createComponent();
+    });
+
     it('makes request to get epic details', () => {
       const actionSpies = {
         fetchEpicDetails: jest.fn(),
@@ -173,6 +171,10 @@ describe('EpicSidebarComponent', () => {
 
   describe('sidebardatewidget dates', () => {
     const mockDate = '2023-03-01';
+
+    beforeEach(() => {
+      wrapper = createComponent();
+    });
 
     it('sets min date when start date is selected', () => {
       const startDateWidget = wrapper.find('[data-testid="start-date"]');
