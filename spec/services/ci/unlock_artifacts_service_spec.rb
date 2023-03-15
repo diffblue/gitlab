@@ -3,6 +3,13 @@
 require 'spec_helper'
 
 RSpec.describe Ci::UnlockArtifactsService, feature_category: :continuous_integration do
+  let_it_be(:ref) { 'master' }
+  let_it_be(:project) { create(:project) }
+  let_it_be(:tag_ref_path) { "#{::Gitlab::Git::TAG_REF_PREFIX}#{ref}" }
+  let_it_be(:ci_ref_tag) { create(:ci_ref, ref_path: tag_ref_path, project: project) }
+  let_it_be(:branch_ref_path) { "#{::Gitlab::Git::BRANCH_REF_PREFIX}#{ref}" }
+  let_it_be(:ci_ref_branch) { create(:ci_ref, ref_path: branch_ref_path, project: project) }
+
   using RSpec::Parameterized::TableSyntax
 
   where(:tag) do
@@ -13,31 +20,27 @@ RSpec.describe Ci::UnlockArtifactsService, feature_category: :continuous_integra
   end
 
   with_them do
-    let(:ref) { 'master' }
-    let(:ref_path) { tag ? "#{::Gitlab::Git::TAG_REF_PREFIX}#{ref}" : "#{::Gitlab::Git::BRANCH_REF_PREFIX}#{ref}" }
-    let(:ci_ref) { create(:ci_ref, ref_path: ref_path) }
-    let(:project) { ci_ref.project }
+    let(:target_ref) { tag ? ci_ref_tag : ci_ref_branch }
     let(:source_job) { create(:ci_build, pipeline: pipeline) }
 
     let!(:old_unlocked_pipeline) { create(:ci_pipeline, :with_persisted_artifacts, ref: ref, tag: tag, project: project, locked: :unlocked) }
     let!(:older_pipeline) { create(:ci_pipeline, :with_persisted_artifacts, ref: ref, tag: tag, project: project, locked: :artifacts_locked) }
     let!(:older_ambiguous_pipeline) { create(:ci_pipeline, :with_persisted_artifacts, ref: ref, tag: !tag, project: project, locked: :artifacts_locked) }
     let!(:code_coverage_pipeline) { create(:ci_pipeline, :with_coverage_report_artifact, ref: ref, tag: tag, project: project, locked: :artifacts_locked) }
-    let!(:pipeline) { create(:ci_pipeline, :with_persisted_artifacts, ref: ref, tag: tag, project: project, locked: :artifacts_locked) }
-    let!(:child_pipeline) { create(:ci_pipeline, :with_persisted_artifacts, ref: ref, tag: tag, child_of: pipeline, project: project, locked: :artifacts_locked) }
+    let!(:successful_pipeline) { create(:ci_pipeline, :with_persisted_artifacts, ref: ref, tag: tag, project: project, locked: :artifacts_locked) }
+    let!(:child_pipeline) { create(:ci_pipeline, :with_persisted_artifacts, ref: ref, tag: tag, child_of: successful_pipeline, project: project, locked: :artifacts_locked) }
     let!(:newer_pipeline) { create(:ci_pipeline, :with_persisted_artifacts, ref: ref, tag: tag, project: project, locked: :artifacts_locked) }
     let!(:other_ref_pipeline) { create(:ci_pipeline, :with_persisted_artifacts, ref: 'other_ref', tag: tag, project: project, locked: :artifacts_locked) }
-    let!(:sources_pipeline) { create(:ci_sources_pipeline, source_job: source_job, source_project: project, pipeline: child_pipeline, project: project) }
 
     before do
       stub_const("#{described_class}::BATCH_SIZE", 1)
     end
 
     describe '#execute' do
-      subject(:execute) { described_class.new(pipeline.project, pipeline.user).execute(ci_ref, before_pipeline) }
+      subject(:execute) { described_class.new(successful_pipeline.project, successful_pipeline.user).execute(target_ref, before_pipeline) }
 
       context 'when running on a ref before a pipeline' do
-        let(:before_pipeline) { pipeline }
+        let(:before_pipeline) { successful_pipeline }
 
         it 'unlocks artifacts from older pipelines' do
           expect { execute }.to change { older_pipeline.reload.locked }.from('artifacts_locked').to('unlocked')
@@ -56,7 +59,7 @@ RSpec.describe Ci::UnlockArtifactsService, feature_category: :continuous_integra
         end
 
         it 'does not unlock artifacts from the same pipeline' do
-          expect { execute }.not_to change { pipeline.reload.locked }.from('artifacts_locked')
+          expect { execute }.not_to change { successful_pipeline.reload.locked }.from('artifacts_locked')
         end
 
         it 'does not unlock artifacts for other refs' do
@@ -87,8 +90,8 @@ RSpec.describe Ci::UnlockArtifactsService, feature_category: :continuous_integra
           expect { execute }.to change { newer_pipeline.reload.locked }.from('artifacts_locked').to('unlocked')
         end
 
-        it 'unlocks artifacts from the same pipeline' do
-          expect { execute }.to change { pipeline.reload.locked }.from('artifacts_locked').to('unlocked')
+        it 'unlocks artifacts from the successful pipeline' do
+          expect { execute }.to change { successful_pipeline.reload.locked }.from('artifacts_locked').to('unlocked')
         end
 
         it 'does not unlock artifacts for tag or branch with same name as ref' do
@@ -114,10 +117,10 @@ RSpec.describe Ci::UnlockArtifactsService, feature_category: :continuous_integra
     end
 
     describe '#unlock_pipelines_query' do
-      subject { described_class.new(pipeline.project, pipeline.user).unlock_pipelines_query(ci_ref, before_pipeline) }
+      subject { described_class.new(successful_pipeline.project, successful_pipeline.user).unlock_pipelines_query(target_ref, before_pipeline) }
 
       context 'when running on a ref before a pipeline' do
-        let(:before_pipeline) { pipeline }
+        let(:before_pipeline) { successful_pipeline }
 
         it 'produces the expected SQL string' do
           expect(subject.squish).to eq <<~SQL.squish
@@ -132,7 +135,7 @@ RSpec.describe Ci::UnlockArtifactsService, feature_category: :continuous_integra
                     FROM
                         "ci_pipelines"
                     WHERE
-                        "ci_pipelines"."ci_ref_id" = #{ci_ref.id}
+                        "ci_pipelines"."ci_ref_id" = #{target_ref.id}
                         AND "ci_pipelines"."locked" = 1
                         AND "ci_pipelines"."id" < #{before_pipeline.id}
                         AND "ci_pipelines"."id" NOT IN
@@ -186,7 +189,7 @@ RSpec.describe Ci::UnlockArtifactsService, feature_category: :continuous_integra
                     FROM
                         "ci_pipelines"
                     WHERE
-                        "ci_pipelines"."ci_ref_id" = #{ci_ref.id}
+                        "ci_pipelines"."ci_ref_id" = #{target_ref.id}
                         AND "ci_pipelines"."locked" = 1
                     LIMIT 1
                     FOR UPDATE
@@ -199,7 +202,7 @@ RSpec.describe Ci::UnlockArtifactsService, feature_category: :continuous_integra
     end
 
     describe '#unlock_job_artifacts_query' do
-      subject { described_class.new(pipeline.project, pipeline.user).unlock_job_artifacts_query(pipeline_ids) }
+      subject { described_class.new(successful_pipeline.project, successful_pipeline.user).unlock_job_artifacts_query(pipeline_ids) }
 
       context 'when given a single pipeline ID' do
         let(:pipeline_ids) { [older_pipeline.id] }
@@ -226,7 +229,7 @@ RSpec.describe Ci::UnlockArtifactsService, feature_category: :continuous_integra
       end
 
       context 'when given multiple pipeline IDs' do
-        let(:pipeline_ids) { [older_pipeline.id, newer_pipeline.id, pipeline.id] }
+        let(:pipeline_ids) { [older_pipeline.id, newer_pipeline.id, successful_pipeline.id] }
 
         it 'produces the expected SQL string' do
           expect(subject.squish).to eq <<~SQL.squish
