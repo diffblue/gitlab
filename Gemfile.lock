@@ -1621,7 +1621,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  CFPropertyList
+  CFPropertyList (~> 3.0.0)
   RedCloth (~> 4.3.2)
   acme-client (~> 2.0)
   activerecord-explain-analyze (~> 0.1)
