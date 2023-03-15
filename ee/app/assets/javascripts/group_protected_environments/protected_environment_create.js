@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import AccessorUtilities from '~/lib/utils/accessor';
 import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';

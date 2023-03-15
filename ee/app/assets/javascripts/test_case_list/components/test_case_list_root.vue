@@ -2,7 +2,7 @@
 import { GlButton } from '@gitlab/ui';
 
 import Api from '~/api';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 import axios from '~/lib/utils/axios_utils';
 import { updateHistory, setUrlParams, queryToObject } from '~/lib/utils/url_utility';

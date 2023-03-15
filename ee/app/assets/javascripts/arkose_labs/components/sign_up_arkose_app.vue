@@ -1,6 +1,6 @@
 <script>
 import { uniqueId } from 'lodash';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import DomElementListener from '~/vue_shared/components/dom_element_listener.vue';
 import { initArkoseLabsScript } from '../init_arkose_labs_script';
 import {

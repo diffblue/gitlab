@@ -1,6 +1,6 @@
 <script>
 import { GlButton } from '@gitlab/ui';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import IssuableCreate from '~/vue_shared/issuable/create/components/issuable_create_root.vue';
 import { redirectTo } from '~/lib/utils/url_utility';
 

@@ -3,7 +3,7 @@ import { GlAlert, GlButton, GlButtonGroup } from '@gitlab/ui';
 import { cloneDeep } from 'lodash';
 import BurnupQueryIteration from 'shared_queries/burndown_chart/burnup.iteration.query.graphql';
 import BurnupQueryMilestone from 'shared_queries/burndown_chart/burnup.milestone.query.graphql';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { WORKSPACE_GROUP } from '~/issues/constants';
 import dateFormat from '~/lib/dateformat';
 import axios from '~/lib/utils/axios_utils';
