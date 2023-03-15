@@ -36,7 +36,7 @@
           = render 'user_info'
 
         .submit-container
-          = f.submit _("Sign out & Register"), class: "btn-confirm gl-button btn"
+          = f.submit _("Sign out & Register"), pajamas_button: true
       - else
         .submit-container
-          = f.submit _("Register"), class: "btn-confirm gl-button btn"
+          = f.submit _("Register"), pajamas_button: true
