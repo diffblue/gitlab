@@ -9537,6 +9537,9 @@ msgstr ""
 msgid "ClusterAgents|Agent %{strongStart}disconnected%{strongEnd}"
 msgstr ""
 
+msgid "ClusterAgents|Agent ID #%{agentId}"
+msgstr ""
+
 msgid "ClusterAgents|Agent access token:"
 msgstr ""
 
@@ -16348,6 +16351,9 @@ msgid "Environment|Auto stop %{time}"
 msgstr ""
 
 msgid "Environment|Deployment tier"
+msgstr ""
+
+msgid "Environment|Kubernetes overview"
 msgstr ""
 
 msgid "Epic"
