@@ -39,6 +39,8 @@ describe('JobArtifactsTable component', () => {
   let wrapper;
   let requestHandlers;
 
+  const mockToastShow = jest.fn();
+
   const findBanner = () => wrapper.findComponent(FeedbackBanner);
 
   const findLoadingState = () => wrapper.findComponent(GlLoadingIcon);
@@ -123,6 +125,11 @@ describe('JobArtifactsTable component', () => {
         canDestroyArtifacts,
         artifactsManagementFeedbackImagePath: 'banner/image/path',
         glFeatures,
+      },
+      mocks: {
+        $toast: {
+          show: mockToastShow,
+        },
       },
       data() {
         return data;
@@ -372,6 +379,15 @@ describe('JobArtifactsTable component', () => {
         await findBulkDelete().vm.$emit('clearSelectedArtifacts');
 
         expect(findBulkDelete().exists()).toBe(false);
+      });
+
+      it('shows a toast when artifacts are deleted', async () => {
+        const count = job.artifacts.nodes.length;
+
+        await findJobCheckbox().vm.$emit('input', true);
+        findBulkDelete().vm.$emit('deleted', count);
+
+        expect(mockToastShow).toHaveBeenCalledWith(`${count} selected artifacts deleted`);
       });
     });
 

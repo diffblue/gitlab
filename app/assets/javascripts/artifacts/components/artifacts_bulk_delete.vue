@@ -1,6 +1,8 @@
 <script>
 import { GlButton, GlModal, GlSprintf } from '@gitlab/ui';
 import { createAlert } from '~/alert';
+import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
 import getJobArtifactsQuery from '../graphql/queries/get_job_artifacts.query.graphql';
 import bulkDestroyJobArtifactsMutation from '../graphql/mutations/bulk_destroy_job_artifacts.mutation.graphql';
 import { removeArtifactFromStore } from '../graphql/cache_update';
@@ -75,7 +77,7 @@ export default {
         await this.$apollo.mutate({
           mutation: bulkDestroyJobArtifactsMutation,
           variables: {
-            projectId: `gid://gitlab/Project/${this.projectId}`,
+            projectId: convertToGraphQLId(TYPENAME_PROJECT, this.projectId),
             ids: this.selectedArtifacts,
           },
           update: (store, { data }) => {
