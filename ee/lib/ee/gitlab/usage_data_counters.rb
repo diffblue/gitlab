@@ -13,7 +13,8 @@ module EE
           super + [
             ::Gitlab::UsageDataCounters::LicensesList,
             ::Gitlab::StatusPage::UsageDataCounters::IncidentCounter,
-            ::Gitlab::UsageDataCounters::LicenseTestingCounter
+            ::Gitlab::UsageDataCounters::LicenseTestingCounter,
+            ::Gitlab::UsageDataCounters::ValueStreamsDashboardCounter
           ]
         end
       end

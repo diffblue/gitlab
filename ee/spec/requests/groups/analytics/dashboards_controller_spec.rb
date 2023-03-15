@@ -179,6 +179,14 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :subgr
             end
           end
 
+          it 'tracks page view on usage ping' do
+            expect(::Gitlab::UsageDataCounters::ValueStreamsDashboardCounter).to receive(:count).with(:views)
+
+            request
+
+            expect(response).to be_successful
+          end
+
           context 'when the feature is not enabled for that group' do
             let(:request) { get(value_streams_dashboard_group_analytics_dashboards_path(another_group)) }
 
