@@ -6,12 +6,12 @@ import MrWidgetRow from '~/vue_merge_request_widget/components/widget/widget_con
 import toast from '~/vue_shared/plugins/global_toast';
 import { BV_SHOW_MODAL, BV_HIDE_MODAL } from '~/lib/utils/constants';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_UNPROCESSABLE_ENTITY } from '~/lib/utils/http_status';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { s__, sprintf } from '~/locale';
 import FindingModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
 import findingQuery from 'ee/security_dashboard/graphql/queries/mr_widget_finding.graphql';
+import dismissFindingMutation from 'ee/security_dashboard/graphql/mutations/dismiss_finding.mutation.graphql';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
 import { capitalizeFirstCharacter, convertToCamelCase } from '~/lib/utils/text_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -361,34 +361,37 @@ export default {
 
       this.isDismissingFinding = true;
 
-      return axios
-        .post(this.mr.createVulnerabilityFeedbackDismissalPath, {
-          vulnerability_feedback: {
-            category: finding.report_type,
+      this.$apollo
+        .mutate({
+          mutation: dismissFindingMutation,
+          refetchQueries: [findingQuery],
+          variables: {
+            uuid: finding.uuid,
             comment,
-            feedback_type: 'dismissal',
-            pipeline_id: this.mr.pipelineId,
-            project_fingerprint: finding.project_fingerprint,
-            finding_uuid: finding.uuid,
-            vulnerability_data: finding,
           },
         })
         .then(({ data }) => {
+          const { errors } = data.securityFindingDismiss;
+
+          if (errors.length > 0) {
+            this.modalData.error = sprintf(
+              s__('ciReport|There was an error dismissing the vulnerability: %{error}'),
+              { error: errors[0] },
+            );
+
+            return;
+          }
+
           this.modalData.vulnerability.state = 'dismissed';
           this.modalData.vulnerability.isDismissed = true;
-          this.$set(this.modalData.vulnerability, 'dismissal_feedback', data);
+
           this.hideModal();
           toast(toastMsg);
         })
-        .catch((error) => {
-          const pipelineNoLongerExists =
-            error.response?.status === HTTP_STATUS_UNPROCESSABLE_ENTITY;
-
-          this.modalData.error = pipelineNoLongerExists
-            ? s__(
-                'ciReport|Could not dismiss vulnerability because the associated pipeline no longer exists. Refresh the page and try again.',
-              )
-            : s__('ciReport|There was an error dismissing the vulnerability. Please try again.');
+        .catch(() => {
+          this.modalData.error = s__(
+            'ciReport|There was an error dismissing the vulnerability. Please try again.',
+          );
         })
         .finally(() => {
           this.isDismissingFinding = false;

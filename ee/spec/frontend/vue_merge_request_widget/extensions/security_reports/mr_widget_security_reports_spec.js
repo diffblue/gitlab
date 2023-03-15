@@ -8,6 +8,7 @@ import FindingModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import SummaryText from 'ee/vue_merge_request_widget/extensions/security_reports/summary_text.vue';
 import SummaryHighlights from 'ee/vue_merge_request_widget/extensions/security_reports/summary_highlights.vue';
 import findingQuery from 'ee/security_dashboard/graphql/queries/mr_widget_finding.graphql';
+import dismissFindingMutation from 'ee/security_dashboard/graphql/mutations/dismiss_finding.mutation.graphql';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import Widget from '~/vue_merge_request_widget/components/widget/widget.vue';
@@ -55,9 +56,13 @@ describe('MR Widget Security Reports', () => {
     containerScanningComparisonPathV2: '/my/container-scanning/endpoint',
   };
 
-  const createComponent = ({ propsData, mountFn = shallowMountExtended } = {}) => {
+  const createComponent = ({
+    propsData,
+    mountFn = shallowMountExtended,
+    apolloHandlers = [],
+  } = {}) => {
     wrapper = mountFn(MRSecurityWidget, {
-      apolloProvider: createMockApollo([[findingQuery, findingQueryMockData()]]),
+      apolloProvider: createMockApollo([[findingQuery, findingQueryMockData()], ...apolloHandlers]),
       propsData: {
         ...propsData,
         mr: {
@@ -95,10 +100,16 @@ describe('MR Widget Security Reports', () => {
     emitSpy = jest.spyOn(wrapper.vm.$root, '$emit');
   };
 
-  const createComponentAndExpandWidget = async ({ mockDataFn, mockDataProps, mrProps = {} }) => {
+  const createComponentAndExpandWidget = async ({
+    mockDataFn,
+    mockDataProps,
+    mrProps = {},
+    apolloHandlers,
+  }) => {
     mockDataFn(mockDataProps);
     createComponent({
       mountFn: mountExtended,
+      apolloHandlers,
       propsData: {
         mr: mrProps,
       },
@@ -387,11 +398,13 @@ describe('MR Widget Security Reports', () => {
     const createComponentExpandWidgetAndOpenModal = async ({
       mockDataProps = {},
       mrProps,
+      apolloHandlers,
     } = {}) => {
       await createComponentAndExpandWidget({
         mockDataFn: mockWithData,
         mockDataProps,
         mrProps,
+        apolloHandlers,
       });
 
       // Click on the vulnerability name
@@ -584,13 +597,22 @@ describe('MR Widget Security Reports', () => {
       });
 
       it('handles dismissing finding - success', async () => {
-        mockAxios.onPost(createVulnerabilityFeedbackDismissalPath).replyOnce(HTTP_STATUS_OK);
-
         await createComponentExpandWidgetAndOpenModal({
-          mrProps: {
-            createVulnerabilityFeedbackDismissalPath,
-          },
+          apolloHandlers: [
+            [
+              dismissFindingMutation,
+              jest.fn().mockResolvedValue({
+                data: {
+                  securityFindingDismiss: {
+                    errors: [],
+                  },
+                },
+              }),
+            ],
+          ],
         });
+
+        expect(findDismissedBadge().exists()).toBe(false);
 
         findModal().vm.$emit('dismissVulnerability');
 
@@ -598,17 +620,25 @@ describe('MR Widget Security Reports', () => {
 
         expect(toast).toHaveBeenCalledWith("Dismissed 'Password leak'");
         expect(emitSpy).toHaveBeenCalledWith(BV_HIDE_MODAL, 'modal-mrwidget-security-issue');
+
+        // There should be a finding with the dismissed badge now
+        expect(findDismissedBadge().text()).toBe('Dismissed');
       });
 
       it('handles dismissing finding - error', async () => {
-        mockAxios
-          .onPost(createVulnerabilityFeedbackDismissalPath)
-          .replyOnce(HTTP_STATUS_BAD_REQUEST);
-
         await createComponentExpandWidgetAndOpenModal({
-          mrProps: {
-            createVulnerabilityFeedbackDismissalPath,
-          },
+          apolloHandlers: [
+            [
+              dismissFindingMutation,
+              jest.fn().mockRejectedValue({
+                data: {
+                  securityFindingDismiss: {
+                    errors: [],
+                  },
+                },
+              }),
+            ],
+          ],
         });
 
         findModal().vm.$emit('dismissVulnerability');
@@ -618,6 +648,8 @@ describe('MR Widget Security Reports', () => {
         expect(findModal().props('modal').error).toBe(
           'There was an error dismissing the vulnerability. Please try again.',
         );
+
+        expect(findDismissedBadge().exists()).toBe(false);
       });
     });
 
