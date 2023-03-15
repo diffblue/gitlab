@@ -6,6 +6,8 @@ import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_ba
 import convertReportType from 'ee/vue_shared/security_reports/store/utils/convert_report_type';
 import getPrimaryIdentifier from 'ee/vue_shared/security_reports/store/utils/get_primary_identifier';
 import { BV_SHOW_MODAL } from '~/lib/utils/constants';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { getCreatedIssueForVulnerability } from 'ee/vue_shared/security_reports/components/helpers';
 import VulnerabilityActionButtons from './vulnerability_action_buttons.vue';
 import VulnerabilityIssueLink from './vulnerability_issue_link.vue';
 
@@ -21,6 +23,7 @@ export default {
     VulnerabilityActionButtons,
     VulnerabilityIssueLink,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     vulnerability: {
       type: Object,
@@ -45,10 +48,17 @@ export default {
     isDismissed() {
       return Boolean(this.vulnerability.dismissal_feedback);
     },
+    issueData() {
+      return this.glFeatures.deprecateVulnerabilitiesFeedback
+        ? getCreatedIssueForVulnerability(this.vulnerability)
+        : this.vulnerability.issue_feedback;
+    },
     hasIssue() {
-      return Boolean(
-        this.vulnerability.issue_feedback && this.vulnerability.issue_feedback.issue_iid,
-      );
+      // Issues can be deleted. After an issue is deleted, issue_feedback will still be an object, but it won't have
+      // an issue_iid. issue_links however will remove the object from the array. Once we enable and remove the
+      // deprecate_vulnerabilities_feedback feature flag, it's no longer necessary to check for issue_iid, and this
+      // computed property can be deleted in favor of checking whether issueData is truthy instead.
+      return Boolean(this.issueData?.issue_iid);
     },
     canDismissVulnerability() {
       const path = this.vulnerability.create_vulnerability_feedback_dismissal_path;
@@ -162,7 +172,7 @@ export default {
           <vulnerability-issue-link
             v-if="hasIssue"
             class="text-nowrap"
-            :issue="vulnerability.issue_feedback"
+            :issue="issueData"
             :project-name="vulnerability.project.name"
           />
 

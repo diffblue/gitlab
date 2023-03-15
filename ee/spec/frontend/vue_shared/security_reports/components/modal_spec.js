@@ -35,6 +35,7 @@ describe('Security Reports modal', () => {
   };
 
   const findModalFooter = () => wrapper.findComponent(ModalFooter);
+  const findIssueNote = () => wrapper.findComponent(IssueNote);
 
   describe('modal', () => {
     const findAlert = () => wrapper.findComponent(GlAlert);
@@ -216,40 +217,67 @@ describe('Security Reports modal', () => {
     });
   });
 
-  describe('related issue read access', () => {
-    describe('with permission to read', () => {
-      beforeEach(() => {
-        const propsData = {
-          modal: createState().modal,
-        };
+  describe('issue note', () => {
+    const modalData = createState().modal;
+    modalData.vulnerability.project = {};
 
-        propsData.modal.vulnerability.issue_feedback = {
-          issue_url: 'http://issue.url',
-        };
-        mountComponent(propsData);
-      });
+    it('shows issue note with expected props', () => {
+      modalData.vulnerability.issue_links = [
+        {
+          link_type: 'created',
+          issue_iid: 1,
+          issue_url: 'url',
+        },
+      ];
+      mountComponent({ modal: modalData });
 
-      it('displays a link to the issue', () => {
-        expect(wrapper.findComponent(IssueNote).exists()).toBe(true);
+      expect(findIssueNote().props()).toMatchObject({
+        feedback: modalData.vulnerability.issue_links[0],
+        project: modalData.vulnerability.project,
       });
     });
 
-    describe('without permission to read', () => {
-      beforeEach(() => {
-        const propsData = {
-          modal: createState().modal,
-        };
+    it.each`
+      issue                                                         | isShown
+      ${null}                                                       | ${false}
+      ${[{ link_type: 'created' }]}                                 | ${false}
+      ${[{ link_type: 'created', issue_iid: 1, issue_url: 'url' }]} | ${true}
+    `('shows issue note? $isShown when issue is $issue', ({ issue, isShown }) => {
+      modalData.vulnerability.issue_links = issue;
+      mountComponent({ modal: modalData });
 
-        propsData.modal.vulnerability.issue_feedback = {
-          issue_url: null,
-        };
-        mountComponent(propsData);
+      expect(findIssueNote().exists()).toBe(isShown);
+    });
+  });
+
+  describe('issue note - deprecateVulnerabilitiesFeedback feature flag disabled', () => {
+    const modalData = createState().modal;
+    modalData.vulnerability.project = {};
+
+    it('shows issue note with expected props', () => {
+      modalData.vulnerability.issue_feedback = { issue_iid: 1, issue_url: 'url' };
+      mountComponent({ modal: modalData }, shallowMount, {
+        deprecateVulnerabilitiesFeedback: false,
       });
 
-      it('hides the link to the issue', () => {
-        const note = wrapper.findComponent(IssueNote);
-        expect(note.exists()).toBe(false);
+      expect(findIssueNote().props()).toMatchObject({
+        feedback: modalData.vulnerability.issue_feedback,
+        project: modalData.vulnerability.project,
       });
+    });
+
+    it.each`
+      issue                                 | isShown
+      ${null}                               | ${false}
+      ${{}}                                 | ${false}
+      ${{ issue_iid: 1, issue_url: 'url' }} | ${true}
+    `('shows issue note? $isShown when issue is $issue', ({ issue, isShown }) => {
+      modalData.vulnerability.issue_feedback = issue;
+      mountComponent({ modal: modalData }, shallowMount, {
+        deprecateVulnerabilitiesFeedback: false,
+      });
+
+      expect(findIssueNote().exists()).toBe(isShown);
     });
   });
 

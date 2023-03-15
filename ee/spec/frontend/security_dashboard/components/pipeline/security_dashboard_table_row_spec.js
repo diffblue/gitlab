@@ -2,6 +2,7 @@ import { GlFormCheckbox, GlSkeletonLoader } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { cloneDeep } from 'lodash';
 import SecurityDashboardTableRow from 'ee/security_dashboard/components/pipeline/security_dashboard_table_row.vue';
 import VulnerabilityActionButtons from 'ee/security_dashboard/components/pipeline/vulnerability_action_buttons.vue';
 import { setupStore } from 'ee/security_dashboard/store';
@@ -9,6 +10,8 @@ import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/component
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
 import { trimText } from 'helpers/text_helper';
 import { BV_SHOW_MODAL } from '~/lib/utils/constants';
+import VulnerabilityIssueLink from 'ee/security_dashboard/components/pipeline/vulnerability_issue_link.vue';
+import { getCreatedIssueForVulnerability } from 'ee/vue_shared/security_reports/components/helpers';
 import mockDataVulnerabilities from '../../store/modules/vulnerabilities/data/mock_data_vulnerabilities';
 
 Vue.use(Vuex);
@@ -17,11 +20,18 @@ describe('Security Dashboard Table Row', () => {
   let wrapper;
   let store;
 
-  const createComponent = (mountFunc, { props = {} } = {}) => {
+  const createComponent = (
+    mountFunc,
+    { props = {} } = {},
+    { deprecateVulnerabilitiesFeedback = true } = {},
+  ) => {
     wrapper = mountFunc(SecurityDashboardTableRow, {
       store,
       propsData: {
         ...props,
+      },
+      provide: {
+        glFeatures: { deprecateVulnerabilitiesFeedback },
       },
     });
   };
@@ -34,7 +44,7 @@ describe('Security Dashboard Table Row', () => {
 
   const findLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findContent = (i) => wrapper.findAll('.table-mobile-content').at(i);
-  const findAllIssueCreated = () => wrapper.findAll('[data-testid="issues-icon"]');
+  const findVulnerabilityIssueLink = () => wrapper.findComponent(VulnerabilityIssueLink);
   const hasSelectedClass = () => wrapper.classes('gl-bg-blue-50');
   const findCheckbox = () => wrapper.findComponent(GlFormCheckbox);
   const findSeverityBadge = () => wrapper.findComponent(SeverityBadge);
@@ -146,39 +156,63 @@ describe('Security Dashboard Table Row', () => {
     });
   });
 
-  describe('with valid issue feedback', () => {
+  describe('with created issue', () => {
     const vulnerability = mockDataVulnerabilities[3];
 
-    beforeEach(() => {
-      createComponent(mount, { props: { vulnerability } });
+    it('shows the vulnerability issue link with the expected props', () => {
+      createComponent(shallowMount, { props: { vulnerability } });
+
+      expect(findVulnerabilityIssueLink().props()).toMatchObject({
+        issue: getCreatedIssueForVulnerability(vulnerability),
+        projectName: vulnerability.project.name,
+      });
     });
 
-    it('should have a `issues` icon', () => {
-      expect(findAllIssueCreated()).toHaveLength(1);
+    it('does not show the vulnerability issue link if there is no issue iid', () => {
+      const vuln = cloneDeep(vulnerability);
+      vuln.issue_links[0].issue_iid = null;
+      createComponent(shallowMount, { props: { vulnerability: vuln } });
+
+      expect(findVulnerabilityIssueLink().exists()).toBe(false);
+    });
+
+    describe('deprecateVulnerabilitiesFeedback feature flag disabled', () => {
+      it('shows the vulnerability issue link with the expected props', () => {
+        createComponent(
+          shallowMount,
+          { props: { vulnerability } },
+          { deprecateVulnerabilitiesFeedback: false },
+        );
+
+        expect(findVulnerabilityIssueLink().props()).toMatchObject({
+          issue: vulnerability.issue_feedback,
+          projectName: vulnerability.project.name,
+        });
+      });
+
+      it('does not show the vulnerability issue link if there is no issue iid', () => {
+        const vuln = cloneDeep(vulnerability);
+        vuln.issue_feedback.issue_iid = null;
+        createComponent(
+          shallowMount,
+          { props: { vulnerability: vuln } },
+          { deprecateVulnerabilitiesFeedback: false },
+        );
+
+        expect(findVulnerabilityIssueLink().exists()).toBe(false);
+      });
     });
   });
 
-  describe('with invalid issue feedback', () => {
-    const vulnerability = mockDataVulnerabilities[6];
-
-    beforeEach(() => {
-      createComponent(mount, { props: { vulnerability } });
-    });
-
-    it('should not have a `issues` icon', () => {
-      expect(findAllIssueCreated()).toHaveLength(0);
-    });
-  });
-
-  describe('with no issue feedback', () => {
+  describe('with no created issue', () => {
     const vulnerability = mockDataVulnerabilities[0];
 
     beforeEach(() => {
       createComponent(shallowMount, { props: { vulnerability } });
     });
 
-    it('should not have a `issues` icon', () => {
-      expect(findAllIssueCreated()).toHaveLength(0);
+    it('should not show the vulnerability issue link', () => {
+      expect(findVulnerabilityIssueLink().exists()).toBe(false);
     });
 
     it('should be unselected', () => {

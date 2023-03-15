@@ -10,6 +10,7 @@ import SolutionCard from 'ee/vue_shared/security_reports/components/solution_car
 import VulnerabilityDetails from 'ee/vue_shared/security_reports/components/vulnerability_details.vue';
 import { __ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { getCreatedIssueForVulnerability } from 'ee/vue_shared/security_reports/components/helpers';
 import { VULNERABILITY_MODAL_ID } from './constants';
 
 export default {
@@ -69,7 +70,7 @@ export default {
   },
   computed: {
     canCreateIssueForThisVulnerability() {
-      return Boolean(!this.isResolved && !this.vulnerability.hasIssue && this.canCreateIssue);
+      return Boolean(!this.isResolved && !this.hasIssue && this.canCreateIssue);
     },
     canCreateMergeRequestForThisVulnerability() {
       return Boolean(!this.isResolved && !this.mergeRequestData && this.remediation);
@@ -97,8 +98,17 @@ export default {
     vulnerability() {
       return this.modal.vulnerability;
     },
-    issueFeedback() {
-      return this.vulnerability?.issue_feedback;
+    issueData() {
+      return this.glFeatures.deprecateVulnerabilitiesFeedback
+        ? getCreatedIssueForVulnerability(this.vulnerability)
+        : this.vulnerability?.issue_feedback;
+    },
+    hasIssue() {
+      // Issues can be deleted. After an issue is deleted, issue_feedback will still be an object, but it won't have
+      // an issue_iid. issue_links however will remove the object from the array. Once we enable and remove the
+      // deprecate_vulnerabilities_feedback feature flag, it's no longer necessary to check for issue_iid, and this
+      // computed property can be deleted in favor of checking whether issueData is truthy instead.
+      return Boolean(this.issueData?.issue_iid);
     },
     mergeRequestData() {
       return this.glFeatures.deprecateVulnerabilitiesFeedback
@@ -141,7 +151,7 @@ export default {
       return this.dismissalFeedback?.comment_details?.comment;
     },
     showFeedbackNotes() {
-      return Boolean(this.issueFeedback?.issue_url || this.mergeRequestData?.merge_request_path);
+      return Boolean(this.issueData?.issue_url || this.mergeRequestData?.merge_request_path);
     },
     showDismissalCard() {
       return this.dismissalFeedback || this.modal.isCommentingOnDismissal;
@@ -210,12 +220,7 @@ export default {
       <gl-loading-icon v-if="isLoadingAdditionalInfo" />
 
       <div v-if="showFeedbackNotes" class="card my-4">
-        <issue-note
-          v-if="issueFeedback"
-          :feedback="issueFeedback"
-          :project="project"
-          class="card-body"
-        />
+        <issue-note v-if="hasIssue" :feedback="issueData" :project="project" class="card-body" />
         <merge-request-note
           v-if="mergeRequestData"
           :feedback="mergeRequestData"

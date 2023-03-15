@@ -14,3 +14,6 @@ import { EMPTY_BODY_MESSAGE } from './constants';
  * @return {String} the validated body message
  */
 export const bodyWithFallBack = (body) => (body === '' ? '' : body || EMPTY_BODY_MESSAGE);
+
+export const getCreatedIssueForVulnerability = (vulnerability) =>
+  vulnerability.issue_links?.find((link) => link.link_type === 'created');
