@@ -155,7 +155,13 @@ RSpec.describe 'New project', :js, feature_category: :projects do
 
         expect(page).to have_text('Authenticate with GitHub')
 
-        allow_any_instance_of(Gitlab::LegacyGithubImport::Client).to receive(:repos).and_return([repo])
+        octokit = instance_double(Octokit::Client)
+        allow_next_instance_of(Gitlab::LegacyGithubImport::Client) do |client|
+          allow(client).to receive(:repos).and_return([repo])
+          allow(client).to receive(:user).with(nil).and_return({ login: 'my-user' })
+          allow(client).to receive(:octokit).and_return(octokit)
+        end
+        allow(octokit).to receive(:access_token).and_return('fake-token')
 
         fill_in 'personal_access_token', with: 'fake-token'
         click_button 'Authenticate'
@@ -163,7 +169,11 @@ RSpec.describe 'New project', :js, feature_category: :projects do
 
         # Mock the POST `/import/github`
         allow_any_instance_of(Gitlab::LegacyGithubImport::Client).to receive(:repository).and_return(repo)
-        project = create(:project, name: 'some-github-repo', creator: user, import_type: 'github')
+        project = create(
+          :project,
+          name: 'some-github-repo', creator: user,
+          import_type: 'github', import_source: 'my-user/some-github-repo'
+        )
         create(:import_state, :finished, import_url: repo.clone_url, project: project)
         allow_any_instance_of(CiCd::SetupProject).to receive(:setup_external_service)
         CiCd::SetupProject.new(project, user).execute
