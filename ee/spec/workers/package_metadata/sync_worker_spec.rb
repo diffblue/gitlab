@@ -16,6 +16,10 @@ RSpec.describe PackageMetadata::SyncWorker, type: :worker, feature_category: :li
   describe '#perform' do
     subject(:perform) { described_class.new.perform }
 
+    before do
+      stub_licensed_features(license_scanning: true)
+    end
+
     context 'with feature flag enabled' do
       it 'calls the sync service to do the work' do
         expect(PackageMetadata::SyncService).to receive(:execute) do |signal|
@@ -46,6 +50,17 @@ RSpec.describe PackageMetadata::SyncWorker, type: :worker, feature_category: :li
       it 'does not call the sync service' do
         expect(PackageMetadata::SyncService).not_to receive(:execute)
         instance.perform
+      end
+    end
+
+    context 'when the license_scanning feature is not available' do
+      before do
+        stub_licensed_features(license_scanning: false)
+      end
+
+      it 'does not call the sync service' do
+        expect(PackageMetadata::SyncService).not_to receive(:execute)
+        perform
       end
     end
   end
