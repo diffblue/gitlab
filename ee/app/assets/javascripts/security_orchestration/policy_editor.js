@@ -1,16 +1,10 @@
 import Vue from 'vue';
-import VueApollo from 'vue-apollo';
 import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
+import apolloProvider from 'ee/vue_shared/security_configuration/graphql/provider';
 import NewPolicyApp from './components/policy_editor/new_policy.vue';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from './constants';
 import createStore from './store';
-import { decomposeApproversV2, gqClient } from './utils';
-
-Vue.use(VueApollo);
-
-const apolloProvider = new VueApollo({
-  defaultClient: gqClient,
-});
+import { decomposeApproversV2 } from './utils';
 
 export default (el, namespaceType) => {
   const {

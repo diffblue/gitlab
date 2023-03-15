@@ -31,7 +31,10 @@ export const typePolicies = {
   },
 };
 
-const defaultClient = createDefaultClient(resolvers, { cacheConfig: { typePolicies }, typeDefs });
+export const defaultClient = createDefaultClient(resolvers, {
+  cacheConfig: { typePolicies },
+  typeDefs,
+});
 
 export default new VueApollo({
   defaultClient,

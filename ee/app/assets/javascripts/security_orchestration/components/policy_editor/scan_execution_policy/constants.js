@@ -52,5 +52,8 @@ export const SCANNER_HUMANIZED_TEMPLATE = s__(
 );
 
 export const DAST_HUMANIZED_TEMPLATE = s__(
-  'ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require a %{scan} scan to run with site profile %{siteProfile} and scanner profile %{scannerProfile} on runner that %{tags}',
+  'ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require a %{scan} scan to run %{dastProfiles} with tags %{tags}',
 );
+
+export const POLICY_ACTION_BUILDER_TAGS_ERROR_KEY = 'tags';
+export const POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY = 'profiles';

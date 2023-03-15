@@ -1,6 +1,6 @@
-import createGqClient from '~/lib/graphql';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_GROUP, TYPENAME_USER } from '~/graphql_shared/constants';
+import { defaultClient } from 'ee/vue_shared/security_configuration/graphql/provider';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from './components/constants';
 import { GROUP_TYPE, USER_TYPE } from './constants';
 
@@ -67,4 +67,4 @@ export const removeUnnecessaryDashes = (manifest) => {
 /**
  * Create GraphQL Client for threat monitoring
  */
-export const gqClient = createGqClient();
+export const gqClient = defaultClient;

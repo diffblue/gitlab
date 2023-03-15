@@ -4,32 +4,40 @@ import {
   GlCollapsibleListbox,
   GlForm,
   GlFormGroup,
-  GlFormInput,
   GlIcon,
   GlSprintf,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { ACTION_THEN_LABEL, ACTION_AND_LABEL, RULE_MODE_SCANNERS } from '../constants';
 import {
   DAST_HUMANIZED_TEMPLATE,
   DEFAULT_SCANNER,
   SCANNER_DAST,
   SCANNER_HUMANIZED_TEMPLATE,
+  POLICY_ACTION_BUILDER_TAGS_ERROR_KEY,
+  POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY,
 } from './constants';
+import ProjectDastProfileSelector from './project_dast_profile_selector.vue';
+import GroupDastProfileSelector from './group_dast_profile_selector.vue';
 import RunnerTagsList from './runner_tags_list.vue';
 import { buildScannerAction } from './lib';
 
 export default {
+  SCANNERS: RULE_MODE_SCANNERS,
+  POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY,
+  POLICY_ACTION_BUILDER_TAGS_ERROR_KEY,
   components: {
     GlButton,
     GlCollapsibleListbox,
     GlForm,
     GlFormGroup,
-    GlFormInput,
     GlIcon,
     GlSprintf,
     RunnerTagsList,
+    ProjectDastProfileSelector,
+    GroupDastProfileSelector,
   },
   directives: {
     GlTooltip,
@@ -69,21 +77,14 @@ export default {
     selectedScannerText() {
       return RULE_MODE_SCANNERS[this.selectedScanner];
     },
-    siteProfile: {
-      get() {
-        return this.initAction.site_profile?.trim() ?? '';
-      },
-      set(value) {
-        this.setSelectedScanner({ siteProfile: value });
-      },
+    isProject() {
+      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
     },
-    scannerProfile: {
-      get() {
-        return this.initAction.scanner_profile?.trim() ?? '';
-      },
-      set(value) {
-        this.setSelectedScanner({ scannerProfile: value });
-      },
+    siteProfile() {
+      return this.initAction.site_profile?.trim() ?? '';
+    },
+    scannerProfile() {
+      return this.initAction.scanner_profile?.trim() ?? '';
     },
     tags: {
       get() {
@@ -115,8 +116,6 @@ export default {
     },
   },
   i18n: {
-    selectedScannerProfilePlaceholder: s__('ScanExecutionPolicy|Select scanner profile'),
-    selectedSiteProfilePlaceholder: s__('ScanExecutionPolicy|Select site profile'),
     selectedTagsInformation: s__(
       'ScanExecutionPolicy|If the field is empty, the runner will be automatically selected',
     ),
@@ -126,10 +125,13 @@ export default {
 
 <template>
   <div class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-display-flex gl-relative">
-    <gl-form inline class="gl-flex-grow-1 gl-gap-3" @submit.prevent>
+    <gl-form
+      class="gl-display-flex gl-flex-wrap gl-align-items-center gl-flex-grow-1 gl-gap-3"
+      @submit.prevent
+    >
       <gl-sprintf :message="actionMessage">
         <template #thenLabel>
-          <label class="text-uppercase gl-font-lg" data-testid="action-component-label">
+          <label class="text-uppercase gl-font-lg gl-mb-0" data-testid="action-component-label">
             {{ actionLabel }}
           </label>
         </template>
@@ -142,38 +144,26 @@ export default {
             @select="setSelectedScanner({ scanner: $event })"
           />
         </template>
-
-        <template #scannerProfile>
-          <gl-form-group
-            :label="s__('ScanExecutionPolicy|Scanner profile')"
-            label-for="scanner-profile"
-            label-sr-only
-          >
-            <gl-form-input
-              id="scanner-profile"
-              v-model="scannerProfile"
-              :placeholder="$options.i18n.selectedScannerProfilePlaceholder"
-              data-testid="scan-profile-selection"
-            />
-          </gl-form-group>
-        </template>
-        <template #siteProfile>
-          <gl-form-group
-            :label="s__('ScanExecutionPolicy|Site profile')"
-            label-for="site-profile"
-            label-sr-only
-          >
-            <gl-form-input
-              id="site-profile"
-              v-model="siteProfile"
-              :placeholder="$options.i18n.selectedSiteProfilePlaceholder"
-              data-testid="site-profile-selection"
-            />
-          </gl-form-group>
+        <template #dastProfiles>
+          <project-dast-profile-selector
+            v-if="isProject"
+            :full-path="namespacePath"
+            :saved-scanner-profile-name="scannerProfile"
+            :saved-site-profile-name="siteProfile"
+            @error="$emit('parsing-error', $options.POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY)"
+            @profiles-selected="setSelectedScanner"
+          />
+          <group-dast-profile-selector
+            v-else
+            :saved-scanner-profile-name="scannerProfile"
+            :saved-site-profile-name="siteProfile"
+            @set-profile="setSelectedScanner"
+          />
         </template>
 
         <template #tags>
           <gl-form-group
+            class="gl-mb-0"
             :label="s__('ScanExecutionPolicy|Tags')"
             label-for="policy-tags"
             label-sr-only
@@ -183,7 +173,7 @@ export default {
                 v-model="tags"
                 :namespace-path="namespacePath"
                 :namespace-type="namespaceType"
-                @error="$emit('parsing-error')"
+                @error="$emit('parsing-error', $options.POLICY_ACTION_BUILDER_TAGS_ERROR_KEY)"
               />
               <gl-icon
                 v-gl-tooltip
