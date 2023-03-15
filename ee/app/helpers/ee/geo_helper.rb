@@ -16,11 +16,11 @@ module EE
       s_('Geo|misconfigured')
     end
 
-    def node_vue_list_properties
+    def geo_sites_vue_data
       {
         replicable_types: replicable_types.to_json,
-        new_node_url: new_admin_geo_node_path,
-        geo_nodes_empty_state_svg: image_path("illustrations/empty-state/geo-empty.svg")
+        new_site_url: new_admin_geo_node_path,
+        geo_sites_empty_state_svg: image_path("illustrations/empty-state/geo-empty.svg")
       }
     end
 

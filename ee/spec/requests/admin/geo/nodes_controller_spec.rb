@@ -6,24 +6,24 @@ RSpec.describe Admin::Geo::NodesController, :geo, feature_category: :geo_replica
   include AdminModeHelper
 
   let_it_be(:admin) { create(:admin) }
-  let_it_be(:geo_node) { create(:geo_node) }
+  let_it_be(:geo_site) { create(:geo_node) }
 
   before do
     enable_admin_mode!(admin)
     login_as(admin)
   end
 
-  describe 'GET /geo/nodes' do
+  describe 'GET /geo/sites' do
     context 'with a valid license' do
       before do
         stub_licensed_features(geo: true)
       end
 
-      it 'renders the Geo Nodes View', :aggregate_failures do
+      it 'renders the Geo Sites View', :aggregate_failures do
         get admin_geo_nodes_path
 
         expect(response).to render_template(:index)
-        expect(response.body).to include('js-geo-nodes')
+        expect(response.body).to include('js-geo-sites')
       end
     end
 

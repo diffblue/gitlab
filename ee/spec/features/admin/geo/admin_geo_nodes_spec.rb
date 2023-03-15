@@ -40,7 +40,7 @@ RSpec.describe 'Admin Geo Sites', :js, :geo, feature_category: :geo_replication 
 
     it 'shows all public Geo Sites and Add site link' do
       expect(page).to have_link('Add site', href: new_admin_geo_node_path)
-      page.within(find('.geo-node-core-details-grid-columns', match: :first)) do
+      page.within(find('.geo-site-core-details-grid-columns', match: :first)) do
         expect(page).to have_content(geo_site.url)
       end
     end
@@ -155,7 +155,7 @@ RSpec.describe 'Admin Geo Sites', :js, :geo, feature_category: :geo_replication 
       wait_for_requests
       expect(page).to have_current_path admin_geo_nodes_path, ignore_query: true
 
-      page.within(find('.geo-node-core-details-grid-columns', match: :first)) do
+      page.within(find('.geo-site-core-details-grid-columns', match: :first)) do
         expect(page).to have_content(geo_site.url)
       end
     end
@@ -180,7 +180,7 @@ RSpec.describe 'Admin Geo Sites', :js, :geo, feature_category: :geo_replication 
       wait_for_requests
       expect(page).to have_current_path admin_geo_nodes_path, ignore_query: true
 
-      page.within(find('.geo-node-core-details-grid-columns', match: :first)) do
+      page.within(find('.geo-site-core-details-grid-columns', match: :first)) do
         expect(page).to have_content('http://newsite.com')
       end
     end
@@ -205,7 +205,7 @@ RSpec.describe 'Admin Geo Sites', :js, :geo, feature_category: :geo_replication 
 
       expect(page).to have_current_path admin_geo_nodes_path, ignore_query: true
       wait_for_requests
-      expect(page).not_to have_css('.geo-node-core-details-grid-columns')
+      expect(page).not_to have_css('.geo-site-core-details-grid-columns')
     end
   end
 

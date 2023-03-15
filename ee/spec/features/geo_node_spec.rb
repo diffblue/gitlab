@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe 'GEO Nodes', :geo, feature_category: :geo_replication do
+RSpec.describe 'Geo Sites', :geo, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   let_it_be(:user) { create(:user) }
   let_it_be(:geo_primary) { create(:geo_node, :primary) }
   let_it_be(:geo_secondary) { create(:geo_node) }
 
-  context 'Geo Secondary Node' do
+  context 'Geo Secondary Site' do
     let(:project) { create(:project) }
 
     before do
@@ -34,7 +34,7 @@ RSpec.describe 'GEO Nodes', :geo, feature_category: :geo_replication do
     end
   end
 
-  context 'Primary Geo Node' do
+  context 'Primary Geo Site' do
     let(:admin_user) { create(:user, :admin) }
 
     before do
@@ -45,8 +45,8 @@ RSpec.describe 'GEO Nodes', :geo, feature_category: :geo_replication do
       gitlab_enable_admin_mode_sign_in(admin_user)
     end
 
-    describe 'Geo Nodes admin screen' do
-      it "has a 'Full details' button on listed secondary geo nodes pointing to correct URL", :js do
+    describe 'Geo Sites admin screen' do
+      it "has a 'Full details' button on listed secondary geo sites pointing to correct URL", :js do
         visit admin_geo_nodes_path
 
         expect(page).to have_content(geo_primary.url)
@@ -56,14 +56,14 @@ RSpec.describe 'GEO Nodes', :geo, feature_category: :geo_replication do
 
         expected_url = File.join(geo_secondary.url, "/admin/geo/sites/#{geo_secondary.id}/replication/lfs_objects")
 
-        expect(all('.geo-node-details-grid-columns').last).to have_link('Full details', href: expected_url)
+        expect(all('.geo-site-details-grid-columns').last).to have_link('Full details', href: expected_url)
       end
 
-      context 'Node Filters', :js do
+      context 'Site Filters', :js do
         it 'defaults to the All tab when a status query is not already set' do
           visit admin_geo_nodes_path
           tab_count = find('[data-testid="geo-sites-filter"] .active .badge').text.to_i
-          results_count = page.all('[data-testid="primary-nodes"]').length + page.all('[data-testid="secondary-nodes"]').length
+          results_count = page.all('[data-testid="primary-sites"]').length + page.all('[data-testid="secondary-sites"]').length
 
           expect(find('[data-testid="geo-sites-filter"] .active')).to have_content('All')
           expect(results_count).to be(tab_count)
@@ -72,7 +72,7 @@ RSpec.describe 'GEO Nodes', :geo, feature_category: :geo_replication do
         it 'sets the correct tab when a status query is already set' do
           visit admin_geo_nodes_path(status: 'unknown')
           tab_count = find('[data-testid="geo-sites-filter"] .active .badge').text.to_i
-          results_count = page.all('[data-testid="primary-nodes"]').length + page.all('[data-testid="secondary-nodes"]').length
+          results_count = page.all('[data-testid="primary-sites"]').length + page.all('[data-testid="secondary-sites"]').length
 
           expect(find('[data-testid="geo-sites-filter"] .active')).not_to have_content('All')
           expect(find('[data-testid="geo-sites-filter"] .active')).to have_content('Unknown')
@@ -82,7 +82,7 @@ RSpec.describe 'GEO Nodes', :geo, feature_category: :geo_replication do
         it 'properly updates the query and sets the tab when a new one is clicked' do
           visit admin_geo_nodes_path
           tab_count = find('[data-testid="geo-sites-filter"] .active .badge').text.to_i
-          results_count = page.all('[data-testid="primary-nodes"]').length + page.all('[data-testid="secondary-nodes"]').length
+          results_count = page.all('[data-testid="primary-sites"]').length + page.all('[data-testid="secondary-sites"]').length
 
           expect(find('[data-testid="geo-sites-filter"] .active')).to have_content('All')
           expect(results_count).to be(tab_count)
@@ -91,7 +91,7 @@ RSpec.describe 'GEO Nodes', :geo, feature_category: :geo_replication do
 
           wait_for_requests
           tab_count = find('[data-testid="geo-sites-filter"] .active .badge').text.to_i
-          results_count = page.all('[data-testid="primary-nodes"]').length + page.all('[data-testid="secondary-nodes"]').length
+          results_count = page.all('[data-testid="primary-sites"]').length + page.all('[data-testid="secondary-sites"]').length
 
           expect(find('[data-testid="geo-sites-filter"] .active')).not_to have_content('All')
           expect(find('[data-testid="geo-sites-filter"] .active')).to have_content('Unknown')
@@ -99,13 +99,13 @@ RSpec.describe 'GEO Nodes', :geo, feature_category: :geo_replication do
           expect(results_count).to be(tab_count)
         end
 
-        it 'properly updates the query and filters the nodes when a search is inputed' do
+        it 'properly updates the query and filters the sites when a search is inputed' do
           visit admin_geo_nodes_path
 
           fill_in 'Filter Geo sites', with: geo_secondary.name
           wait_for_requests
 
-          results_count = page.all('[data-testid="primary-nodes"]').length + page.all('[data-testid="secondary-nodes"]').length
+          results_count = page.all('[data-testid="primary-sites"]').length + page.all('[data-testid="secondary-sites"]').length
 
           expect(results_count).to be(1)
           expect(page).to have_current_path(admin_geo_nodes_path(search: geo_secondary.name))
@@ -114,7 +114,7 @@ RSpec.describe 'GEO Nodes', :geo, feature_category: :geo_replication do
         it 'properly sets the search when a search query is already set' do
           visit admin_geo_nodes_path(search: geo_secondary.name)
 
-          results_count = page.all('[data-testid="primary-nodes"]').length + page.all('[data-testid="secondary-nodes"]').length
+          results_count = page.all('[data-testid="primary-sites"]').length + page.all('[data-testid="secondary-sites"]').length
 
           expect(find('input[placeholder="Filter Geo sites"]').value).to eq(geo_secondary.name)
           expect(results_count).to be(1)
@@ -123,7 +123,7 @@ RSpec.describe 'GEO Nodes', :geo, feature_category: :geo_replication do
         it 'properly handles both a status and search query' do
           visit admin_geo_nodes_path(status: 'unknown', search: geo_secondary.name)
 
-          results = page.all(:xpath, '//div[@data-testid="primary-nodes"] | //div[@data-testid="secondary-nodes"]')
+          results = page.all(:xpath, '//div[@data-testid="primary-sites"] | //div[@data-testid="secondary-sites"]')
 
           expect(find('[data-testid="geo-sites-filter"] .active')).to have_content('Unknown')
           expect(find("input[placeholder='Filter Geo sites']").value).to eq(geo_secondary.name)

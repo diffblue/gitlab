@@ -7,7 +7,7 @@ module QA
         module Geo
           module Nodes
             class Show < QA::Page::Base
-              view 'ee/app/assets/javascripts/geo_nodes/components/app.vue' do
+              view 'ee/app/assets/javascripts/geo_sites/components/app.vue' do
                 element :add_site_button
               end
 
