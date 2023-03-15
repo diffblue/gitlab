@@ -19,6 +19,7 @@ module PackageMetadata
 
     def perform
       return unless Feature.enabled?(:package_metadata_synchronization)
+      return unless ::License.feature_available?(:license_scanning)
 
       try_obtain_lease do
         stop_signal = StopSignal.new(exclusive_lease)
