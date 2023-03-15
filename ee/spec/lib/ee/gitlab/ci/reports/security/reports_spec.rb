@@ -128,40 +128,20 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
           target_reports.get_report('sast', sast_artifact).add_finding(sast_finding)
         end
 
-        shared_examples_for 'count operation with uuid and state filter' do |number_of_batches:|
-          before do
-            stub_const("::Gitlab::Ci::Reports::Security::Concerns::ScanFinding::COUNT_BATCH_SIZE", 1)
+        before do
+          stub_const("::Gitlab::Ci::Reports::Security::Concerns::ScanFinding::COUNT_BATCH_SIZE", 1)
 
-            another_sast_finding = build(:ci_reports_security_finding, severity: 'high', report_type: :sast)
+          another_sast_finding = build(:ci_reports_security_finding, severity: 'high', report_type: :sast)
 
-            security_reports.get_report('sast', sast_artifact).add_finding(another_sast_finding)
-          end
-
-          it 'runs in batches' do
-            expect(::Vulnerability).to receive(
-              :with_findings_by_uuid_and_state).exactly(number_of_batches).times.and_call_original
-
-            reports_violate_policy?
-          end
+          security_reports.get_report('sast', sast_artifact).add_finding(another_sast_finding)
         end
 
-        context "with feature disabled" do
-          before do
-            stub_feature_flags(enforce_scan_result_policies_for_preexisting_vulnerabilities: false)
-          end
+        it { is_expected.to be(true) }
 
-          it { is_expected.to be(false) }
+        it 'runs in batches' do
+          expect(::Vulnerability).to receive(:with_findings_by_uuid_and_state).exactly(3).times.and_call_original
 
-          # 2 inviolating sast findings for the source security_reports branch pipeline.
-          it_behaves_like 'count operation with uuid and state filter', number_of_batches: 2
-        end
-
-        context "with feature enabled" do
-          it { is_expected.to be(true) }
-
-          # 2 inviolating sast findings for the source branch security_reports pipeline.
-          # 1 violating sast finding for the default target branch target_reports pipeline.
-          it_behaves_like 'count operation with uuid and state filter', number_of_batches: 3
+          reports_violate_policy?
         end
       end
     end

@@ -17,10 +17,6 @@ module Gitlab
               count = unsafe_findings_count(target_reports, severity_levels, vulnerability_states, report_types)
               return true if count > vulnerabilities_allowed
 
-              return false if ::Feature.disabled?(
-                :enforce_scan_result_policies_for_preexisting_vulnerabilities, pipeline.project
-              )
-
               return false if vulnerability_states.include?(ApprovalProjectRule::NEWLY_DETECTED)
 
               preexisting_count = preexisting_findings_count(
