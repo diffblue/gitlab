@@ -21,6 +21,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
   let(:path_nav_selector) { '[data-testid="vsa-path-navigation"]' }
   let(:filter_bar_selector) { '[data-testid="vsa-filter-bar"]' }
   let(:card_metric_selector) { '[data-testid="vsa-metrics"] .gl-single-stat' }
+  let(:vsd_link_selector) { '[data-testid="vsd-link"]' }
 
   let(:empty_state_selector) { '[data-testid="vsa-empty-state"]' }
 
@@ -59,7 +60,8 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
   end
 
   before do
-    stub_licensed_features(cycle_analytics_for_groups: true, type_of_work_analytics: true, dora4_analytics: true)
+    stub_licensed_features(cycle_analytics_for_groups: true, type_of_work_analytics: true, dora4_analytics: true, group_level_analytics_dashboard: true)
+    stub_feature_flags(group_analytics_dashboards_page: true)
 
     group.add_owner(user)
     project.add_maintainer(user)
@@ -194,6 +196,27 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
       end
     end
 
+    shared_examples 'value streams dashboard link' do
+      it 'renders a link to the group dashboard' do
+        expect(page).to have_selector(vsd_link_selector)
+
+        expected_url = value_streams_dashboard_group_analytics_dashboards_path(target_group)
+        expect(page.find(vsd_link_selector)).to have_link("Value Streams Dashboard | DORA", href: expected_url)
+      end
+
+      context 'with `group_analytics_dashboards_page` disabled' do
+        before do
+          stub_feature_flags(group_analytics_dashboards_page: false)
+
+          select_group(target_group)
+        end
+
+        it 'does not render a link' do
+          expect(page).not_to have_selector(vsd_link_selector)
+        end
+      end
+    end
+
     context 'without valid query parameters set' do
       before do
         create_value_stream_group_aggregation(group)
@@ -284,6 +307,10 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
       it_behaves_like 'has overview metrics'
 
       it_behaves_like 'has default filters'
+
+      it_behaves_like 'value streams dashboard link' do
+        let(:target_group) { group }
+      end
     end
 
     context 'with a sub group' do
@@ -298,6 +325,10 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
       it_behaves_like 'has overview metrics'
 
       it_behaves_like 'has default filters'
+
+      it_behaves_like 'value streams dashboard link' do
+        let(:target_group) { sub_group }
+      end
     end
   end
 
