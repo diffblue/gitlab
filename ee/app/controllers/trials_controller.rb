@@ -94,7 +94,7 @@ class TrialsController < ApplicationController
   def authenticate_user!
     return if current_user
 
-    redirect_to new_trial_registration_path, alert: I18n.t('devise.failure.unauthenticated')
+    redirect_to new_trial_registration_path(glm_tracking_params), alert: I18n.t('devise.failure.unauthenticated')
   end
 
   def authenticate_user_404!

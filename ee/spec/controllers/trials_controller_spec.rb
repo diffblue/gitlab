@@ -72,8 +72,9 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
 
     context 'when not authenticated' do
       let(:logged_in) { false }
+      let(:post_params) { { glm_source: '_glm_source_', glm_content: '_glm_content_' } }
 
-      it { is_expected.to redirect_to(new_trial_registration_url) }
+      it { is_expected.to redirect_to(new_trial_registration_url(post_params)) }
     end
 
     context 'when not on gitlab.com' do
