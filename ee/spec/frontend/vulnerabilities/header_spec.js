@@ -135,6 +135,11 @@ describe('Vulnerability Header', () => {
                   id: 'gid://gitlab/Vulnerability/54',
                   [`${expected}At`]: '2020-09-16T11:13:26Z',
                   state: expected.toUpperCase(),
+                  ...(expected !== 'detected' && {
+                    [`${expected}By`]: {
+                      id: 'gid://gitlab/User/1',
+                    },
+                  }),
                 },
               },
             },
