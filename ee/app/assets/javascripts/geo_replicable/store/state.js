@@ -5,14 +5,14 @@ const createState = ({
   replicableType,
   graphqlFieldName,
   verificationEnabled,
-  geoCurrentNodeId,
-  geoTargetNodeId,
+  geoCurrentSiteId,
+  geoTargetSiteId,
 }) => ({
   replicableType,
   graphqlFieldName,
   verificationEnabled: parseBoolean(verificationEnabled),
-  geoCurrentNodeId,
-  geoTargetNodeId,
+  geoCurrentSiteId,
+  geoTargetSiteId,
   useGraphQl: Boolean(graphqlFieldName),
   isLoading: false,
 

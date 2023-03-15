@@ -94,11 +94,11 @@ RSpec.describe Admin::Geo::ReplicablesController, :geo, feature_category: :geo_r
           it 'includes expected current and target ids' do
             get url
 
-            expect(response.body).to include("geo-target-node-id=\"#{secondary_node.id}\"")
+            expect(response.body).to include("geo-target-site-id=\"#{secondary_node.id}\"")
             if current_node.present?
-              expect(response.body).to include("geo-current-node-id=\"#{current_node&.id}\"")
+              expect(response.body).to include("geo-current-site-id=\"#{current_node&.id}\"")
             else
-              expect(response.body).not_to include("geo-current-node-id")
+              expect(response.body).not_to include("geo-current-site-id")
             end
           end
         end

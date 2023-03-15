@@ -49,7 +49,7 @@ export const fetchReplicableItemsGraphQl = ({ state, dispatch }, direction) => {
     after = state.paginationData.endCursor;
   }
 
-  const client = getGraphqlClient(state.geoCurrentNodeId, state.geoTargetNodeId);
+  const client = getGraphqlClient(state.geoCurrentSiteId, state.geoTargetSiteId);
 
   client
     .query({
@@ -57,6 +57,7 @@ export const fetchReplicableItemsGraphQl = ({ state, dispatch }, direction) => {
       variables: { first, last, before, after },
     })
     .then((res) => {
+      // Query.geoNode to be renamed to Query.geoSite => https://gitlab.com/gitlab-org/gitlab/-/issues/396739
       if (!res.data.geoNode || !(state.graphqlFieldName in res.data.geoNode)) {
         dispatch('receiveReplicableItemsSuccess', { data: [], pagination: null });
         return;

@@ -36,8 +36,8 @@ describe('GeoReplicable Store Actions', () => {
     state = createState({
       replicableType: MOCK_REPLICABLE_TYPE,
       graphqlFieldName: null,
-      geoCurrentNodeId: null,
-      geoTargetNodeId: null,
+      geoCurrentSiteId: null,
+      geoTargetSiteId: null,
       verificationEnabled: 'true',
     });
   });
@@ -125,17 +125,17 @@ describe('GeoReplicable Store Actions', () => {
 
   describe('fetchReplicableItemsGraphQl', () => {
     describe.each`
-      geoCurrentNodeId | geoTargetNodeId
+      geoCurrentSiteId | geoTargetSiteId
       ${2}             | ${3}
       ${2}             | ${2}
       ${undefined}     | ${2}
       ${undefined}     | ${undefined}
       ${2}             | ${undefined}
-    `(`geoNodeIds`, ({ geoCurrentNodeId, geoTargetNodeId }) => {
+    `(`geoSiteIds`, ({ geoCurrentSiteId, geoTargetSiteId }) => {
       beforeEach(() => {
         state.graphqlFieldName = MOCK_GRAPHQL_REGISTRY;
-        state.geoCurrentNodeId = geoCurrentNodeId;
-        state.geoTargetNodeId = geoTargetNodeId;
+        state.geoCurrentSiteId = geoCurrentSiteId;
+        state.geoTargetSiteId = geoTargetSiteId;
       });
 
       describe('on success with no registry data', () => {
@@ -181,6 +181,7 @@ describe('GeoReplicable Store Actions', () => {
 
         describe('with no direction set', () => {
           const direction = null;
+          // Query.geoNode to be renamed to Query.geoSite => https://gitlab.com/gitlab-org/gitlab/-/issues/396739
           const registries = MOCK_BASIC_GRAPHQL_QUERY_RESPONSE.geoNode[MOCK_GRAPHQL_REGISTRY];
           const data = registries.nodes;
 
@@ -208,6 +209,7 @@ describe('GeoReplicable Store Actions', () => {
 
         describe('with direction set to "next"', () => {
           const direction = NEXT;
+          // Query.geoNode to be renamed to Query.geoSite => https://gitlab.com/gitlab-org/gitlab/-/issues/396739
           const registries = MOCK_BASIC_GRAPHQL_QUERY_RESPONSE.geoNode[MOCK_GRAPHQL_REGISTRY];
           const data = registries.nodes;
 
@@ -240,6 +242,7 @@ describe('GeoReplicable Store Actions', () => {
 
         describe('with direction set to "prev"', () => {
           const direction = PREV;
+          // Query.geoNode to be renamed to Query.geoSite => https://gitlab.com/gitlab-org/gitlab/-/issues/396739
           const registries = MOCK_BASIC_GRAPHQL_QUERY_RESPONSE.geoNode[MOCK_GRAPHQL_REGISTRY];
           const data = registries.nodes;
 
