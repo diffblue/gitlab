@@ -139,34 +139,6 @@ describe('vulnerabilities module mutations', () => {
 
         expect(state.modal.vulnerability.isDismissed).toBe(true);
       });
-
-      it('should set hasIssue when the vulnerability has a related issue', () => {
-        const payload = {
-          vulnerability: {
-            ...vulnerability,
-            issue_feedback: {
-              issue_iid: 123,
-            },
-          },
-        };
-        mutations[types.SET_MODAL_DATA](state, payload);
-
-        expect(state.modal.vulnerability.hasIssue).toBe(true);
-      });
-
-      it('should not set hasIssue when the issue_iid in null', () => {
-        const payload = {
-          vulnerability: {
-            ...vulnerability,
-            issue_feedback: {
-              issue_iid: null,
-            },
-          },
-        };
-        mutations[types.SET_MODAL_DATA](state, payload);
-
-        expect(state.modal.vulnerability.hasIssue).toBe(false);
-      });
     });
   });
 
@@ -185,7 +157,17 @@ describe('vulnerabilities module mutations', () => {
   });
 
   describe('RECEIVE_CREATE_ISSUE_SUCCESS', () => {
-    it('should fire the visitUrl function on the issue URL', () => {
+    it('should visit the issue URL', () => {
+      gon.features = { deprecateVulnerabilitiesFeedback: true };
+      const path = 'fakepath.html';
+      const payload = { issue_links: [{ link_type: 'created', issue_url: path }] };
+      mutations[types.RECEIVE_CREATE_ISSUE_SUCCESS](state, payload);
+
+      expect(visitUrl).toHaveBeenCalledWith(path);
+    });
+
+    it('should visit the issue URL - deprecateVulnerabilitiesFeedback feature flag disabled', () => {
+      gon.features = { deprecateVulnerabilitiesFeedback: false };
       const payload = { issue_url: 'fakepath.html' };
       mutations[types.RECEIVE_CREATE_ISSUE_SUCCESS](state, payload);
 
