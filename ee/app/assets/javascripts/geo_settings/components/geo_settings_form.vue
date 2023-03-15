@@ -23,7 +23,7 @@ export default {
     GlButton,
   },
   computed: {
-    ...mapState(['formErrors', 'nodesPath']),
+    ...mapState(['formErrors', 'sitesPath']),
     ...mapGetters(['formHasError']),
     ...mapComputed([
       { key: 'timeout', updateFn: 'setTimeout' },
@@ -33,7 +33,7 @@ export default {
   methods: {
     ...mapActions(['updateGeoSettings', 'setFormError']),
     redirect() {
-      visitUrl(this.nodesPath);
+      visitUrl(this.sitesPath);
     },
     checkTimeout() {
       this.setFormError({
@@ -91,7 +91,7 @@ export default {
     >
       <gl-button
         data-testid="settingsSaveButton"
-        data-qa-selector="add_node_button"
+        data-qa-selector="add_site_button"
         class="gl-mr-3"
         variant="confirm"
         :disabled="formHasError"

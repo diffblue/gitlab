@@ -5,7 +5,7 @@ import GeoSettingsForm from 'ee/geo_settings/components/geo_settings_form.vue';
 import initStore from 'ee/geo_settings/store';
 import * as types from 'ee/geo_settings/store/mutation_types';
 import { visitUrl } from '~/lib/utils/url_utility';
-import { STRING_OVER_255, MOCK_NODES_PATH } from '../mock_data';
+import { STRING_OVER_255, MOCK_SITES_PATH } from '../mock_data';
 
 Vue.use(Vuex);
 
@@ -18,7 +18,7 @@ describe('GeoSettingsForm', () => {
   let store;
 
   const createStore = () => {
-    store = initStore(MOCK_NODES_PATH);
+    store = initStore(MOCK_SITES_PATH);
   };
 
   const createComponent = () => {
@@ -39,11 +39,11 @@ describe('GeoSettingsForm', () => {
       createComponent();
     });
 
-    it('renders Geo Node Form Name Field', () => {
+    it('renders Geo Site Form Name Field', () => {
       expect(findGeoSettingsTimeoutField().exists()).toBe(true);
     });
 
-    it('renders Geo Node Form Url Field', () => {
+    it('renders Geo Site Form Url Field', () => {
       expect(findGeoSettingsAllowedIpField().exists()).toBe(true);
     });
 
@@ -86,7 +86,7 @@ describe('GeoSettingsForm', () => {
     describe('cancel button', () => {
       it('calls visitUrl when clicked', () => {
         findGeoSettingsCancelButton().vm.$emit('click');
-        expect(visitUrl).toHaveBeenCalledWith(MOCK_NODES_PATH);
+        expect(visitUrl).toHaveBeenCalledWith(MOCK_SITES_PATH);
       });
     });
   });
