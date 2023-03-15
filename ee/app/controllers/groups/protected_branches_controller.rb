@@ -41,7 +41,7 @@ module Groups
     private
 
     def check_feature_available!
-      render_404 unless Feature.enabled?(:group_protected_branches)
+      render_404 unless Feature.enabled?(:group_protected_branches, group)
       render_404 unless License.feature_available?(:group_protected_branches)
     end
 
