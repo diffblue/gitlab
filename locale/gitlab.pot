@@ -1944,6 +1944,9 @@ msgstr ""
 msgid "APIFuzzing|folder/openapi.json"
 msgstr ""
 
+msgid "AWS"
+msgstr ""
+
 msgid "AWS Access Key"
 msgstr ""
 

@@ -21,6 +21,7 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
     insert_package_nav(_('Deployments'))
     insert_infrastructure_registry_nav
     insert_infrastructure_google_cloud_nav
+    insert_infrastructure_aws_nav
   end
 
   context 'when iterations is available' do
