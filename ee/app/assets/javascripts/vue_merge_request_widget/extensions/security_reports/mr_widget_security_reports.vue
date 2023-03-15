@@ -73,7 +73,7 @@ export default {
         this.modalData.error = this.$options.i18n.findingLoadingError;
       },
       result({ data }) {
-        const issue = data.project.pipeline.securityReportFinding.issueLinks.nodes.find(
+        const issue = data.project.pipeline.securityReportFinding.issueLinks?.nodes.find(
           (x) => x.linkType === 'CREATED',
         )?.issue;
 
