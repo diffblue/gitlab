@@ -12,7 +12,7 @@ import {
   GlLabel,
 } from '@gitlab/ui';
 
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { getDayDifference } from '~/lib/utils/datetime_utility';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';

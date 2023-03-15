@@ -1,6 +1,6 @@
 import { flatten } from 'lodash';
 import Api from 'ee/api';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';

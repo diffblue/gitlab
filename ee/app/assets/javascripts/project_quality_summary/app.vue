@@ -1,7 +1,7 @@
 <script>
 import { GlSkeletonLoader, GlCard, GlLink, GlIcon, GlPopover } from '@gitlab/ui';
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { percent, percentHundred } from '~/lib/utils/unit_format';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import TestRunsEmptyState from './components/test_runs_empty_state.vue';

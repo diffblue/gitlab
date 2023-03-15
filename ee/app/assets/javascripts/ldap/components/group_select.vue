@@ -1,7 +1,7 @@
 <script>
 import { debounce } from 'lodash';
 import { GlCollapsibleListbox } from '@gitlab/ui';
-import { createAlert } from '~/flash';
+import { createAlert } from '~/alert';
 import { __, n__ } from '~/locale';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import Api from 'ee/api';
