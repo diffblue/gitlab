@@ -24,6 +24,12 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
           resources :test_cases, only: [:index, :new, :show]
         end
 
+        namespace :ci do
+          namespace :catalog do
+            resources :resources, only: [:index, :show], constraints: { id: /\d+/ }
+          end
+        end
+
         resources :autocomplete_sources, only: [] do
           collection do
             get 'epics'

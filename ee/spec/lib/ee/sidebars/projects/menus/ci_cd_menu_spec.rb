@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Sidebars::Projects::Menus::CiCdMenu do
+  include EE::Ci::Catalog::ResourcesHelper
+
   let(:project) { build(:project) }
   let(:user) { project.first_owner }
   let(:context) { Sidebars::Projects::Context.new(current_user: user, current_ref: 'main', container: project, can_view_pipeline_editor: true) }

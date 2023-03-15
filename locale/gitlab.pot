@@ -31776,6 +31776,9 @@ msgstr ""
 msgid "Pipelines|CI lint"
 msgstr ""
 
+msgid "Pipelines|CI/CD Catalog"
+msgstr ""
+
 msgid "Pipelines|Child pipeline (%{link_start}parent%{link_end})"
 msgstr ""
 
