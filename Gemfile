@@ -587,7 +587,7 @@ gem 'cvss-suite', '~> 3.0.1', require: 'cvss_suite'
 gem 'arr-pm', '~> 0.0.12'
 
 # Apple plist parsing
-gem 'CFPropertyList'
+gem 'CFPropertyList', '~> 3.0.0'
 gem 'app_store_connect'
 
 # For phone verification
