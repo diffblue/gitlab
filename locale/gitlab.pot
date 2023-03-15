@@ -18581,7 +18581,7 @@ msgstr ""
 msgid "Geo|Does not match the primary storage configuration"
 msgstr ""
 
-msgid "Geo|Edit %{nodeType} site"
+msgid "Geo|Edit %{siteType} site"
 msgstr ""
 
 msgid "Geo|Edit Geo Site"
@@ -18764,7 +18764,7 @@ msgstr ""
 msgid "Geo|Remove"
 msgstr ""
 
-msgid "Geo|Remove %{nodeType} site"
+msgid "Geo|Remove %{siteType} site"
 msgstr ""
 
 msgid "Geo|Remove entry"

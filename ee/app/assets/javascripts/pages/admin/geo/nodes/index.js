@@ -1,3 +1,3 @@
-import { initGeoNodes } from 'ee/geo_nodes';
+import { initGeoSites } from 'ee/geo_sites';
 
-initGeoNodes();
+initGeoSites();
