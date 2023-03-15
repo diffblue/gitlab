@@ -55,14 +55,8 @@ const validDevParams = {
 };
 
 describe('guestOverageConfirmAction', () => {
-  let originalGon;
-
-  beforeAll(() => {
-    originalGon = window.gon;
-  });
-
-  afterEach(() => {
-    window.gon = originalGon;
+  beforeEach(() => {
+    gon.features = {};
   });
 
   describe('when overage modal should not be shown', () => {
