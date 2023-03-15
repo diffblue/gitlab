@@ -235,6 +235,15 @@ module EE
               alpha: { milestone: '15.6' },
               resolver: ::Resolvers::ProductAnalytics::DashboardsResolver
 
+        field :product_analytics_state, ::Types::ProductAnalytics::StateEnum,
+              description: 'Current state of the product analytics stack for this project.' \
+                           'Can only be called for one project in a single request',
+              null: true,
+              alpha: { milestone: '15.10' },
+              resolver: ::Resolvers::ProductAnalytics::StateResolver do
+                extension ::Gitlab::Graphql::Limit::FieldCallCount, limit: 1
+              end
+
         field :jitsu_key, GraphQL::Types::String,
               null: true,
               description: 'Jitsu key assigned to the project.',
