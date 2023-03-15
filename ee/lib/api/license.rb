@@ -82,7 +82,7 @@ module API
 
       desc 'Refresh licence billable users' do
         detail 'Triggers refresh of billable users count for licence'
-        success code: 201
+        success ::API::Entities::BasicSuccess
         failure [
           { code: 404, message: 'Not found' },
           { code: 403, message: 'Forbidden' },
@@ -107,7 +107,8 @@ module API
           Time.zone.now
         )
 
-        status :created
+        status :accepted
+        { success: true }
       end
     end
 
