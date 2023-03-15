@@ -1,0 +1,39 @@
+# frozen_string_literal: true
+
+module Resolvers
+  module ProductAnalytics
+    class StateResolver < BaseResolver
+      include Gitlab::Graphql::Authorize::AuthorizeResource
+
+      authorizes_object!
+      authorize :developer_access
+      type ::Types::ProductAnalytics::StateEnum, null: true
+
+      def resolve
+        return unless Gitlab::CurrentSettings.product_analytics_enabled? && object.product_analytics_enabled?
+        return 'create_instance' unless object.project_setting&.jitsu_key&.present?
+        return 'loading_instance' if initializing?
+        return 'waiting_for_events' if no_instance_data?
+
+        'complete'
+      end
+
+      private
+
+      def initializing?
+        !!Gitlab::Redis::SharedState.with { |redis| redis.get("project:#{object.id}:product_analytics_initializing") }
+      end
+
+      def no_instance_data?
+        strong_memoize_with(:no_instance_data, object) do
+          params = { query: { measures: ['TrackedEvents.count'] }, queryType: 'multi', path: 'load' }
+          response = ::ProductAnalytics::CubeDataQueryService.new(container: object,
+            current_user: current_user,
+            params: params).execute
+
+          response.error? || response.payload.dig('results', 0, 'data', 0, 'TrackedEvents.count').to_i == 0
+        end
+      end
+    end
+  end
+end

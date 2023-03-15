@@ -78,7 +78,7 @@ module ProductAnalytics
       payload = {
         iat: Time.now.utc.to_i,
         exp: Time.now.utc.to_i + 180,
-        appId: "gitlab_project_#{params[:project_id]}",
+        appId: "gitlab_project_#{project.id}",
         gitlabToken: gitlab_token,
         iss: ::Settings.gitlab.host
       }
