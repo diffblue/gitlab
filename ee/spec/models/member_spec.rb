@@ -321,7 +321,7 @@ RSpec.describe Member, type: :model do
                                namespace_settings: create(:namespace_settings, new_user_signups_cap: 1))
     end
 
-    let_it_be(:subgroup) { create(:group, parent: group) }
+    let_it_be(:subgroup, refind: true) { create(:group, parent: group) }
     let_it_be(:project, refind: true) { create(:project, namespace: group) }
     let_it_be(:user) { create(:user) }
 
