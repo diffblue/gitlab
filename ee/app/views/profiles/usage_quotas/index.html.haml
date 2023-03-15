@@ -19,7 +19,7 @@
   = gl_tab_link_to '#storage-quota-tab', data: { qa_selector: 'storage_tab' } do
     = s_('UsageQuota|Storage')
 
-.tab-content
+.tab-content.gl-tab-content
   .tab-pane.active#pipelines-quota-tab
     #js-pipeline-usage-app{ data: pipeline_usage_app_data(@namespace) }
   .tab-pane#storage-quota-tab
