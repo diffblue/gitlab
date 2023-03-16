@@ -1,9 +1,8 @@
-import { GlAvatarLabeled, GlDropdown, GlFormRadio, GlFormRadioGroup } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { GlAvatarLabeled, GlFormRadio, GlFormRadioGroup, GlCollapsibleListbox } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import BoardAddNewColumn, { listTypeInfo } from 'ee/boards/components/board_add_new_column.vue';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import BoardAddNewColumnForm from '~/boards/components/board_add_new_column_form.vue';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import { ListType } from '~/boards/constants';
@@ -18,8 +17,9 @@ Vue.use(Vuex);
 describe('BoardAddNewColumn', () => {
   let wrapper;
 
+  const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const selectItem = (id) => {
-    wrapper.findByTestId('selectItem').vm.$emit('change', id);
+    findDropdown().vm.$emit('select', id);
   };
 
   const createStore = ({ actions = {}, getters = {}, state = {} } = {}) => {
@@ -41,46 +41,45 @@ describe('BoardAddNewColumn', () => {
     getListByTypeId = jest.fn(),
     actions = {},
   } = {}) => {
-    wrapper = extendedWrapper(
-      shallowMount(BoardAddNewColumn, {
-        stubs: {
-          BoardAddNewColumnForm,
-          GlFormRadio,
-          GlFormRadioGroup,
-          IterationTitle,
+    wrapper = shallowMountExtended(BoardAddNewColumn, {
+      stubs: {
+        BoardAddNewColumnForm,
+        GlFormRadio,
+        GlFormRadioGroup,
+        IterationTitle,
+        GlCollapsibleListbox,
+      },
+      data() {
+        return {
+          selectedId,
+        };
+      },
+      store: createStore({
+        actions: {
+          fetchLabels: jest.fn(),
+          setAddColumnFormVisibility: jest.fn(),
+          ...actions,
         },
-        data() {
-          return {
-            selectedId,
-          };
+        getters: {
+          getListByTypeId: () => getListByTypeId,
         },
-        store: createStore({
-          actions: {
-            fetchLabels: jest.fn(),
-            setAddColumnFormVisibility: jest.fn(),
-            ...actions,
-          },
-          getters: {
-            getListByTypeId: () => getListByTypeId,
-          },
-          state: {
-            labels,
-            labelsLoading: false,
-            assignees,
-            assigneesLoading: false,
-            iterations,
-            iterationsLoading: false,
-          },
-        }),
-        provide: {
-          scopedLabelsAvailable: true,
-          milestoneListsAvailable: true,
-          assigneeListsAvailable: true,
-          iterationListsAvailable: true,
-          isEpicBoard: false,
+        state: {
+          labels,
+          labelsLoading: false,
+          assignees,
+          assigneesLoading: false,
+          iterations,
+          iterationsLoading: false,
         },
       }),
-    );
+      provide: {
+        scopedLabelsAvailable: true,
+        milestoneListsAvailable: true,
+        assigneeListsAvailable: true,
+        iterationListsAvailable: true,
+        isEpicBoard: false,
+      },
+    });
 
     // trigger change event
     if (selectedId) {
@@ -127,6 +126,13 @@ describe('BoardAddNewColumn', () => {
     cancelButton().vm.$emit('click');
 
     expect(setAddColumnFormVisibility).toHaveBeenCalledWith(expect.anything(), false);
+  });
+
+  it('renders GlCollapsibleListbox with search field', () => {
+    mountComponent();
+
+    expect(findDropdown().exists()).toBe(true);
+    expect(findDropdown().props('searchable')).toBe(true);
   });
 
   describe('Add list button', () => {
@@ -180,6 +186,27 @@ describe('BoardAddNewColumn', () => {
       expect(highlightList).toHaveBeenCalledWith(expect.anything(), mockLabelList.id);
       expect(createList).not.toHaveBeenCalled();
     });
+
+    it('does not create on click and shows the dropdown as invalid when no ID is selected', async () => {
+      const getListByTypeId = jest.fn().mockReturnValue(mockLabelList);
+      const highlightList = jest.fn();
+      const createList = jest.fn();
+
+      mountComponent({
+        selectedId: null,
+        getListByTypeId,
+        actions: {
+          createList,
+          highlightList,
+        },
+      });
+
+      await nextTick();
+
+      submitButton().vm.$emit('click');
+
+      expect(createList).not.toHaveBeenCalled();
+    });
   });
 
   describe('assignee list', () => {
@@ -197,11 +224,10 @@ describe('BoardAddNewColumn', () => {
     });
 
     it('sets assignee placeholder text in form', async () => {
-      expect(findForm().props()).toMatchObject({
-        noneSelected: listTypeInfo.assignee.noneSelected,
-        searchLabel: BoardAddNewColumn.i18n.value,
-        searchPlaceholder: listTypeInfo.assignee.searchPlaceholder,
-      });
+      expect(findForm().props('searchLabel')).toBe(BoardAddNewColumn.i18n.value);
+      expect(findDropdown().props('searchPlaceholder')).toBe(
+        listTypeInfo.assignee.searchPlaceholder,
+      );
     });
 
     it('shows list of assignees', () => {
@@ -234,14 +260,14 @@ describe('BoardAddNewColumn', () => {
     });
 
     it('sets iteration placeholder text in form', () => {
-      expect(findForm().props()).toMatchObject({
-        searchLabel: BoardAddNewColumn.i18n.value,
-        searchPlaceholder: listTypeInfo.iteration.searchPlaceholder,
-      });
+      expect(findForm().props('searchLabel')).toBe(BoardAddNewColumn.i18n.value);
+      expect(findDropdown().props('searchPlaceholder')).toBe(
+        listTypeInfo.iteration.searchPlaceholder,
+      );
     });
 
     it('shows list of iterations', () => {
-      const itemList = wrapper.findComponent(GlDropdown).findAllComponents(GlFormRadio);
+      const itemList = findDropdown().props('items');
 
       expect(itemList).toHaveLength(mockIterations.length);
       expectIterationWithoutTitle();

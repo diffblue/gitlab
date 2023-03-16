@@ -40,3 +40,25 @@ export function groupByIterationCadences(iterations) {
   });
   return cadences;
 }
+
+export function groupOptionsByIterationCadences(iterations) {
+  const cadences = [];
+  iterations.forEach((iteration) => {
+    if (!iteration.iterationCadence) {
+      return;
+    }
+    const { title } = iteration.iterationCadence;
+    const cadenceIteration = {
+      value: iteration.id,
+      title: iteration.title,
+      text: getIterationPeriod(iteration),
+    };
+    const cadence = cadences.find((c) => c.text === title);
+    if (cadence) {
+      cadence.options.push(cadenceIteration);
+    } else {
+      cadences.push({ text: title, options: [cadenceIteration] });
+    }
+  });
+  return cadences;
+}
