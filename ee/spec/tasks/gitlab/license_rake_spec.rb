@@ -9,6 +9,51 @@ RSpec.describe 'gitlab:license namespace rake tasks', :silence_stdout do
     Rake.application.rake_require 'tasks/gitlab/license'
   end
 
+  describe 'info' do
+    subject { run_rake_task 'gitlab:license:info' }
+
+    it 'displays information' do
+      allow(Gitlab::UsageData).to receive(:license_usage_data).and_return(
+        {
+          license_plan: 'Foo',
+          recorded_at: 1.day.ago,
+          uuid: Gitlab::CurrentSettings.uuid,
+          hostname: 'example.com',
+          version: Gitlab::VERSION,
+          installation_type: 'gitlab-development-kit',
+          active_user_count: 42,
+          edition: 'EE',
+          licensee: { 'Email' => 'foo@example.com' }
+        }
+      )
+
+      expect { subject }.to output(
+        include(
+          'Current User Count: 42',
+          'Email associated with license: foo@example.com'
+        )
+      ).to_stdout
+    end
+
+    context 'when license not found' do
+      it 'aborts' do
+        allow(Gitlab::UsageData).to receive(:license_usage_data).and_return(
+          {
+            recorded_at: 1.day.ago,
+            uuid: Gitlab::CurrentSettings.uuid,
+            hostname: 'example.com',
+            version: Gitlab::VERSION,
+            installation_type: 'gitlab-development-kit',
+            active_user_count: 42,
+            edition: 'CE'
+          }
+        )
+
+        expect { subject }.to raise_error(SystemExit, 'No license has been applied.')
+      end
+    end
+  end
+
   describe 'load' do
     let_it_be(:license_path) { 'arbitrary_file_name' }
 
@@ -18,6 +63,54 @@ RSpec.describe 'gitlab:license namespace rake tasks', :silence_stdout do
 
     it 'works when no license to be installed' do
       expect { subject }.not_to raise_error
+    end
+
+    context 'when GITLAB_ACTIVATION_CODE env variable is set' do
+      let(:activation_code) { 'activation_code' }
+      let(:license) { build(:license) }
+      let(:service_result) { { success: true, license: license } }
+
+      before do
+        stub_env('GITLAB_ACTIVATION_CODE', activation_code)
+      end
+
+      def expect_activation
+        expect_next_instance_of(::GitlabSubscriptions::ActivateService) do |service|
+          expect(service)
+            .to receive(:execute)
+            .with(activation_code, automated: true)
+            .and_return(service_result)
+        end
+      end
+
+      it 'triggers ActivateService in automated mode' do
+        expect_activation
+
+        subject
+      end
+
+      context 'when ActivateService is unsuccessful' do
+        let(:service_result) { { success: false, errors: %w[foo bar] } }
+
+        it 'raises error' do
+          expect_activation
+
+          expect { subject }.to raise_error(RuntimeError, 'Activation unsuccessful')
+            .and output(/foo bar/).to_stdout
+        end
+      end
+
+      context 'when GITLAB_LICENSE_FILE is also set' do
+        before do
+          stub_env('GITLAB_LICENSE_FILE', license_path)
+        end
+
+        it 'activates and ignores license file' do
+          expect_activation
+
+          subject
+        end
+      end
     end
 
     context 'when GITLAB_LICENSE_FILE env variable is set' do

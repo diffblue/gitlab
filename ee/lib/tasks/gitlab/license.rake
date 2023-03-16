@@ -1,9 +1,35 @@
 # frozen_string_literal: true
 
-namespace :gitlab do
-  namespace :license do
-    desc 'GitLab | License | Gather license related information'
-    task info: :gitlab_environment do
+module Tasks
+  class GitlabLicenseTasks
+    include Rake::DSL
+
+    def initialize
+      namespace :gitlab do
+        namespace :license do
+          desc 'GitLab | License | Gather license related information'
+          task info: :gitlab_environment do
+            info
+          end
+
+          task :load, [:mode] => :environment do |_, args|
+            args.with_defaults(mode: 'default')
+
+            activation_code = ENV['GITLAB_ACTIVATION_CODE']
+
+            if activation_code.present?
+              activate(activation_code)
+            else
+              seed_license(args)
+            end
+          end
+        end
+      end
+    end
+
+    private
+
+    def info
       license = Gitlab::UsageData.license_usage_data
       abort("No license has been applied.") unless license[:license_plan]
       puts "Today's Date: #{Date.today}"
@@ -14,9 +40,20 @@ namespace :gitlab do
       puts "Email associated with license: #{license[:licensee]['Email']}"
     end
 
-    task :load, [:mode] => :environment do |_, args|
-      args.with_defaults(mode: 'default')
+    # TODO: Alter explanation text in verbose mode, after
+    # https://gitlab.com/gitlab-org/customers-gitlab-com/-/issues/5904 is enabled in production
+    def activate(activation_code)
+      result = ::GitlabSubscriptions::ActivateService.new.execute(activation_code, automated: true)
+      if result[:success]
+        puts 'Activation successful'.color(:green)
+      else
+        puts 'Activation unsuccessful'.color(:red)
+        puts result[:errors].join(' ').color(:red)
+        raise 'Activation unsuccessful'
+      end
+    end
 
+    def seed_license(args)
       flag = 'GITLAB_LICENSE_FILE'
       default_license_file = Settings.source.dirname + 'Gitlab.gitlab-license'
       license_file = ENV.fetch(flag, default_license_file)
@@ -38,3 +75,5 @@ namespace :gitlab do
     end
   end
 end
+
+Tasks::GitlabLicenseTasks.new

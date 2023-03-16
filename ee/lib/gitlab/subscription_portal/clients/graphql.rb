@@ -18,20 +18,22 @@ module Gitlab
         ].freeze
 
         class_methods do
-          def activate(activation_code)
+          def activate(activation_code, automated:)
             uuid = Gitlab::CurrentSettings.uuid
 
             variables = {
               activationCode: activation_code,
-              instanceIdentifier: uuid
+              instanceIdentifier: uuid,
+              automated: automated
             }
 
             query = <<~GQL
-              mutation($activationCode: String!, $instanceIdentifier: String!) {
+              mutation($activationCode: String!, $instanceIdentifier: String!, $automated: Boolean!) {
                 cloudActivationActivate(
                   input: {
                     activationCode: $activationCode,
-                    instanceIdentifier: $instanceIdentifier
+                    instanceIdentifier: $instanceIdentifier,
+                    automated: $automated
                   }
                 ) {
                   licenseKey

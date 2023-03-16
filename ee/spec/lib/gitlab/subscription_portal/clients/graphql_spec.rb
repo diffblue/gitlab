@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
+RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :billing_and_payments do
   let(:client) { Gitlab::SubscriptionPortal::Client }
 
   describe '#activate' do
@@ -24,7 +24,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
         }
       )
 
-      result = client.activate('activation_code_abc')
+      result = client.activate('activation_code_abc', automated: false)
 
       expect(result).to eq({ license_key: license_key, success: true, future_subscriptions: [] })
     end
@@ -60,7 +60,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
           }
         )
 
-        result = client.activate('activation_code_abc')
+        result = client.activate('activation_code_abc', automated: false)
 
         expect(result).to eq(
           {
@@ -101,7 +101,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
           }
         )
 
-        result = client.activate('activation_code_abc')
+        result = client.activate('activation_code_abc', automated: false)
 
         expect(result).to eq({ errors: ["invalid activation code"], success: false })
       end
@@ -113,7 +113,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
           .to_return(status: [500, "Internal Server Error"], body: 'body')
         allow(Gitlab::ErrorTracking).to receive(:log_exception)
 
-        result = client.activate('activation_code_abc')
+        result = client.activate('activation_code_abc', automated: false)
 
         expect(result).to eq({ errors: described_class::CONNECTIVITY_ERROR, success: false })
 
@@ -133,7 +133,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
         stub_request(:any, EE::SUBSCRIPTIONS_GRAPHQL_URL).to_timeout
         allow(Gitlab::ErrorTracking).to receive(:log_exception)
 
-        result = client.activate('activation_code_abc')
+        result = client.activate('activation_code_abc', automated: false)
 
         expect(result).to eq({ errors: described_class::CONNECTIVITY_ERROR, success: false })
         expect(Gitlab::ErrorTracking).to have_received(:log_exception).with(kind_of(Timeout::Error))
