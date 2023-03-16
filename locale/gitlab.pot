@@ -4762,6 +4762,9 @@ msgstr ""
 msgid "Analytics|Code"
 msgstr ""
 
+msgid "Analytics|Column Chart"
+msgstr ""
+
 msgid "Analytics|Configure Dashboard Project"
 msgstr ""
 
@@ -14972,6 +14975,9 @@ msgid "Diffs|Something went wrong while fetching diff lines."
 msgstr ""
 
 msgid "Diffs|with %{additions} and %{deletions}"
+msgstr ""
+
+msgid "Dimension"
 msgstr ""
 
 msgid "Direct member"

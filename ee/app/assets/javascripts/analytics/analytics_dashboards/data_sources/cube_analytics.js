@@ -14,7 +14,7 @@ export const DATE_RANGE_FILTER_DIMENSIONS = {
   trackedevents: 'TrackedEvents.utcTime',
 };
 
-const convertToLineChartFormat = (resultSet) => {
+const convertToCommonChartFormat = (resultSet) => {
   const seriesNames = resultSet.seriesNames();
   const pivot = resultSet.chartPivot();
 
@@ -75,7 +75,8 @@ const buildCubeQuery = (query, queryOverrides, filters) => ({
 });
 
 const VISUALIZATION_PARSERS = {
-  LineChart: convertToLineChartFormat,
+  LineChart: convertToCommonChartFormat,
+  ColumnChart: convertToCommonChartFormat,
   DataTable: convertToTableFormat,
   SingleStat: convertToSingleValue,
 };
