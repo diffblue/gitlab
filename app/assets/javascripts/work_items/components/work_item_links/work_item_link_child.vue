@@ -109,7 +109,9 @@ export default {
       return this.isItemOpen ? __('Created') : __('Closed');
     },
     childPath() {
-      return `/${this.projectPath}/-/work_items/${this.childItem.iid}?iid_path=true`;
+      return `${gon?.relative_url_root || ''}/${this.projectPath}/-/work_items/${
+        this.childItem.iid
+      }?iid_path=true`;
     },
     hasChildren() {
       return this.getWidgetByType(this.childItem, WIDGET_TYPE_HIERARCHY)?.hasChildren;
