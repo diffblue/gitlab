@@ -28,7 +28,7 @@ module Security
         @error_message = nil
 
         ApplicationRecord.transaction do
-          create_feedback
+          create_or_update_feedback
           create_and_dismiss_vulnerability
         end
 
@@ -40,17 +40,29 @@ module Security
         end
       end
 
-      def create_feedback
-        result = ::VulnerabilityFeedback::CreateService.new(
-          @project,
-          @current_user,
-          feedback_params
-        ).execute
+      # This method will be removed after the deprecation of Vulnerability Feedbacks is declared succesful
+      # It is a temporary measure to permit revert to Feedbacks if necessary.
+      def create_or_update_feedback
+        feedback = @project
+          .vulnerability_feedback
+          .with_feedback_type('dismissal')
+          .by_finding_uuid([@security_finding.uuid]).first
 
-        return if result[:status] == :success
+        if feedback
+          # We want to update existing feedback only for comment
+          feedback.update!(vulnerability_feedback_attributes)
+        else
+          result = ::VulnerabilityFeedback::CreateService.new(
+            @project,
+            @current_user,
+            feedback_params
+          ).execute
 
-        @error_message = result[:message].full_messages.join(",")
-        raise ActiveRecord::Rollback
+          return if result[:status] == :success
+
+          @error_message = result[:message].full_messages.join(",")
+          raise ActiveRecord::Rollback
+        end
       end
 
       def create_and_dismiss_vulnerability
@@ -79,6 +91,14 @@ module Security
           dismiss_vulnerability: false,
           migrated_to_state_transition: true
         }
+      end
+
+      def vulnerability_feedback_attributes
+        if @comment.present?
+          { comment: @comment, comment_timestamp: Time.zone.now, comment_author: @current_user }
+        else
+          { comment: nil, comment_timestamp: nil, comment_author: nil }
+        end
       end
     end
   end
