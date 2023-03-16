@@ -16,9 +16,6 @@ module EE
         has_many :vulnerability_findings, source: :finding, through: :vulnerabilities_finding_pipelines, class_name: 'Vulnerabilities::Finding'
         has_many :vulnerability_state_transitions, foreign_key: :state_changed_at_pipeline_id, class_name: 'Vulnerabilities::StateTransition', inverse_of: :pipeline
 
-        has_many :auto_canceled_pipelines, class_name: 'Ci::Pipeline', foreign_key: 'auto_canceled_by_id'
-        has_many :auto_canceled_jobs, class_name: 'CommitStatus', foreign_key: 'auto_canceled_by_id'
-
         # Subscriptions to this pipeline
         has_many :downstream_bridges, class_name: '::Ci::Bridge', foreign_key: :upstream_pipeline_id
         has_many :security_scans, class_name: 'Security::Scan', inverse_of: :pipeline
