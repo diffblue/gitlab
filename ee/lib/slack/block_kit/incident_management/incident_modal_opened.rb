@@ -4,6 +4,10 @@ module Slack
   module BlockKit
     module IncidentManagement
       class IncidentModalOpened
+        # See https://api.slack.com/reference/block-kit/composition-objects#option for the text limit.
+        # Dropdown menu items can have max length of 75 chars.
+        MAX_CHAR_LENGTH = 75
+
         def initialize(projects, response_url)
           @projects = projects
           @response_url = response_url
@@ -53,6 +57,10 @@ module Slack
             "type": "plain_text",
             "text": _("Cancel")
           }
+        end
+
+        def formatted_project_path(path)
+          path.truncate(MAX_CHAR_LENGTH)
         end
 
         def title_block
@@ -184,6 +192,7 @@ module Slack
         def label_block
           {
             "type": "input",
+            "optional": true,
             "block_id": "label_selector",
             "label": {
               "type": "plain_text",
@@ -298,7 +307,7 @@ module Slack
           {
             "text": {
               "type": "plain_text",
-              "text": project.full_path
+              "text": formatted_project_path(project.full_path)
             },
             "value": project.id.to_s
           }
