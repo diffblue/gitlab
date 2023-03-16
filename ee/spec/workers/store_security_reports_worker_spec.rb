@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe StoreSecurityReportsWorker do
+RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_management do
   let_it_be(:secret_detection_scan_1) { create(:security_scan, scan_type: :secret_detection) }
   let_it_be(:secret_detection_scan_2) { create(:security_scan, scan_type: :secret_detection) }
   let_it_be(:secret_detection_pipeline) { secret_detection_scan_2.pipeline }

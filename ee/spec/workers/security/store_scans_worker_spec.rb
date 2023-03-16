@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::StoreScansWorker do
+RSpec.describe Security::StoreScansWorker, feature_category: :vulnerability_management do
   let_it_be(:sast_scan) { create(:security_scan, scan_type: :sast) }
   let_it_be(:pipeline) { sast_scan.pipeline }
   let_it_be(:sast_build) { pipeline.security_scans.sast.last&.build }

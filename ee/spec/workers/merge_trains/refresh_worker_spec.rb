@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeTrains::RefreshWorker do
+RSpec.describe MergeTrains::RefreshWorker, feature_category: :merge_trains do
   let(:worker) { described_class.new }
 
   it 'has the `until_executed` deduplicate strategy' do

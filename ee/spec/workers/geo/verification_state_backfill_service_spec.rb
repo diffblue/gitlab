@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::VerificationStateBackfillService, :geo do
+RSpec.describe Geo::VerificationStateBackfillService, :geo, feature_category: :geo_replication do
   let_it_be(:replicable) { create(:merge_request_diff, :external) }
 
   subject(:job) { described_class.new(MergeRequestDiff, batch_size: 1000) }

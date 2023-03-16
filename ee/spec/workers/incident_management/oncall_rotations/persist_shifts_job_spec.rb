@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IncidentManagement::OncallRotations::PersistShiftsJob do
+RSpec.describe IncidentManagement::OncallRotations::PersistShiftsJob, feature_category: :incident_management do
   include OncallHelpers
 
   let(:worker) { described_class.new }

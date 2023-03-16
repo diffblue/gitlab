@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::ProcessScanResultPolicyWorker do
+RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :security_policy_management do
   let_it_be(:configuration, refind: true) { create(:security_orchestration_policy_configuration, configured_at: nil) }
 
   let(:active_policies) do

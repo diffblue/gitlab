@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Epics::NewEpicIssueWorker do
+RSpec.describe Epics::NewEpicIssueWorker, feature_category: :portfolio_management do
   describe '#perform' do
     let_it_be(:epic) { create(:epic) }
     let_it_be(:issue) { create(:issue) }

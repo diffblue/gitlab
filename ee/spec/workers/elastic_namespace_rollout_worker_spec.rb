@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ElasticNamespaceRolloutWorker, :saas do
+RSpec.describe ElasticNamespaceRolloutWorker, :saas, feature_category: :global_search do
   before do
     stub_const('ROLLOUT', described_class::ROLLOUT)
     stub_const('ROLLBACK', described_class::ROLLBACK)

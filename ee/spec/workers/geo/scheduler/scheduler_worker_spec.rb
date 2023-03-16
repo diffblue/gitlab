@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::Scheduler::SchedulerWorker, :geo do
+RSpec.describe Geo::Scheduler::SchedulerWorker, :geo, feature_category: :geo_replication do
   subject { described_class.new }
 
   it 'includes ::Gitlab::Geo::LogHelpers' do

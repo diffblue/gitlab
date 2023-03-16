@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::IndexingControl do
+RSpec.describe Elastic::IndexingControl, feature_category: :global_search do
   let!(:project) { create(:project, :repository) }
 
   let(:worker) do

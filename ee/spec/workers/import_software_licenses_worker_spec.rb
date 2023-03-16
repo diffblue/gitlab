@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ImportSoftwareLicensesWorker do
+RSpec.describe ImportSoftwareLicensesWorker, feature_category: :license_compliance do
   let(:catalogue) { build(:spdx_catalogue) }
   let(:spdx_apache_license) { build(:spdx_license, :apache_1) }
   let(:spdx_bsd_license) { build(:spdx_license, :bsd) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe RequirementsManagement::ProcessRequirementsReportsWorker do
+RSpec.describe RequirementsManagement::ProcessRequirementsReportsWorker, feature_category: :requirements_management do
   describe '#perform' do
     subject { described_class.new.perform(build_id) }
 

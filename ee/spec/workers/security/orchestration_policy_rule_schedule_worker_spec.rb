@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker do
+RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category: :security_policy_management do
   describe '#perform' do
     let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration) }
     let_it_be(:schedule) { create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: security_orchestration_policy_configuration) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::RefreshCachedDataWorker do
+RSpec.describe Ci::Minutes::RefreshCachedDataWorker, feature_category: :continuous_integration do
   describe '#perform' do
     context 'when namespace is out of CI minutes' do
       include_examples 'an idempotent worker' do

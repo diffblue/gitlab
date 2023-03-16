@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ElasticRemoveExpiredNamespaceSubscriptionsFromIndexCronWorker, :saas do
+RSpec.describe ElasticRemoveExpiredNamespaceSubscriptionsFromIndexCronWorker, :saas, feature_category: :global_search do
   subject { described_class.new }
 
   let(:not_expired_subscription1) { create(:gitlab_subscription, :bronze, end_date: Date.today + 2) }

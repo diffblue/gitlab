@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::RepositoryCleanupWorker, :geo do
+RSpec.describe Geo::RepositoryCleanupWorker, :geo, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   describe '#perform' do

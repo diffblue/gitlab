@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::RepositoryCheck::BatchWorker do
+RSpec.describe EE::RepositoryCheck::BatchWorker, feature_category: :source_code_management do
   include ::EE::GeoHelpers
 
   let(:shard_name) { 'default' }

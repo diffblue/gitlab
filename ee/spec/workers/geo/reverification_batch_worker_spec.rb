@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::ReverificationBatchWorker, :geo do
+RSpec.describe Geo::ReverificationBatchWorker, :geo, feature_category: :geo_replication do
   include EE::GeoHelpers
 
   let(:node) { create(:geo_node, :primary) }

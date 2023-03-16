@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe UpdateAllMirrorsWorker do
+RSpec.describe UpdateAllMirrorsWorker, feature_category: :source_code_management do
   include ExclusiveLeaseHelpers
 
   subject(:worker) { described_class.new }

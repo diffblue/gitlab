@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ElasticIndexingControlWorker do
+RSpec.describe ElasticIndexingControlWorker, feature_category: :global_search do
   subject { described_class.new }
 
   describe '#perform' do

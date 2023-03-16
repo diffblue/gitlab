@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ElasticFullIndexWorker do
+RSpec.describe ElasticFullIndexWorker, feature_category: :global_search do
   subject { described_class.new }
 
   before do

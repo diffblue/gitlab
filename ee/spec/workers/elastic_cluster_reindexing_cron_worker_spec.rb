@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ElasticClusterReindexingCronWorker do
+RSpec.describe ElasticClusterReindexingCronWorker, feature_category: :global_search do
   subject { described_class.new }
 
   describe '#perform' do

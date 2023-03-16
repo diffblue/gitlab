@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe RequirementsManagement::ImportRequirementsCsvWorker do
+RSpec.describe RequirementsManagement::ImportRequirementsCsvWorker, feature_category: :requirements_management do
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user) }
 

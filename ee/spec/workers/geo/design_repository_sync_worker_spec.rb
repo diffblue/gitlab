@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::DesignRepositorySyncWorker, :geo do
+RSpec.describe Geo::DesignRepositorySyncWorker, :geo, feature_category: :geo_replication do
   describe '#perform' do
     it 'runs DesignRepositorySyncService' do
       project = create(:project)

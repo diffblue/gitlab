@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ProductAnalytics::InitializeAnalyticsWorker do
+RSpec.describe ProductAnalytics::InitializeAnalyticsWorker, feature_category: :product_analytics do
   let(:jid) { '12345678' }
   let_it_be(:project) { create(:project) }
 

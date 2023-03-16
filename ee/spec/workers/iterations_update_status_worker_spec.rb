@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IterationsUpdateStatusWorker do
+RSpec.describe IterationsUpdateStatusWorker, feature_category: :team_planning do
   let_it_be(:closed_iteration1, reload: true) { create(:iteration, :skip_future_date_validation, start_date: 20.days.ago, due_date: 11.days.ago) }
   let_it_be(:current_iteration1, reload: true) { create(:iteration, :skip_future_date_validation, start_date: 10.days.ago, due_date: 3.days.ago) }
   let_it_be(:current_iteration2) { create(:iteration, :skip_future_date_validation, start_date: 2.days.ago, due_date: 5.days.from_now) }

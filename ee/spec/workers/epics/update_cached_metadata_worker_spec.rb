@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Epics::UpdateCachedMetadataWorker do
+RSpec.describe Epics::UpdateCachedMetadataWorker, feature_category: :portfolio_management do
   include ExclusiveLeaseHelpers
 
   describe '#perform', :sidekiq_inline do

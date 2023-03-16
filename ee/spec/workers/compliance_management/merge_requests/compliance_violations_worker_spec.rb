@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ComplianceManagement::MergeRequests::ComplianceViolationsWorker do
+RSpec.describe ComplianceManagement::MergeRequests::ComplianceViolationsWorker, feature_category: :compliance_management do
   let(:worker) { described_class.new }
   let_it_be(:merge_request) { create(:merge_request, :merged) }
 

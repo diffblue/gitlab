@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::Batch::ProjectRegistryWorker do
+RSpec.describe Geo::Batch::ProjectRegistryWorker, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   let_it_be(:secondary) { create(:geo_node) }

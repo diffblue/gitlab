@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::MetricsUpdateWorker, :geo do
+RSpec.describe Geo::MetricsUpdateWorker, :geo, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   describe '#perform' do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker do
+RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature_category: :security_policy_management do
   describe '#perform' do
     let_it_be(:namespace) { create(:group) }
     let_it_be(:project_1) { create(:project, namespace: namespace) }

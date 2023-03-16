@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AppSec::Dast::SiteProfilesBuilds::ConsistencyWorker do
+RSpec.describe AppSec::Dast::SiteProfilesBuilds::ConsistencyWorker, feature_category: :dynamic_application_security_testing do
   let(:worker) { described_class.new }
 
   describe '#perform' do

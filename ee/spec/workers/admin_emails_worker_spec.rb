@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AdminEmailsWorker do
+RSpec.describe AdminEmailsWorker, feature_category: :team_planning do
   context "recipients" do
     let(:group) { create(:group) }
     let(:project) { create(:project) }

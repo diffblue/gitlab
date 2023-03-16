@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe NewEpicWorker do
+RSpec.describe NewEpicWorker, feature_category: :portfolio_management do
   describe '#perform' do
     let(:worker) { described_class.new }
 

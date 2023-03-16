@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::DestroyWorker, :geo do
+RSpec.describe Geo::DestroyWorker, :geo, feature_category: :geo_replication do
   let(:replicator) { double(:replicator) }
 
   describe '#perform' do

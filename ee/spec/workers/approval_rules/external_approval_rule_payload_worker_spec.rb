@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ApprovalRules::ExternalApprovalRulePayloadWorker do
+RSpec.describe ApprovalRules::ExternalApprovalRulePayloadWorker, feature_category: :source_code_management do
   let_it_be(:rule) { create(:external_status_check, external_url: 'https://example.com/callback') }
 
   subject { described_class.new.perform(rule.id, {}) }

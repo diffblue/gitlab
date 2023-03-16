@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::VerificationStateBackfillWorker, :geo do
+RSpec.describe Geo::VerificationStateBackfillWorker, :geo, feature_category: :geo_replication do
   include EE::GeoHelpers
   include ExclusiveLeaseHelpers
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Runners::StaleGroupRunnersPruneCronWorker do
+RSpec.describe Ci::Runners::StaleGroupRunnersPruneCronWorker, feature_category: :runner_fleet do
   let(:worker) { described_class.new }
 
   describe '#perform' do

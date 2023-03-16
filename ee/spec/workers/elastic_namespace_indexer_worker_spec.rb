@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ElasticNamespaceIndexerWorker do
+RSpec.describe ElasticNamespaceIndexerWorker, feature_category: :global_search do
   subject { described_class.new }
 
   context 'when ES is disabled' do

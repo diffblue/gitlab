@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::Batch::ProjectRegistrySchedulerWorker do
+RSpec.describe Geo::Batch::ProjectRegistrySchedulerWorker, feature_category: :geo_replication do
   include ExclusiveLeaseHelpers
   include ::EE::GeoHelpers
 

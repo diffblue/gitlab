@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AuditEvents::UserImpersonationEventCreateWorker do
+RSpec.describe AuditEvents::UserImpersonationEventCreateWorker, feature_category: :audit_events do
   describe "#perform" do
     let_it_be(:impersonator) { create(:admin) }
     let_it_be(:user) { create(:user) }

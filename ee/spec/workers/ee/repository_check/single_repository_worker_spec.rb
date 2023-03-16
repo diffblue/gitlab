@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::RepositoryCheck::SingleRepositoryWorker do
+RSpec.describe EE::RepositoryCheck::SingleRepositoryWorker, feature_category: :source_code_management do
   include ::EE::GeoHelpers
 
   let_it_be(:project) { create(:project) }

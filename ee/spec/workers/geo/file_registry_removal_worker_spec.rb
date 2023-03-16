@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::FileRegistryRemovalWorker, :geo do
+RSpec.describe Geo::FileRegistryRemovalWorker, :geo, feature_category: :geo_replication do
   let(:replicator) { instance_double(Geo::UploadReplicator) }
 
   describe '#perform' do

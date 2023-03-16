@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe TodosDestroyer::ConfidentialEpicWorker do
+RSpec.describe TodosDestroyer::ConfidentialEpicWorker, feature_category: :portfolio_management do
   let(:service) { double }
 
   it 'calls the Todos::Destroy::ConfidentialEpicService with epic_id parameter' do
