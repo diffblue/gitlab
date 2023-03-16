@@ -9,6 +9,7 @@ import SummaryText from 'ee/vue_merge_request_widget/extensions/security_reports
 import SummaryHighlights from 'ee/vue_merge_request_widget/extensions/security_reports/summary_highlights.vue';
 import findingQuery from 'ee/security_dashboard/graphql/queries/mr_widget_finding.graphql';
 import dismissFindingMutation from 'ee/security_dashboard/graphql/mutations/dismiss_finding.mutation.graphql';
+import revertFindingToDetectedMutation from 'ee/security_dashboard/graphql/mutations/revert_finding_to_detected.mutation.graphql';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import Widget from '~/vue_merge_request_widget/components/widget/widget.vue';
@@ -855,25 +856,33 @@ describe('MR Widget Security Reports', () => {
     });
 
     describe('undo dismissing finding', () => {
-      const feedbackDismissalPath = '/-/vulnerability/feedback';
+      let mockDataProps;
 
-      beforeEach(async () => {
-        await createComponentExpandWidgetAndOpenModal({
-          mockDataProps: {
-            state: 'dismissed',
-            dismissal_feedback: {
-              destroy_vulnerability_feedback_dismissal_path: feedbackDismissalPath,
-              author: {}, // This is required to because `modal.vue` file needs this object. Passing undefined causes the tests to fail.
-            },
+      beforeEach(() => {
+        mockDataProps = {
+          state: 'dismissed',
+          dismissal_feedback: {
+            author: {},
           },
-          mrProps: {
-            createVulnerabilityFeedbackDismissalPath,
-          },
-        });
+        };
       });
 
       it('handles undoing dismissing a finding - success', async () => {
-        mockAxios.onDelete(feedbackDismissalPath).replyOnce(HTTP_STATUS_OK);
+        await createComponentExpandWidgetAndOpenModal({
+          mockDataProps,
+          apolloHandlers: [
+            [
+              revertFindingToDetectedMutation,
+              jest.fn().mockResolvedValue({
+                data: {
+                  securityFindingRevertToDetected: {
+                    errors: [],
+                  },
+                },
+              }),
+            ],
+          ],
+        });
 
         findModal().vm.$emit('revertDismissVulnerability');
 
@@ -886,7 +895,10 @@ describe('MR Widget Security Reports', () => {
       });
 
       it('handles undoing dismissing a finding - error', async () => {
-        mockAxios.onDelete(feedbackDismissalPath).replyOnce(HTTP_STATUS_BAD_REQUEST);
+        await createComponentExpandWidgetAndOpenModal({
+          mockDataProps,
+          apolloHandlers: [[revertFindingToDetectedMutation, jest.fn().mockRejectedValue({})]],
+        });
 
         findModal().vm.$emit('revertDismissVulnerability');
 
@@ -895,6 +907,9 @@ describe('MR Widget Security Reports', () => {
         expect(findModal().props('modal').error).toBe(
           'There was an error reverting the dismissal. Please try again.',
         );
+
+        // Should still remain the same because the connection failed
+        expect(findModal().props('modal').vulnerability.dismissal_feedback).toEqual({ author: {} });
       });
     });
   });
