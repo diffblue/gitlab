@@ -135,6 +135,28 @@ RSpec.describe Namespaces::ProjectsFinder do
           end
         end
       end
+
+      context 'when compliance framework presence filter is passed' do
+        context "when presence filter is 'any'" do
+          let(:params) { { compliance_framework_filters: { presence_filter: 'any' } } }
+
+          it 'returns projects with any compliance framework' do
+            expect(projects).to contain_exactly(project_1, project_2)
+          end
+        end
+
+        context "when presence filter is 'none'" do
+          let(:params) { { compliance_framework_filters: { presence_filter: 'none' } } }
+          let_it_be(:project_without_framework) do
+            create(:project, :public, group: namespace, path: 'project-without-framework',
+              name: 'Project without framework')
+          end
+
+          it 'returns projects without a compliance framework' do
+            expect(projects).to contain_exactly(project_without_framework)
+          end
+        end
+      end
     end
 
     context 'has_vulnerabilities' do

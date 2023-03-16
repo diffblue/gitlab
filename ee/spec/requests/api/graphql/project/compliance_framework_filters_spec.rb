@@ -96,4 +96,33 @@ RSpec.describe 'Query.group(fullPath).projects', feature_category: :compliance_m
       end
     end
   end
+
+  context 'when compliance framework presence filter is passed as ANY' do
+    let(:params) do
+      {
+        compliance_framework_filters: {
+          presence_filter: :ANY
+        }
+      }
+    end
+
+    it 'returns projects with any framework attached' do
+      expect(projects_full_paths).to contain_exactly(project_with_framework_1.full_path,
+        project_with_framework_2.full_path)
+    end
+  end
+
+  context 'when compliance framework presence filter is passed as NONE' do
+    let(:params) do
+      {
+        compliance_framework_filters: {
+          presence_filter: :NONE
+        }
+      }
+    end
+
+    it 'returns project without any framework' do
+      expect(projects_full_paths).to contain_exactly(project_without_framework.full_path)
+    end
+  end
 end

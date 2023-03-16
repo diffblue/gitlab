@@ -583,6 +583,18 @@ RSpec.describe Project, feature_category: :projects do
           it { is_expected.to eq([project_with_framework_1, project_with_framework_2, project_without_framework]) }
         end
       end
+
+      describe '.missing_compliance_framework' do
+        subject { described_class.missing_compliance_framework }
+
+        it { is_expected.to eq([project_without_framework]) }
+      end
+
+      describe '.any_compliance_framework' do
+        subject { described_class.any_compliance_framework }
+
+        it { is_expected.to match_array([project_with_framework_1, project_with_framework_2]) }
+      end
     end
   end
 

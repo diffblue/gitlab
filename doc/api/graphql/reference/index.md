@@ -22787,6 +22787,15 @@ Mode of a commit action.
 | <a id="commitencodingbase64"></a>`BASE64` | Base64 encoding. |
 | <a id="commitencodingtext"></a>`TEXT` | Text encoding. |
 
+### `ComplianceFrameworkPresenceFilter`
+
+ComplianceFramework of a project for filtering.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="complianceframeworkpresencefilterany"></a>`ANY` | Any compliance framework is assigned. |
+| <a id="complianceframeworkpresencefilternone"></a>`NONE` | No compliance framework is assigned. |
+
 ### `ComplianceViolationReason`
 
 Reason for the compliance violation.
@@ -26103,6 +26112,7 @@ Attributes for defining a CI/CD variable.
 | ---- | ---- | ----------- |
 | <a id="complianceframeworkfiltersid"></a>`id` | [`ComplianceManagementFrameworkID`](#compliancemanagementframeworkid) | ID of the compliance framework. |
 | <a id="complianceframeworkfiltersnot"></a>`not` | [`NegatedComplianceFrameworkFilters`](#negatedcomplianceframeworkfilters) | Negated compliance framework filter input. |
+| <a id="complianceframeworkfilterspresencefilter"></a>`presenceFilter` | [`ComplianceFrameworkPresenceFilter`](#complianceframeworkpresencefilter) | Checks presence of compliance framework of the project, "none" and "any" values are supported. |
 
 ### `ComplianceFrameworkInput`
 
