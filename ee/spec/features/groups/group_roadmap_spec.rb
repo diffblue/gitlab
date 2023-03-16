@@ -32,13 +32,6 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
     wait_for_requests
   end
 
-  def toggle_sort_direction
-    page.within('.vue-filtered-search-bar-container .sort-dropdown-container') do
-      page.find("button[title^='Sort direction']").click
-      wait_for_requests
-    end
-  end
-
   before do
     stub_licensed_features(epics: true)
 
