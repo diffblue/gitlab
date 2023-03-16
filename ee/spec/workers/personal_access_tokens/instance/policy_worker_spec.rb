@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PersonalAccessTokens::Instance::PolicyWorker, type: :worker do
+RSpec.describe PersonalAccessTokens::Instance::PolicyWorker, type: :worker, feature_category: :system_access do
   describe '#perform' do
     let(:instance_limit) { 7 }
     let!(:pat) { create(:personal_access_token, expires_at: expire_at) }

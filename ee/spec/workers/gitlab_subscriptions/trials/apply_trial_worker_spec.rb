@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::Trials::ApplyTrialWorker, type: :worker do
+RSpec.describe GitlabSubscriptions::Trials::ApplyTrialWorker, type: :worker, feature_category: :purchase do
   describe '#perform' do
     let(:logger) { described_class.new.send(:logger) }
     let(:user) { build(:user, id: non_existing_record_id) }

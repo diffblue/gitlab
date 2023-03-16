@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::UpdateRepositoryStorageWorker do
+RSpec.describe Groups::UpdateRepositoryStorageWorker, feature_category: :gitaly do
   subject { described_class.new }
 
   it_behaves_like 'an update storage move worker' do

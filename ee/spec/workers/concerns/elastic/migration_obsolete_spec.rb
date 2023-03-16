@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::MigrationObsolete do
+RSpec.describe Elastic::MigrationObsolete, feature_category: :global_search do
   let(:migration_class) do
     Class.new do
       include Elastic::MigrationObsolete

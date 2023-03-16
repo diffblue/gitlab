@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::SyncNamespaceNameWorker, type: :worker do
+RSpec.describe Namespaces::SyncNamespaceNameWorker, type: :worker, feature_category: :saas_provisioning do
   let_it_be(:namespace) { create(:group) }
 
   describe '#perform' do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::VerificationWorker, :geo do
+RSpec.describe Geo::VerificationWorker, :geo, feature_category: :geo_replication do
   include EE::GeoHelpers
 
   let(:package_file) { create(:conan_package_file, :conan_recipe_file) }

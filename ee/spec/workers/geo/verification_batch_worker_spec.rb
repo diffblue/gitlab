@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::VerificationBatchWorker, :geo do
+RSpec.describe Geo::VerificationBatchWorker, :geo, feature_category: :geo_replication do
   include EE::GeoHelpers
 
   let(:replicable_name) { 'widget' }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ComplianceManagement::UpdateDefaultFrameworkWorker do
+RSpec.describe ComplianceManagement::UpdateDefaultFrameworkWorker, feature_category: :compliance_management do
   let_it_be(:worker) { described_class.new }
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }

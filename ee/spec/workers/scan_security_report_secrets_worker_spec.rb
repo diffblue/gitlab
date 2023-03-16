@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe  ScanSecurityReportSecretsWorker do
+RSpec.describe  ScanSecurityReportSecretsWorker, feature_category: :secret_detection do
   let(:project) { create(:project, :repository) }
   let(:pipeline) { create(:ci_pipeline, :success, project: project) }
 

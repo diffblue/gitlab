@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::ContainerRepositorySyncWorker, :geo do
+RSpec.describe Geo::ContainerRepositorySyncWorker, :geo, feature_category: :geo_replication do
   describe '#perform' do
     it 'runs ContainerRepositorySyncService' do
       container_repository = create(:container_repository)

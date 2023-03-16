@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::BuildFinishedWorker do
+RSpec.describe Ci::BuildFinishedWorker, feature_category: :continuous_integration do
   let_it_be(:ci_runner) { create(:ci_runner) }
   let_it_be_with_reload(:build) { create(:ee_ci_build, :sast, :success, runner: ci_runner) }
   let_it_be(:project) { build.project }

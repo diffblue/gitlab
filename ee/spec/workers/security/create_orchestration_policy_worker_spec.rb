@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::CreateOrchestrationPolicyWorker do
+RSpec.describe Security::CreateOrchestrationPolicyWorker, feature_category: :security_policy_management do
   describe '#perform' do
     let(:configuration) { create(:security_orchestration_policy_configuration, configured_at: configured_at) }
 

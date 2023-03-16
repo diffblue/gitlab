@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Scans::PurgeByJobIdWorker do
+RSpec.describe Security::Scans::PurgeByJobIdWorker, feature_category: :vulnerability_management do
   let(:job_ids) { [1, 2, 3] }
   let(:event) { Ci::JobArtifactsDeletedEvent.new(data: { job_ids: job_ids }) }
 

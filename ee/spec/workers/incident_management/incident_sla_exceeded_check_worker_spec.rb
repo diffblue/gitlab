@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IncidentManagement::IncidentSlaExceededCheckWorker do
+RSpec.describe IncidentManagement::IncidentSlaExceededCheckWorker, feature_category: :incident_management do
   let(:worker) { described_class.new }
 
   describe '#perform' do

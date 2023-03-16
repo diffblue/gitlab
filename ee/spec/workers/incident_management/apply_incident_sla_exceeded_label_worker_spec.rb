@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IncidentManagement::ApplyIncidentSlaExceededLabelWorker do
+RSpec.describe IncidentManagement::ApplyIncidentSlaExceededLabelWorker, feature_category: :incident_management do
   let(:worker) { described_class.new }
 
   let_it_be_with_refind(:incident) { create(:incident, :with_sla) }

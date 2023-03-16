@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::ProjectTransferWorker, :elastic do
+RSpec.describe Elastic::ProjectTransferWorker, :elastic, feature_category: :global_search do
   let_it_be(:non_indexed_namespace) { create(:group) }
   let_it_be(:indexed_namespace) { create(:group) }
   # create project in indexed_namespace to emulate the successful project transfer

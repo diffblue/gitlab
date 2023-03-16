@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Geo::BatchEventCreateWorker, :geo do
+RSpec.describe Geo::BatchEventCreateWorker, :geo, feature_category: :geo_replication do
   describe "#perform" do
     it "calls Gitlab::Geo::Replicator.bulk_create_events" do
       events = []

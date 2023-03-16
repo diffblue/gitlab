@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Auth::SamlGroupSyncWorker do
+RSpec.describe Auth::SamlGroupSyncWorker, feature_category: :system_access do
   describe '#perform' do
     let_it_be(:user) { create(:user) }
 

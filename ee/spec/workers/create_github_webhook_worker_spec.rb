@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe CreateGithubWebhookWorker do
+RSpec.describe CreateGithubWebhookWorker, feature_category: :integrations do
   include GrapePathHelpers::NamedRouteMatcher
 
   let(:project) do

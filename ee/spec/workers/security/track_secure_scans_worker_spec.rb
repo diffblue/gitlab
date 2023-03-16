@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Security::TrackSecureScansWorker do
+RSpec.describe ::Security::TrackSecureScansWorker, feature_category: :vulnerability_management do
   let!(:ci_build) { create(:ee_ci_build) }
 
   describe '#perform' do

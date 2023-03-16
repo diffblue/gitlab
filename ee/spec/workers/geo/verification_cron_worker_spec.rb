@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::VerificationCronWorker, :geo do
+RSpec.describe Geo::VerificationCronWorker, :geo, feature_category: :geo_replication do
   describe '#perform' do
     it 'calls trigger_background_verification on enabled Replicators' do
       replicator = double('replicator')

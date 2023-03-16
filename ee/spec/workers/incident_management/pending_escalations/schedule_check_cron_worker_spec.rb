@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IncidentManagement::PendingEscalations::ScheduleCheckCronWorker do
+RSpec.describe IncidentManagement::PendingEscalations::ScheduleCheckCronWorker, feature_category: :incident_management do
   let(:worker) { described_class.new }
 
   let_it_be(:alert_escalation_1) { create(:incident_management_pending_alert_escalation, process_at: 5.minutes.ago) }

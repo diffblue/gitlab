@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::InitialPipelineProcessWorker do
+RSpec.describe Ci::InitialPipelineProcessWorker, feature_category: :continuous_integration do
   describe '#perform' do
     let_it_be(:namespace) { create(:namespace, :with_used_build_minutes_limit) }
     let_it_be(:project) { create(:project, namespace: namespace) }

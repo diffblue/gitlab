@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::SecondaryUsageDataCronWorker, :clean_gitlab_redis_shared_state do
+RSpec.describe Geo::SecondaryUsageDataCronWorker, :clean_gitlab_redis_shared_state, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   before do

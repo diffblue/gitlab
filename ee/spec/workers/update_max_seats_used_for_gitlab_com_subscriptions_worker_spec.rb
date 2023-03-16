@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker, :saas do
+RSpec.describe UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker, :saas, feature_category: :subscription_cost_management do
   describe '#perform' do
     subject { described_class.new }
 

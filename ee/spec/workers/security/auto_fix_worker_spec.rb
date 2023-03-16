@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::AutoFixWorker do
+RSpec.describe Security::AutoFixWorker, feature_category: :dependency_scanning do
   describe '#perform' do
     subject(:perform) { described_class.new.perform(pipeline.id) }
 

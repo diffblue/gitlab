@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::SyncScanPoliciesWorker do
+RSpec.describe Security::SyncScanPoliciesWorker, feature_category: :security_policy_management do
   describe '#perform' do
     let_it_be(:configuration) { create(:security_orchestration_policy_configuration, configured_at: nil) }
 

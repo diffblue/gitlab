@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::RootStatisticsWorker, '#perform', :saas do
+RSpec.describe Namespaces::RootStatisticsWorker, '#perform', :saas, feature_category: :source_code_management do
   include NamespaceStorageHelpers
 
   let_it_be(:group, refind: true) { create(:group_with_plan, :with_aggregation_schedule, plan: :ultimate_plan) }

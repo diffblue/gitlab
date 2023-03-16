@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::SyncReportsToReportApprovalRulesWorker do
+RSpec.describe Ci::SyncReportsToReportApprovalRulesWorker, feature_category: :source_code_management do
   describe '#perform' do
     let(:pipeline) { double(:pipeline, id: 42) }
     let(:sync_service) { double(:service, execute: true) }

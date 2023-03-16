@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Scans::PurgeWorker do
+RSpec.describe Security::Scans::PurgeWorker, feature_category: :vulnerability_management do
   describe '#perform' do
     subject(:perform) { described_class.new.perform }
 

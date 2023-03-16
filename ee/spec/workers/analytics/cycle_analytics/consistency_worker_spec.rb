@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Analytics::CycleAnalytics::ConsistencyWorker do
+RSpec.describe Analytics::CycleAnalytics::ConsistencyWorker, feature_category: :value_stream_management do
   let(:worker) { described_class.new }
 
   context 'when no pending aggregation records present' do

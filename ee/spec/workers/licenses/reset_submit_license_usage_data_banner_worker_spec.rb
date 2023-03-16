@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Licenses::ResetSubmitLicenseUsageDataBannerWorker, type: :worker do
+RSpec.describe Licenses::ResetSubmitLicenseUsageDataBannerWorker, type: :worker, feature_category: :sm_provisioning do
   describe '#perform' do
     subject(:reset_license_usage_data_exported) { described_class.new.perform }
 

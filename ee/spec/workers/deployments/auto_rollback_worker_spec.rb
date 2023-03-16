@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Deployments::AutoRollbackWorker do
+RSpec.describe Deployments::AutoRollbackWorker, feature_category: :continuous_delivery do
   let_it_be(:environment) { create(:environment) }
 
   let(:worker) { described_class.new }

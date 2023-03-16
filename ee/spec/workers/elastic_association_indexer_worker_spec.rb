@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ElasticAssociationIndexerWorker do
+RSpec.describe ElasticAssociationIndexerWorker, feature_category: :global_search do
   subject { described_class.new }
 
   let(:indexed_associations) { [:issues] }

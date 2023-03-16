@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::SyncTimeoutCronWorker, :geo do
+RSpec.describe Geo::SyncTimeoutCronWorker, :geo, feature_category: :geo_replication do
   describe '#perform' do
     it 'calls fail_sync_timeouts' do
       replicator = double('replicator')

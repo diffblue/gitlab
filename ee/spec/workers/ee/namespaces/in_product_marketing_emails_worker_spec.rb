@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::InProductMarketingEmailsWorker, '#perform' do
+RSpec.describe Namespaces::InProductMarketingEmailsWorker, '#perform', feature_category: :experimentation_activation do
   using RSpec::Parameterized::TableSyntax
 
   let(:license) { build(:license) }

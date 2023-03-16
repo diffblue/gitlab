@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Iterations::RollOverIssuesWorker do
+RSpec.describe Iterations::RollOverIssuesWorker, feature_category: :team_planning do
   let_it_be(:group1) { create(:group) }
   let_it_be(:group2) { create(:group) }
   let_it_be(:cadence1, reload: true) { create(:iterations_cadence, group: group1, roll_over: true, automatic: true) }

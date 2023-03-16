@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Arkose::BlockedUsersReportWorker, '#perform' do
+RSpec.describe Arkose::BlockedUsersReportWorker, '#perform', feature_category: :insider_threat do
   subject(:worker) { described_class.new }
 
   context 'when the feature flag arkose_labs_login_challenge is disabled' do

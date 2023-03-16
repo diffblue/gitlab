@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SetUserStatusBasedOnUserCapSettingWorker, type: :worker do
+RSpec.describe SetUserStatusBasedOnUserCapSettingWorker, type: :worker, feature_category: :user_profile do
   let_it_be(:active_user) { create(:user, state: 'active') }
 
   describe '#perform' do

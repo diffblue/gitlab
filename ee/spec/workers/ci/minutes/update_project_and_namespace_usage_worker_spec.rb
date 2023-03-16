@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageWorker do
+RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageWorker, feature_category: :continuous_integration do
   let_it_be(:project) { create(:project) }
   let_it_be(:namespace) { project.namespace }
   let_it_be(:build) { create(:ci_build, project: project) }

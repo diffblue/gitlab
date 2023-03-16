@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe RepositoryUpdateMirrorWorker do
+RSpec.describe RepositoryUpdateMirrorWorker, feature_category: :source_code_management do
   describe '#perform' do
     let(:jid) { '12345678' }
     let!(:project) { create(:project) }

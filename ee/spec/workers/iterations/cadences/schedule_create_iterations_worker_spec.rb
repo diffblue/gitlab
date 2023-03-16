@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Iterations::Cadences::ScheduleCreateIterationsWorker, :freeze_time do
+RSpec.describe Iterations::Cadences::ScheduleCreateIterationsWorker, :freeze_time, feature_category: :team_planning do
   let_it_be(:group) { create(:group) }
 
   subject(:worker) { described_class.new }

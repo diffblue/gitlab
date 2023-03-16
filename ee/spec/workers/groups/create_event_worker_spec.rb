@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::CreateEventWorker do
+RSpec.describe Groups::CreateEventWorker, feature_category: :onboarding do
   let_it_be(:group) { create(:group) }
   let_it_be(:user) { create(:user) }
 

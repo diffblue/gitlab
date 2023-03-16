@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Analytics::CodeReviewMetricsWorker do
+RSpec.describe Analytics::CodeReviewMetricsWorker, feature_category: :value_stream_management do
   subject(:worker) { described_class.new }
 
   describe "#perform" do

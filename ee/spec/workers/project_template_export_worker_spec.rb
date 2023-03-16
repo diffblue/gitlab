@@ -2,6 +2,6 @@
 
 require 'spec_helper'
 
-RSpec.describe ProjectTemplateExportWorker do
+RSpec.describe ProjectTemplateExportWorker, feature_category: :projects do
   it_behaves_like 'export worker'
 end

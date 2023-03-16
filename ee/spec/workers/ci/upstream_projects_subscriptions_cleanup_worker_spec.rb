@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::UpstreamProjectsSubscriptionsCleanupWorker do
+RSpec.describe Ci::UpstreamProjectsSubscriptionsCleanupWorker, feature_category: :continuous_integration do
   describe '#perform' do
     let(:group) { create(:group, :public) }
     let(:project) { create(:project, :repository, :public, group: group) }

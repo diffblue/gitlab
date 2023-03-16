@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PersonalAccessTokens::Groups::PolicyWorker, type: :worker do
+RSpec.describe PersonalAccessTokens::Groups::PolicyWorker, type: :worker, feature_category: :system_access do
   let(:group) do
     create(:group_with_managed_accounts, max_personal_access_token_lifetime: limit)
   end

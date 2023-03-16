@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Analytics::DevopsAdoption::CreateSnapshotWorker do
+RSpec.describe Analytics::DevopsAdoption::CreateSnapshotWorker, feature_category: :devops_reports do
   subject(:worker) { described_class.new }
 
   describe "#perform" do

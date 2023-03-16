@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::RepositoryVerification::Primary::BatchWorker, :clean_gitlab_redis_cache do
+RSpec.describe Geo::RepositoryVerification::Primary::BatchWorker, :clean_gitlab_redis_cache, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   let_it_be(:healthy_not_verified) { create(:project) }
