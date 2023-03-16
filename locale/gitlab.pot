@@ -25467,7 +25467,7 @@ msgstr ""
 msgid "Leave edit mode? All unsaved changes will be lost."
 msgstr ""
 
-msgid "Leave feadback."
+msgid "Leave feedback."
 msgstr ""
 
 msgid "Leave group"
