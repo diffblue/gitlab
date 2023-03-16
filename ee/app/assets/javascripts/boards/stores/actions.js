@@ -313,14 +313,12 @@ export default {
       })
       .then(({ data }) => {
         const { epics } = data[boardType].board;
-        const epicsFormatted = epics.edges.map((e) => ({
-          ...e.node,
-        }));
+        const epicsFormatted = epics.nodes;
 
         if (epicsFormatted) {
           commit(types.RECEIVE_EPICS_SUCCESS, {
             epics: epicsFormatted,
-            canAdminEpic: epics.edges[0]?.node?.userPermissions?.adminEpic,
+            canAdminEpic: epicsFormatted[0]?.userPermissions?.adminEpic,
             hasMoreEpics: epics.pageInfo?.hasNextPage,
             epicsEndCursor: epics.pageInfo?.endCursor,
           });

@@ -1,3 +1,4 @@
+import { sortBy } from 'lodash';
 import {
   FiltersInfo as FiltersInfoCE,
   formatIssueInput as formatIssueInputCe,
@@ -18,6 +19,7 @@ import {
   IterationFilterType,
   IterationIDs,
   HealthStatusFilterType,
+  ListType,
   MilestoneFilterType,
   MilestoneIDs,
   WeightFilterType,
@@ -283,6 +285,20 @@ export function getBoardQuery(boardType, isEpicBoard) {
     return epicBoardQuery;
   }
   return boardQuery[boardType].query;
+}
+
+export function formatListIssuesForLanes(listIssues) {
+  return listIssues.reduce((map, list) => {
+    let sortedIssues = list.issues.nodes;
+    if (list.listType !== ListType.closed) {
+      sortedIssues = sortBy(sortedIssues, 'relativePosition');
+    }
+
+    return {
+      ...map,
+      [list.id]: sortedIssues,
+    };
+  }, {});
 }
 
 export default {

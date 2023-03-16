@@ -265,7 +265,7 @@ describe('fetchEpicsSwimlanes', () => {
       group: {
         board: {
           epics: {
-            edges: [{ node: mockEpic }],
+            nodes: [mockEpic],
             pageInfo: {},
           },
         },
@@ -278,7 +278,7 @@ describe('fetchEpicsSwimlanes', () => {
       group: {
         board: {
           epics: {
-            edges: [{ node: mockEpic }],
+            nodes: [mockEpic],
             pageInfo: {
               hasNextPage: true,
               endCursor: 'ENDCURSOR',

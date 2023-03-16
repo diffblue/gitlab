@@ -1,16 +1,27 @@
 import { GlButton, GlIcon, GlLoadingIcon } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import EpicLane from 'ee/boards/components/epic_lane.vue';
 import IssuesLaneList from 'ee/boards/components/issues_lane_list.vue';
 import getters from 'ee/boards/stores/getters';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { mockEpic, mockLists, mockIssuesByListId, issues } from '../mock_data';
+import {
+  mockEpic,
+  mockLists,
+  mockIssuesByListId,
+  issues,
+  mockGroupIssuesResponse,
+} from '../mock_data';
 
+Vue.use(VueApollo);
 Vue.use(Vuex);
 
 describe('EpicLane', () => {
   let wrapper;
+  let mockApollo;
 
   const updateBoardEpicUserPreferencesSpy = jest.fn();
   const fetchIssuesForEpicSpy = jest.fn();
@@ -38,16 +49,22 @@ describe('EpicLane', () => {
     });
   };
 
+  const listIssuesQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupIssuesResponse);
+
   const createComponent = ({
     props = {},
     boardItemsByListId = mockIssuesByListId,
     isLoading = false,
+    isApolloBoard = false,
   } = {}) => {
     const store = createStore({ boardItemsByListId, isLoading });
+    mockApollo = createMockApollo([[listsIssuesQuery, listIssuesQueryHandlerSuccess]]);
 
     const defaultProps = {
       epic: mockEpic,
       lists: mockLists,
+      boardId: 'gid://gitlab/Board/1',
+      filterParams: {},
     };
 
     wrapper = shallowMountExtended(EpicLane, {
@@ -55,7 +72,13 @@ describe('EpicLane', () => {
         ...defaultProps,
         ...props,
       },
+      apolloProvider: mockApollo,
       store,
+      provide: {
+        fullPath: 'gitlab-org',
+        boardType: 'group',
+        isApolloBoard,
+      },
     });
   };
 
@@ -135,6 +158,16 @@ describe('EpicLane', () => {
     it('does not render when issuesCount is 0', () => {
       createComponent({ boardItemsByListId: {} });
       expect(findEpicLane().exists()).toBe(false);
+    });
+  });
+
+  describe('Apollo boards', () => {
+    beforeEach(() => {
+      createComponent({ isApolloBoard: true });
+    });
+
+    it('fetches list issues', () => {
+      expect(listIssuesQueryHandlerSuccess).toHaveBeenCalled();
     });
   });
 });

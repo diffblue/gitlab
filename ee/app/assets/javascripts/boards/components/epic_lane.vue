@@ -5,6 +5,9 @@ import { STATUS_OPEN } from '~/issues/constants';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { __, n__, sprintf } from '~/locale';
 import timeagoMixin from '~/vue_shared/mixins/timeago';
+import { formatListIssuesForLanes } from 'ee/boards/boards_util';
+import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
+import { BoardType } from 'ee_else_ce/boards/constants';
 import IssuesLaneList from './issues_lane_list.vue';
 
 export default {
@@ -20,6 +23,7 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   mixins: [timeagoMixin],
+  inject: ['fullPath', 'boardType', 'isApolloBoard'],
   props: {
     epic: {
       type: Object,
@@ -34,6 +38,14 @@ export default {
       required: false,
       default: false,
     },
+    boardId: {
+      type: String,
+      required: true,
+    },
+    filterParams: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     const { userPreferences } = this.epic;
@@ -42,10 +54,34 @@ export default {
 
     return {
       isCollapsed: collapsed,
+      listsWithIssues: [],
     };
   },
+  apollo: {
+    listsWithIssues: {
+      query: listsIssuesQuery,
+      variables() {
+        return {
+          fullPath: this.fullPath,
+          boardId: this.boardId,
+          filters: { ...this.filterParams, epicId: this.epic.id },
+          isGroup: this.boardType === BoardType.group,
+          isProject: this.boardType === BoardType.project,
+        };
+      },
+      context: {
+        isSingleRequest: true,
+      },
+      skip() {
+        return !this.isApolloBoard;
+      },
+      update(data) {
+        return data[this.boardType]?.board.lists.nodes;
+      },
+    },
+  },
   computed: {
-    ...mapState(['epicsFlags', 'filterParams']),
+    ...mapState(['epicsFlags']),
     ...mapGetters(['getIssuesByEpic']),
     isOpen() {
       return this.epic.state === STATUS_OPEN;
@@ -57,6 +93,9 @@ export default {
       return this.isCollapsed ? 'chevron-right' : 'chevron-down';
     },
     issuesCount() {
+      if (this.isApolloBoard) {
+        return this.listsWithIssues.reduce((total, list) => total + list.issues.nodes.length, 0);
+      }
       return this.lists.reduce(
         (total, list) => total + this.getIssuesByEpic(list.id, this.epic.id).length,
         0,
@@ -86,6 +125,9 @@ export default {
     showUnassignedLane() {
       return !this.isCollapsed && this.issuesCount > 0;
     },
+    issuesByList() {
+      return formatListIssuesForLanes(this.listsWithIssues);
+    },
   },
   watch: {
     'filterParams.epicId': {
@@ -111,6 +153,12 @@ export default {
       }).catch(() => {
         this.setError({ message: __('Unable to save your preference'), captureError: true });
       });
+    },
+    getIssuesByList(listId) {
+      if (this.isApolloBoard) {
+        return this.issuesByList[listId];
+      }
+      return this.getIssuesByEpic(listId, this.epic.id);
     },
   },
 };
@@ -172,7 +220,7 @@ export default {
         v-for="list in lists"
         :key="`${list.id}-issues`"
         :list="list"
-        :issues="getIssuesByEpic(list.id, epic.id)"
+        :issues="getIssuesByList(list.id)"
         :epic-id="epic.id"
         :epic-is-confidential="epic.confidential"
         :can-admin-list="canAdminList"

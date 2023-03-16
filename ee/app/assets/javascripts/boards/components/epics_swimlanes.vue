@@ -9,8 +9,14 @@ import { isListDraggable } from '~/boards/boards_util';
 import eventHub from '~/boards/eventhub';
 import { s__, __ } from '~/locale';
 import { defaultSortableOptions } from '~/sortable/constants';
+import {
+  BoardType,
+  DRAGGABLE_TAG,
+  EPIC_LANE_BASE_HEIGHT,
+  DraggableItemTypes,
+} from 'ee_else_ce/boards/constants';
 import { calculateSwimlanesBufferSize } from '../boards_util';
-import { DRAGGABLE_TAG, EPIC_LANE_BASE_HEIGHT, DraggableItemTypes } from '../constants';
+import epicsSwimlanesQuery from '../graphql/epics_swimlanes.query.graphql';
 import EpicLane from './epic_lane.vue';
 import IssuesLaneList from './issues_lane_list.vue';
 import SwimlanesLoadingSkeleton from './swimlanes_loading_skeleton.vue';
@@ -32,7 +38,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  inject: ['disabled', 'isApolloBoard'],
+  inject: ['boardType', 'disabled', 'fullPath', 'isApolloBoard'],
   props: {
     lists: {
       type: Array,
@@ -47,12 +53,35 @@ export default {
       type: Object,
       required: true,
     },
+    boardId: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
       bufferSize: 0,
       isUnassignedCollapsed: true,
+      rawEpics: {},
+      isLoadingMore: false,
     };
+  },
+  apollo: {
+    rawEpics: {
+      query: epicsSwimlanesQuery,
+      variables() {
+        return {
+          ...this.baseVariables,
+          issueFilters: this.filterParams,
+        };
+      },
+      skip() {
+        return !this.isApolloBoard;
+      },
+      update(data) {
+        return data[this.boardType].board.epics;
+      },
+    },
   },
   computed: {
     ...mapState([
@@ -65,8 +94,30 @@ export default {
       'hasMoreEpics',
     ]),
     ...mapGetters(['getUnassignedIssues']),
+    baseVariables() {
+      return {
+        fullPath: this.fullPath,
+        boardId: this.boardId,
+        isGroup: this.boardType === BoardType.group,
+        isProject: this.boardType === BoardType.project,
+      };
+    },
+    epicsToUse() {
+      return this.isApolloBoard ? this.rawEpics?.nodes || [] : this.epics;
+    },
     filtersToUse() {
       return this.isApolloBoard ? this.filters : this.filterParams;
+    },
+    pageInfo() {
+      return this.rawEpics.pageInfo;
+    },
+    hasMoreEpicsToLoad() {
+      return this.isApolloBoard ? this.pageInfo?.hasNextPage : this.hasMoreEpics;
+    },
+    isLoadingMoreEpics() {
+      return this.isApolloBoard
+        ? this.isLoadingMore
+        : this.epicsSwimlanesFetchInProgress.epicLanesFetchMoreInProgress;
     },
     addColumnFormVisible() {
       return this.addColumnForm?.visible;
@@ -94,6 +145,9 @@ export default {
       return this.lists.some((list) => this.pageInfoByListId[list.id]?.hasNextPage);
     },
     isLoading() {
+      if (this.isApolloBoard) {
+        return this.$apollo.queries.rawEpics.loading && !this.isLoadingMoreEpics;
+      }
       const {
         epicLanesFetchInProgress,
         listItemsFetchInProgress,
@@ -140,8 +194,20 @@ export default {
       'fetchItemsForList',
       'doneLoadingSwimlanesItems',
     ]),
-    fetchMoreEpics() {
-      this.fetchEpicsSwimlanes({ fetchNext: true });
+    async fetchMoreEpics() {
+      if (this.isApolloBoard) {
+        this.isLoadingMore = true;
+        await this.$apollo.queries.rawEpics.fetchMore({
+          variables: {
+            ...this.baseVariables,
+            issueFilters: this.filterParams,
+            after: this.pageInfo.endCursor,
+          },
+        });
+        this.isLoadingMore = false;
+      } else {
+        this.fetchEpicsSwimlanes({ fetchNext: true });
+      }
     },
     fetchMoreUnassignedIssues() {
       this.lists.forEach((list) => {
@@ -162,12 +228,14 @@ export default {
     },
     getEpicLaneProps(index) {
       return {
-        key: this.epics[index].id,
+        key: this.epicsToUse[index].id,
         props: {
-          epic: this.epics[index],
+          epic: this.epicsToUse[index],
           lists: this.lists,
           disabled: this.disabled,
           canAdminList: this.canAdminList,
+          boardId: this.boardId,
+          filterParams: this.filtersToUse,
         },
       };
     },
@@ -219,27 +287,27 @@ export default {
       </component>
       <div class="board-epics-swimlanes gl-display-table">
         <virtual-list
-          v-if="epics.length"
+          v-if="epicsToUse.length"
           :size="$options.epicLaneBaseHeight"
           :remain="bufferSize"
           :bench="bufferSize"
           :scrollelement="$refs.scrollableContainer"
           :item="$options.EpicLane"
-          :itemcount="epics.length"
+          :itemcount="epicsToUse.length"
           :itemprops="getEpicLaneProps"
         />
-        <div v-if="hasMoreEpics" class="swimlanes-button gl-pb-3 gl-pl-3 gl-sticky gl-left-0">
+        <div v-if="hasMoreEpicsToLoad" class="swimlanes-button gl-pb-3 gl-pl-3 gl-sticky gl-left-0">
           <gl-button
             category="tertiary"
             variant="confirm"
             class="gl-w-full"
-            :loading="epicsSwimlanesFetchInProgress.epicLanesFetchMoreInProgress"
-            :disabled="epicsSwimlanesFetchInProgress.epicLanesFetchMoreInProgress"
+            :loading="isLoadingMoreEpics"
+            :disabled="isLoadingMoreEpics"
             data-testid="load-more-epics"
             data-track-action="click_button"
             data-track-label="toggle_swimlanes"
             data-track-property="click_load_more_epics"
-            @click="fetchMoreEpics()"
+            @click="fetchMoreEpics"
           >
             {{ epicButtonLabel }}
           </gl-button>
