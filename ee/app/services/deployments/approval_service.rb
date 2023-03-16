@@ -19,6 +19,8 @@ module Deployments
 
       process_build!(deployment, approval)
 
+      deployment.invalidate_cache
+
       success(approval: approval)
     end
 
