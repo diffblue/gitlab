@@ -90,7 +90,7 @@ export default {
 };
 </script>
 <template>
-  <div class="gl-display-flex gl-sm-flex-direction-column gl-py-4">
+  <div class="gl-display-flex gl-sm-flex-direction-column gl-gap-5 gl-py-4">
     <storage-statistics-card
       :used-storage="usedStorageAmount"
       :total-storage="storageLimitEnforced ? repositorySizeLimit : null"
