@@ -1,10 +1,12 @@
-import { GlEmptyState } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
+import { GlEmptyState, GlModal } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
+import VueDraggable from 'vuedraggable';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import Dashboard from 'ee/operations/components/dashboard/dashboard.vue';
 import Project from 'ee/operations/components/dashboard/project.vue';
+import ProjectSelector from '~/vue_shared/components/project_selector/project_selector.vue';
 import createStore from 'ee/vue_shared/dashboards/store';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
@@ -24,8 +26,8 @@ describe('dashboard component', () => {
   const operationsDashboardHelpPath = '/help/user/operations_dashboard/index.html';
   const emptyDashboardSvgPath = '/assets/illustrations/operations-dashboard_empty.svg';
 
-  const mountComponent = ({ stubs = {}, state = {} } = {}) =>
-    mount(Dashboard, {
+  const mountComponent = ({ state = {} } = {}) =>
+    mountExtended(Dashboard, {
       store,
       propsData: {
         addPath: mockAddEndpoint,
@@ -35,11 +37,16 @@ describe('dashboard component', () => {
         operationsDashboardHelpPath,
       },
       state,
-      stubs,
+      stubs: { GlModal: true },
     });
 
+  const findModal = () => wrapper.findComponent(GlModal);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
-  const findAddProjectButton = () => wrapper.find('[data-testid=add-projects-button]');
+  const findAddProjectButton = () => wrapper.findByTestId('add-projects-button');
+  const findRemoveProjectButton = () => wrapper.findByTestId('remove-project-button');
+  const findAllProjects = () => wrapper.findAllComponents(Project);
+  const findProjectSelector = () => wrapper.findComponent(ProjectSelector);
+  const findVueDraggable = () => wrapper.findComponent(VueDraggable);
 
   beforeEach(() => {
     mockAxios = new MockAdapter(axios);
@@ -58,14 +65,8 @@ describe('dashboard component', () => {
   });
 
   describe('add projects button', () => {
-    let button;
-
-    beforeEach(() => {
-      button = findAddProjectButton();
-    });
-
     it('renders add projects text', () => {
-      expect(button.text()).toBe(mockText.ADD_PROJECTS);
+      expect(findAddProjectButton().text()).toBe(mockText.ADD_PROJECTS);
     });
 
     describe('when a project is added', () => {
@@ -77,12 +78,14 @@ describe('dashboard component', () => {
         mockAxios.onPost(mockAddEndpoint).replyOnce(HTTP_STATUS_OK, { added: [1], invalid: [] });
 
         await nextTick();
-        wrapper.vm.projectClicked({ id: 1 });
+
+        findProjectSelector().vm.$emit('projectClicked', { id: 1 });
         await waitForPromises();
-        wrapper.vm.onOk();
+
+        findModal().vm.$emit('primary');
         await waitForPromises();
-        expect(store.state.projects.length).toEqual(2);
-        expect(wrapper.findAllComponents(Project).length).toEqual(2);
+
+        expect(findAllProjects()).toHaveLength(2);
       });
     });
   });
@@ -92,15 +95,12 @@ describe('dashboard component', () => {
       const projectCount = 1;
 
       beforeEach(() => {
-        const projects = mockProjectData(projectCount);
-        store.state.projects = projects;
+        store.state.projects = mockProjectData(projectCount);
         wrapper = mountComponent();
       });
 
       it('includes a dashboard project component for each project', () => {
-        const projectComponents = wrapper.findAllComponents(Project);
-
-        expect(projectComponents).toHaveLength(projectCount);
+        expect(findAllProjects()).toHaveLength(projectCount);
       });
 
       it('passes each project to the dashboard project component', () => {
@@ -111,26 +111,24 @@ describe('dashboard component', () => {
       });
 
       it('dispatches setProjects when projects changes', () => {
-        const dispatch = jest.spyOn(wrapper.vm.$store, 'dispatch').mockImplementation(() => {});
+        const dispatch = jest.spyOn(store, 'dispatch').mockImplementation(() => {});
         const projects = mockProjectData(3);
 
-        wrapper.vm.projects = projects;
+        findVueDraggable().vm.$emit('input', projects);
 
         expect(dispatch).toHaveBeenCalledWith('setProjects', projects);
       });
 
       describe('when a project is removed', () => {
-        it('immediately requests the project list again', () => {
+        it('immediately requests the project list again', async () => {
           mockAxios.reset();
           mockAxios.onDelete(store.state.projects[0].remove_path).reply(HTTP_STATUS_OK);
           mockAxios.onGet(mockListEndpoint).replyOnce(HTTP_STATUS_OK, { projects: [] });
 
-          wrapper.find('[data-testid="remove-project-button"]').vm.$emit('click');
+          findRemoveProjectButton().vm.$emit('click');
+          await waitForPromises();
 
-          return waitForPromises().then(() => {
-            expect(store.state.projects.length).toEqual(0);
-            expect(wrapper.findAllComponents(Project).length).toEqual(0);
-          });
+          expect(wrapper.findAllComponents(Project).length).toEqual(0);
         });
       });
     });
@@ -145,8 +143,10 @@ describe('dashboard component', () => {
         mockAxios.onPost(mockAddEndpoint).replyOnce(HTTP_STATUS_OK, { added: [1], invalid: [] });
 
         await nextTick();
-        wrapper.vm.onOk();
+
+        findModal().vm.$emit('primary');
         await waitForPromises();
+
         expect(store.state.projectSearchResults).toHaveLength(0);
         expect(store.state.selectedProjects).toHaveLength(0);
       });
@@ -155,16 +155,20 @@ describe('dashboard component', () => {
         mockAxios.onPost(mockAddEndpoint).replyOnce(HTTP_STATUS_OK, { added: [], invalid: [1] });
 
         await nextTick();
-        wrapper.vm.onOk();
+
+        findModal().vm.$emit('primary');
         await waitForPromises();
+
         expect(store.state.projectSearchResults).toHaveLength(0);
         expect(store.state.selectedProjects).toHaveLength(0);
       });
 
       it('clears state when canceled', async () => {
         await nextTick();
-        wrapper.vm.onCancel();
+
+        findModal().vm.$emit('canceled');
         await waitForPromises();
+
         expect(store.state.projectSearchResults).toHaveLength(0);
         expect(store.state.selectedProjects).toHaveLength(0);
       });
@@ -173,10 +177,13 @@ describe('dashboard component', () => {
         mockAxios.onPost(mockAddEndpoint).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR, {});
 
         await nextTick();
+
         expect(store.state.projectSearchResults.length).not.toBe(0);
         expect(store.state.selectedProjects.length).not.toBe(0);
-        wrapper.vm.onOk();
+
+        findModal().vm.$emit('primary');
         await waitForPromises();
+
         expect(store.state.projectSearchResults).toHaveLength(0);
         expect(store.state.selectedProjects).toHaveLength(0);
       });
