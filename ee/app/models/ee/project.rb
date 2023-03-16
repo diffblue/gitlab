@@ -1078,6 +1078,10 @@ module EE
       end
     end
 
+    def should_check_index_integrity?
+      use_elasticsearch? && repository_exists? && !empty_repo?
+    end
+
     private
 
     def lock_memberships_to_ldap_or_saml?

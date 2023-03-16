@@ -932,6 +932,33 @@ RSpec.describe Project, feature_category: :projects do
     end
   end
 
+  describe '#should_check_index_integrity?' do
+    let(:project) { build(:project, :repository) }
+
+    subject(:should_check_index_integrity) { project.should_check_index_integrity? }
+
+    where(:advanced_search_enabled, :repository_exists, :repository_empty, :expected) do
+      false | true | true | false
+      false | false | true | false
+      false | true | false | false
+      false | false | false | false
+      true | true | true | false
+      true | false | true | false
+      true | true | false | true
+      true | false | false | false
+    end
+
+    with_them do
+      before do
+        stub_ee_application_setting(elasticsearch_search: advanced_search_enabled, elasticsearch_indexing: advanced_search_enabled)
+        allow(project).to receive(:repository_exists?).and_return(repository_exists)
+        allow(project).to receive(:empty_repo?).and_return(repository_empty)
+      end
+
+      it { is_expected.to be(expected) }
+    end
+  end
+
   context 'merge requests related settings' do
     shared_examples 'setting modified by application setting' do
       where(:feature_enabled, :app_setting, :project_setting, :final_setting) do

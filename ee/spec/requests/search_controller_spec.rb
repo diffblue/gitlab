@@ -169,6 +169,97 @@ RSpec.describe SearchController, type: :request, feature_category: :global_searc
           expect(response.body).to include('search-results') # Confirm search results to prevent false positives
         end
       end
+
+      describe 'search index integrity', :elastic do
+        context 'when project is present and group is not present' do
+          let(:params) { { search: 'test', scope: 'blobs', project_id: project.id } }
+
+          it 'queues the project integrity worker' do
+            expect(::Search::NamespaceIndexIntegrityWorker).not_to receive(:perform_async)
+            expect(::Search::ProjectIndexIntegrityWorker).to receive(:perform_async).with(project.id).and_call_original
+
+            send_search_request(params)
+          end
+        end
+
+        context 'when project is not present and group is not present' do
+          let(:params) { { search: 'test', scope: 'blobs' } }
+
+          it 'does nothing' do
+            expect(::Search::NamespaceIndexIntegrityWorker).not_to receive(:perform_async)
+            expect(::Search::ProjectIndexIntegrityWorker).not_to receive(:perform_async)
+
+            send_search_request(params)
+          end
+        end
+
+        context 'when project is not present and group is present' do
+          let(:params) { { search: 'test', scope: 'blobs', group_id: group.id } }
+
+          it 'queues the namespace integrity worker which then schedules the project integrity worker' do
+            stub_const("#{described_class.name}::DELAY_INTERVAL", 10)
+
+            expect(::Search::ProjectIndexIntegrityWorker).to receive(:perform_in).with(
+              anything,
+              project.id
+            ).and_call_original
+
+            expect(::Search::NamespaceIndexIntegrityWorker).to receive(:perform_async).with(group.id).and_call_original
+
+            send_search_request(params)
+          end
+        end
+
+        context 'when project is present and group is present' do
+          let(:params) { { search: 'test', scope: 'blobs', project_id: project.id, group_id: group.id } }
+
+          it 'queues the project integrity worker' do
+            expect(::Search::NamespaceIndexIntegrityWorker).not_to receive(:perform_async)
+            expect(::Search::ProjectIndexIntegrityWorker).to receive(:perform_async).with(project.id).and_call_original
+
+            send_search_request(params)
+          end
+
+          context 'when search results are returned', :sidekiq_inline do
+            before do
+              project.repository.index_commits_and_blobs
+
+              ensure_elasticsearch_index!
+            end
+
+            it 'does nothing' do
+              expect(::Search::NamespaceIndexIntegrityWorker).not_to receive(:perform_async)
+              expect(::Search::ProjectIndexIntegrityWorker).not_to receive(:perform_async)
+
+              send_search_request(params)
+            end
+          end
+
+          context 'when search_index_integrity feature flag is not enabled' do
+            before do
+              stub_feature_flags(search_index_integrity: false)
+            end
+
+            it 'does nothing' do
+              expect(::Search::NamespaceIndexIntegrityWorker).not_to receive(:perform_async)
+              expect(::Search::ProjectIndexIntegrityWorker).not_to receive(:perform_async)
+
+              send_search_request(params)
+            end
+          end
+
+          context 'when scope is not blobs' do
+            let(:params) { { search: 'test', scope: 'issues', project_id: project.id, group_id: group.id } }
+
+            it 'does nothing' do
+              expect(::Search::NamespaceIndexIntegrityWorker).not_to receive(:perform_async)
+              expect(::Search::ProjectIndexIntegrityWorker).not_to receive(:perform_async)
+
+              send_search_request(params)
+            end
+          end
+        end
+      end
     end
   end
 

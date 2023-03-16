@@ -1,0 +1,85 @@
+# frozen_string_literal: true
+
+require 'spec_helper'
+
+RSpec.describe ::Search::NamespaceIndexIntegrityWorker, feature_category: :global_search do
+  include ExclusiveLeaseHelpers
+
+  let_it_be(:group) { create(:group) }
+  let_it_be(:projects) { create_list(:project, 3, :repository, namespace: group) }
+
+  subject(:worker) { described_class.new }
+
+  describe '#perform' do
+    context 'when search_index_integrity feature flag is disabled' do
+      before do
+        stub_feature_flags(search_index_integrity: false)
+      end
+
+      it 'does nothing' do
+        expect(::Search::ProjectIndexIntegrityWorker).not_to receive(:perform_in)
+
+        worker.perform(group.id)
+      end
+    end
+
+    context 'when namespace_id is not provided' do
+      it 'does nothing' do
+        expect(::Search::ProjectIndexIntegrityWorker).not_to receive(:perform_in)
+
+        worker.perform(nil)
+      end
+    end
+
+    context 'when namespace_id is provided', :elastic_delete_by_query do
+      before do
+        stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+      end
+
+      it_behaves_like 'an idempotent worker' do
+        let(:job_args) { [group.id] }
+
+        it 'schedules ProjectIndexIntegrityWorker for each project with a delay' do
+          stub_const("#{described_class.name}::BATCH_SIZE", 1)
+          stub_const("#{described_class.name}::DELAY_INTERVAL", 10)
+
+          group.all_projects.each do |p|
+            expect(::Search::ProjectIndexIntegrityWorker).to receive(:perform_in).with(
+              within(10.seconds).of(10.seconds),
+              p.id
+            ).and_call_original
+          end
+
+          worker.perform(group.id)
+        end
+      end
+
+      it 'executes under an exclusive lease' do
+        expect_to_obtain_exclusive_lease("#{described_class.name.underscore}/namespace/#{group.id}",
+          timeout: described_class::LEASE_TIMEOUT)
+
+        worker.perform(group.id)
+      end
+
+      context 'when project.should_check_index_integrity? is false' do
+        it 'does not schedule ProjectIndexIntegrityWorker for that project' do
+          allow_next_found_instance_of(Project) do |p|
+            allow(p).to receive(:should_check_index_integrity?).and_return(false)
+          end
+
+          expect(::Search::ProjectIndexIntegrityWorker).not_to receive(:perform_in)
+
+          worker.perform(group.id)
+        end
+      end
+
+      context 'when namespace is not found' do
+        it 'does nothing' do
+          expect(::Search::ProjectIndexIntegrityWorker).not_to receive(:perform_in)
+
+          worker.perform(non_existing_record_id)
+        end
+      end
+    end
+  end
+end
