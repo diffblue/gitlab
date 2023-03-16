@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::ActivateService, feature_category: :billing_and_payments do
+RSpec.describe GitlabSubscriptions::ActivateService, feature_category: :sm_provisioning do
   subject(:execute_service) { described_class.new.execute(activation_code) }
 
   let!(:application_settings) { create(:application_setting) }
@@ -10,10 +10,11 @@ RSpec.describe GitlabSubscriptions::ActivateService, feature_category: :billing_
   let_it_be(:license_key) { build(:gitlab_license, :cloud).export }
 
   let(:activation_code) { 'activation_code' }
+  let(:automated) { false }
 
   def stub_client_activate
     expect(Gitlab::SubscriptionPortal::Client).to receive(:activate)
-      .with(activation_code)
+      .with(activation_code, automated: automated)
       .and_return(customer_dot_response)
   end
 

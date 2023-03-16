@@ -41,6 +41,7 @@ RSpec.describe 'Activate a subscription', feature_category: :purchase do
         query: an_instance_of(String),
         variables: {
           activationCode: activation_code,
+          automated: false,
           instanceIdentifier: application_setting.uuid
         }
       })
@@ -84,6 +85,7 @@ RSpec.describe 'Activate a subscription', feature_category: :purchase do
           query: an_instance_of(String),
           variables: {
             activationCode: activation_code,
+            automated: false,
             instanceIdentifier: application_setting.uuid
           }
         })

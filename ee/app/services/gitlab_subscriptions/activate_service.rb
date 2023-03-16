@@ -10,10 +10,10 @@ module GitlabSubscriptions
       not_self_managed: 'Not self-managed instance'
     }.freeze
 
-    def execute(activation_code)
+    def execute(activation_code, automated: false)
       return error(ERROR_MESSAGES[:not_self_managed]) if Gitlab.com?
 
-      response = client.activate(activation_code)
+      response = client.activate(activation_code, automated: automated)
 
       return response unless response[:success]
 
