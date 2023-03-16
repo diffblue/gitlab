@@ -11722,6 +11722,7 @@ CI/CD variables for a GitLab instance.
 | <a id="cijobrefpath"></a>`refPath` | [`String`](#string) | Path to the ref. |
 | <a id="cijobretried"></a>`retried` | [`Boolean`](#boolean) | Indicates that the job has been retried. |
 | <a id="cijobretryable"></a>`retryable` | [`Boolean!`](#boolean) | Indicates the job can be retried. |
+| <a id="cijobrunnermachine"></a>`runnerMachine` **{warning-solid}** | [`CiRunnerMachine`](#cirunnermachine) | **Introduced** in 15.11. This feature is in Alpha. It can be changed or removed at any time. Runner machine assigned to the job. |
 | <a id="cijobscheduledat"></a>`scheduledAt` | [`Time`](#time) | Schedule for the build. |
 | <a id="cijobschedulingtype"></a>`schedulingType` | [`String`](#string) | Type of job scheduling. Value is `dag` if the job uses the `needs` keyword, and `stage` otherwise. |
 | <a id="cijobshortsha"></a>`shortSha` | [`String!`](#string) | Short SHA1 ID of the commit. |
@@ -11946,6 +11947,7 @@ Returns [`CiRunnerStatus!`](#cirunnerstatus).
 | <a id="cirunnermachinerevision"></a>`revision` | [`String`](#string) | Revision of the runner. |
 | <a id="cirunnermachinerunner"></a>`runner` | [`CiRunner`](#cirunner) | Runner configuration for the runner machine. |
 | <a id="cirunnermachinestatus"></a>`status` | [`CiRunnerStatus!`](#cirunnerstatus) | Status of the runner machine. |
+| <a id="cirunnermachinesystemid"></a>`systemId` | [`String!`](#string) | System ID associated with the runner machine. |
 | <a id="cirunnermachineversion"></a>`version` | [`String`](#string) | Version of the runner. |
 
 ### `CiSecureFileRegistry`
