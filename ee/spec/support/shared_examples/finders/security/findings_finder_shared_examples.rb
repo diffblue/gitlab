@@ -78,7 +78,7 @@ RSpec.shared_examples 'security findings finder' do
         vulnerability_finding = create(:vulnerabilities_finding, uuid: findings.second.uuid)
 
         vulnerability = create(:vulnerability, findings: [vulnerability_finding])
-        create(:vulnerability_state_transitions, vulnerability: vulnerability)
+        create(:vulnerability_state_transition, vulnerability: vulnerability)
         create(:vulnerabilities_issue_link, vulnerability: vulnerability)
         create(:vulnerabilities_merge_request_link, vulnerability: vulnerability)
       end

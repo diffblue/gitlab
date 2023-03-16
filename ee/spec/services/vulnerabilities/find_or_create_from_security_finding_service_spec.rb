@@ -121,7 +121,7 @@ feature_category: :vulnerability_management do
 
       context 'when vulnerability state is dismissed' do
         let!(:state_transition) do
-          create(:vulnerability_state_transitions,
+          create(:vulnerability_state_transition,
             :from_detected,
             :to_dismissed,
             vulnerability: vulnerability,

@@ -80,7 +80,7 @@ FactoryBot.define do
 
       after(:create) do |vulnerability, evaluator|
         create(
-          :vulnerability_state_transitions,
+          :vulnerability_state_transition,
           vulnerability: vulnerability,
           from_state: evaluator.from_state,
           to_state: evaluator.to_state

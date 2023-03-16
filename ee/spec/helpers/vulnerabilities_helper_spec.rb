@@ -398,7 +398,7 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
     context 'when deprecate_vulnerabilities_feedback is enabled' do
       context 'with existing vulnerability_state_transition, issue link and merge request link' do
         let_it_be(:feedback) { create(:vulnerability_feedback, :comment, :dismissal, project: project, pipeline: pipeline, finding_uuid: finding.uuid) }
-        let!(:vulnerability_state_transition) { create(:vulnerability_state_transitions, vulnerability: vulnerability, to_state: :dismissed, comment: "Dismissal Comment", dismissal_reason: :false_positive) }
+        let!(:vulnerability_state_transition) { create(:vulnerability_state_transition, vulnerability: vulnerability, to_state: :dismissed, comment: "Dismissal Comment", dismissal_reason: :false_positive) }
         let!(:vulnerabilities_issue_link) { create(:vulnerabilities_issue_link, vulnerability: vulnerability) }
         let!(:vulnerabilities_merge_request_link) { create(:vulnerabilities_merge_request_link, vulnerability: vulnerability) }
 
