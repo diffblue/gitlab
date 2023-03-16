@@ -274,10 +274,10 @@ RSpec.describe API::Internal::Kubernetes, feature_category: :kubernetes_manageme
         stub_licensed_features(security_orchestration_policies: false)
       end
 
-      it 'returns 404' do
+      it 'returns 402' do
         send_request(headers: { 'Authorization' => "Bearer #{agent_token.token}" })
 
-        expect(response).to have_gitlab_http_status(:not_found)
+        expect(response).to have_gitlab_http_status(:payment_required)
       end
     end
 

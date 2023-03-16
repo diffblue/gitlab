@@ -104,7 +104,10 @@ module EE
                 route_setting :authentication, cluster_agent_token_allowed: true
                 get '/policies_configuration', feature_category: :container_scanning, urgency: :low do
                   not_found! if agent.project.nil?
-                  not_found! unless agent.project.licensed_feature_available?(:security_orchestration_policies)
+
+                  unless agent.project.licensed_feature_available?(:security_orchestration_policies)
+                    render_api_error!('Payment Required', 402)
+                  end
 
                   policies = ::Security::SecurityOrchestrationPolicies::OperationalVulnerabilitiesConfigurationService
                     .new(agent)
