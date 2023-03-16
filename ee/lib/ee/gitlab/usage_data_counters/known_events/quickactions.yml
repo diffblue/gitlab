@@ -1,45 +1,30 @@
 - name: i_quickactions_child_epic
-  redis_slot: quickactions
   aggregation: weekly
 - name: i_quickactions_clear_health_status
-  redis_slot: quickactions
   aggregation: weekly
 - name: i_quickactions_clear_weight
-  redis_slot: quickactions
   aggregation: weekly
 - name: i_quickactions_epic
-  redis_slot: quickactions
   aggregation: weekly
 - name: i_quickactions_health_status
-  redis_slot: quickactions
   aggregation: weekly
 - name: i_quickactions_iteration
-  redis_slot: quickactions
   aggregation: weekly
 - name: i_quickactions_page
-  redis_slot: quickactions
   aggregation: weekly
 - name: i_quickactions_parent_epic
-  redis_slot: quickactions
   aggregation: weekly
 - name: i_quickactions_promote
-  redis_slot: quickactions
   aggregation: weekly
 - name: i_quickactions_publish
-  redis_slot: quickactions
   aggregation: weekly
 - name: i_quickactions_remove_child_epic
-  redis_slot: quickactions
   aggregation: weekly
 - name: i_quickactions_remove_epic
-  redis_slot: quickactions
   aggregation: weekly
 - name: i_quickactions_remove_iteration
-  redis_slot: quickactions
   aggregation: weekly
 - name: i_quickactions_remove_parent_epic
-  redis_slot: quickactions
   aggregation: weekly
 - name: i_quickactions_weight
-  redis_slot: quickactions
   aggregation: weekly

@@ -1,44 +1,30 @@
 - name: i_code_review_mr_with_invalid_approvers
-  redis_slot: code_review
   aggregation: weekly
 ## Status Checks
 - name: i_code_review_merge_request_widget_status_checks_expand_failed
-  redis_slot: code_review
   aggregation: weekly
 - name: i_code_review_merge_request_widget_status_checks_expand_warning
-  redis_slot: code_review
   aggregation: weekly
 - name: i_code_review_merge_request_widget_status_checks_expand_success
-  redis_slot: code_review
   aggregation: weekly
 - name: i_code_review_merge_request_widget_status_checks_expand
-  redis_slot: code_review
   aggregation: weekly
 - name: i_code_review_merge_request_widget_status_checks_full_report_clicked
-  redis_slot: code_review
   aggregation: weekly
 - name: i_code_review_merge_request_widget_status_checks_view
-  redis_slot: code_review
   aggregation: weekly
 ## Metrics
 - name: i_code_review_merge_request_widget_license_compliance_warning
-  redis_slot: code_review
   aggregation: weekly
 - name: i_code_review_merge_request_widget_metrics_expand
-  redis_slot: code_review
   aggregation: weekly
 - name: i_code_review_merge_request_widget_metrics_view
-  redis_slot: code_review
   aggregation: weekly
 - name: i_code_review_merge_request_widget_metrics_full_report_clicked
-  redis_slot: code_review
   aggregation: weekly
 - name: i_code_review_merge_request_widget_metrics_expand_success
-  redis_slot: code_review
   aggregation: weekly
 - name: i_code_review_merge_request_widget_metrics_expand_warning
-  redis_slot: code_review
   aggregation: weekly
 - name: i_code_review_merge_request_widget_metrics_expand_failed
-  redis_slot: code_review
   aggregation: weekly
