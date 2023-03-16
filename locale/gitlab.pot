@@ -1986,6 +1986,9 @@ msgstr ""
 msgid "Abuse reports notification email"
 msgstr ""
 
+msgid "AbuseReports|No reports found"
+msgstr ""
+
 msgid "Accept invitation"
 msgstr ""
 
