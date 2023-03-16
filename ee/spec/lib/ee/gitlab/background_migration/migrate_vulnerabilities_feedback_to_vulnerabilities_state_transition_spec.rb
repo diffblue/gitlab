@@ -37,7 +37,7 @@ RSpec.describe(
   let(:vulnerability_state_transitions) { table(:vulnerability_state_transitions) }
   let(:security_scans) { table(:security_scans) }
   let(:security_findings) { table(:security_findings) }
-  let(:ci_builds) { table(:ci_builds, database: :ci) }
+  let(:ci_builds) { table(:ci_builds, database: :ci) { |model| model.primary_key = :id } }
   let(:ci_job_artifacts) { table(:ci_job_artifacts, database: :ci) }
   let(:ci_pipelines) { table(:ci_pipelines, database: :ci) }
 
@@ -402,7 +402,7 @@ RSpec.describe(
 
   def create_ci_pipeline(overrides = {})
     attrs = {
-      partition_id: 1
+      partition_id: 100
     }.merge(overrides)
     ci_pipelines.create!(attrs)
   end
@@ -410,7 +410,7 @@ RSpec.describe(
   def create_ci_build(overrides = {})
     attrs = {
       type: 'Ci::Build',
-      partition_id: 1
+      partition_id: 100
     }.merge(overrides)
     ci_builds.create!(attrs)
   end

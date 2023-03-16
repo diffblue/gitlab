@@ -55,6 +55,7 @@ module EE
         class CiBuild < ::Ci::ApplicationRecord # rubocop:disable Style/Documentation
           self.table_name = 'ci_builds'
           self.inheritance_column = :_type_disabled
+          self.primary_key = :id
 
           def failed?
             status != 'success'
