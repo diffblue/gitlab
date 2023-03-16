@@ -243,6 +243,10 @@ module EE
           left_outer_joins(:compliance_framework_setting).where(compliance_framework_setting: { framework_id: nil }))
       end
 
+      scope :missing_compliance_framework, -> { where.missing(:compliance_framework_setting) }
+
+      scope :any_compliance_framework, -> { joins(:compliance_framework_setting) }
+
       delegate :shared_runners_seconds, to: :statistics, allow_nil: true
 
       delegate :ci_minutes_usage, to: :shared_runners_limit_namespace

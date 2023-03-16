@@ -23,6 +23,7 @@ module EE
         collection = with_code_coverage(collection)
         collection = with_compliance_framework(collection)
         collection = by_negated_compliance_framework_filters(collection)
+        collection = by_compliance_framework_presence(collection)
         by_storage(collection)
       end
 
@@ -40,6 +41,18 @@ module EE
         return collection if filter_id.nil?
 
         collection.compliance_framework_id_not_in(filter_id)
+      end
+
+      def by_compliance_framework_presence(collection)
+        filter = params.dig(:compliance_framework_filters, :presence_filter)
+        return collection if filter.nil?
+
+        case filter.to_sym
+        when :any
+          collection.any_compliance_framework
+        when :none
+          collection.missing_compliance_framework
+        end
       end
 
       def by_storage(items)
