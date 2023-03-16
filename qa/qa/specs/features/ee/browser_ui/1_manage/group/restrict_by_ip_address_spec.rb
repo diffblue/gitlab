@@ -3,7 +3,7 @@
 module QA
   RSpec.describe 'Manage' do
     describe 'Group access',
-             :requires_admin, :skip_live_env, :reliable, product_group: :system_access do
+             :requires_admin, :skip_live_env, :reliable, product_group: :authentication_and_authorization do
       include Runtime::IPAddress
 
       before(:all) do
