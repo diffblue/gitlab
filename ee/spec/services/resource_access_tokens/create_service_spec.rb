@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ResourceAccessTokens::CreateService do
+RSpec.describe ResourceAccessTokens::CreateService, feature_category: :system_access do
   subject { described_class.new(user, resource).execute }
 
   let_it_be(:user) { create(:user) }
@@ -150,6 +150,9 @@ RSpec.describe ResourceAccessTokens::CreateService do
               allow(service).to receive(:create_membership).and_return(unpersisted_member)
             end
 
+            allow(unpersisted_member).to receive_message_chain(:errors, :full_messages, :to_sentence)
+              .and_return('error message')
+
             resource.add_maintainer(user)
           end
 
@@ -161,7 +164,7 @@ RSpec.describe ResourceAccessTokens::CreateService do
             audit_event = AuditEvent.where(author_id: user.id).last
             custom_message = <<~MESSAGE.squish
               Attempted to create project access token but failed with message:
-              Could not provision maintainer access to project access token
+              Could not provision maintainer access to the access token. ERROR: error message
             MESSAGE
 
             expect(audit_event.details).to include(
