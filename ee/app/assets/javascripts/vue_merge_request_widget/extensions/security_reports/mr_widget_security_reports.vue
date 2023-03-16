@@ -354,11 +354,8 @@ export default {
         });
     },
 
-    dismissFinding(comment) {
+    dismissFinding(comment, toastMsg, errorMsg) {
       const finding = this.modalData?.vulnerability;
-      const toastMsg = sprintf(s__("SecurityReports|Dismissed '%{vulnerabilityName}'"), {
-        vulnerabilityName: finding.name,
-      });
 
       this.isDismissingFinding = true;
 
@@ -387,12 +384,18 @@ export default {
           this.modalData.vulnerability.isDismissed = true;
 
           this.hideModal();
-          toast(toastMsg);
+
+          toast(
+            toastMsg ||
+              sprintf(s__("SecurityReports|Dismissed '%{vulnerabilityName}'"), {
+                vulnerabilityName: finding.name,
+              }),
+          );
         })
         .catch(() => {
-          this.modalData.error = s__(
-            'ciReport|There was an error dismissing the vulnerability. Please try again.',
-          );
+          this.modalData.error =
+            errorMsg ||
+            s__('ciReport|There was an error dismissing the vulnerability. Please try again.');
         })
         .finally(() => {
           this.isDismissingFinding = false;
@@ -449,11 +452,10 @@ export default {
     addDismissalComment(comment) {
       const { vulnerability: finding } = this.modalData;
       const dismissalFeedback = finding.dismissal_feedback;
-      const url = `${this.mr.createVulnerabilityFeedbackDismissalPath}/${dismissalFeedback.id}`;
 
-      const isEditingDismissalContent =
-        dismissalFeedback.comment_details && dismissalFeedback.comment_details.comment;
+      const isEditingDismissalContent = Boolean(dismissalFeedback?.comment_details?.comment);
 
+      const errorMsg = s__('SecurityReports|There was an error adding the comment.');
       const toastMsg = isEditingDismissalContent
         ? sprintf(s__("SecurityReports|Comment edited on '%{vulnerabilityName}'"), {
             vulnerabilityName: finding.name,
@@ -462,26 +464,7 @@ export default {
             vulnerabilityName: finding.name,
           });
 
-      // This will cause the spinner to be displayed
-      this.isDismissingFinding = true;
-
-      return axios
-        .patch(url, {
-          project_id: dismissalFeedback.project_id,
-          id: dismissalFeedback.id,
-          comment,
-        })
-        .then(({ data }) => {
-          this.modalData.vulnerability.dismissal_feedback = data;
-          toast(toastMsg);
-          this.hideModal();
-        })
-        .catch(() => {
-          this.modalData.error = s__('SecurityReports|There was an error adding the comment.');
-        })
-        .finally(() => {
-          this.isDismissingFinding = false;
-        });
+      this.dismissFinding(comment, toastMsg, errorMsg);
     },
 
     hideDismissalDeleteButtons() {
@@ -494,8 +477,7 @@ export default {
 
     deleteDismissalComment() {
       const { vulnerability: finding } = this.modalData;
-      const { dismissal_feedback: dismissalFeedback } = finding;
-      const url = `${this.mr.createVulnerabilityFeedbackDismissalPath}/${dismissalFeedback.id}`;
+      const errorMsg = s__('SecurityReports|There was an error deleting the comment.');
       const toastMsg = sprintf(s__("SecurityReports|Comment deleted on '%{vulnerabilityName}'"), {
         vulnerabilityName: finding.name,
       });
@@ -503,19 +485,7 @@ export default {
       // This will cause the spinner to be displayed
       this.isDismissingFinding = true;
 
-      return axios
-        .patch(url, {
-          project_id: dismissalFeedback.project_id,
-          comment: '',
-        })
-        .then(({ data }) => {
-          this.modalData.vulnerability.dismissal_feedback = data;
-          toast(toastMsg);
-          this.hideModal();
-        })
-        .catch(() => {
-          this.modalData.error = s__('SecurityReports|There was an error deleting the comment.');
-        });
+      this.dismissFinding(undefined, toastMsg, errorMsg);
     },
 
     createMergeRequest() {

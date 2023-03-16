@@ -655,24 +655,17 @@ describe('MR Widget Security Reports', () => {
     });
 
     describe('dismissal comment', () => {
-      let dismissalFeedback;
+      let mockDataProps;
 
       beforeEach(async () => {
-        dismissalFeedback = {
-          author: {},
-          project_id: 20,
-          id: 15,
+        mockDataProps = {
+          state: 'dismissed',
+          dismissal_feedback: {
+            author: {},
+            project_id: 20,
+            id: 15,
+          },
         };
-
-        await createComponentExpandWidgetAndOpenModal({
-          mockDataProps: {
-            state: 'dismissed',
-            dismissal_feedback: dismissalFeedback,
-          },
-          mrProps: {
-            createVulnerabilityFeedbackDismissalPath,
-          },
-        });
       });
 
       it.each`
@@ -681,7 +674,9 @@ describe('MR Widget Security Reports', () => {
         ${'closeDismissalCommentBox'}          | ${false}
         ${'editVulnerabilityDismissalComment'} | ${true}
       `('handles opening dismissal comment for event $event', async ({ event, booleanValue }) => {
-        mockAxios.onPost(createVulnerabilityFeedbackDismissalPath).replyOnce(HTTP_STATUS_OK);
+        await createComponentExpandWidgetAndOpenModal({
+          mockDataProps,
+        });
 
         expect(findModal().props('modal').isCommentingOnDismissal).toBeUndefined();
 
@@ -693,9 +688,21 @@ describe('MR Widget Security Reports', () => {
       });
 
       it('adds the dismissal comment - success', async () => {
-        mockAxios
-          .onPatch(`${createVulnerabilityFeedbackDismissalPath}/${dismissalFeedback.id}`)
-          .replyOnce(HTTP_STATUS_OK, dismissalFeedback);
+        await createComponentExpandWidgetAndOpenModal({
+          mockDataProps,
+          apolloHandlers: [
+            [
+              dismissFindingMutation,
+              jest.fn().mockResolvedValue({
+                data: {
+                  securityFindingDismiss: {
+                    errors: [],
+                  },
+                },
+              }),
+            ],
+          ],
+        });
 
         findModal().vm.$emit('addDismissalComment', 'Edited comment');
 
@@ -706,22 +713,27 @@ describe('MR Widget Security Reports', () => {
       });
 
       it('edits the dismissal comment - success', async () => {
-        mockAxios
-          .onPatch(`${createVulnerabilityFeedbackDismissalPath}/${dismissalFeedback.id}`)
-          .reply(HTTP_STATUS_OK, {
-            ...dismissalFeedback,
-            comment_details: {
-              comment: 'Added comment',
-              comment_author: { id: 15 },
-              comment_timestamp: '2023-01-24T12:46:03.896Z',
-            },
-          });
+        mockDataProps.dismissal_feedback.comment_details = {
+          comment: 'Existing comment',
+          comment_author: { id: 15 },
+        };
 
-        // first add a comment
-        findModal().vm.$emit('addDismissalComment', 'Added comment');
-        await waitForPromises();
+        await createComponentExpandWidgetAndOpenModal({
+          mockDataProps,
+          apolloHandlers: [
+            [
+              dismissFindingMutation,
+              jest.fn().mockResolvedValue({
+                data: {
+                  securityFindingDismiss: {
+                    errors: [],
+                  },
+                },
+              }),
+            ],
+          ],
+        });
 
-        // then edit
         findModal().vm.$emit('addDismissalComment', 'Edited comment');
         await waitForPromises();
 
@@ -730,9 +742,10 @@ describe('MR Widget Security Reports', () => {
       });
 
       it('adds the dismissal comment - error', async () => {
-        mockAxios
-          .onPatch(`${createVulnerabilityFeedbackDismissalPath}/${dismissalFeedback.id}`)
-          .replyOnce(HTTP_STATUS_BAD_REQUEST);
+        await createComponentExpandWidgetAndOpenModal({
+          mockDataProps,
+          apolloHandlers: [[dismissFindingMutation, jest.fn().mockRejectedValue()]],
+        });
 
         findModal().vm.$emit('addDismissalComment', 'Edited comment');
 
@@ -743,42 +756,26 @@ describe('MR Widget Security Reports', () => {
       });
 
       it('deletes the dismissal comment - success', async () => {
-        dismissalFeedback.comment_details = {
-          comment: 'Test',
+        mockDataProps.dismissal_feedback.comment_details = {
+          comment: 'Existing comment',
           comment_author: { id: 15 },
-          comment_timestamp: '2023-01-24T12:46:03.896Z',
         };
 
-        mockWithData({
-          state: 'dismissed',
-          dismissal_feedback: dismissalFeedback,
+        await createComponentExpandWidgetAndOpenModal({
+          mockDataProps,
+          apolloHandlers: [
+            [
+              dismissFindingMutation,
+              jest.fn().mockResolvedValue({
+                data: {
+                  securityFindingDismiss: {
+                    errors: [],
+                  },
+                },
+              }),
+            ],
+          ],
         });
-
-        mockAxios
-          .onPatch(`${createVulnerabilityFeedbackDismissalPath}/15`)
-          .replyOnce(HTTP_STATUS_OK, dismissalFeedback);
-
-        createComponent({
-          mountFn: mountExtended,
-          propsData: {
-            mr: {
-              createVulnerabilityFeedbackDismissalPath,
-            },
-          },
-        });
-
-        await waitForPromises();
-
-        // Click on the toggle button to expand data
-        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-        await nextTick();
-
-        // Second one is for the dynamic scroller
-        await nextTick();
-
-        // Click on the vulnerability name
-        wrapper.findAllByText('Password leak').at(0).trigger('click');
-        await nextTick();
 
         expect(findModal().props('modal').isShowingDeleteButtons).toBe(false);
 
@@ -799,42 +796,15 @@ describe('MR Widget Security Reports', () => {
       });
 
       it('deletes the dismissal comment - error', async () => {
-        dismissalFeedback.comment_details = {
-          comment: 'Test',
+        mockDataProps.dismissal_feedback.comment_details = {
+          comment: 'Existing comment',
           comment_author: { id: 15 },
-          comment_timestamp: '2023-01-24T12:46:03.896Z',
         };
 
-        mockWithData({
-          state: 'dismissed',
-          dismissal_feedback: dismissalFeedback,
+        await createComponentExpandWidgetAndOpenModal({
+          mockDataProps,
+          apolloHandlers: [[dismissFindingMutation, jest.fn().mockRejectedValue()]],
         });
-
-        mockAxios
-          .onPatch(`${createVulnerabilityFeedbackDismissalPath}/15`)
-          .replyOnce(HTTP_STATUS_BAD_REQUEST);
-
-        createComponent({
-          mountFn: mountExtended,
-          propsData: {
-            mr: {
-              createVulnerabilityFeedbackDismissalPath,
-            },
-          },
-        });
-
-        await waitForPromises();
-
-        // Click on the toggle button to expand data
-        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
-        await nextTick();
-
-        // Second one is for the dynamic scroller
-        await nextTick();
-
-        // Click on the vulnerability name
-        wrapper.findAllByText('Password leak').at(0).trigger('click');
-        await nextTick();
 
         expect(findModal().props('modal').isShowingDeleteButtons).toBe(false);
 
