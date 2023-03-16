@@ -40,6 +40,28 @@ RSpec.describe Security::Findings::DismissService, feature_category: :vulnerabil
             end
           end
         end
+
+        context 'when dismissal feedback already exists for finding' do
+          let!(:feedback) do
+            create(:vulnerability_feedback, project: finding.project, finding_uuid: finding.uuid, comment: nil)
+          end
+
+          it 'updates comment for dismissed finding feedback' do
+            expect { dismiss_finding }.to change { feedback.reload.comment }.from(nil).to(comment)
+          end
+
+          context 'when deleting a comment' do
+            let(:comment) { '' }
+
+            it 'removes the comment' do
+              dismiss_finding
+
+              expect(feedback.reload.comment).to be_nil
+              expect(feedback.reload.comment_author).to be_nil
+              expect(feedback.reload.comment_timestamp).to be_nil
+            end
+          end
+        end
       end
 
       context 'when the dismissal_reason is added' do
