@@ -6,7 +6,7 @@ RSpec.describe Gitlab::BackgroundMigration::FixSecurityScanStatuses, feature_cat
   let(:namespaces) { table(:namespaces) }
   let(:projects) { table(:projects) }
   let(:pipelines) { table(:ci_pipelines, database: :ci) }
-  let(:builds) { table(:ci_builds, database: :ci) }
+  let(:builds) { table(:ci_builds, database: :ci) { |model| model.primary_key = :id } }
   let(:security_scans) { table(:security_scans) }
 
   let(:namespace) { namespaces.create!(name: "foo", path: "bar") }
@@ -16,7 +16,7 @@ RSpec.describe Gitlab::BackgroundMigration::FixSecurityScanStatuses, feature_cat
   let(:expired_build) { create_build(artifacts_expire_at: 1.day.ago) }
   let(:failed_build) { create_build(status: 'failure') }
   let(:pipeline) do
-    pipelines.create!(project_id: project.id, ref: 'master', sha: 'adf43c3a', status: 'success', partition_id: 1)
+    pipelines.create!(project_id: project.id, ref: 'master', sha: 'adf43c3a', status: 'success', partition_id: 100)
   end
 
   let(:status_succeeded) { 1 }
@@ -68,7 +68,7 @@ RSpec.describe Gitlab::BackgroundMigration::FixSecurityScanStatuses, feature_cat
                    retried: false,
                    status: status,
                    type: 'Ci::Build',
-                   partition_id: 1,
+                   partition_id: 100,
                    **extra_args)
   end
 end
