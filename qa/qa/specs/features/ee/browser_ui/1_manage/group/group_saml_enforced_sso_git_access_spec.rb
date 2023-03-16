@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Manage', :group_saml, :orchestrated, requires_admin: 'creates a user via API' do
-    describe 'Group SAML SSO - Enforced SSO', product_group: :system_access do
+    describe 'Group SAML SSO - Enforced SSO', product_group: :authentication_and_authorization do
       include Support::API
 
       let!(:group) do

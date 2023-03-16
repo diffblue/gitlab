@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Manage', :orchestrated, :ldap_tls, :ldap_no_tls, :requires_admin do
-    describe 'LDAP Group sync', product_group: :system_access do
+    describe 'LDAP Group sync', product_group: :authentication_and_authorization do
       include Support::API
 
       let(:root_group) do
