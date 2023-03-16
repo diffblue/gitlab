@@ -61,3 +61,11 @@ model/db   @gl-database
 [Double::Colon]
 README.md  @gl-database
 model/db   @gl-database
+
+[DefaultOwners] @config-owner @gl-docs
+README.md
+model/db
+
+[OverriddenOwners] @config-owner
+README.md  @gl-docs
+model/db   @gl-docs

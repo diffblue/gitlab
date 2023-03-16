@@ -15,7 +15,7 @@ FactoryBot.define do
     merge_request
     rule_type { :code_owner }
     sequence(:name) { |n| "*-#{n}.js" }
-    section { Gitlab::CodeOwners::Entry::DEFAULT_SECTION }
+    section { Gitlab::CodeOwners::Section::DEFAULT }
   end
 
   factory :report_approver_rule, parent: :approval_merge_request_rule do

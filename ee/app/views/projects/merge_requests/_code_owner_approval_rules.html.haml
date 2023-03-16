@@ -18,7 +18,7 @@
         - code_owner_rules.each do |code_owner_approval_rule|
           %tr{ data: { qa_selector: "approver_content" } }
             %td
-              - if code_owner_approval_rule.section != Gitlab::CodeOwners::Entry::DEFAULT_SECTION
+              - if code_owner_approval_rule.section != Gitlab::CodeOwners::Section::DEFAULT
                 %span.text-muted.small.d-block= code_owner_approval_rule.section
               %span.monospace= code_owner_approval_rule.name
             %td.d-none.d-sm-table-cell

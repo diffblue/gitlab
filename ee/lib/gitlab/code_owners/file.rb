@@ -5,10 +5,14 @@ module Gitlab
     class File
       include ::Gitlab::Utils::StrongMemoize
 
-      SECTION_HEADER_REGEX = /^(\^)?\[(.*?)\](?:\[(\d*?)\])?/.freeze
+      # TODO: remove with codeowners_default_owners FF
+      SECTION_HEADER_REGEX = /^(\^)?\[(.*?)\](?:\[(\d*?)\])?/
 
-      def initialize(blob)
+      def initialize(blob, project = nil)
         @blob = blob
+
+        # TODO remove with codeowners_default_owners FF
+        @project = project
       end
 
       def parsed_data
@@ -75,8 +79,36 @@ module Gitlab
       end
 
       def get_parsed_data
+        return legacy_get_parsed_data unless Feature.enabled?(:codeowners_default_owners, @project)
+
+        current_section = Section.new(name: Section::DEFAULT)
+        parsed_sectional_data = {
+          current_section.name => {}
+        }
+
+        data.lines.each do |line|
+          line = line.strip
+
+          next if skip?(line)
+
+          # Detect section headers and consider next lines in the file as part ot the section.
+          if (parsed_section = Section.parse(line, parsed_sectional_data))
+            current_section = parsed_section
+            parsed_sectional_data[current_section.name] ||= {}
+
+            next
+          end
+
+          parse_entry(line, parsed_sectional_data, current_section)
+        end
+
+        parsed_sectional_data
+      end
+
+      # TODO: remove with codeowners_default_owners FF
+      def legacy_get_parsed_data
         parsed_sectional_data = {}
-        canonical_section_name = ::Gitlab::CodeOwners::Entry::DEFAULT_SECTION
+        canonical_section_name = ::Gitlab::CodeOwners::Section::DEFAULT
         section_optional = false
         canonical_approvals_required = 0
 
@@ -114,20 +146,36 @@ module Gitlab
         parsed_sectional_data
       end
 
+      # TODO: remove with codeowners_default_owners FF
       def find_section_name(section, parsed_sectional_data)
         section_headers = parsed_sectional_data.keys
 
-        return section if section_headers.last == ::Gitlab::CodeOwners::Entry::DEFAULT_SECTION
+        return section if section_headers.last == ::Gitlab::CodeOwners::Section::DEFAULT
 
         section_headers.find { |k| k.casecmp?(section) } || section
       end
 
+      # TODO: remove with codeowners_default_owners FF
       def extract_entry_and_populate_parsed_data(line, parsed, section, optional, approvals_required)
         pattern, _separator, owners = line.partition(/(?<!\\)\s+/)
 
         normalized_pattern = normalize_pattern(pattern)
 
         parsed[section][normalized_pattern] = Entry.new(pattern, owners, section, optional, approvals_required)
+      end
+
+      def parse_entry(line, parsed, section)
+        pattern, _separator, entry_owners = line.partition(/(?<!\\)\s+/)
+        normalized_pattern = normalize_pattern(pattern)
+
+        owners = entry_owners.presence || section.default_owners
+
+        parsed[section.name][normalized_pattern] = Entry.new(
+          pattern,
+          owners,
+          section.name,
+          section.optional,
+          section.approvals)
       end
 
       def skip?(line)
