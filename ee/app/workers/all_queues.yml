@@ -1560,6 +1560,24 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: search_namespace_index_integrity
+  :worker_name: Search::NamespaceIndexIntegrityWorker
+  :feature_category: :global_search
+  :has_external_dependencies: false
+  :urgency: :throttled
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: search_project_index_integrity
+  :worker_name: Search::ProjectIndexIntegrityWorker
+  :feature_category: :global_search
+  :has_external_dependencies: false
+  :urgency: :throttled
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: security_auto_fix
   :worker_name: Security::AutoFixWorker
   :feature_category: :dependency_scanning

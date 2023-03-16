@@ -37,6 +37,8 @@ module EE
       rescue_from Elastic::TimeoutError, with: :render_timeout
 
       before_action :check_search_rate_limit!, only: search_rate_limited_endpoints
+
+      after_action :run_index_integrity_worker, only: :show, if: :no_results_for_group_or_project_blobs_advanced_search?
     end
 
     def aggregations
@@ -79,5 +81,24 @@ module EE
     def search_type
       track_search_advanced? ? 'advanced' : super
     end
+
+    # rubocop:disable Gitlab/ModuleWithInstanceVariables
+    def no_results_for_group_or_project_blobs_advanced_search?
+      return false unless ::Feature.enabled?(:search_index_integrity)
+      return false unless @scope == 'blobs'
+      return false unless @project || @group
+      return false unless search_service.use_elasticsearch?
+
+      @search_objects.blank?
+    end
+
+    def run_index_integrity_worker
+      if @project.present?
+        ::Search::ProjectIndexIntegrityWorker.perform_async(@project.id)
+      else
+        ::Search::NamespaceIndexIntegrityWorker.perform_async(@group.id)
+      end
+    end
+    # rubocop:enable Gitlab/ModuleWithInstanceVariables
   end
 end
