@@ -102,10 +102,6 @@ describe('Blob content viewer component', () => {
         repository: { empty },
       } = projectMock;
 
-      afterEach(() => {
-        delete gon.current_username;
-      });
-
       it.each`
         canPushCode | canDownloadCode | username   | canLock
         ${true}     | ${true}         | ${'root'}  | ${true}

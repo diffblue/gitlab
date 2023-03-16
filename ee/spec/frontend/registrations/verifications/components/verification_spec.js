@@ -59,7 +59,6 @@ describe('Verification', () => {
 
   afterEach(() => {
     unmockTracking();
-    window.gon = {};
   });
 
   describe('when the component is mounted', () => {

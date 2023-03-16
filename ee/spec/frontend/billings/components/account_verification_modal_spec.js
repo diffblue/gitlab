@@ -10,7 +10,6 @@ import { verificationModalDefaultGon, verificationModalDefaultProps } from '../m
 describe('Account verification modal', () => {
   let wrapper;
 
-  const originalGon = window.gon;
   const findModal = () => wrapper.findComponent({ ref: 'modal' });
   const zuoraSubmitSpy = jest.fn();
 
@@ -24,15 +23,8 @@ describe('Account verification modal', () => {
   };
 
   beforeEach(() => {
-    window.gon = {
-      ...originalGon,
-      ...verificationModalDefaultGon,
-    };
+    window.gon = verificationModalDefaultGon;
     createComponent();
-  });
-
-  afterEach(() => {
-    window.gon = originalGon;
   });
 
   describe('on creation', () => {

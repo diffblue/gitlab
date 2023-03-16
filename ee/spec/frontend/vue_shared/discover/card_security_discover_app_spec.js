@@ -149,14 +149,14 @@ describe('Card security discover app', () => {
   });
 
   describe('Experiment pql_three_cta_test', () => {
-    const originalObjects = [];
+    let originalGl;
 
     beforeEach(() => {
-      originalObjects.push(window.gon, window.gl);
+      originalGl = window.gl;
     });
 
     afterEach(() => {
-      [window.gon, window.gl] = originalObjects;
+      window.gl = originalGl;
     });
 
     it('for control sets control and not show hand raise lead', () => {

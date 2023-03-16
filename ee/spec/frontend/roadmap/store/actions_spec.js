@@ -44,7 +44,6 @@ describe('Roadmap Vuex Actions', () => {
   const timeframeStartDate = mockTimeframeMonths[0];
   const timeframeEndDate = mockTimeframeMonths[mockTimeframeMonths.length - 1];
   let state;
-  let originalGon;
 
   beforeEach(() => {
     state = {
@@ -61,11 +60,6 @@ describe('Roadmap Vuex Actions', () => {
         milestoneTitle: '',
       },
     };
-    originalGon = window.gon;
-  });
-
-  afterEach(() => {
-    window.gon = originalGon;
   });
 
   describe('setInitialData', () => {

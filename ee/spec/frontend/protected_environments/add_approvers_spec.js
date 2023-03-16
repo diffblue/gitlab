@@ -15,7 +15,6 @@ const PROJECT_ID = '0';
 
 describe('ee/protected_environments/add_approvers.vue', () => {
   let wrapper;
-  let originalGon;
   let mockAxios;
 
   const createComponent = ({ projectId = PROJECT_ID, disabled = false } = {}) => {
@@ -49,20 +48,13 @@ describe('ee/protected_environments/add_approvers.vue', () => {
       .wrappers.find((w) => w.attributes('name') === `approval-count-${name}`);
 
   beforeEach(() => {
-    originalGon = window.gon;
-
     window.gon = {
-      ...window.gon,
       api_version: 'v4',
       deploy_access_levels: {
         roles: [],
       },
     };
     mockAxios = new MockAdapter(axios);
-  });
-
-  afterEach(() => {
-    window.gon = originalGon;
   });
 
   it('renders a dropdown for selecting approvers', () => {

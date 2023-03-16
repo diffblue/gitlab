@@ -23,10 +23,6 @@ describe('SidebarTodoComponent', () => {
     gon.current_user_id = 1;
   });
 
-  afterEach(() => {
-    gon.current_user_id = null;
-  });
-
   describe('when `isUserSignedIn` & `sidebarCollapsed` is `true`', () => {
     it('renders component container element with classes `block` & `todo`', async () => {
       wrapper = createComponent({ sidebarCollapsed: true });

@@ -21,19 +21,16 @@ import { MAINTAINER_ACCESS_LEVEL, DEVELOPER_ACCESS_LEVEL } from '../../constants
 describe('ee/protected_environments/store/edit/actions', () => {
   let mockedState;
   let mock;
-  let originalGon;
 
   beforeEach(() => {
     mockedState = state({ projectId: '8' });
     mock = new MockAdapter(axios);
-    originalGon = window.gon;
     window.gon = { api_version: 'v4' };
   });
 
   afterEach(() => {
     mock.restore();
     mock.resetHistory();
-    window.gon = originalGon;
   });
 
   describe('fetchProtectedEnvironments', () => {

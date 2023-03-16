@@ -45,8 +45,6 @@ describe('EE DiffRow', () => {
   };
 
   afterEach(() => {
-    window.gon = {};
-
     Object.values(DiffRow).forEach(({ cache }) => {
       if (cache) {
         cache.clear();

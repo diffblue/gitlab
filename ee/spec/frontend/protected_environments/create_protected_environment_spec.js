@@ -23,7 +23,6 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
   const unmockLocation = useMockLocationHelper();
 
   let wrapper;
-  let originalGon;
   let mockAxios;
 
   const findAlert = () => wrapper.findComponent(GlAlert);
@@ -43,10 +42,7 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
     wrapper.findByRole('button', { name: s__('ProtectedEnvironment|Protect') });
 
   beforeEach(() => {
-    originalGon = window.gon;
-
     window.gon = {
-      ...window.gon,
       api_version: 'v4',
       deploy_access_levels: {
         roles: [],
@@ -56,7 +52,6 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
   });
 
   afterEach(() => {
-    window.gon = originalGon;
     mockAxios.restore();
   });
 
