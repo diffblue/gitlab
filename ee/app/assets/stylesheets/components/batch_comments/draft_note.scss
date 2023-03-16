@@ -32,6 +32,7 @@ button[disabled] {
 .diff-file:not(.discussion-wrapper) .note.draft-note {
   border: 0;
   background: $orange-50;
+  border-radius: 3px;
 
   &.is-editing {
     margin-bottom: 0;
