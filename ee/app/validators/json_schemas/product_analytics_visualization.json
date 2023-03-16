@@ -10,7 +10,12 @@
           "const": "1"
         },
         "type": {
-          "enum": ["LineChart"]
+          "enum": [
+            "LineChart",
+            "ColumnChart",
+            "DataTable",
+            "SingleStat"
+          ]
         },
         "options": {
           "$ref": "#/definitions/Options"

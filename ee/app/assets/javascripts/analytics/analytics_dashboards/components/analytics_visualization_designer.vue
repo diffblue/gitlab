@@ -2,9 +2,8 @@
 import { QueryBuilder } from '@cubejs-client/vue';
 import { GlButton } from '@gitlab/ui';
 
-import { __ } from '~/locale';
-
 import { createCubeJsApi } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
+import { getPanelOptions } from 'ee/analytics/analytics_dashboards/utils/visualization_panel_options';
 import { PANEL_DISPLAY_TYPES } from '../constants';
 
 import MeasureSelector from './visualization_designer/selectors/product_analytics/measure_selector.vue';
@@ -34,10 +33,10 @@ export default {
         measureType: '',
         measureSubType: '',
       },
-      panelOptions: {},
       defaultTitle: '',
       selectedDisplayType: PANEL_DISPLAY_TYPES.DATA,
       selectedVisualizationType: '',
+      hasTimeDimension: false,
     };
   },
   computed: {
@@ -60,6 +59,9 @@ export default {
         options: this.panelOptions,
       };
     },
+    panelOptions() {
+      return getPanelOptions(this.selectedVisualizationType, this.hasTimeDimension);
+    },
   },
   mounted() {
     // Needs to be dynamic as it can't be changed on the cube component
@@ -73,6 +75,9 @@ export default {
     });
   },
   methods: {
+    onVizStateChange(state) {
+      this.hasTimeDimension = Boolean(state.query.timeDimensions?.length);
+    },
     measureUpdated(measureType, measureSubType) {
       this.queryState.measureType = measureType;
       this.queryState.measureSubType = measureSubType;
@@ -83,20 +88,6 @@ export default {
     selectVisualizationType(newType) {
       this.selectDisplayType(PANEL_DISPLAY_TYPES.VISUALIZATION);
       this.selectedVisualizationType = newType;
-
-      if (this.selectedVisualizationType === 'LineChart') {
-        this.panelOptions = {
-          xAxis: {
-            name: __('Time'),
-            type: 'time',
-          },
-          yAxis: {
-            name: __('Counts'),
-          },
-        };
-      } else {
-        this.panelOptions = {};
-      }
     },
     addToDashboard() {
       this.selectDisplayType(PANEL_DISPLAY_TYPES.CODE);
@@ -133,6 +124,7 @@ export default {
         :wrap-with-query-renderer="true"
         :disable-heuristics="true"
         data-testid="query-builder"
+        @vizStateChange="onVizStateChange"
       >
         <template
           #builder="{

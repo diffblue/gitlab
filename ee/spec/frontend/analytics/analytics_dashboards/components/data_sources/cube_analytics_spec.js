@@ -51,9 +51,21 @@ describe('Cube Analytics Data Source', () => {
       expect(mockLoad).toHaveBeenCalledWith(queryOverrides);
     });
 
-    describe('formarts the data', () => {
+    describe('formats the data', () => {
       it('returns the expected data format for line charts', async () => {
         const result = await fetch({ projectId, visualizationType, query });
+
+        expect(result[0]).toMatchObject({
+          data: [
+            ['2022-11-09T00:00:00.000', 55],
+            ['2022-11-10T00:00:00.000', 14],
+          ],
+          name: 'pageview, TrackedEvents Count',
+        });
+      });
+
+      it('returns the expected data format for column charts', async () => {
+        const result = await fetch({ projectId, visualizationType: 'ColumnChart', query });
 
         expect(result[0]).toMatchObject({
           data: [

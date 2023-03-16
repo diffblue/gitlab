@@ -10,6 +10,8 @@ export default {
     TooltipOnTruncate,
     LineChart: () =>
       import('ee/analytics/analytics_dashboards/components/visualizations/line_chart.vue'),
+    ColumnChart: () =>
+      import('ee/analytics/analytics_dashboards/components/visualizations/column_chart.vue'),
     DataTable: () =>
       import('ee/analytics/analytics_dashboards/components/visualizations/data_table.vue'),
     SingleStat: () =>
