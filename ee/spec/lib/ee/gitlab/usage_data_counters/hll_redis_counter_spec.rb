@@ -44,7 +44,6 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
     let(:ce_event) do
       {
         "name" => "ce_event",
-        "redis_slot" => "analytics",
         "expiry" => 84,
         "aggregation" => "weekly"
       }
@@ -53,7 +52,6 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
     let(:ee_event) do
       {
         "name" => "ee_event",
-        "redis_slot" => "analytics",
         "expiry" => 84,
         "aggregation" => "weekly"
       }
