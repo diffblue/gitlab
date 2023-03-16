@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe TodoService do
+RSpec.describe TodoService, feature_category: :team_planning do
   let_it_be(:author) { create(:user, username: 'author') }
   let_it_be(:non_member) { create(:user, username: 'non_member') }
   let_it_be(:member) { create(:user, username: 'member') }

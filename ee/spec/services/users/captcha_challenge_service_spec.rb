@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::CaptchaChallengeService do
+RSpec.describe Users::CaptchaChallengeService, feature_category: :system_access do
   describe '#execute' do
     let_it_be_with_reload(:user) { create(:user) }
 

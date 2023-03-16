@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::Abuse::NamespaceBans::DestroyService do
+RSpec.describe Users::Abuse::NamespaceBans::DestroyService, feature_category: :insider_threat do
   describe '#execute' do
     let_it_be(:user_with_permissions) { create(:user) }
     let_it_be(:user_without_permissions) { create(:user) }

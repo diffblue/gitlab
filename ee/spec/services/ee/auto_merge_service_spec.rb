@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AutoMergeService do
+RSpec.describe AutoMergeService, feature_category: :code_review_workflow do
   describe '.all_strategies_ordered_by_preference' do
     subject { described_class.all_strategies_ordered_by_preference }
 

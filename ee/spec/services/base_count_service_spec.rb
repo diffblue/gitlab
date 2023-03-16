@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe BaseCountService do
+RSpec.describe BaseCountService, feature_category: :shared do
   include ::EE::GeoHelpers
 
   describe '#update_cache_for_key' do

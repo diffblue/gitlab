@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SystemNoteService do
+RSpec.describe SystemNoteService, feature_category: :team_planning do
   include ProjectForksHelper
   include Gitlab::Routing
   include RepoHelpers

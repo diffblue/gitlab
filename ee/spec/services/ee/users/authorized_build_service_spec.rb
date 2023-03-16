@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::AuthorizedBuildService do
+RSpec.describe Users::AuthorizedBuildService, feature_category: :user_management do
   describe '#execute' do
     context 'with non admin user' do
       let(:non_admin) { create(:user) }
