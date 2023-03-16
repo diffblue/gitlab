@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Govern', :reliable, product_group: :compliance do
+  RSpec.describe 'Govern', product_group: :compliance do
     include Support::API
 
     let(:api_client) { Runtime::API::Client.new(:gitlab) }
@@ -57,7 +57,7 @@ module QA
         it_behaves_like 'audit event', ['Added group']
       end
 
-      context 'for change repository size limit', :requires_admin,
+      context 'for change repository size limit', :reliable, :requires_admin,
               testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347908' do
         before do
           sign_in(as_admin: true)
@@ -72,7 +72,8 @@ module QA
         it_behaves_like 'audit event', ['Changed repository size limit']
       end
 
-      context 'for update group name', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347909' do
+      context 'for update group name', :reliable,
+              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347909' do
         before do
           sign_in
           group.visit!
@@ -87,7 +88,7 @@ module QA
         it_behaves_like 'audit event', ['Changed name']
       end
 
-      context 'for add user, change access level, remove user',
+      context 'for add user, change access level, remove user', :reliable,
               testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347911' do
         before do
           sign_in
@@ -103,7 +104,7 @@ module QA
         it_behaves_like 'audit event', ['Added user access as Guest', 'Changed access level', 'Removed user access']
       end
 
-      context 'for add and remove project access',
+      context 'for add and remove project access', :reliable,
               testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347912' do
         before do
           sign_in
