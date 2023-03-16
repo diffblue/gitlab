@@ -39871,9 +39871,6 @@ msgstr ""
 msgid "Select type"
 msgstr ""
 
-msgid "Selected"
-msgstr ""
-
 msgid "Selected commits"
 msgstr ""
 

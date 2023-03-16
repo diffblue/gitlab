@@ -80,7 +80,7 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
 
       click_button 'Select a label'
 
-      page.within(".dropdown-menu") do
+      page.within("[data-testid='board-add-new-column']") do
         find('label', text: label2.title).click
       end
 

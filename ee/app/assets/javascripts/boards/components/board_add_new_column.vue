@@ -2,9 +2,8 @@
 import {
   GlAvatar,
   GlAvatarLabeled,
-  GlDropdownDivider,
-  GlDropdownSectionHeader,
-  GlDropdownText,
+  GlButton,
+  GlCollapsibleListbox,
   GlIcon,
   GlFormGroup,
   GlFormRadio,
@@ -16,7 +15,11 @@ import BoardAddNewColumnForm from '~/boards/components/board_add_new_column_form
 import { ListType } from '~/boards/constants';
 import { isScopedLabel } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
-import { groupByIterationCadences, getIterationPeriod } from 'ee/iterations/utils';
+import {
+  groupOptionsByIterationCadences,
+  groupByIterationCadences,
+  getIterationPeriod,
+} from 'ee/iterations/utils';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 
 export const listTypeInfo = {
@@ -53,14 +56,14 @@ export const listTypeInfo = {
 export default {
   i18n: {
     value: __('Value'),
+    noResults: __('No matching results'),
   },
   components: {
     BoardAddNewColumnForm,
     GlAvatar,
     GlAvatarLabeled,
-    GlDropdownDivider,
-    GlDropdownSectionHeader,
-    GlDropdownText,
+    GlButton,
+    GlCollapsibleListbox,
     GlIcon,
     GlFormGroup,
     GlFormRadio,
@@ -82,6 +85,7 @@ export default {
       selectedId: null,
       selectedItem: null,
       columnType: ListType.label,
+      selectedIdValid: true,
     };
   },
   computed: {
@@ -106,7 +110,17 @@ export default {
     },
 
     items() {
-      return this[this.info.listPropertyName] || [];
+      return (
+        this[this.info.listPropertyName].map((i) => ({
+          ...i,
+          text: i.title,
+          value: i.id,
+        })) || []
+      );
+    },
+
+    listboxItems() {
+      return this.iterationTypeSelected ? groupOptionsByIterationCadences(this.items) : this.items;
     },
 
     hasItems() {
@@ -180,6 +194,13 @@ export default {
       return !this.isEpicBoard && this.columnTypes.length > 1;
     },
   },
+  watch: {
+    selectedId(val) {
+      if (val) {
+        this.selectedIdValid = true;
+      }
+    },
+  },
   created() {
     this.filterItems();
   },
@@ -195,6 +216,7 @@ export default {
     ]),
     addList() {
       if (!this.selectedItem) {
+        this.selectedIdValid = false;
         return;
       }
 
@@ -235,6 +257,11 @@ export default {
         this.selectedItem = { ...item };
       }
     },
+    onHide() {
+      this.searchValue = '';
+      this.$emit('filter-items', '');
+      this.$emit('hide');
+    },
 
     getIterationPeriod,
   },
@@ -243,11 +270,8 @@ export default {
 
 <template>
   <board-add-new-column-form
-    :loading="loading"
-    :none-selected="info.noneSelected"
     :search-label="searchLabel"
-    :search-placeholder="info.searchPlaceholder"
-    :selected-id="selectedId"
+    :selected-id-valid="selectedIdValid"
     @filter-items="filterItems"
     @add-list="addList"
   >
@@ -272,109 +296,100 @@ export default {
       </gl-form-group>
     </template>
 
-    <template #selected>
-      <template v-if="hasLabelSelection">
-        <span
-          class="dropdown-label-box gl-top-0 gl-flex-shrink-0"
-          :style="{
-            backgroundColor: selectedItem.color,
-          }"
-        ></span>
-        <div class="gl-text-truncate">{{ selectedItem.title }}</div>
-      </template>
-
-      <template v-else-if="hasMilestoneSelection">
-        <gl-icon class="gl-flex-shrink-0" name="clock" />
-        <span class="gl-text-truncate">{{ selectedItem.title }}</span>
-      </template>
-
-      <template v-else-if="hasIterationSelection">
-        <gl-icon class="gl-flex-shrink-0" name="iteration" />
-        <span class="gl-text-truncate">{{ selectedItem.title }}</span>
-      </template>
-
-      <template v-else-if="hasAssigneeSelection">
-        <gl-avatar class="gl-mr-2 gl-flex-shrink-0" :size="16" :src="selectedItem.avatarUrl" />
-        <div class="gl-text-truncate">
-          <b class="gl-mr-2">{{ selectedItem.name }}</b>
-          <span class="gl-text-gray-700">@{{ selectedItem.username }}</span>
-        </div>
-      </template>
-    </template>
-
-    <template v-if="hasItems" #items>
-      <gl-form-radio-group
-        v-if="iterationTypeSelected"
-        class="gl-overflow-hidden"
-        data-testid="selectItem"
-        @change="setSelectedItem"
+    <template #dropdown>
+      <gl-collapsible-listbox
+        class="gl-mb-3 gl-max-w-full"
+        :items="listboxItems"
+        searchable
+        :search-placeholder="info.searchPlaceholder"
+        :searching="loading"
+        :selected="selectedId"
+        :no-results-text="$options.i18n.noResults"
+        @select="setSelectedItem"
+        @search="filterItems"
+        @hidden="onHide"
       >
-        <div v-for="(cadence, index) in iterationCadences" :key="cadence.id">
-          <gl-dropdown-divider v-if="index !== 0" :key="index" />
-          <gl-dropdown-section-header :id="cadence.id">
-            <div data-testid="cadence" class="gl-text-truncate">
-              {{ cadence.title }}
-            </div>
-          </gl-dropdown-section-header>
-          <gl-dropdown-text v-for="iteration in cadence.iterations" :key="iteration.id">
-            <gl-form-radio
-              :value="iteration.id"
-              :aria-describedby="cadence.id"
+        <template #toggle>
+          <gl-button
+            class="gl-max-w-full gl-display-flex gl-align-items-center gl-text-truncate"
+            :class="{ 'gl-inset-border-1-red-400!': !selectedIdValid }"
+            button-text-classes="gl-display-flex"
+          >
+            <template v-if="hasLabelSelection">
+              <span
+                class="dropdown-label-box gl-top-0 gl-flex-shrink-0"
+                :style="{
+                  backgroundColor: selectedItem.color,
+                }"
+              ></span>
+              <div class="gl-text-truncate">{{ selectedItem.title }}</div>
+            </template>
+
+            <template v-else-if="hasMilestoneSelection">
+              <gl-icon class="gl-flex-shrink-0" name="clock" />
+              <span class="gl-text-truncate">{{ selectedItem.title }}</span>
+            </template>
+
+            <template v-else-if="hasIterationSelection">
+              <gl-icon class="gl-flex-shrink-0" name="iteration" />
+              <span class="gl-text-truncate">{{
+                selectedItem.title || getIterationPeriod(selectedItem)
+              }}</span>
+            </template>
+
+            <template v-else-if="hasAssigneeSelection">
+              <gl-avatar
+                class="gl-mr-2 gl-flex-shrink-0"
+                :size="16"
+                :src="selectedItem.avatarUrl"
+              />
+              <div class="gl-text-truncate">
+                <b class="gl-mr-2">{{ selectedItem.name }}</b>
+                <span class="gl-text-gray-700">@{{ selectedItem.username }}</span>
+              </div>
+            </template>
+
+            <template v-else>{{ info.noneSelected }}</template>
+            <gl-icon class="dropdown-chevron gl-ml-2" name="chevron-down" />
+          </gl-button>
+        </template>
+
+        <template #group-label="{ group }">
+          {{ group.text }}
+        </template>
+
+        <template #list-item="{ item }">
+          <label class="gl-display-flex gl-font-weight-normal gl-overflow-break-word gl-mb-0">
+            <span
+              v-if="labelTypeSelected"
+              class="dropdown-label-box gl-top-0 gl-flex-shrink-0"
+              :style="{
+                backgroundColor: item.color,
+              }"
+            ></span>
+
+            <gl-avatar-labeled
+              v-if="assigneeTypeSelected"
+              class="gl-display-flex gl-align-items-center"
+              :size="32"
+              :label="item.name"
+              :sub-label="`@${item.username}`"
+              :src="item.avatarUrl"
+            />
+            <div
+              v-else-if="iterationTypeSelected"
+              class="gl-display-inline-block"
               data-testid="new-column-iteration-item"
             >
-              {{ iteration.period }}
-              <iteration-title v-if="iteration.title" :title="iteration.title" />
-            </gl-form-radio>
-          </gl-dropdown-text>
-        </div>
-      </gl-form-radio-group>
-      <gl-form-radio-group
-        v-else
-        class="gl-overflow-y-auto gl-px-5"
-        :checked="selectedId"
-        data-testid="selectItem"
-        @change="setSelectedItem"
-      >
-        <label
-          v-for="item in items"
-          :key="item.id"
-          class="gl-display-flex gl-font-weight-normal gl-overflow-break-word gl-py-3 gl-mb-0"
-        >
-          <gl-form-radio
-            :value="item.id"
-            :class="assigneeTypeSelected ? 'gl-align-self-center' : ''"
-          />
-          <span
-            v-if="labelTypeSelected"
-            class="dropdown-label-box gl-top-0 gl-flex-shrink-0"
-            :style="{
-              backgroundColor: item.color,
-            }"
-          ></span>
-
-          <gl-avatar-labeled
-            v-if="assigneeTypeSelected"
-            class="gl-display-flex gl-align-items-center"
-            :size="32"
-            :label="item.name"
-            :sub-label="`@${item.username}`"
-            :src="item.avatarUrl"
-          />
-          <div
-            v-else-if="iterationTypeSelected"
-            class="gl-display-inline-block"
-            data-testid="new-column-iteration-item"
-          >
-            {{ getIterationPeriod(item) }}
-            <iteration-title v-if="item.title" :title="item.title" />
-          </div>
-          <div v-else class="gl-display-inline-block">
-            {{ item.title }}
-          </div>
-        </label>
-      </gl-form-radio-group>
-
-      <div class="dropdown-content-faded-mask gl-fixed gl-bottom-0 gl-w-full"></div>
+              {{ item.text }}
+              <iteration-title v-if="item.title" :title="item.title" />
+            </div>
+            <div v-else class="gl-display-inline-block">
+              {{ item.text }}
+            </div>
+          </label>
+        </template>
+      </gl-collapsible-listbox>
     </template>
   </board-add-new-column-form>
 </template>

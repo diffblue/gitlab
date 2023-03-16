@@ -107,7 +107,7 @@ RSpec.describe 'User adds milestone/iterations lists', :js, :aggregate_failures,
 
     find_button("Select a").click
 
-    page.within('.dropdown-menu') do
+    page.within('[data-testid="base-dropdown-menu"]') do
       find('label', text: title).click
     end
 
