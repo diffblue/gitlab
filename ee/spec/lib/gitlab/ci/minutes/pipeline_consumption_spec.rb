@@ -40,5 +40,13 @@ RSpec.describe Gitlab::Ci::Minutes::PipelineConsumption, feature_category: :cont
         expect(subject).to eq(12)
       end
     end
+
+    it 'correctly rounds numbers' do
+      consumption_instance = instance_double("Gitlab::Ci::Minutes::Consumption")
+      allow(Gitlab::Ci::Minutes::Consumption).to receive(:new).and_return(consumption_instance)
+      allow(consumption_instance).to receive(:amount).and_return(5.27, 2.67)
+
+      expect(subject).to eq(7.94)
+    end
   end
 end

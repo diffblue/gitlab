@@ -14,7 +14,7 @@ module Gitlab
               pipeline: pipeline,
               runner_matcher: runner_matcher,
               duration: builds.sum(&:duration)).amount
-          end
+          end.round(2)
         end
 
         private
