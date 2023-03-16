@@ -12,6 +12,7 @@ import FindingModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
 import findingQuery from 'ee/security_dashboard/graphql/queries/mr_widget_finding.graphql';
 import dismissFindingMutation from 'ee/security_dashboard/graphql/mutations/dismiss_finding.mutation.graphql';
+import revertFindingToDetectedMutation from 'ee/security_dashboard/graphql/mutations/revert_finding_to_detected.mutation.graphql';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
 import { capitalizeFirstCharacter, convertToCamelCase } from '~/lib/utils/text_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -401,15 +402,30 @@ export default {
     revertDismissVulnerability() {
       this.isDismissingFinding = true;
 
-      axios
-        .delete(
-          this.modalData.vulnerability.dismissal_feedback
-            .destroy_vulnerability_feedback_dismissal_path,
-        )
-        .then(() => {
+      this.$apollo
+        .mutate({
+          mutation: revertFindingToDetectedMutation,
+          refetchQueries: [findingQuery],
+          variables: {
+            uuid: this.modalData.vulnerability.uuid,
+          },
+        })
+        .then(({ data }) => {
+          const { errors } = data.securityFindingRevertToDetected;
+
+          if (errors.length > 0) {
+            this.modalData.error = sprintf(
+              s__('ciReport|There was an error reverting the dismissal: %{error}'),
+              { error: errors[0] },
+            );
+
+            return;
+          }
+
           this.modalData.vulnerability.state = 'detected';
           this.modalData.vulnerability.isDismissed = false;
           this.modalData.vulnerability.dismissal_feedback = null;
+
           this.hideModal();
         })
         .catch(() => {
