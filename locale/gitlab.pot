@@ -50428,9 +50428,6 @@ msgstr ""
 msgid "Your membership in %{group} no longer expires."
 msgstr ""
 
-msgid "Your message here"
-msgstr ""
-
 msgid "Your name"
 msgstr ""
 
