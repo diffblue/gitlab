@@ -1,7 +1,7 @@
 <script>
 import { GlSkeletonLoader, GlLoadingIcon } from '@gitlab/ui';
-
-import { DEFAULT_PAGE_SIZE, FilterState } from '../constants';
+import { DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
+import { FilterState } from '../constants';
 
 export default {
   components: {

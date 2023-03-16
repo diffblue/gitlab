@@ -4,12 +4,11 @@ import produce from 'immer';
 import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import { DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
 import destroyIterationCadence from '../queries/destroy_cadence.mutation.graphql';
 import groupQuery from '../queries/group_iteration_cadences_list.query.graphql';
 import projectQuery from '../queries/project_iteration_cadences_list.query.graphql';
 import IterationCadenceListItem from './iteration_cadence_list_item.vue';
-
-const pageSize = 20;
 
 export default {
   iterationCadencesHelpPagePath: helpPagePath('user/group/iterations/index.md', {
@@ -74,10 +73,10 @@ export default {
 
       if (this.pagination.beforeCursor) {
         vars.beforeCursor = this.pagination.beforeCursor;
-        vars.lastPageSize = pageSize;
+        vars.lastPageSize = DEFAULT_PAGE_SIZE;
       } else {
         vars.afterCursor = this.pagination.afterCursor;
-        vars.firstPageSize = pageSize;
+        vars.firstPageSize = DEFAULT_PAGE_SIZE;
       }
 
       return vars;

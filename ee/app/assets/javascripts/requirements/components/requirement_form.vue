@@ -15,8 +15,8 @@ import { __ } from '~/locale';
 import ZenMode from '~/zen_mode';
 
 import { renderGFM } from '~/behaviors/markdown/render_gfm';
+import { TITLE_LENGTH_MAX } from '~/issues/constants';
 import {
-  MAX_TITLE_LENGTH,
   TestReportStatus,
   I18N_LEGACY_REFERENCE_DEPRECATION_NOTE_TITLE,
   I18N_LEGACY_REFERENCE_DEPRECATION_NOTE_DETAIL,
@@ -25,7 +25,7 @@ import RequirementMeta from '../mixins/requirement_meta';
 import RequirementStatusBadge from './requirement_status_badge.vue';
 
 export default {
-  maxTitleLength: MAX_TITLE_LENGTH,
+  maxTitleLength: TITLE_LENGTH_MAX,
   events: {
     drawerClose: 'drawer-close',
     disableEdit: 'disable-edit',

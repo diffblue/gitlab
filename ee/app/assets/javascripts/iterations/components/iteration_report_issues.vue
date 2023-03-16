@@ -16,6 +16,7 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { STATUS_OPEN, WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { isScopedLabel } from '~/lib/utils/common_utils';
 import { __, n__, sprintf } from '~/locale';
+import { DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
 import iterationIssuesQuery from '../queries/iteration_issues.query.graphql';
 import iterationIssuesWithLabelFilterQuery from '../queries/iteration_issues_with_label_filter.query.graphql';
 
@@ -141,8 +142,7 @@ export default {
     },
     pageSize() {
       const labelGroupingPageSize = 5;
-      const normalPageSize = 20;
-      return this.label.title ? labelGroupingPageSize : normalPageSize;
+      return this.label.title ? labelGroupingPageSize : DEFAULT_PAGE_SIZE;
     },
     shouldShowTable() {
       return this.isExpanded && !this.$apollo.queries.issues.loading;

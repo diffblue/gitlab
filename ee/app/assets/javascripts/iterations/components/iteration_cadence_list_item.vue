@@ -14,13 +14,12 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { fetchPolicies } from '~/lib/graphql';
 import { __, s__ } from '~/locale';
+import { DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
 import { getIterationPeriod } from '../utils';
 import { iterationSortDesc } from '../constants';
 import groupQuery from '../queries/group_iterations_in_cadence.query.graphql';
 import projectQuery from '../queries/project_iterations_in_cadence.query.graphql';
 import TimeboxStatusBadge from './timebox_status_badge.vue';
-
-const pageSize = 20;
 
 const i18n = Object.freeze({
   noResults: {
@@ -133,7 +132,7 @@ export default {
       return {
         fullPath: this.fullPath,
         iterationCadenceId: this.cadenceId,
-        firstPageSize: pageSize,
+        firstPageSize: DEFAULT_PAGE_SIZE,
         state: this.iterationState,
         sort: this.iterationSortOrder,
       };

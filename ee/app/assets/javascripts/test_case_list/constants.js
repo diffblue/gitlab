@@ -45,5 +45,3 @@ export const FilterStateEmptyMessage = {
   opened: __('There are no open test cases'),
   closed: __('There are no archived test cases'),
 };
-
-export const DEFAULT_PAGE_SIZE = 20;

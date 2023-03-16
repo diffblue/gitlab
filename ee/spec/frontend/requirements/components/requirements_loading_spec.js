@@ -6,13 +6,8 @@ import RequirementsLoading from 'ee/requirements/components/requirements_loading
 
 import { FilterState, mockRequirementsCount } from '../mock_data';
 
-jest.mock('ee/requirements/constants', () => ({
+jest.mock('~/vue_shared/issuable/list/constants', () => ({
   DEFAULT_PAGE_SIZE: 2,
-  FilterState: {
-    opened: 'OPENED',
-    archived: 'ARCHIVED',
-    all: 'ALL',
-  },
 }));
 
 const createComponent = ({
