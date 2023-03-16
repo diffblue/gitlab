@@ -1,9 +1,10 @@
 import { GlLink, GlSprintf } from '@gitlab/ui';
-import { mount, shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import MergeImmediatelyConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_immediately_confirmation_dialog.vue';
 import MergeTrainFailedPipelineConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_train_failed_pipeline_confirmation_dialog.vue';
 import MergeTrainHelperIcon from 'ee/vue_merge_request_widget/components/merge_train_helper_icon.vue';
+import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { stubComponent } from 'helpers/stub_component';
 import ReadyToMerge from '~/vue_merge_request_widget/components/states/ready_to_merge.vue';
 import {
   MWPS_MERGE_STRATEGY,
@@ -14,7 +15,7 @@ import { MERGE_TRAIN_BUTTON_TEXT } from '~/vue_merge_request_widget/i18n';
 
 describe('ReadyToMerge', () => {
   let wrapper;
-  let vm;
+  const showMock = jest.fn();
 
   const service = {
     merge: () => Promise.resolve({ res: { data: { status: '' } } }),
@@ -54,9 +55,10 @@ describe('ReadyToMerge', () => {
     mergeTrainsCount: 0,
     userPermissions: { canMerge: true },
     mergeable: true,
+    transitionStateMachine: jest.fn(),
   };
 
-  const createComponent = (mrUpdates = {}, mountFn = shallowMount, data = {}) => {
+  const createComponent = (mrUpdates = {}, mountFn = shallowMountExtended, data = {}) => {
     wrapper = mountFn(ReadyToMerge, {
       propsData: {
         mr: { ...mr, ...mrUpdates },
@@ -70,21 +72,20 @@ describe('ReadyToMerge', () => {
         };
       },
       stubs: {
-        MergeImmediatelyConfirmationDialog,
+        MergeImmediatelyConfirmationDialog: stubComponent(MergeImmediatelyConfirmationDialog, {
+          methods: { show: showMock },
+        }),
         MergeTrainHelperIcon,
         GlSprintf,
         GlLink,
         MergeTrainFailedPipelineConfirmationDialog,
       },
     });
-
-    ({ vm } = wrapper);
   };
 
-  const findMergeButton = () => wrapper.find('[data-testid="merge-button"]');
-  const findMergeImmediatelyDropdown = () =>
-    wrapper.find('[data-testid="merge-immediately-dropdown"]');
-  const findMergeImmediatelyButton = () => wrapper.find('[data-testid="merge-immediately-button"]');
+  const findMergeButton = () => wrapper.findByTestId('merge-button');
+  const findMergeImmediatelyDropdown = () => wrapper.findByTestId('merge-immediately-dropdown');
+  const findMergeImmediatelyButton = () => wrapper.findByTestId('merge-immediately-button');
   const findMergeTrainHelperIcon = () => wrapper.findComponent(MergeTrainHelperIcon);
   const findMergeTrainFailedPipelineConfirmationDialog = () =>
     wrapper.findComponent(MergeTrainFailedPipelineConfirmationDialog);
@@ -110,7 +111,7 @@ describe('ReadyToMerge', () => {
     );
 
     it('displays "Merge in progress"', async () => {
-      createComponent({}, shallowMount, { isMergingImmediately: true });
+      createComponent({}, shallowMountExtended, { isMergingImmediately: true });
 
       expect(findMergeButton().text()).toBe('Merge in progress');
     });
@@ -188,21 +189,18 @@ describe('ReadyToMerge', () => {
     `(
       'with merge stragtegy $mergeStrategy and pipeline failed status of $isPipelineFailed we should show the modal: $isVisible',
       async ({ mergeStrategy, isPipelineFailed, isVisible }) => {
-        createComponent({
-          availableAutoMergeStrategies: [mergeStrategy],
-          headPipeline: {
-            id: 'gid://gitlab/Pipeline/1',
-            path: 'path/to/pipeline',
-            status: isPipelineFailed ? 'FAILED' : 'PASSED',
+        createComponent(
+          {
+            availableAutoMergeStrategies: [mergeStrategy],
+            headPipeline: {
+              id: 'gid://gitlab/Pipeline/1',
+              path: 'path/to/pipeline',
+              status: isPipelineFailed ? 'FAILED' : 'PASSED',
+            },
           },
-        });
+          mountExtended,
+        );
         const modalConfirmation = findMergeTrainFailedPipelineConfirmationDialog();
-
-        if (!isVisible) {
-          // need to mock if we don't show modal
-          // to prevent internals from being invoked
-          vm.handleMergeButtonClick = jest.fn();
-        }
 
         await findMergeButton().vm.$emit('click');
 
@@ -215,53 +213,52 @@ describe('ReadyToMerge', () => {
     const clickMergeImmediately = async () => {
       expect(findMergeImmediatelyConfirmationDialog().exists()).toBe(true);
 
-      findMergeImmediatelyConfirmationDialog().vm.show = jest.fn();
-
-      vm.handleMergeButtonClick = jest.fn();
-
-      findMergeImmediatelyDropdown().trigger('click');
-
+      findMergeImmediatelyDropdown().vm.$emit('show');
       await nextTick();
 
-      findMergeImmediatelyButton().trigger('click');
+      findMergeImmediatelyButton().vm.$emit('click');
 
       await nextTick();
     };
 
     it('should show a warning dialog asking for confirmation if the user is trying to skip the merge train', async () => {
-      createComponent({ availableAutoMergeStrategies: [MT_MERGE_STRATEGY] }, mount);
+      createComponent({ availableAutoMergeStrategies: [MT_MERGE_STRATEGY] });
 
       await clickMergeImmediately();
 
-      expect(findMergeImmediatelyConfirmationDialog().vm.show).toHaveBeenCalled();
-      expect(vm.handleMergeButtonClick).not.toHaveBeenCalled();
+      expect(showMock).toHaveBeenCalled();
+
+      expect(findMergeTrainFailedPipelineConfirmationDialog().props('visible')).toBe(false);
+      expect(findMergeButton().text()).toBe('Start merge train');
+      expect(mr.transitionStateMachine).toHaveBeenCalledTimes(0);
     });
 
     it('should perform the merge when the user confirms their intent to merge immediately', async () => {
-      createComponent({ availableAutoMergeStrategies: [MT_MERGE_STRATEGY] }, mount);
+      createComponent({ availableAutoMergeStrategies: [MT_MERGE_STRATEGY] });
 
       await clickMergeImmediately();
 
       findMergeImmediatelyConfirmationDialog().vm.$emit('mergeImmediately');
 
       await nextTick();
-      // false (no auto merge), true (merge immediately), true (confirmation clicked)
-      expect(vm.handleMergeButtonClick).toHaveBeenCalledWith(false, true, true);
+
+      expect(findMergeTrainFailedPipelineConfirmationDialog().props('visible')).toBe(false);
+      expect(findMergeButton().text()).toBe('Merge in progress');
+      expect(mr.transitionStateMachine).toHaveBeenCalledWith({ transition: 'start-merge' });
     });
 
     it('should not ask for confirmation in non-merge train scenarios', async () => {
-      createComponent(
-        {
-          headPipeline: { id: 'gid://gitlab/Pipeline/1', path: 'path/to/pipeline', active: true },
-          onlyAllowMergeIfPipelineSucceeds: false,
-        },
-        mount,
-      );
+      createComponent({
+        headPipeline: { id: 'gid://gitlab/Pipeline/1', path: 'path/to/pipeline', active: true },
+        onlyAllowMergeIfPipelineSucceeds: false,
+      });
 
       await clickMergeImmediately();
 
-      expect(findMergeImmediatelyConfirmationDialog().vm.show).not.toHaveBeenCalled();
-      expect(vm.handleMergeButtonClick).toHaveBeenCalled();
+      expect(showMock).not.toHaveBeenCalled();
+      expect(findMergeButton().text()).toBe('Merge in progress');
+      expect(findMergeTrainFailedPipelineConfirmationDialog().props('visible')).toBe(false);
+      expect(mr.transitionStateMachine).toHaveBeenCalled();
     });
   });
 
