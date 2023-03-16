@@ -8,19 +8,12 @@ jest.mock('~/lib/utils/axios_utils', () => ({
 describe('dora_api.js', () => {
   const dummyApiVersion = 'v3000';
   const dummyUrlRoot = '/gitlab';
-  const dummyGon = {
-    api_version: dummyApiVersion,
-    relative_url_root: dummyUrlRoot,
-  };
-  let originalGon;
 
   beforeEach(() => {
-    originalGon = window.gon;
-    window.gon = { ...dummyGon };
-  });
-
-  afterEach(() => {
-    window.gon = originalGon;
+    window.gon = {
+      api_version: dummyApiVersion,
+      relative_url_root: dummyUrlRoot,
+    };
   });
 
   describe.each`

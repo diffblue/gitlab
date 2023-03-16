@@ -18,10 +18,6 @@ describe('EE Boards Store Getters', () => {
   };
 
   describe('isSwimlanesOn', () => {
-    afterEach(() => {
-      window.gon = { licensed_features: {} };
-    });
-
     describe('when swimlanes feature is true', () => {
       beforeEach(() => {
         window.gon = { licensed_features: { swimlanes: true } };

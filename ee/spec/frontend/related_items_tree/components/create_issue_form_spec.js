@@ -73,10 +73,6 @@ describe('CreateIssueForm', () => {
     gon.current_username = 'root';
   });
 
-  afterEach(() => {
-    delete gon.current_username;
-  });
-
   describe('data', () => {
     it('initializes data props with default values', () => {
       expect(wrapper.vm.selectedProject).toBeNull();

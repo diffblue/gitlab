@@ -7,7 +7,6 @@ import { createStore } from '~/boards/stores';
 describe('ee/BoardContent', () => {
   let wrapper;
   let store;
-  window.gon = { licensed_features: {} };
 
   const createComponent = ({
     issuableType = 'issue',
@@ -44,11 +43,8 @@ describe('ee/BoardContent', () => {
   };
 
   beforeEach(() => {
+    window.gon = { licensed_features: {} };
     store = createStore();
-  });
-
-  afterEach(() => {
-    window.gon.licensed_features = {};
   });
 
   describe.each`

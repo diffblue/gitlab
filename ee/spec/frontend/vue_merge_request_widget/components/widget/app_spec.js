@@ -32,10 +32,6 @@ describe('MR Widget App', () => {
       window.gon = { features: { refactorSecurityExtension: true } };
     });
 
-    afterEach(() => {
-      delete window.gon;
-    });
-
     it('mounts MrSecurityWidgetEE when user has necessary permissions and reports are enabled', async () => {
       createComponent({
         mr: {

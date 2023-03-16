@@ -24,15 +24,14 @@ describe('EpicFilteredSearch', () => {
     });
   };
 
-  window.gon = {
-    current_user_id: '4',
-    current_username: 'root',
-    current_user_avatar_url: 'url',
-    current_user_fullname: 'Admin',
-  };
-
   describe('default', () => {
     beforeEach(() => {
+      window.gon = {
+        current_user_id: '4',
+        current_username: 'root',
+        current_user_avatar_url: 'url',
+        current_user_fullname: 'Admin',
+      };
       createComponent();
     });
 

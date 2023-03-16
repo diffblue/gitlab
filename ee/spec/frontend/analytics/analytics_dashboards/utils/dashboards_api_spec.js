@@ -21,25 +21,21 @@ import {
 
 describe('AnalyticsDashboard', () => {
   const dummyUrlRoot = '/gitlab';
-  const dummyGon = {
-    relative_url_root: dummyUrlRoot,
-  };
   const dummyRandom = 0.123;
 
-  let originalGon;
   let mock;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    originalGon = window.gon;
-    window.gon = { ...dummyGon };
+    window.gon = {
+      relative_url_root: dummyUrlRoot,
+    };
     jest.spyOn(global.Math, 'random').mockReturnValue(0.123);
   });
 
   afterEach(() => {
     mock.restore();
     jest.spyOn(global.Math, 'random').mockRestore();
-    window.gon = originalGon;
   });
 
   describe('dashboard functions', () => {

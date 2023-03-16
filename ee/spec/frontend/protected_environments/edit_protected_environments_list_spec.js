@@ -74,7 +74,6 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
   let store;
   let wrapper;
   let mock;
-  let originalGon;
 
   const createComponent = async () => {
     store = createStore({ projectId: DEFAULT_PROJECT_ID });
@@ -96,7 +95,6 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    originalGon = window.gon;
     window.gon = { api_version: 'v4' };
     mock
       .onGet('/api/v4/projects/8/protected_environments/')
@@ -119,7 +117,6 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
   afterEach(() => {
     mock.restore();
     mock.resetHistory();
-    window.gon = originalGon;
   });
 
   it('shows a header counting the number of protected environments', async () => {

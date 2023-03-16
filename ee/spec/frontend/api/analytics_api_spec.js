@@ -18,12 +18,7 @@ import * as analyticsMockData from 'ee_jest/analytics/cycle_analytics/mock_data'
 
 const dummyApiVersion = 'v3000';
 const dummyUrlRoot = '/gitlab';
-const dummyGon = {
-  api_version: dummyApiVersion,
-  relative_url_root: dummyUrlRoot,
-};
 
-let originalGon;
 let mock;
 
 describe('ValueStreamAnalyticsApi', () => {
@@ -52,13 +47,14 @@ describe('ValueStreamAnalyticsApi', () => {
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    originalGon = window.gon;
-    window.gon = { ...dummyGon };
+    window.gon = {
+      api_version: dummyApiVersion,
+      relative_url_root: dummyUrlRoot,
+    };
   });
 
   afterEach(() => {
     mock.restore();
-    window.gon = originalGon;
   });
 
   describe('getTypeOfWorkTasksByType', () => {

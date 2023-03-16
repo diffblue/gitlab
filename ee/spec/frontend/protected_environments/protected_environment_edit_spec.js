@@ -17,17 +17,13 @@ const $toast = {
 
 describe('Protected Environment Edit', () => {
   let wrapper;
-  let originalGon;
   let mockAxios;
 
   const url = 'http://some.url';
   const parentContainer = document.createElement('div');
 
   beforeEach(() => {
-    originalGon = window.gon;
-
     window.gon = {
-      ...window.gon,
       deploy_access_levels: {
         roles: [],
       },
@@ -36,7 +32,6 @@ describe('Protected Environment Edit', () => {
   });
 
   afterEach(() => {
-    window.gon = originalGon;
     mockAxios.restore();
   });
 

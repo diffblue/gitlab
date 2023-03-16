@@ -21,12 +21,6 @@ describe('Epic Store Getters', () => {
   });
 
   describe('isUserSignedIn', () => {
-    const originalUserId = gon.current_user_id;
-
-    afterAll(() => {
-      gon.current_user_id = originalUserId;
-    });
-
     it('return boolean representation of the value of `gon.current_user_id`', () => {
       gon.current_user_id = 0;
 

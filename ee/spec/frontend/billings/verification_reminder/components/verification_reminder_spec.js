@@ -53,7 +53,6 @@ describe('VerificationReminder', () => {
   });
 
   afterEach(() => {
-    window.gon = {};
     unmockTracking();
   });
 

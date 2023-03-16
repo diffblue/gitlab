@@ -92,10 +92,6 @@ describe('DevopsAdoptionOverviewTable', () => {
           gon.relative_url_root = '/fake';
         });
 
-        afterEach(() => {
-          gon.relative_url_root = '';
-        });
-
         it('includes a link to the group DevOps page', () => {
           createComponent();
 

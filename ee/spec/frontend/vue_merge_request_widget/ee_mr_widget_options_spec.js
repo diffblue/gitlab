@@ -127,7 +127,6 @@ describe('ee merge request widget options', () => {
       wrapper.destroy();
       wrapper = null;
       mock.restore();
-      gon.features = {};
     });
   });
 
