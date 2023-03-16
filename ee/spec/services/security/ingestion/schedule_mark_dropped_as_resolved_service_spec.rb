@@ -95,7 +95,7 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService,
   context 'when flag is enabled' do
     before do
       stub_const("#{described_class.name}::BATCH_SIZE", 1)
-      stub_feature_flags(sec_mark_dropped_findings_as_resolved_scheduler: true)
+      stub_feature_flags(sec_mark_dropped_findings_as_resolved: true)
     end
 
     it 'schedules MarkDroppedAsResolvedWorker' do
@@ -128,7 +128,7 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService,
 
   context 'when flag is disabled' do
     before do
-      stub_feature_flags(sec_mark_dropped_findings_as_resolved_scheduler: false)
+      stub_feature_flags(sec_mark_dropped_findings_as_resolved: false)
     end
 
     it 'wont schedule MarkDroppedAsResolvedWorker' do
