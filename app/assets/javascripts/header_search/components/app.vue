@@ -167,11 +167,8 @@ export default {
         property: 'navigation_top',
       });
     },
-    closeDropdown() {
-      this.isFocused = false;
-    },
     collapseAndCloseSearchBar() {
-      this.closeDropdown();
+      this.isFocused = false;
       this.$emit('collapseSearchBar');
 
       Tracking.event(undefined, 'blur_input', {
@@ -234,7 +231,7 @@ export default {
       @focusout="collapseAndCloseSearchBar"
       @input="getAutocompleteOptions"
       @keydown.enter.stop.prevent="submitSearch"
-      @keydown.esc.stop.prevent="closeDropdown"
+      @keydown.esc.stop.prevent="collapseAndCloseSearchBar"
     />
     <gl-token
       v-if="showScopeHelp"
