@@ -11,5 +11,6 @@ module Types
 
       field :group_wiki_repository_id, GraphQL::Types::ID, null: false, description: 'ID of the Group Wiki Repository.'
     end
+    # rubocop:enable Graphql/AuthorizeTypes
   end
 end

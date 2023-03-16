@@ -81,6 +81,16 @@ class Geo::BaseRegistry < Geo::TrackingBase
     true
   end
 
+  # Overridden for legacy Geo::ProjectRegistry, Geo::DesignRegistry
+  # and Geo::GroupWikiRepositoryRegistry which is not yet verifiable
+  # TODO: Remove after
+  # https://gitlab.com/gitlab-org/gitlab/-/issues/367926
+  # https://gitlab.com/gitlab-org/gitlab/-/issues/391189
+  # https://gitlab.com/gitlab-org/gitlab/-/issues/323897
+  def self.graphql_mutable?
+    true
+  end
+
   # Search for a list of records associated with registries,
   # based on the query given in `query`.
   #

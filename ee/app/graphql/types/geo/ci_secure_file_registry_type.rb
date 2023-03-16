@@ -11,5 +11,6 @@ module Types
 
       field :ci_secure_file_id, GraphQL::Types::ID, null: false, description: 'ID of the Ci Secure File.'
     end
+    # rubocop:enable Graphql/AuthorizeTypes
   end
 end

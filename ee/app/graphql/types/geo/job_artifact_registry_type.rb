@@ -11,5 +11,6 @@ module Types
 
       field :artifact_id, GraphQL::Types::ID, null: false, description: 'ID of the Job Artifact.'
     end
+    # rubocop:enable Graphql/AuthorizeTypes
   end
 end

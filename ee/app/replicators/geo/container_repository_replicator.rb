@@ -53,9 +53,7 @@ module Geo
 
     # Called by Gitlab::Geo::Replicator#consume
     def consume_event_updated(**params)
-      return unless in_replicables_for_current_secondary?
-
-      sync_repository
+      resync
     end
 
     # Called by Gitlab::Geo::Replicator#consume
@@ -68,7 +66,9 @@ module Geo
       replicate_destroy(params)
     end
 
-    def sync_repository
+    def resync
+      return unless in_replicables_for_current_secondary?
+
       Geo::ContainerRepositorySyncService.new(model_record).execute
     end
 
@@ -82,6 +82,10 @@ module Geo
         model_record_id,
         event_data[:path]
       ).execute
+    end
+
+    def enqueue_sync
+      Geo::EventWorker.perform_async(replicable_name, 'updated', { model_record_id: model_record.id })
     end
 
     # Returns a checksum of the tag list

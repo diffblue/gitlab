@@ -20,6 +20,7 @@ module EE
         mount_mutation ::Mutations::Epics::Create
         mount_mutation ::Mutations::Epics::SetSubscription
         mount_mutation ::Mutations::Epics::AddIssue
+        mount_mutation ::Mutations::Geo::Registries::Update, alpha: { milestone: '16.1' }
         mount_mutation ::Mutations::GitlabSubscriptions::Activate
         mount_mutation ::Mutations::Projects::SetLocked
         mount_mutation ::Mutations::Iterations::Create

@@ -11,5 +11,6 @@ module Types
 
       field :terraform_state_version_id, GraphQL::Types::ID, null: false, description: 'ID of the terraform state version.'
     end
+    # rubocop:enable Graphql/AuthorizeTypes
   end
 end

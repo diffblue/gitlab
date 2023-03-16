@@ -11,5 +11,6 @@ module Types
 
       field :package_file_id, GraphQL::Types::ID, null: false, description: 'ID of the PackageFile.'
     end
+    # rubocop:enable Graphql/AuthorizeTypes
   end
 end

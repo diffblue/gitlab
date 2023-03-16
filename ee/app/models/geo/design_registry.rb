@@ -41,6 +41,17 @@ class Geo::DesignRegistry < Geo::BaseRegistry
     end
   end
 
+  class << self
+    extend ::Gitlab::Utils::Override
+
+    # TODO: Remove to make this resource available in the resync/reverify mutation
+    # Issue: https://gitlab.com/gitlab-org/gitlab/-/issues/391189
+    override :graphql_mutable?
+    def graphql_mutable?
+      false
+    end
+  end
+
   def self.delete_for_model_ids(project_ids)
     # We only need to delete the registry entries here. The design
     # repository deletion should happen when a project is destroyed.

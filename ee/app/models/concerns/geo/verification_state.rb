@@ -214,7 +214,7 @@ module Geo
       end
 
       # Atomically marks the records as verification_pending.
-      # Returns the number of records set to be referified.
+      # Returns the number of records set to be reverified.
       #
       # @param [ActiveRecord::Relation] relation with appropriate where, order, and limit defined
       # @return [Integer] number of records

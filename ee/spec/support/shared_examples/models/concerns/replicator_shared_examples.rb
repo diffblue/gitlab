@@ -6,6 +6,7 @@
 # Required let variables:
 #
 #   - `replicator` should be an instance of the Replicator class being tested, e.g. PackageFileReplicator
+#   - 'event_name' should be the event_name to enqueue a replicable synchronization
 #   - `model_record` should be a valid instance of the model class. It may be unpersisted.
 #   - `primary` should be the primary GeoNode
 #   - `secondary` should be a secondary GeoNode
@@ -130,6 +131,18 @@ RSpec.shared_examples 'a replicator' do
     it 'has "created" and "deleted" events' do
       expect(described_class).to be_event_supported(:created)
       expect(described_class).to be_event_supported(:deleted)
+    end
+  end
+
+  context 'when replicator enqueues a sync event' do
+    specify do
+      expect(Geo::EventWorker).to receive(:perform_async).with(
+        replicator.replicable_name,
+        event_name,
+        { model_record_id: model_record.id }
+      )
+
+      replicator.enqueue_sync
     end
   end
 end

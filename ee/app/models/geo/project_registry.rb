@@ -36,6 +36,17 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
   scope :wiki_checksum_mismatch, -> { where(wiki_checksum_mismatch: true) }
   scope :with_routes, -> { includes(project: :route).includes(project: { namespace: :route }) }
 
+  class << self
+    extend ::Gitlab::Utils::Override
+
+    # TODO: Remove to make this resource available in the resync/reverify mutation
+    # Issue: https://gitlab.com/gitlab-org/gitlab/-/issues/367926
+    override :graphql_mutable?
+    def graphql_mutable?
+      false
+    end
+  end
+
   def self.project_id_in(ids)
     where(project_id: ids)
   end
