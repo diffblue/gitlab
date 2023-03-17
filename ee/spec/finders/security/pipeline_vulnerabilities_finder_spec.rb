@@ -43,7 +43,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
       disable_deduplication
     end
 
-    subject { described_class.new(pipeline: pipeline, params: params).execute }
+    subject(:finder_response) { described_class.new(pipeline: pipeline, params: params).execute }
 
     context 'findings' do
       it 'assigns commit sha to findings' do
@@ -128,6 +128,16 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
           allow(pipeline).to receive(:security_reports).and_return(orig_security_reports)
           described_class.new(pipeline: pipeline, params: { report_type: %w[container_scanning] }).execute
         }
+      end
+
+      context 'when the artifact has invalid findings' do
+        let!(:artifact_sast) { create(:ee_ci_job_artifact, :sast_without_any_identifiers, job: build_sast, project: project) }
+
+        subject(:sast_findings_count) { finder_response.findings.select(&:sast?).length }
+
+        it 'does not return the invalid findings' do
+          expect(sast_findings_count).to be(2)
+        end
       end
     end
 

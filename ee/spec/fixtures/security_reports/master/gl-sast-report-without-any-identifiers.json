@@ -1,0 +1,96 @@
+{
+  "version": "14.0.0",
+  "vulnerabilities": [
+    {
+      "category": "sast",
+      "name": "Predictable pseudorandom number generator",
+      "message": "Predictable pseudorandom number generator",
+      "cve": "groovy/src/main/java/com/gitlab/security_products/tests/App.groovy:47:PREDICTABLE_RANDOM",
+      "severity": "Medium",
+      "confidence": "Medium",
+      "scanner": {
+        "id": "find_sec_bugs",
+        "name": "Find Security Bugs"
+      },
+      "location": {
+        "file": "groovy/src/main/java/com/gitlab/security_products/tests/App.groovy",
+        "start_line": 47,
+        "end_line": 47,
+        "class": "com.gitlab.security_products.tests.App",
+        "method": "generateSecretToken2"
+      },
+      "identifiers": []
+    },
+    {
+      "category": "sast",
+      "name": "Predictable pseudorandom number generator",
+      "message": "Predictable pseudorandom number generator",
+      "cve": "groovy/src/main/java/com/gitlab/security_products/tests/App.groovy:41:PREDICTABLE_RANDOM",
+      "severity": "Low",
+      "confidence": "Low",
+      "scanner": {
+        "id": "find_sec_bugs",
+        "name": "Find Security Bugs"
+      },
+      "location": {
+        "file": "groovy/src/main/java/com/gitlab/security_products/tests/App.groovy",
+        "start_line": 41,
+        "end_line": 41,
+        "class": "com.gitlab.security_products.tests.App",
+        "method": "generateSecretToken1"
+      },
+      "identifiers": [
+        {
+          "type": "find_sec_bugs_type",
+          "name": "Find Security Bugs-PREDICTABLE_RANDOM",
+          "value": "PREDICTABLE_RANDOM",
+          "url": "https://find-sec-bugs.github.io/bugs.htm#PREDICTABLE_RANDOM"
+        }
+      ]
+    },
+    {
+      "category": "sast",
+      "name": "ECB mode is insecure",
+      "message": "ECB mode is insecure",
+      "description": "The cipher uses ECB mode, which provides poor confidentiality for encrypted data",
+      "cve": "ea0f905fc76f2739d5f10a1fd1e37a10:ECB_MODE:java-maven/src/main/java/com/gitlab/security_products/tests/App.java:29",
+      "severity": "Medium",
+      "confidence": "High",
+      "scanner": {
+        "id": "find_sec_bugs",
+        "name": "Find Security Bugs"
+      },
+      "location": {
+        "file": "java-maven/src/main/java/com/gitlab/security_products/tests/App.java",
+        "start_line": 29,
+        "end_line": 29,
+        "class": "com.gitlab.security_products.tests.App",
+        "method": "insecureCypher"
+      },
+      "identifiers": [
+        {
+          "type": "find_sec_bugs_type",
+          "name": "Find Security Bugs-ECB_MODE",
+          "value": "ECB_MODE",
+          "url": "https://find-sec-bugs.github.io/bugs.htm#ECB_MODE"
+        }
+      ]
+    }
+  ],
+  "remediations": [],
+  "scan": {
+    "scanner": {
+      "id": "find_sec_bugs",
+      "name": "Find Security Bugs",
+      "url": "https://spotbugs.github.io",
+      "vendor": {
+        "name": "GitLab"
+      },
+      "version": "4.0.2"
+    },
+    "type": "sast",
+    "status": "success",
+    "start_time": "2022-08-10T21:37:00",
+    "end_time": "2022-08-10T21:38:00"
+  }
+}
