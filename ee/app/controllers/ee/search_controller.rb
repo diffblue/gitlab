@@ -16,7 +16,7 @@ module EE
 
     prepended do
       # track unique users of advanced global search
-      track_custom_event :show,
+      track_event :show,
         name: 'i_search_advanced',
         conditions: -> { track_search_advanced? },
         label: 'redis_hll_counters.search.search_total_unique_counts_monthly',
@@ -27,7 +27,7 @@ module EE
       # elasticsearch integration)
       # for gitlab.com we check if the search uses elasticsearch
       # for self-managed we check if the licensed feature available
-      track_custom_event :show,
+      track_event :show,
         name: 'i_search_paid',
         conditions: -> { track_search_paid? },
         label: 'redis_hll_counters.search.i_search_paid_monthly',

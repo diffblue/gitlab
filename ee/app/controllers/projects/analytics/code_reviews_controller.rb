@@ -7,7 +7,7 @@ module Projects
 
       before_action :authorize_read_code_review_analytics!
 
-      track_custom_event :index,
+      track_event :index,
         name: 'p_analytics_code_reviews',
         action: 'perform_analytics_usage_action',
         label: 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly',

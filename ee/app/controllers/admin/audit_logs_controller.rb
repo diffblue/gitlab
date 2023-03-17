@@ -11,7 +11,7 @@ class Admin::AuditLogsController < Admin::ApplicationController
 
   before_action :check_license_admin_audit_event_available!
 
-  track_custom_event :index,
+  track_event :index,
     name: 'i_compliance_audit_events',
     action: 'visit_instance_compliance_audit_events',
     label: 'redis_hll_counters.compliance.compliance_total_unique_counts_monthly',

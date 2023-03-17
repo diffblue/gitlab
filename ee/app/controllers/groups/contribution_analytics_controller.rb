@@ -8,7 +8,7 @@ class Groups::ContributionAnalyticsController < Groups::ApplicationController
 
   layout 'group'
 
-  track_custom_event :show,
+  track_event :show,
     name: 'g_analytics_contribution',
     action: 'perform_analytics_usage_action',
     label: 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly',

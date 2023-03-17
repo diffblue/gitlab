@@ -10,7 +10,7 @@ class Groups::AuditEventsController < Groups::ApplicationController
 
   before_action :check_audit_events_available!
 
-  track_custom_event :index,
+  track_event :index,
     name: 'g_compliance_audit_events',
     action: 'visit_group_compliance_audit_events',
     label: 'redis_hll_counters.compliance.compliance_total_unique_counts_monthly',

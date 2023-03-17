@@ -10,7 +10,7 @@ class Groups::Security::ComplianceDashboardsController < Groups::ApplicationCont
     push_frontend_feature_flag(:compliance_frameworks_report, group)
   end
 
-  track_custom_event :show,
+  track_event :show,
     name: 'g_compliance_dashboard',
     action: 'show_compliance_dashboard',
     label: 'redis_hll_counters.compliance.compliance_total_unique_counts_monthly',
