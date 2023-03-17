@@ -1,13 +1,32 @@
 <script>
 import { GlAlert, GlLink, GlLoadingIcon, GlSprintf } from '@gitlab/ui';
+import { parseErrorMessage } from '~/lib/utils/error_message';
 import { __, s__ } from '~/locale';
 import DismissibleFeedbackAlert from '~/vue_shared/components/dismissible_feedback_alert.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import ConfigurationPageLayout from '../../components/configuration_page_layout.vue';
 import sastCiConfigurationQuery from '../graphql/sast_ci_configuration.query.graphql';
 import ConfigurationForm from './configuration_form.vue';
 
+export const i18n = {
+  feedbackAlertMessage: __(`
+      As we continue to build more features for SAST, we'd love your feedback
+      on the SAST configuration feature in %{linkStart}this issue%{linkEnd}.`),
+  helpText: s__(
+    `SecurityConfiguration|Customize common SAST settings to suit your
+      requirements. Configuration changes made here override those provided by
+      GitLab and are excluded from updates. For details of more advanced
+      configuration options, see the %{linkStart}GitLab SAST documentation%{linkEnd}.`,
+  ),
+  genericErrorText: s__(
+    `SecurityConfiguration|Could not retrieve configuration data. Please
+      refresh the page, or try again later.`,
+  ),
+};
+
 export default {
+  i18n,
   components: {
     ConfigurationForm,
     ConfigurationPageLayout,
@@ -17,6 +36,7 @@ export default {
     GlLoadingIcon,
     GlSprintf,
   },
+  directives: { SafeHtml },
   mixins: [glFeatureFlagsMixin()],
   inject: {
     sastDocumentationPath: {
@@ -39,13 +59,13 @@ export default {
       update({ project }) {
         return project?.sastCiConfiguration;
       },
-      result({ loading }) {
+      result({ loading, error }) {
         if (!loading && !this.sastCiConfiguration) {
-          this.onError();
+          this.onError(error);
         }
       },
-      error() {
-        this.onError();
+      error(error) {
+        this.onError(error);
       },
     },
   },
@@ -53,27 +73,23 @@ export default {
     return {
       sastCiConfiguration: null,
       hasLoadingError: false,
+      specificErrorText: undefined,
     };
   },
-  methods: {
-    onError() {
-      this.hasLoadingError = true;
+  computed: {
+    errorText() {
+      return this.specificErrorText || this.$options.i18n.genericErrorText;
     },
   },
-  i18n: {
-    feedbackAlertMessage: __(`
-      As we continue to build more features for SAST, we'd love your feedback
-      on the SAST configuration feature in %{linkStart}this issue%{linkEnd}.`),
-    helpText: s__(
-      `SecurityConfiguration|Customize common SAST settings to suit your
-      requirements. Configuration changes made here override those provided by
-      GitLab and are excluded from updates. For details of more advanced
-      configuration options, see the %{linkStart}GitLab SAST documentation%{linkEnd}.`,
-    ),
-    loadingErrorText: s__(
-      `SecurityConfiguration|Could not retrieve configuration data. Please
-      refresh the page, or try again later.`,
-    ),
+  methods: {
+    onError(error) {
+      this.hasLoadingError = true;
+      const { message, userFacing } = parseErrorMessage(error);
+
+      if (userFacing) {
+        this.specificErrorText = message;
+      }
+    },
   },
   feedbackIssue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/225991',
 };
@@ -111,8 +127,9 @@ export default {
       variant="danger"
       :dismissible="false"
       data-testid="error-alert"
-      >{{ $options.i18n.loadingErrorText }}</gl-alert
     >
+      <span v-safe-html="errorText"></span>
+    </gl-alert>
 
     <configuration-form v-else :sast-ci-configuration="sastCiConfiguration" />
   </configuration-page-layout>
