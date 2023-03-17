@@ -11,11 +11,11 @@ export * from './actions/filters';
 export * from './actions/stages';
 export * from './actions/value_streams';
 
-export const setPaths = ({ dispatch, state: { namespace } }) => {
+export const setPaths = ({ dispatch, state: { namespace, currentGroup } }) => {
   return dispatch('filters/setEndpoints', {
     labelsEndpoint: constructPathWithNamespace(namespace, LABELS_ENDPOINT),
     milestonesEndpoint: constructPathWithNamespace(namespace, MILESTONES_ENDPOINT),
-    groupEndpoint: namespace.fullPath,
+    groupEndpoint: currentGroup.fullPath,
   });
 };
 

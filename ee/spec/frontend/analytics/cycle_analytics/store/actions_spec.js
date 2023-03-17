@@ -8,6 +8,7 @@ import {
   createdAfter,
   createdBefore,
   groupNamespace as namespace,
+  currentGroup,
 } from 'jest/analytics/cycle_analytics/mock_data';
 import {
   I18N_VSA_ERROR_STAGES,
@@ -50,6 +51,7 @@ describe('Value Stream Analytics actions', () => {
       features: {},
       activeStages,
       selectedValueStream,
+      currentGroup,
       ...mockGetters,
     };
     mock = new MockAdapter(axios);
@@ -79,7 +81,7 @@ describe('Value Stream Analytics actions', () => {
   });
 
   describe('setPaths', () => {
-    it('dispatches the filters/setEndpoints action with enpoints', () => {
+    it('dispatches the filters/setEndpoints action with endpoints', () => {
       return testAction(
         actions.setPaths,
         {},
@@ -89,7 +91,7 @@ describe('Value Stream Analytics actions', () => {
           {
             type: 'filters/setEndpoints',
             payload: {
-              groupEndpoint: namespace.fullPath,
+              groupEndpoint: 'foo',
               labelsEndpoint: labelsPath,
               milestonesEndpoint: milestonesPath,
             },
