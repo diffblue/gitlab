@@ -125,7 +125,7 @@ describe('Sidebar Weight Widget', () => {
     });
   });
 
-  it('displays a alert message when query is rejected', async () => {
+  it('displays an alert message when query is rejected', async () => {
     createComponent({
       weightQueryHandler: jest.fn().mockRejectedValue('Houston, we have a problem'),
     });

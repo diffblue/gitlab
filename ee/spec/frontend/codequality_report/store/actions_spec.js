@@ -91,7 +91,7 @@ describe('Codequality report actions', () => {
       );
     });
 
-    it('shows a alert message when there is an error', async () => {
+    it('shows an alert message when there is an error', async () => {
       await testAction(
         actions.fetchReport,
         'error',

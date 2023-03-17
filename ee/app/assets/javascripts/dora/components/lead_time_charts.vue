@@ -123,7 +123,7 @@ export default {
     },
     /**
      * Validates that exactly one of [this.projectPath, this.groupPath] has been
-     * provided to this component. If not, a alert message is shown and an error
+     * provided to this component. If not, an alert message is shown and an error
      * is logged with Sentry. This is mainly intended to be a development aid.
 
      * @returns {Boolean} Whether or not the paths are valid
