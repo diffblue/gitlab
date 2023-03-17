@@ -8,16 +8,13 @@ import createStore from './store';
 Vue.use(Translate);
 
 export const initGeoSites = () => {
-  // This file is set up to provide multi-version support in case the Rails bundle doesn't update.
-  // See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/113771#note_1306337644
-  const el = document.getElementById('js-geo-sites') || document.getElementById('js-geo-nodes');
+  const el = document.getElementById('js-geo-sites');
 
   if (!el) {
     return false;
   }
 
   const { newSiteUrl, geoSitesEmptyStateSvg } = el.dataset;
-  const { newNodeUrl, geoNodesEmptyStateSvg } = el.dataset;
   const searchFilter = getParameterByName('search') || '';
   let { replicableTypes } = el.dataset;
 
@@ -27,12 +24,12 @@ export const initGeoSites = () => {
     el,
     store: createStore({ replicableTypes, searchFilter }),
     provide: {
-      geoSitesEmptyStateSvg: geoSitesEmptyStateSvg || geoNodesEmptyStateSvg,
+      geoSitesEmptyStateSvg,
     },
     render(createElement) {
       return createElement(GeoSitesApp, {
         props: {
-          newSiteUrl: newSiteUrl || newNodeUrl,
+          newSiteUrl,
         },
       });
     },
