@@ -24696,6 +24696,15 @@ msgstr ""
 msgid "JobAssistant|Add job"
 msgstr ""
 
+msgid "JobAssistant|Image"
+msgstr ""
+
+msgid "JobAssistant|Image entrypoint (optional)"
+msgstr ""
+
+msgid "JobAssistant|Image name (optional)"
+msgstr ""
+
 msgid "JobAssistant|Job Setup"
 msgstr ""
 
