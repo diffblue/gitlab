@@ -37554,6 +37554,9 @@ msgstr ""
 msgid "Runners|Existing runners are not affected. To permit runner registration for all groups, enable this setting in the Admin Area in Settings &gt; CI/CD."
 msgstr ""
 
+msgid "Runners|Fetch GitLab Runner release version data from GitLab.com"
+msgstr ""
+
 msgid "Runners|Filter projects"
 msgstr ""
 
@@ -37669,6 +37672,9 @@ msgid "Runners|No spot. This is the default choice for Linux Docker executor."
 msgstr ""
 
 msgid "Runners|Not accepting jobs"
+msgstr ""
+
+msgid "Runners|Official runner version data is periodically fetched from GitLab.com to determine whether the runners need upgrades."
 msgstr ""
 
 msgid "Runners|Offline"
@@ -37839,6 +37845,9 @@ msgid "Runners|Runner statuses"
 msgstr ""
 
 msgid "Runners|Runner unassigned from project."
+msgstr ""
+
+msgid "Runners|Runner version management"
 msgstr ""
 
 msgid "Runners|Runners"

@@ -35,6 +35,8 @@ module EE
           private
 
           def upgrade_status_available?
+            return false unless ::Gitlab::Ci::RunnerReleases.instance.enabled?
+
             License.feature_available?(:runner_upgrade_management) || current_user&.has_paid_namespace?
           end
         end
