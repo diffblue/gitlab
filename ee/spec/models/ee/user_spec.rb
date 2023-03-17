@@ -551,7 +551,7 @@ RSpec.describe User, feature_category: :system_access do
           it 'returns a single Group' do
             groups = user.available_subgroups_with_custom_project_templates(group_1.id)
 
-            expect(groups.size).to eq(1)
+            expect(groups.to_a.size).to eq(1)
             expect(groups.take.name).to eq('subgroup-1')
           end
         end
@@ -560,7 +560,7 @@ RSpec.describe User, feature_category: :system_access do
           it 'returns all available Groups' do
             groups = user.available_subgroups_with_custom_project_templates
 
-            expect(groups.size).to eq(2)
+            expect(groups.to_a.size).to eq(2)
             expect(groups.map(&:name)).to include('subgroup-1', 'subgroup-2')
           end
 
@@ -581,7 +581,7 @@ RSpec.describe User, feature_category: :system_access do
           it 'returns groups on ultimate or premium plans' do
             groups = user.available_subgroups_with_custom_project_templates
 
-            expect(groups.size).to eq(1)
+            expect(groups.to_a.size).to eq(1)
             expect(groups.map(&:name)).to include('subgroup-2')
           end
         end
