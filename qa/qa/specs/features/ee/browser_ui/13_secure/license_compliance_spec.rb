@@ -50,7 +50,7 @@ module QA
         end
       end
 
-      shared_examples 'pipeline license display' do |testcase|
+      shared_examples 'pipeline license display' do |approved_license_name, denied_license_name, testcase|
         it 'can approve and deny licenses in the pipeline',
           testcase: testcase do
           @project.visit!
@@ -119,7 +119,7 @@ module QA
           it_behaves_like 'deny license', denied_license_name, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348077'
 
           describe 'Pipeline Licence tab', only: { subdomain: %i[staging production pre staging-canary] } do
-            it_behaves_like 'pipeline license display', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348079'
+            it_behaves_like 'pipeline license display', approved_license_name, denied_license_name, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348079'
           end
         end
       end
@@ -173,7 +173,7 @@ module QA
           it_behaves_like 'deny license', denied_license_name, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/393922'
 
           describe 'Pipeline Licence tab', only: { subdomain: %i[staging production pre staging-canary] } do
-            it_behaves_like 'pipeline license display', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/393923'
+            it_behaves_like 'pipeline license display', approved_license_name, denied_license_name, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/393923'
           end
         end
       end
