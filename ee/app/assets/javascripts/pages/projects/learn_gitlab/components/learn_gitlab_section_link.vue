@@ -1,9 +1,8 @@
 <script>
 import { uniqueId } from 'lodash';
 import { GlLink, GlIcon, GlButton, GlPopover, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
-import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
 import eventHub from '~/invite_members/event_hub';
-import { s__, __ } from '~/locale';
+import { s__ } from '~/locale';
 import { LEARN_GITLAB } from '~/invite_members/constants';
 import { ACTION_LABELS } from '../constants';
 import IncludedInTrialIndicator from './included_in_trial_indicator.vue';
@@ -15,7 +14,6 @@ export default {
     GlIcon,
     GlButton,
     GlPopover,
-    GitlabExperiment,
     IncludedInTrialIndicator,
   },
   directives: {
@@ -24,7 +22,6 @@ export default {
   i18n: {
     contactAdmin: s__('LearnGitlab|Contact your administrator to enable this action.'),
     viewAdminList: s__('LearnGitlab|View administrator list'),
-    watchHow: __('Watch how'),
   },
   props: {
     action: {
@@ -110,28 +107,6 @@ export default {
           </gl-link>
         </gl-popover>
       </template>
-      <gitlab-experiment name="video_tutorials_continuous_onboarding">
-        <template #control></template>
-        <template #candidate>
-          <gl-button
-            v-if="actionLabelValue('videoTutorial')"
-            v-gl-tooltip
-            category="tertiary"
-            icon="live-preview"
-            :title="$options.i18n.watchHow"
-            :aria-label="$options.i18n.watchHow"
-            :href="actionLabelValue('videoTutorial')"
-            target="_blank"
-            class="ml-auto"
-            size="small"
-            data-testid="video-tutorial-link"
-            data-track-action="click_video_link"
-            :data-track-label="actionLabelValue('trackLabel')"
-            data-track-property="Growth::Conversion::Experiment::LearnGitLab"
-            data-track-experiment="video_tutorials_continuous_onboarding"
-          />
-        </template>
-      </gitlab-experiment>
     </div>
   </div>
 </template>
