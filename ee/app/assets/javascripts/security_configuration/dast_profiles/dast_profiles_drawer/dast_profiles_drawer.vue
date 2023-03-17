@@ -6,6 +6,7 @@ import { DRAWER_VIEW_MODE } from 'ee/on_demand_scans/constants';
 import DastProfilesLoader from 'ee/security_configuration/dast_profiles/components/dast_profiles_loader.vue';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 import dastProfileConfiguratorMixin from 'ee/security_configuration/dast_profiles/dast_profiles_configurator_mixin';
+import { NAV_BAR_CSS_CLASS } from '../constants';
 import DastProfilesDrawerHeader from './dast_profiles_drawer_header.vue';
 import DastProfilesDrawerEmptyState from './dast_profiles_drawer_empty_state.vue';
 import DastProfilesDrawerForm from './dast_profiles_drawer_form.vue';
@@ -27,6 +28,11 @@ export default {
   },
   mixins: [dastProfileConfiguratorMixin()],
   props: {
+    containerClass: {
+      type: String,
+      required: false,
+      default: NAV_BAR_CSS_CLASS,
+    },
     open: {
       type: Boolean,
       required: false,
@@ -78,7 +84,7 @@ export default {
   },
   computed: {
     getDrawerHeaderHeight() {
-      return getContentWrapperHeight('.nav-sidebar');
+      return getContentWrapperHeight(this.containerClass);
     },
     hasProfiles() {
       return this.profiles.length > 0;
