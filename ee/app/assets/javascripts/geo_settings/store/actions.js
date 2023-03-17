@@ -12,6 +12,7 @@ export const fetchGeoSettings = ({ commit }) => {
   commit(types.REQUEST_GEO_SETTINGS);
   Api.getApplicationSettings()
     .then(({ data }) => {
+      // `geo_node_allowed_ips` to be renamed `geo_site_allowed_ips` => https://gitlab.com/gitlab-org/gitlab/-/issues/396748
       commit(types.RECEIVE_GEO_SETTINGS_SUCCESS, {
         timeout: data.geo_status_timeout,
         allowedIp: data.geo_node_allowed_ips,
@@ -27,11 +28,13 @@ export const fetchGeoSettings = ({ commit }) => {
 
 export const updateGeoSettings = ({ commit, state }) => {
   commit(types.REQUEST_UPDATE_GEO_SETTINGS);
+  // `geo_node_allowed_ips` to be renamed `geo_site_allowed_ips` => https://gitlab.com/gitlab-org/gitlab/-/issues/396748
   Api.updateApplicationSettings({
     geo_status_timeout: state.timeout,
     geo_node_allowed_ips: state.allowedIp,
   })
     .then(({ data }) => {
+      // `geo_node_allowed_ips` to be renamed `geo_site_allowed_ips` => https://gitlab.com/gitlab-org/gitlab/-/issues/396748
       commit(types.RECEIVE_UPDATE_GEO_SETTINGS_SUCCESS, {
         timeout: data.geo_status_timeout,
         allowedIp: data.geo_node_allowed_ips,
