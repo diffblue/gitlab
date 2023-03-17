@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequest, :elastic do
+RSpec.describe MergeRequest, :elastic, feature_category: :global_search do
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
   end
@@ -91,7 +91,8 @@ RSpec.describe MergeRequest, :elastic do
       'type' => merge_request.es_type,
       'merge_requests_access_level' => ProjectFeature::ENABLED,
       'visibility_level' => Gitlab::VisibilityLevel::INTERNAL,
-      'project_id' => merge_request.target_project.id
+      'project_id' => merge_request.target_project.id,
+      'hashed_root_namespace_id' => merge_request.target_project.namespace.hashed_root_namespace_id
     })
 
     expect(merge_request.__elasticsearch__.as_indexed_json).to eq(expected_hash)
@@ -108,5 +109,18 @@ RSpec.describe MergeRequest, :elastic do
   it_behaves_like 'no results when the user cannot read cross project' do
     let(:record1) { create(:merge_request, source_project: project, title: 'test-mr') }
     let(:record2) { create(:merge_request, source_project: project2, title: 'test-mr') }
+  end
+
+  context 'when hashed root namespace id merge_requests migration has not been finished' do
+    before do
+      set_elasticsearch_migration_to(:add_hashed_root_namespace_id_to_merge_requests, including: false)
+    end
+
+    it 'does not include hashed_root_namespace_id' do
+      mr = create(:merge_request)
+      payload = mr.__elasticsearch__.as_indexed_json
+
+      expect(payload).not_to include('hashed_root_namespace_id')
+    end
   end
 end
