@@ -23,15 +23,11 @@ describe('ComplianceReportsApp component', () => {
   const findViolationsTab = () => wrapper.findByTestId('violations-tab');
 
   const createComponent = (props = {}, mountFn = shallowMount) => {
-    const featureFlags = { complianceFrameworksReport: true };
     return extendedWrapper(
       mountFn(ComplianceReportsApp, {
         propsData: {
           ...defaultProps,
           ...props,
-        },
-        provide: {
-          glFeatures: featureFlags,
         },
         mocks: {
           $route: {
