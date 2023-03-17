@@ -3,13 +3,15 @@ import { merge } from 'lodash';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
-import SASTConfigurationApp from 'ee/security_configuration/sast/components/app.vue';
+import SASTConfigurationApp, { i18n } from 'ee/security_configuration/sast/components/app.vue';
 import ConfigurationForm from 'ee/security_configuration/sast/components/configuration_form.vue';
 import sastCiConfigurationQuery from 'ee/security_configuration/sast/graphql/sast_ci_configuration.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { USER_FACING_ERROR_MESSAGE_PREFIX } from '~/lib/utils/error_message';
 import { sastCiConfigurationQueryResponse } from '../mock_data';
+import { specificErrorMessage, technicalErrorMessage } from '../constants';
 
 Vue.use(VueApollo);
 
@@ -20,8 +22,14 @@ describe('SAST Configuration App', () => {
   let wrapper;
 
   const pendingHandler = () => new Promise(() => {});
-  const successHandler = async () => sastCiConfigurationQueryResponse;
-  const failureHandler = async () => ({ errors: [{ message: 'some error' }] });
+  const successHandler = () => sastCiConfigurationQueryResponse;
+  // Prefixed with USER_FACING_ERROR_MESSAGE_PREFIX as used in lib/gitlab/utils/error_message.rb to indicate a user facing error
+  const failureHandlerSpecific = () => ({
+    errors: [{ message: `${USER_FACING_ERROR_MESSAGE_PREFIX} ${specificErrorMessage}` }],
+  });
+  const failureHandlerGeneric = async () => ({
+    errors: [{ message: technicalErrorMessage }],
+  });
   const createMockApolloProvider = (handler) =>
     createMockApollo([[sastCiConfigurationQuery, handler]]);
 
@@ -108,10 +116,10 @@ describe('SAST Configuration App', () => {
     });
   });
 
-  describe('when loading failed', () => {
+  describe('when loading failed with Error Message including user facing keyword', () => {
     beforeEach(() => {
       createComponent({
-        apolloProvider: createMockApolloProvider(failureHandler),
+        apolloProvider: createMockApolloProvider(failureHandlerSpecific),
       });
       return waitForPromises();
     });
@@ -126,6 +134,25 @@ describe('SAST Configuration App', () => {
 
     it('displays an alert message', () => {
       expect(findErrorAlert().exists()).toBe(true);
+    });
+
+    it('shows specific error message without keyword when defined', () => {
+      expect(findErrorAlert().exists()).toBe(true);
+      expect(findErrorAlert().text()).toContain('some specific error');
+    });
+  });
+
+  describe('when loading failed with Error Message without user facing keyword', () => {
+    beforeEach(() => {
+      createComponent({
+        apolloProvider: createMockApolloProvider(failureHandlerGeneric),
+      });
+      return waitForPromises();
+    });
+
+    it('shows generic error message when no specific message is defined', () => {
+      expect(findErrorAlert().exists()).toBe(true);
+      expect(findErrorAlert().text()).toContain(i18n.genericErrorText);
     });
   });
 

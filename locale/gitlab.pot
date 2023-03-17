@@ -38848,6 +38848,9 @@ msgstr ""
 msgid "SecurityConfiguration|Security training"
 msgstr ""
 
+msgid "SecurityConfiguration|Something went wrong. Please refresh the page, or try again later."
+msgstr ""
+
 msgid "SecurityConfiguration|The status of the tools only applies to the default branch and is based on the %{linkStart}latest pipeline%{linkEnd}."
 msgstr ""
 
