@@ -96,13 +96,7 @@ RSpec.describe "Admin Runners", feature_category: :runner_fleet do
         end
       end
 
-      context 'with runner_upgrade_management disabled' do
-        before do
-          stub_licensed_features(runner_upgrade_management: false)
-
-          visit admin_runners_path
-        end
-
+      shared_examples 'runner upgrade disabled' do
         describe 'filters' do
           let(:runner_version) { '15.0.0' }
           let(:available_runner_releases) { %w[15.0.0] }
@@ -122,6 +116,26 @@ RSpec.describe "Admin Runners", feature_category: :runner_fleet do
 
           it_behaves_like 'no upgrade shown'
         end
+      end
+
+      context 'with runner_upgrade_management licensed feature is disabled' do
+        before do
+          stub_licensed_features(runner_upgrade_management: false)
+
+          visit admin_runners_path
+        end
+
+        it_behaves_like 'runner upgrade disabled'
+      end
+
+      context 'when fetching runner releases setting is disabled' do
+        before do
+          stub_application_setting(update_runner_versions_enabled: false)
+
+          visit admin_runners_path
+        end
+
+        it_behaves_like 'runner upgrade disabled'
       end
     end
   end

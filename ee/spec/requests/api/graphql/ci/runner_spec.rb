@@ -31,9 +31,24 @@ RSpec.describe 'Query.runner(id)', feature_category: :runner_fleet do
       post_graphql(query, current_user: current_user)
 
       runner_data = graphql_data_at(:runner)
-      expect(runner_data).not_to be_nil
 
+      expect(runner_data).not_to be_nil
       expect(runner_data).to match a_graphql_entity_for(runner, upgrade_status: expected_upgrade_status)
+    end
+
+    context 'when fetching runner releases is disabled' do
+      before do
+        stub_application_setting(update_runner_versions_enabled: false)
+      end
+
+      it 'retrieves runner data with nil upgrade status' do
+        post_graphql(query, current_user: current_user)
+
+        runner_data = graphql_data_at(:runner)
+
+        expect(runner_data).not_to be_nil
+        expect(runner_data).to match a_graphql_entity_for(runner, upgrade_status: nil)
+      end
     end
   end
 
