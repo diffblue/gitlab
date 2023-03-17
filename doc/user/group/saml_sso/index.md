@@ -25,7 +25,7 @@ You can configure SAML SSO for the top-level group only.
    1. On the left sidebar, select **Settings > SAML SSO**.
    1. Note the **Assertion consumer service URL**, **Identifier**, and **GitLab single sign-on URL**.
 1. Configure your SAML identity provider app using the noted details.
-   Alternatively, GitLab provides a [metadata XML configuration](#metadata-configuration).
+   Alternatively, GitLab provides a [metadata XML configuration](#set-up-identity-provider-using-metadata).
    See [specific identity provider documentation](#set-up-identity-provider) for more details.
 1. Configure the SAML response to include a [NameID](#nameid) that uniquely identifies each user.
 1. Configure the required [user attributes](#user-attributes), ensuring you include the user's email address.
@@ -157,6 +157,18 @@ OneLogin supports its own [GitLab (SaaS) application](https://onelogin.service-n
 
 1. For **NameID**, use `OneLogin ID`.
 
+### Set up identity provider using metadata
+
+To configure some identity providers, you need a GitLab metadata URL.
+To find this URL:
+
+1. On the top bar, select **Main menu > Groups** and find your group.
+1. On the left sidebar, select **Settings > SAML SSO**.
+1. Copy the provided **GitLab metadata URL**.
+1. Follow your identity provider's documentation and paste the metadata URL when it's requested.
+
+Check your identity provider's documentation to see if it supports the GitLab metadata URL.
+
 ### NameID
 
 GitLab.com uses the SAML NameID to identify users. The NameID element:
@@ -189,15 +201,6 @@ You can configure the following attributes with GitLab.com Group SAML:
 
 - `username` or `nickname`. We recommend you configure only one of these.
 - The [attributes available](../../../integration/saml.md#configure-assertions) to self-managed GitLab instances.
-
-### Metadata configuration
-
-GitLab provides metadata XML that can be used to configure your identity provider.
-
-1. On the top bar, select **Main menu > Groups** and find your group.
-1. On the left sidebar, select **Settings > SAML SSO**.
-1. Copy the provided **GitLab metadata URL**.
-1. Follow your identity provider's documentation and paste the metadata URL when it's requested.
 
 ## Configure GitLab
 
