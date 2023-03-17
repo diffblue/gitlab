@@ -7,7 +7,7 @@ import ViolationsReport from './components/violations_report/report.vue';
 import FrameworksReport from './components/frameworks_report/report.vue';
 
 export function createRouter(basePath, props) {
-  const { mergeCommitsCsvExportPath, groupPath } = props;
+  const { mergeCommitsCsvExportPath, newGroupComplianceFrameworkPath, groupPath } = props;
 
   const routes = [
     {
@@ -25,6 +25,7 @@ export function createRouter(basePath, props) {
       component: FrameworksReport,
       props: {
         groupPath,
+        newGroupComplianceFrameworkPath,
       },
     },
     { path: '*', redirect: { name: ROUTE_VIOLATIONS } },

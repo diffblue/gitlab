@@ -6,7 +6,7 @@ import VueApollo from 'vue-apollo';
 
 import DeleteModal from 'ee/groups/settings/compliance_frameworks/components/delete_modal.vue';
 import deleteComplianceFrameworkMutation from 'ee/groups/settings/compliance_frameworks/graphql/mutations/delete_compliance_framework.mutation.graphql';
-import getComplianceFrameworkQuery from 'ee/groups/settings/compliance_frameworks/graphql/queries/get_compliance_framework.query.graphql';
+import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import {

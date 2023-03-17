@@ -1,17 +1,21 @@
 <script>
-import { GlLink, GlLoadingIcon, GlTableLite } from '@gitlab/ui';
+import { GlFormCheckbox, GlLink, GlLoadingIcon, GlTable } from '@gitlab/ui';
 
 import { __, s__ } from '~/locale';
 
 import FrameworkBadge from '../shared/framework_badge.vue';
+import SelectionOperations from './selection_operations.vue';
 
 export default {
   name: 'ProjectsTable',
   components: {
     FrameworkBadge,
+    SelectionOperations,
+
+    GlFormCheckbox,
     GlLink,
     GlLoadingIcon,
-    GlTableLite,
+    GlTable,
   },
   props: {
     projects: {
@@ -22,22 +26,60 @@ export default {
       type: Boolean,
       required: true,
     },
+    groupPath: {
+      type: String,
+      required: true,
+    },
+    newGroupComplianceFrameworkPath: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      selectedRows: [],
+    };
   },
   computed: {
+    hasProjects() {
+      return this.projects.length > 0;
+    },
+
+    hasSelectedProjects() {
+      return this.selectedRows.length > 0;
+    },
+
+    hasSelectedAllProjects() {
+      return this.selectedRows.length === this.projects.length;
+    },
+
     emptyStateIsVisible() {
-      return !this.isLoading && !this.projects.length;
+      return !this.isLoading && !this.hasProjects;
+    },
+  },
+  methods: {
+    updateSelectedRows(selection) {
+      this.selectedRows = selection;
     },
   },
   fields: [
     {
+      key: 'selected',
+      sortable: false,
+      thClass: 'gl-vertical-align-middle!',
+      tdClass: 'gl-vertical-align-middle!',
+    },
+    {
       key: 'projectName',
       label: __('Project name'),
+      thClass: 'gl-vertical-align-middle!',
       tdClass: 'gl-vertical-align-middle!',
       sortable: false,
     },
     {
       key: 'projectPath',
       label: __('Project path'),
+      thClass: 'gl-vertical-align-middle!',
       tdAttr: { 'data-qa-selector': 'project_path_content' },
       tdClass: 'gl-vertical-align-middle!',
       sortable: false,
@@ -45,6 +87,7 @@ export default {
     {
       key: 'complianceFramework',
       label: __('Compliance framework'),
+      thClass: 'gl-vertical-align-middle!',
       tdClass: 'gl-vertical-align-middle!',
       sortable: false,
     },
@@ -69,16 +112,45 @@ export default {
 </script>
 <template>
   <div>
-    <gl-table-lite
+    <selection-operations
+      :selection="selectedRows"
+      :group-path="groupPath"
+      :new-group-compliance-framework-path="newGroupComplianceFrameworkPath"
+    />
+    <gl-table
       :fields="$options.fields"
+      :busy="isLoading"
       :items="projects"
-      :empty-text="$options.i18n.noProjectsFound"
       no-local-sorting
       show-empty
       stacked="lg"
       hover
+<<<<<<< HEAD
       :tbody-tr-attr="qaRowAttributes"
+=======
+      selectable
+      select-mode="multi"
+      selected-variant="primary"
+      @row-selected="updateSelectedRows"
+>>>>>>> 6922789eb50e (Implement bulk applying compliance framework)
     >
+      <template #head(selected)="{ selectAllRows, clearSelected }">
+        <gl-form-checkbox
+          class="gl-pt-2"
+          :checked="hasSelectedProjects"
+          :indeterminate="hasSelectedProjects && !hasSelectedAllProjects"
+          @change="hasSelectedProjects ? clearSelected() : selectAllRows()"
+        />
+      </template>
+      <template #cell(selected)="{ rowSelected, selectRow, unselectRow }">
+        <div>
+          <gl-form-checkbox
+            class="gl-pt-2"
+            :checked="rowSelected"
+            @change="rowSelected ? unselectRow() : selectRow()"
+          />
+        </div>
+      </template>
       <template #cell(projectName)="{ item }">
         <gl-link :href="item.webUrl" data-qa-selector="project_name_link">{{ item.name }} </gl-link>
       </template>
@@ -95,14 +167,16 @@ export default {
           $options.i18n.noFrameworkMessage
         }}</template>
       </template>
-    </gl-table-lite>
-    <gl-loading-icon v-if="isLoading" size="lg" color="dark" class="gl-my-5" />
-    <div
-      v-else-if="emptyStateIsVisible"
-      class="gl-my-5 gl-text-center"
-      data-testid="projects-table-empty-state"
-    >
-      {{ $options.i18n.noProjectsFound }}
-    </div>
+      <template #empty>
+        <gl-loading-icon v-if="isLoading" size="lg" color="dark" class="gl-my-5" />
+        <div
+          v-else-if="emptyStateIsVisible"
+          class="gl-my-5 gl-text-center"
+          data-testid="projects-table-empty-state"
+        >
+          {{ $options.i18n.noProjectsFound }}
+        </div>
+      </template>
+    </gl-table>
   </div>
 </template>

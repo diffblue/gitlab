@@ -119,6 +119,27 @@ export const complianceFramework = {
   name: 'GDPR',
 };
 
+const createProject = ({ id } = {}) => ({
+  id: `gid://gitlab/Project/${id}`,
+  name: 'Gitlab Shell',
+  fullPath: 'gitlab-org/gitlab-shell',
+  webUrl: 'https://example.com/gitlab-org/gitlab-shell',
+  complianceFrameworks: {
+    nodes: [
+      {
+        id: 'gid://gitlab/ComplianceManagement::Framework/1',
+        name: 'some framework',
+        default: false,
+        description: 'this is a framework',
+        color: '#3cb371',
+        __typename: 'ComplianceFramework',
+      },
+    ],
+    __typename: 'ComplianceFrameworkConnection',
+  },
+  __typename: 'Project',
+});
+
 export const createComplianceFrameworksResponse = ({ count = 1, pageInfo = {} } = {}) => {
   return {
     data: {
@@ -127,26 +148,7 @@ export const createComplianceFrameworksResponse = ({ count = 1, pageInfo = {} } 
         projects: {
           nodes: Array(count)
             .fill(null)
-            .map((_, id) => ({
-              id: `gid://gitlab/Project/${id}`,
-              name: 'Gitlab Shell',
-              fullPath: 'gitlab-org/gitlab-shell',
-              webUrl: 'https://example.com/gitlab-org/gitlab-shell',
-              complianceFrameworks: {
-                nodes: [
-                  {
-                    id: 'gid://gitlab/ComplianceManagement::Framework/1',
-                    name: 'some framework',
-                    default: false,
-                    description: 'this is a framework',
-                    color: '#3cb371',
-                    __typename: 'ComplianceFramework',
-                  },
-                ],
-                __typename: 'ComplianceFrameworkConnection',
-              },
-              __typename: 'Project',
-            })),
+            .map((_, id) => createProject({ id })),
           pageInfo: {
             hasNextPage: true,
             hasPreviousPage: false,
@@ -162,3 +164,14 @@ export const createComplianceFrameworksResponse = ({ count = 1, pageInfo = {} } 
     },
   };
 };
+
+export const createProjectSetComplianceFrameworkResponse = ({ errors } = {}) => ({
+  data: {
+    projectSetComplianceFramework: {
+      __typename: 'ProjectSetComplianceFrameworkPayload',
+      clientMutationId: '1',
+      errors: errors ?? [],
+      project: createProject({ id: 1 }),
+    },
+  },
+});

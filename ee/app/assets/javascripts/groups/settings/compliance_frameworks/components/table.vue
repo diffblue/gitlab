@@ -3,10 +3,10 @@ import { GlAlert, GlBadge, GlButton, GlLoadingIcon, GlTableLite, GlLabel } from 
 import * as Sentry from '@sentry/browser';
 
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import { s__ } from '~/locale';
 
 import { DANGER, INFO, EDIT_BUTTON_LABEL } from '../constants';
-import getComplianceFrameworkQuery from '../graphql/queries/get_compliance_framework.query.graphql';
 import updateComplianceFrameworkMutation from '../graphql/queries/update_compliance_framework.mutation.graphql';
 import { injectIdIntoEditPath } from '../utils';
 import DeleteModal from './delete_modal.vue';
