@@ -23,8 +23,7 @@ module EE
         collection = with_code_coverage(collection)
         collection = with_compliance_framework(collection)
         collection = by_negated_compliance_framework_filters(collection)
-        collection = by_compliance_framework_presence(collection)
-        by_storage(collection)
+        by_compliance_framework_presence(collection)
       end
 
       def with_compliance_framework(collection)
@@ -55,10 +54,16 @@ module EE
         end
       end
 
-      def by_storage(items)
-        return items if params[:sort] != :storage
+      override :sort
+      def sort(items)
+        if params[:sort] == :excess_repo_storage_size_desc
+          return items.order_by_excess_repo_storage_size_desc(namespace.actual_size_limit)
+        end
 
-        items.order_by_total_repository_size_excess_desc(namespace.actual_size_limit)
+        return items.order_by_storage_size(:asc) if params[:sort] == :storage_size_asc
+        return items.order_by_storage_size(:desc) if params[:sort] == :storage_size_desc
+
+        super(items)
       end
 
       def with_vulnerabilities(items)

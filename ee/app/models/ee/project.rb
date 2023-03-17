@@ -207,16 +207,18 @@ module EE
           .where('project_settings.legacy_open_source_license_available' => available)
       end
 
-      scope :order_by_total_repository_size_excess_desc, -> (limit) do
-        excess_arel = ::ProjectStatistics.arel_table[:repository_size] +
-                   ::ProjectStatistics.arel_table[:lfs_objects_size] -
-                   arel_table.coalesce(arel_table[:repository_size_limit], limit, 0)
+      # Less storage left (compared to repo storage limit) means
+      # project will be higher on the list.
+      scope :order_by_excess_repo_storage_size_desc, -> (limit = 0) do
+        excess_repo_storage_size_arel = ::ProjectStatistics.arel_table[:repository_size] +
+          ::ProjectStatistics.arel_table[:lfs_objects_size] -
+          arel_table.coalesce(arel_table[:repository_size_limit], limit)
 
         order = ::Gitlab::Pagination::Keyset::Order.build(
           [
             ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
-              attribute_name: 'excess_storage',
-              order_expression: excess_arel.desc,
+              attribute_name: 'excess_repo_storage_size',
+              order_expression: excess_repo_storage_size_arel.desc,
               add_to_projections: true,
               distinct: false
             ),
@@ -230,6 +232,16 @@ module EE
           ])
 
         order.apply_cursor_conditions(joins(:statistics)).order(order)
+      end
+
+      scope :order_by_storage_size, -> (direction) do
+        build_keyset_order_on_joined_column(
+          scope: joins(:statistics),
+          attribute_name: 'project_statistics_storage_size',
+          column: ::ProjectStatistics.arel_table[:storage_size],
+          direction: direction,
+          nullable: :nulls_first
+        )
       end
 
       scope :with_project_setting, -> { includes(:project_setting) }

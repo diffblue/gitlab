@@ -6,9 +6,14 @@ RSpec.describe Namespaces::ProjectsFinder do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:namespace) { create(:group, :public) }
   let_it_be(:subgroup) { create(:group, parent: namespace) }
-  let_it_be(:project_1) { create(:project, :public, group: namespace, path: 'project', name: 'Project') }
-  let_it_be(:project_2) { create(:project, :public, group: namespace, path: 'test-project', name: 'Test Project') }
-  let_it_be(:project_3) { create(:project, :public, group: subgroup, path: 'test-subgroup', name: 'Subgroup Project') }
+  let_it_be_with_reload(:project_1) { create(:project, :public, group: namespace, path: 'project', name: 'Project') }
+  let_it_be_with_reload(:project_2) do
+    create(:project, :public, group: namespace, path: 'test-project', name: 'Test Project')
+  end
+
+  let_it_be_with_reload(:project_3) do
+    create(:project, :public, group: subgroup, path: 'test-subgroup', name: 'Subgroup Project')
+  end
 
   let(:params) { {} }
 
@@ -179,23 +184,46 @@ RSpec.describe Namespaces::ProjectsFinder do
       end
     end
 
-    context 'sorting' do
-      before do
-        project_1.statistics.update!(lfs_objects_size: 11, repository_size: 10)
-        project_2.statistics.update!(lfs_objects_size: 10, repository_size: 12)
+    describe 'sorting' do
+      let(:sort) { nil }
+      let(:params) { { sort: sort, include_subgroups: true } }
+
+      context 'by excess repo storage size, descending' do
+        let(:sort) { :excess_repo_storage_size_desc }
+
+        before do
+          project_1.statistics.update!(repository_size: 10, lfs_objects_size: 2)
+          project_2.statistics.update!(repository_size: 12, lfs_objects_size: 3)
+          project_3.statistics.update!(repository_size: 11, lfs_objects_size: 0)
+          stub_ee_application_setting(repository_size_limit: 20)
+        end
+
+        it { is_expected.to eq([project_2, project_1, project_3]) }
       end
 
-      context 'when sort equals :storage' do
-        let(:params) { { sort: :storage } }
+      context 'by storage size' do
+        before do
+          project_1.statistics.update!(repository_size: 10, packages_size: 0)
+          project_2.statistics.update!(repository_size: 12, packages_size: 2)
+          project_3.statistics.update!(repository_size: 11, packages_size: 1)
+        end
 
-        it 'returns projects sorted by storage' do
-          expect(projects).to eq [project_2, project_1]
+        context 'ascending' do
+          let(:sort) { :storage_size_asc }
+
+          it { is_expected.to eq([project_1, project_3, project_2]) }
+        end
+
+        context 'descending' do
+          let(:sort) { :storage_size_desc }
+
+          it { is_expected.to eq([project_2, project_3, project_1]) }
         end
       end
 
-      context 'when sort does not equal :storage' do
+      context 'when sorting option is not defined' do
         it 'returns all projects' do
-          expect(projects).to match_array [project_1, project_2]
+          expect(projects).to match_array [project_1, project_2, project_3]
         end
       end
     end
