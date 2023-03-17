@@ -53,4 +53,14 @@ RSpec.describe 'Protected Tags', :js, feature_category: :source_code_management 
       end
     end
   end
+
+  context 'when the users for protected tags feature is on' do
+    before do
+      stub_licensed_features(protected_refs_for_users: true)
+    end
+
+    include_examples 'Deploy keys with protected tags' do
+      let(:all_dropdown_sections) { ['Roles', 'Users', 'Deploy Keys'] }
+    end
+  end
 end
