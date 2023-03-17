@@ -9,7 +9,7 @@ module Projects
         include SortingPreference
         include ProductAnalyticsTracking
 
-        track_custom_event :index,
+        track_event :index,
           name: 'i_ecosystem_jira_service_list_issues',
           action: Integration::SNOWPLOW_EVENT_ACTION,
           label: Integration::SNOWPLOW_EVENT_LABEL,

@@ -19,7 +19,7 @@ class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::Applicati
 
   layout 'group'
 
-  track_custom_event :show,
+  track_event :show,
     name: 'g_analytics_valuestream',
     action: 'perform_analytics_usage_action',
     label: 'redis_hll_counters.analytics.g_analytics_valuestream_monthly',

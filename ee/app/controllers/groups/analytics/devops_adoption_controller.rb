@@ -7,7 +7,7 @@ class Groups::Analytics::DevopsAdoptionController < Groups::Analytics::Applicati
 
   before_action -> { authorize_view_by_action!(:view_group_devops_adoption) }
 
-  track_custom_event :show,
+  track_event :show,
     name: 'users_viewing_analytics_group_devops_adoption',
     action: 'perform_analytics_usage_action',
     label: 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly',

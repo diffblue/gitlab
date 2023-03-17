@@ -5,7 +5,7 @@ class Projects::Analytics::MergeRequestAnalyticsController < Projects::Applicati
 
   before_action :authorize_read_project_merge_request_analytics!
 
-  track_custom_event :show,
+  track_event :show,
     name: 'p_analytics_merge_request',
     action: 'perform_analytics_usage_action',
     label: 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly',

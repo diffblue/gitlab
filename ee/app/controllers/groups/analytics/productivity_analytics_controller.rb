@@ -21,7 +21,7 @@ class Groups::Analytics::ProductivityAnalyticsController < Groups::Analytics::Ap
   include IssuableCollections
   include ProductAnalyticsTracking
 
-  track_custom_event :show,
+  track_event :show,
     name: 'g_analytics_productivity',
     action: 'perform_analytics_usage_action',
     label: 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly',

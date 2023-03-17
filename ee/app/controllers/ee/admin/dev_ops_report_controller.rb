@@ -5,7 +5,7 @@ module EE
     module DevOpsReportController
       extend ActiveSupport::Concern
       prepended do
-        track_custom_event :show,
+        track_event :show,
           name: 'i_analytics_dev_ops_adoption',
           action: 'perform_analytics_usage_action',
           label: 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly',

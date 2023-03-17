@@ -7,7 +7,7 @@ class Groups::IssuesAnalyticsController < Groups::ApplicationController
   before_action :authorize_read_group!
   before_action :authorize_read_issue_analytics!
 
-  track_custom_event :show,
+  track_event :show,
     name: 'g_analytics_issues',
     action: 'perform_analytics_usage_action',
     label: 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly',
