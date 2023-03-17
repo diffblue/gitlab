@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::ApproveService do
+RSpec.describe Users::ApproveService, feature_category: :system_access do
   let_it_be(:current_user) { create(:admin) }
 
   subject(:service) { described_class.new(current_user) }

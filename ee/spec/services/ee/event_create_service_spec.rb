@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EventCreateService do
+RSpec.describe EventCreateService, feature_category: :service_ping do
   let(:service) { described_class.new }
 
   describe 'Epics' do

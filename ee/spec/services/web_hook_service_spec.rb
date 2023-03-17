@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe WebHookService do
+RSpec.describe WebHookService, feature_category: :webhooks do
   let_it_be(:project) { create(:project) }
   let_it_be_with_reload(:project_hook) { create(:project_hook, project: project) }
 

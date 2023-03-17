@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::MergeRequestMetricsService do
+RSpec.describe EE::MergeRequestMetricsService, feature_category: :code_review_workflow do
   subject do
     service = MergeRequestMetricsService.new(merge_request.metrics)
     service.merge(event)

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe WikiPages::UpdateService do
+RSpec.describe WikiPages::UpdateService, feature_category: :wiki do
   let(:user)    { create(:user) }
   let(:page)    { create(:wiki_page) }
 

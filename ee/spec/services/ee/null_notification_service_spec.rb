@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::EE::NullNotificationService do
+RSpec.describe ::EE::NullNotificationService, feature_category: :team_planning do
   it 'responds to methods implemented by NotificationService' do
     method = NotificationService.instance_methods(false).sample
 

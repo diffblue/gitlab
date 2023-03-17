@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe StartPullMirroringService do
+RSpec.describe StartPullMirroringService, feature_category: :source_code_management do
   let(:project) { create(:project, :mirror, :repository) }
   let(:user) { create(:user) }
   let(:import_state) { project.import_state }

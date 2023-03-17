@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe WorkItems::Widgets::StatusService::UpdateService do
+RSpec.describe WorkItems::Widgets::StatusService::UpdateService, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be_with_reload(:work_item) { create(:work_item, :requirement, project: project, author: user) }

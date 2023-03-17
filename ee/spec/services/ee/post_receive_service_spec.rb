@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PostReceiveService, :geo do
+RSpec.describe PostReceiveService, :geo, feature_category: :team_planning do
   include EE::GeoHelpers
 
   let_it_be(:primary_url) { 'http://primary.example.com' }

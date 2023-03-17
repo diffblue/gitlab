@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::CreateService do
+RSpec.describe Users::CreateService, feature_category: :user_management do
   let_it_be(:current_user) { create(:admin) }
 
   let(:params) do

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Users::UpdateService do
+RSpec.describe Users::UpdateService, feature_category: :user_profile do
   let(:user) { create(:user) }
 
   describe '#execute' do

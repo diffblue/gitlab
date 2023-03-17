@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::BuildService do
+RSpec.describe Users::BuildService, feature_category: :user_management do
   describe '#execute' do
     let(:params) do
       { name: 'John Doe', username: 'jduser', email: 'jd@example.com', password: 'mydummypass' }

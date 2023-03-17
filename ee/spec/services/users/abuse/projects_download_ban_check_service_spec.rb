@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::Abuse::ProjectsDownloadBanCheckService do
+RSpec.describe Users::Abuse::ProjectsDownloadBanCheckService, feature_category: :insider_threat do
   let_it_be(:user) { build_stubbed(:user) }
   let_it_be(:project) { build_stubbed(:project, :in_group) }
 

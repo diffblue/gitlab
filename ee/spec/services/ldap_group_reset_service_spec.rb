@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe LdapGroupResetService do
+RSpec.describe LdapGroupResetService, feature_category: :system_access do
   # TODO: refactor to multi-ldap setup
   let(:group) { create(:group) }
   let(:user) { create(:user) }
