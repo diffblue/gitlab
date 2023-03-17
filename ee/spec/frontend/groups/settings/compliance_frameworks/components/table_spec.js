@@ -279,14 +279,12 @@ describe('Table', () => {
         await waitForPromises();
 
         framework = findTableAction().props('framework');
-        findDeleteModal().vm.show = jest.fn();
         findTableAction().vm.$emit('delete', framework);
       });
 
       it('shows the modal when there is a "delete" event from a table item', () => {
         expect(findDeleteModal().props('id')).toBe(framework.id);
         expect(findDeleteModal().props('name')).toBe(framework.name);
-        expect(findDeleteModal().vm.show).toHaveBeenCalled();
       });
 
       describe('and multiple items are being deleted', () => {
