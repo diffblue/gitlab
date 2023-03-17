@@ -66,11 +66,11 @@ RSpec.shared_examples 'language detection' do
     context 'with file at depth > 2' do
       let(:files_at_depth_x) { files.transform_keys { |k| "foo/bar/baz/#{k}" } }
 
-      it 'includes no job' do
-        expect(build_names).to be_empty
-        expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
-          'The rules configuration prevented any jobs from being added to the pipeline.'])
+      it 'creates a pipeline with the expected jobs' do
+        expect(build_names).to include(*include_build_names)
       end
+
+      include_examples 'predefined image suffix'
     end
   end
 end
