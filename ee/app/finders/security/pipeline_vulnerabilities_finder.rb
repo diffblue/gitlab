@@ -31,9 +31,11 @@ module Security
       findings = requested_reports.each_with_object([]) do |report, findings|
         raise ParseError, 'JSON parsing failed' if report.errored?
 
+        valid_findings = report.findings.select(&:valid?)
+
         normalized_findings = normalize_report_findings(
-          report.findings,
-          existing_vulnerabilities_for(report.findings))
+          valid_findings,
+          existing_vulnerabilities_for(valid_findings))
 
         filtered_findings = filter(normalized_findings)
 
