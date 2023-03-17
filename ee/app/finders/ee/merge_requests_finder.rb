@@ -12,6 +12,41 @@ module EE
       by_merge_commit_sha(items)
     end
 
+    override :by_approved
+    def by_approved(items)
+      approved_param = ::Gitlab::Utils.to_boolean(params.fetch(:approved, nil))
+      return items if approved_param.nil?
+
+      approved_filter = ->(item) {
+        if item.approval_needed?
+          item.approved?
+        else
+          item.total_approvals_count > 0
+        end
+      }
+
+      # rubocop: disable CodeReuse/ActiveRecord
+      preload_items = items.preload(
+        :approvers,
+        :approval_merge_request_rule_sources,
+        :approvals,
+        target_project: [
+          :approval_rules,
+          :regular_or_any_approver_approval_rules,
+          { group: :group_merge_request_approval_setting }
+        ]
+      )
+
+      filtered_items = if approved_param
+                         preload_items.select(&approved_filter)
+                       else
+                         preload_items.reject(&approved_filter)
+                       end
+
+      ::MergeRequest.where(id: filtered_items.pluck(:id))
+      # rubocop: enable CodeReuse/ActiveRecord
+    end
+
     # Filter by merge requests approval list that contains specified user directly or as part of group membership
     def by_approvers(items)
       ::MergeRequests::ByApproversFinder
