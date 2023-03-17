@@ -52,19 +52,24 @@ If you have any questions on configuring the SAML app, contact your provider's s
 
 ### Set up Azure
 
-1. [Use Azure to configure SSO for an application](https://learn.microsoft.com/en-us/azure/active-directory/manage-apps/add-application-portal-setup-sso). The following GitLab settings correspond to the Azure fields.
+To set up SSO with Azure as your identification provider:
 
-   | GitLab setting                       | Azure field                                |
-   | ------------------------------------ | ------------------------------------------ |
-   | Identifier                           | Identifier (Entity ID)                     |
-   | Assertion consumer service URL       | Reply URL (Assertion Consumer Service URL) |
-   | GitLab single sign-on URL            | Sign on URL                                |
-   | Identity provider single sign-on URL | Login URL                                  |
-   | Certificate fingerprint              | Thumbprint                                 |
+1. In GitLab, on the top bar, select **Main menu > Groups** and find your group.
+1. On the left sidebar, select **Settings > SAML SSO**.
+1. Note the information on this page.
+1. Go to Azure and [follow the instructions for configuring SSO for an application](https://learn.microsoft.com/en-us/azure/active-directory/manage-apps/add-application-portal-setup-sso). The following GitLab settings correspond to the Azure fields.
+
+   | GitLab setting                           | Azure field                                    |
+   | -----------------------------------------| ---------------------------------------------- |
+   | **Identifier**                           | **Identifier (Entity ID)**                     |
+   | **Assertion consumer service URL**       | **Reply URL (Assertion Consumer Service URL)** |
+   | **GitLab single sign-on URL**            | **Sign on URL**                                |
+   | **Identity provider single sign-on URL** | **Login URL**                                  |
+   | **Certificate fingerprint**              | **Thumbprint**                                 |
 
 1. You should set the following attributes:
    - **Unique User Identifier (Name identifier)** to `user.objectID`.
-   - **nameid-format** to persistent.
+   - **nameid-format** to `persistent`.
    - **Additional claims** to [supported attributes](#user-attributes).
 
 1. Optional. If you use [Group Sync](#group-sync), customize the name of the
