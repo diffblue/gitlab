@@ -63,6 +63,41 @@ RSpec.describe PackageMetadata::SyncWorker, type: :worker, feature_category: :li
         perform
       end
     end
+
+    context 'for Rails.env' do
+      before do
+        allow(Rails.env).to receive(:development?).and_return(is_development)
+      end
+
+      context 'when not set to development' do
+        let(:is_development) { false }
+
+        it 'does call the sync service' do
+          expect(PackageMetadata::SyncService).to receive(:execute)
+          perform
+        end
+      end
+
+      context 'when set to development' do
+        let(:is_development) { true }
+
+        it 'does not call the sync service' do
+          expect(PackageMetadata::SyncService).not_to receive(:execute)
+          perform
+        end
+
+        context 'and the pm sync environment variable is set' do
+          before do
+            stub_env('PM_SYNC_IN_DEV', 'true')
+          end
+
+          it 'does call the sync service' do
+            expect(PackageMetadata::SyncService).to receive(:execute)
+            perform
+          end
+        end
+      end
+    end
   end
 
   describe 'stop signal' do
