@@ -66,13 +66,13 @@ RSpec.describe Resolvers::NamespaceProjectsResolver do
           project_3.statistics.update!(lfs_objects_size: 12, repository_size: 11)
         end
 
-        context 'when sort equals :storage' do
-          subject(:projects) { resolve_projects(sort: :storage) }
+        context 'when sort equals :excess_repo_storage_size_desc' do
+          subject(:projects) { resolve_projects(sort: :excess_repo_storage_size_desc) }
 
           it { is_expected.to eq([project_3, project_2, project_1]) }
         end
 
-        context 'when sort does not equal :storage' do
+        context 'when sort option is not provided' do
           subject(:projects) { resolve_projects }
 
           it { is_expected.to eq([project_1, project_2, project_3]) }
