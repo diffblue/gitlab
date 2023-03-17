@@ -14084,9 +14084,6 @@ msgstr ""
 msgid "Delete selected"
 msgstr ""
 
-msgid "Delete self-monitoring project"
-msgstr ""
-
 msgid "Delete snippet"
 msgstr ""
 
@@ -40704,9 +40701,6 @@ msgstr ""
 msgid "Selecting a GitLab user will add a link to the GitLab user in the descriptions of issues and comments (e.g. \"By %{link_open}@johnsmith%{link_close}\"). It will also associate and/or assign these issues and comments with the selected user."
 msgstr ""
 
-msgid "Self-monitoring"
-msgstr ""
-
 msgid "Self-monitoring project does not exist"
 msgstr ""
 
@@ -40720,36 +40714,6 @@ msgid "Self-monitoring project was not deleted. Please check logs for any error 
 msgstr ""
 
 msgid "Self-monitoring was %{deprecation}deprecated%{link_end} in GitLab 14.9, and is %{removal}scheduled for removal%{link_end} in GitLab 16.0. For information on a possible replacement, %{opstrace}learn more about Opstrace%{link_end}."
-msgstr ""
-
-msgid "SelfMonitoring|Activate or deactivate instance self-monitoring."
-msgstr ""
-
-msgid "SelfMonitoring|Activate self-monitoring to create a project to use to monitor the health of your instance."
-msgstr ""
-
-msgid "SelfMonitoring|Deactivate self-monitoring?"
-msgstr ""
-
-msgid "SelfMonitoring|Deactivating self-monitoring deletes the self-monitoring project. Are you sure you want to deactivate self-monitoring and delete the project?"
-msgstr ""
-
-msgid "SelfMonitoring|Deprecation notice"
-msgstr ""
-
-msgid "SelfMonitoring|Self-monitoring"
-msgstr ""
-
-msgid "SelfMonitoring|Self-monitoring is active. Use the %{projectLinkStart}self-monitoring project%{projectLinkEnd} to monitor the health of your instance."
-msgstr ""
-
-msgid "SelfMonitoring|Self-monitoring project successfully created."
-msgstr ""
-
-msgid "SelfMonitoring|Self-monitoring project successfully deleted."
-msgstr ""
-
-msgid "SelfMonitoring|Self-monitoring was %{deprecation}deprecated%{link_end} in GitLab 14.9, and is %{removal}scheduled for removal%{link_end} in GitLab 16.0. For information on a possible replacement, %{opstrace}learn more about Opstrace%{link_end}."
 msgstr ""
 
 msgid "Send"
@@ -48700,9 +48664,6 @@ msgid "View page @ "
 msgstr ""
 
 msgid "View performance dashboard."
-msgstr ""
-
-msgid "View project"
 msgstr ""
 
 msgid "View project in admin area"
