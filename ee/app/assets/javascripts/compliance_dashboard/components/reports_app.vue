@@ -3,7 +3,6 @@ import { GlTab, GlTabs } from '@gitlab/ui';
 
 import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import { ROUTE_FRAMEWORKS, ROUTE_VIOLATIONS, TABS } from '../constants';
 import MergeCommitsExportButton from './violations_report/shared/merge_commits_export_button.vue';
@@ -17,7 +16,6 @@ export default {
     MergeCommitsExportButton,
     ReportHeader,
   },
-  mixins: [glFeatureFlagMixin()],
   props: {
     mergeCommitsCsvExportPath: {
       type: String,
@@ -34,9 +32,6 @@ export default {
     },
     showViolationsExportButton() {
       return this.hasMergeCommitsCsvExportPath && this.isViolationsReport;
-    },
-    showTabs() {
-      return Boolean(this.glFeatures?.complianceFrameworksReport);
     },
     tabIndex() {
       return TABS.indexOf(this.$route.name);
@@ -75,7 +70,7 @@ export default {
       </template>
     </report-header>
 
-    <gl-tabs v-if="showTabs" :value="tabIndex" content-class="gl-pt-5" lazy>
+    <gl-tabs :value="tabIndex" content-class="gl-pt-5" lazy>
       <gl-tab
         :title="$options.i18n.violationsTab"
         data-testid="violations-tab"

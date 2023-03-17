@@ -6,9 +6,6 @@ class Groups::Security::ComplianceDashboardsController < Groups::ApplicationCont
   layout 'group'
 
   before_action :authorize_compliance_dashboard!
-  before_action do
-    push_frontend_feature_flag(:compliance_frameworks_report, group)
-  end
 
   track_custom_event :show,
     name: 'g_compliance_dashboard',

@@ -19,14 +19,10 @@ export default () => {
     defaultClient: createDefaultClient(),
   });
 
-  const router = createRouter(
-    basePath,
-    {
-      mergeCommitsCsvExportPath,
-      groupPath,
-    },
-    gon.features,
-  );
+  const router = createRouter(basePath, {
+    mergeCommitsCsvExportPath,
+    groupPath,
+  });
 
   return new Vue({
     el,

@@ -6,7 +6,7 @@ import { ROUTE_FRAMEWORKS, ROUTE_VIOLATIONS } from './constants';
 import ViolationsReport from './components/violations_report/report.vue';
 import FrameworksReport from './components/frameworks_report/report.vue';
 
-export function createRouter(basePath, props, featureFlags) {
+export function createRouter(basePath, props) {
   const { mergeCommitsCsvExportPath, groupPath } = props;
 
   const routes = [
@@ -19,7 +19,7 @@ export function createRouter(basePath, props, featureFlags) {
         groupPath,
       },
     },
-    featureFlags.complianceFrameworksReport && {
+    {
       path: '/frameworks',
       name: ROUTE_FRAMEWORKS,
       component: FrameworksReport,
@@ -28,7 +28,7 @@ export function createRouter(basePath, props, featureFlags) {
       },
     },
     { path: '*', redirect: { name: ROUTE_VIOLATIONS } },
-  ].filter(Boolean);
+  ];
 
   return new VueRouter({
     mode: 'history',
