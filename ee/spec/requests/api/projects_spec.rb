@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Projects, feature_category: :projects do
+RSpec.describe API::Projects, :aggregate_failures, feature_category: :projects do
   include ExternalAuthorizationServiceHelpers
   include StubRequests
 
@@ -624,7 +624,7 @@ RSpec.describe API::Projects, feature_category: :projects do
 
   describe 'POST /projects/user/:id' do
     let(:admin) { create(:admin) }
-    let(:api_call) { post api("/projects/user/#{user.id}", admin), params: project_params }
+    let(:api_call) { post api("/projects/user/#{user.id}", admin, admin_mode: true), params: project_params }
 
     context 'with templates' do
       include_context 'instance template name' do
@@ -728,7 +728,7 @@ RSpec.describe API::Projects, feature_category: :projects do
         it 'creates project with mirror settings' do
           admin = create(:admin)
 
-          post api('/projects', admin), params: mirror_params
+          post api('/projects', admin, admin_mode: true), params: mirror_params
 
           expect(response).to have_gitlab_http_status(:created)
           expect(Project.find(json_response['id'])).to have_attributes(
@@ -887,7 +887,7 @@ RSpec.describe API::Projects, feature_category: :projects do
       let_it_be(:audit_event_2) { create(:project_audit_event, entity_id: project.id) }
 
       it 'paginates the records correctly' do
-        get api("/projects/#{project.id}/audit_events", current_user), params: { pagination: 'keyset', per_page: 1 }
+        get api("/projects/#{project.id}/audit_events", current_user, admin_mode: true), params: { pagination: 'keyset', per_page: 1 }
 
         expect(response).to have_gitlab_http_status(:ok)
         records = json_response
@@ -924,7 +924,7 @@ RSpec.describe API::Projects, feature_category: :projects do
 
       context 'on making requests with unsupported ordering structure' do
         it 'returns error' do
-          get api("/projects/#{project.id}/audit_events", current_user), params: { pagination: 'keyset', per_page: 1, order_by: 'created_at', sort: 'asc' }
+          get api("/projects/#{project.id}/audit_events", current_user, admin_mode: true), params: { pagination: 'keyset', per_page: 1, order_by: 'created_at', sort: 'asc' }
 
           expect(response).to have_gitlab_http_status(:method_not_allowed)
           expect(json_response['error']).to eq('Keyset pagination is not yet available for this type of request')
@@ -1334,7 +1334,7 @@ RSpec.describe API::Projects, feature_category: :projects do
 
           expect_any_instance_of(EE::ProjectImportState).to receive(:force_import_job!).once
 
-          put(api("/projects/#{project.id}", admin), params: project_params)
+          put(api("/projects/#{project.id}", admin, admin_mode: true), params: project_params)
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(project.reload).to have_attributes(
@@ -1357,7 +1357,7 @@ RSpec.describe API::Projects, feature_category: :projects do
           }
         end
 
-        it 'disallows creating a project with an import_url that is not reachable', :aggregate_failures do
+        it 'disallows creating a project with an import_url that is not reachable' do
           subject
 
           expect(response).to have_gitlab_http_status(:unprocessable_entity)
@@ -1666,7 +1666,7 @@ RSpec.describe API::Projects, feature_category: :projects do
     end
 
     shared_examples 'deletes project immediately' do
-      it do
+      it :aggregate_failures do
         delete api("/projects/#{project.id}", user)
 
         expect(response).to have_gitlab_http_status(:accepted)
@@ -1675,7 +1675,7 @@ RSpec.describe API::Projects, feature_category: :projects do
     end
 
     shared_examples 'marks project for deletion' do
-      it do
+      it :aggregate_failures do
         delete api("/projects/#{project.id}", user)
 
         expect(response).to have_gitlab_http_status(:accepted)
