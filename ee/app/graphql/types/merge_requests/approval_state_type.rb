@@ -20,7 +20,10 @@ module Types
         null: true,
         description: 'List of approval rules that are associated with the merge request, but invalid.'
 
-      field :suggested_approvers, Types::UserType.connection_type, null: true,
+      field :suggested_approvers, Types::UserType.connection_type,
+        null: true,
+        complexity: 10,
+        calls_gitaly: true,
         description: 'List of suggested approvers.'
 
       def suggested_approvers
