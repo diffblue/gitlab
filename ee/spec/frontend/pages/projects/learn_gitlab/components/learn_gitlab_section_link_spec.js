@@ -1,7 +1,6 @@
 import { GlPopover, GlLink } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import { stubExperiments } from 'helpers/experimentation_helper';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import eventHub from '~/invite_members/event_hub';
 import LearnGitlabSectionLink from 'ee/pages/projects/learn_gitlab/components/learn_gitlab_section_link.vue';
@@ -38,7 +37,6 @@ describe('Learn GitLab Section Link', () => {
   const findPopoverTrigger = () => wrapper.findByTestId('contact-admin-popover-trigger');
   const findPopover = () => wrapper.findComponent(GlPopover);
   const findPopoverLink = () => findPopover().findComponent(GlLink);
-  const videoTutorialLink = () => wrapper.find('[data-testid="video-tutorial-link"]');
 
   it('renders no icon when not completed', () => {
     createWrapper(undefined, { completed: false });
@@ -154,53 +152,6 @@ describe('Learn GitLab Section Link', () => {
       });
 
       unmockTracking();
-    });
-  });
-
-  describe('video_tutorials_continuous_onboarding experiment', () => {
-    describe('when control', () => {
-      beforeEach(() => {
-        stubExperiments({ video_tutorials_continuous_onboarding: 'control' });
-        createWrapper('codeOwnersEnabled');
-      });
-
-      it('renders no video link', () => {
-        expect(videoTutorialLink().exists()).toBe(false);
-      });
-    });
-
-    describe('when candidate', () => {
-      beforeEach(() => {
-        stubExperiments({ video_tutorials_continuous_onboarding: 'candidate' });
-        createWrapper('codeOwnersEnabled');
-      });
-
-      it('renders video link with blank target', () => {
-        const videoLinkElement = videoTutorialLink();
-
-        expect(videoLinkElement.exists()).toBe(true);
-        expect(videoLinkElement.attributes('target')).toEqual('_blank');
-      });
-
-      it('tracks the click', () => {
-        const trackingSpy = mockTracking('_category_', wrapper.element, jest.spyOn);
-
-        videoTutorialLink().trigger('click');
-
-        expect(trackingSpy).toHaveBeenCalledWith('_category_', 'click_video_link', {
-          label: 'add_code_owners',
-          property: 'Growth::Conversion::Experiment::LearnGitLab',
-          context: {
-            data: {
-              experiment: 'video_tutorials_continuous_onboarding',
-              variant: 'candidate',
-            },
-            schema: 'iglu:com.gitlab/gitlab_experiment/jsonschema/1-0-0',
-          },
-        });
-
-        unmockTracking();
-      });
     });
   });
 });

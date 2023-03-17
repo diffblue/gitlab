@@ -54,7 +54,6 @@ export const ACTION_LABELS = {
     section: 'workspace',
     position: 4,
     openInNewTab: true,
-    videoTutorial: 'https://vimeo.com/670896787',
   },
   requiredMrApprovalsEnabled: {
     title: s__('LearnGitLab|Enable require merge approvals'),
@@ -65,7 +64,6 @@ export const ACTION_LABELS = {
     section: 'workspace',
     position: 5,
     openInNewTab: true,
-    videoTutorial: 'https://vimeo.com/670904904',
   },
   mergeRequestCreated: {
     title: s__('LearnGitLab|Submit a merge request (MR)'),
