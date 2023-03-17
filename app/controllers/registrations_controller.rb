@@ -295,6 +295,7 @@ class RegistrationsController < Devise::RegistrationsController
 
   def identity_verification_enabled?
     # overridden by EE module
+    false
   end
 
   def identity_verification_redirect_path
