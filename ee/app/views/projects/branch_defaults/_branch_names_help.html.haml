@@ -1,0 +1,6 @@
+- return unless @project.feature_available?(:push_rules)
+
+- link_push_rules_url = project_settings_repository_path(@project, anchor: 'js-push-rules')
+- link_push_rules_start = '<a href="%{url}" rel="noopener noreferrer">'.html_safe % { url: link_push_rules_url }
+%p.form-text.text-muted
+  = s_('ProjectSettings|Make sure this pattern does not contradict the %{link_start}Push rules &gt; Branch name%{link_end} setting.').html_safe % { link_start: link_push_rules_start, link_end: '</a>'.html_safe }
