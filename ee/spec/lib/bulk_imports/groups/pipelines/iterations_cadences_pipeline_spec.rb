@@ -49,7 +49,7 @@ RSpec.describe BulkImports::Groups::Pipelines::IterationsCadencesPipeline, featu
   subject { described_class.new(context) }
 
   describe '#run' do
-    it 'imports iteration cadences', :aggregated_failures do
+    it 'imports iteration cadences', :aggregate_failures do
       expect { subject.run }.to change(Iterations::Cadence, :count).by(1)
 
       cadence = group.iterations_cadences.first
@@ -60,7 +60,7 @@ RSpec.describe BulkImports::Groups::Pipelines::IterationsCadencesPipeline, featu
       expect(cadence.roll_over).to eq(false)
     end
 
-    it 'imports iterations within cadences', :aggregated_failures do
+    it 'imports iterations within cadences', :aggregate_failures do
       expect { subject.run }.to change(Iteration, :count).by(1)
 
       iteration = group.iterations_cadences.first.iterations.first

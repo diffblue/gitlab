@@ -59,7 +59,7 @@ RSpec.describe Audit::Changes do
         audit!
       end
 
-      it 'creates audit event with correct attributes', :aggregate_failure do
+      it 'creates audit event with correct attributes', :aggregate_failures do
         user.update!(name: 'Scrooge McDuck')
 
         audit!

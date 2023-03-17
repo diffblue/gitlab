@@ -40,7 +40,7 @@ RSpec.describe 'Getting code coverage summary in a project', feature_category: :
     context 'for the default branch' do
       let!(:daily_build_group_report_result) { create(:ci_daily_build_group_report_result, project: project) }
 
-      it 'contains code coverage summary data', :aggregates_failures do
+      it 'contains code coverage summary data', :aggregate_failures do
         post_graphql(query, current_user: current_user)
 
         expect(code_coverage_summary_graphql_data.dig('averageCoverage')).to eq(77.0)

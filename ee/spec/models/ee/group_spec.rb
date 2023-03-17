@@ -2309,7 +2309,7 @@ RSpec.describe Group, feature_category: :subgroups do
     end
   end
 
-  describe '#repository_storage', :aggregated_failures do
+  describe '#repository_storage', :aggregate_failures do
     context 'when wiki does not have a tracked repository storage' do
       it 'returns the default shard' do
         expect(::Repository).to receive(:pick_storage_shard).and_call_original

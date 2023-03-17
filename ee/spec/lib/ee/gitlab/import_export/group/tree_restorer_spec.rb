@@ -93,7 +93,7 @@ RSpec.describe Gitlab::ImportExport::Group::TreeRestorer do
       end
     end
 
-    context 'iteration candences', :aggregated_failures do
+    context 'iteration candences', :aggregate_failures do
       it 'has cadence information' do
         cadence = group.iterations_cadences.first
 
