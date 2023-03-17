@@ -25,9 +25,9 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
 
   it_behaves_like 'unlicensed cycle analytics request params'
 
-  context 'when Namespaces::ProjectNAmespace is given' do
+  context 'when Namespaces::ProjectNamespace is given' do
     it_behaves_like 'unlicensed cycle analytics request params' do
-      let(:namespace) { sub_group_project.project_namespace }
+      let(:namespace) { sub_group_project.reload.project_namespace }
     end
   end
 
