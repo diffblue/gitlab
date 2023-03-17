@@ -115,6 +115,7 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
         expect(rendered).to have_field s_('AdminSettings|Jitsu project ID')
         expect(rendered).to have_field s_('AdminSettings|Jitsu administrator email')
         expect(rendered).to have_field s_('AdminSettings|Jitsu administrator password')
+        expect(rendered).to have_field s_('AdminSettings|Collector host')
         expect(rendered).to have_field s_('AdminSettings|Clickhouse URL')
         expect(rendered).to have_field s_('AdminSettings|Cube API URL')
         expect(rendered).to have_field s_('AdminSettings|Cube API key')

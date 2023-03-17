@@ -10,7 +10,6 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
   let_it_be(:pointer) { create(:analytics_dashboards_pointer, :project_based, project: project) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
 
   let(:jitsu_key) { '1234567890' }
-  let(:collector_host) { 'https://collector.example.com' }
 
   before do
     allow(helper).to receive(:current_user) { user }
@@ -20,6 +19,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
     stub_application_setting(jitsu_project_xid: '123')
     stub_application_setting(jitsu_administrator_email: 'test@example.com')
     stub_application_setting(jitsu_administrator_password: 'password')
+    stub_application_setting(product_analytics_data_collector_host: 'https://new-collector.example.com')
     stub_application_setting(product_analytics_clickhouse_connection_string: 'clickhouse://localhost:9000')
     stub_application_setting(cube_api_base_url: 'https://cube.example.com')
     stub_application_setting(cube_api_key: '0987654321')
@@ -63,7 +63,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
             name: pointer.target_project.name
           }.to_json,
           jitsu_key: user_has_permission ? jitsu_key : nil,
-          collector_host: user_has_permission ? collector_host : nil,
+          collector_host: user_has_permission ? 'https://new-collector.example.com' : nil,
           chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
           dashboard_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
           project_full_path: project.full_path,
