@@ -10684,7 +10684,7 @@ msgstr ""
 msgid "ComplianceFrameworks|Remove default"
 msgstr ""
 
-msgid "ComplianceFrameworks|Required format: %{codeStart}path/file.y[a]ml@group-name/project-name%{codeEnd}. %{linkStart}What is a compliance pipeline configuration?%{linkEnd}"
+msgid "ComplianceFrameworks|Required format: %{codeStart}path/file.y[a]ml@group-name/project-name%{codeEnd}. %{linkStart}See some examples%{linkEnd}."
 msgstr ""
 
 msgid "ComplianceFrameworks|Set default"

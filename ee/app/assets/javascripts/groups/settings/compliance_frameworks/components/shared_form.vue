@@ -103,8 +103,8 @@ export default {
       return this.$options.i18n.pipelineConfigurationInputUnknownFile;
     },
     compliancePipelineConfigurationHelpPath() {
-      return helpPagePath('user/group/manage.md', {
-        anchor: 'configure-a-compliance-pipeline',
+      return helpPagePath('user/group/compliance_frameworks.md', {
+        anchor: 'example-configuration',
       });
     },
   },
@@ -137,7 +137,7 @@ export default {
       'ComplianceFrameworks|Compliance pipeline configuration (optional)',
     ),
     pipelineConfigurationInputDescription: s__(
-      'ComplianceFrameworks|Required format: %{codeStart}path/file.y[a]ml@group-name/project-name%{codeEnd}. %{linkStart}What is a compliance pipeline configuration?%{linkEnd}',
+      'ComplianceFrameworks|Required format: %{codeStart}path/file.y[a]ml@group-name/project-name%{codeEnd}. %{linkStart}See some examples%{linkEnd}.',
     ),
     pipelineConfigurationInputInvalidFormat: s__('ComplianceFrameworks|Invalid format'),
     pipelineConfigurationInputUnknownFile: s__('ComplianceFrameworks|Configuration not found'),
