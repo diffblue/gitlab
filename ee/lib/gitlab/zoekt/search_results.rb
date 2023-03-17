@@ -115,6 +115,8 @@ module Gitlab
       end
 
       def zoekt_search(query, num:, options:)
+        start = Time.current
+
         body = {
           Q: query,
           Opts: {
@@ -131,10 +133,12 @@ module Gitlab
 
         base_url = ::Zoekt::Shard.first.search_base_url
 
+        path = '/api/search'
+        request_body = body.to_json
         response = ::Gitlab::HTTP.post(
-          URI.join(base_url, '/api/search'),
+          URI.join(base_url, path),
           headers: { "Content-Type" => "application/json" },
-          body: body.to_json,
+          body: request_body,
           allow_local_requests: true
         )
 
@@ -143,6 +147,24 @@ module Gitlab
         end
 
         ::Gitlab::Json.parse(response.body, symbolize_names: true)
+      ensure
+        add_request_details(start_time: start, path: path, body: request_body)
+      end
+
+      def add_request_details(start_time:, path:, body:)
+        return unless ::Gitlab::SafeRequestStore.active?
+
+        duration = (Time.current - start_time)
+
+        ::Gitlab::Instrumentation::Zoekt.increment_request_count
+        ::Gitlab::Instrumentation::Zoekt.add_duration(duration)
+
+        ::Gitlab::Instrumentation::Zoekt.add_call_details(
+          duration: duration,
+          method: 'POST',
+          path: path,
+          body: body
+        )
       end
 
       def zoekt_search_and_wrap(query, page: 1, per_page: 20, options: {}, preload_method: nil, &blk)
