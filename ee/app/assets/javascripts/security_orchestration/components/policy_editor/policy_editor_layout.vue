@@ -206,6 +206,7 @@ export default {
               v-if="hasParsingError"
               data-testid="parsing-alert"
               class="gl-mb-5"
+              variant="warning"
               :dismissible="false"
             >
               {{ parsingError }}
