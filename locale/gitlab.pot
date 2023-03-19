@@ -12755,7 +12755,7 @@ msgstr ""
 msgid "CycleAnalytics|Display chart filters"
 msgstr ""
 
-msgid "CycleAnalytics|If you have recently upgraded to GitLab Premium, it can take up to 30 minutes for data to collect and display."
+msgid "CycleAnalytics|If you have recently upgraded your GitLab license from a tier without this feature, it can take up to 30 minutes for data to collect and display."
 msgstr ""
 
 msgid "CycleAnalytics|Lead Time for Changes"
