@@ -49,5 +49,16 @@ RSpec.describe Ci::UnlockRefArtifactsOnPipelineStopWorker, feature_category: :bu
         perform
       end
     end
+
+    context 'when the ref no longer exists' do
+      let(:pipeline) { create(:ci_pipeline, :success, :with_job, ci_ref_presence: false) }
+      let(:pipeline_id) { pipeline.id }
+
+      it 'does not call the service' do
+        expect(Ci::UnlockArtifactsService).not_to receive(:new)
+
+        perform
+      end
+    end
   end
 end

@@ -12,20 +12,22 @@ module Ci
 
     data_consistency :always
 
-    sidekiq_options retry: 3
     include PipelineBackgroundQueue
 
     idempotent!
 
     def perform(pipeline_id)
-      ::Ci::Pipeline.find_by_id(pipeline_id).try do |pipeline|
-        results = ::Ci::UnlockArtifactsService
-          .new(pipeline.project, pipeline.user)
-          .execute(pipeline.ci_ref, pipeline)
+      pipeline = ::Ci::Pipeline.find_by_id(pipeline_id)
 
-        log_extra_metadata_on_done(:unlocked_pipelines, results[:unlocked_pipelines])
-        log_extra_metadata_on_done(:unlocked_job_artifacts, results[:unlocked_job_artifacts])
-      end
+      return if pipeline.nil?
+      return if pipeline.ci_ref.nil?
+
+      results = ::Ci::UnlockArtifactsService
+        .new(pipeline.project, pipeline.user)
+        .execute(pipeline.ci_ref, pipeline)
+
+      log_extra_metadata_on_done(:unlocked_pipelines, results[:unlocked_pipelines])
+      log_extra_metadata_on_done(:unlocked_job_artifacts, results[:unlocked_job_artifacts])
     end
   end
 end
