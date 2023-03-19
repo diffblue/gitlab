@@ -35,7 +35,7 @@ function mapStatusCheck(statusCheck, iconName) {
   };
 }
 
-function mapFailedStatusCheck(statusCheck, canRetry, onRetryCb) {
+function mapFailedStatusCheck(statusCheck, canRetry, onRetryCallback) {
   const row = mapStatusCheck(statusCheck, EXTENSION_ICONS.failed);
 
   if (canRetry) {
@@ -43,7 +43,7 @@ function mapFailedStatusCheck(statusCheck, canRetry, onRetryCb) {
       {
         icon: 'retry',
         text: __('Retry'),
-        onClick: () => onRetryCb(statusCheck),
+        onClick: () => onRetryCallback(statusCheck),
       },
     ];
   }
@@ -51,7 +51,7 @@ function mapFailedStatusCheck(statusCheck, canRetry, onRetryCb) {
   return row;
 }
 
-export function mapStatusCheckResponse(response, options, onRetryCb) {
+export function mapStatusCheckResponse(response, options, onRetryCallback) {
   const { canRetry } = options;
   const approved = [];
   const pending = [];
@@ -66,7 +66,7 @@ export function mapStatusCheckResponse(response, options, onRetryCb) {
         pending.push(mapStatusCheck(statusCheck, EXTENSION_ICONS.neutral));
         break;
       default:
-        failed.push(mapFailedStatusCheck(statusCheck, canRetry, onRetryCb));
+        failed.push(mapFailedStatusCheck(statusCheck, canRetry, onRetryCallback));
     }
   });
 
