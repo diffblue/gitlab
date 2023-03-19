@@ -2,6 +2,7 @@ import * as Sentry from '@sentry/browser';
 import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
+
 import {
   approvedAndPendingChecks,
   approvedChecks,
@@ -31,6 +32,7 @@ describe('Status checks extension', () => {
   let wrapper;
   let mock;
 
+  const POLL_INTERVAL_MS = 10000;
   const getChecksEndpoint = 'https://test-get-check';
   const retryCheckEndpoint = 'https://test-retry-check';
 
@@ -50,9 +52,10 @@ describe('Status checks extension', () => {
   };
 
   const setupWithResponse = (statusCode, data, mr = {}) => {
-    mock.onGet(getChecksEndpoint).reply(statusCode, data);
+    mock.onGet(getChecksEndpoint).reply(statusCode, data, { 'poll-interval': POLL_INTERVAL_MS });
 
     createComponent(mr);
+    jest.advanceTimersByTime(1);
 
     return waitForPromises();
   };
@@ -61,14 +64,21 @@ describe('Status checks extension', () => {
     mock = new MockAdapter(axios);
   });
 
+  afterEach(() => {
+    mock.reset();
+  });
+
   describe('summary', () => {
     describe('when loading', () => {
-      beforeEach(async () => {
-        mock.onGet(getChecksEndpoint).reply(HTTP_STATUS_OK);
+      beforeEach(() => {
+        mock.onGet(getChecksEndpoint).reply(() => new Promise());
         createComponent();
       });
 
-      it('should render loading text', () => {
+      it('should render loading text', async () => {
+        jest.advanceTimersByTime(1);
+        await nextTick();
+
         expect(wrapper.text()).toContain('Status checks are being fetched');
       });
     });
@@ -109,6 +119,36 @@ describe('Status checks extension', () => {
           expect(wrapper.text()).toContain(text);
         });
       });
+    });
+  });
+
+  describe('polling', () => {
+    it('should not start polling if there are no pending status checks', async () => {
+      await setupWithResponse(HTTP_STATUS_OK, approvedChecks);
+      jest.advanceTimersByTime(POLL_INTERVAL_MS * 2);
+      await waitForPromises();
+
+      expect(mock.history.get.length).toBe(1);
+    });
+
+    it('should start polling if there are pending status checks', async () => {
+      await setupWithResponse(HTTP_STATUS_OK, pendingChecks);
+      jest.advanceTimersByTime(POLL_INTERVAL_MS * 2);
+      await waitForPromises();
+
+      expect(mock.history.get.length).toBe(2);
+    });
+
+    it('should stop polling once there are no more pending checks', async () => {
+      await setupWithResponse(HTTP_STATUS_OK, pendingChecks);
+      jest.advanceTimersByTime(POLL_INTERVAL_MS);
+      await waitForPromises();
+
+      mock.onGet(getChecksEndpoint).reply(HTTP_STATUS_OK, approvedChecks);
+      jest.advanceTimersByTime(POLL_INTERVAL_MS * 2);
+      await waitForPromises();
+
+      expect(mock.history.get.length).toBe(3);
     });
   });
 
@@ -235,13 +275,12 @@ describe('Status checks extension', () => {
           .spyOn(StatusCheckRetryApi, 'mrStatusCheckRetry')
           .mockResolvedValue({ response: { status: HTTP_STATUS_OK, data: {} } });
         mock.onGet(getChecksEndpoint).reply(HTTP_STATUS_OK, pendingChecks);
-        const getSpy = jest.spyOn(axios, 'get');
 
         getAndClickRetryActionButton();
         await waitForPromises();
 
-        expect(getSpy).toHaveBeenCalledTimes(1);
-        expect(getSpy).toHaveBeenCalledWith(getChecksEndpoint);
+        expect(mock.history.get.length).toBe(1);
+        expect(mock.history.get[0].url).toBe(getChecksEndpoint);
       });
 
       it('should refetch the status checks when retried status check is already approved', async () => {
@@ -249,13 +288,12 @@ describe('Status checks extension', () => {
           .spyOn(StatusCheckRetryApi, 'mrStatusCheckRetry')
           .mockRejectedValue({ response: { status: HTTP_STATUS_UNPROCESSABLE_ENTITY, data: {} } });
         mock.onGet(getChecksEndpoint).reply(HTTP_STATUS_OK, approvedChecks);
-        const getSpy = jest.spyOn(axios, 'get');
 
         getAndClickRetryActionButton();
         await waitForPromises();
 
-        expect(getSpy).toHaveBeenCalledTimes(1);
-        expect(getSpy).toHaveBeenCalledWith(getChecksEndpoint);
+        expect(mock.history.get.length).toBe(1);
+        expect(mock.history.get[0].url).toBe(getChecksEndpoint);
       });
 
       it('should log to Sentry when the server errors', async () => {

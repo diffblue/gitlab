@@ -1,11 +1,15 @@
 import * as Sentry from '@sentry/browser';
+
 import { __, s__, sprintf } from '~/locale';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_UNPROCESSABLE_ENTITY } from '~/lib/utils/http_status';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
 import * as StatusCheckRetryApi from 'ee/api/status_check_api';
+import Poll from '~/lib/utils/poll';
+import { responseHasPendingChecks } from 'ee/vue_merge_request_widget/extensions/status_checks/utils';
+import { LOADING_STATES } from '~/vue_merge_request_widget/components/extensions/base.vue';
 
-import { mapStatusCheckResponse, getFailedChecksWithLoadingState } from './mappers';
+import { getFailedChecksWithLoadingState, mapStatusCheckResponse } from './mappers';
 
 export default {
   name: 'WidgetStatusChecks',
@@ -15,6 +19,14 @@ export default {
     error: s__('StatusCheck|Failed to load status checks'),
   },
   props: ['apiStatusChecksPath'],
+  data() {
+    return {
+      poll: null,
+    };
+  },
+  beforeDestroy() {
+    this.stopPolling();
+  },
   computed: {
     // Extension computed props
     summary({ approved = [], pending = [], failed = [] }) {
@@ -71,24 +83,23 @@ export default {
   methods: {
     // Extension methods
     async fetchCollapsedData() {
-      const response = await this.fetchStatusChecks(this.apiStatusChecksPath);
+      const { approved, pending, failed } = this.collapsedData;
+      const hasData = Boolean(approved && pending && failed);
 
-      return mapStatusCheckResponse(
-        response,
-        {
-          canRetry: this.mr.canRetryExternalStatusChecks,
-        },
-        (statusCheck) => this.retryStatusCheck(statusCheck),
-      );
+      if (!hasData) {
+        this.startPolling();
+      }
+
+      return this.collapsedData;
     },
     async fetchFullData() {
       const { approved, pending, failed } = this.collapsedData;
-
       return [...approved, ...pending, ...failed];
     },
     // Custom methods
-    async fetchStatusChecks(endpoint) {
-      return axios.get(endpoint);
+    async fetchStatusChecks() {
+      this.loadingState = LOADING_STATES.collapsedLoading;
+      return axios.get(this.apiStatusChecksPath);
     },
     async retryStatusCheck(statusCheck) {
       const { approved, pending, failed } = this.collapsedData;
@@ -101,18 +112,47 @@ export default {
           mergeRequestId: this.mr.iid,
           externalStatusCheckId: statusCheck.id,
         });
-        const statusChecks = await this.fetchCollapsedData();
-        this.setFullData(Object.values(statusChecks).flat());
+        const data = await this.fetchCollapsedData();
+        this.setCollapsedData(data);
       } catch (err) {
         if (err?.response?.status === HTTP_STATUS_UNPROCESSABLE_ENTITY) {
-          const statusChecks = await this.fetchCollapsedData();
-          this.setFullData(Object.values(statusChecks).flat());
+          const data = await this.fetchCollapsedData();
+          this.setCollapsedData(data);
           return;
         }
 
         this.setFullData([...approved, ...pending, ...failed]);
         Sentry.captureException(err);
       }
+    },
+    startPolling() {
+      this.poll = new Poll({
+        resource: {
+          fetchData: async () => this.fetchStatusChecks(),
+        },
+        method: 'fetchData',
+        successCallback: (response) => {
+          if (!responseHasPendingChecks(response)) {
+            this.stopPolling();
+          }
+
+          const data = mapStatusCheckResponse(
+            response,
+            {
+              canRetry: this.mr.canRetryExternalStatusChecks,
+            },
+            (statusCheck) => this.retryStatusCheck(statusCheck),
+          );
+          this.setCollapsedData(data);
+        },
+        errorCallback: (e) => this.setCollapsedError(e),
+      });
+
+      this.poll.makeDelayedRequest(1);
+    },
+    stopPolling() {
+      this.poll?.stop();
+      this.poll = null;
     },
   },
 };

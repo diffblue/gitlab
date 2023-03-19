@@ -37,10 +37,10 @@ describe('status checks widget extension mappers', () => {
   });
 
   describe('mapStatusCheckResponse', () => {
-    let mockRetryCb;
+    let mockRetryCallback;
 
     beforeEach(() => {
-      mockRetryCb = jest.fn();
+      mockRetryCallback = jest.fn();
     });
 
     function getMockResponse(status) {
@@ -53,7 +53,7 @@ describe('status checks widget extension mappers', () => {
       const mockResponse = getMockResponse('passed');
       const options = { canRetry: true };
 
-      const result = mapStatusCheckResponse(mockResponse, options, mockRetryCb);
+      const result = mapStatusCheckResponse(mockResponse, options, mockRetryCallback);
 
       expect(result).toEqual({
         pending: [],
@@ -71,7 +71,7 @@ describe('status checks widget extension mappers', () => {
       const mockResponse = getMockResponse('pending');
       const options = { canRetry: true };
 
-      const result = mapStatusCheckResponse(mockResponse, options, mockRetryCb);
+      const result = mapStatusCheckResponse(mockResponse, options, mockRetryCallback);
 
       expect(result).toEqual({
         approved: [],
@@ -89,7 +89,7 @@ describe('status checks widget extension mappers', () => {
       const mockResponse = getMockResponse('failed');
       const options = { canRetry: true };
 
-      const result = mapStatusCheckResponse(mockResponse, options, mockRetryCb);
+      const result = mapStatusCheckResponse(mockResponse, options, mockRetryCallback);
 
       expect(result).toEqual({
         approved: [],
@@ -114,7 +114,7 @@ describe('status checks widget extension mappers', () => {
       const mockResponse = getMockResponse('failed');
       const options = { canRetry: false };
 
-      const result = mapStatusCheckResponse(mockResponse, options, mockRetryCb);
+      const result = mapStatusCheckResponse(mockResponse, options, mockRetryCallback);
 
       expect(result).toEqual({
         approved: [],
