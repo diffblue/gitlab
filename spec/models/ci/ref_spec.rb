@@ -83,7 +83,7 @@ RSpec.describe Ci::Ref do
         expect(ci_ref.last_finished_pipeline_id).to eq(pipeline.id)
       end
 
-      context 'when the pipeline a dangling pipeline' do
+      context 'when the pipeline is a dangling pipeline' do
         let(:pipeline_source) { Enums::Ci::Pipeline.sources[:ondemand_dast_scan] }
 
         it 'returns nil' do
@@ -124,7 +124,7 @@ RSpec.describe Ci::Ref do
       end
     end
 
-    context 'when the pipeline a dangling pipeline' do
+    context 'when the pipeline is a dangling pipeline' do
       let(:pipeline_source) { Enums::Ci::Pipeline.sources[:ondemand_dast_scan] }
       let!(:pipeline) { create(:ci_pipeline, :running, ci_ref: ci_ref, source: pipeline_source) }
 
