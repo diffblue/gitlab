@@ -50,10 +50,7 @@ class TrialRegistrationsController < RegistrationsController
 
   override :arkose_labs_enabled?
   def arkose_labs_enabled?
-    # TrialRegistrationsController inherits from RegistrationsController but
-    # ArkoseLabs integration is only enabled for users that register through
-    # /users/sign_up for now.
-    false
+    super && Feature.enabled?(:arkose_labs_trial_signup_challenge)
   end
 end
 
