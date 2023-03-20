@@ -37,11 +37,10 @@ class SubscriptionsController < ApplicationController
           current_user.namespace
         end
 
-      experiment(:cart_abandonment_modal,
-        namespace: @namespace,
-        user: current_user,
-        sticky_to: current_user
-      ).run
+      experiment(:cart_abandonment_modal, namespace: @namespace,
+                 user: current_user, sticky_to: current_user) do |e|
+        e.control {} # rubocop:disable Lint/EmptyBlock
+      end.run
     else
       store_location_for(:user, request.fullpath)
       redirect_to new_user_registration_path(redirect_from: 'checkout')
