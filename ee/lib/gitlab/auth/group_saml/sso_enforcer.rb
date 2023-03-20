@@ -37,6 +37,19 @@ module Gitlab
           new(saml_provider, user: user).access_restricted?
         end
 
+        # Given an array of groups or subgroups, return an array
+        # of root groups that are access restricted for the user
+        def self.access_restricted_groups(groups, user: nil)
+          return [] unless groups.any?
+
+          ::Preloaders::GroupRootAncestorPreloader.new(groups, [:saml_provider]).execute
+          root_ancestors = groups.map(&:root_ancestor).uniq
+
+          root_ancestors.select do |root_ancestor|
+            group_access_restricted?(root_ancestor, user: user, for_project: true)
+          end
+        end
+
         private
 
         def saml_enforced?

@@ -219,4 +219,38 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :system_a
       end
     end
   end
+
+  describe '.access_restricted_groups' do
+    let!(:restricted_group) { create(:group, saml_provider: create(:saml_provider, enabled: true, enforced_sso: true)) }
+    let!(:restricted_subgroup) { create(:group, parent: restricted_group) }
+    let!(:restricted_group2) do
+      create(:group, saml_provider: create(:saml_provider, enabled: true, enforced_sso: true))
+    end
+
+    let!(:unrestricted_group) { create(:group) }
+    let!(:unrestricted_subgroup) { create(:group, parent: unrestricted_group) }
+    let!(:groups) { [restricted_subgroup, restricted_group2, unrestricted_group, unrestricted_subgroup] }
+
+    it 'handles empty groups array' do
+      expect(described_class.access_restricted_groups([])).to eq([])
+    end
+
+    it 'returns a list of SSO enforced root groups' do
+      expect(described_class.access_restricted_groups(groups))
+        .to match_array([restricted_group, restricted_group2])
+    end
+
+    it 'returns only unique root groups' do
+      expect(described_class.access_restricted_groups(groups.push(restricted_group)))
+        .to match_array([restricted_group, restricted_group2])
+    end
+
+    it 'avoids N+1 queries' do
+      control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+        described_class.access_restricted_groups([restricted_group])
+      end
+
+      expect { described_class.access_restricted_groups(groups) }.not_to exceed_all_query_limit(control)
+    end
+  end
 end
