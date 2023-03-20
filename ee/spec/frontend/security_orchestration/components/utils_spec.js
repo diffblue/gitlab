@@ -5,7 +5,7 @@ import {
   getPolicyListUrl,
   getSchemaUrl,
   isPolicyInherited,
-  getSingleScanExecutionPolicySchema,
+  getSinglePolicySchema,
 } from 'ee/security_orchestration/components/utils';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
@@ -48,7 +48,7 @@ describe(isPolicyInherited, () => {
   });
 });
 
-describe(getSingleScanExecutionPolicySchema, () => {
+describe(getSinglePolicySchema, () => {
   let mock;
   const mockNamespacePath = 'test/path';
   const mockSchema = {
@@ -64,10 +64,17 @@ describe(getSingleScanExecutionPolicySchema, () => {
           },
         },
       },
+      scan_result_policy: {
+        items: {
+          properties: {
+            fizz: 'buzz',
+          },
+        },
+      },
     },
   };
 
-  const mockOutput = {
+  const createMockOutput = (policyType) => ({
     $id: mockSchema.$id,
     title: mockSchema.title,
     description: mockSchema.description,
@@ -76,11 +83,11 @@ describe(getSingleScanExecutionPolicySchema, () => {
       type: {
         type: 'string',
         description: 'Specifies the type of policy to be enforced.',
-        enum: [POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter],
+        enum: policyType,
       },
-      ...mockSchema.properties.scan_execution_policy.items.properties,
+      ...mockSchema.properties[policyType].items.properties,
     },
-  };
+  });
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
@@ -90,22 +97,38 @@ describe(getSingleScanExecutionPolicySchema, () => {
     mock.restore();
   });
 
-  it('returns the appropriate schema on request success', async () => {
+  it.each`
+    policyType                                                  | output
+    ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter}
+    ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter}
+  `('returns the appropriate schema on request success for $policyType', async ({ policyType }) => {
     mock.onGet().reply(HTTP_STATUS_OK, mockSchema);
 
     await expect(
-      getSingleScanExecutionPolicySchema({
+      getSinglePolicySchema({
         namespacePath: mockNamespacePath,
         namespaceType: NAMESPACE_TYPES.PROJECT,
+        policyType,
       }),
-    ).resolves.toStrictEqual(mockOutput);
+    ).resolves.toStrictEqual(createMockOutput(policyType));
   });
 
   it('returns an empty schema on request failure', async () => {
     await expect(
-      getSingleScanExecutionPolicySchema({
+      getSinglePolicySchema({
         namespacePath: mockNamespacePath,
         namespaceType: NAMESPACE_TYPES.PROJECT,
+        policyType: POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter,
+      }),
+    ).resolves.toStrictEqual({});
+  });
+
+  it('returns an empty schema on non-existing policy type', async () => {
+    await expect(
+      getSinglePolicySchema({
+        namespacePath: mockNamespacePath,
+        namespaceType: NAMESPACE_TYPES.PROJECT,
+        policyType: 'non_existent_policy',
       }),
     ).resolves.toStrictEqual({});
   });

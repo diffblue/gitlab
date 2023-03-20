@@ -1,6 +1,8 @@
 import { shallowMount } from '@vue/test-utils';
+import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
 import PolicyYamlEditor from 'ee/security_orchestration/components/policy_yaml_editor.vue';
+import axios from '~/lib/utils/axios_utils';
 import SourceEditor from '~/vue_shared/components/source_editor.vue';
 import { EDITOR_READY_EVENT } from '~/editor/constants';
 
@@ -11,6 +13,7 @@ describe('PolicyYamlEditor component', () => {
   let mockEditorInstance;
   let mockRegisterSecurityPolicySchema;
   let mockUse;
+  let mock;
 
   const mockNamespacePath = 'test/path';
   const mockNamespaceType = 'testType';
@@ -36,6 +39,7 @@ describe('PolicyYamlEditor component', () => {
   };
 
   beforeEach(() => {
+    mock = new MockAdapter(axios);
     mockUse = jest.fn();
     mockRegisterSecurityPolicySchema = jest.fn();
     mockEditorInstance = {
@@ -48,6 +52,10 @@ describe('PolicyYamlEditor component', () => {
       },
     };
     factory();
+  });
+
+  afterEach(() => {
+    mock.restore();
   });
 
   it('renders container element', () => {

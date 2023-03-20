@@ -1,7 +1,6 @@
 import axios from '~/lib/utils/axios_utils';
 import { getBaseURL, joinPaths } from '~/lib/utils/url_utility';
 import { NAMESPACE_TYPES } from '../constants';
-import { POLICY_TYPE_COMPONENT_OPTIONS } from './constants';
 
 export const getPolicyListUrl = ({ namespacePath, namespaceType = NAMESPACE_TYPES.GROUP }) => {
   const isGroup = namespaceType === NAMESPACE_TYPES.GROUP;
@@ -28,7 +27,7 @@ export const isPolicyInherited = (source) => {
   return false;
 };
 
-export const getSingleScanExecutionPolicySchema = async ({ namespacePath, namespaceType }) => {
+export const getSinglePolicySchema = async ({ namespacePath, namespaceType, policyType }) => {
   try {
     const { data: schemaForMultiplePolicies } = await axios.get(
       getSchemaUrl({ namespacePath, namespaceType }),
@@ -43,9 +42,9 @@ export const getSingleScanExecutionPolicySchema = async ({ namespacePath, namesp
           type: 'string',
           // eslint-disable-next-line @gitlab/require-i18n-strings
           description: 'Specifies the type of policy to be enforced.',
-          enum: [POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter],
+          enum: policyType,
         },
-        ...schemaForMultiplePolicies.properties.scan_execution_policy.items.properties,
+        ...schemaForMultiplePolicies.properties[policyType].items.properties,
       },
     };
   } catch {

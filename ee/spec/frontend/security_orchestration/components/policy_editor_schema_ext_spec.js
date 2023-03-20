@@ -4,11 +4,11 @@ import { PolicySchemaExtension } from 'ee/security_orchestration/components/poli
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import SourceEditor from '~/editor/source_editor';
-import { getSingleScanExecutionPolicySchema } from 'ee/security_orchestration/components/utils';
+import { getSinglePolicySchema } from 'ee/security_orchestration/components/utils';
 
 jest.mock('ee/security_orchestration/components/utils', () => ({
   getSchemaUrl: jest.fn().mockReturnValue('mock/schema.json'),
-  getSingleScanExecutionPolicySchema: jest.fn().mockResolvedValue({ test: 'value' }),
+  getSinglePolicySchema: jest.fn().mockResolvedValue({ test: 'value' }),
 }));
 
 describe('PolicySchemaExtension', () => {
@@ -43,29 +43,16 @@ describe('PolicySchemaExtension', () => {
     describe('register validations options with monaco for yaml language', () => {
       const mockNamespacePath = 'namespace1';
 
-      it.each`
-        title         | policyType                                                  | namespaceType              | itRegistersASchema | schemaFunction
-        ${'does'}     | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter} | ${NAMESPACE_TYPES.PROJECT} | ${true}            | ${getSingleScanExecutionPolicySchema}
-        ${'does'}     | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter} | ${NAMESPACE_TYPES.GROUP}   | ${true}            | ${getSingleScanExecutionPolicySchema}
-        ${'does not'} | ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter}    | ${NAMESPACE_TYPES.PROJECT} | ${false}           | ${() => ({})}
-        ${'does not'} | ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter}    | ${NAMESPACE_TYPES.GROUP}   | ${false}           | ${() => ({})}
-      `(
-        '$title register the schema for $namespaceType $policyType policy',
-        async ({ policyType, namespaceType, itRegistersASchema, schemaFunction }) => {
-          await instance.registerSecurityPolicySchema({
-            namespacePath: mockNamespacePath,
-            namespaceType,
-            policyType,
-          });
+      it('registers the schema', async () => {
+        await instance.registerSecurityPolicySchema({
+          namespacePath: mockNamespacePath,
+          namespaceType: NAMESPACE_TYPES.PROJECT,
+          policyType: POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter,
+        });
 
-          if (itRegistersASchema) {
-            expect(setDiagnosticsOptions).toHaveBeenCalledTimes(1);
-            expect(schemaFunction).toHaveBeenCalledTimes(1);
-          } else {
-            expect(setDiagnosticsOptions).not.toHaveBeenCalled();
-          }
-        },
-      );
+        expect(setDiagnosticsOptions).toHaveBeenCalledTimes(1);
+        expect(getSinglePolicySchema).toHaveBeenCalledTimes(1);
+      });
     });
   });
 });
