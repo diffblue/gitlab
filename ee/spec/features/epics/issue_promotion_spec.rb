@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Issue promotion', :js, feature_category: :portfolio_management do
-  include Spec::Support::Helpers::Features::NotesHelpers
+  include Features::NotesHelpers
 
   let(:group) { create(:group) }
   let(:project) { create(:project, :public, group: group) }

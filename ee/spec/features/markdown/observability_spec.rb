@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Observability rendering', :js, feature_category: :metrics do
-  include Spec::Support::Helpers::Features::NotesHelpers
+  include Features::NotesHelpers
 
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:user) { create(:user) }

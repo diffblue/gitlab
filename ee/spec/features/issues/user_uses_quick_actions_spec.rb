@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Issues > User uses EE quick actions', :js, feature_category: :team_planning do
-  include Spec::Support::Helpers::Features::NotesHelpers
+  include Features::NotesHelpers
 
   describe 'issue-only commands' do
     let_it_be(:user) { create(:user) }

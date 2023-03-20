@@ -7,7 +7,7 @@ require 'spec_helper'
 # specs to this file please take into account if there is any behaviour
 # different from the current ones that needs to be tested.
 RSpec.describe 'Epics > User uses quick actions', :js, feature_category: :portfolio_management do
-  include Spec::Support::Helpers::Features::NotesHelpers
+  include Features::NotesHelpers
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }

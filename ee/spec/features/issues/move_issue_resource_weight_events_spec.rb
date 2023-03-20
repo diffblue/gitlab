@@ -4,7 +4,7 @@ require 'spec_helper'
 
 # Regression test for https://gitlab.com/gitlab-org/gitlab/merge_requests/22461
 RSpec.describe 'Resource weight events', :js, feature_category: :team_planning do
-  include Spec::Support::Helpers::Features::NotesHelpers
+  include Features::NotesHelpers
 
   describe 'move issue by quick action' do
     let(:user) { create(:user) }

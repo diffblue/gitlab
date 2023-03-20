@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Merge request > User uses quick actions', :js, feature_category: :code_review_workflow do
-  include Spec::Support::Helpers::Features::NotesHelpers
+  include Features::NotesHelpers
 
   describe 'merge-request-only commands' do
     let(:user) { create(:user) }
