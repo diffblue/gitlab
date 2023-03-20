@@ -1,12 +1,12 @@
 import { GlAvatar, GlAvatarLink, GlBadge, GlButton, GlLink, GlSprintf } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CiResourcesListItem from 'ee/ci/catalog/components/list/ci_resources_list_item.vue';
-import { mockCatalogResourceList } from 'ee/ci/catalog/constants';
+import { mockCatalogResourceItem } from '../../mock';
 
 describe('CiResourcesListItem', () => {
   let wrapper;
 
-  const resource = mockCatalogResourceList[0];
+  const resource = mockCatalogResourceItem;
   const defaultProps = {
     resource,
   };

@@ -10,6 +10,7 @@ import {
   GlTooltipDirective,
 } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { formatDate, getTimeago } from '~/lib/utils/datetime_utility';
 
 export default {
@@ -41,6 +42,9 @@ export default {
     authorProfileUrl() {
       return this.lastUpdate.user.webUrl;
     },
+    entityId() {
+      return getIdFromGraphQLId(this.resource.id);
+    },
     hasFavorites() {
       return this.resource.statistics?.favorites;
     },
@@ -71,7 +75,7 @@ export default {
   >
     <gl-avatar-link :href="resource.webPath">
       <gl-avatar
-        :entity-id="resource.id"
+        :entity-id="entityId"
         :entity-name="resource.icon"
         :size="48"
         shape="rect"

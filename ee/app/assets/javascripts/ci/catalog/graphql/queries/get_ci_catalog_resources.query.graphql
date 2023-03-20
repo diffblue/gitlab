@@ -1,0 +1,44 @@
+query getCiCatalogResources(
+  $after: String
+  $before: String
+  $first: Int = 20
+  $fullPath: ID!
+  $last: Int
+) {
+  ciCatalogResources(
+    after: $after
+    before: $before
+    first: $first
+    projectPath: $fullPath
+    last: $last
+  ) {
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
+    count
+    nodes {
+      id
+      description
+      icon
+      group @client
+      name
+      namespace @client
+      latestVersion @client
+      lastUpdate @client {
+        time
+        user {
+          id
+          name
+          webUrl
+        }
+      }
+      statistics @client {
+        forks
+        favorites
+      }
+    }
+  }
+}

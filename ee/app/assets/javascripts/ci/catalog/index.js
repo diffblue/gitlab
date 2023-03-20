@@ -5,6 +5,7 @@ import { s__ } from '~/locale';
 import createDefaultClient from '~/lib/graphql';
 import CiNamespaceCatalogApp from './ci_namespace_catalog_app.vue';
 import { createRouter } from './router';
+import { cacheConfig } from './graphql/settings';
 
 export const initNamespaceCatalog = (selector = '#js-ci-namespace-catalog') => {
   const el = document.querySelector(selector);
@@ -14,12 +15,12 @@ export const initNamespaceCatalog = (selector = '#js-ci-namespace-catalog') => {
   }
 
   const { dataset } = el;
-  const { ciCatalogPath } = dataset;
+  const { ciCatalogPath, projectFullPath } = dataset;
 
   Vue.use(VueApollo);
 
   const apolloProvider = new VueApollo({
-    defaultClient: createDefaultClient(),
+    defaultClient: createDefaultClient({}, cacheConfig),
   });
 
   return new Vue({
@@ -28,6 +29,7 @@ export const initNamespaceCatalog = (selector = '#js-ci-namespace-catalog') => {
     apolloProvider,
     router: createRouter(ciCatalogPath),
     provide: {
+      projectFullPath,
       pageTitle: s__('CiCatalog|CI/CD catalog'),
       pageDescription: s__(
         'CiCatalog|Repositories of pipeline components available in this namespace.',

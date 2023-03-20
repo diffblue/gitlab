@@ -9053,6 +9053,9 @@ msgstr ""
 msgid "CiCatalog|Repositories of pipeline components available in this namespace."
 msgstr ""
 
+msgid "CiCatalog|There was an error fetching CI/CD Catalog resources."
+msgstr ""
+
 msgid "CiCdAnalytics|Date range: %{range}"
 msgstr ""
 
