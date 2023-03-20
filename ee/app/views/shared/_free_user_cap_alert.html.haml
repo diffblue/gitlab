@@ -1,4 +1,4 @@
-- content_for :free_user_cap_alert do
+- content_for :page_level_alert do
   = render Namespaces::FreeUserCap::EnforcementAlertComponent.new(namespace: source.root_ancestor,
     user: current_user,
     content_class: full_content_class)
