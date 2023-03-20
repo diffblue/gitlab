@@ -35315,6 +35315,9 @@ msgstr ""
 msgid "ProtectedEnvironments|Unified approval rules have been removed from the settings UI"
 msgstr ""
 
+msgid "ProtectedEnvironments|Unprotect"
+msgstr ""
+
 msgid "ProtectedEnvironments|Users"
 msgstr ""
 

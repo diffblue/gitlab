@@ -59,6 +59,7 @@ export default {
       'saveRule',
       'editRule',
       'updateRule',
+      'unprotectEnvironment',
     ]),
     canDeleteDeployerRules(env) {
       return env[DEPLOYER_RULE_KEY].length > 1;
@@ -124,7 +125,7 @@ export default {
         />
       </template>
     </add-rule-modal>
-    <protected-environments :environments="protectedEnvironments">
+    <protected-environments :environments="protectedEnvironments" @unprotect="unprotectEnvironment">
       <template #default="{ environment }">
         <edit-protected-environment-rules-card
           :loading="loading"

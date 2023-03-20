@@ -131,4 +131,27 @@ describe('ee/protected_environments/store/edit/mutations', () => {
       expect(mockedState.newDeployAccessLevelsForEnvironment[environment.name]).toEqual(rules);
     });
   });
+
+  describe(types.DELETE_PROTECTED_ENVIRONMENT_SUCCESS, () => {
+    const environment = { name: 'staging' };
+
+    beforeEach(() => {
+      mockedState.protectedEnvironments = [environment];
+      mutations[types.DELETE_PROTECTED_ENVIRONMENT_SUCCESS](mockedState, environment);
+    });
+
+    it('sets loading to false', () => {
+      expect(mockedState.loading).toBe(false);
+    });
+
+    it('updates the saved environment', () => {
+      expect(mockedState.protectedEnvironments).toEqual([]);
+    });
+
+    it('clears the new rules', () => {
+      expect(mockedState.newDeployAccessLevelsForEnvironment).toEqual({
+        staging: [],
+      });
+    });
+  });
 });

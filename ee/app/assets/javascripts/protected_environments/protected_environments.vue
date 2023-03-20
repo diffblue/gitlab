@@ -1,10 +1,10 @@
 <script>
-import { GlBadge, GlButton, GlCollapse, GlIcon } from '@gitlab/ui';
-import { n__ } from '~/locale';
+import { GlBadge, GlButton, GlCollapse, GlIcon, GlModal } from '@gitlab/ui';
+import { n__, s__, __, sprintf } from '~/locale';
 import { DEPLOYER_RULE_KEY, APPROVER_RULE_KEY } from './constants';
 
 export default {
-  components: { GlBadge, GlButton, GlCollapse, GlIcon },
+  components: { GlBadge, GlButton, GlCollapse, GlIcon, GlModal },
   props: {
     environments: {
       required: true,
@@ -12,7 +12,20 @@ export default {
     },
   },
   data() {
-    return { expanded: {} };
+    return { expanded: {}, environmentToUnprotect: null };
+  },
+  computed: {
+    confirmUnprotectText() {
+      return sprintf(
+        s__(
+          'ProtectedEnvironment|%{environment_name} will be writable for developers. Are you sure?',
+        ),
+        { environment_name: this.environmentToUnprotect?.name },
+      );
+    },
+    isUnprotectModalVisible() {
+      return Boolean(this.environmentToUnprotect);
+    },
   },
   methods: {
     isLast(index) {
@@ -44,11 +57,36 @@ export default {
         deploymentRules.length,
       );
     },
+    confirmUnprotect(environment) {
+      this.environmentToUnprotect = environment;
+    },
+    unprotect() {
+      this.$emit('unprotect', this.environmentToUnprotect);
+      this.environmentToUnprotect = null;
+    },
+  },
+  modalOptions: {
+    modalId: 'confirm-unprotect-environment',
+    size: 'sm',
+    actionPrimary: {
+      text: __('OK'),
+      attributes: { variant: 'danger' },
+    },
+    actionSecondary: {
+      text: __('Cancel'),
+    },
   },
 };
 </script>
 <template>
   <div>
+    <gl-modal
+      :visible="isUnprotectModalVisible"
+      v-bind="$options.modalOptions"
+      @primary="unprotect"
+    >
+      {{ confirmUnprotectText }}
+    </gl-modal>
     <div
       v-for="(environment, index) in environments"
       :key="environment.name"
@@ -80,6 +118,14 @@ export default {
         class="gl-display-flex gl-flex-direction-column gl-mb-5"
       >
         <slot :environment="environment"></slot>
+        <gl-button
+          category="secondary"
+          variant="danger"
+          class="gl-mt-5 gl-align-self-end"
+          @click="confirmUnprotect(environment)"
+        >
+          {{ s__('ProtectedEnvironments|Unprotect') }}
+        </gl-button>
       </gl-collapse>
     </div>
   </div>

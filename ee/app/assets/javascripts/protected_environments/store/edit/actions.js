@@ -125,3 +125,15 @@ export const updateEnvironment = ({ state, commit, dispatch }, environment) => {
 };
 
 export const editRule = ({ commit }, rule) => commit(types.EDIT_RULE, rule);
+
+export const unprotectEnvironment = ({ state, commit }, environment) => {
+  commit(types.REQUEST_UPDATE_PROTECTED_ENVIRONMENT);
+
+  return Api.deleteProtectedEnvironment(state.projectId, environment)
+    .then(() => {
+      commit(types.DELETE_PROTECTED_ENVIRONMENT_SUCCESS, environment);
+    })
+    .catch((error) => {
+      commit(types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_ERROR, error);
+    });
+};

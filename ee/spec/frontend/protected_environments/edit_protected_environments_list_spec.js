@@ -13,6 +13,7 @@ import AddRuleModal from 'ee/protected_environments/add_rule_modal.vue';
 import AddApprovers from 'ee/protected_environments/add_approvers.vue';
 import EditProtectedEnvironmentRulesCard from 'ee/protected_environments/edit_protected_environment_rules_card.vue';
 import EditProtectedEnvironmentsList from 'ee/protected_environments/edit_protected_environments_list.vue';
+import ProtectedEnvironments from 'ee/protected_environments/protected_environments.vue';
 import { DEPLOYER_RULE_KEY, APPROVER_RULE_KEY } from 'ee/protected_environments/constants';
 import { MAINTAINER_ACCESS_LEVEL, DEVELOPER_ACCESS_LEVEL } from './constants';
 
@@ -208,7 +209,7 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
 
       await waitForPromises();
 
-      expect(mock.history.put.length).toBe(1);
+      expect(mock.history.put).toHaveLength(1);
 
       const [{ data }] = mock.history.put;
       expect(JSON.parse(data)).toMatchObject({ ...environment, deploy_access_levels: rule });
@@ -237,7 +238,7 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
 
       await waitForPromises();
 
-      expect(mock.history.put.length).toBe(1);
+      expect(mock.history.put).toHaveLength(1);
 
       const [{ data }] = mock.history.put;
       expect(JSON.parse(data)).toMatchObject({
@@ -304,7 +305,7 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
 
       await waitForPromises();
 
-      expect(mock.history.put.length).toBe(1);
+      expect(mock.history.put).toHaveLength(1);
 
       const [{ data }] = mock.history.put;
       expect(JSON.parse(data)).toMatchObject({ ...environment, approval_rules: rule });
@@ -333,13 +334,31 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
 
       await waitForPromises();
 
-      expect(mock.history.put.length).toBe(1);
+      expect(mock.history.put).toHaveLength(1);
 
       const [{ data }] = mock.history.put;
       expect(JSON.parse(data)).toMatchObject({
         name: environment.name,
         approval_rules: [destroyedRule],
       });
+    });
+  });
+
+  describe('unprotect environment', () => {
+    it('unprotects an environment when emitted', async () => {
+      const [environment] = DEFAULT_ENVIRONMENTS;
+
+      mock.onDelete().reply(HTTP_STATUS_OK);
+
+      await createComponent();
+
+      wrapper.findComponent(ProtectedEnvironments).vm.$emit('unprotect', environment);
+      await waitForPromises();
+
+      expect(mock.history.delete).toHaveLength(1);
+
+      const [{ url }] = mock.history.delete;
+      expect(url).toBe(`/api/v4/projects/8/protected_environments/${environment.name}`);
     });
   });
 });
