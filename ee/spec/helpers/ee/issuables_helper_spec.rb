@@ -34,7 +34,7 @@ RSpec.describe IssuablesHelper, feature_category: :team_planning do
           state: epic.state,
           initialDescriptionHtml: '<p data-sourcepos="1:1-1:9" dir="auto">epic text</p>',
           initialDescriptionText: 'epic text',
-          initialTaskStatus: '0 of 0 checklist items completed',
+          initialTaskCompletionStatus: { completed_count: 0, count: 0 },
           initialTitleHtml: epic.title,
           initialTitleText: epic.title,
           issuableRef: "&#{epic.iid}",
