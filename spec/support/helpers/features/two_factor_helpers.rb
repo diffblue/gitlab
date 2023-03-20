@@ -49,9 +49,9 @@ module Features
     end
 
     def webauthn_fill_form_and_submit(name: 'My device', password: 'fake')
-      expect(page).to have_content(
-                        _('Your device was successfully set up! Give it a name and register it with the GitLab server.')
-                      )
+      content = _('Your device was successfully set up! Give it a name and register it with the GitLab server.')
+      expect(page).to have_content(content)
+
       within '[data-testid="create-webauthn"]' do
         fill_in _('Device name'), with: name
         fill_in _('Current password'), with: password
