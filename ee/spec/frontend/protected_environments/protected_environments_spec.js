@@ -1,5 +1,6 @@
-import { GlBadge } from '@gitlab/ui';
+import { GlBadge, GlModal } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { s__ } from '~/locale';
 import ProtectedEnvironments from 'ee/protected_environments/protected_environments.vue';
 import { DEVELOPER_ACCESS_LEVEL } from './constants';
 
@@ -55,6 +56,8 @@ describe('ee/protected_environments/protected_environments.vue', () => {
     });
   };
 
+  const findEnvironmentButton = (name) => wrapper.findByRole('button', { name });
+
   describe('environment button', () => {
     let button;
 
@@ -66,8 +69,7 @@ describe('ee/protected_environments/protected_environments.vue', () => {
 
     beforeEach(() => {
       createComponent();
-
-      button = wrapper.findByRole('button', { name: 'staging' });
+      button = findEnvironmentButton('staging');
     });
 
     it('lists a button with the environment name', () => {
@@ -86,6 +88,40 @@ describe('ee/protected_environments/protected_environments.vue', () => {
       await button.trigger('click');
 
       expect(wrapper.findByTestId('staging').isVisible()).toBe(true);
+    });
+  });
+
+  describe('unprotect button', () => {
+    let button;
+    let modal;
+    let environment;
+
+    beforeEach(async () => {
+      createComponent();
+      [environment] = DEFAULT_ENVIRONMENTS;
+
+      await findEnvironmentButton(environment.name).trigger('click');
+
+      button = wrapper.findByRole('button', { name: s__('ProtectedEnvironments|Unprotect') });
+      modal = wrapper.findComponent(GlModal);
+    });
+
+    it('shows a button to unprotect environments', () => {
+      expect(button.exists()).toBe(true);
+    });
+
+    it('triggers a modal to confirm unprotect', async () => {
+      await button.trigger('click');
+
+      expect(modal.props('visible')).toBe(true);
+    });
+
+    it('emits an unprotect event with environment on modal confirm', async () => {
+      await button.trigger('click');
+
+      modal.vm.$emit('primary');
+
+      expect(wrapper.emitted('unprotect')).toEqual([[environment]]);
     });
   });
 });

@@ -425,4 +425,18 @@ describe('Api', () => {
       });
     });
   });
+
+  describe('deleteProtectedEnvironment', () => {
+    it('deletes a protected environment', () => {
+      const environment = { name: 'staging' };
+      const response = {};
+      const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/projects/1/protected_environments/staging`;
+      mock.onDelete(expectedUrl, environment).reply(HTTP_STATUS_OK, response);
+
+      return Api.deleteProtectedEnvironment(1, environment).then(({ data, config }) => {
+        expect(data).toEqual(response);
+        expect(config.url).toBe(expectedUrl);
+      });
+    });
+  });
 });

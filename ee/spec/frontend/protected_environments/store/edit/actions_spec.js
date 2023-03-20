@@ -10,6 +10,7 @@ import {
   saveRule,
   updateRule,
   updateEnvironment,
+  unprotectEnvironment,
 } from 'ee/protected_environments/store/edit/actions';
 import * as types from 'ee/protected_environments/store/edit/mutation_types';
 import { state } from 'ee/protected_environments/store/edit/state';
@@ -322,6 +323,45 @@ describe('ee/protected_environments/store/edit/actions', () => {
             },
           },
         ],
+      );
+    });
+  });
+  describe('unprotectEnvironment', () => {
+    const url = '/api/v4/projects/8/protected_environments/staging';
+
+    it('unprotects an environment', () => {
+      const environment = {
+        name: 'staging',
+      };
+      mock.onDelete(url, environment).replyOnce(HTTP_STATUS_OK);
+
+      return testAction(
+        unprotectEnvironment,
+        environment,
+        mockedState,
+        [
+          { type: types.REQUEST_UPDATE_PROTECTED_ENVIRONMENT },
+          { type: types.DELETE_PROTECTED_ENVIRONMENT_SUCCESS, payload: environment },
+        ],
+        [],
+      );
+    });
+
+    it('saves the error on failure', () => {
+      const environment = {
+        name: 'staging',
+      };
+      mock.onDelete(url, environment).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+
+      return testAction(
+        unprotectEnvironment,
+        environment,
+        mockedState,
+        [
+          { type: types.REQUEST_UPDATE_PROTECTED_ENVIRONMENT },
+          { type: types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_ERROR, payload: expect.any(Error) },
+        ],
+        [],
       );
     });
   });

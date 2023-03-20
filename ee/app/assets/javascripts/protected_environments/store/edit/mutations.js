@@ -49,4 +49,10 @@ export const mutations = {
   [types.RECEIVE_RULE_UPDATED](state, rule) {
     Vue.set(state.editingRules, rule.id, null);
   },
+  [types.DELETE_PROTECTED_ENVIRONMENT_SUCCESS](state, { name }) {
+    state.protectedEnvironments = state.protectedEnvironments.filter((env) => env.name !== name);
+    Vue.set(state.newDeployAccessLevelsForEnvironment, name, []);
+
+    state.loading = false;
+  },
 };

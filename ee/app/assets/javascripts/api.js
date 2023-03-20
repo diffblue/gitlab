@@ -299,4 +299,12 @@ export default {
 
     return axios.put(url, protectedEnvironment);
   },
+
+  deleteProtectedEnvironment(id, { name }) {
+    const url = Api.buildUrl(this.protectedEnvironmentPath)
+      .replace(':id', encodeURIComponent(id))
+      .replace(':name', encodeURIComponent(name));
+
+    return axios.delete(url);
+  },
 };
