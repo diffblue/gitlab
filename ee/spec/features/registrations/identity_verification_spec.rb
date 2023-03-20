@@ -101,9 +101,9 @@ RSpec.describe 'Identity Verification', :js, :saas, feature_category: :instance_
       trial_sign_up
     end
 
-    # The trial flow currently does not present the Arkose challenge. A missing Arkose score is interpreted
-    # as low risk. See issue here: https://gitlab.com/gitlab-org/modelops/anti-abuse/team-tasks/-/issues/230
     it_behaves_like 'registering the user with low risk identity verification'
+    it_behaves_like 'registering the user with medium risk identity verification'
+    it_behaves_like 'registering the user with high risk identity verification'
   end
 
   describe 'SAML flow' do
@@ -155,6 +155,7 @@ RSpec.describe 'Identity Verification', :js, :saas, feature_category: :instance_
 
   def trial_sign_up
     fill_in_user_sign_up_form
+    solve_arkose_verify_challenge
     click_button _('Continue')
   end
 

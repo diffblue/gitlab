@@ -100,45 +100,9 @@ RSpec.describe TrialRegistrationsController, :saas, feature_category: :purchase 
       end
     end
 
-    context 'when ArkoseLabs is enabled for signup' do
-      before do
-        allow(::Arkose::Settings).to receive(:enabled_for_signup?).and_return(true)
-      end
-
-      subject(:request) { post trial_registrations_path, params: { user: user_params } }
-
-      shared_examples 'creates the user' do
-        it 'creates the user' do
-          request
-
-          expect(User.find_by(email: user_params[:email])).not_to be_nil
-        end
-      end
-
-      it_behaves_like 'creates the user'
-
-      context 'when reCAPTCHA is enabled' do
-        before do
-          stub_application_setting(recaptcha_enabled: true)
-        end
-
-        it_behaves_like 'creates the user'
-
-        context 'when reCAPTCHA verification fails' do
-          before do
-            allow_next_instance_of(described_class) do |controller|
-              allow(controller).to receive(:verify_recaptcha).and_return(false)
-            end
-          end
-
-          it 'does not create the user' do
-            request
-
-            expect(User.find_by(email: user_params[:email])).to be_nil
-            expect(flash[:alert]).to eq(_('There was an error with the reCAPTCHA. Please solve the reCAPTCHA again.'))
-          end
-        end
-      end
+    it_behaves_like 'creates a user with ArkoseLabs risk band on signup request' do
+      let(:user_attrs) { user_params }
+      let(:registration_path) { trial_registrations_path }
     end
   end
 end
