@@ -58,7 +58,12 @@ export default {
       return {
         primary: {
           text: this.primaryBtnText,
-          attributes: { variant: 'confirm', loading: this.loading, disabled: !this.isFormValid },
+          attributes: {
+            variant: 'confirm',
+            loading: this.loading,
+            disabled: !this.isFormValid,
+            'data-qa-selector': 'add_schedule_button',
+          },
         },
         cancel: {
           text: i18n.cancel,

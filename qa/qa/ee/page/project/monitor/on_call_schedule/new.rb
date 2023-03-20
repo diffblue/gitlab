@@ -18,6 +18,10 @@ module QA
                 element :schedule_timezone_container
               end
 
+              view 'ee/app/assets/javascripts/oncall_schedules/components/add_edit_schedule_modal.vue' do
+                element :add_schedule_button
+              end
+
               def open_add_schedule_modal
                 click_element(:add_on_call_schedule_button)
               end
@@ -34,7 +38,7 @@ module QA
               end
 
               def save_new_schedule
-                click_button('Add schedule')
+                click_element(:add_schedule_button)
               end
             end
           end
