@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Projects > Members > Manage groups', feature_category: :subgroups do
-  include Spec::Support::Helpers::Features::MembersHelpers
+  include Features::MembersHelpers
   include Features::InviteMembersModalHelpers
 
   shared_examples 'adds group without validation error' do

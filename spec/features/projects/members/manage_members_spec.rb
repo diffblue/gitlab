@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Projects > Members > Manage members', :js, feature_category: :onboarding do
-  include Spec::Support::Helpers::Features::MembersHelpers
+  include Features::MembersHelpers
   include Features::InviteMembersModalHelpers
   include Spec::Support::Helpers::ModalHelpers
 

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Groups > Members > Maintainer/Owner can override LDAP access levels', feature_category: :subgroups do
   include WaitForRequests
-  include Spec::Support::Helpers::Features::MembersHelpers
+  include Features::MembersHelpers
   include Spec::Support::Helpers::ModalHelpers
 
   let(:johndoe)  { create(:user, name: 'John Doe') }

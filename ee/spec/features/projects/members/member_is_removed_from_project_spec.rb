@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Projects > Members > Member is removed from project', :js, feature_category: :subgroups do
   include Spec::Support::Helpers::ModalHelpers
-  include Spec::Support::Helpers::Features::MembersHelpers
+  include Features::MembersHelpers
 
   let(:user) { create(:user) }
   let(:project) { create(:project, :with_namespace_settings) }

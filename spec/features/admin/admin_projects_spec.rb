@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe "Admin::Projects", feature_category: :projects do
-  include Spec::Support::Helpers::Features::MembersHelpers
+  include Features::MembersHelpers
   include Features::InviteMembersModalHelpers
   include Spec::Support::Helpers::ModalHelpers
   include ListboxHelpers
