@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Projects > Members > Manage members', :js, feature_category: :onboarding do
   include Spec::Support::Helpers::Features::MembersHelpers
-  include Spec::Support::Helpers::Features::InviteMembersModalHelper
+  include Features::InviteMembersModalHelpers
   include Spec::Support::Helpers::ModalHelpers
 
   let_it_be(:user1) { create(:user, name: 'John Doe') }

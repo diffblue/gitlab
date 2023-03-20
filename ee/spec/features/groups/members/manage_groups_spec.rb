@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Groups > Members > Manage groups', :js, :saas, feature_category: :subgroups do
   include Spec::Support::Helpers::Features::MembersHelpers
-  include Spec::Support::Helpers::Features::InviteMembersModalHelper
+  include Features::InviteMembersModalHelpers
   include Spec::Support::Helpers::ModalHelpers
   include SubscriptionPortalHelpers
 

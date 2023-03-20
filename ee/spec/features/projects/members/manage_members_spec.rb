@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Projects > Members > Manage members', :js, feature_category: :subgroups do
-  include Spec::Support::Helpers::Features::InviteMembersModalHelper
+  include Features::InviteMembersModalHelpers
 
   context 'with free user limit', :saas do
     let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
