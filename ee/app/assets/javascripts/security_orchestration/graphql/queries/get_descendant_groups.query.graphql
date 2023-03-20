@@ -1,0 +1,16 @@
+query getDescendantGroups($rootNamespacePath: ID!, $search: String) {
+  group(fullPath: $rootNamespacePath) {
+    avatarUrl
+    id
+    fullName
+    fullPath
+    descendantGroups(search: $search) {
+      nodes {
+        avatarUrl
+        id
+        fullName
+        fullPath
+      }
+    }
+  }
+}

@@ -1,7 +1,8 @@
 <script>
 import { GlAvatarLabeled, GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import searchGroups from 'ee/security_orchestration/graphql/queries/get_namespace_groups.query.graphql';
+import searchNamespaceGroups from 'ee/security_orchestration/graphql/queries/get_namespace_groups.query.graphql';
+import searchDescendantGroups from 'ee/security_orchestration/graphql/queries/get_descendant_groups.query.graphql';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { GROUP_TYPE } from 'ee/security_orchestration/constants';
@@ -17,6 +18,7 @@ export default {
     GlAvatarLabeled,
     GlCollapsibleListbox,
   },
+  inject: ['globalGroupApproversEnabled', 'rootNamespacePath'],
   props: {
     existingApprovers: {
       type: Array,
@@ -26,21 +28,38 @@ export default {
   },
   apollo: {
     groups: {
-      query: searchGroups,
+      query() {
+        return this.globalGroupApproversEnabled ? searchNamespaceGroups : searchDescendantGroups;
+      },
       variables() {
         return {
+          rootNamespacePath: this.rootNamespacePath,
           search: this.search,
         };
       },
       update(data) {
-        return (data?.groups?.nodes || []).map((group) => createGroupObject(group));
+        if (!this.globalGroupApproversEnabled) {
+          const { __typename, avatarUrl, id, fullName, fullPath } = data.group;
+          const rootGroupMatches = fullName.includes(this.search);
+
+          const descendantGroups = (data?.group?.descendantGroups?.nodes || []).map(
+            createGroupObject,
+          );
+
+          if (!rootGroupMatches) return descendantGroups;
+
+          const rootGroup = createGroupObject({ __typename, avatarUrl, id, fullName, fullPath });
+          return [rootGroup, ...descendantGroups];
+        }
+
+        return (data?.groups?.nodes || []).map(createGroupObject);
       },
       debounce: DEFAULT_DEBOUNCE_AND_THROTTLE_MS,
     },
   },
   data() {
     return {
-      selectedGroups: this.existingApprovers.map((a) => createGroupObject(a)),
+      selectedGroups: this.existingApprovers.map(createGroupObject),
       search: '',
     };
   },

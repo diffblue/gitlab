@@ -107,7 +107,8 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           scan_policy_documentation_path: kind_of(String),
           scan_result_approvers: approvers&.to_json,
           software_licenses: [apache_license.name, mit_license.name],
-          global_group_approvers_enabled: Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled,
+          global_group_approvers_enabled:
+            Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled.to_json,
           root_namespace_path: project.root_ancestor.full_path
         }
       end
@@ -183,7 +184,8 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           namespace_id: namespace.id,
           scan_result_approvers: approvers&.to_json,
           software_licenses: [apache_license.name, mit_license.name],
-          global_group_approvers_enabled: Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled,
+          global_group_approvers_enabled:
+            Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled.to_json,
           root_namespace_path: namespace.root_ancestor.full_path
         }
       end
