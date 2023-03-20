@@ -1,19 +1,11 @@
 {
-  "version": "14.1.2",
+  "version": "15.0.4",
   "vulnerabilities": [
     {
       "id": "e987fa54ff94e1d0e716814861459d2eb10bd27a0ba8ca243428669d8885ce68",
-      "category": "container_scanning",
-      "message": "CVE-2017-15650 in musl",
       "description": "musl:1.1.18-r3 is affected by CVE-2017-15650",
-      "cve": "alpine:v3.7:musl:CVE-2017-15650",
       "severity": "High",
-      "confidence": "Unknown",
       "solution": "Upgrade musl from 1.1.18-r3 to 1.1.18-r4",
-      "scanner": {
-        "id": "trivy",
-        "name": "trivy"
-      },
       "location": {
         "dependency": {
           "package": {
@@ -39,7 +31,9 @@
       ]
     }
   ],
-  "remediations": [],
+  "remediations": [
+
+  ],
   "scan": {
     "scanner": {
       "id": "trivy",
@@ -49,6 +43,14 @@
         "name": "GitLab"
       },
       "version": "2.1.4"
+    },
+    "analyzer": {
+      "id": "gcs",
+      "name": "GitLab Container Scanning",
+      "vendor": {
+        "name": "GitLab"
+      },
+      "version": "5.2.8"
     },
     "type": "container_scanning",
     "status": "success",
