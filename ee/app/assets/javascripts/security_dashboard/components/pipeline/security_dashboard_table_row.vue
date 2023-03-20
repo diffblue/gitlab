@@ -7,7 +7,10 @@ import convertReportType from 'ee/vue_shared/security_reports/store/utils/conver
 import getPrimaryIdentifier from 'ee/vue_shared/security_reports/store/utils/get_primary_identifier';
 import { BV_SHOW_MODAL } from '~/lib/utils/constants';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { getCreatedIssueForVulnerability } from 'ee/vue_shared/security_reports/components/helpers';
+import {
+  getCreatedIssueForVulnerability,
+  getDismissalTransitionForVulnerability,
+} from 'ee/vue_shared/security_reports/components/helpers';
 import VulnerabilityActionButtons from './vulnerability_action_buttons.vue';
 import VulnerabilityIssueLink from './vulnerability_issue_link.vue';
 
@@ -45,8 +48,16 @@ export default {
       const { location } = this.vulnerability;
       return location && (location.image || location.file || location.path);
     },
-    isDismissed() {
-      return Boolean(this.vulnerability.dismissal_feedback);
+    dismissalData() {
+      return this.glFeatures.deprecateVulnerabilitiesFeedback
+        ? getDismissalTransitionForVulnerability(this.vulnerability)
+        : this.vulnerability.dismissal_feedback;
+    },
+    dismissalComment() {
+      // state_transitions has a comment string, dismissal_feedback has a comment_details object.
+      return this.glFeatures.deprecateVulnerabilitiesFeedback
+        ? this.dismissalData?.comment
+        : this.dismissalData?.comment_details;
     },
     issueData() {
       return this.glFeatures.deprecateVulnerabilitiesFeedback
@@ -117,7 +128,7 @@ export default {
 <template>
   <div
     class="gl-responsive-table-row p-2"
-    :class="{ dismissed: isDismissed, 'gl-bg-blue-50': isSelected }"
+    :class="{ dismissed: dismissalData, 'gl-bg-blue-50': isSelected }"
   >
     <div class="table-section section-5">
       <gl-form-checkbox
@@ -159,16 +170,10 @@ export default {
             @click="openModal({ vulnerability })"
             >{{ vulnerability.name }}</gl-button
           >
-          <template v-if="isDismissed">
-            <gl-icon
-              v-show="vulnerability.dismissal_feedback.comment_details"
-              name="comment"
-              class="text-warning vertical-align-middle"
-            />
-            <span class="vertical-align-middle text-uppercase">{{
-              s__('vulnerability|dismissed')
-            }}</span>
-          </template>
+          <span v-if="dismissalData" data-testid="dismissal-label">
+            <gl-icon v-if="dismissalComment" name="comment" class="text-warning" />
+            <span class="text-uppercase">{{ s__('vulnerability|dismissed') }}</span>
+          </span>
           <vulnerability-issue-link
             v-if="hasIssue"
             class="text-nowrap"
@@ -219,7 +224,7 @@ export default {
           :vulnerability="vulnerability"
           :can-create-issue="canCreateIssue"
           :can-dismiss-vulnerability="canDismissVulnerability"
-          :is-dismissed="isDismissed"
+          :is-dismissed="Boolean(dismissalData)"
         />
       </div>
     </div>
