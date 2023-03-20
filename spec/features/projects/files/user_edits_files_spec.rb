@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Projects > Files > User edits files', :js, feature_category: :projects do
-  include Spec::Support::Helpers::Features::SourceEditorSpecHelpers
+  include Features::SourceEditorSpecHelpers
   include ProjectForksHelper
   include Features::BlobSpecHelpers
 

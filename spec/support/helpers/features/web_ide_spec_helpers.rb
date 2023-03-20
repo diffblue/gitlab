@@ -11,7 +11,7 @@
 #     ide_commit
 #
 module WebIdeSpecHelpers
-  include Spec::Support::Helpers::Features::SourceEditorSpecHelpers
+  include Features::SourceEditorSpecHelpers
 
   # Open the IDE from anywhere by first visiting the given project's page
   def ide_visit(project)

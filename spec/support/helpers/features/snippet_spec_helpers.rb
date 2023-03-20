@@ -8,7 +8,7 @@ require Rails.root.join("spec/support/helpers/features/source_editor_spec_helper
 module Features
   module SnippetSpecHelpers
     include ActionView::Helpers::JavaScriptHelper
-    include Spec::Support::Helpers::Features::SourceEditorSpecHelpers
+    include Features::SourceEditorSpecHelpers
 
     def snippet_description_locator
       'snippet-description'
