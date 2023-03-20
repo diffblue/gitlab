@@ -1,5 +1,6 @@
 <script>
 import { GlButton, GlFormCheckbox, GlLink, GlSprintf } from '@gitlab/ui';
+import { mergeUrlParams, removeParams } from '~/lib/utils/url_utility';
 import { I18N, REMEMBER_ME_PARAM } from '../constants';
 
 export default {
@@ -18,13 +19,11 @@ export default {
   },
   methods: {
     onChange(remember) {
-      const url = new URL(this.href, document.location);
       if (remember) {
-        url.searchParams.set(REMEMBER_ME_PARAM, '1');
+        this.href = mergeUrlParams({ [REMEMBER_ME_PARAM]: '1' }, this.href);
       } else {
-        url.searchParams.delete(REMEMBER_ME_PARAM);
+        this.href = removeParams([REMEMBER_ME_PARAM], this.href);
       }
-      this.href = url.href;
     },
   },
 };
