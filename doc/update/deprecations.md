@@ -47,6 +47,29 @@ and [GraphQL](https://docs.gitlab.com/ee/api/graphql/removed_items.html) depreca
 
 <div class="deprecation removal-160 breaking-change">
 
+### Bundled Grafana Helm Chart is deprecated
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+The Grafana Helm chart that is bundled with the GitLab Helm Chart is deprecated and will be removed in the GitLab Helm Chart 7.0 release (releasing along with GitLab 16.0).
+
+The bundled Grafana Helm chart is an optional service that can be turned on to provide the Grafana UI connected to the GitLab Helm Chart's Prometheus metrics.
+
+The version of Grafana that the GitLab Helm Chart is currently providing is no longer a supported Grafana version.
+If you're using the bundled Grafana, you should switch to the [newer chart version from Grafana Labs](https://artifacthub.io/packages/helm/grafana/grafana)
+or a Grafana Operator from a trusted provider.
+
+In your new Grafana instance, you can [configure the GitLab provided Prometheus as a data source](https://docs.gitlab.com/ee/administration/monitoring/performance/grafana_configuration.html#integration-with-gitlab-ui)
+and [connect Grafana to the GitLab UI](https://docs.gitlab.com/ee/administration/monitoring/performance/grafana_configuration.html#integration-with-gitlab-ui).
+
+</div>
+
+<div class="deprecation removal-160 breaking-change">
+
 ### Deprecated Consul http metrics
 
 Planned removal: GitLab <span class="removal-milestone">16.0</span> <span class="removal-date"></span>
