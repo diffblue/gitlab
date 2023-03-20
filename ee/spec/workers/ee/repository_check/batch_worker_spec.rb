@@ -42,9 +42,11 @@ RSpec.describe EE::RepositoryCheck::BatchWorker, feature_category: :source_code_
     end
 
     it 'loads project ids that were checked more than a month ago from tracking database' do
-      project_registries = create_list(:geo_project_registry, 3, :synced,
-                                       last_repository_check_failed: false,
-                                       last_repository_check_at: 42.days.ago)
+      project_registries = create_list(
+        :geo_project_registry, 3, :synced,
+        last_repository_check_failed: false,
+        last_repository_check_at: 42.days.ago
+      )
       update_project_registry_shard(project_registries, shard_name)
 
       expect(worker.perform(shard_name)).to match_array(project_registries.map(&:project_id))

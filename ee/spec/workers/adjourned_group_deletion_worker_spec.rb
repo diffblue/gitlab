@@ -10,15 +10,19 @@ RSpec.describe AdjournedGroupDeletionWorker, feature_category: :compliance_manag
     let_it_be(:group_not_marked_for_deletion) { create(:group) }
 
     let_it_be(:group_marked_for_deletion) do
-      create(:group_with_deletion_schedule,
-             marked_for_deletion_on: 14.days.ago,
-             deleting_user: user)
+      create(
+        :group_with_deletion_schedule,
+        marked_for_deletion_on: 14.days.ago,
+        deleting_user: user
+      )
     end
 
     let_it_be(:group_marked_for_deletion_for_later) do
-      create(:group_with_deletion_schedule,
-             marked_for_deletion_on: 2.days.ago,
-             deleting_user: user)
+      create(
+        :group_with_deletion_schedule,
+        marked_for_deletion_on: 2.days.ago,
+        deleting_user: user
+      )
     end
 
     before do
@@ -44,9 +48,11 @@ RSpec.describe AdjournedGroupDeletionWorker, feature_category: :compliance_manag
     end
 
     it 'schedules groups 20 seconds apart' do
-      group_marked_for_deletion_2 = create(:group_with_deletion_schedule,
-                                            marked_for_deletion_on: 14.days.ago,
-                                            deleting_user: user)
+      group_marked_for_deletion_2 = create(
+        :group_with_deletion_schedule,
+        marked_for_deletion_on: 14.days.ago,
+        deleting_user: user
+      )
 
       expect(GroupDestroyWorker).to receive(:perform_in).with(0, group_marked_for_deletion.id, user.id)
       expect(GroupDestroyWorker).to receive(:perform_in).with(20, group_marked_for_deletion_2.id, user.id)

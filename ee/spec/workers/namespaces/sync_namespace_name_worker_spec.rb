@@ -33,7 +33,7 @@ RSpec.describe Namespaces::SyncNamespaceNameWorker, type: :worker, feature_categ
 
         expect { sync }.to raise_error(
           described_class::RequestError,
-        %(Namespace name sync failed! Namespace id: #{namespace_id}, {:success=>false, :errors=>"foo"})
+          %(Namespace name sync failed! Namespace id: #{namespace_id}, {:success=>false, :errors=>"foo"})
         )
       end
     end

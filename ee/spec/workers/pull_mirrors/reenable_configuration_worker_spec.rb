@@ -33,7 +33,5 @@ RSpec.describe PullMirrors::ReenableConfigurationWorker, feature_category: :sour
     it { expect { consume_event(subscriber: described_class, event: subscription_started_event) }.not_to raise_error }
   end
 
-  it_behaves_like 'worker with data consistency',
-                  described_class,
-                  data_consistency: :sticky
+  it_behaves_like 'worker with data consistency', described_class, data_consistency: :sticky
 end

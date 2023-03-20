@@ -9,8 +9,11 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration, feature_category: :securi
   end
 
   let!(:schedule) do
-    create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: configuration,
-           owner: project.owner)
+    create(
+      :security_orchestration_policy_rule_schedule,
+      security_orchestration_policy_configuration: configuration,
+      owner: project.owner
+    )
   end
 
   before do
@@ -67,8 +70,9 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration, feature_category: :securi
       end
 
       it 'executes SyncScanResultPoliciesService' do
-        expect_next_instance_of(Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService,
-                                configuration) do |service|
+        expect_next_instance_of(
+          Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService, configuration
+        ) do |service|
           expect(service).to receive(:execute).with(no_args)
         end
 
@@ -77,9 +81,11 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration, feature_category: :securi
 
       it 'executes ProcessRuleService for each policy' do
         active_policies[:scan_execution_policy].each_with_index do |policy, policy_index|
-          expect_next_instance_of(Security::SecurityOrchestrationPolicies::ProcessRuleService,
-                                  policy_configuration: configuration,
-                                  policy_index: policy_index, policy: policy) do |service|
+          expect_next_instance_of(
+            Security::SecurityOrchestrationPolicies::ProcessRuleService,
+            policy_configuration: configuration,
+            policy_index: policy_index, policy: policy
+          ) do |service|
             expect(service).to receive(:execute)
           end
         end

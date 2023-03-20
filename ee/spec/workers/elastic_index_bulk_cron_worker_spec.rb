@@ -101,7 +101,5 @@ RSpec.describe ElasticIndexBulkCronWorker, feature_category: :global_search do
     end
   end
 
-  it_behaves_like 'worker with data consistency',
-                  described_class,
-                  data_consistency: :sticky
+  it_behaves_like 'worker with data consistency', described_class, data_consistency: :sticky
 end

@@ -14,9 +14,7 @@ RSpec.describe RepositoryUpdateMirrorWorker, feature_category: :source_code_mana
       allow(worker).to receive(:jid).and_return(jid)
     end
 
-    it_behaves_like 'worker with data consistency',
-                    described_class,
-                    data_consistency: :sticky
+    it_behaves_like 'worker with data consistency', described_class, data_consistency: :sticky
 
     it 'sets status as finished when update mirror service executes successfully' do
       expect_next_instance_of(Projects::UpdateMirrorService) do |instance|

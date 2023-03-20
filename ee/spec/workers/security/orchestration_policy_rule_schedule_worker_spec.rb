@@ -16,8 +16,11 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
 
       context 'when schedule is created for security orchestration policy configuration in project' do
         it 'executes the rule schedule service' do
-          expect_next_instance_of(Security::SecurityOrchestrationPolicies::RuleScheduleService,
-                                  container: schedule.security_orchestration_policy_configuration.project, current_user: schedule.owner) do |service|
+          expect_next_instance_of(
+            Security::SecurityOrchestrationPolicies::RuleScheduleService,
+            container: schedule.security_orchestration_policy_configuration.project,
+            current_user: schedule.owner
+          ) do |service|
             expect(service).to receive(:execute)
           end
 

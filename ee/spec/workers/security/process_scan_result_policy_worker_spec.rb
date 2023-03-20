@@ -39,18 +39,25 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
 
     it 'calls three services to general merge request approval rules from the policy YAML' do
       active_policies[:scan_result_policy].each_with_index do |policy, policy_index|
-        expect_next_instance_of(Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService,
-                                project: configuration.project,
-                                policy_configuration: configuration,
-                                policy: policy, policy_index: policy_index) do |service|
+        expect_next_instance_of(
+          Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService,
+          project: configuration.project,
+          policy_configuration: configuration,
+          policy: policy,
+          policy_index: policy_index
+        ) do |service|
           expect(service).to receive(:execute)
         end
-        expect_next_instance_of(Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService,
-                                project: configuration.project) do |service|
+        expect_next_instance_of(
+          Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService,
+          project: configuration.project
+        ) do |service|
           expect(service).to receive(:execute)
         end
-        expect_next_instance_of(Security::SecurityOrchestrationPolicies::SyncOpenMergeRequestsHeadPipelineService,
-                                project: configuration.project) do |service|
+        expect_next_instance_of(
+          Security::SecurityOrchestrationPolicies::SyncOpenMergeRequestsHeadPipelineService,
+          project: configuration.project
+        ) do |service|
           expect(service).to receive(:execute)
         end
       end
