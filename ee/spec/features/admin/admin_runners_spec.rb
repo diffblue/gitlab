@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe "Admin Runners", feature_category: :runner_fleet do
   include RunnerReleasesHelper
-  include Spec::Support::Helpers::Features::RunnersHelpers
+  include Features::RunnersHelpers
 
   let_it_be(:admin) { create(:admin) }
 
