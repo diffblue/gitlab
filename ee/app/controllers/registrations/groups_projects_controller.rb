@@ -97,13 +97,7 @@ module Registrations
     end
 
     def track_event(action)
-      ::Gitlab::Tracking.event(self.class.name, action, user: current_user, label: tracking_label)
-    end
-
-    def tracking_label
-      return 'trial_registration' if Gitlab::Utils.to_boolean(params[:trial_onboarding_flow])
-
-      'free_registration'
+      ::Gitlab::Tracking.event(self.class.name, action, user: current_user, label: helpers.onboarding_track_label)
     end
   end
 end

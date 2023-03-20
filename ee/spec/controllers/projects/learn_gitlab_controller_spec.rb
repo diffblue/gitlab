@@ -63,32 +63,6 @@ RSpec.describe Projects::LearnGitlabController, feature_category: :onboarding do
 
         expect(cookies[:confetti_post_signup]).to eq('true')
       end
-
-      it 'tracks render event' do
-        onboarding
-
-        expect_snowplow_event(
-          category: described_class.name,
-          action: 'onboarding',
-          user: user,
-          label: 'free_registration'
-        )
-      end
-
-      context 'when in trial onboarding flow' do
-        let(:extra_params) { { trial_onboarding_flow: true } }
-
-        it 'tracks the action event' do
-          onboarding
-
-          expect_snowplow_event(
-            category: described_class.name,
-            action: 'onboarding',
-            user: user,
-            label: 'trial_registration'
-          )
-        end
-      end
     end
 
     context 'with a non-owner user signed in' do
@@ -98,17 +72,6 @@ RSpec.describe Projects::LearnGitlabController, feature_category: :onboarding do
       end
 
       it { is_expected.to have_gitlab_http_status(:not_found) }
-
-      it 'does not track the action event' do
-        onboarding
-
-        expect_no_snowplow_event(
-          category: described_class.name,
-          action: 'onboarding',
-          user: user,
-          label: 'free_registration'
-        )
-      end
     end
   end
 end
