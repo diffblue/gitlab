@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Admin::CredentialsInventory', feature_category: :user_management do
-  include Spec::Support::Helpers::Features::ResponsiveTableHelpers
+  include Features::ResponsiveTableHelpers
 
   before do
     admin = create(:admin)
