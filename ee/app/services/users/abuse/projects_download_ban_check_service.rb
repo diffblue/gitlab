@@ -21,8 +21,8 @@ module Users
       private
 
       def user_exceeded_download_limit_for_application?
-        return false unless ::Feature.enabled?(:git_abuse_rate_limit_feature_flag, user)
         return false unless License.feature_available?(:git_abuse_rate_limit)
+        return false unless Gitlab::CurrentSettings.unique_project_download_limit_enabled?
 
         result = GitAbuse::ApplicationThrottleService.execute(user, project)
 

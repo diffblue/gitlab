@@ -499,6 +499,12 @@ module EE
       self[:git_rate_limit_users_alertlist].presence || ::User.admins.active.pluck_primary_key
     end
 
+    def unique_project_download_limit_enabled?
+      return true if max_number_of_repository_downloads.nonzero? && max_number_of_repository_downloads_within_time_period.nonzero?
+
+      false
+    end
+
     private
 
     def elasticsearch_limited_project_exists?(project)

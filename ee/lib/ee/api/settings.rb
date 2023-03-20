@@ -65,8 +65,7 @@ module EE
               attrs = attrs.except(:maintenance_mode, :maintenance_mode_message)
             end
 
-            unless License.feature_available?(:git_abuse_rate_limit) &&
-              ::Feature.enabled?(:git_abuse_rate_limit_feature_flag)
+            unless License.feature_available?(:git_abuse_rate_limit)
               attrs = attrs.except(*EE::ApplicationSettingsHelper.git_abuse_rate_limit_attributes)
             end
 

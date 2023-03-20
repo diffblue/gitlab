@@ -14,7 +14,6 @@ RSpec.describe 'admin/application_settings/_git_abuse_rate_limit' do
   describe 'git abuse rate limit settings' do
     before do
       stub_licensed_features(git_abuse_rate_limit: true)
-      stub_feature_flags(git_abuse_rate_limit_feature_flag: true)
     end
 
     context 'when page loads' do

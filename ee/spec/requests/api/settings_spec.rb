@@ -313,10 +313,6 @@ RSpec.describe API::Settings, 'EE Settings', feature_category: :shared do
   context 'git abuse rate limit settings', feature_category: :insider_threat do
     let(:user) { create(:user) }
 
-    before do
-      stub_feature_flags(git_abuse_rate_limit_feature_flag: true)
-    end
-
     let(:settings) do
       {
         max_number_of_repository_downloads: 5,

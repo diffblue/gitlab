@@ -1,4 +1,3 @@
-- return unless Feature.enabled?(:git_abuse_rate_limit_feature_flag)
 - return unless License.feature_available?(:git_abuse_rate_limit)
 
 %section.settings.no-animate#js-git-abuse-rate-limit-settings{ class: ('expanded' if expanded_by_default?), data: {testid: 'git-abuse-rate-limit-settings'} }
