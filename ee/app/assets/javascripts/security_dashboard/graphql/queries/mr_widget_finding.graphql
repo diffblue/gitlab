@@ -9,6 +9,9 @@ query pipelineFinding($fullPath: ID!, $pipelineId: ID!, $uuid: String!) {
         dismissedAt
         dismissedBy {
           id
+          name
+          username
+          webUrl
         }
         mergeRequest {
           id

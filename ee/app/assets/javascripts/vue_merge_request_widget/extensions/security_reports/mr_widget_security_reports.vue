@@ -74,11 +74,10 @@ export default {
         this.modalData.error = this.$options.i18n.findingLoadingError;
       },
       result({ data }) {
-        const issue = data.project.pipeline.securityReportFinding.issueLinks?.nodes.find(
-          (x) => x.linkType === 'CREATED',
-        )?.issue;
+        const finding = data.project.pipeline.securityReportFinding;
+        const { mergeRequest, stateComment, dismissedBy, dismissedAt } = finding;
 
-        const { mergeRequest } = data.project.pipeline.securityReportFinding;
+        const issue = finding.issueLinks?.nodes.find((x) => x.linkType === 'CREATED')?.issue;
 
         if (mergeRequest) {
           this.$set(this.modalData.vulnerability, 'hasMergeRequest', true);
@@ -97,6 +96,17 @@ export default {
             created_at: issue.createdAt,
             issue_url: issue.webUrl,
             issue_iid: issue.iid,
+          });
+        }
+
+        if (dismissedAt) {
+          this.$set(this.modalData.vulnerability, 'isDismissed', true);
+          this.$set(this.modalData.vulnerability, 'dismissal_feedback', {
+            comment_details: stateComment
+              ? { comment: stateComment, comment_author: dismissedBy }
+              : null,
+            author: dismissedBy,
+            created_at: finding.dismissedAt,
           });
         }
       },
@@ -251,6 +261,15 @@ export default {
         return Boolean(endpoint) && this.mr.enabledReports[enabledReportsKeyName];
       });
 
+      // The backend returns the cached finding objects. Let's remove them as they may cause
+      // bugs. Instead, fetch the non-cached data when the finding modal is opened.
+      const getFindingWithoutFeedback = (finding) => ({
+        ...finding,
+        dismissal_feedback: undefined,
+        merge_request_feedback: undefined,
+        issue_feedback: undefined,
+      });
+
       return endpoints.map(([path, reportType]) => () => {
         const props = {
           reportType,
@@ -265,7 +284,13 @@ export default {
           .then(({ data, headers = {}, status }) => ({
             headers,
             status,
-            data: { ...props, ...data, numberOfNewFindings: data.added?.length || 0 },
+            data: {
+              ...props,
+              ...data,
+              added: data.added?.map?.(getFindingWithoutFeedback) || [],
+              fixed: data.fixed?.map?.(getFindingWithoutFeedback) || [],
+              numberOfNewFindings: data.added?.length || 0,
+            },
           }))
           .catch(({ headers = {}, status = 500 }) => ({
             headers,
@@ -318,9 +343,6 @@ export default {
         isShowingDeleteButtons: false,
       };
 
-      // We want to keep a reference to the `finding` object so that whenever
-      // that object is updated, also the `vulnerability.collapsed` state is updated.
-      this.modalData.vulnerability.isDismissed = this.isDismissed(finding);
       this.isDismissingFinding = false;
 
       this.$root.$emit(BV_SHOW_MODAL, VULNERABILITY_MODAL_ID);

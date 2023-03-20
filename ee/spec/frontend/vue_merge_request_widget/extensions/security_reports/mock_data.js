@@ -442,7 +442,11 @@ export const emptyResponse = () => ({
   fixed: [],
 });
 
-export const findingQueryMockData = () =>
+export const findingQueryMockData = ({
+  stateComment = null,
+  dismissedAt = null,
+  dismissedBy = null,
+} = {}) =>
   jest.fn().mockResolvedValue({
     data: {
       project: {
@@ -451,9 +455,9 @@ export const findingQueryMockData = () =>
           id: 'gid://gitlab/Ci::Pipeline/13',
           securityReportFinding: {
             id: 'b58fadc9-e4af-5404-ba6b-e4ee14801c6f',
-            stateComment: null,
-            dismissedAt: null,
-            dismissedBy: null,
+            stateComment,
+            dismissedAt,
+            dismissedBy,
             mergeRequest: {
               id: 'git://gitlab/MergeRequest/7',
               iid: 7,
