@@ -1,8 +1,9 @@
-import { GlFormCheckbox, GlSkeletonLoader } from '@gitlab/ui';
+import { GlFormCheckbox, GlSkeletonLoader, GlIcon } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { cloneDeep } from 'lodash';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import SecurityDashboardTableRow from 'ee/security_dashboard/components/pipeline/security_dashboard_table_row.vue';
 import VulnerabilityActionButtons from 'ee/security_dashboard/components/pipeline/vulnerability_action_buttons.vue';
 import { setupStore } from 'ee/security_dashboard/store';
@@ -48,6 +49,8 @@ describe('Security Dashboard Table Row', () => {
   const hasSelectedClass = () => wrapper.classes('gl-bg-blue-50');
   const findCheckbox = () => wrapper.findComponent(GlFormCheckbox);
   const findSeverityBadge = () => wrapper.findComponent(SeverityBadge);
+  const findDismissalLabel = () => wrapper.findByTestId('dismissal-label');
+  const findDismissalCommentIcon = () => wrapper.findComponent(GlIcon);
 
   describe('when loading', () => {
     beforeEach(() => {
@@ -140,20 +143,59 @@ describe('Security Dashboard Table Row', () => {
     });
   });
 
-  describe('with a dismissed vulnerability', () => {
-    const vulnerability = mockDataVulnerabilities[2];
+  describe('vulnerability dismissal', () => {
+    let vulnerability;
 
     beforeEach(() => {
-      createComponent(shallowMount, { props: { vulnerability } });
+      vulnerability = cloneDeep(mockDataVulnerabilities[0]);
     });
 
-    it('should have a `dismissed` class', () => {
-      expect(wrapper.classes()).toContain('dismissed');
+    it.each`
+      stateTransitions                                   | isLabelShown | isIconShown
+      ${[{ to_state: 'dismissed' }]}                     | ${true}      | ${false}
+      ${[{ to_state: 'dismissed', comment: 'comment' }]} | ${true}      | ${true}
+      ${[{}, {}, { to_state: 'dismissed' }]}             | ${true}      | ${false}
+      ${[]}                                              | ${false}     | ${false}
+      ${[{ to_state: 'dismissed' }, {}, {}]}             | ${false}     | ${false}
+      ${[{ to_state: 'detected' }]}                      | ${false}     | ${false}
+    `(
+      'shows dismissal badge: $isLabelShown, shows dismissal comment icon: $isIconShown',
+      ({ stateTransitions, isLabelShown, isIconShown }) => {
+        vulnerability.state_transitions = stateTransitions;
+        createComponent(shallowMountExtended, { props: { vulnerability } });
+
+        expect(findDismissalLabel().exists()).toBe(isLabelShown);
+        expect(findDismissalCommentIcon().exists()).toBe(isIconShown);
+      },
+    );
+  });
+
+  describe('vulnerability dismissal - deprecateVulnerabilitiesFeedback feature flag disabled', () => {
+    let vulnerability;
+
+    beforeEach(() => {
+      vulnerability = cloneDeep(mockDataVulnerabilities[0]);
     });
 
-    it('should render a `DISMISSED` tag', () => {
-      expect(wrapper.text()).toContain('dismissed');
-    });
+    it.each`
+      dismissalFeedback          | isLabelShown | isIconShown
+      ${{}}                      | ${true}      | ${false}
+      ${{ comment_details: {} }} | ${true}      | ${true}
+      ${null}                    | ${false}     | ${false}
+    `(
+      'shows dismissal badge: $isLabelShown, shows dismissal comment icon: $isIconShown',
+      ({ dismissalFeedback, isLabelShown, isIconShown }) => {
+        vulnerability.dismissal_feedback = dismissalFeedback;
+        createComponent(
+          shallowMountExtended,
+          { props: { vulnerability } },
+          { deprecateVulnerabilitiesFeedback: false },
+        );
+
+        expect(findDismissalLabel().exists()).toBe(isLabelShown);
+        expect(findDismissalCommentIcon().exists()).toBe(isIconShown);
+      },
+    );
   });
 
   describe('with created issue', () => {

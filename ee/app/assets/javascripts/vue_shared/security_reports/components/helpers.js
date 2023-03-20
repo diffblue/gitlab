@@ -17,3 +17,8 @@ export const bodyWithFallBack = (body) => (body === '' ? '' : body || EMPTY_BODY
 
 export const getCreatedIssueForVulnerability = (vulnerability) =>
   vulnerability.issue_links?.find((link) => link.link_type === 'created');
+
+export const getDismissalTransitionForVulnerability = (vulnerability) => {
+  const latestTransition = vulnerability.state_transitions?.at(-1);
+  return latestTransition?.to_state === 'dismissed' ? latestTransition : null;
+};
