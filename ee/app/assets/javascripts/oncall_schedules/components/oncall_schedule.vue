@@ -5,6 +5,9 @@ import {
   GlCard,
   GlCollapse,
   GlIcon,
+  GlDisclosureDropdown,
+  GlDisclosureDropdownItem,
+  GlCollapsibleListbox,
   GlModalDirective,
   GlTooltipDirective,
 } from '@gitlab/ui';
@@ -18,7 +21,7 @@ import {
   nDaysBefore,
   nDaysAfter,
 } from '~/lib/utils/datetime_utility';
-import { s__ } from '~/locale';
+import { s__, __ } from '~/locale';
 import {
   addRotationModalId,
   deleteRotationModalId,
@@ -47,9 +50,29 @@ export const i18n = {
   },
   scheduleOpen: s__('OnCallSchedules|Expand schedule'),
   scheduleClose: s__('OnCallSchedules|Collapse schedule'),
+  moreActions: __('More actions'),
 };
 export const editScheduleModalId = 'editScheduleModal';
 export const deleteScheduleModalId = 'deleteScheduleModal';
+
+const editDeleteDisclosureItems = {
+  edit: {
+    text: i18n.editScheduleLabel,
+  },
+  delete: {
+    text: i18n.deleteScheduleLabel,
+  },
+};
+const presetListboxItems = [
+  {
+    text: i18n.presetTypeLabels.DAYS,
+    value: PRESET_TYPES.DAYS,
+  },
+  {
+    text: i18n.presetTypeLabels.WEEKS,
+    value: PRESET_TYPES.WEEKS,
+  },
+];
 
 export default {
   i18n,
@@ -58,6 +81,8 @@ export default {
   editScheduleModalId,
   deleteRotationModalId,
   deleteScheduleModalId,
+  editDeleteDisclosureItems,
+  presetListboxItems,
   PRESET_TYPES,
   components: {
     GlButton,
@@ -65,6 +90,9 @@ export default {
     GlCard,
     GlCollapse,
     GlIcon,
+    GlDisclosureDropdown,
+    GlDisclosureDropdownItem,
+    GlCollapsibleListbox,
     AddEditRotationModal,
     DeleteRotationModal,
     DeleteScheduleModal,
@@ -125,7 +153,6 @@ export default {
       rotations: this.schedule.rotations.nodes,
       rotationToUpdate: {},
       scheduleVisible: this.scheduleIndex === 0,
-      bodyClass: this.scheduleIndex === 0 ? 'gl-p-5' : 'gl-p-0',
     };
   },
   computed: {
@@ -180,7 +207,7 @@ export default {
         : this.$options.i18n.scheduleOpen;
     },
     scheduleVisibleAngleIcon() {
-      return this.scheduleVisible ? 'chevron-lg-down' : 'chevron-lg-right';
+      return this.scheduleVisible ? 'chevron-lg-down' : 'chevron-lg-up';
     },
     selectedTimezone() {
       return this.timezones.find((tz) => tz.identifier === this.schedule.timezone);
@@ -241,109 +268,114 @@ export default {
     <gl-card
       class="gl-mt-5"
       :class="{ 'gl-border-bottom-0': !scheduleVisible }"
-      :body-class="bodyClass"
-      :header-class="{ 'gl-py-3': true, 'gl-rounded-small': !scheduleVisible }"
+      body-class="gl-bg-gray-10 gl-py-0"
+      :header-class="{ 'gl-bg-white': true, 'gl-rounded-small': !scheduleVisible }"
     >
       <template #header>
-        <div class="gl-display-flex gl-align-items-center" data-testid="scheduleHeader">
+        <div class="gl-display-flex gl-align-items-flex-start" data-testid="schedule-header">
+          <div class="gl-flex-grow-1">
+            <h2 class="gl-font-weight-bold gl-m-0">{{ schedule.name }}</h2>
+            <p class="gl-text-gray-500 gl-m-0">
+              {{ scheduleInfo }}
+            </p>
+          </div>
+          <gl-disclosure-dropdown
+            v-if="userCanCreateSchedule"
+            v-gl-tooltip
+            :title="$options.i18n.moreActions"
+            toggle-class="gl-mr-2 gl-py-2!"
+            class="gl-border-r"
+            data-testid="schedule-edit-button-group"
+            icon="ellipsis_v"
+            category="tertiary"
+            size="small"
+            left
+            text-sr-only
+            no-caret
+          >
+            <gl-disclosure-dropdown-item
+              :key="$options.i18n.editScheduleLabel"
+              v-gl-modal="editScheduleModalId"
+              :item="$options.editDeleteDisclosureItems.edit"
+            />
+            <gl-disclosure-dropdown-item
+              :key="$options.i18n.deleteScheduleLabel"
+              v-gl-modal="deleteScheduleModalId"
+              :item="$options.editDeleteDisclosureItems.delete"
+            />
+          </gl-disclosure-dropdown>
           <gl-button
             v-gl-tooltip
-            class="gl-mr-2 gl-p-0!"
             :title="scheduleVisibleAriaLabel"
             :aria-label="scheduleVisibleAriaLabel"
             category="tertiary"
+            size="small"
+            class="gl-ml-2 gl-py-2"
             @click="scheduleVisible = !scheduleVisible"
           >
-            <gl-icon :size="12" :name="scheduleVisibleAngleIcon" />
+            <gl-icon :size="16" :name="scheduleVisibleAngleIcon" />
           </gl-button>
-          <h3 class="gl-font-weight-bold gl-font-lg gl-m-0">{{ schedule.name }}</h3>
-          <gl-button-group
-            v-if="userCanCreateSchedule"
-            class="gl-ml-auto"
-            data-testid="schedule-edit-button-group"
-          >
-            <gl-button
-              v-gl-modal="editScheduleModalId"
-              v-gl-tooltip
-              :title="$options.i18n.editScheduleLabel"
-              icon="pencil"
-              :aria-label="$options.i18n.editScheduleLabel"
-            />
-            <gl-button
-              v-gl-modal="deleteScheduleModalId"
-              v-gl-tooltip
-              :title="$options.i18n.deleteScheduleLabel"
-              icon="remove"
-              :aria-label="$options.i18n.deleteScheduleLabel"
-            />
-          </gl-button-group>
         </div>
       </template>
-      <gl-collapse
-        :visible="scheduleVisible"
-        @hidden="bodyClass = 'gl-p-0'"
-        @show="bodyClass = 'gl-p-5'"
-      >
-        <p class="gl-text-gray-500 gl-mb-5" data-testid="scheduleBody">
-          {{ scheduleInfo }}
-        </p>
-        <div class="gl-display-flex gl-justify-content-space-between gl-mb-3">
-          <div class="gl-display-flex gl-align-items-center">
-            <gl-button-group>
-              <gl-button
-                data-testid="previous-timeframe-btn"
-                icon="chevron-left"
-                :disabled="loading"
-                :aria-label="$options.i18n.viewPreviousTimeframe"
-                @click="updateToViewPreviousTimeframe"
-              />
-              <gl-button
-                data-testid="next-timeframe-btn"
-                icon="chevron-right"
-                :disabled="loading"
-                :aria-label="$options.i18n.viewNextTimeframe"
-                @click="updateToViewNextTimeframe"
-              />
-            </gl-button-group>
-            <div class="gl-ml-3">{{ scheduleRange }}</div>
-          </div>
-          <gl-button-group data-testid="shift-preset-change">
+      <gl-collapse :visible="scheduleVisible">
+        <div
+          class="gl-mt-3 gl-display-flex gl-justify-content-space-between"
+          data-testid="rotations-header"
+        >
+          <h3 class="gl-font-lg gl-m-0">{{ $options.i18n.rotationTitle }}</h3>
+          <gl-button v-if="userCanCreateSchedule" v-gl-modal="addRotationModalId" variant="link"
+            >{{ $options.i18n.addARotation }}
+          </gl-button>
+        </div>
+
+        <hr class="gl-my-3" />
+
+        <div class="gl-display-flex gl-align-items-center gl-mb-3">
+          <gl-icon name="calendar" :size="14" class="gl-text-gray-700 gl-mr-2" />
+          <div class="gl-flex-grow-1 gl-text-gray-700 gl-font-weight-bold">{{ scheduleRange }}</div>
+
+          <gl-collapsible-listbox
+            data-testid="shift-preset-change"
+            :items="$options.presetListboxItems"
+            :toggle-text="$options.i18n.presetTypeLabels[presetType]"
+            :selected="presetType"
+            size="small"
+            @select="switchPresetType"
+          />
+
+          <gl-button-group class="gl-ml-3">
             <gl-button
-              v-for="type in $options.PRESET_TYPES"
-              :key="type"
-              :selected="type === presetType"
-              :title="formatPresetType(type)"
-              @click="switchPresetType(type)"
-            >
-              {{ $options.i18n.presetTypeLabels[type] }}
-            </gl-button>
+              data-testid="previous-timeframe-btn"
+              icon="chevron-left"
+              size="small"
+              :disabled="loading"
+              :aria-label="$options.i18n.viewPreviousTimeframe"
+              @click="updateToViewPreviousTimeframe"
+            />
+            <gl-button
+              data-testid="next-timeframe-btn"
+              icon="chevron-right"
+              size="small"
+              :disabled="loading"
+              :aria-label="$options.i18n.viewNextTimeframe"
+              @click="updateToViewNextTimeframe"
+            />
           </gl-button-group>
         </div>
 
-        <gl-card header-class="gl-bg-transparent">
-          <template #header>
-            <div
-              class="gl-display-flex gl-justify-content-space-between"
-              data-testid="rotationsHeader"
-            >
-              <h6 class="gl-m-0">{{ $options.i18n.rotationTitle }}</h6>
-              <gl-button v-if="userCanCreateSchedule" v-gl-modal="addRotationModalId" variant="link"
-                >{{ $options.i18n.addARotation }}
-              </gl-button>
-            </div>
-          </template>
-          <div class="schedule-shell" data-testid="rotationsBody">
-            <schedule-timeline-section :preset-type="presetType" :timeframe="timeframe" />
-            <rotations-list-section
-              :preset-type="presetType"
-              :rotations="rotations"
-              :timeframe="timeframe"
-              :schedule-iid="schedule.iid"
-              :loading="loading"
-              @set-rotation-to-update="setRotationToUpdate"
-            />
-          </div>
-        </gl-card>
+        <hr class="gl-my-3" />
+
+        <div class="schedule-shell gl-mb-3" data-testid="rotations-body">
+          <schedule-timeline-section :preset-type="presetType" :timeframe="timeframe" />
+          <rotations-list-section
+            :preset-type="presetType"
+            :rotations="rotations"
+            :timeframe="timeframe"
+            :schedule-iid="schedule.iid"
+            :loading="loading"
+            @set-rotation-to-update="setRotationToUpdate"
+          />
+        </div>
       </gl-collapse>
     </gl-card>
     <delete-schedule-modal :schedule="schedule" :modal-id="deleteScheduleModalId" />

@@ -1,5 +1,5 @@
-import { GlButton, GlCard, GlIcon, GlCollapse } from '@gitlab/ui';
-import Vue, { nextTick } from 'vue';
+import { GlButton, GlCard, GlIcon, GlCollapse, GlCollapsibleListbox } from '@gitlab/ui';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import mockTimezones from 'test_fixtures/timezones/full.json';
 import OnCallSchedule, { i18n } from 'ee/oncall_schedules/components/oncall_schedule.vue';
@@ -87,37 +87,34 @@ describe('On-call schedule', () => {
     fakeApollo = null;
   });
 
-  const findScheduleHeader = () => wrapper.findByTestId('scheduleHeader');
-  const findRotationsHeader = () => wrapper.findByTestId('rotationsHeader');
-  const findSchedule = () => wrapper.findByTestId('scheduleBody');
-  const findScheduleDescription = () => findSchedule().text();
-  const findRotations = () => wrapper.findByTestId('rotationsBody');
-  const findRotationsShiftPreset = () => wrapper.findByTestId('shift-preset-change');
+  const findScheduleHeader = () => wrapper.findByTestId('schedule-header');
+  const findRotationsHeader = () => wrapper.findByTestId('rotations-header');
+  const findRotations = () => wrapper.findByTestId('rotations-body');
+  const findRotationsShiftPreset = () => wrapper.findComponent(GlCollapsibleListbox);
   const findAddRotationsBtn = () => findRotationsHeader().findComponent(GlButton);
   const findScheduleTimeline = () => findRotations().findComponent(ScheduleTimelineSection);
   const findRotationsList = () => findRotations().findComponent(RotationsListSection);
   const findLoadPreviousTimeframeBtn = () => wrapper.findByTestId('previous-timeframe-btn');
   const findLoadNextTimeframeBtn = () => wrapper.findByTestId('next-timeframe-btn');
   const findCollapsible = () => wrapper.findComponent(GlCollapse);
-  const findGlCard = () => wrapper.findComponent(GlCard);
   const findCollapsibleIcon = () => wrapper.findComponent(GlIcon);
   const findEditAndDeleteButtons = () => wrapper.findByTestId('schedule-edit-button-group');
-
-  it('shows schedule title', () => {
-    expect(findScheduleHeader().text()).toBe(mockSchedule.name);
-  });
 
   describe('Timeframe schedule card header information', () => {
     const timezone = lastTz.identifier;
     const offset = `(UTC ${lastTz.formatted_offset})`;
 
+    it('shows schedule title and timezone', () => {
+      expect(findScheduleHeader().text()).toContain(mockSchedule.name);
+    });
+
     it('shows timezone info', () => {
-      expect(findScheduleDescription()).toContain(timezone);
-      expect(findScheduleDescription()).toContain(offset);
+      expect(findScheduleHeader().text()).toContain(timezone);
+      expect(findScheduleHeader().text()).toContain(offset);
     });
 
     it('shows schedule description if present', () => {
-      expect(findScheduleDescription()).toContain(mockSchedule.description);
+      expect(findScheduleHeader().text()).toContain(mockSchedule.description);
     });
 
     it('does not show schedule description if none present', () => {
@@ -126,7 +123,7 @@ describe('On-call schedule', () => {
         loading: false,
         scheduleIndex: 0,
       });
-      expect(findScheduleDescription()).not.toContain(mockSchedule.description);
+      expect(findScheduleHeader()).not.toContain(mockSchedule.description);
     });
   });
 
@@ -169,7 +166,7 @@ describe('On-call schedule', () => {
   it('renders a collapsed card if not the first in the list by default', () => {
     createComponent({ scheduleIndex: 1 });
     expect(findCollapsible().attributes('visible')).toBeUndefined();
-    expect(findCollapsibleIcon().props('name')).toBe('chevron-lg-right');
+    expect(findCollapsibleIcon().props('name')).toBe('chevron-lg-up');
   });
 
   describe('Timeframe shift preset type', () => {
@@ -178,16 +175,12 @@ describe('On-call schedule', () => {
     });
 
     it('sets shift preset type with a default type', () => {
-      const presetBtns = findRotationsShiftPreset().findAllComponents(GlButton);
-      expect(presetBtns.at(0).attributes('selected')).toBe(undefined);
-      expect(presetBtns.at(1).attributes('selected')).toBe('true');
+      expect(findRotationsShiftPreset().props('selected')).toBe(PRESET_TYPES.WEEKS);
     });
 
     it('updates the rotation preset type on click', async () => {
-      const presetBtns = findRotationsShiftPreset().findAllComponents(GlButton);
-      await presetBtns.at(0).vm.$emit('click');
-      expect(presetBtns.at(0).attributes('selected')).toBe('true');
-      expect(presetBtns.at(1).attributes('selected')).toBe(undefined);
+      await findRotationsShiftPreset().vm.$emit('select', PRESET_TYPES.DAYS);
+      expect(findRotationsShiftPreset().props('selected')).toBe(PRESET_TYPES.DAYS);
     });
   });
 
@@ -254,20 +247,6 @@ describe('On-call schedule', () => {
           expectedVariables,
         );
       });
-    });
-  });
-
-  describe('Card collapsing behavior', () => {
-    it('adds content body padding when it is expanded', async () => {
-      findCollapsible().vm.$emit('show');
-      await nextTick();
-      expect(findGlCard().props('bodyClass')).toBe('gl-p-5');
-    });
-
-    it('removes content body padding when it is collapsed', async () => {
-      findCollapsible().vm.$emit('hidden');
-      await nextTick();
-      expect(findGlCard().props('bodyClass')).toBe('gl-p-0');
     });
   });
 
