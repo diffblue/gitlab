@@ -2010,7 +2010,7 @@ In GitLab 16.0, PostgreSQL 13 becomes the minimum required PostgreSQL version.
 PostgreSQL 12 will be supported for the full GitLab 15 release cycle.
 PostgreSQL 13 will also be supported for instances that want to upgrade prior to GitLab 16.0.
 
-Upgrading to PostgreSQL 13 is not yet supported for GitLab instances with Geo enabled. Geo support for PostgreSQL 13 will be announced in a minor release version of GitLab 15, after the process is fully supported and validated. For more information, read the Geo related verifications on the [support epic for PostgreSQL 13](https://gitlab.com/groups/gitlab-org/-/epics/3832).
+Support for PostgreSQL 13 was added to Geo in GitLab 15.2.
 
 </div>
 
