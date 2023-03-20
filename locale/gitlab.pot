@@ -15652,9 +15652,6 @@ msgstr ""
 msgid "Edited %{timeago} by %{author}"
 msgstr ""
 
-msgid "Edited by %{author}"
-msgstr ""
-
 msgid "Editing"
 msgstr ""
 
