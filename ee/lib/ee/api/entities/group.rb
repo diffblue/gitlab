@@ -24,6 +24,10 @@ module EE
                      }
 
           expose :marked_for_deletion_on, if: ->(group, _) { group.licensed_feature_available?(:adjourned_deletion_for_projects_and_groups) }
+
+          expose :wiki_access_level do |group|
+            group.group_feature.string_access_level(:wiki)
+          end
         end
       end
     end
