@@ -5,5 +5,5 @@
   "replicable-type" => @replicator_class.replicable_name_plural,
   "graphql-field-name" => @replicator_class.graphql_field_name,
   "verification-enabled" => @replicator_class.verification_enabled?&.to_s,
-  "geo-target-node-id" => @target_node&.id,
-  "geo-current-node-id" => @current_node&.id } }
+  "geo-target-site-id" => @target_node&.id,
+  "geo-current-site-id" => @current_node&.id } }

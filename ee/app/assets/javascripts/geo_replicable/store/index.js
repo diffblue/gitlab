@@ -11,8 +11,8 @@ export const getStoreConfig = ({
   replicableType,
   graphqlFieldName,
   verificationEnabled,
-  geoCurrentNodeId,
-  geoTargetNodeId,
+  geoCurrentSiteId,
+  geoTargetSiteId,
 }) => ({
   actions,
   getters,
@@ -21,8 +21,8 @@ export const getStoreConfig = ({
     replicableType,
     graphqlFieldName,
     verificationEnabled,
-    geoCurrentNodeId,
-    geoTargetNodeId,
+    geoCurrentSiteId,
+    geoTargetSiteId,
   }),
 });
 

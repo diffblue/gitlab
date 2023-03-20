@@ -51,6 +51,7 @@ export const MOCK_GRAPHQL_PAGINATION_DATA = {
   endCursor: 'abc124',
 };
 
+// Query.geoNode to be renamed to Query.geoSite => https://gitlab.com/gitlab-org/gitlab/-/issues/396739
 export const MOCK_BASIC_GRAPHQL_QUERY_RESPONSE = {
   geoNode: {
     [MOCK_GRAPHQL_REGISTRY]: {
