@@ -525,15 +525,6 @@
   :weight: 1
   :idempotent: false
   :tags: []
-- :name: cronjob:update_max_seats_used_for_gitlab_com_subscriptions
-  :worker_name: UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker
-  :feature_category: :subscription_cost_management
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :cpu
-  :weight: 1
-  :idempotent: false
-  :tags: []
 - :name: cronjob:vulnerabilities_historical_statistics_deletion
   :worker_name: Vulnerabilities::HistoricalStatistics::DeletionWorker
   :feature_category: :vulnerability_management

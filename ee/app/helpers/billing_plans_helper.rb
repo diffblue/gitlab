@@ -210,10 +210,13 @@ module BillingPlansHelper
 
   private
 
-  # once https://gitlab.com/gitlab-org/gitlab/-/issues/382725 is rolled out, this method won't
-  # be necessary and can be replaced with just `namespace.gitlab_subscription.last_seat_refresh_at`
   def seats_last_updated_value(namespace)
-    (namespace.gitlab_subscription&.last_seat_refresh_at || UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker.last_enqueue_time)&.utc&.strftime('%H:%M:%S')
+    subscription = namespace.gitlab_subscription
+
+    return unless subscription
+    return unless subscription.last_seat_refresh_at
+
+    namespace.gitlab_subscription.last_seat_refresh_at.utc.strftime('%H:%M:%S')
   end
 
   def add_seats_url(group)
