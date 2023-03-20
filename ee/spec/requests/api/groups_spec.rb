@@ -891,7 +891,6 @@ RSpec.describe API::Groups, feature_category: :subgroups do
             let(:project) { nil }
             let(:namespace) { group }
             let(:context) { [::Gitlab::Tracking::ServicePingContext.new(data_source: :redis_hll, event: 'a_compliance_audit_events_api').to_context] }
-            let(:feature_flag_name) { :route_hll_to_snowplow_phase4 }
           end
         end
       end
@@ -973,7 +972,6 @@ RSpec.describe API::Groups, feature_category: :subgroups do
               let(:project) { nil }
               let(:namespace) { group }
               let(:context) { [::Gitlab::Tracking::ServicePingContext.new(data_source: :redis_hll, event: 'a_compliance_audit_events_api').to_context] }
-              let(:feature_flag_name) { :route_hll_to_snowplow_phase4 }
             end
           end
 

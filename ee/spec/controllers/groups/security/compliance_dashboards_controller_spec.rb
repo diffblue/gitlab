@@ -31,7 +31,6 @@ RSpec.describe Groups::Security::ComplianceDashboardsController, feature_categor
         end
 
         it_behaves_like 'Snowplow event tracking with RedisHLL context' do
-          let(:feature_flag_name) { :route_hll_to_snowplow_phase4 }
           let(:category) { described_class.to_s }
           let(:action) { 'show_compliance_dashboard' }
           let(:namespace) { group }

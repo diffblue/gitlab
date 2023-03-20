@@ -142,7 +142,6 @@ RSpec.describe Groups::AuditEventsController, feature_category: :audit_events do
         let(:user) { client }
         let(:namespace) { group }
         let(:context) { [::Gitlab::Tracking::ServicePingContext.new(data_source: :redis_hll, event: 'g_compliance_audit_events').to_context] }
-        let(:feature_flag_name) { :route_hll_to_snowplow_phase4 }
       end
 
       context 'when invalid date' do
