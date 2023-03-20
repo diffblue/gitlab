@@ -24,7 +24,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
         project.add_developer(user)
       end
 
-      it 'returns all vulnerabilities of a project' do
+      it 'returns all vulnerabilities of a project', :aggregate_failures do
         get_vulnerabilities
 
         expect(response).to have_gitlab_http_status(:ok)
@@ -36,7 +36,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
       context 'with pagination' do
         let(:project_vulnerabilities_path) { "#{super()}?page=3&per_page=1" }
 
-        it 'paginates the vulnerabilities according to the pagination params' do
+        it 'paginates the vulnerabilities according to the pagination params', :aggregate_failures do
           low_severity_vulnerability = create(:vulnerability, :with_finding, project: project, severity: :low)
 
           get_vulnerabilities
@@ -49,7 +49,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
       it_behaves_like 'forbids access to vulnerability API endpoint in case of disabled features'
     end
 
-    describe 'permissions' do
+    describe 'permissions', :enable_admin_mode do
       it { expect { get_vulnerabilities }.to be_allowed_for(:admin) }
       it { expect { get_vulnerabilities }.to be_allowed_for(:owner).of(project) }
       it { expect { get_vulnerabilities }.to be_allowed_for(:maintainer).of(project) }
@@ -75,7 +75,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
         project.add_developer(user)
       end
 
-      it 'returns the desired vulnerability' do
+      it 'returns the desired vulnerability', :aggregate_failures do
         get_vulnerability
 
         expect(response).to have_gitlab_http_status(:ok)
@@ -83,7 +83,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
         expect(json_response['id']).to eq vulnerability_id
       end
 
-      it 'returns the desired findings' do
+      it 'returns the desired findings', :aggregate_failures do
         get_vulnerability
 
         expect(response).to have_gitlab_http_status(:ok)
@@ -95,7 +95,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
       it_behaves_like 'forbids access to vulnerability API endpoint in case of disabled features'
     end
 
-    describe 'permissions' do
+    describe 'permissions', :enable_admin_mode do
       it { expect { get_vulnerability }.to be_allowed_for(:admin) }
       it { expect { get_vulnerability }.to be_allowed_for(:owner).of(project) }
       it { expect { get_vulnerability }.to be_allowed_for(:maintainer).of(project) }
@@ -122,7 +122,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
         project.add_developer(user)
       end
 
-      it 'creates a vulnerability from finding and attaches it to the vulnerability' do
+      it 'creates a vulnerability from finding and attaches it to the vulnerability', :aggregate_failures do
         expect { subject }.to change { project.vulnerabilities.count }.by(1)
         expect(project.vulnerabilities.last).to(
           have_attributes(
@@ -143,7 +143,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
       context 'when finding id is unknown' do
         let(:finding_id) { 0 }
 
-        it 'responds with expected error' do
+        it 'responds with expected error', :aggregate_failures do
           subject
 
           expect(response).to have_gitlab_http_status(:bad_request)
@@ -156,7 +156,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
           create(:vulnerability, findings: [finding], project: finding.project)
         end
 
-        it 'rejects creation of a new vulnerability from this finding' do
+        it 'rejects creation of a new vulnerability from this finding', :aggregate_failures do
           subject
 
           expect(response).to have_gitlab_http_status(:bad_request)
@@ -167,7 +167,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
       it_behaves_like 'forbids access to vulnerability API endpoint in case of disabled features'
     end
 
-    describe 'permissions' do
+    describe 'permissions', :enable_admin_mode do
       it { expect { create_vulnerability }.to be_allowed_for(:admin) }
       it { expect { create_vulnerability }.to be_allowed_for(:owner).of(project) }
       it { expect { create_vulnerability }.to be_allowed_for(:maintainer).of(project) }
@@ -202,7 +202,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
           stub_feature_flags(deprecate_vulnerabilities_feedback: false)
         end
 
-        it 'dismisses a vulnerability and its associated findings' do
+        it 'dismisses a vulnerability and its associated findings', :aggregate_failures do
           freeze_time do
             dismiss_vulnerability
 
@@ -240,7 +240,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
           Grape::Endpoint.before_each nil
         end
 
-        it 'responds with error' do
+        it 'responds with error', :aggregate_failures do
           dismiss_vulnerability
 
           expect(response).to have_gitlab_http_status(:bad_request)
@@ -261,7 +261,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
       it_behaves_like 'forbids access to vulnerability API endpoint in case of disabled features'
     end
 
-    describe 'permissions' do
+    describe 'permissions', :enable_admin_mode do
       it { expect { dismiss_vulnerability }.to be_allowed_for(:admin) }
       it { expect { dismiss_vulnerability }.to be_allowed_for(:owner).of(project) }
       it { expect { dismiss_vulnerability }.to be_allowed_for(:maintainer).of(project) }
@@ -291,7 +291,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
         project.add_developer(user)
       end
 
-      it 'resolves a vulnerability and its associated findings' do
+      it 'resolves a vulnerability and its associated findings', :aggregate_failures do
         freeze_time do
           resolve_vulnerability
 
@@ -311,7 +311,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
           post api("/vulnerabilities/#{vulnerability_id}/resolve", user), params: { comment: comment }
         end
 
-        it 'adds the comment to the vulnerability state transition' do
+        it 'adds the comment to the vulnerability state transition', :aggregate_failures do
           resolve_vulnerability
 
           expect(response).to have_gitlab_http_status(:created)
@@ -336,7 +336,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
       it_behaves_like 'forbids access to vulnerability API endpoint in case of disabled features'
     end
 
-    describe 'permissions' do
+    describe 'permissions', :enable_admin_mode do
       it { expect { resolve_vulnerability }.to be_allowed_for(:admin) }
       it { expect { resolve_vulnerability }.to be_allowed_for(:owner).of(project) }
       it { expect { resolve_vulnerability }.to be_allowed_for(:maintainer).of(project) }
@@ -371,7 +371,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
         project.add_developer(user)
       end
 
-      it 'confirms a vulnerability and its associated findings' do
+      it 'confirms a vulnerability and its associated findings', :aggregate_failures do
         freeze_time do
           confirm_vulnerability
 
@@ -400,7 +400,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
       it_behaves_like 'forbids access to vulnerability API endpoint in case of disabled features'
     end
 
-    describe 'permissions' do
+    describe 'permissions', :enable_admin_mode do
       it { expect { confirm_vulnerability }.to be_allowed_for(:admin) }
       it { expect { confirm_vulnerability }.to be_allowed_for(:owner).of(project) }
       it { expect { confirm_vulnerability }.to be_allowed_for(:maintainer).of(project) }
@@ -473,7 +473,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
           Grape::Endpoint.before_each nil
         end
 
-        it 'responds with error' do
+        it 'responds with error', :aggregate_failures do
           revert_vulnerability_to_detected
 
           expect(response).to have_gitlab_http_status(:bad_request)
@@ -494,7 +494,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
       it_behaves_like 'forbids access to vulnerability API endpoint in case of disabled features'
     end
 
-    describe 'permissions' do
+    describe 'permissions', :enable_admin_mode do
       it { expect { revert_vulnerability_to_detected }.to be_allowed_for(:admin) }
       it { expect { revert_vulnerability_to_detected }.to be_allowed_for(:owner).of(project) }
       it { expect { revert_vulnerability_to_detected }.to be_allowed_for(:maintainer).of(project) }
