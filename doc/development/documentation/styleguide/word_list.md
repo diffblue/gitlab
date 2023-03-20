@@ -969,6 +969,10 @@ Use lowercase for **personal access token**.
 
 Do not use **please**. For details, see the [Microsoft style guide](https://learn.microsoft.com/en-us/style-guide/a-z-word-list-term-collections/p/please).
 
+## Premium
+
+Use **Premium**, in uppercase, for the subscription tier.
+
 ## prerequisites
 
 Use **prerequisites** when documenting the steps before a task. Do not use **requirements**.
@@ -1313,6 +1317,10 @@ For example:
 - For a list of quick actions, type `/`.
 
 See also [**enter**](#enter).
+
+## Ultimate
+
+Use **Ultimate**, in uppercase, for the subscription tier.
 
 ## units of measurement
 
