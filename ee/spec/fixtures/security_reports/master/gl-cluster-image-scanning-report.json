@@ -1,18 +1,11 @@
 {
-  "version": "14.1.2",
+  "version": "15.0.4",
   "vulnerabilities": [
     {
-      "category": "cluster_image_scanning",
-      "message": "CVE-2017-18269 in glibc",
+      "id": "aa24a31ae8fdc7c0e98d73a0757e0e362674ee5d1f7263992d81f58f8a51cb64",
       "description": "An SSE2-optimized memmove implementation for i386 in sysdeps/i386/i686/multiarch/memcpy-sse2-unaligned.S in the GNU C Library (aka glibc or libc6) 2.21 through 2.27 does not correctly perform the overlapping memory check if the source memory range spans the middle of the address space, resulting in corrupt data being produced by the copy operation. This may disclose information to context-dependent attackers, or result in a denial of service, or, possibly, code execution.",
-      "cve": "debian:9:glibc:CVE-2017-18269",
       "severity": "Critical",
-      "confidence": "Unknown",
       "solution": "Upgrade glibc from 2.24-11+deb9u3 to 2.24-11+deb9u4",
-      "scanner": {
-        "id": "starboard",
-        "name": "Starboard"
-      },
       "location": {
         "dependency": {
           "package": {
@@ -46,17 +39,10 @@
       ]
     },
     {
-      "category": "cluster_image_scanning",
-      "message": "CVE-2017-16997 in glibc",
+      "id": "63d4657e761a98d4adf369ce4ce591879278484ceeadfcfc4692f269479b6a4f",
       "description": "elf/dl-load.c in the GNU C Library (aka glibc or libc6) 2.19 through 2.26 mishandles RPATH and RUNPATH containing $ORIGIN for a privileged (setuid or AT_SECURE) program, which allows local users to gain privileges via a Trojan horse library in the current working directory, related to the fillin_rpath and decompose_rpath functions. This is associated with misinterpretion of an empty RPATH/RUNPATH token as the \"./\" directory. NOTE: this configuration of RPATH/RUNPATH for a privileged program is apparently very uncommon; most likely, no such program is shipped with any common Linux distribution.",
-      "cve": "debian:9:glibc:CVE-2017-16997",
       "severity": "Critical",
-      "confidence": "Unknown",
       "solution": "Upgrade glibc from 2.24-11+deb9u3 to 2.24-11+deb9u4",
-      "scanner": {
-        "id": "starboard",
-        "name": "Starboard"
-      },
       "location": {
         "dependency": {
           "package": {
@@ -94,19 +80,15 @@
     {
       "fixes": [
         {
-          "cve": "CVE-2022-22576",
           "id": "857114844e8ac6cf5c9946ac4d40ab73eccf35df"
         },
         {
-          "cve": "CVE-2022-27774",
           "id": "09675f15e9a285de79a477f12d03bcc08dda8d80"
         },
         {
-          "cve": "CVE-2022-27775",
           "id": "7c07e0b19de5536323882ffb492ec7d3fdf5d029"
         },
         {
-          "cve": "CVE-2022-27776",
           "id": "be0740fbe8024b6041fad1af45062e2acaefb169"
         }
       ],
@@ -116,19 +98,15 @@
     {
       "fixes": [
         {
-          "cve": "CVE-2022-22576",
           "id": "8fbba0e54af83852316315f695164063df348cdf"
         },
         {
-          "cve": "CVE-2022-27774",
           "id": "b5de6ed3b0d1683db14d8d8f10e88bcf8aa9772a"
         },
         {
-          "cve": "CVE-2022-27775",
           "id": "32d836aba4d317bf9f5541255f694d6377103dd0"
         },
         {
-          "cve": "CVE-2022-27776",
           "id": "e7589f575ec9f631ead7b8ecd51c37262ea011a0"
         }
       ],
@@ -145,6 +123,15 @@
         "name": "GitLab"
       },
       "version": "0.10.0"
+    },
+    "analyzer": {
+      "id": "gitlab-agent",
+      "name": "Gitlab Agent for Kubernetes",
+      "url": "https://gitlab.com/gitlab-org/cluster-integration/gitlab-agent",
+      "vendor": {
+        "name": "GitLab"
+      },
+      "version": "15.10.0"
     },
     "type": "cluster_image_scanning",
     "status": "success",

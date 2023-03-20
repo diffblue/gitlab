@@ -34,7 +34,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::ContainerScanning do
     end
 
     it "generates expected metadata_version" do
-      expect(report.findings.first.metadata_version).to eq('14.1.2')
+      expect(report.findings.first.metadata_version).to eq('15.0.4')
     end
 
     it "adds report image's name to raw_metadata" do
