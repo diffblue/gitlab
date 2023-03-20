@@ -2,6 +2,8 @@
 
 module Groups
   class ProtectedBranchesController < Groups::ApplicationController
+    include ProtectedBranchesHelper
+
     before_action :check_feature_available!
     before_action :authorize_admin_group!
     before_action :load_protected_branch, only: %i[update destroy]
@@ -41,8 +43,8 @@ module Groups
     private
 
     def check_feature_available!
-      render_404 unless Feature.enabled?(:group_protected_branches, group)
-      render_404 unless License.feature_available?(:group_protected_branches)
+      render_404 unless group_protected_branches_feature_available?(group)
+      render_404 unless can_admin_group_protected_branches?(group)
     end
 
     def load_protected_branch

@@ -17,6 +17,16 @@ RSpec.describe Groups::ProtectedBranchesController, feature_category: :source_co
   end
 
   describe 'before action hook' do
+    context 'when group is not top-level' do
+      let(:group) { create(:group, :nested) }
+
+      it 'respond status :not_found' do
+        post collection_path
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
     context 'when feature flag disabled' do
       before do
         stub_feature_flags(group_protected_branches: false)
