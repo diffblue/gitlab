@@ -89,7 +89,6 @@ RSpec.describe ::Search::IndexRepairService, feature_category: :global_search do
             namespace_id: project.namespace_id,
             root_namespace_id: project.root_namespace.id,
             project_id: project.id,
-            project_commit: project.commit,
             project_last_repository_updated_at: project.last_repository_updated_at,
             index_status_last_commit: nil,
             index_status_indexed_at: nil,
