@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ApprovalRuleLike do
+RSpec.describe ApprovalRuleLike, feature_category: :source_code_management do
   let(:user1) { create(:user) }
   let(:user2) { create(:user) }
   let(:user3) { create(:user) }
