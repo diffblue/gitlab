@@ -1,17 +1,13 @@
 <script>
-import { debounce } from 'lodash';
-import { GlLink, GlSprintf, GlCollapsibleListbox } from '@gitlab/ui';
+import { GlLink, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { HELP_PAGE_RUNNER_TAGS_PATH } from 'ee/on_demand_scans/constants';
-import getAllProjectRunners from '../graphql/all_runners.query.graphql';
+import RunnerTagsDropdown from 'ee/vue_shared/components/runner_tags_dropdown/runner_tags_dropdown.vue';
 import { ERROR_MESSAGES, ERROR_FETCH_RUNNER_TAGS } from '../settings';
-import { getUniqueTagListFromEdges } from '../utils';
 
 export default {
   HELP_PAGE_RUNNER_TAGS_PATH,
   i18n: {
-    runnerEmptyStateText: s__('OnDemandScans|No matching results'),
     runnerSearchHeader: s__('OnDemandScans|Select runner tags'),
     runnerTagsLabel: s__(
       'OnDemandScans|%{textStart}Tags specify which runners process this scan. Runners must have every tag selected.%{textEnd} %{linkStart}What are runner tags?%{linkEnd}',
@@ -20,8 +16,8 @@ export default {
   name: 'RunnerTags',
   components: {
     GlLink,
-    GlCollapsibleListbox,
     GlSprintf,
+    RunnerTagsDropdown,
   },
   props: {
     canEditRunnerTags: {
@@ -36,90 +32,26 @@ export default {
     value: {
       type: Array,
       required: false,
-      default: null,
+      default: () => [],
     },
   },
   data() {
     return {
-      search: '',
-      isLoading: false,
       selected: [],
-      tags: [],
     };
   },
   computed: {
-    isListEmpty() {
-      return this.filteredUnselectedItems.length === 0;
-    },
     isRunnerTagsDisabled() {
       return !this.canEditRunnerTags;
     },
-    filteredUnselectedItems() {
-      return this.tags
-        .filter((tag) => tag.includes(this.search))
-        .map((tag) => ({ text: tag, value: tag }));
-    },
-    text() {
-      return this.selected?.join(', ') || this.$options.i18n.runnerSearchHeader;
-    },
-  },
-  created() {
-    this.debouncedSearchKeyUpdate = debounce(this.setSearchKey, DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
-
-    if (this.value?.length > 0) {
-      this.selected = this.value;
-    }
   },
   methods: {
-    async fetchRunners() {
-      try {
-        /**
-         * Avoid request if runner tags dropdown is disabled
-         * in case disabled class is removed manually
-         */
-        if (this.isRunnerTagsDisabled) {
-          return;
-        }
-
-        if (this.isListEmpty) {
-          this.isLoading = true;
-          const { data } = await this.$apollo.query({
-            query: getAllProjectRunners,
-            variables: {
-              fullPath: this.projectPath,
-            },
-          });
-
-          const {
-            project: {
-              runners: { nodes = [] },
-            },
-          } = data;
-
-          this.tags = getUniqueTagListFromEdges(nodes);
-        }
-        this.sortTags();
-      } catch (error) {
-        this.$emit('error', error?.message || ERROR_MESSAGES[ERROR_FETCH_RUNNER_TAGS]);
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    setSearchKey(value) {
-      this.search = value?.trim();
-    },
-    sortTags() {
-      this.tags.sort((a) => (this.isTagSelected(a) ? -1 : 1));
-    },
-    isTagSelected(tag) {
-      return this.selected?.includes(tag);
+    emitErrorMessage(error) {
+      this.$emit('error', error?.message || ERROR_MESSAGES[ERROR_FETCH_RUNNER_TAGS]);
     },
     setSelection(tags) {
       this.selected = tags;
       this.$emit('input', this.selected);
-    },
-    hideDropdown() {
-      this.sortTags();
     },
   },
 };
@@ -136,24 +68,15 @@ export default {
       </template>
     </gl-sprintf>
 
-    <gl-collapsible-listbox
-      class="gl-mt-3"
+    <runner-tags-dropdown
+      toggle-class="gl-w-full gl-mb-1! gl-mt-4"
       :block="true"
-      :items="filteredUnselectedItems"
       :disabled="isRunnerTagsDisabled"
-      :loading="isLoading"
-      :header-text="$options.i18n.runnerSearchHeader"
-      :multiple="true"
-      :no-results-text="$options.i18n.runnerEmptyStateText"
-      :searchable="true"
-      :searching="isLoading"
-      :selected="selected"
-      toggle-class="gl-w-full gl-mb-1!"
-      :toggle-text="text"
-      @hidden="hideDropdown"
-      @search="debouncedSearchKeyUpdate"
-      @select="setSelection"
-      @shown.once="fetchRunners"
+      :empty-tags-list-placeholder="$options.i18n.noRunnerTagsText"
+      :namespace-path="projectPath"
+      :value="value"
+      @input="setSelection"
+      @error="emitErrorMessage"
     />
   </div>
 </template>

@@ -1,13 +1,13 @@
 import { nextTick } from 'vue';
-import { GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
+import { GlSprintf, GlCollapsibleListbox } from '@gitlab/ui';
 import { __ } from '~/locale';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import RunnerTagsList from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/runner_tags_list.vue';
 import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/policy_action_builder.vue';
 import ProjectDastProfileSelector from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/project_dast_profile_selector.vue';
+import projectRunnerTags from 'ee/vue_shared/components/runner_tags_dropdown/graphql/get_project_runner_tags.query.graphql';
+import groupRunnerTags from 'ee/vue_shared/components/runner_tags_dropdown/graphql/get_group_runner_tags.query.graphql';
 import GroupDastProfileSelector from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/group_dast_profile_selector.vue';
-import projectRunnerTags from 'ee/security_orchestration/graphql/queries/get_project_runner_tags.query.graphql';
-import groupRunnerTags from 'ee/security_orchestration/graphql/queries/get_group_runner_tags.query.graphql';
 import { buildScannerAction } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib';
 import {
   ACTION_AND_LABEL,
@@ -19,7 +19,7 @@ import {
   SCANNER_HUMANIZED_TEMPLATE,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
 import { createMockApolloProvider } from 'ee_jest/security_configuration/dast_profiles/graphql/create_mock_apollo_provider';
-import { RUNNER_TAG_LIST_MOCK } from '../../../../on_demand_scans/mocks';
+import { RUNNER_TAG_LIST_MOCK } from 'ee_jest/vue_shared/components/runner_tags_dropdown/mocks/mocks';
 
 describe('PolicyActionBuilder', () => {
   let wrapper;
@@ -52,8 +52,8 @@ describe('PolicyActionBuilder', () => {
     mountFn = mountExtended,
     props = {},
     stubs = {},
-    provide = {},
     handlers = defaultHandlerValue(),
+    provide = {},
   } = {}) => {
     wrapper = mountFn(PolicyActionBuilder, {
       apolloProvider: createApolloProvider(handlers),
