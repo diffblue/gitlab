@@ -350,6 +350,44 @@ RSpec.describe ApplicationSetting do
           end
         end
       end
+
+      describe 'unique_project_download_limit_enabled' do
+        context 'when max_number_of_repository_downloads is 0' do
+          before do
+            subject.max_number_of_repository_downloads = 0
+            subject.max_number_of_repository_downloads_within_time_period = 300
+            subject.save!
+          end
+
+          it 'allows project to be indexed' do
+            expect(setting.unique_project_download_limit_enabled?).to be(false)
+          end
+        end
+
+        context 'when max_number_of_repository_downloads_within_time_period is 0' do
+          before do
+            subject.max_number_of_repository_downloads = 1
+            subject.max_number_of_repository_downloads_within_time_period = 0
+            subject.save!
+          end
+
+          it 'allows project to be indexed' do
+            expect(setting.unique_project_download_limit_enabled?).to be(false)
+          end
+        end
+
+        context 'when neither are 0' do
+          before do
+            subject.max_number_of_repository_downloads = 1
+            subject.max_number_of_repository_downloads_within_time_period = 300
+            subject.save!
+          end
+
+          it 'allows project to be indexed' do
+            expect(setting.unique_project_download_limit_enabled?).to be(true)
+          end
+        end
+      end
     end
 
     describe 'when validating product analytics settings', feature_category: :product_analytics do

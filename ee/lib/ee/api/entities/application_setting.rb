@@ -32,7 +32,7 @@ module EE
           expose :maintenance_mode_message, if: ->(_instance, _opts) { ::Gitlab::Geo.license_allows? }
           expose :git_two_factor_session_expiry, if: ->(_instance, _opts) { License.feature_available?(:git_two_factor_enforcement) && ::Feature.enabled?(:two_factor_for_cli) }
           expose(*EE::ApplicationSettingsHelper.git_abuse_rate_limit_attributes, if: ->(_instance, _options) do
-            ::License.feature_available?(:git_abuse_rate_limit) && ::Feature.enabled?(:git_abuse_rate_limit_feature_flag)
+            ::License.feature_available?(:git_abuse_rate_limit)
           end)
         end
       end

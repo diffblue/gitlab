@@ -463,12 +463,10 @@ RSpec.describe 'Admin updates EE-only settings' do
   end
 
   describe 'git abuse rate limit settings', :js, feature_category: :instance_resiliency do
-    let(:git_abuse_flag) { true }
     let(:license_allows) { true }
     let(:user) { create(:user, name: 'John Doe') }
 
     before do
-      stub_feature_flags(git_abuse_rate_limit_feature_flag: git_abuse_flag)
       stub_licensed_features(git_abuse_rate_limit: license_allows)
 
       visit reporting_admin_application_settings_path
@@ -483,20 +481,6 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
 
     context 'when license allows' do
-      it 'shows the Git abuse rate limit mode section' do
-        expect(page).to have_selector('[data-testid="git-abuse-rate-limit-settings"]')
-      end
-    end
-
-    context 'when feature-flag is disabled' do
-      let(:git_abuse_flag) { false }
-
-      it 'does not show the Git abuse rate limit section' do
-        expect(page).not_to have_selector('[data-testid="git-abuse-rate-limit-settings"]')
-      end
-    end
-
-    context 'when feature-flag is enabled' do
       it 'shows the Git abuse rate limit section' do
         expect(page).to have_selector('[data-testid="git-abuse-rate-limit-settings"]')
       end

@@ -43,12 +43,6 @@ RSpec.describe Users::Abuse::ProjectsDownloadBanCheckService, feature_category: 
           it { is_expected.to be_success }
         end
 
-        context 'when feature flag is disabled' do
-          let(:feature_flag_state) { false }
-
-          it { is_expected.to be_success }
-        end
-
         context 'when licensed feature is not available' do
           let(:licensed_feature_state) { false }
 
@@ -58,15 +52,27 @@ RSpec.describe Users::Abuse::ProjectsDownloadBanCheckService, feature_category: 
 
       context 'when application-level projects download throttling is configured' do
         before do
-          stub_feature_flags(git_abuse_rate_limit_feature_flag: feature_flag_state)
           stub_licensed_features(git_abuse_rate_limit: licensed_feature_state)
 
           allow_next_instance_of(Users::Abuse::GitAbuse::ApplicationThrottleService, project, user) do |service|
             allow(service).to receive(:execute).and_return(service_response)
           end
+
+          allow(Gitlab::CurrentSettings).to receive(:unique_project_download_limit_enabled?).and_return(true)
         end
 
         it_behaves_like 'uses the result of the configured projects download throttle service'
+
+        context 'when setting is disabled' do
+          before do
+            allow(Gitlab::CurrentSettings).to receive(:unique_project_download_limit_enabled?).and_return(false)
+          end
+
+          it 'returns a success response' do
+            expect(Users::Abuse::GitAbuse::ApplicationThrottleService).not_to receive(:execute)
+            expect(execute).to be_success
+          end
+        end
       end
 
       context 'when namespace-level projects download throttling is configured' do
@@ -77,6 +83,12 @@ RSpec.describe Users::Abuse::ProjectsDownloadBanCheckService, feature_category: 
           allow_next_instance_of(Users::Abuse::GitAbuse::NamespaceThrottleService, project, user) do |service|
             allow(service).to receive(:execute).and_return(service_response)
           end
+        end
+
+        context 'when feature flag is disabled' do
+          let(:feature_flag_state) { false }
+
+          it { is_expected.to be_success }
         end
 
         it_behaves_like 'uses the result of the configured projects download throttle service'
@@ -108,6 +120,8 @@ RSpec.describe Users::Abuse::ProjectsDownloadBanCheckService, feature_category: 
         allow_next_instance_of(Users::Abuse::GitAbuse::NamespaceThrottleService, project, user) do |service|
           allow(service).to receive(:execute).and_return({ banned: banned_from_namespace })
         end
+
+        allow(Gitlab::CurrentSettings).to receive(:unique_project_download_limit_enabled?).and_return(true)
       end
 
       context 'when user is banned at the application-level' do
