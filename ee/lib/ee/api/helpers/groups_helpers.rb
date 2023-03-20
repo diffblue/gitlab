@@ -13,6 +13,7 @@ module EE
             optional :ldap_access, type: Integer, desc: 'A valid access level'
             optional :shared_runners_minutes_limit, type: Integer, desc: '(admin-only) Pipeline minutes quota for this group'
             optional :extra_shared_runners_minutes_limit, type: Integer, desc: '(admin-only) Extra pipeline minutes quota for this group'
+            optional :wiki_access_level, type: String, values: %w[disabled private enabled], desc: 'Wiki access level. One of `disabled`, `private` or `enabled`'
             all_or_none_of :ldap_cn, :ldap_access
           end
 

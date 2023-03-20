@@ -429,6 +429,17 @@ RSpec.describe API::Groups, feature_category: :subgroups do
         end
       end
     end
+
+    context 'wiki_access_level' do
+      %w[disabled private enabled].each do |access_level|
+        it 'updates the attribute as expected' do
+          put api("/groups/#{group.id}", user), params: { wiki_access_level: access_level }
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response['wiki_access_level']).to eq(access_level)
+        end
+      end
+    end
   end
 
   describe "POST /groups" do
@@ -617,6 +628,17 @@ RSpec.describe API::Groups, feature_category: :subgroups do
           end.to change { Group.count }
 
           expect(response).to have_gitlab_http_status(:created)
+        end
+      end
+    end
+
+    context 'wiki_access_level' do
+      %w[disabled private enabled].each do |access_level|
+        it 'updates the attribute as expected' do
+          post api("/groups", admin), params: attributes_for_group_api.merge(wiki_access_level: access_level)
+
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response['wiki_access_level']).to eq(access_level)
         end
       end
     end

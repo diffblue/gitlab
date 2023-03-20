@@ -79,10 +79,10 @@ RSpec.describe Groups::FeatureSetting do
     end
 
     context 'when feature has any other value' do
-      it 'returns true' do
-        group.group_feature.update_attribute(:wiki_access_level, 200)
+      it 'returns false' do
+        group.group_feature.update_attribute(:wiki_access_level, 10)
 
-        expect(group.feature_available?(:wiki)).to eq(true)
+        expect(group.feature_available?(:wiki)).to eq(false)
       end
     end
 
@@ -92,4 +92,52 @@ RSpec.describe Groups::FeatureSetting do
     end
   end
   # rubocop:enable Gitlab/FeatureAvailableUsage
+
+  describe 'wiki_access_level=' do
+    let_it_be(:group) { create(:group) }
+
+    before_all do
+      group.update!(wiki_access_level: 'enabled')
+    end
+
+    context 'when passing a string' do
+      %w[disabled private enabled].each do |access_level|
+        it 'updates the attribute as expected' do
+          group.update!(wiki_access_level: access_level)
+
+          expect(group.group_feature.wiki_access_level)
+            .to eq(::Groups::FeatureSetting.access_level_from_str(access_level))
+        end
+      end
+    end
+
+    context 'when passing an integer' do
+      [0, 10, 20].each do |access_level|
+        it 'updates the attribute as expected' do
+          group.update!(wiki_access_level: access_level)
+
+          expect(group.group_feature.wiki_access_level).to eq(access_level)
+        end
+      end
+    end
+
+    context 'when passing a string containing the integer value' do
+      %w[0 10 20].each do |access_level|
+        it 'updates the attribute as expected' do
+          group.update!(wiki_access_level: access_level)
+
+          expect(group.group_feature.wiki_access_level).to eq(access_level.to_i)
+        end
+      end
+    end
+
+    context 'when passing an invalid value' do
+      %w[5 internal].each do |access_level|
+        it 'does not update the attribute' do
+          expect { group.update!(wiki_access_level: access_level) }
+            .to raise_error(ArgumentError, "Invalid wiki_access_level \"#{access_level}\"")
+        end
+      end
+    end
+  end
 end
