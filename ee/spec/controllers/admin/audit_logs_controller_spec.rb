@@ -62,8 +62,6 @@ RSpec.describe Admin::AuditLogsController, feature_category: :audit_events do
               .to_context
           ]
         end
-
-        let(:feature_flag_name) { :route_hll_to_snowplow_phase4 }
       end
 
       context 'when invalid date' do

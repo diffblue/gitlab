@@ -13,14 +13,12 @@ module API
       forbidden! unless ::License.feature_available?(:admin_audit_log)
       increment_unique_values('a_compliance_audit_events_api', current_user.id)
 
-      if ::Feature.enabled?(:route_hll_to_snowplow_phase4)
-        ::Gitlab::Tracking.event(
-          'API::AuditEvents',
-          :admin_audit_event_request,
-          user: current_user,
-          context: [::Gitlab::Tracking::ServicePingContext.new(data_source: :redis_hll, event: 'a_compliance_audit_events_api').to_context]
-        )
-      end
+      ::Gitlab::Tracking.event(
+        'API::AuditEvents',
+        :admin_audit_event_request,
+        user: current_user,
+        context: [::Gitlab::Tracking::ServicePingContext.new(data_source: :redis_hll, event: 'a_compliance_audit_events_api').to_context]
+      )
     end
 
     resources :audit_events do

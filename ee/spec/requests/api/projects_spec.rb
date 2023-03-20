@@ -876,7 +876,6 @@ RSpec.describe API::Projects, feature_category: :projects do
             let(:action) { 'project_audit_event_request' }
             let(:namespace) { project.namespace }
             let(:context) { [::Gitlab::Tracking::ServicePingContext.new(data_source: :redis_hll, event: 'a_compliance_audit_events_api').to_context] }
-            let(:feature_flag_name) { :route_hll_to_snowplow_phase4 }
           end
         end
       end

@@ -47,7 +47,6 @@ RSpec.describe Admin::CredentialsController, type: :request, feature_category: :
           let(:project) { nil }
           let(:namespace) { nil }
           let(:context) { [::Gitlab::Tracking::ServicePingContext.new(data_source: :redis_hll, event: 'i_compliance_credential_inventory').to_context] }
-          let(:feature_flag_name) { :route_hll_to_snowplow_phase4 }
         end
 
         describe 'filtering by type of credential' do
