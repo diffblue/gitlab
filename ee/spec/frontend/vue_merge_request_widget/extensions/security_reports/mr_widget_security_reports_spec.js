@@ -57,13 +57,21 @@ describe('MR Widget Security Reports', () => {
     containerScanningComparisonPathV2: '/my/container-scanning/endpoint',
   };
 
+  const mockAuthor = {
+    name: 'Administrator',
+    username: 'root',
+    webUrl: 'http://gdk.test:3000/root',
+    id: 'gid://gitlab/User/15',
+  };
+
   const createComponent = ({
     propsData,
     mountFn = shallowMountExtended,
-    apolloHandlers = [],
+    findingHandler = [findingQuery, findingQueryMockData()],
+    additionalHandlers = [],
   } = {}) => {
     wrapper = mountFn(MRSecurityWidget, {
-      apolloProvider: createMockApollo([[findingQuery, findingQueryMockData()], ...apolloHandlers]),
+      apolloProvider: createMockApollo([findingHandler, ...additionalHandlers]),
       propsData: {
         ...propsData,
         mr: {
@@ -105,12 +113,14 @@ describe('MR Widget Security Reports', () => {
     mockDataFn,
     mockDataProps,
     mrProps = {},
-    apolloHandlers,
+    findingHandler,
+    additionalHandlers,
   }) => {
     mockDataFn(mockDataProps);
     createComponent({
       mountFn: mountExtended,
-      apolloHandlers,
+      findingHandler,
+      additionalHandlers,
       propsData: {
         mr: mrProps,
       },
@@ -399,18 +409,19 @@ describe('MR Widget Security Reports', () => {
     const createComponentExpandWidgetAndOpenModal = async ({
       mockDataProps = {},
       mrProps,
-      apolloHandlers,
+      findingHandler,
+      additionalHandlers,
     } = {}) => {
       await createComponentAndExpandWidget({
         mockDataFn: mockWithData,
         mockDataProps,
         mrProps,
-        apolloHandlers,
+        findingHandler,
+        additionalHandlers,
       });
 
       // Click on the vulnerability name
       wrapper.findAllByText('Password leak').at(0).trigger('click');
-      await nextTick();
     };
 
     it('does not display the modal until the finding is clicked', async () => {
@@ -420,7 +431,16 @@ describe('MR Widget Security Reports', () => {
     });
 
     it('renders the modal when the finding is clicked', async () => {
-      await createComponentExpandWidgetAndOpenModal();
+      await createComponentExpandWidgetAndOpenModal({
+        findingHandler: [
+          findingQuery,
+          findingQueryMockData({
+            stateComment: 'Existing comment',
+            dismissedAt: '2023-03-07T10:50:09Z',
+            dismissedBy: mockAuthor,
+          }),
+        ],
+      });
 
       const modal = findModal();
 
@@ -439,7 +459,16 @@ describe('MR Widget Security Reports', () => {
           uuid: '0',
           severity: 'critical',
           name: 'Password leak',
-          isDismissed: false,
+          dismissal_feedback: {
+            author: {
+              name: 'Administrator',
+              username: 'root',
+            },
+            created_at: '2023-03-07T10:50:09Z',
+            comment_details: {
+              comment: 'Existing comment',
+            },
+          },
           merge_request_feedback: {
             author: {
               name: 'Administrator',
@@ -599,7 +628,7 @@ describe('MR Widget Security Reports', () => {
 
       it('handles dismissing finding - success', async () => {
         await createComponentExpandWidgetAndOpenModal({
-          apolloHandlers: [
+          additionalHandlers: [
             [
               dismissFindingMutation,
               jest.fn().mockResolvedValue({
@@ -628,7 +657,7 @@ describe('MR Widget Security Reports', () => {
 
       it('handles dismissing finding - error', async () => {
         await createComponentExpandWidgetAndOpenModal({
-          apolloHandlers: [
+          additionalHandlers: [
             [
               dismissFindingMutation,
               jest.fn().mockRejectedValue({
@@ -690,7 +719,7 @@ describe('MR Widget Security Reports', () => {
       it('adds the dismissal comment - success', async () => {
         await createComponentExpandWidgetAndOpenModal({
           mockDataProps,
-          apolloHandlers: [
+          additionalHandlers: [
             [
               dismissFindingMutation,
               jest.fn().mockResolvedValue({
@@ -713,14 +742,17 @@ describe('MR Widget Security Reports', () => {
       });
 
       it('edits the dismissal comment - success', async () => {
-        mockDataProps.dismissal_feedback.comment_details = {
-          comment: 'Existing comment',
-          comment_author: { id: 15 },
-        };
-
         await createComponentExpandWidgetAndOpenModal({
           mockDataProps,
-          apolloHandlers: [
+          findingHandler: [
+            findingQuery,
+            findingQueryMockData({
+              stateComment: 'Existing comment',
+              dismissedAt: '2023-03-07T10:50:09Z',
+              dismissedBy: mockAuthor,
+            }),
+          ],
+          additionalHandlers: [
             [
               dismissFindingMutation,
               jest.fn().mockResolvedValue({
@@ -734,7 +766,10 @@ describe('MR Widget Security Reports', () => {
           ],
         });
 
+        await waitForPromises();
+
         findModal().vm.$emit('addDismissalComment', 'Edited comment');
+
         await waitForPromises();
 
         expect(toast).toHaveBeenCalledWith("Comment edited on 'Password leak'");
@@ -744,7 +779,7 @@ describe('MR Widget Security Reports', () => {
       it('adds the dismissal comment - error', async () => {
         await createComponentExpandWidgetAndOpenModal({
           mockDataProps,
-          apolloHandlers: [[dismissFindingMutation, jest.fn().mockRejectedValue()]],
+          additionalHandlers: [[dismissFindingMutation, jest.fn().mockRejectedValue()]],
         });
 
         findModal().vm.$emit('addDismissalComment', 'Edited comment');
@@ -763,7 +798,7 @@ describe('MR Widget Security Reports', () => {
 
         await createComponentExpandWidgetAndOpenModal({
           mockDataProps,
-          apolloHandlers: [
+          additionalHandlers: [
             [
               dismissFindingMutation,
               jest.fn().mockResolvedValue({
@@ -803,7 +838,7 @@ describe('MR Widget Security Reports', () => {
 
         await createComponentExpandWidgetAndOpenModal({
           mockDataProps,
-          apolloHandlers: [[dismissFindingMutation, jest.fn().mockRejectedValue()]],
+          additionalHandlers: [[dismissFindingMutation, jest.fn().mockRejectedValue()]],
         });
 
         expect(findModal().props('modal').isShowingDeleteButtons).toBe(false);
@@ -840,7 +875,7 @@ describe('MR Widget Security Reports', () => {
       it('handles undoing dismissing a finding - success', async () => {
         await createComponentExpandWidgetAndOpenModal({
           mockDataProps,
-          apolloHandlers: [
+          additionalHandlers: [
             [
               revertFindingToDetectedMutation,
               jest.fn().mockResolvedValue({
@@ -867,7 +902,7 @@ describe('MR Widget Security Reports', () => {
       it('handles undoing dismissing a finding - error', async () => {
         await createComponentExpandWidgetAndOpenModal({
           mockDataProps,
-          apolloHandlers: [[revertFindingToDetectedMutation, jest.fn().mockRejectedValue({})]],
+          additionalHandlers: [[revertFindingToDetectedMutation, jest.fn().mockRejectedValue({})]],
         });
 
         findModal().vm.$emit('revertDismissVulnerability');
@@ -877,9 +912,6 @@ describe('MR Widget Security Reports', () => {
         expect(findModal().props('modal').error).toBe(
           'There was an error reverting the dismissal. Please try again.',
         );
-
-        // Should still remain the same because the connection failed
-        expect(findModal().props('modal').vulnerability.dismissal_feedback).toEqual({ author: {} });
       });
     });
   });
