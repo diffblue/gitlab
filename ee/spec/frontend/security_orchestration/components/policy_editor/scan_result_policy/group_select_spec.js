@@ -3,7 +3,8 @@ import VueApollo from 'vue-apollo';
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import waitForPromises from 'helpers/wait_for_promises';
-import searchGroups from 'ee/security_orchestration/graphql/queries/get_namespace_groups.query.graphql';
+import searchDescendantGroups from 'ee/security_orchestration/graphql/queries/get_descendant_groups.query.graphql';
+import searchNamespaceGroups from 'ee/security_orchestration/graphql/queries/get_namespace_groups.query.graphql';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import GroupSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/group_select.vue';
@@ -11,15 +12,39 @@ import { GROUP_TYPE } from 'ee/security_orchestration/constants';
 
 Vue.use(VueApollo);
 
+const rootGroup = {
+  avatarUrl: null,
+  id: 'gid://gitlab/Group/1',
+  fullName: 'Name 1',
+  fullPath: 'path/to/name-1',
+};
+
 const group = {
   avatarUrl: null,
   id: 'gid://gitlab/Group/2',
-  fullName: 'Name 1',
-  fullPath: 'path/to/name-1',
+  fullName: 'Name 2',
+  fullPath: 'path/to/name-2',
   __typename: 'Group',
 };
 
-const USERS_RESPONSE = {
+const DESCENDANT_GROUP_RESPONSE = {
+  data: {
+    group: {
+      ...rootGroup,
+      descendantGroups: {
+        nodes: [
+          {
+            ...group,
+          },
+        ],
+        __typename: 'GroupConnection',
+      },
+      __typename: 'Group',
+    },
+  },
+};
+
+const NAMESPACE_GROUP_RESPONSE = {
   data: {
     groups: {
       nodes: [
@@ -29,17 +54,24 @@ const USERS_RESPONSE = {
       ],
       __typename: 'GroupConnection',
     },
-    __typename: 'UserCore',
   },
 };
 
 describe('GroupSelect component', () => {
   let wrapper;
-  const namespacePath = 'path/to/namespace';
-  const searchQueryHandlerSuccess = jest.fn().mockResolvedValue(USERS_RESPONSE);
+  const rootNamespacePath = 'root/path/to/namespace';
+  const searchDescendantGroupsQueryHandlerSuccess = jest
+    .fn()
+    .mockResolvedValue(DESCENDANT_GROUP_RESPONSE);
+  const searchNamespaceGroupsQueryHandlerSuccess = jest
+    .fn()
+    .mockResolvedValue(NAMESPACE_GROUP_RESPONSE);
 
-  const createComponent = (propsData = {}) => {
-    const fakeApollo = createMockApollo([[searchGroups, searchQueryHandlerSuccess]]);
+  const createComponent = ({ propsData = {}, provide = {} } = {}) => {
+    const fakeApollo = createMockApollo([
+      [searchDescendantGroups, searchDescendantGroupsQueryHandlerSuccess],
+      [searchNamespaceGroups, searchNamespaceGroupsQueryHandlerSuccess],
+    ]);
 
     wrapper = mount(GroupSelect, {
       apolloProvider: fakeApollo,
@@ -48,7 +80,9 @@ describe('GroupSelect component', () => {
         ...propsData,
       },
       provide: {
-        namespacePath,
+        globalGroupApproversEnabled: true,
+        rootNamespacePath,
+        ...provide,
       },
     });
   };
@@ -58,47 +92,84 @@ describe('GroupSelect component', () => {
   const waitForApolloAndVue = async () => {
     await nextTick();
     jest.runOnlyPendingTimers();
-    await waitForPromises();
   };
 
-  beforeEach(async () => {
-    createComponent();
-    await waitForApolloAndVue();
-  });
+  describe('default', () => {
+    beforeEach(async () => {
+      createComponent();
+      await waitForApolloAndVue();
+    });
 
-  it('filters groups when search is performed in listbox', async () => {
-    expect(searchQueryHandlerSuccess).toHaveBeenCalledWith({ search: '' });
+    it('filters groups when search is performed in listbox', async () => {
+      expect(searchNamespaceGroupsQueryHandlerSuccess).toHaveBeenCalledWith({
+        rootNamespacePath,
+        search: '',
+      });
+      expect(searchDescendantGroupsQueryHandlerSuccess).not.toHaveBeenCalled();
 
-    const searchTerm = 'test';
-    findListbox().vm.$emit('search', searchTerm);
-    await waitForApolloAndVue();
+      const searchTerm = 'test';
+      findListbox().vm.$emit('search', searchTerm);
+      await waitForApolloAndVue();
 
-    expect(searchQueryHandlerSuccess).toHaveBeenCalledWith({ search: searchTerm });
-  });
+      expect(searchNamespaceGroupsQueryHandlerSuccess).toHaveBeenCalledWith({
+        rootNamespacePath,
+        search: searchTerm,
+      });
+    });
 
-  it('emits when a group is selected', async () => {
-    findListbox().vm.$emit('select', [group.id]);
-    await nextTick();
-    expect(wrapper.emitted('updateSelectedApprovers')).toEqual([
-      [
+    it('emits when a group is selected', async () => {
+      findListbox().vm.$emit('select', [group.id]);
+      await nextTick();
+      expect(wrapper.emitted('updateSelectedApprovers')).toEqual([
         [
-          {
-            ...group,
-            id: getIdFromGraphQLId(group.id),
-            text: group.fullName,
-            type: GROUP_TYPE,
-            value: group.id,
-          },
+          [
+            {
+              ...group,
+              id: getIdFromGraphQLId(group.id),
+              text: group.fullName,
+              type: GROUP_TYPE,
+              value: group.id,
+            },
+          ],
         ],
-      ],
-    ]);
+      ]);
+    });
+
+    it('emits when a group is deselected', () => {
+      findListbox().vm.$emit('select', [group.id]);
+      findListbox().vm.$emit('select', []);
+      expect(wrapper.emitted('updateSelectedApprovers')[1]).toEqual([[]]);
+    });
   });
 
-  it('emits when a group is deselected', async () => {
-    findListbox().vm.$emit('select', [group.id]);
-    await nextTick();
-    findListbox().vm.$emit('select', []);
-    await nextTick();
-    expect(wrapper.emitted('updateSelectedApprovers')[1]).toEqual([[]]);
+  describe('descendant group approvers', () => {
+    it('filters groups when search is performed in listbox', async () => {
+      createComponent({ provide: { globalGroupApproversEnabled: false } });
+      await waitForApolloAndVue();
+
+      expect(searchNamespaceGroupsQueryHandlerSuccess).not.toHaveBeenCalled();
+      expect(searchDescendantGroupsQueryHandlerSuccess).toHaveBeenCalledWith({
+        rootNamespacePath,
+        search: '',
+      });
+
+      const searchTerm = 'test';
+      findListbox().vm.$emit('search', searchTerm);
+      await waitForApolloAndVue();
+
+      expect(searchDescendantGroupsQueryHandlerSuccess).toHaveBeenCalledWith({
+        rootNamespacePath,
+        search: searchTerm,
+      });
+    });
+
+    it('contains the root group and descendent group', async () => {
+      createComponent({ provide: { globalGroupApproversEnabled: false } });
+      await waitForApolloAndVue();
+      await waitForPromises();
+
+      const items = [expect.objectContaining(rootGroup), expect.objectContaining(group)];
+      expect(findListbox().props('items')).toEqual(items);
+    });
   });
 });
