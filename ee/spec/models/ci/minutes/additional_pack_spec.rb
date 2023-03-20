@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::AdditionalPack, type: :model do
+RSpec.describe Ci::Minutes::AdditionalPack, type: :model, feature_category: :continuous_integration do
   describe 'associations' do
     it { is_expected.to belong_to(:namespace) }
   end
