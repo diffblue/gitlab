@@ -20,7 +20,7 @@ export const addScheduleModalId = 'addScheduleModal';
 export const i18n = {
   title: s__('OnCallSchedules|On-call schedules'),
   add: {
-    button: s__('OnCallSchedules|Add a schedule'),
+    button: s__('OnCallSchedules|Add schedule'),
     tooltip: s__('OnCallSchedules|Add an additional schedule to your project'),
   },
   emptyState: {
@@ -110,14 +110,15 @@ export default {
 
     <template v-else-if="hasSchedules">
       <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
-        <h2>{{ $options.i18n.title }}</h2>
+        <h1>{{ $options.i18n.title }}</h1>
         <gl-button
           v-if="userCanCreateSchedule"
           v-gl-modal="$options.addScheduleModalId"
           v-gl-tooltip.left.viewport.hover
           :title="$options.i18n.add.tooltip"
           :aria-label="$options.i18n.add.tooltip"
-          category="secondary"
+          category="primary"
+          size="small"
           variant="confirm"
           class="gl-mt-5"
           data-testid="add-additional-schedules-button"

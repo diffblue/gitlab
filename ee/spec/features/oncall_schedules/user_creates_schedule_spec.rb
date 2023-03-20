@@ -18,18 +18,20 @@ RSpec.describe 'On-call Schedules', :js, feature_category: :on_call_schedule_man
   end
 
   context 'displaying the empty state by default' do
-    it { expect(page).to have_button 'Add a schedule' }
+    it { expect(page).to have_button 'Add schedule' }
   end
 
   context 'creating a schedule' do
     it 'adds a schedule given valid options' do
-      click_button 'Add a schedule'
+      click_button 'Add schedule'
       fill_in 'schedule-name', with: 'Test schedule'
       fill_in 'schedule-description', with: 'Test schedule description'
 
       click_button 'Select timezone'
       click_button '[UTC-12] International Date Line West'
-      click_button 'Add schedule'
+      within_element(id: 'addScheduleModal') do
+        click_button 'Add schedule'
+      end
 
       wait_for_all_requests
       expect(page).to have_css '.gl-alert-tip'
