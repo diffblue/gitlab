@@ -14,22 +14,19 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
   describe('#identity_verification_enabled?') do
     where(
       identity_verification: [true, false],
-      soft_email_confirmation: [true, false],
       require_admin_approval_after_user_signup: [true, false],
-      email_confirmation_setting: %w[hard off]
+      email_confirmation_setting: %w[soft hard off]
     )
 
     with_them do
       before do
         stub_feature_flags(identity_verification: identity_verification)
-        stub_feature_flags(soft_email_confirmation: soft_email_confirmation)
         stub_application_setting(require_admin_approval_after_user_signup: require_admin_approval_after_user_signup)
         stub_application_setting_enum('email_confirmation_setting', email_confirmation_setting)
       end
 
       it 'returns the expected result' do
         result = identity_verification &&
-          !soft_email_confirmation &&
           !require_admin_approval_after_user_signup &&
           email_confirmation_setting == 'hard'
 

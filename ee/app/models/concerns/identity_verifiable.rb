@@ -11,9 +11,8 @@ module IdentityVerifiable
   }.freeze
 
   def identity_verification_enabled?
-    return false if ::Feature.enabled?(:soft_email_confirmation)
+    return false unless ::Gitlab::CurrentSettings.email_confirmation_setting_hard?
     return false if ::Gitlab::CurrentSettings.require_admin_approval_after_user_signup
-    return false if ::Gitlab::CurrentSettings.email_confirmation_setting_off?
 
     email_wrapper = ::Gitlab::Email::FeatureFlagWrapper.new(email)
     Feature.enabled?(:identity_verification, email_wrapper)
