@@ -18,8 +18,7 @@ module PackageMetadata
     worker_has_external_dependencies!
 
     def perform
-      return unless Feature.enabled?(:package_metadata_synchronization)
-      return unless ::License.feature_available?(:license_scanning)
+      return unless should_run?
 
       try_obtain_lease do
         stop_signal = StopSignal.new(exclusive_lease)
@@ -39,6 +38,16 @@ module PackageMetadata
       def lease_time_elapsed
         LEASE_TIMEOUT - lease.ttl
       end
+    end
+
+    private
+
+    def should_run?
+      return false unless Feature.enabled?(:package_metadata_synchronization)
+      return false unless ::License.feature_available?(:license_scanning)
+      return false if Rails.env.development? && ENV.fetch('PM_SYNC_IN_DEV', 'false') != 'true'
+
+      true
     end
   end
 end
