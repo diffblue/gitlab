@@ -8,6 +8,7 @@ import {
   GlFormSelect,
 } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { I18N_DELETION_PROTECTION } from '../constants';
 
 export default {
@@ -19,6 +20,7 @@ export default {
     GlFormRadio,
     GlFormSelect,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     deletionAdjournedPeriod: {
       type: Number,
@@ -44,12 +46,19 @@ export default {
   },
   computed: {
     delayedDeletionDisabled() {
+      if (this.isAlwaysPerformDelayedDeletionFeatureFlagEnabled) {
+        return false;
+      }
+
       return !this.formData.delayedGroupDeletion;
     },
     inputGroupTextClass() {
       return this.delayedDeletionDisabled
         ? 'gl-border-gray-100 gl-bg-gray-10 gl-text-gray-400'
         : '';
+    },
+    isAlwaysPerformDelayedDeletionFeatureFlagEnabled() {
+      return this.glFeatures.alwaysPerformDelayedDeletion;
     },
   },
   i18n: I18N_DELETION_PROTECTION,
@@ -72,21 +81,23 @@ export default {
       data-testid="keep-deleted"
       class="gl-display-flex gl-flex-direction-row gl-align-items-baseline gl-mb-3"
     >
-      <gl-form-radio
-        v-model="formData.delayedGroupDeletion"
-        name="application_setting[delayed_group_deletion]"
-        class="gl-mr-3"
-        :value="true"
-        >{{ $options.i18n.keepDeleted }}</gl-form-radio
-      >
-      <gl-form-select
-        name="application_setting[delayed_project_deletion]"
-        :disabled="delayedDeletionDisabled"
-        :value="formData.delayedProjectDeletion"
-        :options="$options.selectOptions"
-        class="gl-mr-3 gl-w-20 gl-py-0 gl-px-2 gl-h-6!"
-      />
-      <span class="gl-mr-3">{{ $options.i18n.for }}</span>
+      <template v-if="!isAlwaysPerformDelayedDeletionFeatureFlagEnabled">
+        <gl-form-radio
+          v-model="formData.delayedGroupDeletion"
+          name="application_setting[delayed_group_deletion]"
+          class="gl-mr-3"
+          :value="true"
+          >{{ $options.i18n.keepDeleted }}</gl-form-radio
+        >
+        <gl-form-select
+          name="application_setting[delayed_project_deletion]"
+          :disabled="delayedDeletionDisabled"
+          :value="formData.delayedProjectDeletion"
+          :options="$options.selectOptions"
+          class="gl-mr-3 gl-w-20 gl-py-0 gl-px-2 gl-h-6!"
+        />
+        <span class="gl-mr-3">{{ $options.i18n.for }}</span>
+      </template>
       <gl-form-input-group class="gl-w-auto">
         <gl-form-input
           v-model="formData.deletionAdjournedPeriod"
@@ -106,6 +117,7 @@ export default {
       </gl-form-input-group>
     </div>
     <gl-form-radio
+      v-if="!isAlwaysPerformDelayedDeletionFeatureFlagEnabled"
       v-model="formData.delayedGroupDeletion"
       data-testid="delete-immediately"
       name="application_setting[delayed_group_deletion]"

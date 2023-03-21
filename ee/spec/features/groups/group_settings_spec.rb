@@ -162,49 +162,55 @@ RSpec.describe 'Edit group settings', feature_category: :subgroups do
       stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
     end
 
-    it_behaves_like 'a cascading setting' do
-      let_it_be(:subgroup) { create(:group, parent: group) }
-      let(:setting_field_selector) { '[data-testid="delayed-project-removal-radio-button"]' }
-      let(:setting_path) { edit_group_path(group, anchor: 'js-permissions-settings') }
-      let(:group_path) { edit_group_path(group) }
-      let(:subgroup_path) { edit_group_path(subgroup) }
-      let(:click_save_button) { save_permissions_group }
-      let(:enable_setting) { -> { choose 'group_delayed_project_removal_true' } }
-    end
-
-    context 'delayed deletion is disabled by an admin', :js do
-      let_it_be(:user) { create(:admin) }
-
+    context 'when `always_perform_delayed_deletion` feature flag is disabled' do
       before do
-        stub_env('IN_MEMORY_APPLICATION_SETTINGS', 'false')
         stub_feature_flags(always_perform_delayed_deletion: false)
-        gitlab_enable_admin_mode_sign_in(user)
-
-        visit general_admin_application_settings_path
-
-        page.within '#js-visibility-settings' do
-          choose 'None, delete immediately'
-          click_button 'Save changes'
-        end
       end
 
-      it 'does not render the group delayed deletion inputs' do
-        visit edit_group_path(group)
-
-        page.within form_group_selector do
-          expect(page).not_to have_selector('input')
-        end
+      it_behaves_like 'a cascading setting' do
+        let_it_be(:subgroup) { create(:group, parent: group) }
+        let(:setting_field_selector) { '[data-testid="delayed-project-removal-radio-button"]' }
+        let(:setting_path) { edit_group_path(group, anchor: 'js-permissions-settings') }
+        let(:group_path) { edit_group_path(group) }
+        let(:subgroup_path) { edit_group_path(subgroup) }
+        let(:click_save_button) { save_permissions_group }
+        let(:enable_setting) { -> { choose 'group_delayed_project_removal_true' } }
       end
 
-      it 'displays lock icon with popover' do
-        visit edit_group_path(group)
+      context 'delayed deletion is disabled by an admin', :js do
+        let_it_be(:user) { create(:admin) }
 
-        page.within form_group_selector do
-          find('[data-testid="cascading-settings-lock-icon"]').click
+        before do
+          stub_env('IN_MEMORY_APPLICATION_SETTINGS', 'false')
+          stub_feature_flags(always_perform_delayed_deletion: false)
+          gitlab_enable_admin_mode_sign_in(user)
+
+          visit general_admin_application_settings_path
+
+          page.within '#js-visibility-settings' do
+            choose 'None, delete immediately'
+            click_button 'Save changes'
+          end
         end
 
-        page.within '[data-testid="cascading-settings-lock-popover"]' do
-          expect(page).to have_text 'This setting has been enforced by an instance admin.'
+        it 'does not render the group delayed deletion inputs' do
+          visit edit_group_path(group)
+
+          page.within form_group_selector do
+            expect(page).not_to have_selector('input')
+          end
+        end
+
+        it 'displays lock icon with popover' do
+          visit edit_group_path(group)
+
+          page.within form_group_selector do
+            find('[data-testid="cascading-settings-lock-icon"]').click
+          end
+
+          page.within '[data-testid="cascading-settings-lock-popover"]' do
+            expect(page).to have_text 'This setting has been enforced by an instance admin.'
+          end
         end
       end
     end
@@ -227,6 +233,12 @@ RSpec.describe 'Edit group settings', feature_category: :subgroups do
         fill_in 'confirm_name_input', with: confirm_with
         click_button confirm_button_text
       end
+    end
+
+    it 'does not display delayed project removal field at group level', :js do
+      visit edit_group_path(group)
+
+      expect(page).not_to have_css(form_group_selector)
     end
   end
 
