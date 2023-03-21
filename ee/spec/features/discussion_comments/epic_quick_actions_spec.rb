@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Epic quick actions', :js, feature_category: :team_planning do
-  include Spec::Support::Helpers::Features::NotesHelpers
+  include Features::NotesHelpers
 
   let(:user) { create(:user) }
   let(:group) { create(:group) }

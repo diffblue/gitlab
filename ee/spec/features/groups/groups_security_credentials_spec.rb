@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Groups::Security::Credentials', feature_category: :subgroups do
-  include Spec::Support::Helpers::Features::ResponsiveTableHelpers
+  include Features::ResponsiveTableHelpers
 
   let_it_be(:group_with_managed_accounts) { create(:group_with_managed_accounts, :private) }
   let_it_be(:managed_user) { create(:user, :group_managed, managing_group: group_with_managed_accounts, name: 'abc') }

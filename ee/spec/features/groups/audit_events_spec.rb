@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Groups > Audit Events', :js, feature_category: :audit_events do
-  include Spec::Support::Helpers::Features::MembersHelpers
+  include Features::MembersHelpers
 
   let_it_be(:user) { create(:user) }
   let_it_be(:alex) { create(:user, name: 'Alex') }

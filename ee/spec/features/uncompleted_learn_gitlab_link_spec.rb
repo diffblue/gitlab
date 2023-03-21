@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Uncompleted learn gitlab link', :feature, :js, feature_category: :onboarding do
-  include Spec::Support::Helpers::Features::InviteMembersModalHelper
+  include Features::InviteMembersModalHelpers
 
   let_it_be(:user) { create(:user) }
   let_it_be(:namespace) { create(:group).tap { |g| g.add_owner(user) } }

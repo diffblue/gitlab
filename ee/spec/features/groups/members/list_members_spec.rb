@@ -2,8 +2,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Groups > Members > List members', feature_category: :subgroups do
-  include Spec::Support::Helpers::Features::MembersHelpers
-  include Spec::Support::Helpers::Features::InviteMembersModalHelper
+  include Features::MembersHelpers
+  include Features::InviteMembersModalHelpers
 
   let_it_be(:user1) { create(:user, name: 'John Doe') }
   let_it_be(:user2) { create(:user, name: 'Mary Jane') }

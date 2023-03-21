@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'EE user opens IDE', :js, feature_category: :web_ide do
   using RSpec::Parameterized::TableSyntax
-  include WebIdeSpecHelpers
+  include Features::WebIdeSpecHelpers
 
   let_it_be(:unsigned_commits_warning) { 'This project does not accept unsigned commits.' }
 

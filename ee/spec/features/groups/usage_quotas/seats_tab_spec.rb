@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category: :subscription_cost_management do
   include Spec::Support::Helpers::ModalHelpers
-  include Spec::Support::Helpers::Features::MembersHelpers
+  include Features::MembersHelpers
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
