@@ -118,10 +118,6 @@
   }
 }
 
-.gl-isolate {
-  isolation: isolate;
-}
-
 .gl-focus:focus {
   @include gl-focus;
 }
