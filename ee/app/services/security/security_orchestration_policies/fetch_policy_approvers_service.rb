@@ -14,9 +14,13 @@ module Security
       def execute
         action = required_approval(policy)
 
-        return success({ users: [], groups: [] }) unless action
+        return success({ users: [], groups: [], roles: [] }) unless action
 
-        success({ users: user_approvers(action), groups: group_approvers(action) })
+        success({
+          users: user_approvers(action),
+          groups: group_approvers(action),
+          roles: role_approvers(action)
+        })
       end
 
       private
@@ -66,6 +70,10 @@ module Security
           user: current_user,
           container: container,
           search_globally: search_groups_globally?).execute
+      end
+
+      def role_approvers(action)
+        action[:role_approvers] || []
       end
 
       def search_groups_globally?

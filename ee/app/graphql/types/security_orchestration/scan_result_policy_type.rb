@@ -12,6 +12,9 @@ module Types
       implements OrchestrationPolicyType
 
       field :group_approvers, ['::Types::GroupType'], null: true, description: 'Approvers of the group type.'
+      field :role_approvers, [::Types::MemberAccessLevelNameEnum],
+            null: true,
+            description: 'Approvers of the role type. Users belonging to these role(s) alone will be approvers.'
       field :source, Types::SecurityOrchestration::SecurityPolicySourceType,
             null: false,
             description: 'Source of the policy. Its fields depend on the source type.'
