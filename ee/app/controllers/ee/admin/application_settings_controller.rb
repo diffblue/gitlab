@@ -15,6 +15,9 @@ module EE
         before_action :push_password_complexity_feature, only: [:general]
         before_action :new_license, only: [:general]
         before_action :scim_token, only: [:general]
+        before_action only: [:general] do
+          push_frontend_feature_flag(:always_perform_delayed_deletion)
+        end
 
         feature_category :sm_provisioning, [:seat_link_payload]
         feature_category :source_code_management, [:templates]

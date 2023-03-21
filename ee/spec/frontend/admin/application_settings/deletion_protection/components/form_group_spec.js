@@ -21,7 +21,7 @@ describe('Form group component', () => {
   const findGlLink = () => wrapper.findComponent(GlLink);
   const findGlFormGroup = () => wrapper.findComponent(GlFormGroup);
 
-  const createComponent = (mountFn = shallowMountExtended, props = {}) => {
+  const createComponent = ({ mountFn = shallowMountExtended, props = {}, provide = {} } = {}) => {
     wrapper = mountFn(FormGroup, {
       propsData: {
         deletionAdjournedPeriod: 7,
@@ -29,6 +29,7 @@ describe('Form group component', () => {
         delayedProjectDeletion: false,
         ...props,
       },
+      provide,
     });
   };
 
@@ -56,54 +57,106 @@ describe('Form group component', () => {
   });
 
   describe('Form inputs', () => {
-    beforeEach(() => {
-      createComponent();
-    });
+    describe('when `alwaysPerformDelayedDeletion` feature flag is disabled', () => {
+      beforeEach(() => {
+        createComponent();
+      });
 
-    it('renders an input for enabling delayed group deletion', () => {
-      expect(findKeepDeletedRadioButton().attributes('name')).toBe(
-        'application_setting[delayed_group_deletion]',
-      );
-    });
+      it('renders an input for enabling delayed group deletion', () => {
+        expect(findKeepDeletedRadioButton().attributes('name')).toBe(
+          'application_setting[delayed_group_deletion]',
+        );
+      });
 
-    it('renders an input for disabling delayed group deletion', () => {
-      expect(findDeleteImmediatelyRadioButton().attributes('name')).toBe(
-        'application_setting[delayed_group_deletion]',
-      );
-    });
+      it('renders an input for disabling delayed group deletion', () => {
+        expect(findDeleteImmediatelyRadioButton().attributes('name')).toBe(
+          'application_setting[delayed_group_deletion]',
+        );
+      });
 
-    it('renders an input for selecting delayed project deletion', () => {
-      expect(findSelectProjectRemoval().attributes('name')).toBe(
-        'application_setting[delayed_project_deletion]',
-      );
-    });
+      it('renders an input for selecting delayed project deletion', () => {
+        expect(findSelectProjectRemoval().attributes('name')).toBe(
+          'application_setting[delayed_project_deletion]',
+        );
+      });
 
-    it('renders an input for setting the deletion adjourned period', () => {
-      expect(findAdjournedPeriodInput().attributes()).toMatchObject({
-        name: 'application_setting[deletion_adjourned_period]',
-        type: 'number',
-        min: '1',
-        max: '90',
+      it('renders an input for setting the deletion adjourned period', () => {
+        expect(findAdjournedPeriodInput().attributes()).toMatchObject({
+          name: 'application_setting[deletion_adjourned_period]',
+          type: 'number',
+          min: '1',
+          max: '90',
+        });
+      });
+
+      it('renders a hidden input for disabling delayed project deletion', () => {
+        expect(findHiddenInput().attributes()).toMatchObject({
+          name: 'application_setting[delayed_project_deletion]',
+          value: 'false',
+        });
       });
     });
 
-    it('renders a hidden input for disabling delayed project deletion', () => {
-      expect(findHiddenInput().attributes()).toMatchObject({
-        name: 'application_setting[delayed_project_deletion]',
-        value: 'false',
+    describe('when `alwaysPerformDelayedDeletion` feature flag is enabled', () => {
+      beforeEach(() => {
+        createComponent({ provide: { glFeatures: { alwaysPerformDelayedDeletion: true } } });
+      });
+
+      it('does not render an input for enabling delayed group deletion', () => {
+        expect(findKeepDeletedRadioButton().exists()).toBe(false);
+      });
+
+      it('does not render an input for disabling delayed group deletion', () => {
+        expect(findDeleteImmediatelyRadioButton().exists()).toBe(false);
+      });
+
+      it('does not render an input for selecting delayed project deletion', () => {
+        expect(findSelectProjectRemoval().exists()).toBe(false);
+      });
+
+      it('renders an input for setting the deletion adjourned period', () => {
+        expect(findAdjournedPeriodInput().attributes()).toMatchObject({
+          name: 'application_setting[deletion_adjourned_period]',
+          type: 'number',
+          min: '1',
+          max: '90',
+        });
+      });
+
+      it('does not render a hidden input for disabling delayed project deletion', () => {
+        expect(findHiddenInput().exists()).toBe(false);
       });
     });
   });
 
   describe('Select options', () => {
     beforeEach(() => {
-      createComponent(mountExtended);
+      createComponent({ mountFn: mountExtended });
     });
 
-    it('renders the select delayed project deletion options', () => {
-      const options = findSelectProjectRemoval().findAll('option');
-      expect(options.at(0).text()).toBe(I18N_DELETION_PROTECTION.groupsOnly);
-      expect(options.at(1).text()).toBe(I18N_DELETION_PROTECTION.groupsAndProjects);
+    describe('when `alwaysPerformDelayedDeletion` feature flag is disabled', () => {
+      beforeEach(() => {
+        createComponent({ mountFn: mountExtended });
+      });
+
+      it('renders the select delayed project deletion options', () => {
+        const options = findSelectProjectRemoval().findAll('option');
+        expect(options.at(0).text()).toBe(I18N_DELETION_PROTECTION.groupsOnly);
+        expect(options.at(1).text()).toBe(I18N_DELETION_PROTECTION.groupsAndProjects);
+      });
+    });
+
+    describe('when `alwaysPerformDelayedDeletion` feature flag is enabled', () => {
+      beforeEach(() => {
+        createComponent({
+          mountFn: mountExtended,
+          provide: { glFeatures: { alwaysPerformDelayedDeletion: true } },
+        });
+      });
+
+      it('does not render the select delayed project deletion options', () => {
+        expect(findSelectProjectRemoval().exists()).toBe(false);
+      });
     });
   });
 
@@ -122,7 +175,7 @@ describe('Form group component', () => {
     });
 
     it('selects the "groups only" option', () => {
-      createComponent(mountExtended);
+      createComponent({ mountFn: mountExtended });
 
       expect(findSelectedIndex()).toBe(0);
     });
@@ -130,7 +183,7 @@ describe('Form group component', () => {
 
   describe('When group delayed deletion is enabled', () => {
     beforeEach(() => {
-      createComponent(shallowMountExtended, { delayedGroupDeletion: true });
+      createComponent({ mountFn: shallowMountExtended, props: { delayedGroupDeletion: true } });
     });
 
     it('selects the "Keep deleted" radio button', () => {
@@ -145,7 +198,10 @@ describe('Form group component', () => {
 
   describe('When group and project delayed deletion is enabled', () => {
     beforeEach(() => {
-      createComponent(mountExtended, { delayedGroupDeletion: true, delayedProjectDeletion: true });
+      createComponent({
+        mountFn: mountExtended,
+        props: { delayedGroupDeletion: true, delayedProjectDeletion: true },
+      });
     });
 
     it('selects the "Keep deleted" radio button', () => {
