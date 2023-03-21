@@ -1,9 +1,9 @@
 import { nextTick } from 'vue';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
-import Api from 'ee/api';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import PolicyRuleBranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_branch_selection.vue';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import { ALL_PROTECTED_BRANCHES } from 'ee/vue_shared/components/branches_selector/constants';
 
 describe('PolicyRuleBranchSelection', () => {
   let wrapper;
@@ -19,7 +19,7 @@ describe('PolicyRuleBranchSelection', () => {
   };
 
   const factory = (propsData = {}, provide = {}) => {
-    wrapper = mountExtended(PolicyRuleBranchSelection, {
+    wrapper = shallowMountExtended(PolicyRuleBranchSelection, {
       propsData: {
         initRule: DEFAULT_RULE,
         ...propsData,
@@ -36,12 +36,6 @@ describe('PolicyRuleBranchSelection', () => {
   const findBranchesLabel = () => wrapper.findByTestId('branches-label');
   const findGroupLevelBranches = () => wrapper.findByTestId('group-level-branch');
 
-  beforeEach(() => {
-    jest
-      .spyOn(Api, 'projectProtectedBranches')
-      .mockReturnValue(Promise.resolve(PROTECTED_BRANCHES_MOCK));
-  });
-
   describe('initial rendering', () => {
     beforeEach(() => {
       factory();
@@ -53,6 +47,10 @@ describe('PolicyRuleBranchSelection', () => {
 
     it('does not render branches label when targeting all branches', () => {
       expect(findBranchesLabel().exists()).toBe(false);
+    });
+
+    it('renders default selected branch', () => {
+      expect(findBranches().props('selectedBranchesNames')).toStrictEqual([]);
     });
   });
 
@@ -66,6 +64,16 @@ describe('PolicyRuleBranchSelection', () => {
       expect(wrapper.emitted().changed).toEqual([
         [expect.objectContaining({ branches: UPDATED_RULE.branches })],
       ]);
+    });
+
+    it('does not add to branches if "All Protected Branches" is selected', async () => {
+      factory();
+      await nextTick();
+      findBranches().vm.$emit('input', PROTECTED_BRANCHES_MOCK[0]);
+      await nextTick();
+      findBranches().vm.$emit('input', ALL_PROTECTED_BRANCHES);
+      await nextTick();
+      expect(wrapper.emitted().changed[1]).toEqual([expect.objectContaining({ branches: [] })]);
     });
   });
 
@@ -126,7 +134,7 @@ describe('PolicyRuleBranchSelection', () => {
           },
         );
 
-        expect(findGroupLevelBranches().classes('is-invalid')).toBe(true);
+        expect(findGroupLevelBranches().props('state')).toBe(undefined);
       });
     });
   });

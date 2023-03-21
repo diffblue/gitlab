@@ -4,7 +4,7 @@ import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import { ALL_BRANCHES } from 'ee/vue_shared/components/branches_selector/constants';
+import { ALL_PROTECTED_BRANCHES } from 'ee/vue_shared/components/branches_selector/constants';
 
 export default {
   components: {
@@ -44,7 +44,7 @@ export default {
         return this.initRule.branches;
       },
       set(value) {
-        const branches = value.id === ALL_BRANCHES.id ? [] : [value.name];
+        const branches = value.id === ALL_PROTECTED_BRANCHES.id ? [] : [value.name];
         this.triggerChanged({ branches });
       },
     },
@@ -73,6 +73,8 @@ export default {
         v-if="displayBranchSelector"
         id="group-level-branch"
         v-model="branchesToAdd"
+        :allow-all-branches-option="false"
+        :allow-all-protected-branches-option="true"
         :project-id="namespaceId"
         :selected-branches-names="branchesToAdd"
       />
