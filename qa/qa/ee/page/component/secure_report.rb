@@ -45,7 +45,8 @@ module QA
               has_element?(:filter_status_dropdown)
             end
 
-            retry_until(sleep_interval: 2, message: "Retrying status click until current url matches state") do
+            # Retry on exception to avoid ElementNotFound errors when clicks are sent too fast for the UI to update
+            retry_on_exception(sleep_interval: 2, message: "Retrying status click until current url matches state") do
               click_element(:filter_status_dropdown)
               click_element("filter_all_statuses_dropdown_item")
               statuses.each do |status|
@@ -53,6 +54,7 @@ module QA
                 # ee/app/assets/javascripts/security_dashboard/components/shared/filters/filter_body.vue
                 click_element("filter_#{status.downcase.tr(" ", "_")}_dropdown_item")
                 # To account for 'All statuses' dropdown item
+                wait_for_requests # It takes a moment to update the page after changing selections
               end
               click_element(:filter_status_dropdown)
               state = statuses.map do |status|
@@ -70,9 +72,12 @@ module QA
           end
 
           def filter_by_activity(activity_name)
-            click_element(:filter_activity_dropdown, wait: 30)
+            # Even though we can add a selector here it's not enough on it's own because it appears on several elements
+            # We use the `> button` selector to avoid an ambiguous match error
+            selector = "[data-qa-selector='filter_activity_dropdown'] > button"
+            act_via_capybara(:find, selector, wait: 30).click
             click_element("filter_#{activity_name.downcase.tr(" ", "_")}_dropdown_item")
-            click_element(:filter_activity_dropdown)
+            act_via_capybara(:find, selector).click
           end
 
           def has_vulnerability?(name)
