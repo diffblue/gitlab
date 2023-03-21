@@ -83,7 +83,7 @@ export default {
     </span>
     <gl-alert
       v-if="error"
-      class="gl-mt-5 security-policies-alert"
+      class="gl-mt-5 security-policies-alert gl-z-index-2"
       :title="error"
       dismissible
       variant="danger"
