@@ -57,6 +57,7 @@ module EE
 
       has_many :minimal_access_group_members, -> { where(access_level: [::Gitlab::Access::MINIMAL_ACCESS]) }, class_name: 'GroupMember'
       has_many :minimal_access_groups, through: :minimal_access_group_members, source: :group
+      has_many :elevated_members, -> { elevated_guests }, class_name: 'Member'
 
       has_many :users_ops_dashboard_projects
       has_many :ops_dashboard_projects, through: :users_ops_dashboard_projects, source: :project
@@ -107,7 +108,7 @@ module EE
         subquery = ::Member
           .select(1)
           .where(::Member.arel_table[:user_id].eq(::User.arel_table[:id]))
-          .merge(::Member.non_guests)
+          .merge(::Member.with_elevated_guests)
 
         where('EXISTS (?)', subquery)
       end
@@ -602,7 +603,7 @@ module EE
     def paid_in_current_license?
       return true unless License.current.exclude_guests_from_active_count?
 
-      highest_role > ::Gitlab::Access::GUEST
+      highest_role > ::Gitlab::Access::GUEST || elevated_members.any?
     end
 
     def available_minimal_access_groups

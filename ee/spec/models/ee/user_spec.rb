@@ -38,6 +38,7 @@ RSpec.describe User, feature_category: :system_access do
     it { is_expected.to have_many(:deployment_approvals) }
     it { is_expected.to have_many(:namespace_bans).class_name('Namespaces::NamespaceBan') }
     it { is_expected.to have_many(:dependency_list_exports).class_name('Dependencies::DependencyListExport') }
+    it { is_expected.to have_many(:elevated_members).class_name('Member') }
   end
 
   describe 'nested attributes' do
@@ -680,6 +681,11 @@ RSpec.describe User, feature_category: :system_access do
     let_it_be(:regular_user) { create(:user) }
     let_it_be(:project_reporter_user) { create(:project_member, :reporter).user }
     let_it_be(:project_guest_user) { create(:project_member, :guest).user }
+    let_it_be(:group) { create(:group) }
+    let_it_be(:member_role_elevating) { create(:member_role, :guest, namespace: group) }
+    let_it_be(:member_role_basic) { create(:member_role, :guest, namespace: group) }
+    let_it_be(:guest_with_elevated_role) { create(:group_member, :guest, source: group, member_role: member_role_elevating).user }
+    let_it_be(:guest_without_elevated_role) { create(:group_member, :guest, source: group, member_role: member_role_basic).user }
 
     subject(:users) { described_class.billable }
 
@@ -701,6 +707,8 @@ RSpec.describe User, feature_category: :system_access do
         expect(users).to include(project_reporter_user)
         expect(users).to include(project_guest_user)
         expect(users).to include(regular_user)
+        expect(users).to include(guest_with_elevated_role)
+        expect(users).to include(guest_without_elevated_role)
 
         expect(users).not_to include(bot_user)
         expect(users).not_to include(service_account)
@@ -722,10 +730,9 @@ RSpec.describe User, feature_category: :system_access do
           AND
           ("users"."user_type" IS NULL OR "users"."user_type" IN (4, 5))
           AND
-          (EXISTS (SELECT 1 FROM "members"
-            WHERE "members"."user_id" = "users"."id"
-            AND
-            (members.access_level > 10)))
+          (EXISTS (SELECT 1 FROM ((SELECT "members".* FROM "members"
+            WHERE (members.access_level > 10))) members
+            WHERE "members"."user_id" = "users"."id"))
         SQL
 
         expect(users.to_sql.squish).to eq(expected_sql.squish), "query was changed. Please ensure query is covered with an index and adjust this test case"
@@ -738,6 +745,15 @@ RSpec.describe User, feature_category: :system_access do
         expect(users).not_to include(project_guest_user)
         expect(users).not_to include(bot_user)
         expect(users).not_to include(service_account)
+      end
+
+      context 'with elevating role' do
+        it 'returns users with elevated roles' do
+          expect(MemberRole).to receive(:elevating).at_least(:once).and_return(MemberRole.where(id: member_role_elevating.id))
+
+          expect(users).to include(guest_with_elevated_role)
+          expect(users).not_to include(guest_without_elevated_role)
+        end
       end
     end
   end
