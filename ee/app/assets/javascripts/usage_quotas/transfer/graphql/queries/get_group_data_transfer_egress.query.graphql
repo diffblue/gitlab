@@ -4,6 +4,7 @@ query getGroupDataTransferEgress($fullPath: ID!) {
     dataTransfer {
       egressNodes {
         nodes {
+          date
           totalEgress
         }
       }
