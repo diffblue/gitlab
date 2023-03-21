@@ -10,7 +10,6 @@ module EE
       override :authorized?
       def authorized?
         return super unless group
-        return false unless ::Feature.enabled?('group_owners_to_disable_two_factor', group)
 
         user&.can_group_owner_disable_two_factor?(group, current_user)
       end

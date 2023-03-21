@@ -2,13 +2,7 @@
 module Groups
   class TwoFactorAuthsController < Groups::ApplicationController
     before_action :authorize_admin_group!
-    before_action :check_for_feature_flag
     before_action :set_user
-
-    before_action do
-      push_frontend_feature_flag(:group_owners_to_disable_two_factor)
-    end
-
     feature_category :user_management
 
     def destroy
@@ -33,10 +27,6 @@ module Groups
 
     def set_user
       @user = User.find(params[:user_id])
-    end
-
-    def check_for_feature_flag
-      render_404 unless Feature.enabled?('group_owners_to_disable_two_factor', group)
     end
   end
 end

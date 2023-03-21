@@ -80,10 +80,6 @@ describe('MemberTableCell', () => {
 
   describe('permissions', () => {
     describe('canDisableTwoFactor', () => {
-      beforeEach(() => {
-        gon.features = { groupOwnersToDisableTwoFactor: true };
-      });
-
       it('returns `true` when `canDisableTwoFactor` is `true`', () => {
         createComponent({
           member: { ...directMember, canDisableTwoFactor: true },
