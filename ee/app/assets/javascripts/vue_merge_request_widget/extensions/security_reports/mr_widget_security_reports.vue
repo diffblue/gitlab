@@ -275,23 +275,31 @@ export default {
           reportType,
           reportTypeDescription: reportTypes[reportType],
           numberOfNewFindings: 0,
+          numberOfFixedFindings: 0,
           added: [],
           fixed: [],
         };
 
         return axios
           .get(path)
-          .then(({ data, headers = {}, status }) => ({
-            headers,
-            status,
-            data: {
-              ...props,
-              ...data,
-              added: data.added?.map?.(getFindingWithoutFeedback) || [],
-              fixed: data.fixed?.map?.(getFindingWithoutFeedback) || [],
-              numberOfNewFindings: data.added?.length || 0,
-            },
-          }))
+          .then(({ data, headers = {}, status }) => {
+            const added = data.added?.map?.(getFindingWithoutFeedback) || [];
+            const fixed = data.fixed?.map?.(getFindingWithoutFeedback) || [];
+
+            return {
+              headers,
+              status,
+              data: {
+                ...props,
+                ...data,
+                added,
+                fixed,
+                findings: [...added, ...fixed],
+                numberOfNewFindings: added.length,
+                numberOfFixedFindings: fixed.length,
+              },
+            };
+          })
           .catch(({ headers = {}, status = 500 }) => ({
             headers,
             status,
@@ -637,40 +645,52 @@ export default {
           </div>
         </template>
         <template #body>
-          <div v-if="report.numberOfNewFindings > 0" class="gl-mt-2 gl-w-full">
-            <strong>{{ $options.i18n.new }}</strong>
-            <div class="gl-mt-2">
-              <dynamic-scroller
-                :items="report.added"
-                :min-item-size="32"
-                :style="{ maxHeight: '170px' }"
-                data-testid="dynamic-content-scroller"
-                key-field="uuid"
-                class="gl-pr-5"
-              >
-                <template #default="{ item: vuln, active }">
-                  <dynamic-scroller-item :item="vuln" :active="active">
-                    <mr-widget-row
-                      :key="vuln.uuid"
-                      :level="3"
-                      :widget-name="$options.name"
-                      :status-icon-name="statusIconNameVulnerability(vuln)"
-                      class="gl-mt-2"
-                    >
-                      <template #body>
-                        {{ $options.SEVERITY_LEVELS[vuln.severity] }}
-                        <gl-button variant="link" class="gl-ml-2" @click="setModalData(vuln)">{{
-                          vuln.name
-                        }}</gl-button>
-                        <gl-badge v-if="isDismissed(vuln)" class="gl-ml-3">{{
-                          $options.i18n.dismissed
-                        }}</gl-badge>
-                      </template>
-                    </mr-widget-row>
-                  </dynamic-scroller-item>
-                </template>
-              </dynamic-scroller>
-            </div>
+          <div
+            v-if="report.numberOfNewFindings || report.numberOfFixedFindings"
+            class="gl-mt-2 gl-w-full"
+          >
+            <dynamic-scroller
+              :items="report.findings"
+              :min-item-size="32"
+              :style="{ maxHeight: '170px' }"
+              data-testid="dynamic-content-scroller"
+              key-field="uuid"
+              class="gl-pr-5"
+            >
+              <template #default="{ item: vuln, active, index }">
+                <dynamic-scroller-item :item="vuln" :active="active">
+                  <strong
+                    v-if="report.numberOfNewFindings > 0 && index === 0"
+                    data-testid="new-findings-title"
+                    class="gl-display-block gl-mt-2"
+                    >{{ $options.i18n.new }}</strong
+                  >
+                  <strong
+                    v-if="report.numberOfFixedFindings > 0 && report.numberOfNewFindings === index"
+                    data-testid="fixed-findings-title"
+                    class="gl-display-block gl-mt-2"
+                    >{{ $options.i18n.fixed }}</strong
+                  >
+                  <mr-widget-row
+                    :key="vuln.uuid"
+                    :level="3"
+                    :widget-name="$options.name"
+                    :status-icon-name="statusIconNameVulnerability(vuln)"
+                    class="gl-mt-2"
+                  >
+                    <template #body>
+                      {{ $options.SEVERITY_LEVELS[vuln.severity] }}
+                      <gl-button variant="link" class="gl-ml-2" @click="setModalData(vuln)">{{
+                        vuln.name
+                      }}</gl-button>
+                      <gl-badge v-if="isDismissed(vuln)" class="gl-ml-3">{{
+                        $options.i18n.dismissed
+                      }}</gl-badge>
+                    </template>
+                  </mr-widget-row>
+                </dynamic-scroller-item>
+              </template>
+            </dynamic-scroller>
           </div>
         </template>
       </mr-widget-row>
