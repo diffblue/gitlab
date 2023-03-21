@@ -13,12 +13,10 @@ query BoardEE(
     board(id: $boardId) {
       id
       epics(first: 10, issueFilters: $issueFilters, after: $after) {
-        edges {
-          node {
-            ...BoardEpicNode
-            userPreferences {
-              collapsed
-            }
+        nodes {
+          ...BoardEpicNode
+          userPreferences {
+            collapsed
           }
         }
         pageInfo {
@@ -33,12 +31,10 @@ query BoardEE(
     board(id: $boardId) {
       id
       epics(first: 10, issueFilters: $issueFilters, after: $after) {
-        edges {
-          node {
-            ...BoardEpicNode
-            userPreferences {
-              collapsed
-            }
+        nodes {
+          ...BoardEpicNode
+          userPreferences {
+            collapsed
           }
         }
         pageInfo {

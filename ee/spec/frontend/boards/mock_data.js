@@ -552,6 +552,9 @@ export const mockEpics = [
       id: '40',
     },
     labels: [],
+    userPreferences: {
+      collapsed: false,
+    },
   },
   {
     id: 'gid://gitlab/Epic/40',
@@ -568,6 +571,9 @@ export const mockEpics = [
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
     labels: [],
+    userPreferences: {
+      collapsed: false,
+    },
   },
   {
     id: 'gid://gitlab/Epic/39',
@@ -584,6 +590,9 @@ export const mockEpics = [
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
     labels: [],
+    userPreferences: {
+      collapsed: false,
+    },
   },
   {
     id: 'gid://gitlab/Epic/38',
@@ -600,6 +609,9 @@ export const mockEpics = [
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
     labels: [],
+    userPreferences: {
+      collapsed: false,
+    },
   },
   {
     id: 'gid://gitlab/Epic/37',
@@ -616,6 +628,9 @@ export const mockEpics = [
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
     labels: [],
+    userPreferences: {
+      collapsed: false,
+    },
   },
 ];
 
@@ -809,3 +824,22 @@ export const mockTokens = (
     operators: OPERATORS_IS_NOT,
   },
 ];
+
+export const mockEpicSwimlanesResponse = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/114',
+      board: {
+        id: 'gid://gitlab/Board/1',
+        epics: {
+          nodes: [mockEpics],
+          pageInfo: {
+            endCursor: null,
+            hasNextPage: false,
+          },
+        },
+      },
+      __typename: 'Group',
+    },
+  },
+};

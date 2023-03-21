@@ -1,8 +1,9 @@
-import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VirtualList from 'vue-virtual-scroll-list';
 import Draggable from 'vuedraggable';
+import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import * as BoardUtils from 'ee/boards/boards_util';
 import EpicLane from 'ee/boards/components/epic_lane.vue';
 import EpicsSwimlanes from 'ee/boards/components/epics_swimlanes.vue';
@@ -10,15 +11,24 @@ import IssueLaneList from 'ee/boards/components/issues_lane_list.vue';
 import SwimlanesLoadingSkeleton from 'ee/boards/components/swimlanes_loading_skeleton.vue';
 import { EPIC_LANE_BASE_HEIGHT } from 'ee/boards/constants';
 import getters from 'ee/boards/stores/getters';
+import epicsSwimlanesQuery from 'ee/boards/graphql/epics_swimlanes.query.graphql';
 import BoardListHeader from 'ee_else_ce/boards/components/board_list_header.vue';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import { mockLists, mockEpics, mockIssuesByListId, issues } from '../mock_data';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import {
+  mockLists,
+  mockEpics,
+  mockIssuesByListId,
+  issues,
+  mockEpicSwimlanesResponse,
+} from '../mock_data';
 
+Vue.use(VueApollo);
 Vue.use(Vuex);
 jest.mock('ee/boards/boards_util');
 
 describe('EpicsSwimlanes', () => {
   let wrapper;
+  let mockApollo;
   const bufferSize = 100;
 
   const findDraggable = () => wrapper.findComponent(Draggable);
@@ -61,27 +71,33 @@ describe('EpicsSwimlanes', () => {
     });
   };
 
+  const epicsSwimlanesQueryHandlerSuccess = jest.fn().mockResolvedValue(mockEpicSwimlanesResponse);
+
   const createComponent = ({
     canAdminList = false,
     epicLanesFetchInProgress = false,
     listItemsFetchInProgress = false,
     hasMoreEpics = false,
+    isApolloBoard = false,
   } = {}) => {
     const store = createStore({ epicLanesFetchInProgress, listItemsFetchInProgress, hasMoreEpics });
+    mockApollo = createMockApollo([[epicsSwimlanesQuery, epicsSwimlanesQueryHandlerSuccess]]);
     const defaultProps = {
       lists: mockLists,
+      boardId: 'gid://gitlab/Board/1',
     };
 
-    wrapper = extendedWrapper(
-      shallowMount(EpicsSwimlanes, {
-        propsData: { ...defaultProps, canAdminList, filters: {} },
-        store,
-        provide: {
-          disabled: false,
-          isApolloBoard: false,
-        },
-      }),
-    );
+    wrapper = shallowMountExtended(EpicsSwimlanes, {
+      propsData: { ...defaultProps, canAdminList, filters: {} },
+      apolloProvider: mockApollo,
+      store,
+      provide: {
+        fullPath: 'gitlab-org',
+        boardType: 'group',
+        disabled: false,
+        isApolloBoard,
+      },
+    });
   };
 
   beforeEach(() => {
@@ -209,5 +225,15 @@ describe('EpicsSwimlanes', () => {
         expect(wrapper.findComponent(SwimlanesLoadingSkeleton).exists()).toBe(expected);
       },
     );
+  });
+
+  describe('Apollo boards', () => {
+    beforeEach(() => {
+      createComponent({ isApolloBoard: true });
+    });
+
+    it('fetches epics swimlanes', () => {
+      expect(epicsSwimlanesQueryHandlerSuccess).toHaveBeenCalled();
+    });
   });
 });
