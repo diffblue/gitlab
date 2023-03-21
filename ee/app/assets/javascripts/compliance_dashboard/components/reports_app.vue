@@ -78,6 +78,9 @@ export default {
       />
       <gl-tab
         :title="$options.i18n.frameworksTab"
+        :title-link-attributes="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
+          'data-qa-selector': 'frameworks_tab',
+        } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
         data-testid="frameworks-tab"
         @click="goTo($options.ROUTE_FRAMEWORKS)"
       />

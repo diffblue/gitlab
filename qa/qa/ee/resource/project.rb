@@ -25,6 +25,34 @@ module QA
         def api_push_rules_path
           "#{api_get_path}/push_rule"
         end
+
+        # Set a compliance framework for the project
+        #
+        # @return [void]
+        def compliance_framework=(framework)
+          mutation = <<~GQL
+            mutation {
+              projectSetComplianceFramework(input: {
+                complianceFrameworkId: "#{framework.gid}",
+                projectId: "gid://gitlab/Project/#{id}"
+              })
+              {
+                errors
+                project {
+                  id
+                  complianceFrameworks {
+                    nodes {
+                      id
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          GQL
+
+          api_post_to('/graphql', mutation)
+        end
       end
     end
   end
