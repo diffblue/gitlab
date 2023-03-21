@@ -26,3 +26,6 @@
   aggregation: weekly
 - name: g_analytics_valuestream
   aggregation: weekly
+- name: g_metrics_comparison_page
+  aggregation: weekly
+

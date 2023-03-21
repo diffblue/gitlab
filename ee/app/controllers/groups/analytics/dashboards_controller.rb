@@ -3,6 +3,10 @@
 module Groups
   module Analytics
     class DashboardsController < Groups::Analytics::ApplicationController
+      include ProductAnalyticsTracking
+
+      track_event :value_streams_dashboard, name: 'g_metrics_comparison_page'
+
       before_action { authorize_view_by_action!(:read_group_analytics_dashboards) }
 
       layout 'group'

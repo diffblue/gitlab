@@ -198,3 +198,22 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :subgr
     end
   end
 end
+
+RSpec.describe Groups::Analytics::DashboardsController, type: :controller, feature_category: :product_analytics do
+  let_it_be(:group) { create(:group) }
+  let_it_be(:user) do
+    create(:user).tap do |user|
+      group.add_reporter(user)
+    end
+  end
+
+  before do
+    stub_licensed_features(group_level_analytics_dashboard: true)
+    sign_in(user)
+  end
+
+  it_behaves_like 'tracking unique visits', :value_streams_dashboard do
+    let(:request_params) { { group_id: group.to_param } }
+    let(:target_id) { 'g_metrics_comparison_page' }
+  end
+end
