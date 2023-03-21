@@ -48,7 +48,7 @@ module Elastic
       private
 
       def should_use_project_ids_filter?(options)
-        return true if options[:project_ids] == :any || options[:group_ids].blank? || Feature.disabled?(:elasticsearch_use_traversal_id_optimization)
+        return true if options[:project_ids] == :any || options[:group_ids].blank?
 
         !Elastic::DataMigrationService.migration_has_finished?(:backfill_traversal_ids_to_blobs_and_wiki_blobs)
       end
