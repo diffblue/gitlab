@@ -38,6 +38,7 @@ export default {
     {
       key: 'projectPath',
       label: __('Project path'),
+      tdAttr: { 'data-qa-selector': 'project_path_content' },
       tdClass: 'gl-vertical-align-middle!',
       sortable: false,
     },
@@ -52,6 +53,18 @@ export default {
     noProjectsFound: s__('ComplianceReport|No projects found'),
     noFrameworkMessage: s__('ComplianceReport|No framework'),
   },
+  methods: {
+    qaRowAttributes(project, type) {
+      if (type === 'row') {
+        return {
+          'data-qa-selector': 'project_frameworks_row',
+          'data-qa-project-name': project.name,
+        };
+      }
+
+      return {};
+    },
+  },
 };
 </script>
 <template>
@@ -64,9 +77,10 @@ export default {
       show-empty
       stacked="lg"
       hover
+      :tbody-tr-attr="qaRowAttributes"
     >
       <template #cell(projectName)="{ item }">
-        <gl-link :href="item.webUrl">{{ item.name }}</gl-link>
+        <gl-link :href="item.webUrl" data-qa-selector="project_name_link">{{ item.name }} </gl-link>
       </template>
       <template #cell(projectPath)="{ item: { fullPath } }">
         {{ fullPath }}
