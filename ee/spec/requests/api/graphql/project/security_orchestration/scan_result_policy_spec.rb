@@ -8,7 +8,13 @@ RSpec.describe 'Query.project(fullPath).scanResultPolicies', feature_category: :
   let_it_be(:user) { policy_management_project.first_owner }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:action) do
-    { type: 'require_approval', approvals_required: 1, user_approvers_ids: [user.id], group_approvers_ids: [group.id] }
+    {
+      type: 'require_approval',
+      approvals_required: 1,
+      user_approvers_ids: [user.id],
+      group_approvers_ids: [group.id],
+      role_approvers: %w[maintainer developer]
+    }
   end
 
   let_it_be(:policy) { build(:scan_result_policy, actions: [action]) }
@@ -33,6 +39,7 @@ RSpec.describe 'Query.project(fullPath).scanResultPolicies', feature_category: :
                 id
                 webUrl
               }
+              roleApprovers
             }
           }
         }
@@ -54,6 +61,10 @@ RSpec.describe 'Query.project(fullPath).scanResultPolicies', feature_category: :
             "id" => "gid://gitlab/Group/#{group.id}",
             "webUrl" => "http://localhost/groups/#{group.full_path}"
           }
+        ],
+        "roleApprovers" => %w[
+          MAINTAINER
+          DEVELOPER
         ]
       }
     ]

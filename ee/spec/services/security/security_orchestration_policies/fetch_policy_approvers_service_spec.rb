@@ -123,6 +123,34 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
       end
     end
 
+    context 'with role approver' do
+      let(:action) { { type: "require_approval", approvals_required: 1, role_approvers: roles } }
+
+      context 'when role_approvers in policy is empty' do
+        let(:roles) { [] }
+
+        it 'returns empty roles' do
+          response = service.execute
+
+          expect(response[:status]).to eq(:success)
+          expect(response[:roles]).to be_empty
+          expect(response[:users]).to be_empty
+        end
+      end
+
+      context 'when role_approvers in policy is not empty' do
+        let(:roles) { %w[MAINTAINER DEVELOPER] }
+
+        it 'returns role approvers' do
+          response = service.execute
+
+          expect(response[:status]).to eq(:success)
+          expect(response[:roles]).to match_array(roles)
+          expect(response[:users]).to be_empty
+        end
+      end
+    end
+
     context 'with both user and group approvers' do
       let(:action) { { type: "require_approval", approvals_required: 1, group_approvers: [group.path], user_approvers_ids: [user.id] } }
 

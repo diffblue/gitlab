@@ -24,6 +24,7 @@ module Resolvers
             updated_at: policy[:config].policy_last_updated_at,
             user_approvers: approvers[:users],
             group_approvers: approvers[:groups],
+            role_approvers: approvers[:roles],
             source: {
               project: policy[:project],
               namespace: policy[:namespace],
