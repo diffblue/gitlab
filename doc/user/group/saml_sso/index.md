@@ -481,7 +481,7 @@ To rescind a user's access to the group when only SAML SSO is configured, either
 - Remove (in order) the user from:
   1. The user data store on the identity provider or the list of users on the specific app.
   1. The GitLab.com group.
-- Use [Group Sync](group_sync.md#automatic-member-removal) at the top-level of your group with the [default role](#role) set to [minimal access](../../permissions.md#users-with-minimal-access) to automatically block access to all resources within the group. Users may continue to [use a seat](../../permissions.md#minimal-access-users-take-license-seats).
+- Use [Group Sync](group_sync.md#automatic-member-removal) at the top-level of your group with the [default role](#role) set to [minimal access](../../permissions.md#users-with-minimal-access) to automatically block access to all resources within the group.
 
 To rescind a user's access to the group when also using SCIM, refer to [Remove access](scim_setup.md#remove-access).
 
