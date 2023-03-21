@@ -6,12 +6,13 @@ module EE
       extend ::Gitlab::Utils::Override
 
       def issue_params_from_template
-        return {} unless project.feature_available?(:issuable_default_templates)
+        return {} unless container.feature_available?(:issuable_default_templates)
+        return {} unless container.respond_to?(:issues_template)
 
-        if project.issues_template.present? && params.include?(:description)
-          { description: project.issues_template + "\n" + params.delete(:description) }
+        if container.issues_template.present? && params.include?(:description)
+          { description: container.issues_template + "\n" + params.delete(:description) }
         else
-          { description: project.issues_template }
+          { description: container.issues_template }
         end
       end
 

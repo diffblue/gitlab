@@ -22,9 +22,7 @@ module WorkItems
         end
 
         def in_the_same_group_hierarchy?(iteration)
-          return false unless work_item.project.group.present?
-
-          group_ids = work_item.project.group.self_and_ancestors.select(:id)
+          group_ids = (work_item.project&.group || work_item.namespace).self_and_ancestors.select(:id)
 
           # rubocop: disable CodeReuse/ActiveRecord
           ::Iteration.of_groups(group_ids).exists?(id: iteration.id)

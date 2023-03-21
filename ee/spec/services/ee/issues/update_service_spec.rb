@@ -598,8 +598,11 @@ RSpec.describe Issues::UpdateService, feature_category: :team_planning do
           )
           expect(escalation_update_class).to receive(:new).with(issue, user).and_return(service_double)
           expect(service_double).to receive(:execute)
-          expect(project).to receive(:execute_hooks).with(expected_full_payload, :issue_hooks)
-          expect(project).to receive(:execute_integrations).with(expected_full_payload, :issue_hooks)
+
+          delegated_project = project.project_namespace.project
+
+          expect(delegated_project).to receive(:execute_hooks).with(expected_full_payload, :issue_hooks)
+          expect(delegated_project).to receive(:execute_integrations).with(expected_full_payload, :issue_hooks)
 
           # For incident specific actions
           expected_full_payload = include(
@@ -608,7 +611,7 @@ RSpec.describe Issues::UpdateService, feature_category: :team_planning do
               object_kind: 'incident'
             )
           )
-          expect(project).to receive(:execute_integrations).with(expected_full_payload, :incident_hooks)
+          expect(delegated_project).to receive(:execute_integrations).with(expected_full_payload, :incident_hooks)
 
           update_issue(opts)
         end

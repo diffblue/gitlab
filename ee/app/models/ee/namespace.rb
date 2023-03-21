@@ -490,6 +490,10 @@ module EE
       root? && licensed_feature_available?(:custom_roles)
     end
 
+    def okrs_mvc_feature_flag_enabled?
+      ::Feature.enabled?(:okrs_mvc, self)
+    end
+
     private
 
     def security_orchestration_policies_for_namespaces(namespace_ids)
