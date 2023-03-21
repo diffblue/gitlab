@@ -10886,6 +10886,9 @@ msgstr ""
 msgid "Configure advanced permissions, Large File Storage, two-factor authentication, and customer relations settings."
 msgstr ""
 
+msgid "Configure custom rules for Jira issue key matching"
+msgstr ""
+
 msgid "Configure existing installation"
 msgstr ""
 
@@ -24399,6 +24402,9 @@ msgstr ""
 msgid "Jira integration not configured."
 msgstr ""
 
+msgid "Jira issue matching"
+msgstr ""
+
 msgid "Jira project key is not configured."
 msgstr ""
 
@@ -24573,6 +24579,12 @@ msgstr ""
 msgid "JiraService|Jira comments are created when an issue is referenced in a merge request."
 msgstr ""
 
+msgid "JiraService|Jira issue prefix"
+msgstr ""
+
+msgid "JiraService|Jira issue regex"
+msgstr ""
+
 msgid "JiraService|Jira issues"
 msgstr ""
 
@@ -24621,7 +24633,13 @@ msgstr ""
 msgid "JiraService|Use Jira as this project's issue tracker."
 msgstr ""
 
+msgid "JiraService|Use a prefix to match Jira issue keys."
+msgstr ""
+
 msgid "JiraService|Use custom transitions"
+msgstr ""
+
+msgid "JiraService|Use regular expression to match Jira issue keys."
 msgstr ""
 
 msgid "JiraService|Username for the server version or an email for the cloud version"

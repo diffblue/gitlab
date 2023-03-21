@@ -132,6 +132,8 @@ RSpec.describe MergeRequests::MergeService, feature_category: :source_code_manag
     context 'with jira issue enforcement' do
       using RSpec::Parameterized::TableSyntax
 
+      let_it_be(:jira_integration) { create(:jira_integration) }
+
       subject do
         perform_enqueued_jobs do
           service.execute(merge_request)
@@ -147,9 +149,10 @@ RSpec.describe MergeRequests::MergeService, feature_category: :source_code_manag
 
       with_them do
         before do
+          allow(project).to receive(:jira_integration).and_return(jira_integration)
           allow(project).to receive(:prevent_merge_without_jira_issue?).and_return(prevent_merge)
           allow(Atlassian::JiraIssueKeyExtractor).to receive(:has_keys?)
-                                                       .with(merge_request.title, merge_request.description)
+            .with(merge_request.title, merge_request.description, custom_regex: merge_request.project.jira_integration.reference_pattern)
                                                        .and_return(issue_specified)
         end
 

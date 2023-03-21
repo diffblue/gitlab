@@ -57,7 +57,13 @@ module EE
     end
 
     def issue_keys
-      Atlassian::JiraIssueKeyExtractor.new(merge_request.title, merge_request.description).issue_keys
+      return [] unless project.jira_integration.try(:active?)
+
+      Atlassian::JiraIssueKeyExtractor.new(
+        merge_request.title,
+        merge_request.description,
+        custom_regex: project.jira_integration.reference_pattern
+      ).issue_keys
     end
 
     private

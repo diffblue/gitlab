@@ -134,6 +134,9 @@ RSpec.describe MergeRequestPresenter do
   end
 
   describe '#issue_keys' do
+    # This feature relies on having valid Jira integration active with the project
+    # if it is enabled.
+    let_it_be(:project) { create(:project, :repository, :with_jira_integration) }
     let(:presenter) { described_class.new(merge_request, current_user: user) }
 
     subject { presenter.issue_keys }

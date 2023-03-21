@@ -95,9 +95,19 @@ module EE
 
       def check_jira_issue_enforcement
         return unless merge_request.project.prevent_merge_without_jira_issue?
-        return if Atlassian::JiraIssueKeyExtractor.has_keys?(merge_request.title, merge_request.description)
+        return if has_jira_issue_keys?
 
         raise ::MergeRequests::MergeService::MergeError, _('Before this can be merged, a Jira issue must be linked in the title or description')
+      end
+
+      def has_jira_issue_keys?
+        return unless merge_request.project.jira_integration.try(:active?)
+
+        Atlassian::JiraIssueKeyExtractor.has_keys?(
+          merge_request.title,
+          merge_request.description,
+          custom_regex: merge_request.project.jira_integration.reference_pattern
+        )
       end
     end
   end
