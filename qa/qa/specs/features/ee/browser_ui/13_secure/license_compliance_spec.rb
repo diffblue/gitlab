@@ -141,7 +141,7 @@ module QA
 
         context 'License Management' do
           approved_license_name = 'ISC'
-          denied_license_name = 'Apache-2.0'
+          denied_license_name = 'MIT'
 
           before(:context) do
             @runner = Resource::ProjectRunner.fabricate_via_api! do |runner|
