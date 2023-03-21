@@ -120,13 +120,31 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::CreateService, feature
     end
 
     context 'when link type is absent' do
-      let(:args) { { link: 'https://gitlab.slack.com/messages/IDHERE', link_text: link_text } }
+      shared_examples 'link_types' do |link_type|
+        it 'sets correct link type based on link' do
+          result = execute.payload[:issuable_resource_link]
 
-      it 'sets correct link type based on link' do
-        result = execute.payload[:issuable_resource_link]
+          expect(execute).to be_success
+          expect(result.link_type).to eq(link_type)
+        end
+      end
 
-        expect(execute).to be_success
-        expect(result.link_type).to eq('slack')
+      context 'for slack' do
+        let(:args) { { link: 'https://gitlab.slack.com/messages/IDHERE' } }
+
+        it_behaves_like 'link_types', 'slack'
+      end
+
+      context 'for zoom' do
+        let(:args) { { link: 'https://gitlab.zoom.us/j/IDHERE' } }
+
+        it_behaves_like 'link_types', 'zoom'
+      end
+
+      context 'for pagerduty' do
+        let(:args) { { link: 'https://gitlab.pagerduty.com/incidents/IDHERE' } }
+
+        it_behaves_like 'link_types', 'pagerduty'
       end
     end
 
