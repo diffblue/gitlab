@@ -43,8 +43,7 @@ RSpec.describe MergeRequest, :elastic, feature_category: :global_search do
   it "names elasticsearch queries" do
     described_class.elastic_search('*').total_count
 
-    assert_named_queries('merge_request:match:search_terms',
-                         'merge_request:authorized:project')
+    assert_named_queries('merge_request:match:search_terms', 'merge_request:authorized:project')
   end
 
   it "searches by iid and scopes to type: merge_request only", :sidekiq_might_not_need_inline do

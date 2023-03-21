@@ -18,13 +18,13 @@ module Geo
       extend Gitlab::Utils::Override
 
       delegate :verification_pending_batch,
-               :verification_failed_batch,
-               :needs_verification_count,
-               :needs_reverification_count,
-               :fail_verification_timeouts,
-               :reverifiable_batch,
-               :reverify_batch,
-               to: :verification_query_class
+        :verification_failed_batch,
+        :needs_verification_count,
+        :needs_reverification_count,
+        :fail_verification_timeouts,
+        :reverifiable_batch,
+        :reverify_batch,
+        to: :verification_query_class
 
       # If replication is disabled, then so is verification.
       override :verification_enabled?

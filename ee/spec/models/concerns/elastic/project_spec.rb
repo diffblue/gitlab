@@ -212,8 +212,7 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_cate
   it "names elasticsearch queries" do
     described_class.elastic_search('*').total_count
 
-    assert_named_queries('doc:is_a:project',
-                         'project:match:search_terms')
+    assert_named_queries('doc:is_a:project', 'project:match:search_terms')
   end
 
   describe '.as_indexed_json' do

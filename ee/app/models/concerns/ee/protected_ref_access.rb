@@ -24,9 +24,8 @@ module EE
         validates :user_id, uniqueness: { scope: protected_type, allow_nil: true }
         validates :access_level, uniqueness: { scope: protected_type, if: :role?,
                                                conditions: -> { where(user_id: nil, group_id: nil) } }
-        validates :group, :user,
-                  absence: true,
-                  unless: -> { importing? || protected_refs_for_users_required_and_available }
+        validates :group, :user, absence: true,
+          unless: -> { importing? || protected_refs_for_users_required_and_available }
 
         validate :validate_group_membership, if: -> { !importing? && protected_refs_for_users_required_and_available }
         validate :validate_user_membership, if: -> { !importing? && protected_refs_for_users_required_and_available }
