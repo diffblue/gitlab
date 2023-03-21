@@ -3,7 +3,7 @@
 require 'spec_helper'
 require 'benchmark/ips'
 
-RSpec.describe Gitlab::Ci::Reports::DependencyList::Report do
+RSpec.describe Gitlab::Ci::Reports::DependencyList::Report, feature_category: :license_compliance do
   let(:report) { described_class.new }
 
   describe '#dependencies' do
@@ -162,8 +162,10 @@ RSpec.describe Gitlab::Ci::Reports::DependencyList::Report do
 
     let(:license) { build(:ci_reports_license_scanning_report, :mit).licenses.first }
 
+    let(:purl_type_of_dependency_with_license) { dependency[:purl_type] }
+
     before do
-      license.add_dependency(name: name_of_dependency_with_license)
+      license.add_dependency(name: name_of_dependency_with_license, purl_type: purl_type_of_dependency_with_license)
       report.add_dependency(dependency)
       report.apply_license(license)
     end
@@ -173,6 +175,15 @@ RSpec.describe Gitlab::Ci::Reports::DependencyList::Report do
 
       context 'with empty license list' do
         let(:dependency) { build :dependency }
+
+        it 'applies license' do
+          is_expected.to eq(1)
+        end
+      end
+
+      context 'with dependency with non-canonical representation' do
+        let(:dependency) { build :dependency, name: 'Irigokon', purl_type: 'pypi' }
+        let(:name_of_dependency_with_license) { dependency[:name].downcase }
 
         it 'applies license' do
           is_expected.to eq(1)

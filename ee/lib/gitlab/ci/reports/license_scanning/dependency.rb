@@ -6,12 +6,13 @@ module Gitlab
       module LicenseScanning
         class Dependency
           attr_accessor :path
-          attr_reader :name, :package_manager, :version
+          attr_reader :name, :package_manager, :purl_type, :version
 
           def initialize(attributes = {})
             @name = attributes.fetch(:name)
             @package_manager = attributes[:package_manager]
             @path = attributes[:path]
+            @purl_type = attributes[:purl_type]
             @version = attributes[:version]
           end
 
