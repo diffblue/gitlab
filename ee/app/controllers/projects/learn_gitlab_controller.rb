@@ -20,9 +20,6 @@ module Projects
     def onboarding
       cookies[:confetti_post_signup] = true
 
-      @track_label = helpers.in_trial_onboarding_flow? ? 'trial_registration' : 'free_registration'
-      ::Gitlab::Tracking.event(self.class.name, 'onboarding', user: current_user, label: @track_label)
-
       render layout: 'minimal'
     end
 

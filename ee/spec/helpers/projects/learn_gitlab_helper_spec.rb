@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
+  using RSpec::Parameterized::TableSyntax
+
   let_it_be(:user) { create(:user) }
 
   before do
@@ -222,6 +224,22 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
 
           expect(onboarding_actions_data).to include(result)
         end
+      end
+    end
+  end
+
+  describe '#onboarding_track_label' do
+    where(:params, :result) do
+      lazy { { trial_onboarding_flow: 'true' } }  | 'trial_registration'
+      lazy { { trial_onboarding_flow: 'false' } } | 'free_registration'
+      lazy { {} }                                 | 'free_registration'
+    end
+
+    with_them do
+      it 'returns free_registration' do
+        allow(helper).to receive(:params).and_return(params)
+
+        expect(helper.onboarding_track_label).to eq(result)
       end
     end
   end
