@@ -22676,6 +22676,7 @@ Include type.
 
 | Value | Description |
 | ----- | ----------- |
+| <a id="ciconfigincludetypecomponent"></a>`component` | Component include. |
 | <a id="ciconfigincludetypefile"></a>`file` | Project file include. |
 | <a id="ciconfigincludetypelocal"></a>`local` | Local include. |
 | <a id="ciconfigincludetyperemote"></a>`remote` | Remote include. |
