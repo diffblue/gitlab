@@ -1,6 +1,86 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
+RSpec.describe 'Query.jobs', feature_category: :continuous_integration do
+  include GraphqlHelpers
+
+  let_it_be(:admin) { create(:admin) }
+  let_it_be(:project) { create(:project, :repository, :public) }
+  let_it_be(:pipeline) { create(:ci_pipeline, project: project) }
+  let_it_be(:build) do
+    create(:ci_build, pipeline: pipeline, name: 'my test job', ref: 'HEAD', tag_list: %w[tag1 tag2])
+  end
+
+  let(:query) do
+    %(
+      query {
+        jobs {
+          nodes {
+            id
+            #{fields.map { |field| GraphqlHelpers.fieldnamerize(field.to_s) }.join(' ')}
+          }
+        }
+      }
+    )
+  end
+
+  let(:jobs_graphql_data) { graphql_data_at(:jobs, :nodes) }
+
+  let(:fields) do
+    %i[commit_path ref_path web_path browse_artifacts_path play_path tags]
+  end
+
+  it 'returns the paths in each job of a pipeline' do
+    post_graphql(query, current_user: admin)
+
+    expect(jobs_graphql_data).to contain_exactly(
+      a_graphql_entity_for(
+        build,
+        commit_path: "/#{project.full_path}/-/commit/#{build.sha}",
+        ref_path: "/#{project.full_path}/-/commits/HEAD",
+        web_path: "/#{project.full_path}/-/jobs/#{build.id}",
+        browse_artifacts_path: "/#{project.full_path}/-/jobs/#{build.id}/artifacts/browse",
+        play_path: "/#{project.full_path}/-/jobs/#{build.id}/play",
+        tags: build.tag_list
+      )
+    )
+  end
+
+  context 'when requesting individual fields' do
+    using RSpec::Parameterized::TableSyntax
+
+    let_it_be(:admin2) { create(:admin) }
+    let_it_be(:project2) { create(:project) }
+    let_it_be(:pipeline2) { create(:ci_pipeline, project: project2) }
+
+    where(:field) do
+      %i[commit_path ref_path web_path browse_artifacts_path play_path tags]
+    end
+
+    with_them do
+      let(:fields) do
+        [field]
+      end
+
+      it 'does not generate N+1 queries', :request_store, :use_sql_query_cache do
+        # warm-up cache and so on:
+        args = { current_user: admin }
+        post_graphql(query, **args)
+
+        control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+          post_graphql(query, **args)
+        end
+
+        args = { current_user: admin2 }
+        create(:ci_build, pipeline: pipeline2, name: 'my test job2', ref: 'HEAD', tag_list: %w[tag3])
+        post_graphql(query, **args)
+
+        expect { post_graphql(query, **args) }.not_to exceed_all_query_limit(control)
+      end
+    end
+  end
+end
+
 RSpec.describe 'Query.project.pipeline', feature_category: :continuous_integration do
   include GraphqlHelpers
 
