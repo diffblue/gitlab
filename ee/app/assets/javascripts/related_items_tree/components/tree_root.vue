@@ -87,12 +87,18 @@ export default {
   <component
     :is="treeRootWrapper"
     v-bind="treeRootOptions"
-    class="list-unstyled related-items-list tree-root gl-pt-3 gl-px-5 gl-pb-4"
+    class="list-unstyled related-items-list tree-root gl-p-0"
     :move="onMove"
     @start="handleDragOnStart"
     @end="handleDragOnEnd"
   >
-    <tree-item v-for="item in children" :key="item.id" :parent-item="parentItem" :item="item" />
+    <tree-item
+      v-for="item in children"
+      :key="item.id"
+      :parent-item="parentItem"
+      :item="item"
+      class="gl-pt-3! gl-border-t-1 gl-border-t-solid gl-border-t-gray-100"
+    />
     <li v-if="hasMoreChildren" class="tree-item list-item pt-0 pb-0 d-flex justify-content-center">
       <gl-button
         v-if="!fetchInProgress"

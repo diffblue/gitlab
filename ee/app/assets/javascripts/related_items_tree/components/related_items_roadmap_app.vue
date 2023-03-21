@@ -53,7 +53,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-px-3 gl-py-3 gl-bg-gray-10">
+  <div class="gl-mb-3">
     <gl-alert v-if="loadingError" variant="danger" :dismissible="false">
       {{ $options.loadingFailedText }}
     </gl-alert>
