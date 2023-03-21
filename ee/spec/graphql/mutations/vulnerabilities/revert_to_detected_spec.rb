@@ -15,7 +15,7 @@ RSpec.describe Mutations::Vulnerabilities::RevertToDetected, feature_category: :
 
     let(:params) do
       {
-        id: GitlabSchema.id_from_object(vulnerability).to_s,
+        id: GitlabSchema.id_from_object(vulnerability),
         comment: comment
       }
     end
@@ -39,7 +39,7 @@ RSpec.describe Mutations::Vulnerabilities::RevertToDetected, feature_category: :
         end
 
         context 'and no comment is provided' do
-          let(:params) { { id: GitlabSchema.id_from_object(vulnerability).to_s } }
+          let(:params) { { id: GitlabSchema.id_from_object(vulnerability) } }
 
           it 'returns the vulnerability back in detected state', :aggregate_failures do
             expect(mutated_vulnerability).to eq(vulnerability)
