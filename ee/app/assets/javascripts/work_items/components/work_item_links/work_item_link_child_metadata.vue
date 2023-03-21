@@ -49,24 +49,24 @@ export default {
 
 <template>
   <work-item-link-child-metadata :metadata-widgets="metadataWidgets">
-    <div
-      v-if="hasProgress"
-      v-gl-tooltip.bottom
-      :title="__('Progress')"
-      class="gl-display-flex gl-align-items-center gl-mr-5 gl-cursor-help gl-line-height-normal"
-      data-testid="item-progress"
-    >
-      <gl-icon name="progress" />
-      <span class="gl-font-sm gl-text-primary gl-ml-2">{{ progress }}%</span>
-    </div>
     <gl-badge
       v-if="hasHealthStatus"
       v-gl-tooltip.bottom
       :variant="healthStatusVariant"
       :title="s__('WorkItem|Health status')"
       size="sm"
-      class="gl-mr-5 gl-cursor-help"
+      class="gl-cursor-help gl-align-self-center"
       >{{ healthStatusText }}</gl-badge
     >
+    <div
+      v-if="hasProgress"
+      v-gl-tooltip.bottom
+      :title="__('Progress')"
+      class="gl-display-flex gl-align-items-center gl-mr-3 gl-cursor-help gl-line-height-normal"
+      data-testid="item-progress"
+    >
+      <gl-icon name="progress" />
+      <span class="gl-font-sm gl-text-primary gl-ml-2">{{ progress }}%</span>
+    </div>
   </work-item-link-child-metadata>
 </template>
