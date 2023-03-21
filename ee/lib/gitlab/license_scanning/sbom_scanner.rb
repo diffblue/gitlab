@@ -19,7 +19,12 @@ module Gitlab
           package_licenses.each do |package_license|
             package_license.licenses.each do |license_string|
               license = license_scanning_report.add_license(id: license_string, name: license_string)
-              license.add_dependency(name: package_license.name, version: package_license.version)
+
+              license.add_dependency(
+                name: package_license.name,
+                purl_type: package_license.purl_type,
+                version: package_license.version
+              )
             end
           end
         end
