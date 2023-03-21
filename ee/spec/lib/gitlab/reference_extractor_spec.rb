@@ -12,6 +12,25 @@ RSpec.describe Gitlab::ReferenceExtractor do
 
   subject { described_class.new(project, project.creator) }
 
+  describe 'referables prefixes' do
+    def prefixes
+      described_class.referrables.each_with_object({}) do |referable, result|
+        class_name = referable.to_s.camelize
+        klass = class_name.constantize if Object.const_defined?(class_name)
+
+        next unless klass.respond_to?(:reference_prefix)
+
+        prefix = klass.reference_prefix
+        result[prefix] ||= []
+        result[prefix] << referable
+      end
+    end
+
+    it 'returns all supported prefixes' do
+      expect(prefixes.keys.uniq).to match_array(%w(@ # ~ % ! $ & [vulnerability: *iteration:))
+    end
+  end
+
   it 'accesses valid epics' do
     stub_licensed_features(epics: true)
 
