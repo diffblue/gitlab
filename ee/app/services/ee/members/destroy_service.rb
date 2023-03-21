@@ -29,11 +29,35 @@ module EE
       end
 
       def log_audit_event(member:, author:, action:)
-        ::AuditEventService.new(
-          author,
-          member.source,
-          action: action
-        ).for_member(member).security_event
+        audit_context = {
+          name: 'member_destroyed',
+          scope: member.source,
+          target: member.user || ::Gitlab::Audit::NullTarget.new,
+          target_details: member.user ? member.user.name : 'Deleted User',
+          additional_details: {
+            remove: "user_access",
+            member_id: member.id
+          }
+        }
+
+        case action
+        when :destroy
+          audit_context.update(
+            author: author,
+            message: 'Membership destroyed'
+          )
+        when :expired
+          audit_context.update(
+            author: ::Gitlab::Audit::UnauthenticatedAuthor.new(name: '(System)'),
+            message: "Membership expired on #{member.expires_at}"
+          )
+          audit_context[:additional_details].update(
+            system_event: true,
+            reason: "access expired on #{member.expires_at}"
+          )
+        end
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
       end
 
       def cleanup_group_identity(member)

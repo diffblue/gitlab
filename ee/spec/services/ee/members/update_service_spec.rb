@@ -20,6 +20,10 @@ RSpec.describe Members::UpdateService, feature_category: :subgroups do
 
   shared_examples_for 'logs an audit event' do
     specify do
+      expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+        hash_including(name: "member_updated")
+      ).and_call_original
+
       expect do
         described_class.new(current_user, params).execute(member, permission: permission)
       end.to change { AuditEvent.count }.by(1)
