@@ -326,14 +326,14 @@ After you have configured your identity provider, you can:
 - Migrate to a different identity provider.
 - Change email domains.
 
-### Change the identity provider
+#### Change the identity provider
 
 To change the identity provider:
 
 - If the `NameID` is not identical in the existing and new identity providers, [change the NameID for users](#change-nameid-for-one-or-more-users).
 - If the `NameID` is identical, users do not have to make any changes.
 
-### Migrate to a different identity provider
+#### Migrate to a different identity provider
 
 You can migrate to a different identity provider. During the migration process,
 users cannot access any of the SAML groups. To mitigate this, you can disable
@@ -344,7 +344,7 @@ To migrate identity providers:
 1. [Configure](#configure-your-identity-provider) the group with the new identity provider.
 1. [Change the NameID for users](#change-nameid-for-one-or-more-users).
 
-### Change email domains
+#### Change email domains
 
 To migrate users to a new email domain, tell users to:
 
