@@ -57,3 +57,4 @@ export const DAST_HUMANIZED_TEMPLATE = s__(
 
 export const POLICY_ACTION_BUILDER_TAGS_ERROR_KEY = 'tags';
 export const POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY = 'profiles';
+export const CONTENT_WRAPPER_CONTAINER_CLASS = '.content-wrapper';
