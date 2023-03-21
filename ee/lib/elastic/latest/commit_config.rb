@@ -41,6 +41,7 @@ module Elastic
         indexes :message, type: :text, index_options: 'positions'
         indexes :visibility_level, type: :integer
         indexes :repository_access_level, type: :integer
+        indexes :hashed_root_namespace_id, type: :integer
       end
     end
   end

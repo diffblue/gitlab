@@ -103,13 +103,18 @@ module Gitlab
         command << "--to-sha=#{to_sha}"
 
         command += if index_wiki?
-                     ["--blob-type=wiki_blob", "--skip-commits", "--full-path=#{project.full_path}"]
+                     %W[--blob-type=wiki_blob --skip-commits --full-path=#{project.full_path}]
                    else
-                     [
-                       "--full-path=#{project.full_path}",
-                       "--visibility-level=#{project.visibility_level}",
-                       "--repository-access-level=#{project.repository_access_level}"
-                     ]
+                     %W[
+                       --full-path=#{project.full_path}
+                       --visibility-level=#{project.visibility_level}
+                       --repository-access-level=#{project.repository_access_level}
+                     ].tap do |c|
+                       migration_name = :add_hashed_root_namespace_id_to_commits
+                       migration_done = ::Elastic::DataMigrationService.migration_has_finished?(migration_name)
+
+                       c << "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}" if migration_done
+                     end
                    end
 
         if traversal_id_migration_applied?
