@@ -33,9 +33,11 @@ module EE
         joins(sanitize_sql_array([sql, namespace.id]))
       end
 
-      scope :with_elevated_guests, -> do
-        elevated_guests = guests.joins(:member_role).merge(MemberRole.elevating)
+      scope :elevated_guests, -> do
+        where(access_level: ::Gitlab::Access::GUEST).joins(:member_role).merge(MemberRole.elevating)
+      end
 
+      scope :with_elevated_guests, -> do
         from_union([non_guests, elevated_guests])
       end
 

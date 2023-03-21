@@ -8,11 +8,11 @@ RSpec.describe Admin::UsersController, :enable_admin_mode, feature_category: :us
   let_it_be(:admin) { create(:admin) }
   let_it_be(:user) { create(:user) }
 
-  describe 'GET card_match' do
-    before do
-      sign_in(admin)
-    end
+  before do
+    sign_in(admin)
+  end
 
+  describe 'GET card_match' do
     context 'when not SaaS' do
       it 'responds with 404' do
         send_request
@@ -47,6 +47,15 @@ RSpec.describe Admin::UsersController, :enable_admin_mode, feature_category: :us
 
     def send_request
       get card_match_admin_user_path(user)
+    end
+  end
+
+  describe 'GET #index' do
+    it 'eager loads authorized projects association' do
+      get admin_users_path
+
+      expect(assigns(:users).first.association(:user_highest_role)).to be_loaded
+      expect(assigns(:users).first.association(:elevated_members)).to be_loaded
     end
   end
 end
