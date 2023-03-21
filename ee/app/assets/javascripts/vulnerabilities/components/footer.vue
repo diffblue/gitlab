@@ -220,7 +220,9 @@ export default {
     />
     <div v-if="vulnerabilityDetectionData" class="notes" data-testid="detection-note">
       <div class="system-note gl-display-flex gl-align-items-center gl-p-0! gl-mt-6!">
-        <div class="timeline-icon gl-m-0!">
+        <div
+          class="gl-float-left gl--flex-center gl-rounded-full gl-mt-n1 gl-ml-2 gl-w-6 gl-h-6 gl-bg-gray-50 gl-text-gray-600 gl-m-0!"
+        >
           <gl-icon name="search-dot" class="circle-icon-container" />
         </div>
         <status-description
