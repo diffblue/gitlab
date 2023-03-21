@@ -71,8 +71,6 @@
 // https://gitlab.com/groups/gitlab-org/-/epics/2882
 .gl-h-200\! { height: px-to-rem($grid-size * 25) !important; }
 
-.gl-bg-purple-light { background-color: $purple-light; }
-
 // This utility is used to force the z-index to match that of dropdown menu's
 .gl-z-dropdown-menu\! {
   z-index: $zindex-dropdown-menu !important;
