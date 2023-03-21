@@ -186,25 +186,35 @@ describe('MR Widget Security Reports', () => {
   });
 
   describe('with MR data', () => {
-    const mockWithData = () => {
-      mockAxios.onGet(reportEndpoints.sastComparisonPathV2).replyOnce(HTTP_STATUS_OK, {
-        added: [
-          {
-            uuid: 1,
-            severity: 'critical',
-            name: 'Password leak',
-            state: 'dismissed',
-          },
-          { uuid: 2, severity: 'high', name: 'XSS vulnerability' },
-        ],
-      });
+    const mockWithData = ({ findings } = {}) => {
+      mockAxios.onGet(reportEndpoints.sastComparisonPathV2).replyOnce(
+        HTTP_STATUS_OK,
+        findings?.sast || {
+          added: [
+            {
+              uuid: '1',
+              severity: 'critical',
+              name: 'Password leak',
+              state: 'dismissed',
+            },
+            { uuid: '2', severity: 'high', name: 'XSS vulnerability' },
+          ],
+          fixed: [
+            { uuid: '14abc', severity: 'high', name: 'SQL vulnerability' },
+            { uuid: 'bc41e', severity: 'high', name: 'SQL vulnerability 2' },
+          ],
+        },
+      );
 
-      mockAxios.onGet(reportEndpoints.dastComparisonPathV2).replyOnce(HTTP_STATUS_OK, {
-        added: [
-          { uuid: 5, severity: 'low', name: 'SQL Injection' },
-          { uuid: 3, severity: 'unknown', name: 'Weak password' },
-        ],
-      });
+      mockAxios.onGet(reportEndpoints.dastComparisonPathV2).replyOnce(
+        HTTP_STATUS_OK,
+        findings?.dast || {
+          added: [
+            { uuid: '5', severity: 'low', name: 'SQL Injection' },
+            { uuid: '3', severity: 'unknown', name: 'Weak password' },
+          ],
+        },
+      );
 
       [
         reportEndpoints.dependencyScanningComparisonPathV2,
@@ -310,18 +320,69 @@ describe('MR Widget Security Reports', () => {
       );
     });
 
-    it('passes correct items to the dynamic scroller', async () => {
+    it('contains new and fixed findings in the dynamic scroller', async () => {
       await createComponentAndExpandWidget({ mockDataFn: mockWithData });
 
       expect(findDynamicScroller().props('items')).toEqual([
+        // New findings
         {
-          uuid: 1,
+          uuid: '1',
           severity: 'critical',
           name: 'Password leak',
           state: 'dismissed',
         },
-        { uuid: 2, severity: 'high', name: 'XSS vulnerability' },
+        { uuid: '2', severity: 'high', name: 'XSS vulnerability' },
+        // Fixed findings
+        { uuid: '14abc', severity: 'high', name: 'SQL vulnerability' },
+        { uuid: 'bc41e', severity: 'high', name: 'SQL vulnerability 2' },
       ]);
+
+      expect(wrapper.findByTestId('new-findings-title').text()).toBe('New');
+      expect(wrapper.findByTestId('fixed-findings-title').text()).toBe('Fixed');
+    });
+
+    it('contains only fixed findings in the dynamic scroller', async () => {
+      await createComponentAndExpandWidget({
+        mockDataFn: mockWithData,
+        mockDataProps: {
+          findings: {
+            sast: {
+              fixed: [
+                { uuid: '14abc', severity: 'high', name: 'SQL vulnerability' },
+                { uuid: 'bc41e', severity: 'high', name: 'SQL vulnerability 2' },
+              ],
+            },
+            dast: {},
+          },
+        },
+      });
+
+      expect(findDynamicScroller().props('items')).toEqual([
+        { uuid: '14abc', severity: 'high', name: 'SQL vulnerability' },
+        { uuid: 'bc41e', severity: 'high', name: 'SQL vulnerability 2' },
+      ]);
+
+      expect(wrapper.findByTestId('new-findings-title').exists()).toBe(false);
+      expect(wrapper.findByTestId('fixed-findings-title').text()).toBe('Fixed');
+    });
+
+    it('contains only added findings in the dynamic scroller', async () => {
+      await createComponentAndExpandWidget({
+        mockDataFn: mockWithData,
+        mockDataProps: {
+          findings: {
+            sast: {},
+          },
+        },
+      });
+
+      expect(findDynamicScroller().props('items')).toEqual([
+        { uuid: '5', severity: 'low', name: 'SQL Injection' },
+        { uuid: '3', severity: 'unknown', name: 'Weak password' },
+      ]);
+
+      expect(wrapper.findByTestId('new-findings-title').text()).toBe('New');
+      expect(wrapper.findByTestId('fixed-findings-title').exists()).toBe(false);
     });
   });
 
