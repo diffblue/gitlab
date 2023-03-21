@@ -12,7 +12,11 @@ module EE
         scope :scheduled_for_over_limit_check, -> do
           where(next_over_limit_check_at: ..Time.current)
             .or(where(next_over_limit_check_at: nil))
-            .order(arel_table[:next_over_limit_check_at].asc.nulls_first)
+            .order_next_over_limit_check_nulls_first
+        end
+
+        scope :order_next_over_limit_check_nulls_first, -> do
+          order(arel_table[:next_over_limit_check_at].asc.nulls_first)
         end
 
         scope :lock_for_over_limit_check, ->(limit, namespace_ids) do

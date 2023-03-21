@@ -444,6 +444,15 @@
   :weight: 1
   :idempotent: false
   :tags: []
+- :name: cronjob:namespaces_free_user_cap_backfill_notification_clearing_jobs
+  :worker_name: Namespaces::FreeUserCap::BackfillNotificationClearingJobsWorker
+  :feature_category: :user_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:namespaces_free_user_cap_backfill_notification_jobs
   :worker_name: Namespaces::FreeUserCap::BackfillNotificationJobsWorker
   :feature_category: :user_management
@@ -1430,6 +1439,15 @@
   :feature_category: :source_code_management
   :has_external_dependencies: false
   :urgency: :high
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: namespaces_free_user_cap_notification_clearing
+  :worker_name: Namespaces::FreeUserCap::NotificationClearingWorker
+  :feature_category: :user_management
+  :has_external_dependencies: false
+  :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
