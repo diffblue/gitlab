@@ -11,7 +11,7 @@ RSpec.describe ProtectedEnvironments::UpdateService, '#execute' do
   let(:params) do
     {
       deploy_access_levels_attributes: [
-        { id: deploy_access_level.id, access_level: Gitlab::Access::DEVELOPER },
+        { id: deploy_access_level.id, access_level: Gitlab::Access::DEVELOPER, user_id: nil },
         { access_level: maintainer_access }
       ]
     }

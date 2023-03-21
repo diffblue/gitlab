@@ -5,6 +5,7 @@ RSpec.describe Groups::ProtectedEnvironmentsController, feature_category: :conti
   let_it_be(:group) { create(:group) }
   let_it_be(:subgroup_1) { create(:group, parent: group) }
   let_it_be(:subgroup_2) { create(:group, parent: group) }
+  let_it_be(:subgroup_3) { create(:group, parent: group) }
   let_it_be(:group_owner) { create(:user).tap { |u| group.add_owner(u) } }
   let_it_be(:group_maintainer) { create(:user).tap { |u| group.add_maintainer(u) } }
 
@@ -73,14 +74,17 @@ RSpec.describe Groups::ProtectedEnvironmentsController, feature_category: :conti
   end
 
   describe '#PUT update' do
-    let(:protected_environment) { create(:protected_environment, :group_level, group: group) }
+    let(:protected_environment) do
+      create(:protected_environment, :group_level, group: group, authorize_group_to_deploy: subgroup_1)
+    end
+
     let(:deploy_access_level) { protected_environment.deploy_access_levels.first }
 
     let(:params) do
       {
         deploy_access_levels_attributes: [
-          { id: deploy_access_level.id, group_id: subgroup_1.id },
-          { group_id: subgroup_2.id }
+          { id: deploy_access_level.id, group_id: subgroup_2.id },
+          { group_id: subgroup_3.id }
         ]
       }
     end
@@ -97,7 +101,7 @@ RSpec.describe Groups::ProtectedEnvironmentsController, feature_category: :conti
 
       new_group_ids = json_response['deploy_access_levels'].map { |level| level['group_id'] }
 
-      expect(new_group_ids).to match_array([subgroup_1.id, subgroup_2.id])
+      expect(new_group_ids).to match_array([subgroup_2.id, subgroup_3.id])
     end
 
     context 'with invalid params' do
