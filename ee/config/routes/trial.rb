@@ -6,6 +6,5 @@ resources :trials, only: [:new] do
     get :select
     post :apply
     put :extend_reactivate
-    post :create_hand_raise_lead
   end
 end
