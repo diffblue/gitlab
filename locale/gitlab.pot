@@ -38067,6 +38067,9 @@ msgstr ""
 msgid "SSL verification"
 msgstr ""
 
+msgid "SVG could not be rendered correctly: "
+msgstr ""
+
 msgid "Sat"
 msgstr ""
 
@@ -46576,6 +46579,9 @@ msgstr ""
 msgid "Upvotes"
 msgstr ""
 
+msgid "Usage"
+msgstr ""
+
 msgid "Usage Trends"
 msgstr ""
 
@@ -46672,6 +46678,9 @@ msgstr ""
 msgid "UsageQuota|Local proxy used for frequently-accessed upstream Docker images. %{linkStart}More information%{linkEnd}"
 msgstr ""
 
+msgid "UsageQuota|Month"
+msgstr ""
+
 msgid "UsageQuota|Namespace storage used"
 msgstr ""
 
@@ -46760,6 +46769,9 @@ msgid "UsageQuota|This table omits projects that used 0 CI/CD minutes or 0 share
 msgstr ""
 
 msgid "UsageQuota|Transfer"
+msgstr ""
+
+msgid "UsageQuota|Transfer data used by month"
 msgstr ""
 
 msgid "UsageQuota|Uploads"
