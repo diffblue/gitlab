@@ -106,3 +106,5 @@ class OperationsController < ApplicationController
       .represent(projects)
   end
 end
+
+OperationsController.prepend_mod
