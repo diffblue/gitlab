@@ -35,7 +35,7 @@ RSpec.describe 'Identity Verification', :js, :saas, feature_category: :instance_
     end
   end
 
-  shared_examples 'registering the user with medium risk identity verification' do
+  shared_examples 'registering the user with medium risk identity verification' do |skip_email_validation: false|
     let(:risk) { :medium }
 
     it 'verifies the user' do
@@ -43,7 +43,7 @@ RSpec.describe 'Identity Verification', :js, :saas, feature_category: :instance_
 
       verify_phone_number
 
-      verify_email
+      verify_email unless skip_email_validation
 
       expect_to_see_verification_successful_page
 
@@ -51,7 +51,7 @@ RSpec.describe 'Identity Verification', :js, :saas, feature_category: :instance_
     end
   end
 
-  shared_examples 'registering the user with high risk identity verification' do
+  shared_examples 'registering the user with high risk identity verification' do |skip_email_validation: false|
     let(:risk) { :high }
 
     it 'verifies the user' do
@@ -61,7 +61,7 @@ RSpec.describe 'Identity Verification', :js, :saas, feature_category: :instance_
 
       verify_phone_number
 
-      verify_email
+      verify_email unless skip_email_validation
 
       expect_to_see_verification_successful_page
 
@@ -82,17 +82,22 @@ RSpec.describe 'Identity Verification', :js, :saas, feature_category: :instance_
 
   describe 'Invite flow' do
     let(:invitation) { create(:group_member, :invited, :developer, invite_email: user_email) }
-    let(:risk) { :high }
 
-    # The invite flow does present the Arkose challenge, so pass a risk score, but do not verify identity.
-    # See issue here: https://gitlab.com/gitlab-org/modelops/anti-abuse/team-tasks/-/issues/127
-    it 'registers the user' do
+    before do
       visit invite_path(invitation.raw_invite_token, invite_type: Emails::Members::INITIAL_INVITE)
-
       sign_up
-
-      expect_to_see_welcome_page
     end
+
+    context 'when the user is low risk' do
+      let(:risk) { :low }
+
+      it 'does not verify the user' do
+        expect_to_see_welcome_page
+      end
+    end
+
+    it_behaves_like 'registering the user with medium risk identity verification', skip_email_validation: true
+    it_behaves_like 'registering the user with high risk identity verification', skip_email_validation: true
   end
 
   describe 'Trial flow' do

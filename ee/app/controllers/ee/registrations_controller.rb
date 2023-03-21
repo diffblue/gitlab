@@ -36,7 +36,6 @@ module EE
       super
 
       log_audit_event(user)
-      record_arkose_data(user)
     end
 
     override :set_resource_fields
@@ -55,19 +54,19 @@ module EE
       super || ::Gitlab::CurrentSettings.should_apply_user_signup_cap?
     end
 
+    override :identity_verification_enabled?
+    def identity_verification_enabled?
+      resource.identity_verification_enabled?
+    end
+
     override :identity_verification_redirect_path
     def identity_verification_redirect_path
       identity_verification_path
     end
 
-    override :custom_confirmation_enabled?
-    def custom_confirmation_enabled?
-      custom_confirmation_instructions_service.enabled?
-    end
-
     override :send_custom_confirmation_instructions
     def send_custom_confirmation_instructions
-      return unless resource.persisted? && custom_confirmation_enabled?
+      return unless resource.persisted? && identity_verification_enabled?
 
       custom_confirmation_instructions_service.send_instructions
     end
@@ -109,14 +108,14 @@ module EE
     end
     strong_memoize_attr :arkose_labs_verify_response
 
-    def record_arkose_data(user)
-      return unless user&.persisted?
+    def record_arkose_data
+      return unless resource&.persisted?
       return unless arkose_labs_enabled?
       return unless arkose_labs_verify_response
 
       Arkose::RecordUserDataService.new(
         response: arkose_labs_verify_response,
-        user: user
+        user: resource
       ).execute
     end
 

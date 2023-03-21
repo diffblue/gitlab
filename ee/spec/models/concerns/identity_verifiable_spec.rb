@@ -11,6 +11,64 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
     create(:user_custom_attribute, key: 'arkose_risk_band', value: value, user_id: user.id)
   end
 
+  describe('#identity_verification_enabled?') do
+    where(
+      identity_verification: [true, false],
+      require_admin_approval_after_user_signup: [true, false],
+      email_confirmation_setting: %w[soft hard off]
+    )
+
+    with_them do
+      before do
+        stub_feature_flags(identity_verification: identity_verification)
+        stub_application_setting(require_admin_approval_after_user_signup: require_admin_approval_after_user_signup)
+        stub_application_setting_enum('email_confirmation_setting', email_confirmation_setting)
+      end
+
+      it 'returns the expected result' do
+        result = identity_verification &&
+          !require_admin_approval_after_user_signup &&
+          email_confirmation_setting == 'hard'
+
+        expect(user.identity_verification_enabled?).to eq(result)
+      end
+    end
+  end
+
+  describe('#active_for_authentication?') do
+    subject { user.active_for_authentication? }
+
+    where(:identity_verification_enabled?, :identity_verified?, :result) do
+      true  | true  | true
+      true  | false | false
+      false | true  | true
+      false | false | true
+    end
+
+    before do
+      allow(user).to receive(:identity_verification_enabled?).and_return(identity_verification_enabled?)
+      allow(user).to receive(:identity_verified?).and_return(identity_verified?)
+    end
+
+    with_them do
+      context 'when not confirmed' do
+        before do
+          allow(user).to receive(:confirmed?).and_return(false)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+
+      context 'when confirmed' do
+        before do
+          allow(user).to receive(:confirmed?).and_return(true)
+        end
+
+        it { is_expected.to eq(result) }
+      end
+    end
+  end
+
   describe('#identity_verified?') do
     subject { user.identity_verified? }
 
@@ -23,6 +81,7 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
 
     with_them do
       before do
+        allow(user).to receive(:identity_verification_enabled?).and_return(true)
         allow(user).to receive(:identity_verification_state).and_return(
           {
             phone: phone_verified,
@@ -32,6 +91,22 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
       end
 
       it { is_expected.to eq(result) }
+    end
+
+    context 'when identity verification is not enabled' do
+      before do
+        allow(user).to receive(:identity_verification_enabled?).and_return(false)
+      end
+
+      context 'and their email is already verified' do
+        it { is_expected.to eq(true) }
+      end
+
+      context 'and their email is not yet verified' do
+        let(:user) { create(:user, :unconfirmed) }
+
+        it { is_expected.to eq(false) }
+      end
     end
 
     context 'when user has already signed in before' do
@@ -46,17 +121,6 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
 
         it { is_expected.to eq(false) }
       end
-    end
-
-    context('when identity_verification feature flag is disabled') do
-      before do
-        stub_feature_flags(identity_verification: false)
-
-        allow(user).to receive(:confirmed?).and_return(true)
-        allow(user).to receive(:identity_verification_state).and_return({ phone: false })
-      end
-
-      it { is_expected.to eq(true) }
     end
   end
 

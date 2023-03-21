@@ -10,9 +10,22 @@ module IdentityVerifiable
     EMAIL: 'email'
   }.freeze
 
-  def identity_verified?
+  def identity_verification_enabled?
+    return false unless ::Gitlab::CurrentSettings.email_confirmation_setting_hard?
+    return false if ::Gitlab::CurrentSettings.require_admin_approval_after_user_signup
+
     email_wrapper = ::Gitlab::Email::FeatureFlagWrapper.new(email)
-    return email_verified? unless Feature.enabled?(:identity_verification, email_wrapper)
+    Feature.enabled?(:identity_verification, email_wrapper)
+  end
+
+  def active_for_authentication?
+    return false unless super
+
+    !identity_verification_enabled? || identity_verified?
+  end
+
+  def identity_verified?
+    return email_verified? unless identity_verification_enabled?
 
     # Treat users that have already signed in before as verified if their email
     # is already verified.
