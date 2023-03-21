@@ -20,13 +20,7 @@ You can configure SAML SSO for the top-level group only.
 
 ## Configure your identity provider
 
-1. Find the information in GitLab required for configuration:
-   1. On the top bar, select **Main menu > Groups** and find your group.
-   1. On the left sidebar, select **Settings > SAML SSO**.
-   1. Note the **Assertion consumer service URL**, **Identifier**, and **GitLab single sign-on URL**.
-1. Configure your SAML identity provider app using the noted details.
-   Alternatively, GitLab provides a [metadata XML configuration](#set-up-identity-provider-using-metadata).
-   See [specific identity provider documentation](#set-up-identity-provider) for more details.
+1. [Configure your SAML identity provider](#set-up-identity-provider).
 1. Configure the SAML response to include a [NameID](#nameid) that uniquely identifies each user.
 1. Configure the required [user attributes](#user-attributes), ensuring you include the user's email address.
 1. While the default is enabled for most SAML providers, ensure the app is set to have service provider
