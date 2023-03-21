@@ -27674,6 +27674,9 @@ msgid_plural "Milestones"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Milestone actions"
+msgstr ""
+
 msgid "Milestone due date"
 msgstr ""
 
