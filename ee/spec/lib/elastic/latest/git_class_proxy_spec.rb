@@ -102,7 +102,6 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, feature_category: :glob
 
     before do
       set_elasticsearch_migration_to(:backfill_traversal_ids_to_blobs_and_wiki_blobs, including: false)
-      stub_feature_flags(elasticsearch_use_traversal_id_optimization: false)
     end
 
     it 'does not use the traversal_id filter' do
@@ -116,7 +115,6 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, feature_category: :glob
 
     before do
       set_elasticsearch_migration_to(:backfill_traversal_ids_to_blobs_and_wiki_blobs, including: true)
-      stub_feature_flags(elasticsearch_use_traversal_id_optimization: true)
     end
 
     it 'does not use the traversal_id filter when project_ids are passed' do
