@@ -11,6 +11,7 @@ RSpec.describe Gitlab::UsageDataCounters::IssueActivityUniqueCounter, :snowplow,
   let_it_be(:event_label) { described_class::ISSUE_LABEL }
 
   let(:event_property) { action }
+  let(:original_params) { nil }
 
   context 'for Issue health status changed actions' do
     it_behaves_like 'daily tracked issuable snowplow and service ping events with project' do
