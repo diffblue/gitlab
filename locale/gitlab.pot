@@ -19677,6 +19677,9 @@ msgstr ""
 msgid "GlobalSearch|Search GitLab"
 msgstr ""
 
+msgid "GlobalSearch|Search GitLab %{kbdOpen}/%{kbdClose}"
+msgstr ""
+
 msgid "GlobalSearch|Search for projects, issues, etc."
 msgstr ""
 
@@ -19693,6 +19696,9 @@ msgid "GlobalSearch|Showing top %{maxItems}"
 msgstr ""
 
 msgid "GlobalSearch|Syntax options"
+msgstr ""
+
+msgid "GlobalSearch|The search term must be at least 3 characters long."
 msgstr ""
 
 msgid "GlobalSearch|There was an error fetching search autocomplete suggestions."
