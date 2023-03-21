@@ -52,31 +52,53 @@ RSpec.shared_examples 'a verifiable replicator' do
     end
   end
 
+  RSpec.shared_examples 'a counter of succeeded available verifiables' do |count_method|
+    specify do
+      verifiable.verification_started!
+      verifiable.verification_succeeded_with_checksum!('some checksum', Time.current)
+
+      expect(described_class.send(count_method)).to eq(1)
+    end
+
+    it 'excludes other verification states' do
+      verifiable.verification_started!
+
+      expect(described_class.send(count_method)).to eq(0)
+
+      verifiable.verification_failed_with_message!('some error message')
+
+      expect(described_class.send(count_method)).to eq(0)
+
+      verifiable.verification_pending!
+
+      expect(described_class.send(count_method)).to eq(0)
+    end
+  end
+
   describe '.checksummed_count' do
     context 'when verification is enabled' do
+      let(:verifiable) { model_record }
+
       before do
         allow(described_class).to receive(:verification_enabled?).and_return(true)
       end
 
-      it 'returns the number of available verifiables where verification succeeded' do
-        model_record.verification_started
-        model_record.verification_succeeded_with_checksum!('some checksum', Time.current)
+      context 'when batch count feature flag is enabled' do
+        before do
+          # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+          # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+          stub_batch_counter_transaction_open_check
+        end
 
-        expect(described_class.checksummed_count).to eq(1)
+        it_behaves_like 'a counter of succeeded available verifiables', :checksummed_count
       end
 
-      it 'excludes non-success verification states' do
-        model_record.verification_started!
+      context 'when batch count feature flag is disabled' do
+        before do
+          stub_feature_flags(geo_batch_count: false)
+        end
 
-        expect(described_class.checksummed_count).to eq(0)
-
-        model_record.verification_failed_with_message!('some error message')
-
-        expect(described_class.checksummed_count).to eq(0)
-
-        model_record.verification_pending!
-
-        expect(described_class.checksummed_count).to eq(0)
+        it_behaves_like 'a counter of succeeded available verifiables', :checksummed_count
       end
     end
 
@@ -89,31 +111,96 @@ RSpec.shared_examples 'a verifiable replicator' do
     end
   end
 
+  describe '.verified_count' do
+    context 'when verification is enabled' do
+      let(:verifiable) { replicator.registry }
+
+      before do
+        model_record.save!
+
+        allow(described_class).to receive(:verification_enabled?).and_return(true)
+
+        # Verification on the secondary requires a synced registry
+        verifiable.start
+        verifiable.synced!
+      end
+
+      context 'when batch count feature flag is enabled' do
+        before do
+          # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+          # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+          stub_batch_counter_transaction_open_check
+        end
+
+        it_behaves_like 'a counter of succeeded available verifiables', :verified_count
+      end
+
+      context 'when batch count feature flag is disabled' do
+        before do
+          stub_feature_flags(geo_batch_count: false)
+        end
+
+        it_behaves_like 'a counter of succeeded available verifiables', :verified_count
+      end
+    end
+
+    context 'when verification is disabled' do
+      it 'returns nil' do
+        allow(described_class).to receive(:verification_enabled?).and_return(false)
+
+        expect(described_class.verified_count).to be_nil
+      end
+    end
+  end
+
+  RSpec.shared_examples 'a counter of failed available verifiables' do |count_method|
+    specify do
+      verifiable.verification_started!
+      verifiable.verification_failed_with_message!('some error message')
+
+      # This bypasses the registry state attribute to :synced again
+      # since available_verifiables return synced registries
+      # and we need that state to count it properly.
+      verifiable.update_attribute(:state, 2) if count_method == :verification_failed_count
+
+      expect(described_class.send(count_method)).to eq(1)
+    end
+
+    it 'excludes other verification states' do
+      verifiable.verification_started!
+
+      expect(described_class.send(count_method)).to eq(0)
+
+      verifiable.verification_succeeded_with_checksum!('foo', Time.current)
+
+      expect(described_class.send(count_method)).to eq(0)
+
+      verifiable.verification_pending!
+
+      expect(described_class.send(count_method)).to eq(0)
+    end
+  end
+
   describe '.checksum_failed_count' do
     context 'when verification is enabled' do
-      before do
-        allow(described_class).to receive(:verification_enabled?).and_return(true)
+      let(:verifiable) { model_record }
+
+      context 'when batch count feature flag is enabled' do
+        before do
+          # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+          # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+          stub_batch_counter_transaction_open_check
+        end
+
+        it_behaves_like 'a counter of failed available verifiables', :checksum_failed_count
       end
 
-      it 'returns the number of available verifiables where verification failed' do
-        model_record.verification_started!
-        model_record.verification_failed_with_message!('some error message')
+      context 'when batch count feature flag is disabled' do
+        before do
+          stub_feature_flags(geo_batch_count: false)
+        end
 
-        expect(described_class.checksum_failed_count).to eq(1)
-      end
-
-      it 'excludes other verification states' do
-        model_record.verification_started!
-
-        expect(described_class.checksum_failed_count).to eq(0)
-
-        model_record.verification_succeeded_with_checksum!('foo', Time.current)
-
-        expect(described_class.checksum_failed_count).to eq(0)
-
-        model_record.verification_pending!
-
-        expect(described_class.checksum_failed_count).to eq(0)
+        it_behaves_like 'a counter of failed available verifiables', :checksum_failed_count
       end
     end
 
@@ -126,15 +213,106 @@ RSpec.shared_examples 'a verifiable replicator' do
     end
   end
 
+  describe '.verification_failed_count' do
+    context 'when verification is enabled' do
+      let(:verifiable) { replicator.registry }
+
+      before do
+        model_record.save!
+
+        allow(described_class).to receive(:verification_enabled?).and_return(true)
+
+        # Verification on the secondary requires a synced registry
+        verifiable.start
+        verifiable.synced!
+      end
+
+      context 'when batch count feature flag is enabled' do
+        before do
+          # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+          # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+          stub_batch_counter_transaction_open_check
+        end
+
+        it_behaves_like 'a counter of failed available verifiables', :verification_failed_count
+      end
+
+      context 'when batch count feature flag is disabled' do
+        before do
+          stub_feature_flags(geo_batch_count: false)
+        end
+
+        it_behaves_like 'a counter of failed available verifiables', :verification_failed_count
+      end
+    end
+
+    context 'when verification is disabled' do
+      it 'returns nil' do
+        allow(described_class).to receive(:verification_enabled?).and_return(false)
+
+        expect(described_class.verification_failed_count).to be_nil
+      end
+    end
+  end
+
   describe '.verification_total_count' do
     context 'when verification is enabled' do
-      it 'returns the number of verification_not_disabled registry rows' do
-        allow(described_class).to receive(:verification_enabled?).and_return(true)
-        relation = instance_double(ActiveRecord::Relation, count: 123)
-        registry = class_double(Geo::PackageFileRegistry, verification_not_disabled: relation)
-        allow(described_class).to receive(:registry_class).and_return(registry)
+      let(:verifiable) { replicator.registry }
 
-        expect(described_class.verification_total_count).to eq(123)
+      before do
+        model_record.save!
+
+        allow(described_class).to receive(:verification_enabled?).and_return(true)
+
+        # Verification on the secondary requires a synced registry
+        verifiable.start
+        verifiable.synced!
+      end
+
+      context 'when batch count feature flag is enabled' do
+        before do
+          # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+          # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+          stub_batch_counter_transaction_open_check
+        end
+
+        context 'when the verification_state is disabled' do
+          specify do
+            verifiable.verification_disabled!
+
+            expect(described_class.verification_total_count).to eq(0)
+          end
+        end
+
+        context 'when the verification_state is not disabled' do
+          specify do
+            verifiable.verification_started!
+
+            expect(described_class.verification_total_count).to eq(1)
+          end
+        end
+      end
+
+      context 'when batch count feature flag is disabled' do
+        before do
+          stub_feature_flags(geo_batch_count: false)
+        end
+
+        context 'when the verification_state is disabled' do
+          specify do
+            verifiable.verification_disabled!
+
+            expect(described_class.verification_total_count).to eq(0)
+          end
+        end
+
+        context 'when the verification_state is not disabled' do
+          specify do
+            verifiable.verification_started!
+
+            expect(described_class.verification_total_count).to eq(1)
+          end
+        end
       end
     end
 

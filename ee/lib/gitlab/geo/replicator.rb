@@ -13,6 +13,7 @@ module Gitlab
       include ::Gitlab::Utils::StrongMemoize
       include ::Gitlab::Geo::LogHelpers
       extend ::Gitlab::Geo::LogHelpers
+      extend ::Gitlab::Geo::BatchCounter
 
       CLASS_SUFFIXES = %w(RegistryFinder RegistriesResolver).freeze
 
@@ -135,16 +136,6 @@ module Gitlab
         replicator_class = for_replicable_name(replicable_name)
 
         replicator_class.new(model_record_id: replicable_id)
-      end
-
-      def self.batch_count_enabled?
-        Feature.enabled?(:geo_batch_count)
-      end
-
-      def self.batch_count(relation, column, &block)
-        return yield unless batch_count_enabled?
-
-        ::Gitlab::Database::BatchCount.batch_count(relation, column)
       end
 
       def self.primary_total_count

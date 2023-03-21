@@ -154,7 +154,9 @@ module Geo
         # Bonus: This causes the progress bar to be hidden.
         return unless verification_enabled?
 
-        model.verification_succeeded.count
+        batch_count(model.verification_succeeded, model.primary_key) do
+          model.verification_succeeded.count
+        end
       end
 
       def checksum_failed_count
@@ -162,7 +164,9 @@ module Geo
         # Bonus: This causes the progress bar to be hidden.
         return unless verification_enabled?
 
-        model.verification_failed.count
+        batch_count(model.verification_failed, model.primary_key) do
+          model.verification_failed.count
+        end
       end
 
       def checksum_total_count
@@ -170,7 +174,9 @@ module Geo
         # Bonus: This causes the progress bar to be hidden.
         return unless verification_enabled?
 
-        model.available_verifiables.count
+        batch_count(model.available_verifiables, model.primary_key) do
+          model.available_verifiables.count
+        end
       end
 
       def verified_count
@@ -178,7 +184,9 @@ module Geo
         # Bonus: This causes the progress bar to be hidden.
         return unless verification_enabled?
 
-        registry_class.verification_succeeded.count
+        batch_count(registry_class.verification_succeeded, registry_class.primary_key) do
+          registry_class.verification_succeeded.count
+        end
       end
 
       def verification_failed_count
@@ -186,7 +194,9 @@ module Geo
         # Bonus: This causes the progress bar to be hidden.
         return unless verification_enabled?
 
-        registry_class.verification_failed.count
+        batch_count(registry_class.verification_failed, registry_class.primary_key) do
+          registry_class.verification_failed.count
+        end
       end
 
       def verification_total_count
@@ -196,7 +206,9 @@ module Geo
 
         # Exclude resources where verification is disabled. We need to do
         # frontend work if we want to show admins verification_disabled things.
-        registry_class.verification_not_disabled.count
+        batch_count(registry_class.verification_not_disabled, registry_class.primary_key) do
+          registry_class.verification_not_disabled.count
+        end
       end
     end
 
