@@ -31327,6 +31327,9 @@ msgstr ""
 msgid "PerformanceBar|Trace"
 msgstr ""
 
+msgid "PerformanceBar|Zoekt calls"
+msgstr ""
+
 msgid "PerformanceBar|cpu"
 msgstr ""
 
