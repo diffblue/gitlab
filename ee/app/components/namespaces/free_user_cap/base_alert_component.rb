@@ -19,14 +19,14 @@ module Namespaces
       attr_reader :namespace, :user, :content_class
 
       def render?
-        return false unless Shared.default_render?(user: user, namespace: namespace)
+        return false unless ::Namespaces::FreeUserCap.owner_access?(user: user, namespace: namespace)
         return false if dismissed?
 
         breached_cap_limit?
       end
 
       def breached_cap_limit?
-        Shared.enforcement_over_limit?(namespace)
+        ::Namespaces::FreeUserCap::Enforcement.new(namespace).over_limit?
       end
 
       def variant
@@ -50,15 +50,27 @@ module Namespaces
       def alert_data
         return base_alert_data unless dismissible
 
-        base_alert_data.merge(Shared.extra_alert_data(namespace, feature_name))
+        base_alert_data.merge(
+          feature_id: feature_name,
+          dismiss_endpoint: Rails.application.routes.url_helpers.group_callouts_path,
+          group_id: namespace.id
+        )
       end
 
       def base_alert_data
-        Shared.base_alert_data
+        {
+          track_action: 'render',
+          track_label: 'user_limit_banner',
+          testid: 'user-over-limit-free-plan-alert'
+        }
       end
 
       def close_button_data
-        Shared.close_button_data
+        {
+          track_action: 'dismiss_banner',
+          track_label: 'user_limit_banner',
+          testid: 'user-over-limit-free-plan-dismiss'
+        }
       end
 
       def namespace_primary_cta
@@ -86,11 +98,11 @@ module Namespaces
       end
 
       def container_class
-        Shared.container_class(content_class)
+        "gl-overflow-auto #{content_class}"
       end
 
       def free_user_limit
-        Shared.free_user_limit
+        ::Namespaces::FreeUserCap.dashboard_limit
       end
 
       def blog_link_start

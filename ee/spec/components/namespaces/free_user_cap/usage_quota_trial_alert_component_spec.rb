@@ -1,28 +1,28 @@
 # frozen_string_literal: true
+
 require "spec_helper"
 
-RSpec.describe Namespaces::FreeUserCap::UsageQuotaTrialAlertComponent, :saas, :aggregate_failures, type: :component do
+RSpec.describe Namespaces::FreeUserCap::UsageQuotaTrialAlertComponent, :saas, :aggregate_failures, type: :component,
+  feature_category: :experimentation_conversion do
   let_it_be(:namespace, refind: true) { create(:group, :private) }
   let_it_be(:user, refind: true) { create(:user) }
-  let_it_be(:content_class) { '_content_class_' }
-  let_it_be(:trial_ends_on) { Date.parse('2022-06-01') }
-
+  let(:content_class) { '_content_class_' }
+  let(:trial_ends_on) { Date.parse('2022-06-01') }
   let(:free_user_cap_enabled) { true }
-
   let!(:gitlab_subscription) do
     create(:gitlab_subscription, :active_trial, :free, namespace: namespace, trial_ends_on: trial_ends_on)
   end
 
   let(:title) do
     "On 1, Jun, 2022, your trial will end and #{namespace.name} will be limited to " \
-    "#{::Namespaces::FreeUserCap.dashboard_limit} members"
+      "#{::Namespaces::FreeUserCap.dashboard_limit} members"
   end
 
   let(:body) do
-    "When your trial ends, you'll move to the Free tier, which has a limit of "\
-    "#{::Namespaces::FreeUserCap.dashboard_limit} seats. #{::Namespaces::FreeUserCap.dashboard_limit} " \
-    'seats will remain active, and members not occupying a seat will have the Over limit ' \
-    'status and lose access to this group. To get more seats, upgrade to a paid tier.'
+    "When your trial ends, you'll move to the Free tier, which has a limit of " \
+      "#{::Namespaces::FreeUserCap.dashboard_limit} seats. #{::Namespaces::FreeUserCap.dashboard_limit} " \
+      'seats will remain active, and members not occupying a seat will have the Over limit ' \
+      'status and lose access to this group. To get more seats, upgrade to a paid tier.'
   end
 
   subject(:component) do

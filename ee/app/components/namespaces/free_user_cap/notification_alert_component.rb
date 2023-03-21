@@ -8,7 +8,7 @@ module Namespaces
       PROMOTION_URL = 'https://about.gitlab.com/pricing/faq-efficient-free-tier/#transition-offer'
 
       def breached_cap_limit?
-        Shared.over_notification_limit?(namespace)
+        ::Namespaces::FreeUserCap::Notification.new(namespace).over_limit?
       end
 
       def dismissible

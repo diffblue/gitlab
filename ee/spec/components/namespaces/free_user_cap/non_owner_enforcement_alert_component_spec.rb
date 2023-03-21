@@ -1,16 +1,16 @@
 # frozen_string_literal: true
+
 require "spec_helper"
 
-RSpec.describe Namespaces::FreeUserCap::NonOwnerAlertComponent, :saas, :aggregate_failures, type: :component do
+RSpec.describe Namespaces::FreeUserCap::NonOwnerEnforcementAlertComponent, :saas, :aggregate_failures, type: :component,
+  feature_category: :experimentation_conversion do
   let_it_be(:namespace, reload: true) { create(:group) }
   let_it_be(:user, refind: true) { create(:user) }
-  let_it_be(:content_class) { '_content_class_' }
-
+  let(:content_class) { '_content_class_' }
   let(:free_user_cap_over_limit?) { true }
-
   let(:title) do
     "Your top-level group #{namespace.name} is over the #{::Namespaces::FreeUserCap.dashboard_limit} " \
-    "user limit and has been placed in a read-only state."
+      "user limit and has been placed in a read-only state."
   end
 
   subject(:component) do

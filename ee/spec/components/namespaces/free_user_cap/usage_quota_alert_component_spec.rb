@@ -1,24 +1,24 @@
 # frozen_string_literal: true
+
 require "spec_helper"
 
-RSpec.describe Namespaces::FreeUserCap::UsageQuotaAlertComponent, :saas, :aggregate_failures, type: :component do
+RSpec.describe Namespaces::FreeUserCap::UsageQuotaAlertComponent, :saas, :aggregate_failures, type: :component,
+  feature_category: :experimentation_conversion do
   let_it_be(:namespace, refind: true) { create(:group, :private) }
   let_it_be(:user, refind: true) { create(:user) }
-  let_it_be(:content_class) { '_content_class_' }
-
+  let(:content_class) { '_content_class_' }
   let(:free_plan_members_count) { 6 }
   let!(:gitlab_subscription) { create(:gitlab_subscription, :expired, :free, namespace: namespace) }
-
   let(:title) do
     "Your free group is now limited to #{::Namespaces::FreeUserCap.dashboard_limit} members"
   end
 
   let(:body) do
     "Your group recently changed to use the Free plan. Free groups are limited to " \
-    "#{::Namespaces::FreeUserCap.dashboard_limit} members and " \
-    "the remaining members will get a status of over-limit and lose access to the group. You can " \
-    "free up space for new members by removing those who no longer need access or toggling them " \
-    "to over-limit. To get an unlimited number of members, you can upgrade to a paid tier."
+      "#{::Namespaces::FreeUserCap.dashboard_limit} members and " \
+      "the remaining members will get a status of over-limit and lose access to the group. You can " \
+      "free up space for new members by removing those who no longer need access or toggling them " \
+      "to over-limit. To get an unlimited number of members, you can upgrade to a paid tier."
   end
 
   subject(:component) { described_class.new(namespace: namespace, user: user, content_class: content_class) }

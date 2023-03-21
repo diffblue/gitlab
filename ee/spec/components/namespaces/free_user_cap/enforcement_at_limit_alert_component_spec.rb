@@ -1,18 +1,17 @@
 # frozen_string_literal: true
+
 require "spec_helper"
 
-RSpec.describe Namespaces::FreeUserCap::EnforcementAtLimitAlertComponent,
-  :saas, :aggregate_failures, type: :component do
-  let_it_be(:namespace) { build_stubbed(:group) }
-  let_it_be(:content_class) { '_content_class_' }
-
+RSpec.describe Namespaces::FreeUserCap::EnforcementAtLimitAlertComponent, :saas, :aggregate_failures, type: :component,
+  feature_category: :experimentation_conversion do
+  let(:namespace) { build_stubbed(:group) }
+  let(:content_class) { '_content_class_' }
   let(:user) { build_stubbed(:user) }
   let(:free_user_cap_at_limit?) { true }
   let(:owner_access?) { true }
-
-  let_it_be(:title) do
+  let(:title) do
     "Your top-level group #{namespace.name} has reached the " \
-    "#{::Namespaces::FreeUserCap.dashboard_limit} user limit"
+      "#{::Namespaces::FreeUserCap.dashboard_limit} user limit"
   end
 
   subject(:component) do

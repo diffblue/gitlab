@@ -1,10 +1,11 @@
 # frozen_string_literal: true
+
 require "spec_helper"
 
 RSpec.describe Namespaces::FreeUserCap::NonOwnerNotificationAlertComponent, :saas, :aggregate_failures, type: :component, feature_category: :experimentation_conversion do
   let_it_be(:namespace) { create(:group, :private) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
   let_it_be(:user, refind: true) { create(:user) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
-  let_it_be(:content_class) { '_content_class_' }
+  let(:content_class) { '_content_class_' }
   let(:notification_free_user_cap_over?) { true }
   let(:title) do
     format(_("Your top-level group %{name} will move to a read-only state soon"), name: namespace.name)

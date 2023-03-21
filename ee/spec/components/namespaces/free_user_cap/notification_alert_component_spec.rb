@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "spec_helper"
 
 RSpec.describe Namespaces::FreeUserCap::NotificationAlertComponent, :saas, :aggregate_failures, type: :component, feature_category: :experimentation_conversion do
