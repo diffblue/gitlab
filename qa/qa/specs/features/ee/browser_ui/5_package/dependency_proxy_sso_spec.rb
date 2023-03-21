@@ -1,12 +1,8 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Package', :orchestrated, :group_saml, requires_admin: 'for various user admin functions' do
-    describe 'Dependency Proxy Group SSO', product_group: :container_registry, quarantine: {
-      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/396367',
-      type: :stale,
-      only: { subdomain: %i[staging staging-ref] }
-    } do
+  RSpec.describe 'Package', :skip_live_env, :orchestrated, :group_saml, requires_admin: 'for various user admin functions' do
+    describe 'Dependency Proxy Group SSO', product_group: :container_registry do
       include Support::API
 
       let!(:group) do
