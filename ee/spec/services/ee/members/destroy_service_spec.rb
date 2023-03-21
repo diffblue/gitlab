@@ -15,6 +15,10 @@ RSpec.describe Members::DestroyService, feature_category: :subgroups do
 
   shared_examples_for 'logs an audit event' do
     specify do
+      expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+        hash_including(name: "member_destroyed")
+      ).and_call_original
+
       expect { event }.to change { AuditEvent.count }.by(1)
     end
   end
@@ -60,6 +64,14 @@ RSpec.describe Members::DestroyService, feature_category: :subgroups do
 
     context 'streaming audit event' do
       subject { described_class.new(current_user).execute(member, skip_authorization: true) }
+
+      it 'audits event with name' do
+        expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+          hash_including(name: "member_destroyed")
+        ).and_call_original
+
+        subject
+      end
 
       include_examples 'sends streaming audit event'
     end

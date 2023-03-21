@@ -1,0 +1,9 @@
+---
+name: member_destroyed
+description: Event triggered when a membership is destroyed
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/374112
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/109711
+feature_category: compliance_management
+milestone: '15.9'
+saved_to_database: true
+streamed: true

@@ -135,6 +135,14 @@ RSpec.describe Members::CreateService, feature_category: :subgroups do
       }
     end
 
+    it 'audits event with name' do
+      expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+        hash_including(name: "member_created")
+      ).and_call_original
+
+      subject
+    end
+
     include_examples 'sends streaming audit event'
   end
 

@@ -8,7 +8,7 @@ module EE
       def after_execute(action:, old_access_level:, old_expiry:, member:)
         super
 
-        log_audit_event(action: action, old_access_level: old_access_level, old_expiry: old_expiry, member: member)
+        log_audit_event(old_access_level: old_access_level, old_expiry: old_expiry, member: member)
       end
 
       private
@@ -27,14 +27,26 @@ module EE
         super
       end
 
-      def log_audit_event(action:, old_access_level:, old_expiry:, member:)
-        ::AuditEventService.new(
-          current_user,
-          member.source,
-          action: action,
-          old_access_level: old_access_level,
-          old_expiry: old_expiry
-        ).for_member(member).security_event
+      def log_audit_event(old_access_level:, old_expiry:, member:)
+        audit_context = {
+          name: 'member_updated',
+          author: current_user || ::Gitlab::Audit::UnauthenticatedAuthor.new(name: '(System)'),
+          scope: member.source,
+          target: member.user || ::Gitlab::Audit::NullTarget.new,
+          target_details: member.user ? member.user.name : 'Deleted User',
+          message: 'Membership updated',
+          additional_details: {
+            change: 'access_level',
+            from: old_access_level,
+            to: member.human_access,
+            expiry_from: old_expiry,
+            expiry_to: member.expires_at,
+            as: ::Gitlab::Access.options_with_owner.key(member.access_level.to_i),
+            member_id: member.id
+          }
+        }
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
       end
     end
   end
