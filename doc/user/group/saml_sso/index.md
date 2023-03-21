@@ -153,19 +153,24 @@ For more information, see an [example configuration page](example_saml_config.md
 
 OneLogin supports its own [GitLab (SaaS) application](https://onelogin.service-now.com/support?id=kb_article&sys_id=92e4160adbf16cd0ca1c400e0b961923&kb_category=50984e84db738300d5505eea4b961913).
 
+To set up OneLogin as your identity provider:
+
+1. In GitLab, on the top bar, select **Main menu > Groups** and find your group.
+1. On the left sidebar, select **Settings > SAML SSO**.
+1. Note the information on this page.
 1. If you use the OneLogin generic
    [SAML Test Connector (Advanced)](https://onelogin.service-now.com/support?id=kb_article&sys_id=b2c19353dbde7b8024c780c74b9619fb&kb_category=93e869b0db185340d5505eea4b961934),
    you should [use the OneLogin SAML Test Connector](https://onelogin.service-now.com/support?id=kb_article&sys_id=93f95543db109700d5505eea4b96198f). The following GitLab settings correspond
    to the OneLogin fields:
 
-   | GitLab setting                                   | OneLogin field                   |
-   | ------------------------------------------------ | -------------------------------- |
-   | Identifier                                       | **Audience**                     |
-   | Assertion consumer service URL                   | **Recipient**                    |
-   | Assertion consumer service URL                   | **ACS (Consumer) URL**           |
-   | Assertion consumer service URL (escaped version) | **ACS (Consumer) URL Validator** |
-   | GitLab single sign-on URL                        | **Login URL**                    |
-   | Identity provider single sign-on URL             | **SAML 2.0 Endpoint**            |
+   | GitLab setting                                       | OneLogin field                   |
+   | ---------------------------------------------------- | -------------------------------- |
+   | **Identifier**                                       | **Audience**                     |
+   | **Assertion consumer service URL**                   | **Recipient**                    |
+   | **Assertion consumer service URL**                   | **ACS (Consumer) URL**           |
+   | **Assertion consumer service URL (escaped version)** | **ACS (Consumer) URL Validator** |
+   | **GitLab single sign-on URL**                        | **Login URL**                    |
+   | **Identity provider single sign-on URL**             | **SAML 2.0 Endpoint**            |
 
 1. For **NameID**, use `OneLogin ID`.
 
