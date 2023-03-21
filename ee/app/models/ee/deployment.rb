@@ -20,18 +20,6 @@ module EE
       scope :with_approvals, -> { preload(approvals: [:user]) }
 
       state_machine :status do
-        after_transition any => :success do |deployment|
-          deployment.run_after_commit do
-            # Schedule to refresh the DORA daily metrics.
-            # It has 5 minutes delay due to waiting for the other async processes
-            # (e.g. `LinkMergeRequestWorker`) to be finished before collecting metrics.
-            ::Dora::DailyMetrics::RefreshWorker
-              .perform_in(5.minutes,
-                          deployment.environment_id,
-                          deployment.finished_at.to_date.to_s)
-          end
-        end
-
         after_transition created: :blocked do |deployment, transition|
           deployment.run_after_commit do
             next unless deployment.allow_pipeline_trigger_approve_deployment
@@ -43,6 +31,8 @@ module EE
           end
         end
       end
+
+      Dora::Watchers.mount(self)
     end
 
     def pending_approval_count
