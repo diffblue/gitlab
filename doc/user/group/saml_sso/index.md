@@ -119,27 +119,35 @@ For more information, see an [example configuration page](example_saml_config.md
 
 ### Set up Okta
 
-<i class="fa fa-youtube-play youtube" aria-hidden="true"></i>
-For a demo of the Okta SAML setup including SCIM, see [Demo: Okta Group SAML & SCIM setup](https://youtu.be/0ES9HsZq0AQ).
+To set up SSO with Okta as your identity provider:
 
-1. [Set up a SAML application in Okta](https://developer.okta.com/docs/guides/build-sso-integration/saml2/main/).
+1. In GitLab, on the top bar, select **Main menu > Groups** and find your group.
+1. On the left sidebar, select **Settings > SAML SSO**.
+1. Note the information on this page.
+1. Follow the instructions for [setting up a SAML application in Okta](https://developer.okta.com/docs/guides/build-sso-integration/saml2/main/).
+
    The following GitLab settings correspond to the Okta fields.
 
-   | GitLab setting                       | Okta field                                                 |
-   | ------------------------------------ | ---------------------------------------------------------- |
-   | Identifier                           | **Audience URI**                                               |
-   | Assertion consumer service URL       | **Single sign-on URL**                                         |
-   | GitLab single sign-on URL            | **Login page URL** (under **Application Login Page** settings) |
-   | Identity provider single sign-on URL | **Identity Provider Single Sign-On URL**                       |
+   | GitLab setting                           | Okta field                                                     |
+   | ---------------------------------------- | -------------------------------------------------------------- |
+   | **Identifier**                           | **Audience URI**                                               |
+   | **Assertion consumer service URL**       | **Single sign-on URL**                                         |
+   | **GitLab single sign-on URL**            | **Login page URL** (under **Application Login Page** settings) |
+   | **Identity provider single sign-on URL** | **Identity Provider Single Sign-On URL**                       |
 
 1. Under the Okta **Single sign-on URL** field, select the **Use this for Recipient URL and Destination URL** checkbox.
 
 1. Set these values:
-   - For **Application username (NameID)**: **Custom** `user.getInternalProperty("id")`
-   - For **Name ID Format**: `Persistent`
+   - For **Application username (NameID)**: **Custom** `user.getInternalProperty("id")`.
+   - For **Name ID Format**: `Persistent`.
 
 The Okta GitLab application available in the App Catalog only supports [SCIM](scim_setup.md). Support
 for SAML is proposed in [issue 216173](https://gitlab.com/gitlab-org/gitlab/-/issues/216173).
+
+<i class="fa fa-youtube-play youtube" aria-hidden="true"></i>
+For a demo of the Okta SAML setup including SCIM, see [Demo: Okta Group SAML & SCIM setup](https://youtu.be/0ES9HsZq0AQ).
+
+For more information, see an [example configuration page](example_saml_config.md#okta)
 
 ### Set up OneLogin
 
