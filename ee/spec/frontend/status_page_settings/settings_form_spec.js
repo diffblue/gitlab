@@ -1,10 +1,21 @@
 import { shallowMount } from '@vue/test-utils';
+import Vuex from 'vuex';
 import StatusPageSettingsForm from 'ee/status_page_settings/components/settings_form.vue';
 import createStore from 'ee/status_page_settings/store';
 
 describe('Status Page settings form', () => {
   let wrapper;
-  const store = createStore();
+  const { state } = createStore();
+  const updateStatusPageSettingsSpy = jest.fn();
+
+  const fakeStore = () => {
+    return new Vuex.Store({
+      state,
+      actions: {
+        updateStatusPageSettings: updateStatusPageSettingsSpy,
+      },
+    });
+  };
 
   const findForm = () => wrapper.findComponent({ ref: 'settingsForm' });
   const findToggleButton = () => wrapper.findComponent({ ref: 'toggleBtn' });
@@ -12,7 +23,7 @@ describe('Status Page settings form', () => {
   const findSectionSubHeader = () => wrapper.findComponent({ ref: 'sectionSubHeader' });
 
   beforeEach(() => {
-    wrapper = shallowMount(StatusPageSettingsForm, { store });
+    wrapper = shallowMount(StatusPageSettingsForm, { store: fakeStore() });
   });
 
   afterEach(() => {
@@ -46,14 +57,10 @@ describe('Status Page settings form', () => {
   });
 
   describe('form', () => {
-    beforeEach(() => {
-      jest.spyOn(wrapper.vm, 'updateStatusPageSettings').mockImplementation();
-    });
-
     describe('submit button', () => {
       it('submits form on click', () => {
         findForm().trigger('submit');
-        expect(wrapper.vm.updateStatusPageSettings).toHaveBeenCalled();
+        expect(updateStatusPageSettingsSpy).toHaveBeenCalled();
       });
     });
   });
