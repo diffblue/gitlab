@@ -70,10 +70,6 @@ class TrialsController < ApplicationController
     end
   end
 
-  def skip
-    redirect_to stored_location_or_provided_path(dashboard_projects_path)
-  end
-
   protected
 
   # override the ConfirmEmailWarning method in order to skip

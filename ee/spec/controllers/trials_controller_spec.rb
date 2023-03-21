@@ -581,28 +581,4 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
       it { is_expected.not_to set_confirm_warning_for(user.email) }
     end
   end
-
-  describe '#skip' do
-    subject(:get_skip) { get :skip, params: params }
-
-    let(:params) { {} }
-
-    context 'when the user is `setup_for_company: true`' do
-      let(:user) { create(:user, setup_for_company: true) }
-
-      it { is_expected.to redirect_to(dashboard_projects_path) }
-
-      context 'with has a stored_location_for set' do
-        before do
-          controller.store_location_for(:user, new_trial_path)
-        end
-
-        it { is_expected.to redirect_to(new_trial_path) }
-      end
-    end
-
-    context 'when the user is `setup_for_company: false`' do
-      it { is_expected.to redirect_to(dashboard_projects_path) }
-    end
-  end
 end
