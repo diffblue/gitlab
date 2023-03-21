@@ -28402,6 +28402,9 @@ msgstr ""
 msgid "NavigationTheme|Red"
 msgstr ""
 
+msgid "Navigation|Admin"
+msgstr ""
+
 msgid "Navigation|Context navigation"
 msgstr ""
 
