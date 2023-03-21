@@ -18,6 +18,8 @@ module EpicIssues
       super
 
       Epics::UpdateDatesService.new([link.epic]).execute
+
+      ::GraphqlTriggers.issuable_epic_updated(@target)
     end
 
     def track_event

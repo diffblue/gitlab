@@ -43,6 +43,12 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
         expect(subject[:created_references].count).to eq(1)
       end
 
+      it 'triggers issuableEpicUpdated' do
+        expect(GraphqlTriggers).to receive(:issuable_epic_updated).with(issue)
+
+        subject
+      end
+
       describe 'async actions', :sidekiq_inline do
         it 'creates 1 system note for epic and 1 system note for issue' do
           expect { subject }.to change { Note.count }.by(2)
@@ -86,6 +92,12 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
 
       it 'no relationship is created' do
         expect { subject }.not_to change { EpicIssue.count }
+      end
+
+      it 'does not trigger issuableEpicUpdated' do
+        expect(GraphqlTriggers).not_to receive(:issuable_epic_updated)
+
+        subject
       end
     end
 

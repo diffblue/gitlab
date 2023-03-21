@@ -14,6 +14,10 @@ module EE
 
         field :issuable_health_status_updated, subscription: Subscriptions::IssuableUpdated, null: true,
                                             description: 'Triggered when the health status of an issuable is updated.'
+
+        field :issuable_epic_updated,
+          subscription: Subscriptions::IssuableUpdated, null: true,
+          description: 'Triggered when the epic of an issuable is updated.'
       end
     end
   end

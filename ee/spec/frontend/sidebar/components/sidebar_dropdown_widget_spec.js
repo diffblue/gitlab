@@ -9,6 +9,7 @@ import { IssuableAttributeType, issuableAttributesQueries } from 'ee/sidebar/con
 import groupEpicsQuery from 'ee/sidebar/queries/group_epics.query.graphql';
 import projectIssueEpicMutation from 'ee/sidebar/queries/project_issue_epic.mutation.graphql';
 import projectIssueEpicQuery from 'ee/sidebar/queries/project_issue_epic.query.graphql';
+import projectIssueEpicSubscription from 'ee/sidebar/queries/issuable_epic.subscription.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -24,6 +25,7 @@ import {
   mockEpic2,
   emptyGroupEpicsResponse,
   mockNoPermissionEpicResponse,
+  mockEpicUpdatesSubscriptionResponse,
 } from '../mock_data';
 
 jest.mock('~/alert');
@@ -50,11 +52,14 @@ describe('SidebarDropdownWidget', () => {
     requestHandlers = [],
     groupEpicsSpy = jest.fn().mockResolvedValue(mockGroupEpicsResponse),
     currentEpicSpy = jest.fn().mockResolvedValue(noCurrentEpicResponse),
+    epicUpdatedSpy = jest.fn().mockResolvedValue(mockEpicUpdatesSubscriptionResponse),
+    realTimeIssueEpicLinks = true,
   } = {}) => {
     Vue.use(VueApollo);
     mockApollo = createMockApollo([
       [groupEpicsQuery, groupEpicsSpy],
       [projectIssueEpicQuery, currentEpicSpy],
+      [projectIssueEpicSubscription, epicUpdatedSpy],
       ...requestHandlers,
     ]);
 
@@ -63,7 +68,10 @@ describe('SidebarDropdownWidget', () => {
         provide: {
           canUpdate: true,
           issuableAttributesQueries,
-          glFeatures: { epicWidgetEditConfirmation: true },
+          glFeatures: {
+            epicWidgetEditConfirmation: true,
+            realTimeIssueEpicLinks,
+          },
         },
         apolloProvider: mockApollo,
         propsData: {
@@ -202,6 +210,36 @@ describe('SidebarDropdownWidget', () => {
       });
 
       describe("when attribute type is 'epic'", () => {
+        describe('real-time epic link updates', () => {
+          describe('when realTimeIssueEpicLinks feature is enabled', () => {
+            it('should submit GraphQL subscription', async () => {
+              const epicUpdatedSpy = jest
+                .fn()
+                .mockResolvedValue(mockEpicUpdatesSubscriptionResponse);
+              await createComponentWithApollo({
+                realTimeIssueEpicLinks: true,
+                epicUpdatedSpy,
+              });
+
+              expect(epicUpdatedSpy).toHaveBeenCalled();
+            });
+          });
+
+          describe('when realTimeIssueEpicLinks feature is disabled', () => {
+            it('should not submit GraphqQL subscription', async () => {
+              const epicUpdatedSpy = jest
+                .fn()
+                .mockResolvedValue(mockEpicUpdatesSubscriptionResponse);
+              await createComponentWithApollo({
+                realTimeIssueEpicLinks: false,
+                epicUpdatedSpy,
+              });
+
+              expect(epicUpdatedSpy).not.toHaveBeenCalled();
+            });
+          });
+        });
+
         describe("when user doesn't have permission", () => {
           it('opens popover on edit click', async () => {
             await createComponentWithApollo({

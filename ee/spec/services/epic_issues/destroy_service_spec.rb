@@ -22,6 +22,12 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
       it 'returns an error' do
         is_expected.to eq(message: 'No Issue Link found', status: :error, http_status: 404)
       end
+
+      it 'does not trigger issuableEpicUpdated' do
+        expect(GraphqlTriggers).not_to receive(:issuable_epic_updated)
+
+        subject
+      end
     end
 
     context 'when epics feature is enabled' do
@@ -76,6 +82,12 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
           subject
         end
 
+        it 'triggers issuableEpicUpdated' do
+          expect(GraphqlTriggers).to receive(:issuable_epic_updated).with(issue)
+
+          subject
+        end
+
         context 'refresh epic dates' do
           it 'calls UpdateDatesService' do
             expect(Epics::UpdateDatesService).to receive(:new).with([epic_issue.epic]).and_call_original
@@ -96,6 +108,12 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
 
         it 'does not counts an usage ping event' do
           expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).not_to receive(:track_epic_issue_removed)
+
+          subject
+        end
+
+        it 'does not trigger issuableEpicUpdated' do
+          expect(GraphqlTriggers).not_to receive(:issuable_epic_updated)
 
           subject
         end

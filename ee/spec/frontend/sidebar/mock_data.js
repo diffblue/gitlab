@@ -136,6 +136,12 @@ export const noCurrentEpicResponse = {
   },
 };
 
+export const mockEpicUpdatesSubscriptionResponse = {
+  data: {
+    issuableEpicUpdated: null,
+  },
+};
+
 export const mockNoPermissionEpicResponse = {
   data: {
     workspace: {
