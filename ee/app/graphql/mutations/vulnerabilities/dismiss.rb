@@ -5,21 +5,11 @@ module Mutations
     class Dismiss < BaseMutation
       graphql_name 'VulnerabilityDismiss'
 
-      authorize :admin_vulnerability
+      def self.state_transition_name_past_tense
+        "dismissed"
+      end
 
-      field :vulnerability, Types::VulnerabilityType,
-            null: true,
-            description: 'Vulnerability after dismissal.'
-
-      argument :id,
-               ::Types::GlobalIDType[::Vulnerability],
-               required: true,
-               description: 'ID of the vulnerability to be dismissed.'
-
-      argument :comment,
-               GraphQL::Types::String,
-               required: false,
-               description: 'Comment why vulnerability should be dismissed (max. 50 000 characters).'
+      prepend Mutations::VulnerabilityStateTransitions
 
       argument :dismissal_reason,
                Types::Vulnerabilities::DismissalReasonEnum,
@@ -28,7 +18,7 @@ module Mutations
 
       def resolve(id:, comment: nil, dismissal_reason: nil)
         vulnerability = authorized_find!(id: id)
-        result = dismiss_vulnerability(vulnerability, comment, dismissal_reason)
+        result = transition_vulnerability(vulnerability, comment, dismissal_reason)
 
         {
           vulnerability: result,
@@ -38,12 +28,8 @@ module Mutations
 
       private
 
-      def dismiss_vulnerability(vulnerability, comment, dismissal_reason)
+      def transition_vulnerability(vulnerability, comment, dismissal_reason)
         ::Vulnerabilities::DismissService.new(current_user, vulnerability, comment, dismissal_reason).execute
-      end
-
-      def find_object(id:)
-        GitlabSchema.find_by_gid(id)
       end
     end
   end
