@@ -74,21 +74,13 @@ export default {
       sastCiConfiguration: null,
       hasLoadingError: false,
       specificErrorText: undefined,
+      errorText: '',
     };
-  },
-  computed: {
-    errorText() {
-      return this.specificErrorText || this.$options.i18n.genericErrorText;
-    },
   },
   methods: {
     onError(error) {
       this.hasLoadingError = true;
-      const { message, userFacing } = parseErrorMessage(error);
-
-      if (userFacing) {
-        this.specificErrorText = message;
-      }
+      this.errorText = parseErrorMessage(error, this.$options.i18n.genericErrorText);
     },
   },
   feedbackIssue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/225991',
