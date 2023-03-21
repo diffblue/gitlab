@@ -6,6 +6,8 @@ RSpec.describe IncidentManagement::IssuableResourceLink, type: :model do
   let_it_be(:issuable_resource_link) { create(:issuable_resource_link) }
   let_it_be(:issuable_resource_link1) { create(:issuable_resource_link, link_type: :slack, link_text: 'slack1') }
   let_it_be(:issuable_resource_link2) { create(:issuable_resource_link, link_type: :slack, link_text: 'slack2') }
+  let_it_be(:issuable_resource_link3) { create(:issuable_resource_link, link_type: :pagerduty, link_text: 'pd1') }
+  let_it_be(:issuable_resource_link4) { create(:issuable_resource_link, link_type: :pagerduty, link_text: 'pd2') }
 
   describe 'associations' do
     it { is_expected.to belong_to(:issue) }
@@ -47,7 +49,7 @@ RSpec.describe IncidentManagement::IssuableResourceLink, type: :model do
 
   describe 'enums' do
     let(:link_type_values) do
-      { general: 0, zoom: 1, slack: 2 }
+      { general: 0, zoom: 1, slack: 2, pagerduty: 3 }
     end
 
     it { is_expected.to define_enum_for(:link_type).with_values(link_type_values) }
@@ -63,6 +65,13 @@ RSpec.describe IncidentManagement::IssuableResourceLink, type: :model do
 
     it 'returns zoom links for zoom_links' do
       expect(described_class.zoom_links).to contain_exactly(issuable_resource_link)
+    end
+
+    it 'returns slack links for slack_links' do
+      expect(described_class.pagerduty_links).to contain_exactly(
+        issuable_resource_link3,
+        issuable_resource_link4
+      )
     end
   end
 end

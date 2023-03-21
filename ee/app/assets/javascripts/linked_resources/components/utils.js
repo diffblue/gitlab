@@ -3,6 +3,7 @@ import { createAlert } from '~/alert';
 
 const zoomRegex = /(https:\/\/(?:[\w-]+\.)?zoom\.us\/(?:s|j|my)\/\S+)/;
 const slackRegex = /(https:\/\/[a-zA-Z0-9]+.slack\.com\/[a-z\][a-zA-Z0-9_]+)/;
+const pagerdutyRegex = /(https:\/\/[a-zA-Z0-9]+.pagerduty\.com\/incidents\/[a-z\][a-zA-Z0-9]+)/;
 
 export const displayAndLogError = (error) =>
   createAlert({
@@ -27,6 +28,8 @@ export const identifyLinkType = (link) => {
     return 'zoom';
   } else if (slackRegex.test(link)) {
     return 'slack';
+  } else if (pagerdutyRegex.test(link)) {
+    return 'pagerduty';
   }
   return 'general';
 };

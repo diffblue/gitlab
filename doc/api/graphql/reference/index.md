@@ -23418,6 +23418,7 @@ Issuable resource link type enum.
 | Value | Description |
 | ----- | ----------- |
 | <a id="issuableresourcelinktypegeneral"></a>`general` | General link type. |
+| <a id="issuableresourcelinktypepagerduty"></a>`pagerduty` | Pagerduty link type. |
 | <a id="issuableresourcelinktypeslack"></a>`slack` | Slack link type. |
 | <a id="issuableresourcelinktypezoom"></a>`zoom` | Zoom link type. |
 

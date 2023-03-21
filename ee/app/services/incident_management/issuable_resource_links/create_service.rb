@@ -5,6 +5,7 @@ module IncidentManagement
     class CreateService < IssuableResourceLinks::BaseService
       ZOOM_REGEXP = %r{https://(?:[\w-]+\.)?zoom\.us/(?:s|j|my)/\S+}.freeze
       SLACK_REGEXP = %r{https://[a-zA-Z0-9]+.slack\.com/[a-z][a-zA-Z0-9_]+}.freeze
+      PAGERDUTY_REGEXP = %r{https://[a-zA-Z0-9]+.pagerduty\.com/incidents/[a-zA-Z0-9]+}.freeze
 
       def initialize(incident, user, params)
         @incident = incident
@@ -41,13 +42,22 @@ module IncidentManagement
 
         return :slack if SLACK_REGEXP.match?(params[:link])
 
+        return :pagerduty if PAGERDUTY_REGEXP.match?(params[:link])
+
         :general
       end
 
       def get_link_text(link, link_type)
         return link if link_type == 'general'
 
-        prefix = link_type == 'slack' ? 'Slack #' : 'Zoom #'
+        prefix = case link_type
+                 when 'slack'
+                   'Slack #'
+                 when 'zoom'
+                   'Zoom #'
+                 when 'pagerduty'
+                   'PagerDuty incident #'
+                 end
 
         prefix + link.split('/').last.split('?').first
       end
