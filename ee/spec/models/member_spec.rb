@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Member, type: :model do
+RSpec.describe Member, type: :model, feature_category: :subgroups do
   let_it_be(:user) { create :user }
   let_it_be(:group) { create :group }
   let_it_be(:member) { build :group_member, source: group, user: user }
@@ -653,6 +653,24 @@ RSpec.describe Member, type: :model do
       expect(described_class.count).to eq 2
       expect(described_class.banned_from(group).map(&:user_id)).to match_array([member1.user_id])
     end
+  end
+
+  describe '.not_banned_in scope' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+
+    let_it_be(:banned_group_member) { create(:group_member, :banned, :developer, source: group) }
+    let_it_be(:banned_project_member) { create(:project_member, :banned, :developer, source: project) }
+
+    let_it_be(:group_member) { create(:group_member, :developer, source: group) }
+    let_it_be(:project_member) { create(:project_member, :developer, source: project) }
+
+    subject(:not_banned_in) { described_class.not_banned_in(group) }
+
+    it { is_expected.to exclude banned_group_member }
+    it { is_expected.to exclude banned_project_member }
+    it { is_expected.to include group_member }
+    it { is_expected.to include project_member }
   end
 
   describe '.elevated_guests scope' do
