@@ -16,7 +16,7 @@ describe('SubscriptionsApi', () => {
 
   describe('Hand raise leads', () => {
     describe('sendHandRaiseLead', () => {
-      const expectedUrl = `/-/trials/create_hand_raise_lead`;
+      const expectedUrl = `/-/subscriptions/hand_raise_leads`;
       const params = {
         namespaceId: 1000,
         companyName: 'ACME',

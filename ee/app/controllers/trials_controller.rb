@@ -11,11 +11,10 @@ class TrialsController < ApplicationController
   layout 'minimal'
 
   before_action :check_if_gl_com_or_dev
-  before_action :authenticate_user!, except: [:create_hand_raise_lead]
-  before_action :authenticate_user_404!, only: [:create_hand_raise_lead]
+  before_action :authenticate_user!
   before_action :find_or_create_namespace, only: :apply
-  before_action :find_namespace, only: [:extend_reactivate, :create_hand_raise_lead]
-  before_action :authenticate_namespace_owner!, only: [:extend_reactivate]
+  before_action :find_namespace, only: :extend_reactivate
+  before_action :authenticate_namespace_owner!, only: :extend_reactivate
   before_action only: [:new, :select] do
     push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
   end
@@ -41,16 +40,6 @@ class TrialsController < ApplicationController
       apply_trial_and_redirect
     else
       redirect_to select_trials_path(glm_tracking_params)
-    end
-  end
-
-  def create_hand_raise_lead
-    result = GitlabSubscriptions::CreateHandRaiseLeadService.new.execute(hand_raise_lead_params)
-
-    if result.success?
-      head :ok
-    else
-      render_403
     end
   end
 
@@ -93,10 +82,6 @@ class TrialsController < ApplicationController
     redirect_to new_trial_registration_path(glm_tracking_params), alert: I18n.t('devise.failure.unauthenticated')
   end
 
-  def authenticate_user_404!
-    render_404 unless current_user
-  end
-
   def authenticate_namespace_owner!
     user_is_namespace_owner = if @namespace.is_a?(Group)
                                 @namespace.owners.include?(current_user)
@@ -105,23 +90,6 @@ class TrialsController < ApplicationController
                               end
 
     render_403 unless user_is_namespace_owner
-  end
-
-  def hand_raise_lead_params
-    params.permit(
-      :first_name, :last_name, :company_name, :company_size, :phone_number, :country,
-      :state, :namespace_id, :comment, :glm_content
-    ).merge(hand_raise_lead_extra_params)
-  end
-
-  def hand_raise_lead_extra_params
-    {
-      work_email: current_user.email,
-      uid: current_user.id,
-      provider: 'gitlab',
-      setup_for_company: current_user.setup_for_company,
-      glm_source: 'gitlab.com'
-    }
   end
 
   def company_params

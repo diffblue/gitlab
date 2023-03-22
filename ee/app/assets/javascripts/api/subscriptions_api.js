@@ -2,7 +2,7 @@ import { buildApiUrl } from '~/api/api_utils';
 import axios from '~/lib/utils/axios_utils';
 
 const SUBSCRIPTIONS_PATH = '/api/:version/subscriptions';
-const CREATE_HAND_RAISE_LEAD_PATH = '/-/trials/create_hand_raise_lead';
+const CREATE_HAND_RAISE_LEAD_PATH = '/-/subscriptions/hand_raise_leads';
 
 export function createSubscription(groupId, customer, subscription) {
   const url = buildApiUrl(SUBSCRIPTIONS_PATH);
