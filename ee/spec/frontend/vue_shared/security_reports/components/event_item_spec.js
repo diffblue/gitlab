@@ -1,5 +1,4 @@
 import { GlButton } from '@gitlab/ui';
-
 import { nextTick } from 'vue';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import Component from 'ee/vue_shared/security_reports/components/event_item.vue';
@@ -58,6 +57,7 @@ describe('Event Item', () => {
       expect(wrapper.html()).toEqual(expect.stringContaining('<p>Test</p>'));
     });
   });
+
   describe('with action buttons', () => {
     const propsData = {
       author: {
@@ -87,18 +87,43 @@ describe('Event Item', () => {
     });
 
     it('renders the action buttons', () => {
-      expect(wrapper.findAllComponents(GlButton)).toHaveLength(2);
-      expect(wrapper.element).toMatchSnapshot();
+      const buttons = wrapper.findAllComponents(GlButton);
+
+      expect(buttons).toHaveLength(2);
+
+      propsData.actionButtons.forEach((button, index) => {
+        expect(buttons.at(index).props('icon')).toBe(button.iconName);
+        expect(buttons.at(index).attributes('title')).toBe(button.title);
+      });
     });
 
     it('emits the button events when clicked', async () => {
       const buttons = wrapper.findAllComponents(GlButton);
+
       buttons.at(0).trigger('click');
       await nextTick();
       buttons.at(1).trigger('click');
       await nextTick();
+
       expect(propsData.actionButtons[0].onClick).toHaveBeenCalledTimes(1);
       expect(propsData.actionButtons[1].onClick).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('created at timestamp', () => {
+    it('shows the timestamp when there is one', () => {
+      const date = new Date().toISOString();
+      mountComponent({ propsData: { author: {}, createdAt: date } });
+
+      expect(noteHeader().props('createdAt')).toBe(date);
+      expect(noteHeader().text()).toBe('·');
+    });
+
+    it(`does not show timestamp when there isn't one`, () => {
+      mountComponent({ propsData: { author: {} } });
+
+      expect(noteHeader().props('createdAt')).toBe('');
+      expect(noteHeader().text()).not.toContain('·');
     });
   });
 });

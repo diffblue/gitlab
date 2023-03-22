@@ -74,7 +74,7 @@ export default {
         :show-spinner="false"
         class="gl-pb-0 gl-pl-0"
       >
-        <slot name="header-message">&middot;</slot>
+        <slot name="header-message"><template v-if="createdAt">&middot;</template></slot>
       </note-header>
 
       <slot></slot>
