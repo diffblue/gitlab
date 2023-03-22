@@ -2,7 +2,7 @@
 
 module EE
   module Preloaders
-    module UsersMaxAccessLevelInProjectsPreloader
+    module UsersMaxAccessLevelByProjectPreloader
       extend ::Gitlab::Utils::Override
 
       private
