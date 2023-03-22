@@ -56,8 +56,7 @@ RSpec.describe 'Namespace (JavaScript fixtures)', type: :controller do
             build_artifacts_size: 1_272_375,
             pipeline_artifacts_size: 0,
             wiki_size: 0,
-            packages_size: 0,
-            uploads_size: 0
+            packages_size: 0
           )
 
           project_dummy.update!(
@@ -70,8 +69,7 @@ RSpec.describe 'Namespace (JavaScript fixtures)', type: :controller do
             build_artifacts_size: 0,
             pipeline_artifacts_size: 0,
             wiki_size: 0,
-            packages_size: 0,
-            uploads_size: 0
+            packages_size: 0
           )
 
           project_boilerplate.update!(
@@ -83,8 +81,7 @@ RSpec.describe 'Namespace (JavaScript fixtures)', type: :controller do
             build_artifacts_size: 1_272_375,
             pipeline_artifacts_size: 0,
             wiki_size: 0,
-            packages_size: 0,
-            uploads_size: 0
+            packages_size: 0
           )
         end
 
