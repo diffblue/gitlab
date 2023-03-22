@@ -14,6 +14,9 @@ RSpec.describe Security::ScanResultPolicyRead, feature_category: :security_polic
 
     it { is_expected.not_to allow_value(nil).for(:match_on_inclusion) }
     it { is_expected.to allow_value(true, false).for(:match_on_inclusion) }
+
+    it { is_expected.not_to allow_value(nil).for(:role_approvers) }
+    it { is_expected.to(validate_inclusion_of(:role_approvers).in_array(Gitlab::Access.values)) }
   end
 
   describe '#newly_detected?' do

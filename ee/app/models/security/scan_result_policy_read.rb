@@ -10,6 +10,7 @@ module Security
     has_many :software_license_policies
 
     validates :match_on_inclusion, inclusion: { in: [true, false], message: 'must be a boolean value' }
+    validates :role_approvers, inclusion: { in: Gitlab::Access.all_values }
 
     def newly_detected?
       license_states.include?(ApprovalProjectRule::NEWLY_DETECTED)

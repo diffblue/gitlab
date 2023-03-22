@@ -24,6 +24,8 @@ RSpec.describe ApprovalRuleLike, feature_category: :source_code_management do
 
         group1.add_guest(group1_user)
         group2.add_guest(group2_user)
+
+        stub_feature_flags(scan_result_role_action: false)
       end
 
       shared_examples 'approvers contains the right users' do
@@ -38,8 +40,8 @@ RSpec.describe ApprovalRuleLike, feature_category: :source_code_management do
 
       context 'when the user relations are already loaded' do
         before do
-          subject.users
-          subject.group_users
+          subject.users.to_a
+          subject.group_users.to_a
         end
 
         it 'does not perform any new queries when all users are loaded already' do
@@ -60,6 +62,34 @@ RSpec.describe ApprovalRuleLike, feature_category: :source_code_management do
           rule = subject.class.find(subject.id)
 
           expect(rule.approvers).to contain_exactly(user1, user2, group1_user, group2_user)
+        end
+      end
+
+      context 'when scan_result_role_action is enabled' do
+        before do
+          stub_feature_flags(scan_result_role_action: true)
+        end
+
+        context 'when scan_result_policy_read does not exist' do
+          it_behaves_like 'approvers contains the right users'
+        end
+
+        context 'when scan_result_policy_read has role_approvers' do
+          let_it_be(:user4) { create(:user) }
+          let_it_be(:scan_result_policy_read) do
+            create(:scan_result_policy_read, role_approvers: [Gitlab::Access::MAINTAINER])
+          end
+
+          before do
+            subject.update!(scan_result_policy_read: scan_result_policy_read)
+            group1.add_maintainer(user4)
+          end
+
+          it 'contains users as direct members and group members and role members' do
+            rule = subject.class.find(subject.id)
+
+            expect(rule.approvers).to contain_exactly(user1, user2, group1_user, group2_user, user4)
+          end
         end
       end
     end
