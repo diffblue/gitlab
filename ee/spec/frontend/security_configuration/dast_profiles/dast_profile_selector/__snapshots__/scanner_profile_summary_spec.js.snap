@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`DastScannerProfileSummary renders properly 1`] = `
-<dast-profile-summary-card-stub
-  iseditable="true"
-  profiletype="scanner"
+<gl-card-stub
+  bodyclass=""
+  class=""
+  footerclass=""
+  headerclass=""
 >
-  
-    Passive scanner
-  
+   
   <summary-cell-stub
     class=""
     label="Scan mode"
@@ -36,5 +36,5 @@ exports[`DastScannerProfileSummary renders properly 1`] = `
     label="Debug messages"
     value="Hide debug messages"
   />
-</dast-profile-summary-card-stub>
+</gl-card-stub>
 `;

@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`DastScannerProfileSummary renders properly 1`] = `
-<dast-profile-summary-card-stub
-  iseditable="true"
-  profiletype="site"
+<gl-card-stub
+  bodyclass=""
+  class=""
+  footerclass=""
+  headerclass=""
 >
-  
-    Validation pending
-  
+   
   <summary-cell-stub
     class=""
     label="Target URL"
@@ -78,5 +78,5 @@ exports[`DastScannerProfileSummary renders properly 1`] = `
     label="OpenAPI Specification file URL"
     value="https://example.com"
   />
-</dast-profile-summary-card-stub>
+</gl-card-stub>
 `;

@@ -6,6 +6,7 @@ import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_help
 import App from 'ee/security_configuration/dast_profiles/dast_profile_selector/site_profile_summary.vue';
 import { siteProfiles } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
 import DastSiteValidationModal from 'ee/security_configuration/dast_site_validation/components/dast_site_validation_modal.vue';
+import DastProfileSummaryCard from 'ee/security_configuration/dast_profiles/dast_profile_selector/dast_profile_summary_card.vue';
 import {
   DAST_SITE_VALIDATION_STATUS,
   DAST_SITE_VALIDATION_POLLING_INTERVAL,
@@ -56,6 +57,9 @@ describe('DastScannerProfileSummary', () => {
         {
           propsData: defaultProps,
           provide: defaultProvide,
+          stubs: {
+            DastProfileSummaryCard,
+          },
         },
         { ...options, apolloProvider },
       ),

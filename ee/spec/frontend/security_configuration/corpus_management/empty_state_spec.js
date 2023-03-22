@@ -1,3 +1,4 @@
+import { GlEmptyState } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
 import EmptyState from 'ee/security_configuration/corpus_management/components/empty_state.vue';
@@ -17,6 +18,9 @@ describe('EE - CorpusManagement - EmptyState', () => {
       },
       slots: {
         actions: testButton,
+      },
+      stubs: {
+        GlEmptyState,
       },
       ...options,
     });

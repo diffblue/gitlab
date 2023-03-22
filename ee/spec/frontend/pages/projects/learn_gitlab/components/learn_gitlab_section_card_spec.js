@@ -1,3 +1,4 @@
+import { GlCard } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import LearnGitlabSectionCard from 'ee/pages/projects/learn_gitlab/components/learn_gitlab_section_card.vue';
 import { testActions } from './mock_data';
@@ -11,6 +12,9 @@ describe('Learn GitLab Section Card', () => {
   const createWrapper = () => {
     wrapper = shallowMount(LearnGitlabSectionCard, {
       propsData: { section: defaultSection, actions: testActions, svg: testImage },
+      stubs: {
+        GlCard,
+      },
     });
   };
 
