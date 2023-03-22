@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composition do
   let_it_be(:project) { build(:project) }
 
-  describe 'can_view_private_catalog?' do
+  describe '#can_view_private_catalog?' do
     subject { helper.can_view_private_catalog?(project) }
 
     context 'when FF `ci_private_catalog_beta` is disabled' do
@@ -69,6 +69,33 @@ RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composi
         it 'returns false' do
           expect(subject).to be false
         end
+      end
+    end
+  end
+
+  describe '#js_ci_catalog_data' do
+    subject { helper.js_ci_catalog_data(project) }
+
+    context 'without the right permissions' do
+      before do
+        stub_licensed_features(ci_private_catalog: false)
+      end
+
+      it 'does not return the EE specific attributes' do
+        expect(subject.keys).not_to include('ci_catalog_path')
+      end
+    end
+
+    context 'with the right permissions' do
+      before do
+        stub_licensed_features(ci_private_catalog: true)
+        allow(helper).to receive(:can_collaborate_with_project?).and_return(true)
+      end
+
+      it 'returns both the super and EE specific properties' do
+        expect(subject).to eq(
+          "ci_catalog_path" => "/#{project.full_path}/-/ci/catalog/resources"
+        )
       end
     end
   end
