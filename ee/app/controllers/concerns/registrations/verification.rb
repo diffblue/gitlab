@@ -16,7 +16,6 @@ module Registrations::Verification
 
     def require_verification
       experiment(:require_verification_for_namespace_creation, user: current_user) do |e|
-        e.control {} # rubocop:disable Lint/EmptyBlock
         e.candidate { redirect_to new_users_sign_up_groups_project_path }
       end
     end

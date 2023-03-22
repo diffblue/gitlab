@@ -25,7 +25,6 @@ module Registrations
 
     def new
       experiment(:require_verification_for_namespace_creation, user: current_user) do |e|
-        e.control {} # rubocop:disable Lint/EmptyBlock
         e.candidate { set_requires_verification }
       end
 
