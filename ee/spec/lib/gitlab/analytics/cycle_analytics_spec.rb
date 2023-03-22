@@ -51,14 +51,27 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics, feature_category: :planning_an
     end
 
     context 'when on SaaS', :saas do
-      it 'succeeds' do
+      before do
         stub_licensed_features(cycle_analytics_for_projects: true)
         stub_ee_application_setting(should_check_namespace_plan: true)
+      end
 
-        group = create(:group_with_plan, plan: :ultimate_plan)
-        project_namespace = create(:project, group: group).reload.project_namespace
+      context 'when the parent is a group' do
+        it 'succeeds' do
+          group = create(:group_with_plan, plan: :ultimate_plan)
+          project_namespace = create(:project, group: group).reload.project_namespace
 
-        expect(described_class).to be_licensed(project_namespace)
+          expect(described_class).to be_licensed(project_namespace)
+        end
+      end
+
+      context 'when the parent is a user namespace' do
+        it 'returns false' do
+          namespace = create(:namespace_with_plan, plan: :ultimate_plan)
+          project_namespace = create(:project, namespace: namespace).reload.project_namespace
+
+          expect(described_class).not_to be_licensed(project_namespace)
+        end
       end
     end
   end
