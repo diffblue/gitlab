@@ -62,8 +62,8 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
             full_path: pointer.target_project.full_path,
             name: pointer.target_project.name
           }.to_json,
-          jitsu_key: jitsu_key,
-          collector_host: collector_host,
+          jitsu_key: user_has_permission ? jitsu_key : nil,
+          collector_host: user_has_permission ? collector_host : nil,
           chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
           dashboard_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
           project_full_path: project.full_path,

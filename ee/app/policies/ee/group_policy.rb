@@ -237,6 +237,7 @@ module EE
       rule { maintainer }.policy do
         enable :maintainer_access
         enable :admin_wiki
+        enable :modify_product_analytics_settings
       end
 
       rule { auditor }.policy do
@@ -407,6 +408,7 @@ module EE
         enable :create_wiki
         enable :admin_merge_request
         enable :read_group_audit_events
+        enable :read_product_analytics
       end
 
       rule { security_orchestration_policies_enabled & can?(:developer_access) }.policy do
