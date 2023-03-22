@@ -15,7 +15,7 @@ module Elastic
         # Schema version. The format is Date.today.strftime('%y_%m')
         # Please update if you're changing the schema of the document
         if ::Elastic::DataMigrationService.migration_has_finished?(:add_label_ids_and_schema_version_to_issues_mapping)
-          data['schema_version'] = 23_02
+          data['schema_version'] = 23_03
         end
 
         # Load them through the issue_assignees table since calling
@@ -35,6 +35,10 @@ module Elastic
 
         if ::Elastic::DataMigrationService.migration_has_finished?(:add_label_ids_and_schema_version_to_issues_mapping)
           data['label_ids'] = target.label_ids.map(&:to_s)
+        end
+
+        if ::Elastic::DataMigrationService.migration_has_finished?(:add_hashed_root_namespace_id_to_issues)
+          data['hashed_root_namespace_id'] = target.project.namespace.hashed_root_namespace_id
         end
 
         data.merge(generic_attributes)

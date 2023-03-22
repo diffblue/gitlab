@@ -128,27 +128,38 @@ RSpec.describe Issue, :elastic, feature_category: :global_search do
               'upvotes' => 1,
               'namespace_ancestry_ids' => "#{group.id}-#{subgroup.id}-",
               'label_ids' => [label.id.to_s],
-              'schema_version' => 23_02,
+              'schema_version' => 23_03,
               'assignee_id' => [assignee.id],
               'issues_access_level' => ProjectFeature::ENABLED,
-              'visibility_level' => Gitlab::VisibilityLevel::INTERNAL
+              'visibility_level' => Gitlab::VisibilityLevel::INTERNAL,
+              'hashed_root_namespace_id' => issue.project.namespace.hashed_root_namespace_id
             })
     end
 
     it 'returns json with all needed elements' do
-      set_elasticsearch_migration_to :add_hidden_to_issues, including: true
+      set_elasticsearch_migration_to :add_hashed_root_namespace_id_to_issues, including: true
       expected_hash['hidden'] = issue.hidden?
-      expect(issue.__elasticsearch__.as_indexed_json).to eq(expected_hash)
-    end
-
-    it 'does not return hidden if add_hidden_to_issues migration is not finished' do
-      set_elasticsearch_migration_to :add_hidden_to_issues, including: false
       expect(issue.__elasticsearch__.as_indexed_json).to eq(expected_hash)
     end
 
     it 'does not return label_ids and schema_version if migration is not finished' do
       set_elasticsearch_migration_to :add_label_ids_and_schema_version_to_issues_mapping, including: false
-      expect(issue.__elasticsearch__.as_indexed_json).to eq(expected_hash.except('label_ids', 'schema_version'))
+      expect(issue.__elasticsearch__.as_indexed_json).to eq(expected_hash.except('label_ids', 'schema_version', 'hashed_root_namespace_id'))
+    end
+
+    it 'does not have an N+1' do
+      set_elasticsearch_migration_to :add_hashed_root_namespace_id_to_issues, including: true
+
+      control = ActiveRecord::QueryRecorder.new do
+        issue.__elasticsearch__.as_indexed_json
+      end
+
+      group_with_parent = create(:group, parent: create(:group))
+      issue.project.namespace.update!(parent_id: group_with_parent.id)
+
+      expect do
+        issue.__elasticsearch__.as_indexed_json
+      end.not_to exceed_query_limit(control.count)
     end
   end
 
@@ -183,6 +194,20 @@ RSpec.describe Issue, :elastic, feature_category: :global_search do
 
         expect(indexed_json['description']).to eq('The description is too long')
       end
+    end
+  end
+
+  context 'when hashed root namespace id issues migration has not been finished' do
+    let_it_be(:issue) { create(:issue) }
+
+    before do
+      set_elasticsearch_migration_to(:add_hashed_root_namespace_id_to_issues, including: false)
+    end
+
+    it 'does not include hashed_root_namespace_id' do
+      payload = issue.__elasticsearch__.as_indexed_json
+
+      expect(payload).not_to include('hashed_root_namespace_id')
     end
   end
 
