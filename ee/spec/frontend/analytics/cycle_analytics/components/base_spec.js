@@ -17,8 +17,8 @@ import {
   groupNamespace as namespace,
   createdBefore,
   createdAfter,
-  selectedProjects,
   initialPaginationQuery,
+  selectedProjects as rawSelectedProjects,
 } from 'jest/analytics/cycle_analytics/mock_data';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
 import { toYmd } from '~/analytics/shared/utils';
@@ -70,15 +70,21 @@ const defaultStubs = {
 };
 
 const [selectedValueStream] = valueStreams;
-
+const selectedProjects = rawSelectedProjects.map(({ pathWithNamespace: fullPath, ...rest }) => ({
+  ...rest,
+  fullPath,
+}));
 const initialCycleAnalyticsState = {
   selectedValueStream,
   createdAfter,
   createdBefore,
-  group: currentGroup,
+  groupPath: currentGroup.fullPath,
   stage,
   aggregation: aggregationData,
   namespace,
+  enableTasksByTypeChart: true,
+  enableProjectsFilter: true,
+  enableCustomizableStages: true,
 };
 
 const mocks = {
@@ -174,6 +180,7 @@ describe('EE Value Stream Analytics component', () => {
   const findPathNavigation = () => wrapper.findComponent(PathNavigation);
   const findStageTable = () => wrapper.findComponent(StageTable);
   const findOverviewMetrics = () => wrapper.findComponent(ValueStreamMetrics);
+  const findFilterBar = () => wrapper.findComponent(ValueStreamFilters);
 
   const displaysMetrics = (flag) => {
     expect(findOverviewMetrics().exists()).toBe(flag);
@@ -196,7 +203,11 @@ describe('EE Value Stream Analytics component', () => {
   };
 
   const displaysFilters = (flag) => {
-    expect(wrapper.findComponent(ValueStreamFilters).exists()).toBe(flag);
+    expect(findFilterBar().exists()).toBe(flag);
+  };
+
+  const displaysProjectFilter = (flag) => {
+    expect(findFilterBar().props('hasProjectFilter')).toBe(flag);
   };
 
   const displaysValueStreamSelect = (flag) => {
@@ -304,6 +315,10 @@ describe('EE Value Stream Analytics component', () => {
 
     it('displays the filter bar', () => {
       displaysFilters(true);
+    });
+
+    it('displays the project filter', () => {
+      displaysProjectFilter(true);
     });
 
     it('displays the metrics', () => {
@@ -511,8 +526,8 @@ describe('EE Value Stream Analytics component', () => {
       page: null,
     };
 
-    const selectedProjectIds = selectedProjects.map(({ id }) => getIdFromGraphQLId(id));
     const selectedStage = { title: 'Plan', id: 2 };
+    const selectedProjectIds = selectedProjects.map(({ id }) => getIdFromGraphQLId(id));
 
     beforeEach(async () => {
       commonUtils.historyPushState = jest.fn();
@@ -598,12 +613,52 @@ describe('EE Value Stream Analytics component', () => {
   });
 
   describe('with`groupAnalyticsDashboardsPage=true` and `groupLevelAnalyticsDashboard=true`', () => {
+    beforeEach(() => {
+      mock = new MockAdapter(axios);
+      mockRequiredRoutes(mock);
+    });
+
+    afterEach(() => {
+      mock.restore();
+    });
+
+    it('renders a link to the value streams dashboard', async () => {
+      wrapper = await createComponent({
+        withStageSelected: true,
+        features: { groupAnalyticsDashboardsPage: true, groupLevelAnalyticsDashboard: true },
+      });
+
+      expect(findOverviewMetrics().props('dashboardsPath')).toBe(
+        '/groups/foo/-/analytics/dashboards/value_streams_dashboard',
+      );
+    });
+
+    it('renders the value streams dashboard with selected projects as a query parameter', async () => {
+      wrapper = await createComponent({
+        withStageSelected: true,
+        features: { groupAnalyticsDashboardsPage: true, groupLevelAnalyticsDashboard: true },
+        initialState: {
+          ...initialCycleAnalyticsState,
+          selectedProjects,
+        },
+      });
+
+      expect(findOverviewMetrics().props('dashboardsPath')).toContain(
+        '?query=group/cool-project,group/another-cool-project',
+      );
+    });
+  });
+
+  describe('with `enableTasksByTypeChart=false`', () => {
     beforeEach(async () => {
       mock = new MockAdapter(axios);
       mockRequiredRoutes(mock);
       wrapper = await createComponent({
         withStageSelected: true,
-        features: { groupAnalyticsDashboardsPage: true, groupLevelAnalyticsDashboard: true },
+        initialState: {
+          ...initialCycleAnalyticsState,
+          enableTasksByTypeChart: false,
+        },
       });
     });
 
@@ -611,8 +666,57 @@ describe('EE Value Stream Analytics component', () => {
       mock.restore();
     });
 
+    it('does not display the tasks by type chart', () => {
+      displaysTypeOfWork(false);
+    });
+  });
+
+  describe('with `enableCustomizableStages=false`', () => {
+    beforeEach(async () => {
+      mock = new MockAdapter(axios);
+      mockRequiredRoutes(mock);
+      wrapper = await createComponent({
+        withStageSelected: true,
+        features: { groupAnalyticsDashboardsPage: true, groupLevelAnalyticsDashboard: true },
+        initialState: {
+          ...initialCycleAnalyticsState,
+          enableCustomizableStages: false,
+        },
+      });
+    });
+
+    afterEach(() => {
+      mock.restore();
+    });
+
+    it('does not display the value stream selector', () => {
+      displaysValueStreamSelect(false);
+    });
+  });
+
+  describe('with `enableProjectsFilter=false`', () => {
+    beforeEach(async () => {
+      mock = new MockAdapter(axios);
+      mockRequiredRoutes(mock);
+      wrapper = await createComponent({
+        withStageSelected: true,
+        features: { groupAnalyticsDashboardsPage: true, groupLevelAnalyticsDashboard: true },
+        initialState: {
+          ...initialCycleAnalyticsState,
+          enableProjectsFilter: false,
+        },
+      });
+    });
+
+    afterEach(() => {
+      mock.restore();
+    });
+
+    it('does not display the project filter', () => {
+      displaysProjectFilter(false);
+    });
+
     it('renders a link to the value streams dashboard', () => {
-      expect(findOverviewMetrics().props('dashboardsPath')).toBeDefined();
       expect(findOverviewMetrics().props('dashboardsPath')).toBe(
         '/groups/foo/-/analytics/dashboards/value_streams_dashboard',
       );

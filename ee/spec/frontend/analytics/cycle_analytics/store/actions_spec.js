@@ -32,6 +32,17 @@ stages[0].hidden = true;
 const activeStages = stages.filter(({ hidden }) => !hidden);
 const [selectedValueStream] = valueStreams;
 
+const defaultState = {
+  createdAfter,
+  createdBefore,
+  stages: [],
+  features: {},
+  activeStages,
+  selectedValueStream,
+  groupPath: currentGroup.fullPath,
+  enableTasksByTypeChart: true,
+};
+
 const mockGetters = {
   namespacePath: () => namespace.fullPath,
   currentValueStreamId: () => selectedValueStream.id,
@@ -45,13 +56,7 @@ describe('Value Stream Analytics actions', () => {
 
   beforeEach(() => {
     state = {
-      createdAfter,
-      createdBefore,
-      stages: [],
-      features: {},
-      activeStages,
-      selectedValueStream,
-      currentGroup,
+      ...defaultState,
       ...mockGetters,
     };
     mock = new MockAdapter(axios);
@@ -112,6 +117,8 @@ describe('Value Stream Analytics actions', () => {
         receiveCycleAnalyticsDataSuccess:
           overrides.receiveCycleAnalyticsDataSuccess || jest.fn().mockResolvedValue(),
       };
+      // TODO: It seems like we have been missing failure test cases for these API requests
+      //       this should be addressed as part of https://gitlab.com/gitlab-org/gitlab/-/issues/396665
       return {
         mocks,
         mockDispatchContext: jest
@@ -131,7 +138,7 @@ describe('Value Stream Analytics actions', () => {
       return testAction(
         actions.fetchCycleAnalyticsData,
         state,
-        null,
+        getters,
         [],
         [
           { type: 'requestCycleAnalyticsData' },
@@ -205,6 +212,15 @@ describe('Value Stream Analytics actions', () => {
         [{ type: 'typeOfWork/fetchTopRankedGroupLabels' }],
       );
     });
+
+    it(`with 'enableTasksByTypeChart=false' does not dispatch the 'typeOfWork/fetchTopRankedGroupLabels' action`, () => {
+      return testAction(
+        actions.receiveCycleAnalyticsDataSuccess,
+        null,
+        { ...state, enableTasksByTypeChart: false },
+        [{ type: types.RECEIVE_VALUE_STREAM_DATA_SUCCESS }],
+      );
+    });
   });
 
   describe('receiveCycleAnalyticsDataError', () => {
@@ -271,6 +287,7 @@ describe('Value Stream Analytics actions', () => {
       selectedMilestone,
       selectedAssigneeList,
       selectedLabelList,
+      enableTasksByTypeChart: true,
     };
 
     beforeEach(() => {
@@ -346,6 +363,22 @@ describe('Value Stream Analytics actions', () => {
           expect(mockDispatch).not.toHaveBeenCalledWith('setSelectedStage');
           expect(mockDispatch).not.toHaveBeenCalledWith('fetchStageData');
           expect(mockDispatch).toHaveBeenCalledWith('setDefaultSelectedStage');
+        });
+      });
+
+      describe('with `enableTasksByTypeChart=false`', () => {
+        it.each`
+          action                        | args
+          ${'setPaths'}                 | ${{ namespacePath: namespace.fullPath }}
+          ${'filters/initialize'}       | ${{ selectedAuthor, selectedMilestone, selectedAssigneeList, selectedLabelList }}
+          ${'durationChart/setLoading'} | ${true}
+        `('dispatches $action', async ({ action, args }) => {
+          await actions.initializeCycleAnalytics(store, {
+            ...initialData,
+            enableTasksByTypeChart: false,
+          });
+
+          expect(mockDispatch).toHaveBeenCalledWith(action, args);
         });
       });
 

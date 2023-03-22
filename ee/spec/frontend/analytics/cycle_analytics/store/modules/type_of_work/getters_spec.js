@@ -12,7 +12,7 @@ import {
   groupLabels,
   groupLabelIds,
   groupLabelNames,
-  currentGroup,
+  currentGroup as namespace,
 } from '../../../mock_data';
 
 const selectedProjectIds = [1, 2];
@@ -25,7 +25,7 @@ const rootState = {
   topRankedLabels: groupLabels,
   createdAfter,
   createdBefore,
-  currentGroup,
+  namespace,
   defaultGroupLabels: groupLabels,
 };
 const rootGetters = { selectedProjectIds };
@@ -51,7 +51,7 @@ describe('Type of work getters', () => {
     it('returns all the task by type filter key', () => {
       const keys = Object.keys(selectedTasksByTypeFilters(state));
 
-      ['currentGroup', 'selectedProjectIds', 'createdAfter', 'createdBefore', 'subject'].forEach(
+      ['namespace', 'selectedProjectIds', 'createdAfter', 'createdBefore', 'subject'].forEach(
         (key) => {
           expect(keys).toContain(key);
         },
@@ -61,7 +61,7 @@ describe('Type of work getters', () => {
     it('sets the correct value for each key', () => {
       const result = selectedTasksByTypeFilters(state, null, rootState, rootGetters);
 
-      expect(result.currentGroup).toEqual(currentGroup);
+      expect(result.namespace).toEqual(namespace);
       expect(result.selectedProjectIds).toEqual(selectedProjectIds);
       expect(result.subject).toEqual(TASKS_BY_TYPE_SUBJECT_ISSUE);
       expect(result.createdBefore).toEqual(createdBefore);

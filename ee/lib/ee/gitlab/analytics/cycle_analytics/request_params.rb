@@ -15,6 +15,8 @@ module EE
               attrs[:group] = group_data_attributes if group.present?
               attrs[:projects] = group_projects(project_ids) if group.present? && project_ids.present?
               attrs[:enable_tasks_by_type_chart] = 'true' if group.present?
+              attrs[:enable_customizable_stages] = 'true' if licensed?
+              attrs[:enable_projects_filter] = 'true' if group.present?
             end
           end
 

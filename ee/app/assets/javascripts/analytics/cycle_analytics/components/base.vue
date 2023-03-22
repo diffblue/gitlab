@@ -1,7 +1,7 @@
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { GlEmptyState } from '@gitlab/ui';
-import { refreshCurrentPage } from '~/lib/utils/url_utility';
+import { joinPaths, refreshCurrentPage } from '~/lib/utils/url_utility';
 import { VSA_METRICS_GROUPS } from '~/analytics/shared/constants';
 import { generateValueStreamsDashboardLink } from '~/analytics/shared/utils';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
@@ -52,7 +52,6 @@ export default {
     ...mapState([
       'isLoading',
       'isLoadingStage',
-      'currentGroup',
       'selectedProjects',
       'selectedStage',
       'stages',
@@ -65,7 +64,11 @@ export default {
       'pagination',
       'aggregation',
       'isCreatingAggregation',
+      'groupPath',
       'features',
+      'enableTasksByTypeChart',
+      'enableProjectsFilter',
+      'enableCustomizableStages',
     ]),
     ...mapGetters([
       'hasNoAccessError',
@@ -88,12 +91,18 @@ export default {
     shouldRenderAggregationWarning() {
       return this.isCreatingAggregation || this.isWaitingForNextAggregation;
     },
+    shouldRenderTasksByType() {
+      return this.enableTasksByTypeChart && this.isOverviewStageSelected;
+    },
     selectedStageReady() {
       return !this.hasNoAccessError && this.selectedStage;
     },
     shouldDisplayCreateMultipleValueStreams() {
       return Boolean(
-        !this.shouldRenderEmptyState && !this.isLoadingValueStreams && !this.isCreatingAggregation,
+        this.enableCustomizableStages &&
+          !this.shouldRenderEmptyState &&
+          !this.isLoadingValueStreams &&
+          !this.isCreatingAggregation,
       );
     },
     hasDateRangeSet() {
@@ -137,9 +146,15 @@ export default {
       );
     },
     dashboardsPath() {
-      return this.showDashboardsLink
-        ? generateValueStreamsDashboardLink(this.namespacePath, this.selectedProjectFullPaths)
-        : null;
+      if (this.showDashboardsLink) {
+        const namespacePath = this.enableProjectsFilter
+          ? this.namespacePath
+          : joinPaths('groups', this.groupPath);
+        const projectsQuery = this.enableProjectsFilter ? this.selectedProjectFullPaths : [];
+
+        return generateValueStreamsDashboardLink(namespacePath, projectsQuery);
+      }
+      return null;
     },
   },
   methods: {
@@ -205,10 +220,11 @@ export default {
       <value-stream-filters
         v-if="!shouldRenderAggregationWarning"
         class="gl-mb-6"
-        :group-path="currentGroup.fullPath"
+        :group-path="groupPath"
         :selected-projects="selectedProjects"
         :start-date="createdAfter"
         :end-date="createdBefore"
+        :has-project-filter="enableProjectsFilter"
         @selectProject="onProjectsSelect"
         @setDateRange="onSetDateRange"
       />
@@ -249,7 +265,7 @@ export default {
         />
         <div :class="[isOverviewStageSelected ? 'gl-mt-2' : 'gl-mt-6']">
           <duration-chart class="gl-mb-6" :stages="activeStages" :selected-stage="selectedStage" />
-          <type-of-work-charts v-if="isOverviewStageSelected" class="gl-mb-6" />
+          <type-of-work-charts v-if="shouldRenderTasksByType" class="gl-mb-6" />
         </div>
         <stage-table
           v-if="!isOverviewStageSelected"

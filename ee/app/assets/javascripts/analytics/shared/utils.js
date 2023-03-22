@@ -1,5 +1,6 @@
 import { merge, cloneDeep, zip } from 'lodash';
 import { dateFormats } from '~/analytics/shared/constants';
+import { extractVSAFeaturesFromGON } from '~/analytics/shared/utils';
 import dateFormat from '~/lib/dateformat';
 import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
@@ -102,13 +103,6 @@ const buildProjectsFromJSON = (projects = '') => {
   }));
 };
 
-const extractFeatures = (gon) => ({
-  // feature flags
-  groupAnalyticsDashboardsPage: Boolean(gon?.features?.groupAnalyticsDashboardsPage),
-  // licensed feature toggles
-  groupLevelAnalyticsDashboard: Boolean(gon?.licensed_features?.groupLevelAnalyticsDashboard),
-});
-
 /**
  * Builds the initial data object for Value Stream Analytics with data loaded from the backend
  *
@@ -122,6 +116,7 @@ export const buildCycleAnalyticsInitialData = ({
   createdAfter = null,
   projects = null,
   groupName = null,
+  groupPath = null,
   groupFullPath = null,
   groupParentId = null,
   groupAvatarUrl = null,
@@ -134,6 +129,9 @@ export const buildCycleAnalyticsInitialData = ({
   aggregationNextRunAt = null,
   namespaceName = null,
   namespaceFullPath = null,
+  enableTasksByTypeChart = false,
+  enableCustomizableStages = false,
+  enableProjectsFilter = false,
 } = {}) => ({
   selectedValueStream: buildValueStreamFromJson(valueStream),
   group: groupId
@@ -142,11 +140,13 @@ export const buildCycleAnalyticsInitialData = ({
           groupId,
           groupName,
           groupFullPath,
+          groupPath,
           groupAvatarUrl,
           groupParentId,
         }),
       )
     : null,
+  groupPath: groupPath || groupFullPath,
   createdBefore: createdBefore ? toLocalDate(createdBefore) : null,
   createdAfter: createdAfter ? toLocalDate(createdAfter) : null,
   selectedProjects: projects
@@ -169,11 +169,14 @@ export const buildCycleAnalyticsInitialData = ({
     lastRunAt: aggregationLastRunAt,
     nextRunAt: aggregationNextRunAt,
   },
-  features: extractFeatures(gon),
+  features: extractVSAFeaturesFromGON(),
   namespace: {
     name: namespaceName,
     fullPath: namespaceFullPath,
   },
+  enableTasksByTypeChart: parseBoolean(enableTasksByTypeChart),
+  enableCustomizableStages: parseBoolean(enableCustomizableStages),
+  enableProjectsFilter: parseBoolean(enableProjectsFilter),
 });
 
 /**

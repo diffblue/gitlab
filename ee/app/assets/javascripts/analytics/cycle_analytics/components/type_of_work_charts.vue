@@ -46,7 +46,7 @@ export default {
         selectedTasksByTypeFilters: {
           createdAfter,
           createdBefore,
-          currentGroup: { name: groupName },
+          namespace: { name: groupName },
           selectedProjectIds,
         },
       } = this;

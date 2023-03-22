@@ -11,11 +11,11 @@ export * from './actions/filters';
 export * from './actions/stages';
 export * from './actions/value_streams';
 
-export const setPaths = ({ dispatch, state: { namespace, currentGroup } }) => {
+export const setPaths = ({ dispatch, state: { namespace, groupPath } }) => {
   return dispatch('filters/setEndpoints', {
     labelsEndpoint: constructPathWithNamespace(namespace, LABELS_ENDPOINT),
     milestonesEndpoint: constructPathWithNamespace(namespace, MILESTONES_ENDPOINT),
-    groupEndpoint: currentGroup.fullPath,
+    groupEndpoint: groupPath,
   });
 };
 
@@ -30,9 +30,16 @@ export const fetchGroupLabels = ({ commit, getters: { namespacePath } }) => {
 
 export const requestCycleAnalyticsData = ({ commit }) => commit(types.REQUEST_VALUE_STREAM_DATA);
 
-export const receiveCycleAnalyticsDataSuccess = ({ commit, dispatch }) => {
+export const receiveCycleAnalyticsDataSuccess = ({
+  commit,
+  dispatch,
+  state: { enableTasksByTypeChart },
+}) => {
   commit(types.RECEIVE_VALUE_STREAM_DATA_SUCCESS);
-  dispatch('typeOfWork/fetchTopRankedGroupLabels');
+
+  if (enableTasksByTypeChart) {
+    dispatch('typeOfWork/fetchTopRankedGroupLabels');
+  }
 };
 
 export const receiveCycleAnalyticsDataError = ({ commit }, { response = {} }) => {
@@ -46,7 +53,7 @@ export const receiveCycleAnalyticsDataError = ({ commit }, { response = {} }) =>
   }
 };
 
-export const fetchCycleAnalyticsData = ({ dispatch }) => {
+export const fetchCycleAnalyticsData = ({ dispatch, state: { enableTasksByTypeChart } }) => {
   removeFlash();
 
   return Promise.resolve()
@@ -54,11 +61,16 @@ export const fetchCycleAnalyticsData = ({ dispatch }) => {
     .then(() => dispatch('fetchValueStreams'))
     .then(() => dispatch('receiveCycleAnalyticsDataSuccess'))
     .catch((error) => {
-      return Promise.all([
+      const promises = [
         dispatch('receiveCycleAnalyticsDataError', error),
         dispatch('durationChart/setLoading', false),
-        dispatch('typeOfWork/setLoading', false),
-      ]);
+      ];
+
+      if (enableTasksByTypeChart) {
+        promises.push(dispatch('typeOfWork/setLoading', false));
+      }
+
+      return Promise.all(promises);
     });
 };
 
@@ -76,14 +88,12 @@ export const initializeCycleAnalytics = ({ dispatch, commit }, initialData = {})
     selectedLabelList,
     stage: selectedStage,
     namespace,
+    enableTasksByTypeChart,
   } = initialData;
   commit(types.SET_FEATURES, features);
 
   if (namespace?.fullPath) {
-    return Promise.all([
-      selectedStage
-        ? dispatch('setSelectedStage', selectedStage)
-        : dispatch('setDefaultSelectedStage'),
+    let promises = [
       dispatch('setPaths', { namespacePath: namespace.fullPath }),
       dispatch('filters/initialize', {
         selectedAuthor,
@@ -92,8 +102,19 @@ export const initializeCycleAnalytics = ({ dispatch, commit }, initialData = {})
         selectedLabelList,
       }),
       dispatch('durationChart/setLoading', true),
-      dispatch('typeOfWork/setLoading', true),
-    ])
+    ];
+
+    if (enableTasksByTypeChart) {
+      promises = [...promises, dispatch('typeOfWork/setLoading', true)];
+    }
+
+    if (selectedStage) {
+      promises = [dispatch('setSelectedStage', selectedStage), ...promises];
+    } else {
+      promises = [dispatch('setDefaultSelectedStage'), ...promises];
+    }
+
+    return Promise.all(promises)
       .then(() =>
         Promise.all([
           selectedStage?.id ? dispatch('fetchStageData', selectedStage.id) : Promise.resolve(),

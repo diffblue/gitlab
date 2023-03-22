@@ -167,10 +167,28 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
       it { is_expected.to eq(true) }
     end
 
-    describe 'enable_tasks_by_type_chart data attribute' do
-      subject(:value) { described_class.new(params).to_data_attributes[:enable_tasks_by_type_chart] }
+    describe 'feature availablity data attributes' do
+      subject(:value) { described_class.new(params).to_data_attributes }
 
-      it { is_expected.to eq('true') }
+      it 'enables all paid features' do
+        is_expected.to match(a_hash_including(enable_tasks_by_type_chart: 'true',
+          enable_customizable_stages: 'true',
+          enable_projects_filter: 'true'))
+      end
+
+      context 'when Namespaces::ProjectNamespace is given' do
+        before do
+          stub_licensed_features(cycle_analytics_for_projects: true)
+
+          params[:namespace] = sub_group_project.project_namespace
+        end
+
+        it 'disables the task by type chart and the projects filter' do
+          is_expected.to match(a_hash_including(enable_tasks_by_type_chart: 'false',
+            enable_customizable_stages: 'true',
+            enable_projects_filter: 'false'))
+        end
+      end
     end
   end
 end
