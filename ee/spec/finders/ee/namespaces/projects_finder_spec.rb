@@ -162,6 +162,14 @@ RSpec.describe Namespaces::ProjectsFinder do
           end
         end
       end
+
+      context 'when compliance framework presence filter is not supported' do
+        let(:params) { { compliance_framework_filters: { presence_filter: :invalid } } }
+
+        it 'raises an ArgumentError' do
+          expect { projects }.to raise_error(ArgumentError, "The presence filter is not supported: 'invalid'")
+        end
+      end
     end
 
     context 'has_vulnerabilities' do

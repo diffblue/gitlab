@@ -51,6 +51,8 @@ module EE
           collection.any_compliance_framework
         when :none
           collection.missing_compliance_framework
+        else
+          raise ArgumentError, "The presence filter is not supported: '#{filter}'"
         end
       end
 
