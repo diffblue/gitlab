@@ -15,25 +15,11 @@ module Namespaces
       BATCH_SIZE = 1
       SCHEDULING_BUFFER = 24
 
-      def clear(group_id:)
-        group = Group.find_by id: group_id # rubocop: disable CodeReuse/ActiveRecord
-        return unless group
-
-        Gitlab::ApplicationContext.push(namespace: group)
-        log_service_response ClearOverLimitGroupNotificationService.execute(group: group)
-      end
-
       def perform_work(...)
         return unless feature_enabled?
 
         next_batch.map(&:namespace_id).each do |namespace_id|
-          clear group_id: namespace_id
-        end
-      end
-
-      def next_batch
-        Namespace::Detail.transaction do
-          Namespace::Detail.find_by_sql next_batch_sql # rubocop: disable CodeReuse/ActiveRecord
+          clear namespace_id: namespace_id
         end
       end
 
@@ -44,10 +30,24 @@ module Namespaces
       end
 
       def remaining_work_count(...)
-        (notified_groups_to_be_checked.limit(MAX_RUNNING_JOBS * BATCH_SIZE).count / BATCH_SIZE).ceil
+        (notified_namespaces_to_be_checked.limit(MAX_RUNNING_JOBS * BATCH_SIZE).count / BATCH_SIZE).ceil
       end
 
       private
+
+      def next_batch
+        Namespace::Detail.transaction do
+          Namespace::Detail.find_by_sql next_batch_sql # rubocop: disable CodeReuse/ActiveRecord
+        end
+      end
+
+      def clear(namespace_id:)
+        namespace = Namespace.find_by id: namespace_id # rubocop: disable CodeReuse/ActiveRecord
+        return unless namespace
+
+        Gitlab::ApplicationContext.push(namespace: namespace)
+        log_service_response ClearOverLimitNotificationService.execute(root_namespace: namespace)
+      end
 
       def log_service_response(result)
         return unless result.is_a? ServiceResponse
@@ -68,7 +68,7 @@ module Namespaces
       end
 
       def locked_item_ids_sql
-        notified_groups_to_be_checked
+        notified_namespaces_to_be_checked
           .order_next_over_limit_check_nulls_first
           .limit(BATCH_SIZE)
           .lock('FOR UPDATE SKIP LOCKED')
@@ -76,7 +76,7 @@ module Namespaces
           .to_sql
       end
 
-      def notified_groups_to_be_checked
+      def notified_namespaces_to_be_checked
         Namespace::Detail.where(free_user_cap_over_limit_notified_at: ..due_at)
       end
       # rubocop: enable CodeReuse/ActiveRecord
