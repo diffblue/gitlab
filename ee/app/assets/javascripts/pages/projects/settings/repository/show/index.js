@@ -1,4 +1,5 @@
 /* eslint-disable no-new */
+import 'bootstrap/js/dist/collapse';
 import ProtectedBranchEditList from 'ee/protected_branches/protected_branch_edit_list';
 import initDatePicker from '~/behaviors/date_picker';
 import initDeployKeys from '~/deploy_keys';
