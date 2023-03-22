@@ -20,12 +20,7 @@ DORA includes four key metrics, divided into two core areas of DevOps:
 
 For software leaders, tracking velocity alongside quality metrics ensures they're not sacrificing quality for speed.
 
-<div class="video-fallback">
-  For an overview, see <a href="https://www.youtube.com/watch?v=1BrcMV6rCDw">GitLab Speed Run: DORA metrics in GitLab One DevOps Platform</a>.
-</div>
-<figure class="video-container">
-  <iframe src="https://www.youtube-nocookie.com/embed/1BrcMV6rCDw" frameborder="0" allowfullscreen> </iframe>
-</figure>
+For a video explanation, see [DORA metrics: User analytics](https://www.youtube.com/watch?v=lM_FbVYuN8s) and [GitLab speed run: DORA metrics](https://www.youtube.com/watch?v=1BrcMV6rCDw).
 
 ## DORA metrics dashboard in Value Stream Analytics
 
