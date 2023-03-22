@@ -15,52 +15,46 @@ RSpec.describe Projects::DisableLegacyInactiveProjectsService do
       projects
     end
 
-    where(:feature_flag, :legacy_open_source_license_available) do
-      true | false
-      false | true
+    before do
+      stub_const("#{described_class}::UPDATE_BATCH_SIZE", 1)
+      stub_const("#{described_class}::PAUSE_SECONDS", 0)
     end
 
-    with_them do
+    context 'when the combined batch size is more than or equal to the inactive public projects count' do
       before do
-        stub_feature_flags(legacy_open_source_license_worker: feature_flag)
-        stub_const("#{described_class}::UPDATE_BATCH_SIZE", 1)
-        stub_const("#{described_class}::PAUSE_SECONDS", 0)
+        stub_const("#{described_class}::LOOP_LIMIT", inactive_public_projects.size)
       end
 
-      context 'when the combined batch size is more than or equal to the inactive public projects count' do
-        before do
-          stub_const("#{described_class}::LOOP_LIMIT", inactive_public_projects.size)
-        end
+      it 'disables legacy open-source license for all the public projects' do
+        subject.execute
 
-        it 'disables legacy open-source license for all the public projects' do
-          subject.execute
+        expect(inactive_public_projects.map { |project| updated_license(project) }).to all(eq false)
+        expect(updated_license(active_public_project)).to eq(true)
+        expect(updated_license(inactive_private_project)).to eq(true)
+        expect(updated_license(active_private_project)).to eq(true)
+      end
+    end
 
-          inactive_public_projects.each do |inactive_public_project|
-            expect(updated_license(inactive_public_project)).to eq(legacy_open_source_license_available)
-          end
-          expect(updated_license(active_public_project)).to eq(true)
-          expect(updated_license(inactive_private_project)).to eq(true)
-          expect(updated_license(active_private_project)).to eq(true)
-        end
+    context 'when the combined batch size is less than the inactive public projects count' do
+      before do
+        stub_const("#{described_class}::LOOP_LIMIT", 1)
       end
 
-      context 'when the combined batch size is less than the inactive public projects count' do
-        before do
-          stub_const("#{described_class}::LOOP_LIMIT", 1)
-        end
+      it 'terminates the worker before completing all the projects' do
+        subject.execute
 
-        it 'terminates the worker before completing all the projects' do
-          subject.execute
+        migrated_licenses = inactive_public_projects
+                              .first(described_class::LOOP_LIMIT)
+                              .map { |inactive_public_project| updated_license(inactive_public_project) }
 
-          inactive_public_projects.first(described_class::LOOP_LIMIT).each do |inactive_public_project|
-            expect(updated_license(inactive_public_project)).to eq(legacy_open_source_license_available)
-          end
+        expect(migrated_licenses).to all(eq false)
 
-          unmigrated_projects_count = inactive_public_projects.size - described_class::LOOP_LIMIT
-          inactive_public_projects.last(unmigrated_projects_count).each do |inactive_public_project|
-            expect(updated_license(inactive_public_project)).to eq(true)
-          end
-        end
+        unmigrated_projects_count = inactive_public_projects.size - described_class::LOOP_LIMIT
+        unmigrated_licenses = inactive_public_projects
+                                .last(unmigrated_projects_count)
+                                .map { |inactive_public_project| updated_license(inactive_public_project) }
+
+        expect(unmigrated_licenses).to all(eq true)
       end
     end
   end
