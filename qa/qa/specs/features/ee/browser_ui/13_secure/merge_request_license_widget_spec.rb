@@ -129,7 +129,7 @@ module QA
       end
 
       describe 'when a CycloneDX SBOM file exists', only: { subdomain: :staging } do
-        let(:approved_license_name) { "ISC" }
+        let(:approved_license_name) { "CC0-1.0" }
         let(:denied_license_name) { "Apache-2.0" }
         let(:executor) { "qa-runner-#{Time.now.to_i}" }
 
@@ -144,6 +144,7 @@ module QA
             project.name = 'license-widget-project'
             project.description = 'License widget test'
           end
+          Runtime::Feature.enable(:license_scanning_sbom_scanner, project: @project)
 
           @runner = Resource::ProjectRunner.fabricate! do |runner|
             runner.project = @project
@@ -212,9 +213,9 @@ module QA
                     "type": "library"
                   },
                   {
-                    "name": "rblx-dev-packager",
-                    "version": "1.0.43",
-                    "purl": "pkg:npm/rblx-dev-packager@1.0.43",
+                    "name": "spdx-license-list",
+                    "version": "6.6.0",
+                    "purl": "pkg:npm/spdx-license-list@6.6.0",
                     "type": "library"
                   }
                 ]
