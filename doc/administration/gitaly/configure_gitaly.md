@@ -1563,7 +1563,7 @@ proposed in issue [19185](https://gitlab.com/gitlab-org/gitlab/-/issues/19185).
 
 ## Generate configuration using an external command
 
-> [Introduced](https://gitlab.com/gitlab-org/gitaly/-/issues/4828) in GitLab 15.10.
+> [Introduced](https://gitlab.com/gitlab-org/gitaly/-/issues/4828) in GitLab 15.11.
 
 You can generate parts of the Gitaly configuration using an external command. You might do this:
 
