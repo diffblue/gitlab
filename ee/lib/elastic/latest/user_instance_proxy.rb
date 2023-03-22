@@ -36,7 +36,11 @@ module Elastic
 
         # Schema version. The format is Date.today.strftime('%y_%m')
         # Please update if you're changing the schema of the document
-        data['schema_version'] = 22_10
+        data['schema_version'] = 23_03
+
+        if ::Elastic::DataMigrationService.migration_has_finished?(:add_hashed_root_namespace_id_to_users)
+          data['hashed_root_namespace_id'] = target.namespace.hashed_root_namespace_id
+        end
 
         data.merge(generic_attributes)
       end
