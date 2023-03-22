@@ -197,7 +197,7 @@ To view the compliance frameworks report:
 
 Prerequisites:
 
-- You must have at least the Owner role for the group.
+- You must have the Owner role for the group.
 
 To apply a compliance framework to projects in a group:
 
@@ -213,7 +213,7 @@ To apply a compliance framework to projects in a group:
 
 Prerequisites:
 
-- You must have at least the Owner role for the group.
+- You must have the Owner role for the group.
 
 To remove a compliance framework from projects in a group:
 
