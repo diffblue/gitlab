@@ -83,6 +83,10 @@ describe('ProjectsTable component', () => {
         expect(findSelectAllCheckbox().exists()).toBe(true);
       });
 
+      it('renders empty state when no rows are selected', async () => {
+        expect(findSelectAllCheckbox().find('input').element.checked).toBe(false);
+      });
+
       it('renders indeterminate state when not all rows are selected', async () => {
         await selectRow(0);
         expect(isIndeterminate(findSelectAllCheckbox())).toBe(true);
@@ -95,6 +99,15 @@ describe('ProjectsTable component', () => {
         }
 
         expect(isIndeterminate(findSelectAllCheckbox())).toBe(false);
+      });
+
+      it('renders checked state when all rows are selected', async () => {
+        for (let i = 0; i < projects.length; i += 1) {
+          // eslint-disable-next-line no-await-in-loop
+          await selectRow(i);
+        }
+
+        expect(findSelectAllCheckbox().find('input').element.checked).toBe(true);
       });
 
       it('clears selection when clicking checkbox in indeterminate state', async () => {

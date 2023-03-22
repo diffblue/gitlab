@@ -61,6 +61,17 @@ export default {
     updateSelectedRows(selection) {
       this.selectedRows = selection;
     },
+
+    qaRowAttributes(project, type) {
+      if (type === 'row') {
+        return {
+          'data-qa-selector': 'project_frameworks_row',
+          'data-qa-project-name': project.name,
+        };
+      }
+
+      return {};
+    },
   },
   fields: [
     {
@@ -96,18 +107,6 @@ export default {
     noProjectsFound: s__('ComplianceReport|No projects found'),
     noFrameworkMessage: s__('ComplianceReport|No framework'),
   },
-  methods: {
-    qaRowAttributes(project, type) {
-      if (type === 'row') {
-        return {
-          'data-qa-selector': 'project_frameworks_row',
-          'data-qa-project-name': project.name,
-        };
-      }
-
-      return {};
-    },
-  },
 };
 </script>
 <template>
@@ -125,14 +124,11 @@ export default {
       show-empty
       stacked="lg"
       hover
-<<<<<<< HEAD
       :tbody-tr-attr="qaRowAttributes"
-=======
       selectable
       select-mode="multi"
       selected-variant="primary"
       @row-selected="updateSelectedRows"
->>>>>>> 6922789eb50e (Implement bulk applying compliance framework)
     >
       <template #head(selected)="{ selectAllRows, clearSelected }">
         <gl-form-checkbox

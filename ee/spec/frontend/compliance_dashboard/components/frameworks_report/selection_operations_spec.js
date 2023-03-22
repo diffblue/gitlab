@@ -155,7 +155,7 @@ describe('SelectionOperations component', () => {
 
         beforeEach(() => select(findFrameworkSelectionDropdown(), SELECTED_FRAMEWORK));
 
-        it('enables apply button when framework is selected', async () => {
+        it('enables apply button when framework is selected', () => {
           expect(findApplyButton().props('disabled')).toBe(false);
         });
 
@@ -176,7 +176,7 @@ describe('SelectionOperations component', () => {
         describe('when clicking apply button calls mutation', () => {
           beforeEach(() => findApplyButton().vm.$emit('click'));
 
-          it('calls mutation', async () => {
+          it('calls mutation', () => {
             expect(projectSetComplianceFrameworkMutation).toHaveBeenCalledTimes(COUNT);
             projects.forEach((p) => {
               expect(projectSetComplianceFrameworkMutation).toHaveBeenCalledWith(

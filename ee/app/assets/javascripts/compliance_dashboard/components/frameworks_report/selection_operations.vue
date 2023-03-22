@@ -64,7 +64,10 @@ export default {
           text: this.$options.i18n.applyFramework,
           value: this.$options.operations.APPLY_OPERATION,
         },
-        { text: this.$options.i18n.removeFramework, value: 'remove' },
+        {
+          text: this.$options.i18n.removeFramework,
+          value: this.$options.operations.REMOVE_OPERATION,
+        },
       ];
     },
     frameworksDropdownItems() {
@@ -136,7 +139,7 @@ export default {
           ),
         );
 
-        const firstError = results.some(
+        const firstError = results.find(
           (response) => response.data.projectSetComplianceFramework.errors.length,
         );
         if (firstError) {
@@ -213,10 +216,10 @@ export default {
     <gl-tooltip :target="() => $refs.operations" :disabled="hasSelection">
       {{ $options.i18n.operationSelectionTooltip }}
     </gl-tooltip>
-    <div ref="operations">
+    <div ref="operations" class="gl-pl-5">
       <gl-collapsible-listbox
         v-model="selectedOperation"
-        class="gl-pl-5"
+        class="gl-mr-2"
         :disabled="!hasSelection"
         :toggle-text="
           selectedOperation ? selectedOperation.text : $options.i18n.dropdownActionPlaceholder
