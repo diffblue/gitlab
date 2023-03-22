@@ -41,6 +41,7 @@ module Elastic
 
         indexes :namespace_ancestry_ids, type: :keyword
         indexes :schema_version, type: :short
+        indexes :hashed_root_namespace_id, type: :integer
       end
     end
   end
