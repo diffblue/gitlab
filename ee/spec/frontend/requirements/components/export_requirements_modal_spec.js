@@ -3,6 +3,8 @@ import { shallowMount } from '@vue/test-utils';
 
 import ExportRequirementsModal from 'ee/requirements/components/export_requirements_modal.vue';
 
+const FIELDS = ExportRequirementsModal.fields;
+const TEST_INDEX = 0;
 const createComponent = ({ requirementCount = 42, email = 'admin@example.com' } = {}) =>
   shallowMount(ExportRequirementsModal, {
     propsData: {
@@ -14,95 +16,86 @@ const createComponent = ({ requirementCount = 42, email = 'admin@example.com' } 
 describe('ExportRequirementsModal', () => {
   let wrapper;
 
+  const findSelectAllCheckbox = () =>
+    wrapper.find('.scrollbox-header').findComponent(GlFormCheckbox);
+  const findFieldCheckboxes = () =>
+    wrapper.find('.scrollbox-body').findAllComponents(GlFormCheckbox);
+  const findFieldCheckbox = (index) => findFieldCheckboxes().at(index);
+  const toggleSelectAllCheckbox = () => findSelectAllCheckbox().vm.$emit('change');
+  const toggleFieldCheckbox = (index) => findFieldCheckbox(index).vm.$emit('change');
+  const expectAllFieldCheckboxesSelected = (selected = true) => {
+    findFieldCheckboxes().wrappers.forEach((fieldCheckbox) => {
+      if (selected) {
+        expect(fieldCheckbox.attributes('checked')).toBe('true');
+      } else {
+        expect(fieldCheckbox.attributes('checked')).toBeUndefined();
+      }
+    });
+  };
+
   beforeEach(() => {
     wrapper = createComponent();
   });
 
-  describe('methods', () => {
-    describe('handleExport', () => {
-      it('emits `export` event', () => {
-        wrapper.vm.handleExport();
+  describe('field checkbox', () => {
+    const field = FIELDS[TEST_INDEX];
 
-        const emitted = wrapper.emitted('export');
+    it('is checked by default and the corresponding field key included in the emit', async () => {
+      expect(findFieldCheckbox(TEST_INDEX).attributes('checked')).toBe('true');
 
-        expect(emitted).toBeDefined();
-      });
+      await wrapper.findComponent(GlModal).vm.$emit('primary');
+      expect(wrapper.emitted('export')[0][0].includes(field.key)).toBe(true);
     });
 
-    describe('toggleField', () => {
-      it("removes field if it's already selected", async () => {
-        const [field] = wrapper.vm.$options.fields;
+    it('is unchecks on click and the corresponding field key is included in the emit', async () => {
+      await toggleFieldCheckbox(TEST_INDEX);
+      expect(findFieldCheckbox(TEST_INDEX).attributes('checked')).toBeUndefined();
 
-        wrapper.vm.toggleField(field.key);
-
-        expect(wrapper.vm.selectedFields.includes(field)).toBe(false);
-      });
-
-      it("adds field if it's not selected", async () => {
-        const [field] = wrapper.vm.$options.fields;
-
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        await wrapper.setData({
-          selectedFields: wrapper.vm.$options.fields.slice(1).map((f) => f.key),
-        });
-
-        wrapper.vm.toggleField(field.key);
-
-        expect(wrapper.vm.selectedFields.includes(field.key)).toBe(true);
-      });
+      await wrapper.findComponent(GlModal).vm.$emit('primary');
+      expect(wrapper.emitted('export')[0][0].includes(field.key)).not.toBe(true);
     });
 
-    describe('isFieldSelected', () => {
-      it('returns true when field is in selectedFields', () => {
-        const [field] = wrapper.vm.$options.fields;
+    it('can be checked again and the corresponding field key is included back in the emit when the field has been unchecked', async () => {
+      await toggleFieldCheckbox(TEST_INDEX);
+      expect(findFieldCheckbox(TEST_INDEX).attributes('checked')).toBeUndefined();
 
-        expect(wrapper.vm.isFieldSelected(field.key)).toBe(true);
+      await toggleFieldCheckbox(TEST_INDEX);
+      expect(findFieldCheckbox(TEST_INDEX).attributes('checked')).toBe('true');
+
+      await wrapper.findComponent(GlModal).vm.$emit('primary');
+      expect(wrapper.emitted('export')[0][0].includes(field.key)).toBe(true);
+    });
+  });
+
+  describe('"Select all" toggle', () => {
+    it('selects all if few are selected', async () => {
+      await toggleFieldCheckbox(TEST_INDEX);
+
+      findFieldCheckboxes().wrappers.forEach((fieldCheckbox, index) => {
+        if (index === TEST_INDEX) {
+          expect(fieldCheckbox.attributes('checked')).toBeUndefined();
+        } else {
+          expect(fieldCheckbox.attributes('checked')).toBe('true');
+        }
       });
 
-      it('returns false when field is in selectedFields', async () => {
-        const [field] = wrapper.vm.$options.fields;
-
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        await wrapper.setData({
-          selectedFields: wrapper.vm.$options.fields.slice(1).map((f) => f.key),
-        });
-
-        expect(wrapper.vm.isFieldSelected(field.key)).toBe(false);
-      });
+      await toggleSelectAllCheckbox();
+      expectAllFieldCheckboxesSelected();
     });
 
-    describe('toggleAllFields', () => {
-      it('selects all if few are selected', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        await wrapper.setData({
-          selectedFields: wrapper.vm.$options.fields.slice(1).map((f) => f.key),
-        });
+    it('unchecks all if all are selected', async () => {
+      expectAllFieldCheckboxesSelected();
 
-        wrapper.vm.toggleAllFields();
+      await toggleSelectAllCheckbox();
+      expectAllFieldCheckboxesSelected(false);
+    });
 
-        expect(wrapper.vm.selectedFields).toHaveLength(wrapper.vm.$options.fields.length);
-      });
+    it('selects all if none are selected', async () => {
+      await toggleSelectAllCheckbox();
+      expectAllFieldCheckboxesSelected(false);
 
-      it('unchecks all if all are selected', () => {
-        wrapper.vm.toggleAllFields();
-
-        expect(wrapper.vm.selectedFields).toHaveLength(0);
-      });
-
-      it('selects all if none are selected', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        await wrapper.setData({
-          selectedFields: [],
-        });
-
-        wrapper.vm.toggleAllFields();
-
-        expect(wrapper.vm.selectedFields).toHaveLength(wrapper.vm.$options.fields.length);
-      });
+      await toggleSelectAllCheckbox();
+      expectAllFieldCheckboxesSelected();
     });
   });
 
@@ -110,21 +103,15 @@ describe('ExportRequirementsModal', () => {
     it('GlModal open click emits export event', () => {
       wrapper.findComponent(GlModal).vm.$emit('primary');
 
-      const emitted = wrapper.emitted('export');
-
-      expect(emitted).toBeDefined();
+      expect(wrapper.emitted('export')).toBeDefined();
     });
 
     it('renders checkboxes for advanced exporting', () => {
-      const checkboxes = wrapper.find('.scrollbox-body').findAllComponents(GlFormCheckbox);
-
-      expect(checkboxes).toHaveLength(wrapper.vm.$options.fields.length);
+      expect(findFieldCheckboxes()).toHaveLength(FIELDS.length);
     });
 
     it('renders Select all checkbox', () => {
-      const checkbox = wrapper.find('.scrollbox-header').findAllComponents(GlFormCheckbox);
-
-      expect(checkbox).toHaveLength(1);
+      expect(findSelectAllCheckbox().exists()).toBe(true);
     });
   });
 });
