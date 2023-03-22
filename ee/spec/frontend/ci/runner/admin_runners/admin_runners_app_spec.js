@@ -16,13 +16,12 @@ import {
   runnersCountData,
   onlineContactTimeoutSecs,
   staleTimeoutSecs,
+  mockRegistrationToken,
   newRunnerPath,
   emptyStateSvgPath,
   emptyStateFilteredSvgPath,
 } from 'jest/ci/runner/mock_data';
 import { allRunnersUpgradeStatusData } from '../mock_data';
-
-const mockRegistrationToken = 'MOCK_REGISTRATION_TOKEN';
 
 const mockRunnersHandler = jest.fn();
 const mockRunnersCountHandler = jest.fn();

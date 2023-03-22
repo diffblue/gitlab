@@ -1,4 +1,12 @@
-import { DEFAULT_MEMBERSHIP, RUNNER_PAGE_SIZE } from '~/ci/runner/constants';
+import {
+  DEFAULT_MEMBERSHIP,
+  DEFAULT_SORT,
+  INSTANCE_TYPE,
+  CREATED_ASC,
+  RUNNER_PAGE_SIZE,
+} from '~/ci/runner/constants';
+import { UPGRADE_STATUS_AVAILABLE } from 'ee/ci/runner/constants';
+
 import { mockSearchExamples } from 'jest/ci/runner/mock_data';
 import {
   fromUrlQueryToSearch,
@@ -15,14 +23,16 @@ describe('ee search_params.js', () => {
       search: {
         runnerType: null,
         membership: DEFAULT_MEMBERSHIP,
-        filters: [{ type: 'upgrade_status', value: { data: 'AVAILABLE', operator: '=' } }],
+        filters: [
+          { type: 'upgrade_status', value: { data: UPGRADE_STATUS_AVAILABLE, operator: '=' } },
+        ],
         pagination: {},
-        sort: 'CREATED_DESC',
+        sort: DEFAULT_SORT,
       },
       graphqlVariables: {
-        upgradeStatus: 'AVAILABLE',
+        upgradeStatus: UPGRADE_STATUS_AVAILABLE,
         membership: DEFAULT_MEMBERSHIP,
-        sort: 'CREATED_DESC',
+        sort: DEFAULT_SORT,
         first: RUNNER_PAGE_SIZE,
       },
     },
@@ -30,17 +40,19 @@ describe('ee search_params.js', () => {
       name: 'upgrade status, a single instance type and a non default sort',
       urlQuery: '?runner_type[]=INSTANCE_TYPE&upgrade_status[]=AVAILABLE&sort=CREATED_ASC',
       search: {
-        runnerType: 'INSTANCE_TYPE',
+        runnerType: INSTANCE_TYPE,
         membership: DEFAULT_MEMBERSHIP,
-        filters: [{ type: 'upgrade_status', value: { data: 'AVAILABLE', operator: '=' } }],
+        filters: [
+          { type: 'upgrade_status', value: { data: UPGRADE_STATUS_AVAILABLE, operator: '=' } },
+        ],
         pagination: {},
-        sort: 'CREATED_ASC',
+        sort: CREATED_ASC,
       },
       graphqlVariables: {
-        upgradeStatus: 'AVAILABLE',
-        type: 'INSTANCE_TYPE',
+        upgradeStatus: UPGRADE_STATUS_AVAILABLE,
+        type: INSTANCE_TYPE,
         membership: DEFAULT_MEMBERSHIP,
-        sort: 'CREATED_ASC',
+        sort: CREATED_ASC,
         first: RUNNER_PAGE_SIZE,
       },
     },
@@ -64,7 +76,7 @@ describe('ee search_params.js', () => {
     it.each(['http://test.host/?upgrade_status[]=AVAILABLE'])(
       'When a filter is removed, it is removed from the URL',
       (initalUrl) => {
-        const search = { filters: [], sort: 'CREATED_DESC' };
+        const search = { filters: [], sort: DEFAULT_SORT };
         const expectedUrl = `http://test.host/`;
 
         expect(fromSearchToUrl(search, initalUrl)).toBe(expectedUrl);
@@ -73,7 +85,7 @@ describe('ee search_params.js', () => {
 
     it('When unrelated search parameter is present, it does not get removed', () => {
       const initialUrl = `http://test.host/?unrelated=UNRELATED&upgrade_status[]=AVAILABLE`;
-      const search = { filters: [], sort: 'CREATED_DESC' };
+      const search = { filters: [], sort: DEFAULT_SORT };
       const expectedUrl = `http://test.host/?unrelated=UNRELATED`;
 
       expect(fromSearchToUrl(search, initialUrl)).toBe(expectedUrl);
