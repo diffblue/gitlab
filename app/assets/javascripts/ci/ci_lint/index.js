@@ -11,6 +11,8 @@ const apolloProvider = new VueApollo({
   defaultClient: createDefaultClient(resolvers),
 });
 
+// test change for CODEOWNERS
+
 export default (containerId = '#js-ci-lint') => {
   const containerEl = document.querySelector(containerId);
   const { endpoint, lintHelpPagePath, pipelineSimulationHelpPagePath } = containerEl.dataset;
