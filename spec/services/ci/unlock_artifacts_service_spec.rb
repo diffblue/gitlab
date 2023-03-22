@@ -121,7 +121,7 @@ RSpec.describe Ci::UnlockArtifactsService, feature_category: :continuous_integra
           end
         end
 
-        # rubocop:disable RSpec/MultipleMemoizedHelpers
+        # rubocop:todo RSpec/MultipleMemoizedHelpers
         context 'when the ref has no successful pipeline' do
           let!(:target_ref) { new_ci_ref }
           let!(:failed_pipeline_1) { create(:ci_pipeline, :with_persisted_artifacts, status: :failed, ref: new_ref, project: project, locked: :artifacts_locked) }
