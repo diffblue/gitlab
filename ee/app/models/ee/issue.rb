@@ -374,5 +374,16 @@ module EE
 
       register_epic_id_for_cache_update(epic_issue.epic_id)
     end
+
+    def allowed_work_item_type_change
+      super
+
+      # We don't allow any other type than Issues for Epics. However, as this restriction got introduced
+      # afterwards, there is the possibility that other issue types (e.g. Incident) exist with an epic assigned.
+      # To not invalidate these records, we only check type changes for Issues.
+      if issue_type? && has_epic?
+        errors.add(:work_item_type_id, format(_('can not be changed when assigned to an epic')))
+      end
+    end
   end
 end

@@ -1397,6 +1397,37 @@ RSpec.describe Issue, feature_category: :team_planning do
     end
   end
 
+  describe '#allowed_work_item_type_change' do
+    let_it_be(:epic) { create(:epic) }
+
+    context 'when it is part of an epic' do
+      it 'is not possible to change from issue to incident' do
+        issue = create(:issue, :issue, epic: epic)
+        issue.work_item_type_id = WorkItems::Type.default_by_type(:incident).id
+
+        expect(issue).not_to be_valid
+        expect(issue.errors[:work_item_type_id])
+          .to include(_('can not be changed when assigned to an epic'))
+      end
+
+      it 'is possible to change back from incident to issue' do
+        issue = create(:issue, :incident, epic: epic)
+        issue.work_item_type_id = WorkItems::Type.default_by_type(:issue).id
+
+        expect(issue).to be_valid
+      end
+    end
+
+    context 'when it is not part of an epic' do
+      it 'is possible to change between types' do
+        issue = create(:issue, :issue)
+        issue.work_item_type_id = WorkItems::Type.default_by_type(:incident).id
+
+        expect(issue).to be_valid
+      end
+    end
+  end
+
   it_behaves_like 'resource with exportable associations' do
     let_it_be(:user) { create(:user) }
     let_it_be(:group) { create(:group, :private) }
