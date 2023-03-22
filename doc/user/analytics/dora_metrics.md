@@ -158,6 +158,21 @@ These deployment records are not created for pull-based deployments, for example
 
 To track DORA metrics in these cases, you can [create a deployment record](../../api/deployments.md#create-a-deployment) using the Deployments API. See also the documentation page for [Track deployments of an external deployment tool](../../ci/environments/external_deployment_tools.md).
 
+### Measure DORA Time to restore service and Change failure rate with external incidents
+
+[Time to restore service](#time-to-restore-service) and [Change failure rate](#change-failure-rate)
+require [GitLab incidents](../../operations/incident_management/manage_incidents.md) to calculate the metrics.
+
+For PagerDuty, you can set up a [webhook to automatically create a GitLab incident for each PagerDuty incident](../../operations/incident_management/manage_incidents.md#using-the-pagerduty-webhook).
+This configuration requires you to make changes in both PagerDuty and GitLab.
+
+For others incident management tools, you can set up the
+[HTTP integration](../../operations/incident_management/integrations.md#http-endpoints),
+and use it to automatically:
+
+1. [Create an incident when an alert is triggered](../../operations/incident_management/manage_incidents.md#automatically-when-an-alert-is-triggered).
+1. [Close incidents via recovery alerts](../../operations/incident_management/manage_incidents.md#automatically-close-incidents-via-recovery-alerts).
+
 ### Supported DORA metrics in GitLab
 
 | Metric                    | Level             | API                                                 | UI chart               | Comments |
