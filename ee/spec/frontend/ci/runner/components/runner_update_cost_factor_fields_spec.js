@@ -42,7 +42,7 @@ describe('RunnerUpdateCostFactorFields', () => {
       expect(findPublicProjectsCostFactor().find('input').attributes()).toMatchObject(fieldAttrs);
     });
 
-    it('handles input of private cost factor', async () => {
+    it('handles input of private cost factor', () => {
       triggerInput(findPrivateProjectsCostFactor(), '3.50');
 
       expect(wrapper.emitted('input').length).toBe(1);
@@ -54,7 +54,7 @@ describe('RunnerUpdateCostFactorFields', () => {
       ]);
     });
 
-    it('handles input of public cost factor', async () => {
+    it('handles input of public cost factor', () => {
       triggerInput(findPublicProjectsCostFactor(), '2.50');
 
       expect(wrapper.emitted('input').length).toBe(1);
