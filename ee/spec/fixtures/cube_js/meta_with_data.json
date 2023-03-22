@@ -1,0 +1,612 @@
+{
+  "cubes": [
+    {
+      "name": "Sessions",
+      "title": "Sessions",
+      "connectedComponent": 1,
+      "measures": [
+        {
+          "name": "Sessions.count",
+          "title": "Sessions Count",
+          "shortTitle": "Count",
+          "cumulativeTotal": false,
+          "cumulative": false,
+          "type": "number",
+          "aggType": "count",
+          "drillMembers": [
+
+          ],
+          "drillMembersGrouped": {
+            "measures": [
+
+            ],
+            "dimensions": [
+
+            ]
+          },
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.averagePerUser",
+          "title": "Sessions Average Per User",
+          "shortTitle": "Average Per User",
+          "cumulativeTotal": false,
+          "cumulative": false,
+          "type": "number",
+          "aggType": "number",
+          "drillMembers": [
+
+          ],
+          "drillMembersGrouped": {
+            "measures": [
+
+            ],
+            "dimensions": [
+
+            ]
+          },
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.averageDurationMinutes",
+          "title": "Sessions Average Duration Minutes",
+          "shortTitle": "Average Duration Minutes",
+          "cumulativeTotal": false,
+          "cumulative": false,
+          "type": "number",
+          "aggType": "avg",
+          "drillMembers": [
+
+          ],
+          "drillMembersGrouped": {
+            "measures": [
+
+            ],
+            "dimensions": [
+
+            ]
+          },
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.uniqueUsersCount",
+          "title": "Sessions Unique Users Count",
+          "shortTitle": "Unique Users Count",
+          "cumulativeTotal": false,
+          "cumulative": false,
+          "type": "number",
+          "aggType": "countDistinct",
+          "drillMembers": [
+
+          ],
+          "drillMembersGrouped": {
+            "measures": [
+
+            ],
+            "dimensions": [
+
+            ]
+          },
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.repeatPercent",
+          "title": "Sessions Repeat Percent",
+          "description": "Percent of Repeat Sessions",
+          "shortTitle": "Repeat Percent",
+          "format": "percent",
+          "cumulativeTotal": false,
+          "cumulative": false,
+          "type": "number",
+          "aggType": "number",
+          "drillMembers": [
+
+          ],
+          "drillMembersGrouped": {
+            "measures": [
+
+            ],
+            "dimensions": [
+
+            ]
+          },
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.repeatCount",
+          "title": "Sessions Repeat Count",
+          "description": "Repeat Sessions Count",
+          "shortTitle": "Repeat Count",
+          "cumulativeTotal": false,
+          "cumulative": false,
+          "type": "number",
+          "aggType": "count",
+          "drillMembers": [
+
+          ],
+          "drillMembersGrouped": {
+            "measures": [
+
+            ],
+            "dimensions": [
+
+            ]
+          },
+          "isVisible": true
+        }
+      ],
+      "dimensions": [
+        {
+          "name": "Sessions.isFirst",
+          "title": "Sessions Is First",
+          "type": "string",
+          "shortTitle": "Is First",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.anonymousId",
+          "title": "Sessions Anonymous Id",
+          "type": "string",
+          "shortTitle": "Anonymous Id",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.numberEvents",
+          "title": "Sessions Number Events",
+          "type": "number",
+          "shortTitle": "Number Events",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.startAt",
+          "title": "Sessions Start at",
+          "type": "time",
+          "shortTitle": "Start at",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.nextStartAt",
+          "title": "Sessions Next Start at",
+          "type": "time",
+          "shortTitle": "Next Start at",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.endAt",
+          "title": "Sessions End at",
+          "type": "time",
+          "shortTitle": "End at",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.durationMinutes",
+          "title": "Sessions Duration Minutes",
+          "type": "number",
+          "shortTitle": "Duration Minutes",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.parsedUaUaFamily",
+          "title": "Sessions Parsed Ua Ua Family",
+          "type": "string",
+          "shortTitle": "Parsed Ua Ua Family",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.docHost",
+          "title": "Sessions Doc Host",
+          "type": "string",
+          "shortTitle": "Doc Host",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.docPath",
+          "title": "Sessions Doc Path",
+          "type": "string",
+          "shortTitle": "Doc Path",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.docSearch",
+          "title": "Sessions Doc Search",
+          "type": "string",
+          "shortTitle": "Doc Search",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.eventType",
+          "title": "Sessions Event Type",
+          "type": "string",
+          "shortTitle": "Event Type",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.eventnCtxEventId",
+          "title": "Sessions Eventn Ctx Event Id",
+          "type": "string",
+          "shortTitle": "Eventn Ctx Event Id",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.localTzOffset",
+          "title": "Sessions Local Tz Offset",
+          "type": "string",
+          "shortTitle": "Local Tz Offset",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.pageTitle",
+          "title": "Sessions Page Title",
+          "type": "string",
+          "shortTitle": "Page Title",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.parsedUaOsFamily",
+          "title": "Sessions Parsed Ua Os Family",
+          "type": "string",
+          "shortTitle": "Parsed Ua Os Family",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.parsedUaOsVersion",
+          "title": "Sessions Parsed Ua Os Version",
+          "type": "string",
+          "shortTitle": "Parsed Ua Os Version",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.parsedUaUaVersion",
+          "title": "Sessions Parsed Ua Ua Version",
+          "type": "string",
+          "shortTitle": "Parsed Ua Ua Version",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.referer",
+          "title": "Sessions Referer",
+          "type": "string",
+          "shortTitle": "Referer",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.screenResolution",
+          "title": "Sessions Screen Resolution",
+          "type": "string",
+          "shortTitle": "Screen Resolution",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.url",
+          "title": "Sessions Url",
+          "type": "string",
+          "shortTitle": "Url",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.src",
+          "title": "Sessions Src",
+          "type": "string",
+          "shortTitle": "Src",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.sourceIp",
+          "title": "Sessions Source Ip",
+          "type": "string",
+          "shortTitle": "Source Ip",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "Sessions.userLanguage",
+          "title": "Sessions User Language",
+          "type": "string",
+          "shortTitle": "User Language",
+          "suggestFilterValues": true,
+          "isVisible": true
+        }
+      ],
+      "segments": [
+
+      ]
+    },
+    {
+      "name": "TrackedEvents",
+      "title": "Tracked Events",
+      "connectedComponent": 1,
+      "measures": [
+        {
+          "name": "TrackedEvents.count",
+          "title": "Tracked Events Count",
+          "shortTitle": "Count",
+          "cumulativeTotal": false,
+          "cumulative": false,
+          "type": "number",
+          "aggType": "count",
+          "drillMembers": [
+            "TrackedEvents.eventnCtxEventId",
+            "TrackedEvents.idsAjsAnonymousId",
+            "TrackedEvents.pageTitle",
+            "TrackedEvents.userAnonymousId",
+            "TrackedEvents.userHashedAnonymousId"
+          ],
+          "drillMembersGrouped": {
+            "measures": [
+
+            ],
+            "dimensions": [
+              "TrackedEvents.eventnCtxEventId",
+              "TrackedEvents.idsAjsAnonymousId",
+              "TrackedEvents.pageTitle",
+              "TrackedEvents.userAnonymousId",
+              "TrackedEvents.userHashedAnonymousId"
+            ]
+          },
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.pageViewsCount",
+          "title": "Tracked Events Page Views Count",
+          "shortTitle": "Page Views Count",
+          "cumulativeTotal": false,
+          "cumulative": false,
+          "type": "number",
+          "aggType": "count",
+          "drillMembers": [
+
+          ],
+          "drillMembersGrouped": {
+            "measures": [
+
+            ],
+            "dimensions": [
+
+            ]
+          },
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.uniqueUsersCount",
+          "title": "Tracked Events Unique Users Count",
+          "shortTitle": "Unique Users Count",
+          "cumulativeTotal": false,
+          "cumulative": false,
+          "type": "number",
+          "aggType": "countDistinct",
+          "drillMembers": [
+
+          ],
+          "drillMembersGrouped": {
+            "measures": [
+
+            ],
+            "dimensions": [
+
+            ]
+          },
+          "isVisible": true
+        }
+      ],
+      "dimensions": [
+        {
+          "name": "TrackedEvents.apiKey",
+          "title": "Tracked Events Api Key",
+          "type": "string",
+          "shortTitle": "Api Key",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.docEncoding",
+          "title": "Tracked Events Doc Encoding",
+          "type": "string",
+          "shortTitle": "Doc Encoding",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.docHost",
+          "title": "Tracked Events Doc Host",
+          "type": "string",
+          "shortTitle": "Doc Host",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.docPath",
+          "title": "Tracked Events Doc Path",
+          "type": "string",
+          "shortTitle": "Doc Path",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.docSearch",
+          "title": "Tracked Events Doc Search",
+          "type": "string",
+          "shortTitle": "Doc Search",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.eventType",
+          "title": "Tracked Events Event Type",
+          "type": "string",
+          "shortTitle": "Event Type",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.idsAjsAnonymousId",
+          "title": "Tracked Events Ids Ajs Anonymous Id",
+          "type": "string",
+          "shortTitle": "Ids Ajs Anonymous Id",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.localTzOffset",
+          "title": "Tracked Events Local Tz Offset",
+          "type": "string",
+          "shortTitle": "Local Tz Offset",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.pageTitle",
+          "title": "Tracked Events Page Title",
+          "type": "string",
+          "shortTitle": "Page Title",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.parsedUaOsFamily",
+          "title": "Tracked Events Parsed Ua Os Family",
+          "type": "string",
+          "shortTitle": "Parsed Ua Os Family",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.parsedUaOsVersion",
+          "title": "Tracked Events Parsed Ua Os Version",
+          "type": "string",
+          "shortTitle": "Parsed Ua Os Version",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.parsedUaUaFamily",
+          "title": "Tracked Events Parsed Ua Ua Family",
+          "type": "string",
+          "shortTitle": "Parsed Ua Ua Family",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.parsedUaUaVersion",
+          "title": "Tracked Events Parsed Ua Ua Version",
+          "type": "string",
+          "shortTitle": "Parsed Ua Ua Version",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.referer",
+          "title": "Tracked Events Referer",
+          "type": "string",
+          "shortTitle": "Referer",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.screenResolution",
+          "title": "Tracked Events Screen Resolution",
+          "type": "string",
+          "shortTitle": "Screen Resolution",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.sourceIp",
+          "title": "Tracked Events Source Ip",
+          "type": "string",
+          "shortTitle": "Source Ip",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.src",
+          "title": "Tracked Events Src",
+          "type": "string",
+          "shortTitle": "Src",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.url",
+          "title": "Tracked Events Url",
+          "type": "string",
+          "shortTitle": "Url",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.userAgent",
+          "title": "Tracked Events User Agent",
+          "type": "string",
+          "shortTitle": "User Agent",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.userAnonymousId",
+          "title": "Tracked Events User Anonymous Id",
+          "type": "string",
+          "shortTitle": "User Anonymous Id",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.userHashedAnonymousId",
+          "title": "Tracked Events User Hashed Anonymous Id",
+          "type": "string",
+          "shortTitle": "User Hashed Anonymous Id",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.userLanguage",
+          "title": "Tracked Events User Language",
+          "type": "string",
+          "shortTitle": "User Language",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.vpSize",
+          "title": "Tracked Events Vp Size",
+          "type": "string",
+          "shortTitle": "Vp Size",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "TrackedEvents.utcTime",
+          "title": "Tracked Events Utc Time",
+          "type": "time",
+          "shortTitle": "Utc Time",
+          "suggestFilterValues": true,
+          "isVisible": true
+        }
+      ],
+      "segments": [
+
+      ]
+    }
+  ]
+}

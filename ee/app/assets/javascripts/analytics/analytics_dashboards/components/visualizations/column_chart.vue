@@ -29,6 +29,7 @@ export default {
     :option="options"
     height="auto"
     responsive
+    data-testid="dashboard-visualization-column-chart"
     class="gl-overflow-hidden"
   />
 </template>
