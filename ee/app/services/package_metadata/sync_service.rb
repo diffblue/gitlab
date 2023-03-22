@@ -7,7 +7,10 @@ module PackageMetadata
 
     def self.execute(signal)
       SyncConfiguration.all.each do |config|
-        break if signal.stop?
+        if signal.stop?
+          break Gitlab::AppJsonLogger.debug(class: name,
+            message: "Stop signal received before starting #{config.purl_type} sync")
+        end
 
         connector = connector_for(config)
         new(connector, config.version_format, config.purl_type, signal).execute
@@ -41,6 +44,7 @@ module PackageMetadata
         csv_file.each_slice(INGEST_SLICE_SIZE) do |data_objects|
           ingest(data_objects)
         end
+
         checkpoint.update(sequence: csv_file.sequence, chunk: csv_file.chunk)
 
         if signal.stop?
