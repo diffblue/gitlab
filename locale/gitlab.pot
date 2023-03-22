@@ -9158,6 +9158,9 @@ msgstr ""
 msgid "CiVariable|Define a CI/CD variable in the UI"
 msgstr ""
 
+msgid "CiVariable|Maximum of 20 environments listed. For more environments, enter a search query."
+msgstr ""
+
 msgid "CiVariable|New environment"
 msgstr ""
 
