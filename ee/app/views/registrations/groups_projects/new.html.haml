@@ -16,7 +16,6 @@
 
       - tab_container_class = ''
       - experiment(:require_verification_for_namespace_creation, user: current_user) do |e|
-        - e.control {} # rubocop:disable Lint/EmptyBlock
         - e.candidate do
           .js-credit-card-verification{ data: credit_card_verification_data }
           - tab_container_class = 'gl-display-none'
@@ -121,7 +120,6 @@
                 %h4= s_('ProjectsNew|No import options available')
                 %p= s_('ProjectsNew|Contact an administrator to enable options for importing your project.')
       - experiment(:require_verification_for_namespace_creation, user: current_user) do |e|
-        - e.control {} # rubocop:disable Lint/EmptyBlock
         - e.candidate do
           - if Feature.enabled?(:exit_registration_verification) && current_user.requires_credit_card_verification
             .js-exit-registration-verification{ data: { exit_path: exit_users_sign_up_groups_projects_path } }
