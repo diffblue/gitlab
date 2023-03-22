@@ -2,8 +2,8 @@ import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import ModalRuleCreate from 'ee/approvals/components/modal_rule_create.vue';
-import RuleForm from 'ee/approvals/components/rule_form.vue';
 import { stubComponent } from 'helpers/stub_component';
+import RuleForm from 'ee/approvals/components/rule_form.vue';
 import GlModalVuex from '~/vue_shared/components/gl_modal_vuex.vue';
 
 const TEST_MODAL_ID = 'test-modal-create-id';
@@ -17,11 +17,21 @@ describe('Approvals ModalRuleCreate', () => {
   let wrapper;
   let modal;
   let form;
+  let submitMock;
 
   const findModal = () => wrapper.findComponent(GlModalVuex);
   const findForm = () => wrapper.findComponent(RuleForm);
 
   const factory = (options = {}) => {
+    submitMock = jest.fn();
+
+    const RuleFormStub = stubComponent(RuleForm, {
+      template: `<span />`,
+      methods: {
+        submit: submitMock,
+      },
+    });
+
     const store = new Vuex.Store({
       modules: {
         [MODAL_MODULE]: {
@@ -44,6 +54,7 @@ describe('Approvals ModalRuleCreate', () => {
         GlModalVuex: stubComponent(GlModalVuex, {
           props: ['modalModule', 'modalId', 'actionPrimary', 'actionCancel'],
         }),
+        RuleForm: RuleFormStub,
       },
     });
   };
@@ -78,10 +89,10 @@ describe('Approvals ModalRuleCreate', () => {
     });
 
     it('when modal emits ok, submits form', () => {
-      form.vm.submit = jest.fn();
+      // An instance of Event is passed to handle .prevent vue event modifier
       modal.vm.$emit('ok', new Event('ok'));
 
-      expect(form.vm.submit).toHaveBeenCalled();
+      expect(submitMock).toHaveBeenCalled();
     });
   });
 
@@ -129,7 +140,7 @@ describe('Approvals ModalRuleCreate', () => {
     });
 
     it('renders form with defaultRuleName', () => {
-      expect(form.props().defaultRuleName).toBe('License-Check');
+      expect(form.props('defaultRuleName')).toBe('License-Check');
       expect(form.exists()).toBe(true);
     });
 
