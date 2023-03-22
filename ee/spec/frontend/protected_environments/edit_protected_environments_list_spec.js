@@ -3,7 +3,7 @@ import MockAdapter from 'axios-mock-adapter';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { mountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
 import { sprintf, s__ } from '~/locale';
@@ -22,35 +22,54 @@ const DEFAULT_ENVIRONMENTS = [
     name: 'staging',
     deploy_access_levels: [
       {
+        id: 1,
         access_level: DEVELOPER_ACCESS_LEVEL,
         access_level_description: 'Deployers + Maintainers',
         group_id: null,
         user_id: null,
       },
       {
+        id: 2,
         group_id: 1,
         group_inheritance_type: '1',
         access_level_description: 'Some group',
         access_level: null,
         user_id: null,
       },
-      { user_id: 1, access_level_description: 'Some user', access_level: null, group_id: null },
+      {
+        id: 3,
+        user_id: 1,
+        access_level_description: 'Some user',
+        access_level: null,
+        group_id: null,
+      },
     ],
     approval_rules: [
       {
+        id: 1,
         access_level: 30,
         access_level_description: 'Deployers + Maintainers',
         group_id: null,
         user_id: null,
+        required_approvals: 1,
       },
       {
+        id: 2,
         group_id: 1,
         group_inheritance_type: '1',
         access_level_description: 'Some group',
         access_level: null,
         user_id: null,
+        required_approvals: 1,
       },
-      { user_id: 1, access_level_description: 'Some user', access_level: null, group_id: null },
+      {
+        id: 3,
+        user_id: 1,
+        access_level_description: 'Some user',
+        access_level: null,
+        group_id: null,
+        required_approvals: 1,
+      },
     ],
   },
 ];
@@ -93,6 +112,12 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
     wrapper.findByTitle(s__('ProtectedEnvironments|Delete deployer rule'));
   const findApproverDeleteButton = () =>
     wrapper.findByTitle(s__('ProtectedEnvironments|Delete approver rule'));
+  const findApproverEditButton = (w = wrapper) =>
+    w.findByRole('button', { name: s__('ProtectedEnvironments|Edit') });
+  const findApproverSaveButton = () =>
+    wrapper.findByRole('button', { name: s__('ProtectedEnvironments|Save') });
+  const findApprovalsInput = () =>
+    wrapper.findByRole('textbox', { name: s__('ProtectedEnvironments|Required approval count') });
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
@@ -341,6 +366,62 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
         name: environment.name,
         approval_rules: [destroyedRule],
       });
+    });
+  });
+
+  describe('approver edit rule', () => {
+    let environment;
+
+    beforeEach(async () => {
+      [environment] = DEFAULT_ENVIRONMENTS;
+      await createComponent();
+
+      wrapper.findComponent(GlButton).vm.$emit('click');
+
+      await nextTick();
+    });
+
+    it('allows editing of an approval rule', async () => {
+      const [rule] = environment.approval_rules;
+      const value = '2';
+
+      mock.onPut().reply(HTTP_STATUS_OK);
+
+      const button = findApproverEditButton();
+
+      await button.trigger('click');
+
+      const input = findApprovalsInput();
+
+      expect(input.exists()).toBe(true);
+
+      await input.setValue(value);
+
+      findApproverSaveButton().trigger('click');
+
+      await waitForPromises();
+
+      expect(mock.history.put.length).toBe(1);
+      const [{ data }] = mock.history.put;
+      expect(JSON.parse(data)).toMatchObject({
+        name: environment.name,
+        approval_rules: [
+          {
+            id: rule.id,
+            access_level: rule.access_level,
+            access_level_description: rule.access_level_description,
+            required_approvals: value,
+          },
+        ],
+      });
+    });
+
+    it('hides the edit button for user rules', () => {
+      const { id } = environment.approval_rules.find(({ user_id: userId }) => userId);
+      const row = wrapper.findByTestId(`approval_rules-${id}`);
+      const button = findApproverEditButton(extendedWrapper(row));
+
+      expect(button.exists()).toBe(false);
     });
   });
 

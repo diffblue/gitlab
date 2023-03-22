@@ -48,6 +48,7 @@ export default {
       <div
         v-for="rule in rules"
         :key="rule.id"
+        :data-testid="`${ruleKey}-${rule.id}`"
         class="gl-border-t gl-p-5 gl-display-flex gl-align-items-center gl-w-full"
       >
         <slot name="rule" :rule="rule" :rule-key="ruleKey"></slot>

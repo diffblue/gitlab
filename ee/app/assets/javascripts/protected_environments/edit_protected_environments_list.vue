@@ -69,6 +69,9 @@ export default {
       this.addingRule = ruleKey;
       this.isAddingRule = true;
     },
+    isUserRule({ user_id: userId }) {
+      return userId != null;
+    },
   },
   i18n: {
     title: s__(
@@ -86,6 +89,7 @@ export default {
     addApprovalRuleModalTitle: s__('ProtectedEnvironments|Create approval rule'),
     addModalText: __('Set a group, access level or users who are required to deploy.'),
     addDeployerLabel: s__('ProtectedEnvironments|Allowed to deploy'),
+    approvalCount: s__('ProtectedEnvironments|Required approval count'),
     editApproverButton: s__('ProtectedEnvironments|Edit'),
     saveApproverButton: s__('ProtectedEnvironments|Save'),
   },
@@ -195,16 +199,25 @@ export default {
                 v-gl-tooltip
                 :src="user.avatar_url"
                 :title="user.name"
-                :size="32"
+                :size="24"
                 class="gl-mr-2"
               />
             </div>
 
             <template v-if="editingRules[rule.id]">
-              <gl-form-input
-                v-model="editingRules[rule.id].required_approvals"
-                class="gl-w-20p gl-text-center"
-              />
+              <gl-form-group
+                :label-for="`approval-count-${rule.id}`"
+                :label="$options.i18n.approvalCount"
+                label-sr-only
+                class="gl-w-20p gl-mb-0"
+              >
+                <gl-form-input
+                  :id="`approval-count-${rule.id}`"
+                  v-model="editingRules[rule.id].required_approvals"
+                  :name="`approval-count-${rule.id}`"
+                  class="gl-text-center"
+                />
+              </gl-form-group>
 
               <gl-button
                 class="gl-ml-auto gl-mr-4"
@@ -216,7 +229,11 @@ export default {
             <template v-else>
               <span class="gl-w-20p gl-text-center">{{ rule.required_approvals }}</span>
 
-              <gl-button class="gl-ml-auto gl-mr-4" @click="editRule(rule)">
+              <gl-button
+                v-if="!isUserRule(rule)"
+                class="gl-ml-auto gl-mr-4"
+                @click="editRule(rule)"
+              >
                 {{ $options.i18n.editApproverButton }}
               </gl-button>
             </template>
@@ -226,6 +243,7 @@ export default {
               category="secondary"
               variant="danger"
               icon="remove"
+              :class="{ 'gl-ml-auto': isUserRule(rule) }"
               :loading="loading"
               :title="$options.i18n.approverDeleteButtonTitle"
               :aria-label="$options.i18n.approverDeleteButtonTitle"
