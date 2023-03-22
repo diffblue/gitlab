@@ -1,0 +1,9 @@
+---
+name: project_visibility_level_updated
+description: audit when project visiblity level setting is updated
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/369288
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/106652
+milestone: '15.7'
+feature_category: projects
+saved_to_database: true
+streamed: true

@@ -1,0 +1,9 @@
+---
+name: project_cicd_merge_pipelines_enabled_updated
+description: audit when project cicd merge pipelines setting is updated
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/369317
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/107428
+milestone: '15.8'
+feature_category: projects
+saved_to_database: true
+streamed: true
