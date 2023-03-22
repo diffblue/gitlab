@@ -99,19 +99,6 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest do
     it_behaves_like 'when http call raises an exception'
   end
 
-  describe '#extend_reactivate_trial' do
-    let(:http_method) { :put }
-
-    subject do
-      client.extend_reactivate_trial({})
-    end
-
-    it_behaves_like 'when response is successful'
-    it_behaves_like 'when response code is 422'
-    it_behaves_like 'when response code is 500'
-    it_behaves_like 'when http call raises an exception'
-  end
-
   describe '#create_subscription' do
     subject do
       client.create_subscription({}, 'customer@mail.com', 'token')

@@ -5,6 +5,5 @@ resources :trials, only: [:new] do
     post :create_lead
     get :select
     post :apply
-    put :extend_reactivate
   end
 end

@@ -316,18 +316,6 @@ module EE
       trial? && trial_ends_on.present? && trial_ends_on >= Date.today
     end
 
-    def can_extend_trial?
-      return false unless ::Feature.enabled?(:allow_extend_reactivate_trial)
-
-      trial_active? && !trial_extended_or_reactivated?
-    end
-
-    def can_reactivate_trial?
-      return false unless ::Feature.enabled?(:allow_extend_reactivate_trial)
-
-      !trial_active? && !never_had_trial? && !trial_extended_or_reactivated? && free_plan?
-    end
-
     def never_had_trial?
       trial_ends_on.nil?
     end
