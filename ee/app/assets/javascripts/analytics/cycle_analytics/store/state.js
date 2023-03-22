@@ -16,7 +16,7 @@ export default () => ({
 
   errorCode: null,
 
-  currentGroup: null,
+  groupPath: null,
   selectedProjects: [],
   selectedStage: null,
   selectedValueStream: null,
@@ -53,4 +53,7 @@ export default () => ({
     lastRunAt: null,
     nextRunAt: null,
   },
+  enableTasksByTypeChart: false,
+  enableCustomizableStages: false,
+  enableProjectsFilter: false,
 });

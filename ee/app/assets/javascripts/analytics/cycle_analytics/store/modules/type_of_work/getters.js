@@ -10,10 +10,10 @@ export const selectedLabelIds = ({ selectedLabels = [] }) => {
 
 export const selectedTasksByTypeFilters = (state = {}, _, rootState = {}, rootGetters = {}) => {
   const { subject } = state;
-  const { currentGroup, createdAfter = null, createdBefore = null } = rootState;
+  const { namespace, createdAfter = null, createdBefore = null } = rootState;
   const { selectedProjectIds = [] } = rootGetters;
   return {
-    currentGroup,
+    namespace,
     selectedProjectIds,
     createdAfter,
     createdBefore,

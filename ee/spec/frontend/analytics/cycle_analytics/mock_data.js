@@ -252,7 +252,7 @@ export const currentGroup = {
 };
 
 export const taskByTypeFilters = {
-  currentGroup,
+  namespace: currentGroup,
   selectedProjectIds: [],
   createdAfter: new Date('2019-12-11'),
   createdBefore: new Date('2020-01-10'),

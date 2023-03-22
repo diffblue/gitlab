@@ -102,7 +102,7 @@ export default {
   [types.INITIALIZE_VSA](
     state,
     {
-      group = null,
+      groupPath = null,
       createdAfter = null,
       createdBefore = null,
       selectedProjects = [],
@@ -111,16 +111,22 @@ export default {
       pagination = {},
       aggregation = {},
       namespace = {},
+      enableTasksByTypeChart = false,
+      enableCustomizableStages = false,
+      enableProjectsFilter = false,
     } = {},
   ) {
     state.isLoading = true;
-    state.currentGroup = group;
+    state.groupPath = groupPath;
     state.selectedProjects = selectedProjects;
     state.selectedValueStream = selectedValueStream;
     state.createdBefore = createdBefore;
     state.createdAfter = createdAfter;
     state.defaultStageConfig = defaultStageConfig;
     state.namespace = namespace;
+    state.enableTasksByTypeChart = enableTasksByTypeChart;
+    state.enableCustomizableStages = enableCustomizableStages;
+    state.enableProjectsFilter = enableProjectsFilter;
 
     Vue.set(state, 'aggregation', aggregation);
 
