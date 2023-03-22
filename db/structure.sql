@@ -22377,11 +22377,11 @@ CREATE TABLE snippet_statistics (
 CREATE TABLE snippet_user_mentions (
     id bigint NOT NULL,
     snippet_id integer NOT NULL,
-    note_id integer,
+    note_id_convert_to_bigint integer,
     mentioned_users_ids integer[],
     mentioned_projects_ids integer[],
     mentioned_groups_ids integer[],
-    note_id_convert_to_bigint bigint
+    note_id bigint
 );
 
 CREATE SEQUENCE snippet_user_mentions_id_seq
