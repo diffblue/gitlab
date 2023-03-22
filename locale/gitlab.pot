@@ -38284,6 +38284,9 @@ msgstr ""
 msgid "Saved replies can be used when creating comments inside issues, merge requests, and epics."
 msgstr ""
 
+msgid "Saved reply actions"
+msgstr ""
+
 msgid "Saving"
 msgstr ""
 
