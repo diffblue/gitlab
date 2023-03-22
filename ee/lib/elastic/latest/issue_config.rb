@@ -39,6 +39,7 @@ module Elastic
         indexes :namespace_ancestry, type: :text, index_prefixes: { min_chars: 1, max_chars: 19 } # deprecated
         indexes :namespace_ancestry_ids, type: :keyword
         indexes :label_ids, type: :keyword
+        indexes :hashed_root_namespace_id, type: :integer
 
         indexes :schema_version, type: :short
       end
