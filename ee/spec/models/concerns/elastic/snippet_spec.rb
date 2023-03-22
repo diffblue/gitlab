@@ -38,9 +38,7 @@ RSpec.describe Snippet, :elastic do
   it "names elasticsearch queries" do
     described_class.elastic_search('*').total_count
 
-    assert_named_queries('doc:is_a:snippet',
-                         'snippet:match:search_terms',
-                         'snippet:authorized')
+    assert_named_queries('doc:is_a:snippet', 'snippet:match:search_terms', 'snippet:authorized')
   end
 
   it 'returns json with all needed elements' do

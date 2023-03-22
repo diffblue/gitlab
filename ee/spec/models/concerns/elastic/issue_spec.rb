@@ -78,8 +78,7 @@ RSpec.describe Issue, :elastic, feature_category: :global_search do
   it "names elasticsearch queries" do
     described_class.elastic_search('*').total_count
 
-    assert_named_queries('issue:match:search_terms',
-                         'issue:authorized:project')
+    assert_named_queries('issue:match:search_terms', 'issue:authorized:project')
   end
 
   it "searches by iid and scopes to type: issue only" do
@@ -115,14 +114,14 @@ RSpec.describe Issue, :elastic, feature_category: :global_search do
     let(:expected_hash) do
       issue.attributes.extract!(
         'id',
-      'iid',
-      'title',
-      'description',
-      'created_at',
-      'updated_at',
-      'project_id',
-      'author_id',
-      'confidential'
+        'iid',
+        'title',
+        'description',
+        'created_at',
+        'updated_at',
+        'project_id',
+        'author_id',
+        'confidential'
       ).merge({
               'type' => issue.es_type,
               'state' => issue.state,
