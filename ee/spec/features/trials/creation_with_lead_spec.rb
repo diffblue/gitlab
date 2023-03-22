@@ -2,11 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Trial Capture Lead', :js, feature_category: :purchase do
+RSpec.describe 'Trial lead submission and creation', :saas, :js, feature_category: :purchase do
   let_it_be(:user) { create(:user) }
 
   before do
-    allow(Gitlab).to receive(:com?).and_return(true).at_least(:once)
     sign_in(user)
     visit new_trial_path
 
@@ -52,18 +51,51 @@ RSpec.describe 'Trial Capture Lead', :js, feature_category: :purchase do
       end
     end
 
-    context 'with state' do
-      it 'proceeds to the next step' do
-        fill_in 'company_name', with: form_data[:company_name]
-        select form_data[:company_size], from: 'company_size'
-        fill_in 'phone_number', with: form_data[:phone_number]
-        select form_data.dig(:country, :name), from: 'country'
-        select form_data.dig(:state, :name), from: 'state'
+    context 'when there is one trialable namespace' do
+      context 'when applying trial fails' do
+        before do
+          create(:group).tap { |record| record.add_owner(user) }
+          allow_next_instance_of(GitlabSubscriptions::Trials::ApplyTrialService) do |service|
+            allow(service).to receive(:execute).and_return(ServiceResponse.error(message: '_fail_'))
+          end
+        end
+
+        it 'fills out form, submits and lands on select page' do
+          fill_in_company_information
+
+          click_button 'Continue'
+
+          expect(page).to have_current_path(create_lead_trials_path, ignore_query: true)
+          expect(page).to have_content('We have found the following errors')
+          expect(page).to have_content('This subscription is for')
+        end
+      end
+    end
+
+    context 'when there is more than one trialable namespace' do
+      before do
+        create(:group).tap { |record| record.add_owner(user) }
+        create(:group).tap { |record| record.add_owner(user) }
+      end
+
+      it 'fills out the trial form and lands on the select namespace page' do
+        fill_in_company_information
 
         click_button 'Continue'
 
-        expect(page).not_to have_css('flash-container')
         expect(page).to have_current_path(select_trials_path, ignore_query: true)
+        expect(page).to have_content('This subscription is for')
+      end
+    end
+
+    context 'with state' do
+      it 'proceeds to the next step' do
+        fill_in_company_information
+
+        click_button 'Continue'
+
+        expect(page).to have_current_path(select_trials_path, ignore_query: true)
+        expect(page).to have_content('New Group Name')
       end
     end
 
@@ -72,18 +104,22 @@ RSpec.describe 'Trial Capture Lead', :js, feature_category: :purchase do
       let(:extra_trial_params) { {} }
 
       it 'proceeds to the next step' do
-        fill_in 'company_name', with: form_data[:company_name]
-        select form_data[:company_size], from: 'company_size'
-        fill_in 'phone_number', with: form_data[:phone_number]
-        select form_data.dig(:country, :name), from: 'country'
+        fill_in_company_information(with_state: false)
 
         expect(page).not_to have_selector('[data-testid="state"]')
 
         click_button 'Continue'
 
-        expect(page).not_to have_css('flash-container')
         expect(page).to have_current_path(select_trials_path, ignore_query: true)
       end
+    end
+
+    def fill_in_company_information(with_state: true)
+      fill_in 'company_name', with: form_data[:company_name]
+      select form_data[:company_size], from: 'company_size'
+      fill_in 'phone_number', with: form_data[:phone_number]
+      select form_data.dig(:country, :name), from: 'country'
+      select form_data.dig(:state, :name), from: 'state' if with_state
     end
   end
 
