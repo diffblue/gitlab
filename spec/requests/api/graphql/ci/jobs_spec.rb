@@ -17,7 +17,7 @@ RSpec.describe 'Query.jobs', feature_category: :continuous_integration do
         jobs {
           nodes {
             id
-            #{fields.map { |field| GraphqlHelpers.fieldnamerize(field.to_s) }.join(' ')}
+            #{fields.join(' ')}
           }
         }
       }
@@ -27,7 +27,7 @@ RSpec.describe 'Query.jobs', feature_category: :continuous_integration do
   let(:jobs_graphql_data) { graphql_data_at(:jobs, :nodes) }
 
   let(:fields) do
-    %i[commit_path ref_path web_path browse_artifacts_path play_path tags]
+    %w[commitPath refPath webPath browseArtifactsPath playPath tags]
   end
 
   it 'returns the paths in each job of a pipeline' do
@@ -53,9 +53,7 @@ RSpec.describe 'Query.jobs', feature_category: :continuous_integration do
     let_it_be(:project2) { create(:project) }
     let_it_be(:pipeline2) { create(:ci_pipeline, project: project2) }
 
-    where(:field) do
-      %i[commit_path ref_path web_path browse_artifacts_path play_path tags]
-    end
+    where(:field) { fields }
 
     with_them do
       let(:fields) do
@@ -65,13 +63,13 @@ RSpec.describe 'Query.jobs', feature_category: :continuous_integration do
       it 'does not generate N+1 queries', :request_store, :use_sql_query_cache do
         # warm-up cache and so on:
         args = { current_user: admin }
-        post_graphql(query, **args)
+        args2 = { current_user: admin2 }
+        post_graphql(query, **args2)
 
         control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
           post_graphql(query, **args)
         end
 
-        args = { current_user: admin2 }
         create(:ci_build, pipeline: pipeline2, name: 'my test job2', ref: 'HEAD', tag_list: %w[tag3])
         post_graphql(query, **args)
 
