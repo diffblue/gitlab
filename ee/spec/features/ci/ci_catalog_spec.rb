@@ -9,7 +9,7 @@ RSpec.describe 'Ci Catalog', :js, feature_category: :pipeline_composition do
 
   before do
     project.add_developer(user)
-    stub_licensed_features(ci_private_catalog: true)
+    stub_licensed_features(ci_namespace_catalog: true)
 
     sign_in(user)
   end

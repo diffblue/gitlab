@@ -10,7 +10,7 @@ module EE
         override :can_view_private_catalog?
         def can_view_private_catalog?(project)
           ::Feature.enabled?(:ci_private_catalog_beta, project) &&
-            project.licensed_feature_available?(:ci_private_catalog) &&
+            project.licensed_feature_available?(:ci_namespace_catalog) &&
             can_collaborate_with_project?(project)
         end
 

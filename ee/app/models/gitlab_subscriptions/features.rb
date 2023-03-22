@@ -178,7 +178,7 @@ module GitlabSubscriptions
       api_fuzzing
       auto_rollback
       no_code_automation
-      ci_private_catalog
+      ci_namespace_catalog
       cluster_image_scanning
       external_status_checks
       combined_project_analytics_dashboards

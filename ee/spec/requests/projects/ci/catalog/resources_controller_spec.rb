@@ -21,7 +21,7 @@ RSpec.describe Projects::Ci::Catalog::ResourcesController, feature_category: :pi
 
     context 'with disabled FF `ci_private_catalog_beta`' do
       before do
-        stub_licensed_features(ci_private_catalog: true)
+        stub_licensed_features(ci_namespace_catalog: true)
         stub_feature_flags(ci_private_catalog_beta: false)
         project.add_developer(user)
       end
@@ -33,9 +33,9 @@ RSpec.describe Projects::Ci::Catalog::ResourcesController, feature_category: :pi
       end
     end
 
-    context 'with license for `ci_private_catalog`' do
+    context 'with license for `ci_namespace_catalog`' do
       before do
-        stub_licensed_features(ci_private_catalog: true)
+        stub_licensed_features(ci_namespace_catalog: true)
       end
 
       context 'with enough privileges' do
@@ -63,7 +63,7 @@ RSpec.describe Projects::Ci::Catalog::ResourcesController, feature_category: :pi
       end
     end
 
-    context 'without license for `ci_private_catalog`' do
+    context 'without license for `ci_namespace_catalog`' do
       context 'with enough privileges' do
         before do
           project.add_developer(user)
