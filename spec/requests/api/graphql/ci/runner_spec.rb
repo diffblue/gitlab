@@ -144,7 +144,7 @@ RSpec.describe 'Query.runner(id)', feature_category: :runner_fleet do
       create(:ci_runner, :instance, version: '14.0.0', tag_list: %w[tag5 tag6], creator: another_admin)
       create(:ci_runner, :project, version: '14.0.1', projects: [project1], tag_list: %w[tag3 tag8], creator: another_admin)
 
-      expect { post_graphql(query, **args) }.not_to exceed_query_limit(control)
+      expect { post_graphql(query, **args) }.not_to exceed_all_query_limit(control)
     end
   end
 
@@ -737,14 +737,13 @@ RSpec.describe 'Query.runner(id)', feature_category: :runner_fleet do
       QUERY
     end
 
-    it 'does not execute more queries per runner', :use_sql_query_cache, :aggregate_failures,
-       quarantine: "https://gitlab.com/gitlab-org/gitlab/-/issues/391442" do
+    it 'does not execute more queries per runner', :aggregate_failures, quarantine: "https://gitlab.com/gitlab-org/gitlab/-/issues/391442" do
       # warm-up license cache and so on:
       personal_access_token = create(:personal_access_token, user: user)
       args = { current_user: user, token: { personal_access_token: personal_access_token } }
       post_graphql(double_query, **args)
 
-      control = ActiveRecord::QueryRecorder.new(skip_cached: false) { post_graphql(single_query, **args) }
+      control = ActiveRecord::QueryRecorder.new { post_graphql(single_query, **args) }
 
       personal_access_token = create(:personal_access_token, user: another_admin)
       args = { current_user: another_admin, token: { personal_access_token: personal_access_token } }
