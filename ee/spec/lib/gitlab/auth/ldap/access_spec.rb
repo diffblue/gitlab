@@ -167,54 +167,119 @@ RSpec.describe Gitlab::Auth::Ldap::Access, feature_category: :system_access do
         stub_ldap_person_find_by_dn(entry, provider)
       end
 
-      it 'does not update name if name attribute is not set' do
-        expect { access.update_user }.not_to change(user, :name)
-      end
-
-      it 'does not update the name if the user has the same name in GitLab and in LDAP' do
-        entry['cn'] = [user.name]
-
-        expect { access.update_user }.not_to change(user, :name)
-      end
-
-      context 'when cn is different' do
+      context 'when sync_name config is true' do
         before do
-          entry['cn'] = ['New Name']
+          allow(Gitlab.config.ldap).to receive(:enabled).and_return(true)
+          stub_ldap_config(sync_name: true)
         end
 
-        it 'does not update the name when in a read-only GitLab instance' do
-          allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+        it 'does not update name if name attribute is not set' do
+          expect { access.update_user }.not_to change(user, :name)
+        end
+
+        it 'does not update the name if the user has the same name in GitLab and in LDAP' do
+          entry['cn'] = [user.name]
 
           expect { access.update_user }.not_to change(user, :name)
         end
 
-        it 'updates the name if the user name is different' do
-          expect { access.update_user }.to change(user, :name)
+        context 'when cn is different' do
+          before do
+            entry['cn'] = ['New Name']
+          end
+
+          it 'does not update the name when in a read-only GitLab instance' do
+            allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+
+            expect { access.update_user }.not_to change(user, :name)
+          end
+
+          it 'updates the name if the user name is different' do
+            expect { access.update_user }.to change(user, :name)
+          end
+
+          it 'does not update the email if the user name is different' do
+            expect { access.update_user }.not_to change(user, :email)
+          end
         end
 
-        it 'does not update the email if the user name is different' do
-          expect { access.update_user }.not_to change(user, :email)
+        context 'when first and last name attributes passed' do
+          before do
+            entry['givenName'] = ['Jane']
+            entry['sn'] = ['Doe']
+          end
+
+          it 'does not update the name when in a read-only GitLab instance' do
+            allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+
+            expect { access.update_user }.not_to change(user, :name)
+          end
+
+          it 'updates the name if the user name is different' do
+            expect { access.update_user }.to change(user, :name).to('Jane Doe')
+          end
+
+          it 'does not update the email if the user name is different' do
+            expect { access.update_user }.not_to change(user, :email)
+          end
         end
       end
 
-      context 'when first and last name attributes passed' do
+      context 'when sync_name config is false' do
         before do
-          entry['givenName'] = ['Jane']
-          entry['sn'] = ['Doe']
+          allow(Gitlab.config.ldap).to receive(:enabled).and_return(true)
+          stub_ldap_config(sync_name: false)
         end
 
-        it 'does not update the name when in a read-only GitLab instance' do
-          allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+        it 'does not update name if name attribute is not set' do
+          expect { access.update_user }.not_to change(user, :name)
+        end
+
+        it 'does not update the name if the user has the same name in GitLab and in LDAP' do
+          entry['cn'] = [user.name]
 
           expect { access.update_user }.not_to change(user, :name)
         end
 
-        it 'updates the name if the user name is different' do
-          expect { access.update_user }.to change(user, :name).to('Jane Doe')
+        context 'when cn is different' do
+          before do
+            entry['cn'] = ['New Name']
+          end
+
+          it 'does not update the name when in a read-only GitLab instance' do
+            allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+
+            expect { access.update_user }.not_to change(user, :name)
+          end
+
+          it 'does not update the name if the user name is different' do
+            expect { access.update_user }.not_to change(user, :name)
+          end
+
+          it 'does not update the email if the user name is different' do
+            expect { access.update_user }.not_to change(user, :email)
+          end
         end
 
-        it 'does not update the email if the user name is different' do
-          expect { access.update_user }.not_to change(user, :email)
+        context 'when first and last name attributes passed' do
+          before do
+            entry['givenName'] = ['Jane']
+            entry['sn'] = ['Doe']
+          end
+
+          it 'does not update the name when in a read-only GitLab instance' do
+            allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+
+            expect { access.update_user }.not_to change(user, :name)
+          end
+
+          it 'does not update the name if the user name is different' do
+            expect { access.update_user }.not_to change(user, :name)
+          end
+
+          it 'does not update the email if the user name is different' do
+            expect { access.update_user }.not_to change(user, :email)
+          end
         end
       end
     end
