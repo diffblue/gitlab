@@ -47,7 +47,7 @@ module API
         level = ::Gitlab::Audit::Levels::Instance.new
         audit_events = AuditEventFinder.new(level: level, params: params).execute
 
-        present paginate(audit_events), with: EE::API::Entities::AuditEvent
+        present paginate_with_strategies(audit_events), with: EE::API::Entities::AuditEvent
       end
 
       desc 'Get single audit event' do
