@@ -5,6 +5,10 @@ import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
 export const initTrialCreateLeadForm = () => {
   const el = document.querySelector('#js-trial-create-lead-form');
 
+  if (!el) {
+    return false;
+  }
+
   const {
     submitPath,
     firstName,
