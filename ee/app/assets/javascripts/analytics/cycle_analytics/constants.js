@@ -64,7 +64,7 @@ export const EMPTY_STATE_TITLE = s__(
 export const EMPTY_STATE_DESCRIPTION = s__(
   'CycleAnalytics|Create a custom value stream to view metrics about stages specific to your development process. Use your value stream to visualize your DevSecOps lifecycle, determine the velocity of your group, and identify inefficient processes.',
 );
-export const EMPTY_STATE_ACTION_TEXT = s__('CycleAnalytics|Create a custom value stream…');
+export const EMPTY_STATE_ACTION_TEXT = s__('CycleAnalytics|New value stream…');
 export const EMPTY_STATE_SECONDARY_TEXT = __('Learn more');
 export const EMPTY_STATE_FILTER_ERROR_TITLE = __(
   'Value Stream Analytics can help you determine your team’s velocity',

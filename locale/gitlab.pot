@@ -12743,9 +12743,6 @@ msgstr ""
 msgid "CycleAnalytics|Create a custom value stream to view metrics about stages specific to your development process. Use your value stream to visualize your DevSecOps lifecycle, determine the velocity of your group, and identify inefficient processes."
 msgstr ""
 
-msgid "CycleAnalytics|Create a custom value stream…"
-msgstr ""
-
 msgid "CycleAnalytics|Custom value streams to measure your DevSecOps lifecycle"
 msgstr ""
 
@@ -12762,6 +12759,9 @@ msgid "CycleAnalytics|If you have recently upgraded to GitLab Premium, it can ta
 msgstr ""
 
 msgid "CycleAnalytics|Lead Time for Changes"
+msgstr ""
+
+msgid "CycleAnalytics|New value stream…"
 msgstr ""
 
 msgid "CycleAnalytics|Number of tasks"
