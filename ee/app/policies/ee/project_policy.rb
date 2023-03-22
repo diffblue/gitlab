@@ -273,6 +273,7 @@ module EE
         enable :update_vulnerability_feedback
         enable :admin_feature_flags_issue_links
         enable :read_project_audit_events
+        enable :read_product_analytics
       end
 
       rule { can?(:reporter_access) & iterations_available }.policy do
@@ -363,6 +364,7 @@ module EE
         enable :modify_auto_fix_setting
         enable :modify_merge_request_author_setting
         enable :modify_merge_request_committer_setting
+        enable :modify_product_analytics_settings
       end
 
       rule { license_scanning_enabled & can?(:maintainer_access) }.enable :admin_software_license_policy

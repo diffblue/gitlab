@@ -5,6 +5,11 @@ require 'spec_helper'
 RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_shared_state,
   feature_category: :product_analytics do
   let_it_be(:project) { create(:project) }
+  let_it_be(:user) { create(:user) }
+
+  before do
+    project.add_maintainer(user)
+  end
 
   shared_examples 'no job is enqueued' do
     it 'does not enqueue a job' do
@@ -15,28 +20,28 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
   end
 
   describe '#lock!' do
-    subject { described_class.new(container: project).lock! }
+    subject { described_class.new(container: project, current_user: user).lock! }
 
     it 'sets the redis key' do
       expect { subject }
         .to change {
-          described_class.new(container: project).send(:locked?)
+          described_class.new(container: project, current_user: user).send(:locked?)
         }.from(false).to(true)
     end
   end
 
   describe '#unlock!' do
-    subject { described_class.new(container: project).unlock! }
+    subject { described_class.new(container: project, current_user: user).unlock! }
 
     it 'deletes the redis key' do
       subject
 
-      expect(described_class.new(container: project).send(:locked?)).to eq false
+      expect(described_class.new(container: project, current_user: user).send(:locked?)).to eq false
     end
   end
 
   describe '#execute' do
-    subject { described_class.new(container: project).execute }
+    subject { described_class.new(container: project, current_user: user).execute }
 
     before do
       stub_licensed_features(product_analytics: true)
@@ -53,7 +58,7 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
       it 'locks the job' do
         subject
 
-        expect(described_class.new(container: project).send(:locked?)).to eq true
+        expect(described_class.new(container: project, current_user: user).send(:locked?)).to eq true
       end
 
       it 'returns a success response' do
@@ -108,6 +113,14 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
       it 'returns an error' do
         expect(subject.message).to eq "Product analytics is disabled"
       end
+    end
+
+    context 'when user does not have permission to initialize product analytics' do
+      before do
+        project.add_guest(user)
+      end
+
+      it_behaves_like 'no job is enqueued'
     end
 
     context 'when enable_product_analytics application setting is false' do

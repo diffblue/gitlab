@@ -19,7 +19,8 @@ module Mutations
 
       def resolve(project_path:)
         project = authorized_find!(project_path)
-        service = ::ProductAnalytics::InitializeStackService.new(container: project).execute
+        service = ::ProductAnalytics::InitializeStackService.new(container: project, current_user: current_user)
+                                                            .execute
 
         if service.success?
           {

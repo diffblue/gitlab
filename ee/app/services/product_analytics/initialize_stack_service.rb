@@ -11,6 +11,10 @@ module ProductAnalytics
         return ServiceResponse.error(message: 'Product analytics is disabled for this project')
       end
 
+      unless can?(current_user, :modify_product_analytics_settings, container)
+        return ServiceResponse.error(message: 'User is not authorized to initialize product analytics')
+      end
+
       return ServiceResponse.error(message: 'Product analytics initialization is already in progress') if locked?
 
       if container.project_setting.jitsu_key.present?
