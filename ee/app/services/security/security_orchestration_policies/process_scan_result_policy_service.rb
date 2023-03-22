@@ -26,15 +26,24 @@ module Security
         policy[:rules].first(Security::ScanResultPolicy::LIMIT).each_with_index do |rule, rule_index|
           next unless rule_type_allowed?(rule[:type])
 
-          if license_scanning_policies_enabled && rule[:type] == Security::ScanResultPolicy::LICENSE_FINDING
-            scan_result_policy_read = create_scan_result_policy(rule)
-            create_software_license_policies(rule, rule_index, scan_result_policy_read)
+          if create_scan_result_policy_read?(action_info, rule)
+            scan_result_policy_read = create_scan_result_policy(rule, action_info)
           end
+
+          create_software_license_policies(rule, rule_index, scan_result_policy_read) if license_finding?(rule)
 
           ::ApprovalRules::CreateService
             .new(project, author, rule_params(rule, rule_index, action_info, scan_result_policy_read))
             .execute
         end
+      end
+
+      def license_finding?(rule)
+        license_scanning_policies_enabled && rule[:type] == Security::ScanResultPolicy::LICENSE_FINDING
+      end
+
+      def create_scan_result_policy_read?(action_info, rule)
+        scan_result_role_action_enabled || license_finding?(rule)
       end
 
       def create_software_license_policies(rule, _rule_index, scan_result_policy_read)
@@ -51,11 +60,12 @@ module Security
         end
       end
 
-      def create_scan_result_policy(rule)
+      def create_scan_result_policy(rule, action_info)
         policy_configuration.scan_result_policy_reads.create!(
           orchestration_policy_idx: policy_index,
           license_states: rule[:license_states],
-          match_on_inclusion: rule[:match_on_inclusion]
+          match_on_inclusion: rule[:match_on_inclusion] || false,
+          role_approvers: role_access_levels(action_info[:role_approvers])
         )
       end
 
@@ -73,15 +83,11 @@ module Security
           report_type: report_type(rule[:type]),
           orchestration_policy_idx: policy_index,
           group_ids: groups_ids(action_info[:group_approvers_ids], action_info[:group_approvers]),
-          security_orchestration_policy_configuration_id: policy_configuration.id
+          security_orchestration_policy_configuration_id: policy_configuration.id,
+          scan_result_policy_id: scan_result_policy_read&.id
         }
 
-        if rule[:type] == Security::ScanResultPolicy::LICENSE_FINDING
-          rule_params.merge!({
-            severity_levels: [],
-            scan_result_policy_id: scan_result_policy_read&.id
-          })
-        end
+        rule_params[:severity_levels] = [] if rule[:type] == Security::ScanResultPolicy::LICENSE_FINDING
 
         if rule[:type] == Security::ScanResultPolicy::SCAN_FINDING
           rule_params.merge!({
@@ -116,6 +122,10 @@ module Security
         @license_scanning_policies_enabled ||= Feature.enabled?(:license_scanning_policies, project)
       end
 
+      def scan_result_role_action_enabled
+        @scan_result_role_action_enabled ||= Feature.enabled?(:scan_result_role_action, project)
+      end
+
       def users_ids(user_ids, user_names)
         project.team.users.get_ids_by_ids_or_usernames(user_ids, user_names)
       end
@@ -129,6 +139,13 @@ module Security
           search_globally: search_groups_globally?).execute
       end
       # rubocop: enable Cop/GroupPublicOrVisibleToUser
+
+      def role_access_levels(role_approvers)
+        return [] unless role_approvers
+
+        roles_map = Gitlab::Access.sym_options_with_owner
+        role_approvers.filter_map { |role| roles_map[role.to_sym] }
+      end
 
       def search_groups_globally?
         Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled?

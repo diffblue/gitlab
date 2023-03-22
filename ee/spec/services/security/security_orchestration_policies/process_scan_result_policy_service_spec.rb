@@ -57,6 +57,55 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       it_behaves_like 'create approval rule with specific approver'
     end
 
+    context 'with role_approvers' do
+      let(:policy) do
+        build(:scan_result_policy,
+          name: 'Test Policy',
+          actions: [{
+            type: 'require_approval',
+            approvals_required: 1,
+            user_approvers: [approver.username],
+            role_approvers: ['developer']
+          }]
+        )
+      end
+
+      let_it_be(:developer) { create(:user) }
+
+      before do
+        project.add_developer(developer)
+      end
+
+      context 'when scan_result_role_action is disabled' do
+        before do
+          stub_feature_flags(scan_result_role_action: false)
+        end
+
+        it_behaves_like 'create approval rule with specific approver'
+
+        it 'does not create scan_result_policy_read' do
+          expect { subject }.not_to change { Security::ScanResultPolicyRead.count }
+        end
+      end
+
+      context 'when scan_result_role_action is enabled' do
+        before do
+          stub_feature_flags(license_scanning_policies: false)
+          stub_feature_flags(scan_result_role_action: true)
+        end
+
+        it 'creates approval rules with role approvers' do
+          expect { subject }.to change { project.approval_rules.count }.by(1)
+          expect(project.approval_rules.first.approvers).to contain_exactly(approver, developer)
+        end
+
+        it 'creates scan_result_policy_read' do
+          expect { subject }.to change { Security::ScanResultPolicyRead.count }.by(1)
+          expect(project.approval_rules.first.scan_result_policy_read.role_approvers).to match_array([Gitlab::Access::DEVELOPER])
+        end
+      end
+    end
+
     context 'with only group id' do
       let(:policy) { build(:scan_result_policy, name: 'Test Policy', actions: [{ type: 'require_approval', approvals_required: 1, group_approvers_ids: [group.id] }]) }
 
@@ -305,6 +354,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       context 'when license_scanning_policies is disabled' do
         before do
           stub_feature_flags(license_scanning_policies: false)
+          stub_feature_flags(scan_result_role_action: false)
         end
 
         it 'does not create scan_result_policy_read' do

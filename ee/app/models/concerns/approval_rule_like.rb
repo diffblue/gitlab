@@ -56,10 +56,10 @@ module ApprovalRuleLike
   # Users who are eligible to approve, including specified group members.
   # @return [Array<User>]
   def approvers
-    @approvers ||= if users.loaded? && group_users.loaded?
-                     users | group_users
+    @approvers ||= if Feature.enabled?(:scan_result_role_action, project)
+                     with_role_approvers
                    else
-                     User.from_union([users, group_users])
+                     direct_approvers
                    end
   end
 
@@ -90,5 +90,29 @@ module ApprovalRuleLike
       source_rule.approvals_required != approvals_required ||
       source_rule.user_ids.to_set != user_ids.to_set ||
       source_rule.group_ids.to_set != group_ids.to_set
+  end
+
+  private
+
+  def direct_approvers
+    if users.loaded? && group_users.loaded?
+      users | group_users
+    else
+      User.from_union([users, group_users])
+    end
+  end
+
+  def with_role_approvers
+    if users.loaded? && group_users.loaded?
+      users | group_users | role_approvers
+    else
+      User.from_union([users, group_users, role_approvers])
+    end
+  end
+
+  def role_approvers
+    return User.none unless scan_result_policy_read
+
+    project.team.members_with_access_levels(scan_result_policy_read.role_approvers)
   end
 end

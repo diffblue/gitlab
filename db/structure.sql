@@ -21947,7 +21947,8 @@ CREATE TABLE scan_result_policies (
     updated_at timestamp with time zone NOT NULL,
     orchestration_policy_idx smallint NOT NULL,
     license_states text[] DEFAULT '{}'::text[],
-    match_on_inclusion boolean
+    match_on_inclusion boolean,
+    role_approvers integer[] DEFAULT '{}'::integer[]
 );
 
 CREATE SEQUENCE scan_result_policies_id_seq
