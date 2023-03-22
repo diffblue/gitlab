@@ -14,7 +14,7 @@ RSpec.describe Projects::AnalyticsDashboardHelper, feature_category: :value_stre
   describe '#analytics_dashboard_available?' do
     context 'when feature flag is disabled' do
       before do
-        stub_feature_flags(project_analytics_dashboards_page: false)
+        stub_feature_flags(product_analytics_dashboards: false)
       end
 
       it 'is false for group and personal projects' do

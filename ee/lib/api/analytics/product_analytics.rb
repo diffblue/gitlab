@@ -63,7 +63,7 @@ module API
 
       resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
         desc 'Proxy analytics request to cube installation.
-                        Requires :product_analytics_internal_preview flag to be enabled.'
+                        Requires :product_analytics_dashboards flag to be enabled.'
         params do
           use :cube_query_params
         end

@@ -113,7 +113,7 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :product_analytics 
 
             context 'with the feature flag disabled' do
               before do
-                stub_feature_flags(product_analytics_internal_preview: false)
+                stub_feature_flags(product_analytics_dashboards: false)
               end
 
               it_behaves_like 'does not render the product analytics dashboards'
@@ -121,7 +121,7 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :product_analytics 
 
             context 'with the feature flag enabled' do
               before do
-                stub_feature_flags(product_analytics_internal_preview: true)
+                stub_feature_flags(product_analytics_dashboards: true)
               end
 
               context 'with the licensed feature disabled' do

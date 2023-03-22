@@ -773,7 +773,7 @@ module EE
 
     def product_analytics_enabled?
       return false unless licensed_feature_available?(:product_analytics)
-      return false unless ::Feature.enabled?(:product_analytics_internal_preview, self)
+      return false unless ::Feature.enabled?(:product_analytics_dashboards, self)
 
       true
     end

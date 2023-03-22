@@ -8,7 +8,7 @@ RSpec.describe Projects::ProductAnalyticsController, type: :request, feature_cat
     let_it_be(:user) { project.first_owner }
 
     before do
-      stub_feature_flags(product_analytics_internal_preview: true)
+      stub_feature_flags(product_analytics_dashboards: true)
       stub_licensed_features(product_analytics: true)
       stub_application_setting(jitsu_host: 'https://jitsu.example.com')
       stub_application_setting(jitsu_project_xid: '123')
@@ -37,7 +37,7 @@ RSpec.describe Projects::ProductAnalyticsController, type: :request, feature_cat
 
     context 'with feature flag disabled' do
       before do
-        stub_feature_flags(product_analytics_internal_preview: false)
+        stub_feature_flags(product_analytics_dashboards: false)
         stub_licensed_features(product_analytics: true)
       end
 
@@ -46,7 +46,7 @@ RSpec.describe Projects::ProductAnalyticsController, type: :request, feature_cat
 
     context 'without licensed feature' do
       before do
-        stub_feature_flags(product_analytics_internal_preview: true)
+        stub_feature_flags(product_analytics_dashboards: true)
         stub_licensed_features(product_analytics: false)
       end
 
