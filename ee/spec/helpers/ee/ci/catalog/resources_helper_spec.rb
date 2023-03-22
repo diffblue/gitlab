@@ -11,7 +11,7 @@ RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composi
     context 'when FF `ci_private_catalog_beta` is disabled' do
       before do
         stub_feature_flags(ci_private_catalog_beta: false)
-        stub_licensed_features(ci_private_catalog: true)
+        stub_licensed_features(ci_namespace_catalog: true)
         allow(helper).to receive(:can_collaborate_with_project?).and_return(true)
       end
 
@@ -25,9 +25,9 @@ RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composi
         allow(helper).to receive(:can_collaborate_with_project?).and_return(false)
       end
 
-      context 'when license for private catalog is enabled' do
+      context 'when license for namespace catalog is enabled' do
         before do
-          stub_licensed_features(ci_private_catalog: true)
+          stub_licensed_features(ci_namespace_catalog: true)
         end
 
         it 'returns false' do
@@ -35,9 +35,9 @@ RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composi
         end
       end
 
-      context 'when license for private catalog is not enabled' do
+      context 'when license for namespace catalog is not enabled' do
         before do
-          stub_licensed_features(ci_private_catalog: false)
+          stub_licensed_features(ci_namespace_catalog: false)
         end
 
         it 'returns false' do
@@ -51,9 +51,9 @@ RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composi
         allow(helper).to receive(:can_collaborate_with_project?).and_return(true)
       end
 
-      context 'when license for private catalog is enabled' do
+      context 'when license for namespace catalog is enabled' do
         before do
-          stub_licensed_features(ci_private_catalog: true)
+          stub_licensed_features(ci_namespace_catalog: true)
         end
 
         it 'returns true' do
@@ -61,9 +61,9 @@ RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composi
         end
       end
 
-      context 'when license for private catalog is not enabled' do
+      context 'when license for namespace catalog is not enabled' do
         before do
-          stub_licensed_features(ci_private_catalog: false)
+          stub_licensed_features(ci_namespace_catalog: false)
         end
 
         it 'returns false' do
@@ -78,7 +78,7 @@ RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composi
 
     context 'without the right permissions' do
       before do
-        stub_licensed_features(ci_private_catalog: false)
+        stub_licensed_features(ci_namespace_catalog: false)
       end
 
       it 'does not return the EE specific attributes' do
@@ -88,7 +88,7 @@ RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composi
 
     context 'with the right permissions' do
       before do
-        stub_licensed_features(ci_private_catalog: true)
+        stub_licensed_features(ci_namespace_catalog: true)
         allow(helper).to receive(:can_collaborate_with_project?).and_return(true)
       end
 
