@@ -24747,7 +24747,25 @@ msgstr ""
 msgid "JobAssistant|Add job"
 msgstr ""
 
+msgid "JobAssistant|Add path"
+msgstr ""
+
 msgid "JobAssistant|Allow failure"
+msgstr ""
+
+msgid "JobAssistant|Artifacts and cache"
+msgstr ""
+
+msgid "JobAssistant|Artifacts exclude paths (optional)"
+msgstr ""
+
+msgid "JobAssistant|Artifacts paths (optional)"
+msgstr ""
+
+msgid "JobAssistant|Cache key (optional)"
+msgstr ""
+
+msgid "JobAssistant|Cache paths (optional)"
 msgstr ""
 
 msgid "JobAssistant|Error - Valid value is between 1 second and 1 week"
