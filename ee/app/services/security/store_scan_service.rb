@@ -9,6 +9,10 @@
 module Security
   class StoreScanService
     DEDUPLICATE_BATCH_SIZE = 50
+    SCAN_INGESTION_ERROR = {
+      type: 'ScanIngestionError',
+      message: 'Ingestion failed for security scan'
+    }.freeze
 
     def self.execute(artifact, known_keys, deduplicate)
       new(artifact, known_keys, deduplicate).execute
@@ -72,7 +76,7 @@ module Security
 
       security_scan.succeeded!
     rescue StandardError => error
-      security_scan.preparation_failed!
+      mark_scan_as_failed!
 
       Gitlab::ErrorTracking.track_exception(error)
     end
@@ -86,10 +90,8 @@ module Security
     end
 
     def update_deduplicated_findings
-      Security::Scan.transaction do
-        mark_all_findings_as_duplicate
-        mark_unique_findings
-      end
+      mark_all_findings_as_duplicate
+      mark_unique_findings
     end
 
     def mark_all_findings_as_duplicate
@@ -114,6 +116,12 @@ module Security
       return if known_keys.intersect?(keys.to_set)
 
       known_keys.merge(keys)
+    end
+
+    def mark_scan_as_failed!
+      security_scan.status = :preparation_failed
+
+      security_scan.add_processing_error!(SCAN_INGESTION_ERROR)
     end
   end
 end

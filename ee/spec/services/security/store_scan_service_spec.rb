@@ -150,6 +150,8 @@ RSpec.describe Security::StoreScanService, feature_category: :vulnerability_mana
 
     context 'when storing the findings raises an error' do
       let(:error) { RuntimeError.new }
+      let(:expected_errors) { [{ 'type' => 'ScanIngestionError', 'message' => 'Ingestion failed for security scan' }] }
+      let!(:security_scan) { create(:security_scan, build: artifact.job, scan_type: artifact.file_type) }
 
       before do
         allow(Security::StoreFindingsService).to receive(:execute).and_raise(error)
@@ -157,7 +159,8 @@ RSpec.describe Security::StoreScanService, feature_category: :vulnerability_mana
       end
 
       it 'marks the security scan as `preparation_failed` and tracks the error' do
-        expect { store_scan }.to change { Security::Scan.preparation_failed.count }.by(1)
+        expect { store_scan }.to change { security_scan.reload.status }.to('preparation_failed')
+                             .and change { security_scan.reload.processing_errors }.to(expected_errors)
 
         expect(Gitlab::ErrorTracking).to have_received(:track_exception).with(error)
       end
