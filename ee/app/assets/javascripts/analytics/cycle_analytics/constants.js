@@ -78,7 +78,7 @@ export const AGGREGATING_DATA_WARNING_MESSAGE = s__(
   "CycleAnalytics|'%{name}' is collecting the data. This can take a few minutes.",
 );
 export const AGGREGATING_DATA_WARNING_NEXT_UPDATE = s__(
-  'CycleAnalytics|If you have recently upgraded to GitLab Premium, it can take up to 30 minutes for data to collect and display.',
+  'CycleAnalytics|If you have recently upgraded your GitLab license from a tier without this feature, it can take up to 30 minutes for data to collect and display.',
 );
 export const AGGREGATING_DATA_PRIMARY_ACTION_TEXT = __('Reload page');
 export const AGGREGATING_DATA_SECONDARY_ACTION_TEXT = __('Learn more');
