@@ -1,5 +1,5 @@
 include:
-  template: Dependency-Scanning.gitlab-ci.yml
+  template: Jobs/Dependency-Scanning.gitlab-ci.yml
 
 sbom:
   tags: [secure_sbom]
