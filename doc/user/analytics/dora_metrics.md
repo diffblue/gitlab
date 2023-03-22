@@ -15,8 +15,8 @@ Using these metrics helps improve DevOps efficiency and communicate performance 
 
 DORA includes four key metrics, divided into two core areas of DevOps:
 
-- [Deployment Frequency](#deployment-frequency) and [Lead Time for Change](#lead-time-for-changes) measure team velocity.
-- [Change Failure Rate](#change-failure-rate) and [Time to Restore Service](#time-to-restore-service) measure stability.
+- [Deployment frequency](#deployment-frequency) and [Lead time for changes](#lead-time-for-changes) measure team velocity.
+- [Change failure rate](#change-failure-rate) and [Time to restore service](#time-to-restore-service) measure stability.
 
 For software leaders, tracking velocity alongside quality metrics ensures they're not sacrificing quality for speed.
 
@@ -27,7 +27,7 @@ For software leaders, tracking velocity alongside quality metrics ensures they'r
   <iframe src="https://www.youtube-nocookie.com/embed/1BrcMV6rCDw" frameborder="0" allowfullscreen> </iframe>
 </figure>
 
-## DORA Metrics dashboard in Value Stream Analytics
+## DORA metrics dashboard in Value Stream Analytics
 
 The four DORA metrics are available out-of-the-box in the [Value Stream Analytics (VSA) overview dashboard](../group/value_stream_analytics/index.md#view-value-stream-analytics).
 This helps you visualize the engineering work in the context of end-to-end value delivery.
