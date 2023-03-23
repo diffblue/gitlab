@@ -9,8 +9,6 @@ module Projects
     PAUSE_SECONDS = 1 # We don't want to execute too many heavy queries at once
 
     def execute
-      return unless revoke_legacy_open_source_licenses?
-
       loop_until(limit: LOOP_LIMIT) do
         inactive_public_projects_batch = Project
                                            .public_only
@@ -25,10 +23,6 @@ module Projects
 
         sleep(PAUSE_SECONDS)
       end
-    end
-
-    def revoke_legacy_open_source_licenses?
-      Feature.enabled?(:legacy_open_source_license_worker)
     end
   end
 end

@@ -1,8 +1,0 @@
----
-name: legacy_open_source_license_worker
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/93435
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/369205
-milestone: '15.3'
-type: development
-group: group::workspace
-default_enabled: false
