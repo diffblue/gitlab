@@ -1,9 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import ReportItem from 'ee/vulnerabilities/components/generic_report/report_item.vue';
-import {
-  REPORT_TYPES,
-  REPORT_COMPONENTS,
-} from 'ee/vulnerabilities/components/generic_report/types/constants';
+import { REPORT_COMPONENTS } from 'ee/vulnerabilities/components/generic_report/types/component_map';
+import { REPORT_TYPES } from 'ee/vulnerabilities/components/generic_report/types/constants';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 const TEST_DATA = {
