@@ -705,6 +705,7 @@ export default {
         <work-item-notes
           v-if="workItemNotes"
           :work-item-id="workItem.id"
+          :work-item-iid="workItem.iid"
           :query-variables="queryVariables"
           :full-path="fullPath"
           :fetch-by-iid="fetchByIid"

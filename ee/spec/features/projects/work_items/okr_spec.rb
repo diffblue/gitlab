@@ -100,7 +100,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     it_behaves_like 'work items labels'
     it_behaves_like 'work items progress'
     it_behaves_like 'work items health status'
-    it_behaves_like 'work items comments'
+    it_behaves_like 'work items comments', :objective
     it_behaves_like 'work items description'
 
     context 'in hierarchy' do
@@ -208,7 +208,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     it_behaves_like 'work items labels'
     it_behaves_like 'work items progress'
     it_behaves_like 'work items health status'
-    it_behaves_like 'work items comments'
+    it_behaves_like 'work items comments', :key_result
     it_behaves_like 'work items description'
   end
 
