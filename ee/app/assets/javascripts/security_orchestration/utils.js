@@ -2,7 +2,7 @@ import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_GROUP, TYPENAME_USER } from '~/graphql_shared/constants';
 import { defaultClient } from 'ee/vue_shared/security_configuration/graphql/provider';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from './components/constants';
-import { GROUP_TYPE, USER_TYPE } from './constants';
+import { GROUP_TYPE, ROLE_TYPE, USER_TYPE } from './constants';
 
 /**
  * Get a policy's type
@@ -27,6 +27,16 @@ export const decomposeApproversV2 = (existingApprovers) => {
   const GROUP_TYPE_UNIQ_KEY_V2 = 'fullName';
 
   return existingApprovers.reduce((acc, approver) => {
+    if (typeof approver === 'string') {
+      if (!acc[ROLE_TYPE]) {
+        acc[ROLE_TYPE] = [approver];
+        return acc;
+      }
+
+      acc[ROLE_TYPE].push(approver);
+      return acc;
+    }
+
     const approverKeys = Object.keys(approver);
 
     let type = USER_TYPE;

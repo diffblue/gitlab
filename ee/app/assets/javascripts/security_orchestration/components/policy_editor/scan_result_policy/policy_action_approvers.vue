@@ -1,8 +1,9 @@
 <script>
 import { GlButton, GlForm, GlFormInput, GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
-import { GROUP_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
-import UserSelect from './user_select.vue';
+import { GROUP_TYPE, ROLE_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
 import GroupSelect from './group_select.vue';
+import RoleSelect from './role_select.vue';
+import UserSelect from './user_select.vue';
 import {
   ADD_APPROVER_LABEL,
   APPROVER_TYPE_LIST_ITEMS,
@@ -19,6 +20,7 @@ export default {
     GlCollapsibleListbox,
     GlSprintf,
     GroupSelect,
+    RoleSelect,
     UserSelect,
   },
   inject: ['namespaceId'],
@@ -55,11 +57,16 @@ export default {
         ? APPROVER_TYPE_LIST_ITEMS.find((v) => v.value === this.approverType).text
         : DEFAULT_APPROVER_DROPDOWN_TEXT;
     },
-    groupTypeApprovers() {
-      return this.existingApprovers[GROUP_TYPE];
-    },
-    userTypeApprovers() {
-      return this.existingApprovers[USER_TYPE];
+    approverComponent() {
+      switch (this.approverType) {
+        case GROUP_TYPE:
+          return GroupSelect;
+        case ROLE_TYPE:
+          return RoleSelect;
+        case USER_TYPE:
+        default:
+          return UserSelect;
+      }
     },
     hasAvailableTypes() {
       return Boolean(this.availableTypes.length);
@@ -91,12 +98,7 @@ export default {
     },
     handleApproversUpdate({ updatedApprovers, type }) {
       const updatedExistingApprovers = { ...this.existingApprovers };
-      if (type === GROUP_TYPE) {
-        updatedExistingApprovers[GROUP_TYPE] = updatedApprovers;
-      } else {
-        updatedExistingApprovers[USER_TYPE] = updatedApprovers;
-      }
-
+      updatedExistingApprovers[type] = updatedApprovers;
       this.$emit('updateApprovers', updatedExistingApprovers);
     },
     handleSelectedApproverType(newType) {
@@ -109,8 +111,6 @@ export default {
       this.$emit('removeApproverType', this.approverType);
     },
   },
-  GROUP_TYPE,
-  USER_TYPE,
   i18n: {
     ADD_APPROVER_LABEL,
   },
@@ -151,24 +151,14 @@ export default {
         @select="handleSelectedApproverType"
       />
 
-      <template v-if="approverType === $options.USER_TYPE">
-        <user-select
-          :existing-approvers="userTypeApprovers"
+      <template v-if="approverType">
+        <component
+          :is="approverComponent"
+          :existing-approvers="existingApprovers[approverType]"
           @updateSelectedApprovers="
             handleApproversUpdate({
               updatedApprovers: $event,
-              type: $options.USER_TYPE,
-            })
-          "
-        />
-      </template>
-      <template v-else-if="approverType === $options.GROUP_TYPE">
-        <group-select
-          :existing-approvers="groupTypeApprovers"
-          @updateSelectedApprovers="
-            handleApproversUpdate({
-              updatedApprovers: $event,
-              type: $options.GROUP_TYPE,
+              type: approverType,
             })
           "
         />

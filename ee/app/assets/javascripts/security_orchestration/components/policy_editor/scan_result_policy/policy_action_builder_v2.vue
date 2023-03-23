@@ -1,6 +1,6 @@
 <script>
 import { uniqueId } from 'lodash';
-import { GROUP_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
+import { GROUP_TYPE, ROLE_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
 import PolicyActionApprovers from './policy_action_approvers.vue';
 import {
   APPROVER_TYPE_DICT,
@@ -30,16 +30,12 @@ export default {
     const doesActionHaveType = (type) => {
       return Object.keys(this.initAction).some((k) => APPROVER_TYPE_DICT[type].includes(k));
     };
-
-    if (doesActionHaveType(USER_TYPE)) {
-      availableApproverTypes = removeAvailableApproverType(availableApproverTypes, USER_TYPE);
-      approverTypeTracker.push({ id: uniqueId(), type: USER_TYPE });
-    }
-
-    if (doesActionHaveType(GROUP_TYPE)) {
-      availableApproverTypes = removeAvailableApproverType(availableApproverTypes, GROUP_TYPE);
-      approverTypeTracker.push({ id: uniqueId(), type: GROUP_TYPE });
-    }
+    [GROUP_TYPE, ROLE_TYPE, USER_TYPE].forEach((type) => {
+      if (doesActionHaveType(type)) {
+        availableApproverTypes = removeAvailableApproverType(availableApproverTypes, type);
+        approverTypeTracker.push({ id: uniqueId(), type });
+      }
+    });
 
     return {
       approverTypeTracker: approverTypeTracker.length ? approverTypeTracker : [{ id: uniqueId() }],

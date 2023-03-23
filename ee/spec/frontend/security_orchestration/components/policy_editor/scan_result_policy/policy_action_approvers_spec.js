@@ -134,7 +134,7 @@ describe('PolicyActionApprovers', () => {
   describe('multiple types', () => {
     beforeEach(() => {
       factory({
-        propsData: { approverIndex: 1, numOfApproverTypes: 2 },
+        propsData: { approverIndex: 1, numOfApproverTypes: 3 },
       });
     });
 
