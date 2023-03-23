@@ -115,7 +115,7 @@ export default {
 <template>
   <div :style="sectionContainerStyles" class="milestones-list-section gl-display-table clearfix">
     <div
-      class="milestones-list-title gl-display-table-cell border-bottom gl-vertical-align-top position-sticky gl-px-3 gl-pt-2"
+      class="milestones-list-title gl-display-table-cell border-bottom gl-vertical-align-top position-sticky gl-pl-2 gl-pr-3 gl-pt-2"
     >
       <div class="gl-display-flex gl-align-items-center">
         <span
@@ -128,13 +128,13 @@ export default {
         >
           <gl-button
             :aria-label="expandButton.iconLabel"
-            variant="link"
+            category="tertiary"
+            size="small"
+            :icon="expandButton.name"
             @click="toggleMilestonesExpanded"
-          >
-            <gl-icon :name="expandButton.name" class="text-secondary" />
-          </gl-button>
+          />
         </span>
-        <div class="gl-overflow-hidden gl-flex-grow-1 gl-mx-3 gl-font-weight-bold">
+        <div class="gl-overflow-hidden gl-flex-grow-1 gl-ml-2 gl-mr-3 gl-font-weight-bold">
           {{ __('Milestones') }}
         </div>
         <div

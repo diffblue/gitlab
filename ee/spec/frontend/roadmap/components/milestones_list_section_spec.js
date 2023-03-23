@@ -1,4 +1,4 @@
-import { GlIcon, GlButton } from '@gitlab/ui';
+import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import MilestoneTimeline from 'ee/roadmap/components/milestone_timeline.vue';
@@ -50,7 +50,7 @@ describe('MilestonesListSectionComponent', () => {
   const findExpandButtonData = () => {
     const container = findExpandButtonContainer();
     return {
-      icon: container.findComponent(GlIcon).attributes('name'),
+      icon: container.findComponent(GlButton).attributes('icon'),
       iconLabel: container.findComponent(GlButton).attributes('aria-label'),
       tooltip: getBinding(container.element, 'gl-tooltip').value.title,
     };
