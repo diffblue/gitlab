@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::ProjectApprovalRules, feature_category: :source_code_management do
+RSpec.describe API::ProjectApprovalRules, :aggregate_failures, feature_category: :source_code_management do
   let_it_be(:group) { create(:group_with_members) }
   let_it_be(:user) { create(:user) }
   let_it_be(:user2) { create(:user) }
@@ -18,7 +18,7 @@ RSpec.describe API::ProjectApprovalRules, feature_category: :source_code_managem
     let(:url) { "/projects/#{private_project.id}/approval_rules/#{approval_rule.id}" }
 
     context 'when the request is correct' do
-      it 'matches the response schema', :aggregate_failures do
+      it 'matches the response schema' do
         get api(url, user)
 
         expect(response).to have_gitlab_http_status(:ok)

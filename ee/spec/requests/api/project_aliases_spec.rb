@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe API::ProjectAliases, api: true, feature_category: :source_code_management do
+RSpec.describe API::ProjectAliases, :aggregate_failures, api: true, feature_category: :source_code_management do
   let(:user)  { create(:user) }
   let(:admin) { create(:admin) }
 
   context 'without premium license' do
     describe 'GET /project_aliases' do
       before do
-        get api('/project_aliases', admin)
+        get api('/project_aliases', admin, admin_mode: true)
       end
 
       it 'returns 403' do
@@ -21,7 +21,7 @@ RSpec.describe API::ProjectAliases, api: true, feature_category: :source_code_ma
       let(:project_alias) { create(:project_alias) }
 
       before do
-        get api("/project_aliases/#{project_alias.name}", admin)
+        get api("/project_aliases/#{project_alias.name}", admin, admin_mode: true)
       end
 
       it 'returns 403' do
@@ -33,7 +33,7 @@ RSpec.describe API::ProjectAliases, api: true, feature_category: :source_code_ma
       let(:project) { create(:project) }
 
       before do
-        post api("/project_aliases", admin), params: { project_id: project.id, name: 'some-project' }
+        post api("/project_aliases", admin, admin_mode: true), params: { project_id: project.id, name: 'some-project' }
       end
 
       it 'returns 403' do
@@ -45,7 +45,7 @@ RSpec.describe API::ProjectAliases, api: true, feature_category: :source_code_ma
       let(:project_alias) { create(:project_alias) }
 
       before do
-        delete api("/project_aliases/#{project_alias.name}", admin)
+        delete api("/project_aliases/#{project_alias.name}", admin, admin_mode: true)
       end
 
       it 'returns 403' do
@@ -77,7 +77,7 @@ RSpec.describe API::ProjectAliases, api: true, feature_category: :source_code_ma
 
     describe 'GET /project_aliases' do
       before do
-        get api('/project_aliases', user)
+        get api('/project_aliases', user, admin_mode: true)
       end
 
       it_behaves_like 'GitLab administrator only API endpoint'
@@ -100,7 +100,7 @@ RSpec.describe API::ProjectAliases, api: true, feature_category: :source_code_ma
       let(:alias_name) { project_alias.name }
 
       before do
-        get api("/project_aliases/#{alias_name}", user)
+        get api("/project_aliases/#{alias_name}", user, admin_mode: true)
       end
 
       it_behaves_like 'GitLab administrator only API endpoint'
@@ -131,7 +131,7 @@ RSpec.describe API::ProjectAliases, api: true, feature_category: :source_code_ma
       let(:alias_name) { project_alias.name }
 
       before do
-        post api("/project_aliases", user), params: { project_id: project.id, name: alias_name }
+        post api("/project_aliases", user, admin_mode: true), params: { project_id: project.id, name: alias_name }
       end
 
       it_behaves_like 'GitLab administrator only API endpoint'
@@ -161,7 +161,7 @@ RSpec.describe API::ProjectAliases, api: true, feature_category: :source_code_ma
       let(:alias_name) { project_alias.name }
 
       before do
-        delete api("/project_aliases/#{alias_name}", user)
+        delete api("/project_aliases/#{alias_name}", user, admin_mode: true)
       end
 
       it_behaves_like 'GitLab administrator only API endpoint'

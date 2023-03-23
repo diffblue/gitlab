@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::ProjectApprovals, feature_category: :source_code_management do
+RSpec.describe API::ProjectApprovals, :aggregate_failures, feature_category: :source_code_management do
   let_it_be(:group)    { create(:group_with_members) }
   let_it_be(:user)     { create(:user) }
   let_it_be(:user2)    { create(:user) }
@@ -93,9 +93,11 @@ RSpec.describe API::ProjectApprovals, feature_category: :source_code_management 
 
   describe 'POST /projects/:id/approvals' do
     shared_examples_for 'a user with access' do
+      let_it_be(:admin_mode) { false }
+
       context 'when missing parameters' do
         it 'returns 400 status' do
-          post api(url, current_user)
+          post api(url, current_user, admin_mode: admin_mode)
 
           expect(response).to have_gitlab_http_status(:bad_request)
         end
@@ -103,13 +105,13 @@ RSpec.describe API::ProjectApprovals, feature_category: :source_code_management 
 
       context 'when the request is correct' do
         it 'returns 201 status' do
-          post api(url, current_user), params: { approvals_before_merge: 3 }
+          post api(url, current_user, admin_mode: admin_mode), params: { approvals_before_merge: 3 }
 
           expect(response).to have_gitlab_http_status(:created)
         end
 
         it 'matches the response schema' do
-          post api(url, current_user), params: { approvals_before_merge: 3 }
+          post api(url, current_user, admin_mode: admin_mode), params: { approvals_before_merge: 3 }
 
           expect(response).to match_response_schema('public_api/v4/project_approvers', dir: 'ee')
         end
@@ -132,7 +134,7 @@ RSpec.describe API::ProjectApprovals, feature_category: :source_code_management 
             require_password_to_approve: true
           }
 
-          post api(url, current_user), params: settings
+          post api(url, current_user, admin_mode: admin_mode), params: settings
 
           expect(json_response.symbolize_keys).to include(settings)
         end
@@ -141,7 +143,7 @@ RSpec.describe API::ProjectApprovals, feature_category: :source_code_management 
           private_group = create(:group, :private)
           project.approver_groups.create!(group: private_group)
 
-          post api(url, current_user), params: { approvals_before_merge: 3 }
+          post api(url, current_user, admin_mode: admin_mode), params: { approvals_before_merge: 3 }
 
           expect(response).to match_response_schema('public_api/v4/project_approvers', dir: 'ee')
           expect(json_response["approver_groups"].size).to eq(visible_approver_groups_count)
@@ -151,6 +153,8 @@ RSpec.describe API::ProjectApprovals, feature_category: :source_code_management 
 
     shared_examples 'updates merge requests settings when possible' do
       using RSpec::Parameterized::TableSyntax
+
+      let_it_be(:admin_mode) { false }
 
       where(:permission_value, :param_value, :final_value) do
         false | false | false
@@ -172,7 +176,7 @@ RSpec.describe API::ProjectApprovals, feature_category: :source_code_management 
             setting => param_value
           }
 
-          post api(url, current_user), params: settings
+          post api(url, current_user, admin_mode: admin_mode), params: settings
 
           expect(project.reload[setting]).to eq(final_value)
         end
@@ -210,26 +214,32 @@ RSpec.describe API::ProjectApprovals, feature_category: :source_code_management 
     end
 
     context 'as a global admin' do
+      let_it_be(:admin_mode) { true }
+
       it_behaves_like 'a user with access' do
         let(:current_user) { admin }
+        let(:admin_mode) { true }
         let(:visible_approver_groups_count) { 1 }
       end
 
       context 'updates merge requests settings' do
         it_behaves_like 'updates merge requests settings when possible' do
           let(:current_user) { admin }
+          let(:admin_mode) { true }
           let(:permission) { :modify_approvers_rules }
           let(:setting) { :disable_overriding_approvers_per_merge_request }
         end
 
         it_behaves_like 'updates merge requests settings when possible' do
           let(:current_user) { admin }
+          let(:admin_mode) { true }
           let(:permission) { :modify_merge_request_committer_setting }
           let(:setting) { :merge_requests_disable_committers_approval }
         end
 
         it_behaves_like 'updates merge requests settings when possible' do
           let(:current_user) { admin }
+          let(:admin_mode) { true }
           let(:permission) { :modify_merge_request_author_setting }
           let(:setting) { :merge_requests_author_approval }
         end
