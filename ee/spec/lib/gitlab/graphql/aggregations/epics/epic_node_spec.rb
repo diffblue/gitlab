@@ -46,7 +46,7 @@ RSpec.describe Gitlab::Graphql::Aggregations::Epics::EpicNode do
     end
 
     context 'an epic with no child epics' do
-      context 'with no child issues', :aggregate_results do
+      context 'with no child issues', :aggregate_failures do
         let(:flat_info) { [] }
 
         it 'has the correct aggregates', :aggregate_failures do
@@ -62,7 +62,7 @@ RSpec.describe Gitlab::Graphql::Aggregations::Epics::EpicNode do
         it_behaves_like 'has_issues?', false
       end
 
-      context 'with an issue with 0 weight', :aggregate_results do
+      context 'with an issue with 0 weight', :aggregate_failures do
         let(:flat_info) do
           [
             record_for(epic_id: epic_id, parent_id: nil, epic_state_id: CLOSED_EPIC_STATE, issues_state_id: OPENED_ISSUE_STATE, issues_count: 1, issues_weight_sum: 0)

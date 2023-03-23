@@ -218,7 +218,7 @@ RSpec.describe Gitlab::ImportExport::Group::TreeSaver do
     end
 
     context 'iteration cadences relation' do
-      it 'saves iteration cadences with iterations', :aggregated_failures do
+      it 'saves iteration cadences with iterations', :aggregate_failures do
         cadence = create(:iterations_cadence, group: group, description: 'description')
         iteration = create(:iteration, iterations_cadence: cadence)
 

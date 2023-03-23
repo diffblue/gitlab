@@ -39,7 +39,7 @@ RSpec.describe Gitlab::ImportExport::RepoRestorer do
         end
       end
 
-      it 'restores the repo successfully', :aggregated_failures do
+      it 'restores the repo successfully', :aggregate_failures do
         expect(group.wiki_repository_exists?).to be false
 
         expect { restorer.restore }.to change { GroupWikiRepository.count }.by(1)
@@ -54,7 +54,7 @@ RSpec.describe Gitlab::ImportExport::RepoRestorer do
       end
     end
 
-    context 'when no group wiki in the bundle', :aggregated_failures do
+    context 'when no group wiki in the bundle', :aggregate_failures do
       let_it_be(:group_wiki) { create(:group_wiki) }
 
       it 'does not creates an empty wiki' do
