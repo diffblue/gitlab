@@ -17,10 +17,10 @@
 
 %p.spaced-lines{ style: 'margin-bottom: 24px;' }
   - end_link = "</a>".html_safe
-  = s_("FreeUserCap|To get more members %{trial_link_start}start a trial %{trial_link_end} or %{upgrade_link_start}upgrade%{upgrade_link_end} to GitLab Premium or GitLab Ultimate.").html_safe % { upgrade_link_start: "<a href='#{@upgrade_url}'>".html_safe, upgrade_link_end: end_link, trial_link_start: "<a href='#{@start_trial_url}'>".html_safe, trial_link_end: end_link }
+  = s_("FreeUserCap|To get more members %{trial_link_start}start a trial %{trial_link_end} or %{upgrade_link_start}upgrade%{upgrade_link_end} to GitLab Premium or GitLab Ultimate.").html_safe % { upgrade_link_start: "<a href='#{@billings_url_track_link}'>".html_safe, upgrade_link_end: end_link, trial_link_start: "<a href='#{@start_trial_url}'>".html_safe, trial_link_end: end_link }
 
 %p.centered
   = link_to s_("FreeUserCap|Manage members"), @manage_users_url, { style: 'color: white; background: #6A4CC0; border: none; border-radius: 4px; padding: 8px;' }
 
 %p.centered
-  = link_to s_("FreeUserCap|Explore paid plans"), @upgrade_url
+  = link_to s_("FreeUserCap|Explore paid plans"), @billings_url_track_cta
