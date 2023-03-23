@@ -45,7 +45,7 @@ module QA
 
         app_project.visit!
 
-        Page::Project::Menu.perform(&:click_ci_cd_pipelines)
+        Page::Project::Menu.perform(&:go_to_pipelines)
         Page::Project::Pipeline::Index.perform(&:click_run_pipeline_button)
         Page::Project::Pipeline::New.perform(&:click_run_pipeline_button)
 

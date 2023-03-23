@@ -74,7 +74,7 @@ module QA
             new_pipeline&.dig(:status) == 'success'
           end
 
-          Page::Project::Menu.perform(&:click_ci_cd_pipelines)
+          Page::Project::Menu.perform(&:go_to_pipelines)
 
           # Downstream project must have 2 pipelines at this time
           expect { downstream_project.pipelines.size }.to eventually_eq(2), "There are currently #{downstream_project.pipelines.size} pipelines in downstream project."
