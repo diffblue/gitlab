@@ -38242,6 +38242,9 @@ msgstr ""
 msgid "Runners|If both settings are disabled, new runners cannot be registered."
 msgstr ""
 
+msgid "Runners|In GitLab Runner 15.6, the use of registration tokens and runner parameters in the 'register' command was deprecated. They have been replaced by authentication tokens. %{linkStart}How does this impact my current registration workflow?%{linkEnd}"
+msgstr ""
+
 msgid "Runners|Install GitLab Runner"
 msgstr ""
 
