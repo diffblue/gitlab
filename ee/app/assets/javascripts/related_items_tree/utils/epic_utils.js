@@ -1,3 +1,4 @@
+import { STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
 import createGqClient, { fetchPolicies } from '~/lib/graphql';
 import { mergeUrlParams } from '~/lib/utils/url_utility';
 import { PathIdSeparator } from '~/related_issues/constants';
@@ -33,7 +34,7 @@ export const sortChildren = (childA, childB) => childA.relativePosition - childB
  *
  * @param {Array} items
  */
-const stateOrder = ['opened', 'closed'];
+const stateOrder = [STATUS_OPEN, STATUS_CLOSED];
 export const sortByState = (a, b) => stateOrder.indexOf(a.state) - stateOrder.indexOf(b.state);
 
 /**

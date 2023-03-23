@@ -4,7 +4,7 @@ import { cloneDeep } from 'lodash';
 import BurnupQueryIteration from 'shared_queries/burndown_chart/burnup.iteration.query.graphql';
 import BurnupQueryMilestone from 'shared_queries/burndown_chart/burnup.milestone.query.graphql';
 import { createAlert } from '~/alert';
-import { WORKSPACE_GROUP } from '~/issues/constants';
+import { STATUS_CLOSED, WORKSPACE_GROUP } from '~/issues/constants';
 import dateFormat from '~/lib/dateformat';
 import axios from '~/lib/utils/axios_utils';
 import { getDayDifference, nDaysAfter, newDateAsLocaleTime } from '~/lib/utils/datetime_utility';
@@ -149,6 +149,9 @@ export default {
     },
     displayValue() {
       return this.issuesSelected ? 'count' : 'weight';
+    },
+    isClosed() {
+      return this.iterationState === STATUS_CLOSED;
     },
     parent() {
       return this.iterationId ? 'iteration' : 'milestone';
@@ -338,7 +341,7 @@ export default {
     </div>
     <template v-if="iterationId">
       <timebox-summary-cards
-        v-if="iterationState === 'closed'"
+        v-if="isClosed"
         :columns="columns"
         :loading="loading"
         :total="report.stats.total"

@@ -1,6 +1,7 @@
 <script>
 import { GlSprintf } from '@gitlab/ui';
 import { componentNames } from 'ee/ci/reports/components/issue_body';
+import { STATUS_CLOSED, STATUS_MERGED } from '~/issues/constants';
 import { n__, sprintf } from '~/locale';
 import ReportSection from '~/ci/reports/components/report_section.vue';
 import { status as reportStatus } from '~/ci/reports/constants';
@@ -35,10 +36,10 @@ export default {
     },
     unmergedBlockingMergeRequests() {
       return Object.keys(this.visibleMergeRequests)
-        .filter((state) => state !== 'merged')
+        .filter((state) => state !== STATUS_MERGED)
         .reduce(
           (unmergedBlockingMRs, state) =>
-            state === 'closed'
+            state === STATUS_CLOSED
               ? [...this.visibleMergeRequests[state], ...unmergedBlockingMRs]
               : [...unmergedBlockingMRs, ...this.visibleMergeRequests[state]],
           [],

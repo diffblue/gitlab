@@ -10,6 +10,7 @@ import {
   GlAlert,
 } from '@gitlab/ui';
 
+import { STATUS_OPEN } from '~/issues/constants';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import IssuableShow from '~/vue_shared/issuable/show/components/issuable_show_root.vue';
 import IssuableEventHub from '~/vue_shared/issuable/show/event_hub';
@@ -59,7 +60,7 @@ export default {
   },
   computed: {
     isTestCaseOpen() {
-      return this.testCase.state === 'opened';
+      return this.testCase.state === STATUS_OPEN;
     },
     statusIcon() {
       return this.isTestCaseOpen ? 'issue-open-m' : 'mobile-issue-close';

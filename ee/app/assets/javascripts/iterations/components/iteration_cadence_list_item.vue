@@ -11,7 +11,7 @@ import {
   GlSkeletonLoader,
 } from '@gitlab/ui';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
+import { STATUS_CLOSED, WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { fetchPolicies } from '~/lib/graphql';
 import { __, s__ } from '~/locale';
 import { DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
@@ -172,7 +172,7 @@ export default {
       return this.automatic && this.durationInWeeks;
     },
     iterationSortOrder() {
-      return this.iterationState === 'closed' ? iterationSortDesc : null;
+      return this.iterationState === STATUS_CLOSED ? iterationSortDesc : null;
     },
   },
   created() {

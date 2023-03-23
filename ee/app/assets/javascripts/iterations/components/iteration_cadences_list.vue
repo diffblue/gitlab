@@ -1,7 +1,13 @@
 <script>
 import { GlAlert, GlButton, GlLoadingIcon, GlKeysetPagination, GlTab, GlTabs } from '@gitlab/ui';
 import produce from 'immer';
-import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
+import {
+  STATUS_ALL,
+  STATUS_CLOSED,
+  STATUS_OPEN,
+  WORKSPACE_GROUP,
+  WORKSPACE_PROJECT,
+} from '~/issues/constants';
 import { s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
@@ -93,13 +99,13 @@ export default {
     state() {
       switch (this.tabIndex) {
         case 0:
-          return 'opened';
+          return STATUS_OPEN;
         case 1:
-          return 'closed';
+          return STATUS_CLOSED;
         case 2:
-          return 'all';
+          return STATUS_ALL;
         default:
-          return 'opened';
+          return STATUS_OPEN;
       }
     },
   },
