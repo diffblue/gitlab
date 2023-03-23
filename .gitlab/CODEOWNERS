@@ -1220,8 +1220,12 @@ lib/gitlab/checks/** @proglottis @toon
 /lib/tasks/gitlab/password.rake @gitlab-org/manage/authentication-and-authorization/approvers
 /lib/tasks/tokens.rake @gitlab-org/manage/authentication-and-authorization/approvers
 
-[Verify Backend] @gitlab-org/maintainers/cicd-verify
-/app/**/ci/ 
+[Verify] @gitlab-org/maintainers/cicd-verify
+# Verify backend
+/**/app/**/ci/ 
+/**/lib/**/ci/
+/**/spec/**/ci/
+/**/app/**/merge_trains/
 /app/controllers/admin/jobs_controller.rb
 /app/controllers/admin/runner_projects_controller.rb
 /app/controllers/admin/runners_controller.rb
@@ -1265,10 +1269,7 @@ lib/gitlab/checks/** @proglottis @toon
 /app/workers/run_pipeline_schedule_worker.rb
 /app/workers/stuck_ci_jobs_worker.rb
 /app/workers/update_external_pull_requests_worker.rb
-/lib/**/ci/
 /lib/api/commit_statuses.rb
-/ee/app/**/ci/
-/ee/app/**/merge_trains/
 /ee/app/models/merge_train.rb
 /ee/app/finders/merge_trains_finder.rb
 /ee/app/services/auto_merge/add_to_merge_train_when_pipeline_succeeds_service.rb
@@ -1284,9 +1285,7 @@ lib/gitlab/checks/** @proglottis @toon
 /ee/app/views/projects/pipelines/
 /ee/app/views/projects/settings/ci_cd/
 /ee/app/workers/clear_shared_runners_minutes_worker.rb
-/ee/lib/**/ci/
 /ee/lib/ee/api/entities/merge_train.rb
-/spec/**/ci
 /spec/controllers/admin/jobs_controller_spec.rb
 /spec/controllers/admin/runner_projects_controller_spec.rb
 /spec/controllers/admin/runners_controller_spec.rb
@@ -1322,8 +1321,6 @@ lib/gitlab/checks/** @proglottis @toon
 /spec/workers/run_pipeline_schedule_worker_spec.rb
 /spec/workers/stuck_ci_jobs_worker_spec.rb
 /spec/workers/update_external_pull_requests_worker_spec.rb
-/ee/spec/**/ci
-/ee/spec/**/merge_trains
 /ee/spec/models/merge_train_spec.rb
 /ee/spec/finders/merge_trains_finder_spec.rb
 /ee/spec/services/auto_merge/add_to_merge_train_when_pipeline_succeeds_service_spec.rb
@@ -1332,17 +1329,14 @@ lib/gitlab/checks/** @proglottis @toon
 /ee/spec/controllers/projects/subscriptions_controller_spec.rb
 /ee/spec/helpers/ee/projects/pipeline_helper_spec.rb
 /ee/spec/workers/clear_shared_runners_minutes_worker_spec.rb
-/ee/spec/lib/**/ci/
 
-^[Verify Frontend] @gitlab-org/ci-cd/verify/frontend
-/**/javascripts/jobs/
-/**/javascripts/pipelines/
-/app/assets/javascripts/ci/
-/app/assets/javascripts/ci/pipeline_schedules/
-/ee/app/assets/javascripts/ci/
-/app/assets/javascripts/token_access/
-/app/assets/javascripts/admin/application_settings/runner_token_expiration/
-/ee/app/assets/javascripts/usage_quotas/pipelines/ @gitlab-org/ci-cd/verify/frontend @fulfillment-group/utilization-group/fe
+# Verify frontend
+/**/javascripts/ci/            @gitlab-org/ci-cd/verify/frontend
+/**/javascripts/pipelines/     @gitlab-org/ci-cd/verify/frontend
+/**/javascripts/jobs/          @gitlab-org/ci-cd/verify/frontend
+/**/javascripts/token_access/  @gitlab-org/ci-cd/verify/frontend
+/**/javascripts/admin/application_settings/runner_token_expiration/  @gitlab-org/ci-cd/verify/frontend
+/**/javascripts/usage_quotas/pipelines/ @gitlab-org/ci-cd/verify/frontend @fulfillment-group/utilization-group/fe
 
 [Manage::Workspace]
 lib/api/entities/basic_project_details.rb @gitlab-org/manage/manage-workspace/backend-approvers
