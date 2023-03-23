@@ -17,21 +17,22 @@ export const ERROR_LOADING_PAYMENT_FORM = s__(
   'Checkout|Failed to load the payment form. Refresh the page and try again.',
 );
 
-/* eslint-disable @gitlab/require-i18n-strings */
 export const STEP_SUBSCRIPTION_DETAILS = 'subscriptionDetails';
 export const STEP_BILLING_ADDRESS = 'billingAddress';
 export const STEP_PAYMENT_METHOD = 'paymentMethod';
 export const STEP_CONFIRM_ORDER = 'confirmOrder';
 
 // The order of the steps in this array determines the flow of the application
+/* eslint-disable @gitlab/require-i18n-strings */
 export const STEPS = [
   { id: STEP_SUBSCRIPTION_DETAILS, __typename: 'Step' },
   { id: STEP_BILLING_ADDRESS, __typename: 'Step' },
   { id: STEP_PAYMENT_METHOD, __typename: 'Step' },
   { id: STEP_CONFIRM_ORDER, __typename: 'Step' },
 ];
-export const TRACK_SUCCESS_MESSAGE = 'Success';
 /* eslint-enable @gitlab/require-i18n-strings */
+
+export const TRACK_SUCCESS_MESSAGE = 'Success';
 
 export const QSR_RECONCILIATION_PATH = 'subscriptions/quarterly_reconciliation.html';
 

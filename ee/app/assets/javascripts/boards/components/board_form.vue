@@ -1,7 +1,4 @@
 <script>
-// This is a false violation of @gitlab/no-runtime-template-compiler, since it
-// extends a valid Vue single file component.
-/* eslint-disable @gitlab/no-runtime-template-compiler */
 import { fullLabelId } from '~/boards/boards_util';
 import BoardFormFoss from '~/boards/components/board_form.vue';
 import { TYPENAME_USER } from '~/graphql_shared/constants';
@@ -11,6 +8,9 @@ import createEpicBoardMutation from '../graphql/epic_board_create.mutation.graph
 import destroyEpicBoardMutation from '../graphql/epic_board_destroy.mutation.graphql';
 import updateEpicBoardMutation from '../graphql/epic_board_update.mutation.graphql';
 
+// This is a false violation of @gitlab/no-runtime-template-compiler, since it
+// extends a valid Vue single file component.
+// eslint-disable-next-line @gitlab/no-runtime-template-compiler
 export default {
   extends: BoardFormFoss,
   inject: ['isIssueBoard', 'isEpicBoard'],

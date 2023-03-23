@@ -1,7 +1,4 @@
 <script>
-// This is a false violation of @gitlab/no-runtime-template-compiler, since it
-// extends a valid Vue single file component.
-/* eslint-disable @gitlab/no-runtime-template-compiler */
 import { sprintf } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import RuleViewFoss from '~/projects/settings/branch_rules/components/view/index.vue';
@@ -14,6 +11,9 @@ import {
 const approvalsHelpDocLink = helpPagePath(APPROVALS_HELP_PATH);
 const statusChecksHelpDocLink = helpPagePath(STATUS_CHECKS_HELP_PATH);
 
+// This is a false violation of @gitlab/no-runtime-template-compiler, since it
+// extends a valid Vue single file component.
+// eslint-disable-next-line @gitlab/no-runtime-template-compiler
 export default {
   name: 'EERuleView',
   extends: RuleViewFoss,

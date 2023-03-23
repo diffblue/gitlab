@@ -1,7 +1,4 @@
 <script>
-// This is a false violation of @gitlab/no-runtime-template-compiler, since it
-// extends a valid Vue single file component.
-/* eslint-disable @gitlab/no-runtime-template-compiler */
 import { mapActions } from 'vuex';
 import BoardsSelectorFoss from '~/boards/components/boards_selector.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
@@ -9,6 +6,9 @@ import Tracking from '~/tracking';
 import epicBoardsQuery from '../graphql/epic_boards.query.graphql';
 import { fullBoardId, fullEpicBoardId } from '../boards_util';
 
+// This is a false violation of @gitlab/no-runtime-template-compiler, since it
+// extends a valid Vue single file component.
+// eslint-disable-next-line @gitlab/no-runtime-template-compiler
 export default {
   extends: BoardsSelectorFoss,
   mixins: [Tracking.mixin()],

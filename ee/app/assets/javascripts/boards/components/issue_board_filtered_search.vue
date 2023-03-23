@@ -1,7 +1,4 @@
 <script>
-// This is a false violation of @gitlab/no-runtime-template-compiler, since it
-// extends a valid Vue single file component.
-/* eslint-disable @gitlab/no-runtime-template-compiler */
 import { orderBy } from 'lodash';
 import IssueBoardFilteredSearchFoss from '~/boards/components/issue_board_filtered_search.vue';
 import {
@@ -24,6 +21,9 @@ import IterationToken from 'ee/vue_shared/components/filtered_search_bar/tokens/
 import WeightToken from 'ee/vue_shared/components/filtered_search_bar/tokens/weight_token.vue';
 import issueBoardFilters from '../issue_board_filters';
 
+// This is a false violation of @gitlab/no-runtime-template-compiler, since it
+// extends a valid Vue single file component.
+// eslint-disable-next-line @gitlab/no-runtime-template-compiler
 export default {
   extends: IssueBoardFilteredSearchFoss,
   i18n: {

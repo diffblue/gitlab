@@ -117,6 +117,7 @@ export default {
     { key: 'state', value: 'State' },
     { key: 'state updated at (utc)', value: 'State Updated At (UTC)' },
   ],
+  /* eslint-enable @gitlab/require-i18n-strings */
 };
 </script>
 
