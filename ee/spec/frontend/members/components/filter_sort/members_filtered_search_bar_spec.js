@@ -3,9 +3,10 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { redirectTo } from '~/lib/utils/url_utility';
+import { __ } from '~/locale';
 import MembersFilteredSearchBar from '~/members/components/filter_sort/members_filtered_search_bar.vue';
 import { MEMBER_TYPES } from '~/members/constants';
-import { FILTERED_SEARCH_TOKEN_ENTERPRISE } from 'ee/members/constants';
+import { FILTERED_SEARCH_TOKEN_ENTERPRISE, FILTERED_SEARCH_USER_TYPE } from 'ee/members/constants';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 
 jest.mock('~/lib/utils/url_utility', () => {
@@ -31,7 +32,7 @@ describe('MembersFilteredSearchBar', () => {
           state: {
             filteredSearchBar: {
               show: true,
-              tokens: ['enterprise'],
+              tokens: ['enterprise', 'user_type'],
               searchParam: 'search',
               placeholder: 'Filter members',
               recentSearchesStorageKey: 'group_members',
@@ -60,7 +61,7 @@ describe('MembersFilteredSearchBar', () => {
     it('includes `enterprise` token in `filteredSearchBar.tokens`', () => {
       createComponent();
 
-      expect(findFilteredSearchBar().props('tokens')).toEqual([FILTERED_SEARCH_TOKEN_ENTERPRISE]);
+      expect(findFilteredSearchBar().props('tokens')).toContain(FILTERED_SEARCH_TOKEN_ENTERPRISE);
     });
   });
 
@@ -68,7 +69,9 @@ describe('MembersFilteredSearchBar', () => {
     it('does not include `enterprise` token in `filteredSearchBar.tokens`', () => {
       createComponent({ provide: { canFilterByEnterprise: false } });
 
-      expect(findFilteredSearchBar().props('tokens')).toEqual([]);
+      expect(findFilteredSearchBar().props('tokens')).not.toContain(
+        FILTERED_SEARCH_TOKEN_ENTERPRISE,
+      );
     });
   });
 
@@ -85,6 +88,56 @@ describe('MembersFilteredSearchBar', () => {
       ]);
 
       expect(redirectTo).toHaveBeenCalledWith('https://localhost/?enterprise=true');
+    });
+  });
+
+  describe('when `service_accounts` feature flag is enabled', () => {
+    beforeEach(() => {
+      gon.features = { serviceAccountsCrud: true };
+    });
+
+    describe('when `canManageMembers` is `true`', () => {
+      it('includes `user_type` token in `filteredSearchBar.tokens`', () => {
+        createComponent();
+
+        expect(findFilteredSearchBar().props('tokens')).toContain(FILTERED_SEARCH_USER_TYPE);
+      });
+
+      describe('when filtered search bar is submitted with `user_type=service_account` filter', () => {
+        beforeEach(() => {
+          setWindowLocation('https://localhost');
+        });
+
+        it('adds correct `?user_type=service_account` query param', () => {
+          createComponent();
+
+          findFilteredSearchBar().vm.$emit('onFilter', [
+            {
+              type: FILTERED_SEARCH_USER_TYPE.type,
+              // Remove the internationalized string after this issue is closed: https://gitlab.com/gitlab-org/gitlab-ui/-/issues/2159
+              value: { data: __('Service account'), operator: '=' },
+            },
+          ]);
+
+          expect(redirectTo).toHaveBeenCalledWith('https://localhost/?user_type=service_account');
+        });
+      });
+    });
+
+    describe('when `canManageMembers` is `false`', () => {
+      it('does not include `user_type` token in `filteredSearchBar.tokens`', () => {
+        createComponent({ provide: { canManageMembers: false } });
+
+        expect(findFilteredSearchBar().props('tokens')).not.toContain(FILTERED_SEARCH_USER_TYPE);
+      });
+    });
+  });
+
+  describe('when `service_accounts` feature flag is disabled', () => {
+    it('does not include `user_type` token in `filteredSearchBar.tokens`', () => {
+      createComponent();
+
+      expect(findFilteredSearchBar().props('tokens')).not.toContain(FILTERED_SEARCH_USER_TYPE);
     });
   });
 });
