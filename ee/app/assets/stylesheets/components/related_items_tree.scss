@@ -25,10 +25,6 @@
         cursor: default;
         min-height: $grid-size * 5;
       }
-
-      &.item-closed {
-        background-color: $white;
-      }
     }
 
     .item-meta {
