@@ -1,7 +1,6 @@
 <script>
 import { GlButtonGroup, GlButton } from '@gitlab/ui';
 
-// eslint-disable-next-line import/no-cycle
 import { VIEW_TYPES, LINE_TYPES } from './constants';
 import { createDiffData } from './diff_utils';
 

@@ -1,5 +1,5 @@
 <script>
-import { REPORT_COMPONENTS, getComponentNameForType } from './types/constants';
+import { REPORT_COMPONENTS, getComponentNameForType } from './types/component_map';
 
 export default {
   components: {
