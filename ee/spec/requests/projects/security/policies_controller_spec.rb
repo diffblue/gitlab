@@ -52,7 +52,7 @@ RSpec.describe Projects::Security::PoliciesController, type: :request, feature_c
           let_it_be(:type) { 'scan_result_policy' }
           let_it_be(:policy) { build(:scan_result_policy) }
           let_it_be(:group) { create(:group) }
-          let_it_be(:service_result) { { users: [user], groups: [group], status: :success } }
+          let_it_be(:service_result) { { users: [user], groups: [group], roles: ['OWNER'], status: :success } }
 
           let(:service) { instance_double('::Security::SecurityOrchestrationPolicies::FetchPolicyApproversService', execute: service_result) }
 

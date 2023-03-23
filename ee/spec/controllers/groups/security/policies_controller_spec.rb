@@ -72,7 +72,7 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
         context 'with scan result policy type' do
           let(:policy) { build(:scan_result_policy) }
           let(:policy_type) { 'scan_result_policy' }
-          let(:service_result) { { users: [user], groups: [group], status: :success } }
+          let_it_be(:service_result) { { users: [user], groups: [group], roles: ['OWNER'], status: :success } }
 
           let(:service) do
             instance_double('::Security::SecurityOrchestrationPolicies::FetchPolicyApproversService',

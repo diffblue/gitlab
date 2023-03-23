@@ -282,8 +282,8 @@ describe('PolicyActionBuilder', () => {
 
     it('renders the user select with only the user approvers', () => {
       expect(findAllActionApprovers()).toHaveLength(2);
-      expect(findAllActionApprovers().at(0).props('approverType')).toBe(USER_TYPE);
-      expect(findAllActionApprovers().at(1).props('approverType')).toBe(GROUP_TYPE);
+      expect(findAllActionApprovers().at(0).props('approverType')).toBe(GROUP_TYPE);
+      expect(findAllActionApprovers().at(1).props('approverType')).toBe(USER_TYPE);
     });
   });
 });

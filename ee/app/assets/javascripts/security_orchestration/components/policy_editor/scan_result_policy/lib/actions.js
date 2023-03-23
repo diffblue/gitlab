@@ -2,16 +2,18 @@ import { omitBy, isEmpty } from 'lodash';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { n__, s__ } from '~/locale';
 import { TYPENAME_USER } from '~/graphql_shared/constants';
-import { GROUP_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
+import { GROUP_TYPE, ROLE_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
 
 export const APPROVER_TYPE_DICT = {
   [GROUP_TYPE]: ['group_approvers', 'group_approvers_ids'],
+  [ROLE_TYPE]: ['role_approvers'],
   [USER_TYPE]: ['user_approvers', 'user_approvers_ids'],
 };
 
 export const ADD_APPROVER_LABEL = s__('SecurityOrchestration|Add new approver');
 
 export const APPROVER_TYPE_LIST_ITEMS = [
+  { text: s__('SecurityOrchestration|Roles'), value: ROLE_TYPE },
   { text: s__('SecurityOrchestration|Individual users'), value: USER_TYPE },
   { text: s__('SecurityOrchestration|Groups'), value: GROUP_TYPE },
 ];
@@ -87,6 +89,10 @@ export const createActionFromApprovers = ({ type, approvals_required }, approver
 
   if (approvers[GROUP_TYPE]) {
     newAction.group_approvers_ids = groupIds(approvers[GROUP_TYPE]);
+  }
+
+  if (approvers[ROLE_TYPE]) {
+    newAction.role_approvers = approvers[ROLE_TYPE];
   }
 
   return newAction;

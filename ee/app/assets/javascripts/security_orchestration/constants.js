@@ -9,4 +9,6 @@ export const NAMESPACE_TYPES = {
 
 export const GROUP_TYPE = 'group';
 
+export const ROLE_TYPE = 'role';
+
 export const USER_TYPE = 'user';

@@ -85,7 +85,9 @@ module Projects
 
         return unless result[:status] == :success
 
-        API::Entities::UserBasic.represent(result[:users]) + API::Entities::PublicGroupDetails.represent(result[:groups])
+        API::Entities::UserBasic.represent(result[:users]) +
+          API::Entities::PublicGroupDetails.represent(result[:groups]) +
+          result[:roles]
       end
     end
   end
