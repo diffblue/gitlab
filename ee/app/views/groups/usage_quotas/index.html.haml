@@ -21,8 +21,9 @@
   = gl_tabs_nav({ class: 'js-storage-tabs' }) do
     = gl_tab_link_to '#seats-quota-tab', data: { qa_selector: 'seats_tab' }, item_active: true do
       = s_('UsageQuota|Seats')
-    = gl_tab_link_to '#pipelines-quota-tab', data: { qa_selector: 'pipelines_tab' } do
-      =  s_('UsageQuota|Pipelines')
+    - if can? current_user, :admin_ci_minutes, @group
+      = gl_tab_link_to '#pipelines-quota-tab', data: { qa_selector: 'pipelines_tab' } do
+        =  s_('UsageQuota|Pipelines')
     = gl_tab_link_to '#storage-quota-tab', data: { qa_selector: 'storage_tab' } do
       = s_('UsageQuota|Storage')
     - if Feature.enabled?(:data_transfer_monitoring)

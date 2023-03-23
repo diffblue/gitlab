@@ -83,7 +83,7 @@ RSpec.describe 'Profile > Usage Quota', :js, feature_category: :subscription_cos
         it_behaves_like 'correct pagination'
       end
 
-      context 'on pipelines tab' do
+      context 'on pipelines tab', feature_category: :continuous_integration do
         let(:item_selector) { '[data-testid="pipelines-quota-tab-project-name"]' }
 
         before do
