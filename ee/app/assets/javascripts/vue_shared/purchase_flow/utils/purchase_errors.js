@@ -62,14 +62,19 @@ export const UNLINKED_ACCOUNT_ERROR = {
   },
 };
 
+/* eslint-disable-next-line @gitlab/require-i18n-strings */
+const cannotBeBlank = "can't be blank";
+/* eslint-disable-next-line @gitlab/require-i18n-strings */
+const alreadyTaken = 'has already been taken';
+
 export const CONTRACT_EFFECTIVE_ERROR =
   'The Contract effective date should not be later than the term end date of the basic subscription';
-export const EMAIL_TAKEN_ERROR = '{"email"=>["has already been taken"]}';
 export const GENERIC_DECLINE_ERROR =
   'Transaction declined.generic_decline - Your card was declined';
+export const EMAIL_TAKEN_ERROR = JSON.stringify({ email: [alreadyTaken] });
 export const INSUFFICIENT_FUNDS_ERROR = 'Your card has insufficient funds.';
-export const FIRST_NAME_BLANK_ERROR_VARIATION = `{"first_name":["can't be blank"]}`;
-export const LAST_NAME_BLANK_ERROR = `"last_name":["can't be blank"]`;
+export const FIRST_NAME_BLANK_ERROR_VARIATION = JSON.stringify({ first_name: [cannotBeBlank] });
+export const LAST_NAME_BLANK_ERROR = JSON.stringify({ last_name: [cannotBeBlank] });
 export const LAST_NAME_BLANK_ERROR_VARIATION = `{${LAST_NAME_BLANK_ERROR}}`;
 
 export const errorDictionary = convertObjectPropsToLowerCase({

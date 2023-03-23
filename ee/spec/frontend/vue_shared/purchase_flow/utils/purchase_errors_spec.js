@@ -13,20 +13,17 @@ describe('Purchase Dynamic Errors', () => {
   });
 
   describe('mapSystemToFriendlyError', () => {
-    describe.each(Object.keys(errorDictionary))(
-      'when system error is %systemError',
-      (systemError) => {
-        const friendlyError = errorDictionary[systemError];
+    describe.each(Object.keys(errorDictionary))('when system error is %s', (systemError) => {
+      const friendlyError = errorDictionary[systemError];
 
-        it('maps the system error to the friendly one', () => {
-          expect(mapSystemToFriendlyError(systemError)).toEqual(friendlyError);
-        });
+      it('maps the system error to the friendly one', () => {
+        expect(mapSystemToFriendlyError(systemError)).toEqual(friendlyError);
+      });
 
-        it('maps the system error to the friendly one from uppercase', () => {
-          expect(mapSystemToFriendlyError(systemError.toUpperCase())).toEqual(friendlyError);
-        });
-      },
-    );
+      it('maps the system error to the friendly one from uppercase', () => {
+        expect(mapSystemToFriendlyError(systemError.toUpperCase())).toEqual(friendlyError);
+      });
+    });
 
     describe.each(['', {}, [], undefined, null])('when system error is %s', (systemError) => {
       it('maps the system error to the friendly one', () => {
@@ -40,6 +37,16 @@ describe('Purchase Dynamic Errors', () => {
 
       it('maps the system error to the friendly one', () => {
         expect(mapSystemToFriendlyError(message)).toEqual(nonExistentKeyError);
+      });
+    });
+
+    describe('when error is email already taken', () => {
+      const EMAIL_TAKEN_ERROR = JSON.stringify({ email: ['has already been taken'] });
+
+      it('maps the email friendly error', () => {
+        expect(mapSystemToFriendlyError(EMAIL_TAKEN_ERROR)).toEqual(
+          errorDictionary[EMAIL_TAKEN_ERROR],
+        );
       });
     });
   });
