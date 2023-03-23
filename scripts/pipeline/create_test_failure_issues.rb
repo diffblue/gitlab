@@ -53,6 +53,10 @@ class CreateTestFailureIssue
   WWW_GITLAB_COM_CATEGORIES_JSON = "#{WWW_GITLAB_COM_SITE}/categories.json".freeze
   FEATURE_CATEGORY_METADATA_REGEX = /(?<=feature_category: :)\w+/
   DEFAULT_LABELS = ['type::maintenance', 'test'].freeze
+  PROJECT_PATH = ENV.fetch('CI_PROJECT_PATH', 'gitlab-org/gitlab')
+  JOB_BASE_URL = "https://gitlab.com/#{PROJECT_PATH}/-/jobs/".freeze
+  FILE_BASE_URL = "https://gitlab.com/#{PROJECT_PATH}/-/blob/master/".freeze
+  REPORT_ITEM_REGEX = %r{^1\. \d{4}-\d{2}-\d{2}: #{JOB_BASE_URL}.+$}
 
   def initialize(options)
     @project = options.delete(:project)
@@ -92,24 +96,13 @@ class CreateTestFailureIssue
   end
 
   def update_reports(existing_issue, failed_test)
-    # We migrate existing issues to use `[title-hash:...]` instead of `ID - \1` which was confusing.
-    issue_title = existing_issue.title
-      .sub(%r{- ID: (\w{12})\z}, '[title-hash:\1]')
-
-    # We migrate existing issues to use numbered list for reports.
-    issue_description = existing_issue.description
-      .gsub(%r{^- ((?:\d{4}-\d{2}-\d{2}: )?(?:https://gitlab.com/gitlab-org/gitlab/-/jobs/.+))$}, '1. \1')
-
     # We count the number of existing reports.
-    reports_count = issue_description
-      .scan(%r{^1\. (?:\d{4}-\d{2}-\d{2}: )?(?:https://gitlab.com/gitlab-org/gitlab/-/jobs/.+)$})
+    reports_count = existing_issue.description
+      .scan(REPORT_ITEM_REGEX)
       .size.to_i + 1
 
-    # We migrate raw test file path to link to test file
-    issue_description.sub!(/^`#{failed_test['file']}`$/, test_file_link(failed_test))
-
     # We include the number of reports in the header, for visibility.
-    issue_description.sub!(/^### Reports.*$/, "### Reports (#{reports_count})")
+    issue_description = existing_issue.description.sub(/^### Reports.*$/, "### Reports (#{reports_count})")
 
     # We add the current failure to the list of reports.
     issue_description = "#{issue_description}\n#{report_list_item(failed_test)}"
@@ -118,7 +111,6 @@ class CreateTestFailureIssue
       .new(project: project, api_token: api_token)
       .execute(
         existing_issue.iid,
-        title: issue_title,
         description: issue_description,
         weight: reports_count
       )
@@ -139,11 +131,11 @@ class CreateTestFailureIssue
   end
 
   def failed_test_id(failed_test)
-    Digest::SHA256.hexdigest(search_safe(failed_test['name']))[0...12]
+    Digest::SHA256.hexdigest(failed_test['file'] + failed_test['name'])[0...12]
   end
 
   def failed_test_issue_title(failed_test)
-    title = "#{failed_test['file']} [title-hash:#{failed_test_id(failed_test)}]"
+    title = "#{failed_test['file']} [test-hash:#{failed_test_id(failed_test)}]"
 
     raise "Title is too long!" if title.size > MAX_TITLE_LENGTH
 
@@ -151,7 +143,7 @@ class CreateTestFailureIssue
   end
 
   def test_file_link(failed_test)
-    "[`#{failed_test['file']}`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/#{failed_test['file']})"
+    "[`#{failed_test['file']}`](#{FILE_BASE_URL}#{failed_test['file']})"
   end
 
   def report_list_item(failed_test)

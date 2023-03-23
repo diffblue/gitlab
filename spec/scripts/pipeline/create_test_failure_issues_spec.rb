@@ -60,8 +60,8 @@ RSpec.describe CreateTestFailureIssues, feature_category: :tooling do
       }
     end
 
-    let(:test_id) { Digest::SHA256.hexdigest(failed_test['name'])[0...12] }
-    let(:latest_format_issue_title) { "#{failed_test['file']} [title-hash:#{test_id}]" }
+    let(:test_id) { Digest::SHA256.hexdigest(failed_test['file'] + failed_test['name'])[0...12] }
+    let(:latest_format_issue_title) { "#{failed_test['file']} [test-hash:#{test_id}]" }
 
     around do |example|
       freeze_time { example.run }
@@ -115,7 +115,7 @@ RSpec.describe CreateTestFailureIssues, feature_category: :tooling do
 
         let(:expected_create_payload) do
           {
-            title: "#{failed_test['file']} [title-hash:#{Digest::SHA256.hexdigest(failed_test['name'])[0...12]}]",
+            title: latest_format_issue_title,
             description: expected_description,
             labels: described_class::DEFAULT_LABELS.map { |label| "wip-#{label}" } + [
               "wip-#{categories_mapping['source_code_management']['label']}",
@@ -169,7 +169,6 @@ RSpec.describe CreateTestFailureIssues, feature_category: :tooling do
 
         let(:expected_update_payload) do
           {
-            title: latest_format_issue_title,
             description: latest_format_issue_description.sub(/^### Reports.*$/, '### Reports (2)') +
               "\n#{failed_test_report_line}",
             weight: 2
@@ -181,6 +180,7 @@ RSpec.describe CreateTestFailureIssues, feature_category: :tooling do
           allow(find_issue_stub).to receive(:execute).with(expected_search_payload).and_return([issue_stub])
         end
 
+        # This shared example can be useful if we want to test migration to a new format in the future
         shared_examples 'existing issue update' do
           it 'calls UpdateIssue#execute(payload)' do
             expect(UpdateIssue).to receive(:new).with(project: project, api_token: api_token)
@@ -194,28 +194,6 @@ RSpec.describe CreateTestFailureIssues, feature_category: :tooling do
         context 'when issue already has the latest format' do
           let(:issue_description) { latest_format_issue_description }
           let(:issue_title) { latest_format_issue_title }
-
-          it_behaves_like 'existing issue update'
-        end
-
-        context 'when issue has an old format' do
-          let(:issue_title) { "#{failed_test['file']} - ID: #{test_id}" }
-          let(:issue_description) do
-            <<~DESCRIPTION
-            ### Test description
-
-            `#{failed_test['name']}`
-
-            ### Test file path
-
-            `#{failed_test['file']}`
-
-            <!-- Don't add anything after the report list since it's updated automatically -->
-            ### Reports
-
-            - #{Time.new.utc.strftime('%F')}: #{failed_test['job_url']} (#{env['CI_PIPELINE_URL']})
-            DESCRIPTION
-          end
 
           it_behaves_like 'existing issue update'
         end
