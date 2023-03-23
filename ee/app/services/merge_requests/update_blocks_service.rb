@@ -46,7 +46,23 @@ module MergeRequests
       end
 
       if errors.present?
-        merge_request.errors.add(:dependencies, 'failed to save: ' + errors.join(', '))
+        docs_link =
+          Rails
+            .application
+            .routes
+            .url_helpers
+            .help_page_url(
+              'user/project/merge_requests/dependencies.html',
+              anchor: 'complex-merge-order-dependencies-are-unsupported'
+            )
+
+        merge_request
+          .errors
+          .add(
+            :dependencies,
+            'failed to save: ' + errors.uniq.join(', ') + '.',
+            help_page_url: docs_link
+          )
       end
 
       # When no references are specified and old blocking merge requests are deleted,

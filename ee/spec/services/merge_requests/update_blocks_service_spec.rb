@@ -100,7 +100,7 @@ RSpec.describe MergeRequests::UpdateBlocksService, feature_category: :code_revie
               service.execute
 
               expect(merge_request.reload.blocking_merge_requests).not_to include(mr_to_add)
-              expect(merge_request.errors[:dependencies]).to include(/cannot itself be blocked/)
+              expect(merge_request.errors[:dependencies]).to include(/Dependency chains are not supported/)
             end
           end
 
