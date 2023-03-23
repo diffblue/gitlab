@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::LogCursor::Events::RepositoriesChangedEvent, :clean_gitlab_redis_shared_state do
+RSpec.describe Gitlab::Geo::LogCursor::Events::RepositoriesChangedEvent,
+  :clean_gitlab_redis_shared_state,
+  feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   let(:logger) { Gitlab::Geo::LogCursor::Logger.new(described_class, Logger::INFO) }

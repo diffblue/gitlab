@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::RegistryPolicy do
+RSpec.describe Geo::RegistryPolicy, feature_category: :geo_replication do
   let!(:registry) { create(:geo_package_file_registry) }
 
   subject(:policy) { described_class.new(current_user, registry) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GeoNodeFinder do
+RSpec.describe GeoNodeFinder, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   let_it_be(:geo_node1) { create(:geo_node) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Patch::GeoDatabaseTasks do
+RSpec.describe Gitlab::Patch::GeoDatabaseTasks, feature_category: :geo_replication do
   describe Gitlab::Patch::GeoDatabaseTasks::ActiveRecordDatabaseTasksDumpFilename do
     subject do
       Class.new do

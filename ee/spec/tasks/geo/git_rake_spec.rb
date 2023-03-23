@@ -2,7 +2,7 @@
 
 require 'rake_helper'
 
-RSpec.describe 'geo:git:housekeeping' do
+RSpec.describe 'geo:git:housekeeping', feature_category: :geo_replication do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:registry) { ::Geo::ProjectRegistry.find_or_create_by!(project: project) }
 

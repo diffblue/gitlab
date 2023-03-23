@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe EE::GeoHelper do
+RSpec.describe EE::GeoHelper, feature_category: :geo_replication do
   describe '.current_node_human_status' do
     where(:primary, :secondary, :result) do
       [

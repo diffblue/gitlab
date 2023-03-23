@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::PushUser do
+RSpec.describe Geo::PushUser, feature_category: :geo_replication do
   let!(:user) { create(:user) }
   let!(:key) { create(:key, user: user) }
 

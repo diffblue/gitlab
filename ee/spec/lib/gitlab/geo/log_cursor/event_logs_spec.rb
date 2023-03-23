@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::LogCursor::EventLogs, :clean_gitlab_redis_shared_state do
+RSpec.describe Gitlab::Geo::LogCursor::EventLogs,
+  :clean_gitlab_redis_shared_state,
+  feature_category: :geo_replication do
   subject { described_class.new }
 
   describe '#fetch_in_batches' do

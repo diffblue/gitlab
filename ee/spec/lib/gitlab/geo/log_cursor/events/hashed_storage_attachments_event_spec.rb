@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::LogCursor::Events::HashedStorageAttachmentsEvent, :clean_gitlab_redis_shared_state do
+RSpec.describe Gitlab::Geo::LogCursor::Events::HashedStorageAttachmentsEvent,
+  :clean_gitlab_redis_shared_state,
+  feature_category: :geo_replication do
   let(:logger) { Gitlab::Geo::LogCursor::Logger.new(described_class, Logger::INFO) }
   let(:event_log) { create(:geo_event_log, :hashed_storage_attachments_event) }
   let!(:event_log_state) { create(:geo_event_log_state, event_id: event_log.id - 1) }

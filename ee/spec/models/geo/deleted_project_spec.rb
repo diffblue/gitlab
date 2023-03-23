@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::DeletedProject, :geo, type: :model do
+RSpec.describe Geo::DeletedProject, :geo, type: :model, feature_category: :geo_replication do
   include StubConfiguration
 
   subject { described_class.new(id: 1, name: 'sample', disk_path: 'root/sample', repository_storage: 'foo') }

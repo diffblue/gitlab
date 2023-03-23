@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::Eventable do
+RSpec.describe Geo::Eventable, feature_category: :geo_replication do
   describe '.up_to_event' do
     it 'finds only events up to the given geo event log id' do
       events = create_list(:geo_event_log, 4, :updated_event)

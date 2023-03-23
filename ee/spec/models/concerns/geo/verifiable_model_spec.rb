@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::VerifiableModel do
+RSpec.describe Geo::VerifiableModel, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   context 'when separate table is used for verification state' do

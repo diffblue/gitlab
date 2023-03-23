@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo, :geo, :request_store do
+RSpec.describe Gitlab::Geo, :geo, :request_store, feature_category: :geo_replication do
   using RSpec::Parameterized::TableSyntax
   include ::EE::GeoHelpers
 

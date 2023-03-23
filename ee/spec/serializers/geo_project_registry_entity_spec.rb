@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GeoProjectRegistryEntity do
+RSpec.describe GeoProjectRegistryEntity, feature_category: :geo_replication do
   let(:registry) { create(:geo_project_registry, :synced) }
 
   let(:entity) do

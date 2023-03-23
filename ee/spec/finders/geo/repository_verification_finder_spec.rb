@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::RepositoryVerificationFinder do
+RSpec.describe Geo::RepositoryVerificationFinder, feature_category: :geo_replication do
   let_it_be(:project) { create(:project) }
 
   describe '#find_failed_repositories' do

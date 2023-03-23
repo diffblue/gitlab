@@ -8,7 +8,7 @@ require 'spec_helper'
 #   against a DummyModel.
 # - Place tests in replicable_model_shared_examples.rb if you want them to be
 #   run against every real Model.
-RSpec.describe Geo::ReplicableModel do
+RSpec.describe Geo::ReplicableModel, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   let_it_be(:primary_node) { create(:geo_node, :primary) }

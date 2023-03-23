@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::Logger do
+RSpec.describe Gitlab::Geo::Logger, feature_category: :geo_replication do
   it 'uses the same log_level defined in Rails' do
     allow(Rails.logger).to receive(:level) { 99 }
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::SecondaryUsageData, :geo, type: :model do
+RSpec.describe Geo::SecondaryUsageData, :geo, type: :model, feature_category: :geo_replication do
   subject { create(:geo_secondary_usage_data) }
 
   let(:prometheus_client) { Gitlab::PrometheusClient.new('http://localhost:9090') }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::Oauth::LogoutState do
+RSpec.describe Gitlab::Geo::Oauth::LogoutState, feature_category: :geo_replication do
   let(:salt) { 'MTAwZDhjYmQxNzUw' }
   let(:tag) { 'Y0D_b1xDW3uO-qN86c83HQ==' }
   let(:return_to) { 'http://fake-secondary.com:3000/project/test' }

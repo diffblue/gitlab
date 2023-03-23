@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Admin::Geo::NodesController do
+RSpec.describe Admin::Geo::NodesController, :geo, feature_category: :geo_replication do
   shared_examples 'unlicensed geo action' do
     it 'redirects to the 403 page' do
       expect(response).to have_gitlab_http_status(:forbidden)
