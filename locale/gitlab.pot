@@ -2283,10 +2283,10 @@ msgstr ""
 msgid "Add a homepage to your wiki that contains information about your project and GitLab will display it here instead of this message."
 msgstr ""
 
-msgid "Add a new issue"
+msgid "Add a new comment template"
 msgstr ""
 
-msgid "Add a new saved reply"
+msgid "Add a new issue"
 msgstr ""
 
 msgid "Add a numbered list"
@@ -2412,10 +2412,10 @@ msgstr ""
 msgid "Add new application"
 msgstr ""
 
-msgid "Add new directory"
+msgid "Add new comment template"
 msgstr ""
 
-msgid "Add new saved reply"
+msgid "Add new directory"
 msgstr ""
 
 msgid "Add or remove a user."
@@ -10458,6 +10458,9 @@ msgstr ""
 msgid "Comment '%{label}' position"
 msgstr ""
 
+msgid "Comment Templates"
+msgstr ""
+
 msgid "Comment added to the timeline."
 msgstr ""
 
@@ -10468,6 +10471,15 @@ msgid "Comment is being updated"
 msgstr ""
 
 msgid "Comment on lines %{startLine} to %{endLine}"
+msgstr ""
+
+msgid "Comment template actions"
+msgstr ""
+
+msgid "Comment templates"
+msgstr ""
+
+msgid "Comment templates can be used when creating comments inside issues, merge requests, and epics."
 msgstr ""
 
 msgid "Comment/Reply (quoting selected text)"
@@ -13769,6 +13781,9 @@ msgstr ""
 msgid "Delete comment"
 msgstr ""
 
+msgid "Delete comment template"
+msgstr ""
+
 msgid "Delete comment?"
 msgstr ""
 
@@ -13821,9 +13836,6 @@ msgid "Delete release %{release}?"
 msgstr ""
 
 msgid "Delete row"
-msgstr ""
-
-msgid "Delete saved reply"
 msgstr ""
 
 msgid "Delete selected"
@@ -15577,6 +15589,9 @@ msgstr ""
 msgid "Edit comment"
 msgstr ""
 
+msgid "Edit comment template"
+msgstr ""
+
 msgid "Edit commit message"
 msgstr ""
 
@@ -15641,9 +15656,6 @@ msgid "Edit project: %{project_name}"
 msgstr ""
 
 msgid "Edit public deploy key"
-msgstr ""
-
-msgid "Edit saved reply"
 msgstr ""
 
 msgid "Edit sidebar"
@@ -16099,7 +16111,7 @@ msgstr ""
 msgid "Enter Admin Mode"
 msgstr ""
 
-msgid "Enter a name for your saved reply"
+msgid "Enter a name for your comment template"
 msgstr ""
 
 msgid "Enter a number"
@@ -23063,6 +23075,9 @@ msgstr ""
 msgid "Insert column before"
 msgstr ""
 
+msgid "Insert comment template"
+msgstr ""
+
 msgid "Insert image"
 msgstr ""
 
@@ -23076,9 +23091,6 @@ msgid "Insert row after"
 msgstr ""
 
 msgid "Insert row before"
-msgstr ""
-
-msgid "Insert saved reply"
 msgstr ""
 
 msgid "Insert suggestion"
@@ -28277,10 +28289,10 @@ msgstr ""
 msgid "My awesome group"
 msgstr ""
 
-msgid "My company or team"
+msgid "My comment templates (%{count})"
 msgstr ""
 
-msgid "My saved replies (%{count})"
+msgid "My company or team"
 msgstr ""
 
 msgid "My topic"
@@ -32521,7 +32533,7 @@ msgstr ""
 msgid "Please enable and migrate to hashed storage to avoid security issues and ensure data integrity. %{migrate_link}"
 msgstr ""
 
-msgid "Please enter a name for the saved reply."
+msgid "Please enter a name for the comment template."
 msgstr ""
 
 msgid "Please enter a non-negative number"
@@ -32545,7 +32557,7 @@ msgstr ""
 msgid "Please enter a value of 90 days or more"
 msgstr ""
 
-msgid "Please enter the saved reply content."
+msgid "Please enter the comment template content."
 msgstr ""
 
 msgid "Please enter your current password."
@@ -38339,15 +38351,6 @@ msgid "Save password"
 msgstr ""
 
 msgid "Save pipeline schedule"
-msgstr ""
-
-msgid "Saved Replies"
-msgstr ""
-
-msgid "Saved replies can be used when creating comments inside issues, merge requests, and epics."
-msgstr ""
-
-msgid "Saved reply actions"
 msgstr ""
 
 msgid "Saving"
@@ -46325,7 +46328,7 @@ msgstr ""
 msgid "Unable to find Jira project to import data from."
 msgstr ""
 
-msgid "Unable to find saved reply"
+msgid "Unable to find comment template"
 msgstr ""
 
 msgid "Unable to fully load the default commit message. You can still apply this suggestion and the commit message will be correct."
@@ -49683,10 +49686,10 @@ msgstr ""
 msgid "Write an internal note or drag your files here…"
 msgstr ""
 
-msgid "Write milestone description..."
+msgid "Write comment template content here…"
 msgstr ""
 
-msgid "Write saved reply content here…"
+msgid "Write milestone description..."
 msgstr ""
 
 msgid "Write your release notes or drag your files here…"
