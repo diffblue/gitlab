@@ -28,7 +28,6 @@ query getNamespaceStorageStatistics(
       packagesSize
       wikiSize
       snippetsSize
-      uploadsSize
     }
     projects(
       includeSubgroups: true
@@ -58,7 +57,6 @@ query getNamespaceStorageStatistics(
           packagesSize
           wikiSize
           snippetsSize
-          uploadsSize
         }
       }
       pageInfo {

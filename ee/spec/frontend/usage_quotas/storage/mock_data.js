@@ -75,7 +75,6 @@ export const mockedNamespaceStorageResponse = {
         packagesSize: 0,
         wikiSize: 104800,
         snippetsSize: 0,
-        uploadsSize: 0,
         __typename: 'RootStorageStatistics',
       },
       projects: {
@@ -99,7 +98,6 @@ export const mockedNamespaceStorageResponse = {
               packagesSize: 0,
               wikiSize: 104800,
               snippetsSize: 0,
-              uploadsSize: 0,
               __typename: 'ProjectStatistics',
             },
             __typename: 'Project',
@@ -123,7 +121,6 @@ export const mockedNamespaceStorageResponse = {
               packagesSize: 0,
               wikiSize: 104800,
               snippetsSize: 0,
-              uploadsSize: 0,
               __typename: 'ProjectStatistics',
             },
             __typename: 'Project',
