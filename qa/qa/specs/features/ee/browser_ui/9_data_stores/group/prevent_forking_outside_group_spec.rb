@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Manage' do
+  RSpec.describe 'Data Stores' do
     describe 'prevent forking outside group',
-             except: { subdomain: %i[staging staging-canary] }, product_group: :organization do
+      except: { subdomain: %i[staging staging-canary] }, product_group: :tenant_scale do
       let!(:group_for_fork) do
         Resource::Sandbox.fabricate! do |sandbox_group|
           sandbox_group.path = "group_for_fork_#{SecureRandom.hex(8)}"
@@ -17,12 +17,19 @@ module QA
         end
       end
 
+      after do
+        project.group.sandbox.update_group_setting(group_setting: 'prevent_forking_outside_group', value: false)
+        project.remove_via_api!
+        group_for_fork.remove_via_api!
+      end
+
       context 'when disabled' do
         before do
           set_prevent_forking_outside_group('disabled')
         end
 
-        it 'allows forking outside of group', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347870' do
+        it 'allows forking outside of group',
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347870' do
           project.visit!
 
           Page::Project::Show.perform(&:fork_project)
@@ -38,7 +45,8 @@ module QA
           set_prevent_forking_outside_group('enabled')
         end
 
-        it 'does not allow forking outside of group', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347872' do
+        it 'does not allow forking outside of group',
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347872' do
           project.visit!
 
           Page::Project::Show.perform(&:fork_project)
@@ -51,12 +59,6 @@ module QA
             expect(namespaces).not_to include(group_for_fork)
           end
         end
-      end
-
-      after do
-        project.group.sandbox.update_group_setting(group_setting: 'prevent_forking_outside_group', value: false)
-        project.remove_via_api!
-        group_for_fork.remove_via_api!
       end
 
       def set_prevent_forking_outside_group(enabled_or_disabled)
