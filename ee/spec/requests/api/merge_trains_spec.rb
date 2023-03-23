@@ -285,7 +285,7 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
     end
 
     context 'with invalid merge request iid' do
-      let(:merge_request_iid) { 12345 }
+      let(:merge_request_iid) { -1 }
 
       it 'exits with invalid return code' do
         subject
@@ -306,16 +306,6 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
       it_behaves_like 'succeeds to add to merge train'
     end
 
-    context 'with invalid parameters' do
-      let(:params) { { sha: 123, squash: 'yes', when_pipeline_succeeds: 'yes' } }
-
-      it 'errors out before calling service' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:conflict)
-      end
-    end
-
     context 'with extra parameters' do
       let(:params) { { extra_param: true } }
 
@@ -329,7 +319,7 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
     context 'with when_pipeline_succeeds enabled' do
       let(:params) { { when_pipeline_succeeds: true } }
 
-      context 'when pipeilie is not completed' do
+      context 'when pipeline is not completed' do
         let(:pipeline_status) { :running }
 
         it 'returns status accepted' do

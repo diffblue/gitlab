@@ -101,7 +101,9 @@ module API
           failure [
             { code: 400, message: 'Failed to merge' },
             { code: 401, message: 'Unauthorized' },
-            { code: 404, message: 'Not found' }
+            { code: 404, message: 'Not found' },
+            { code: 409, message: 'Conflict' },
+            { code: 403, message: 'Forbidden' }
           ]
         end
         params do
@@ -109,7 +111,7 @@ module API
                                        `branch, otherwise the merge fails.'
           optional :squash, type: Grape::API::Boolean,
                             desc: 'When true, the commits will be squashed into a single commit on merge'
-          optional :when_pipeline_succeeds, type: Boolean,
+          optional :when_pipeline_succeeds, type: Grape::API::Boolean,
                                                   desc: 'When true, this merge request will be merged when `\
                                                   `the pipeline succeeds'
         end
