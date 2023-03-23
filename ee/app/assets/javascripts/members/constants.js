@@ -35,10 +35,23 @@ export const FILTERED_SEARCH_TOKEN_ENTERPRISE = {
   requiredPermissions: 'canFilterByEnterprise',
 };
 
+export const FILTERED_SEARCH_USER_TYPE = {
+  type: 'user_type',
+  icon: 'account',
+  title: __('Account'),
+  token: GlFilteredSearchToken,
+  unique: true,
+  operators: OPERATORS_IS,
+  // Remove the single quotes surrounding `Service account` after this issue is closed: https://gitlab.com/gitlab-org/gitlab-ui/-/issues/2159
+  options: [{ value: 'service_account', title: `'${__('Service account')}'` }],
+  requiredPermissions: 'canManageMembers',
+};
+
 // eslint-disable-next-line import/export
 export const AVAILABLE_FILTERED_SEARCH_TOKENS = [
   ...AVAILABLE_FILTERED_SEARCH_TOKENS_CE,
   FILTERED_SEARCH_TOKEN_ENTERPRISE,
+  FILTERED_SEARCH_USER_TYPE,
 ];
 
 // eslint-disable-next-line import/export

@@ -40142,6 +40142,9 @@ msgstr ""
 msgid "Service Ping payload not found in the application cache"
 msgstr ""
 
+msgid "Service account"
+msgstr ""
+
 msgid "Service account generated successfully"
 msgstr ""
 
