@@ -2,7 +2,6 @@
 
 module Ci
   class Build < Ci::Processable
-    # test change for CODEOWNERS
     prepend Ci::BulkInsertableTags
     include Ci::Metadatable
     include Ci::Contextable
