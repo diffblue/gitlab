@@ -53,7 +53,6 @@ describe('SidebarDropdownWidget', () => {
     groupEpicsSpy = jest.fn().mockResolvedValue(mockGroupEpicsResponse),
     currentEpicSpy = jest.fn().mockResolvedValue(noCurrentEpicResponse),
     epicUpdatedSpy = jest.fn().mockResolvedValue(mockEpicUpdatesSubscriptionResponse),
-    realTimeIssueEpicLinks = true,
   } = {}) => {
     Vue.use(VueApollo);
     mockApollo = createMockApollo([
@@ -70,7 +69,6 @@ describe('SidebarDropdownWidget', () => {
           issuableAttributesQueries,
           glFeatures: {
             epicWidgetEditConfirmation: true,
-            realTimeIssueEpicLinks,
           },
         },
         apolloProvider: mockApollo,
@@ -211,32 +209,13 @@ describe('SidebarDropdownWidget', () => {
 
       describe("when attribute type is 'epic'", () => {
         describe('real-time epic link updates', () => {
-          describe('when realTimeIssueEpicLinks feature is enabled', () => {
-            it('should submit GraphQL subscription', async () => {
-              const epicUpdatedSpy = jest
-                .fn()
-                .mockResolvedValue(mockEpicUpdatesSubscriptionResponse);
-              await createComponentWithApollo({
-                realTimeIssueEpicLinks: true,
-                epicUpdatedSpy,
-              });
-
-              expect(epicUpdatedSpy).toHaveBeenCalled();
+          it('should submit GraphQL subscription', async () => {
+            const epicUpdatedSpy = jest.fn().mockResolvedValue(mockEpicUpdatesSubscriptionResponse);
+            await createComponentWithApollo({
+              epicUpdatedSpy,
             });
-          });
 
-          describe('when realTimeIssueEpicLinks feature is disabled', () => {
-            it('should not submit GraphqQL subscription', async () => {
-              const epicUpdatedSpy = jest
-                .fn()
-                .mockResolvedValue(mockEpicUpdatesSubscriptionResponse);
-              await createComponentWithApollo({
-                realTimeIssueEpicLinks: false,
-                epicUpdatedSpy,
-              });
-
-              expect(epicUpdatedSpy).not.toHaveBeenCalled();
-            });
+            expect(epicUpdatedSpy).toHaveBeenCalled();
           });
         });
 

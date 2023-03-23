@@ -69,14 +69,6 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
 
       expect(response.body).to have_pushed_frontend_feature_flags(escalationPolicies: true)
     end
-
-    it 'pushes realTimeIssueEpicLinks feature flag' do
-      project.add_guest(user)
-
-      get_show
-
-      expect(response.body).to have_pushed_frontend_feature_flags(realTimeIssueEpicLinks: true)
-    end
   end
 
   describe 'GET #index' do
