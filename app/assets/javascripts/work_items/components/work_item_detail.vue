@@ -39,7 +39,7 @@ import {
   WIDGET_TYPE_NOTES,
 } from '../constants';
 
-import workItemDatesSubscription from '../graphql/work_item_dates.subscription.graphql';
+import workItemDatesSubscription from '../../graphql_shared/subscriptions/work_item_dates.subscription.graphql';
 import workItemTitleSubscription from '../graphql/work_item_title.subscription.graphql';
 import workItemAssigneesSubscription from '../graphql/work_item_assignees.subscription.graphql';
 import workItemMilestoneSubscription from '../graphql/work_item_milestone.subscription.graphql';

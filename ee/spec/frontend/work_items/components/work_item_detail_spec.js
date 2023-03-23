@@ -21,7 +21,7 @@ import {
 } from 'jest/work_items/mock_data';
 import WorkItemDetail from '~/work_items/components/work_item_detail.vue';
 import workItemQuery from '~/work_items/graphql/work_item.query.graphql';
-import workItemDatesSubscription from '~/work_items/graphql/work_item_dates.subscription.graphql';
+import workItemDatesSubscription from '~/graphql_shared/subscriptions/work_item_dates.subscription.graphql';
 import workItemTitleSubscription from '~/work_items/graphql/work_item_title.subscription.graphql';
 import workItemAssigneesSubscription from '~/work_items/graphql/work_item_assignees.subscription.graphql';
 import workItemMilestoneSubscription from '~/work_items/graphql/work_item_milestone.subscription.graphql';
