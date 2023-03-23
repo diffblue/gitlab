@@ -26,21 +26,15 @@ module ProtectedEnvironments
     end
 
     def valid_attribute?(attribute)
-      keys = attribute.slice(:access_level, :group_id, :user_id).keys
-      return false unless keys.count == 1
-
       # If it's a destroy request, any group/user IDs are allowed to be passed,
       # so that users who are no longer project members can be removed from the access list.
       # `has_destroy_flag?` is defined in `ActiveRecord::NestedAttributes`.
       return true if ProtectedEnvironments::DeployAccessLevel.new.send(:has_destroy_flag?, attribute) # rubocop:disable GitlabSecurity/PublicSend
 
-      if attribute[:group_id].present?
-        qualified_group_ids.include?(attribute[:group_id])
-      elsif attribute[:user_id].present?
-        qualified_user_ids.include?(attribute[:user_id])
-      else
-        true
-      end
+      return false if attribute[:group_id].present? && qualified_group_ids.exclude?(attribute[:group_id])
+      return false if attribute[:user_id].present? && qualified_user_ids.exclude?(attribute[:user_id])
+
+      true
     end
 
     def qualified_group_ids

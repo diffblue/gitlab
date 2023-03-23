@@ -66,7 +66,7 @@ RSpec.shared_examples 'protected environments access' do |developer_access: true
 
         with_them do
           before do
-            protected_environment.deploy_access_levels.create!(user: user, access_level: deploy_access_level(access_level))
+            protected_environment.deploy_access_levels.create!(user: user)
 
             update_user_access(access_level, user, project)
           end
@@ -81,7 +81,7 @@ RSpec.shared_examples 'protected environments access' do |developer_access: true
           project.add_reporter(user)
           operator_group.add_reporter(user)
 
-          protected_environment.deploy_access_levels.create!(group: operator_group, access_level: Gitlab::Access::REPORTER)
+          protected_environment.deploy_access_levels.create!(group: operator_group)
         end
 
         it { is_expected.to eq(direct_access) }

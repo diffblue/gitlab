@@ -57,7 +57,8 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
         deploy_access_levels: [
           {
             id: protected_environment.deploy_access_levels.last.id,
-            user_id: user_id
+            user_id: user_id,
+            access_level: nil
           }
         ]
       }
@@ -617,7 +618,8 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
           deploy_access_levels: [
             {
               id: group_protected_environment.deploy_access_levels.first.id,
-              group_id: shared_group.id
+              group_id: shared_group.id,
+              access_level: nil
             }
           ],
           required_approval_count: 1
@@ -636,6 +638,7 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
             {
               id: group_protected_environment.deploy_access_levels.last.id,
               group_id: subgroup.id,
+              access_level: nil,
               group_inheritance_type: ::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE[:ALL]
             }
           ],

@@ -4,7 +4,7 @@ FactoryBot.define do
     user { nil }
     group { nil }
     protected_environment
-    access_level { Gitlab::Access::DEVELOPER }
+    access_level { user_id.nil? && group_id.nil? ? Gitlab::Access::DEVELOPER : nil }
 
     trait :maintainer_access do
       access_level { Gitlab::Access::MAINTAINER }

@@ -20,9 +20,9 @@ module ProtectedEnvironments
     end
 
     def authorizable_attributes_presence
-      unless read_attribute(:access_level) || read_attribute(:group_id) || read_attribute(:user_id)
-        errors.add(:base, 'One of the Group ID, User ID or Access Level must be specified.')
-      end
+      return if [read_attribute(:access_level), read_attribute(:group_id), read_attribute(:user_id)].compact.count == 1
+
+      errors.add(:base, 'Only one of the Group ID, User ID or Access Level must be specified.')
     end
   end
 end

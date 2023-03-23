@@ -16,7 +16,7 @@ RSpec.describe ProtectedEnvironments::DeployAccessLevel do
 
       expect(deploy_access_level).not_to be_valid
       expect(deploy_access_level.errors[:base])
-        .to include('One of the Group ID, User ID or Access Level must be specified.')
+        .to include('Only one of the Group ID, User ID or Access Level must be specified.')
     end
 
     it 'passes a validation when one of the authorizable attributes is present' do
@@ -26,6 +26,17 @@ RSpec.describe ProtectedEnvironments::DeployAccessLevel do
       deploy_access_level.access_level = Gitlab::Access::MAINTAINER
 
       expect(deploy_access_level).to be_valid
+    end
+
+    it 'fails validation when two of the authorizable attributes are present' do
+      deploy_access_level = build(:protected_environment_deploy_access_level)
+      deploy_access_level.user = create(:user)
+      deploy_access_level.group_id = nil
+      deploy_access_level.access_level = Gitlab::Access::MAINTAINER
+
+      expect(deploy_access_level).not_to be_valid
+      expect(deploy_access_level.errors[:base])
+        .to include('Only one of the Group ID, User ID or Access Level must be specified.')
     end
   end
 

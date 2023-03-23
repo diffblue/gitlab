@@ -88,25 +88,32 @@ RSpec.describe Projects::ProtectedEnvironmentsController, feature_category: :con
   describe '#PUT update' do
     let(:protected_environment) { create(:protected_environment, project: project) }
     let(:deploy_access_level) { protected_environment.deploy_access_levels.first }
+    let(:deploy_access_level_to_destroy) do
+      create(:protected_environment_deploy_access_level, protected_environment: protected_environment)
+    end
 
-    let(:params) do
+    let(:access_levels_params) do
       {
         deploy_access_levels_attributes: [
-          { id: deploy_access_level.id, access_level: Gitlab::Access::DEVELOPER },
+          { id: deploy_access_level.id, access_level: Gitlab::Access::DEVELOPER, user_id: nil },
+          { id: deploy_access_level_to_destroy.id, _destroy: true },
           { access_level: maintainer_access }
         ],
         required_approval_count: 3
       }
     end
 
+    let(:params) do
+      {
+        namespace_id: project.namespace.to_param,
+        project_id: project.to_param,
+        id: protected_environment.id,
+        protected_environment: access_levels_params
+      }
+    end
+
     subject do
-      put :update,
-        params: {
-          namespace_id: project.namespace.to_param,
-          project_id: project.to_param,
-          id: protected_environment.id,
-          protected_environment: params
-        }
+      put :update, params: params, as: :json
     end
 
     context 'when the user is authorized' do
@@ -121,8 +128,14 @@ RSpec.describe Projects::ProtectedEnvironmentsController, feature_category: :con
       end
 
       it 'updates the protected environment', :aggregate_failures do
+        protected_environment.reload
+        deploy_access_level.reload
+
+        expect(deploy_access_level.access_level).to eq(Gitlab::Access::DEVELOPER)
+        expect(deploy_access_level.user_id).to be_nil
         expect(protected_environment.deploy_access_levels.count).to eq(2)
-        expect(protected_environment.reload.required_approval_count).to eq(3)
+        expect(protected_environment.required_approval_count).to eq(3)
+        expect(ProtectedEnvironments::DeployAccessLevel.find_by_id(deploy_access_level_to_destroy.id)).to be_nil
       end
 
       it 'is successful' do
