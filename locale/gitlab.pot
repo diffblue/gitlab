@@ -8119,12 +8119,6 @@ msgstr ""
 msgid "CICD|instance enabled"
 msgstr ""
 
-msgid "CLOSED"
-msgstr ""
-
-msgid "CLOSED (MOVED)"
-msgstr ""
-
 msgid "CODEOWNERS rule violation"
 msgstr ""
 
@@ -9377,6 +9371,9 @@ msgid "Closed"
 msgstr ""
 
 msgid "Closed %{epicTimeagoDate}"
+msgstr ""
+
+msgid "Closed (moved)"
 msgstr ""
 
 msgid "Closed MRs"
