@@ -14,17 +14,21 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
 
   let(:gitlab_dot_com) { true }
 
-  before do
-    stub_feature_flags(usage_quotas_for_all_editions: false)
-    stub_ee_application_setting(should_check_namespace_plan: gitlab_dot_com)
+  shared_context 'when user is allowed to see usage quotas' do
+    before do
+      stub_feature_flags(usage_quotas_for_all_editions: false)
+      stub_ee_application_setting(should_check_namespace_plan: gitlab_dot_com)
 
-    group.add_owner(user)
-    sign_in(user)
-    visit_usage_quotas_page
-    wait_for_requests
+      group.add_owner(user)
+      sign_in(user)
+      visit_usage_quotas_page
+      wait_for_requests
+    end
   end
 
   context 'with no quota' do
+    include_context 'when user is allowed to see usage quotas'
+
     let(:group) { create(:group, :with_ci_minutes, ci_minutes_limit: nil) }
 
     it 'shows correct group quota info' do
@@ -35,6 +39,8 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
   end
 
   context 'with no projects using shared runners' do
+    include_context 'when user is allowed to see usage quotas'
+
     let(:group) { create(:group, :with_not_used_build_minutes_limit) }
     let!(:project) { create(:project, namespace: group, shared_runners_enabled: false) }
 
@@ -50,6 +56,8 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
   end
 
   context 'with minutes under quota' do
+    include_context 'when user is allowed to see usage quotas'
+
     let(:group) { create(:group, :with_not_used_build_minutes_limit) }
 
     it 'shows correct group quota info' do
@@ -61,6 +69,8 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
   end
 
   context 'with minutes over quota' do
+    include_context 'when user is allowed to see usage quotas'
+
     let(:group) { create(:group, :with_used_build_minutes_limit) }
     let!(:other_project) { create(:project, namespace: group, shared_runners_enabled: false) }
     let!(:no_minutes_project) do
@@ -126,6 +136,8 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
   end
 
   describe 'Purchase additional CI minutes' do
+    include_context 'when user is allowed to see usage quotas'
+
     it 'points to GitLab CI minutes purchase flow' do
       visit_usage_quotas_page
 
@@ -152,6 +164,8 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
   end
 
   context 'in projects usage table' do
+    include_context 'when user is allowed to see usage quotas'
+
     let!(:project) do
       create(:project, :with_ci_minutes, amount_used: 100, shared_runners_duration: 1000, namespace: group,
                                          shared_runners_enabled: true)
@@ -201,6 +215,8 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
   end
 
   context 'with pagination' do
+    include_context 'when user is allowed to see usage quotas'
+
     let(:per_page) { 1 }
     let(:item_selector) { '[data-testid="pipelines-quota-tab-project-name"]' }
     let(:prev_button_selector) { '[data-testid="prevButton"]' }
@@ -213,6 +229,21 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
     end
 
     it_behaves_like 'correct pagination'
+  end
+
+  context 'when not the group owner' do
+    before do
+      stub_feature_flags(usage_quotas_for_all_editions: false)
+      stub_ee_application_setting(should_check_namespace_plan: gitlab_dot_com)
+
+      sign_in(user)
+      visit_usage_quotas_page
+      wait_for_requests
+    end
+
+    it 'shows no minutes quota info' do
+      expect(page).not_to have_selector('#pipelines-quota-tab')
+    end
   end
 
   def visit_usage_quotas_page(anchor = 'pipelines-quota-tab')
