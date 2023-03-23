@@ -6,18 +6,25 @@ RSpec.describe Geo::MetricsUpdateWorker, :geo, feature_category: :geo_replicatio
   include ::EE::GeoHelpers
 
   describe '#perform' do
-    let(:secondary) { create(:geo_node) }
+    let(:primary) { create(:geo_node, :primary) }
 
     before do
-      stub_current_geo_node(secondary)
+      stub_current_geo_node(primary)
+
+      # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+      # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+      stub_batch_counter_transaction_open_check
     end
 
-    it 'executes MetricsUpdateService' do
-      service = double(:service, execute: true)
+    include_examples 'an idempotent worker' do
+      it 'delegates to MetricsUpdateService' do
+        service = Geo::MetricsUpdateService.new
+        allow(Geo::MetricsUpdateService).to receive(:new).and_return(service).at_least(1).time
 
-      expect(Geo::MetricsUpdateService).to receive(:new).and_return(service)
+        expect(service).to receive(:execute).and_call_original.at_least(1).time
 
-      subject.perform
+        perform_multiple
+      end
     end
   end
 end

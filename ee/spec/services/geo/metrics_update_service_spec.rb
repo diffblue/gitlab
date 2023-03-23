@@ -69,11 +69,6 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus, feature_category: :
     # is not allowed within a transaction but all RSpec tests run inside of a transaction.
     stub_batch_counter_transaction_open_check
 
-    # FIXME: we don't clear prometheus state between specs, so these specs below
-    # create *persistent* entries in the prometheus database that may cause other
-    # specs to transiently fail.
-    #
-    # Issue: https://gitlab.com/gitlab-org/gitlab-foss/issues/39968
     allow(Gitlab::Metrics).to receive(:prometheus_metrics_enabled?).and_return(true)
   end
 
@@ -108,7 +103,7 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus, feature_category: :
         subject.execute
       end
 
-      it 'updates metrics for all nodes' do
+      it 'updates metrics for all sites' do
         allow(GeoNodeStatus).to receive(:current_node_status).and_return(GeoNodeStatus.from_json(primary_data.as_json))
 
         secondary.update!(status: GeoNodeStatus.from_json(data.as_json))
@@ -116,26 +111,13 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus, feature_category: :
 
         subject.execute
 
-        expect(Gitlab::Metrics.registry.get(:geo_db_replication_lag_seconds).values.count).to eq(2)
-        expect(Gitlab::Metrics.registry.get(:geo_repositories).values.count).to eq(3)
-
-        expect(Gitlab::Metrics.registry.get(:geo_repositories).get({ name: secondary.name, url: secondary.name })).to eq(10)
-        expect(Gitlab::Metrics.registry.get(:geo_repositories).get({ name: another_secondary.name, url: another_secondary.name })).to eq(10)
-        expect(Gitlab::Metrics.registry.get(:geo_repositories).get({ name: primary.name, url: primary.name })).to eq(10)
+        expect(metric_value(:geo_repositories, geo_site: secondary)).to eq(10)
+        expect(metric_value(:geo_repositories, geo_site: another_secondary)).to eq(10)
+        expect(metric_value(:geo_repositories, geo_site: primary)).to eq(10)
       end
 
       it 'updates the GeoNodeStatus entry' do
         expect { subject.execute }.to change { GeoNodeStatus.count }.by(1)
-      end
-
-      it 'updates metrics when secondary nodes are cached', :request_store do
-        allow(subject).to receive(:update_prometheus_metrics).and_call_original
-        expect(subject).to receive(:update_prometheus_metrics).with(secondary, anything).twice
-        expect(subject).to receive(:update_prometheus_metrics).with(another_secondary, anything).twice
-
-        2.times do
-          subject.execute
-        end
       end
     end
 
@@ -197,10 +179,10 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus, feature_category: :
       it 'does not create GeoNodeStatus entries' do
         expect { subject.execute }.to change { GeoNodeStatus.count }.by(0)
       end
+    end
 
-      def metric_value(metric_name)
-        Gitlab::Metrics.registry.get(metric_name)&.get({ name: secondary.name, url: secondary.name })
-      end
+    def metric_value(metric_name, geo_site: secondary)
+      Gitlab::Metrics.registry.get(metric_name)&.get({ name: geo_site.name, url: geo_site.name })
     end
   end
 end

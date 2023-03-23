@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 module Geo
-  class MetricsUpdateWorker # rubocop:disable Scalability/IdempotentWorker
+  class MetricsUpdateWorker
     include ApplicationWorker
 
+    idempotent!
     data_consistency :always
 
     include ExclusiveLeaseGuard
