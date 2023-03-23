@@ -307,7 +307,7 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures, feature_category
         context 'on other issue types' do
           shared_examples_for 'raising error' do
             before do
-              issue.update!(issue_type: issue_type)
+              issue.update!(issue_type: issue_type, work_item_type: WorkItems::Type.default_by_type(issue_type))
             end
 
             it 'raises error' do

@@ -36,7 +36,7 @@ RSpec.describe Issues::CloneService, feature_category: :team_planning do
 
     context 'when it is not allowed to clone issues of given type' do
       it 'throws error' do
-        requirement_issue = create(:issue, issue_type: :requirement, project: old_project)
+        requirement_issue = create(:issue, :requirement, project: old_project)
 
         expect { clone_service.execute(requirement_issue, new_project) }
           .to raise_error(StandardError, 'Cannot clone issues of \'requirement\' type.')
