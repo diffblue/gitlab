@@ -1,6 +1,5 @@
 - add_to_breadcrumbs s_('OnDemandScans|On-demand Scans'), project_on_demand_scans_path(@project, anchor: 'saved')
 - breadcrumb_title s_('OnDemandScans|Edit on-demand DAST scan')
 - page_title s_('OnDemandScans|Edit on-demand DAST scan')
-- @content_class = "limit-container-width" unless fluid_layout
 
 #js-on-demand-scans-form{ data: on_demand_scans_form_data(@project).merge({ dast_scan: @dast_profile.to_json }) }

@@ -1,7 +1,6 @@
 - add_to_breadcrumbs _("Security configuration"), project_security_configuration_path(@project)
 - breadcrumb_title s_("OnDemandScans|DAST configuration")
 - page_title s_("OnDemandScans|DAST configuration")
-- @content_class = "limit-container-width" unless fluid_layout
 
 - content_for :prefetch_asset_tags do
   - webpack_preload_asset_tag('monaco')
