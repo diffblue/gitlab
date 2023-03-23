@@ -12,6 +12,8 @@ import updateEpicBoardListMutation from './graphql/epic_board_list_update.mutati
 import epicBoardListsQuery from './graphql/epic_board_lists.query.graphql';
 import listEpicsQuery from './graphql/lists_epics.query.graphql';
 import listEpicsWithColorQuery from './graphql/lists_epics_with_color.query.graphql';
+import listDeferredQuery from './graphql/board_lists_deferred.query.graphql';
+import epicListDeferredQuery from './graphql/epic_board_lists_deferred.query.graphql';
 
 export * from '~/boards/constants';
 
@@ -151,6 +153,15 @@ export const listsQuery = {
   },
   [TYPE_EPIC]: {
     query: epicBoardListsQuery,
+  },
+};
+
+export const listsDeferredQuery = {
+  [TYPE_ISSUE]: {
+    query: listDeferredQuery,
+  },
+  [TYPE_EPIC]: {
+    query: epicListDeferredQuery,
   },
 };
 

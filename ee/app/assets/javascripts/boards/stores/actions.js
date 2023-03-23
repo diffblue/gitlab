@@ -580,10 +580,6 @@ export default {
           positionInList,
         },
         update(cache) {
-          if (!window.gon.features.feEpicBoardTotalWeight) {
-            return;
-          }
-
           if (reordering) return;
 
           const updateList = (listId, summationFunction) => {

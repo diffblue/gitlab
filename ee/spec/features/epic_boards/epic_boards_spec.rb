@@ -30,7 +30,7 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
   context 'display epics in board' do
     before do
       stub_licensed_features(epics: true)
-      stub_feature_flags(fe_epic_board_total_weight: true, apollo_boards: false)
+      stub_feature_flags(apollo_boards: false)
       group.add_maintainer(user)
       sign_in(user)
       visit_epic_boards_page
