@@ -133,6 +133,15 @@ RSpec.describe Namespace do
     end
   end
 
+  describe '#has_index_assignment?', feature_category: :global_search do
+    it 'delegates to ::Search::NamespaceIndexAssignment' do
+      index_type = Search::NoteIndex
+      expect(::Search::NamespaceIndexAssignment).to receive(:has_assignment?)
+        .with(namespace: namespace, type: index_type).and_return(true)
+      expect(namespace.has_index_assignment?(type: index_type)).to eq(true)
+    end
+  end
+
   describe '#hashed_root_namespace_id', feature_category: :global_search do
     it 'delegates to Search.hash_namespace_id' do
       expect(::Search).to receive(:hash_namespace_id).with(namespace.root_ancestor.id).and_return 8_675_309

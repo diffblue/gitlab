@@ -32,6 +32,11 @@ module EE
       end
     end
 
+    def search_index
+      namespace = project&.namespace || author.namespace # Personal snippets do not have a project
+      ::Search::IndexRegistry.index_for_namespace(namespace: namespace, type: ::Search::NoteIndex)
+    end
+
     # Original method in Elastic::ApplicationSearch
     def searchable?
       !system && super
