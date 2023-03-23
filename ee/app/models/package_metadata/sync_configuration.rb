@@ -13,7 +13,12 @@ module PackageMetadata
       maven: "maven",
       npm: "npm",
       nuget: "nuget",
-      pypi: "pypi"
+      pypi: "pypi",
+      apk: "apk",
+      rpm: "rpm",
+      deb: "deb",
+      cbl_mariner: "cbl-mariner"
+
     }.with_indifferent_access.freeze
 
     def self.all

@@ -12,7 +12,11 @@ RSpec.describe PackageMetadata::Checkpoint, type: :model, feature_category: :lic
       maven: 5,
       npm: 6,
       nuget: 7,
-      pypi: 8
+      pypi: 8,
+      apk: 9,
+      rpm: 10,
+      deb: 11,
+      cbl_mariner: 12
     }
   end
 
@@ -31,7 +35,7 @@ RSpec.describe PackageMetadata::Checkpoint, type: :model, feature_category: :lic
   end
 
   describe '.with_purl_type' do
-    let(:checkpoints) { create_list(:pm_checkpoint, 8) }
+    let(:checkpoints) { create_list(:pm_checkpoint, 12) }
 
     it 'returns the checkpoint for the given parameters' do
       checkpoints.each do |checkpoint|
