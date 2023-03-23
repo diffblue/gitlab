@@ -15,22 +15,19 @@ RSpec.describe Elastic::Latest::ApplicationInstanceProxy, feature_category: :glo
 
     let_it_be(:target) { create(:note) }
     let(:search_index) do
-      # rubocop:disable RSpec/VerifiedDoubles
-      double(:search_index, present?: search_index_present, paused?: search_index_paused, alias_name: 'alias-name')
-      # rubocop:enable RSpec/VerifiedDoubles
+      instance_double(Search::NoteIndex, present?: search_index_present, path: path)
     end
 
     let(:search_index_present) { true }
-    let(:search_index_paused) { false }
+    let(:path) { 'this-is-a-search-index-path' }
 
     before do
-      stub_const("Search::NoteIndex", :note_index) # https://gitlab.com/gitlab-org/gitlab/-/issues/393184
       allow(target).to receive(:search_index).and_return(search_index)
     end
 
     context 'when search index is valid' do
-      it 'returns search index alias name' do
-        expect(subject.index_name).to eq(search_index.alias_name)
+      it 'returns search index path' do
+        expect(subject.index_name).to eq(search_index.path)
       end
     end
 
@@ -39,14 +36,6 @@ RSpec.describe Elastic::Latest::ApplicationInstanceProxy, feature_category: :glo
 
       it 'raises an error' do
         expect { subject.index_name }.to raise_error ArgumentError, /index assignment was missing/i
-      end
-    end
-
-    context 'when search index is paused' do
-      let(:search_index_paused) { true }
-
-      it 'raises an error' do
-        expect { subject.index_name }.to raise_error ArgumentError, /cannot write to paused index/i
       end
     end
 

@@ -42,6 +42,14 @@ module EE
       accepts_nested_attributes_for :gitlab_subscription, update_only: true
       accepts_nested_attributes_for :namespace_limit
 
+      has_many :search_index_assignments,
+               class_name: 'Search::NamespaceIndexAssignment'
+
+      has_many :search_indices,
+               through: :search_index_assignments,
+               source: 'index',
+               class_name: 'Search::Index'
+
       scope :include_gitlab_subscription, -> { includes(:gitlab_subscription) }
       scope :include_gitlab_subscription_with_hosted_plan, -> { includes(gitlab_subscription: :hosted_plan) }
       scope :join_gitlab_subscription, -> { joins("LEFT OUTER JOIN gitlab_subscriptions ON gitlab_subscriptions.namespace_id=namespaces.id") }
@@ -421,6 +429,10 @@ module EE
 
     def use_zoekt?
       ::Zoekt::IndexedNamespace.enabled_for_namespace?(self)
+    end
+
+    def has_index_assignment?(type:)
+      ::Search::NamespaceIndexAssignment.has_assignment?(namespace: self, type: type)
     end
 
     def invalidate_elasticsearch_indexes_cache!

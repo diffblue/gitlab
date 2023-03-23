@@ -48,30 +48,26 @@ module Elastic
     private
 
     def load_index_name(config)
-      index_partitioning_enabled? ? search_write_alias_name : config.index_name
+      index_partitioning_enabled? ? search_write_index_path : config.index_name
     end
 
     def index_partitioning_enabled?
       case target
       when Note
-        defined?(::Search::NoteIndex) && Feature.enabled?(:search_index_partitioning_notes, target.project)
+        Feature.enabled?(:search_index_partitioning_notes, target.project)
       else
         false
       end
     end
 
-    def search_write_alias_name
+    def search_write_index_path
       search_index = target.search_index
 
       unless search_index.present?
         raise ArgumentError, "Search index assignment was missing for #{target.class} with id: `#{target.id}`"
       end
 
-      alias_name = search_index.alias_name
-
-      raise ArgumentError, "Cannot write to paused index: #{alias_name}" if search_index.paused?
-
-      alias_name
+      search_index.path
     end
 
     # Some attributes are actually complicated methods. Bad data can cause

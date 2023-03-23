@@ -176,4 +176,30 @@ RSpec.describe Note do
       end
     end
   end
+
+  describe '#search_index', feature_category: :global_search do
+    let(:note) { create(:note) }
+    let(:search_index) { instance_double(::Search::NoteIndex) }
+
+    it 'delegates to Search::IndexRegistry' do
+      expect(::Search::IndexRegistry).to receive(:index_for_namespace)
+        .with(namespace: note.project.namespace, type: ::Search::NoteIndex)
+        .and_return(search_index)
+
+      expect(note.search_index).to eq(search_index)
+    end
+
+    context 'when not assigned to a project' do
+      let(:user) { create(:user) }
+      let(:note) { described_class.new(author: user) }
+
+      it 'uses author namespace' do
+        expect(::Search::IndexRegistry).to receive(:index_for_namespace)
+          .with(namespace: user.namespace, type: ::Search::NoteIndex)
+          .and_return(search_index)
+
+        expect(note.search_index).to eq(search_index)
+      end
+    end
+  end
 end
