@@ -22,10 +22,7 @@ class MergeRequestBlock < ApplicationRecord
     errors.add(:base, _('This block is self-referential')) if
       blocking_merge_request == blocked_merge_request
 
-    errors.add(:blocking_merge_request, _('cannot itself be blocked')) if
-      blocking_merge_request.blocks_as_blockee.any?
-
-    errors.add(:blocked_merge_request, _('cannot block others')) if
-      blocked_merge_request.blocks_as_blocker.any?
+    errors.add(:base, _('Dependency chains are not supported')) if
+      blocking_merge_request.blocks_as_blockee.any? || blocked_merge_request.blocks_as_blocker.any?
   end
 end
