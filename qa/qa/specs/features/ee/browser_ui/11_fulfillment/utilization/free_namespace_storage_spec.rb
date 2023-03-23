@@ -5,7 +5,10 @@ module QA
                  only: { subdomain: :staging },
                  feature_flag: { name: 'namespace_storage_limit', scope: :group },
                  product_group: :utilization do
-    describe 'Utilization' do
+    describe 'Utilization', quarantine: {
+      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/398115',
+      type: :investigating
+    } do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:owner_api_client) { Runtime::API::Client.new(:gitlab, user: owner_user) }
       let(:hash) { SecureRandom.hex(8) }
