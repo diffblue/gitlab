@@ -54,10 +54,10 @@ describe('Board List Header Component', () => {
     weightFeatureAvailable = false,
     canCreateEpic = true,
     listQueryHandler = jest.fn().mockResolvedValue(boardListQueryResponse()),
-    glFeatures = { feEpicBoardTotalWeight: true },
     currentUserId = 1,
     state = { activeId: inactiveId },
     isEpicBoard = false,
+    issuableType = 'issue',
   } = {}) => {
     const boardId = '1';
 
@@ -100,9 +100,9 @@ describe('Board List Header Component', () => {
         weightFeatureAvailable,
         currentUserId,
         canCreateEpic,
-        glFeatures,
         isEpicBoard,
         disabled: false,
+        issuableType,
       },
       stubs: {
         GlDisclosureDropdown,
@@ -129,7 +129,7 @@ describe('Board List Header Component', () => {
   describe('New epic button', () => {
     beforeEach(() => {
       jest.spyOn(boardsEventHub, '$emit');
-      createComponent({ isEpicBoard: true });
+      createComponent({ isEpicBoard: true, issuableType: 'epic' });
     });
 
     it('renders Create new epic button', () => {
@@ -148,6 +148,7 @@ describe('Board List Header Component', () => {
       createComponent({
         canCreateEpic: false,
         isEpicBoard: true,
+        issuableType: 'epic',
       });
 
       expect(findDropdown().exists()).toBe(false);
@@ -241,7 +242,7 @@ describe('Board List Header Component', () => {
     });
 
     it('does not call setFullBoardIssuesCount when isEpicBoard is true', async () => {
-      createComponent({ isEpicBoard: true });
+      createComponent({ isEpicBoard: true, issuableType: 'epic' });
       await waitForPromises();
 
       expect(setFullBoardIssuesCountSpy).not.toHaveBeenCalled();
@@ -251,13 +252,14 @@ describe('Board List Header Component', () => {
   describe('weightFeatureAvailable', () => {
     describe('weightFeatureAvailable is true', () => {
       it.each`
-        isEpicBoard | totalWeight
-        ${true}     | ${epicBoardListQueryResponse().data.epicBoardList.metadata.totalWeight}
-        ${false}    | ${boardListQueryResponse().data.boardList.totalWeight}
-      `('isEpicBoard is $isEpicBoard', async ({ isEpicBoard, totalWeight }) => {
+        isEpicBoard | issuableType | totalWeight
+        ${true}     | ${'epic'}    | ${epicBoardListQueryResponse().data.epicBoardList.metadata.totalWeight}
+        ${false}    | ${'issue'}   | ${boardListQueryResponse().data.boardList.totalWeight}
+      `('isEpicBoard is $isEpicBoard', async ({ isEpicBoard, totalWeight, issuableType }) => {
         createComponent({
           weightFeatureAvailable: true,
           isEpicBoard,
+          issuableType,
         });
 
         await waitForPromises();

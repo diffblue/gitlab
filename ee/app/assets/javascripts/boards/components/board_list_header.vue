@@ -5,38 +5,27 @@
 import { mapActions } from 'vuex';
 import BoardListHeaderFoss from '~/boards/components/board_list_header.vue';
 import { n__, __, sprintf } from '~/locale';
-import listQuery from 'ee_else_ce/boards/graphql/board_lists_deferred.query.graphql';
-import epicListQuery from 'ee/boards/graphql/epic_board_lists_deferred.query.graphql';
+import { listsDeferredQuery } from '../constants';
 
 export default {
   extends: BoardListHeaderFoss,
-  inject: ['weightFeatureAvailable', 'isEpicBoard'],
+  inject: ['weightFeatureAvailable', 'isEpicBoard', 'issuableType'],
   apollo: {
     boardList: {
-      query: listQuery,
+      query() {
+        return listsDeferredQuery[this.issuableType].query;
+      },
       variables() {
         return {
           id: this.list.id,
           filters: this.filterParams,
         };
-      },
-      skip() {
-        return this.isEpicBoard;
       },
       context: {
         isSingleRequest: true,
       },
-    },
-    epicBoardList: {
-      query: epicListQuery,
-      variables() {
-        return {
-          id: this.list.id,
-          filters: this.filterParams,
-        };
-      },
-      skip() {
-        return !this.isEpicBoard || !this.glFeatures.feEpicBoardTotalWeight;
+      update(data) {
+        return this.isEpicBoard ? data.epicBoardList : data.boardList;
       },
     },
   },
@@ -64,35 +53,23 @@ export default {
 
       return sprintf(__('%{totalWeight} total weight'), { totalWeight: this.totalWeight });
     },
-    isEpicBoardListLoading() {
-      return this.$apollo.queries.epicBoardList.loading;
-    },
     totalWeight() {
-      if (this.isEpicBoard && this.glFeatures.feEpicBoardTotalWeight) {
-        return this.epicBoardList?.metadata?.totalWeight || 0;
+      if (this.isEpicBoard) {
+        return this.boardList?.metadata?.totalWeight || 0;
       }
 
       return this.boardList?.totalWeight;
-    },
-    canShowTotalWeight() {
-      if (!this.weightFeatureAvailable) {
-        return false;
-      }
-
-      if (this.isEpicBoard) {
-        return this.glFeatures.feEpicBoardTotalWeight && !this.isEpicBoardListLoading;
-      }
-
-      return !this.isLoading;
     },
   },
   watch: {
     boardList: {
       handler() {
-        this.setFullBoardIssuesCount({
-          listId: this.boardList?.id,
-          count: this.boardList?.issuesCount ?? 0,
-        });
+        if (!this.isEpicBoard) {
+          this.setFullBoardIssuesCount({
+            listId: this.boardList?.id,
+            count: this.boardList?.issuesCount ?? 0,
+          });
+        }
       },
     },
   },
