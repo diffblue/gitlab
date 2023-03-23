@@ -1,12 +1,21 @@
 import { GlModal, GlAlert, GlLoadingIcon } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
-import Vue, { nextTick } from 'vue';
+import { nextTick } from 'vue';
 import IssueNote from 'ee/vue_shared/security_reports/components/issue_note.vue';
 import MergeRequestNote from 'ee/vue_shared/security_reports/components/merge_request_note.vue';
 import Modal from 'ee/vue_shared/security_reports/components/modal.vue';
 import ModalFooter from 'ee/vue_shared/security_reports/components/modal_footer.vue';
 import SolutionCard from 'ee/vue_shared/security_reports/components/solution_card_vuex.vue';
+import DismissalNote from 'ee/vue_shared/security_reports/components/dismissal_note.vue';
+import DismissalCommentBoxToggle from 'ee/vue_shared/security_reports/components/dismissal_comment_box_toggle.vue';
 import createState from 'ee/vue_shared/security_reports/store/state';
+
+const transition = {
+  comment: 'abc',
+  author: {},
+  created_at: new Date().toISOString(),
+  to_state: 'dismissed',
+};
 
 describe('Security Reports modal', () => {
   let wrapper;
@@ -36,6 +45,8 @@ describe('Security Reports modal', () => {
 
   const findModalFooter = () => wrapper.findComponent(ModalFooter);
   const findIssueNote = () => wrapper.findComponent(IssueNote);
+  const findDismissalNote = () => wrapper.findComponent(DismissalNote);
+  const findDismissalCommentBoxToggle = () => wrapper.findComponent(DismissalCommentBoxToggle);
 
   describe('modal', () => {
     const findAlert = () => wrapper.findComponent(GlAlert);
@@ -70,48 +81,62 @@ describe('Security Reports modal', () => {
 
   describe('with permissions', () => {
     describe('with dismissed issue', () => {
+      let propsData;
+
       beforeEach(() => {
-        const propsData = {
+        propsData = {
           modal: createState().modal,
           canDismissVulnerability: true,
         };
-        propsData.modal.vulnerability.isDismissed = true;
-        propsData.modal.vulnerability.dismissalFeedback = {
-          author: { username: 'jsmith', name: 'John Smith' },
-          pipeline: { id: '123', path: '#' },
-          created_at: new Date().toString(),
-        };
-        mountComponent(propsData, mount);
       });
 
-      it('renders dismissal author and associated pipeline', () => {
-        expect(modal.text().trim()).toContain('John Smith');
-        expect(modal.text().trim()).toContain('@jsmith');
-        expect(modal.text().trim()).toContain('#123');
+      it('renders dismissal note', () => {
+        propsData.modal.vulnerability.state_transitions = [transition];
+        mountComponent(propsData);
+
+        expect(findDismissalNote().props('feedback')).toMatchObject({
+          comment_details: { comment: transition.comment },
+          author: transition.author,
+          created_at: transition.created_at,
+        });
       });
 
-      it('renders the dismissal comment placeholder', () => {
-        expect(modal.find('.js-comment-placeholder')).not.toBeNull();
+      it('renders dismissal note - deprecateVulnerabilitiesFeedback feature flag disabled', () => {
+        const feedback = {};
+        propsData.modal.vulnerability.dismissalFeedback = feedback;
+        mountComponent(propsData, shallowMount, { deprecateVulnerabilitiesFeedback: false });
+
+        expect(findDismissalNote().props('feedback')).toBe(feedback);
       });
     });
 
-    describe('with about to be dismissed issue', () => {
+    describe('with about to be dismissed finding', () => {
+      let propsData;
+
       beforeEach(() => {
-        const propsData = {
+        propsData = {
           modal: createState().modal,
           canDismissVulnerability: true,
         };
-        propsData.modal.vulnerability.dismissalFeedback = {
-          author: { username: 'jsmith', name: 'John Smith' },
-          pipeline: { id: '123', path: '#' },
-        };
-        mountComponent(propsData, mount);
       });
 
-      it('renders dismissal author and hides associated pipeline', () => {
-        expect(modal.text().trim()).toContain('John Smith');
-        expect(modal.text().trim()).toContain('@jsmith');
-        expect(modal.text().trim()).not.toContain('#123');
+      it('renders dismissal note', () => {
+        propsData.modal.vulnerability.state_transitions = [transition];
+        mountComponent(propsData);
+
+        expect(findDismissalNote().props('feedback')).toMatchObject({
+          comment_details: { comment: transition.comment },
+          author: transition.author,
+          created_at: transition.created_at,
+        });
+      });
+
+      it('renders dismissal note - deprecateVulnerabilitiesFeedback feature flag disabled', () => {
+        const feedback = {};
+        propsData.modal.vulnerability.dismissalFeedback = feedback;
+        mountComponent(propsData, shallowMount, { deprecateVulnerabilitiesFeedback: false });
+
+        expect(findDismissalNote().props('feedback')).toBe(feedback);
       });
     });
 
@@ -418,68 +443,54 @@ describe('Security Reports modal', () => {
     const comment = "Pirates don't eat the tourists";
     let propsData;
 
+    const addCommentAndSubmit = async (newComment) => {
+      findDismissalCommentBoxToggle().vm.$emit('input', newComment);
+      findDismissalCommentBoxToggle().vm.$emit('submit');
+      await nextTick();
+    };
+
     beforeEach(() => {
       propsData = {
-        modal: createState().modal,
+        modal: {
+          ...createState().modal,
+          isCommentingOnDismissal: true,
+        },
       };
-
-      propsData.modal.isCommentingOnDismissal = true;
     });
 
-    beforeAll(() => {
-      // https://github.com/vuejs/vue-test-utils/issues/532#issuecomment-398449786
-      Vue.config.silent = true;
+    it('shows an error when an empty comment is submitted', async () => {
+      mountComponent(propsData);
+      await addCommentAndSubmit('');
+
+      expect(findDismissalCommentBoxToggle().props('errorMessage')).toBe(
+        'Please add a comment in the text area above',
+      );
     });
 
-    afterAll(() => {
-      Vue.config.silent = false;
+    it('dismisses the finding with the comment if the finding is not already dismissed', async () => {
+      mountComponent(propsData);
+      await addCommentAndSubmit(comment);
+
+      expect(wrapper.emitted('dismissVulnerability')[0][0]).toBe(comment);
+      expect(findDismissalCommentBoxToggle().props('errorMessage')).toBe('');
     });
 
-    describe('with a non-dismissed vulnerability', () => {
-      beforeEach(() => {
-        mountComponent(propsData);
-      });
+    it('adds the dismissal comment if the finding is already dismissed', async () => {
+      propsData.modal.vulnerability.state_transitions = [transition];
+      mountComponent(propsData);
+      await addCommentAndSubmit(comment);
 
-      it('creates an error when an empty comment is submitted', () => {
-        const { vm } = wrapper;
-        vm.handleDismissalCommentSubmission();
-
-        expect(vm.dismissalCommentErrorMessage).toBe('Please add a comment in the text area above');
-      });
-
-      it('submits the comment and dismisses the vulnerability if text has been entered', () => {
-        const { vm } = wrapper;
-        vm.addCommentAndDismiss = jest.fn();
-        vm.localDismissalComment = comment;
-        vm.handleDismissalCommentSubmission();
-
-        expect(vm.addCommentAndDismiss).toHaveBeenCalled();
-        expect(vm.dismissalCommentErrorMessage).toBe('');
-      });
+      expect(wrapper.emitted('addDismissalComment')[0][0]).toBe(comment);
+      expect(findDismissalCommentBoxToggle().props('errorMessage')).toBe('');
     });
 
-    describe('with a dismissed vulnerability', () => {
-      beforeEach(() => {
-        propsData.modal.vulnerability.dismissal_feedback = { author: {} };
-        mountComponent(propsData);
-      });
+    it('adds the dismissal comment if the finding is already dismissed - deprecateVulnerabilitiesFeedback feature flag disabled', async () => {
+      propsData.modal.vulnerability.dismissal_feedback = {};
+      mountComponent(propsData, shallowMount, { deprecateVulnerabilitiesFeedback: false });
+      await addCommentAndSubmit(comment);
 
-      it('creates an error when an empty comment is submitted', () => {
-        const { vm } = wrapper;
-        vm.handleDismissalCommentSubmission();
-
-        expect(vm.dismissalCommentErrorMessage).toBe('Please add a comment in the text area above');
-      });
-
-      it('submits the comment if text is entered and the vulnerability is already dismissed', () => {
-        const { vm } = wrapper;
-        vm.addDismissalComment = jest.fn();
-        vm.localDismissalComment = comment;
-        vm.handleDismissalCommentSubmission();
-
-        expect(vm.addDismissalComment).toHaveBeenCalled();
-        expect(vm.dismissalCommentErrorMessage).toBe('');
-      });
+      expect(wrapper.emitted('addDismissalComment')[0][0]).toBe(comment);
+      expect(findDismissalCommentBoxToggle().props('errorMessage')).toBe('');
     });
   });
 });
