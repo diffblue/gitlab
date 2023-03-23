@@ -4,25 +4,18 @@ import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import AccountVerificationModal from 'ee/billings/components/account_verification_modal.vue';
 import CreditCardValidationRequiredAlert from 'ee/billings/components/cc_validation_required_alert.vue';
 import { TEST_HOST } from 'helpers/test_constants';
-import { stubComponent } from 'helpers/stub_component';
 
 describe('CreditCardValidationRequiredAlert', () => {
-  let showSpy;
   let trackingSpy;
   let wrapper;
 
   const createComponent = ({ data = {}, props = {} } = {}) => {
-    showSpy = jest.fn();
-
     return shallowMount(CreditCardValidationRequiredAlert, {
       propsData: {
         ...props,
       },
       stubs: {
         GlSprintf,
-        AccountVerificationModal: stubComponent(AccountVerificationModal, {
-          methods: { show: showSpy, hide: jest.fn() },
-        }),
       },
       data() {
         return data;
@@ -31,6 +24,7 @@ describe('CreditCardValidationRequiredAlert', () => {
   };
 
   const findGlAlert = () => wrapper.findComponent(GlAlert);
+  const findAccountVerificationModal = () => wrapper.findComponent(AccountVerificationModal);
 
   beforeEach(() => {
     trackingSpy = mockTracking(undefined, undefined, jest.spyOn);
@@ -41,7 +35,6 @@ describe('CreditCardValidationRequiredAlert', () => {
     };
 
     wrapper = createComponent();
-    wrapper.vm.$refs.modal.hide = jest.fn();
   });
 
   afterEach(() => {
@@ -67,9 +60,10 @@ describe('CreditCardValidationRequiredAlert', () => {
   });
 
   it('hides the modal and emits a verifiedCreditCard event upon success', () => {
-    wrapper.findComponent(AccountVerificationModal).vm.$emit('success');
+    const accountVerificationModal = findAccountVerificationModal();
+    accountVerificationModal.vm.$emit('success');
 
-    expect(wrapper.vm.$refs.modal.hide).toHaveBeenCalled();
+    expect(accountVerificationModal.props('visible')).toBe(false);
     expect(wrapper.emitted('verifiedCreditCard')).toBeDefined();
   });
 
@@ -80,7 +74,7 @@ describe('CreditCardValidationRequiredAlert', () => {
   });
 
   it('does not open the modal on mount', () => {
-    expect(showSpy).not.toHaveBeenCalled();
+    expect(findAccountVerificationModal().props('visible')).toBe(false);
   });
 
   describe('when isFromAccountValidationEmail prop is true', () => {
@@ -89,11 +83,11 @@ describe('CreditCardValidationRequiredAlert', () => {
     });
 
     it('opens the modal on mount', () => {
-      expect(showSpy).toHaveBeenCalled();
+      expect(findAccountVerificationModal().props('visible')).toBe(true);
     });
 
     it('sends successful verification event', () => {
-      wrapper.findComponent(AccountVerificationModal).vm.$emit('success');
+      findAccountVerificationModal().vm.$emit('success');
 
       expect(trackingSpy).toHaveBeenCalledWith(undefined, 'successful_validation', {
         label: 'account_validation_email',

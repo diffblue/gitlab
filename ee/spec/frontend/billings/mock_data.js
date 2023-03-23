@@ -69,6 +69,7 @@ export const verificationModalDefaultGon = {
 };
 
 export const verificationModalDefaultProps = {
+  visible: false,
   iframeUrl: 'https://gitlab.com',
   allowedOrigin: 'https://gitlab.com',
 };

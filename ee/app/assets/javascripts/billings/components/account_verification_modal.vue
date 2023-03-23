@@ -17,7 +17,15 @@ export default {
     GlSprintf,
     Zuora,
   },
+  model: {
+    prop: 'visible',
+    event: 'change',
+  },
   props: {
+    visible: {
+      type: Boolean,
+      required: true,
+    },
     iframeUrl: {
       type: String,
       required: true,
@@ -53,12 +61,6 @@ export default {
 
       this.$refs.zuora.submit();
     },
-    show() {
-      this.$refs.modal.show();
-    },
-    hide() {
-      this.$refs.modal.hide();
-    },
     handleLoadError() {
       this.hasLoadError = true;
     },
@@ -70,11 +72,12 @@ export default {
 
 <template>
   <gl-modal
-    ref="modal"
     modal-id="credit-card-verification-modal"
+    :visible="visible"
     :title="$options.i18n.title"
     :action-primary="actionPrimaryProps"
     @primary="submit"
+    @change="$emit('change', $event)"
   >
     <p>
       <gl-sprintf :message="$options.i18n.description">

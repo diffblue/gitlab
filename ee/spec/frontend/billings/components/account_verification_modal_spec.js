@@ -1,4 +1,4 @@
-import { GlSprintf } from '@gitlab/ui';
+import { GlSprintf, GlModal } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import AccountVerificationModal, {
@@ -10,7 +10,7 @@ import { verificationModalDefaultGon, verificationModalDefaultProps } from '../m
 describe('Account verification modal', () => {
   let wrapper;
 
-  const findModal = () => wrapper.findComponent({ ref: 'modal' });
+  const findModal = () => wrapper.findComponent(GlModal);
   const zuoraSubmitSpy = jest.fn();
 
   const createComponent = () => {
@@ -70,6 +70,14 @@ describe('Account verification modal', () => {
       wrapper.findComponent(Zuora).vm.$emit('success');
 
       expect(wrapper.emitted('success')).toHaveLength(1);
+    });
+  });
+
+  describe('when modal emits change', () => {
+    it('forwards the change event up', () => {
+      findModal().vm.$emit('change');
+
+      expect(wrapper.emitted('change')).toHaveLength(1);
     });
   });
 
