@@ -49,15 +49,21 @@ module Elastic
     end
 
     def log(message, payload = {})
-      logger.info(build_structured_payload(**payload.merge(message: "[Elastic::Migration: #{self.version}] #{message}")))
+      logger.info(build_structured_payload(
+        **payload.merge(message: "[Elastic::Migration: #{self.version}] #{message}")
+      ))
     end
 
     def log_warn(message, payload = {})
-      logger.warn(build_structured_payload(**payload.merge(message: "[Elastic::Migration: #{self.version}] #{message}")))
+      logger.warn(build_structured_payload(
+        **payload.merge(message: "[Elastic::Migration: #{self.version}] #{message}")
+      ))
     end
 
     def log_raise(message, payload = {})
-      logger.error(build_structured_payload(**payload.merge(message: "[Elastic::Migration: #{self.version}] #{message}")))
+      logger.error(build_structured_payload(
+        **payload.merge(message: "[Elastic::Migration: #{self.version}] #{message}")
+      ))
       raise message
     end
 

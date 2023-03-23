@@ -3,7 +3,7 @@
 module Gitlab
   module Search
     class Client
-      DELEGATED_METHODS = %i[cat count indices index reindex].freeze
+      DELEGATED_METHODS = %i[cat count indices index reindex update_by_query search].freeze
 
       attr_reader :adapter
 
