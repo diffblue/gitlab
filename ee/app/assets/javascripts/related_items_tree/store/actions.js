@@ -363,10 +363,9 @@ export const addItem = ({ state, dispatch, getters }) => {
         dispatch('receiveAddItemFailure', { itemAddFailureType: itemAddFailureTypesMap.NOT_FOUND });
       }
       // Ignore 409 conflict when the issue or epic is already attached to epic
-      /* eslint-disable @gitlab/require-i18n-strings */
       else if (
         response.status === HTTP_STATUS_CONFLICT &&
-        response.data.message === 'Epic hierarchy level too deep'
+        response.data.message === 'Epic hierarchy level too deep' // eslint-disable-line @gitlab/require-i18n-strings
       ) {
         dispatch('receiveAddItemFailure', {
           itemAddFailureType: itemAddFailureTypesMap.MAX_NUMBER_OF_CHILD_EPICS,

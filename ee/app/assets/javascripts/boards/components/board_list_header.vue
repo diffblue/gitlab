@@ -1,12 +1,12 @@
 <script>
-// This is a false violation of @gitlab/no-runtime-template-compiler, since it
-// extends a valid Vue single file component.
-/* eslint-disable @gitlab/no-runtime-template-compiler */
 import { mapActions } from 'vuex';
 import BoardListHeaderFoss from '~/boards/components/board_list_header.vue';
 import { n__, __, sprintf } from '~/locale';
 import { listsDeferredQuery } from '../constants';
 
+// This is a false violation of @gitlab/no-runtime-template-compiler, since it
+// extends a valid Vue single file component.
+// eslint-disable-next-line @gitlab/no-runtime-template-compiler
 export default {
   extends: BoardListHeaderFoss,
   inject: ['weightFeatureAvailable', 'isEpicBoard', 'issuableType'],
