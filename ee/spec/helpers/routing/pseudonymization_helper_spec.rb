@@ -109,5 +109,34 @@ RSpec.describe ::Routing::PseudonymizationHelper do
 
       it_behaves_like 'masked url'
     end
+
+    context 'when utm_medium, utm_source, utm_campaign, utm_content and utm_budget is present' do
+      let(:masked_url) do
+        "http://localhost/namespace#{group.id}/project#{project.id}/-/security/vulnerability_report" \
+          "?utm_budget=foobar&utm_campaign=register&utm_content=test&utm_medium=mobile&utm_source=gitlab.com"
+      end
+
+      let(:request) do
+        double(
+          :Request,
+          path_parameters: {
+            controller: 'projects/security/vulnerability_report',
+            action: 'index',
+            namespace_id: group.name,
+            project_id: project.name
+          },
+          protocol: 'http',
+          host: 'localhost',
+          query_string: "utm_budget=foobar&utm_campaign=register" \
+                        "&utm_content=test&utm_medium=mobile&utm_source=gitlab.com"
+        )
+      end
+
+      before do
+        allow(helper).to receive(:request).and_return(request)
+      end
+
+      it_behaves_like 'masked url'
+    end
   end
 end
