@@ -10,7 +10,10 @@ import SolutionCard from 'ee/vue_shared/security_reports/components/solution_car
 import VulnerabilityDetails from 'ee/vue_shared/security_reports/components/vulnerability_details.vue';
 import { __ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { getCreatedIssueForVulnerability } from 'ee/vue_shared/security_reports/components/helpers';
+import {
+  getCreatedIssueForVulnerability,
+  getDismissalTransitionForVulnerability,
+} from 'ee/vue_shared/security_reports/components/helpers';
 import { VULNERABILITY_MODAL_ID } from './constants';
 
 export default {
@@ -115,57 +118,63 @@ export default {
         ? this.vulnerability?.merge_request_links?.at(-1)
         : this.vulnerability?.merge_request_feedback;
     },
-    dismissalFeedback() {
-      // grouped security reports are populating `dismissalFeedback` and the dashboards `dismissal_feedback`
-      // https://gitlab.com/gitlab-org/gitlab/issues/207489 aims to use the same property in all cases
-      return this.vulnerability?.dismissalFeedback || this.vulnerability?.dismissal_feedback;
-    },
-    isEditingExistingFeedback() {
-      return this.dismissalFeedback && this.modal.isCommentingOnDismissal;
-    },
-    dismissalFeedbackObject() {
-      if (this.dismissalFeedback) {
-        return this.dismissalFeedback;
+    dismissalData() {
+      if (this.glFeatures.deprecateVulnerabilitiesFeedback) {
+        const transition = getDismissalTransitionForVulnerability(this.vulnerability);
+
+        if (!transition) {
+          return null;
+        }
+
+        const commentDetails = transition.comment
+          ? { comment: transition.comment, comment_author: transition.author }
+          : null;
+        // Return the dismissal data in the format the dismissal note expects.
+        return {
+          author: transition.author,
+          created_at: transition.created_at,
+          comment_details: commentDetails,
+        };
       }
 
-      // If we don't have access to the feedback object, we can preempt the data with properties taken from the `gon` variable
-
-      const {
-        current_user_avatar_url: avatarUrl,
-        current_user_fullname: name,
-        current_user_id: id,
-        current_username: username,
-      } = gon;
-
-      return {
-        author: {
-          id,
-          name,
-          username,
-          state: 'active',
-          avatar_url: avatarUrl,
-        },
-      };
+      return this.vulnerability?.dismissalFeedback || this.vulnerability?.dismissal_feedback;
     },
-    dismissalFeedbackComment() {
-      return this.dismissalFeedback?.comment_details?.comment;
+    isEditingDismissalComment() {
+      return this.dismissalData && this.modal.isCommentingOnDismissal;
+    },
+    dismissalDataOrCurrentUser() {
+      // If a user is dismissing and adding a comment at the same time, there is no dismissal data, so we create a fake
+      // one with the author as the current user so that the UI shows the dismissal note correctly.
+      return (
+        this.dismissalData || {
+          author: {
+            id: gon.current_user_id,
+            name: gon.current_user_fullname,
+            username: gon.current_username,
+            avatar_url: gon.current_user_avatar_url,
+          },
+        }
+      );
+    },
+    dismissalComment() {
+      return this.dismissalData?.comment_details?.comment;
     },
     showFeedbackNotes() {
       return Boolean(this.issueData?.issue_url || this.mergeRequestData?.merge_request_path);
     },
     showDismissalCard() {
-      return this.dismissalFeedback || this.modal.isCommentingOnDismissal;
+      return Boolean(this.dismissalData) || this.modal.isCommentingOnDismissal;
     },
     showDismissalCommentActions() {
-      return !this.dismissalFeedback?.comment_details || !this.isEditingExistingFeedback;
+      return !this.dismissalData?.comment_details || !this.isEditingDismissalComment;
     },
     showDismissalCommentTextbox() {
-      return !this.dismissalFeedback?.comment_details || this.isEditingExistingFeedback;
+      return !this.dismissalData?.comment_details || this.isEditingDismissalComment;
     },
   },
   methods: {
     handleDismissalCommentSubmission() {
-      if (this.dismissalFeedback) {
+      if (this.dismissalData) {
         this.addDismissalComment();
       } else {
         this.addCommentAndDismiss();
@@ -231,7 +240,7 @@ export default {
 
       <div v-if="showDismissalCard" class="card card-body my-4">
         <dismissal-note
-          :feedback="dismissalFeedbackObject"
+          :feedback="dismissalDataOrCurrentUser"
           :is-commenting-on-dismissal="modal.isCommentingOnDismissal"
           :is-showing-delete-buttons="modal.isShowingDeleteButtons"
           :project="project"
@@ -244,7 +253,7 @@ export default {
         <dismissal-comment-box-toggle
           v-if="showDismissalCommentTextbox"
           v-model="localDismissalComment"
-          :dismissal-comment="dismissalFeedbackComment"
+          :dismissal-comment="dismissalComment"
           :is-active="modal.isCommentingOnDismissal"
           :error-message="dismissalCommentErrorMessage"
           @openDismissalCommentBox="$emit('openDismissalCommentBox')"
@@ -253,15 +262,15 @@ export default {
         />
       </div>
 
-      <gl-alert v-if="modal.error" variant="danger" :dismissible="false">{{
-        modal.error
-      }}</gl-alert>
+      <gl-alert v-if="modal.error" variant="danger" :dismissible="false">
+        {{ modal.error }}
+      </gl-alert>
     </slot>
     <template #modal-footer>
       <dismissal-comment-modal-footer
         v-if="modal.isCommentingOnDismissal"
-        :is-dismissed="vulnerability.isDismissed"
-        :is-editing-existing-feedback="isEditingExistingFeedback"
+        :is-dismissed="Boolean(dismissalData)"
+        :is-editing-existing-feedback="isEditingDismissalComment"
         :is-dismissing-vulnerability="isDismissingVulnerability"
         @addCommentAndDismiss="addCommentAndDismiss"
         @addDismissalComment="addDismissalComment"
@@ -277,7 +286,7 @@ export default {
         :can-create-merge-request="canCreateMergeRequestForThisVulnerability"
         :can-download-patch="canDownloadPatchForThisVulnerability"
         :can-dismiss-vulnerability="canDismissThisVulnerability"
-        :is-dismissed="vulnerability.isDismissed"
+        :is-dismissed="Boolean(dismissalData)"
         :is-creating-issue="isCreatingIssue"
         :is-dismissing-vulnerability="isDismissingVulnerability"
         :is-creating-merge-request="isCreatingMergeRequest"
