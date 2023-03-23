@@ -32,6 +32,14 @@ module EE
       end
     end
 
+    def average_progress_of_children
+      children = work_item_children
+      child_count = children.count
+      return 0 unless child_count > 0
+
+      (::WorkItems::Progress.where(work_item: children).sum(:progress).to_i / child_count).to_i
+    end
+
     private
 
     def unlicensed_widgets

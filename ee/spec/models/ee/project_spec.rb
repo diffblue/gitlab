@@ -4021,7 +4021,6 @@ RSpec.describe Project, feature_category: :projects do
     let_it_be(:project) { create(:project) }
 
     it 'returns true if feature_flag is enabled' do
-      stub_feature_flags(okrs_mvc: true)
       expect(project.okrs_mvc_feature_flag_enabled?).to be_truthy
     end
 
@@ -4035,13 +4034,25 @@ RSpec.describe Project, feature_category: :projects do
     let_it_be(:project) { create(:project) }
 
     it 'returns true if feature_flag is enabled' do
-      stub_feature_flags(okr_automatic_rollups: true)
       expect(project.okr_automatic_rollups_enabled?).to be_truthy
     end
 
     it 'returns false if feature_flag is disabled' do
       stub_feature_flags(okr_automatic_rollups: false)
       expect(project.okr_automatic_rollups_enabled?).to be_falsey
+    end
+  end
+
+  describe '#okr_async_automatic_rollups_enabled?' do
+    let_it_be(:project) { create(:project) }
+
+    it 'returns true if feature_flag is enabled' do
+      expect(project.okr_async_automatic_rollups_enabled?).to be_truthy
+    end
+
+    it 'returns false if feature_flag is disabled' do
+      stub_feature_flags(okr_automatic_rollups_async: false)
+      expect(project.okr_async_automatic_rollups_enabled?).to be_falsey
     end
   end
 
