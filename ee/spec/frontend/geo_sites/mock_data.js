@@ -349,5 +349,4 @@ export const MOCK_REPLICATION_COUNTS = [
   },
 ];
 
-export const GEO_NODE_W_DATA_FIXTURE = `<div id="js-geo-nodes" data-new-site-url="admin/geo/nodes/new" data-geo-nodes-empty-state-svg="geo/nodes/empty-state.svg" data-replicable-types="[]"></div>`;
 export const GEO_SITE_W_DATA_FIXTURE = `<div id="js-geo-sites" data-new-site-url="admin/geo/sites/new" data-geo-sites-empty-state-svg="geo/sites/empty-state.svg" data-replicable-types="[]"></div>`;

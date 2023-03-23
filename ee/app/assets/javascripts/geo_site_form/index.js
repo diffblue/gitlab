@@ -7,22 +7,15 @@ import createStore from './store';
 Vue.use(Translate);
 
 export default () => {
-  // This file is set up to provide multi-version support in case the Rails bundle doesn't update.
-  // See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/113771#note_1306337644
-  const el =
-    document.getElementById('js-geo-site-form') || document.getElementById('js-geo-node-form');
+  const el = document.getElementById('js-geo-site-form');
 
   const {
     dataset: { selectiveSyncTypes, syncShardsOptions, siteData, sitesPath },
   } = el;
 
-  const {
-    dataset: { nodeData, nodesPath },
-  } = el;
-
   return new Vue({
     el,
-    store: createStore(sitesPath || nodesPath),
+    store: createStore(sitesPath),
     components: {
       GeoSiteFormApp,
     },
@@ -30,9 +23,6 @@ export default () => {
       let site;
       if (siteData) {
         site = JSON.parse(siteData);
-        site = convertObjectPropsToCamelCase(site, { deep: true });
-      } else if (nodeData) {
-        site = JSON.parse(nodeData);
         site = convertObjectPropsToCamelCase(site, { deep: true });
       }
 

@@ -5,12 +5,7 @@ import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import waitForPromises from 'helpers/wait_for_promises';
 import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import { initGeoSites } from 'ee/geo_sites';
-import {
-  GEO_NODE_W_DATA_FIXTURE,
-  GEO_SITE_W_DATA_FIXTURE,
-  MOCK_SITES_RES,
-  MOCK_SITE_STATUSES_RES,
-} from './mock_data';
+import { GEO_SITE_W_DATA_FIXTURE, MOCK_SITES_RES, MOCK_SITE_STATUSES_RES } from './mock_data';
 
 describe('initGeoSites', () => {
   let wrapper;
@@ -35,11 +30,9 @@ describe('initGeoSites', () => {
   });
 
   describe.each`
-    description                                                   | fixture                                                    | link
-    ${'with no geo elements'}                                     | ${'<div></div>'}                                           | ${{ href: '', expected: undefined }}
-    ${'with #js-geo-nodes and valid data'}                        | ${GEO_NODE_W_DATA_FIXTURE}                                 | ${{ href: 'admin/geo/nodes/new', expected: true }}
-    ${'with #js-geo-sites and valid data'}                        | ${GEO_SITE_W_DATA_FIXTURE}                                 | ${{ href: 'admin/geo/sites/new', expected: true }}
-    ${'with both #js-geo-sites and #js-geo-nodes and valid data'} | ${`${GEO_NODE_W_DATA_FIXTURE} ${GEO_SITE_W_DATA_FIXTURE}`} | ${{ href: 'admin/geo/sites/new', expected: true }}
+    description                            | fixture                    | link
+    ${'with no geo elements'}              | ${'<div></div>'}           | ${{ href: '', expected: undefined }}
+    ${'with #js-geo-sites and valid data'} | ${GEO_SITE_W_DATA_FIXTURE} | ${{ href: 'admin/geo/sites/new', expected: true }}
   `('Add Site Link: $description', ({ fixture, link }) => {
     beforeEach(() => {
       createAppWrapper(fixture, { res: MOCK_SITES_RES, statusRes: MOCK_SITE_STATUSES_RES });
@@ -53,11 +46,9 @@ describe('initGeoSites', () => {
   });
 
   describe.each`
-    description                                                   | fixture                                                    | emptyState
-    ${'with no geo elements'}                                     | ${'<div></div>'}                                           | ${{ src: '', expected: undefined }}
-    ${'with #js-geo-nodes and valid data'}                        | ${GEO_NODE_W_DATA_FIXTURE}                                 | ${{ src: 'geo/nodes/empty-state.svg', expected: true }}
-    ${'with #js-geo-sites and valid data'}                        | ${GEO_SITE_W_DATA_FIXTURE}                                 | ${{ src: 'geo/sites/empty-state.svg', expected: true }}
-    ${'with both #js-geo-sites and #js-geo-nodes and valid data'} | ${`${GEO_NODE_W_DATA_FIXTURE} ${GEO_SITE_W_DATA_FIXTURE}`} | ${{ src: 'geo/sites/empty-state.svg', expected: true }}
+    description                            | fixture                    | emptyState
+    ${'with no geo elements'}              | ${'<div></div>'}           | ${{ src: '', expected: undefined }}
+    ${'with #js-geo-sites and valid data'} | ${GEO_SITE_W_DATA_FIXTURE} | ${{ src: 'geo/sites/empty-state.svg', expected: true }}
   `('Empty State: $description', ({ fixture, emptyState }) => {
     beforeEach(() => {
       createAppWrapper(fixture, { res: [], statusRes: [] });
