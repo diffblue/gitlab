@@ -44,5 +44,26 @@ RSpec.describe NotesFinder do
         expect(subject).to eq([note])
       end
     end
+
+    context 'when notes on public epic in a public group' do
+      let_it_be(:epic) { create(:epic) }
+      let_it_be(:public_group) { epic.group }
+      let_it_be(:guest_member) { create(:user) }
+      let_it_be(:reporter_member) { create(:user) }
+      let_it_be(:guest_group_member) { create(:group_member, :guest, user: guest_member, source: public_group) }
+      let_it_be(:reporter_group_member) { create(:group_member, :reporter, user: reporter_member, source: public_group) }
+      let_it_be(:internal_note) { create(:note_on_epic, noteable: epic, internal: true) }
+      let(:public_note) { note }
+
+      it 'shows all notes when the current_user has reporter access' do
+        notes = described_class.new(reporter_member, target: epic).execute
+        expect(notes).to contain_exactly internal_note, public_note
+      end
+
+      it 'shows only public notes when the current_user has guest access' do
+        notes = described_class.new(guest_member, target: epic).execute
+        expect(notes).to contain_exactly public_note
+      end
+    end
   end
 end
