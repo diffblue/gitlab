@@ -190,7 +190,7 @@
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent: false
+  :idempotent: true
   :tags: []
 - :name: cronjob:geo_prune_event_log
   :worker_name: Geo::PruneEventLogWorker

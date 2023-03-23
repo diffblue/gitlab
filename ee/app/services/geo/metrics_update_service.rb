@@ -11,10 +11,12 @@ module Geo
 
       send_status_to_primary(current_node, current_node_status) if Gitlab::Geo.secondary?
 
-      update_prometheus_metrics(current_node, current_node_status) if prometheus_enabled?
+      if prometheus_enabled?
+        update_prometheus_metrics(current_node, current_node_status)
 
-      if Gitlab::Geo.primary? && prometheus_enabled?
-        Gitlab::Geo.secondary_nodes.each { |node| update_prometheus_metrics(node, node.status) }
+        if Gitlab::Geo.primary?
+          Gitlab::Geo.secondary_nodes.find_each { |node| update_prometheus_metrics(node, node.status) }
+        end
       end
     end
 
@@ -25,7 +27,7 @@ module Geo
     end
 
     def current_node
-      @current_node ||= Gitlab::Geo.current_node
+      Gitlab::Geo.current_node
     end
 
     def send_status_to_primary(node, status)
