@@ -2,6 +2,7 @@ import { GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { makeMockUserCalloutDismisser } from 'helpers/mock_user_callout_dismisser';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
+import AccountVerificationModal from 'ee/billings/components/account_verification_modal.vue';
 import VerificationReminder from 'ee/billings/verification_reminder/components/verification_reminder.vue';
 import { TEST_HOST } from 'helpers/test_constants';
 import {
@@ -16,8 +17,11 @@ import {
 describe('VerificationReminder', () => {
   let wrapper;
   let trackingSpy;
+  let dismissMock;
 
   const createComponent = ({ shouldShowCallout = true } = {}, data = {}) => {
+    dismissMock = jest.fn();
+
     wrapper = shallowMount(VerificationReminder, {
       data() {
         return data;
@@ -26,13 +30,13 @@ describe('VerificationReminder', () => {
         GlSprintf,
         UserCalloutDismisser: makeMockUserCalloutDismisser({
           shouldShowCallout,
+          dismiss: dismissMock,
         }),
       },
     });
   };
 
-  const findVerificationModal = () => wrapper.findComponent({ ref: 'modal' });
-  const calloutDismisser = () => wrapper.findComponent({ ref: 'calloutDismisser' });
+  const findVerificationModal = () => wrapper.findComponent(AccountVerificationModal);
   const findWarningAlert = () => wrapper.findComponent({ ref: 'warningAlert' });
   const findSuccessAlert = () => wrapper.findComponent({ ref: 'successAlert' });
   const findValidateLink = () => wrapper.findComponent({ ref: 'validateLink' });
@@ -46,10 +50,6 @@ describe('VerificationReminder', () => {
     trackingSpy = mockTracking(undefined, undefined, jest.spyOn);
 
     createComponent();
-
-    findVerificationModal().vm.show = jest.fn();
-    findVerificationModal().vm.hide = jest.fn();
-    calloutDismisser().vm.dismiss = jest.fn();
   });
 
   afterEach(() => {
@@ -80,7 +80,7 @@ describe('VerificationReminder', () => {
     });
 
     it('calls the dismiss callback', () => {
-      expect(calloutDismisser().vm.dismiss).toHaveBeenCalled();
+      expect(dismissMock).toHaveBeenCalled();
     });
   });
 
@@ -108,7 +108,7 @@ describe('VerificationReminder', () => {
     });
 
     it('shows the verification modal', () => {
-      expect(findVerificationModal().vm.show).toHaveBeenCalled();
+      expect(findVerificationModal().props('visible')).toBe(true);
     });
   });
 
@@ -136,11 +136,11 @@ describe('VerificationReminder', () => {
     });
 
     it('hides the modal', () => {
-      expect(findVerificationModal().vm.hide).toHaveBeenCalled();
+      expect(findVerificationModal().props('visible')).toBe(false);
     });
 
     it('calls the dismiss callback', () => {
-      expect(calloutDismisser().vm.dismiss).toHaveBeenCalled();
+      expect(dismissMock).toHaveBeenCalled();
     });
 
     it('renders the success alert', () => {

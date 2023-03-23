@@ -27,6 +27,7 @@ export default {
   data() {
     return {
       shouldRenderSuccess: false,
+      accountVerificationModalVisible: false,
     };
   },
   computed: {
@@ -47,14 +48,14 @@ export default {
     },
     showModal() {
       this.track(START_VERIFICATION_EVENT);
-      this.$refs.modal.show();
+      this.accountVerificationModalVisible = true;
     },
     clickOpenDocs() {
       this.track(OPEN_DOCS_EVENT);
     },
     handleSuccessfulVerification() {
       this.track(SUCCESSFUL_VERIFICATION_EVENT);
-      this.$refs.modal.hide();
+      this.accountVerificationModalVisible = false;
       this.$refs.calloutDismisser.dismiss();
       this.shouldRenderSuccess = true;
     },
@@ -98,7 +99,7 @@ export default {
       </template>
     </user-callout-dismisser>
     <account-verification-modal
-      ref="modal"
+      v-model="accountVerificationModalVisible"
       :iframe-url="iframeUrl"
       :allowed-origin="allowedOrigin"
       @success="handleSuccessfulVerification"

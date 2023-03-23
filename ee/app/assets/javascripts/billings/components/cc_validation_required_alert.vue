@@ -45,6 +45,7 @@ export default {
   data() {
     return {
       shouldRenderSuccess: false,
+      accountVerificationModalVisible: false,
     };
   },
   computed: {
@@ -62,14 +63,14 @@ export default {
   },
   methods: {
     showModal() {
-      this.$refs.modal.show();
+      this.accountVerificationModalVisible = true;
     },
     handleSuccessfulVerification() {
       if (this.isFromAccountValidationEmail) {
         this.track('successful_validation', { label: 'account_validation_email' });
       }
 
-      this.$refs.modal.hide();
+      this.accountVerificationModalVisible = false;
       this.shouldRenderSuccess = true;
       this.$emit('verifiedCreditCard');
     },
@@ -110,7 +111,7 @@ export default {
     </gl-alert>
 
     <account-verification-modal
-      ref="modal"
+      v-model="accountVerificationModalVisible"
       :iframe-url="iframeUrl"
       :allowed-origin="allowedOrigin"
       @success="handleSuccessfulVerification"
