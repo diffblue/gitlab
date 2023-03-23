@@ -9,7 +9,6 @@ import GeoReplicableFilterBar from 'ee/geo_replicable/components/geo_replicable_
 import initStore from 'ee/geo_replicable/store';
 import {
   MOCK_GEO_REPLICATION_SVG_PATH,
-  MOCK_GEO_TROUBLESHOOTING_LINK,
   MOCK_BASIC_FETCH_DATA_MAP,
   MOCK_REPLICABLE_TYPE,
   MOCK_GRAPHQL_REGISTRY,
@@ -22,7 +21,6 @@ describe('GeoReplicableApp', () => {
   let store;
 
   const propsData = {
-    geoTroubleshootingLink: MOCK_GEO_TROUBLESHOOTING_LINK,
     geoReplicableEmptySvgPath: MOCK_GEO_REPLICATION_SVG_PATH,
   };
 

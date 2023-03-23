@@ -3,11 +3,8 @@ import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoReplicableEmptyState from 'ee/geo_replicable/components/geo_replicable_empty_state.vue';
-import {
-  MOCK_GEO_REPLICATION_SVG_PATH,
-  MOCK_GEO_TROUBLESHOOTING_LINK,
-  MOCK_REPLICABLE_TYPE,
-} from '../mock_data';
+import { GEO_TROUBLESHOOTING_LINK } from 'ee/geo_replicable/constants';
+import { MOCK_GEO_REPLICATION_SVG_PATH, MOCK_REPLICABLE_TYPE } from '../mock_data';
 
 Vue.use(Vuex);
 
@@ -15,7 +12,6 @@ describe('GeoReplicableEmptyState', () => {
   let wrapper;
 
   const propsData = {
-    geoTroubleshootingLink: MOCK_GEO_TROUBLESHOOTING_LINK,
     geoReplicableEmptySvgPath: MOCK_GEO_REPLICATION_SVG_PATH,
   };
 
@@ -42,7 +38,7 @@ describe('GeoReplicableEmptyState', () => {
 
   describe.each`
     hasFilters | title                                             | description                                 | link
-    ${false}   | ${`There are no ${MOCK_REPLICABLE_TYPE} to show`} | ${`No ${MOCK_REPLICABLE_TYPE} were found.`} | ${MOCK_GEO_TROUBLESHOOTING_LINK}
+    ${false}   | ${`There are no ${MOCK_REPLICABLE_TYPE} to show`} | ${`No ${MOCK_REPLICABLE_TYPE} were found.`} | ${GEO_TROUBLESHOOTING_LINK}
     ${true}    | ${'No results found'}                             | ${'Edit your search filter and try again.'} | ${false}
   `('template when hasFilters is $hasFilters', ({ hasFilters, title, description, link }) => {
     beforeEach(() => {
@@ -57,7 +53,7 @@ describe('GeoReplicableEmptyState', () => {
       expect(findGlEmptyState().text()).toContain(description);
     });
 
-    it(`does${link ? '' : ' not'} provide a help link to ${MOCK_GEO_TROUBLESHOOTING_LINK}`, () => {
+    it(`does${link ? '' : ' not'} provide a help link to ${GEO_TROUBLESHOOTING_LINK}`, () => {
       expect(findGlLink().exists() && findGlLink().attributes('href')).toBe(link);
     });
 

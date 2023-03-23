@@ -1,4 +1,5 @@
 import { __ } from '~/locale';
+import { helpPagePath } from '~/helpers/help_page_helper';
 
 export const FILTER_STATES = {
   ALL: {
@@ -51,3 +52,7 @@ export const NEXT = 'next';
 export const DEFAULT_PAGE_SIZE = 20;
 
 export const RESYNC_MODAL_ID = 'resync-all-geo';
+
+export const GEO_TROUBLESHOOTING_LINK = helpPagePath(
+  'administration/geo/replication/troubleshooting.md',
+);

@@ -16,9 +16,6 @@ export default () => {
   return new Vue({
     el,
     store: createStore(sitesPath),
-    components: {
-      GeoSiteFormApp,
-    },
     render(createElement) {
       let site;
       if (siteData) {
@@ -26,7 +23,7 @@ export default () => {
         site = convertObjectPropsToCamelCase(site, { deep: true });
       }
 
-      return createElement('geo-site-form-app', {
+      return createElement(GeoSiteFormApp, {
         props: {
           selectiveSyncTypes: JSON.parse(selectiveSyncTypes),
           syncShardsOptions: JSON.parse(syncShardsOptions),

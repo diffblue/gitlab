@@ -18,10 +18,6 @@ export default {
       type: String,
       required: true,
     },
-    geoTroubleshootingLink: {
-      type: String,
-      required: true,
-    },
   },
   computed: {
     ...mapState(['isLoading', 'replicableItems', 'useGraphQl']),
@@ -48,7 +44,6 @@ export default {
       <geo-replicable-empty-state
         v-else
         :geo-replicable-empty-svg-path="geoReplicableEmptySvgPath"
-        :geo-troubleshooting-link="geoTroubleshootingLink"
       />
     </template>
   </article>
