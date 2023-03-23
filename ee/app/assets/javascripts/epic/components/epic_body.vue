@@ -39,7 +39,7 @@ export default {
 <template>
   <div>
     <div
-      class="issuable-details detail-page-description content-block gl-pt-2 gl-pb-0 gl-border-none"
+      class="issuable-details detail-page-description content-block gl-pt-4 gl-pb-0 gl-border-none"
     >
       <issuable-body
         :endpoint="endpoint"
