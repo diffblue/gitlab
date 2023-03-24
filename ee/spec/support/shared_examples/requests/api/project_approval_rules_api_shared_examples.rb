@@ -63,7 +63,7 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
 
   shared_examples_for 'a user with access' do
     it 'returns 201 status' do
-      post api(url, current_user, admin_mode: current_user.admin?), params: params
+      post api(url, current_user), params: params
 
       expect(response).to have_gitlab_http_status(:created)
       expect(response).to match_response_schema(schema, dir: 'ee')
@@ -241,7 +241,7 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
 
       before do
         stub_licensed_features(multiple_approval_rules: true)
-        put api(url, current_user, admin_mode: current_user.admin?), params: params.merge(applies_to_all_protected_branches: true)
+        put api(url, current_user), params: params.merge(applies_to_all_protected_branches: true)
       end
 
       it 'returns a list of project protected branches in the response' do
@@ -255,7 +255,7 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
 
       before do
         stub_licensed_features(multiple_approval_rules: true)
-        put api(url, current_user, admin_mode: current_user.admin?), params: { protected_branch_ids: protected_branches.map(&:id) }
+        put api(url, current_user), params: { protected_branch_ids: protected_branches.map(&:id) }
       end
 
       it 'associates approval rule to specified protected branches' do
@@ -271,7 +271,7 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
 
       it 'returns 200 status' do
         expect do
-          put api(url, current_user, admin_mode: current_user.admin?), params: { scanners: scanners }
+          put api(url, current_user), params: { scanners: scanners }
         end.to change { approval_rule.reload.scanners.count }.from(0).to(scanners.count)
         expect(response).to have_gitlab_http_status(:ok)
       end
@@ -282,7 +282,7 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
 
       it 'returns 200 status' do
         expect do
-          put api(url, current_user, admin_mode: current_user.admin?), params: { scanners: scanners }
+          put api(url, current_user), params: { scanners: scanners }
         end.not_to change { approval_rule.reload.scanners }
 
         expect(response).to have_gitlab_http_status(:ok)
@@ -298,7 +298,7 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
 
       it 'returns 200 status' do
         expect do
-          put api(url, current_user, admin_mode: current_user.admin?), params: { vulnerabilities_allowed: vulnerabilities_allowed }
+          put api(url, current_user), params: { vulnerabilities_allowed: vulnerabilities_allowed }
         end.not_to change { approval_rule.reload.scanners }
 
         expect(response).to have_gitlab_http_status(:ok)
@@ -310,7 +310,7 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
 
       it 'returns 200 status' do
         expect do
-          put api(url, current_user, admin_mode: current_user.admin?), params: { severity_levels: severity_levels }
+          put api(url, current_user), params: { severity_levels: severity_levels }
         end.to change { approval_rule.reload.severity_levels.count }.from(::ApprovalProjectRule::DEFAULT_SEVERITIES.count).to(severity_levels.count)
         expect(response).to have_gitlab_http_status(:ok)
       end
@@ -325,7 +325,7 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
       context 'when sending json data' do
         it 'removes all approvers if empty params are given' do
           expect do
-            put api(url, current_user, admin_mode: current_user.admin?), params: { users: [], groups: [] }.to_json, headers: { CONTENT_TYPE: 'application/json' }
+            put api(url, current_user), params: { users: [], groups: [] }.to_json, headers: { CONTENT_TYPE: 'application/json' }
           end.to change { approval_rule.users.count + approval_rule.groups.count }.from(2).to(0)
 
           expect(response).to have_gitlab_http_status(:ok)
@@ -336,7 +336,7 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
 
     it 'sets approvers' do
       expect do
-        put api(url, current_user, admin_mode: current_user.admin?), params: { users: "#{approver.id},#{other_approver.id}" }
+        put api(url, current_user), params: { users: "#{approver.id},#{other_approver.id}" }
       end.to change { approval_rule.users.count }.from(0).to(2)
 
       expect(approval_rule.users).to contain_exactly(approver, other_approver)
@@ -350,7 +350,7 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
 
       it 'returns 200 status' do
         expect do
-          put api(url, current_user, admin_mode: current_user.admin?), params: { vulnerabilities_allowed: vulnerabilities_allowed }
+          put api(url, current_user), params: { vulnerabilities_allowed: vulnerabilities_allowed }
         end.to change { approval_rule.reload.vulnerabilities_allowed }.from(0).to(vulnerabilities_allowed)
         expect(response).to have_gitlab_http_status(:ok)
       end
@@ -400,7 +400,7 @@ RSpec.shared_examples 'an API endpoint for deleting project approval rule' do
 
   shared_examples_for 'a user with access' do
     it 'destroys' do
-      delete api(url, current_user, admin_mode: current_user.admin?)
+      delete api(url, current_user)
 
       expect(ApprovalProjectRule.exists?(id: approval_rule.id)).to eq(false)
       expect(response).to have_gitlab_http_status(:no_content)
