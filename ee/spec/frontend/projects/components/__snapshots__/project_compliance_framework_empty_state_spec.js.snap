@@ -1,49 +1,125 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Project compliance framework empty state matches the snapshot when "addFrameworkPath" is a string path 1`] = `
-<gl-empty-state-stub
-  compact="true"
-  contentclass=""
-  invertindarkmode="true"
-  primarybuttonlink="/edit-group"
-  primarybuttontext="Add framework in group-name"
-  svgheight="100"
-  svgpath="/image.svg"
+<section
+  class="gl-display-flex gl-flex-direction-row"
 >
-  <h5
-    class="gl-mt-0"
+  <div
+    class="gl-display-none gl-sm-display-block gl-px-4"
   >
-    No compliance frameworks are set up yet
-  </h5>
-  Add a framework to 
-  <gl-link-stub
-    href="/group-path"
+    <div
+      class="svg-250"
+    >
+      <img
+        alt=""
+        class="gl-max-w-full gl-dark-invert-keep-hue"
+        height="100"
+        role="img"
+        src="/image.svg"
+      />
+    </div>
+  </div>
+   
+  <div
+    class="gl-flex-grow-1 gl-flex-basis-0 gl-px-4"
+    data-testid="gl-empty-state-content"
   >
-    group-name
-  </gl-link-stub>
-   and it will appear here.
-</gl-empty-state-stub>
+    <div
+      class="gl-mx-auto gl-my-0"
+    >
+      <h5
+        class="gl-mt-0"
+      >
+        No compliance frameworks are set up yet
+      </h5>
+       
+      <p
+        class="gl-mt-3"
+      >
+        Add a framework to 
+        <gl-link-stub
+          href="/group-path"
+        >
+          group-name
+        </gl-link-stub>
+         and it will appear here.
+      </p>
+       
+      <div
+        class="gl-display-flex gl-flex-wrap"
+      >
+        <gl-button-stub
+          buttontextclasses=""
+          category="primary"
+          class="gl-mb-3 gl-mr-3"
+          href="/edit-group"
+          icon=""
+          size="medium"
+          variant="confirm"
+        >
+          Add framework in group-name
+        </gl-button-stub>
+         
+        <!---->
+      </div>
+    </div>
+  </div>
+</section>
 `;
 
 exports[`Project compliance framework empty state matches the snapshot when "addFrameworkPath" is undefined 1`] = `
-<gl-empty-state-stub
-  compact="true"
-  contentclass=""
-  invertindarkmode="true"
-  svgheight="100"
-  svgpath="/image.svg"
+<section
+  class="gl-display-flex gl-flex-direction-row"
 >
-  <h5
-    class="gl-mt-0"
+  <div
+    class="gl-display-none gl-sm-display-block gl-px-4"
   >
-    No compliance frameworks are set up yet
-  </h5>
-  After a framework is added to 
-  <gl-link-stub
-    href="/group-path"
+    <div
+      class="svg-250"
+    >
+      <img
+        alt=""
+        class="gl-max-w-full gl-dark-invert-keep-hue"
+        height="100"
+        role="img"
+        src="/image.svg"
+      />
+    </div>
+  </div>
+   
+  <div
+    class="gl-flex-grow-1 gl-flex-basis-0 gl-px-4"
+    data-testid="gl-empty-state-content"
   >
-    group-name
-  </gl-link-stub>
-  , it will appear here.
-</gl-empty-state-stub>
+    <div
+      class="gl-mx-auto gl-my-0"
+    >
+      <h5
+        class="gl-mt-0"
+      >
+        No compliance frameworks are set up yet
+      </h5>
+       
+      <p
+        class="gl-mt-3"
+      >
+        After a framework is added to 
+        <gl-link-stub
+          href="/group-path"
+        >
+          group-name
+        </gl-link-stub>
+        , it will appear here.
+      </p>
+       
+      <div
+        class="gl-display-flex gl-flex-wrap"
+      >
+        <!---->
+         
+        <!---->
+      </div>
+    </div>
+  </div>
+</section>
 `;

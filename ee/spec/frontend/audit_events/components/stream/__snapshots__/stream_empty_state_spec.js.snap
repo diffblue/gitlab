@@ -1,38 +1,68 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`StreamEmptyState should render correctly 1`] = `
-<gl-empty-state-stub
-  class="gl-mt-5"
-  contentclass=""
-  invertindarkmode="true"
-  svgheight="72"
-  svgpath="mock/path"
-  title="Setup streaming for audit events"
+<section
+  class="gl-display-flex gl-mt-5 empty-state gl-text-center gl-flex-direction-column"
 >
-  <h3
-    class="h4 gl-font-size-h-display gl-line-height-36 gl-mt-n3"
+  <div
+    class="gl-max-w-full"
   >
-    
+    <div
+      class="svg-250 svg-content"
+    >
+      <img
+        alt=""
+        class="gl-max-w-full gl-dark-invert-keep-hue"
+        height="72"
+        role="img"
+        src="mock/path"
+      />
+    </div>
+  </div>
+   
+  <div
+    class="gl-max-w-full gl-m-auto"
+    data-testid="gl-empty-state-content"
+  >
+    <div
+      class="gl-mx-auto gl-my-0 gl-p-5"
+    >
+      <h3
+        class="h4 gl-font-size-h-display gl-line-height-36 gl-mt-n3"
+      >
+        
       Setup streaming for audit events
     
-  </h3>
-  <p>
-    Add an HTTP endpoint to manage audit logs in third-party systems.
-  </p>
-   
-  <p>
-    This is great for keeping everything one place.
-  </p>
-  <gl-button-stub
-    buttontextclasses=""
-    category="primary"
-    icon=""
-    size="medium"
-    variant="confirm"
-  >
-    
+      </h3>
+       
+      <p
+        class="gl-mt-3"
+      >
+        <p>
+          Add an HTTP endpoint to manage audit logs in third-party systems.
+        </p>
+         
+        <p>
+          This is great for keeping everything one place.
+        </p>
+      </p>
+       
+      <div
+        class="gl-display-flex gl-flex-wrap gl-justify-content-center"
+      >
+        <gl-button-stub
+          buttontextclasses=""
+          category="primary"
+          icon=""
+          size="medium"
+          variant="confirm"
+        >
+          
       Add streaming destination
     
-  </gl-button-stub>
-</gl-empty-state-stub>
+        </gl-button-stub>
+      </div>
+    </div>
+  </div>
+</section>
 `;

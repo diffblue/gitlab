@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import { GlButton } from '@gitlab/ui';
+import { GlButton, GlEmptyState } from '@gitlab/ui';
 import StreamEmptyState from 'ee/audit_events/components/stream/stream_empty_state.vue';
 import { mockSvgPath } from '../../mock_data';
 
@@ -10,6 +10,9 @@ describe('StreamEmptyState', () => {
     wrapper = shallowMount(StreamEmptyState, {
       provide: {
         emptyStateSvgPath: mockSvgPath,
+      },
+      stubs: {
+        GlEmptyState,
       },
     });
   };

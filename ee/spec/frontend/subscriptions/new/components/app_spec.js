@@ -36,7 +36,6 @@ describe('App component', () => {
     wrapper = shallowMountExtended(Component, {
       store,
       stubs: {
-        Modal,
         GitlabExperiment,
         StepOrderApp: {
           template: `

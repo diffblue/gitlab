@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlButton, GlSprintf } from '@gitlab/ui';
 import { createAlert } from '~/alert';
@@ -75,7 +75,8 @@ describe('StreamItem', () => {
       createComponent();
       const deleteBtn = findDeleteButton();
       const editBtn = findEditButton();
-      await deleteBtn.trigger('click');
+      deleteBtn.vm.$emit('click');
+      await nextTick();
 
       expect(editBtn.props('disabled')).toBe(true);
       expect(deleteBtn.props('loading')).toBe(true);
@@ -97,7 +98,8 @@ describe('StreamItem', () => {
       const deleteBtn = findDeleteButton();
       const editBtn = findEditButton();
 
-      await deleteBtn.trigger('click');
+      deleteBtn.vm.$emit('click');
+      await nextTick();
 
       expect(editBtn.props('disabled')).toBe(true);
       expect(deleteBtn.props('loading')).toBe(true);
@@ -120,7 +122,8 @@ describe('StreamItem', () => {
       const deleteBtn = findDeleteButton();
       const editBtn = findEditButton();
 
-      await deleteBtn.trigger('click');
+      deleteBtn.vm.$emit('click');
+      await nextTick();
 
       expect(editBtn.props('disabled')).toBe(true);
       expect(deleteBtn.props('loading')).toBe(true);
@@ -140,9 +143,10 @@ describe('StreamItem', () => {
   });
 
   describe('editing', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createComponent();
-      findEditButton().trigger('click');
+      findEditButton().vm.$emit('click');
+      await nextTick();
     });
 
     it('should render correctly', () => {

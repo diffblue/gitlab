@@ -1,7 +1,8 @@
 import { GlModal, GlAlert, GlSprintf } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
-import { nextTick } from 'vue';
+import Vue from 'vue';
+import { stubComponent } from 'helpers/stub_component';
 import DeleteScheduleModal, {
   i18n,
 } from 'ee/oncall_schedules/components/delete_schedule_modal.vue';
@@ -16,7 +17,6 @@ import {
   destroyScheduleResponseWithErrors,
 } from './mocks/apollo_mock';
 
-const localVue = createLocalVue();
 const projectPath = 'group/project';
 const mutate = jest.fn();
 const mockHideModal = jest.fn();
@@ -32,8 +32,8 @@ describe('DeleteScheduleModal', () => {
   const findModalText = () => wrapper.findComponent(GlSprintf);
   const findAlert = () => wrapper.findComponent(GlAlert);
 
-  async function destroySchedule(localWrapper) {
-    localWrapper.findComponent(GlModal).vm.$emit('primary', { preventDefault: jest.fn() });
+  function destroySchedule() {
+    wrapper.findComponent(GlModal).vm.$emit('primary', { preventDefault: jest.fn() });
   }
 
   const createComponent = ({ data = {}, props = {} } = {}) => {
@@ -56,15 +56,22 @@ describe('DeleteScheduleModal', () => {
           mutate,
         },
       },
-      stubs: { GlSprintf: false },
+      stubs: {
+        GlModal: stubComponent(GlModal, {
+          template:
+            '<div><slot name="modal-title"></slot><slot></slot><slot name="modal-footer"></slot></div>',
+          methods: {
+            hide: mockHideModal,
+          },
+        }),
+      },
     });
-    wrapper.vm.$refs.deleteScheduleModal.hide = mockHideModal;
   };
 
   function createComponentWithApollo({
     destroyHandler = jest.fn().mockResolvedValue(destroyScheduleResponse),
   } = {}) {
-    localVue.use(VueApollo);
+    Vue.use(VueApollo);
     destroyScheduleHandler = destroyHandler;
 
     const requestHandlers = [
@@ -83,7 +90,6 @@ describe('DeleteScheduleModal', () => {
     });
 
     wrapper = shallowMount(DeleteScheduleModal, {
-      localVue,
       apolloProvider: fakeApollo,
       propsData: {
         schedule,
@@ -95,22 +101,24 @@ describe('DeleteScheduleModal', () => {
     });
   }
 
-  beforeEach(() => {
-    createComponent();
-  });
-
   it('renders delete schedule modal layout', () => {
+    createComponent();
+
     expect(wrapper.element).toMatchSnapshot();
   });
 
   describe('renders delete modal with the correct schedule information', () => {
     it('renders name of schedule to destroy', () => {
+      createComponent();
+
       expect(findModalText().attributes('message')).toBe(i18n.deleteScheduleMessage);
     });
   });
 
   describe('Schedule destroy apollo API call', () => {
     it('makes a request with `oncallScheduleDestroy` to delete a schedule', () => {
+      createComponent();
+
       mutate.mockResolvedValueOnce({});
       findModal().vm.$emit('primary', { preventDefault: jest.fn() });
       expect(mutate).toHaveBeenCalledWith({
@@ -121,6 +129,8 @@ describe('DeleteScheduleModal', () => {
     });
 
     it('hides the modal on successful schedule deletion', async () => {
+      createComponent();
+
       mutate.mockResolvedValueOnce({ data: { oncallScheduleDestroy: { errors: [] } } });
       findModal().vm.$emit('primary', { preventDefault: jest.fn() });
       await waitForPromises();
@@ -128,6 +138,8 @@ describe('DeleteScheduleModal', () => {
     });
 
     it("doesn't hide the modal on deletion fail", async () => {
+      createComponent();
+
       const error = 'some error';
       mutate.mockResolvedValueOnce({ data: { oncallScheduleDestroy: { errors: [error] } } });
       findModal().vm.$emit('primary', { preventDefault: jest.fn() });
@@ -142,17 +154,17 @@ describe('DeleteScheduleModal', () => {
   describe('with mocked Apollo client', () => {
     it('has the name of the schedule to delete based on getOncallSchedulesQuery', async () => {
       createComponentWithApollo();
-
-      await jest.runOnlyPendingTimers();
-      await nextTick();
+      await waitForPromises();
 
       expect(findModal().attributes('data-testid')).toBe(`delete-schedule-modal-${schedule.iid}`);
     });
 
     it('calls a mutation with correct parameters and destroys a schedule', async () => {
       createComponentWithApollo();
+      await waitForPromises();
 
-      await destroySchedule(wrapper);
+      destroySchedule();
+      await waitForPromises();
 
       expect(destroyScheduleHandler).toHaveBeenCalled();
     });
@@ -162,7 +174,7 @@ describe('DeleteScheduleModal', () => {
         destroyHandler: jest.fn().mockResolvedValue(destroyScheduleResponseWithErrors),
       });
 
-      await destroySchedule(wrapper);
+      destroySchedule(wrapper);
       await waitForPromises();
 
       const alert = findAlert();
