@@ -70,20 +70,20 @@ describe('SamlAuthorize', () => {
 
     describe('when checkbox is toggled', () => {
       it(`adds the '${REMEMBER_ME_PARAM}' query parameter to the SAML URL`, async () => {
-        expect(findButton().attributes('href')).not.toContain(REMEMBER_ME_PARAM);
+        expect(findButton().attributes('href')).toEqual(samlUrl);
 
         await findCheckbox().vm.$emit('change', true);
 
-        expect(findButton().attributes('href')).toContain(`${REMEMBER_ME_PARAM}=1`);
+        expect(findButton().attributes('href')).toEqual(`${samlUrl}?${REMEMBER_ME_PARAM}=1`);
       });
 
       it(`removes the '${REMEMBER_ME_PARAM}' query parameter from the SAML URL`, async () => {
         await findCheckbox().vm.$emit('change', true);
-        expect(findButton().attributes('href')).toContain(`${REMEMBER_ME_PARAM}=1`);
+        expect(findButton().attributes('href')).toEqual(`${samlUrl}?${REMEMBER_ME_PARAM}=1`);
 
         await findCheckbox().vm.$emit('change', false);
 
-        expect(findButton().attributes('href')).not.toContain('REMEMBER_ME_PARAM');
+        expect(findButton().attributes('href')).toEqual(samlUrl);
       });
     });
   });
