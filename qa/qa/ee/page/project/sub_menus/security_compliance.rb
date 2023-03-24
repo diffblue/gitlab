@@ -14,7 +14,7 @@ module QA
               end
             end
 
-            def click_on_dependency_list
+            def go_to_dependency_list
               hover_security_compliance do
                 within_submenu do
                   click_element(:sidebar_menu_item_link, menu_item: 'Dependency list')
@@ -30,7 +30,7 @@ module QA
               end
             end
 
-            def click_on_policies
+            def go_to_policies
               hover_security_compliance do
                 within_submenu do
                   click_element(:sidebar_menu_item_link, menu_item: 'Policies')
@@ -38,7 +38,7 @@ module QA
               end
             end
 
-            def click_on_vulnerability_report
+            def go_to_vulnerability_report
               hover_security_compliance do
                 within_submenu do
                   click_element(:sidebar_menu_item_link, menu_item: 'Vulnerability report')
@@ -46,7 +46,7 @@ module QA
               end
             end
 
-            def click_on_security_configuration_link
+            def go_to_security_configuration
               hover_security_compliance do
                 within_submenu do
                   click_element(:sidebar_menu_item_link, menu_item: 'Security configuration')
@@ -62,7 +62,7 @@ module QA
               end
             end
 
-            def go_to_audit_events_settings
+            def go_to_audit_events
               hover_security_compliance do
                 within_submenu do
                   click_element(:sidebar_menu_item_link, menu_item: 'Audit events')

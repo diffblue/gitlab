@@ -38,7 +38,7 @@ module QA
 
       it 'dependency list has empty state',
          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348004' do
-        Page::Project::Menu.perform(&:click_on_dependency_list)
+        Page::Project::Menu.perform(&:go_to_dependency_list)
 
         EE::Page::Project::Secure::DependencyList.perform do |dependency_list|
           expect(dependency_list)
@@ -78,7 +78,7 @@ module QA
          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348037' do
         push_security_reports
         Page::Project::Menu.perform(&:click_project)
-        Page::Project::Menu.perform(&:click_on_vulnerability_report)
+        Page::Project::Menu.perform(&:go_to_vulnerability_report)
 
         EE::Page::Project::Secure::Show.perform do |dashboard|
           filter_report_and_perform(dashboard, "Dependency Scanning") do
@@ -145,7 +145,7 @@ module QA
           pipelines = project.pipelines
           !pipelines.empty? && pipelines.last[:status] == "success"
         end
-        Page::Project::Menu.perform(&:click_on_vulnerability_report)
+        Page::Project::Menu.perform(&:go_to_vulnerability_report)
 
         EE::Page::Project::Secure::Show.perform do |security_dashboard|
           security_dashboard.filter_report_type("SAST") do
@@ -174,7 +174,7 @@ module QA
 
       it 'displays the Dependency List', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348035' do
         push_security_reports
-        Page::Project::Menu.perform(&:click_on_dependency_list)
+        Page::Project::Menu.perform(&:go_to_dependency_list)
 
         EE::Page::Project::Secure::DependencyList.perform do |dependency_list|
           expect(dependency_list).to have_dependency_count_of number_of_dependencies_in_fixture

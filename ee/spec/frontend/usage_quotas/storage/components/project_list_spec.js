@@ -4,7 +4,6 @@ import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import StorageTypeHelpLink from 'ee/usage_quotas/storage/components/storage_type_help_link.vue';
 import StorageTypeWarning from 'ee/usage_quotas/storage/components/storage_type_warning.vue';
-import { uploadsPopoverContent } from '~/usage_quotas/storage/constants';
 import { namespaceContainerRegistryPopoverContent } from 'ee/usage_quotas/storage/constants';
 import { projectHelpLinks } from 'jest/usage_quotas/storage/mock_data';
 import { projects } from '../mock_data';
@@ -31,7 +30,6 @@ const findStorageTypeWarning = (projectId, storageType) =>
 const storageTypes = [
   { key: 'storage' },
   { key: 'repository' },
-  { key: 'uploads' },
   { key: 'snippets' },
   { key: 'buildArtifacts' },
   { key: 'containerRegistry' },
@@ -42,7 +40,6 @@ const storageTypes = [
 
 const storageTypesWithPopover = [
   { key: 'container-registry', content: namespaceContainerRegistryPopoverContent },
-  { key: 'uploads', content: uploadsPopoverContent },
 ];
 
 describe('ProjectList', () => {
