@@ -238,17 +238,18 @@ RSpec.describe ::EE::Gitlab::Scim::Group::ProvisioningService, :saas,
 
         context 'when error in create identity' do
           let(:error_response) { described_class.new(service_params, group).send(:error_response) }
-          let(:provision_response) do
-            ::EE::Gitlab::Scim::ProvisioningResponse.new(status: :error,
-                                                         message: "undefined method `save' for nil:NilClass")
-          end
 
           before do
             allow(service).to receive(:identity).and_return(nil)
           end
 
           it 'returns provision response error' do
-            expect(service.execute.to_json).to eq(provision_response.to_json)
+            response = service.execute
+
+            expect(response).to be_a(::EE::Gitlab::Scim::ProvisioningResponse)
+            expect(response.as_json).to match(hash_including('status' => 'error',
+                                                             'message' => /^undefined method `save' for nil:NilClass/,
+                                                             'identity' => nil))
           end
         end
       end
