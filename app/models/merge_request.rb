@@ -1204,6 +1204,7 @@ class MergeRequest < ApplicationRecord
       ::MergeRequests::Mergeability::CheckOpenStatusService,
       ::MergeRequests::Mergeability::CheckDraftStatusService,
       ::MergeRequests::Mergeability::CheckBrokenStatusService,
+      ::MergeRequests::Mergeability::CheckStaleApprovalsService,
       ::MergeRequests::Mergeability::CheckDiscussionsStatusService,
       ::MergeRequests::Mergeability::CheckCiStatusService
     ]
