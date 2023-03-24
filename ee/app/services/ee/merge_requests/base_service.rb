@@ -72,13 +72,12 @@ module EE
           rule.approved_approvers.map(&:id)
         end.compact
 
-        merge_request.approvals.where(user_id: match_ids).delete_all # rubocop:disable CodeReuse/ActiveRecord
-        trigger_merge_request_merge_status_updated(merge_request)
-        trigger_merge_request_approval_state_updated(merge_request)
+        delete_approvals(merge_request, merge_request.approvals.where(user_id: match_ids)) # rubocop:disable CodeReuse/ActiveRecord
       end
 
-      def delete_approvals(merge_request)
-        merge_request.approvals.delete_all
+      def delete_approvals(merge_request, approvals = merge_request.approvals)
+        approvals.destroy_all # rubocop: disable Cop/DestroyAll
+
         trigger_merge_request_merge_status_updated(merge_request)
         trigger_merge_request_approval_state_updated(merge_request)
       end
