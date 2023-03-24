@@ -31,7 +31,7 @@ module QA
 
       it 'can load Policies page and view the policies list', :smoke,
 testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347589' do
-        Page::Project::Menu.perform(&:click_on_policies)
+        Page::Project::Menu.perform(&:go_to_policies)
 
         EE::Page::Project::Policies::Index.perform do |policies_page|
           aggregate_failures do
@@ -42,7 +42,7 @@ testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347589' do
 
       it 'can navigate to Policy Editor page', :smoke,
 testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347611' do
-        Page::Project::Menu.perform(&:click_on_policies)
+        Page::Project::Menu.perform(&:go_to_policies)
 
         EE::Page::Project::Policies::Index.perform(&:click_new_policy_button)
 
