@@ -8,7 +8,7 @@ module QA
     shared_examples 'audit event' do |expected_events|
       it 'logs audit events for UI operations' do
         QA::Support::Retrier.retry_on_exception do
-          Page::Project::Menu.perform(&:go_to_audit_events_settings)
+          Page::Project::Menu.perform(&:go_to_audit_events)
         end
         expected_events.each do |expected_event|
           expect(page).to have_text(expected_event)

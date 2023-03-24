@@ -17,6 +17,8 @@ module QA
               prepend SubMenus::Analytics
               prepend SubMenus::Repository
               prepend SubMenus::Settings
+
+              prepend SubMenus::SuperSidebar::SecurityCompliance if QA::Runtime::Env.super_sidebar_enabled?
             end
           end
         end

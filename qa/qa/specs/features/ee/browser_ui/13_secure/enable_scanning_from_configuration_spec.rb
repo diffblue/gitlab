@@ -50,7 +50,7 @@ module QA
           'runs dependency scanning job when enabled from configuration',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347621'
         ) do
-          Page::Project::Menu.perform(&:click_on_security_configuration_link)
+          Page::Project::Menu.perform(&:go_to_security_configuration)
 
           Page::Project::Secure::ConfigurationForm.perform do |config_form|
             expect(config_form).to have_dependency_scanning_status('Not enabled')
@@ -76,7 +76,7 @@ module QA
             expect(pipeline).to have_job('gemnasium-dependency_scanning')
           end
 
-          Page::Project::Menu.perform(&:click_on_security_configuration_link)
+          Page::Project::Menu.perform(&:go_to_security_configuration)
 
           Page::Project::Secure::ConfigurationForm.perform do |config_form|
             expect(config_form).to have_dependency_scanning_status('Enabled')
@@ -110,7 +110,7 @@ module QA
           'runs sast job when enabled from configuration',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347685'
         ) do
-          Page::Project::Menu.perform(&:click_on_security_configuration_link)
+          Page::Project::Menu.perform(&:go_to_security_configuration)
 
           Page::Project::Secure::ConfigurationForm.perform do |config_form|
             expect(config_form).to have_sast_status('Not enabled')
@@ -155,7 +155,7 @@ module QA
             expect(pipeline).to have_job('brakeman-sast')
           end
 
-          Page::Project::Menu.perform(&:click_on_security_configuration_link)
+          Page::Project::Menu.perform(&:go_to_security_configuration)
 
           Page::Project::Secure::ConfigurationForm.perform do |config_form|
             expect(config_form).to have_sast_status('Enabled')
@@ -177,7 +177,7 @@ module QA
           'shows correct status in configuration',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/375460'
         ) do
-          Page::Project::Menu.perform(&:click_on_security_configuration_link)
+          Page::Project::Menu.perform(&:go_to_security_configuration)
           Page::Project::Secure::ConfigurationForm.perform do |config_form|
             config_form.go_to_compliance_tab
 
@@ -217,7 +217,7 @@ module QA
             expect(pipeline).to have_job('license_scanning')
           end
 
-          Page::Project::Menu.perform(&:click_on_security_configuration_link)
+          Page::Project::Menu.perform(&:go_to_security_configuration)
           Page::Project::Secure::ConfigurationForm.perform do |config_form|
             config_form.go_to_compliance_tab
 

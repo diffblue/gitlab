@@ -44,7 +44,7 @@ testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/377406' do
 
       it 'can successfully create a JIRA issue from vulnerability details page',
          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/381386' do
-        Page::Project::Menu.perform(&:click_on_vulnerability_report)
+        Page::Project::Menu.perform(&:go_to_vulnerability_report)
 
         EE::Page::Project::Secure::SecurityDashboard.perform do |security_dashboard|
           expect(security_dashboard).to have_vulnerability(description: vuln_name)
