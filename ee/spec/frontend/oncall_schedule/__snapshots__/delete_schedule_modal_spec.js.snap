@@ -1,17 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`DeleteScheduleModal renders delete schedule modal layout 1`] = `
-<gl-modal-stub
-  actioncancel="[object Object]"
-  actionprimary="[object Object]"
-  arialabel=""
+<div
   data-testid="delete-schedule-modal-37"
-  dismisslabel="Close"
-  modalclass=""
-  modalid="deleteScheduleModal"
-  size="sm"
-  title="Delete schedule"
-  titletag="h4"
 >
   <!---->
    
@@ -26,5 +17,5 @@ exports[`DeleteScheduleModal renders delete schedule modal layout 1`] = `
     Any escalation rules that are using this schedule will also be deleted.
   
   </div>
-</gl-modal-stub>
+</div>
 `;

@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import { GlSprintf } from '@gitlab/ui';
+import { GlSprintf, GlEmptyState } from '@gitlab/ui';
 import ProjectComplianceFrameworkEmptyState from 'ee/projects/components/project_compliance_framework_empty_state.vue';
 
 describe('Project compliance framework empty state', () => {
@@ -19,6 +19,7 @@ describe('Project compliance framework empty state', () => {
       },
       stubs: {
         GlSprintf,
+        GlEmptyState,
       },
     });
   };
