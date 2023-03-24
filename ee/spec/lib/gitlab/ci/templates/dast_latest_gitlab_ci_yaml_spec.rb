@@ -104,6 +104,24 @@ RSpec.describe 'DAST.latest.gitlab-ci.yml', feature_category: :continuous_integr
             include_examples 'includes no jobs'
           end
 
+          context 'when DAST_DISABLED="true"' do
+            before do
+              create(:ci_variable, project: project, key: 'DAST_DISABLED', value: 'true')
+            end
+
+            include_examples 'includes no jobs'
+          end
+
+          context 'when DAST_DISABLED="false"' do
+            before do
+              create(:ci_variable, project: project, key: 'DAST_DISABLED', value: 'false')
+            end
+
+            it 'includes jobs' do
+              expect(build_names).not_to be_empty
+            end
+          end
+
           context 'when DAST_DISABLED_FOR_DEFAULT_BRANCH=1' do
             before do
               create(:ci_variable, project: project, key: 'DAST_DISABLED_FOR_DEFAULT_BRANCH', value: '1')
@@ -128,7 +146,33 @@ RSpec.describe 'DAST.latest.gitlab-ci.yml', feature_category: :continuous_integr
             it_behaves_like 'acts as MR pipeline', %w[dast], { 'CHANGELOG.md' => '' }
           end
 
-          context 'when REVIEW_DISABLED=true' do
+          context 'when DAST_DISABLED_FOR_DEFAULT_BRANCH="false"' do
+            before do
+              create(:ci_variable, project: project, key: 'DAST_DISABLED_FOR_DEFAULT_BRANCH', value: 'false')
+            end
+
+            context 'when on default branch' do
+              it 'includes dast job' do
+                expect(build_names).to match_array(%w[dast])
+              end
+            end
+
+            context 'when on feature branch' do
+              let(:pipeline_branch) { 'patch-1' }
+
+              before do
+                project.repository.create_branch(pipeline_branch, default_branch)
+              end
+
+              it 'includes dast job' do
+                expect(build_names).to match_array(%w[dast])
+              end
+            end
+
+            it_behaves_like 'acts as MR pipeline', %w[dast], { 'CHANGELOG.md' => '' }
+          end
+
+          context 'when REVIEW_DISABLED="true"' do
             before do
               create(:ci_variable, project: project, key: 'REVIEW_DISABLED', value: 'true')
             end
@@ -145,6 +189,28 @@ RSpec.describe 'DAST.latest.gitlab-ci.yml', feature_category: :continuous_integr
               end
 
               include_examples 'includes no jobs'
+            end
+          end
+
+          context 'when REVIEW_DISABLED="false"' do
+            before do
+              create(:ci_variable, project: project, key: 'REVIEW_DISABLED', value: 'false')
+            end
+
+            context 'when on default branch' do
+              it_behaves_like 'acts as branch pipeline', %w[dast]
+            end
+
+            context 'when on feature branch' do
+              let(:pipeline_branch) { 'patch-1' }
+
+              before do
+                project.repository.create_branch(pipeline_branch, default_branch)
+              end
+
+              it 'includes dast job' do
+                expect(build_names).to match_array(%w[dast])
+              end
             end
           end
         end
