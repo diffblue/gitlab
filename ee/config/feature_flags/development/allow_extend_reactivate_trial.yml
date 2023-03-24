@@ -1,8 +1,0 @@
----
-name: allow_extend_reactivate_trial
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/56471
-rollout_issue_url:
-milestone: '13.11'
-type: development
-group: group::purchase
-default_enabled: false

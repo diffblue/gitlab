@@ -13,8 +13,6 @@ class TrialsController < ApplicationController
   before_action :check_if_gl_com_or_dev
   before_action :authenticate_user!
   before_action :find_or_create_namespace, only: :apply
-  before_action :find_namespace, only: :extend_reactivate
-  before_action :authenticate_namespace_owner!, only: :extend_reactivate
   before_action only: [:new, :select] do
     push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
   end
@@ -47,18 +45,6 @@ class TrialsController < ApplicationController
     apply_trial_and_redirect
   end
 
-  def extend_reactivate
-    render_404 unless Feature.enabled?(:allow_extend_reactivate_trial)
-
-    result = GitlabSubscriptions::ExtendReactivateTrialService.new.execute(extend_reactivate_trial_params) if valid_extension?
-
-    if result&.success?
-      head :ok
-    else
-      render_403
-    end
-  end
-
   protected
 
   # override the ConfirmEmailWarning method in order to skip
@@ -80,16 +66,6 @@ class TrialsController < ApplicationController
     return if current_user
 
     redirect_to new_trial_registration_path(glm_tracking_params), alert: I18n.t('devise.failure.unauthenticated')
-  end
-
-  def authenticate_namespace_owner!
-    user_is_namespace_owner = if @namespace.is_a?(Group)
-                                @namespace.owners.include?(current_user)
-                              else
-                                @namespace.owner == current_user
-                              end
-
-    render_403 unless user_is_namespace_owner
   end
 
   def company_params
@@ -121,15 +97,6 @@ class TrialsController < ApplicationController
     }
   end
 
-  def extend_reactivate_trial_params
-    gl_com_params = { gitlab_com_trial: true }
-
-    {
-      trial_user: params.permit(:namespace_id, :trial_extension_type, :trial_entity, :glm_source, :glm_content).merge(gl_com_params),
-      uid: current_user.id
-    }
-  end
-
   def find_or_create_namespace
     @namespace = if find_namespace?
                    current_user.namespaces.find_by_id(params[:namespace_id])
@@ -140,28 +107,8 @@ class TrialsController < ApplicationController
     render_404 unless @namespace
   end
 
-  def find_namespace
-    @namespace = if find_namespace?
-                   current_user.namespaces.find_by_id(params[:namespace_id])
-                 end
-
-    render_404 unless @namespace
-  end
-
   def find_namespace?
     params[:namespace_id].present? && params[:namespace_id] != '0'
-  end
-
-  def valid_extension?
-    trial_extension_type = params[:trial_extension_type].to_i
-
-    return false unless GitlabSubscription.trial_extension_types.value?(trial_extension_type)
-
-    return false if trial_extension_type == GitlabSubscription.trial_extension_types[:extended] && !@namespace.can_extend_trial?
-
-    return false if trial_extension_type == GitlabSubscription.trial_extension_types[:reactivated] && !@namespace.can_reactivate_trial?
-
-    true
   end
 
   def can_create_group?
