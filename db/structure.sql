@@ -32479,6 +32479,8 @@ CREATE INDEX index_vulnerability_feedback_on_pipeline_id ON vulnerability_feedba
 
 CREATE INDEX index_vulnerability_finding_signatures_on_finding_id ON vulnerability_finding_signatures USING btree (finding_id);
 
+CREATE INDEX index_vulnerability_finding_signatures_on_signature_sha ON vulnerability_finding_signatures USING btree (signature_sha);
+
 CREATE INDEX index_vulnerability_findings_remediations_on_remediation_id ON vulnerability_findings_remediations USING btree (vulnerability_remediation_id);
 
 CREATE UNIQUE INDEX index_vulnerability_findings_remediations_on_unique_keys ON vulnerability_findings_remediations USING btree (vulnerability_occurrence_id, vulnerability_remediation_id);
