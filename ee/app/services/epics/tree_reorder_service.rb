@@ -109,41 +109,55 @@ module Epics
     end
 
     def authorized?
-      return false unless can_admin?(base_epic)
+      return false unless can_reorder_object?(moving_object)
 
       if adjacent_reference
-        return false unless can_admin?(adjacent_reference_epic)
+        return false unless can_reorder_adjacent_reference?
       end
 
       if new_parent
-        return false unless can_admin?(new_parent) && can_admin?(moving_object.parent)
+        return false unless can_move_under_new_parent?
       end
 
       true
     end
 
-    def can_admin?(epic)
-      return false unless epic
+    def can_reorder_object?(moving_object)
+      return false unless can_admin_epic_relation?(base_epic)
 
-      ability, subject =
-        if moving_object.is_a?(Epic)
-          [:admin_epic_tree_relation, epic]
-        else
-          [:admin_epic_relation, epic]
-        end
-
-      can?(current_user, ability, subject)
+      case moving_object
+      when Epic
+        can_admin_epic_relation?(moving_object, tree_object: true)
+      when EpicIssue
+        can_admin_epic_issue?(moving_object)
+      end
     end
 
-    def adjacent_reference_epic
+    def can_reorder_adjacent_reference?
       case adjacent_reference
-      when EpicIssue
-        adjacent_reference&.epic
       when Epic
-        adjacent_reference
-      else
-        nil
+        can_admin_epic_relation?(adjacent_reference)
+      when EpicIssue
+        can_admin_epic_issue?(adjacent_reference)
       end
+    end
+
+    def can_move_under_new_parent?
+      return false unless can_admin_epic_relation?(new_parent, tree_object: true)
+      return false unless moving_object.parent && can_admin_epic_relation?(moving_object.parent)
+
+      true
+    end
+
+    def can_admin_epic_issue?(epic_issue)
+      can?(current_user, :admin_issue_relation, epic_issue.issue) &&
+        can_admin_epic_relation?(epic_issue.epic)
+    end
+
+    def can_admin_epic_relation?(epic, tree_object: false)
+      ability = tree_object ? :admin_epic_tree_relation : :admin_epic_relation
+
+      can?(current_user, ability, epic)
     end
 
     def base_epic
