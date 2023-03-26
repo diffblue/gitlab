@@ -30,7 +30,7 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
   end
 
   describe '#execute' do
-    subject { service.execute }
+    subject(:execute) { service.execute }
 
     context 'when license_report is empty' do
       let_it_be(:license_compliance_rule) do
@@ -40,7 +40,15 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
       let_it_be(:pipeline) { create(:ee_ci_pipeline, status: 'pending', project: project) }
 
       it 'does not update approval rules' do
-        expect { subject }.not_to change { license_compliance_rule.reload.approvals_required }
+        expect { execute }.not_to change { license_compliance_rule.reload.approvals_required }
+      end
+
+      it 'does not call report' do
+        allow_any_instance_of(Gitlab::Ci::Reports::LicenseScanning::Report) do |instance|
+          expect(instance).not_to receive(:violates?)
+        end
+
+        execute
       end
     end
 
@@ -57,13 +65,21 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
         let(:denied_license) { create(:software_license, name: license_report.license_names[0]) }
 
         it 'requires approval' do
-          expect { subject }.not_to change { license_compliance_rule.reload.approvals_required }
+          expect { execute }.not_to change { license_compliance_rule.reload.approvals_required }
+        end
+
+        it 'calls report' do
+          allow_any_instance_of(Gitlab::Ci::Reports::LicenseScanning::Report) do |instance|
+            expect(instance).to receive(:violates?)
+          end
+
+          execute
         end
       end
 
       context "when no licenses violate the license compliance policy" do
         it 'does not require approval' do
-          expect { subject }.to change { license_compliance_rule.reload.approvals_required }.from(1).to(0)
+          expect { execute }.to change { license_compliance_rule.reload.approvals_required }.from(1).to(0)
         end
       end
     end
@@ -97,7 +113,7 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
         let(:denied_license) { create(:software_license, name: license_report.license_names[0]) }
 
         it 'requires approval' do
-          expect { subject }.not_to change { license_finding_rule.reload.approvals_required }
+          expect { execute }.not_to change { license_finding_rule.reload.approvals_required }
         end
       end
 
@@ -110,7 +126,7 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
 
         context 'when target branch pipeline is empty' do
           it 'does not require approval' do
-            expect { subject }.to change { license_finding_rule.reload.approvals_required }.from(1).to(0)
+            expect { execute }.to change { license_finding_rule.reload.approvals_required }.from(1).to(0)
           end
         end
 
@@ -166,9 +182,9 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
 
           it 'sync approvals_required' do
             if result
-              expect { subject }.not_to change { license_finding_rule.reload.approvals_required }
+              expect { execute }.not_to change { license_finding_rule.reload.approvals_required }
             else
-              expect { subject }.to change { license_finding_rule.reload.approvals_required }.from(1).to(0)
+              expect { execute }.to change { license_finding_rule.reload.approvals_required }.from(1).to(0)
             end
           end
         end

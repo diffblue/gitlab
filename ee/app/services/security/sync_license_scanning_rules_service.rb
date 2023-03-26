@@ -10,10 +10,11 @@ module Security
 
     def initialize(pipeline)
       @pipeline = pipeline
+      @scanner = ::Gitlab::LicenseScanning.scanner_for_pipeline(project, pipeline)
     end
 
     def execute
-      return if report.empty? && !pipeline.complete?
+      return unless scanner.results_available?
 
       merge_requests = pipeline.merge_requests_as_head_pipeline
 
@@ -23,19 +24,21 @@ module Security
 
     private
 
-    attr_reader :pipeline
+    attr_reader :pipeline, :scanner
 
     delegate :project, to: :pipeline
 
     def sync_license_check_rule(merge_requests)
-      return if report.violates?(project.software_license_policies.without_scan_result_policy_read)
-
-      ApprovalMergeRequestRule
+      license_approval_rules = ApprovalMergeRequestRule
         .report_approver
         .license_scanning
         .without_scan_result_policy_read
         .for_unmerged_merge_requests(merge_requests)
-        .update_all(approvals_required: 0)
+
+      return if license_approval_rules.empty?
+      return if report.violates?(project.software_license_policies.without_scan_result_policy_read)
+
+      license_approval_rules.update_all(approvals_required: 0)
     end
 
     def sync_license_finding_rules(merge_requests)
@@ -129,7 +132,7 @@ module Security
     end
 
     def target_branch_report(merge_request)
-      project.license_compliance(merge_request.latest_pipeline_for_target_branch).license_scanning_report
+      ::Gitlab::LicenseScanning.scanner_for_pipeline(project, merge_request.latest_pipeline_for_target_branch).report
     end
 
     def new_dependency_names(target_branch_report)
@@ -137,7 +140,7 @@ module Security
     end
 
     def report
-      project.license_compliance(pipeline).license_scanning_report
+      scanner.report
     end
     strong_memoize_attr :report
 
