@@ -104,7 +104,7 @@ RSpec.describe 'Groups > Settings > Group Hooks', feature_category: :integration
         visit webhooks_path
 
         click_button 'Test'
-        click_button 'Push events'
+        click_link 'Push events'
 
         expect(WebMock).to have_requested(:post, hook.url)
         expect(page).to have_current_path(webhooks_path, ignore_query: true)
@@ -115,7 +115,7 @@ RSpec.describe 'Groups > Settings > Group Hooks', feature_category: :integration
         visit webhooks_path
 
         click_button 'Test'
-        click_button 'Push events'
+        click_link 'Push events'
 
         expect(page).to have_current_path(webhooks_path, ignore_query: true)
         expect(page).to have_content 'Hook execution failed'
