@@ -151,9 +151,7 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute', feature_catego
 
           context "when an unexpected error occurs" do
             before do
-              allow_next_instance_of(Gitlab::Ci::Reports::LicenseScanning::Report) do |instance|
-                allow(instance).to receive(:violates?).and_raise('heck')
-              end
+              allow(Gitlab::LicenseScanning).to receive(:scanner_for_pipeline).and_raise('heck')
 
               expect(Gitlab::AppLogger).to receive(:error).with(
                 hash_including(pipeline: anything,
