@@ -41,7 +41,7 @@ RSpec.describe 'Every metric definition', feature_category: :service_ping do
   let(:metric_files_key_paths) do
     Gitlab::Usage::MetricDefinition
       .definitions
-      .reject { |k, v| v.status == 'removed' || v.key_path =~ Regexp.union(ignored_metric_files_key_patterns) }
+      .reject { |_, v| v.status == 'removed' || v.key_path =~ Regexp.union(ignored_metric_files_key_patterns) }
       .keys
       .sort
   end
@@ -49,7 +49,7 @@ RSpec.describe 'Every metric definition', feature_category: :service_ping do
   let(:metric_files_with_schema) do
     Gitlab::Usage::MetricDefinition
       .definitions
-      .select { |k, v| v.respond_to?(:value_json_schema) }
+      .select { |_, v| v.respond_to?(:value_json_schema) }
   end
 
   # Recursively traverse nested Hash of a generated Usage Ping to return an Array of key paths
@@ -70,7 +70,7 @@ RSpec.describe 'Every metric definition', feature_category: :service_ping do
 
   before do
     allow(Gitlab::UsageData).to receive_messages(count: -1, distinct_count: -1, estimate_batch_distinct_count: -1, sum: -1)
-    allow(Gitlab::UsageData).to receive(:alt_usage_data).and_wrap_original do |m, *args, **kwargs|
+    allow(Gitlab::UsageData).to receive(:alt_usage_data).and_wrap_original do |_m, *_args, **kwargs|
       kwargs[:fallback] || Gitlab::Utils::UsageData::FALLBACK
     end
     allow(Gitlab::Geo).to receive(:enabled?).and_return(true)
