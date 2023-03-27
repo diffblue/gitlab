@@ -1,5 +1,5 @@
 <script>
-import { GlDropdown, GlDropdownItem, GlSearchBoxByType } from '@gitlab/ui';
+import { GlCollapsibleListbox } from '@gitlab/ui';
 import { debounce } from 'lodash';
 import Api from 'ee/api';
 import { __ } from '~/locale';
@@ -7,9 +7,7 @@ import { BRANCH_FETCH_DELAY, ALL_BRANCHES, ALL_PROTECTED_BRANCHES, PLACEHOLDER }
 
 export default {
   components: {
-    GlDropdown,
-    GlDropdownItem,
-    GlSearchBoxByType,
+    GlCollapsibleListbox,
   },
   props: {
     projectId: {
@@ -47,11 +45,13 @@ export default {
       branches: [],
       initialLoading: false,
       searching: false,
-      searchTerm: '',
       selected: null,
     };
   },
   computed: {
+    branchesValues() {
+      return this.branches.map((b) => ({ ...b, value: b.name }));
+    },
     selectedBranch() {
       const idsOnly = this.selectedBranches.map((branch) => branch.id);
       const selectedById = this.branches.find((branch) => idsOnly.includes(branch.id));
@@ -80,6 +80,15 @@ export default {
 
       return PLACEHOLDER;
     },
+    selectedBranchValue() {
+      return this.selectedBranch.name;
+    },
+  },
+  created() {
+    this.handleSearch = debounce(this.fetchBranches, BRANCH_FETCH_DELAY);
+  },
+  destroyed() {
+    this.handleSearch.cancel();
   },
   mounted() {
     this.initialLoading = true;
@@ -120,11 +129,9 @@ export default {
           this.searching = false;
         });
     },
-    search: debounce(function debouncedSearch() {
-      this.fetchBranches(this.searchTerm);
-    }, BRANCH_FETCH_DELAY),
-    isSelectedBranch(id) {
-      return this.selectedBranch.id === id;
+    handleSelect(value) {
+      const newlySelectedBranch = this.branchesValues.find((b) => b.value === value);
+      this.onSelect(newlySelectedBranch);
     },
     onSelect(branch) {
       this.selected = branch;
@@ -143,24 +150,21 @@ export default {
 </script>
 
 <template>
-  <gl-dropdown
+  <gl-collapsible-listbox
+    :items="branchesValues"
+    block
     :class="{ 'is-invalid': isInvalid }"
-    class="gl-w-full gl-dropdown-menu-full-width"
-    :text="selectedBranch.name"
+    :toggle-text="selectedBranch.name"
     :loading="initialLoading"
     :header-text="$options.i18n.header"
+    searchable
+    :searching="searching"
+    :selected="selectedBranchValue"
+    @search="handleSearch"
+    @select="handleSelect"
   >
-    <template #header>
-      <gl-search-box-by-type v-model="searchTerm" :is-loading="searching" @input="search" />
+    <template #list-item="{ item }">
+      <span :class="branchNameClass(item.id)">{{ item.name }}</span>
     </template>
-    <gl-dropdown-item
-      v-for="branch in branches"
-      :key="branch.id"
-      is-check-item
-      :is-checked="isSelectedBranch(branch.id)"
-      @click="onSelect(branch)"
-    >
-      <span :class="branchNameClass(branch.id)">{{ branch.name }}</span>
-    </gl-dropdown-item>
-  </gl-dropdown>
+  </gl-collapsible-listbox>
 </template>
