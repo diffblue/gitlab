@@ -105,6 +105,7 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :product_analytics 
               stub_application_setting(jitsu_project_xid: '123')
               stub_application_setting(jitsu_administrator_email: 'test@example.com')
               stub_application_setting(jitsu_administrator_password: 'password')
+              stub_application_setting(product_analytics_data_collector_host: 'https://collector.example.com')
               stub_application_setting(product_analytics_clickhouse_connection_string: 'clickhouse://localhost:9000')
               stub_application_setting(cube_api_base_url: 'https://cube.example.com')
               stub_application_setting(cube_api_key: '123')

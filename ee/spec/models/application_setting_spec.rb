@@ -430,6 +430,12 @@ RSpec.describe ApplicationSetting do
         it { is_expected.to allow_value('420d0e1b73b2ad4acd21c92e533be327').for(:cube_api_key) }
         it { is_expected.not_to allow_value(nil).for(:cube_api_key) }
         it { is_expected.not_to allow_value("").for(:cube_api_key) }
+
+        it { is_expected.to allow_value("https://collector.gitlab.com").for(:product_analytics_data_collector_host) }
+        it { is_expected.to allow_value("http://localhost:8000").for(:product_analytics_data_collector_host) }
+        it { is_expected.not_to allow_value("invalid.host").for(:product_analytics_data_collector_host) }
+        it { is_expected.not_to allow_value(nil).for(:product_analytics_data_collector_host) }
+        it { is_expected.not_to allow_value("").for(:product_analytics_data_collector_host) }
       end
 
       context 'when product analytics is disabled' do
@@ -444,6 +450,7 @@ RSpec.describe ApplicationSetting do
         it { is_expected.to allow_value(nil).for(:product_analytics_clickhouse_connection_string) }
         it { is_expected.to allow_value(nil).for(:cube_api_base_url) }
         it { is_expected.to allow_value(nil).for(:cube_api_key) }
+        it { is_expected.to allow_value(nil).for(:product_analytics_data_collector_host) }
       end
     end
   end
