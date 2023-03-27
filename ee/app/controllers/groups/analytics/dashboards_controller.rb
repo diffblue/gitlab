@@ -31,6 +31,8 @@ module Groups
           else
             []
           end
+
+        Gitlab::UsageDataCounters::ValueStreamsDashboardCounter.count(:views)
       end
 
       private
