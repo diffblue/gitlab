@@ -1,5 +1,5 @@
-import { GlDropdown, GlDropdownItem, GlSearchBoxByType } from '@gitlab/ui';
-import { shallowMount, mount } from '@vue/test-utils';
+import { GlCollapsibleListbox } from '@gitlab/ui';
+import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import Api from 'ee/api';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
@@ -13,19 +13,21 @@ import { TEST_BRANCHES_SELECTIONS, TEST_PROJECT_ID, TEST_PROTECTED_BRANCHES } fr
 
 const allBranchOptions = [ALL_BRANCHES, ALL_PROTECTED_BRANCHES, ...TEST_PROTECTED_BRANCHES];
 const branchNames = (branches = TEST_BRANCHES_SELECTIONS) => branches.map((branch) => branch.name);
+const addValueToBranches = (branches) => branches.map((b) => ({ ...b, value: b.name }));
 const protectedBranchNames = () => TEST_PROTECTED_BRANCHES.map((branch) => branch.name);
 const error = new Error('Something went wrong');
 
 describe('Protected Branches Selector', () => {
   let wrapper;
 
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
-  const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
-  const findSelectableBranches = () => findDropdownItems().wrappers.map((item) => item.text());
-  const findSearch = () => wrapper.findComponent(GlSearchBoxByType);
+  const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
+  const findSelectableBranches = () =>
+    findListbox()
+      .props('items')
+      .map((item) => item.name);
 
-  const createComponent = (props = {}, mountFn = shallowMount) => {
-    wrapper = mountFn(ProtectedBranchesSelector, {
+  const createComponent = (props = {}) => {
+    wrapper = mount(ProtectedBranchesSelector, {
       propsData: {
         projectId: '1',
         ...props,
@@ -44,14 +46,14 @@ describe('Protected Branches Selector', () => {
       createComponent();
       await waitForPromises();
 
-      expect(findDropdown().exists()).toBe(true);
+      expect(findListbox().exists()).toBe(true);
     });
 
     it('renders dropdown with invalid class if is invalid', async () => {
       createComponent({ isInvalid: true });
       await waitForPromises();
 
-      expect(findDropdown().classes('is-invalid')).toBe(true);
+      expect(findListbox().classes('is-invalid')).toBe(true);
     });
 
     it.each`
@@ -65,7 +67,7 @@ describe('Protected Branches Selector', () => {
       ${false}               | ${true}                         | ${[ALL_PROTECTED_BRANCHES]}               | ${[]}                 | ${ALL_PROTECTED_BRANCHES.name}
       ${false}               | ${false}                        | ${[]}                                     | ${[]}                 | ${PLACEHOLDER.name}
     `(
-      'with allowAllBranchesOption set to $allowAllBranchesOption and allowAllProtectedBranchesOption set to $allowAllProtectedBranchesOption and selectedBranches set to $selectedBranches and selectedBranchesNames set to $selectedBranchesNames the item checked is: $branchName',
+      'with allowAllBranchesOption set to $allowAllBranchesOption and allowAllProtectedBranchesOption set to $allowAllProtectedBranchesOption and selectedBranches set to $selectedBranches and selectedBranchesNames set to $selectedBranchesNames, the selected branch is $branchName',
       async ({
         allowAllBranchesOption,
         allowAllProtectedBranchesOption,
@@ -81,14 +83,7 @@ describe('Protected Branches Selector', () => {
         });
         await waitForPromises();
 
-        expect(findDropdown().props('text')).toBe(branchName);
-        if (selectedBranches.length > 0 || selectedBranchesNames.length > 0)
-          expect(
-            findDropdownItems()
-              .filter((item) => item.text() === branchName)
-              .at(0)
-              .props('isChecked'),
-          ).toBe(true);
+        expect(findListbox().props('toggleText')).toBe(branchName);
       },
     );
 
@@ -96,35 +91,55 @@ describe('Protected Branches Selector', () => {
       createComponent();
       await nextTick();
 
-      expect(findDropdown().props('loading')).toBe(true);
+      expect(findListbox().props('loading')).toBe(true);
       await waitForPromises();
 
       expect(wrapper.emitted('apiError')).toStrictEqual([[{ hasErrored: false }]]);
       expect(findSelectableBranches()).toStrictEqual(branchNames());
-      expect(findDropdown().props('loading')).toBe(false);
+      expect(findListbox().props('loading')).toBe(false);
+    });
+
+    it('when the branch is changed it emits the input event', async () => {
+      createComponent();
+
+      await waitForPromises();
+      findListbox().vm.$emit('select', TEST_PROTECTED_BRANCHES[0].name);
+      await nextTick();
+
+      expect(wrapper.emitted('input')).toStrictEqual([
+        addValueToBranches([TEST_PROTECTED_BRANCHES[0]]),
+      ]);
     });
 
     describe('with allow all branches option', () => {
-      it('set to true', async () => {
-        createComponent({
-          allowAllBranchesOption: true,
-        });
-        await waitForPromises();
+      describe('set to true', () => {
+        it('shows the allow all option', async () => {
+          createComponent({
+            allowAllBranchesOption: true,
+          });
+          await waitForPromises();
 
-        expect(findDropdownItems().filter((item) => item.text() === ALL_BRANCHES.name).length).toBe(
-          1,
-        );
+          expect(
+            findListbox()
+              .props('items')
+              .findIndex((b) => b.id === ALL_BRANCHES.id),
+          ).toBeGreaterThan(-1);
+        });
       });
 
-      it('set to false', async () => {
-        createComponent({
-          allowAllBranchesOption: false,
-        });
-        await waitForPromises();
+      describe('set to false', () => {
+        it('does not show the allow all option', async () => {
+          createComponent({
+            allowAllBranchesOption: false,
+          });
+          await waitForPromises();
 
-        expect(findDropdownItems().filter((item) => item.text() === ALL_BRANCHES.name).length).toBe(
-          0,
-        );
+          expect(
+            findListbox()
+              .props('items')
+              .findIndex((b) => b.id === ALL_BRANCHES.id),
+          ).toBe(-1);
+        });
       });
     });
 
@@ -136,32 +151,26 @@ describe('Protected Branches Selector', () => {
         });
         await waitForPromises();
 
-        expect(findDropdown().props('text')).toBe(ALL_PROTECTED_BRANCHES.name);
-        expect(
-          findDropdownItems()
-            .filter((item) => item.text() === ALL_PROTECTED_BRANCHES.name)
-            .at(0)
-            .props('isChecked'),
-        ).toBe(true);
+        expect(findListbox().props('toggleText')).toBe(ALL_PROTECTED_BRANCHES.name);
       });
 
       it('displays all the protected branches, all branches, and all protected branches', async () => {
         createComponent({ allowAllProtectedBranchesOption: true });
         await nextTick();
 
-        expect(findDropdown().props('loading')).toBe(true);
+        expect(findListbox().props('loading')).toBe(true);
         await waitForPromises();
 
         expect(wrapper.emitted('apiError')).toStrictEqual([[{ hasErrored: false }]]);
         expect(findSelectableBranches()).toStrictEqual(branchNames(allBranchOptions));
-        expect(findDropdown().props('loading')).toBe(false);
+        expect(findListbox().props('loading')).toBe(false);
       });
     });
 
     describe('when fetching the branch list fails', () => {
       beforeEach(() => {
         jest.spyOn(Api, 'projectProtectedBranches').mockRejectedValueOnce(error);
-        createComponent({});
+        createComponent();
       });
 
       it('emits the `apiError` event', () => {
@@ -178,12 +187,12 @@ describe('Protected Branches Selector', () => {
     it('fetches protected branches with search term', async () => {
       const term = 'lorem';
 
-      createComponent({}, mount);
+      createComponent();
 
-      findSearch().vm.$emit('input', term);
+      findListbox().vm.$emit('search', term);
       await nextTick();
 
-      expect(findSearch().props('isLoading')).toBe(true);
+      expect(findListbox().props('loading')).toBe(true);
 
       await waitForPromises();
 
@@ -192,22 +201,22 @@ describe('Protected Branches Selector', () => {
         [{ hasErrored: false }],
         [{ hasErrored: false }],
       ]);
-      expect(findSearch().props('isLoading')).toBe(false);
+      expect(findListbox().props('loading')).toBe(false);
     });
 
     it('fetches protected branches with no all branches if there is a search', async () => {
-      createComponent({}, mount);
+      createComponent();
 
-      findSearch().vm.$emit('input', 'main');
+      findListbox().vm.$emit('search', 'main');
       await waitForPromises();
 
       expect(findSelectableBranches()).toStrictEqual(protectedBranchNames());
     });
 
     it('fetches protected branches with all branches if search contains term "all"', async () => {
-      createComponent({}, mount);
+      createComponent();
 
-      findSearch().vm.$emit('input', 'all');
+      findListbox().vm.$emit('search', 'all');
       await waitForPromises();
 
       expect(findSelectableBranches()).toStrictEqual(branchNames());
@@ -217,7 +226,7 @@ describe('Protected Branches Selector', () => {
       it('fetches protected branches with all branches if search contains term "all"', async () => {
         createComponent({ allowAllProtectedBranchesOption: true }, mount);
 
-        findSearch().vm.$emit('input', 'all');
+        findListbox().vm.$emit('search', 'all');
         await waitForPromises();
 
         expect(findSelectableBranches()).toStrictEqual(branchNames(allBranchOptions));
@@ -232,7 +241,7 @@ describe('Protected Branches Selector', () => {
 
         it('emits the `apiError` event and returns all branches and all protected branches when searching for "all"', async () => {
           jest.spyOn(Api, 'projectProtectedBranches').mockRejectedValueOnce(error);
-          findSearch().vm.$emit('input', 'all');
+          findListbox().vm.$emit('search', 'all');
 
           await waitForPromises();
 
@@ -250,14 +259,14 @@ describe('Protected Branches Selector', () => {
 
     describe('when fetching the branch list fails while searching', () => {
       beforeEach(() => {
-        createComponent({}, mount);
+        createComponent();
 
         return waitForPromises();
       });
 
       it('emits the `apiError` event and returns no items when searching for a term', async () => {
         jest.spyOn(Api, 'projectProtectedBranches').mockRejectedValueOnce(error);
-        findSearch().vm.$emit('input', 'main');
+        findListbox().vm.$emit('search', 'main');
 
         await waitForPromises();
 
@@ -265,12 +274,12 @@ describe('Protected Branches Selector', () => {
           [{ hasErrored: false }],
           [{ hasErrored: true, error }],
         ]);
-        expect(findDropdownItems()).toHaveLength(0);
+        expect(findListbox().props('items')).toHaveLength(0);
       });
 
       it('emits the `apiError` event and returns all branches when searching for "all"', async () => {
         jest.spyOn(Api, 'projectProtectedBranches').mockRejectedValueOnce(error);
-        findSearch().vm.$emit('input', 'all');
+        findListbox().vm.$emit('search', 'all');
 
         await waitForPromises();
 
@@ -281,15 +290,5 @@ describe('Protected Branches Selector', () => {
         expect(findSelectableBranches()).toStrictEqual([ALL_BRANCHES.name]);
       });
     });
-  });
-
-  it('when the branch is changed it sets the isChecked property and emits the input event', async () => {
-    createComponent();
-
-    await waitForPromises();
-    await findDropdownItems().at(1).vm.$emit('click');
-
-    expect(findDropdownItems().at(1).props('isChecked')).toBe(true);
-    expect(wrapper.emitted('input')).toStrictEqual([[TEST_PROTECTED_BRANCHES[0]]]);
   });
 });
