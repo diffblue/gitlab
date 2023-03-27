@@ -67,9 +67,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
           dashboard_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
           project_full_path: project.full_path,
-          features: {
-            product_analytics: enabled
-          }.to_json
+          features: (enabled ? [:product_analytics] : []).to_json
         })
       end
     end

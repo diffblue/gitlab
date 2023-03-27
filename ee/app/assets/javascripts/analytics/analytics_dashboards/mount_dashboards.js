@@ -1,7 +1,11 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
-import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
+import {
+  convertObjectPropsToCamelCase,
+  convertArrayToCamelCase,
+  parseBoolean,
+} from '~/lib/utils/common_utils';
 import createRouter from './router';
 
 const buildAnalyticsDashboardPointer = (analyticsDashboardPointerJSON = '') => {
@@ -50,7 +54,7 @@ export default (id, App) => {
       collectorHost,
       chartEmptyStateIllustrationPath,
       dashboardEmptyStateIllustrationPath,
-      features: convertObjectPropsToCamelCase(JSON.parse(features)),
+      features: convertArrayToCamelCase(JSON.parse(features)),
       showInstrumentationDetailsButton: parseBoolean(showInstrumentationDetailsButton),
     },
     render(h) {

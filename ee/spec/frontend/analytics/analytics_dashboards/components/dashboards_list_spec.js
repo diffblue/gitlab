@@ -1,4 +1,5 @@
 import DashboardsList from 'ee/analytics/analytics_dashboards/components/dashboards_list.vue';
+import DashboardListItem from 'ee/analytics/analytics_dashboards/components/list/dashboard_list_item.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
   I18N_DASHBOARD_LIST_TITLE,
@@ -23,11 +24,7 @@ jest.mock('ee/analytics/analytics_dashboards/api/dashboards_api');
 describe('DashboardsList', () => {
   let wrapper;
 
-  const findRouterDescriptions = () => wrapper.findAllByTestId('dashboard-description');
-  const findRouterLinks = () => wrapper.findAllByTestId('dashboard-link');
-  const findRouterIcons = () => wrapper.findAllByTestId('dashboard-icon');
-  const findRouterLabels = () => wrapper.findAllByTestId('dashboard-label');
-  const findListItems = () => wrapper.findAllByTestId('dashboard-list-item');
+  const findListItems = () => wrapper.findAllComponents(DashboardListItem);
   const findPageTitle = () => wrapper.findByTestId('title');
   const findPageDescription = () => wrapper.findByTestId('description');
   const findHelpLink = () => wrapper.findByTestId('help-link');
@@ -37,7 +34,8 @@ describe('DashboardsList', () => {
     wrapper.findByTestId('intrumentation-details-dropdown');
   const findKeyInputAt = (index) => wrapper.findAllComponents(AnalyticsClipboardInput).at(index);
 
-  const NUMBER_OF_DASHBOARDS = jsonList.productAnalytics.length + 1;
+  const NUMBER_OF_CUSTOM_DASHBOARDS = 1;
+  const NUMBER_OF_DASHBOARDS = jsonList.productAnalytics.length + NUMBER_OF_CUSTOM_DASHBOARDS;
 
   const $router = {
     push: jest.fn(),
@@ -101,49 +99,37 @@ describe('DashboardsList', () => {
       );
     });
 
+    it('renders a list item for each custom dashboard', () => {
+      expect(getCustomDashboards).toHaveBeenCalledWith(TEST_CUSTOM_DASHBOARDS_PROJECT);
+
+      expect(findListItems()).toHaveLength(NUMBER_OF_CUSTOM_DASHBOARDS);
+
+      expect(findListItems().at(0).props('dashboard')).toMatchObject({
+        id: 'new_dashboard',
+        title: 'new_dashboard',
+      });
+    });
+
     it('does not render any feature dashboards', () => {
-      expect(findRouterLinks()).toHaveLength(1);
+      expect(findListItems()).toHaveLength(1);
     });
   });
 
   describe('when the feature dashboards are enabled', () => {
+    const FEATURE = 'productAnalytics';
+
     beforeEach(() => {
-      createWrapper({ features: { productAnalytics: true } });
+      createWrapper({ features: [FEATURE] });
     });
 
-    it('should render titles of pre-built dashboards', () => {
-      expect(findRouterLinks()).toHaveLength(NUMBER_OF_DASHBOARDS);
-      expect(findRouterLinks().at(0).text()).toContain('Audience');
+    it('renders a list item for each dashboard', () => {
+      expect(findListItems()).toHaveLength(NUMBER_OF_DASHBOARDS);
     });
 
-    it('should render titles of custom dashboard', () => {
-      expect(getCustomDashboards).toHaveBeenCalledWith(TEST_CUSTOM_DASHBOARDS_PROJECT);
-      expect(findRouterLinks()).toHaveLength(NUMBER_OF_DASHBOARDS);
-      expect(findRouterLinks().at(2).text()).toContain('new_dashboard');
-    });
-
-    it('should render descriptions', () => {
-      expect(findRouterDescriptions()).toHaveLength(NUMBER_OF_DASHBOARDS);
-      expect(findRouterDescriptions().at(0).text()).toContain('Understand your audience');
-    });
-
-    it('should render links', () => {
-      expect(findRouterLinks()).toHaveLength(NUMBER_OF_DASHBOARDS);
-    });
-
-    it('should render icons', () => {
-      expect(findRouterIcons().at(0).props('name')).toBe('project');
-    });
-
-    it('should render builtin labels', () => {
-      expect(findRouterLabels()).toHaveLength(2);
-      expect(findRouterLabels().at(0).props('title')).toBe('By GitLab');
-    });
-
-    it('should route to the dashboard when a list item is clicked', async () => {
-      await findListItems().at(0).trigger('click');
-
-      expect($router.push).toHaveBeenCalledWith('dashboard_audience');
+    it('renders a list item for each feature dashboard at the start of the list', () => {
+      jsonList[FEATURE].forEach((dashboard, idx) => {
+        expect(findListItems().at(idx).props('dashboard')).toEqual(dashboard);
+      });
     });
   });
 
