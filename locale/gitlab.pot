@@ -10574,6 +10574,12 @@ msgstr ""
 msgid "Committed by"
 msgstr ""
 
+msgid "Committed-after"
+msgstr ""
+
+msgid "Committed-before"
+msgstr ""
+
 msgid "CommonJS module"
 msgstr ""
 
@@ -38566,9 +38572,6 @@ msgstr ""
 msgid "Search by author"
 msgstr ""
 
-msgid "Search by commit title or SHA"
-msgstr ""
-
 msgid "Search by message"
 msgstr ""
 
@@ -38612,6 +38615,9 @@ msgid "Search milestones"
 msgstr ""
 
 msgid "Search or create tag"
+msgstr ""
+
+msgid "Search or filter commits"
 msgstr ""
 
 msgid "Search or filter results..."
@@ -53007,6 +53013,9 @@ msgid "your group (%{group_name})"
 msgstr ""
 
 msgid "your settings"
+msgstr ""
+
+msgid "yyyy-mm-dd"
 msgstr ""
 
 msgid "{group}"
