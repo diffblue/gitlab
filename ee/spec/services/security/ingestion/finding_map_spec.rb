@@ -35,7 +35,7 @@ RSpec.describe Security::Ingestion::FindingMap, feature_category: :vulnerability
       create(:vulnerability_feedback,
              :issue,
              project: security_finding.scan.project,
-             project_fingerprint: report_finding.project_fingerprint)
+             finding_uuid: security_finding.uuid)
     end
 
     subject { finding_map.issue_feedback }
