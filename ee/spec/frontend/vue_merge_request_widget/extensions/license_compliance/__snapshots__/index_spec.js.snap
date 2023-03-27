@@ -28,7 +28,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
           class="gl-w-full"
         >
           <div
-            class="gl-display-flex gl-flex-nowrap"
+            class="gl-display-flex gl-flex-wrap-nowrap"
           >
             <div
               class="gl-flex-wrap gl-display-flex gl-w-full"
@@ -115,7 +115,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
                 class="gl-w-full"
               >
                 <div
-                  class="gl-display-flex gl-flex-nowrap"
+                  class="gl-display-flex gl-flex-wrap-nowrap"
                 >
                   <div
                     class="gl-flex-wrap gl-display-flex gl-w-full"
@@ -213,7 +213,7 @@ exports[`License Compliance extension expanded data with new licenses displays d
           class="gl-w-full"
         >
           <div
-            class="gl-display-flex gl-flex-nowrap"
+            class="gl-display-flex gl-flex-wrap-nowrap"
           >
             <div
               class="gl-flex-wrap gl-display-flex gl-w-full"
@@ -300,7 +300,7 @@ exports[`License Compliance extension expanded data with new licenses displays d
                 class="gl-w-full"
               >
                 <div
-                  class="gl-display-flex gl-flex-nowrap"
+                  class="gl-display-flex gl-flex-wrap-nowrap"
                 >
                   <div
                     class="gl-flex-wrap gl-display-flex gl-w-full"
@@ -388,7 +388,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
           class="gl-w-full"
         >
           <div
-            class="gl-display-flex gl-flex-nowrap"
+            class="gl-display-flex gl-flex-wrap-nowrap"
           >
             <div
               class="gl-flex-wrap gl-display-flex gl-w-full"
@@ -475,7 +475,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
                 class="gl-w-full"
               >
                 <div
-                  class="gl-display-flex gl-flex-nowrap"
+                  class="gl-display-flex gl-flex-wrap-nowrap"
                 >
                   <div
                     class="gl-flex-wrap gl-display-flex gl-w-full"
