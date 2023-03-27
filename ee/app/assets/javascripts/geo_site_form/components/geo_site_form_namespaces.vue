@@ -8,7 +8,7 @@ export default {
   name: 'GeoSiteFormNamespaces',
   i18n: {
     noSelectedDropdownTitle: s__('Geo|Select groups to replicate'),
-    withSelectedDropdownTitle: (len) => n__('Geo|%d group selected', '%d groups selected', len),
+    withSelectedDropdownTitle: (len) => n__('Geo|%d group selected', 'Geo|%d groups selected', len),
     nothingFound: s__('Geo|Nothing found…'),
   },
   components: {
