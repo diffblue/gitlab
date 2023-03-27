@@ -15,6 +15,9 @@ module Ci
 
       scope :current_month, -> { where(date: beginning_of_month) }
       scope :for_namespace, -> (namespace) { where(namespace: namespace) }
+      scope :by_namespace_and_date, -> (namespace, date) {
+        where(namespace: namespace, date: date)
+      }
 
       def self.previous_usage(namespace)
         for_namespace(namespace).where("#{quoted_table_name}.date < :date", date: beginning_of_month).order(:date).last

@@ -85,6 +85,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="queryciminutesusagedate"></a>`date` | [`Date`](#date) | Date for which to retrieve the usage data, should be the first day of a month. |
 | <a id="queryciminutesusagenamespaceid"></a>`namespaceId` | [`NamespaceID`](#namespaceid) | Global ID of the Namespace for the monthly CI/CD minutes usage. |
 
 ### `Query.ciVariables`
