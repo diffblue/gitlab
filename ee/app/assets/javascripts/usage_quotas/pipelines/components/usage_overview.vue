@@ -41,7 +41,7 @@ export default {
 
 <template>
   <section
-    class="gl-display-flex gl-justify-content-space-between gl-flex-wrap gl-border-b-gray-100"
+    class="gl-display-flex gl-justify-content-space-between gl-flex-wrap-wrap gl-border-b-gray-100"
   >
     <section>
       <h5 class="gl-m-0" data-testid="minutes-title">
