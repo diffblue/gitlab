@@ -52409,6 +52409,9 @@ msgstr ""
 msgid "must be associated with a Group or a Project"
 msgstr ""
 
+msgid "must be at least 1 day"
+msgstr ""
+
 msgid "must be greater than start date"
 msgstr ""
 
