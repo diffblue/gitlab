@@ -35450,6 +35450,9 @@ msgstr ""
 msgid "ProtectedEnvironment|Unprotect"
 msgstr ""
 
+msgid "ProtectedEnvironment|Users with at least the Developer role can write to unprotected environments. Are you sure you want to unprotect %{environment_name}?"
+msgstr ""
+
 msgid "ProtectedEnvironment|Your environment can't be unprotected"
 msgstr ""
 
@@ -40613,6 +40616,9 @@ msgid "Show labels"
 msgstr ""
 
 msgid "Show latest version"
+msgstr ""
+
+msgid "Show less"
 msgstr ""
 
 msgid "Show list"

@@ -18,7 +18,7 @@ export default {
     confirmUnprotectText() {
       return sprintf(
         s__(
-          'ProtectedEnvironment|%{environment_name} will be writable for developers. Are you sure?',
+          'ProtectedEnvironment|Users with at least the Developer role can write to unprotected environments. Are you sure you want to unprotect %{environment_name}?',
         ),
         { environment_name: this.environmentToUnprotect?.name },
       );
