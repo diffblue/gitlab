@@ -22,6 +22,10 @@ module Analytics
     private
 
     def collector_host
+      if ::Gitlab::CurrentSettings.product_analytics_data_collector_host.present?
+        return ::Gitlab::CurrentSettings.product_analytics_data_collector_host
+      end
+
       return unless ::Gitlab::CurrentSettings.jitsu_host.present?
 
       ::Gitlab::CurrentSettings.current_application_settings.jitsu_host.gsub(%r{(://\w+.)}, '://collector.')

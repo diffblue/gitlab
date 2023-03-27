@@ -186,11 +186,17 @@ module EE
       validates :security_policy_global_group_approvers_enabled,
                 inclusion: { in: [true, false], message: 'must be a boolean value' }
 
+      validates :product_analytics_data_collector_host,
+                addressable_url: ::ApplicationSetting::ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ allow_localhost: true }),
+                presence: true,
+                if: :product_analytics_enabled
+
       alias_attribute :delayed_project_deletion, :delayed_project_removal
 
       before_save :update_lock_delayed_project_removal, if: :delayed_group_deletion_changed?
       after_commit :update_personal_access_tokens_lifetime, if: :saved_change_to_max_personal_access_token_lifetime?
       after_commit :resume_elasticsearch_indexing
+      before_validation :ensure_product_analytics_data_collector_host!, if: :product_analytics_enabled
     end
 
     class_methods do
@@ -589,6 +595,13 @@ module EE
       # This is the only way to update lock_delayed_project_removal and it is used to
       # enforce the cascading setting when delayed deletion is disabled on a instance.
       self.lock_delayed_project_removal = !self.delayed_group_deletion
+    end
+
+    # this method will be removed after a migration will backfill null product_analytics_data_collector_host
+    def ensure_product_analytics_data_collector_host!
+      if self.product_analytics_data_collector_host.nil? && self.jitsu_host.present?
+        self.product_analytics_data_collector_host = self.jitsu_host.gsub(%r{(://\w+.)}, '://collector.')
+      end
     end
   end
 end
