@@ -26,10 +26,13 @@ module Dora
         return error
       end
 
-      data = ::Dora::DailyMetrics
-        .for_environments(environments)
-        .in_range_of(start_date, end_date)
-        .aggregate_for!(metrics, interval)
+      data = ::Analytics::DoraMetricsAggregator.aggregate_for(
+        projects: target_projects,
+        metrics: metrics,
+        interval: interval,
+        start_date: start_date,
+        end_date: end_date,
+        environment_tiers: environment_tiers)
 
       success(data: data)
     end
@@ -89,10 +92,6 @@ module Dora
       end
 
       nil
-    end
-
-    def environments
-      Environment.for_project(target_projects).for_tier(environment_tiers)
     end
 
     def target_projects

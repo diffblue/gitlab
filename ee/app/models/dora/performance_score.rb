@@ -15,5 +15,13 @@ module Dora
     DailyMetrics::AVAILABLE_METRICS.each do |metric|
       enum metric.to_sym => SCORES, :_suffix => true
     end
+
+    def self.refresh!(project, date)
+      date = date.beginning_of_month.to_date
+      scores = Analytics::DoraPerformanceScoreCalculator.scores_for(project, date)
+      score_data = scores.merge(project_id: project.id, date: date)
+
+      upsert(score_data, unique_by: [:project_id, :date])
+    end
   end
 end
