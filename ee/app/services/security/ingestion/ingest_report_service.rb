@@ -8,7 +8,7 @@ module Security
     # Returns the ingested vulnerability IDs for each batch.
     class IngestReportService
       BATCH_SIZE = 50
-      SCAN_INGESTION_ERROR = {
+      INGESTION_ERROR = {
         type: 'IngestionError',
         message: 'Ingestion failed for some vulnerabilities'
       }.freeze
@@ -58,7 +58,7 @@ module Security
         return if errored
 
         self.errored = true
-        security_scan.add_processing_error!(SCAN_INGESTION_ERROR)
+        security_scan.add_processing_error!(INGESTION_ERROR)
       end
 
       def mark_resolved_vulnerabilities(ingested_ids)
