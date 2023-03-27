@@ -35,13 +35,17 @@ RSpec.describe Vulnerabilities::FindingEntity, feature_category: :vulnerability_
   end
 
   let(:dismiss_feedback) do
-    build(:vulnerability_feedback, :sast, :dismissal,
-           project: project, project_fingerprint: occurrence.project_fingerprint)
+    build(
+      :vulnerability_feedback, :sast, :dismissal,
+      project: project, project_fingerprint: occurrence.project_fingerprint
+    )
   end
 
   let(:issue_feedback) do
-    build(:vulnerability_feedback, :sast, :issue,
-           project: project, project_fingerprint: occurrence.project_fingerprint)
+    build(
+      :vulnerability_feedback, :sast, :issue,
+      project: project, project_fingerprint: occurrence.project_fingerprint
+    )
   end
 
   let(:request) { double('request') }

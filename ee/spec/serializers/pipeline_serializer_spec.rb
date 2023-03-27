@@ -14,10 +14,7 @@ RSpec.describe PipelineSerializer do
 
   context 'when pipeline contains failed bridge jobs' do
     let(:pipeline) do
-      create(:ci_empty_pipeline,
-             project: project,
-             status: :success,
-             ref: :master)
+      create(:ci_empty_pipeline, project: project, status: :success, ref: :master)
     end
 
     before do

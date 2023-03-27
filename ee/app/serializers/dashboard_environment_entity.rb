@@ -12,15 +12,17 @@ class DashboardEnvironmentEntity < Grape::Entity
   expose :external_url
 
   expose :last_visible_deployment, as: :last_deployment, if: ->(environment) { environment.last_visible_deployment } do |environment|
-    DeploymentEntity.represent(environment.last_visible_deployment,
-                               options.merge(request: request_with_project,
-                                             except: unnecessary_deployment_fields))
+    DeploymentEntity.represent(
+      environment.last_visible_deployment,
+      options.merge(request: request_with_project, except: unnecessary_deployment_fields)
+    )
   end
 
   expose :last_visible_pipeline, as: :last_pipeline, if: ->(environment) { environment.last_visible_pipeline } do |environment|
-    PipelineDetailsEntity.represent(environment.last_visible_pipeline,
-                                    options.merge(request: request_with_project,
-                                                  only: required_pipeline_fields))
+    PipelineDetailsEntity.represent(
+      environment.last_visible_pipeline,
+      options.merge(request: request_with_project, only: required_pipeline_fields)
+    )
   end
 
   private
