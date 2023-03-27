@@ -13,6 +13,7 @@ export default () => {
   const {
     basePath,
     mergeCommitsCsvExportPath,
+    frameworksCsvExportPath,
     groupPath,
     rootAncestorPath,
     newGroupComplianceFrameworkPath,
@@ -41,6 +42,7 @@ export default () => {
       createElement(ReportsApp, {
         props: {
           mergeCommitsCsvExportPath,
+          frameworksCsvExportPath,
           newGroupComplianceFrameworkPath,
         },
       }),
