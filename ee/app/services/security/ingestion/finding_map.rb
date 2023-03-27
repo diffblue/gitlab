@@ -36,11 +36,11 @@ module Security
       # Deprecated under deprecate_vulnerabilities_feedback FF. When this flag is active, this method should not be being called.
       # Issue: https://gitlab.com/gitlab-org/gitlab/-/issues/384222
       def issue_feedback
-        BatchLoader.for([project.id, project_fingerprint]).batch do |tuples, loader|
+        BatchLoader.for([project.id, uuid]).batch do |tuples, loader|
           Vulnerabilities::Feedback.for_issue
                                    .by_project(tuples.first.first)
-                                   .by_project_fingerprints(tuples.map(&:second))
-                                   .each { |feedback| loader.call([feedback.project_id, feedback.project_fingerprint], feedback) }
+                                   .by_finding_uuid(tuples.map(&:second))
+                                   .each { |feedback| loader.call([feedback.project_id, feedback.finding_uuid], feedback) }
         end
       end
 
