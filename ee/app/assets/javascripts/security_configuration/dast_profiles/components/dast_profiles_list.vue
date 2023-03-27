@@ -191,7 +191,7 @@ export default {
               {{ errorMessage }}
               <ul
                 v-if="hasErrorDetails"
-                :aria-label="__('DastProfiles|Error Details')"
+                :aria-label="s__('DastProfiles|Error Details')"
                 class="gl-p-0 gl-m-0"
               >
                 <li

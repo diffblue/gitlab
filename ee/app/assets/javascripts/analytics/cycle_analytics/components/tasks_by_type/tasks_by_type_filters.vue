@@ -84,7 +84,7 @@ export default {
       data-testid="type-of-work-filters-label"
       :initial-data="defaultGroupLabels"
       :max-labels="maxLabels"
-      :aria-label="__('CycleAnalytics|Display chart filters')"
+      :aria-label="s__('CycleAnalytics|Display chart filters')"
       :selected-label-names="selectedLabelNames"
       aria-expanded="false"
       multiselect

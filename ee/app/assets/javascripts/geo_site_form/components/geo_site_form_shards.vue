@@ -7,7 +7,7 @@ export default {
   name: 'GeoSiteFormShards',
   i18n: {
     noSelectedDropdownTitle: s__('Geo|Select shards to replicate'),
-    withSelectedDropdownTitle: (len) => n__('Geo|%d shard selected', '%d shards selected', len),
+    withSelectedDropdownTitle: (len) => n__('Geo|%d shard selected', 'Geo|%d shards selected', len),
     nothingFound: s__('Geo|Nothing found…'),
   },
   components: {

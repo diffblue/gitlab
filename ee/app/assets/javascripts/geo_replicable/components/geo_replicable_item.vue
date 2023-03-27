@@ -12,7 +12,7 @@ export default {
   i18n: {
     unknown: __('Unknown'),
     nA: __('Not applicable.'),
-    resync: __('Geo|Resync'),
+    resync: s__('Geo|Resync'),
     lastVerified: s__('Geo|Last time verified'),
   },
   components: {
