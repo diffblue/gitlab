@@ -1478,6 +1478,9 @@ msgstr ""
 msgid "."
 msgstr ""
 
+msgid ".gitlab-ci.yml with aliases/anchors is not supported. Please change the CI configuration manually."
+msgstr ""
+
 msgid "/"
 msgstr ""
 
