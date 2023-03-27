@@ -15,6 +15,7 @@ import EditProtectedEnvironmentRulesCard from './edit_protected_environment_rule
 import AddRuleModal from './add_rule_modal.vue';
 import AddApprovers from './add_approvers.vue';
 import ProtectedEnvironments from './protected_environments.vue';
+import ShowMore from './show_more.vue';
 
 export default {
   components: {
@@ -28,6 +29,7 @@ export default {
     EditProtectedEnvironmentRulesCard,
     AddRuleModal,
     AddApprovers,
+    ShowMore,
   },
   directives: {
     GlTooltip,
@@ -96,6 +98,7 @@ export default {
   ACCESS_LEVELS,
   DEPLOYER_RULE_KEY,
   APPROVER_RULE_KEY,
+  AVATAR_LIMIT: 5,
 };
 </script>
 <template>
@@ -149,15 +152,22 @@ export default {
               {{ rule.access_level_description }}
             </span>
 
-            <gl-avatar
-              v-for="user in getUsersForRule(rule, ruleKey)"
-              :key="user.id"
-              v-gl-tooltip
-              :src="user.avatar_url"
-              :title="user.name"
-              :size="24"
-              class="gl-mr-2"
-            />
+            <div class="gl-w-half">
+              <show-more
+                #default="{ item }"
+                :limit="$options.AVATAR_LIMIT"
+                :items="getUsersForRule(rule, ruleKey)"
+              >
+                <gl-avatar
+                  :key="item.id"
+                  v-gl-tooltip
+                  :src="item.avatar_url"
+                  :title="item.name"
+                  :size="24"
+                  class="gl-mr-2"
+                />
+              </show-more>
+            </div>
 
             <gl-button
               v-if="canDeleteDeployerRules(environment)"
@@ -193,15 +203,20 @@ export default {
             </span>
 
             <div class="gl-w-20p">
-              <gl-avatar
-                v-for="user in getUsersForRule(rule, ruleKey)"
-                :key="user.id"
-                v-gl-tooltip
-                :src="user.avatar_url"
-                :title="user.name"
-                :size="24"
-                class="gl-mr-2"
-              />
+              <show-more
+                #default="{ item }"
+                :limit="$options.AVATAR_LIMIT"
+                :items="getUsersForRule(rule, ruleKey)"
+              >
+                <gl-avatar
+                  :key="item.id"
+                  v-gl-tooltip
+                  :src="item.avatar_url"
+                  :title="item.name"
+                  :size="24"
+                  class="gl-mr-2"
+                />
+              </show-more>
             </div>
 
             <template v-if="editingRules[rule.id]">
