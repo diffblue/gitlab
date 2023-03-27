@@ -33,6 +33,8 @@ module EE
       service_class = ::Users::EmailVerification::SendCustomConfirmationInstructionsService
       service_class.new(user).execute if new_user
       session[:verification_user_id] = user.id
+      ::User.sticking.stick_or_unstick_request(request.env, :user, user.id)
+
       redirect_to identity_verification_path
     end
   end

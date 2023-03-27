@@ -118,10 +118,14 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
     end
 
     shared_examples 'identity verification required' do
-      it 'redirects to identity verification' do
+      it 'handles sticking, sets the session and redirects to identity verification', :aggregate_failures do
         expect_any_instance_of(::Users::EmailVerification::SendCustomConfirmationInstructionsService) do |instance|
           expect(instance).to receive(:execute)
         end
+
+        expect(User.sticking)
+          .to receive(:stick_or_unstick_request)
+          .with(anything, :user, anything)
 
         oauth_request
 
@@ -135,6 +139,8 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
         allow_any_instance_of(::Users::EmailVerification::SendCustomConfirmationInstructionsService) do |instance|
           expect(instance).not_to receive(:execute)
         end
+
+        expect(User.sticking).not_to receive(:stick_or_unstick_request)
 
         oauth_request
 
