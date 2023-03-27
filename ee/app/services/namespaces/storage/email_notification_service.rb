@@ -38,13 +38,22 @@ module Namespaces
         return if level == :storage_remaining
 
         owner_emails = namespace.owners.map(&:email)
+        usage_values = {
+          current_size: root_storage_size.current_size,
+          limit: root_storage_size.limit,
+          used_storage_percentage: root_storage_size.used_storage_percentage
+        }
 
         if level == :exceeded
-          mailer.notify_out_of_storage(namespace, owner_emails).deliver_later
+          mailer.notify_out_of_storage(
+            namespace: namespace,
+            recipients: owner_emails,
+            usage_values: usage_values).deliver_later
         else
-          percentage = root_storage_size.remaining_storage_percentage
-          size = root_storage_size.remaining_storage_size
-          mailer.notify_limit_warning(namespace, owner_emails, percentage, size).deliver_later
+          mailer.notify_limit_warning(
+            namespace: namespace,
+            recipients: owner_emails,
+            usage_values: usage_values).deliver_later
         end
       end
 

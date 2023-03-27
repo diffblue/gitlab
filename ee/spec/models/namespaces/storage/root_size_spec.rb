@@ -171,6 +171,34 @@ RSpec.describe Namespaces::Storage::RootSize, :saas do
     end
   end
 
+  describe '#used_storage_percentage' do
+    where(:limit, :used, :expected_percentage) do
+      0    | 0    | 0
+      0    | 100  | 0
+      100  | 0    | 0
+      100  | 200  | 200
+      1    | 0    | 0
+      100  | 10   | 10
+      100  | 77   | 77
+      100  | 95   | 95
+      100  | 99   | 99
+      100  | 100  | 100
+      1000 | 971  | 97
+      8192 | 6144 | 75
+      5120 | 3840 | 75
+      5120 | 5118 | 99
+    end
+
+    with_them do
+      it 'returns the percentage of remaining storage rounding down to the nearest integer' do
+        set_storage_size_limit(namespace, megabytes: limit)
+        set_used_storage(namespace, megabytes: used)
+
+        expect(model.used_storage_percentage).to eq(expected_percentage)
+      end
+    end
+  end
+
   describe '#remaining_storage_percentage' do
     where(:limit, :used, :expected_percentage) do
       0    | 0    | 100

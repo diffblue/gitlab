@@ -1,5 +1,7 @@
-<%= s_('NamespaceStorage|%{name}(%{url}) namespace has exceeded its namespace storage limit.') % { name: @namespace.name, url: @usage_quotas_url }%>
+<%= s_('NamespaceStorage|You have used %{used_storage_percentage} of the storage quota for %{name} (%{current_size} of %{limit}).') % { name: @namespace.name, url: @usage_quotas_url, current_size: number_to_human_size(@current_size), limit: number_to_human_size(@limit), used_storage_percentage: "#{@used_storage_percentage}%" }%> <%= s_('NamespaceStorage|See storage usage statistics: %{url}') % { url: @usage_quotas_url }%>
 
-<%= s_('NamespaceStorage|We recommend that you buy additional storage to resume normal service.') %>
+<%= s_('NamespaceStorage|%{name} is now read-only. Projects under this namespace are locked and actions are restricted.') % { name: @namespace.name } %> <%= s_('NamespaceStorage|Learn about which actions are restricted: %{url}') % { url: help_page_url('user/read_only_namespaces') } %>
+
+<%= s_('NamespaceStorage|Manage your storage usage or purchase additional storage.') %> <%= s_('Learn more: %{url}') % { url: help_page_url('user/usage_quotas', anchor: 'manage-your-storage-usage') } %>
 
 <%= s_('NamespaceStorage|Buy more storage') %> → <%= @buy_storage_url %>

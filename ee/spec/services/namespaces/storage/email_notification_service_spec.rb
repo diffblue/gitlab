@@ -20,21 +20,26 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
         group.add_owner(owner)
       end
 
-      where(:limit, :used, :last_notification_level, :expected_level) do
-        100 | 100 | :storage_remaining | :exceeded
-        100 | 200 | :storage_remaining | :exceeded
-        100 | 100 | :caution           | :exceeded
-        100 | 100 | :warning           | :exceeded
-        100 | 100 | :danger            | :exceeded
+      where(:limit, :current_size, :used_storage_percentage, :last_notification_level, :expected_level) do
+        100 | 100 | 100 | :storage_remaining | :exceeded
+        100 | 200 | 200 | :storage_remaining | :exceeded
+        100 | 100 | 100 | :caution           | :exceeded
+        100 | 100 | 100 | :warning           | :exceeded
+        100 | 100 | 100 | :danger            | :exceeded
       end
 
       with_them do
         it 'sends an out of storage notification when the namespace runs out of storage' do
           set_storage_size_limit(group, megabytes: limit)
-          set_used_storage(group, megabytes: used)
+          set_used_storage(group, megabytes: current_size)
           set_notification_level(last_notification_level)
 
-          expect(mailer).to receive(:notify_out_of_storage).with(group, [owner.email])
+          expect(mailer).to receive(:notify_out_of_storage).with(namespace: group, recipients: [owner.email],
+            usage_values: {
+              current_size: current_size.megabytes,
+              limit: limit.megabytes,
+              used_storage_percentage: used_storage_percentage
+            })
             .and_return(action_mailer)
           expect(action_mailer).to receive(:deliver_later)
 
@@ -44,29 +49,34 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
         end
       end
 
-      where(:limit, :used, :last_notification_level, :expected_percent, :expected_size, :expected_level) do
-        100  | 70   | :storage_remaining | 30 | 30.megabytes   | :caution
-        100  | 85   | :storage_remaining | 15 | 15.megabytes   | :warning
-        100  | 95   | :storage_remaining | 5  | 5.megabytes    | :danger
-        100  | 77   | :storage_remaining | 23 | 23.megabytes   | :caution
-        1000 | 971  | :storage_remaining | 2  | 29.megabytes   | :danger
-        100  | 85   | :caution           | 15 | 15.megabytes   | :warning
-        100  | 95   | :warning           | 5  | 5.megabytes    | :danger
-        100  | 99   | :exceeded          | 1  | 1.megabytes    | :danger
-        100  | 94   | :danger            | 6  | 6.megabytes    | :warning
-        100  | 84   | :warning           | 16 | 16.megabytes   | :caution
-        8192 | 6144 | :storage_remaining | 25 | 2.gigabytes    | :caution
-        5120 | 3840 | :storage_remaining | 25 | 1.25.gigabytes | :caution
-        5120 | 5118 | :warning           | 0  | 2.megabytes    | :danger
+      where(:limit, :current_size, :used_storage_percentage, :last_notification_level, :expected_level) do
+        100  | 70   | 70 | :storage_remaining | :caution
+        100  | 85   | 85 | :storage_remaining | :warning
+        100  | 95   | 95 | :storage_remaining | :danger
+        100  | 77   | 77 | :storage_remaining | :caution
+        1000 | 971  | 97 | :storage_remaining | :danger
+        100  | 85   | 85 | :caution           | :warning
+        100  | 95   | 95 | :warning           | :danger
+        100  | 99   | 99 | :exceeded          | :danger
+        100  | 94   | 94 | :danger            | :warning
+        100  | 84   | 84 | :warning           | :caution
+        8192 | 6144 | 75 | :storage_remaining | :caution
+        5120 | 3840 | 75 | :storage_remaining | :caution
+        5120 | 5118 | 99 | :warning           | :danger
       end
 
       with_them do
         it 'sends a storage limit notification when storage is running low' do
           set_storage_size_limit(group, megabytes: limit)
-          set_used_storage(group, megabytes: used)
+          set_used_storage(group, megabytes: current_size)
           set_notification_level(last_notification_level)
 
-          expect(mailer).to receive(:notify_limit_warning).with(group, [owner.email], expected_percent, expected_size)
+          expect(mailer).to receive(:notify_limit_warning).with(namespace: group, recipients: [owner.email],
+            usage_values: {
+              current_size: current_size.megabytes,
+              limit: limit.megabytes,
+              used_storage_percentage: used_storage_percentage
+            })
             .and_return(action_mailer)
           expect(action_mailer).to receive(:deliver_later)
 
@@ -76,7 +86,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
         end
       end
 
-      where(:limit, :used, :last_notification_level) do
+      where(:limit, :current_size, :last_notification_level) do
         100  | 5   | :storage_remaining
         100  | 69  | :storage_remaining
         100  | 69  | :caution
@@ -89,7 +99,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
       with_them do
         it 'does not send an email when there is sufficient storage remaining' do
           set_storage_size_limit(group, megabytes: limit)
-          set_used_storage(group, megabytes: used)
+          set_used_storage(group, megabytes: current_size)
           set_notification_level(last_notification_level)
 
           expect(mailer).not_to receive(:notify_out_of_storage)
@@ -99,7 +109,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
         end
       end
 
-      where(:limit, :used, :last_notification_level) do
+      where(:limit, :current_size, :last_notification_level) do
         0    | 0   | :storage_remaining
         0    | 150 | :storage_remaining
         0    | 0   | :caution
@@ -115,7 +125,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
       with_them do
         it 'does not send an email when there is no storage limit' do
           set_storage_size_limit(group, megabytes: limit)
-          set_used_storage(group, megabytes: used)
+          set_used_storage(group, megabytes: current_size)
           set_notification_level(last_notification_level)
 
           expect(mailer).not_to receive(:notify_out_of_storage)
@@ -138,7 +148,12 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
         group.add_guest(create(:user))
         owner_emails = [owner.email, owner2.email]
 
-        expect(mailer).to receive(:notify_out_of_storage).with(group, match_array(owner_emails))
+        expect(mailer).to receive(:notify_out_of_storage).with(namespace: group, recipients: match_array(owner_emails),
+          usage_values: {
+            current_size: 200.megabytes,
+            limit: 100.megabytes,
+            used_storage_percentage: 200
+          })
           .and_return(action_mailer)
         expect(action_mailer).to receive(:deliver_later)
 
@@ -155,7 +170,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
         service.execute(group)
       end
 
-      where(:limit, :used, :last_notification_level) do
+      where(:limit, :current_size, :last_notification_level) do
         100  | 70  | :caution
         100  | 85  | :warning
         100  | 95  | :danger
@@ -164,7 +179,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
       with_them do
         it 'does not send a storage limit notification for the same threshold twice' do
           set_storage_size_limit(group, megabytes: limit)
-          set_used_storage(group, megabytes: used)
+          set_used_storage(group, megabytes: current_size)
           set_notification_level(last_notification_level)
 
           expect(mailer).not_to receive(:notify_limit_warning)
@@ -193,12 +208,17 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
         end
 
         it 'sends a limit notification' do
-          set_storage_size_limit(namespace, megabytes: 1000)
-          set_used_storage(namespace, megabytes: 851)
+          set_storage_size_limit(namespace, megabytes: 100)
+          set_used_storage(namespace, megabytes: 85)
           owner = namespace.owner
 
-          expect(mailer).to receive(:notify_limit_warning).with(namespace, [owner.email], 14, 149.megabytes)
-          .and_return(action_mailer)
+          expect(mailer).to receive(:notify_limit_warning).with(namespace: namespace, recipients: [owner.email],
+            usage_values: {
+              current_size: 85.megabytes,
+              limit: 100.megabytes,
+              used_storage_percentage: 85
+            })
+            .and_return(action_mailer)
           expect(action_mailer).to receive(:deliver_later)
 
           service.execute(namespace)
@@ -209,7 +229,12 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
           set_used_storage(namespace, megabytes: 550)
           owner = namespace.owner
 
-          expect(mailer).to receive(:notify_out_of_storage).with(namespace, [owner.email])
+          expect(mailer).to receive(:notify_out_of_storage).with(namespace: namespace, recipients: [owner.email],
+            usage_values: {
+              current_size: 550.megabytes,
+              limit: 100.megabytes,
+              used_storage_percentage: 550
+            })
             .and_return(action_mailer)
           expect(action_mailer).to receive(:deliver_later)
 

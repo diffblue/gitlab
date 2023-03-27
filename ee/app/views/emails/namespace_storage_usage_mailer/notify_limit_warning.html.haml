@@ -1,7 +1,15 @@
+- name_link = link_to @namespace.name, @usage_quotas_url
+
 %p
-  - name_link = link_to @namespace.name, @usage_quotas_url
-  = html_escape(s_('NamespaceStorage|%{name_with_link} namespace has approximately %{percent} (%{size}) namespace storage space remaining.')) % { name_with_link: name_link.html_safe, percent: "#{@percentage_of_available_storage}%", size: number_to_human_size(@size_of_available_storage) }
+  = html_escape(s_('NamespaceStorage|You have used %{used_storage_percentage} of the storage quota for %{name_with_link} (%{current_size} of %{limit}).')) % { name_with_link: name_link.html_safe, current_size: number_to_human_size(@current_size), limit: number_to_human_size(@limit), used_storage_percentage: "#{@used_storage_percentage}%" }
+
 %p
-  = s_('NamespaceStorage|We recommend that you buy additional storage to ensure your service is not interrupted.')
+  = html_escape(s_('NamespaceStorage|If %{name_with_link} exceeds the storage quota, all projects in the namespace will be locked and actions will be restricted.')) % { name_with_link: name_link.html_safe }
+  = link_to s_('NamespaceStorage|Which actions become restricted?'), help_page_url('user/read_only_namespaces')
+
+%p
+  = s_('NamespaceStorage|Manage your storage usage or purchase additional storage.')
+  = link_to s_('Learn more.'), help_page_url('user/usage_quotas', anchor: 'manage-your-storage-usage')
+
 %p
   = link_to sprintf('%{link_label} →', { link_label: s_('NamespaceStorage|Buy more storage') }), @buy_storage_url
