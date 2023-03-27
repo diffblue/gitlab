@@ -69,6 +69,7 @@ export default {
       },
     },
   },
+  safeHtmlConfig: { ALLOWED_TAGS: ['a'], ALLOWED_ATTR: ['href', 'rel'] },
   data() {
     return {
       sastCiConfiguration: null,
@@ -120,7 +121,7 @@ export default {
       :dismissible="false"
       data-testid="error-alert"
     >
-      <span v-safe-html="errorText"></span>
+      <span v-safe-html:[$options.safeHtmlConfig]="errorText"></span>
     </gl-alert>
 
     <configuration-form v-else :sast-ci-configuration="sastCiConfiguration" />
