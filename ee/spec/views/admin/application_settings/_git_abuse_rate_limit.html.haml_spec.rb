@@ -35,13 +35,14 @@ RSpec.describe 'admin/application_settings/_git_abuse_rate_limit' do
       let(:allowlist) { %w[user1 user2] }
       let(:alertlist) { %i[1 2] }
       let(:application_setting) do
-        build(:application_setting,
-              max_number_of_repository_downloads: 10,
-              max_number_of_repository_downloads_within_time_period: 100,
-              git_rate_limit_users_allowlist: allowlist,
-              git_rate_limit_users_alertlist: alertlist,
-              auto_ban_user_on_excessive_projects_download: true
-             )
+        build(
+          :application_setting,
+          max_number_of_repository_downloads: 10,
+          max_number_of_repository_downloads_within_time_period: 100,
+          git_rate_limit_users_allowlist: allowlist,
+          git_rate_limit_users_alertlist: alertlist,
+          auto_ban_user_on_excessive_projects_download: true
+        )
       end
 
       it 'renders the settings app root with pre-saved data' do

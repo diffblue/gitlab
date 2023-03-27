@@ -20,10 +20,9 @@ RSpec.describe 'groups/edit.html.haml' do
         render
 
         expect(rendered).to render_template('groups/settings/_ip_restriction')
-        expect(rendered).to(have_field('group_ip_restriction_ranges',
-                                       disabled: false,
-                                       with: ranges.join(","),
-                                       type: :hidden))
+        expect(rendered).to(have_field(
+          'group_ip_restriction_ranges', disabled: false, with: ranges.join(","), type: :hidden
+        ))
       end
     end
 
@@ -119,10 +118,9 @@ RSpec.describe 'groups/edit.html.haml' do
         render
 
         expect(rendered).to render_template('groups/settings/_allowed_email_domain')
-        expect(rendered).to(have_field('group_allowed_email_domains_list',
-                                       disabled: false,
-                                       with: domains.join(","),
-                                       type: :hidden))
+        expect(rendered).to(have_field(
+          'group_allowed_email_domains_list', disabled: false, with: domains.join(","), type: :hidden
+        ))
       end
     end
 
