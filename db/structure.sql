@@ -13010,7 +13010,8 @@ CREATE TABLE ci_builds (
     id bigint NOT NULL,
     stage_id bigint,
     partition_id bigint DEFAULT 100 NOT NULL,
-    CONSTRAINT check_1e2fbd1b39 CHECK ((lock_version IS NOT NULL))
+    CONSTRAINT check_1e2fbd1b39 CHECK ((lock_version IS NOT NULL)),
+    CONSTRAINT partitioning_constraint CHECK ((partition_id = 100))
 );
 
 CREATE SEQUENCE ci_builds_id_seq
@@ -27403,9 +27404,6 @@ ALTER TABLE ONLY pages_domain_acme_orders
 
 ALTER TABLE ONLY pages_domains
     ADD CONSTRAINT pages_domains_pkey PRIMARY KEY (id);
-
-ALTER TABLE ci_builds
-    ADD CONSTRAINT partitioning_constraint CHECK ((partition_id = 100)) NOT VALID;
 
 ALTER TABLE ONLY path_locks
     ADD CONSTRAINT path_locks_pkey PRIMARY KEY (id);
