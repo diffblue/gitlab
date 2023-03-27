@@ -98,7 +98,7 @@ export default {
         <span class="gl-font-weight-bold">{{ name }}</span>
       </template>
     </div>
-    <div class="gl-display-flex gl-align-items-center gl-flex-wrap">
+    <div class="gl-display-flex gl-align-items-center gl-flex-wrap-wrap">
       <geo-replicable-time-ago
         v-for="(timeAgo, index) in timeAgoArray"
         :key="index"
