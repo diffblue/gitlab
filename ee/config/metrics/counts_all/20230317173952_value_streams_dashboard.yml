@@ -1,0 +1,23 @@
+---
+key_path: analytics_counts_visits.g_metrics_comparison_page
+description: 'Total number of visits to value stream dashboards page'
+product_section: dev
+product_stage: plan
+product_group: optimize
+product_category: planning_analytics
+value_type: number
+status: active
+milestone: "15.11"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/114786
+time_frame: all
+data_source: redis
+data_category: optional
+instrumentation_class: RedisMetric
+options:
+  prefix: value_streams_dashboard
+  event: views
+performance_indicator_type: []
+distribution:
+- ee
+tier:
+- ultimate
