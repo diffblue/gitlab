@@ -1,6 +1,7 @@
 import { GlSprintf, GlModal } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
+import { stubComponent } from 'helpers/stub_component';
 import AccountVerificationModal, {
   IFRAME_MINIMUM_HEIGHT,
 } from 'ee/billings/components/account_verification_modal.vue';
@@ -9,15 +10,23 @@ import { verificationModalDefaultGon, verificationModalDefaultProps } from '../m
 
 describe('Account verification modal', () => {
   let wrapper;
+  let zuoraSubmitMock;
 
   const findModal = () => wrapper.findComponent(GlModal);
-  const zuoraSubmitSpy = jest.fn();
+  const findZuora = () => wrapper.findComponent(Zuora);
 
   const createComponent = () => {
+    zuoraSubmitMock = jest.fn();
+
     wrapper = shallowMount(AccountVerificationModal, {
       propsData: verificationModalDefaultProps,
       stubs: {
         GlSprintf,
+        Zuora: stubComponent(Zuora, {
+          methods: {
+            submit: zuoraSubmitMock,
+          },
+        }),
       },
     });
   };
@@ -37,7 +46,7 @@ describe('Account verification modal', () => {
     });
 
     it('renders the Zuora component', () => {
-      expect(wrapper.findComponent(Zuora).props()).toEqual({
+      expect(findZuora().props()).toEqual({
         currentUserId: 300,
         initialHeight: IFRAME_MINIMUM_HEIGHT,
         paymentFormId: 'payment-validation-page-id',
@@ -54,7 +63,7 @@ describe('Account verification modal', () => {
 
   describe('when zuora emits load error', () => {
     it('disables the CTA on the modal', async () => {
-      wrapper.findComponent(Zuora).vm.$emit('load-error');
+      findZuora().vm.$emit('load-error');
 
       await nextTick();
 
@@ -67,7 +76,7 @@ describe('Account verification modal', () => {
 
   describe('when zuora emits success', () => {
     it('forwards the success event up', () => {
-      wrapper.findComponent(Zuora).vm.$emit('success');
+      findZuora().vm.$emit('success');
 
       expect(wrapper.emitted('success')).toHaveLength(1);
     });
@@ -84,12 +93,11 @@ describe('Account verification modal', () => {
   describe('clicking the submit button', () => {
     beforeEach(() => {
       createComponent();
-      wrapper.vm.$refs.zuora = { submit: zuoraSubmitSpy };
       findModal().vm.$emit('primary', { preventDefault: jest.fn() });
     });
 
     it('calls the submit method of the Zuora component', () => {
-      expect(zuoraSubmitSpy).toHaveBeenCalled();
+      expect(zuoraSubmitMock).toHaveBeenCalled();
     });
   });
 });
