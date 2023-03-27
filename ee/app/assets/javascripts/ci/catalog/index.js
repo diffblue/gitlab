@@ -24,12 +24,13 @@ export const initNamespaceCatalog = (selector = '#js-ci-namespace-catalog') => {
 
   return new Vue({
     el,
+    name: 'CiCatalogRoot',
     apolloProvider,
     router: createRouter(ciCatalogPath),
     provide: {
       pageTitle: s__('CiCatalog|CI/CD catalog'),
       pageDescription: s__(
-        'CiCatalog|Repositories of reusable pipeline components available in this namespace.',
+        'CiCatalog|Repositories of pipeline components available in this namespace.',
       ),
     },
     render(h) {

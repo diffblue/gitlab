@@ -8999,7 +8999,16 @@ msgstr ""
 msgid "CiCatalog|CI/CD catalog"
 msgstr ""
 
-msgid "CiCatalog|Repositories of reusable pipeline components available in this namespace."
+msgid "CiCatalog|Create a pipeline component repository and make reusing pipeline configurations faster and easier."
+msgstr ""
+
+msgid "CiCatalog|Get started with the CI/CD catalog"
+msgstr ""
+
+msgid "CiCatalog|Learn more"
+msgstr ""
+
+msgid "CiCatalog|Repositories of pipeline components available in this namespace."
 msgstr ""
 
 msgid "CiCdAnalytics|Date range: %{range}"
