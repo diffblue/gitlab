@@ -46,7 +46,7 @@ export default {
         <div>
           <div class="gl-font-weight-bold">{{ $options.i18n.title }}</div>
           <p class="gl-mb-3">{{ $options.i18n.content }}</p>
-          <div class="gl-display-inline-flex gl-flex-wrap gl-gap-3">
+          <div class="gl-display-inline-flex gl-flex-wrap-wrap gl-gap-3">
             <gl-button
               class="gl-flex-grow-1"
               variant="confirm"
