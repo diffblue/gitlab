@@ -117,7 +117,7 @@ export default {
 <template>
   <div
     v-if="hasCodeOwners && !isFetching"
-    class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-flex-wrap"
+    class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-flex-wrap-wrap"
   >
     <div class="gl-display-inline gl-mr-2">
       <gl-icon name="users" data-testid="users-icon" />

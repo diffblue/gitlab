@@ -209,7 +209,9 @@ export default {
     </template>
 
     <template #content>
-      <div class="gl-w-full gl-mt-3 gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap">
+      <div
+        class="gl-w-full gl-mt-3 gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap-wrap"
+      >
         <gl-sprintf :message="$options.i18n.scanResultExecutionPeriod">
           <template #period>
             <gl-collapsible-listbox
