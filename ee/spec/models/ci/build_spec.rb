@@ -8,10 +8,13 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
   let(:project) { create(:project, :repository, group: group) }
 
   let(:pipeline) do
-    create(:ci_pipeline, project: project,
-                         sha: project.commit.id,
-                         ref: project.default_branch,
-                         status: 'success')
+    create(
+      :ci_pipeline,
+      project: project,
+      sha: project.commit.id,
+      ref: project.default_branch,
+      status: 'success'
+    )
   end
 
   let(:job) { create(:ci_build, pipeline: pipeline) }
@@ -109,10 +112,10 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
         job.update!(environment: 'staging')
         create(:environment, name: 'staging', project: job.project)
 
-        variable =
-          build(:ci_variable,
-                environment_variable.slice(:key, :value)
-                  .merge(project: project, environment_scope: 'stag*'))
+        variable = build(
+          :ci_variable,
+          environment_variable.slice(:key, :value).merge(project: project, environment_scope: 'stag*')
+        )
 
         variable.save!
       end
