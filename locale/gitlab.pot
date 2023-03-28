@@ -36606,6 +36606,9 @@ msgstr ""
 msgid "Report Finding not found"
 msgstr ""
 
+msgid "Report abuse"
+msgstr ""
+
 msgid "Report abuse to administrator"
 msgstr ""
 
