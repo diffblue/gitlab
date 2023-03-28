@@ -807,3 +807,18 @@ To work around this issue, you can try:
 - For older kernels, using the `nolease` mount option to disable file leasing.
 
 For more information, [see the investigation details](https://gitlab.com/gitlab-org/gitlab/-/issues/389995).
+
+### Usage quota shows incorrect artifact storage usage
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/238536) in GitLab 14.10.
+
+Sometimes the [artifacts storage usage](../user/usage_quotas.md) displays an incorrect
+value for the total storage space used by artifacts. To recalculate the artifact
+usage statistics for all projects in the instance, you can run this background script:
+
+```shell
+bin/rake 'gitlab:refresh_project_statistics_build_artifacts_size[file.csv]'
+```
+
+The artifact usage value can fluctuate to `0` while the script is running. After
+recalculation, usage should display as expected again.
