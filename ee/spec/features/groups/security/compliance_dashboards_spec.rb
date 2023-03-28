@@ -42,8 +42,17 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
     let_it_be(:merge_request_2) { create(:merge_request, source_project: project_2, state: :merged, author: user_2, merge_commit_sha: '24327319d067f4101cd3edd36d023ab5e49a8579') }
 
     context 'and there is a compliance violation' do
-      let_it_be(:violation) { create(:compliance_violation, :approved_by_committer, severity_level: :high, merge_request: merge_request, violating_user: user) }
-      let_it_be(:violation_2) { create(:compliance_violation, :approved_by_merge_request_author, severity_level: :medium, merge_request: merge_request_2, violating_user: user) }
+      let_it_be(:violation) do
+        create(:compliance_violation, :approved_by_committer, severity_level: :high, merge_request: merge_request,
+          violating_user: user, title: merge_request.title, target_project_id: project.id,
+          target_branch: merge_request.target_branch, merged_at: 1.day.ago)
+      end
+
+      let_it_be(:violation_2) do
+        create(:compliance_violation, :approved_by_merge_request_author, severity_level: :medium,
+          merge_request: merge_request_2, violating_user: user, title: merge_request_2.title,
+          target_project_id: project_2.id, target_branch: merge_request_2.target_branch, merged_at: 7.days.ago)
+      end
 
       let(:merged_at) { 1.day.ago }
 
