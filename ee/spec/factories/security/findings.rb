@@ -27,7 +27,8 @@ FactoryBot.define do
           location: {},
           evidence: {},
           assets: [],
-          details: {}
+          details: {},
+          raw_source_code_extract: 'AES/ECB/NoPadding'
         }
       end
     end

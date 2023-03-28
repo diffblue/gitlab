@@ -16,6 +16,8 @@ module Security
       grouped_report_artifacts.each { |artifacts| StoreGroupedScansService.execute(artifacts) }
 
       schedule_store_reports_worker
+
+      schedule_scan_security_report_secrets_worker
     end
 
     private
@@ -42,6 +44,20 @@ module Security
 
     def schedule_store_reports_worker
       StoreSecurityReportsWorker.perform_async(pipeline.id) if pipeline.default_branch?
+    end
+
+    def schedule_scan_security_report_secrets_worker
+      ScanSecurityReportSecretsWorker.perform_async(pipeline.id) if revoke_secret_detection_token?
+    end
+
+    def revoke_secret_detection_token?
+      pipeline.project.public? &&
+        ::Gitlab::CurrentSettings.secret_detection_token_revocation_enabled? &&
+        secret_detection_scans_found?
+    end
+
+    def secret_detection_scans_found?
+      pipeline.security_scans.by_scan_types(:secret_detection).any?
     end
   end
 end

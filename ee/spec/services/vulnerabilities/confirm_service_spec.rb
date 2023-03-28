@@ -14,6 +14,7 @@ RSpec.describe Vulnerabilities::ConfirmService, feature_category: :vulnerability
 
   let(:project) { create(:project) } # cannot use let_it_be here: caching causes problems with permission-related tests
   let(:vulnerability) { create(:vulnerability, :with_findings, project: project) }
+  let(:state_transition) { create(:vulnerability_state_transition, vulnerability: vulnerability) }
   let(:service) { described_class.new(user, vulnerability, comment) }
   let(:created_state_transition) { ::Vulnerabilities::StateTransition.last }
 
@@ -49,14 +50,16 @@ RSpec.describe Vulnerabilities::ConfirmService, feature_category: :vulnerability
         confirm_vulnerability
       end
 
-      it 'creates state transition entry to `confirmed`', :aggregate_failures do
-        expect { confirm_vulnerability }.to change { ::Vulnerabilities::StateTransition.count }
-          .from(0)
-          .to(1)
-        expect(created_state_transition.vulnerability_id).to eq(vulnerability.id)
-        expect(created_state_transition.to_state).to eq('confirmed')
-        expect(created_state_transition.author).to eq(user)
-        expect(created_state_transition.comment).to eq(comment)
+      it 'creates state transition entry to `confirmed`' do
+        expect(::Vulnerabilities::StateTransition).to receive(:create!).with(
+          vulnerability: vulnerability,
+          from_state: vulnerability.state,
+          to_state: :confirmed,
+          author: user,
+          comment: "It's really there, I swear."
+        )
+
+        confirm_vulnerability
       end
 
       context 'when security dashboard feature is disabled' do

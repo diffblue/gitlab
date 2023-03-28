@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Reports::Security::Finding do
+RSpec.describe Gitlab::Ci::Reports::Security::Finding, feature_category: :vulnerability_management do
   using RSpec::Parameterized::TableSyntax
 
   describe '#initialize' do
@@ -570,5 +570,14 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding do
 
       it { is_expected.to eq(assets) }
     end
+  end
+
+  describe '#raw_source_code_extract' do
+    let(:original_data) { { 'raw_source_code_extract' => 'leaked-secret' } }
+    let(:finding) { build(:ci_reports_security_finding, original_data: original_data) }
+
+    subject { finding.raw_source_code_extract }
+
+    it { is_expected.to eq(original_data['raw_source_code_extract']) }
   end
 end

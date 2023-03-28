@@ -84,6 +84,20 @@ RSpec.describe Security::TokenRevocationService, '#execute', feature_category: :
 
       expect(subject[:status]).to be(:success)
     end
+
+    context 'when vulnerability is missing' do
+      before do
+        revocable_keys.each do |key|
+          key.delete(:vulnerability)
+        end
+      end
+
+      it 'does not call `SystemNoteService`' do
+        expect(SystemNoteService).not_to receive(:change_vulnerability_state)
+
+        subject
+      end
+    end
   end
 
   context 'when revocation token API returns a response with failure' do

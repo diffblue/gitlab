@@ -19,6 +19,8 @@ class ScanSecurityReportSecretsWorker # rubocop:disable Scalability/IdempotentWo
 
   ScanSecurityReportSecretsWorkerError = Class.new(StandardError)
 
+  DEFAULT_BATCH_SIZE = 100
+
   def perform(pipeline_id)
     pipeline = Ci::Pipeline.find_by_id(pipeline_id)
     return unless pipeline
@@ -35,20 +37,25 @@ class ScanSecurityReportSecretsWorker # rubocop:disable Scalability/IdempotentWo
   private
 
   def revocable_keys(pipeline)
-    vulnerability_findings = pipeline.vulnerability_findings.report_type(:secret_detection)
+    keys = []
 
-    vulnerability_findings.map do |vulnerability_finding|
-      {
-        type: revocation_type(vulnerability_finding),
-        token: vulnerability_finding.metadata['raw_source_code_extract'],
-        location: vulnerability_finding.vulnerability.present.location_link_with_raw_path,
-        vulnerability: vulnerability_finding.vulnerability
-      }
+    pipeline.security_findings.by_report_types(:secret_detection).each_batch(of: DEFAULT_BATCH_SIZE) do |relation|
+      relation.each do |security_finding|
+        keys << {
+          type: revocation_type(security_finding),
+          token: security_finding.raw_source_code_extract,
+          location: security_finding.present.location_link_with_raw_path,
+          vulnerability: security_finding.vulnerability
+        }
+      end
     end
+
+    keys
   end
 
-  def revocation_type(vulnerability_finding)
-    identifier = vulnerability_finding.metadata['identifiers'].first
-    (identifier["type"] + '_' + identifier["value"].tr(' ', '_')).downcase
+  def revocation_type(security_finding)
+    identifier = security_finding.identifiers.first
+
+    (identifier[:external_type] + '_' + identifier[:external_id].tr(' ', '_')).downcase
   end
 end

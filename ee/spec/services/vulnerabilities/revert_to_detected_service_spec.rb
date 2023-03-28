@@ -14,6 +14,7 @@ RSpec.describe Vulnerabilities::RevertToDetectedService, feature_category: :vuln
 
   let(:project) { create(:project) } # cannot use let_it_be here: caching causes problems with permission-related tests
   let(:vulnerability) { create(:vulnerability, :with_findings, project: project) }
+  let(:state_transition) { create(:vulnerability_state_transition, vulnerability: vulnerability) }
   let(:service) { described_class.new(user, vulnerability, comment) }
 
   subject(:revert_vulnerability_to_detected) { service.execute }
@@ -35,13 +36,14 @@ RSpec.describe Vulnerabilities::RevertToDetectedService, feature_category: :vuln
     end
 
     it 'creates state transition entry to `detected`' do
-      expect { revert_vulnerability_to_detected }.to change { ::Vulnerabilities::StateTransition.count }
-        .from(0)
-        .to(1)
-      expect(::Vulnerabilities::StateTransition.last.vulnerability_id).to eq(vulnerability.id)
-      expect(::Vulnerabilities::StateTransition.last.to_state).to eq('detected')
-      expect(::Vulnerabilities::StateTransition.last.comment).to eq(comment)
-      expect(::Vulnerabilities::StateTransition.last.author).to eq(user)
+      expect(::Vulnerabilities::StateTransition).to receive(:create!).with(
+        vulnerability: vulnerability,
+        from_state: vulnerability.state,
+        to_state: :detected,
+        author: user,
+        comment: comment
+      )
+      revert_vulnerability_to_detected
     end
 
     it_behaves_like 'calls vulnerability statistics utility services in order'

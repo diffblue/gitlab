@@ -68,6 +68,22 @@ RSpec.describe Security::StoreFindingsService, feature_category: :vulnerability_
             ])
       end
 
+      it 'stores raw_source_code_extract from original_data in database' do
+        store_findings
+
+        expect(security_scan.findings.reload.as_json(only: :finding_data)).to include(
+          a_hash_including(
+            "finding_data" => a_hash_including("raw_source_code_extract" => security_finding_1.raw_source_code_extract)
+          ),
+          a_hash_including(
+            "finding_data" => a_hash_including("raw_source_code_extract" => security_finding_2.raw_source_code_extract)
+          ),
+          a_hash_including(
+            "finding_data" => a_hash_including("raw_source_code_extract" => security_finding_3.raw_source_code_extract)
+          )
+        )
+      end
+
       context 'when the scanners already exist in the database' do
         before do
           create(:vulnerabilities_scanner, project: project, external_id: security_scanner.key)

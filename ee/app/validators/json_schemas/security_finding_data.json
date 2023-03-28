@@ -56,8 +56,9 @@
     "false_positive?": {
       "type": "boolean"
     },
-    "location": {
-      "type": "object"
+    "raw_source_code_extract": {
+      "type": "string",
+      "description": "Provides an unsanitized excerpt of the affected source code."
     },
     "evidence": {
       "type": "object"
