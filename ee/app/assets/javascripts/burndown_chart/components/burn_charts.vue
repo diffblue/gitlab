@@ -294,7 +294,7 @@ export default {
 
 <template>
   <div>
-    <div class="burndown-header gl-display-flex gl-align-items-center gl-flex-wrap">
+    <div class="burndown-header gl-display-flex gl-align-items-center gl-flex-wrap-wrap">
       <strong ref="filterLabel">{{ __('Filter by') }}</strong>
       <gl-button-group>
         <gl-button
