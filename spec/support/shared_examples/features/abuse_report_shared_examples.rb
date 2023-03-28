@@ -2,7 +2,7 @@
 
 RSpec.shared_examples 'reports the user with an abuse category' do
   it 'creates abuse report' do
-    click_button 'Report abuse to administrator'
+    click_button 'Report abuse'
     choose "They're posting spam."
     click_button 'Next'
 
