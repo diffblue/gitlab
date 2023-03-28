@@ -235,6 +235,7 @@ export default {
             <approvals-summary
               v-else
               :approval-state="approvals"
+              :disable-committers-approval="disableCommittersApproval"
               :multiple-approval-rules-available="mr.multipleApprovalRulesAvailable"
             />
           </div>
