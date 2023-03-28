@@ -66,28 +66,12 @@ RSpec.describe Ci::Minutes::TrackLiveConsumptionService, :saas, feature_category
       let(:build) { create(:ci_build, :success) }
 
       it_behaves_like 'returns early', 'Build is not running'
-
-      context 'when refactor_ci_minutes_consumption feature flag is disabled' do
-        before do
-          stub_feature_flags(refactor_ci_minutes_consumption: false)
-        end
-
-        it_behaves_like 'returns early', 'Build is not running'
-      end
     end
 
     context 'when runner is not of instance type' do
       let(:runner) { create(:ci_runner, :project) }
 
       it_behaves_like 'returns early', 'Cost factor not enabled for build'
-
-      context 'when refactor_ci_minutes_consumption feature flag is disabled' do
-        before do
-          stub_feature_flags(refactor_ci_minutes_consumption: false)
-        end
-
-        it_behaves_like 'returns early', 'Cost factor not enabled for build'
-      end
     end
 
     context 'when cost factor is not enabled for build' do
@@ -121,14 +105,6 @@ RSpec.describe Ci::Minutes::TrackLiveConsumptionService, :saas, feature_category
       end
 
       it_behaves_like 'limit not exceeded', 99, 1
-
-      context 'when refactor_ci_minutes_consumption feature flag is disabled' do
-        before do
-          stub_feature_flags(refactor_ci_minutes_consumption: false)
-        end
-
-        it_behaves_like 'limit not exceeded', 99, 1
-      end
     end
 
     context 'when current consumption exceeds the limit but not the grace period' do
@@ -164,14 +140,6 @@ RSpec.describe Ci::Minutes::TrackLiveConsumptionService, :saas, feature_category
         end
 
         it_behaves_like 'limit exceeded'
-
-        context 'when refactor_ci_minutes_consumption feature flag is disabled' do
-          before do
-            stub_feature_flags(refactor_ci_minutes_consumption: false)
-          end
-
-          it_behaves_like 'limit exceeded'
-        end
       end
     end
   end

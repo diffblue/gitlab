@@ -34,17 +34,6 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService, feature_category: :contin
         expect { subject }.to not_change { Ci::Minutes::NamespaceMonthlyUsage.count }
           .and not_change { Ci::Minutes::ProjectMonthlyUsage.count }
       end
-
-      context 'when refactor_ci_minutes_consumption feature flag is disabled' do
-        before do
-          stub_feature_flags(refactor_ci_minutes_consumption: false)
-        end
-
-        it 'does not update monthly usages' do
-          expect { subject }.to not_change { Ci::Minutes::NamespaceMonthlyUsage.count }
-            .and not_change { Ci::Minutes::ProjectMonthlyUsage.count }
-        end
-      end
     end
 
     shared_examples 'updates usage' do |expected_ci_minutes, expected_shared_runners_duration|
@@ -76,23 +65,6 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService, feature_category: :contin
 
         expect(project_usage.amount_used.to_f).to eq(expected_ci_minutes)
         expect(project_usage.shared_runners_duration).to eq(expected_shared_runners_duration)
-      end
-
-      context 'when refactor_ci_minutes_consumption feature flag is disabled' do
-        before do
-          stub_feature_flags(refactor_ci_minutes_consumption: false)
-        end
-
-        it 'performs the same and tracks usages' do
-          subject
-
-          expect(project.statistics.reload.shared_runners_seconds)
-            .to eq(expected_ci_minutes * 60)
-          expect(namespace_usage.amount_used.to_f)
-            .to eq((namespace.reload.namespace_statistics.shared_runners_seconds.to_f / 60).round(2))
-          expect(project_usage.amount_used.to_f).to eq(expected_ci_minutes)
-          expect(project_usage.shared_runners_duration).to eq(expected_shared_runners_duration)
-        end
       end
     end
 
