@@ -11,13 +11,7 @@
   aggregation: weekly
 - name: i_testing_group_code_coverage_visit_total
   aggregation: weekly
-- name: i_testing_load_performance_widget_total
-  aggregation: weekly
 - name: i_testing_metrics_report_artifact_uploaders
-  aggregation: weekly
-- name: i_testing_metrics_report_widget_total
-  aggregation: weekly
-- name: i_testing_web_performance_widget_total
   aggregation: weekly
 - name: i_search_advanced
   aggregation: weekly
